@@ -2,9 +2,11 @@
 
 ## Overview
 
-A comprehensive global theme system that allows every user to personalize their digital identity across the entire CGraph platform. Each user's theme follows them everywhere - in chats, forums, profiles, and even authentication pages.
+A comprehensive global theme system that allows every user to personalize their digital identity
+across the entire CGraph platform. Each user's theme follows them everywhere - in chats, forums,
+profiles, and even authentication pages.
 
-**Core Principle**: *Your theme is your identity. Others see it, but can't change it.*
+**Core Principle**: _Your theme is your identity. Others see it, but can't change it._
 
 ---
 
@@ -13,7 +15,9 @@ A comprehensive global theme system that allows every user to personalize their 
 ### 1. Core Infrastructure ✅
 
 #### Theme Store (`/apps/web/src/stores/themeStore.ts`)
-- **12 Color Presets**: emerald, purple, cyan, orange, pink, gold, crimson, arctic, sunset, midnight, forest, ocean
+
+- **12 Color Presets**: emerald, purple, cyan, orange, pink, gold, crimson, arctic, sunset,
+  midnight, forest, ocean
 - **10 Avatar Borders**: none, static, glow, pulse, rotate, fire, ice, electric, legendary, mythic
 - **8 Chat Bubble Styles**: default, rounded, sharp, cloud, modern, retro, bubble, glassmorphism
 - **6 Visual Effects**: glassmorphism, neon, holographic, minimal, aurora, cyberpunk
@@ -24,6 +28,7 @@ A comprehensive global theme system that allows every user to personalize their 
 #### Themed Components (`/apps/web/src/components/theme/`)
 
 **ThemedAvatar.tsx**:
+
 - Animated borders (10 types)
 - Particle effects for premium borders
 - 4 sizes: small, medium, large, xlarge
@@ -31,6 +36,7 @@ A comprehensive global theme system that allows every user to personalize their 
 - Smooth animations (pulse, rotate, fire, ice, electric, legendary, mythic)
 
 **ThemedChatBubble.tsx**:
+
 - User's theme on their messages
 - 6 entrance animations (slide, fade, scale, bounce, flip, none)
 - Glassmorphism, neon, and holographic effects
@@ -38,6 +44,7 @@ A comprehensive global theme system that allows every user to personalize their 
 - Shows sender's theme (immutable by receiver)
 
 #### Theme Customization Page (`/apps/web/src/pages/settings/ThemeCustomization.tsx`)
+
 - **Live Preview Panel**: See changes instantly
 - **4 Customization Tabs**:
   - Theme: Color presets, quick presets
@@ -49,6 +56,7 @@ A comprehensive global theme system that allows every user to personalize their 
 - **Real-time Updates**: Preview changes immediately
 
 #### App Integration (`/apps/web/src/App.tsx`)
+
 - Global CSS variables injection
 - Theme initialization on app load
 - Server sync on user login
@@ -64,6 +72,7 @@ A comprehensive global theme system that allows every user to personalize their 
 See complete spec in `/CGraph/BACKEND_API_SPECIFICATION.md`
 
 **Summary**:
+
 1. `GET /api/v1/users/:id/theme` - Fetch user theme
 2. `PUT /api/v1/users/:id/theme` - Update user theme
 3. `POST /api/v1/users/:id/theme/reset` - Reset to default
@@ -72,12 +81,14 @@ See complete spec in `/CGraph/BACKEND_API_SPECIFICATION.md`
 ### Database Changes Needed
 
 **Option 1 (Recommended)**: Add JSONB column to users table
+
 ```sql
 ALTER TABLE users ADD COLUMN theme_preferences JSONB DEFAULT '{}';
 CREATE INDEX idx_users_theme_preferences ON users USING GIN (theme_preferences);
 ```
 
 **Option 2**: Create separate user_themes table
+
 ```sql
 CREATE TABLE user_themes (
   id UUID PRIMARY KEY,
@@ -88,6 +99,7 @@ CREATE TABLE user_themes (
 ```
 
 **Also add theme snapshots to messages**:
+
 ```sql
 ALTER TABLE messages ADD COLUMN sender_theme_snapshot JSONB DEFAULT '{}';
 ALTER TABLE posts ADD COLUMN author_theme_snapshot JSONB DEFAULT '{}';
@@ -115,39 +127,46 @@ See complete guide in `/CGraph/FRONTEND_IMPLEMENTATION_GUIDE.md`
 **Quick Summary**:
 
 ### Phase 1: Messages (HIGH PRIORITY)
+
 - Update `/apps/web/src/pages/messages/Conversation.tsx`
 - Update `/apps/web/src/pages/messages/EnhancedConversation.tsx`
 - Update `/apps/web/src/pages/groups/GroupChannel.tsx`
 - Replace message bubbles with `ThemedChatBubble` component
 
 ### Phase 2: Profiles (HIGH PRIORITY)
+
 - Update `/apps/web/src/pages/profile/UserProfile.tsx`
 - Update `/apps/web/src/pages/settings/Settings.tsx`
 - Replace avatars with `ThemedAvatar` component
 - Add link to theme customization
 
 ### Phase 3: Authentication (MEDIUM)
+
 - Update `/apps/web/src/pages/auth/Login.tsx`
 - Update `/apps/web/src/pages/auth/Register.tsx`
 - Update `/apps/web/src/pages/auth/Onboarding.tsx`
 - Apply themed backgrounds and buttons
 
 ### Phase 4: Forums (MEDIUM)
+
 - Update `/apps/web/src/pages/forums/Forums.tsx`
 - Update `/apps/web/src/pages/forums/ForumPost.tsx`
 - Add ThemedAvatar to authors
 - Apply themes to comments
 
 ### Phase 5: Navigation (MEDIUM)
+
 - Update `/apps/web/src/layouts/AppLayout.tsx`
 - Theme active navigation items
 - Update header avatar
 
 ### Phase 6: Additional Pages (LOW)
+
 - Friends, Members, Leaderboard, Notifications
 - Replace all avatars with ThemedAvatar
 
 ### Phase 7: Premium Features (LOW)
+
 - Create PremiumThemeGate component
 - Update CoinShop with theme packs
 - Gate premium borders/effects
@@ -158,36 +177,39 @@ See complete guide in `/CGraph/FRONTEND_IMPLEMENTATION_GUIDE.md`
 
 ### Color Presets
 
-| Preset | Primary | Secondary | Use Case |
-|--------|---------|-----------|----------|
-| emerald | #10b981 | #34d399 | Default, nature |
-| purple | #8b5cf6 | #a78bfa | Creative, mystical |
-| cyan | #06b6d4 | #22d3ee | Tech, modern |
-| orange | #f97316 | #fb923c | Energetic, warm |
-| pink | #ec4899 | #f472b6 | Playful, vibrant |
-| gold | #eab308 | #facc15 | Premium, luxury |
-| crimson | #dc2626 | #f87171 | Bold, powerful |
-| arctic | #38bdf8 | #7dd3fc | Cool, calm |
-| sunset | #f59e0b | #f97316 | Warm, inviting |
-| midnight | #4c1d95 | #6b21a8 | Dark, mysterious |
-| forest | #059669 | #10b981 | Natural, earthy |
-| ocean | #0284c7 | #0ea5e9 | Deep, serene |
+| Preset   | Primary | Secondary | Use Case           |
+| -------- | ------- | --------- | ------------------ |
+| emerald  | #10b981 | #34d399   | Default, nature    |
+| purple   | #8b5cf6 | #a78bfa   | Creative, mystical |
+| cyan     | #06b6d4 | #22d3ee   | Tech, modern       |
+| orange   | #f97316 | #fb923c   | Energetic, warm    |
+| pink     | #ec4899 | #f472b6   | Playful, vibrant   |
+| gold     | #eab308 | #facc15   | Premium, luxury    |
+| crimson  | #dc2626 | #f87171   | Bold, powerful     |
+| arctic   | #38bdf8 | #7dd3fc   | Cool, calm         |
+| sunset   | #f59e0b | #f97316   | Warm, inviting     |
+| midnight | #4c1d95 | #6b21a8   | Dark, mysterious   |
+| forest   | #059669 | #10b981   | Natural, earthy    |
+| ocean    | #0284c7 | #0ea5e9   | Deep, serene       |
 
 ### Premium Tiers
 
 **Free**:
+
 - 4 color presets (emerald, arctic, crimson, gold)
 - Basic borders (none, static, glow, pulse)
 - 3 chat styles (default, rounded, sharp)
 - 2 effects (minimal, glassmorphism)
 
 **Starter ($4.99/mo)**:
+
 - 8 color presets
 - Rotating border
 - 5 chat styles
 - Aurora effect
 
 **Pro ($9.99/mo)**:
+
 - All 12 color presets
 - Animated borders (fire, ice, electric)
 - All 8 chat styles
@@ -195,6 +217,7 @@ See complete guide in `/CGraph/FRONTEND_IMPLEMENTATION_GUIDE.md`
 - Particle effects
 
 **Business ($19.99/mo)**:
+
 - Everything in Pro
 - Legendary/Mythic borders
 - Custom CSS injection
@@ -250,6 +273,7 @@ See complete guide in `/CGraph/FRONTEND_IMPLEMENTATION_GUIDE.md`
 ### For You (Frontend Developer)
 
 1. **Test What's Built**:
+
    ```bash
    cd /CGraph/apps/web
    pnpm dev
@@ -294,6 +318,7 @@ See complete guide in `/CGraph/FRONTEND_IMPLEMENTATION_GUIDE.md`
 ### Manual Testing
 
 **Theme Customization**:
+
 1. Visit `/settings/theme`
 2. Change color preset → Preview updates?
 3. Change avatar border → Animation works?
@@ -303,18 +328,21 @@ See complete guide in `/CGraph/FRONTEND_IMPLEMENTATION_GUIDE.md`
 7. Reset → Back to default?
 
 **Messages**:
+
 1. Send a message → Uses your theme?
 2. Receive message → Uses sender's theme?
 3. Change theme → Own messages update?
 4. Multiple users → Each has own theme?
 
 **Profiles**:
+
 1. View own profile → Avatar has border?
 2. View another profile → Their theme shows?
 3. Background themed?
 4. Particles work (if premium)?
 
 **Auth Pages**:
+
 1. Logout → Login page uses theme?
 2. Register → Theme persists?
 3. Animations smooth?
@@ -322,12 +350,14 @@ See complete guide in `/CGraph/FRONTEND_IMPLEMENTATION_GUIDE.md`
 ### Automated Testing
 
 Run test suite:
+
 ```bash
 cd /CGraph/apps/web
 pnpm test
 ```
 
 Coverage should include:
+
 - Theme store actions
 - Component rendering
 - Export/import functionality
@@ -367,29 +397,34 @@ Track these to measure success:
 ## 🎯 Key Principles
 
 ### 1. Personal Identity
+
 - Each user's theme is their digital signature
 - Visible to everyone, changeable by none (except owner)
 - Follows user across ALL interactions
 
 ### 2. Performance First
+
 - Lazy load particle effects
 - Cache user themes aggressively
 - Debounce server updates
 - Use CSS variables for dynamic theming
 
 ### 3. Premium Value
+
 - Free tier is fully functional
 - Premium adds polish and prestige
 - Clear visual hierarchy (legendary > epic > rare > free)
 - No pay-to-win, only pay-to-customize
 
 ### 4. Accessibility
+
 - Maintain WCAG AA contrast ratios
 - Respect prefers-reduced-motion
 - Provide simple mode option
 - Keyboard navigation support
 
 ### 5. Scalability
+
 - Theme data is small (~2KB JSON)
 - Snapshots prevent retroactive changes
 - Cache invalidation strategy
@@ -400,6 +435,7 @@ Track these to measure success:
 ## 🚀 Deployment Plan
 
 ### Week 1: Core Infrastructure
+
 - ✅ Theme store (DONE)
 - ✅ Themed components (DONE)
 - ✅ Customization UI (DONE)
@@ -407,6 +443,7 @@ Track these to measure success:
 - 🚧 Backend API (YOUR TASK)
 
 ### Week 2: Message Integration
+
 - Update Conversation.tsx
 - Update EnhancedConversation.tsx
 - Update GroupChannel.tsx
@@ -414,6 +451,7 @@ Track these to measure success:
 - Deploy to staging
 
 ### Week 3: Profile & Auth
+
 - Update UserProfile.tsx
 - Update auth pages
 - Add onboarding theme picker
@@ -421,6 +459,7 @@ Track these to measure success:
 - Deploy to staging
 
 ### Week 4: Forums & Polish
+
 - Update forum components
 - Add premium gates
 - Performance optimization
@@ -428,6 +467,7 @@ Track these to measure success:
 - Deploy to production (feature flag)
 
 ### Week 5: Rollout
+
 - Enable for 10% users
 - Monitor metrics
 - Collect feedback
@@ -438,17 +478,20 @@ Track these to measure success:
 ## 📚 Resources
 
 ### Documentation
+
 - **Backend API Spec**: `/CGraph/BACKEND_API_SPECIFICATION.md` (18 pages)
 - **Frontend Guide**: `/CGraph/FRONTEND_IMPLEMENTATION_GUIDE.md` (35 pages)
 - **Implementation Roadmap**: `/CGraph/THEME_SYSTEM_IMPLEMENTATION.md` (12 pages)
 
 ### Code
+
 - **Theme Store**: `/apps/web/src/stores/themeStore.ts` (500 lines)
 - **ThemedAvatar**: `/apps/web/src/components/theme/ThemedAvatar.tsx` (200 lines)
 - **ThemedChatBubble**: `/apps/web/src/components/theme/ThemedChatBubble.tsx` (250 lines)
 - **Customization UI**: `/apps/web/src/pages/settings/ThemeCustomization.tsx` (650 lines)
 
 ### External References
+
 - Framer Motion: https://www.framer.com/motion/
 - Zustand: https://github.com/pmndrs/zustand
 - Tailwind CSS: https://tailwindcss.com/
@@ -459,20 +502,20 @@ Track these to measure success:
 
 ### Common Issues
 
-**Q: Theme doesn't persist after refresh**
-A: Check localStorage in DevTools. Zustand persist should save to `cgraph-user-theme`
+**Q: Theme doesn't persist after refresh** A: Check localStorage in DevTools. Zustand persist should
+save to `cgraph-user-theme`
 
-**Q: CSS variables not updating**
-A: Ensure App.tsx useEffect is setting `document.documentElement.style.setProperty()`
+**Q: CSS variables not updating** A: Ensure App.tsx useEffect is setting
+`document.documentElement.style.setProperty()`
 
-**Q: Themed borders don't animate**
-A: Verify framer-motion is installed and animation props are passed correctly
+**Q: Themed borders don't animate** A: Verify framer-motion is installed and animation props are
+passed correctly
 
-**Q: Performance issues with particles**
-A: Reduce particle count or use lazy loading. Consider disabling on mobile.
+**Q: Performance issues with particles** A: Reduce particle count or use lazy loading. Consider
+disabling on mobile.
 
-**Q: Backend API not ready yet**
-A: System works without backend! Uses localStorage. Just add API calls later.
+**Q: Backend API not ready yet** A: System works without backend! Uses localStorage. Just add API
+calls later.
 
 ### Where to Get Help
 
@@ -489,6 +532,7 @@ A: System works without backend! Uses localStorage. Just add API calls later.
 Before launching the theme system:
 
 **Backend**:
+
 - [ ] Database migrations run
 - [ ] API endpoints implemented
 - [ ] Validation logic working
@@ -498,6 +542,7 @@ Before launching the theme system:
 - [ ] Migration script for existing users
 
 **Frontend**:
+
 - [ ] All phases implemented (or at minimum Phase 1-2)
 - [ ] Theme persists across sessions
 - [ ] Server sync working
@@ -514,6 +559,7 @@ Before launching the theme system:
 - [ ] No console errors
 
 **Testing**:
+
 - [ ] Manual testing complete
 - [ ] Automated tests passing
 - [ ] Cross-browser tested
@@ -521,6 +567,7 @@ Before launching the theme system:
 - [ ] Edge cases covered
 
 **Deployment**:
+
 - [ ] Feature flag configured
 - [ ] Analytics tracking added
 - [ ] Error monitoring ready
@@ -534,6 +581,7 @@ Before launching the theme system:
 You now have a **complete, production-ready global theme system** for CGraph!
 
 **What's Done**:
+
 - ✅ Core infrastructure (theme store, components, UI)
 - ✅ App integration (CSS variables, initialization)
 - ✅ Complete documentation (backend spec + frontend guide)
@@ -541,6 +589,7 @@ You now have a **complete, production-ready global theme system** for CGraph!
 - ✅ Deployment plan
 
 **What's Next**:
+
 1. **You**: Implement backend API (use BACKEND_API_SPECIFICATION.md)
 2. **You**: Integrate UI across pages (use FRONTEND_IMPLEMENTATION_GUIDE.md)
 3. **Test** thoroughly
@@ -555,6 +604,7 @@ You now have a **complete, production-ready global theme system** for CGraph!
 ---
 
 **Need help?** All documentation is in `/CGraph/` directory. Start with:
+
 - Backend: `BACKEND_API_SPECIFICATION.md`
 - Frontend: `FRONTEND_IMPLEMENTATION_GUIDE.md`
 

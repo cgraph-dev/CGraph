@@ -1,12 +1,12 @@
 # CGraph Web App - Comprehensive Functionality Audit
 
-**Date**: January 19, 2026
-**Status**: 🔍 In Progress
-**Version**: 0.9.3
+**Date**: January 19, 2026 **Status**: 🔍 In Progress **Version**: 0.9.3
 
 ## Executive Summary
 
-This document provides a comprehensive audit of the CGraph web application, identifying functional vs. non-functional features, broken implementations, and required fixes to ensure all features work end-to-end.
+This document provides a comprehensive audit of the CGraph web application, identifying functional
+vs. non-functional features, broken implementations, and required fixes to ensure all features work
+end-to-end.
 
 ---
 
@@ -15,6 +15,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 ### ✅ **WORKING FEATURES**
 
 #### Real-Time Messaging
+
 - **Phoenix WebSocket Integration**: Full implementation with exponential backoff reconnection
 - **Message Send/Receive**: Text messages work perfectly
 - **Typing Indicators**: Real-time with animated dots, 8 style variants
@@ -27,6 +28,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 - **Date Separators**: Messages grouped by date with glass effect separators
 
 #### Customization (Client-Side)
+
 - **ThemedChatBubble**: Gradient fills, glass morphism, border radius, shadows, glows, bubble tails
 - **ThemedAvatar**: 10 animated border types (glow, pulse, fire, ice, electric, legendary, mythic)
 - **Message Animations**: Slide, fade, scale, bounce, flip entrance animations
@@ -34,6 +36,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 - **Chat Effects**: 30+ entrance animations, 15 bubble presets
 
 #### Advanced Features
+
 - **Swipe-to-Reply**: Mobile gesture detection with spring physics
 - **Long-Press Actions**: Gesture recognition for message actions
 - **E2EE Testing**: Comprehensive encryption verification modal
@@ -42,6 +45,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 ### ⚠️ **PARTIALLY WORKING**
 
 #### Mentions (@username)
+
 - **Status**: Autocomplete UI exists in MessageInput.tsx
 - **Issue**: Only shows 3 hardcoded mock users (alice, bob, charlie)
 - **Missing**:
@@ -51,6 +55,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
   - Search users by username pattern
 
 #### File Attachments
+
 - **Status**: UI components exist (attachment menu visible)
 - **Issue**: No upload implementation
 - **Missing**:
@@ -61,6 +66,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
   - Progress indicators
 
 #### GIF Support
+
 - **Status**: UI button exists in MessageInput
 - **Issue**: No GIF picker implementation
 - **Missing**:
@@ -70,6 +76,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
   - Preview before send
 
 #### Message Editing & Deletion
+
 - **Status**: Store methods exist (`editMessage`, `deleteMessage`)
 - **Issue**: Not thoroughly tested, no confirmation dialogs
 - **Missing**:
@@ -79,6 +86,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
   - Permission checking (own messages only)
 
 #### Group Messaging
+
 - **Status**: Infrastructure exists but UI focused on DMs
 - **Issue**: Group-specific features not visible
 - **Missing**:
@@ -91,29 +99,34 @@ This document provides a comprehensive audit of the CGraph web application, iden
 ### 🔴 **BROKEN / NEEDS FIXING**
 
 #### Message Data Normalization
+
 - **Issue**: Multiple field name formats for sender ID
   ```typescript
-  message.senderId || message.sender_id || message.sender?.id || message.sender?.user_id
+  message.senderId || message.sender_id || message.sender?.id || message.sender?.user_id;
   ```
 - **Impact**: Indicates inconsistent API responses
 - **Fix Required**: Standardize backend API response format
 
 #### Theme Store Integration
+
 - **Issue**: ThemedChatBubble pulls from themeStore but persistence unclear
 - **Impact**: User customizations may not persist correctly
 - **Fix Required**: Ensure chat bubble themes sync with backend
 
 #### Conversation Info Panel
+
 - **Issue**: "Conversation Info" button exists but has no click handler
 - **Impact**: Can't view conversation details
 - **Fix Required**: Implement modal showing participants, creation date, mute status, etc.
 
 #### Message Search
+
 - **Issue**: Search only searches conversation names, not message content
 - **Impact**: Can't find specific messages in conversations
 - **Fix Required**: Backend integration for full-text message search
 
 #### Sticker Purchase Flow
+
 - **Issue**: Locked packs show lock icon but no purchase button
 - **Impact**: Users can't buy premium sticker packs
 - **Fix Required**: Implement coin/currency integration and purchase flow
@@ -125,6 +138,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 ### ✅ **WORKING FEATURES**
 
 #### General Settings
+
 - **Account Settings**: Display name, username (14-day cooldown), email, wallet connection
 - **Security**: Password change, 2FA setup, email verification status
 - **Notifications**: Toggle all notification types, email digests, push notifications
@@ -133,6 +147,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 - **Privacy**: Message permissions, online status, profile visibility
 
 #### Chat Bubble Customization (Client-Only)
+
 - **Full UI**: 6 tabs (colors, shape, effects, animations, layout, backgrounds)
 - **Features**: Own/other message colors, 5 bubble shapes, glass effects, shadow intensity
 - **Animations**: Entrance (slide, fade, scale, bounce, flip), hover effects
@@ -141,13 +156,16 @@ This document provides a comprehensive audit of the CGraph web application, iden
 - **Export/Import**: JSON-based theme sharing
 
 #### Avatar Customization (Partial Backend)
-- **Border Styles**: 10 types (none, solid, gradient, rainbow, pulse, spin, glow, neon, fire, electric)
+
+- **Border Styles**: 10 types (none, solid, gradient, rainbow, pulse, spin, glow, neon, fire,
+  electric)
 - **Customization**: Border color, width, glow intensity, animation speed
 - **Shapes**: circle, rounded-square, hexagon, octagon, shield, diamond
 - **Persistence**: localStorage + backend API (`/api/v1/users/me/avatar-border/*`)
 - **Issue**: Optimistic updates without reliable backend confirmation
 
 #### Profile Theme Customization (Partial Backend)
+
 - **20 Presets**: minimalist-dark/light, cyberpunk-neon, fantasy-castle, space-explorer, etc.
 - **Card Layouts**: 7 options (minimal, compact, detailed, gaming, social, creator, custom)
 - **Customization**: Colors, backgrounds (color/gradient/image/video), hover effects
@@ -155,6 +173,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 - **Issue**: Optimistic updates without reliable backend confirmation
 
 #### App Theme Settings
+
 - **Features**: Built-in theme selection (Matrix, Default)
 - **Premium Gating**: Premium themes with upgrade prompt
 - **Persistence**: localStorage only (`cgraph-app-theme`)
@@ -163,6 +182,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 ### ⚠️ **PARTIALLY WORKING**
 
 #### Global Theme Customization (ThemeCustomization.tsx)
+
 - **Status**: Full UI with 12 color presets, effects, animation settings
 - **Issue**: Backend integration has TODO comments
 - **Missing**:
@@ -171,6 +191,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
   - No user-to-user theme visibility
 
 #### Avatar Border Backend Sync
+
 - **Status**: API endpoints exist but offline fallback present
 - **Issue**: Optimistic updates apply locally even if API fails
 - **Missing**:
@@ -179,6 +200,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
   - Sync status indicator ("Saving...", "Saved", "Error")
 
 #### Profile Theme Backend Sync
+
 - **Status**: Same issues as avatar borders
 - **Issue**: Backend endpoints exist but unreliable integration
 - **Missing**: Same as avatar borders
@@ -186,11 +208,13 @@ This document provides a comprehensive audit of the CGraph web application, iden
 ### 🔴 **BROKEN / NEEDS IMPLEMENTATION**
 
 #### Chat Bubble Backend Persistence
+
 - **Issue**: Completely client-side only, no API endpoint
 - **Impact**: Settings lost on logout/clear cache
 - **Fix Required**: Create backend API endpoint `/api/v1/users/me/chat-bubble-style`
 
 #### Title Selection UI
+
 - **Issue**: Complete data structure exists (50+ titles) but ZERO UI
 - **Impact**: Users cannot select/equip titles
 - **Fix Required**:
@@ -200,6 +224,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
   - Connect to leaderboard achievements
 
 #### Badge Customization UI
+
 - **Issue**: Components exist but disconnected from settings
 - **Impact**: Users cannot select/equip badges
 - **Fix Required**:
@@ -209,6 +234,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
   - Add badge display to profiles
 
 #### Cross-User Visibility
+
 - **Issue**: Unclear which customizations are visible to others
 - **Impact**: User confusion about public vs. private customizations
 - **Fix Required**:
@@ -217,6 +243,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
   - Render other users' themes/borders/badges correctly
 
 #### Settings Sync Indicators
+
 - **Issue**: No visual feedback for save status
 - **Impact**: Users don't know if customizations saved
 - **Fix Required**: Add "Saving...", "Saved", "Error" indicators to all settings
@@ -230,6 +257,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 **File**: `/apps/web/src/pages/profile/UserProfile.tsx`
 
 **Features to Verify**:
+
 - [ ] Profile display rendering
 - [ ] Edit capabilities
 - [ ] Privacy controls
@@ -242,6 +270,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 - [ ] Friend list display
 
 **Known Issues**:
+
 - Profile theme application unclear
 - Badge/title integration missing UI
 
@@ -252,10 +281,12 @@ This document provides a comprehensive audit of the CGraph web application, iden
 **Status**: ⏳ Needs Detailed Review
 
 **Files**:
+
 - `/apps/web/src/pages/groups/Groups.tsx`
 - `/apps/web/src/pages/groups/GroupChannel.tsx`
 
 **Features to Verify**:
+
 - [ ] Group creation
 - [ ] Membership management
 - [ ] Permission settings
@@ -267,6 +298,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 - [ ] Comparison with Discord/Telegram
 
 **Known Issues**:
+
 - Group messaging UI not visible in main chat
 - Group-specific features unclear
 
@@ -277,6 +309,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 **Status**: ⏳ Needs Detailed Review
 
 **Files**:
+
 - `/apps/web/src/pages/forums/Forums.tsx`
 - `/apps/web/src/pages/forums/ForumPost.tsx`
 - `/apps/web/src/pages/forums/CreatePost.tsx`
@@ -286,6 +319,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 - `/apps/web/src/pages/forums/PluginMarketplace.tsx`
 
 **Features to Verify**:
+
 - [ ] Thread creation
 - [ ] Posting and replying
 - [ ] Tagging system
@@ -297,6 +331,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 - [ ] User experience vs traditional forums
 
 **Known Issues**:
+
 - Missing forum features mentioned in requirements
 
 ---
@@ -392,6 +427,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 ## 7. BACKEND API STATUS
 
 ### ✅ **Implemented**
+
 - `/api/v1/users/me` - Update display name
 - `/api/v1/users/me/username` - Change username
 - `/api/v1/users/me/avatar-border/*` - Avatar border endpoints
@@ -401,6 +437,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 - `/api/v1/conversations` - Conversation management
 
 ### ❌ **Missing**
+
 - `/api/v1/users/me/chat-bubble-style` - Chat bubble persistence
 - `/api/v1/users/me/theme` - Global theme persistence
 - `/api/v1/users/me/badges/equip` - Badge equipping
@@ -410,6 +447,7 @@ This document provides a comprehensive audit of the CGraph web application, iden
 - `/api/v1/sticker-packs/purchase` - Sticker purchases
 
 ### ⚠️ **Partially Implemented**
+
 - Avatar border endpoints (exist but offline fallback)
 - Profile theme endpoints (exist but optimistic updates)
 
@@ -451,6 +489,7 @@ From the landing page customization demos, apply these design elements to the we
 ## 9. TESTING CHECKLIST
 
 ### Chat & Messaging
+
 - [ ] Send text message
 - [ ] Receive message in real-time
 - [ ] Add/remove reaction
@@ -469,6 +508,7 @@ From the landing page customization demos, apply these design elements to the we
 - [ ] Search messages
 
 ### Settings & Customizations
+
 - [ ] Change display name (persists)
 - [ ] Change username (cooldown enforced)
 - [ ] Toggle notifications (saves)
@@ -482,6 +522,7 @@ From the landing page customization demos, apply these design elements to the we
 - [ ] Export/import themes
 
 ### Profiles
+
 - [ ] View own profile
 - [ ] View other user profile
 - [ ] Edit profile
@@ -493,6 +534,7 @@ From the landing page customization demos, apply these design elements to the we
 - [ ] Social stats accurate
 
 ### Groups
+
 - [ ] Create group
 - [ ] Join group
 - [ ] Send group message
@@ -502,6 +544,7 @@ From the landing page customization demos, apply these design elements to the we
 - [ ] Moderation tools
 
 ### Forums
+
 - [ ] Browse forums
 - [ ] Create thread
 - [ ] Post reply
@@ -533,9 +576,8 @@ From the landing page customization demos, apply these design elements to the we
 
 ---
 
-**Status**: 🔍 Audit In Progress
-**Last Updated**: January 19, 2026
-**Next Review**: After completing profiles/groups/forums assessment
+**Status**: 🔍 Audit In Progress **Last Updated**: January 19, 2026 **Next Review**: After
+completing profiles/groups/forums assessment
 
 ---
 
@@ -544,8 +586,10 @@ From the landing page customization demos, apply these design elements to the we
 ### ✅ **WORKING FEATURES**
 
 #### Profile Display
+
 - **Profile Page**: Well-designed profile with banner, avatar, user info (`UserProfile.tsx`)
-- **User Information Displayed**: Avatar, display name, username, verified status, premium status, bio, status message
+- **User Information Displayed**: Avatar, display name, username, verified status, premium status,
+  bio, status message
 - **Level Badge**: Overlay on avatar showing user level
 - **Gamification Stats**: Level, Total XP, Day Streak, Friends count
 - **Karma Display**: Categorized contribution level (common, top, legendary)
@@ -556,6 +600,7 @@ From the landing page customization demos, apply these design elements to the we
 - **Achievements Section**: Grid display of unlocked achievements with rarity color coding
 
 #### Profile Card Component
+
 - **Multiple Layouts**: 7 templates (minimal, compact, detailed, gaming, social, creator, custom)
 - **Title Support**: Shows equipped titles properly
 - **Badge Support**: Component expects equipped badges (but not provided from main profile)
@@ -564,6 +609,7 @@ From the landing page customization demos, apply these design elements to the we
 - **Social Links**: Support for mutual friends, forums in common
 
 #### Social Features
+
 - **Friend Management**: Add/Remove Friend buttons working
 - **Accept Friend Request**: Button appears for pending requests
 - **Mutual Friends Count**: Displayed correctly
@@ -572,6 +618,7 @@ From the landing page customization demos, apply these design elements to the we
 - **Online Status**: Shows online/idle/dnd/offline with color indicators
 
 #### API Integration
+
 - **Profile Fetching**: `GET /api/v1/users/{userId}` working
 - **Profile Updates**: Backend endpoints exist for bio, privacy, title, badges
 - **File Uploads**: Avatar/banner upload endpoints available
@@ -586,7 +633,7 @@ From the landing page customization demos, apply these design elements to the we
    - Users customize borders in settings but they NEVER appear on actual profile
    - `UserProfile.tsx` uses `AnimatedAvatar` which doesn't check avatar border store
    - **Impact**: HIGH - users invest time customizing borders but they're invisible to others
-   - **Files**: 
+   - **Files**:
      - `/apps/web/src/pages/profile/UserProfile.tsx:338`
      - `/apps/web/src/components/avatar/AvatarBorderRenderer.tsx`
      - `/apps/web/src/stores/avatarBorderStore.ts`
@@ -649,6 +696,7 @@ From the landing page customization demos, apply these design elements to the we
 ### 🔧 **REQUIRED FIXES - Priority Order**
 
 #### **P0 - Critical (Blocks Core Functionality)**
+
 1. ✅ **Create Profile Editing Form**
    - Add bio, location, website, occupation, interests editing
    - Integrate with `profileStore.updateProfile()`
@@ -670,6 +718,7 @@ From the landing page customization demos, apply these design elements to the we
    - Show up to 5 equipped badges with proper styling
 
 #### **P1 - High (Affects User Experience)**
+
 1. ✅ **Apply Profile Theme Colors**
    - Connect `profileThemeStore` to `UserProfile.tsx`
    - Apply theme colors, backgrounds, effects
@@ -686,6 +735,7 @@ From the landing page customization demos, apply these design elements to the we
    - Fetch on profile load
 
 #### **P2 - Medium (Polish & Enhancement)**
+
 1. Add profile activity feed (recent posts, comments)
 2. Add mutual friends viewer modal
 3. Add profile visibility indicator
@@ -694,10 +744,12 @@ From the landing page customization demos, apply these design elements to the we
 ### 📊 **IMPLEMENTATION STATUS**
 
 **Working**: 60%
+
 - Profile display, social features, API integration working well
 - Friend management, stats, karma display functional
 
 **Broken**: 40%
+
 - Avatar borders invisible
 - Profile themes not applied
 - Profile editing completely missing
@@ -707,6 +759,7 @@ From the landing page customization demos, apply these design elements to the we
 ### 📝 **TECHNICAL NOTES**
 
 **Code Quality**:
+
 - ✅ Well-structured component hierarchy
 - ✅ Proper use of Zustand stores
 - ✅ Good TypeScript type safety
@@ -716,23 +769,29 @@ From the landing page customization demos, apply these design elements to the we
 - ❌ Missing glue code between settings and profile display
 
 **Missing API Mappings in Profile Response**:
+
 ```typescript
 // Currently mapped:
-username, display_name, avatar_url, banner_url, bio, level, karma, etc.
-
-// MISSING:
-equipped_title_id       // Title is fetched separately, should be in main response
-equipped_badges         // Not fetched at all
-avatar_border_config    // Border preferences not in API
-profile_theme           // Theme configuration not in API
+(username,
+  display_name,
+  avatar_url,
+  banner_url,
+  bio,
+  level,
+  karma,
+  // MISSING:
+  etc.equipped_title_id); // Title is fetched separately, should be in main response
+equipped_badges; // Not fetched at all
+avatar_border_config; // Border preferences not in API
+profile_theme; // Theme configuration not in API
 ```
 
 **Disconnected Systems**:
+
 1. `AvatarBorderRenderer.tsx` (150+ styles) → Never used in main profile
 2. `profileThemeStore.ts` (20+ presets) → Never applied to UserProfile
 3. `ProfileCard.tsx` (theming support) → Never rendered on main profile
 4. Avatar/banner upload methods → Never called from UI
-
 
 ---
 
@@ -741,6 +800,7 @@ profile_theme           // Theme configuration not in API
 ### Current Implementation Status
 
 **Frontend Implementation**: ✅ COMPLETE
+
 - `AnimatedAvatar.tsx` has full border rendering (150+ styles)
 - Local persistence via Zustand + localStorage (`cgraph-avatar-style-v2`)
 - Border customization UI in `AvatarSettings.tsx` working
@@ -748,6 +808,7 @@ profile_theme           // Theme configuration not in API
 - Advanced features: shapes, particle effects, glow intensity, animation speeds
 
 **Backend Integration**: ❌ MISSING
+
 - NO `avatar_border_config` field in user profile table
 - NO API endpoint to save avatar border preferences
 - NO API endpoint to fetch other users' avatar border settings
@@ -766,6 +827,7 @@ Avatar borders work perfectly on YOUR device but are **INVISIBLE TO OTHER USERS*
 ### Technical Architecture Analysis
 
 **Current Flow (Broken)**:
+
 ```
 User A customizes border → Saved to User A's localStorage
 User B views User A's profile → Backend returns profile (no border data)
@@ -773,6 +835,7 @@ User B's browser renders User A's avatar → Uses User B's local settings
 ```
 
 **Required Flow (Fixed)**:
+
 ```
 User A customizes border → Saved to User A's localStorage + Backend
 User B views User A's profile → Backend returns profile WITH avatar_border_config
@@ -782,6 +845,7 @@ User B's browser renders User A's avatar → Uses User A's avatar_border_config
 ### Required Backend Changes
 
 1. **Database Migration** - Add to users table:
+
 ```elixir
 # Migration: add_avatar_border_to_users.exs
 alter table(:users) do
@@ -790,12 +854,14 @@ end
 ```
 
 2. **API Endpoints Needed**:
+
 ```
 PUT  /api/v1/users/me/avatar-border    # Save avatar border config
 GET  /api/v1/users/:id                 # Include avatar_border_config in response
 ```
 
 3. **Profile Response Update**:
+
 ```typescript
 // Currently returned:
 {
@@ -824,11 +890,12 @@ GET  /api/v1/users/:id                 # Include avatar_border_config in respons
 ### Frontend Changes Needed (After Backend Ready)
 
 1. **Save to Backend When Changed** - Update `AvatarSettings.tsx`:
+
 ```typescript
 const handleBorderStyleChange = async (newStyle: Partial<AvatarStyle>) => {
   // Update local store (immediate feedback)
   updateStyle(key, value);
-  
+
   // Sync to backend (persistence)
   try {
     await api.put('/api/v1/users/me/avatar-border', { avatar_border_config: style });
@@ -840,6 +907,7 @@ const handleBorderStyleChange = async (newStyle: Partial<AvatarStyle>) => {
 ```
 
 2. **Load from Profile** - Update `UserProfile.tsx`:
+
 ```typescript
 // When fetching profile
 const profile = await fetchProfile(userId);
@@ -855,21 +923,24 @@ const profile = await fetchProfile(userId);
 ```
 
 3. **Fallback Logic**:
+
 ```typescript
 // If viewing own profile → use local settings (most up-to-date)
 // If viewing others' profile → use their backend settings
-const avatarStyle = isOwnProfile 
-  ? undefined  // Use local store
-  : profile.avatarBorderConfig;  // Use their saved config
+const avatarStyle = isOwnProfile
+  ? undefined // Use local store
+  : profile.avatarBorderConfig; // Use their saved config
 ```
 
 ### Workaround for Now
 
 **Option 1**: Document that avatar borders are local-only
+
 - Add note in AvatarSettings: "Avatar borders are currently visible only to you"
 - Add VisibilityBadge with `visible="local"` label
 
 **Option 2**: Disable avatar border customization until backend ready
+
 - Hide avatar border settings temporarily
 - Show "Coming Soon" message
 
@@ -878,17 +949,18 @@ const avatarStyle = isOwnProfile
 ### Priority Assessment
 
 **Impact**: HIGH
+
 - Users invest time/coins on avatar borders expecting others to see them
 - Creates false expectation of cross-user visibility
 - Damages trust when users realize borders aren't visible to others
 
 **Complexity**: MEDIUM
+
 - Backend: Add 1 field, 1 endpoint (simple map/JSON field)
 - Frontend: Add API call on save, pass customStyle prop (trivial)
 - Testing: Verify cross-user visibility works
 
 **Recommendation**: P1 - Fix after completing P0 critical features (profile editing, badge display)
-
 
 ---
 
@@ -896,7 +968,10 @@ const avatarStyle = isOwnProfile
 
 ### Executive Summary
 
-CGraph's Groups functionality has a **solid foundation with modern UI/UX** but suffers from **incomplete backend integration** and **partially functional features**. Discord-inspired architecture with Phoenix WebSocket support for real-time messaging, but many advanced features still in development.
+CGraph's Groups functionality has a **solid foundation with modern UI/UX** but suffers from
+**incomplete backend integration** and **partially functional features**. Discord-inspired
+architecture with Phoenix WebSocket support for real-time messaging, but many advanced features
+still in development.
 
 **Overall Status**: 65-70% Complete  
 **Working**: UI structure, real-time messaging, typing indicators, member lists, role definitions  
@@ -905,6 +980,7 @@ CGraph's Groups functionality has a **solid foundation with modern UI/UX** but s
 ### ✅ WORKING FEATURES
 
 #### Groups Page & UI
+
 - Sidebar server list with active indicators
 - Channel list panel with categories
 - Smooth Framer Motion animations
@@ -912,6 +988,7 @@ CGraph's Groups functionality has a **solid foundation with modern UI/UX** but s
 - User panel at bottom
 
 #### Real-Time Messaging
+
 - Phoenix WebSocket integration working
 - Message send/receive functional
 - Date headers and author grouping
@@ -921,12 +998,14 @@ CGraph's Groups functionality has a **solid foundation with modern UI/UX** but s
 - WebSocket channel join/leave working
 
 #### Member Management UI
+
 - Role-based member grouping
 - Online/offline separation
 - Member search/filter
 - Context menu (visual only)
 
 #### Role & Permission System
+
 - Full role CRUD interface (UI only)
 - Drag-and-drop role reordering
 - 22 permission flags defined
@@ -934,6 +1013,7 @@ CGraph's Groups functionality has a **solid foundation with modern UI/UX** but s
 - Role colors (15 presets)
 
 #### Invite System
+
 - Create invites with expiration/limits
 - Copy to clipboard
 - Manage invites tab
@@ -1004,24 +1084,25 @@ CGraph's Groups functionality has a **solid foundation with modern UI/UX** but s
 
 ### 📊 Discord/Telegram Feature Comparison
 
-| Feature | Discord | Telegram | CGraph | Status |
-|---------|---------|----------|--------|--------|
-| Text Channels | ✅ | ✅ | ✅ | Complete |
-| Voice Channels | ✅ | ✅ | ❌ | Type only |
-| Categories | ✅ | ❌ | ✅ | Complete |
-| Roles/Permissions | ✅ | ⚠️ | ⚠️ | UI only |
-| Invite System | ✅ | ✅ | ✅ | Complete |
-| Message Reactions | ✅ | ✅ | ⚠️ | Display only |
-| Message Pins | ✅ | ✅ | ❌ | Missing |
-| File Sharing | ✅ | ✅ | ❌ | Missing |
-| Message Search | ✅ | ✅ | ❌ | Missing |
-| Audit Log | ✅ | ❌ | ❌ | Missing |
-| Threads | ✅ | ❌ | ❌ | Missing |
-| Forum Channels | ✅ | ❌ | ❌ | Missing |
+| Feature           | Discord | Telegram | CGraph | Status       |
+| ----------------- | ------- | -------- | ------ | ------------ |
+| Text Channels     | ✅      | ✅       | ✅     | Complete     |
+| Voice Channels    | ✅      | ✅       | ❌     | Type only    |
+| Categories        | ✅      | ❌       | ✅     | Complete     |
+| Roles/Permissions | ✅      | ⚠️       | ⚠️     | UI only      |
+| Invite System     | ✅      | ✅       | ✅     | Complete     |
+| Message Reactions | ✅      | ✅       | ⚠️     | Display only |
+| Message Pins      | ✅      | ✅       | ❌     | Missing      |
+| File Sharing      | ✅      | ✅       | ❌     | Missing      |
+| Message Search    | ✅      | ✅       | ❌     | Missing      |
+| Audit Log         | ✅      | ❌       | ❌     | Missing      |
+| Threads           | ✅      | ❌       | ❌     | Missing      |
+| Forum Channels    | ✅      | ❌       | ❌     | Missing      |
 
 ### 🔧 Priority Fix Roadmap
 
 **Phase 1: Critical (1-2 weeks)**
+
 1. Implement group settings save (API integration)
 2. Wire group creation modal
 3. Implement message reactions
@@ -1029,6 +1110,7 @@ CGraph's Groups functionality has a **solid foundation with modern UI/UX** but s
 5. Error handling and user feedback
 
 **Phase 2: High Priority (2-3 weeks)**
+
 1. File upload to messages
 2. Message search
 3. Role saving (CRUD)
@@ -1037,6 +1119,7 @@ CGraph's Groups functionality has a **solid foundation with modern UI/UX** but s
 6. Permission enforcement
 
 **Phase 3: Medium Priority (3-4 weeks)**
+
 1. Voice channel implementation
 2. Forum channels
 3. Pin messages
@@ -1059,18 +1142,21 @@ CGraph's Groups functionality has a **solid foundation with modern UI/UX** but s
 ### 🎯 Recommendations
 
 **Immediate Actions:**
+
 1. Prioritize API integration - 30+ endpoints defined but many not called
 2. Complete message reactions - core feature currently broken
 3. Wire up group settings - interface exists but doesn't save
 4. Add error handling - current strategy is "throw and forget"
 
 **Architecture Improvements:**
+
 1. Consider React Query for server state
 2. Implement permission middleware
 3. Add cache invalidation strategy
 4. Request deduplication
 
 **Code Quality:**
+
 - ✅ Excellent UI/UX design
 - ✅ Proper TypeScript typing
 - ✅ Clean component architecture
@@ -1079,18 +1165,20 @@ CGraph's Groups functionality has a **solid foundation with modern UI/UX** but s
 - ❌ No error boundaries
 - ❌ Incomplete API integration
 
-
 ---
 
 ## 7. FORUMS FUNCTIONALITY - Comprehensive Review
 
 ### Executive Summary
 
-CGraph's Forums has **solid core functionality for Reddit-style forums** but suffers from **architectural confusion** with two competing systems (Reddit-style posts/comments vs MyBB-style boards/threads). Many advanced features are defined in code but disconnected from UI.
+CGraph's Forums has **solid core functionality for Reddit-style forums** but suffers from
+**architectural confusion** with two competing systems (Reddit-style posts/comments vs MyBB-style
+boards/threads). Many advanced features are defined in code but disconnected from UI.
 
 **Overall Status**: 60% Complete  
 **Working**: Voting system, comments, forum creation, moderation basics, leaderboard  
-**Broken**: Post editor missing features, board integration, moderation queue UI, many backend-only features
+**Broken**: Post editor missing features, board integration, moderation queue UI, many backend-only
+features
 
 ### 🏗️ Architecture Issue
 
@@ -1110,11 +1198,13 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
    - Classic bulletin board features
    - **Status**: 40% functional, UI disconnected
 
-**Problem**: Both systems exist simultaneously with incomplete integration, causing confusion and wasted effort.
+**Problem**: Both systems exist simultaneously with incomplete integration, causing confusion and
+wasted effort.
 
 ### ✅ WORKING FEATURES
 
 #### Forum Discovery & Creation
+
 - Forum list with glassmorphic cards
 - Hot/New/Top sorting
 - Multi-step creation wizard (4 steps)
@@ -1123,6 +1213,7 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 - Leaderboard with hall of fame
 
 #### Post Display & Interaction
+
 - Full post view with markdown rendering
 - Vote sidebar (upvote/downvote)
 - Comment threading (nested replies)
@@ -1131,6 +1222,7 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 - Post types: text, link, image (video/poll defined but not implemented)
 
 #### Voting & Karma
+
 - **Forum-level voting** for competition
 - **Post/comment voting** with scores
 - Optimistic updates
@@ -1139,6 +1231,7 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 - Multiple sort options
 
 #### Moderation Tools (for owners/mods)
+
 - Pin/unpin posts
 - Lock/unlock posts
 - Delete posts
@@ -1146,6 +1239,7 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 - Forum settings editor
 
 #### Member System
+
 - Member roles: Owner, Admin, Moderator, Member
 - Color-coded badges
 - Sort by: recent, reputation, posts, A-Z
@@ -1225,27 +1319,28 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 
 ### 📊 Reddit/MyBB Feature Comparison
 
-| Feature | Reddit | MyBB | CGraph | Status |
-|---------|--------|------|--------|--------|
-| Forum Creation | ✅ | ✅ | ✅ | Complete |
-| Post Voting | ✅ | ❌ | ✅ | Complete |
-| Comment Threading | ✅ | ❌ | ✅ | Partial |
-| Hot/New/Top Sort | ✅ | ❌ | ✅ | Complete |
-| Boards/Categories | ❌ | ✅ | ⚠️ | Disconnected |
-| Thread Prefixes | ❌ | ✅ | ⚠️ | Display only |
-| Thread Ratings | ❌ | ✅ | ⚠️ | Backend only |
-| Rich Text Editor | ✅ | ✅ | ❌ | Missing |
-| Polls | ✅ | ✅ | ⚠️ | Display only |
-| Attachments | ✅ | ✅ | ⚠️ | Interface only |
-| Awards | ✅ | ❌ | ❌ | Missing |
-| Moderation Queue | ✅ | ✅ | ⚠️ | Backend only |
-| User Warnings | ❌ | ✅ | ⚠️ | Backend only |
-| Edit History | ✅ | ✅ | ⚠️ | Partial |
-| Forum Competition | ❌ | ❌ | ✅ | Unique! |
+| Feature           | Reddit | MyBB | CGraph | Status         |
+| ----------------- | ------ | ---- | ------ | -------------- |
+| Forum Creation    | ✅     | ✅   | ✅     | Complete       |
+| Post Voting       | ✅     | ❌   | ✅     | Complete       |
+| Comment Threading | ✅     | ❌   | ✅     | Partial        |
+| Hot/New/Top Sort  | ✅     | ❌   | ✅     | Complete       |
+| Boards/Categories | ❌     | ✅   | ⚠️     | Disconnected   |
+| Thread Prefixes   | ❌     | ✅   | ⚠️     | Display only   |
+| Thread Ratings    | ❌     | ✅   | ⚠️     | Backend only   |
+| Rich Text Editor  | ✅     | ✅   | ❌     | Missing        |
+| Polls             | ✅     | ✅   | ⚠️     | Display only   |
+| Attachments       | ✅     | ✅   | ⚠️     | Interface only |
+| Awards            | ✅     | ❌   | ❌     | Missing        |
+| Moderation Queue  | ✅     | ✅   | ⚠️     | Backend only   |
+| User Warnings     | ❌     | ✅   | ⚠️     | Backend only   |
+| Edit History      | ✅     | ✅   | ⚠️     | Partial        |
+| Forum Competition | ❌     | ❌   | ✅     | Unique!        |
 
 ### 🔧 Priority Fix Roadmap
 
 **Phase 1: Critical (1-2 weeks)**
+
 1. Choose one architecture (Reddit OR MyBB style)
 2. Add markdown/rich text editor
 3. Fix comment tree insertion logic
@@ -1253,6 +1348,7 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 5. Integrate image upload
 
 **Phase 2: High Priority (2-3 weeks)**
+
 1. Build moderation queue UI
 2. Expose warning/ban systems
 3. Complete forum settings
@@ -1260,6 +1356,7 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 5. Integrate search
 
 **Phase 3: Medium Priority (3-4 weeks)**
+
 1. Poll creation flow
 2. Thread prefix creation UI
 3. Forum analytics
@@ -1267,6 +1364,7 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 5. Karma restrictions
 
 **Phase 4: Enhancement (2-3 weeks)**
+
 1. Awards/reactions
 2. Saved posts list
 3. Plugin system
@@ -1276,6 +1374,7 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 ### 📁 Key Files
 
 **Frontend:**
+
 - Main Store: `/apps/web/src/stores/forumStore.ts` (1500+ lines)
 - Board Store: `/apps/web/src/stores/forumHostingStore.ts`
 - Forums Page: `/apps/web/src/pages/forums/Forums.tsx`
@@ -1285,6 +1384,7 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 - Leaderboard: `/apps/web/src/pages/forums/ForumLeaderboard.tsx`
 
 **Components:**
+
 - `/apps/web/src/components/forums/ThreadPrefix.tsx`
 - `/apps/web/src/components/forums/ThreadRating.tsx`
 - `/apps/web/src/components/forums/PollWidget.tsx`
@@ -1293,6 +1393,7 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 - `/apps/web/src/components/forums/AttachmentUploader.tsx`
 
 **Backend:**
+
 - `/apps/backend/lib/cgraph/forums.ex`
 - `/apps/backend/lib/cgraph_web/controllers/api/v1/forum_controller.ex`
 - `/apps/backend/lib/cgraph_web/controllers/api/v1/post_controller.ex`
@@ -1300,6 +1401,7 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 ### 🎯 Recommendations
 
 **Immediate Actions:**
+
 1. **Decide on architecture** - Reddit-style OR MyBB-style, not both
 2. **Add markdown editor** - Critical for content creation
 3. **Integrate boards properly** - If keeping MyBB features
@@ -1308,12 +1410,14 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 **Architectural Decision Required:**
 
 **Option A: Go Full Reddit-Style**
+
 - Remove board/thread system
 - Focus on forums → posts → comments
 - Clean up UI, remove unused features
 - Simpler to maintain
 
 **Option B: Go Full MyBB-Style**
+
 - Integrate boards into main UI
 - Complete thread prefix/rating features
 - Add classic forum features
@@ -1322,6 +1426,7 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 **Hybrid approach is NOT recommended** - causes confusion and maintenance overhead.
 
 **Code Quality:**
+
 - ✅ Comprehensive store with 95+ methods
 - ✅ Good TypeScript typing
 - ✅ Working voting system
@@ -1329,4 +1434,3 @@ CGraph's Forums has **solid core functionality for Reddit-style forums** but suf
 - ❌ Two conflicting architectures
 - ❌ Many features defined but unused
 - ❌ Missing critical UI components
-

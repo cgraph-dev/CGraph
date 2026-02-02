@@ -1,13 +1,17 @@
 # Backend API Specification for Global Theme System
 
 ## Overview
-This document specifies all backend API endpoints, database schema, and business logic needed to support the global theme system. The frontend is already built and ready to integrate with these endpoints.
+
+This document specifies all backend API endpoints, database schema, and business logic needed to
+support the global theme system. The frontend is already built and ready to integrate with these
+endpoints.
 
 ---
 
 ## Database Schema
 
 ### Option 1: JSONB Column in Users Table (Recommended)
+
 Add a single JSONB column to the existing `users` table:
 
 ```elixir
@@ -26,12 +30,14 @@ end
 ```
 
 **Advantages:**
+
 - Simple, no joins needed
 - Fast queries
 - GIN index for JSON queries
 - Embedded in user record
 
 ### Option 2: Separate UserThemes Table
+
 Create a dedicated table for theme data:
 
 ```elixir
@@ -56,6 +62,7 @@ end
 ```
 
 **Advantages:**
+
 - Cleaner separation
 - Easier to add theme-specific features
 - Can track theme history
@@ -111,6 +118,7 @@ The `theme_data` JSONB field should store this structure:
 ## API Endpoints
 
 ### 1. Get User Theme
+
 **Endpoint:** `GET /api/v1/users/:id/theme`
 
 **Purpose:** Fetch a user's theme preferences
@@ -118,12 +126,14 @@ The `theme_data` JSONB field should store this structure:
 **Authentication:** Optional (public themes for viewing others, authenticated for own theme)
 
 **Request:**
+
 ```http
 GET /api/v1/users/123/theme
 Authorization: Bearer <token>
 ```
 
 **Response Success (200):**
+
 ```json
 {
   "data": {
@@ -134,7 +144,7 @@ Authorization: Bearer <token>
       "chat_bubble_style": "default",
       "chat_bubble_color": "emerald",
       "bubble_border_radius": 16,
-      "effect": "glassmorphism",
+      "effect": "glassmorphism"
       // ... full theme object
     },
     "updated_at": "2026-01-18T10:30:00Z"
@@ -143,6 +153,7 @@ Authorization: Bearer <token>
 ```
 
 **Response Error (404):**
+
 ```json
 {
   "error": "User not found"
@@ -150,11 +161,13 @@ Authorization: Bearer <token>
 ```
 
 **Business Logic:**
+
 1. If user has no theme_preferences, return default theme
 2. Public fields only if requesting another user's theme
 3. Include premium status check
 
 **Elixir Controller Example:**
+
 ```elixir
 defmodule CGraphWeb.UserThemeController do
   use CGraphWeb, :controller
@@ -186,6 +199,7 @@ end
 ---
 
 ### 2. Update User Theme
+
 **Endpoint:** `PUT /api/v1/users/:id/theme`
 
 **Purpose:** Update current user's theme preferences
@@ -193,6 +207,7 @@ end
 **Authentication:** Required (can only update own theme)
 
 **Request:**
+
 ```http
 PUT /api/v1/users/123/theme
 Authorization: Bearer <token>
@@ -211,6 +226,7 @@ Content-Type: application/json
 ```
 
 **Response Success (200):**
+
 ```json
 {
   "data": {
@@ -225,6 +241,7 @@ Content-Type: application/json
 ```
 
 **Response Error (403):**
+
 ```json
 {
   "error": "Unauthorized - can only update your own theme"
@@ -232,17 +249,21 @@ Content-Type: application/json
 ```
 
 **Response Error (422):**
+
 ```json
 {
   "error": "Validation failed",
   "details": {
-    "color_preset": ["must be one of: emerald, purple, cyan, orange, pink, gold, crimson, arctic, sunset, midnight, forest, ocean"],
+    "color_preset": [
+      "must be one of: emerald, purple, cyan, orange, pink, gold, crimson, arctic, sunset, midnight, forest, ocean"
+    ],
     "bubble_border_radius": ["must be between 0 and 50"]
   }
 }
 ```
 
 **Business Logic:**
+
 1. Verify user is updating their own theme
 2. Validate all theme fields
 3. Check premium features (legendary/mythic borders require premium)
@@ -250,6 +271,7 @@ Content-Type: application/json
 5. Update `updated_at` timestamp
 
 **Elixir Validation Example:**
+
 ```elixir
 defmodule CGraph.UserThemes.Theme do
   use Ecto.Schema
@@ -308,6 +330,7 @@ end
 ---
 
 ### 3. Reset User Theme
+
 **Endpoint:** `POST /api/v1/users/:id/theme/reset`
 
 **Purpose:** Reset user's theme to default
@@ -315,12 +338,14 @@ end
 **Authentication:** Required
 
 **Request:**
+
 ```http
 POST /api/v1/users/123/theme/reset
 Authorization: Bearer <token>
 ```
 
 **Response Success (200):**
+
 ```json
 {
   "data": {
@@ -334,6 +359,7 @@ Authorization: Bearer <token>
 ```
 
 **Business Logic:**
+
 1. Replace user's theme with default theme
 2. Preserve premium status
 3. Update timestamp
@@ -341,6 +367,7 @@ Authorization: Bearer <token>
 ---
 
 ### 4. Get User Theme (Bulk)
+
 **Endpoint:** `POST /api/v1/users/themes/batch`
 
 **Purpose:** Fetch themes for multiple users (for chat/forum rendering)
@@ -348,6 +375,7 @@ Authorization: Bearer <token>
 **Authentication:** Required
 
 **Request:**
+
 ```http
 POST /api/v1/users/themes/batch
 Authorization: Bearer <token>
@@ -359,6 +387,7 @@ Content-Type: application/json
 ```
 
 **Response Success (200):**
+
 ```json
 {
   "data": [
@@ -386,6 +415,7 @@ Content-Type: application/json
 ```
 
 **Business Logic:**
+
 1. Limit to 100 user_ids per request
 2. Return only public theme fields
 3. Return default theme for users without custom theme
@@ -399,8 +429,7 @@ Content-Type: application/json
 
 When a user updates their theme, broadcast to relevant channels:
 
-**Channel:** `user:{user_id}`
-**Event:** `theme_updated`
+**Channel:** `user:{user_id}` **Event:** `theme_updated`
 
 ```elixir
 defmodule CGraphWeb.UserChannel do
@@ -427,6 +456,7 @@ end
 ```
 
 **Frontend Listener:**
+
 ```typescript
 // In chatStore or themeStore
 channel.on('theme_updated', (payload) => {
@@ -460,6 +490,7 @@ end
 ```
 
 **Message Creation Logic:**
+
 ```elixir
 defmodule CGraph.Messaging do
   def create_message(attrs) do
@@ -523,12 +554,14 @@ end
 ### Premium Features List
 
 **Free Tier:**
+
 - Color presets: emerald, arctic, crimson, gold (4 presets)
 - Avatar borders: none, static, glow, pulse
 - Chat styles: default, rounded, sharp
 - Effects: minimal, glassmorphism
 
 **Starter Tier ($4.99/mo):**
+
 - All free features
 - Additional colors: purple, cyan, orange, pink (8 total)
 - Avatar borders: rotate
@@ -536,6 +569,7 @@ end
 - Effects: aurora
 
 **Pro Tier ($9.99/mo):**
+
 - All starter features
 - Additional colors: sunset, midnight, forest, ocean (12 total)
 - Avatar borders: fire, ice, electric
@@ -545,6 +579,7 @@ end
 - Animated backgrounds
 
 **Business Tier ($19.99/mo):**
+
 - All pro features
 - Avatar borders: legendary, mythic (all 10)
 - Custom CSS injection
@@ -552,6 +587,7 @@ end
 - Themed border collections (150+ borders)
 
 **Validation Function:**
+
 ```elixir
 defmodule CGraph.UserThemes.PremiumValidator do
   @free_colors ["emerald", "arctic", "crimson", "gold"]
@@ -638,11 +674,13 @@ end
 ```
 
 **Cache Keys:**
+
 - `theme:{user_id}` - Full user theme
 - `themes:batch:{hash}` - Batch request results
 - `theme:public:{user_id}` - Public theme fields only
 
 **Invalidation:**
+
 - On theme update
 - On user premium status change
 - Manual invalidation endpoint for admins
@@ -679,6 +717,7 @@ end
 ```
 
 **Metrics to Track:**
+
 1. Most popular color presets
 2. Most popular avatar borders
 3. Premium feature adoption rate
@@ -723,6 +762,7 @@ end
 ```
 
 **Run Migration:**
+
 ```bash
 # On production server
 /app/bin/cgraph eval "CGraph.Release.migrate_user_themes()"
@@ -751,22 +791,23 @@ end
 
 ## Error Codes Reference
 
-| Code | Error | Description |
-|------|-------|-------------|
-| 200 | Success | Theme retrieved/updated successfully |
-| 400 | Bad Request | Invalid theme data format |
-| 401 | Unauthorized | Not authenticated |
-| 403 | Forbidden | Cannot modify another user's theme |
-| 404 | Not Found | User not found |
-| 422 | Validation Error | Theme data failed validation |
-| 429 | Rate Limited | Too many requests |
-| 500 | Server Error | Internal server error |
+| Code | Error            | Description                          |
+| ---- | ---------------- | ------------------------------------ |
+| 200  | Success          | Theme retrieved/updated successfully |
+| 400  | Bad Request      | Invalid theme data format            |
+| 401  | Unauthorized     | Not authenticated                    |
+| 403  | Forbidden        | Cannot modify another user's theme   |
+| 404  | Not Found        | User not found                       |
+| 422  | Validation Error | Theme data failed validation         |
+| 429  | Rate Limited     | Too many requests                    |
+| 500  | Server Error     | Internal server error                |
 
 ---
 
 ## Testing Checklist
 
 ### Unit Tests
+
 - [ ] Theme validation (valid/invalid values)
 - [ ] Premium feature gating
 - [ ] Default theme generation
@@ -774,6 +815,7 @@ end
 - [ ] Public vs private field filtering
 
 ### Integration Tests
+
 - [ ] Create/update/delete theme via API
 - [ ] Batch theme fetching
 - [ ] WebSocket theme updates
@@ -781,6 +823,7 @@ end
 - [ ] Rate limiting enforcement
 
 ### Performance Tests
+
 - [ ] Load test batch endpoint (100 users)
 - [ ] Cache performance (with/without)
 - [ ] Message creation with theme snapshot (1000 messages)
@@ -819,6 +862,7 @@ end
    - Rate limiting
 
 **Frontend is Ready:**
+
 - Theme store with persistence ✓
 - Themed components (Avatar, ChatBubble) ✓
 - Customization UI ✓

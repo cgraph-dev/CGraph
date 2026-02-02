@@ -1,11 +1,45 @@
 # CGraph Documentation
 
-> **Current Version: 0.9.8** | Enterprise-grade real-time communication platform
+> **Current Version: 0.9.11** | Enterprise-grade real-time communication platform
 
 ⚠️ **Proprietary Software** - CGraph is proprietary software. Self-hosting is not permitted.
 
 Welcome to the official CGraph documentation. This resource provides comprehensive guidance for
 developers and users of our hosted platform.
+
+---
+
+## 🏗️ Architecture (START HERE)
+
+| Document                                                                    | Description                              |
+| --------------------------------------------------------------------------- | ---------------------------------------- |
+| [**Architecture Transformation Plan**](ARCHITECTURE_TRANSFORMATION_PLAN.md) | ⭐ Current architecture status (8.0/10)  |
+| [**CLAUDE.md**](../CLAUDE.md)                                               | AI agent instructions & project overview |
+| [**Architecture Diagrams**](ARCHITECTURE_DIAGRAMS.md)                       | Visual system architecture (Mermaid)     |
+| [**Schema Ownership**](SCHEMA_OWNERSHIP.md)                                 | Database table ownership matrix          |
+
+### Module Architecture (New in v0.9.11)
+
+```
+apps/web/src/
+├── modules/           # 12 feature modules (auth, chat, forums, etc.)
+├── shared/            # Shared primitives (components, hooks, utils)
+├── components/        # Application-level components
+├── pages/             # Route pages
+└── stores/            # Zustand state management
+```
+
+**Import patterns:**
+
+```typescript
+// Shared UI primitives
+import { GlassCard, Button, toast } from '@/shared/components/ui';
+import { useDebounce } from '@/shared/hooks';
+
+// Module components
+import { ChatWindow } from '@/modules/chat';
+import { ForumPost } from '@/modules/forums';
+```
 
 ---
 
@@ -27,16 +61,6 @@ developers and users of our hosted platform.
 | [**CGraph Essentials**](CGRAPH_ESSENTIALS.md)               | The 20 rules that matter most          |
 | [**Security Review Tracking**](SECURITY_REVIEW_TRACKING.md) | Audit schedule and findings            |
 | [**Code Standards**](CODE_SIMPLIFICATION_GUIDELINES.md)     | Comprehensive coding guidelines        |
-
----
-
-## 🏗️ Architecture
-
-| Document                                                     | Description                          |
-| ------------------------------------------------------------ | ------------------------------------ |
-| [**Architecture Diagrams**](ARCHITECTURE_DIAGRAMS.md)        | Visual system architecture (Mermaid) |
-| [**Schema Ownership**](SCHEMA_OWNERSHIP.md)                  | Database table ownership matrix      |
-| [**Architecture Decision Records**](architecture/decisions/) | Why we chose what we chose           |
 
 ---
 

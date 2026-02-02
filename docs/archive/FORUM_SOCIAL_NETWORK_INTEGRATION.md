@@ -1,8 +1,6 @@
 # CGraph Forum Social Network - Complete Integration Guide
 
-**Version:** 1.1.0
-**Last Updated:** January 2026
-**Target Release:** v1.0.0
+**Version:** 1.1.0 **Last Updated:** January 2026 **Target Release:** v1.0.0
 
 ## Table of Contents
 
@@ -27,7 +25,10 @@
 
 ### Vision
 
-CGraph Forums is a **Reddit-style social forum network** where users discover, create, and participate in community forums. Every CGraph user has **one identity** that works seamlessly across the entire platform - the same username, profile, avatar, and reputation they use for messaging also works in forums.
+CGraph Forums is a **Reddit-style social forum network** where users discover, create, and
+participate in community forums. Every CGraph user has **one identity** that works seamlessly across
+the entire platform - the same username, profile, avatar, and reputation they use for messaging also
+works in forums.
 
 **Key Differentiators:**
 
@@ -40,22 +41,23 @@ CGraph Forums is a **Reddit-style social forum network** where users discover, c
 
 ### Subscription Tiers
 
-| Tier | Forum Creation | Storage | AI Moderation | Support |
-|------|---------------|---------|---------------|---------|
-| **Free** | 1 forum | 100MB | Basic | Community |
-| **Premium** | 5 forums | 5GB | Advanced | Priority |
-| **Enterprise** | Custom (unlimited) | Custom | Custom AI models | Dedicated |
+| Tier           | Forum Creation     | Storage | AI Moderation    | Support   |
+| -------------- | ------------------ | ------- | ---------------- | --------- |
+| **Free**       | 1 forum            | 100MB   | Basic            | Community |
+| **Premium**    | 5 forums           | 5GB     | Advanced         | Priority  |
+| **Enterprise** | Custom (unlimited) | Custom  | Custom AI models | Dedicated |
 
-> **Important**: All users can **join unlimited forums** regardless of tier. Tier limits only apply to forum **creation**.
+> **Important**: All users can **join unlimited forums** regardless of tier. Tier limits only apply
+> to forum **creation**.
 
 ### Key Metrics
 
-| Metric | Current | Target |
-|--------|---------|--------|
-| Backend Implementation | ~80% | 100% |
-| Frontend Implementation | ~80% | 100% |
-| Real-Time Features | 0% | 100% |
-| AI Moderation | 0% | 100% |
+| Metric                  | Current | Target |
+| ----------------------- | ------- | ------ |
+| Backend Implementation  | ~80%    | 100%   |
+| Frontend Implementation | ~80%    | 100%   |
+| Real-Time Features      | 0%      | 100%   |
+| AI Moderation           | 0%      | 100%   |
 
 ---
 
@@ -92,6 +94,7 @@ Every CGraph user has **one account** that works everywhere:
 ```
 
 **Implementation:**
+
 - Forums use `user_id` foreign key to the main `users` table
 - No separate forum registration - users are already registered
 - Profile data (username, avatar, bio) pulled from `users` table
@@ -220,8 +223,10 @@ Like Reddit's front page, users see a personalized feed:
 ### Key Design Decisions
 
 1. **Single Users Table**: Forums reference the main `users` table, not a separate forum users table
-2. **Forum Members Table**: Stores forum-specific data (role, post count, reputation) per user per forum
-3. **Lazy Membership**: Users can browse public forums without joining; membership created on first interaction
+2. **Forum Members Table**: Stores forum-specific data (role, post count, reputation) per user per
+   forum
+3. **Lazy Membership**: Users can browse public forums without joining; membership created on first
+   interaction
 4. **Real-Time First**: All updates pushed via WebSocket, REST for initial load and writes
 
 ---
@@ -230,31 +235,31 @@ Like Reddit's front page, users see a personalized feed:
 
 ### Backend Status: ~80% Complete
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Forum CRUD | ✅ | Create, read, update, delete forums |
-| User Integration | ✅ | Forums use main users table |
-| Board Management | ✅ | Nested boards/categories |
-| Threads & Posts | ✅ | Full CRUD with voting |
-| Voting System | ✅ | Reddit-style upvote/downvote |
-| Permission System | ✅ | 30+ granular permissions |
-| Subscriptions | ✅ | Forum-level subscriptions |
-| Moderation Tools | ✅ | Warnings, bans, mod logs |
-| Search | ✅ | Full-text search |
-| **Phoenix Channels** | ❌ | **CRITICAL: No real-time** |
-| **AI Moderation** | ❌ | **Planned for v1.1** |
+| Feature              | Status | Notes                               |
+| -------------------- | ------ | ----------------------------------- |
+| Forum CRUD           | ✅     | Create, read, update, delete forums |
+| User Integration     | ✅     | Forums use main users table         |
+| Board Management     | ✅     | Nested boards/categories            |
+| Threads & Posts      | ✅     | Full CRUD with voting               |
+| Voting System        | ✅     | Reddit-style upvote/downvote        |
+| Permission System    | ✅     | 30+ granular permissions            |
+| Subscriptions        | ✅     | Forum-level subscriptions           |
+| Moderation Tools     | ✅     | Warnings, bans, mod logs            |
+| Search               | ✅     | Full-text search                    |
+| **Phoenix Channels** | ❌     | **CRITICAL: No real-time**          |
+| **AI Moderation**    | ❌     | **Planned for v1.1**                |
 
 ### Frontend Status: ~80% Complete
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Forum Discovery | ✅ | Browse, search, filter |
-| Forum View | ✅ | Threads, members, settings |
-| Post Creation | ✅ | Text, links, images, polls |
-| Voting UI | ✅ | Upvote/downvote with animations |
-| User Profile | ✅ | Uses main profile system |
-| **WebSocket Integration** | ❌ | **CRITICAL: Not connected** |
-| **AI Mod Dashboard** | ❌ | **Planned for v1.1** |
+| Feature                   | Status | Notes                           |
+| ------------------------- | ------ | ------------------------------- |
+| Forum Discovery           | ✅     | Browse, search, filter          |
+| Forum View                | ✅     | Threads, members, settings      |
+| Post Creation             | ✅     | Text, links, images, polls      |
+| Voting UI                 | ✅     | Upvote/downvote with animations |
+| User Profile              | ✅     | Uses main profile system        |
+| **WebSocket Integration** | ❌     | **CRITICAL: Not connected**     |
+| **AI Mod Dashboard**      | ❌     | **Planned for v1.1**            |
 
 ---
 
@@ -814,17 +819,23 @@ export function useThreadSocket(threadId: string | undefined) {
     };
   }, [threadId]);
 
-  const vote = useCallback((value: 1 | -1) => {
-    if (threadId) {
-      socketManager.voteOnThread(threadId, value);
-    }
-  }, [threadId]);
+  const vote = useCallback(
+    (value: 1 | -1) => {
+      if (threadId) {
+        socketManager.voteOnThread(threadId, value);
+      }
+    },
+    [threadId]
+  );
 
-  const sendTyping = useCallback((isTyping: boolean) => {
-    if (threadId) {
-      socketManager.sendTyping(threadId, isTyping);
-    }
-  }, [threadId]);
+  const sendTyping = useCallback(
+    (isTyping: boolean) => {
+      if (threadId) {
+        socketManager.sendTyping(threadId, isTyping);
+      }
+    },
+    [threadId]
+  );
 
   return { viewers, typing, vote, sendTyping };
 }
@@ -962,7 +973,9 @@ export function useThreadSocket(threadId: string | undefined) {
 
 ### Overview
 
-CGraph Forums will integrate AI-powered moderation to help forum owners manage their communities at scale. This is a **Premium/Enterprise feature** that assists human moderators rather than replacing them.
+CGraph Forums will integrate AI-powered moderation to help forum owners manage their communities at
+scale. This is a **Premium/Enterprise feature** that assists human moderators rather than replacing
+them.
 
 ### Architecture
 
@@ -1008,15 +1021,15 @@ CGraph Forums will integrate AI-powered moderation to help forum owners manage t
 
 ### Features by Tier
 
-| Feature | Free | Premium | Enterprise |
-|---------|------|---------|------------|
-| Basic spam filter | ✓ | ✓ | ✓ |
-| AI content analysis | - | ✓ | ✓ |
-| AI mod suggestions | - | ✓ | ✓ |
-| Auto-moderation rules | - | ✓ | ✓ |
-| Custom AI training | - | - | ✓ |
-| API for custom models | - | - | ✓ |
-| Dedicated AI resources | - | - | ✓ |
+| Feature                | Free | Premium | Enterprise |
+| ---------------------- | ---- | ------- | ---------- |
+| Basic spam filter      | ✓    | ✓       | ✓          |
+| AI content analysis    | -    | ✓       | ✓          |
+| AI mod suggestions     | -    | ✓       | ✓          |
+| Auto-moderation rules  | -    | ✓       | ✓          |
+| Custom AI training     | -    | -       | ✓          |
+| API for custom models  | -    | -       | ✓          |
+| Dedicated AI resources | -    | -       | ✓          |
 
 ### Database Schema for AI Moderation
 
@@ -1145,18 +1158,21 @@ interface AIModQueueItem {
 ### Implementation Phases
 
 **Phase 1: Basic Integration (v1.1)**
+
 - Connect to Claude API for content analysis
 - Basic spam/toxicity detection
 - Manual mod queue with AI suggestions
 - Premium tier gating
 
 **Phase 2: Auto-Moderation (v1.2)**
+
 - Configurable auto-actions
 - Learning from mod decisions
 - Improved accuracy through feedback
 - Analytics dashboard
 
 **Phase 3: Enterprise Features (v1.3)**
+
 - Custom model fine-tuning
 - Forum-specific training data
 - API for external models
@@ -1168,40 +1184,40 @@ interface AIModQueueItem {
 
 ### Priority: CRITICAL (Week 1)
 
-| Task | Description | Estimate |
-|------|-------------|----------|
-| Phoenix Channels | Create forum/thread channels | 2 days |
-| Socket Manager | Add forum methods to frontend | 1 day |
-| User Integration | Ensure forums use main users table | 0.5 days |
-| Join Flow | Implement Reddit-style instant join | 0.5 days |
-| Tier Enforcement | Enforce 1/5/unlimited limits | 0.5 days |
+| Task             | Description                         | Estimate |
+| ---------------- | ----------------------------------- | -------- |
+| Phoenix Channels | Create forum/thread channels        | 2 days   |
+| Socket Manager   | Add forum methods to frontend       | 1 day    |
+| User Integration | Ensure forums use main users table  | 0.5 days |
+| Join Flow        | Implement Reddit-style instant join | 0.5 days |
+| Tier Enforcement | Enforce 1/5/unlimited limits        | 0.5 days |
 
 ### Priority: HIGH (Week 2)
 
-| Task | Description | Estimate |
-|------|-------------|----------|
-| Home Feed | Personalized feed from joined forums | 2 days |
-| Popular Feed | Global trending posts | 1 day |
-| Real-time Voting | WebSocket vote updates | 1 day |
-| Typing Indicators | Show who's composing | 0.5 days |
+| Task              | Description                          | Estimate |
+| ----------------- | ------------------------------------ | -------- |
+| Home Feed         | Personalized feed from joined forums | 2 days   |
+| Popular Feed      | Global trending posts                | 1 day    |
+| Real-time Voting  | WebSocket vote updates               | 1 day    |
+| Typing Indicators | Show who's composing                 | 0.5 days |
 
 ### Priority: MEDIUM (Week 3-4)
 
-| Task | Description | Estimate |
-|------|-------------|----------|
-| AI Mod Schema | Database tables for AI | 1 day |
-| AI Analysis API | Connect to Claude API | 2 days |
-| Mod Queue UI | AI-powered review interface | 2 days |
-| AI Settings | Configuration panel | 1 day |
+| Task            | Description                 | Estimate |
+| --------------- | --------------------------- | -------- |
+| AI Mod Schema   | Database tables for AI      | 1 day    |
+| AI Analysis API | Connect to Claude API       | 2 days   |
+| Mod Queue UI    | AI-powered review interface | 2 days   |
+| AI Settings     | Configuration panel         | 1 day    |
 
 ### Priority: LOW (Week 5+)
 
-| Task | Description | Estimate |
-|------|-------------|----------|
-| AI Auto-Actions | Automated moderation | 2 days |
-| AI Learning | Train from feedback | 3 days |
-| Enterprise Custom Models | Fine-tuning support | 5 days |
-| Mobile Forums | React Native screens | 5 days |
+| Task                     | Description          | Estimate |
+| ------------------------ | -------------------- | -------- |
+| AI Auto-Actions          | Automated moderation | 2 days   |
+| AI Learning              | Train from feedback  | 3 days   |
+| Enterprise Custom Models | Fine-tuning support  | 5 days   |
+| Mobile Forums            | React Native screens | 5 days   |
 
 ---
 
@@ -1309,16 +1325,21 @@ curl -X POST https://api.cgraph.org/api/v1/forums \
 
 ### Vision: The Ultimate Platform for Community Leaders
 
-CGraph Forums empowers **every type of community leader** - streamers, gamers, bloggers, writers, scientists, artists, educators, storytellers, and entrepreneurs - to create **unique, powerful communities** that perfectly serve their niche.
+CGraph Forums empowers **every type of community leader** - streamers, gamers, bloggers, writers,
+scientists, artists, educators, storytellers, and entrepreneurs - to create **unique, powerful
+communities** that perfectly serve their niche.
 
 **Philosophy:**
+
 - Every forum is a **unique world** with its own identity, layout, and features
 - Community leaders need **powerful tools** to grow and engage their audience
 - **Drag-and-drop simplicity** meets **enterprise-level customization**
 - No coding required, but available for power users
-- **Any niche welcomes**: gaming, writing, science, entertainment, education, art, music, business, storytelling, sports, lifestyle, and beyond
+- **Any niche welcomes**: gaming, writing, science, entertainment, education, art, music, business,
+  storytelling, sports, lifestyle, and beyond
 
 **Why Create a Forum on CGraph?**
+
 - **Full control** over your community's look, feel, and structure
 - **Flexible organization** - drag-and-drop boards, widgets, and sections
 - **Niche-specific tools** - features designed for YOUR type of community
@@ -1628,7 +1649,8 @@ CGraph Forums empowers **every type of community leader** - streamers, gamers, b
 
 ### 15.4 Niche Forum Templates
 
-**Every type of community leader should feel at home on CGraph.** We provide **30+ starter templates** optimized for specific niches:
+**Every type of community leader should feel at home on CGraph.** We provide **30+ starter
+templates** optimized for specific niches:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -2475,249 +2497,249 @@ CREATE TABLE forum_analytics_daily (
 // ═══════════════════════════════════════════════════════════════
 
 // Drag-and-Drop Organization
-'ForumLayoutBuilder.tsx'         // Main drag-and-drop forum builder
-'BoardDragList.tsx'              // Draggable board list with categories
-'BoardCategoryEditor.tsx'        // Create/edit board categories
-'BoardOrganizer.tsx'             // Organize boards within categories
-'BoardCard.tsx'                  // Individual board card in builder
-'LayoutPreview.tsx'              // Live preview of layout changes
+'ForumLayoutBuilder.tsx'; // Main drag-and-drop forum builder
+'BoardDragList.tsx'; // Draggable board list with categories
+'BoardCategoryEditor.tsx'; // Create/edit board categories
+'BoardOrganizer.tsx'; // Organize boards within categories
+'BoardCard.tsx'; // Individual board card in builder
+'LayoutPreview.tsx'; // Live preview of layout changes
 
 // Widget System
-'WidgetManager.tsx'              // Add/remove/configure widgets
-'WidgetPalette.tsx'              // Available widgets to drag
-'WidgetConfigurator.tsx'         // Configure individual widget settings
-'SidebarEditor.tsx'              // Customize sidebar layout
-'HeaderEditor.tsx'               // Customize header layout
+'WidgetManager.tsx'; // Add/remove/configure widgets
+'WidgetPalette.tsx'; // Available widgets to drag
+'WidgetConfigurator.tsx'; // Configure individual widget settings
+'SidebarEditor.tsx'; // Customize sidebar layout
+'HeaderEditor.tsx'; // Customize header layout
 
 // Widget Components (actual widgets)
-'OnlineMembersWidget.tsx'        // Show online members
-'ForumStatsWidget.tsx'           // Member/post/thread counts
-'TrendingThreadsWidget.tsx'      // Hot discussions
-'RecentActivityWidget.tsx'       // Latest posts feed
-'LeaderboardWidget.tsx'          // Top contributors
-'CalendarWidget.tsx'             // Upcoming events
-'ShoutboxWidget.tsx'             // Real-time chat widget
-'StreamEmbedWidget.tsx'          // Twitch/YouTube embed
-'SocialFeedWidget.tsx'           // Twitter/Discord embed
-'WelcomeBoxWidget.tsx'           // New visitor greeting
-'QuickPollWidget.tsx'            // Sidebar polls
-'AnnouncementWidget.tsx'         // Important messages
+'OnlineMembersWidget.tsx'; // Show online members
+'ForumStatsWidget.tsx'; // Member/post/thread counts
+'TrendingThreadsWidget.tsx'; // Hot discussions
+'RecentActivityWidget.tsx'; // Latest posts feed
+'LeaderboardWidget.tsx'; // Top contributors
+'CalendarWidget.tsx'; // Upcoming events
+'ShoutboxWidget.tsx'; // Real-time chat widget
+'StreamEmbedWidget.tsx'; // Twitch/YouTube embed
+'SocialFeedWidget.tsx'; // Twitter/Discord embed
+'WelcomeBoxWidget.tsx'; // New visitor greeting
+'QuickPollWidget.tsx'; // Sidebar polls
+'AnnouncementWidget.tsx'; // Important messages
 
 // ═══════════════════════════════════════════════════════════════
 // THEME CUSTOMIZATION COMPONENTS
 // ═══════════════════════════════════════════════════════════════
 
 // Theme Builder
-'ThemeBuilder.tsx'               // Visual theme editor (main)
-'ThemePreview.tsx'               // Live preview of theme changes
-'ColorSchemeEditor.tsx'          // Pick colors with live preview
-'ColorPicker.tsx'                // Advanced color picker with presets
-'GradientBuilder.tsx'            // Create gradients visually
-'BackgroundEditor.tsx'           // Configure background (image/video/color)
-'TypographyEditor.tsx'           // Font selection and sizing
-'CardStyleEditor.tsx'            // Configure card appearance
-'GlassmorphismEditor.tsx'        // Glassmorphism effect settings
+'ThemeBuilder.tsx'; // Visual theme editor (main)
+'ThemePreview.tsx'; // Live preview of theme changes
+'ColorSchemeEditor.tsx'; // Pick colors with live preview
+'ColorPicker.tsx'; // Advanced color picker with presets
+'GradientBuilder.tsx'; // Create gradients visually
+'BackgroundEditor.tsx'; // Configure background (image/video/color)
+'TypographyEditor.tsx'; // Font selection and sizing
+'CardStyleEditor.tsx'; // Configure card appearance
+'GlassmorphismEditor.tsx'; // Glassmorphism effect settings
 
 // Preset Themes
-'ThemeGallery.tsx'               // Browse preset themes
-'ThemeCard.tsx'                  // Preview card for a theme
-'SeasonalThemePicker.tsx'        // Holiday/seasonal themes
+'ThemeGallery.tsx'; // Browse preset themes
+'ThemeCard.tsx'; // Preview card for a theme
+'SeasonalThemePicker.tsx'; // Holiday/seasonal themes
 
 // Advanced (Premium)
-'CSSEditor.tsx'                  // Custom CSS with syntax highlighting
-'AnimationPicker.tsx'            // Choose animation effects
-'ParallaxEditor.tsx'             // Configure parallax effects
-'SoundManager.tsx'               // Upload/configure forum sounds
-'CustomCursorPicker.tsx'         // Custom cursor selection
+'CSSEditor.tsx'; // Custom CSS with syntax highlighting
+'AnimationPicker.tsx'; // Choose animation effects
+'ParallaxEditor.tsx'; // Configure parallax effects
+'SoundManager.tsx'; // Upload/configure forum sounds
+'CustomCursorPicker.tsx'; // Custom cursor selection
 
 // ═══════════════════════════════════════════════════════════════
 // BOARD CUSTOMIZATION COMPONENTS
 // ═══════════════════════════════════════════════════════════════
 
-'BoardCustomizer.tsx'            // Customize board appearance
-'BoardIconPicker.tsx'            // Select emoji or upload icon
-'BoardColorPicker.tsx'           // Set board accent color
-'BoardHeaderEditor.tsx'          // Custom header image for board
-'BoardTypeSelector.tsx'          // Choose board type (standard, gallery, Q&A, etc.)
-'BoardPermissionEditor.tsx'      // Configure board access
+'BoardCustomizer.tsx'; // Customize board appearance
+'BoardIconPicker.tsx'; // Select emoji or upload icon
+'BoardColorPicker.tsx'; // Set board accent color
+'BoardHeaderEditor.tsx'; // Custom header image for board
+'BoardTypeSelector.tsx'; // Choose board type (standard, gallery, Q&A, etc.)
+'BoardPermissionEditor.tsx'; // Configure board access
 
 // ═══════════════════════════════════════════════════════════════
 // THREAD CUSTOMIZATION COMPONENTS
 // ═══════════════════════════════════════════════════════════════
 
-'ThreadStylePicker.tsx'          // Choose thread colors/effects
-'PostIconPicker.tsx'             // Select post mood icon
-'GlowEffectSelector.tsx'         // Configure glow effects
-'ThreadBackgroundPicker.tsx'     // Solid/gradient/pattern backgrounds
-'ThreadBorderEditor.tsx'         // Border styling options
+'ThreadStylePicker.tsx'; // Choose thread colors/effects
+'PostIconPicker.tsx'; // Select post mood icon
+'GlowEffectSelector.tsx'; // Configure glow effects
+'ThreadBackgroundPicker.tsx'; // Solid/gradient/pattern backgrounds
+'ThreadBorderEditor.tsx'; // Border styling options
 
 // ═══════════════════════════════════════════════════════════════
 // CONTENT & MEDIA COMPONENTS
 // ═══════════════════════════════════════════════════════════════
 
 // Custom Emojis
-'EmojiManager.tsx'               // Upload/manage custom emojis
-'EmojiUploader.tsx'              // Bulk emoji upload
-'EmojiCategoryEditor.tsx'        // Organize emoji categories
-'EmojiPicker.tsx'                // Use custom emojis in posts
+'EmojiManager.tsx'; // Upload/manage custom emojis
+'EmojiUploader.tsx'; // Bulk emoji upload
+'EmojiCategoryEditor.tsx'; // Organize emoji categories
+'EmojiPicker.tsx'; // Use custom emojis in posts
 
 // Stickers
-'StickerPackManager.tsx'         // Create/manage sticker packs
-'StickerUploader.tsx'            // Upload stickers to a pack
-'StickerPicker.tsx'              // Use stickers in posts
+'StickerPackManager.tsx'; // Create/manage sticker packs
+'StickerUploader.tsx'; // Upload stickers to a pack
+'StickerPicker.tsx'; // Use stickers in posts
 
 // ═══════════════════════════════════════════════════════════════
 // COMMUNITY LEADER DASHBOARD COMPONENTS
 // ═══════════════════════════════════════════════════════════════
 
 // Analytics
-'ForumAnalyticsDashboard.tsx'    // Main analytics dashboard
-'MemberGrowthChart.tsx'          // Member growth over time
-'EngagementMetrics.tsx'          // Posts, replies, reactions
-'TrafficSourcesChart.tsx'        // Where visitors come from
-'PopularContentList.tsx'         // Top performing threads
-'PeakActivityHeatmap.tsx'        // When members are active
+'ForumAnalyticsDashboard.tsx'; // Main analytics dashboard
+'MemberGrowthChart.tsx'; // Member growth over time
+'EngagementMetrics.tsx'; // Posts, replies, reactions
+'TrafficSourcesChart.tsx'; // Where visitors come from
+'PopularContentList.tsx'; // Top performing threads
+'PeakActivityHeatmap.tsx'; // When members are active
 
 // Promotional Tools
-'AnnouncementBannerEditor.tsx'   // Create announcement banners
-'WelcomeMessageEditor.tsx'       // Customize new member greeting
-'SocialSharePreview.tsx'         // Preview OG cards
-'EmbedWidgetGenerator.tsx'       // Generate embed codes
-'QRCodeGenerator.tsx'            // Generate forum QR codes
-'ReferralProgramManager.tsx'     // Manage referral program
+'AnnouncementBannerEditor.tsx'; // Create announcement banners
+'WelcomeMessageEditor.tsx'; // Customize new member greeting
+'SocialSharePreview.tsx'; // Preview OG cards
+'EmbedWidgetGenerator.tsx'; // Generate embed codes
+'QRCodeGenerator.tsx'; // Generate forum QR codes
+'ReferralProgramManager.tsx'; // Manage referral program
 
 // Event Management
-'EventCreator.tsx'               // Create new events
-'EventCalendar.tsx'              // Calendar view of events
-'RSVPManager.tsx'                // Track event RSVPs
-'RecurringEventEditor.tsx'       // Set up recurring events
+'EventCreator.tsx'; // Create new events
+'EventCalendar.tsx'; // Calendar view of events
+'RSVPManager.tsx'; // Track event RSVPs
+'RecurringEventEditor.tsx'; // Set up recurring events
 
 // Member Recognition
-'RoleManager.tsx'                // Create/manage custom roles
-'MemberSpotlight.tsx'            // Feature member of the month
-'AchievementEditor.tsx'          // Create custom achievements
-'LeaderboardConfig.tsx'          // Configure leaderboards
+'RoleManager.tsx'; // Create/manage custom roles
+'MemberSpotlight.tsx'; // Feature member of the month
+'AchievementEditor.tsx'; // Create custom achievements
+'LeaderboardConfig.tsx'; // Configure leaderboards
 
 // Moderation
-'ModQueueDashboard.tsx'          // Review reported content
-'AutomodRuleEditor.tsx'          // Create automod rules
-'BanManager.tsx'                 // Manage bans and warnings
-'ModLogViewer.tsx'               // View moderation history
+'ModQueueDashboard.tsx'; // Review reported content
+'AutomodRuleEditor.tsx'; // Create automod rules
+'BanManager.tsx'; // Manage bans and warnings
+'ModLogViewer.tsx'; // View moderation history
 
 // ═══════════════════════════════════════════════════════════════
 // ENGAGEMENT COMPONENTS
 // ═══════════════════════════════════════════════════════════════
 
 // Gamification
-'XPSystemConfig.tsx'             // Configure XP earning rates
-'LevelEditor.tsx'                // Define levels and rewards
-'AchievementManager.tsx'         // Create/manage achievements
-'CurrencyConfig.tsx'             // Configure forum currency
-'CurrencyShopEditor.tsx'         // Set up currency shop
+'XPSystemConfig.tsx'; // Configure XP earning rates
+'LevelEditor.tsx'; // Define levels and rewards
+'AchievementManager.tsx'; // Create/manage achievements
+'CurrencyConfig.tsx'; // Configure forum currency
+'CurrencyShopEditor.tsx'; // Set up currency shop
 
 // Interactive Features
-'PollCreator.tsx'                // Create polls
-'SurveyBuilder.tsx'              // Build surveys
-'ContestManager.tsx'             // Run contests with voting
-'AMAManager.tsx'                 // Host Ask Me Anything events
-'BracketCreator.tsx'             // Create prediction brackets
+'PollCreator.tsx'; // Create polls
+'SurveyBuilder.tsx'; // Build surveys
+'ContestManager.tsx'; // Run contests with voting
+'AMAManager.tsx'; // Host Ask Me Anything events
+'BracketCreator.tsx'; // Create prediction brackets
 
 // Scheduled Content
-'ScheduledPostEditor.tsx'        // Create recurring posts
-'ContentCalendar.tsx'            // View/manage scheduled content
-'AutoPostConfig.tsx'             // Configure automatic posts
+'ScheduledPostEditor.tsx'; // Create recurring posts
+'ContentCalendar.tsx'; // View/manage scheduled content
+'AutoPostConfig.tsx'; // Configure automatic posts
 
 // ═══════════════════════════════════════════════════════════════
 // TEMPLATE SELECTION
 // ═══════════════════════════════════════════════════════════════
 
-'TemplateSelector.tsx'           // Pick niche template on creation
-'TemplateGallery.tsx'            // Browse all templates
-'TemplatePreview.tsx'            // Preview template before applying
-'TemplateCustomizer.tsx'         // Customize template after selection
+'TemplateSelector.tsx'; // Pick niche template on creation
+'TemplateGallery.tsx'; // Browse all templates
+'TemplatePreview.tsx'; // Preview template before applying
+'TemplateCustomizer.tsx'; // Customize template after selection
 ```
 
 ### 15.9 Forum Customization by Tier
 
-| Feature | Free | Premium | Enterprise |
-|---------|------|---------|------------|
-| **Forum Creation** | | | |
-| Forums allowed | 1 | 5 | Custom/Unlimited |
-| Members per forum | Unlimited | Unlimited | Unlimited |
-| Boards per forum | 10 | 50 | Unlimited |
-| **Layout & Organization** | | | |
-| Drag-and-drop organization | ✓ | ✓ | ✓ |
-| Board categories | 3 | 10 | Unlimited |
-| Board types | Standard only | All types | All types |
-| Custom board icons | Emoji only | Emoji + Upload | Emoji + Upload + Animated |
-| Sidebar widgets | 3 | 10 | Unlimited |
-| Custom widget placement | - | ✓ | ✓ |
-| **Themes & Branding** | | | |
-| Preset themes | 5 | All (20+) | All + Seasonal |
-| Color customization | Basic (5 colors) | Full palette | Full palette |
-| Custom logo/banner | ✓ | ✓ | ✓ |
-| Background image | - | ✓ | ✓ |
-| Background video | - | - | ✓ |
-| Custom fonts | - | 10 fonts | Any font |
-| Glassmorphism effects | - | ✓ | ✓ |
-| Parallax scrolling | - | - | ✓ |
-| Custom CSS | - | - | ✓ |
-| Custom cursor | - | - | ✓ |
-| Sound effects | - | - | ✓ |
-| **Thread Styling** | | | |
-| Thread colors | 5 colors | Full palette | Full palette |
-| Gradient backgrounds | - | ✓ | ✓ |
-| Glow effects | - | ✓ | ✓ |
-| Animated borders | - | ✓ | ✓ |
-| Custom thread icons | Emoji only | + Upload | + Animated |
-| **Content & Media** | | | |
-| Custom emojis | - | 50 | 500 |
-| Animated emojis | - | ✓ | ✓ |
-| Sticker packs | - | 5 | Unlimited |
-| File upload size | 10MB | 50MB | 100MB |
-| **Community Leader Tools** | | | |
-| Basic analytics | ✓ | ✓ | ✓ |
-| Advanced analytics | - | ✓ | ✓ |
-| Traffic sources | - | ✓ | ✓ |
-| Export analytics | - | - | ✓ |
-| Announcement banners | 1 active | 3 active | Unlimited |
-| Scheduled posts | - | 10 | Unlimited |
-| Email digests to members | - | ✓ | ✓ |
-| Embed widgets | - | ✓ | ✓ |
-| **Events & Engagement** | | | |
-| Events per month | 3 | 20 | Unlimited |
-| Recurring events | - | ✓ | ✓ |
-| RSVP tracking | ✓ | ✓ | ✓ |
-| Calendar integration | - | ✓ | ✓ |
-| Polls per month | 5 | Unlimited | Unlimited |
-| Contests/giveaways | - | ✓ | ✓ |
-| AMA hosting | - | ✓ | ✓ |
-| **Gamification** | | | |
-| Basic XP/levels | ✓ | ✓ | ✓ |
-| Custom achievements | 5 | 50 | Unlimited |
-| Leaderboards | Basic | Advanced | Advanced |
-| Forum currency | - | ✓ | ✓ |
-| Daily login rewards | - | ✓ | ✓ |
-| Level-gated boards | - | ✓ | ✓ |
-| **Member Recognition** | | | |
-| Custom roles | 5 | 20 | Unlimited |
-| Custom role badges | - | ✓ | ✓ |
-| Member spotlight | - | ✓ | ✓ |
-| Anniversary celebrations | - | ✓ | ✓ |
-| **Moderation** | | | |
-| Mod team size | 3 | 10 | Unlimited |
-| Basic automod | ✓ | ✓ | ✓ |
-| Advanced automod rules | - | ✓ | ✓ |
-| AI moderation assistance | - | ✓ | ✓ (custom model) |
-| Mod action logs | 7 days | 30 days | Unlimited |
-| IP banning | - | ✓ | ✓ |
-| **Integrations** | | | |
-| Discord integration | - | ✓ | ✓ |
-| Twitch/YouTube embed | - | ✓ | ✓ |
-| Social media widgets | - | ✓ | ✓ |
-| API access | - | - | ✓ |
-| Webhooks | - | - | ✓ |
-| SSO/SAML | - | - | ✓ |
+| Feature                    | Free             | Premium        | Enterprise                |
+| -------------------------- | ---------------- | -------------- | ------------------------- |
+| **Forum Creation**         |                  |                |                           |
+| Forums allowed             | 1                | 5              | Custom/Unlimited          |
+| Members per forum          | Unlimited        | Unlimited      | Unlimited                 |
+| Boards per forum           | 10               | 50             | Unlimited                 |
+| **Layout & Organization**  |                  |                |                           |
+| Drag-and-drop organization | ✓                | ✓              | ✓                         |
+| Board categories           | 3                | 10             | Unlimited                 |
+| Board types                | Standard only    | All types      | All types                 |
+| Custom board icons         | Emoji only       | Emoji + Upload | Emoji + Upload + Animated |
+| Sidebar widgets            | 3                | 10             | Unlimited                 |
+| Custom widget placement    | -                | ✓              | ✓                         |
+| **Themes & Branding**      |                  |                |                           |
+| Preset themes              | 5                | All (20+)      | All + Seasonal            |
+| Color customization        | Basic (5 colors) | Full palette   | Full palette              |
+| Custom logo/banner         | ✓                | ✓              | ✓                         |
+| Background image           | -                | ✓              | ✓                         |
+| Background video           | -                | -              | ✓                         |
+| Custom fonts               | -                | 10 fonts       | Any font                  |
+| Glassmorphism effects      | -                | ✓              | ✓                         |
+| Parallax scrolling         | -                | -              | ✓                         |
+| Custom CSS                 | -                | -              | ✓                         |
+| Custom cursor              | -                | -              | ✓                         |
+| Sound effects              | -                | -              | ✓                         |
+| **Thread Styling**         |                  |                |                           |
+| Thread colors              | 5 colors         | Full palette   | Full palette              |
+| Gradient backgrounds       | -                | ✓              | ✓                         |
+| Glow effects               | -                | ✓              | ✓                         |
+| Animated borders           | -                | ✓              | ✓                         |
+| Custom thread icons        | Emoji only       | + Upload       | + Animated                |
+| **Content & Media**        |                  |                |                           |
+| Custom emojis              | -                | 50             | 500                       |
+| Animated emojis            | -                | ✓              | ✓                         |
+| Sticker packs              | -                | 5              | Unlimited                 |
+| File upload size           | 10MB             | 50MB           | 100MB                     |
+| **Community Leader Tools** |                  |                |                           |
+| Basic analytics            | ✓                | ✓              | ✓                         |
+| Advanced analytics         | -                | ✓              | ✓                         |
+| Traffic sources            | -                | ✓              | ✓                         |
+| Export analytics           | -                | -              | ✓                         |
+| Announcement banners       | 1 active         | 3 active       | Unlimited                 |
+| Scheduled posts            | -                | 10             | Unlimited                 |
+| Email digests to members   | -                | ✓              | ✓                         |
+| Embed widgets              | -                | ✓              | ✓                         |
+| **Events & Engagement**    |                  |                |                           |
+| Events per month           | 3                | 20             | Unlimited                 |
+| Recurring events           | -                | ✓              | ✓                         |
+| RSVP tracking              | ✓                | ✓              | ✓                         |
+| Calendar integration       | -                | ✓              | ✓                         |
+| Polls per month            | 5                | Unlimited      | Unlimited                 |
+| Contests/giveaways         | -                | ✓              | ✓                         |
+| AMA hosting                | -                | ✓              | ✓                         |
+| **Gamification**           |                  |                |                           |
+| Basic XP/levels            | ✓                | ✓              | ✓                         |
+| Custom achievements        | 5                | 50             | Unlimited                 |
+| Leaderboards               | Basic            | Advanced       | Advanced                  |
+| Forum currency             | -                | ✓              | ✓                         |
+| Daily login rewards        | -                | ✓              | ✓                         |
+| Level-gated boards         | -                | ✓              | ✓                         |
+| **Member Recognition**     |                  |                |                           |
+| Custom roles               | 5                | 20             | Unlimited                 |
+| Custom role badges         | -                | ✓              | ✓                         |
+| Member spotlight           | -                | ✓              | ✓                         |
+| Anniversary celebrations   | -                | ✓              | ✓                         |
+| **Moderation**             |                  |                |                           |
+| Mod team size              | 3                | 10             | Unlimited                 |
+| Basic automod              | ✓                | ✓              | ✓                         |
+| Advanced automod rules     | -                | ✓              | ✓                         |
+| AI moderation assistance   | -                | ✓              | ✓ (custom model)          |
+| Mod action logs            | 7 days           | 30 days        | Unlimited                 |
+| IP banning                 | -                | ✓              | ✓                         |
+| **Integrations**           |                  |                |                           |
+| Discord integration        | -                | ✓              | ✓                         |
+| Twitch/YouTube embed       | -                | ✓              | ✓                         |
+| Social media widgets       | -                | ✓              | ✓                         |
+| API access                 | -                | -              | ✓                         |
+| Webhooks                   | -                | -              | ✓                         |
+| SSO/SAML                   | -                | -              | ✓                         |
 
 ---
 
@@ -2763,7 +2785,8 @@ Enable forum owners to **monetize their communities** while keeping the platform
 
 ## Summary
 
-CGraph Forums is the **ultimate platform for community leaders** - a Reddit-style social forum network where **anyone can create and customize their own community**:
+CGraph Forums is the **ultimate platform for community leaders** - a Reddit-style social forum
+network where **anyone can create and customize their own community**:
 
 ### Core Features
 
@@ -2790,7 +2813,9 @@ CGraph Forums is the **ultimate platform for community leaders** - a Reddit-styl
 
 ### 30+ Niche Templates
 
-Optimized for: **Streamers**, **Gamers**, **Writers**, **Artists**, **Musicians**, **Scientists**, **Educators**, **Bloggers**, **Podcasters**, **Fitness**, **DIY/Crafts**, **Entertainment**, **Local Communities**, and many more!
+Optimized for: **Streamers**, **Gamers**, **Writers**, **Artists**, **Musicians**, **Scientists**,
+**Educators**, **Bloggers**, **Podcasters**, **Fitness**, **DIY/Crafts**, **Entertainment**, **Local
+Communities**, and many more!
 
 ---
 
@@ -2808,7 +2833,9 @@ CGraph Forums is built for the **next generation of online communities**:
 - **For Educators**: Course organization, student Q&A, progress tracking, resource libraries
 - **For ANY Niche**: If you have a community, CGraph has the tools for you
 
-We combine the **customization power of classic forums** (MyBB, vBulletin, phpBB) with **modern technology**:
+We combine the **customization power of classic forums** (MyBB, vBulletin, phpBB) with **modern
+technology**:
+
 - ✨ Drag-and-drop simplicity
 - ⚡ Real-time everything
 - 🤖 AI-powered moderation
@@ -2819,18 +2846,17 @@ We combine the **customization power of classic forums** (MyBB, vBulletin, phpBB
 
 ### Implementation Phases
 
-| Phase | Features |
-|-------|----------|
+| Phase    | Features                                                   |
+| -------- | ---------------------------------------------------------- |
 | **v1.0** | Core forums with WebSocket integration, basic organization |
-| **v1.1** | AI moderation, analytics dashboard |
-| **v1.2** | Drag-and-drop builder, widget system |
-| **v1.3** | Theme builder, custom emojis, thread styling |
-| **v1.4** | Full niche templates library, gamification system |
-| **v1.5** | Event management, scheduled posts, advanced engagement |
-| **v2.0** | Enterprise features, API access, creator economy |
+| **v1.1** | AI moderation, analytics dashboard                         |
+| **v1.2** | Drag-and-drop builder, widget system                       |
+| **v1.3** | Theme builder, custom emojis, thread styling               |
+| **v1.4** | Full niche templates library, gamification system          |
+| **v1.5** | Event management, scheduled posts, advanced engagement     |
+| **v2.0** | Enterprise features, API access, creator economy           |
 
 ---
 
-*Document Version: 1.3.0*
-*Last Updated: January 2026*
-*Focus: Forum-level customization and community leader tools*
+_Document Version: 1.3.0_ _Last Updated: January 2026_ _Focus: Forum-level customization and
+community leader tools_

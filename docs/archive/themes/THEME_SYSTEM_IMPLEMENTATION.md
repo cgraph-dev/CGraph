@@ -1,14 +1,18 @@
 # Global Theme System Implementation Roadmap
 
 ## Overview
-This document outlines the comprehensive implementation of a global theme system for CGraph that allows users to personalize their appearance across the entire application.
+
+This document outlines the comprehensive implementation of a global theme system for CGraph that
+allows users to personalize their appearance across the entire application.
 
 ## ✅ Completed Components
 
 ### 1. Core Infrastructure
+
 - ✅ **Global Theme Store** (`/apps/web/src/stores/themeStore.ts`)
   - Zustand-based state management with persistence
-  - 12 color presets (emerald, purple, cyan, orange, pink, gold, crimson, arctic, sunset, midnight, forest, ocean)
+  - 12 color presets (emerald, purple, cyan, orange, pink, gold, crimson, arctic, sunset, midnight,
+    forest, ocean)
   - Avatar border customization (10 types from static to mythic)
   - Chat bubble styling (8 presets)
   - Effect presets (6 types: glassmorphism, neon, holographic, minimal, aurora, cyberpunk)
@@ -17,6 +21,7 @@ This document outlines the comprehensive implementation of a global theme system
   - Server sync preparation
 
 ### 2. Themed Components
+
 - ✅ **ThemedAvatar** (`/apps/web/src/components/theme/ThemedAvatar.tsx`)
   - Applies user's avatar border theme
   - Supports 10 border animation types
@@ -33,6 +38,7 @@ This document outlines the comprehensive implementation of a global theme system
   - Shows sender's theme (not changeable by receiver)
 
 ### 3. Theme Customization UI
+
 - ✅ **ThemeCustomization Page** (`/apps/web/src/pages/settings/ThemeCustomization.tsx`)
   - Live preview panel
   - 4 tabs: Theme, Avatar, Chat Bubbles, Effects
@@ -43,10 +49,13 @@ This document outlines the comprehensive implementation of a global theme system
 ## 🚧 Required Implementation
 
 ### Phase 1: Backend API Integration
+
 **Priority: HIGH** - Required for theme persistence
 
 #### Files to Create/Update:
+
 1. **Backend API Endpoints** (`apps/backend/lib/cgraph_web/controllers/user_theme_controller.ex`)
+
    ```elixir
    # GET /api/v1/users/:id/theme - Fetch user theme
    # PUT /api/v1/users/:id/theme - Update user theme
@@ -54,6 +63,7 @@ This document outlines the comprehensive implementation of a global theme system
    ```
 
 2. **Database Migration** (`apps/backend/priv/repo/migrations/`)
+
    ```elixir
    # Add user_themes table or theme_preferences JSONB column to users table
    - user_id (references users)
@@ -73,12 +83,12 @@ This document outlines the comprehensive implementation of a global theme system
      getUserTheme: (userId: string) => api.get(`/users/${userId}/theme`),
      updateUserTheme: (userId: string, theme: UserTheme) =>
        api.put(`/users/${userId}/theme`, theme),
-     resetUserTheme: (userId: string) =>
-       api.post(`/users/${userId}/theme/reset`),
+     resetUserTheme: (userId: string) => api.post(`/users/${userId}/theme/reset`),
    };
    ```
 
 ### Phase 2: Message Components Integration
+
 **Priority: HIGH** - Core user-facing feature
 
 #### Files to Update:
@@ -100,6 +110,7 @@ This document outlines the comprehensive implementation of a global theme system
    - ThemedAvatar for commenter avatars
 
 ### Phase 3: Authentication Pages
+
 **Priority: MEDIUM** - User onboarding experience
 
 #### Files to Update:
@@ -119,6 +130,7 @@ This document outlines the comprehensive implementation of a global theme system
    - Skip option with default theme
 
 ### Phase 4: Profile Pages
+
 **Priority: HIGH** - User identity display
 
 #### Files to Update:
@@ -134,6 +146,7 @@ This document outlines the comprehensive implementation of a global theme system
    - Cache theme per user
 
 ### Phase 5: Navigation & Layout
+
 **Priority: MEDIUM** - Consistent experience
 
 #### Files to Update:
@@ -149,6 +162,7 @@ This document outlines the comprehensive implementation of a global theme system
    - Mobile nav: Theme-colored highlights
 
 ### Phase 6: Settings Integration
+
 **Priority: MEDIUM**
 
 #### Files to Update:
@@ -162,6 +176,7 @@ This document outlines the comprehensive implementation of a global theme system
    - Auto-save toggle
 
 ### Phase 7: Premium Features
+
 **Priority: LOW** - Monetization
 
 #### Files to Create/Update:
@@ -176,6 +191,7 @@ This document outlines the comprehensive implementation of a global theme system
    - Special effect unlocks
 
 ### Phase 8: Forum Integration
+
 **Priority: MEDIUM**
 
 #### Files to Update:
@@ -214,6 +230,7 @@ This document outlines the comprehensive implementation of a global theme system
 ## 📊 Implementation Statistics
 
 ### Total Files to Create: 8
+
 - Backend API endpoints
 - Database migration
 - Theme context
@@ -221,6 +238,7 @@ This document outlines the comprehensive implementation of a global theme system
 - API client extensions
 
 ### Total Files to Update: 30+
+
 - All message/chat components
 - All profile components
 - Authentication flow (3 files)
@@ -230,6 +248,7 @@ This document outlines the comprehensive implementation of a global theme system
 - Member/social features (5+ files)
 
 ### Estimated Development Time
+
 - **Phase 1 (Backend)**: 8-12 hours
 - **Phase 2 (Messages)**: 6-8 hours
 - **Phase 3 (Auth)**: 4-6 hours
@@ -245,24 +264,28 @@ This document outlines the comprehensive implementation of a global theme system
 ## 🎨 Design Principles
 
 ### User Identity
+
 - **Each user's theme is their digital identity**
 - Theme follows user everywhere (chat, forums, profiles)
 - Other users see your theme on your content
 - Cannot change others' themes
 
 ### Performance
+
 - Themes cached in localStorage (Zustand persistence)
 - Server sync on login/changes only
 - CSS variables for dynamic theming
 - Lazy load premium effects
 
 ### Accessibility
+
 - Maintain WCAG 2.1 AA contrast ratios
 - Respect prefers-reduced-motion
 - Provide "Simple Mode" toggle
 - Alt text for all visual effects
 
 ### Premium Tiers
+
 - **Free**: Basic borders, 4 color presets, simple effects
 - **Starter**: 8 colors, rotating borders, glass effects
 - **Pro**: All colors, animated borders (fire/ice/electric), particle effects
@@ -271,6 +294,7 @@ This document outlines the comprehensive implementation of a global theme system
 ## 🔧 Technical Considerations
 
 ### State Management
+
 ```typescript
 // Theme loads on app init from localStorage
 // Syncs with server on user login
@@ -279,6 +303,7 @@ This document outlines the comprehensive implementation of a global theme system
 ```
 
 ### CSS Architecture
+
 ```css
 /* Global CSS variables set by theme */
 :root {
@@ -296,6 +321,7 @@ This document outlines the comprehensive implementation of a global theme system
 ```
 
 ### Message Protocol
+
 ```typescript
 // Messages include sender theme snapshot
 interface Message {
@@ -314,12 +340,14 @@ interface Message {
 ## 📝 Migration Strategy
 
 ### Existing Users
+
 1. Generate default theme on first login post-deployment
 2. Migrate existing chat bubble preferences to new theme system
 3. Preserve avatar customizations
 4. Email announcement with theme customization link
 
 ### New Users
+
 1. Show theme picker during onboarding (Step 3 of 5)
 2. Allow skip with "Emerald" default
 3. Link to full customization in welcome email
@@ -340,11 +368,13 @@ interface Message {
 ## 🚀 Deployment Plan
 
 ### Pre-deployment
+
 1. Backend database migration
 2. Deploy backend API endpoints
 3. Test theme sync with staging data
 
 ### Deployment
+
 1. Deploy backend changes
 2. Run migration script
 3. Deploy frontend with feature flag
@@ -353,6 +383,7 @@ interface Message {
 6. Gradual rollout to 100%
 
 ### Post-deployment
+
 1. Monitor error rates
 2. Collect user feedback
 3. Track theme customization adoption
@@ -361,12 +392,14 @@ interface Message {
 ## 📚 Documentation Needs
 
 ### User Documentation
+
 - [ ] Theme customization guide
 - [ ] Video tutorial
 - [ ] FAQ section
 - [ ] Premium features comparison
 
 ### Developer Documentation
+
 - [ ] Theme API reference
 - [ ] Component usage examples
 - [ ] Migration guide
@@ -378,9 +411,9 @@ interface Message {
 
 To continue implementation, we need to decide on the prioritized phases. I recommend:
 
-**Week 1**: Phase 1 (Backend) + Phase 2 (Messages)
-**Week 2**: Phase 3 (Auth) + Phase 4 (Profiles)
-**Week 3**: Phase 5-7 (Layout, Settings, Premium)
-**Week 4**: Phase 8-9 (Forums, Additional) + Testing
+**Week 1**: Phase 1 (Backend) + Phase 2 (Messages) **Week 2**: Phase 3 (Auth) + Phase 4 (Profiles)
+**Week 3**: Phase 5-7 (Layout, Settings, Premium) **Week 4**: Phase 8-9 (Forums, Additional) +
+Testing
 
-Would you like me to proceed with any specific phase, or shall I continue building out the core components?
+Would you like me to proceed with any specific phase, or shall I continue building out the core
+components?

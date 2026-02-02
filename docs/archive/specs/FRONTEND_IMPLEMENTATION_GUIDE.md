@@ -2,7 +2,8 @@
 
 ## 📋 Overview
 
-This guide provides step-by-step instructions for implementing the global theme system across all frontend pages. The core infrastructure is ready - we just need to integrate it everywhere.
+This guide provides step-by-step instructions for implementing the global theme system across all
+frontend pages. The core infrastructure is ready - we just need to integrate it everywhere.
 
 **Status**: ✅ Core built, 🚧 Integration needed
 
@@ -11,6 +12,7 @@ This guide provides step-by-step instructions for implementing the global theme 
 ## ✅ Already Completed
 
 ### 1. Core Infrastructure
+
 - ✅ **Theme Store** (`/apps/web/src/stores/themeStore.ts`)
   - Complete state management
   - 12 color presets
@@ -39,13 +41,15 @@ This guide provides step-by-step instructions for implementing the global theme 
 ### Phase 1: Message/Chat Components (Priority: HIGH)
 
 #### 1.1 Update Conversation Component
+
 **File**: `/apps/web/src/pages/messages/Conversation.tsx`
 
-**Current State**: Uses standard message bubbles
-**Goal**: Replace with `ThemedChatBubble` component
+**Current State**: Uses standard message bubbles **Goal**: Replace with `ThemedChatBubble` component
 
 **Steps**:
+
 1. Import ThemedChatBubble:
+
 ```typescript
 import { ThemedChatBubble } from '@/components/theme/ThemedChatBubble';
 ```
@@ -53,6 +57,7 @@ import { ThemedChatBubble } from '@/components/theme/ThemedChatBubble';
 2. Find the message rendering section (usually inside a `.map()`)
 
 3. Replace existing message bubble with:
+
 ```typescript
 <ThemedChatBubble
   message={message.content}
@@ -67,6 +72,7 @@ import { ThemedChatBubble } from '@/components/theme/ThemedChatBubble';
 ```
 
 4. Update message type to include theme snapshot:
+
 ```typescript
 interface Message {
   id: string;
@@ -80,6 +86,7 @@ interface Message {
 ```
 
 **Testing**:
+
 - [ ] Messages render with correct themes
 - [ ] Own messages use current user's theme
 - [ ] Other user's messages use their theme
@@ -89,6 +96,7 @@ interface Message {
 ---
 
 #### 1.2 Update Enhanced Conversation
+
 **File**: `/apps/web/src/pages/messages/EnhancedConversation.tsx`
 
 Same steps as 1.1
@@ -96,11 +104,13 @@ Same steps as 1.1
 ---
 
 #### 1.3 Update Group Channel Messages
+
 **File**: `/apps/web/src/pages/groups/GroupChannel.tsx`
 
 Same steps as 1.1, but with group context
 
 **Additional**:
+
 - Show avatar for all messages (group context)
 - Different theme per member
 
@@ -109,15 +119,19 @@ Same steps as 1.1, but with group context
 ### Phase 2: Profile & Avatar Updates (Priority: HIGH)
 
 #### 2.1 Update User Profile Page
+
 **File**: `/apps/web/src/pages/profile/UserProfile.tsx`
 
 **Steps**:
+
 1. Import ThemedAvatar:
+
 ```typescript
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 ```
 
 2. Replace existing avatar image with:
+
 ```typescript
 <ThemedAvatar
   src={user.avatarUrl}
@@ -128,6 +142,7 @@ import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 ```
 
 3. Apply themed background:
+
 ```typescript
 const { theme } = useThemeStore();
 const colors = THEME_COLORS[theme.colorPreset];
@@ -143,6 +158,7 @@ const colors = THEME_COLORS[theme.colorPreset];
 ```
 
 4. Add animated particles for premium users:
+
 ```typescript
 {theme.particlesEnabled && user.isPremium && (
   <div className="absolute inset-0 pointer-events-none">
@@ -160,6 +176,7 @@ const colors = THEME_COLORS[theme.colorPreset];
 ```
 
 **Testing**:
+
 - [ ] Avatar displays with correct theme
 - [ ] Profile background matches theme
 - [ ] Particles render for premium users
@@ -168,11 +185,13 @@ const colors = THEME_COLORS[theme.colorPreset];
 ---
 
 #### 2.2 Update Settings Page Avatar
+
 **File**: `/apps/web/src/pages/settings/Settings.tsx`
 
 Find avatar section and replace with `ThemedAvatar`
 
 Add link to theme customization:
+
 ```typescript
 <Link
   to="/settings/theme"
@@ -194,15 +213,19 @@ Add link to theme customization:
 ### Phase 3: Authentication Pages (Priority: MEDIUM)
 
 #### 3.1 Update Login Page
+
 **File**: `/apps/web/src/pages/auth/Login.tsx`
 
 **Steps**:
+
 1. Import theme store:
+
 ```typescript
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 ```
 
 2. Add animated background:
+
 ```typescript
 const { theme } = useThemeStore();
 const colors = THEME_COLORS[theme.colorPreset];
@@ -233,6 +256,7 @@ return (
 ```
 
 3. Apply theme to buttons:
+
 ```typescript
 <button
   type="submit"
@@ -247,6 +271,7 @@ return (
 ```
 
 **Testing**:
+
 - [ ] Background animates smoothly
 - [ ] Buttons use theme colors
 - [ ] Glow effect works when enabled
@@ -255,6 +280,7 @@ return (
 ---
 
 #### 3.2 Update Register Page
+
 **File**: `/apps/web/src/pages/auth/Register.tsx`
 
 Same approach as Login page.
@@ -262,12 +288,15 @@ Same approach as Login page.
 ---
 
 #### 3.3 Update Onboarding
+
 **File**: `/apps/web/src/pages/auth/Onboarding.tsx`
 
 **Steps**:
+
 1. Add theme selection step (Step 3 of onboarding)
 
 2. Show quick preset picker:
+
 ```typescript
 const presets = ['minimal', 'modern', 'vibrant', 'elegant', 'gaming'];
 
@@ -292,6 +321,7 @@ const presets = ['minimal', 'modern', 'vibrant', 'elegant', 'gaming'];
 ```
 
 **Testing**:
+
 - [ ] Theme picker appears in onboarding
 - [ ] Skip button works
 - [ ] Selected theme persists
@@ -302,10 +332,13 @@ const presets = ['minimal', 'modern', 'vibrant', 'elegant', 'gaming'];
 ### Phase 4: Forum Integration (Priority: MEDIUM)
 
 #### 4.1 Update Forum Post List
+
 **File**: `/apps/web/src/pages/forums/Forums.tsx`
 
 **Steps**:
+
 1. Add ThemedAvatar to post author:
+
 ```typescript
 <ThemedAvatar
   src={post.author.avatarUrl}
@@ -316,6 +349,7 @@ const presets = ['minimal', 'modern', 'vibrant', 'elegant', 'gaming'];
 ```
 
 2. Add theme-colored post title for premium users:
+
 ```typescript
 {post.author.isPremium && (
   <h3
@@ -332,6 +366,7 @@ const presets = ['minimal', 'modern', 'vibrant', 'elegant', 'gaming'];
 ```
 
 **Testing**:
+
 - [ ] Author avatars show theme borders
 - [ ] Premium posts have gradient titles
 - [ ] List loads quickly with many posts
@@ -339,9 +374,11 @@ const presets = ['minimal', 'modern', 'vibrant', 'elegant', 'gaming'];
 ---
 
 #### 4.2 Update Forum Post View
+
 **File**: `/apps/web/src/pages/forums/ForumPost.tsx`
 
 **Steps**:
+
 1. Update post author avatar (large)
 2. Update comment avatars (small)
 3. Apply theme to comment bubbles:
@@ -371,6 +408,7 @@ const presets = ['minimal', 'modern', 'vibrant', 'elegant', 'gaming'];
 ```
 
 **Testing**:
+
 - [ ] Post author avatar themed correctly
 - [ ] Comments show author themes
 - [ ] Theme colors don't clash
@@ -381,15 +419,19 @@ const presets = ['minimal', 'modern', 'vibrant', 'elegant', 'gaming'];
 ### Phase 5: Navigation & Layout (Priority: MEDIUM)
 
 #### 5.1 Update App Layout
+
 **File**: `/apps/web/src/layouts/AppLayout.tsx`
 
 **Steps**:
+
 1. Import theme store:
+
 ```typescript
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 ```
 
 2. Apply theme to sidebar active items:
+
 ```typescript
 const { theme } = useThemeStore();
 const colors = THEME_COLORS[theme.colorPreset];
@@ -411,6 +453,7 @@ const colors = THEME_COLORS[theme.colorPreset];
 ```
 
 3. Update user menu avatar:
+
 ```typescript
 <ThemedAvatar
   src={user.avatarUrl}
@@ -420,6 +463,7 @@ const colors = THEME_COLORS[theme.colorPreset];
 ```
 
 **Testing**:
+
 - [ ] Active nav items use theme color
 - [ ] User avatar in header has border
 - [ ] Theme persists across pages
@@ -430,9 +474,11 @@ const colors = THEME_COLORS[theme.colorPreset];
 ### Phase 6: Additional Pages
 
 #### 6.1 Friends Page
+
 **File**: `/apps/web/src/pages/friends/Friends.tsx`
 
 Replace all friend avatars with `ThemedAvatar`:
+
 ```typescript
 <ThemedAvatar
   src={friend.avatarUrl}
@@ -445,11 +491,13 @@ Replace all friend avatars with `ThemedAvatar`:
 ---
 
 #### 6.2 Member List
+
 **File**: `/apps/web/src/pages/members/MemberList.tsx`
 
 Same as Friends page.
 
 **Optional Enhancement**: Filter by theme color:
+
 ```typescript
 <select onChange={(e) => setFilterTheme(e.target.value)}>
   <option value="">All Themes</option>
@@ -464,11 +512,14 @@ Same as Friends page.
 ---
 
 #### 6.3 Leaderboard
+
 **File**: `/apps/web/src/pages/leaderboard/LeaderboardPage.tsx`
 
 **Steps**:
+
 1. Add ThemedAvatar for all users
 2. Special animation for #1 position:
+
 ```typescript
 {rank === 1 && (
   <motion.div
@@ -489,11 +540,14 @@ Same as Friends page.
 ---
 
 #### 6.4 Notifications
+
 **File**: `/apps/web/src/pages/notifications/Notifications.tsx`
 
 **Steps**:
+
 1. Add ThemedAvatar for notification senders
 2. Theme-colored notification badges:
+
 ```typescript
 <div
   className="notification-badge"
@@ -511,6 +565,7 @@ Same as Friends page.
 ### Phase 7: Premium Features
 
 #### 7.1 Create Premium Theme Gate Component
+
 **File**: `/apps/web/src/components/theme/PremiumThemeGate.tsx`
 
 ```typescript
@@ -562,6 +617,7 @@ export function PremiumThemeGate({
 ```
 
 **Usage in ThemeCustomization.tsx**:
+
 ```typescript
 <PremiumThemeGate feature="Legendary Border" requiredTier="business">
   <button onClick={() => setAvatarBorder('legendary')}>
@@ -573,9 +629,11 @@ export function PremiumThemeGate({
 ---
 
 #### 7.2 Update Coin Shop
+
 **File**: `/apps/web/src/pages/premium/CoinShop.tsx`
 
 Add theme packs for purchase:
+
 ```typescript
 const themeProducts = [
   {
@@ -622,7 +680,9 @@ Add to `/apps/web/src/index.css`:
 .btn-primary {
   background: var(--button-primary-bg);
   box-shadow: var(--button-primary-shadow);
-  transition: transform 0.2s, box-shadow 0.3s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.3s;
 }
 
 .btn-primary:hover {
@@ -661,6 +721,7 @@ Add to `/apps/web/src/index.css`:
 ### Manual Testing Checklist
 
 **Theme Customization Page**:
+
 - [ ] All color presets selectable
 - [ ] Avatar border preview updates in real-time
 - [ ] Chat bubble preview shows correct style
@@ -671,6 +732,7 @@ Add to `/apps/web/src/index.css`:
 - [ ] Toggles work correctly
 
 **Messages/Chat**:
+
 - [ ] Own messages use your theme
 - [ ] Other user messages use their theme
 - [ ] Themes don't clash visually
@@ -681,6 +743,7 @@ Add to `/apps/web/src/index.css`:
 - [ ] Avatars display with borders
 
 **Profiles**:
+
 - [ ] Avatar border animates
 - [ ] Profile background themed
 - [ ] Particles render (if enabled)
@@ -688,12 +751,14 @@ Add to `/apps/web/src/index.css`:
 - [ ] Responsive on mobile
 
 **Auth Pages**:
+
 - [ ] Background animates
 - [ ] Buttons use theme
 - [ ] Login/register forms themed
 - [ ] Theme persists after logout
 
 **Navigation**:
+
 - [ ] Active items use theme color
 - [ ] User avatar in header themed
 - [ ] Smooth transitions
@@ -754,6 +819,7 @@ describe('Theme System', () => {
 ## 🚀 Deployment Checklist
 
 ### Pre-deployment
+
 - [ ] All components tested locally
 - [ ] Theme persistence works
 - [ ] No console errors
@@ -762,6 +828,7 @@ describe('Theme System', () => {
 - [ ] Performance profiled (no lag with particles)
 
 ### Deployment
+
 - [ ] Backend API ready (see BACKEND_API_SPECIFICATION.md)
 - [ ] Environment variables set
 - [ ] Build succeeds
@@ -769,6 +836,7 @@ describe('Theme System', () => {
 - [ ] Analytics tracking added
 
 ### Post-deployment
+
 - [ ] Monitor error rates
 - [ ] Check theme adoption metrics
 - [ ] Collect user feedback
@@ -779,6 +847,7 @@ describe('Theme System', () => {
 ## 📊 Performance Optimization
 
 ### 1. Lazy Load Particle Effects
+
 ```typescript
 const ParticleEffect = lazy(() => import('@/components/theme/ParticleEffect'));
 
@@ -790,24 +859,25 @@ const ParticleEffect = lazy(() => import('@/components/theme/ParticleEffect'));
 ```
 
 ### 2. Memoize Theme Colors
+
 ```typescript
-const colors = useMemo(
-  () => THEME_COLORS[theme.colorPreset],
-  [theme.colorPreset]
-);
+const colors = useMemo(() => THEME_COLORS[theme.colorPreset], [theme.colorPreset]);
 ```
 
 ### 3. Debounce Theme Updates
+
 ```typescript
 const debouncedSaveTheme = useMemo(
-  () => debounce((theme: UserTheme) => {
-    saveToServer(userId, theme);
-  }, 2000),
+  () =>
+    debounce((theme: UserTheme) => {
+      saveToServer(userId, theme);
+    }, 2000),
   [userId]
 );
 ```
 
 ### 4. Cache User Themes
+
 ```typescript
 // In your API client
 const userThemeCache = new Map<string, UserTheme>();
@@ -830,22 +900,16 @@ export async function getUserTheme(userId: string) {
 If you have limited time, implement in this order for maximum impact:
 
 **Day 1** (4-6 hours):
+
 1. Message/Chat components (Phase 1) - Most visible
 2. Profile page avatars (Phase 2.1) - High traffic
 
-**Day 2** (4-6 hours):
-3. Settings page link (Phase 2.2)
-4. Navigation active items (Phase 5.1)
-5. Friends/Members avatars (Phase 6.1-6.2)
+**Day 2** (4-6 hours): 3. Settings page link (Phase 2.2) 4. Navigation active items (Phase 5.1) 5.
+Friends/Members avatars (Phase 6.1-6.2)
 
-**Day 3** (4-6 hours):
-6. Forum integration (Phase 4.1-4.2)
-7. Authentication pages (Phase 3.1-3.2)
+**Day 3** (4-6 hours): 6. Forum integration (Phase 4.1-4.2) 7. Authentication pages (Phase 3.1-3.2)
 
-**Day 4** (4-6 hours):
-8. Premium features (Phase 7)
-9. Testing & polish
-10. Deploy!
+**Day 4** (4-6 hours): 8. Premium features (Phase 7) 9. Testing & polish 10. Deploy!
 
 ---
 
@@ -861,20 +925,19 @@ If you have limited time, implement in this order for maximum impact:
 
 ## 🆘 Troubleshooting
 
-**Issue**: Theme doesn't persist after refresh
-**Solution**: Check localStorage, ensure zustand persist middleware is configured correctly
+**Issue**: Theme doesn't persist after refresh **Solution**: Check localStorage, ensure zustand
+persist middleware is configured correctly
 
-**Issue**: Colors don't update in real-time
-**Solution**: Ensure CSS variables are being set in App.tsx useEffect
+**Issue**: Colors don't update in real-time **Solution**: Ensure CSS variables are being set in
+App.tsx useEffect
 
-**Issue**: Themed borders don't animate
-**Solution**: Check if framer-motion is imported, verify animation props
+**Issue**: Themed borders don't animate **Solution**: Check if framer-motion is imported, verify
+animation props
 
-**Issue**: Performance lag with particles
-**Solution**: Reduce particle count or use lazy loading
+**Issue**: Performance lag with particles **Solution**: Reduce particle count or use lazy loading
 
-**Issue**: Themes clash in group chat
-**Solution**: Ensure each message uses sender's theme, not receiver's
+**Issue**: Themes clash in group chat **Solution**: Ensure each message uses sender's theme, not
+receiver's
 
 ---
 

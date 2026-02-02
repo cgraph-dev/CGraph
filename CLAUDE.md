@@ -42,8 +42,9 @@ forums, and gamification. Features include Signal Protocol encryption (X3DH + Do
 AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a karma-based
 forum system.
 
-**Version**: 0.9.8  
-**Last Updated**: February 2026  
+**Version**: 0.9.11  
+**Last Updated**: February 2, 2026  
+**Architecture Score**: 8.0/10  
 **License**: Proprietary (see LICENSE)
 
 ## Key Features
