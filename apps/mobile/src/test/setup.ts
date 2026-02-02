@@ -392,6 +392,7 @@ jest.mock('phoenix', () => ({
 
 // Global test utilities
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace -- Required for Jest type augmentation
   namespace jest {
     interface Matchers<R> {
       toBeAccessible(): R;
