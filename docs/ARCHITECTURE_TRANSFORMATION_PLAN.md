@@ -88,9 +88,21 @@ import { useDebounce } from '@/hooks';
 
 ### 🔄 Phase 4 - Import Migration (In Progress)
 
-- 144+ files still using `@/components/` imports
-- Gradual migration to `@/modules/` and `@/shared/` imports
-- Full backward compatibility maintained
+**GlassCard Migration: COMPLETE (70+ files)**
+
+- Migrated all GlassCard imports to `@/shared/components/ui`
+- Added GlassCardNeon, GlassCardHolographic, GlassCardCrystal exports
+- Chat, Forum, Gamification, Groups, Premium, Settings, Social components
+
+**Hook Migration: COMPLETE (10 files)**
+
+- useToast → `@/shared/hooks`
+- useDebounce → `@/shared/hooks`
+
+**Remaining Work:**
+
+- Utils migration (cn, formatTimeAgo) - ~50+ files
+- Component migration (Button, Card, etc.) - ~10 files
 
 ---
 
