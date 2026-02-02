@@ -36,7 +36,7 @@ describe('Theme Store', () => {
     useThemeStore.setState({
       colorPreset: 'emerald',
       profileThemeId: 'default',
-      effectPreset: 'none',
+      effectPreset: 'minimal',
       profileCardLayout: 'default',
       isLoading: false,
       error: null,
@@ -131,12 +131,12 @@ describe('Theme Store', () => {
 
   describe('Effect Presets', () => {
     it('should set effect preset', () => {
-      useThemeStore.getState().setEffectPreset('matrix');
-      expect(useThemeStore.getState().effectPreset).toBe('matrix');
+      useThemeStore.getState().setEffectPreset('neon');
+      expect(useThemeStore.getState().effectPreset).toBe('neon');
     });
 
     it('should set different effect presets', () => {
-      const effects = ['none', 'matrix', 'particles'] as const;
+      const effects = ['minimal', 'neon', 'holographic'] as const;
       effects.forEach((effect) => {
         useThemeStore.getState().setEffectPreset(effect);
         expect(useThemeStore.getState().effectPreset).toBe(effect);

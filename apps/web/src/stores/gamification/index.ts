@@ -61,6 +61,7 @@ export {
   type MarketplaceStats,
   type ItemType,
   type CurrencyType,
+  type SortOption,
 } from './marketplaceSlice';
 
 // Re-export referral slice

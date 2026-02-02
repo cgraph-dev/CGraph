@@ -15,7 +15,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useChatBubbleStore } from '@/stores/theme';
+import { useChatBubbleStore, type ChatBubbleConfig } from '@/stores/theme';
 import { useChatCustomization } from '@/stores/unifiedCustomizationStore';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -23,7 +23,9 @@ import { ChatBubbleLeftIcon, SwatchIcon, CheckIcon, CloudIcon } from '@heroicons
 
 export default function ChatBubbleSettingsHybrid() {
   // === LOCAL UI STATE (localStorage only) ===
-  const { style, updateStyle } = useChatBubbleStore();
+  const themeStore = useChatBubbleStore();
+  const style = themeStore.chatBubble;
+  const updateStyle = (updates: Partial<ChatBubbleConfig>) => themeStore.updateChatBubble(updates);
 
   // === BACKEND-SYNCED STATE (cross-device) ===
   const { chat, updateChat, isSyncing } = useChatCustomization();

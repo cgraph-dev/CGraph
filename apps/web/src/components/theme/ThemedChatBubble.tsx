@@ -30,7 +30,7 @@ export function ThemedChatBubble({
 }: ThemedChatBubbleProps) {
   const currentUserTheme = useThemeStore((state) => state.theme);
   const { chat } = useChatCustomization();
-  const { style: bubbleStyle } = useChatBubbleStore();
+  const bubbleStyle = useChatBubbleStore((state) => state.chatBubble);
 
   // If it's own message, use current user's theme; otherwise use provided theme
   const theme = isOwn

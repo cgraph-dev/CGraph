@@ -63,9 +63,11 @@ export function useChatFacade() {
     playSound: effects.playSound,
 
     // === Bubble Customization ===
-    bubbleStyle: bubble.style,
-    updateBubbleStyle: bubble.updateStyle,
-    resetBubbleStyle: bubble.resetStyle,
+    bubbleStyle: bubble.chatBubbleStyle,
+    chatBubble: bubble.chatBubble,
+    updateBubbleStyle: bubble.setChatBubbleStyle,
+    updateChatBubble: bubble.updateChatBubble,
+    resetBubbleStyle: bubble.resetChatBubble,
     applyBubblePreset: bubble.applyPreset,
 
     // === Calls State ===

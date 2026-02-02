@@ -3,13 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   useThemeStore,
   THEME_COLORS,
-  type ThemeColorPreset,
+  type ColorPreset,
   type AvatarBorderType,
   type ChatBubbleStylePreset,
   type EffectPreset,
 } from '@/stores/theme';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { ThemedChatBubble } from '@/components/theme/ThemedChatBubble';
+
+// Alias for compatibility
+type ThemeColorPreset = ColorPreset;
 
 type TabType = 'theme' | 'avatar' | 'chat' | 'effects';
 

@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useChatBubbleStore, CHAT_BUBBLE_PRESETS, type ChatBubbleStyle } from '@/stores/theme';
+import { useChatBubbleStore, CHAT_BUBBLE_PRESETS, type ChatBubbleConfig } from '@/stores/theme';
 import { useChatCustomization } from '@/stores/unifiedCustomizationStore';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -37,7 +37,12 @@ const CATEGORY_COLORS: Record<BackgroundCategory, { bg: string; text: string; bo
 };
 
 export default function ChatBubbleSettings() {
-  const { style, updateStyle, resetStyle, applyPreset } = useChatBubbleStore();
+  const themeStore = useChatBubbleStore();
+  const style = themeStore.chatBubble;
+  const updateStyle = <K extends keyof ChatBubbleConfig>(key: K, value: ChatBubbleConfig[K]) =>
+    themeStore.updateChatBubble({ [key]: value } as Partial<ChatBubbleConfig>);
+  const resetStyle = themeStore.resetChatBubble;
+  const applyPreset = themeStore.applyPreset;
   const { updateChat } = useChatCustomization();
   const syncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [activeTab, setActiveTab] = useState<
@@ -303,8 +308,8 @@ export default function ChatBubbleSettings() {
 
 // Tab component props interface
 interface TabProps {
-  style: ChatBubbleStyle;
-  updateStyle: <K extends keyof ChatBubbleStyle>(key: K, value: ChatBubbleStyle[K]) => void;
+  style: ChatBubbleConfig;
+  updateStyle: <K extends keyof ChatBubbleConfig>(key: K, value: ChatBubbleConfig[K]) => void;
 }
 
 // Helper components for each tab

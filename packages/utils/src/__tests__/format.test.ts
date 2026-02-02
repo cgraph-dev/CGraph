@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   formatMessageTime,
   formatRelativeTime,
-  formatPostTime,
   formatDateHeader,
   formatFileSize,
   formatNumber,

@@ -7,6 +7,9 @@
 // Main store
 export { useThemeStore } from './themeStore';
 
+// Import for local use
+import type { ColorPreset as ColorPresetType } from './themeStore';
+
 // Types
 export type {
   ColorPreset,
@@ -23,6 +26,9 @@ export type {
   LegacyTheme,
   ThemeStore,
 } from './themeStore';
+
+// ThemeColorPreset alias for backward compatibility
+export type ThemeColorPreset = ColorPresetType;
 
 // Constants
 export {
@@ -78,3 +84,10 @@ export {
   type ForumTitleAnimation,
   type ForumRoleStyle,
 } from '../forumThemeStore';
+
+// Re-export UserTheme type from deprecated themeStore
+export type { UserTheme } from '../themeStore';
+
+// ChatBubbleStyle alias for compatibility
+import type { ChatBubbleConfig as ChatBubbleConfigType } from './themeStore';
+export type ChatBubbleStyle = ChatBubbleConfigType;
