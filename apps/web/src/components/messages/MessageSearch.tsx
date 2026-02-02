@@ -202,18 +202,30 @@ export function MessageSearch({
 
         if (response.data?.messages) {
           setResults(
-            response.data.messages.map((m: any) => ({
-              id: m.id,
-              conversationId: m.conversation_id,
-              conversationName: m.conversation_name || 'Conversation',
-              senderId: m.sender_id,
-              senderUsername: m.sender_username || 'Unknown',
-              senderAvatarUrl: m.sender_avatar_url,
-              content: m.content,
-              highlightedContent: highlightContent(m.content, searchQuery),
-              createdAt: m.created_at,
-              messageType: m.message_type || 'text',
-            }))
+            response.data.messages.map(
+              (m: {
+                id: string;
+                conversation_id: string;
+                conversation_name?: string;
+                sender_id: string;
+                sender_username?: string;
+                sender_avatar_url?: string;
+                content: string;
+                created_at: string;
+                message_type?: string;
+              }) => ({
+                id: m.id,
+                conversationId: m.conversation_id,
+                conversationName: m.conversation_name || 'Conversation',
+                senderId: m.sender_id,
+                senderUsername: m.sender_username || 'Unknown',
+                senderAvatarUrl: m.sender_avatar_url,
+                content: m.content,
+                highlightedContent: highlightContent(m.content, searchQuery),
+                createdAt: m.created_at,
+                messageType: m.message_type || 'text',
+              })
+            )
           );
           saveRecentSearch(searchQuery);
         } else {

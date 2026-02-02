@@ -568,13 +568,22 @@ function MentionAutocomplete({
 
         if (response.data?.users) {
           setUsers(
-            response.data.users.map((u: any) => ({
-              id: u.id,
-              username: u.username,
-              displayName: u.display_name || u.username,
-              avatarUrl: u.avatar_url,
-              avatarBorderId: u.avatar_border_id || u.avatarBorderId || null,
-            }))
+            response.data.users.map(
+              (u: {
+                id: string;
+                username: string;
+                display_name?: string;
+                avatar_url?: string;
+                avatar_border_id?: string;
+                avatarBorderId?: string;
+              }) => ({
+                id: u.id,
+                username: u.username,
+                displayName: u.display_name || u.username,
+                avatarUrl: u.avatar_url,
+                avatarBorderId: u.avatar_border_id || u.avatarBorderId || null,
+              })
+            )
           );
         } else {
           // Fallback to mock data if API not available
