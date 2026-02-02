@@ -27,7 +27,7 @@ import {
 } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import type { Forum } from '@/stores/forumStore';
 
 /**

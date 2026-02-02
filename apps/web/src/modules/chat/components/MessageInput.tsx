@@ -12,7 +12,7 @@ import {
   PlusCircleIcon,
   AtSymbolIcon,
 } from '@heroicons/react/24/outline';
-import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { GlassCard } from '@/shared/components/ui';
 import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 import { StickerPicker } from '@/modules/chat/components/StickerPicker';

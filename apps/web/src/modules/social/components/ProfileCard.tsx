@@ -13,7 +13,7 @@ import {
   type ProfileCardConfig,
   type ProfileHoverEffect,
   type ThemePresetConfig,
-} from '@/stores/profileThemeStore';
+} from '@/stores/theme';
 import type { Achievement } from '@/stores/gamificationStore';
 
 /**

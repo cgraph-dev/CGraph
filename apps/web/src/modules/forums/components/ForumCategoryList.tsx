@@ -19,7 +19,7 @@ void ChevronDownIcon; // Reserved for category collapse animation
 void EyeIcon; // Reserved for forum visibility indicator
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import type { ForumCategory, Forum } from '@/stores/forumStore';
 
 /**

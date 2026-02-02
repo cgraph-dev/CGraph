@@ -5,7 +5,7 @@ import {
   SeasonalEvent,
   EventReward,
   BattlePassTier,
-} from '@/stores/seasonalEventStore';
+} from '@/stores/gamification';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 // Reserved for future features

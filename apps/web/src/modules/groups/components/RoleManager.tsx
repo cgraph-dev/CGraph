@@ -9,7 +9,7 @@ import {
   CheckIcon,
 } from '@heroicons/react/24/outline';
 import { useGroupStore, type Role } from '@/stores/groupStore';
-import { useThemeStore } from '@/stores/themeStore';
+import { useThemeStore } from '@/stores/theme';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 

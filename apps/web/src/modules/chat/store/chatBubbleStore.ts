@@ -1,4 +1,4 @@
 /**
  * Chat Bubble Store - Re-export from legacy
  */
-export * from '@/stores/chatBubbleStore';
+export * from '@/stores/theme';

@@ -12,7 +12,7 @@ import {
 void EllipsisVerticalIcon; // Reserved for member context menu
 import { StarIcon as CrownIcon } from '@heroicons/react/24/solid';
 import { useGroupStore, type Member, type Role } from '@/stores/groupStore';
-import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 void THEME_COLORS; // Reserved for role color theming
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { GlassCard } from '@/shared/components/ui';

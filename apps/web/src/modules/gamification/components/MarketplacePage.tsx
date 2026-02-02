@@ -5,7 +5,7 @@ import {
   ItemType,
   SortOption,
   MarketplaceListing,
-} from '@/stores/marketplaceStore';
+} from '@/stores/gamification';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 // Reserved for future use

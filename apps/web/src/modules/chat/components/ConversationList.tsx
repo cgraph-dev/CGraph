@@ -18,7 +18,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useChatStore, type Conversation } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
-import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';

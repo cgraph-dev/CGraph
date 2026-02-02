@@ -2,7 +2,7 @@ import { ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LockClosedIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { StarIcon, StarIcon as CrownIcon } from '@heroicons/react/24/solid'; // CrownIcon doesn't exist, using StarIcon
-import { useThemeStore } from '@/stores/themeStore';
+import { useThemeStore } from '@/stores/theme';
 
 // Reserved for future use
 void CrownIcon;

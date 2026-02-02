@@ -21,7 +21,7 @@ import { TrophyIcon as TrophyIconSolid, StarIcon } from '@heroicons/react/24/sol
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { useAuthStore } from '@/stores/authStore';
 
 /**

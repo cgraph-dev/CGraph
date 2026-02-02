@@ -42,6 +42,8 @@ export {
 // Re-export seasonal events slice
 export {
   useSeasonalEventStore,
+  useFeaturedEvent,
+  useCurrentEventProgress,
   type SeasonalEvent,
   type EventProgress,
   type EventReward,

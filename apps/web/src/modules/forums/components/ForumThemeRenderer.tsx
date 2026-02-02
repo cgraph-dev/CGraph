@@ -7,7 +7,7 @@ import {
   type ForumTheme,
   type ForumTitleAnimation,
   type ForumRoleStyle,
-} from '@/stores/forumThemeStore';
+} from '@/stores/theme';
 
 // Reserved for future features
 const _reservedAnimations = { AnimatePresence };

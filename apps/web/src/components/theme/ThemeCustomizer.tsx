@@ -18,7 +18,7 @@ import {
   type AvatarBorderType,
   type ChatBubbleStylePreset,
   type EffectPreset,
-} from '@/stores/themeStore';
+} from '@/stores/theme';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from './ThemedAvatar';
 import { ThemedChatBubble } from './ThemedChatBubble';

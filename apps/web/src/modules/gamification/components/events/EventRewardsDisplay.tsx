@@ -8,8 +8,8 @@ import {
   CheckCircleIcon,
   LockClosedIcon,
 } from '@heroicons/react/24/outline';
-import { useCurrentEventProgress } from '@/stores/seasonalEventStore';
-import type { EventReward, EventMilestone, BattlePassTier } from '@/stores/seasonalEventStore';
+import { useCurrentEventProgress } from '@/stores/gamification';
+import type { EventReward, EventMilestone, BattlePassTier } from '@/stores/gamification';
 import { GlassCard } from '@/shared/components/ui';
 
 /**

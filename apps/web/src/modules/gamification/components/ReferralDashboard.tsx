@@ -14,7 +14,7 @@ import {
   ArrowTrendingDownIcon,
 } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
-import { useReferralStore } from '@/stores/referralStore';
+import { useReferralStore } from '@/stores/gamification';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { createLogger } from '@/lib/logger';
 

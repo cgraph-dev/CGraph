@@ -7,7 +7,7 @@ import {
   type AvatarBorderType,
   type ChatBubbleStylePreset,
   type EffectPreset,
-} from '@/stores/themeStore';
+} from '@/stores/theme';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { ThemedChatBubble } from '@/components/theme/ThemedChatBubble';
 

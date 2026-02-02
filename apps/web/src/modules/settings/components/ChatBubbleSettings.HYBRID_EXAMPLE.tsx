@@ -15,7 +15,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useChatBubbleStore } from '@/stores/chatBubbleStore';
+import { useChatBubbleStore } from '@/stores/theme';
 import { useChatCustomization } from '@/stores/unifiedCustomizationStore';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';

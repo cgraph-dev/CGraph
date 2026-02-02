@@ -17,7 +17,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
-import type { UserTheme } from '@/stores/themeStore';
+import type { UserTheme } from '@/stores/theme';
 import { springs } from '@/lib/animations/transitions';
 import { getAvatarBorderId } from '@/lib/utils';
 import { useFriendStore } from '@/stores/friendStore';

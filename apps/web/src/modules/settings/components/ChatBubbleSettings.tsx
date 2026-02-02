@@ -1,10 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  useChatBubbleStore,
-  CHAT_BUBBLE_PRESETS,
-  type ChatBubbleStyle,
-} from '@/stores/chatBubbleStore';
+import { useChatBubbleStore, CHAT_BUBBLE_PRESETS, type ChatBubbleStyle } from '@/stores/theme';
 import { useChatCustomization } from '@/stores/unifiedCustomizationStore';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';

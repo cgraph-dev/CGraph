@@ -15,7 +15,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { useForumStore, type Post as PostType, type ForumCategory } from '@/stores/forumStore';
 import { createLogger } from '@/lib/logger';
 
