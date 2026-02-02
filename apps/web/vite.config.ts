@@ -43,13 +43,14 @@ export default defineConfig({
         '**/test/**',
         '**/mocks/**',
       ],
-      // Progressive coverage thresholds - gradually increase as tests are added
-      // Current baseline: 7.91%, incrementally increase as new tests added
+      // Progressive coverage thresholds - Phase 5 targets
+      // Current: 12%, Short-term: 30%, Target: 80%
+      // Increase thresholds as tests are added to prevent regression
       thresholds: {
-        statements: 7,
-        branches: 3,
-        functions: 5,
-        lines: 7,
+        statements: 12,
+        branches: 50,
+        functions: 20,
+        lines: 12,
       },
     },
   },
