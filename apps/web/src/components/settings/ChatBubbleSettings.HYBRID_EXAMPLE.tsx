@@ -17,7 +17,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useChatBubbleStore } from '@/stores/chatBubbleStore';
 import { useChatCustomization } from '@/stores/unifiedCustomizationStore';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { ChatBubbleLeftIcon, SwatchIcon, CheckIcon, CloudIcon } from '@heroicons/react/24/outline';
 

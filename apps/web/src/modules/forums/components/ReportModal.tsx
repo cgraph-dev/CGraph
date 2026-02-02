@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { XMarkIcon, FlagIcon } from '@heroicons/react/24/outline';
 import { useForumStore, type Report } from '@/stores/forumStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { toast } from '@/components/ui';
 import { createLogger } from '@/lib/logger';
 

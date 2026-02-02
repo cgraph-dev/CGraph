@@ -13,7 +13,7 @@ import {
   AtSymbolIcon,
 } from '@heroicons/react/24/outline';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 import { StickerPicker } from '@/components/chat/StickerPicker';
 import { GifPicker, type GifResult } from '@/components/chat/GifPicker';

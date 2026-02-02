@@ -16,7 +16,7 @@ import {
 import { useGroupStore, type Group } from '@/stores/groupStore';
 import { RoleManager } from './RoleManager';
 import { InviteModal } from './InviteModal';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { createLogger } from '@/lib/logger';
 

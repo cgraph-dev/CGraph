@@ -1,17 +1,17 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 p-4">
       {/* Ambient particles */}
       {[...Array(20)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute w-0.5 h-0.5 rounded-full bg-primary-400 pointer-events-none"
+          className="pointer-events-none absolute h-0.5 w-0.5 rounded-full bg-primary-400"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
@@ -34,9 +34,14 @@ export default function NotFound() {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="text-center relative z-10"
+        className="relative z-10 text-center"
       >
-        <GlassCard variant="holographic" glow glowColor="rgba(16, 185, 129, 0.3)" className="p-12 max-w-lg">
+        <GlassCard
+          variant="holographic"
+          glow
+          glowColor="rgba(16, 185, 129, 0.3)"
+          className="max-w-lg p-12"
+        >
           {/* 404 Number with animation */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -45,7 +50,7 @@ export default function NotFound() {
             className="mb-6"
           >
             <div className="relative inline-block">
-              <h1 className="text-9xl font-bold bg-gradient-to-r from-primary-400 via-purple-400 to-primary-400 bg-clip-text text-transparent">
+              <h1 className="bg-gradient-to-r from-primary-400 via-purple-400 to-primary-400 bg-clip-text text-9xl font-bold text-transparent">
                 404
               </h1>
               <motion.div
@@ -63,7 +68,7 @@ export default function NotFound() {
             transition={{ delay: 0.3, type: 'spring', stiffness: 400, damping: 15 }}
             className="mb-6 flex justify-center"
           >
-            <div className="p-4 bg-gradient-to-br from-primary-500/20 to-purple-500/20 rounded-full">
+            <div className="rounded-full bg-gradient-to-br from-primary-500/20 to-purple-500/20 p-4">
               <ExclamationTriangleIcon className="h-16 w-16 text-primary-400" />
             </div>
           </motion.div>
@@ -74,11 +79,12 @@ export default function NotFound() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <h2 className="text-3xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-4">
+            <h2 className="mb-4 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
               Page Not Found
             </h2>
-            <p className="text-gray-400 mb-8 max-w-md mx-auto">
-              The page you're looking for doesn't exist or has been moved. Let's get you back on track.
+            <p className="mx-auto mb-8 max-w-md text-gray-400">
+              The page you're looking for doesn't exist or has been moved. Let's get you back on
+              track.
             </p>
           </motion.div>
 
@@ -92,14 +98,19 @@ export default function NotFound() {
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-purple-600 hover:from-primary-500 hover:to-purple-500 text-white font-medium rounded-lg transition-all relative overflow-hidden group"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-lg bg-gradient-to-r from-primary-600 to-purple-600 px-6 py-3 font-medium text-white transition-all hover:from-primary-500 hover:to-purple-500"
                 style={{ boxShadow: '0 0 30px rgba(16, 185, 129, 0.3)' }}
               >
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100"
                   transition={{ duration: 0.3 }}
                 />
-                <svg className="h-5 w-5 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  className="relative z-10 h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"

@@ -5,7 +5,7 @@ import { createLogger } from '@/lib/logger';
 const logger = createLogger('ScheduleMessageModal');
 import { ClockIcon, XMarkIcon, CalendarIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import { add, format, isBefore, isAfter, addHours, type Duration } from 'date-fns';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { toast } from '@/components/Toast';
 

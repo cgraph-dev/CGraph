@@ -21,7 +21,7 @@ import {
   ShoppingBagIcon,
   StarIcon,
 } from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { TitleBadge } from '@/components/gamification/TitleBadge';
 import { TITLES, type Title, type TitleRarity } from '@/data/titles';

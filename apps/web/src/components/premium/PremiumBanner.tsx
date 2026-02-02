@@ -21,7 +21,7 @@ import {
   StarIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { usePremiumStore } from '@/features/premium/stores';
@@ -96,7 +96,7 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className={`flex items-center justify-between p-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg ${className}`}
+        className={`flex items-center justify-between rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20 p-2 ${className}`}
       >
         <div className="flex items-center gap-2">
           <SparklesIcon className="h-4 w-4 text-purple-400" />
@@ -104,7 +104,7 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
         </div>
         <button
           onClick={handleUpgrade}
-          className="text-sm text-purple-400 hover:text-purple-300 font-medium"
+          className="text-sm font-medium text-purple-400 hover:text-purple-300"
         >
           Upgrade →
         </button>
@@ -120,7 +120,7 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
         exit={{ y: -100, opacity: 0 }}
         className={`relative bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 ${className}`}
       >
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="container mx-auto flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-4">
             <motion.div
               animate={{ rotate: [0, 10, -10, 0] }}
@@ -128,30 +128,27 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
             >
               <SparklesIcon className="h-6 w-6 text-white" />
             </motion.div>
-            <span className="text-white font-medium">{title}</span>
-            <span className="hidden sm:inline text-white/80">— {description}</span>
+            <span className="font-medium text-white">{title}</span>
+            <span className="hidden text-white/80 sm:inline">— {description}</span>
           </div>
-          
+
           <div className="flex items-center gap-3">
             {showPrice && (
-              <div className="hidden sm:flex items-center gap-2">
+              <div className="hidden items-center gap-2 sm:flex">
                 {originalPrice && (
                   <span className="text-white/60 line-through">${originalPrice}</span>
                 )}
-                <span className="text-white font-bold">${price}/mo</span>
+                <span className="font-bold text-white">${price}/mo</span>
               </div>
             )}
             <Button
               onClick={handleUpgrade}
-              className="px-4 py-1.5 bg-white text-purple-600 font-semibold rounded-full hover:bg-white/90"
+              className="rounded-full bg-white px-4 py-1.5 font-semibold text-purple-600 hover:bg-white/90"
             >
               {ctaText}
             </Button>
             {dismissible && (
-              <button
-                onClick={handleDismiss}
-                className="p-1 hover:bg-white/10 rounded-full"
-              >
+              <button onClick={handleDismiss} className="rounded-full p-1 hover:bg-white/10">
                 <XMarkIcon className="h-5 w-5 text-white/80" />
               </button>
             )}
@@ -170,11 +167,11 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
           exit={{ opacity: 0, y: 50, scale: 0.9 }}
           className={`fixed bottom-4 right-4 z-40 ${className}`}
         >
-          <GlassCard variant="holographic" className="p-4 max-w-sm">
+          <GlassCard variant="holographic" className="max-w-sm p-4">
             {dismissible && (
               <button
                 onClick={handleDismiss}
-                className="absolute top-2 right-2 p-1 rounded-full bg-white/10 hover:bg-white/20"
+                className="absolute right-2 top-2 rounded-full bg-white/10 p-1 hover:bg-white/20"
               >
                 <XMarkIcon className="h-4 w-4 text-white/60" />
               </button>
@@ -182,16 +179,16 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
 
             <div className="flex items-start gap-3">
               <motion.div
-                animate={{ 
+                animate={{
                   scale: [1, 1.1, 1],
                   rotate: [0, 5, -5, 0],
                 }}
                 transition={{ repeat: Infinity, duration: 2 }}
-                className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl"
+                className="rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 p-3"
               >
                 <SparklesIcon className="h-6 w-6 text-white" />
               </motion.div>
-              
+
               <div className="flex-1">
                 <h4 className="font-semibold text-white">{title}</h4>
                 <AnimatePresence mode="wait">
@@ -200,7 +197,7 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="flex items-center gap-2 mt-1 text-sm text-purple-400"
+                    className="mt-1 flex items-center gap-2 text-sm text-purple-400"
                   >
                     {ANIMATED_FEATURES[activeFeatureIndex]?.icon}
                     <span>{ANIMATED_FEATURES[activeFeatureIndex]?.text}</span>
@@ -211,7 +208,7 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
 
             <Button
               onClick={handleUpgrade}
-              className="w-full mt-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg flex items-center justify-center gap-2"
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 py-2 font-semibold text-white"
             >
               {showPrice && <span>${price}/mo</span>}
               <ChevronRightIcon className="h-4 w-4" />
@@ -238,14 +235,15 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
             transition={{ repeat: Infinity, duration: 5, ease: 'linear' }}
             className="absolute inset-0 opacity-50"
             style={{
-              background: 'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)',
+              background:
+                'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)',
               backgroundSize: '200% 100%',
             }}
           />
         </div>
 
         {/* Floating particles */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
           {[...Array(10)].map((_, i) => (
             <motion.div
               key={i}
@@ -258,7 +256,7 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
                 duration: 3 + Math.random() * 2,
                 delay: Math.random() * 2,
               }}
-              className="absolute w-2 h-2 rounded-full bg-white/30"
+              className="absolute h-2 w-2 rounded-full bg-white/30"
               style={{
                 left: `${Math.random() * 100}%`,
                 bottom: -10,
@@ -270,33 +268,29 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
         {dismissible && (
           <button
             onClick={handleDismiss}
-            className="absolute top-4 right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 z-10"
+            className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 hover:bg-white/20"
           >
             <XMarkIcon className="h-5 w-5 text-white" />
           </button>
         )}
 
-        <div className="relative p-8 md:p-12 text-center">
+        <div className="relative p-8 text-center md:p-12">
           <motion.div
-            animate={{ 
+            animate={{
               scale: [1, 1.1, 1],
               rotate: [0, 5, -5, 0],
             }}
             transition={{ repeat: Infinity, duration: 3 }}
-            className="inline-flex p-4 bg-white/20 rounded-2xl mb-6"
+            className="mb-6 inline-flex rounded-2xl bg-white/20 p-4"
           >
             <SparklesIcon className="h-10 w-10 text-white" />
           </motion.div>
 
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-            {title}
-          </h2>
-          <p className="text-lg text-white/80 max-w-xl mx-auto mb-6">
-            {description}
-          </p>
+          <h2 className="mb-3 text-3xl font-bold text-white md:text-4xl">{title}</h2>
+          <p className="mx-auto mb-6 max-w-xl text-lg text-white/80">{description}</p>
 
           {/* Features carousel */}
-          <div className="flex justify-center gap-4 mb-8 flex-wrap">
+          <div className="mb-8 flex flex-wrap justify-center gap-4">
             {ANIMATED_FEATURES.map((feature, index) => (
               <motion.div
                 key={index}
@@ -304,7 +298,7 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
                   scale: activeFeatureIndex === index ? 1.1 : 1,
                   opacity: activeFeatureIndex === index ? 1 : 0.6,
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-white/20 rounded-full text-white"
+                className="flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-white"
               >
                 {feature.icon}
                 <span className="text-sm font-medium">{feature.text}</span>
@@ -317,15 +311,13 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
             <div className="mb-6">
               <div className="flex items-baseline justify-center gap-2">
                 {originalPrice && (
-                  <span className="text-2xl text-white/50 line-through">
-                    ${originalPrice}
-                  </span>
+                  <span className="text-2xl text-white/50 line-through">${originalPrice}</span>
                 )}
                 <span className="text-5xl font-bold text-white">${price}</span>
                 <span className="text-xl text-white/80">/month</span>
               </div>
               {originalPrice && (
-                <p className="text-sm text-green-300 mt-2">
+                <p className="mt-2 text-sm text-green-300">
                   Save ${(originalPrice - price).toFixed(2)} per month!
                 </p>
               )}
@@ -334,15 +326,13 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
 
           <Button
             onClick={handleUpgrade}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-white text-purple-600 font-bold text-lg rounded-xl hover:bg-white/90 shadow-xl"
+            className="inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-lg font-bold text-purple-600 shadow-xl hover:bg-white/90"
           >
             <StarIcon className="h-6 w-6" />
             {ctaText}
           </Button>
 
-          <p className="text-sm text-white/60 mt-4">
-            Cancel anytime. No questions asked.
-          </p>
+          <p className="mt-4 text-sm text-white/60">Cancel anytime. No questions asked.</p>
         </div>
       </motion.div>
     );
@@ -359,7 +349,7 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
         {dismissible && (
           <button
             onClick={handleDismiss}
-            className="absolute top-3 right-3 p-1 rounded-full bg-white/10 hover:bg-white/20"
+            className="absolute right-3 top-3 rounded-full bg-white/10 p-1 hover:bg-white/20"
           >
             <XMarkIcon className="h-4 w-4 text-white/60" />
           </button>
@@ -367,18 +357,18 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
 
         <div className="flex items-start gap-4">
           <motion.div
-            animate={{ 
+            animate={{
               scale: [1, 1.1, 1],
             }}
             transition={{ repeat: Infinity, duration: 2 }}
-            className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex-shrink-0"
+            className="flex-shrink-0 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 p-3"
           >
             <SparklesIcon className="h-8 w-8 text-white" />
           </motion.div>
 
           <div className="flex-1">
             <h3 className="text-lg font-bold text-white">{title}</h3>
-            <p className="text-sm text-white/60 mt-1">{description}</p>
+            <p className="mt-1 text-sm text-white/60">{description}</p>
 
             {features.length > 0 && (
               <ul className="mt-4 space-y-2">
@@ -390,17 +380,17 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
                     transition={{ delay: index * 0.1 }}
                     className="flex items-center gap-2 text-sm text-white/80"
                   >
-                    <StarIcon className="h-4 w-4 text-purple-400 flex-shrink-0" />
+                    <StarIcon className="h-4 w-4 flex-shrink-0 text-purple-400" />
                     {feature}
                   </motion.li>
                 ))}
               </ul>
             )}
 
-            <div className="flex items-center gap-4 mt-4">
+            <div className="mt-4 flex items-center gap-4">
               <Button
                 onClick={handleUpgrade}
-                className="px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg hover:opacity-90"
+                className="rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-2 font-semibold text-white hover:opacity-90"
               >
                 {ctaText}
               </Button>

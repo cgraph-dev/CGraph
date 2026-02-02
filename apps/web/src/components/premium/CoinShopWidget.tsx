@@ -12,14 +12,8 @@
 
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  SparklesIcon,
-  FireIcon,
-  StarIcon,
-  PlusIcon,
-  CheckIcon,
-} from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
+import { SparklesIcon, FireIcon, StarIcon, PlusIcon, CheckIcon } from '@heroicons/react/24/outline';
+import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { usePremiumStore } from '@/features/premium/stores';
@@ -35,19 +29,69 @@ export interface CoinShopWidgetProps {
 }
 
 const DEFAULT_PACKAGES: CoinPackage[] = [
-  { id: 'starter', name: 'Starter', coins: 100, bonusCoins: 0, price: 0.99, currency: 'USD', isPopular: false },
-  { id: 'basic', name: 'Basic', coins: 500, bonusCoins: 50, price: 4.99, currency: 'USD', isPopular: false },
-  { id: 'popular', name: 'Popular', coins: 1200, bonusCoins: 200, price: 9.99, currency: 'USD', isPopular: true },
-  { id: 'value', name: 'Great Value', coins: 2500, bonusCoins: 500, price: 19.99, currency: 'USD', isPopular: false },
-  { id: 'premium', name: 'Premium', coins: 5500, bonusCoins: 1500, price: 39.99, currency: 'USD', isPopular: false },
-  { id: 'ultimate', name: 'Ultimate', coins: 12000, bonusCoins: 4000, price: 79.99, currency: 'USD', isPopular: false },
+  {
+    id: 'starter',
+    name: 'Starter',
+    coins: 100,
+    bonusCoins: 0,
+    price: 0.99,
+    currency: 'USD',
+    isPopular: false,
+  },
+  {
+    id: 'basic',
+    name: 'Basic',
+    coins: 500,
+    bonusCoins: 50,
+    price: 4.99,
+    currency: 'USD',
+    isPopular: false,
+  },
+  {
+    id: 'popular',
+    name: 'Popular',
+    coins: 1200,
+    bonusCoins: 200,
+    price: 9.99,
+    currency: 'USD',
+    isPopular: true,
+  },
+  {
+    id: 'value',
+    name: 'Great Value',
+    coins: 2500,
+    bonusCoins: 500,
+    price: 19.99,
+    currency: 'USD',
+    isPopular: false,
+  },
+  {
+    id: 'premium',
+    name: 'Premium',
+    coins: 5500,
+    bonusCoins: 1500,
+    price: 39.99,
+    currency: 'USD',
+    isPopular: false,
+  },
+  {
+    id: 'ultimate',
+    name: 'Ultimate',
+    coins: 12000,
+    bonusCoins: 4000,
+    price: 79.99,
+    currency: 'USD',
+    isPopular: false,
+  },
 ];
 
 const CoinIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
     <circle cx="12" cy="12" r="10" fill="url(#coinGradient)" />
     <circle cx="12" cy="12" r="7" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-    <text x="12" y="16" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">$</text>
+    <text x="12" y="16" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">
+      $
+    </text>
     <defs>
       <linearGradient id="coinGradient" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0%" stopColor="#F59E0B" />
@@ -69,25 +113,26 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [purchaseAnimation, setPurchaseAnimation] = useState<string | null>(null);
 
-  const displayPackages = maxPackages 
-    ? packages.slice(0, maxPackages)
-    : packages;
+  const displayPackages = maxPackages ? packages.slice(0, maxPackages) : packages;
 
   const handleSelectPackage = (pkg: CoinPackage) => {
     HapticFeedback.light();
     setSelectedPackage(pkg.id);
   };
 
-  const handlePurchase = useCallback((pkg: CoinPackage) => {
-    HapticFeedback.medium();
-    setPurchaseAnimation(pkg.id);
-    
-    setTimeout(() => {
-      setPurchaseAnimation(null);
-      setSelectedPackage(null);
-      onPurchase?.(pkg);
-    }, 500);
-  }, [onPurchase]);
+  const handlePurchase = useCallback(
+    (pkg: CoinPackage) => {
+      HapticFeedback.medium();
+      setPurchaseAnimation(pkg.id);
+
+      setTimeout(() => {
+        setPurchaseAnimation(null);
+        setSelectedPackage(null);
+        onPurchase?.(pkg);
+      }, 500);
+    },
+    [onPurchase]
+  );
 
   const getCoinValue = (pkg: CoinPackage) => {
     return ((pkg.coins + pkg.bonusCoins) / pkg.price).toFixed(0);
@@ -107,14 +152,14 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
     return (
       <div className={`flex items-center gap-4 ${className}`}>
         {showBalance && (
-          <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/20 rounded-lg">
+          <div className="flex items-center gap-2 rounded-lg bg-amber-500/20 px-3 py-2">
             <CoinIcon className="h-5 w-5" />
             <span className="font-semibold text-amber-400">{coinBalance.toLocaleString()}</span>
           </div>
         )}
         <Button
           onClick={() => packages[2] && onPurchase?.(packages[2])}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:opacity-90"
+          className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2 text-white hover:opacity-90"
         >
           <PlusIcon className="h-4 w-4" />
           Get Coins
@@ -127,15 +172,17 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
     return (
       <GlassCard variant="frosted" className={`p-4 ${className}`}>
         {showBalance && (
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <span className="text-white/60">Your Balance</span>
             <div className="flex items-center gap-2">
               <CoinIcon className="h-6 w-6" />
-              <span className="text-xl font-bold text-amber-400">{coinBalance.toLocaleString()}</span>
+              <span className="text-xl font-bold text-amber-400">
+                {coinBalance.toLocaleString()}
+              </span>
             </div>
           </div>
         )}
-        
+
         <div className="grid grid-cols-3 gap-2">
           {displayPackages.slice(0, 3).map((pkg) => (
             <motion.button
@@ -143,9 +190,9 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handlePurchase(pkg)}
-              className="p-3 bg-dark-800/50 rounded-xl hover:bg-dark-700/50 transition-colors text-center"
+              className="rounded-xl bg-dark-800/50 p-3 text-center transition-colors hover:bg-dark-700/50"
             >
-              <div className="flex items-center justify-center gap-1 mb-1">
+              <div className="mb-1 flex items-center justify-center gap-1">
                 <CoinIcon className="h-4 w-4" />
                 <span className="font-bold text-amber-400">{pkg.coins}</span>
               </div>
@@ -154,9 +201,9 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
           ))}
         </div>
 
-        <button 
+        <button
           onClick={() => packages[0] && onPurchase?.(packages[0])}
-          className="w-full mt-3 text-sm text-primary-400 hover:text-primary-300"
+          className="mt-3 w-full text-sm text-primary-400 hover:text-primary-300"
         >
           View all packages →
         </button>
@@ -168,21 +215,19 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
     <div className={className}>
       {/* Balance display */}
       {showBalance && (
-        <GlassCard variant="crystal" className="p-4 mb-4">
+        <GlassCard variant="crystal" className="mb-4 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <motion.div
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ repeat: Infinity, duration: 2 }}
-                className="p-3 bg-amber-500/20 rounded-xl"
+                className="rounded-xl bg-amber-500/20 p-3"
               >
                 <CoinIcon className="h-8 w-8" />
               </motion.div>
               <div>
                 <p className="text-sm text-white/60">Your Balance</p>
-                <p className="text-2xl font-bold text-amber-400">
-                  {coinBalance.toLocaleString()}
-                </p>
+                <p className="text-2xl font-bold text-amber-400">{coinBalance.toLocaleString()}</p>
               </div>
             </div>
             <SparklesIcon className="h-6 w-6 text-amber-400/50" />
@@ -191,7 +236,7 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
       )}
 
       {/* Packages grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
         {displayPackages.map((pkg, index) => {
           const isSelected = selectedPackage === pkg.id;
           const isPurchasing = purchaseAnimation === pkg.id;
@@ -207,36 +252,29 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
             >
               {/* Badges */}
               {pkg.isPopular && (
-                <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-10">
-                  <span className="px-2 py-0.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                <div className="absolute -top-2 left-1/2 z-10 -translate-x-1/2">
+                  <span className="flex items-center gap-1 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-0.5 text-xs font-bold text-white">
                     <FireIcon className="h-3 w-3" /> Popular
                   </span>
                 </div>
               )}
               {isBestValue && !pkg.isPopular && (
-                <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-10">
-                  <span className="px-2 py-0.5 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                <div className="absolute -top-2 left-1/2 z-10 -translate-x-1/2">
+                  <span className="flex items-center gap-1 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 px-2 py-0.5 text-xs font-bold text-white">
                     <StarIcon className="h-3 w-3" /> Best Value
                   </span>
                 </div>
               )}
 
-              <motion.div
-                whileHover={{ scale: 1.03, y: -4 }}
-                whileTap={{ scale: 0.98 }}
-              >
+              <motion.div whileHover={{ scale: 1.03, y: -4 }} whileTap={{ scale: 0.98 }}>
                 <GlassCard
                   variant={pkg.isPopular ? 'holographic' : 'frosted'}
-                  className={`
-                    p-4 cursor-pointer transition-all
-                    ${isSelected ? 'ring-2 ring-primary-500' : ''}
-                    ${pkg.isPopular ? 'ring-2 ring-purple-500/50' : ''}
-                  `}
+                  className={`cursor-pointer p-4 transition-all ${isSelected ? 'ring-2 ring-primary-500' : ''} ${pkg.isPopular ? 'ring-2 ring-purple-500/50' : ''} `}
                   onClick={() => handleSelectPackage(pkg)}
                 >
                   {/* Coins display */}
-                  <div className="text-center mb-3">
-                    <div className="flex items-center justify-center gap-1 mb-1">
+                  <div className="mb-3 text-center">
+                    <div className="mb-1 flex items-center justify-center gap-1">
                       <CoinIcon className="h-6 w-6" />
                       <span className="text-2xl font-bold text-amber-400">
                         {pkg.coins.toLocaleString()}
@@ -246,7 +284,7 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full text-xs"
+                        className="inline-flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-0.5 text-xs text-green-400"
                       >
                         <PlusIcon className="h-3 w-3" />
                         {pkg.bonusCoins} bonus
@@ -256,12 +294,8 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
 
                   {/* Price */}
                   <div className="text-center">
-                    <span className="text-lg font-bold text-white">
-                      ${pkg.price.toFixed(2)}
-                    </span>
-                    <p className="text-xs text-white/40 mt-1">
-                      {getCoinValue(pkg)} coins/$
-                    </p>
+                    <span className="text-lg font-bold text-white">${pkg.price.toFixed(2)}</span>
+                    <p className="mt-1 text-xs text-white/40">{getCoinValue(pkg)} coins/$</p>
                   </div>
 
                   {/* Purchase button */}
@@ -271,7 +305,7 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="mt-3 pt-3 border-t border-white/10"
+                        className="mt-3 border-t border-white/10 pt-3"
                       >
                         <Button
                           onClick={(e) => {
@@ -279,7 +313,7 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
                             handlePurchase(pkg);
                           }}
                           disabled={isPurchasing}
-                          className="w-full py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold rounded-lg flex items-center justify-center gap-2"
+                          className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 py-2 font-semibold text-white"
                         >
                           {isPurchasing ? (
                             <motion.div
@@ -303,7 +337,7 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
       </div>
 
       {/* Info text */}
-      <p className="text-center text-xs text-white/40 mt-4">
+      <p className="mt-4 text-center text-xs text-white/40">
         All purchases are final. Coins can be used to buy themes, badges, and more.
       </p>
     </div>

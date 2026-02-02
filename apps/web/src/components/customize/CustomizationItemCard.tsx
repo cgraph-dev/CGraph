@@ -11,7 +11,7 @@ import { memo, ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { LockClosedIcon, EyeIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 // ==================== TYPE DEFINITIONS ====================
 
@@ -148,7 +148,9 @@ const StatusButton = memo(function StatusButton({
   }
 
   return (
-    <div className={`flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 ${buttonPadding}`}>
+    <div
+      className={`flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 ${buttonPadding}`}
+    >
       <LockClosedIcon className={`${iconSize} text-white/40`} />
       <span className={`${textSize} text-white/60`}>Click to Preview</span>
     </div>
@@ -276,6 +278,8 @@ function CustomizationItemCardInner<T extends CustomizationItem>({
 }
 
 // Export memoized component with generic type support
-export const CustomizationItemCard = memo(CustomizationItemCardInner) as typeof CustomizationItemCardInner;
+export const CustomizationItemCard = memo(
+  CustomizationItemCardInner
+) as typeof CustomizationItemCardInner;
 
 export default CustomizationItemCard;

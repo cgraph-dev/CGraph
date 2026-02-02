@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useNotificationStore, Notification } from '@/stores/notificationStore';
 import { formatTimeAgo } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import {

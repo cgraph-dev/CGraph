@@ -19,7 +19,7 @@ import {
   type ChatBubbleStylePreset,
   type EffectPreset,
 } from '@/stores/themeStore';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from './ThemedAvatar';
 import { ThemedChatBubble } from './ThemedChatBubble';
 import { PremiumThemeGate, TierBadge } from './PremiumThemeGate';

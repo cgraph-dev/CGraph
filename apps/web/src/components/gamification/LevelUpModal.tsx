@@ -8,7 +8,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon } from '@heroicons/react/24/solid';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import confetti from 'canvas-confetti';
 
@@ -105,18 +105,18 @@ export default function LevelUpModal({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
         >
           {/* Animated Background Particles */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
             {[...Array(30)].map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute w-2 h-2 rounded-full"
+                className="absolute h-2 w-2 rounded-full"
                 style={{
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`,
@@ -140,18 +140,23 @@ export default function LevelUpModal({
           </div>
 
           <motion.div
-            className="relative max-w-lg w-full"
+            className="relative w-full max-w-lg"
             initial={{ scale: 0.5, opacity: 0, rotateY: -180 }}
             animate={{ scale: 1, opacity: 1, rotateY: 0 }}
             exit={{ scale: 0.5, opacity: 0, rotateY: 180 }}
             transition={{ type: 'spring', duration: 0.8 }}
             onClick={(e) => e.stopPropagation()}
           >
-            <GlassCard variant="holographic" glow borderGradient className="p-8 relative overflow-hidden">
+            <GlassCard
+              variant="holographic"
+              glow
+              borderGradient
+              className="relative overflow-hidden p-8"
+            >
               {/* Close Button */}
               <motion.button
                 onClick={onClose}
-                className="absolute top-4 right-4 p-2 rounded-full bg-dark-800/80 hover:bg-dark-700 text-gray-400 hover:text-white transition-colors z-10"
+                className="absolute right-4 top-4 z-10 rounded-full bg-dark-800/80 p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
                 whileHover={{ scale: 1.1, rotate: 90 }}
                 whileTap={{ scale: 0.9 }}
               >
@@ -184,14 +189,12 @@ export default function LevelUpModal({
                     }}
                     transition={{ duration: 0.6, delay: 0.3 }}
                   >
-                    <SparklesIcon className="h-16 w-16 text-primary-400 mx-auto mb-4" />
+                    <SparklesIcon className="mx-auto mb-4 h-16 w-16 text-primary-400" />
                   </motion.div>
-                  <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                  <h2 className="mb-2 bg-gradient-to-r from-primary-400 via-purple-400 to-pink-400 bg-clip-text text-3xl font-bold text-transparent">
                     Level Up!
                   </h2>
-                  <p className="text-gray-400">
-                    You've reached a new milestone
-                  </p>
+                  <p className="text-gray-400">You've reached a new milestone</p>
                 </motion.div>
 
                 {/* Level Transition Animation */}
@@ -208,9 +211,11 @@ export default function LevelUpModal({
                     transition={{ delay: 0.6 }}
                   >
                     <div className="h-24 w-24 rounded-full bg-gradient-to-br from-gray-600 to-gray-800 p-1">
-                      <div className="h-full w-full rounded-full bg-dark-900 flex flex-col items-center justify-center">
+                      <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-dark-900">
                         <span className="text-3xl font-bold text-gray-500">{oldLevel}</span>
-                        <span className="text-[10px] text-gray-600 uppercase tracking-wider">Previous</span>
+                        <span className="text-[10px] uppercase tracking-wider text-gray-600">
+                          Previous
+                        </span>
                       </div>
                     </div>
                   </motion.div>
@@ -236,11 +241,13 @@ export default function LevelUpModal({
                     transition={{ delay: 0.8, duration: 1, type: 'spring' }}
                   >
                     <div className="h-32 w-32 rounded-full bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500 p-1.5">
-                      <div className="h-full w-full rounded-full bg-dark-900 flex flex-col items-center justify-center">
-                        <span className="text-4xl font-bold bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-transparent">
+                      <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-dark-900">
+                        <span className="bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-4xl font-bold text-transparent">
                           {newLevel}
                         </span>
-                        <span className="text-xs text-gray-400 uppercase tracking-wider">Current</span>
+                        <span className="text-xs uppercase tracking-wider text-gray-400">
+                          Current
+                        </span>
                       </div>
                     </div>
                     {/* Pulsing Glow */}
@@ -263,9 +270,11 @@ export default function LevelUpModal({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 1.2 }}
                 >
-                  <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-green-500/30 bg-gradient-to-r from-green-500/20 to-emerald-500/20 px-6 py-3">
                     <TrophyIcon className="h-5 w-5 text-green-400" />
-                    <span className="text-xl font-bold text-green-400">+{xpGained.toLocaleString()} XP</span>
+                    <span className="text-xl font-bold text-green-400">
+                      +{xpGained.toLocaleString()} XP
+                    </span>
                   </div>
                 </motion.div>
 
@@ -278,21 +287,23 @@ export default function LevelUpModal({
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
                     >
-                      <div className="flex items-center gap-2 text-primary-400 mb-3">
+                      <div className="mb-3 flex items-center gap-2 text-primary-400">
                         <GiftIcon className="h-5 w-5" />
                         <span className="font-semibold">Rewards Unlocked</span>
                       </div>
 
                       {rewardsUnlocked.titles && rewardsUnlocked.titles.length > 0 && (
                         <motion.div
-                          className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/30"
+                          className="rounded-lg border border-purple-500/30 bg-purple-500/10 p-3"
                           initial={{ x: -20, opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
                           transition={{ delay: 0.1 }}
                         >
-                          <div className="text-sm font-semibold text-purple-400 mb-1">New Titles</div>
+                          <div className="mb-1 text-sm font-semibold text-purple-400">
+                            New Titles
+                          </div>
                           {rewardsUnlocked.titles.map((title, idx) => (
-                            <div key={idx} className="text-white flex items-center gap-2">
+                            <div key={idx} className="flex items-center gap-2 text-white">
                               <StarIcon className="h-4 w-4 text-purple-400" />
                               <span>"{title}"</span>
                             </div>
@@ -302,15 +313,19 @@ export default function LevelUpModal({
 
                       {rewardsUnlocked.badges && rewardsUnlocked.badges.length > 0 && (
                         <motion.div
-                          className="p-3 rounded-lg bg-primary-500/10 border border-primary-500/30"
+                          className="rounded-lg border border-primary-500/30 bg-primary-500/10 p-3"
                           initial={{ x: -20, opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
                           transition={{ delay: 0.2 }}
                         >
-                          <div className="text-sm font-semibold text-primary-400 mb-1">New Badges</div>
+                          <div className="mb-1 text-sm font-semibold text-primary-400">
+                            New Badges
+                          </div>
                           <div className="flex flex-wrap gap-2">
                             {rewardsUnlocked.badges.map((badge, idx) => (
-                              <span key={idx} className="text-2xl" title={badge}>{badge}</span>
+                              <span key={idx} className="text-2xl" title={badge}>
+                                {badge}
+                              </span>
                             ))}
                           </div>
                         </motion.div>
@@ -318,31 +333,36 @@ export default function LevelUpModal({
 
                       {rewardsUnlocked.perks && rewardsUnlocked.perks.length > 0 && (
                         <motion.div
-                          className="p-3 rounded-lg bg-pink-500/10 border border-pink-500/30"
+                          className="rounded-lg border border-pink-500/30 bg-pink-500/10 p-3"
                           initial={{ x: -20, opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
                           transition={{ delay: 0.3 }}
                         >
-                          <div className="text-sm font-semibold text-pink-400 mb-1">New Perks</div>
+                          <div className="mb-1 text-sm font-semibold text-pink-400">New Perks</div>
                           {rewardsUnlocked.perks.map((perk, idx) => (
-                            <div key={idx} className="text-white text-sm">• {perk}</div>
+                            <div key={idx} className="text-sm text-white">
+                              • {perk}
+                            </div>
                           ))}
                         </motion.div>
                       )}
 
-                      {rewardsUnlocked.loreFragments && rewardsUnlocked.loreFragments.length > 0 && (
-                        <motion.div
-                          className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30"
-                          initial={{ x: -20, opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
-                          transition={{ delay: 0.4 }}
-                        >
-                          <div className="text-sm font-semibold text-amber-400 mb-1">Lore Unlocked</div>
-                          <div className="text-white text-sm">
-                            {rewardsUnlocked.loreFragments.length} new story fragment(s) available
-                          </div>
-                        </motion.div>
-                      )}
+                      {rewardsUnlocked.loreFragments &&
+                        rewardsUnlocked.loreFragments.length > 0 && (
+                          <motion.div
+                            className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3"
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: 0.4 }}
+                          >
+                            <div className="mb-1 text-sm font-semibold text-amber-400">
+                              Lore Unlocked
+                            </div>
+                            <div className="text-sm text-white">
+                              {rewardsUnlocked.loreFragments.length} new story fragment(s) available
+                            </div>
+                          </motion.div>
+                        )}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -350,7 +370,7 @@ export default function LevelUpModal({
                 {/* Continue Button */}
                 <motion.button
                   onClick={onClose}
-                  className="w-full py-4 rounded-xl bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 hover:from-primary-500 hover:via-purple-500 hover:to-pink-500 text-white font-bold text-lg transition-all relative overflow-hidden group"
+                  className="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-primary-600 via-purple-600 to-pink-600 py-4 text-lg font-bold text-white transition-all hover:from-primary-500 hover:via-purple-500 hover:to-pink-500"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: showRewards && hasRewards ? 2 : 1.5 }}

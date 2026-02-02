@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrophyIcon, XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { Achievement } from '@/stores/gamificationStore';
 import confetti from 'canvas-confetti';
@@ -46,7 +46,7 @@ export default function AchievementNotification({
   onViewDetails,
 }: AchievementNotificationProps) {
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-3 max-w-sm">
+    <div className="fixed right-4 top-4 z-50 max-w-sm space-y-3">
       <AnimatePresence mode="popLayout">
         {notifications.map((notification, index) => (
           <AchievementToast
@@ -199,37 +199,41 @@ function AchievementToast({
         )}
 
         {/* Auto-dismiss Progress Bar */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-dark-800">
+        <div className="absolute left-0 right-0 top-0 h-1 bg-dark-800">
           <motion.div
             className="h-full bg-gradient-to-r from-primary-500 to-purple-500"
             style={{ width: `${autoDismissProgress}%` }}
           />
         </div>
 
-        <div className="p-4 pt-5 relative z-10">
+        <div className="relative z-10 p-4 pt-5">
           <div className="flex items-start gap-3">
             {/* Icon */}
             <motion.div
-              className="flex-shrink-0 h-12 w-12 rounded-full flex items-center justify-center text-2xl"
+              className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full text-2xl"
               style={{
                 background: `linear-gradient(135deg, ${colors.from}, ${colors.to})`,
               }}
-              animate={isUnlock ? {
-                rotate: [0, 10, -10, 10, 0],
-                scale: [1, 1.1, 1],
-              } : {}}
+              animate={
+                isUnlock
+                  ? {
+                      rotate: [0, 10, -10, 10, 0],
+                      scale: [1, 1.1, 1],
+                    }
+                  : {}
+              }
               transition={{ duration: 0.6 }}
             >
               {achievement.icon || '🏆'}
             </motion.div>
 
             {/* Content */}
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               {/* Header */}
-              <div className="flex items-start justify-between gap-2 mb-1">
+              <div className="mb-1 flex items-start justify-between gap-2">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h4 className="font-bold text-white text-sm">{achievement.title}</h4>
+                    <h4 className="text-sm font-bold text-white">{achievement.title}</h4>
                     {isUnlock && (
                       <motion.div
                         initial={{ scale: 0, rotate: -180 }}
@@ -240,9 +244,9 @@ function AchievementToast({
                       </motion.div>
                     )}
                   </div>
-                  <div className="flex items-center gap-2 mt-0.5">
+                  <div className="mt-0.5 flex items-center gap-2">
                     <span
-                      className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                      className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
                       style={{
                         background: `linear-gradient(135deg, ${colors.from}40, ${colors.to}40)`,
                         color: colors.from,
@@ -251,7 +255,7 @@ function AchievementToast({
                       {achievement.rarity}
                     </span>
                     {isUnlock && (
-                      <span className="text-[10px] text-green-400 font-semibold">UNLOCKED!</span>
+                      <span className="text-[10px] font-semibold text-green-400">UNLOCKED!</span>
                     )}
                   </div>
                 </div>
@@ -263,7 +267,7 @@ function AchievementToast({
                     onDismiss();
                     HapticFeedback.light();
                   }}
-                  className="p-1 rounded-full hover:bg-dark-700 text-gray-400 hover:text-white transition-colors"
+                  className="rounded-full p-1 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
                   whileHover={{ scale: 1.1, rotate: 90 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -272,19 +276,19 @@ function AchievementToast({
               </div>
 
               {/* Description */}
-              <p className="text-xs text-gray-400 mb-2 line-clamp-2">
-                {achievement.description}
-              </p>
+              <p className="mb-2 line-clamp-2 text-xs text-gray-400">{achievement.description}</p>
 
               {/* Progress or Rewards */}
               {isUnlock ? (
                 <div className="flex items-center gap-2 text-xs">
                   <TrophyIcon className="h-4 w-4 text-primary-400" />
-                  <span className="text-primary-400 font-semibold">+{achievement.xpReward} XP</span>
+                  <span className="font-semibold text-primary-400">+{achievement.xpReward} XP</span>
                   {achievement.titleReward && (
                     <>
                       <span className="text-gray-500">•</span>
-                      <span className="text-purple-400">New Title: "{achievement.titleReward}"</span>
+                      <span className="text-purple-400">
+                        New Title: "{achievement.titleReward}"
+                      </span>
                     </>
                   )}
                 </div>
@@ -292,11 +296,11 @@ function AchievementToast({
                 <div className="space-y-1">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-gray-400">Progress</span>
-                    <span className="text-gray-300 font-semibold">
+                    <span className="font-semibold text-gray-300">
                       {achievement.progress} / {achievement.maxProgress}
                     </span>
                   </div>
-                  <div className="h-1.5 bg-dark-800 rounded-full overflow-hidden">
+                  <div className="h-1.5 overflow-hidden rounded-full bg-dark-800">
                     <motion.div
                       className="h-full rounded-full"
                       style={{

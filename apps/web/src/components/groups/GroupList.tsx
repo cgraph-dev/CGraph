@@ -11,7 +11,7 @@ import {
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 import { useGroupStore, type Group } from '@/stores/groupStore';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { createLogger } from '@/lib/logger';

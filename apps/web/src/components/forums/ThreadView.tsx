@@ -28,7 +28,7 @@ import {
   BookmarkIcon as BookmarkIconSolid,
   StarIcon as StarIconSolid,
 } from '@heroicons/react/24/solid';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { useAuthStore } from '@/stores/authStore';

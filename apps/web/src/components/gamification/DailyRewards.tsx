@@ -10,7 +10,7 @@ import {
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { GiftIcon as GiftIconSolid, StarIcon } from '@heroicons/react/24/solid';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import confetti from 'canvas-confetti';

@@ -14,7 +14,7 @@ import {
   XMarkIcon,
   PaintBrushIcon,
 } from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';

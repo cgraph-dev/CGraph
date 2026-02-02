@@ -15,7 +15,7 @@ import { useGroupStore, type Member, type Role } from '@/stores/groupStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 void THEME_COLORS; // Reserved for role color theming
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { getAvatarBorderId } from '@/lib/utils';
 import { chatLogger as logger } from '@/lib/logger';

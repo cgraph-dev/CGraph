@@ -7,7 +7,7 @@ import { useThemeStore } from '@/stores/themeStore';
 // Reserved for future use
 void CrownIcon;
 import { useAuthStore } from '@/stores/authStore';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 /**
  * PremiumThemeGate Component

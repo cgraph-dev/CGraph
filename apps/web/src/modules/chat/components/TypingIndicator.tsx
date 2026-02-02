@@ -7,7 +7,7 @@
 
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 interface TypingIndicatorProps {
   /** Array of usernames currently typing */

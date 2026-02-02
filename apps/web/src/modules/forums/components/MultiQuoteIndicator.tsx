@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChatBubbleLeftIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useForumStore } from '@/stores/forumStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 interface MultiQuoteIndicatorProps {
   onQuoteClick: () => void;

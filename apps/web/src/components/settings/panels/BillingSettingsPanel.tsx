@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
 import { api } from '@/lib/api';
 import { toast } from '@/components/Toast';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 export function BillingSettingsPanel() {
   const { user } = useAuthStore();

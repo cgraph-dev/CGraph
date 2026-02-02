@@ -19,7 +19,7 @@ import {
   RocketLaunchIcon,
   StarIcon,
 } from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { SubscriptionTier, SubscriptionPlan } from '@/features/premium/stores/types';
@@ -76,20 +76,20 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
-  const price = billingInterval === 'yearly' 
-    ? (plan.priceYearly / 12).toFixed(2)
-    : plan.priceMonthly.toFixed(2);
-  
+  const price =
+    billingInterval === 'yearly'
+      ? (plan.priceYearly / 12).toFixed(2)
+      : plan.priceMonthly.toFixed(2);
+
   const yearlyTotal = plan.priceYearly.toFixed(2);
-  const monthlySavings = billingInterval === 'yearly' 
-    ? ((plan.priceMonthly * 12 - plan.priceYearly) / 12).toFixed(2)
-    : null;
+  const monthlySavings =
+    billingInterval === 'yearly'
+      ? ((plan.priceMonthly * 12 - plan.priceYearly) / 12).toFixed(2)
+      : null;
 
   const tierColor = TIER_COLORS[plan.tier];
   const tierGradient = TIER_GRADIENTS[plan.tier];
-  const displayedFeatures = showFeatures 
-    ? plan.features.slice(0, maxFeatures)
-    : [];
+  const displayedFeatures = showFeatures ? plan.features.slice(0, maxFeatures) : [];
 
   const handleSelect = () => {
     HapticFeedback.medium();
@@ -98,19 +98,15 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
   if (variant === 'compact') {
     return (
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className={className}
-      >
+      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className={className}>
         <GlassCard
           variant={isCurrentPlan ? 'neon' : 'frosted'}
-          className={`p-4 cursor-pointer ${isCurrentPlan ? 'ring-2 ring-primary-500' : ''}`}
+          className={`cursor-pointer p-4 ${isCurrentPlan ? 'ring-2 ring-primary-500' : ''}`}
           onClick={handleSelect}
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg bg-gradient-to-br ${tierGradient} text-white`}>
+              <div className={`rounded-lg bg-gradient-to-br p-2 ${tierGradient} text-white`}>
                 {TIER_ICONS[plan.tier]}
               </div>
               <div>
@@ -130,9 +126,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
             </div>
           </div>
           {isCurrentPlan && (
-            <div className="mt-2 text-xs text-primary-400 font-medium">
-              ✓ Current Plan
-            </div>
+            <div className="mt-2 text-xs font-medium text-primary-400">✓ Current Plan</div>
           )}
         </GlassCard>
       </motion.div>
@@ -151,9 +145,9 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"
+          className="absolute -top-3 left-1/2 z-10 -translate-x-1/2"
         >
-          <span className="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full shadow-lg">
+          <span className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-1 text-xs font-bold text-white shadow-lg">
             Most Popular
           </span>
         </motion.div>
@@ -164,9 +158,9 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"
+          className="absolute -top-3 left-1/2 z-10 -translate-x-1/2"
         >
-          <span className="px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-xs font-bold rounded-full shadow-lg flex items-center gap-1">
+          <span className="flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 px-3 py-1 text-xs font-bold text-white shadow-lg">
             <Crown className="h-3 w-3" /> Best Value
           </span>
         </motion.div>
@@ -174,11 +168,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
       <GlassCard
         variant={variant === 'featured' || plan.tier === 'pro' ? 'holographic' : 'frosted'}
-        className={`
-          relative overflow-hidden p-6
-          ${plan.tier === 'pro' ? 'ring-2 ring-purple-500/50' : ''}
-          ${isCurrentPlan ? 'ring-2 ring-primary-500' : ''}
-        `}
+        className={`relative overflow-hidden p-6 ${plan.tier === 'pro' ? 'ring-2 ring-purple-500/50' : ''} ${isCurrentPlan ? 'ring-2 ring-primary-500' : ''} `}
       >
         {/* Animated background */}
         <AnimatePresence>
@@ -193,26 +183,23 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         </AnimatePresence>
 
         {/* Header */}
-        <div className="relative text-center mb-6">
+        <div className="relative mb-6 text-center">
           <motion.div
-            animate={{ 
+            animate={{
               rotate: isHovered ? [0, -10, 10, 0] : 0,
               scale: isHovered ? 1.1 : 1,
             }}
-            className={`
-              inline-flex p-4 rounded-2xl mb-4
-              bg-gradient-to-br ${tierGradient} text-white
-            `}
+            className={`mb-4 inline-flex rounded-2xl bg-gradient-to-br p-4 ${tierGradient} text-white`}
           >
             {TIER_ICONS[plan.tier]}
           </motion.div>
-          
-          <h3 className="text-xl font-bold text-white mb-1">{plan.name}</h3>
+
+          <h3 className="mb-1 text-xl font-bold text-white">{plan.name}</h3>
           <p className="text-sm text-white/60">{plan.description}</p>
         </div>
 
         {/* Pricing */}
-        <div className="text-center mb-6">
+        <div className="mb-6 text-center">
           {plan.priceMonthly === 0 ? (
             <div className="text-4xl font-bold text-white">Free</div>
           ) : (
@@ -227,11 +214,9 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-2 space-y-1"
                 >
-                  <div className="text-sm text-white/60">
-                    ${yearlyTotal} billed yearly
-                  </div>
+                  <div className="text-sm text-white/60">${yearlyTotal} billed yearly</div>
                   {monthlySavings && parseFloat(monthlySavings) > 0 && (
-                    <div className="text-sm text-green-400 font-medium">
+                    <div className="text-sm font-medium text-green-400">
                       Save ${monthlySavings}/month
                     </div>
                   )}
@@ -243,7 +228,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
         {/* Features */}
         {showFeatures && displayedFeatures.length > 0 && (
-          <ul className="space-y-3 mb-6">
+          <ul className="mb-6 space-y-3">
             {displayedFeatures.map((feature, index) => (
               <motion.li
                 key={feature}
@@ -257,7 +242,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
               </motion.li>
             ))}
             {plan.features.length > maxFeatures && (
-              <li className="text-sm text-white/60 pl-7">
+              <li className="pl-7 text-sm text-white/60">
                 +{plan.features.length - maxFeatures} more features
               </li>
             )}
@@ -265,26 +250,22 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         )}
 
         {/* Limits summary */}
-        <div className="grid grid-cols-2 gap-2 mb-6 text-xs">
-          <div className="bg-white/5 rounded-lg p-2 text-center">
+        <div className="mb-6 grid grid-cols-2 gap-2 text-xs">
+          <div className="rounded-lg bg-white/5 p-2 text-center">
             <div className="text-white/60">Groups</div>
             <div className="font-semibold text-white">
               {plan.limits.maxGroups === -1 ? 'Unlimited' : plan.limits.maxGroups}
             </div>
           </div>
-          <div className="bg-white/5 rounded-lg p-2 text-center">
+          <div className="rounded-lg bg-white/5 p-2 text-center">
             <div className="text-white/60">Storage</div>
-            <div className="font-semibold text-white">
-              {plan.limits.maxStorageGB}GB
-            </div>
+            <div className="font-semibold text-white">{plan.limits.maxStorageGB}GB</div>
           </div>
-          <div className="bg-white/5 rounded-lg p-2 text-center">
+          <div className="rounded-lg bg-white/5 p-2 text-center">
             <div className="text-white/60">File Size</div>
-            <div className="font-semibold text-white">
-              {plan.limits.maxFileSize}MB
-            </div>
+            <div className="font-semibold text-white">{plan.limits.maxFileSize}MB</div>
           </div>
-          <div className="bg-white/5 rounded-lg p-2 text-center">
+          <div className="rounded-lg bg-white/5 p-2 text-center">
             <div className="text-white/60">Emojis</div>
             <div className="font-semibold text-white">
               {plan.limits.customEmojis === -1 ? '∞' : plan.limits.customEmojis}
@@ -296,22 +277,24 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         <Button
           onClick={handleSelect}
           disabled={isCurrentPlan && plan.tier !== 'free'}
-          className={`
-            w-full py-3 font-semibold rounded-xl
-            ${isCurrentPlan 
-              ? 'bg-white/10 text-white/60 cursor-default' 
+          className={`w-full rounded-xl py-3 font-semibold ${
+            isCurrentPlan
+              ? 'cursor-default bg-white/10 text-white/60'
               : `bg-gradient-to-r ${tierGradient} text-white hover:opacity-90`
-            }
-          `}
+          } `}
         >
-          {isCurrentPlan ? 'Current Plan' : plan.priceMonthly === 0 ? 'Get Started' : 'Subscribe Now'}
+          {isCurrentPlan
+            ? 'Current Plan'
+            : plan.priceMonthly === 0
+              ? 'Get Started'
+              : 'Subscribe Now'}
         </Button>
 
         {/* Compare link */}
         {onCompare && (
           <button
             onClick={onCompare}
-            className="w-full mt-3 text-sm text-white/60 hover:text-white transition-colors"
+            className="mt-3 w-full text-sm text-white/60 transition-colors hover:text-white"
           >
             Compare all features →
           </button>

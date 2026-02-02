@@ -23,7 +23,7 @@ import {
 const _reservedPostEditor = { DocumentTextIcon, HashtagIcon, AtSymbolIcon };
 void _reservedPostEditor;
 
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import type { ThreadPrefix, ForumCategory } from '@/stores/forumStore';

@@ -12,11 +12,12 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 // Import all enhanced components (v2.0)
-import GlassCard, {
+import {
+  GlassCard,
   GlassCardNeon,
   GlassCardHolographic,
   GlassCardCrystal,
-} from '@/components/ui/GlassCard';
+} from '@/shared/components/ui';
 import { AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
 import {
   AnimatedReactionBubble,

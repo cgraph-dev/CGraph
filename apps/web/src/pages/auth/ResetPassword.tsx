@@ -12,7 +12,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 // =============================================================================
 // TYPES
@@ -168,8 +168,7 @@ export default function ResetPassword() {
       animate={{ opacity: 1 }}
       className="flex flex-col items-center py-8"
     >
-      <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent 
-                    rounded-full animate-spin" />
+      <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
       <p className="mt-4 text-gray-400">Validating your reset link...</p>
     </motion.div>
   );
@@ -179,14 +178,13 @@ export default function ResetPassword() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="text-center py-8"
+      className="py-8 text-center"
     >
       <motion.div
         variants={itemVariants}
-        className="inline-flex items-center justify-center w-20 h-20 rounded-full 
-                 bg-red-500/20 text-red-400 mb-6"
+        className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-red-500/20 text-red-400"
       >
-        <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -196,24 +194,27 @@ export default function ResetPassword() {
         </svg>
       </motion.div>
 
-      <motion.h2 variants={itemVariants} className="text-2xl font-bold text-white mb-2">
+      <motion.h2 variants={itemVariants} className="mb-2 text-2xl font-bold text-white">
         Link Expired
       </motion.h2>
 
-      <motion.p variants={itemVariants} className="text-gray-400 mb-8">
+      <motion.p variants={itemVariants} className="mb-8 text-gray-400">
         This password reset link has expired or has already been used.
       </motion.p>
 
       <motion.div variants={itemVariants}>
         <Link
           to="/forgot-password"
-          className="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 
-                   text-white font-medium rounded-xl hover:bg-primary-600 
-                   transition-colors"
+          className="inline-flex items-center gap-2 rounded-xl bg-primary-500 px-6 py-3 font-medium text-white transition-colors hover:bg-primary-600"
         >
           Request New Link
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 8l4 4m0 0l-4 4m4-4H3"
+            />
           </svg>
         </Link>
       </motion.div>
@@ -225,26 +226,25 @@ export default function ResetPassword() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="text-center py-8"
+      className="py-8 text-center"
     >
       <motion.div
         variants={itemVariants}
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
-        className="inline-flex items-center justify-center w-20 h-20 rounded-full 
-                 bg-green-500/20 text-green-400 mb-6"
+        className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-green-500/20 text-green-400"
       >
-        <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
         </svg>
       </motion.div>
 
-      <motion.h2 variants={itemVariants} className="text-2xl font-bold text-white mb-2">
+      <motion.h2 variants={itemVariants} className="mb-2 text-2xl font-bold text-white">
         Password Reset!
       </motion.h2>
 
-      <motion.p variants={itemVariants} className="text-gray-400 mb-8">
+      <motion.p variants={itemVariants} className="mb-8 text-gray-400">
         Your password has been successfully reset. You can now log in with your new password.
       </motion.p>
 
@@ -252,14 +252,16 @@ export default function ResetPassword() {
         <button
           type="button"
           onClick={() => navigate('/login')}
-          className="inline-flex items-center gap-2 px-8 py-3 
-                   bg-gradient-to-r from-primary-500 to-purple-600 
-                   text-white font-medium rounded-xl shadow-lg shadow-primary-500/25
-                   hover:shadow-primary-500/40 hover:scale-[1.02] transition-all"
+          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-primary-500 to-purple-600 px-8 py-3 font-medium text-white shadow-lg shadow-primary-500/25 transition-all hover:scale-[1.02] hover:shadow-primary-500/40"
         >
           Continue to Login
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M17 8l4 4m0 0l-4 4m4-4H3"
+            />
           </svg>
         </button>
       </motion.div>
@@ -275,10 +277,9 @@ export default function ResetPassword() {
       className="space-y-6"
     >
       {/* Header */}
-      <motion.div variants={itemVariants} className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl 
-                      bg-gradient-to-br from-primary-500 to-purple-600 text-white mb-4">
-          <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <motion.div variants={itemVariants} className="mb-8 text-center">
+        <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-purple-600 text-white">
+          <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -298,7 +299,7 @@ export default function ResetPassword() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400"
+            className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-red-400"
           >
             {errorMessage}
           </motion.div>
@@ -307,25 +308,22 @@ export default function ResetPassword() {
 
       {/* Password Field */}
       <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-300 mb-2">New Password</label>
+        <label className="mb-2 block text-sm font-medium text-gray-300">New Password</label>
         <div className="relative">
           <input
             type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter new password"
-            className="w-full px-4 py-3 pr-12 bg-dark-800/50 border border-dark-600 rounded-lg
-                     text-white placeholder-gray-500 focus:border-primary-500 focus:ring-1
-                     focus:ring-primary-500 transition-all duration-200"
+            className="w-full rounded-lg border border-dark-600 bg-dark-800/50 px-4 py-3 pr-12 text-white placeholder-gray-500 transition-all duration-200 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 
-                     hover:text-gray-300 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-300"
           >
             {showPassword ? (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -334,7 +332,7 @@ export default function ResetPassword() {
                 />
               </svg>
             ) : (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -359,8 +357,8 @@ export default function ResetPassword() {
             animate={{ opacity: 1, height: 'auto' }}
             className="mt-3"
           >
-            <div className="flex items-center gap-2 mb-2">
-              <div className="flex-1 h-1.5 bg-dark-700 rounded-full overflow-hidden">
+            <div className="mb-2 flex items-center gap-2">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-dark-700">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${(strength.score / 5) * 100}%` }}
@@ -387,11 +385,26 @@ export default function ResetPassword() {
                   }`}
                 >
                   {strength.requirements[key as keyof typeof strength.requirements] ? (
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    <svg
+                      className="h-3.5 w-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   ) : (
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg
+                      className="h-3.5 w-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -410,30 +423,28 @@ export default function ResetPassword() {
 
       {/* Confirm Password Field */}
       <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
+        <label className="mb-2 block text-sm font-medium text-gray-300">Confirm Password</label>
         <div className="relative">
           <input
             type={showConfirmPassword ? 'text' : 'password'}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Confirm new password"
-            className={`w-full px-4 py-3 pr-12 bg-dark-800/50 border rounded-lg
-                      text-white placeholder-gray-500 transition-all duration-200 ${
-                        confirmPassword
-                          ? passwordsMatch
-                            ? 'border-green-500 focus:ring-green-500'
-                            : 'border-red-500 focus:ring-red-500'
-                          : 'border-dark-600 focus:border-primary-500 focus:ring-primary-500'
-                      } focus:ring-1`}
+            className={`w-full rounded-lg border bg-dark-800/50 px-4 py-3 pr-12 text-white placeholder-gray-500 transition-all duration-200 ${
+              confirmPassword
+                ? passwordsMatch
+                  ? 'border-green-500 focus:ring-green-500'
+                  : 'border-red-500 focus:ring-red-500'
+                : 'border-dark-600 focus:border-primary-500 focus:ring-primary-500'
+            } focus:ring-1`}
           />
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 
-                     hover:text-gray-300 transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-300"
           >
             {showConfirmPassword ? (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -442,7 +453,7 @@ export default function ResetPassword() {
                 />
               </svg>
             ) : (
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -469,25 +480,37 @@ export default function ResetPassword() {
         <button
           type="submit"
           disabled={!canSubmit}
-          className="w-full py-3 bg-gradient-to-r from-primary-500 to-purple-600 
-                   text-white font-medium rounded-xl shadow-lg shadow-primary-500/25
-                   hover:shadow-primary-500/40 hover:scale-[1.02]
-                   disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
-                   transition-all duration-200 flex items-center justify-center gap-2"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-500 to-purple-600 py-3 font-medium text-white shadow-lg shadow-primary-500/25 transition-all duration-200 hover:scale-[1.02] hover:shadow-primary-500/40 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
         >
           {isLoading ? (
             <>
-              <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
               </svg>
               Resetting Password...
             </>
           ) : (
             <>
               Reset Password
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </>
           )}
@@ -496,7 +519,10 @@ export default function ResetPassword() {
 
       {/* Back to Login */}
       <motion.div variants={itemVariants} className="text-center">
-        <Link to="/login" className="text-sm text-gray-400 hover:text-primary-400 transition-colors">
+        <Link
+          to="/login"
+          className="text-sm text-gray-400 transition-colors hover:text-primary-400"
+        >
           Remember your password? Sign in
         </Link>
       </motion.div>
@@ -504,17 +530,14 @@ export default function ResetPassword() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 
-                  flex items-center justify-center p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 p-4">
       {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-1/2 -right-1/2 w-full h-full 
-                      bg-gradient-radial from-primary-500/10 to-transparent rounded-full" />
-        <div className="absolute -bottom-1/2 -left-1/2 w-full h-full 
-                      bg-gradient-radial from-purple-500/10 to-transparent rounded-full" />
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="bg-gradient-radial absolute -right-1/2 -top-1/2 h-full w-full rounded-full from-primary-500/10 to-transparent" />
+        <div className="bg-gradient-radial absolute -bottom-1/2 -left-1/2 h-full w-full rounded-full from-purple-500/10 to-transparent" />
       </div>
 
-      <GlassCard variant="frosted" className="w-full max-w-md relative z-10" hover3D={false}>
+      <GlassCard variant="frosted" className="relative z-10 w-full max-w-md" hover3D={false}>
         <div className="p-8">
           {state === 'validating' && renderValidating()}
           {state === 'expired' && renderExpired()}

@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 import AnimatedAvatar, { useAvatarStyle } from '@/components/ui/AnimatedAvatar';
 import { useAuthStore } from '@/stores/authStore';
 import { useProfileStore } from '@/stores/profileStore';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { toast } from '@/components/Toast';
 import SyncStatusIndicator, { useSyncStatus } from '@/components/settings/SyncStatusIndicator';

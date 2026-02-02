@@ -14,7 +14,7 @@ import {
 import { useForumStore, type Poll } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('PollWidget');

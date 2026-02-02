@@ -18,7 +18,7 @@ import {
 void FireIcon; // Reserved for streak indicator on leaderboard
 void ClockIcon; // Reserved for time period selector
 import { TrophyIcon as TrophyIconSolid, StarIcon } from '@heroicons/react/24/solid';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';

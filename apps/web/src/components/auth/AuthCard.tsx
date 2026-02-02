@@ -13,7 +13,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 export interface AuthCardProps {
   children: React.ReactNode;
@@ -44,11 +44,7 @@ const Logo: React.FC<{ size: 'sm' | 'md' | 'lg' }> = ({ size }) => {
     <Link to="/" className="group inline-flex items-center gap-3">
       <motion.div
         whileHover={{ scale: 1.1, rotate: 5 }}
-        className={`
-          flex items-center justify-center rounded-xl
-          bg-gradient-to-br from-primary-500 to-purple-600
-          ${sizeClasses[size]}
-        `}
+        className={`flex items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 ${sizeClasses[size]} `}
       >
         <svg
           className="h-2/3 w-2/3 text-white"
@@ -64,15 +60,13 @@ const Logo: React.FC<{ size: 'sm' | 'md' | 'lg' }> = ({ size }) => {
           />
         </svg>
       </motion.div>
-      <span className={`font-bold text-white ${textSizes[size]}`}>
-        CGraph
-      </span>
+      <span className={`font-bold text-white ${textSizes[size]}`}>CGraph</span>
     </Link>
   );
 };
 
 const GridBackground: React.FC = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+  <div className="pointer-events-none absolute inset-0 overflow-hidden">
     <div
       className="absolute inset-0 opacity-5"
       style={{
@@ -87,7 +81,7 @@ const GridBackground: React.FC = () => (
 );
 
 const GradientBackground: React.FC = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+  <div className="pointer-events-none absolute inset-0 overflow-hidden">
     <motion.div
       animate={{
         background: [
@@ -103,7 +97,7 @@ const GradientBackground: React.FC = () => (
 );
 
 const ParticlesBackground: React.FC = () => (
-  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+  <div className="pointer-events-none absolute inset-0 overflow-hidden">
     {[...Array(20)].map((_, i) => (
       <motion.div
         key={i}
@@ -122,7 +116,7 @@ const ParticlesBackground: React.FC = () => (
           duration: Math.random() * 20 + 10,
           ease: 'linear',
         }}
-        className="absolute w-1 h-1 bg-primary-500/30 rounded-full"
+        className="absolute h-1 w-1 rounded-full bg-primary-500/30"
       />
     ))}
   </div>
@@ -154,19 +148,17 @@ export const AuthCard: React.FC<AuthCardProps> = ({
 
   if (variant === 'split') {
     return (
-      <div className={`min-h-screen flex ${className}`}>
+      <div className={`flex min-h-screen ${className}`}>
         {/* Left side - branding */}
         <motion.div
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
-          className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-primary-600 to-purple-700 p-12 flex-col justify-between"
+          className="relative hidden flex-col justify-between bg-gradient-to-br from-primary-600 to-purple-700 p-12 lg:flex lg:w-1/2"
         >
           {renderBackground()}
-          
-          <div className="relative">
-            {showLogo && <Logo size={logoSize} />}
-          </div>
-          
+
+          <div className="relative">{showLogo && <Logo size={logoSize} />}</div>
+
           <div className="relative space-y-6">
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -195,15 +187,15 @@ export const AuthCard: React.FC<AuthCardProps> = ({
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
-          className="flex-1 flex items-center justify-center p-8 bg-dark-900"
+          className="flex flex-1 items-center justify-center bg-dark-900 p-8"
         >
           <div className="w-full max-w-md">
             {showLogo && (
-              <div className="lg:hidden mb-8 text-center">
+              <div className="mb-8 text-center lg:hidden">
                 <Logo size={logoSize} />
               </div>
             )}
-            
+
             {(title || subtitle) && (
               <div className="mb-8">
                 {title && (
@@ -251,11 +243,11 @@ export const AuthCard: React.FC<AuthCardProps> = ({
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className={`w-full max-w-sm mx-auto ${className}`}
+        className={`mx-auto w-full max-w-sm ${className}`}
       >
-        <GlassCard variant="frosted" className="p-6 relative overflow-hidden">
+        <GlassCard variant="frosted" className="relative overflow-hidden p-6">
           {renderBackground()}
-          
+
           <div className="relative">
             {showLogo && (
               <div className="mb-6 text-center">
@@ -285,9 +277,9 @@ export const AuthCard: React.FC<AuthCardProps> = ({
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: 'spring', damping: 20, stiffness: 100 }}
-      className={`w-full max-w-md mx-auto ${className}`}
+      className={`mx-auto w-full max-w-md ${className}`}
     >
-      <GlassCard variant="crystal" className="p-8 relative overflow-hidden">
+      <GlassCard variant="crystal" className="relative overflow-hidden p-8">
         {/* Animated border */}
         <motion.div
           animate={{
@@ -298,12 +290,12 @@ export const AuthCard: React.FC<AuthCardProps> = ({
             ],
           }}
           transition={{ repeat: Infinity, duration: 3 }}
-          className="absolute inset-0 rounded-2xl pointer-events-none"
+          className="pointer-events-none absolute inset-0 rounded-2xl"
           style={{ padding: 1 }}
         />
 
         {renderBackground()}
-        
+
         <div className="relative">
           {showLogo && (
             <div className="mb-8 text-center">
@@ -342,7 +334,7 @@ export const AuthCard: React.FC<AuthCardProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="mt-8 pt-6 border-t border-white/10"
+              className="mt-8 border-t border-white/10 pt-6"
             >
               {footer}
             </motion.div>

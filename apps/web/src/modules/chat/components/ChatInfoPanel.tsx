@@ -15,7 +15,7 @@ import {
   SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import type { UserTheme } from '@/stores/themeStore';
 import { springs } from '@/lib/animations/transitions';

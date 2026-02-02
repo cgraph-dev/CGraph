@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { toast } from '@/components/Toast';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 export function PrivacySettingsPanel() {
   const { settings, updatePrivacySettings, isSaving } = useSettingsStore();

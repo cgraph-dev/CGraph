@@ -10,7 +10,7 @@ import {
   TrophyIcon,
 } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/react/24/solid';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useGamificationStore, Quest, QuestObjective } from '@/stores/gamificationStore';
 import confetti from 'canvas-confetti';
@@ -40,7 +40,8 @@ export default function QuestPanel({
   className = '',
   onQuestComplete,
 }: QuestPanelProps) {
-  const { activeQuests, completedQuests, completeQuest, fetchQuests, isLoading } = useGamificationStore();
+  const { activeQuests, completedQuests, completeQuest, fetchQuests, isLoading } =
+    useGamificationStore();
   const [claimingQuestId, setClaimingQuestId] = useState<string | null>(null);
   const [expandedQuest, setExpandedQuest] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState<Record<string, string>>({});
@@ -54,7 +55,7 @@ export default function QuestPanel({
   useEffect(() => {
     const updateTimes = () => {
       const times: Record<string, string> = {};
-      activeQuests.forEach(quest => {
+      activeQuests.forEach((quest) => {
         if (quest.expiresAt) {
           times[quest.id] = formatTimeRemaining(quest.expiresAt);
         }
@@ -68,38 +69,41 @@ export default function QuestPanel({
   }, [activeQuests]);
 
   // Handle claiming quest rewards
-  const handleClaimReward = useCallback(async (quest: Quest) => {
-    if (claimingQuestId) return;
+  const handleClaimReward = useCallback(
+    async (quest: Quest) => {
+      if (claimingQuestId) return;
 
-    setClaimingQuestId(quest.id);
-    HapticFeedback.success();
+      setClaimingQuestId(quest.id);
+      HapticFeedback.success();
 
-    // Celebration confetti
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#10b981', '#8b5cf6', '#f59e0b'],
-    });
+      // Celebration confetti
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#10b981', '#8b5cf6', '#f59e0b'],
+      });
 
-    try {
-      await completeQuest(quest.id);
-      onQuestComplete?.(quest);
-    } finally {
-      setClaimingQuestId(null);
-    }
-  }, [claimingQuestId, completeQuest, onQuestComplete]);
+      try {
+        await completeQuest(quest.id);
+        onQuestComplete?.(quest);
+      } finally {
+        setClaimingQuestId(null);
+      }
+    },
+    [claimingQuestId, completeQuest, onQuestComplete]
+  );
 
   // Check if all objectives are complete
   const isQuestReady = (quest: Quest): boolean => {
-    return quest.objectives.every(obj => obj.completed);
+    return quest.objectives.every((obj) => obj.completed);
   };
 
   // Calculate quest progress percentage
   const getQuestProgress = (quest: Quest): number => {
     if (quest.objectives.length === 0) return 0;
     const totalProgress = quest.objectives.reduce((sum, obj) => {
-      return sum + (obj.currentValue / obj.targetValue);
+      return sum + obj.currentValue / obj.targetValue;
     }, 0);
     return Math.min((totalProgress / quest.objectives.length) * 100, 100);
   };
@@ -139,7 +143,7 @@ export default function QuestPanel({
   };
 
   const displayedQuests = activeQuests.slice(0, maxQuests);
-  const completedToday = completedQuests.filter(q => {
+  const completedToday = completedQuests.filter((q) => {
     if (!q.completedAt) return false;
     const today = new Date().toDateString();
     return new Date(q.completedAt).toDateString() === today;
@@ -149,8 +153,8 @@ export default function QuestPanel({
     return (
       <div className={className}>
         <GlassCard variant="frosted" glow className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-white">
               <TrophyIcon className="h-4 w-4 text-yellow-400" />
               Daily Quests
             </h3>
@@ -160,7 +164,7 @@ export default function QuestPanel({
           </div>
 
           <div className="space-y-2">
-            {displayedQuests.slice(0, 3).map(quest => {
+            {displayedQuests.slice(0, 3).map((quest) => {
               const progress = getQuestProgress(quest);
               const ready = isQuestReady(quest);
 
@@ -170,18 +174,20 @@ export default function QuestPanel({
                   className="flex items-center gap-3"
                   whileHover={{ x: 2 }}
                 >
-                  <div className={`h-6 w-6 rounded-full flex items-center justify-center ${
-                    ready ? 'bg-green-500' : 'bg-dark-700'
-                  }`}>
+                  <div
+                    className={`flex h-6 w-6 items-center justify-center rounded-full ${
+                      ready ? 'bg-green-500' : 'bg-dark-700'
+                    }`}
+                  >
                     {ready ? (
                       <CheckCircleSolidIcon className="h-4 w-4 text-white" />
                     ) : (
                       <span className="text-xs text-gray-400">{Math.round(progress)}%</span>
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs text-gray-300 truncate">{quest.title}</p>
-                    <div className="h-1 bg-dark-700 rounded-full mt-1 overflow-hidden">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-xs text-gray-300">{quest.title}</p>
+                    <div className="mt-1 h-1 overflow-hidden rounded-full bg-dark-700">
                       <motion.div
                         className={`h-full rounded-full ${ready ? 'bg-green-500' : 'bg-primary-500'}`}
                         initial={{ width: 0 }}
@@ -195,7 +201,7 @@ export default function QuestPanel({
           </div>
 
           {activeQuests.length > 3 && (
-            <button className="mt-3 text-xs text-primary-400 hover:text-primary-300 flex items-center gap-1">
+            <button className="mt-3 flex items-center gap-1 text-xs text-primary-400 hover:text-primary-300">
               View all quests
               <ChevronRightIcon className="h-3 w-3" />
             </button>
@@ -209,21 +215,22 @@ export default function QuestPanel({
     <div className={className}>
       <GlassCard variant="holographic" glow borderGradient className="p-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="flex items-center gap-2 text-xl font-bold text-white">
             <TrophyIcon className="h-6 w-6 text-yellow-400" />
             Active Quests
           </h2>
           <div className="flex items-center gap-4">
             <div className="text-sm text-gray-400">
-              <span className="text-primary-400 font-semibold">{completedToday}</span> completed today
+              <span className="font-semibold text-primary-400">{completedToday}</span> completed
+              today
             </div>
             <motion.button
               onClick={() => {
                 fetchQuests();
                 HapticFeedback.light();
               }}
-              className="p-2 rounded-lg bg-dark-700 hover:bg-dark-600 transition-colors"
+              className="rounded-lg bg-dark-700 p-2 transition-colors hover:bg-dark-600"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
@@ -242,12 +249,12 @@ export default function QuestPanel({
             />
           </div>
         ) : activeQuests.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="h-16 w-16 rounded-full bg-dark-700 flex items-center justify-center mx-auto mb-4">
+          <div className="py-8 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-dark-700">
               <CheckCircleIcon className="h-8 w-8 text-green-400" />
             </div>
             <p className="text-gray-400">All quests completed!</p>
-            <p className="text-sm text-gray-500 mt-1">Check back later for new quests</p>
+            <p className="mt-1 text-sm text-gray-500">Check back later for new quests</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -271,13 +278,13 @@ export default function QuestPanel({
                     <GlassCard
                       variant={ready ? 'neon' : 'frosted'}
                       glow={ready}
-                      className="p-4 cursor-pointer"
+                      className="cursor-pointer p-4"
                       onClick={() => setExpandedQuest(isExpanded ? null : quest.id)}
                     >
                       <div className="flex items-start gap-4">
                         {/* Quest Icon */}
                         <motion.div
-                          className={`h-12 w-12 rounded-xl ${typeColor.bg} border ${typeColor.border} flex items-center justify-center flex-shrink-0`}
+                          className={`h-12 w-12 rounded-xl ${typeColor.bg} border ${typeColor.border} flex flex-shrink-0 items-center justify-center`}
                           whileHover={{ scale: 1.1, rotate: 5 }}
                         >
                           {ready ? (
@@ -288,19 +295,21 @@ export default function QuestPanel({
                         </motion.div>
 
                         {/* Quest Info */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-1 flex items-center gap-2">
                             <h3 className="font-semibold text-white">{quest.title}</h3>
-                            <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${typeColor.bg} ${typeColor.text}`}>
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${typeColor.bg} ${typeColor.text}`}
+                            >
                               {quest.type}
                             </span>
                           </div>
 
-                          <p className="text-sm text-gray-400 mb-3">{quest.description}</p>
+                          <p className="mb-3 text-sm text-gray-400">{quest.description}</p>
 
                           {/* Progress Bar */}
                           <div className="relative">
-                            <div className="h-2 bg-dark-700 rounded-full overflow-hidden">
+                            <div className="h-2 overflow-hidden rounded-full bg-dark-700">
                               <motion.div
                                 className={`h-full rounded-full ${ready ? 'bg-green-500' : 'bg-gradient-to-r from-primary-500 to-purple-500'}`}
                                 initial={{ width: 0 }}
@@ -308,7 +317,7 @@ export default function QuestPanel({
                                 transition={{ duration: 0.5 }}
                               />
                             </div>
-                            <span className="absolute right-0 -top-5 text-xs text-gray-400">
+                            <span className="absolute -top-5 right-0 text-xs text-gray-400">
                               {Math.round(progress)}%
                             </span>
                           </div>
@@ -323,7 +332,11 @@ export default function QuestPanel({
                                 className="mt-4 space-y-2 overflow-hidden"
                               >
                                 {quest.objectives.map((obj, objIndex) => (
-                                  <QuestObjectiveItem key={obj.id} objective={obj} index={objIndex} />
+                                  <QuestObjectiveItem
+                                    key={obj.id}
+                                    objective={obj}
+                                    index={objIndex}
+                                  />
                                 ))}
                               </motion.div>
                             )}
@@ -331,7 +344,7 @@ export default function QuestPanel({
                         </div>
 
                         {/* Right Side - Time & Rewards */}
-                        <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                        <div className="flex flex-shrink-0 flex-col items-end gap-2">
                           {/* Time Remaining */}
                           <div className="flex items-center gap-1 text-xs text-gray-400">
                             <ClockIcon className="h-3 w-3" />
@@ -341,7 +354,9 @@ export default function QuestPanel({
                           {/* Rewards */}
                           <div className="flex items-center gap-1 text-sm">
                             <SparklesIcon className="h-4 w-4 text-yellow-400" />
-                            <span className="text-yellow-400 font-semibold">+{quest.xpReward} XP</span>
+                            <span className="font-semibold text-yellow-400">
+                              +{quest.xpReward} XP
+                            </span>
                           </div>
 
                           {/* Claim Button */}
@@ -352,7 +367,7 @@ export default function QuestPanel({
                                 handleClaimReward(quest);
                               }}
                               disabled={isClaiming}
-                              className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold text-sm hover:from-green-400 hover:to-emerald-400 transition-all disabled:opacity-50"
+                              className="rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-2 text-sm font-semibold text-white transition-all hover:from-green-400 hover:to-emerald-400 disabled:opacity-50"
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
                             >
@@ -380,7 +395,7 @@ export default function QuestPanel({
         {/* Show More */}
         {activeQuests.length > maxQuests && (
           <motion.button
-            className="mt-4 w-full py-3 rounded-lg bg-dark-700 hover:bg-dark-600 text-sm text-gray-400 hover:text-white transition-colors flex items-center justify-center gap-2"
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-dark-700 py-3 text-sm text-gray-400 transition-colors hover:bg-dark-600 hover:text-white"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -404,19 +419,23 @@ function QuestObjectiveItem({ objective, index }: { objective: QuestObjective; i
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="flex items-center gap-3 p-2 rounded-lg bg-dark-800/50"
+      className="flex items-center gap-3 rounded-lg bg-dark-800/50 p-2"
     >
-      <div className={`h-5 w-5 rounded-full flex items-center justify-center ${
-        objective.completed ? 'bg-green-500' : 'bg-dark-600'
-      }`}>
+      <div
+        className={`flex h-5 w-5 items-center justify-center rounded-full ${
+          objective.completed ? 'bg-green-500' : 'bg-dark-600'
+        }`}
+      >
         {objective.completed ? (
           <CheckCircleSolidIcon className="h-4 w-4 text-white" />
         ) : (
           <div className="h-2 w-2 rounded-full bg-gray-500" />
         )}
       </div>
-      <div className="flex-1 min-w-0">
-        <p className={`text-sm ${objective.completed ? 'text-gray-400 line-through' : 'text-gray-300'}`}>
+      <div className="min-w-0 flex-1">
+        <p
+          className={`text-sm ${objective.completed ? 'text-gray-400 line-through' : 'text-gray-300'}`}
+        >
           {objective.description}
         </p>
       </div>

@@ -18,7 +18,7 @@ import {
   MagnifyingGlassIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import UserProfileCard from '@/components/profile/UserProfileCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';

@@ -21,7 +21,7 @@ import {
   ExclamationTriangleIcon,
   GiftIcon,
 } from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { usePremiumStore } from '@/features/premium/stores';

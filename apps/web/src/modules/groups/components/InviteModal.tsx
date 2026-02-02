@@ -11,7 +11,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useGroupStore } from '@/stores/groupStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { createLogger } from '@/lib/logger';
 

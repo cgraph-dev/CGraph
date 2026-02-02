@@ -6,7 +6,7 @@ import {
   type ChatBubbleStyle,
 } from '@/stores/chatBubbleStore';
 import { useChatCustomization } from '@/stores/unifiedCustomizationStore';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import {
   ChatBubbleLeftIcon,

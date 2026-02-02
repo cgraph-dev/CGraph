@@ -6,7 +6,7 @@ const logger = createLogger('AccountSettings');
 import { api } from '@/lib/api';
 import { toast } from '@/components/Toast';
 import { motion } from 'framer-motion';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { getAvatarBorderId } from '@/lib/utils';

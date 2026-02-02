@@ -11,7 +11,7 @@ import { useThemeEnhanced } from '@/contexts/ThemeContextEnhanced';
 import ShaderBackground from '@/components/shaders/ShaderBackground';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { motion, AnimatePresence } from 'framer-motion';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { getAvatarBorderId } from '@/lib/utils';
 import { pageTransitions, buttonVariantsSubtle } from '@/lib/animations/transitions';

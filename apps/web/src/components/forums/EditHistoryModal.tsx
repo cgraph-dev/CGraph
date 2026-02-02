@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { XMarkIcon, ClockIcon, UserIcon } from '@heroicons/react/24/outline';
 import { useForumStore, type PostEditHistory } from '@/stores/forumStore';
 import { formatTimeAgo } from '@/lib/utils';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('EditHistoryModal');

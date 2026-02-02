@@ -4,7 +4,7 @@ import { DevicePhoneMobileIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 import { toast } from '@/components/Toast';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 const logger = createLogger('SessionsSettings');
 

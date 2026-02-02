@@ -19,7 +19,7 @@ import { useChatStore, type Conversation } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { getAvatarBorderId } from '@/lib/utils';
 

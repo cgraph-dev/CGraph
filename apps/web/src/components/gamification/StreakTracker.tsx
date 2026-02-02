@@ -14,7 +14,7 @@ import {
 void FireIcon; // Reserved for streak fire animation
 void CalendarDaysIcon; // Reserved for calendar view
 import { FireIcon as FireIconSolid } from '@heroicons/react/24/solid';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import confetti from 'canvas-confetti';

@@ -7,7 +7,7 @@ import {
   PhotoIcon,
   MusicalNoteIcon,
 } from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 /**
@@ -54,10 +54,17 @@ const IMAGE_REGEX = /\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i;
 const VIDEO_REGEX = /\.(mp4|webm|ogg|mov)(\?.*)?$/i;
 const AUDIO_REGEX = /\.(mp3|wav|ogg|m4a)(\?.*)?$/i;
 
-export default function RichMediaEmbed({ content, isOwnMessage: _isOwnMessage, onLoad }: RichMediaEmbedProps) {
+export default function RichMediaEmbed({
+  content,
+  isOwnMessage: _isOwnMessage,
+  onLoad,
+}: RichMediaEmbedProps) {
   const [embeds, setEmbeds] = useState<LinkMetadata[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [lightboxMedia, setLightboxMedia] = useState<{ url: string; type: 'image' | 'video' } | null>(null);
+  const [lightboxMedia, setLightboxMedia] = useState<{
+    url: string;
+    type: 'image' | 'video';
+  } | null>(null);
 
   useEffect(() => {
     const extractAndFetchMetadata = async () => {
@@ -149,7 +156,7 @@ export default function RichMediaEmbed({ content, isOwnMessage: _isOwnMessage, o
 
   return (
     <>
-      <div className="space-y-2 mt-2">
+      <div className="mt-2 space-y-2">
         {embeds.map((embed, index) => (
           <motion.div
             key={embed.url}
@@ -188,7 +195,7 @@ export default function RichMediaEmbed({ content, isOwnMessage: _isOwnMessage, o
       <AnimatePresence>
         {lightboxMedia && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -198,7 +205,7 @@ export default function RichMediaEmbed({ content, isOwnMessage: _isOwnMessage, o
             }}
           >
             <motion.button
-              className="absolute top-4 right-4 p-2 rounded-full bg-dark-800/80 hover:bg-dark-700 text-white transition-colors"
+              className="absolute right-4 top-4 rounded-full bg-dark-800/80 p-2 text-white transition-colors hover:bg-dark-700"
               whileHover={{ scale: 1.1, rotate: 90 }}
               whileTap={{ scale: 0.9 }}
               onClick={(e) => {
@@ -211,7 +218,7 @@ export default function RichMediaEmbed({ content, isOwnMessage: _isOwnMessage, o
             </motion.button>
 
             <motion.div
-              className="max-w-7xl max-h-[90vh] w-full"
+              className="max-h-[90vh] w-full max-w-7xl"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
@@ -221,7 +228,7 @@ export default function RichMediaEmbed({ content, isOwnMessage: _isOwnMessage, o
                 <img
                   src={lightboxMedia.url}
                   alt="Full size"
-                  className="max-w-full max-h-[90vh] object-contain mx-auto rounded-lg shadow-2xl"
+                  className="mx-auto max-h-[90vh] max-w-full rounded-lg object-contain shadow-2xl"
                   loading="lazy"
                 />
               ) : (
@@ -229,7 +236,7 @@ export default function RichMediaEmbed({ content, isOwnMessage: _isOwnMessage, o
                   src={lightboxMedia.url}
                   controls
                   autoPlay
-                  className="max-w-full max-h-[90vh] mx-auto rounded-lg shadow-2xl"
+                  className="mx-auto max-h-[90vh] max-w-full rounded-lg shadow-2xl"
                 />
               )}
             </motion.div>
@@ -240,18 +247,12 @@ export default function RichMediaEmbed({ content, isOwnMessage: _isOwnMessage, o
   );
 }
 
-function ImageEmbed({
-  embed,
-  onExpand,
-}: {
-  embed: LinkMetadata;
-  onExpand: () => void;
-}) {
+function ImageEmbed({ embed, onExpand }: { embed: LinkMetadata; onExpand: () => void }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
     <motion.div
-      className="relative max-w-sm rounded-xl overflow-hidden cursor-pointer group"
+      className="group relative max-w-sm cursor-pointer overflow-hidden rounded-xl"
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onExpand}
@@ -264,11 +265,11 @@ function ImageEmbed({
       <img
         src={embed.url}
         alt={embed.title || 'Image'}
-        className="w-full h-auto max-h-96 object-cover"
+        className="h-auto max-h-96 w-full object-cover"
         loading="lazy"
         onLoad={() => setIsLoaded(true)}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-3">
+      <div className="absolute inset-0 flex items-end justify-between bg-gradient-to-t from-black/60 via-transparent to-transparent p-3 opacity-0 transition-opacity group-hover:opacity-100">
         <PhotoIcon className="h-5 w-5 text-white drop-shadow-lg" />
         <ArrowTopRightOnSquareIcon className="h-5 w-5 text-white drop-shadow-lg" />
       </div>
@@ -276,23 +277,17 @@ function ImageEmbed({
   );
 }
 
-function VideoEmbed({
-  embed,
-  onExpand,
-}: {
-  embed: LinkMetadata;
-  onExpand: () => void;
-}) {
+function VideoEmbed({ embed, onExpand }: { embed: LinkMetadata; onExpand: () => void }) {
   const [showPlayer, setShowPlayer] = useState(false);
 
   // YouTube iframe embed
   if (embed.videoUrl?.includes('youtube.com/embed')) {
     return (
-      <div className="relative max-w-md rounded-xl overflow-hidden">
+      <div className="relative max-w-md overflow-hidden rounded-xl">
         <GlassCard variant="crystal" className="p-0">
           {!showPlayer ? (
             <motion.div
-              className="relative cursor-pointer group"
+              className="group relative cursor-pointer"
               onClick={() => {
                 setShowPlayer(true);
                 HapticFeedback.medium();
@@ -302,12 +297,12 @@ function VideoEmbed({
               <img
                 src={embed.image || ''}
                 alt={embed.title || 'Video'}
-                className="w-full aspect-video object-cover"
+                className="aspect-video w-full object-cover"
                 loading="lazy"
               />
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 group-hover:bg-black/30 transition-colors">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40 transition-colors group-hover:bg-black/30">
                 <motion.div
-                  className="h-16 w-16 rounded-full bg-red-600/90 flex items-center justify-center"
+                  className="flex h-16 w-16 items-center justify-center rounded-full bg-red-600/90"
                   whileHover={{ scale: 1.1 }}
                   animate={{
                     boxShadow: [
@@ -317,7 +312,7 @@ function VideoEmbed({
                   }}
                   transition={{ duration: 1.5, repeat: Infinity }}
                 >
-                  <PlayCircleIcon className="h-10 w-10 text-white ml-1" />
+                  <PlayCircleIcon className="ml-1 h-10 w-10 text-white" />
                 </motion.div>
               </div>
             </motion.div>
@@ -325,15 +320,15 @@ function VideoEmbed({
             <iframe
               src={`${embed.videoUrl}?autoplay=1`}
               title={embed.title || 'Video'}
-              className="w-full aspect-video"
+              className="aspect-video w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               sandbox="allow-scripts allow-same-origin allow-presentation"
             />
           )}
           {embed.title && (
-            <div className="p-3 border-t border-white/10">
-              <p className="text-sm font-medium text-white truncate">{embed.title}</p>
+            <div className="border-t border-white/10 p-3">
+              <p className="truncate text-sm font-medium text-white">{embed.title}</p>
               <p className="text-xs text-gray-400">{embed.siteName}</p>
             </div>
           )}
@@ -345,22 +340,22 @@ function VideoEmbed({
   // Native video player
   return (
     <motion.div
-      className="relative max-w-sm rounded-xl overflow-hidden cursor-pointer"
+      className="relative max-w-sm cursor-pointer overflow-hidden rounded-xl"
       whileHover={{ scale: 1.01 }}
       onClick={onExpand}
     >
       <video
         src={embed.videoUrl || embed.url}
-        className="w-full h-auto max-h-96 object-cover"
+        className="h-auto max-h-96 w-full object-cover"
         controls={false}
         preload="metadata"
       />
-      <div className="absolute inset-0 flex items-center justify-center bg-black/40 hover:bg-black/30 transition-colors">
+      <div className="absolute inset-0 flex items-center justify-center bg-black/40 transition-colors hover:bg-black/30">
         <motion.div
-          className="h-16 w-16 rounded-full bg-primary-600/90 flex items-center justify-center"
+          className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-600/90"
           whileHover={{ scale: 1.1 }}
         >
-          <PlayCircleIcon className="h-10 w-10 text-white ml-1" />
+          <PlayCircleIcon className="ml-1 h-10 w-10 text-white" />
         </motion.div>
       </div>
     </motion.div>
@@ -371,12 +366,12 @@ function AudioEmbed({ embed }: { embed: LinkMetadata }) {
   return (
     <div className="max-w-md">
       <GlassCard variant="frosted" glow className="p-4">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+        <div className="mb-3 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500">
             <MusicalNoteIcon className="h-6 w-6 text-white" />
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-white truncate">{embed.title}</p>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium text-white">{embed.title}</p>
             <p className="text-xs text-gray-400">Audio File</p>
           </div>
         </div>
@@ -396,13 +391,13 @@ function LinkPreview({ embed }: { embed: LinkMetadata }) {
       whileHover={{ scale: 1.01 }}
       onClick={() => HapticFeedback.light()}
     >
-      <GlassCard variant="crystal" glow borderGradient className="p-0 overflow-hidden">
+      <GlassCard variant="crystal" glow borderGradient className="overflow-hidden p-0">
         {embed.image && (
           <div className="relative h-48 overflow-hidden">
             <img
               src={embed.image}
               alt={embed.title || 'Preview'}
-              className="w-full h-full object-cover"
+              className="h-full w-full object-cover"
               loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent" />
@@ -414,16 +409,18 @@ function LinkPreview({ embed }: { embed: LinkMetadata }) {
               <img
                 src={embed.favicon}
                 alt=""
-                className="h-5 w-5 rounded flex-shrink-0 mt-0.5"
+                className="mt-0.5 h-5 w-5 flex-shrink-0 rounded"
                 loading="lazy"
               />
             )}
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               {embed.title && (
-                <h4 className="font-semibold text-white text-sm line-clamp-2 mb-1">{embed.title}</h4>
+                <h4 className="mb-1 line-clamp-2 text-sm font-semibold text-white">
+                  {embed.title}
+                </h4>
               )}
               {embed.description && (
-                <p className="text-xs text-gray-400 line-clamp-2 mb-2">{embed.description}</p>
+                <p className="mb-2 line-clamp-2 text-xs text-gray-400">{embed.description}</p>
               )}
               <div className="flex items-center gap-2 text-xs text-gray-500">
                 {embed.siteName && <span>{embed.siteName}</span>}

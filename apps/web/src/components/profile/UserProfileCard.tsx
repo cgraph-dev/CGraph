@@ -9,7 +9,7 @@ import {
   EyeIcon,
   ShieldExclamationIcon,
 } from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { type ProfileCardUser } from './ProfileCard';
 import { useAuthStore } from '@/stores/authStore';
 import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';

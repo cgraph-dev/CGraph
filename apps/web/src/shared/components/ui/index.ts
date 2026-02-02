@@ -101,6 +101,11 @@ export {
   StatCard,
 } from '@/components/ui';
 
-// Re-export GlassCard and AnimatedAvatar
-export { default as GlassCard } from '@/components/ui/GlassCard';
+// Re-export GlassCard variants and AnimatedAvatar
+export {
+  default as GlassCard,
+  GlassCardNeon,
+  GlassCardHolographic,
+  GlassCardCrystal,
+} from '@/components/ui/GlassCard';
 export { default as AnimatedAvatar } from '@/components/ui/AnimatedAvatar';

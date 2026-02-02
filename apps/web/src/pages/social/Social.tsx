@@ -14,7 +14,7 @@ import {
 void UserPlusIcon; // Reserved for add friend button
 void EllipsisVerticalIcon; // Reserved for context menu
 import { BellIcon as BellIconSolid } from '@heroicons/react/24/solid';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import UserProfileCard from '@/components/profile/UserProfileCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { useFriendStore, type Friend, type FriendRequest } from '@/stores/friendStore';

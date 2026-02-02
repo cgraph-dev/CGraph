@@ -20,7 +20,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useAuthStore } from '@/stores/authStore';
 import { api } from '@/lib/api';
@@ -180,7 +180,7 @@ function ConfettiParticle({ delay, color }: { delay: number; color: string }) {
 
   return (
     <motion.div
-      className="absolute w-2 h-2 rounded-sm pointer-events-none"
+      className="pointer-events-none absolute h-2 w-2 rounded-sm"
       style={{
         left: `${randomX}%`,
         top: '-10px',
@@ -207,7 +207,7 @@ function ConfettiParticle({ delay, color }: { delay: number; color: string }) {
 // Floating particles background
 function FloatingParticles() {
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+    <div className="pointer-events-none fixed inset-0 overflow-hidden">
       {[...Array(25)].map((_, i) => (
         <motion.div
           key={i}
@@ -253,45 +253,48 @@ export default function LeaderboardPage() {
   const pageSize = 25;
 
   const currentCategory = useMemo(
-    () => CATEGORIES.find(c => c.id === category) ?? CATEGORIES[0]!,
+    () => CATEGORIES.find((c) => c.id === category) ?? CATEGORIES[0]!,
     [category]
   );
 
   // Fetch leaderboard data
-  const fetchLeaderboard = useCallback(async (showRefreshIndicator = false) => {
-    if (showRefreshIndicator) {
-      setIsRefreshing(true);
-    } else {
-      setIsLoading(true);
-    }
-
-    try {
-      const response = await api.get('/api/v1/leaderboard', {
-        params: {
-          category,
-          period: timePeriod,
-          page,
-          page_size: pageSize,
-        },
-      });
-
-      setLeaderboard(response.data);
-      if (page === 1) {
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 5000);
+  const fetchLeaderboard = useCallback(
+    async (showRefreshIndicator = false) => {
+      if (showRefreshIndicator) {
+        setIsRefreshing(true);
+      } else {
+        setIsLoading(true);
       }
-    } catch {
-      // Mock data for demo
-      setLeaderboard(generateMockData());
-      if (page === 1) {
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 5000);
+
+      try {
+        const response = await api.get('/api/v1/leaderboard', {
+          params: {
+            category,
+            period: timePeriod,
+            page,
+            page_size: pageSize,
+          },
+        });
+
+        setLeaderboard(response.data);
+        if (page === 1) {
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 5000);
+        }
+      } catch {
+        // Mock data for demo
+        setLeaderboard(generateMockData());
+        if (page === 1) {
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 5000);
+        }
+      } finally {
+        setIsLoading(false);
+        setIsRefreshing(false);
       }
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [category, timePeriod, page]);
+    },
+    [category, timePeriod, page]
+  );
 
   useEffect(() => {
     fetchLeaderboard();
@@ -301,14 +304,42 @@ export default function LeaderboardPage() {
   // Generate mock data for demo
   function generateMockData(): LeaderboardData {
     const mockNames = [
-      'CryptoKing', 'NodeMaster', 'BlockchainQueen', 'DeFiWizard', 'TokenTrader',
-      'SmartContractor', 'HashHero', 'ChainChampion', 'WalletWarrior', 'GasGuru',
-      'StakeKing', 'YieldFarmer', 'LiquidityLord', 'NFTNinja', 'DAODragon',
-      'MetaMogul', 'EtherExpert', 'SolidityPro', 'RustRanger', 'GoGopher',
-      'WebDevWizard', 'ReactRuler', 'TypeScriptTitan', 'PythonPro', 'RustRookie',
+      'CryptoKing',
+      'NodeMaster',
+      'BlockchainQueen',
+      'DeFiWizard',
+      'TokenTrader',
+      'SmartContractor',
+      'HashHero',
+      'ChainChampion',
+      'WalletWarrior',
+      'GasGuru',
+      'StakeKing',
+      'YieldFarmer',
+      'LiquidityLord',
+      'NFTNinja',
+      'DAODragon',
+      'MetaMogul',
+      'EtherExpert',
+      'SolidityPro',
+      'RustRanger',
+      'GoGopher',
+      'WebDevWizard',
+      'ReactRuler',
+      'TypeScriptTitan',
+      'PythonPro',
+      'RustRookie',
     ];
 
-    const titles = ['The Legendary', 'Champion', 'Elite', 'Master', 'Expert', 'Rising Star', 'Newcomer'];
+    const titles = [
+      'The Legendary',
+      'Champion',
+      'Elite',
+      'Master',
+      'Expert',
+      'Rising Star',
+      'Newcomer',
+    ];
 
     const entries: LeaderboardEntry[] = mockNames.slice(0, 20).map((name, i) => ({
       rank: (page - 1) * pageSize + i + 1,
@@ -318,7 +349,7 @@ export default function LeaderboardPage() {
       displayName: name,
       avatarUrl: null,
       level: Math.max(1, 100 - i * 4 + Math.floor(Math.random() * 10)),
-      value: Math.floor(100000 / ((page - 1) * pageSize + i + 1) * (1 + Math.random() * 0.3)),
+      value: Math.floor((100000 / ((page - 1) * pageSize + i + 1)) * (1 + Math.random() * 0.3)),
       isOnline: Math.random() > 0.4,
       isPremium: i < 5 || Math.random() > 0.6,
       isVerified: i < 3,
@@ -326,20 +357,22 @@ export default function LeaderboardPage() {
     }));
 
     // Add current user if not in top
-    const userRank: LeaderboardEntry | null = user ? {
-      rank: 42,
-      previousRank: 45,
-      userId: user.id,
-      username: user.username || 'user',
-      displayName: user.displayName,
-      avatarUrl: user.avatarUrl,
-      level: 15,
-      value: 2500,
-      isOnline: true,
-      isPremium: false,
-      isVerified: false,
-      title: 'Rising Star',
-    } : null;
+    const userRank: LeaderboardEntry | null = user
+      ? {
+          rank: 42,
+          previousRank: 45,
+          userId: user.id,
+          username: user.username || 'user',
+          displayName: user.displayName,
+          avatarUrl: user.avatarUrl,
+          level: 15,
+          value: 2500,
+          isOnline: true,
+          isPremium: false,
+          isVerified: false,
+          title: 'Rising Star',
+        }
+      : null;
 
     return {
       entries,
@@ -365,7 +398,7 @@ export default function LeaderboardPage() {
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="flex items-center gap-1 text-green-400 bg-green-500/10 px-2 py-0.5 rounded-full"
+          className="flex items-center gap-1 rounded-full bg-green-500/10 px-2 py-0.5 text-green-400"
         >
           <ArrowTrendingUpIcon className="h-3.5 w-3.5" />
           <span className="text-xs font-bold">+{diff}</span>
@@ -376,7 +409,7 @@ export default function LeaderboardPage() {
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="flex items-center gap-1 text-red-400 bg-red-500/10 px-2 py-0.5 rounded-full"
+          className="flex items-center gap-1 rounded-full bg-red-500/10 px-2 py-0.5 text-red-400"
         >
           <ArrowTrendingDownIcon className="h-3.5 w-3.5" />
           <span className="text-xs font-bold">{diff}</span>
@@ -384,7 +417,7 @@ export default function LeaderboardPage() {
       );
     }
     return (
-      <div className="flex items-center gap-1 text-gray-500 bg-gray-500/10 px-2 py-0.5 rounded-full">
+      <div className="flex items-center gap-1 rounded-full bg-gray-500/10 px-2 py-0.5 text-gray-500">
         <MinusIcon className="h-3.5 w-3.5" />
       </div>
     );
@@ -401,7 +434,7 @@ export default function LeaderboardPage() {
     if (!leaderboard || !searchQuery.trim()) return entries;
     const query = searchQuery.toLowerCase();
     return entries.filter(
-      entry =>
+      (entry) =>
         entry.username.toLowerCase().includes(query) ||
         entry.displayName?.toLowerCase().includes(query)
     );
@@ -410,566 +443,615 @@ export default function LeaderboardPage() {
   const totalPages = leaderboard?.totalCount ? Math.ceil(leaderboard.totalCount / pageSize) : 0;
 
   return (
-    <div className="flex-1 flex flex-col h-full max-h-screen overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative">
+    <div className="relative flex h-full max-h-screen flex-1 flex-col overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Background Effects */}
       <FloatingParticles />
 
       {/* Confetti for top ranks */}
       {showConfetti && page === 1 && (
-        <div className="fixed inset-0 pointer-events-none z-50">
+        <div className="pointer-events-none fixed inset-0 z-50">
           {[...Array(30)].map((_, i) => {
             const colors = ['#FFD700', '#C0C0C0', '#CD7F32', '#8B5CF6', '#EC4899'];
-            return (
-              <ConfettiParticle
-                key={i}
-                delay={i * 0.1}
-                color={colors[i % colors.length]!}
-              />
-            );
+            return <ConfettiParticle key={i} delay={i * 0.1} color={colors[i % colors.length]!} />;
           })}
         </div>
       )}
 
       <div className="flex-1 overflow-y-auto">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 relative z-10">
+        <div className="relative z-10 mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-8"
+            className="mb-8 text-center"
           >
             {/* Trophy Badge */}
             <motion.div
-              className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-gradient-to-r from-yellow-500/20 via-amber-500/20 to-orange-500/20 border border-yellow-500/30 mb-6 backdrop-blur-sm"
+              className="mb-6 inline-flex items-center gap-3 rounded-2xl border border-yellow-500/30 bg-gradient-to-r from-yellow-500/20 via-amber-500/20 to-orange-500/20 px-6 py-3 backdrop-blur-sm"
               whileHover={{ scale: 1.02 }}
-            animate={{
-              boxShadow: [
-                '0 0 20px rgba(250, 204, 21, 0.2)',
-                '0 0 40px rgba(250, 204, 21, 0.3)',
-                '0 0 20px rgba(250, 204, 21, 0.2)',
-              ],
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
+              animate={{
+                boxShadow: [
+                  '0 0 20px rgba(250, 204, 21, 0.2)',
+                  '0 0 40px rgba(250, 204, 21, 0.3)',
+                  '0 0 20px rgba(250, 204, 21, 0.2)',
+                ],
+              }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <TrophyIcon className="h-7 w-7 text-yellow-400" />
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <TrophyIcon className="h-7 w-7 text-yellow-400" />
+              </motion.div>
+              <span className="text-lg font-bold text-yellow-400">Global Rankings</span>
+              <motion.span
+                className="text-2xl"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                🏆
+              </motion.span>
             </motion.div>
-            <span className="text-yellow-400 font-bold text-lg">Global Rankings</span>
-            <motion.span
-              className="text-2xl"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              🏆
-            </motion.span>
+
+            <h1 className="mb-4 text-4xl font-black sm:text-5xl md:text-6xl">
+              <span className="bg-gradient-to-r from-white via-yellow-200 to-orange-300 bg-clip-text text-transparent">
+                Leaderboard
+              </span>
+            </h1>
+            <p className="mx-auto max-w-xl text-lg text-gray-400">
+              Compete with the community, earn achievements, and climb to the top
+            </p>
           </motion.div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-4">
-            <span className="bg-gradient-to-r from-white via-yellow-200 to-orange-300 bg-clip-text text-transparent">
-              Leaderboard
-            </span>
-          </h1>
-          <p className="text-gray-400 text-lg max-w-xl mx-auto">
-            Compete with the community, earn achievements, and climb to the top
-          </p>
-        </motion.div>
+          {/* Category Pills */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="scrollbar-hide mb-6 overflow-x-auto pb-2"
+          >
+            <div className="flex min-w-max justify-center gap-2 px-4">
+              {CATEGORIES.map((cat, index) => (
+                <motion.button
+                  key={cat.id}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.1 + index * 0.05 }}
+                  onClick={() => {
+                    setCategory(cat.id);
+                    setPage(1);
+                    HapticFeedback.light();
+                  }}
+                  className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold transition-all ${
+                    category === cat.id
+                      ? `bg-gradient-to-r ${cat.gradient} text-white shadow-lg`
+                      : 'border border-dark-700 bg-dark-800/80 text-gray-400 hover:bg-dark-700 hover:text-white'
+                  }`}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <span className={category === cat.id ? 'text-white' : cat.color}>{cat.icon}</span>
+                  <span>{cat.name}</span>
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
 
-        {/* Category Pills */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-6 overflow-x-auto pb-2 scrollbar-hide"
-        >
-          <div className="flex justify-center gap-2 min-w-max px-4">
-            {CATEGORIES.map((cat, index) => (
+          {/* Time Period & Search Row */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="mb-8 flex flex-col items-center justify-between gap-4 sm:flex-row"
+          >
+            {/* Time Period Tabs */}
+            <div className="flex items-center gap-1 rounded-2xl border border-dark-700 bg-dark-800/80 p-1.5 backdrop-blur-sm">
+              {TIME_PERIODS.map((period) => (
+                <motion.button
+                  key={period.id}
+                  onClick={() => {
+                    setTimePeriod(period.id);
+                    setPage(1);
+                    HapticFeedback.light();
+                  }}
+                  className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
+                    timePeriod === period.id
+                      ? `bg-gradient-to-r ${currentCategory.gradient} text-white shadow-md`
+                      : 'text-gray-400 hover:bg-dark-700/50 hover:text-white'
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {period.icon}
+                  <span className="hidden sm:inline">{period.name}</span>
+                </motion.button>
+              ))}
+            </div>
+
+            {/* Search & Refresh */}
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
+                <input
+                  type="text"
+                  placeholder="Search users..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-48 rounded-xl border border-dark-700 bg-dark-800/80 py-2 pl-9 pr-4 text-white placeholder-gray-500 transition-all focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500/50 sm:w-64"
+                />
+              </div>
               <motion.button
-                key={cat.id}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 + index * 0.05 }}
-                onClick={() => {
-                  setCategory(cat.id);
-                  setPage(1);
-                  HapticFeedback.light();
-                }}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${
-                  category === cat.id
-                    ? `bg-gradient-to-r ${cat.gradient} text-white shadow-lg`
-                    : 'bg-dark-800/80 text-gray-400 hover:text-white hover:bg-dark-700 border border-dark-700'
-                }`}
-                whileHover={{ scale: 1.05, y: -2 }}
+                onClick={() => fetchLeaderboard(true)}
+                disabled={isRefreshing}
+                className="rounded-xl border border-dark-700 bg-dark-800/80 p-2.5 text-gray-400 transition-all hover:bg-dark-700 hover:text-white disabled:opacity-50"
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <span className={category === cat.id ? 'text-white' : cat.color}>{cat.icon}</span>
-                <span>{cat.name}</span>
+                <ArrowPathIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
               </motion.button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Time Period & Search Row */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8"
-        >
-          {/* Time Period Tabs */}
-          <div className="flex items-center gap-1 p-1.5 rounded-2xl bg-dark-800/80 border border-dark-700 backdrop-blur-sm">
-            {TIME_PERIODS.map((period) => (
-              <motion.button
-                key={period.id}
-                onClick={() => {
-                  setTimePeriod(period.id);
-                  setPage(1);
-                  HapticFeedback.light();
-                }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-                  timePeriod === period.id
-                    ? `bg-gradient-to-r ${currentCategory.gradient} text-white shadow-md`
-                    : 'text-gray-400 hover:text-white hover:bg-dark-700/50'
-                }`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {period.icon}
-                <span className="hidden sm:inline">{period.name}</span>
-              </motion.button>
-            ))}
-          </div>
-
-          {/* Search & Refresh */}
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-              <input
-                type="text"
-                placeholder="Search users..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-48 sm:w-64 pl-9 pr-4 py-2 rounded-xl bg-dark-800/80 border border-dark-700 text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all"
-              />
             </div>
-            <motion.button
-              onClick={() => fetchLeaderboard(true)}
-              disabled={isRefreshing}
-              className="p-2.5 rounded-xl bg-dark-800/80 border border-dark-700 text-gray-400 hover:text-white hover:bg-dark-700 transition-all disabled:opacity-50"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <ArrowPathIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-            </motion.button>
-          </div>
-        </motion.div>
-
-        {/* Current User's Rank Card (if not in top) */}
-        {leaderboard?.userRank && leaderboard.userRank.rank > pageSize && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="mb-6"
-          >
-            <GlassCard variant="neon" glow className="p-5 relative overflow-hidden">
-              {/* Animated background */}
-              <div className={`absolute inset-0 bg-gradient-to-r ${currentCategory.gradient} opacity-5`} />
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
-                animate={{ x: ['-100%', '100%'] }}
-                transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
-              />
-
-              <div className="relative flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="text-center px-4 py-2 rounded-xl bg-primary-500/20 border border-primary-500/30">
-                    <p className="text-xs text-primary-300 mb-0.5">Your Rank</p>
-                    <p className="text-3xl font-black text-primary-400">#{leaderboard.userRank.rank}</p>
-                  </div>
-                  <div className="h-14 w-px bg-gradient-to-b from-transparent via-dark-600 to-transparent hidden sm:block" />
-                  <div className="flex items-center gap-3">
-                    <AnimatedAvatar
-                      src={leaderboard.userRank.avatarUrl}
-                      alt={leaderboard.userRank.displayName || leaderboard.userRank.username}
-                      size="lg"
-                      showStatus={true}
-                      statusType="online"
-                    />
-                    <div>
-                      <p className="font-bold text-white text-lg">{leaderboard.userRank.displayName || leaderboard.userRank.username}</p>
-                      <p className="text-sm text-gray-400">@{leaderboard.userRank.username}</p>
-                      {leaderboard.userRank.title && (
-                        <span className="text-xs text-primary-400 font-medium">{leaderboard.userRank.title}</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-6">
-                  {getRankChange(leaderboard.userRank.rank, leaderboard.userRank.previousRank)}
-                  <div className="text-center sm:text-right">
-                    <p className="text-xs text-gray-400 mb-1">{currentCategory.description}</p>
-                    <p className={`text-2xl font-black bg-gradient-to-r ${currentCategory.gradient} bg-clip-text text-transparent`}>
-                      {formatValue(leaderboard.userRank.value)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </GlassCard>
           </motion.div>
-        )}
 
-        {/* Main Leaderboard */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-        >
-          <GlassCard variant="frosted" className="overflow-hidden">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-b border-dark-700/50 bg-dark-900/50">
-              <div className="flex items-center gap-3 text-gray-400 mb-2 sm:mb-0">
-                <GlobeAltIcon className="h-5 w-5" />
-                <span className="text-sm font-medium">
-                  {(leaderboard?.totalCount ?? 0).toLocaleString()} participants competing
-                </span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-500">
-                <ClockIcon className="h-4 w-4" />
-                <span className="text-xs">
-                  Updated {leaderboard?.lastUpdated ? new Date(leaderboard.lastUpdated).toLocaleTimeString() : 'now'}
-                </span>
-              </div>
-            </div>
-
-            {/* Loading State */}
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-24">
-                <motion.div
-                  className={`h-16 w-16 rounded-full border-4 border-t-transparent bg-gradient-to-r ${currentCategory.gradient}`}
-                  style={{ borderColor: 'currentColor', borderTopColor: 'transparent' }}
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          {/* Current User's Rank Card (if not in top) */}
+          {leaderboard?.userRank && leaderboard.userRank.rank > pageSize && (
+            <motion.div
+              initial={{ opacity: 0, y: 20, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="mb-6"
+            >
+              <GlassCard variant="neon" glow className="relative overflow-hidden p-5">
+                {/* Animated background */}
+                <div
+                  className={`absolute inset-0 bg-gradient-to-r ${currentCategory.gradient} opacity-5`}
                 />
-                <p className="mt-4 text-gray-400">Loading rankings...</p>
-              </div>
-            ) : (
-              <>
-                {/* Top 3 Podium */}
-                {page === 1 && leaderboard && (leaderboard.entries?.length ?? 0) >= 3 && (
-                  <div className="relative py-8 px-4 border-b border-dark-700/50 bg-gradient-to-b from-dark-800/50 to-transparent">
-                    {/* Spotlights */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl" />
-                    </div>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
+                  animate={{ x: ['-100%', '100%'] }}
+                  transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
+                />
 
-                    <div className="flex items-end justify-center gap-4 sm:gap-8 relative">
-                      {[1, 0, 2].map((index) => {
-                        const entry = leaderboard.entries?.[index];
-                        if (!entry) return null;
+                <div className="relative flex flex-col items-center justify-between gap-4 sm:flex-row">
+                  <div className="flex items-center gap-4">
+                    <div className="rounded-xl border border-primary-500/30 bg-primary-500/20 px-4 py-2 text-center">
+                      <p className="mb-0.5 text-xs text-primary-300">Your Rank</p>
+                      <p className="text-3xl font-black text-primary-400">
+                        #{leaderboard.userRank.rank}
+                      </p>
+                    </div>
+                    <div className="hidden h-14 w-px bg-gradient-to-b from-transparent via-dark-600 to-transparent sm:block" />
+                    <div className="flex items-center gap-3">
+                      <AnimatedAvatar
+                        src={leaderboard.userRank.avatarUrl}
+                        alt={leaderboard.userRank.displayName || leaderboard.userRank.username}
+                        size="lg"
+                        showStatus={true}
+                        statusType="online"
+                      />
+                      <div>
+                        <p className="text-lg font-bold text-white">
+                          {leaderboard.userRank.displayName || leaderboard.userRank.username}
+                        </p>
+                        <p className="text-sm text-gray-400">@{leaderboard.userRank.username}</p>
+                        {leaderboard.userRank.title && (
+                          <span className="text-xs font-medium text-primary-400">
+                            {leaderboard.userRank.title}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-6">
+                    {getRankChange(leaderboard.userRank.rank, leaderboard.userRank.previousRank)}
+                    <div className="text-center sm:text-right">
+                      <p className="mb-1 text-xs text-gray-400">{currentCategory.description}</p>
+                      <p
+                        className={`bg-gradient-to-r text-2xl font-black ${currentCategory.gradient} bg-clip-text text-transparent`}
+                      >
+                        {formatValue(leaderboard.userRank.value)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </GlassCard>
+            </motion.div>
+          )}
+
+          {/* Main Leaderboard */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+          >
+            <GlassCard variant="frosted" className="overflow-hidden">
+              {/* Header */}
+              <div className="flex flex-col items-center justify-between border-b border-dark-700/50 bg-dark-900/50 p-4 sm:flex-row">
+                <div className="mb-2 flex items-center gap-3 text-gray-400 sm:mb-0">
+                  <GlobeAltIcon className="h-5 w-5" />
+                  <span className="text-sm font-medium">
+                    {(leaderboard?.totalCount ?? 0).toLocaleString()} participants competing
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-gray-500">
+                  <ClockIcon className="h-4 w-4" />
+                  <span className="text-xs">
+                    Updated{' '}
+                    {leaderboard?.lastUpdated
+                      ? new Date(leaderboard.lastUpdated).toLocaleTimeString()
+                      : 'now'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Loading State */}
+              {isLoading ? (
+                <div className="flex flex-col items-center justify-center py-24">
+                  <motion.div
+                    className={`h-16 w-16 rounded-full border-4 border-t-transparent bg-gradient-to-r ${currentCategory.gradient}`}
+                    style={{ borderColor: 'currentColor', borderTopColor: 'transparent' }}
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  />
+                  <p className="mt-4 text-gray-400">Loading rankings...</p>
+                </div>
+              ) : (
+                <>
+                  {/* Top 3 Podium */}
+                  {page === 1 && leaderboard && (leaderboard.entries?.length ?? 0) >= 3 && (
+                    <div className="relative border-b border-dark-700/50 bg-gradient-to-b from-dark-800/50 to-transparent px-4 py-8">
+                      {/* Spotlights */}
+                      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+                        <div className="absolute left-1/2 top-0 h-96 w-96 -translate-x-1/2 rounded-full bg-yellow-500/10 blur-3xl" />
+                      </div>
+
+                      <div className="relative flex items-end justify-center gap-4 sm:gap-8">
+                        {[1, 0, 2].map((index) => {
+                          const entry = leaderboard.entries?.[index];
+                          if (!entry) return null;
+                          const config = getRankConfig(entry.rank);
+                          const isFirst = entry.rank === 1;
+                          const podiumHeight = isFirst
+                            ? 'h-36'
+                            : entry.rank === 2
+                              ? 'h-28'
+                              : 'h-20';
+
+                          return (
+                            <motion.div
+                              key={entry.userId}
+                              initial={{ opacity: 0, y: 50, scale: 0.8 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              transition={{
+                                delay: 0.3 + index * 0.15,
+                                type: 'spring',
+                                stiffness: 100,
+                              }}
+                              whileHover={{ y: -8, scale: 1.02 }}
+                              onClick={() => navigate(`/profile/${entry.userId}`)}
+                              className={`flex cursor-pointer flex-col items-center text-center ${
+                                isFirst ? 'order-2' : index === 0 ? 'order-1' : 'order-3'
+                              }`}
+                            >
+                              {/* Avatar Section */}
+                              <div className="relative mb-2">
+                                {/* Crown for #1 */}
+                                {config.crown && (
+                                  <motion.div
+                                    className="absolute -top-8 left-1/2 z-10 -translate-x-1/2"
+                                    animate={{
+                                      y: [0, -5, 0],
+                                      rotate: [0, 5, -5, 0],
+                                    }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                  >
+                                    <span className="text-3xl drop-shadow-lg">👑</span>
+                                  </motion.div>
+                                )}
+
+                                {/* Glow Effect */}
+                                <motion.div
+                                  className={`absolute inset-0 rounded-full blur-xl ${config.bg}`}
+                                  animate={{
+                                    opacity: [0.5, 0.8, 0.5],
+                                    scale: [1, 1.1, 1],
+                                  }}
+                                  transition={{ duration: 2, repeat: Infinity }}
+                                  style={{ boxShadow: `0 0 40px ${config.glowColor}` }}
+                                />
+
+                                <div
+                                  className={`relative rounded-full p-1 ${config.bg} border-2 ${config.border}`}
+                                  style={{ boxShadow: `0 0 30px ${config.glowColor}` }}
+                                >
+                                  <AnimatedAvatar
+                                    src={entry.avatarUrl}
+                                    alt={entry.displayName || entry.username}
+                                    size={isFirst ? '2xl' : 'xl'}
+                                    showStatus={entry.isOnline}
+                                    statusType={entry.isOnline ? 'online' : 'offline'}
+                                  />
+                                </div>
+
+                                {/* Medal Badge */}
+                                <motion.div
+                                  className={`absolute -bottom-1 left-1/2 -translate-x-1/2 text-2xl drop-shadow-lg`}
+                                  animate={{ scale: [1, 1.1, 1] }}
+                                  transition={{ duration: 1.5, repeat: Infinity }}
+                                >
+                                  {config.medal}
+                                </motion.div>
+                              </div>
+
+                              {/* User Info */}
+                              <div className="mt-4">
+                                <div className="mb-1 flex items-center justify-center gap-1">
+                                  <p
+                                    className={`max-w-[80px] truncate font-bold sm:max-w-[120px] ${config.text}`}
+                                  >
+                                    {entry.displayName || entry.username}
+                                  </p>
+                                  {entry.isPremium && (
+                                    <BoltIcon className="h-4 w-4 text-yellow-400" />
+                                  )}
+                                  {entry.isVerified && (
+                                    <StarIcon className="h-4 w-4 text-primary-400" />
+                                  )}
+                                </div>
+                                {entry.title && (
+                                  <p className="mb-1 text-xs font-medium text-primary-400">
+                                    {entry.title}
+                                  </p>
+                                )}
+                                <p className="text-xs text-gray-500">Level {entry.level}</p>
+                                <p className={`text-lg font-black ${config.text} mt-1`}>
+                                  {formatValue(entry.value)}
+                                </p>
+                              </div>
+
+                              {/* Podium */}
+                              <motion.div
+                                className={`${podiumHeight} mt-3 w-20 rounded-t-lg sm:w-28 ${config.bg} border-x-2 border-t-2 ${config.border} flex items-start justify-center pt-2`}
+                                initial={{ height: 0 }}
+                                animate={{ height: 'auto' }}
+                                transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
+                              >
+                                <span className={`text-3xl font-black ${config.text}`}>
+                                  #{entry.rank}
+                                </span>
+                              </motion.div>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Rest of Rankings */}
+                  <div className="divide-y divide-dark-800/50">
+                    <AnimatePresence mode="popLayout">
+                      {filteredEntries.slice(page === 1 ? 3 : 0).map((entry, index) => {
+                        const isCurrentUser = user?.id === entry.userId;
                         const config = getRankConfig(entry.rank);
-                        const isFirst = entry.rank === 1;
-                        const podiumHeight = isFirst ? 'h-36' : entry.rank === 2 ? 'h-28' : 'h-20';
 
                         return (
                           <motion.div
                             key={entry.userId}
-                            initial={{ opacity: 0, y: 50, scale: 0.8 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            transition={{
-                              delay: 0.3 + index * 0.15,
-                              type: 'spring',
-                              stiffness: 100,
-                            }}
-                            whileHover={{ y: -8, scale: 1.02 }}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            transition={{ delay: index * 0.02 }}
                             onClick={() => navigate(`/profile/${entry.userId}`)}
-                            className={`cursor-pointer text-center flex flex-col items-center ${
-                              isFirst ? 'order-2' : index === 0 ? 'order-1' : 'order-3'
+                            className={`group flex cursor-pointer items-center gap-3 p-4 transition-all hover:bg-dark-800/50 sm:gap-4 ${
+                              isCurrentUser
+                                ? `border-l-4 border-primary-500 bg-gradient-to-r from-primary-500/10 to-transparent`
+                                : ''
                             }`}
                           >
-                            {/* Avatar Section */}
-                            <div className="relative mb-2">
-                              {/* Crown for #1 */}
-                              {config.crown && (
-                                <motion.div
-                                  className="absolute -top-8 left-1/2 -translate-x-1/2 z-10"
-                                  animate={{
-                                    y: [0, -5, 0],
-                                    rotate: [0, 5, -5, 0],
-                                  }}
-                                  transition={{ duration: 2, repeat: Infinity }}
-                                >
-                                  <span className="text-3xl drop-shadow-lg">👑</span>
-                                </motion.div>
-                              )}
+                            {/* Rank */}
+                            <div className="w-10 shrink-0 text-center sm:w-14">
+                              <span
+                                className={`text-base font-bold sm:text-lg ${entry.rank <= 3 ? config.text : 'text-gray-400'}`}
+                              >
+                                #{entry.rank}
+                              </span>
+                            </div>
 
-                              {/* Glow Effect */}
-                              <motion.div
-                                className={`absolute inset-0 rounded-full blur-xl ${config.bg}`}
-                                animate={{
-                                  opacity: [0.5, 0.8, 0.5],
-                                  scale: [1, 1.1, 1],
-                                }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                                style={{ boxShadow: `0 0 40px ${config.glowColor}` }}
+                            {/* Rank Change */}
+                            <div className="w-14 shrink-0 sm:w-16">
+                              {getRankChange(entry.rank, entry.previousRank)}
+                            </div>
+
+                            {/* Avatar */}
+                            <div className="shrink-0">
+                              <AnimatedAvatar
+                                src={entry.avatarUrl}
+                                alt={entry.displayName || entry.username}
+                                size="md"
+                                showStatus={entry.isOnline}
+                                statusType={entry.isOnline ? 'online' : 'offline'}
                               />
-
-                              <div
-                                className={`relative p-1 rounded-full ${config.bg} border-2 ${config.border}`}
-                                style={{ boxShadow: `0 0 30px ${config.glowColor}` }}
-                              >
-                                <AnimatedAvatar
-                                  src={entry.avatarUrl}
-                                  alt={entry.displayName || entry.username}
-                                  size={isFirst ? '2xl' : 'xl'}
-                                  showStatus={entry.isOnline}
-                                  statusType={entry.isOnline ? 'online' : 'offline'}
-                                />
-                              </div>
-
-                              {/* Medal Badge */}
-                              <motion.div
-                                className={`absolute -bottom-1 left-1/2 -translate-x-1/2 text-2xl drop-shadow-lg`}
-                                animate={{ scale: [1, 1.1, 1] }}
-                                transition={{ duration: 1.5, repeat: Infinity }}
-                              >
-                                {config.medal}
-                              </motion.div>
                             </div>
 
                             {/* User Info */}
-                            <div className="mt-4">
-                              <div className="flex items-center justify-center gap-1 mb-1">
-                                <p className={`font-bold truncate max-w-[80px] sm:max-w-[120px] ${config.text}`}>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span
+                                  className={`truncate font-semibold ${isCurrentUser ? 'text-primary-400' : 'text-white transition-colors group-hover:text-primary-300'}`}
+                                >
                                   {entry.displayName || entry.username}
-                                </p>
-                                {entry.isPremium && <BoltIcon className="h-4 w-4 text-yellow-400" />}
-                                {entry.isVerified && <StarIcon className="h-4 w-4 text-primary-400" />}
+                                </span>
+                                {entry.isPremium && (
+                                  <BoltIcon className="h-4 w-4 shrink-0 text-yellow-400" />
+                                )}
+                                {entry.isVerified && (
+                                  <StarIcon className="h-4 w-4 shrink-0 text-primary-400" />
+                                )}
                               </div>
-                              {entry.title && (
-                                <p className="text-xs text-primary-400 font-medium mb-1">{entry.title}</p>
-                              )}
-                              <p className="text-xs text-gray-500">Level {entry.level}</p>
-                              <p className={`text-lg font-black ${config.text} mt-1`}>
-                                {formatValue(entry.value)}
-                              </p>
+                              <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <span>Level {entry.level}</span>
+                                {entry.title && (
+                                  <>
+                                    <span>•</span>
+                                    <span className="text-primary-400/70">{entry.title}</span>
+                                  </>
+                                )}
+                              </div>
                             </div>
 
-                            {/* Podium */}
-                            <motion.div
-                              className={`${podiumHeight} w-20 sm:w-28 mt-3 rounded-t-lg ${config.bg} border-t-2 border-x-2 ${config.border} flex items-start justify-center pt-2`}
-                              initial={{ height: 0 }}
-                              animate={{ height: 'auto' }}
-                              transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
-                            >
-                              <span className={`text-3xl font-black ${config.text}`}>#{entry.rank}</span>
-                            </motion.div>
+                            {/* Value */}
+                            <div className="shrink-0 text-right">
+                              <p
+                                className={`bg-gradient-to-r text-base font-bold sm:text-lg ${currentCategory.gradient} bg-clip-text text-transparent`}
+                              >
+                                {formatValue(entry.value)}
+                              </p>
+                              <p className="hidden text-xs text-gray-500 sm:block">
+                                {currentCategory.description}
+                              </p>
+                            </div>
                           </motion.div>
                         );
                       })}
-                    </div>
+                    </AnimatePresence>
+
+                    {/* Empty State */}
+                    {filteredEntries.length === 0 && (
+                      <div className="py-16 text-center">
+                        <MagnifyingGlassIcon className="mx-auto mb-4 h-12 w-12 text-gray-600" />
+                        <p className="text-gray-400">No users found matching "{searchQuery}"</p>
+                      </div>
+                    )}
                   </div>
-                )}
 
-                {/* Rest of Rankings */}
-                <div className="divide-y divide-dark-800/50">
-                  <AnimatePresence mode="popLayout">
-                    {filteredEntries.slice(page === 1 ? 3 : 0).map((entry, index) => {
-                      const isCurrentUser = user?.id === entry.userId;
-                      const config = getRankConfig(entry.rank);
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 border-t border-dark-700/50 bg-dark-900/30 p-4">
+                      <motion.button
+                        onClick={() => setPage(1)}
+                        disabled={page === 1}
+                        className="rounded-lg bg-dark-700/50 p-2 text-gray-400 transition-all hover:bg-dark-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <ChevronLeftIcon className="h-4 w-4" />
+                        <ChevronLeftIcon className="-ml-3 h-4 w-4" />
+                      </motion.button>
+                      <motion.button
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        className="rounded-lg bg-dark-700/50 p-2 text-gray-400 transition-all hover:bg-dark-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <ChevronLeftIcon className="h-4 w-4" />
+                      </motion.button>
 
-                      return (
-                        <motion.div
-                          key={entry.userId}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: 20 }}
-                          transition={{ delay: index * 0.02 }}
-                          onClick={() => navigate(`/profile/${entry.userId}`)}
-                          className={`flex items-center gap-3 sm:gap-4 p-4 cursor-pointer transition-all hover:bg-dark-800/50 group ${
-                            isCurrentUser
-                              ? `bg-gradient-to-r from-primary-500/10 to-transparent border-l-4 border-primary-500`
-                              : ''
-                          }`}
-                        >
-                          {/* Rank */}
-                          <div className="w-10 sm:w-14 text-center shrink-0">
-                            <span className={`text-base sm:text-lg font-bold ${entry.rank <= 3 ? config.text : 'text-gray-400'}`}>
-                              #{entry.rank}
-                            </span>
-                          </div>
+                      <div className="flex items-center gap-1 px-2">
+                        {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                          let pageNum: number;
+                          if (totalPages <= 5) {
+                            pageNum = i + 1;
+                          } else if (page <= 3) {
+                            pageNum = i + 1;
+                          } else if (page >= totalPages - 2) {
+                            pageNum = totalPages - 4 + i;
+                          } else {
+                            pageNum = page - 2 + i;
+                          }
 
-                          {/* Rank Change */}
-                          <div className="w-14 sm:w-16 shrink-0">
-                            {getRankChange(entry.rank, entry.previousRank)}
-                          </div>
+                          return (
+                            <motion.button
+                              key={i}
+                              onClick={() => setPage(pageNum)}
+                              className={`h-8 w-8 rounded-lg text-sm font-medium transition-all ${
+                                page === pageNum
+                                  ? `bg-gradient-to-r ${currentCategory.gradient} text-white`
+                                  : 'bg-dark-700/50 text-gray-400 hover:bg-dark-600 hover:text-white'
+                              }`}
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                            >
+                              {pageNum}
+                            </motion.button>
+                          );
+                        })}
+                      </div>
 
-                          {/* Avatar */}
-                          <div className="shrink-0">
-                            <AnimatedAvatar
-                              src={entry.avatarUrl}
-                              alt={entry.displayName || entry.username}
-                              size="md"
-                              showStatus={entry.isOnline}
-                              statusType={entry.isOnline ? 'online' : 'offline'}
-                            />
-                          </div>
+                      <motion.button
+                        onClick={() => setPage((p) => p + 1)}
+                        disabled={page >= totalPages}
+                        className="rounded-lg bg-dark-700/50 p-2 text-gray-400 transition-all hover:bg-dark-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <ChevronRightIcon className="h-4 w-4" />
+                      </motion.button>
+                      <motion.button
+                        onClick={() => setPage(totalPages)}
+                        disabled={page >= totalPages}
+                        className="rounded-lg bg-dark-700/50 p-2 text-gray-400 transition-all hover:bg-dark-600 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <ChevronRightIcon className="h-4 w-4" />
+                        <ChevronRightIcon className="-ml-3 h-4 w-4" />
+                      </motion.button>
 
-                          {/* User Info */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className={`font-semibold truncate ${isCurrentUser ? 'text-primary-400' : 'text-white group-hover:text-primary-300 transition-colors'}`}>
-                                {entry.displayName || entry.username}
-                              </span>
-                              {entry.isPremium && <BoltIcon className="h-4 w-4 text-yellow-400 shrink-0" />}
-                              {entry.isVerified && <StarIcon className="h-4 w-4 text-primary-400 shrink-0" />}
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                              <span>Level {entry.level}</span>
-                              {entry.title && (
-                                <>
-                                  <span>•</span>
-                                  <span className="text-primary-400/70">{entry.title}</span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Value */}
-                          <div className="text-right shrink-0">
-                            <p className={`text-base sm:text-lg font-bold bg-gradient-to-r ${currentCategory.gradient} bg-clip-text text-transparent`}>
-                              {formatValue(entry.value)}
-                            </p>
-                            <p className="text-xs text-gray-500 hidden sm:block">{currentCategory.description}</p>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </AnimatePresence>
-
-                  {/* Empty State */}
-                  {filteredEntries.length === 0 && (
-                    <div className="text-center py-16">
-                      <MagnifyingGlassIcon className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                      <p className="text-gray-400">No users found matching "{searchQuery}"</p>
+                      <span className="ml-2 hidden text-sm text-gray-500 sm:inline">
+                        of {totalPages.toLocaleString()} pages
+                      </span>
                     </div>
                   )}
+                </>
+              )}
+            </GlassCard>
+          </motion.div>
+
+          {/* Stats Footer */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4"
+          >
+            {[
+              {
+                label: 'Total Users',
+                value: (leaderboard?.totalCount ?? 0).toLocaleString(),
+                icon: <UserGroupIcon className="h-5 w-5" />,
+              },
+              {
+                label: 'Active Today',
+                value: Math.floor((leaderboard?.totalCount ?? 0) * 0.15).toLocaleString(),
+                icon: <BoltIcon className="h-5 w-5" />,
+              },
+              {
+                label: 'Your Percentile',
+                value: leaderboard?.userRank
+                  ? `Top ${Math.ceil((leaderboard.userRank.rank / (leaderboard?.totalCount || 1)) * 100)}%`
+                  : 'N/A',
+                icon: <ChartBarIcon className="h-5 w-5" />,
+              },
+              { label: 'Next Update', value: '5 min', icon: <ClockIcon className="h-5 w-5" /> },
+            ].map((stat, index) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 + index * 0.05 }}
+                className="rounded-xl border border-dark-700/50 bg-dark-800/50 p-4 text-center"
+              >
+                <div
+                  className={`inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br ${currentCategory.gradient} mb-2 bg-opacity-20`}
+                >
+                  <span className={currentCategory.color}>{stat.icon}</span>
                 </div>
-
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-2 p-4 border-t border-dark-700/50 bg-dark-900/30">
-                    <motion.button
-                      onClick={() => setPage(1)}
-                      disabled={page === 1}
-                      className="p-2 rounded-lg bg-dark-700/50 text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-dark-600 hover:text-white transition-all"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <ChevronLeftIcon className="h-4 w-4" />
-                      <ChevronLeftIcon className="h-4 w-4 -ml-3" />
-                    </motion.button>
-                    <motion.button
-                      onClick={() => setPage(p => Math.max(1, p - 1))}
-                      disabled={page === 1}
-                      className="p-2 rounded-lg bg-dark-700/50 text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-dark-600 hover:text-white transition-all"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <ChevronLeftIcon className="h-4 w-4" />
-                    </motion.button>
-
-                    <div className="flex items-center gap-1 px-2">
-                      {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                        let pageNum: number;
-                        if (totalPages <= 5) {
-                          pageNum = i + 1;
-                        } else if (page <= 3) {
-                          pageNum = i + 1;
-                        } else if (page >= totalPages - 2) {
-                          pageNum = totalPages - 4 + i;
-                        } else {
-                          pageNum = page - 2 + i;
-                        }
-
-                        return (
-                          <motion.button
-                            key={i}
-                            onClick={() => setPage(pageNum)}
-                            className={`w-8 h-8 rounded-lg text-sm font-medium transition-all ${
-                              page === pageNum
-                                ? `bg-gradient-to-r ${currentCategory.gradient} text-white`
-                                : 'bg-dark-700/50 text-gray-400 hover:bg-dark-600 hover:text-white'
-                            }`}
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            {pageNum}
-                          </motion.button>
-                        );
-                      })}
-                    </div>
-
-                    <motion.button
-                      onClick={() => setPage(p => p + 1)}
-                      disabled={page >= totalPages}
-                      className="p-2 rounded-lg bg-dark-700/50 text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-dark-600 hover:text-white transition-all"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <ChevronRightIcon className="h-4 w-4" />
-                    </motion.button>
-                    <motion.button
-                      onClick={() => setPage(totalPages)}
-                      disabled={page >= totalPages}
-                      className="p-2 rounded-lg bg-dark-700/50 text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-dark-600 hover:text-white transition-all"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <ChevronRightIcon className="h-4 w-4" />
-                      <ChevronRightIcon className="h-4 w-4 -ml-3" />
-                    </motion.button>
-
-                    <span className="text-gray-500 text-sm ml-2 hidden sm:inline">
-                      of {totalPages.toLocaleString()} pages
-                    </span>
-                  </div>
-                )}
-              </>
-            )}
-          </GlassCard>
-        </motion.div>
-
-        {/* Stats Footer */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4"
-        >
-          {[
-            { label: 'Total Users', value: (leaderboard?.totalCount ?? 0).toLocaleString(), icon: <UserGroupIcon className="h-5 w-5" /> },
-            { label: 'Active Today', value: Math.floor((leaderboard?.totalCount ?? 0) * 0.15).toLocaleString(), icon: <BoltIcon className="h-5 w-5" /> },
-            { label: 'Your Percentile', value: leaderboard?.userRank ? `Top ${Math.ceil((leaderboard.userRank.rank / (leaderboard?.totalCount || 1)) * 100)}%` : 'N/A', icon: <ChartBarIcon className="h-5 w-5" /> },
-            { label: 'Next Update', value: '5 min', icon: <ClockIcon className="h-5 w-5" /> },
-          ].map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 + index * 0.05 }}
-              className="p-4 rounded-xl bg-dark-800/50 border border-dark-700/50 text-center"
-            >
-              <div className={`inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br ${currentCategory.gradient} bg-opacity-20 mb-2`}>
-                <span className={currentCategory.color}>{stat.icon}</span>
-              </div>
-              <p className="text-lg font-bold text-white">{stat.value}</p>
-              <p className="text-xs text-gray-500">{stat.label}</p>
-            </motion.div>
-          ))}
-        </motion.div>
+                <p className="text-lg font-bold text-white">{stat.value}</p>
+                <p className="text-xs text-gray-500">{stat.label}</p>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </div>
     </div>

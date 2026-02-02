@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChatBubbleLeftIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useForumStore } from '@/stores/forumStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 interface MultiQuoteIndicatorProps {
   onQuoteClick: () => void;
@@ -32,17 +32,16 @@ export default function MultiQuoteIndicator({ onQuoteClick }: MultiQuoteIndicato
             <div className="flex items-center gap-3">
               <div className="relative">
                 <ChatBubbleLeftIcon className="h-6 w-6 text-primary-400" />
-                <div className="absolute -top-2 -right-2 h-5 w-5 bg-primary-500 rounded-full flex items-center justify-center">
+                <div className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary-500">
                   <span className="text-xs font-bold text-white">{multiQuoteBuffer.length}</span>
                 </div>
               </div>
               <div>
                 <p className="text-sm font-semibold text-white">
-                  {multiQuoteBuffer.length} {multiQuoteBuffer.length === 1 ? 'post' : 'posts'} selected
+                  {multiQuoteBuffer.length} {multiQuoteBuffer.length === 1 ? 'post' : 'posts'}{' '}
+                  selected
                 </p>
-                <p className="text-xs text-gray-400">
-                  Click to reply with quotes
-                </p>
+                <p className="text-xs text-gray-400">Click to reply with quotes</p>
               </div>
             </div>
 
@@ -55,7 +54,7 @@ export default function MultiQuoteIndicator({ onQuoteClick }: MultiQuoteIndicato
                 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-4 py-2 bg-gradient-to-r from-primary-600 to-purple-600 hover:from-primary-500 hover:to-purple-500 text-white text-sm font-medium rounded-lg transition-all shadow-lg shadow-primary-500/20"
+                className="rounded-lg bg-gradient-to-r from-primary-600 to-purple-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-primary-500/20 transition-all hover:from-primary-500 hover:to-purple-500"
               >
                 Quote & Reply
               </motion.button>
@@ -67,7 +66,7 @@ export default function MultiQuoteIndicator({ onQuoteClick }: MultiQuoteIndicato
                 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 bg-dark-700 hover:bg-red-500/20 text-gray-400 hover:text-red-400 rounded-lg transition-colors"
+                className="rounded-lg bg-dark-700 p-2 text-gray-400 transition-colors hover:bg-red-500/20 hover:text-red-400"
                 title="Clear selection"
               >
                 <XMarkIcon className="h-5 w-5" />
@@ -77,13 +76,13 @@ export default function MultiQuoteIndicator({ onQuoteClick }: MultiQuoteIndicato
 
           {/* Selected Posts Preview */}
           {multiQuoteBuffer.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-dark-600 space-y-1 max-h-32 overflow-y-auto">
+            <div className="mt-3 max-h-32 space-y-1 overflow-y-auto border-t border-dark-600 pt-3">
               {multiQuoteBuffer.map((postId) => (
                 <div
                   key={postId}
-                  className="flex items-center justify-between gap-2 px-2 py-1.5 bg-dark-700/50 rounded"
+                  className="flex items-center justify-between gap-2 rounded bg-dark-700/50 px-2 py-1.5"
                 >
-                  <span className="text-xs text-gray-400 truncate">
+                  <span className="truncate text-xs text-gray-400">
                     Post ID: {postId.slice(0, 8)}...
                   </span>
                   <button
@@ -91,7 +90,7 @@ export default function MultiQuoteIndicator({ onQuoteClick }: MultiQuoteIndicato
                       HapticFeedback.light();
                       removeFromMultiQuote(postId);
                     }}
-                    className="text-gray-500 hover:text-red-400 transition-colors"
+                    className="text-gray-500 transition-colors hover:text-red-400"
                   >
                     <XMarkIcon className="h-3 w-3" />
                   </button>

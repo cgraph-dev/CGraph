@@ -6,7 +6,7 @@ import { createLogger } from '@/lib/logger';
 import { getMessageSenderId } from '@/lib/apiUtils';
 import { formatDateHeader, groupMessagesByDate } from '@/lib/chat/messageUtils';
 import { handleAddReaction } from '@/lib/chat/reactionUtils';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import {
   AnimatedMessageWrapper,
   AnimatedReactionBubble,

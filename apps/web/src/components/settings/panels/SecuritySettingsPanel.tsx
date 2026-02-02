@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 export function SecuritySettingsPanel() {
   const { user } = useAuthStore();

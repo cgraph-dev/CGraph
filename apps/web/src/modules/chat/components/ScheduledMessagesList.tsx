@@ -11,7 +11,7 @@ import {
   CalendarIcon,
 } from '@heroicons/react/24/outline';
 import { format, formatDistanceToNow, isPast, isToday, isTomorrow, isThisWeek } from 'date-fns';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useChatStore, Message } from '@/stores/chatStore';
 import { toast } from '@/components/Toast';

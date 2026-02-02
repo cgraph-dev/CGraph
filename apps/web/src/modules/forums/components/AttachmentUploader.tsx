@@ -14,7 +14,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useForumStore, type PostAttachment } from '@/stores/forumStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('AttachmentUploader');

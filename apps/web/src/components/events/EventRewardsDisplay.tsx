@@ -10,7 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useCurrentEventProgress } from '@/stores/seasonalEventStore';
 import type { EventReward, EventMilestone, BattlePassTier } from '@/stores/seasonalEventStore';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 /**
  * EventRewardsDisplay Component
