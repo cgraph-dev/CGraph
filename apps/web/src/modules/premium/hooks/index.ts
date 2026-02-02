@@ -1,1 +1,7 @@
-// premium hooks
+/**
+ * Premium Module Hooks
+ *
+ * Subscription and premium feature related hooks.
+ */
+
+export { useSubscription } from './useSubscription';

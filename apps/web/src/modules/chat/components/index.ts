@@ -80,3 +80,10 @@ export { E2EEErrorModal } from './E2EEErrorModal';
 // ============================================
 
 export { ForwardMessageModal } from './ForwardMessageModal';
+
+// ============================================
+// Messaging Components
+// ============================================
+
+export { ConversationList } from './ConversationList';
+export { MessageInput } from './MessageInput';
