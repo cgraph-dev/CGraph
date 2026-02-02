@@ -1,4 +1,5 @@
 // Startup debug logging (only in development)
+// Note: Using console directly here because logger isn't loaded yet
 const debugLog = import.meta.env.DEV
   ? (msg: string, ...args: unknown[]) => console.debug('[CGraph]', msg, ...args)
   : () => {};
@@ -19,6 +20,7 @@ import { ThemeProviderEnhanced } from './contexts/ThemeContextEnhanced';
 import { NotificationProvider } from './providers/NotificationProvider';
 import AnimatedLogo from './components/AnimatedLogo';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { logger } from './lib/logger';
 import './index.css';
 
 debugLog('All imports completed');
@@ -55,7 +57,7 @@ const localStoragePersister = createSyncStoragePersister({
     try {
       return JSON.stringify(data);
     } catch (error) {
-      console.warn('[CGraph] Failed to serialize cache:', error);
+      logger.warn('Failed to serialize cache:', error);
       return '{}';
     }
   },
@@ -63,7 +65,7 @@ const localStoragePersister = createSyncStoragePersister({
     try {
       return JSON.parse(data);
     } catch (error) {
-      console.warn('[CGraph] Failed to deserialize cache, clearing corrupted data:', error);
+      logger.warn('Failed to deserialize cache, clearing corrupted data:', error);
       // Clear corrupted cache
       try {
         window.localStorage.removeItem('cgraph-query-cache');
@@ -132,11 +134,11 @@ if (!rootElement) {
 
 // Handle uncaught errors at the window level
 window.addEventListener('error', (event) => {
-  console.error('[CGraph] Uncaught error:', event.error);
+  logger.error('Uncaught error:', event.error);
 });
 
 window.addEventListener('unhandledrejection', (event) => {
-  console.error('[CGraph] Unhandled promise rejection:', event.reason);
+  logger.error('Unhandled promise rejection:', event.reason);
 });
 
 debugLog('Creating React root...');
@@ -176,7 +178,7 @@ try {
   );
   debugLog('Application rendered successfully');
 } catch (err) {
-  console.error('[CGraph] Failed to render:', err);
+  logger.error('Failed to render:', err);
 }
 
 debugLog('Application mounted');

@@ -18,6 +18,10 @@
  * @since v0.7.35
  */
 
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('AIMessageEngine');
+
 // =============================================================================
 // TYPES
 // =============================================================================
@@ -420,7 +424,7 @@ export class AIMessageEngine {
       ...config,
     };
     // Store config for future use in AI features
-    console.debug('AIMessageEngine initialized with config:', this._config);
+    logger.debug('Initialized with config:', this._config);
   }
 
   // ===========================================================================

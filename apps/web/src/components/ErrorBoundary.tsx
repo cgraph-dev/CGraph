@@ -1,5 +1,8 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { captureError, addBreadcrumb } from '@/lib/errorTracking';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ErrorBoundary');
 
 interface Props {
   children: ReactNode;
@@ -20,13 +23,13 @@ interface State {
 /**
  * Error Boundary component that catches JavaScript errors anywhere in the
  * child component tree and displays a fallback UI instead of crashing.
- * 
+ *
  * Features:
  * - Automatic error tracking integration
  * - Error ID for support reference
  * - Breadcrumb trail for debugging
  * - Graceful recovery options
- * 
+ *
  * @version 2.0.0
  * @since v0.7.58
  */
@@ -47,7 +50,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     this.setState({ errorInfo });
-    
+
     // Add breadcrumb for context
     addBreadcrumb({
       category: 'error',
@@ -58,7 +61,7 @@ export class ErrorBoundary extends Component<Props, State> {
         componentStack: errorInfo.componentStack?.substring(0, 500),
       },
     });
-    
+
     // Capture error with full context
     const errorId = captureError(error, {
       component: this.props.componentName || 'ErrorBoundary',
@@ -72,14 +75,14 @@ export class ErrorBoundary extends Component<Props, State> {
         recoverable: 'true',
       },
     });
-    
+
     this.setState({ errorId });
-    
+
     // Call optional error callback
     this.props.onError?.(error, errorInfo);
-    
-    // Log to console in all environments (sanitized in production)
-    console.error('ErrorBoundary caught an error:', error.message);
+
+    // Log error (sanitized in production via logger)
+    logger.error('Caught an error:', error.message);
   }
 
   handleRetry = (): void => {
@@ -103,7 +106,7 @@ export class ErrorBoundary extends Component<Props, State> {
   handleReportIssue = (): void => {
     // Open support with error context
     const errorId = this.state.errorId;
-    const supportUrl = errorId 
+    const supportUrl = errorId
       ? `mailto:support@cgraph.org?subject=Error Report ${errorId}&body=Error ID: ${errorId}%0A%0APlease describe what you were doing when this error occurred:%0A%0A`
       : 'mailto:support@cgraph.org?subject=Error Report&body=Please describe what you were doing when this error occurred:%0A%0A';
     window.open(supportUrl, '_blank');
@@ -116,11 +119,11 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center p-8 bg-dark-900">
-          <div className="text-center max-w-md">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-900/30 border border-red-500/50 flex items-center justify-center">
+        <div className="flex min-h-screen items-center justify-center bg-dark-900 p-8">
+          <div className="max-w-md text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-red-500/50 bg-red-900/30">
               <svg
-                className="w-8 h-8 text-red-500"
+                className="h-8 w-8 text-red-500"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -133,33 +136,32 @@ export class ErrorBoundary extends Component<Props, State> {
                 />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-white mb-2">
-              Something went wrong
-            </h2>
-            <p className="text-gray-400 mb-4">
-              We encountered an unexpected error. Please try again or contact support if the problem persists.
+            <h2 className="mb-2 text-xl font-semibold text-white">Something went wrong</h2>
+            <p className="mb-4 text-gray-400">
+              We encountered an unexpected error. Please try again or contact support if the problem
+              persists.
             </p>
             {this.state.errorId && (
-              <p className="text-xs text-gray-500 mb-4 font-mono bg-dark-800 px-3 py-2 rounded inline-block">
+              <p className="mb-4 inline-block rounded bg-dark-800 px-3 py-2 font-mono text-xs text-gray-500">
                 Error ID: {this.state.errorId}
               </p>
             )}
-            <div className="flex gap-3 justify-center flex-wrap">
+            <div className="flex flex-wrap justify-center gap-3">
               <button
                 onClick={this.handleRetry}
-                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+                className="rounded-lg bg-primary-600 px-4 py-2 text-white transition-colors hover:bg-primary-700"
               >
                 Try Again
               </button>
               <button
                 onClick={this.handleReload}
-                className="px-4 py-2 border border-dark-600 text-gray-300 rounded-lg hover:bg-dark-800 transition-colors"
+                className="rounded-lg border border-dark-600 px-4 py-2 text-gray-300 transition-colors hover:bg-dark-800"
               >
                 Reload Page
               </button>
               <button
                 onClick={this.handleReportIssue}
-                className="px-4 py-2 text-gray-400 hover:text-white transition-colors text-sm"
+                className="px-4 py-2 text-sm text-gray-400 transition-colors hover:text-white"
               >
                 Report Issue
               </button>
@@ -169,7 +171,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-300">
                   Error Details (Development Only)
                 </summary>
-                <pre className="mt-2 p-4 bg-dark-800 border border-dark-700 rounded-lg text-xs overflow-auto max-h-48 text-red-400">
+                <pre className="mt-2 max-h-48 overflow-auto rounded-lg border border-dark-700 bg-dark-800 p-4 text-xs text-red-400">
                   {this.state.error.toString()}
                   {this.state.errorInfo?.componentStack}
                 </pre>

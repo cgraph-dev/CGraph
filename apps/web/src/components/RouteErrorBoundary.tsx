@@ -1,6 +1,7 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { captureError, addBreadcrumb } from '@/lib/errorTracking';
+import { routeLogger } from '@/lib/logger';
 
 interface Props {
   children: ReactNode;
@@ -69,7 +70,7 @@ export class RouteErrorBoundary extends Component<Props, State> {
 
     // Log in development
     if (import.meta.env.DEV) {
-      console.error(`[RouteErrorBoundary] ${this.props.routeName || 'Route'} crashed:`, error);
+      routeLogger.error(`${this.props.routeName || 'Route'} crashed:`, error);
     }
   }
 

@@ -2,6 +2,7 @@ import { useMemo, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { format, isToday, isYesterday, formatDistanceToNow } from 'date-fns';
+import { chatLogger } from '@/lib/logger';
 
 // Reserved for future use
 void formatDistanceToNow;
@@ -343,7 +344,7 @@ function ConversationItem({
                 <ConversationMenu
                   conversation={conversation}
                   onAction={(action) => {
-                    console.debug(action, conversation.id);
+                    chatLogger.debug('Menu action:', action, conversation.id);
                     setShowMenu(false);
                   }}
                 />
