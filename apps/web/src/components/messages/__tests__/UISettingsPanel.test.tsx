@@ -46,10 +46,14 @@ vi.mock('@/lib/animations/AnimationEngine', () => ({
   },
 }));
 
-// Mock SparklesIcon
-vi.mock('@heroicons/react/24/outline', () => ({
-  SparklesIcon: () => <span data-testid="sparkles-icon">✨</span>,
-}));
+// Mock heroicons
+vi.mock('@heroicons/react/24/outline', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@heroicons/react/24/outline')>();
+  return {
+    ...actual,
+    SparklesIcon: () => <span data-testid="sparkles-icon">✨</span>,
+  };
+});
 
 describe('UISettingsPanel', () => {
   const defaultUIPreferences: UIPreferences = {
