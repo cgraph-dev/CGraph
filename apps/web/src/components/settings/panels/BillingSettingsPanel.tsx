@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
 import { api } from '@/lib/api';
-import { toast } from '@/components/Toast';
+import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';
 
 export function BillingSettingsPanel() {

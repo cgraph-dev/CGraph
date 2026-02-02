@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { DevicePhoneMobileIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
-import { toast } from '@/components/Toast';
+import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';
 
 const logger = createLogger('SessionsSettings');

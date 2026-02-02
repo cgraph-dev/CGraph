@@ -12,7 +12,7 @@ import { AnimatedAvatar, useAvatarStyle, GlassCard } from '@/shared/components/u
 import { useAuthStore } from '@/stores/authStore';
 import { useProfileStore } from '@/stores/profileStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { toast } from '@/components/Toast';
+import { toast } from '@/shared/components/ui';
 import SyncStatusIndicator, { useSyncStatus } from '@/components/settings/SyncStatusIndicator';
 import VisibilityBadge from '@/components/settings/VisibilityBadge';
 import {

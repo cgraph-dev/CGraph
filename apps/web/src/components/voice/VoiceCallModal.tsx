@@ -7,7 +7,7 @@ import {
   XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/stores/authStore';
-import { toast } from '@/components/Toast';
+import { toast } from '@/shared/components/ui';
 import { useWebRTC } from '@/hooks/useWebRTC';
 
 interface VoiceCallModalProps {

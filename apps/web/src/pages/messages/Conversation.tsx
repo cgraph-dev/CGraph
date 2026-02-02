@@ -12,7 +12,7 @@ import {
   getMessageSenderId,
 } from '@/lib/apiUtils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { toast } from '@/components/Toast';
+import { toast } from '@/shared/components/ui';
 import type { GifResult } from '@/components/chat/GifPicker';
 import type { Sticker } from '@/data/stickers';
 

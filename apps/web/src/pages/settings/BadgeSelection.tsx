@@ -4,7 +4,7 @@ import { Award, Lock, Search, Sparkles, Trophy, Star, Shield, Crown } from 'luci
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { useAuthStore } from '@/stores/authStore';
 import VisibilityBadge from '@/components/settings/VisibilityBadge';
-import { toast } from '@/components/Toast';
+import { toast } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('BadgeSelection');

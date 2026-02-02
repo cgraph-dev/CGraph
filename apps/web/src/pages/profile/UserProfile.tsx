@@ -8,7 +8,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useFriendStore } from '@/stores/friendStore';
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { Button } from '@/components';
-import { toast } from '@/components/Toast';
+import { toast } from '@/shared/components/ui';
 import {
   UserPlusIcon,
   UserMinusIcon,

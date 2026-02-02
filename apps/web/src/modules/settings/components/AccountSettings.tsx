@@ -4,7 +4,7 @@ import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('AccountSettings');
 import { api } from '@/lib/api';
-import { toast } from '@/components/Toast';
+import { toast } from '@/shared/components/ui';
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';

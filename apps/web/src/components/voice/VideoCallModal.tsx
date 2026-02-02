@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { VideoCameraSlashIcon } from '@heroicons/react/24/solid';
 import { useAuthStore } from '@/stores/authStore';
-import { toast } from '@/components/Toast';
+import { toast } from '@/shared/components/ui';
 import { useWebRTC } from '@/hooks/useWebRTC';
 
 interface VideoCallModalProps {

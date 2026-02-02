@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useSettingsStore } from '@/stores/settingsStore';
-import { toast } from '@/components/Toast';
+import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';
 
 export function NotificationSettingsPanel() {

@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { socketManager } from '@/lib/socket';
 import { formatTimeAgo, getAvatarBorderId } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';
-import { toast } from '@/components/Toast';
+import { toast } from '@/shared/components/ui';
 
 const logger = createLogger('Messages');
 import {

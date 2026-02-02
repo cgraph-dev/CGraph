@@ -5,7 +5,7 @@ import { useGamificationStore } from '@/stores/gamificationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { TitleBadge } from '@/components/gamification/TitleBadge';
 import VisibilityBadge from '@/components/settings/VisibilityBadge';
-import { toast } from '@/components/Toast';
+import { toast } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
 import type { TitleRarity } from '@/data/titles';
 
