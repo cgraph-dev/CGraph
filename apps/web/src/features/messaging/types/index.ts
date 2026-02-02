@@ -1,17 +1,18 @@
 /**
  * Messaging Types
- * 
+ *
  * TypeScript types and interfaces for messaging feature.
  */
 
 // Re-export from shared types package
+// Note: TypingIndicator type is renamed to avoid conflict with TypingIndicator component
 export type {
   Message,
   Conversation,
   ConversationParticipant,
   MessageReaction,
   ReadReceipt,
-  TypingIndicator,
+  TypingIndicator as TypingIndicatorData,
 } from '@cgraph/shared-types';
 
 // Feature-specific types

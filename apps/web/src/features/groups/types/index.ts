@@ -1,17 +1,11 @@
 /**
  * Groups Types
- * 
+ *
  * TypeScript types and interfaces for groups feature.
  */
 
 // Re-export from shared types
-export type {
-  Group,
-  Channel,
-  Role,
-  Member,
-  Invite,
-} from '@cgraph/shared-types';
+export type { Group, Channel, Role, Member, Invite } from '@cgraph/shared-types';
 
 // Feature-specific types
 export interface GroupWithDetails {
@@ -29,7 +23,7 @@ export interface GroupWithDetails {
   updatedAt: Date;
 }
 
-export type GroupFeature = 
+export type GroupFeature =
   | 'VERIFIED'
   | 'PARTNERED'
   | 'DISCOVERABLE'
@@ -51,13 +45,7 @@ export interface ChannelWithDetails {
   createdAt: Date;
 }
 
-export type ChannelType = 
-  | 'text'
-  | 'voice'
-  | 'announcement'
-  | 'forum'
-  | 'stage'
-  | 'category';
+export type ChannelType = 'text' | 'voice' | 'announcement' | 'forum' | 'stage' | 'category';
 
 export interface PermissionOverwrite {
   id: string;
@@ -105,7 +93,11 @@ export interface InviteWithDetails {
   createdAt: Date;
 }
 
-export interface GroupSettings {
+/**
+ * Group settings configuration type.
+ * Note: For the GroupSettings component, import from './components' instead.
+ */
+export interface GroupSettingsConfig {
   id: string;
   groupId: string;
   defaultMessageNotifications: 'all' | 'mentions' | 'none';
@@ -116,3 +108,6 @@ export interface GroupSettings {
   systemChannelId?: string;
   rulesChannelId?: string;
 }
+
+/** @deprecated Use GroupSettingsConfig instead */
+export type GroupSettingsData = GroupSettingsConfig;

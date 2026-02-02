@@ -1,28 +1,48 @@
 /**
  * Messaging Components
- * 
- * Re-exports messaging-related components from the legacy structure
- * for backward compatibility while enabling feature-based imports.
+ *
+ * Re-exports messaging components from the module structure.
+ * This file maintains backward compatibility for existing imports.
+ *
+ * @deprecated Import from '@/modules/chat/components' instead
  */
 
-// Re-export from legacy locations for backward compatibility
-// These will be gradually migrated to this directory
+// Re-export from modules location
+export {
+  // Chat components
+  MessageReactions,
+  RichMediaEmbed,
+  // Animation components
+  AnimatedMessageWrapper,
+  AnimatedReactionBubble,
+  // Core message components
+  MessageBubble,
+  MessageList,
+  MessageInputArea,
+  MessageSearch,
+  FileMessage,
+  GifMessage,
+  ReplyPreview,
+  ScheduleMessageModal,
+  ScheduledMessagesList,
+  // Conversation components
+  ConversationHeader,
+  ConversationInput,
+  ConversationModals,
+  TypingIndicator,
+  AmbientBackground,
+} from '@/modules/chat/components';
 
-// Chat components - available
+// Re-export types
+export type {
+  MessageBubbleProps,
+  UIPreferences,
+  MessageInputAreaProps,
+  ReplyPreviewProps,
+  ConversationModalsProps,
+  AmbientBackgroundProps,
+} from '@/modules/chat/components';
+
+// Components still in old location (until migrated)
 export { default as StickerPicker } from '@/components/chat/StickerPicker';
-export { default as RichMediaEmbed } from '@/components/chat/RichMediaEmbed';
-export { default as MessageReactions } from '@/components/chat/MessageReactions';
 export { default as E2EEConnectionTester } from '@/components/chat/E2EEConnectionTester';
-
-// Conversation components - available
-export { default as AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
-export { default as AnimatedReactionBubble } from '@/components/conversation/AnimatedReactionBubble';
-
-// TODO: Create these components when needed
-// export { default as AnimatedReactions } from '@/components/conversation/AnimatedReactions';
-// export { default as ReplyPreview } from '@/components/conversation/ReplyPreview';
-
-// Core messaging components - TODO: Create
-// export { default as MessageInput } from '@/components/MessageInput';
-// export { default as MessageList } from '@/components/MessageList';
-// export { default as ConversationList } from '@/components/ConversationList';

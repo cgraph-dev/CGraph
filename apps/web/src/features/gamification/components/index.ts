@@ -1,15 +1,36 @@
 /**
  * Gamification Components
- * 
- * Re-exports gamification-related components from the legacy structure.
+ *
+ * Re-exports gamification components from the module structure.
+ * This file maintains backward compatibility for existing imports.
+ *
+ * @deprecated Import from '@/modules/gamification/components' instead
  */
 
-// Gamification UI components
-export { default as AchievementNotification } from '@/components/gamification/AchievementNotification';
-export { default as LevelProgress } from '@/components/gamification/LevelProgress';
-export { default as LevelUpModal } from '@/components/gamification/LevelUpModal';
-export { default as QuestPanel } from '@/components/gamification/QuestPanel';
-export { default as TitleBadge } from '@/components/gamification/TitleBadge';
+// Re-export from modules location
+export {
+  AchievementNotification,
+  AchievementDisplay,
+  LevelProgress,
+  LevelUpModal,
+  QuestPanel,
+  TitleBadge,
+  LeaderboardWidget,
+  StreakTracker,
+  DailyRewards,
+  UserStars,
+  UserStarsBadge,
+  UserStarsTierList,
+  getTierForPostCount,
+  getProgressToNextTier,
+  getPostsToNextTier,
+  USER_TIERS,
+} from '@/modules/gamification/components';
 
-// TODO: Create when needed
-// export { default as XPGainAnimation } from '@/components/gamification/XPGainAnimation';
+// Re-export types
+export type {
+  TitleBadgeProps,
+  AchievementNotificationData,
+  UserStarsProps,
+  UserStarsTier,
+} from '@/modules/gamification/components';

@@ -1,11 +1,35 @@
 /**
  * Premium Components
  *
- * Re-exports premium-related components.
+ * Re-exports premium components from the module structure.
+ * This file maintains backward compatibility for existing imports.
+ *
+ * @deprecated Import from '@/modules/premium/components' instead
  */
 
 import React from 'react';
 import { useAuthStore } from '@/stores/authStore';
+
+// Re-export from modules location
+export {
+  SubscriptionCard,
+  PaymentModal,
+  CoinShopWidget,
+  PremiumBanner,
+  FeatureComparison,
+} from '@/modules/premium/components';
+
+// Re-export types
+export type {
+  SubscriptionCardProps,
+  PaymentModalProps,
+  PaymentItem,
+  CoinShopWidgetProps,
+  PremiumBannerProps,
+  FeatureComparisonProps,
+  FeatureCategory,
+  FeatureItem,
+} from '@/modules/premium/components';
 
 /**
  * Premium badge displayed next to username
@@ -37,7 +61,3 @@ export const CoinBalance: React.FC<{ className?: string }> = ({ className }) => 
     React.createElement('span', { className: 'font-medium' }, coins.toLocaleString())
   );
 };
-
-// These components would be extracted from pages for reuse
-export { default as SubscriptionCard } from '@/pages/premium/PremiumPage';
-export { default as ShopItemCard } from '@/pages/premium/CoinShop';
