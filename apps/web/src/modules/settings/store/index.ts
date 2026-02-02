@@ -1,1 +1,2 @@
-// settings store
+// Settings Store
+export * from './settingsStore';

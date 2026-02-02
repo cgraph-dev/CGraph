@@ -1,1 +1,3 @@
-// social store
+// Social Store
+export * from './friendStore';
+export * from './notificationStore';

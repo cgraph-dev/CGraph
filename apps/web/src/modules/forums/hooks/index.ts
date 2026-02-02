@@ -1,1 +1,8 @@
-// forums hooks
+/**
+ * Forums Module Hooks
+ *
+ * All forum-related hooks consolidated here.
+ */
+
+export { useForumSocket } from './useForumSocket';
+export { useThreadSocket } from './useThreadSocket';

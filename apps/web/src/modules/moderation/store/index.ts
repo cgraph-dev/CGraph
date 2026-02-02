@@ -1,1 +1,2 @@
-// moderation store
+// Moderation Store
+export * from './moderationStore';

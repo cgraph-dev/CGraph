@@ -1,1 +1,2 @@
-// groups store
+// Groups Store
+export * from './groupStore';

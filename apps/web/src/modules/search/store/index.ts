@@ -1,1 +1,2 @@
-// search store
+// Search Store
+export * from './searchStore';
