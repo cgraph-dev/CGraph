@@ -1,9 +1,9 @@
 /**
  * ReactionPickerModal Component
- * 
+ *
  * Full emoji picker modal for adding reactions to messages.
  * Organized by category with scrollable grid layout.
- * 
+ *
  * @module components/conversation/ReactionPickerModal
  * @since v0.7.29
  */
@@ -51,13 +51,13 @@ export interface ReactionPickerModalProps {
 
 /**
  * Full-screen emoji picker with category tabs.
- * 
+ *
  * Features:
  * - Category tabs for easy navigation
  * - Scrollable emoji grid
  * - Visual indicator for already-reacted emojis
  * - Tap to add/remove reactions
- * 
+ *
  * @example
  * ```tsx
  * <ReactionPickerModal
@@ -84,21 +84,18 @@ export const ReactionPickerModal = memo(function ReactionPickerModal({
   onRemoveReaction,
   onClose,
 }: ReactionPickerModalProps) {
-  if (!visible || !message) return null;
-
-  const categoryKeys = Object.keys(EMOJI_CATEGORIES) as EmojiCategory[];
-  const emojis = EMOJI_CATEGORIES[selectedCategory];
-
+  // Hooks must be called before any early returns
   // Check if user has already reacted with specific emoji
   const hasReacted = useCallback(
     (emoji: string) => {
-      return message.reactions?.some((r) => r.emoji === emoji && r.hasReacted) || false;
+      return message?.reactions?.some((r) => r.emoji === emoji && r.hasReacted) || false;
     },
-    [message.reactions]
+    [message?.reactions]
   );
 
   const handleEmojiPress = useCallback(
     (emoji: string) => {
+      if (!message) return;
       if (hasReacted(emoji)) {
         onRemoveReaction(message.id, emoji);
       } else {
@@ -106,8 +103,14 @@ export const ReactionPickerModal = memo(function ReactionPickerModal({
       }
       onClose();
     },
-    [message.id, hasReacted, onAddReaction, onRemoveReaction, onClose]
+    [message, hasReacted, onAddReaction, onRemoveReaction, onClose]
   );
+
+  // Early return after hooks
+  if (!visible || !message) return null;
+
+  const categoryKeys = Object.keys(EMOJI_CATEGORIES) as EmojiCategory[];
+  const emojis = EMOJI_CATEGORIES[selectedCategory];
 
   return (
     <Modal

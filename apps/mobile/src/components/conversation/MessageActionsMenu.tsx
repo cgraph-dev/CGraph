@@ -1,9 +1,9 @@
 /**
  * MessageActionsMenu Component
- * 
+ *
  * Discord/Telegram-style message action sheet with quick reactions,
  * message preview, and action buttons for reply, copy, pin, and delete.
- * 
+ *
  * @module components/conversation/MessageActionsMenu
  * @since v0.7.29
  */
@@ -68,14 +68,14 @@ export interface MessageActionsMenuProps {
 
 /**
  * Message context menu with modern iOS/Discord-style design.
- * 
+ *
  * Features:
  * - Blur backdrop with fade animation
  * - Message preview card with sender info
  * - Quick reaction bar for common emojis
  * - Action buttons with staggered entrance animation
  * - Cancel button for easy dismissal
- * 
+ *
  * Accessibility:
  * - Supports hardware back button on Android
  * - Touch outside to dismiss
@@ -96,18 +96,20 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
   onQuickReaction,
   onOpenReactionPicker,
 }: MessageActionsMenuProps) {
+  // Check if user has reacted with specific emoji
+  // Hooks must be called before any early returns
+  const getReactionState = useCallback(
+    (emoji: string) => {
+      return message?.reactions?.some((r) => r.emoji === emoji && r.hasReacted) || false;
+    },
+    [message?.reactions]
+  );
+
+  // Early return after hooks
   if (!visible || !message) return null;
 
   const isOwnMessage = String(userId) === String(message.sender_id);
   const isPinned = message.is_pinned;
-
-  // Check if user has reacted with specific emoji
-  const getReactionState = useCallback(
-    (emoji: string) => {
-      return message.reactions?.some((r) => r.emoji === emoji && r.hasReacted) || false;
-    },
-    [message.reactions]
-  );
 
   // Build action items based on context
   const actionItems = [
@@ -157,7 +159,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
     outputRange: [0, 1],
   });
 
-  const renderActionItem = (item: typeof actionItems[0], index: number) => {
+  const renderActionItem = (item: (typeof actionItems)[0], index: number) => {
     const itemAnim = animations.actionItems[index] || new Animated.Value(1);
     const translateY = itemAnim.interpolate({
       inputRange: [0, 1],
