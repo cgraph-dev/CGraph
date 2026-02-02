@@ -7,7 +7,7 @@
  * @module stores/facades/marketplaceFacade
  */
 
-import { useMarketplaceStore } from '../marketplaceStore';
+import { useMarketplaceStore } from '../../modules/gamification/store';
 import { useAvatarBorderStore } from '../avatarBorderStore';
 
 /**

@@ -7,11 +7,13 @@
  * @module stores/facades/communityFacade
  */
 
-import { useForumStore } from '../forumStore';
-import { useGroupStore } from '../groupStore';
-import { useModerationStore } from '../moderationStore';
-import { useForumHostingStore } from '../forumHostingStore';
-import { useAnnouncementStore } from '../announcementStore';
+import {
+  useForumStore,
+  useForumHostingStore,
+  useAnnouncementStore,
+} from '../../modules/forums/store';
+import { useGroupStore } from '../../modules/groups/store';
+import { useModerationStore } from '../../modules/moderation/store';
 
 /**
  * Unified community and social facade

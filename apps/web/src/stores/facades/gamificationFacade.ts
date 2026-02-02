@@ -7,10 +7,12 @@
  * @module stores/facades/gamificationFacade
  */
 
-import { useGamificationStore } from '../gamificationStore';
-import { usePrestigeStore } from '../prestigeStore';
-import { useSeasonalEventStore } from '../seasonalEventStore';
-import { useReferralStore } from '../referralStore';
+import {
+  useGamificationStore,
+  usePrestigeStore,
+  useSeasonalEventStore,
+  useReferralStore,
+} from '../../modules/gamification/store';
 
 /**
  * Unified gamification and progression facade

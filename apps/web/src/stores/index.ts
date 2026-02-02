@@ -4,17 +4,20 @@
  * This is the single entry point for all Zustand stores.
  * Import from here for consistent access to application state.
  *
+ * Stores are migrating to module-based organization.
+ * This file maintains backward compatibility by re-exporting from modules.
+ *
  * @example
  * ```typescript
- * // Preferred: Import from stores/index
- * import { useAuthStore, useChatStore, useThemeStore } from '@/stores';
+ * // RECOMMENDED: Use facades for aggregated state
+ * import { useChatFacade, useAuthFacade } from '@/stores';
  *
- * // Still works: Direct imports (backward compatible)
- * import { useAuthStore } from '@/stores/authStore';
+ * // Also works: Direct store imports (backward compatible)
+ * import { useAuthStore, useChatStore } from '@/stores';
  * ```
  *
  * @module stores
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 // ============================================================================
@@ -25,48 +28,53 @@ export type { User, AuthState } from './authStore';
 
 export { useProfileStore } from './profileStore';
 
-export { useSettingsStore } from './settingsStore';
+export { useSettingsStore } from '../modules/settings/store';
 export type { UserSettings } from './settingsStore';
 
-export { useFriendStore } from './friendStore';
+export { useFriendStore } from '../modules/social/store';
 export type { Friend, FriendRequest } from './friendStore';
 
 // ============================================================================
 // Chat Domain (Messages, Conversations, Effects)
+// Re-exported from modules/chat/store
 // ============================================================================
-export { useChatStore } from './chatStore';
-export type {
-  Message,
-  MessageMetadata,
-  Conversation,
-  ConversationParticipant,
-  Reaction,
-  ChatState,
-} from './chatStore';
+export {
+  useChatStore,
+  useChatEffectsStore,
+  useChatBubbleStore,
+  type Message,
+  type MessageMetadata,
+  type Conversation,
+  type ConversationParticipant,
+  type Reaction,
+  type ChatState,
+} from '../modules/chat/store';
 
-export { useChatEffectsStore } from './chatEffectsStore';
-export { useChatBubbleStore } from './chatBubbleStore';
 export { useIncomingCallStore } from './incomingCallStore';
 export type { IncomingCall } from './incomingCallStore';
 
 // ============================================================================
 // Community Domain (Forums, Groups, Moderation)
+// Re-exported from modules
 // ============================================================================
-export { useForumStore } from './forumStore';
-export { useGroupStore } from './groupStore';
+export { useForumStore, useForumHostingStore, useAnnouncementStore } from '../modules/forums/store';
+
+export { useGroupStore } from '../modules/groups/store';
 export type { Group, Channel, Member, Role, ChannelMessage, ChannelCategory } from './groupStore';
 
-export { useModerationStore } from './moderationStore';
-export { useForumHostingStore } from './forumHostingStore';
-export { useAnnouncementStore } from './announcementStore';
+export { useModerationStore } from '../modules/moderation/store';
 
 // ============================================================================
 // Gamification Domain (XP, Achievements, Events)
+// Re-exported from modules/gamification/store
 // ============================================================================
-export { useGamificationStore } from './gamificationStore';
-export { usePrestigeStore } from './prestigeStore';
-export { useSeasonalEventStore } from './seasonalEventStore';
-export { useReferralStore } from './referralStore';
+export {
+  useGamificationStore,
+  usePrestigeStore,
+  useSeasonalEventStore,
+  useReferralStore,
+  useMarketplaceStore,
+} from '../modules/gamification/store';
 
 // ============================================================================
 // Theme Domain (All Theme/Customization)
@@ -79,14 +87,14 @@ export { useCustomizationStore } from './unifiedCustomizationStore';
 // ============================================================================
 // Marketplace Domain (Economy, Items)
 // ============================================================================
-export { useMarketplaceStore } from './marketplaceStore';
 export { useAvatarBorderStore } from './avatarBorderStore';
 
 // ============================================================================
 // Utility Domain (Notifications, Search, Misc)
+// Re-exported from modules where available
 // ============================================================================
-export { useNotificationStore } from './notificationStore';
-export { useSearchStore } from './searchStore';
+export { useNotificationStore } from '../modules/social/store';
+export { useSearchStore } from '../modules/search/store';
 export { usePluginStore } from './pluginStore';
 export { useCalendarStore } from './calendarStore';
 

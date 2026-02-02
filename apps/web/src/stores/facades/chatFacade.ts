@@ -7,9 +7,7 @@
  * @module stores/facades/chatFacade
  */
 
-import { useChatStore } from '../chatStore';
-import { useChatEffectsStore } from '../chatEffectsStore';
-import { useChatBubbleStore } from '../chatBubbleStore';
+import { useChatStore, useChatEffectsStore, useChatBubbleStore } from '../../modules/chat/store';
 import { useIncomingCallStore } from '../incomingCallStore';
 
 /**

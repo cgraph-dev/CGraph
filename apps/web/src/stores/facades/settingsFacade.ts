@@ -7,7 +7,7 @@
  * @module stores/facades/settingsFacade
  */
 
-import { useSettingsStore } from '../settingsStore';
+import { useSettingsStore } from '../../modules/settings/store';
 import { useThemeStore } from '../themeStore';
 import { useCustomizationStore } from '../unifiedCustomizationStore';
 

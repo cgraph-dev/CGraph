@@ -9,7 +9,7 @@
 
 import { useAuthStore } from '../authStore';
 import { useProfileStore } from '../profileStore';
-import { useFriendStore } from '../friendStore';
+import { useFriendStore } from '../../modules/social/store';
 
 /**
  * Unified authentication and user facade

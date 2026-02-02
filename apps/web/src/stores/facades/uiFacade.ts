@@ -7,8 +7,8 @@
  * @module stores/facades/uiFacade
  */
 
-import { useNotificationStore } from '../notificationStore';
-import { useSearchStore } from '../searchStore';
+import { useNotificationStore } from '../../modules/social/store';
+import { useSearchStore } from '../../modules/search/store';
 import { usePluginStore } from '../pluginStore';
 import { useCalendarStore } from '../calendarStore';
 
