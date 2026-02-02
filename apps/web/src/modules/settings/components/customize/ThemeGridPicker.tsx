@@ -1,6 +1,6 @@
 /**
  * ThemeGridPicker Component
- * 
+ *
  * Grid-based theme/color picker with animated selection states,
  * glow effects, and hover previews.
  */
@@ -67,12 +67,7 @@ export default function ThemeGridPicker<T extends string>({
           <motion.button
             key={option.id}
             onClick={() => !isLocked && onSelect(option.id)}
-            className={`
-              relative ${sizeClasses[size]} rounded-lg overflow-hidden
-              transition-all duration-200 group
-              ${isLocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-              ${isSelected ? 'ring-2 ring-white ring-offset-2 ring-offset-dark-900' : ''}
-            `}
+            className={`relative ${sizeClasses[size]} group overflow-hidden rounded-lg transition-all duration-200 ${isLocked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${isSelected ? 'ring-2 ring-white ring-offset-2 ring-offset-dark-900' : ''} `}
             style={{ background: gradient }}
             whileHover={!isLocked ? { scale: 1.1, zIndex: 10 } : {}}
             whileTap={!isLocked ? { scale: 0.95 } : {}}
@@ -101,14 +96,14 @@ export default function ThemeGridPicker<T extends string>({
                 animate={{ scale: 1 }}
                 className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[1px]"
               >
-                <CheckIcon className="w-5 h-5 text-white drop-shadow-lg" />
+                <CheckIcon className="h-5 w-5 text-white drop-shadow-lg" />
               </motion.div>
             )}
 
             {/* Lock icon for locked items */}
             {option.isLocked && showLockIcon && (
               <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                <LockClosedIcon className="w-4 h-4 text-white/70" />
+                <LockClosedIcon className="h-4 w-4 text-white/70" />
               </div>
             )}
 
@@ -120,8 +115,8 @@ export default function ThemeGridPicker<T extends string>({
             )}
 
             {/* Hover tooltip */}
-            <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-20">
-              <div className="bg-dark-800 text-white text-xs px-2 py-1 rounded shadow-lg border border-white/10">
+            <div className="pointer-events-none absolute -bottom-8 left-1/2 z-20 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="rounded border border-white/10 bg-dark-800 px-2 py-1 text-xs text-white shadow-lg">
                 {option.name}
                 {option.isLocked && ' 🔒'}
               </div>
@@ -132,12 +127,9 @@ export default function ThemeGridPicker<T extends string>({
 
       {/* Labels row if enabled */}
       {showLabels && (
-        <div className={`col-span-full grid ${columnClasses[columns]} gap-2 mt-1`}>
+        <div className={`col-span-full grid ${columnClasses[columns]} mt-1 gap-2`}>
           {options.map((option) => (
-            <div
-              key={`label-${option.id}`}
-              className="text-xs text-center text-gray-400 truncate"
-            >
+            <div key={`label-${option.id}`} className="truncate text-center text-xs text-gray-400">
               {option.name}
             </div>
           ))}

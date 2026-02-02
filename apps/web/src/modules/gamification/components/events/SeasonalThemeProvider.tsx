@@ -300,7 +300,7 @@ function Particle({ type, color, delay, duration }: ParticleProps) {
         repeat: Infinity,
         ease: 'linear',
       }}
-      className="absolute pointer-events-none"
+      className="pointer-events-none absolute"
       style={{ color, fontSize: type === 'hearts' ? '16px' : '12px' }}
     >
       {getParticleShape()}
@@ -357,14 +357,10 @@ export default function SeasonalThemeProvider({
   };
 
   const shouldShowParticles =
-    enableParticles &&
-    currentTheme.particles &&
-    currentTheme.effects?.enableParticles;
+    enableParticles && currentTheme.particles && currentTheme.effects?.enableParticles;
 
   const shouldShowGradient =
-    enableGradients &&
-    currentTheme.effects?.enableGradient &&
-    isSeasonalActive;
+    enableGradients && currentTheme.effects?.enableGradient && isSeasonalActive;
 
   return (
     <SeasonalThemeContext.Provider value={contextValue}>
@@ -378,7 +374,7 @@ export default function SeasonalThemeProvider({
               animate={{ opacity: 0.05 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 1 }}
-              className="fixed inset-0 pointer-events-none z-0"
+              className="pointer-events-none fixed inset-0 z-0"
               style={{
                 background: `radial-gradient(ellipse at top, ${currentTheme.colors.primary}44 0%, transparent 50%)`,
               }}
@@ -389,7 +385,7 @@ export default function SeasonalThemeProvider({
         {/* Particle system */}
         <AnimatePresence>
           {shouldShowParticles && currentTheme.particles && (
-            <div key="particles" className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+            <div key="particles" className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
               {Array.from({ length: currentTheme.particles.count }).map((_, i) => (
                 <Particle
                   key={i}

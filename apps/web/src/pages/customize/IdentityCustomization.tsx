@@ -35,7 +35,7 @@ import { ALL_TITLES, type TitleDefinition, type TitleAnimationType } from '@/dat
 import { ALL_BADGES, type BadgeDefinition } from '@/data/badgesCollection';
 
 // Import reusable components
-import ThemedBorderCard from '@/components/customize/ThemedBorderCard';
+import ThemedBorderCard from '@/modules/settings/components/customize/ThemedBorderCard';
 
 /**
  * IdentityCustomization Component

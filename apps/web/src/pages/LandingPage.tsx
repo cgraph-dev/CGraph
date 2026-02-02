@@ -17,7 +17,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { AnimatedAvatar } from '@/components/customize/AnimatedAvatar';
+import { AnimatedAvatar } from '@/modules/settings/components/customize/AnimatedAvatar';
 import { motion } from 'framer-motion';
 import { LogoIcon } from '@/components/Logo';
 import {

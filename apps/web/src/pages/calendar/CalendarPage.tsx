@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import CalendarView from '@/components/calendar/CalendarView';
-import EventForm from '@/components/calendar/EventForm';
+import CalendarView from '@/modules/social/components/CalendarView';
+import EventForm from '@/modules/social/components/EventForm';
 import { CalendarEvent } from '@/stores/calendarStore';
 
 /**
  * Calendar Page
- * 
+ *
  * Main calendar page with event viewing and creation
  */
 
@@ -33,10 +33,7 @@ export default function CalendarPage() {
 
   return (
     <>
-      <CalendarView
-        onCreateEvent={handleCreateEvent}
-        onEventClick={handleEventClick}
-      />
+      <CalendarView onCreateEvent={handleCreateEvent} onEventClick={handleEventClick} />
 
       {showEventForm && (
         <EventForm

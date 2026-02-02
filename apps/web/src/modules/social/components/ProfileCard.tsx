@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
 import { getBorderById } from '@/data/avatar-borders';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
-import { AnimatedBadgeWithTooltip } from '@/components/badges/AnimatedBadge';
+import { AnimatedBadgeWithTooltip } from '@/modules/gamification/components/badges/AnimatedBadge';
 import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
 import {
   useActiveProfileTheme,

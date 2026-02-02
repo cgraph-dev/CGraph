@@ -53,8 +53,8 @@ import { ScheduleMessageModal } from '@/modules/chat/components/ScheduleMessageM
 import ChatInfoPanel from '@/modules/chat/components/ChatInfoPanel';
 
 // Voice components
-import { VoiceCallModal } from '@/components/voice/VoiceCallModal';
-import { VideoCallModal } from '@/components/voice/VideoCallModal';
+import { VoiceCallModal } from '@/modules/calls/components/VoiceCallModal';
+import { VideoCallModal } from '@/modules/calls/components/VideoCallModal';
 
 // Reaction utilities
 import { handleAddReaction } from '@/lib/chat/reactionUtils';

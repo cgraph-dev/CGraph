@@ -182,7 +182,14 @@ interface ParticleProps {
   delay?: number;
 }
 
-function OrbitingParticle({ index, total, radius, color, reverse = false, delay = 0 }: ParticleProps) {
+function OrbitingParticle({
+  index,
+  total,
+  radius,
+  color,
+  reverse = false,
+  delay = 0,
+}: ParticleProps) {
   const angle = (index / total) * 360;
 
   return (
@@ -228,9 +235,8 @@ export function AnimatedBadge({
   const colors = RARITY_COLORS[achievement.rarity];
 
   // Progress calculation
-  const progress = achievement.maxProgress > 0
-    ? (achievement.progress / achievement.maxProgress) * 100
-    : 0;
+  const progress =
+    achievement.maxProgress > 0 ? (achievement.progress / achievement.maxProgress) * 100 : 0;
   const isCompleted = achievement.unlocked;
 
   // Render animation effects based on rarity
@@ -242,7 +248,7 @@ export function AnimatedBadge({
         // Subtle shimmer overlay
         return (
           <motion.div
-            className="absolute inset-0 rounded-full overflow-hidden pointer-events-none"
+            className="pointer-events-none absolute inset-0 overflow-hidden rounded-full"
             style={{
               background: `linear-gradient(90deg, transparent, ${colors.primary}30, transparent)`,
               backgroundSize: '200% 100%',
@@ -255,7 +261,7 @@ export function AnimatedBadge({
         // Pulsing glow ring
         return (
           <motion.div
-            className="absolute inset-0 rounded-full pointer-events-none"
+            className="pointer-events-none absolute inset-0 rounded-full"
             animate={pulseGlowAnimation(colors.glow)}
           />
         );
@@ -264,7 +270,7 @@ export function AnimatedBadge({
         // Rotating gradient ring
         return (
           <motion.div
-            className="absolute rounded-full pointer-events-none"
+            className="pointer-events-none absolute rounded-full"
             style={{
               width: config.ring,
               height: config.ring,
@@ -279,7 +285,7 @@ export function AnimatedBadge({
           >
             {/* Inner mask */}
             <div
-              className="absolute bg-dark-900 rounded-full"
+              className="absolute rounded-full bg-dark-900"
               style={{
                 inset: 3,
               }}
@@ -321,7 +327,7 @@ export function AnimatedBadge({
         return (
           <>
             <motion.div
-              className="absolute inset-[-4px] rounded-full pointer-events-none overflow-hidden"
+              className="pointer-events-none absolute inset-[-4px] overflow-hidden rounded-full"
               style={{
                 background: `linear-gradient(45deg, ${colors.primary}60, ${colors.secondary}60, #f59e0b60, ${colors.primary}60)`,
                 backgroundSize: '300% 300%',
@@ -331,7 +337,7 @@ export function AnimatedBadge({
             />
             {/* Pulsing outer glow */}
             <motion.div
-              className="absolute inset-[-8px] rounded-full pointer-events-none"
+              className="pointer-events-none absolute inset-[-8px] rounded-full"
               style={{
                 boxShadow: `0 0 20px ${colors.glow}, 0 0 40px ${colors.glow}`,
               }}
@@ -364,7 +370,7 @@ export function AnimatedBadge({
           <>
             {/* Void distortion background */}
             <motion.div
-              className="absolute inset-[-6px] rounded-full pointer-events-none"
+              className="pointer-events-none absolute inset-[-6px] rounded-full"
               style={{
                 background: `radial-gradient(circle, transparent 30%, ${colors.primary}40 60%, ${colors.secondary}60 100%)`,
                 filter: 'blur(2px)',
@@ -373,7 +379,7 @@ export function AnimatedBadge({
             />
             {/* Inner void */}
             <motion.div
-              className="absolute inset-[-12px] rounded-full pointer-events-none"
+              className="pointer-events-none absolute inset-[-12px] rounded-full"
               style={{
                 background: `conic-gradient(from 0deg, ${colors.primary}80, transparent, ${colors.secondary}80, transparent, ${colors.primary}80)`,
               }}
@@ -388,7 +394,7 @@ export function AnimatedBadge({
             />
             {/* Outer void ring */}
             <motion.div
-              className="absolute inset-[-16px] rounded-full pointer-events-none"
+              className="pointer-events-none absolute inset-[-16px] rounded-full"
               style={{
                 background: `conic-gradient(from 180deg, transparent, ${colors.primary}60, transparent, ${colors.secondary}60, transparent)`,
               }}
@@ -415,7 +421,7 @@ export function AnimatedBadge({
             ))}
             {/* Intense glow */}
             <motion.div
-              className="absolute inset-[-4px] rounded-full pointer-events-none"
+              className="pointer-events-none absolute inset-[-4px] rounded-full"
               animate={{
                 boxShadow: [
                   `0 0 20px ${colors.glow}, 0 0 40px ${colors.glow}, inset 0 0 20px ${colors.glow}`,
@@ -459,9 +465,7 @@ export function AnimatedBadge({
       <motion.div
         className={cn(
           'relative flex items-center justify-center rounded-full',
-          isCompleted
-            ? `bg-gradient-to-br ${colors.gradient}`
-            : 'bg-dark-700 grayscale',
+          isCompleted ? `bg-gradient-to-br ${colors.gradient}` : 'bg-dark-700 grayscale',
           isEquipped && 'ring-2 ring-primary-500 ring-offset-2 ring-offset-dark-900'
         )}
         style={{
@@ -488,10 +492,7 @@ export function AnimatedBadge({
       >
         {/* Badge icon */}
         <span
-          className={cn(
-            'text-center select-none',
-            !isCompleted && 'opacity-50'
-          )}
+          className={cn('select-none text-center', !isCompleted && 'opacity-50')}
           style={{
             fontSize: config.icon,
             lineHeight: 1,
@@ -502,11 +503,7 @@ export function AnimatedBadge({
 
         {/* Progress ring (for incomplete achievements) */}
         {showProgress && !isCompleted && progress > 0 && (
-          <svg
-            className="absolute inset-0 -rotate-90"
-            width={config.badge}
-            height={config.badge}
-          >
+          <svg className="absolute inset-0 -rotate-90" width={config.badge} height={config.badge}>
             <circle
               cx={config.badge / 2}
               cy={config.badge / 2}
@@ -525,7 +522,7 @@ export function AnimatedBadge({
       {/* Equipped indicator */}
       {isEquipped && (
         <motion.div
-          className="absolute -top-1 -right-1 w-4 h-4 bg-primary-500 rounded-full flex items-center justify-center"
+          className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary-500"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           exit={{ scale: 0 }}
@@ -567,8 +564,8 @@ export function AnimatedBadgeWithTooltip({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             className={cn(
-              'absolute bottom-full left-1/2 -translate-x-1/2 mb-3 z-50',
-              'px-4 py-3 rounded-xl',
+              'absolute bottom-full left-1/2 z-50 mb-3 -translate-x-1/2',
+              'rounded-xl px-4 py-3',
               'bg-dark-800/95 backdrop-blur-xl',
               'border border-white/10',
               'shadow-xl shadow-black/50',
@@ -576,7 +573,7 @@ export function AnimatedBadgeWithTooltip({
               'pointer-events-none'
             )}
           >
-            <div className="text-center space-y-2">
+            <div className="space-y-2 text-center">
               {/* Title */}
               <p className="font-bold text-white">
                 {props.achievement.unlocked || !props.achievement.isHidden
@@ -594,7 +591,7 @@ export function AnimatedBadgeWithTooltip({
               {/* Rarity badge */}
               <div className="flex items-center justify-center gap-2">
                 <span
-                  className="text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                  className="rounded-full px-2 py-0.5 text-xs font-semibold uppercase tracking-wider"
                   style={{
                     backgroundColor: `${colors.primary}20`,
                     color: colors.primary,
@@ -602,21 +599,19 @@ export function AnimatedBadgeWithTooltip({
                 >
                   {props.achievement.rarity}
                 </span>
-                <span className="text-xs text-gray-500">
-                  +{props.achievement.xpReward} XP
-                </span>
+                <span className="text-xs text-gray-500">+{props.achievement.xpReward} XP</span>
               </div>
 
               {/* Progress bar */}
               {!props.achievement.unlocked && props.achievement.maxProgress > 1 && (
                 <div className="pt-2">
-                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                  <div className="mb-1 flex justify-between text-xs text-gray-500">
                     <span>Progress</span>
                     <span>
                       {props.achievement.progress} / {props.achievement.maxProgress}
                     </span>
                   </div>
-                  <div className="h-1.5 bg-dark-600 rounded-full overflow-hidden">
+                  <div className="h-1.5 overflow-hidden rounded-full bg-dark-600">
                     <motion.div
                       className="h-full rounded-full"
                       style={{
@@ -634,21 +629,21 @@ export function AnimatedBadgeWithTooltip({
 
               {/* Unlocked date */}
               {props.achievement.unlocked && props.achievement.unlockedAt && (
-                <p className="text-xs text-gray-500 pt-1">
+                <p className="pt-1 text-xs text-gray-500">
                   Unlocked {new Date(props.achievement.unlockedAt).toLocaleDateString()}
                 </p>
               )}
 
               {/* Title reward */}
               {props.achievement.titleReward && (
-                <p className="text-xs text-primary-400 pt-1">
+                <p className="pt-1 text-xs text-primary-400">
                   Rewards: "{props.achievement.titleReward}" title
                 </p>
               )}
             </div>
 
             {/* Tooltip arrow */}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-dark-800/95" />
+            <div className="absolute left-1/2 top-full -translate-x-1/2 border-8 border-transparent border-t-dark-800/95" />
           </motion.div>
         )}
       </AnimatePresence>

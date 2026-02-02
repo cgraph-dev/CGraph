@@ -18,7 +18,7 @@ const EffectsCustomization = lazy(() => import('./EffectsCustomization'));
 const ProgressionCustomization = lazy(() => import('./ProgressionCustomization'));
 
 // New V2 panels for enhanced experience (optional use)
-import { LivePreviewPanel } from '@/components/customize';
+import { LivePreviewPanel } from '@/modules/settings/components/customize';
 
 /**
  * Customize Hub - Main Page

@@ -1,6 +1,6 @@
 /**
  * RangeSliderControl Component
- * 
+ *
  * Styled range slider with dynamic gradient fill,
  * value display, and theme-aware coloring.
  */
@@ -38,7 +38,7 @@ export default function RangeSliderControl({
   description,
 }: RangeSliderControlProps) {
   const [isDragging, setIsDragging] = useState(false);
-  
+
   const percentage = ((value - min) / (max - min)) * 100;
 
   const handleChange = useCallback(
@@ -55,27 +55,26 @@ export default function RangeSliderControl({
         <label className="text-sm font-medium text-gray-300">{label}</label>
         {showValue && (
           <motion.span
-            className="text-sm font-mono px-2 py-0.5 rounded"
+            className="rounded px-2 py-0.5 font-mono text-sm"
             style={{
               backgroundColor: `${color}20`,
               color: color,
             }}
             animate={isDragging ? { scale: 1.1 } : { scale: 1 }}
           >
-            {value}{unit}
+            {value}
+            {unit}
           </motion.span>
         )}
       </div>
 
       {/* Description */}
-      {description && (
-        <p className="text-xs text-gray-500">{description}</p>
-      )}
+      {description && <p className="text-xs text-gray-500">{description}</p>}
 
       {/* Slider container */}
-      <div className="relative h-6 flex items-center">
+      <div className="relative flex h-6 items-center">
         {/* Track background */}
-        <div className="absolute inset-x-0 h-2 rounded-full bg-dark-700 overflow-hidden">
+        <div className="absolute inset-x-0 h-2 overflow-hidden rounded-full bg-dark-700">
           {/* Filled portion */}
           <motion.div
             className="h-full rounded-full"
@@ -103,12 +102,12 @@ export default function RangeSliderControl({
           onTouchStart={() => setIsDragging(true)}
           onTouchEnd={() => setIsDragging(false)}
           disabled={disabled}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+          className="absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
         />
 
         {/* Custom thumb */}
         <motion.div
-          className="absolute h-5 w-5 rounded-full border-2 pointer-events-none"
+          className="pointer-events-none absolute h-5 w-5 rounded-full border-2"
           style={{
             left: `calc(${percentage}% - 10px)`,
             backgroundColor: color,
@@ -124,8 +123,14 @@ export default function RangeSliderControl({
 
       {/* Min/Max labels */}
       <div className="flex justify-between text-xs text-gray-500">
-        <span>{min}{unit}</span>
-        <span>{max}{unit}</span>
+        <span>
+          {min}
+          {unit}
+        </span>
+        <span>
+          {max}
+          {unit}
+        </span>
       </div>
     </div>
   );
@@ -154,8 +159,8 @@ export function CompactSlider({
   const percentage = ((value - min) / (max - min)) * 100;
 
   return (
-    <div className="relative h-4 flex items-center flex-1">
-      <div className="absolute inset-x-0 h-1.5 rounded-full bg-dark-700 overflow-hidden">
+    <div className="relative flex h-4 flex-1 items-center">
+      <div className="absolute inset-x-0 h-1.5 overflow-hidden rounded-full bg-dark-700">
         <div
           className="h-full rounded-full transition-all"
           style={{
@@ -172,10 +177,10 @@ export function CompactSlider({
         value={value}
         onChange={(e) => onChange(parseFloat(e.target.value))}
         disabled={disabled}
-        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+        className="absolute inset-0 h-full w-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
       />
       <div
-        className="absolute h-3 w-3 rounded-full border border-white pointer-events-none transition-all"
+        className="pointer-events-none absolute h-3 w-3 rounded-full border border-white transition-all"
         style={{
           left: `calc(${percentage}% - 6px)`,
           backgroundColor: color,

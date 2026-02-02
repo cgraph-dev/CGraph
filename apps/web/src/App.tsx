@@ -21,7 +21,7 @@ import AuthLayout from '@/layouts/AuthLayout';
 // ============================================================================
 // GLOBAL HANDLERS - Must be eagerly loaded
 // ============================================================================
-import { IncomingCallHandler } from '@/components/voice/IncomingCallHandler';
+import { IncomingCallHandler } from '@/modules/calls/components/IncomingCallHandler';
 
 // ============================================================================
 // SCROLL TO TOP - Ensures page starts at top on navigation

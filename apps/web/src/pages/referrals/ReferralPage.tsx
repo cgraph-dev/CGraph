@@ -1,8 +1,8 @@
-import ReferralDashboard from '@/components/referral/ReferralDashboard';
+import ReferralDashboard from '@/modules/gamification/components/ReferralDashboard';
 
 /**
  * Referral Page
- * 
+ *
  * Main referral program page
  */
 

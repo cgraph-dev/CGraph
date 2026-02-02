@@ -25,7 +25,9 @@ import {
 } from '@/data/profileThemes';
 
 // Import reusable components
-import ProfileThemeCard, { ProfileThemeGrid } from '@/components/customize/ProfileThemeCard';
+import ProfileThemeCard, {
+  ProfileThemeGrid,
+} from '@/modules/settings/components/customize/ProfileThemeCard';
 
 /**
  * ThemeCustomization Component

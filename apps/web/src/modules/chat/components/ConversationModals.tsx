@@ -6,8 +6,8 @@ import { ForwardMessageModal } from '@/modules/chat/components/ForwardMessageMod
 import { MessageSearch } from '@/modules/chat/components/MessageSearch';
 import { ScheduleMessageModal } from '@/modules/chat/components/ScheduleMessageModal';
 import { ScheduledMessagesList } from '@/modules/chat/components/ScheduledMessagesList';
-import { VoiceCallModal } from '@/components/voice/VoiceCallModal';
-import { VideoCallModal } from '@/components/voice/VideoCallModal';
+import { VoiceCallModal } from '@/modules/calls/components/VoiceCallModal';
+import { VideoCallModal } from '@/modules/calls/components/VideoCallModal';
 import ChatInfoPanel from '@/modules/chat/components/ChatInfoPanel';
 
 export interface ConversationModalsProps {

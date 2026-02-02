@@ -10,12 +10,15 @@ import {
 import { GlassCard } from '@/shared/components/ui';
 import { useAuthStore } from '@/stores/authStore';
 import { useCustomizationStore, getBubbleStyle, getBubbleAnimation } from '@/stores/customization';
-import { CustomizationItemCard, type CustomizationItem } from '@/components/customize';
+import {
+  CustomizationItemCard,
+  type CustomizationItem,
+} from '@/modules/settings/components/customize';
 import toast from 'react-hot-toast';
 
 // Import reusable customization controls
-import RangeSliderControl from '@/components/customize/RangeSliderControl';
-import AnimatedToggle from '@/components/customize/AnimatedToggle';
+import RangeSliderControl from '@/modules/settings/components/customize/RangeSliderControl';
+import AnimatedToggle from '@/modules/settings/components/customize/AnimatedToggle';
 
 /**
  * ChatCustomization Component

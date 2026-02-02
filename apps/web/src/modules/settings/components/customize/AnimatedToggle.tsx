@@ -1,6 +1,6 @@
 /**
  * AnimatedToggle Component
- * 
+ *
  * Toggle switch with gradient background, smooth animations,
  * and theme-aware styling.
  */
@@ -40,19 +40,13 @@ export default function AnimatedToggle({
 
   return (
     <label
-      className={`
-        flex items-center justify-between gap-3 cursor-pointer
-        ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-        ${className}
-      `}
+      className={`flex cursor-pointer items-center justify-between gap-3 ${disabled ? 'cursor-not-allowed opacity-50' : ''} ${className} `}
     >
-      <div className="flex items-center gap-2 flex-1 min-w-0">
-        {icon && <span className="text-gray-400 flex-shrink-0">{icon}</span>}
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        {icon && <span className="flex-shrink-0 text-gray-400">{icon}</span>}
         <div className="min-w-0">
           <span className={`font-medium text-gray-200 ${config.text}`}>{label}</span>
-          {description && (
-            <p className="text-xs text-gray-500 truncate">{description}</p>
-          )}
+          {description && <p className="truncate text-xs text-gray-500">{description}</p>}
         </div>
       </div>
 
@@ -62,12 +56,7 @@ export default function AnimatedToggle({
         aria-checked={checked}
         disabled={disabled}
         onClick={() => !disabled && onChange(!checked)}
-        className={`
-          relative flex-shrink-0 ${config.track} rounded-full
-          transition-colors duration-200 ease-in-out
-          focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-900
-          ${checked ? '' : 'bg-dark-600'}
-        `}
+        className={`relative flex-shrink-0 ${config.track} rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-900 ${checked ? '' : 'bg-dark-600'} `}
         style={{
           backgroundColor: checked ? color : undefined,
           boxShadow: checked ? `0 0 12px ${color}60` : 'none',
@@ -87,10 +76,7 @@ export default function AnimatedToggle({
 
         {/* Thumb */}
         <motion.div
-          className={`
-            ${config.thumb} rounded-full bg-white shadow-md
-            flex items-center justify-center
-          `}
+          className={` ${config.thumb} flex items-center justify-center rounded-full bg-white shadow-md`}
           initial={false}
           animate={{
             x: checked ? config.translate : 2,
@@ -106,11 +92,23 @@ export default function AnimatedToggle({
             className="text-[8px]"
           >
             {checked ? (
-              <svg className="w-2.5 h-2.5" viewBox="0 0 12 12" fill="none" stroke={color} strokeWidth="2">
+              <svg
+                className="h-2.5 w-2.5"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke={color}
+                strokeWidth="2"
+              >
                 <path d="M2 6l3 3 5-6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             ) : (
-              <svg className="w-2 h-2" viewBox="0 0 12 12" fill="none" stroke="#6b7280" strokeWidth="2">
+              <svg
+                className="h-2 w-2"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="#6b7280"
+                strokeWidth="2"
+              >
                 <path d="M3 3l6 6M9 3l-6 6" strokeLinecap="round" />
               </svg>
             )}
@@ -136,11 +134,9 @@ export function ToggleGroup({
   return (
     <div className={`space-y-3 ${className}`}>
       {title && (
-        <h4 className="text-sm font-medium text-gray-400 uppercase tracking-wider">
-          {title}
-        </h4>
+        <h4 className="text-sm font-medium uppercase tracking-wider text-gray-400">{title}</h4>
       )}
-      <div className="space-y-2 bg-dark-800/50 rounded-xl p-4 border border-white/5">
+      <div className="space-y-2 rounded-xl border border-white/5 bg-dark-800/50 p-4">
         {children}
       </div>
     </div>
@@ -168,17 +164,13 @@ export function CompactToggle({
       aria-checked={checked}
       disabled={disabled}
       onClick={() => !disabled && onChange(!checked)}
-      className={`
-        relative w-9 h-5 rounded-full transition-colors duration-200
-        ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-        ${checked ? '' : 'bg-dark-600'}
-      `}
+      className={`relative h-5 w-9 rounded-full transition-colors duration-200 ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${checked ? '' : 'bg-dark-600'} `}
       style={{
         backgroundColor: checked ? color : undefined,
       }}
     >
       <motion.div
-        className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow"
+        className="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow"
         animate={{ x: checked ? 18 : 2 }}
         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
       />
