@@ -212,6 +212,24 @@ Full application for authenticated users:
 ```
 apps/web/
 ├── src/
+│   ├── modules/                   # NEW: Feature-based modules
+│   │   ├── auth/                  # Authentication components
+│   │   ├── chat/                  # Messaging (50+ components)
+│   │   ├── forums/                # Forum discussions (20+ components)
+│   │   ├── groups/                # Discord-style servers
+│   │   ├── gamification/          # XP, achievements, quests
+│   │   ├── social/                # Friends, presence, profiles
+│   │   ├── settings/              # User preferences
+│   │   ├── calls/                 # Voice/video calls
+│   │   ├── moderation/            # Mod tools
+│   │   ├── premium/               # Subscriptions
+│   │   ├── search/                # Global search
+│   │   └── admin/                 # Admin dashboard
+│   ├── shared/                    # Shared code for all modules
+│   │   ├── components/ui/         # GlassCard, Button, etc.
+│   │   ├── hooks/                 # useDebounce, useToast, etc.
+│   │   ├── utils/                 # cn, formatTimeAgo, etc.
+│   │   └── types/                 # Shared TypeScript types
 │   ├── pages/
 │   │   ├── messages/              # Direct messages
 │   │   ├── groups/                # Discord-style servers
@@ -219,10 +237,27 @@ apps/web/
 │   │   ├── settings/              # User settings
 │   │   └── LandingPage.tsx        # Fallback for unauthenticated
 │   ├── stores/                    # Zustand state management
-│   ├── components/                # Shared components
+│   ├── components/                # Legacy components (migrating)
 │   └── App.tsx                    # Main router
 ├── package.json
 └── vite.config.ts
+```
+
+**Module Import Patterns:**
+
+```typescript
+// Import from modules
+import { ChatWindow, MessageBubble } from '@/modules/chat';
+import { ForumPost } from '@/modules/forums';
+import { UserProfile } from '@/modules/social';
+
+// Import shared components
+import { GlassCard, Button, AnimatedAvatar } from '@/shared/components/ui';
+import { PageLayout, Sidebar } from '@/shared/components/layout';
+
+// Import shared hooks and utils
+import { useDebounce, useToast } from '@/shared/hooks';
+import { cn, formatTimeAgo } from '@/shared/utils';
 ```
 
 **Route behavior** (Discord-style):
