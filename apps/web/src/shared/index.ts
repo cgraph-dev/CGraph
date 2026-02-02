@@ -16,5 +16,5 @@ export * from './hooks';
 // Utils (cn, formatTimeAgo, error display, URL security)
 export * from './utils';
 
-// Types - TODO: Populate as types are migrated
-// export * from './types';
+// Types are exported separately to avoid conflicts
+// Import types from '@/shared/types' directly
