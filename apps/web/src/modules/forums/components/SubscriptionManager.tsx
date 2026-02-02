@@ -1,18 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createLogger } from '@/lib/logger';
-import Card, { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-
-const logger = createLogger('SubscriptionManager');
-import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Button,
+  Badge,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/shared/components/ui';
+
+const logger = createLogger('SubscriptionManager');
 import { Bell, BellOff, MessageSquare, Layout, Folder, Loader2, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 

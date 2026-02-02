@@ -6,12 +6,13 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import Button from '@/components/ui/Button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import Badge from '@/components/ui/Badge';
+  Button,
+  Input,
+  Label,
+  Alert,
+  AlertDescription,
+  Badge,
+} from '@/shared/components/ui';
 import { Loader2, AlertCircle, CheckCircle2, Clock, History } from 'lucide-react';
 import { useDebounce } from '@/shared/hooks';
 import { createLogger } from '@/lib/logger';

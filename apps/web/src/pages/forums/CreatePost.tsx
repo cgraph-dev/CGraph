@@ -6,7 +6,7 @@ const logger = createLogger('CreatePost');
 import { useForumStore, type PostAttachment } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { MarkdownEditor } from '@/components';
-import { toast } from '@/components/ui/Toast';
+import { toast } from '@/shared/components/ui';
 import AttachmentUploader from '@/components/forums/AttachmentUploader';
 import {
   ArrowLeftIcon,

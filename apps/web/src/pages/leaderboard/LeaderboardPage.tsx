@@ -20,11 +20,10 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
-import { GlassCard } from '@/shared/components/ui';
+import { GlassCard, AnimatedAvatar } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useAuthStore } from '@/stores/authStore';
 import { api } from '@/lib/api';
-import AnimatedAvatar from '@/components/ui/AnimatedAvatar';
 
 /**
  * Leaderboard Page

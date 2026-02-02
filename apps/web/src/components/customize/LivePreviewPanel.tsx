@@ -37,8 +37,7 @@ const ANIMATION_SPEED_MULTIPLIERS: Record<'slow' | 'normal' | 'fast', number> = 
 };
 
 // Import enhanced UI components
-import TiltCard from '@/components/ui/TiltCard';
-import GlowText, { FireText } from '@/components/ui/GlowText';
+import { TiltCard, GlowText, FireText } from '@/shared/components/ui';
 
 // =============================================================================
 // CHAT BUBBLE PREVIEW

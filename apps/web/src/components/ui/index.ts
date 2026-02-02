@@ -1,25 +1,32 @@
 // UI Components
 export { default as Avatar, AvatarGroup } from './Avatar';
-export { 
-  default as Badge, 
-  NewBadge, 
-  HotBadge, 
-  NsfwBadge, 
-  PinnedBadge, 
-  PrivateBadge, 
+export {
+  default as Badge,
+  NewBadge,
+  HotBadge,
+  NsfwBadge,
+  PinnedBadge,
+  PrivateBadge,
   PublicBadge,
   OwnerBadge,
   ModeratorBadge,
   MemberBadge,
-  CountBadge 
+  CountBadge,
 } from './Badge';
 export { default as Button, IconButton } from './Button';
-export { default as Card, CardHeader, CardTitle, CardContent, CardFooter } from './Card';
-export { 
-  default as Skeleton, 
-  PostCardSkeleton, 
-  ForumCardSkeleton, 
-  CommentSkeleton 
+export {
+  default as Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+  CardDescription,
+} from './Card';
+export {
+  default as Skeleton,
+  PostCardSkeleton,
+  ForumCardSkeleton,
+  CommentSkeleton,
 } from './Skeleton';
 export {
   default as ErrorState,
@@ -41,25 +48,19 @@ export { default as ToastContainer, toast, useToastStore } from './Toast';
 export { default as Tooltip } from './Tooltip';
 
 // Form components
-export { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription, 
-  DialogFooter 
+export {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from './dialog';
 export { Input } from './input';
 export { Label } from './label';
 export { Alert, AlertDescription, AlertTitle } from './alert';
 export { Popover, PopoverTrigger, PopoverContent } from './popover';
-export { 
-  Select, 
-  SelectTrigger, 
-  SelectValue, 
-  SelectContent, 
-  SelectItem 
-} from './select';
+export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './select';
 export { Switch } from './switch';
 export { Separator } from './separator';
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
@@ -68,4 +69,9 @@ export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
 export { default as TiltCard, MiniTiltCard } from './TiltCard';
 export { default as GlowText, FireText, ElectricText, RainbowText } from './GlowText';
 export { default as AnimatedBorder, BadgeBorder, NeonBorder } from './AnimatedBorder';
-export { default as GamingStatsGrid, AnimatedCounter, XPProgressBar, StatCard } from './GamingStatsGrid';
+export {
+  default as GamingStatsGrid,
+  AnimatedCounter,
+  XPProgressBar,
+  StatCard,
+} from './GamingStatsGrid';

@@ -33,6 +33,7 @@ export {
   CardTitle,
   CardContent,
   CardFooter,
+  CardDescription,
   // Skeleton
   Skeleton,
   PostCardSkeleton,
@@ -108,4 +109,4 @@ export {
   GlassCardHolographic,
   GlassCardCrystal,
 } from '@/components/ui/GlassCard';
-export { default as AnimatedAvatar } from '@/components/ui/AnimatedAvatar';
+export { default as AnimatedAvatar, useAvatarStyle } from '@/components/ui/AnimatedAvatar';

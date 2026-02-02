@@ -1,17 +1,19 @@
 import React from 'react';
-import Button from '@/components/ui/Button';
 import { Bell, BellOff, Loader2 } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
+  Button,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
+  Switch,
+  Label,
+  Separator,
+} from '@/shared/components/ui';
 
 type SubscriptionType = 'forum' | 'board' | 'thread';
 type NotificationMode = 'instant' | 'daily' | 'weekly' | 'none';

@@ -10,8 +10,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { GlassCard } from '@/shared/components/ui';
-import Avatar from '@/components/ui/Avatar';
+import { GlassCard, Avatar } from '@/shared/components/ui';
 import { useCustomizationStore } from '@/stores/customization';
 import {
   getAvatarBorderStyle,
