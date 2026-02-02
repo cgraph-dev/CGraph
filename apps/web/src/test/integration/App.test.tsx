@@ -8,6 +8,42 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import App from '../../App';
 
+// Mock GSAP to prevent timer leaks
+vi.mock('gsap', () => ({
+  default: {
+    to: vi.fn(),
+    from: vi.fn(),
+    fromTo: vi.fn(),
+    set: vi.fn(),
+    timeline: vi.fn(() => ({
+      to: vi.fn().mockReturnThis(),
+      from: vi.fn().mockReturnThis(),
+      set: vi.fn().mockReturnThis(),
+      play: vi.fn().mockReturnThis(),
+      pause: vi.fn().mockReturnThis(),
+      kill: vi.fn(),
+    })),
+    killTweensOf: vi.fn(),
+    registerPlugin: vi.fn(),
+  },
+  gsap: {
+    to: vi.fn(),
+    from: vi.fn(),
+    fromTo: vi.fn(),
+    set: vi.fn(),
+    timeline: vi.fn(() => ({
+      to: vi.fn().mockReturnThis(),
+      from: vi.fn().mockReturnThis(),
+      set: vi.fn().mockReturnThis(),
+      play: vi.fn().mockReturnThis(),
+      pause: vi.fn().mockReturnThis(),
+      kill: vi.fn(),
+    })),
+    killTweensOf: vi.fn(),
+    registerPlugin: vi.fn(),
+  },
+}));
+
 // Mock the auth store
 const mockAuthStore = {
   isAuthenticated: false,

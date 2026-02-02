@@ -109,6 +109,54 @@ vi.mock('@/stores/chatBubbleStore', () => ({
   })),
 }));
 
+// Module path mocks - facades now import from module locations
+vi.mock('@/modules/chat/store', () => ({
+  useChatStore: vi.fn(() => ({
+    conversations: [],
+    activeConversationId: null,
+    messages: {},
+    typingUsers: {},
+    typingUsersInfo: {},
+    isLoadingMessages: false,
+    isLoadingConversations: false,
+    hasMoreMessages: false,
+    scheduledMessages: [],
+    setActiveConversation: vi.fn(),
+    sendMessage: vi.fn(),
+    editMessage: vi.fn(),
+    deleteMessage: vi.fn(),
+    fetchMessages: vi.fn(),
+    fetchConversations: vi.fn(),
+    markAsRead: vi.fn(),
+    createConversation: vi.fn(),
+    addReaction: vi.fn(),
+    removeReaction: vi.fn(),
+    scheduleMessage: vi.fn(),
+    cancelScheduledMessage: vi.fn(),
+    rescheduleMessage: vi.fn(),
+  })),
+  useChatEffectsStore: vi.fn(() => ({
+    effects: {},
+    bubbleStyles: {},
+    activeMessageEffect: null,
+    activeBubbleStyle: null,
+    activeTypingIndicator: null,
+    soundsEnabled: true,
+    setMessageEffect: vi.fn(),
+    setBubbleStyle: vi.fn(),
+    activateEffect: vi.fn(),
+    toggleSounds: vi.fn(),
+    playSound: vi.fn(),
+    clearEffects: vi.fn(),
+  })),
+  useChatBubbleStore: vi.fn(() => ({
+    style: { ownMessageBg: '#10b981' },
+    updateStyle: vi.fn(),
+    resetStyle: vi.fn(),
+    applyPreset: vi.fn(),
+  })),
+}));
+
 vi.mock('@/stores/incomingCallStore', () => ({
   useIncomingCallStore: vi.fn(() => ({
     incomingCall: null,
@@ -137,6 +185,67 @@ vi.mock('@/stores/forumStore', () => ({
     voteForum: vi.fn(),
     subscribe: vi.fn(),
     unsubscribe: vi.fn(),
+  })),
+}));
+
+// Module path mocks for forums, groups, moderation
+vi.mock('@/modules/forums/store', () => ({
+  useForumStore: vi.fn(() => ({
+    forums: [],
+    currentForum: null,
+    posts: [],
+    currentPost: null,
+    isLoadingForums: false,
+    isLoadingPosts: false,
+    fetchForums: vi.fn(),
+    fetchForum: vi.fn(),
+    fetchPosts: vi.fn(),
+    fetchPost: vi.fn(),
+    createPost: vi.fn(),
+    deletePost: vi.fn(),
+    createComment: vi.fn(),
+    vote: vi.fn(),
+    voteForum: vi.fn(),
+    subscribe: vi.fn(),
+    unsubscribe: vi.fn(),
+  })),
+  useForumHostingStore: vi.fn(() => ({
+    boards: [],
+    threads: [],
+    fetchBoards: vi.fn(),
+    fetchThreads: vi.fn(),
+  })),
+  useAnnouncementStore: vi.fn(() => ({
+    announcements: [],
+    getUnreadCount: vi.fn(() => 0),
+    fetchAnnouncements: vi.fn(),
+    markAsRead: vi.fn(),
+  })),
+}));
+
+vi.mock('@/modules/groups/store', () => ({
+  useGroupStore: vi.fn(() => ({
+    groups: [],
+    activeGroupId: null,
+    isLoadingGroups: false,
+    fetchGroups: vi.fn(),
+    fetchGroup: vi.fn(),
+    createGroup: vi.fn(),
+    joinGroup: vi.fn(),
+    leaveGroup: vi.fn(),
+  })),
+}));
+
+vi.mock('@/modules/moderation/store', () => ({
+  useModerationStore: vi.fn(() => ({
+    queue: [],
+    queueCounts: { pending: 0, approved: 0, rejected: 0 },
+    bans: [],
+    isLoadingBans: false,
+    banUser: vi.fn(),
+    liftBan: vi.fn(),
+    fetchBans: vi.fn(),
+    issueWarning: vi.fn(),
   })),
 }));
 
@@ -257,6 +366,95 @@ vi.mock('@/stores/settingsStore', () => ({
   })),
 }));
 
+// Module path mocks for gamification and settings
+vi.mock('@/modules/gamification/store', () => ({
+  useGamificationStore: vi.fn(() => ({
+    level: 5,
+    xp: 1500,
+    xpToNextLevel: 2000,
+    achievements: [],
+    quests: [],
+    streak: 7,
+    isLoading: false,
+    fetchGamificationData: vi.fn(),
+    claimReward: vi.fn(),
+    completeQuest: vi.fn(),
+    updateStreak: vi.fn(),
+  })),
+  usePrestigeStore: vi.fn(() => ({
+    prestige: { level: 0, totalXp: 0 },
+    requirements: {},
+    canPrestige: false,
+    leaderboard: [],
+    isPrestiging: false,
+    fetchPrestige: vi.fn(),
+    performPrestige: vi.fn(),
+    getProgressPercent: vi.fn(() => 50),
+    getXpWithBonus: vi.fn((xp: number) => xp),
+  })),
+  useSeasonalEventStore: vi.fn(() => ({
+    activeEvents: [],
+    featuredEvent: null,
+    currentEvent: null,
+    currentProgress: null,
+    leaderboard: [],
+    isLoading: false,
+    fetchEvents: vi.fn(),
+    fetchEventDetails: vi.fn(),
+    joinEvent: vi.fn(),
+    claimReward: vi.fn(),
+  })),
+  useReferralStore: vi.fn(() => ({
+    referralCode: { code: 'ABC123', url: 'https://example.com/ref/ABC123' },
+    stats: { totalReferrals: 5, pendingRewards: 2 },
+    referrals: [],
+    fetchReferralCode: vi.fn(),
+    regenerateCode: vi.fn(),
+    claimReward: vi.fn(),
+  })),
+  useMarketplaceStore: vi.fn(() => ({
+    listings: [],
+    selectedListing: null,
+    myListings: [],
+    transactionHistory: [],
+    stats: {},
+    userTotals: {},
+    filters: {},
+    hasMore: false,
+    isLoading: false,
+    isCreating: false,
+    isPurchasing: false,
+    fetchListings: vi.fn(),
+    fetchListing: vi.fn(),
+    fetchMyListings: vi.fn(),
+    fetchHistory: vi.fn(),
+    createListing: vi.fn(),
+    updateListing: vi.fn(),
+    cancelListing: vi.fn(),
+    purchaseListing: vi.fn(),
+    setFilters: vi.fn(),
+    clearFilters: vi.fn(),
+    getPriceRecommendation: vi.fn(),
+  })),
+}));
+
+vi.mock('@/modules/settings/store', () => ({
+  useSettingsStore: vi.fn(() => ({
+    settings: { theme: 'dark', notifications: true },
+    isLoading: false,
+    fetchSettings: vi.fn(),
+    updateNotificationSettings: vi.fn(),
+    updatePrivacySettings: vi.fn(),
+    updateAppearanceSettings: vi.fn(),
+    updateLocaleSettings: vi.fn(),
+    updateKeyboardSettings: vi.fn(),
+    updateAllSettings: vi.fn(),
+    resetToDefaults: vi.fn(),
+    getTheme: vi.fn(() => 'dark'),
+    getShouldReduceMotion: vi.fn(() => false),
+  })),
+}));
+
 vi.mock('@/stores/theme', () => ({
   useThemeStore: vi.fn(() => ({
     colorPreset: 'emerald',
@@ -337,7 +535,59 @@ vi.mock('@/stores/notificationStore', () => ({
   })),
 }));
 
+// Also mock the module path since uiFacade now imports from modules
+vi.mock('@/modules/social/store', () => ({
+  useNotificationStore: vi.fn(() => ({
+    notifications: [],
+    unreadCount: 3,
+    isLoading: false,
+    hasMore: false,
+    fetchNotifications: vi.fn(),
+    markAsRead: vi.fn(),
+    markAllAsRead: vi.fn(),
+    deleteNotification: vi.fn(),
+    addNotification: vi.fn(),
+    clearAll: vi.fn(),
+  })),
+  useFriendStore: vi.fn(() => ({
+    friends: [],
+    pendingRequests: [],
+    sentRequests: [],
+    isLoading: false,
+    fetchFriends: vi.fn(),
+    fetchPendingRequests: vi.fn(),
+    sendRequest: vi.fn(),
+    acceptRequest: vi.fn(),
+    declineRequest: vi.fn(),
+    removeFriend: vi.fn(),
+    blockUser: vi.fn(),
+    unblockUser: vi.fn(),
+  })),
+}));
+
 vi.mock('@/stores/searchStore', () => ({
+  useSearchStore: vi.fn(() => ({
+    query: '',
+    category: 'all',
+    users: [],
+    groups: [],
+    forums: [],
+    posts: [],
+    messages: [],
+    isLoading: false,
+    hasSearched: false,
+    error: null,
+    search: vi.fn(),
+    searchById: vi.fn(),
+    setQuery: vi.fn(),
+    setCategory: vi.fn(),
+    clearResults: vi.fn(),
+    clearError: vi.fn(),
+  })),
+}));
+
+// Also mock the module path since uiFacade now imports from modules
+vi.mock('@/modules/search/store', () => ({
   useSearchStore: vi.fn(() => ({
     query: '',
     category: 'all',

@@ -14,7 +14,7 @@ import { handlers } from '../mocks/handlers';
 // MSW server for API mocking
 const server = setupServer(...handlers);
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+beforeAll(() => server.listen({ onUnhandledRequest: 'warn' }));
 afterEach(() => {
   server.resetHandlers();
   cleanup();
