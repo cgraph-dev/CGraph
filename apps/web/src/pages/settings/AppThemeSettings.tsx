@@ -5,7 +5,7 @@ void Download; // Reserved for theme export feature
 void Upload; // Reserved for theme import feature
 import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
 import { useAuthStore } from '@/stores/authStore';
-import VisibilityBadge from '@/components/settings/VisibilityBadge';
+import VisibilityBadge from '@/modules/settings/components/VisibilityBadge';
 
 /**
  * App Theme Settings Page

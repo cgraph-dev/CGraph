@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Award, Lock, Search, Sparkles, Trophy, Star, Shield, Crown } from 'lucide-react';
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { useAuthStore } from '@/stores/authStore';
-import VisibilityBadge from '@/components/settings/VisibilityBadge';
+import VisibilityBadge from '@/modules/settings/components/VisibilityBadge';
 import { toast } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
 

@@ -4,12 +4,12 @@ import { useForumStore, Post } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatTimeAgo } from '@/lib/utils';
 import { PostCardSkeleton } from '@/components';
-import { LeaderboardSidebar } from '@/components/forums/LeaderboardWidget';
+import { LeaderboardSidebar } from '@/modules/forums/components/LeaderboardWidget';
 import { GlassCard } from '@/shared/components/ui';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import ThreadPrefix from '@/components/forums/ThreadPrefix';
-import ThreadRating from '@/components/forums/ThreadRating';
+import ThreadPrefix from '@/modules/forums/components/ThreadPrefix';
+import ThreadRating from '@/modules/forums/components/ThreadRating';
 import {
   PlusIcon,
   ArrowUpIcon,

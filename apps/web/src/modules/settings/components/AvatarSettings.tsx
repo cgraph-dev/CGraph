@@ -12,8 +12,10 @@ import { AnimatedAvatar, useAvatarStyle, GlassCard, toast } from '@/shared/compo
 import { useAuthStore } from '@/stores/authStore';
 import { useProfileStore } from '@/stores/profileStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import SyncStatusIndicator, { useSyncStatus } from '@/components/settings/SyncStatusIndicator';
-import VisibilityBadge from '@/components/settings/VisibilityBadge';
+import SyncStatusIndicator, {
+  useSyncStatus,
+} from '@/modules/settings/components/SyncStatusIndicator';
+import VisibilityBadge from '@/modules/settings/components/VisibilityBadge';
 import {
   UserCircleIcon,
   SparklesIcon,

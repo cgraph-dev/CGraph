@@ -2,8 +2,12 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
-import { OAuthButtonGroup } from '@/components/auth/OAuthButtons';
-import { TextScramble, GlitchText, prefersReducedMotion } from '@/components/auth/AuthEffects';
+import { OAuthButtonGroup } from '@/modules/auth/components/OAuthButtons';
+import {
+  TextScramble,
+  GlitchText,
+  prefersReducedMotion,
+} from '@/modules/auth/components/AuthEffects';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('Register');

@@ -27,7 +27,7 @@ import {
   JobsStatusCard,
   formatUptime,
   ChatBubbleIcon,
-} from '@/components/admin';
+} from '@/modules/admin/components';
 
 export function OverviewTab() {
   const { data: metrics, isLoading: metricsLoading } = useQuery({

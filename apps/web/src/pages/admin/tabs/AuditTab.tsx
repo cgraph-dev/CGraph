@@ -5,7 +5,7 @@ import { adminApi } from '@/lib/api/admin';
 import { format } from 'date-fns';
 import clsx from 'clsx';
 import type { AuditEntry } from '@/types/admin.types';
-import { LoadingState } from '@/components/admin';
+import { LoadingState } from '@/modules/admin/components';
 
 // ============================================================================
 // Audit Log Tab - View system audit logs

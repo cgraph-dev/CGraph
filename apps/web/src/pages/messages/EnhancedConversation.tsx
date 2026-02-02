@@ -38,11 +38,11 @@ import {
 } from '@heroicons/react/24/outline';
 
 // Import our new components
-import { AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
+import { AnimatedMessageWrapper } from '@/modules/chat/components/AnimatedMessageWrapper';
 import {
   AnimatedReactionBubble,
   ReactionPicker,
-} from '@/components/conversation/AnimatedReactionBubble';
+} from '@/modules/chat/components/AnimatedReactionBubble';
 import { GlassCard, GlassCardNeon } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';
@@ -52,7 +52,7 @@ import { themeEngine } from '@/lib/ai/ThemeEngine';
 import { getAvatarBorderId } from '@/lib/utils';
 
 // Sticker system integration
-import { StickerPicker, StickerButton } from '@/components/chat/StickerPicker';
+import { StickerPicker, StickerButton } from '@/modules/chat/components/StickerPicker';
 import type { Sticker } from '@/data/stickers';
 
 // =============================================================================

@@ -4,7 +4,7 @@ import { extractErrorMessage } from '@/lib/apiUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import UserProfileCard from '@/components/profile/UserProfileCard';
+import UserProfileCard from '@/modules/social/components/UserProfileCard';
 import {
   UserPlusIcon,
   UserMinusIcon,

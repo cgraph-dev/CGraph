@@ -159,9 +159,12 @@ export class ConversationChannel {
     });
 
     if (onDiff) {
-      this.presence.onDiff((diff) => {
-        onDiff(diff as unknown as PresenceDiff);
-      });
+      // Phoenix.js Presence.onDiff is available but not in type definitions
+      (this.presence as unknown as { onDiff: (cb: (diff: PresenceDiff) => void) => void }).onDiff(
+        (diff: PresenceDiff) => {
+          onDiff(diff);
+        }
+      );
     }
   }
 

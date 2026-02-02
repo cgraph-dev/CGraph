@@ -12,7 +12,7 @@ import {
   ParticleField,
   AuroraGlow,
   prefersReducedMotion,
-} from '@/components/auth/AuthEffects';
+} from '@/modules/auth/components/AuthEffects';
 
 interface AuthLayoutProps {
   children: ReactNode;

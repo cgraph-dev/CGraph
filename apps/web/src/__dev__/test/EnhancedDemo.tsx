@@ -18,11 +18,11 @@ import {
   GlassCardHolographic,
   GlassCardCrystal,
 } from '@/shared/components/ui';
-import { AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
+import { AnimatedMessageWrapper } from '@/modules/chat/components/AnimatedMessageWrapper';
 import {
   AnimatedReactionBubble,
   ReactionPicker,
-} from '@/components/conversation/AnimatedReactionBubble';
+} from '@/modules/chat/components/AnimatedReactionBubble';
 import Matrix3DEnvironment from '@/components/three/Matrix3DEnvironment';
 import ShaderBackground from '@/components/shaders/ShaderBackground';
 import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';

@@ -9,10 +9,10 @@ import { formatTimeAgo } from '@/lib/utils';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import Dropdown, { DropdownItem, DropdownDivider } from '@/components/Dropdown';
 import { toast } from '@/shared/components/ui';
-import ThreadPrefix from '@/components/forums/ThreadPrefix';
-import ThreadRating from '@/components/forums/ThreadRating';
-import PollWidget from '@/components/forums/PollWidget';
-import EditHistoryModal from '@/components/forums/EditHistoryModal';
+import ThreadPrefix from '@/modules/forums/components/ThreadPrefix';
+import ThreadRating from '@/modules/forums/components/ThreadRating';
+import PollWidget from '@/modules/forums/components/PollWidget';
+import EditHistoryModal from '@/modules/forums/components/EditHistoryModal';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import {
   ArrowUpIcon,

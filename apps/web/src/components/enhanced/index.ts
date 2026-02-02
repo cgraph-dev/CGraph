@@ -36,20 +36,31 @@ export {
 export type { HoloTheme, HoloConfig } from './ui/HolographicUIv4';
 
 // App-level Holographic Provider
-export { 
-  AppHoloProvider, 
-  defaultHoloConfig, 
-  performanceHoloConfig, 
+export {
+  AppHoloProvider,
+  defaultHoloConfig,
+  performanceHoloConfig,
   accessibleHoloConfig,
-  premiumHoloConfig 
+  premiumHoloConfig,
 } from './AppHoloProvider';
 
 // =============================================================================
 // ANIMATION SYSTEM
 // =============================================================================
 
-export { AnimationEngine, SpringPhysics, HapticFeedback, GestureHandler, ANIMATION_PRESETS } from '@/lib/animations/AnimationEngine';
-export type { AnimationConfig, SpringConfig, GestureConfig, SequenceStep } from '@/lib/animations/AnimationEngine';
+export {
+  AnimationEngine,
+  SpringPhysics,
+  HapticFeedback,
+  GestureHandler,
+  ANIMATION_PRESETS,
+} from '@/lib/animations/AnimationEngine';
+export type {
+  AnimationConfig,
+  SpringConfig,
+  GestureConfig,
+  SequenceStep,
+} from '@/lib/animations/AnimationEngine';
 
 // =============================================================================
 // AI SYSTEMS
@@ -57,7 +68,12 @@ export type { AnimationConfig, SpringConfig, GestureConfig, SequenceStep } from 
 
 // Theme Engine
 export { themeEngine, AIThemeEngine } from '@/lib/ai/ThemeEngine';
-export type { ThemeColors, ThemeMetadata, AdaptiveTheme, UserPreference } from '@/lib/ai/ThemeEngine';
+export type {
+  ThemeColors,
+  ThemeMetadata,
+  AdaptiveTheme,
+  UserPreference,
+} from '@/lib/ai/ThemeEngine';
 
 // AI Message Intelligence (NEW v0.7.35)
 export { AIMessageEngine, aiMessageEngine } from '@/lib/ai/AIMessageEngine';
@@ -76,7 +92,12 @@ export type {
 // =============================================================================
 
 // Double Ratchet Protocol (NEW v0.7.35)
-export { DoubleRatchetEngine, PostQuantumDoubleRatchet, generateDHKeyPair, importDHPublicKey } from '@/lib/crypto/doubleRatchet';
+export {
+  DoubleRatchetEngine,
+  PostQuantumDoubleRatchet,
+  generateDHKeyPair,
+  importDHPublicKey,
+} from '@/lib/crypto/doubleRatchet';
 export type {
   RatchetState,
   MessageHeader,
@@ -94,7 +115,11 @@ export { default as AdvancedVoiceVisualizer } from '@/components/audio/AdvancedV
 export type { AdvancedVoiceVisualizerProps } from '@/components/audio/AdvancedVoiceVisualizer';
 
 // Spatial Audio Engine (NEW v0.7.35)
-export { SpatialAudioEngine, SpatialAudioRoom, spatialAudioEngine } from '@/lib/audio/SpatialAudioEngine';
+export {
+  SpatialAudioEngine,
+  SpatialAudioRoom,
+  spatialAudioEngine,
+} from '@/lib/audio/SpatialAudioEngine';
 export type {
   Position3D,
   Orientation3D,
@@ -111,7 +136,12 @@ export type {
 // =============================================================================
 
 // Glass Card
-export { default as GlassCard, GlassCardNeon, GlassCardHolographic, GlassCardCrystal } from '@/components/ui/GlassCard';
+export {
+  default as GlassCard,
+  GlassCardNeon,
+  GlassCardHolographic,
+  GlassCardCrystal,
+} from '@/components/ui/GlassCard';
 export type { GlassCardProps } from '@/components/ui/GlassCard';
 
 // Holographic UI (NEW v0.7.35)
@@ -133,24 +163,39 @@ export type { HolographicTheme, HolographicConfig } from '@/components/enhanced/
 // CONVERSATION COMPONENTS
 // =============================================================================
 
-export { AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
-export type { AnimatedMessageWrapperProps } from '@/components/conversation/AnimatedMessageWrapper';
+export { AnimatedMessageWrapper } from '@/modules/chat/components/AnimatedMessageWrapper';
+export type { AnimatedMessageWrapperProps } from '@/modules/chat/components/AnimatedMessageWrapper';
 
-export { AnimatedReactionBubble, ReactionPicker } from '@/components/conversation/AnimatedReactionBubble';
-export type { AnimatedReactionBubbleProps, ReactionData } from '@/components/conversation/AnimatedReactionBubble';
+export {
+  AnimatedReactionBubble,
+  ReactionPicker,
+} from '@/modules/chat/components/AnimatedReactionBubble';
+export type {
+  AnimatedReactionBubbleProps,
+  ReactionData,
+} from '@/modules/chat/components/AnimatedReactionBubble';
 
 // =============================================================================
 // 3D COMPONENTS
 // =============================================================================
 
-export { default as Matrix3DEnvironment, Matrix3DLowProfile, Matrix3DCyberBlue } from '@/components/three/Matrix3DEnvironment';
+export {
+  default as Matrix3DEnvironment,
+  Matrix3DLowProfile,
+  Matrix3DCyberBlue,
+} from '@/components/three/Matrix3DEnvironment';
 export type { Matrix3DEnvironmentProps } from '@/components/three/Matrix3DEnvironment';
 
 // =============================================================================
 // SHADER COMPONENTS
 // =============================================================================
 
-export { default as ShaderBackground, MatrixShaderBackground, CyberShaderBackground, NeuralShaderBackground } from '@/components/shaders/ShaderBackground';
+export {
+  default as ShaderBackground,
+  MatrixShaderBackground,
+  CyberShaderBackground,
+  NeuralShaderBackground,
+} from '@/components/shaders/ShaderBackground';
 export type { ShaderBackgroundProps } from '@/components/shaders/ShaderBackground';
 
 // =============================================================================
@@ -158,4 +203,3 @@ export type { ShaderBackgroundProps } from '@/components/shaders/ShaderBackgroun
 // =============================================================================
 
 export { default as EnhancedConversation } from '@/pages/messages/EnhancedConversation';
-

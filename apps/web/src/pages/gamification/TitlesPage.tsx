@@ -23,7 +23,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { TitleBadge } from '@/components/gamification/TitleBadge';
+import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
 import { TITLES, type Title, type TitleRarity } from '@/data/titles';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';

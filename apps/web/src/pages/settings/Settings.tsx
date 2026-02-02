@@ -16,11 +16,11 @@ import {
 } from '@heroicons/react/24/outline';
 
 // These components are available for extended settings functionality
-import AppearanceSettingsEnhanced from '@/components/settings/AppearanceSettingsEnhanced';
-import ChatBubbleSettings from '@/components/settings/ChatBubbleSettings';
-import UICustomizationSettings from '@/components/settings/UICustomizationSettings';
-import AvatarSettings from '@/components/settings/AvatarSettings';
-import { AccountSettings } from '@/components/settings/AccountSettings';
+import AppearanceSettingsEnhanced from '@/modules/settings/components/AppearanceSettingsEnhanced';
+import ChatBubbleSettings from '@/modules/settings/components/ChatBubbleSettings';
+import UICustomizationSettings from '@/modules/settings/components/UICustomizationSettings';
+import AvatarSettings from '@/modules/settings/components/AvatarSettings';
+import { AccountSettings } from '@/modules/settings/components/AccountSettings';
 import {
   SecuritySettingsPanel,
   NotificationSettingsPanel,
@@ -29,7 +29,7 @@ import {
   PrivacySettingsPanel,
   BillingSettingsPanel,
   RedirectToCustomize,
-} from '@/components/settings/panels';
+} from '@/modules/settings/components/panels';
 
 // Reserved for extended settings - mark as used to prevent tree-shaking removal
 const _extendedSettingsComponents = {

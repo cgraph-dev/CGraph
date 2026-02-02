@@ -1,7 +1,7 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { adminApi } from '@/lib/api/admin';
-import { LoadingState, SettingToggle, SettingNumber } from '@/components/admin';
+import { LoadingState, SettingToggle, SettingNumber } from '@/modules/admin/components';
 
 // ============================================================================
 // Settings Tab - System configuration management

@@ -64,8 +64,10 @@ export { GifPicker, type GifResult } from './GifPicker';
 export {
   StickerPicker,
   StickerMessage,
+  StickerButton,
   type StickerPickerProps,
   type StickerMessageProps,
+  type StickerButtonProps,
 } from './StickerPicker';
 
 // ============================================

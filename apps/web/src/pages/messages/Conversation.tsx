@@ -13,7 +13,7 @@ import {
 } from '@/lib/apiUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/shared/components/ui';
-import type { GifResult } from '@/components/chat/GifPicker';
+import type { GifResult } from '@/modules/chat/components/GifPicker';
 import type { Sticker } from '@/data/stickers';
 
 // Extracted hooks
@@ -28,7 +28,7 @@ import {
   AnimatedReactionBubble,
   ConversationHeader,
   TypingIndicator,
-} from '@/components/conversation';
+} from '@/modules/chat/components';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { themeEngine } from '@/lib/ai/ThemeEngine';
@@ -42,15 +42,15 @@ import {
   AmbientBackground,
   MessageSearch,
   type UIPreferences,
-} from '@/components/messages';
+} from '@/modules/chat/components';
 
 // Chat components
-import E2EEConnectionTester from '@/components/chat/E2EEConnectionTester';
-import { E2EEErrorModal } from '@/components/chat/E2EEErrorModal';
-import { ForwardMessageModal } from '@/components/chat/ForwardMessageModal';
-import { ScheduledMessagesList } from '@/components/chat/ScheduledMessagesList';
-import { ScheduleMessageModal } from '@/components/chat/ScheduleMessageModal';
-import ChatInfoPanel from '@/components/chat/ChatInfoPanel';
+import E2EEConnectionTester from '@/modules/chat/components/E2EEConnectionTester';
+import { E2EEErrorModal } from '@/modules/chat/components/E2EEErrorModal';
+import { ForwardMessageModal } from '@/modules/chat/components/ForwardMessageModal';
+import { ScheduledMessagesList } from '@/modules/chat/components/ScheduledMessagesList';
+import { ScheduleMessageModal } from '@/modules/chat/components/ScheduleMessageModal';
+import ChatInfoPanel from '@/modules/chat/components/ChatInfoPanel';
 
 // Voice components
 import { VoiceCallModal } from '@/components/voice/VoiceCallModal';

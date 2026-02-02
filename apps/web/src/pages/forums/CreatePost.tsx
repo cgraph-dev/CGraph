@@ -7,7 +7,7 @@ import { useForumStore, type PostAttachment } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { MarkdownEditor } from '@/components';
 import { toast } from '@/shared/components/ui';
-import AttachmentUploader from '@/components/forums/AttachmentUploader';
+import AttachmentUploader from '@/modules/forums/components/AttachmentUploader';
 import {
   ArrowLeftIcon,
   PhotoIcon,

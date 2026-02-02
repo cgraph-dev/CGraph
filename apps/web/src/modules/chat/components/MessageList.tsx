@@ -7,12 +7,10 @@ import { getMessageSenderId } from '@/lib/apiUtils';
 import { formatDateHeader, groupMessagesByDate } from '@/lib/chat/messageUtils';
 import { handleAddReaction } from '@/lib/chat/reactionUtils';
 import { GlassCard } from '@/shared/components/ui';
-import {
-  AnimatedMessageWrapper,
-  AnimatedReactionBubble,
-  TypingIndicator,
-} from '@/components/conversation';
-import { MessageBubble, type UIPreferences } from '@/components/messages';
+import { AnimatedMessageWrapper } from './AnimatedMessageWrapper';
+import { AnimatedReactionBubble } from './AnimatedReactionBubble';
+import { TypingIndicator } from './TypingIndicator';
+import { MessageBubble, type UIPreferences } from './MessageBubble';
 
 const logger = createLogger('MessageList');
 

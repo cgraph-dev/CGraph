@@ -26,8 +26,8 @@ import Dropdown, { DropdownItem } from '@/components/Dropdown';
 import { motion } from 'framer-motion';
 import { GlassCard, AnimatedAvatar } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import LevelProgress from '@/components/gamification/LevelProgress';
-import { TitleBadge } from '@/components/gamification/TitleBadge';
+import LevelProgress from '@/modules/gamification/components/LevelProgress';
+import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
 import { ACHIEVEMENT_DEFINITIONS } from '@/data/achievements';
 import type { UserProfileData, FriendshipStatus } from '@/types/profile.types';
 import {
@@ -39,7 +39,7 @@ import {
   ProfileSidebar,
   EquippedBadgesShowcase,
   AchievementsShowcase,
-} from '@/components/profile';
+} from '@/modules/social/components';
 
 export default function UserProfile() {
   const { userId } = useParams<{ userId: string }>();

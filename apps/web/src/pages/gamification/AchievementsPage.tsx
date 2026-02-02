@@ -29,8 +29,8 @@ import {
   type AchievementRarity,
 } from '@/stores/gamificationStore';
 import { ACHIEVEMENT_DEFINITIONS } from '@/data/achievements';
-import { TitleBadge } from '@/components/gamification/TitleBadge';
-import LevelProgress from '@/components/gamification/LevelProgress';
+import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
+import LevelProgress from '@/modules/gamification/components/LevelProgress';
 
 // ==================== TYPES ====================
 

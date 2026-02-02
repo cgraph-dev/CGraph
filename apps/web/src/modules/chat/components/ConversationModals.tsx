@@ -1,14 +1,14 @@
 import { AnimatePresence } from 'framer-motion';
 import { Message } from '@/stores/chatStore';
-import E2EEConnectionTester from '@/components/chat/E2EEConnectionTester';
-import { E2EEErrorModal } from '@/components/chat/E2EEErrorModal';
-import { ForwardMessageModal } from '@/components/chat/ForwardMessageModal';
-import { MessageSearch } from '@/components/messages/MessageSearch';
-import { ScheduleMessageModal } from '@/components/chat/ScheduleMessageModal';
-import { ScheduledMessagesList } from '@/components/chat/ScheduledMessagesList';
+import E2EEConnectionTester from '@/modules/chat/components/E2EEConnectionTester';
+import { E2EEErrorModal } from '@/modules/chat/components/E2EEErrorModal';
+import { ForwardMessageModal } from '@/modules/chat/components/ForwardMessageModal';
+import { MessageSearch } from '@/modules/chat/components/MessageSearch';
+import { ScheduleMessageModal } from '@/modules/chat/components/ScheduleMessageModal';
+import { ScheduledMessagesList } from '@/modules/chat/components/ScheduledMessagesList';
 import { VoiceCallModal } from '@/components/voice/VoiceCallModal';
 import { VideoCallModal } from '@/components/voice/VideoCallModal';
-import ChatInfoPanel from '@/components/chat/ChatInfoPanel';
+import ChatInfoPanel from '@/modules/chat/components/ChatInfoPanel';
 
 export interface ConversationModalsProps {
   conversationId: string | undefined;

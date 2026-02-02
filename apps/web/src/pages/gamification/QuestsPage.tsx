@@ -27,7 +27,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useGamificationStore, type Quest, type QuestObjective } from '@/stores/gamificationStore';
 import { api } from '@/lib/api';
-import LevelProgress from '@/components/gamification/LevelProgress';
+import LevelProgress from '@/modules/gamification/components/LevelProgress';
 
 // ==================== TYPES ====================
 

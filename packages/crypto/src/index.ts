@@ -39,8 +39,13 @@ export {
   base64ToArrayBuffer,
 } from './utils';
 
-// X3DH Protocol (placeholder - to be migrated from web app)
-// export { X3DHProtocol } from './x3dh';
-
-// Double Ratchet (placeholder - to be migrated from web app)
-// export { DoubleRatchetEngine } from './doubleRatchet';
+// Double Ratchet engine
+export {
+  DoubleRatchetEngine,
+  PostQuantumDoubleRatchet,
+  generateDHKeyPair,
+  importDHPublicKey,
+  type KeyPair as DHKeyPair,
+  type RatchetState,
+  type MessageHeader,
+} from './doubleRatchet';

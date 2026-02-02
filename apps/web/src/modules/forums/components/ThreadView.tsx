@@ -33,7 +33,7 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatTimeAgo } from '@/lib/utils';
-import { UserStars } from '@/components/gamification/UserStars';
+import { UserStars } from '@/modules/gamification/components/UserStars';
 import { ThreadedCommentTree } from './ThreadedCommentTree';
 import type { Post, Comment, ThreadPrefix } from '@/stores/forumStore';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';

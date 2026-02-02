@@ -6,7 +6,7 @@ import { adminApi } from '@/lib/api/admin';
 import { formatTimeAgo } from '@/lib/utils';
 import clsx from 'clsx';
 import type { Report } from '@/types/admin.types';
-import { StatusBadge, LoadingState, EmptyState } from '@/components/admin';
+import { StatusBadge, LoadingState, EmptyState } from '@/modules/admin/components';
 
 // ============================================================================
 // Reports Tab - Moderation reports management

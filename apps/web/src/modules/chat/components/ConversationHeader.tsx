@@ -20,7 +20,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
-import UserProfileCard from '@/components/profile/UserProfileCard';
+import UserProfileCard from '@/modules/social/components/UserProfileCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { getAvatarBorderId } from '@/lib/utils';
 import type { Conversation } from '@/stores/chatStore';

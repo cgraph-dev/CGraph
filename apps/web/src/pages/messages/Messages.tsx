@@ -18,7 +18,7 @@ import {
   MagnifyingGlassPlusIcon,
 } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { MessageSearch } from '@/components/messages/MessageSearch';
+import { MessageSearch } from '@/modules/chat/components/MessageSearch';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 export default function Messages() {

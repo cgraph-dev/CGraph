@@ -15,7 +15,7 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useGamificationStore, Achievement } from '@/stores/gamificationStore';
 import AchievementNotification, {
   AchievementNotificationData,
-} from '@/components/gamification/AchievementNotification';
+} from '@/modules/gamification/components/AchievementNotification';
 import confetti from 'canvas-confetti';
 
 /**

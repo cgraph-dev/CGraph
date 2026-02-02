@@ -6,12 +6,12 @@ import { useAuthStore } from '@/stores/authStore';
 import { useChatStore, Message } from '@/stores/chatStore';
 import { VoiceMessagePlayer } from '@/components/VoiceMessagePlayer';
 import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';
-import MessageReactions from '@/components/chat/MessageReactions';
-import RichMediaEmbed from '@/components/chat/RichMediaEmbed';
-import { GifMessage } from '@/components/chat/GifMessage';
-import { FileMessage } from '@/components/chat/FileMessage';
+import MessageReactions from '@/modules/chat/components/MessageReactions';
+import RichMediaEmbed from '@/modules/chat/components/RichMediaEmbed';
+import { GifMessage } from '@/modules/chat/components/GifMessage';
+import { FileMessage } from '@/modules/chat/components/FileMessage';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
-import UserProfileCard from '@/components/profile/UserProfileCard';
+import UserProfileCard from '@/modules/social/components/UserProfileCard';
 import { aggregateReactions, handleRemoveReaction } from '@/lib/chat';
 import { createLogger } from '@/lib/logger';
 

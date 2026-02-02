@@ -5,7 +5,7 @@ import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
 import { getBorderById } from '@/data/avatar-borders';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { AnimatedBadgeWithTooltip } from '@/components/badges/AnimatedBadge';
-import { TitleBadge } from '@/components/gamification/TitleBadge';
+import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
 import {
   useActiveProfileTheme,
   useProfileCardConfig,

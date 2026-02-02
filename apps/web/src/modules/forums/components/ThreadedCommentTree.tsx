@@ -32,7 +32,7 @@ import {
   ArrowUpIcon as ArrowUpIconSolid,
   ArrowDownIcon as ArrowDownIconSolid,
 } from '@heroicons/react/24/solid';
-import { UserStars } from '@/components/gamification/UserStars';
+import { UserStars } from '@/modules/gamification/components/UserStars';
 import { formatTimeAgo } from '@/lib/utils';
 import type { Comment } from '@/stores/forumStore';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';

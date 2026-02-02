@@ -25,9 +25,9 @@ import {
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useGamificationStore } from '@/stores/gamificationStore';
-import LevelProgress from '@/components/gamification/LevelProgress';
-import { TitleBadge } from '@/components/gamification/TitleBadge';
-import QuestPanel from '@/components/gamification/QuestPanel';
+import LevelProgress from '@/modules/gamification/components/LevelProgress';
+import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
+import QuestPanel from '@/modules/gamification/components/QuestPanel';
 import { ACHIEVEMENT_DEFINITIONS } from '@/data/achievements';
 
 // ==================== STAT CARD ====================

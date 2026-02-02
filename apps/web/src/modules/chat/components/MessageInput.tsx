@@ -15,8 +15,8 @@ import {
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { GlassCard } from '@/shared/components/ui';
 import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
-import { StickerPicker } from '@/components/chat/StickerPicker';
-import { GifPicker, type GifResult } from '@/components/chat/GifPicker';
+import { StickerPicker } from '@/modules/chat/components/StickerPicker';
+import { GifPicker, type GifResult } from '@/modules/chat/components/GifPicker';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { Sticker } from '@/data/stickers';
 import { api } from '@/lib/api';

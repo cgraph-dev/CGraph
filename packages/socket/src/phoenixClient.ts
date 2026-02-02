@@ -6,13 +6,7 @@
  */
 
 import { Socket, Channel } from 'phoenix';
-import type {
-  SocketOptions,
-  ChannelOptions,
-  ConnectionState,
-  MessageHandler,
-  ErrorHandler,
-} from './types';
+import type { SocketOptions, ChannelOptions, ConnectionState, MessageHandler } from './types';
 
 export class PhoenixClient {
   private socket: Socket | null = null;
@@ -189,7 +183,7 @@ export function createChannelHandler<T>(
 /**
  * Push message to channel with typed response
  */
-export function pushToChannel<TPayload, TResponse>(
+export function pushToChannel<TPayload extends object, TResponse>(
   channel: Channel,
   event: string,
   payload: TPayload,

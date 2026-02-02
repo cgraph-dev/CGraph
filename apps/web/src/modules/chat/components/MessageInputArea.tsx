@@ -10,9 +10,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 import { GlassCard } from '@/shared/components/ui';
-import { StickerPicker, StickerButton } from '@/components/chat/StickerPicker';
-import { GifPicker, type GifResult } from '@/components/chat/GifPicker';
-import { EmojiPicker } from '@/components/chat/EmojiPicker';
+import { StickerPicker, StickerButton } from '@/modules/chat/components/StickerPicker';
+import { GifPicker, type GifResult } from '@/modules/chat/components/GifPicker';
+import { EmojiPicker } from '@/modules/chat/components/EmojiPicker';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { Sticker } from '@/data/stickers';
 import type { UIPreferences } from './MessageBubble';

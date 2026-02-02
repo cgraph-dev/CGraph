@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { formatTimeAgo } from '@/lib/utils';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import type { AdminUser } from '@/types/admin.types';
-import { StatusBadge, LoadingState } from '@/components/admin';
+import { StatusBadge, LoadingState } from '@/modules/admin/components';
 
 // ============================================================================
 // Users Tab - User management with search, ban/unban functionality
