@@ -13,6 +13,33 @@ defmodule CGraph.Accounts do
   alias CGraph.Workers.{Orchestrator, SendEmailNotification}
 
   # ============================================================================
+  # Submodule Delegations (Phase 6 Architecture Refactor)
+  # These delegate to extracted submodules for better code organization
+  # ============================================================================
+
+  # Users submodule delegations
+  alias CGraph.Accounts.Users, as: UsersModule
+  defdelegate get_user_v2(id), to: UsersModule, as: :get_user
+  defdelegate get_user_by_email_v2(email), to: UsersModule, as: :get_user_by_email
+  defdelegate get_user_by_username_v2(username), to: UsersModule, as: :get_user_by_username
+
+  # Authentication submodule delegations
+  alias CGraph.Accounts.Authentication, as: AuthModule
+  defdelegate authenticate_v2(identifier, password), to: AuthModule, as: :authenticate
+  defdelegate create_session_v2(user, device_info \\ %{}), to: AuthModule, as: :create_session
+  defdelegate get_session_by_token_v2(token), to: AuthModule, as: :get_session_by_token
+  defdelegate revoke_session_v2(session), to: AuthModule, as: :revoke_session
+
+  # Registration submodule delegations
+  alias CGraph.Accounts.Registration, as: RegModule
+  defdelegate register_user_v2(attrs, opts \\ []), to: RegModule, as: :register_user
+
+  # Sessions submodule delegations
+  alias CGraph.Accounts.Sessions, as: SessionsModule
+  defdelegate list_user_sessions_v2(user_id), to: SessionsModule, as: :list_user_sessions
+  defdelegate revoke_all_sessions_v2(user_id, except \\ nil), to: SessionsModule, as: :revoke_all
+
+  # ============================================================================
   # Registration & Authentication
   # ============================================================================
 
