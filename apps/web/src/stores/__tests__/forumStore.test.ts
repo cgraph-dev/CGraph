@@ -1140,6 +1140,7 @@ describe('forumStore', () => {
       const result = await useForumStore.getState().createThreadPrefix({
         name: 'New Prefix',
         color: '#f59e0b',
+        forums: ['forum-1'],
       });
 
       expect(result.name).toBe('New Prefix');
@@ -1174,7 +1175,7 @@ describe('forumStore', () => {
         question: 'Test poll?',
         options: ['Yes', 'No'],
         allowMultiple: false,
-        isPublic: true,
+        public: true,
       });
 
       expect(result.question).toBe('Test poll?');
@@ -1269,7 +1270,6 @@ describe('forumStore', () => {
       const result = await useForumStore.getState().banUser({
         userId: 'user-1',
         reason: 'Repeated violations',
-        banType: 'temporary',
         expiresAt: '2026-02-30T00:00:00Z',
       });
 
@@ -1327,8 +1327,8 @@ describe('forumStore', () => {
       mockedApi.post.mockResolvedValue({ data: { report: mockReport } });
 
       const result = await useForumStore.getState().reportItem({
-        targetType: 'post',
-        targetId: 'post-1',
+        reportType: 'post',
+        itemId: 'post-1',
         reason: 'Inappropriate content',
       });
 
@@ -1338,10 +1338,10 @@ describe('forumStore', () => {
     it('should fetch reports', async () => {
       mockedApi.get.mockResolvedValue({ data: { reports: [] } });
 
-      await useForumStore.getState().fetchReports('pending');
+      await useForumStore.getState().fetchReports('open');
 
       expect(mockedApi.get).toHaveBeenCalledWith('/api/v1/admin/reports', {
-        params: { status: 'pending' },
+        params: { status: 'open' },
       });
     });
 
@@ -1452,7 +1452,7 @@ describe('forumStore', () => {
         name: 'Moderators',
         description: 'Site moderators',
         color: '#f59e0b',
-        permissions: { canModerate: true },
+        permissions: { canBanUsers: true },
         createdAt: '2026-01-30T00:00:00Z',
       };
       mockedApi.post.mockResolvedValue({ data: { user_group: mockGroup } });
@@ -1461,7 +1461,8 @@ describe('forumStore', () => {
         name: 'Moderators',
         description: 'Site moderators',
         color: '#f59e0b',
-        permissions: { canModerate: true },
+        type: 'custom',
+        permissions: { canBanUsers: true },
       });
 
       expect(result.name).toBe('Moderators');

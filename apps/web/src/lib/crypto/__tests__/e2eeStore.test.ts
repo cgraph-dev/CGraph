@@ -7,7 +7,7 @@
  * @module lib/crypto/__tests__/e2eeStore.test
  */
 
-import { describe, it, expect, beforeEach, vi, type MockedFunction } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 import { useE2EEStore } from '../e2eeStore';
 import { api } from '@/lib/api';
