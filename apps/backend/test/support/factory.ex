@@ -475,79 +475,93 @@ defmodule CGraph.Factory do
   # ============================================================================
 
   def avatar_border_factory do
-    %CGraph.Gamification.Cosmetics.AvatarBorder{
+    %CGraph.Gamification.AvatarBorder{
       name: sequence(:border_name, &"Border #{&1}"),
       slug: sequence(:border_slug, &"border-#{&1}"),
       description: "A beautiful avatar border",
-      border_type: Enum.random([:static, :animated, :particle]),
-      theme: Enum.random([:default, :premium, :seasonal, :achievement]),
-      rarity: Enum.random([:common, :uncommon, :rare, :epic, :legendary]),
-      config: %{
+      theme: Enum.random(~w(basic gradient glow animated retro neon)),
+      rarity: Enum.random(~w(common uncommon rare epic legendary)),
+      border_style: %{
         "color" => "##{:crypto.strong_rand_bytes(3) |> Base.encode16()}",
         "thickness" => Enum.random([2, 3, 4]),
         "glow" => Enum.random([true, false])
       },
-      animation_config: nil,
-      preview_url: "/borders/preview/#{:rand.uniform(100)}.png",
-      coin_price: Enum.random([100, 500, 1000, 2500, 5000]),
-      gem_price: nil,
+      animation_type: "none",
+      animation_speed: 1.0,
+      animation_intensity: 1.0,
+      colors: ["#FF0000", "#00FF00"],
+      particle_config: %{},
+      glow_config: %{},
+      unlock_type: "default",
+      unlock_requirement: nil,
       is_purchasable: true,
-      is_tradeable: true,
-      is_limited: false,
+      coin_cost: Enum.random([100, 500, 1000, 2500, 5000]),
+      gem_cost: 0,
+      preview_url: "/borders/preview/#{:rand.uniform(100)}.png",
       is_active: true,
-      inserted_at: DateTime.utc_now(),
-      updated_at: DateTime.utc_now()
+      sort_order: 0,
+      inserted_at: DateTime.utc_now() |> DateTime.truncate(:second),
+      updated_at: DateTime.utc_now() |> DateTime.truncate(:second)
     }
   end
 
   def user_avatar_border_factory do
-    %CGraph.Gamification.Cosmetics.UserAvatarBorder{
+    %CGraph.Gamification.UserAvatarBorder{
       user_id: nil,
       avatar_border_id: nil,
       is_equipped: false,
-      is_favorite: false,
-      acquired_at: DateTime.utc_now(),
-      acquisition_source: Enum.random([:purchase, :achievement, :event, :gift]),
-      trade_locked_until: nil
+      unlock_source: Enum.random(~w(default achievement purchase event gift)),
+      unlock_data: %{},
+      expires_at: nil,
+      custom_colors: nil,
+      custom_animation_speed: nil,
+      inserted_at: DateTime.utc_now() |> DateTime.truncate(:second),
+      updated_at: DateTime.utc_now() |> DateTime.truncate(:second)
     }
   end
 
   def profile_theme_factory do
-    %CGraph.Gamification.Cosmetics.ProfileTheme{
+    %CGraph.Gamification.ProfileTheme{
       name: sequence(:theme_name, &"Theme #{&1}"),
       slug: sequence(:theme_slug, &"theme-#{&1}"),
       description: "A stunning profile theme",
-      theme_type: Enum.random([:color, :gradient, :image, :animated]),
-      category: Enum.random([:minimal, :vibrant, :dark, :light]),
-      rarity: Enum.random([:common, :uncommon, :rare, :epic, :legendary]),
-      config: %{
-        "background" => "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        "accent_color" => "#ffffff"
+      preset: Enum.random(~w(minimalist-dark minimalist-light gradient-aurora cyberpunk-neon)),
+      rarity: Enum.random(~w(common uncommon rare epic legendary)),
+      colors: %{
+        "primary" => "#22c55e",
+        "secondary" => "#4ade80",
+        "accent" => "#86efac",
+        "background" => "#0a0a0f",
+        "surface" => "#1a1a2e",
+        "text" => "#ffffff"
       },
-      preview_url: "/themes/preview/#{:rand.uniform(100)}.png",
-      coin_price: Enum.random([500, 1000, 2500, 5000]),
-      is_purchasable: true,
-      is_tradeable: true,
-      is_active: true
+      inserted_at: DateTime.utc_now() |> DateTime.truncate(:second),
+      updated_at: DateTime.utc_now() |> DateTime.truncate(:second)
     }
   end
 
   def chat_effect_factory do
-    %CGraph.Gamification.Cosmetics.ChatEffect{
+    %CGraph.Gamification.ChatEffect{
       name: sequence(:effect_name, &"Effect #{&1}"),
       slug: sequence(:effect_slug, &"effect-#{&1}"),
       description: "An eye-catching chat effect",
-      effect_type: Enum.random([:message, :bubble, :typing, :reaction]),
-      category: Enum.random([:fun, :elegant, :festive]),
-      rarity: Enum.random([:common, :uncommon, :rare, :epic]),
+      effect_type: Enum.random(~w(message-effect bubble-style typing-indicator)),
+      effect_id: "confetti",
+      rarity: Enum.random(~w(common uncommon rare epic)),
       config: %{
         "particle_count" => Enum.random([5, 10, 15, 20]),
         "color" => "##{:crypto.strong_rand_bytes(3) |> Base.encode16()}"
       },
-      preview_url: "/effects/preview/#{:rand.uniform(100)}.gif",
-      coin_price: Enum.random([100, 250, 500, 1000]),
+      preview_config: %{},
+      unlock_type: "default",
+      unlock_requirement: nil,
       is_purchasable: true,
-      is_active: true
+      coin_cost: Enum.random([100, 250, 500, 1000]),
+      gem_cost: 0,
+      is_active: true,
+      sort_order: 0,
+      inserted_at: DateTime.utc_now() |> DateTime.truncate(:second),
+      updated_at: DateTime.utc_now() |> DateTime.truncate(:second)
     }
   end
 
@@ -556,31 +570,30 @@ defmodule CGraph.Factory do
   # ============================================================================
 
   def user_prestige_factory do
-    %CGraph.Gamification.Prestige.UserPrestige{
+    %CGraph.Gamification.UserPrestige{
       user_id: nil,
       prestige_level: 0,
-      total_prestiges: 0,
-      xp_multiplier: Decimal.new("1.00"),
-      coin_multiplier: Decimal.new("1.00"),
-      total_xp_earned: 0,
-      total_coins_earned: 0,
-      exclusive_rewards_unlocked: [],
-      prestige_title: nil,
-      last_prestige_at: nil
+      prestige_xp: 0,
+      xp_to_next_prestige: 100_000,
+      xp_bonus: 0.0,
+      coin_bonus: 0.0,
+      karma_bonus: 0.0,
+      drop_rate_bonus: 0.0,
+      prestige_history: [],
+      total_resets: 0,
+      last_prestige_at: nil,
+      exclusive_titles: [],
+      exclusive_borders: [],
+      exclusive_effects: [],
+      lifetime_xp: 0,
+      lifetime_karma: 0,
+      lifetime_coins_earned: 0,
+      lifetime_messages: 0
     }
   end
 
-  def prestige_reward_factory do
-    %CGraph.Gamification.Prestige.PrestigeReward{
-      prestige_level: sequence(:prestige_level, & &1),
-      reward_type: Enum.random([:avatar_border, :profile_theme, :title, :coins]),
-      reward_id: Ecto.UUID.generate(),
-      reward_name: sequence(:reward_name, &"Prestige Reward #{&1}"),
-      reward_description: "Exclusive prestige reward",
-      reward_config: %{},
-      is_active: true
-    }
-  end
+  # Note: prestige_reward_factory removed - PrestigeReward module does not exist
+  # Prestige rewards are stored as arrays on UserPrestige (exclusive_titles, etc.)
 
   # ============================================================================
   # Seasonal Events Factories
@@ -590,24 +603,30 @@ defmodule CGraph.Factory do
     start_date = DateTime.add(DateTime.utc_now(), -Enum.random(1..7), :day)
     end_date = DateTime.add(start_date, Enum.random(14..60), :day)
 
-    %CGraph.Gamification.Events.SeasonalEvent{
+    %CGraph.Gamification.SeasonalEvent{
       name: sequence(:event_name, &"Seasonal Event #{&1}"),
       slug: sequence(:event_slug, &"event-#{&1}"),
       description: "An exciting seasonal event!",
-      event_type: Enum.random([:seasonal, :holiday, :anniversary, :competition]),
-      status: :draft,
+      event_type: Enum.random(["seasonal", "holiday", "anniversary", "special"]),
+      status: "active",
       starts_at: start_date,
       ends_at: end_date,
-      config: %{
-        "xp_multiplier" => Enum.random([1.5, 2.0, 2.5]),
-        "primary_color" => "#8B5CF6",
-        "secondary_color" => "#EC4899",
-        "battle_pass_enabled" => true,
-        "leaderboard_enabled" => true,
-        "max_battle_pass_tier" => 50
-      },
-      exclusive_rewards: [],
-      total_participants: 0
+      grace_period_ends_at: DateTime.add(end_date, 3, :day),
+      theme: %{},
+      banner_url: nil,
+      icon_url: nil,
+      colors: %{"primary" => "#8B5CF6", "secondary" => "#EC4899"},
+      rewards: [],
+      milestone_rewards: [],
+      participation_rewards: [],
+      event_currency: nil,
+      event_currency_icon: nil,
+      multipliers: %{"xp" => 1.5, "coins" => 1.0, "karma" => 1.0},
+      quests: [],
+      daily_challenges: [],
+      has_battle_pass: false,
+      battle_pass_cost: 0,
+      battle_pass_tiers: []
     }
   end
 
@@ -615,7 +634,7 @@ defmodule CGraph.Factory do
     struct!(
       seasonal_event_factory(),
       %{
-        status: :active,
+        status: "active",
         starts_at: DateTime.add(DateTime.utc_now(), -1, :day),
         ends_at: DateTime.add(DateTime.utc_now(), 14, :day)
       }
@@ -623,75 +642,64 @@ defmodule CGraph.Factory do
   end
 
   def user_event_progress_factory do
-    %CGraph.Gamification.Events.UserEventProgress{
+    %CGraph.Gamification.UserEventProgress{
       user_id: nil,
-      event_id: nil,
-      event_xp: 0,
+      seasonal_event_id: nil,
+      event_points: 0,
+      event_currency_earned: 0,
+      event_currency_spent: 0,
+      quests_completed: [],
+      daily_challenges_completed: [],
+      milestones_claimed: [],
+      has_battle_pass: false,
       battle_pass_tier: 0,
-      has_premium_pass: false,
-      leaderboard_rank: nil,
-      leaderboard_score: 0,
-      quests_completed: 0,
-      claimed_tiers: [],
-      bonus_rewards_claimed: [],
-      last_activity_at: DateTime.utc_now()
+      battle_pass_xp: 0,
+      claimed_free_rewards: [],
+      claimed_premium_rewards: [],
+      leaderboard_points: 0,
+      best_rank: nil,
+      first_participated_at: DateTime.utc_now(),
+      last_participated_at: DateTime.utc_now(),
+      total_sessions: 0,
+      rewards_claimed: []
     }
   end
 
-  def battle_pass_tier_factory do
-    %CGraph.Gamification.Events.BattlePassTier{
-      event_id: nil,
-      tier_number: sequence(:tier_number, & &1),
-      xp_required: sequence(:tier_xp, &(&1 * 1000)),
-      free_reward_type: Enum.random([:coins, :xp_boost, :cosmetic]),
-      free_reward_config: %{"amount" => Enum.random([100, 250, 500])},
-      premium_reward_type: Enum.random([:avatar_border, :profile_theme, :chat_effect]),
-      premium_reward_config: %{"rarity" => Enum.random(["rare", "epic", "legendary"])},
-      is_active: true
-    }
-  end
+  # Note: battle_pass_tier_factory removed - BattlePassTier module doesn't exist
+  # Battle pass tiers are stored as array on SeasonalEvent (battle_pass_tiers field)
 
   # ============================================================================
   # Marketplace Factories
   # ============================================================================
 
   def marketplace_listing_factory do
-    %CGraph.Gamification.Marketplace.MarketplaceListing{
+    %CGraph.Gamification.MarketplaceItem{
       seller_id: nil,
-      item_type: Enum.random([:avatar_border, :profile_theme, :chat_effect]),
+      buyer_id: nil,
+      item_type: Enum.random(["avatar_border", "profile_theme", "chat_effect"]),
       item_id: Ecto.UUID.generate(),
-      item_name: sequence(:item_name, &"Item #{&1}"),
-      item_rarity: Enum.random([:common, :uncommon, :rare, :epic, :legendary]),
-      item_preview_url: "/items/preview/#{:rand.uniform(100)}.png",
+      listing_status: "active",
       price: Enum.random([500, 1000, 2500, 5000, 10000]),
-      currency: :coins,
-      status: :active,
-      accepts_trades: Enum.random([true, false]),
+      currency_type: "coins",
+      original_price: nil,
+      min_price: nil,
+      max_price: nil,
+      listing_fee: 0,
+      transaction_fee_percent: 0.05,
       listed_at: DateTime.utc_now(),
       expires_at: DateTime.add(DateTime.utc_now(), 30, :day),
-      flagged: false,
-      risk_score: 0,
-      view_count: 0,
-      favorite_count: 0
+      sold_at: nil,
+      item_name: sequence(:item_name, &"Item #{&1}"),
+      item_rarity: Enum.random(["common", "uncommon", "rare", "epic", "legendary"]),
+      item_preview_url: "/items/preview/#{:rand.uniform(100)}.png",
+      item_metadata: %{},
+      accepts_trades: Enum.random([true, false]),
+      trade_preferences: []
     }
   end
 
-  def marketplace_transaction_factory do
-    %CGraph.Gamification.Marketplace.MarketplaceTransaction{
-      listing_id: nil,
-      buyer_id: nil,
-      seller_id: nil,
-      item_type: :avatar_border,
-      item_id: Ecto.UUID.generate(),
-      item_name: sequence(:tx_item_name, &"Sold Item #{&1}"),
-      price: Enum.random([500, 1000, 2500, 5000]),
-      currency: :coins,
-      fee_amount: 0,
-      seller_proceeds: 0,
-      status: :completed,
-      completed_at: DateTime.utc_now()
-    }
-  end
+  # Note: marketplace_transaction_factory removed - MarketplaceTransaction module doesn't exist
+  # Transactions are tracked via the MarketplaceItem buyer_id and sold_at fields
 
   # ============================================================================
   # Helper Functions for Gamification
@@ -717,19 +725,23 @@ defmodule CGraph.Factory do
 
   @doc """
   Create an event with full battle pass structure.
+  Battle pass tiers are stored directly on the event as an array of maps.
   """
   def event_with_battle_pass(tier_count \\ 50) do
-    event = insert(:active_event)
-    
-    Enum.each(1..tier_count, fn tier_num ->
-      insert(:battle_pass_tier, 
-        event_id: event.id, 
-        tier_number: tier_num, 
-        xp_required: tier_num * 1000
-      )
+    tiers = Enum.map(1..tier_count, fn tier_num ->
+      %{
+        "tier" => tier_num,
+        "xp_required" => tier_num * 1000,
+        "free_reward" => %{"type" => "coins", "amount" => tier_num * 100},
+        "premium_reward" => %{"type" => "cosmetic", "rarity" => if(rem(tier_num, 10) == 0, do: "legendary", else: "rare")}
+      }
     end)
     
-    event
+    insert(:active_event,
+      has_battle_pass: true,
+      battle_pass_cost: 950,
+      battle_pass_tiers: tiers
+    )
   end
 
   @doc """

@@ -21,6 +21,41 @@ defmodule CGraph.Forums do
   alias CGraph.Repo
 
   # ============================================================================
+  # Submodule Delegations (Phase 6 Architecture Refactor)
+  # These delegate to extracted submodules for better code organization
+  # ============================================================================
+
+  # Posts submodule delegations
+  alias CGraph.Forums.Posts, as: PostsModule
+  defdelegate list_posts_v2(forum, opts \\ []), to: PostsModule, as: :list_posts
+  defdelegate get_post_v2(post_id), to: PostsModule, as: :get_post
+  defdelegate get_post_with_vote_v2(forum, post_id, user), to: PostsModule, as: :get_post_with_vote
+  defdelegate create_post_v2(forum, user, attrs), to: PostsModule, as: :create_post
+  defdelegate increment_post_views_v2(post), to: PostsModule, as: :increment_views
+
+  # Comments submodule delegations
+  alias CGraph.Forums.Comments, as: CommentsModule
+  defdelegate list_comments_v2(post, opts \\ []), to: CommentsModule, as: :list_comments
+  defdelegate get_comment_v2(comment_id), to: CommentsModule, as: :get_comment
+  defdelegate create_comment_v2(post, user, attrs), to: CommentsModule, as: :create_comment
+  defdelegate vote_comment(user, comment, vote_type), to: CommentsModule, as: :vote
+
+  # Members submodule delegations
+  alias CGraph.Forums.Members, as: MembersModule
+  defdelegate list_members(forum_id, opts \\ []), to: MembersModule
+  defdelegate get_forum_member_v2(forum_id, user_id), to: MembersModule, as: :get_member
+  defdelegate member_v2?(forum_id, user_id), to: MembersModule, as: :member?
+  defdelegate subscribe_v2(user, forum), to: MembersModule, as: :subscribe
+  defdelegate unsubscribe_v2(user, forum), to: MembersModule, as: :unsubscribe
+  defdelegate ban_member_v2(forum_id, user_id, reason, banned_by_id, expires_at \\ nil), to: MembersModule, as: :ban_member
+
+  # Feeds submodule delegations
+  alias CGraph.Forums.Feeds, as: FeedsModule
+  defdelegate list_public_feed_v2(opts \\ []), to: FeedsModule, as: :list_public_feed
+  defdelegate list_home_feed_v2(user, opts \\ []), to: FeedsModule, as: :list_home_feed
+  defdelegate list_popular_feed_v2(opts \\ []), to: FeedsModule, as: :list_popular_feed
+
+  # ============================================================================
   # Forums
   # ============================================================================
 

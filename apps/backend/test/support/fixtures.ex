@@ -3,7 +3,7 @@ defmodule CgraphWeb.UserFixtures do
   Test fixtures for users and related data.
   """
 
-  alias Cgraph.Accounts
+  alias CGraph.Accounts
 
   @doc """
   Generate a unique user email.
@@ -64,7 +64,7 @@ defmodule CgraphWeb.MessagingFixtures do
   Test fixtures for messaging.
   """
 
-  alias Cgraph.Messaging
+  alias CGraph.Messaging
   alias CgraphWeb.UserFixtures
 
   @doc """
@@ -83,7 +83,7 @@ defmodule CgraphWeb.MessagingFixtures do
   """
   def message_fixture(conversation, user, attrs \\ %{}) do
     # Ensure the user exists in the database by re-fetching
-    {:ok, msg_user} = Cgraph.Accounts.get_user(user.id)
+    {:ok, msg_user} = CGraph.Accounts.get_user(user.id)
 
     {:ok, message} =
       attrs
@@ -99,7 +99,7 @@ defmodule CgraphWeb.GroupFixtures do
   Test fixtures for groups.
   """
 
-  alias Cgraph.Groups
+  alias CGraph.Groups
   alias CgraphWeb.UserFixtures
 
   @doc """
@@ -167,7 +167,7 @@ defmodule CgraphWeb.ForumFixtures do
   Note: Forum names must be 3-21 characters, alphanumeric + underscores only.
   """
 
-  alias Cgraph.Forums
+  alias CGraph.Forums
   alias CgraphWeb.UserFixtures
 
   @doc """
@@ -255,7 +255,7 @@ defmodule CgraphWeb.ModerationFixtures do
 
   import Ecto.Query
 
-  alias Cgraph.Moderation
+  alias CGraph.Moderation
   alias CgraphWeb.UserFixtures
 
   @doc """
@@ -338,8 +338,8 @@ defmodule CgraphWeb.ModerationFixtures do
   def appeal_fixture(reporter \\ nil, admin \\ nil) do
     {_report, target, admin} = reviewed_report_fixture(reporter, admin, :suspend)
 
-    action = Cgraph.Repo.one!(
-      from(ra in Cgraph.Moderation.ReviewAction,
+    action = CGraph.Repo.one!(
+      from(ra in CGraph.Moderation.ReviewAction,
         order_by: [desc: ra.inserted_at],
         limit: 1
       )
