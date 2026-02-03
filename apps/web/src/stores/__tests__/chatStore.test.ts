@@ -2,11 +2,34 @@
  * chatStore Unit Tests
  *
  * Tests for Zustand chat store state management.
- * These tests focus on synchronous state operations.
+ * These tests focus on synchronous state operations and async API calls.
  */
 
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi, beforeEach, type MockedFunction } from 'vitest';
 import { useChatStore, type Message, type Conversation } from '../chatStore';
+
+// Mock the API module
+vi.mock('@/lib/api', () => ({
+  api: {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    patch: vi.fn(),
+    delete: vi.fn(),
+  },
+}));
+
+// Import the mocked api with proper typing
+import { api } from '@/lib/api';
+
+// Type the mocked API properly
+const mockedApi = {
+  get: api.get as MockedFunction<typeof api.get>,
+  post: api.post as MockedFunction<typeof api.post>,
+  put: api.put as MockedFunction<typeof api.put>,
+  patch: api.patch as MockedFunction<typeof api.patch>,
+  delete: api.delete as MockedFunction<typeof api.delete>,
+};
 
 // Mock message data
 const mockMessage: Message = {
@@ -65,7 +88,11 @@ const mockConversation: Conversation = {
   isMuted: false,
 };
 
-// Reset store state after each test
+// Reset store state and mocks after each test
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
 afterEach(() => {
   useChatStore.setState({
     conversations: [],
@@ -338,6 +365,333 @@ describe('chatStore', () => {
 
       const recipientId = useChatStore.getState().getRecipientId('unknown', 'current-user');
       expect(recipientId).toBeNull();
+    });
+  });
+
+  describe('fetchConversations action', () => {
+    it('should fetch conversations from API', async () => {
+      mockedApi.get.mockResolvedValue({
+        data: { conversations: [mockConversation] },
+      });
+
+      await useChatStore.getState().fetchConversations();
+
+      expect(mockedApi.get).toHaveBeenCalledWith('/api/v1/conversations');
+      expect(useChatStore.getState().conversations).toHaveLength(1);
+      expect(useChatStore.getState().isLoadingConversations).toBe(false);
+    });
+
+    it('should set loading state while fetching', async () => {
+      let resolvePromise: (value: unknown) => void;
+      mockedApi.get.mockImplementation(() => new Promise((resolve) => (resolvePromise = resolve)));
+
+      const promise = useChatStore.getState().fetchConversations();
+      expect(useChatStore.getState().isLoadingConversations).toBe(true);
+
+      resolvePromise!({ data: { conversations: [] } });
+      await promise;
+
+      expect(useChatStore.getState().isLoadingConversations).toBe(false);
+    });
+
+    it('should use cache if recently fetched', async () => {
+      // First fetch
+      mockedApi.get.mockResolvedValue({ data: { conversations: [mockConversation] } });
+      await useChatStore.getState().fetchConversations();
+
+      // Second fetch should use cache
+      await useChatStore.getState().fetchConversations();
+
+      expect(mockedApi.get).toHaveBeenCalledTimes(1);
+    });
+
+    it('should skip if already loading', async () => {
+      useChatStore.setState({ isLoadingConversations: true });
+      mockedApi.get.mockResolvedValue({ data: { conversations: [] } });
+
+      await useChatStore.getState().fetchConversations();
+
+      expect(mockedApi.get).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('fetchMessages action', () => {
+    it('should fetch messages for a conversation', async () => {
+      mockedApi.get.mockResolvedValue({
+        data: { messages: [mockMessage] },
+      });
+
+      await useChatStore.getState().fetchMessages('conv-456');
+
+      expect(mockedApi.get).toHaveBeenCalledWith('/api/v1/conversations/conv-456/messages', {
+        params: { limit: 50 },
+      });
+      const messages = useChatStore.getState().messages['conv-456'];
+      expect(messages).toHaveLength(1);
+    });
+
+    it('should support pagination with before parameter', async () => {
+      mockedApi.get.mockResolvedValue({ data: { messages: [] } });
+
+      await useChatStore.getState().fetchMessages('conv-456', 'msg-before');
+
+      expect(mockedApi.get).toHaveBeenCalledWith('/api/v1/conversations/conv-456/messages', {
+        params: { before: 'msg-before', limit: 50 },
+      });
+    });
+
+    it('should track hasMoreMessages based on response length', async () => {
+      // Less than 50 messages means no more
+      mockedApi.get.mockResolvedValue({ data: { messages: [mockMessage] } });
+
+      await useChatStore.getState().fetchMessages('conv-456');
+
+      expect(useChatStore.getState().hasMoreMessages['conv-456']).toBe(false);
+    });
+  });
+
+  describe('sendMessage action', () => {
+    it('should send a message to a conversation', async () => {
+      mockedApi.post.mockResolvedValue({ data: { message: mockMessage } });
+      useChatStore.setState({ conversations: [mockConversation] });
+
+      await useChatStore.getState().sendMessage('conv-456', 'Hello!');
+
+      expect(mockedApi.post).toHaveBeenCalled();
+      const callArgs = mockedApi.post.mock.calls[0];
+      expect(callArgs?.[0]).toBe('/api/v1/conversations/conv-456/messages');
+      expect(callArgs?.[1]).toEqual(expect.objectContaining({ content: 'Hello!' }));
+    });
+
+    it('should send message with reply reference', async () => {
+      mockedApi.post.mockResolvedValue({ data: { message: mockMessage } });
+      useChatStore.setState({ conversations: [mockConversation] });
+
+      await useChatStore.getState().sendMessage('conv-456', 'Reply!', 'msg-original');
+
+      expect(mockedApi.post).toHaveBeenCalledWith(
+        '/api/v1/conversations/conv-456/messages',
+        expect.objectContaining({ content: 'Reply!', reply_to_id: 'msg-original' })
+      );
+    });
+  });
+
+  describe('editMessage action', () => {
+    it('should edit a message', async () => {
+      mockedApi.patch.mockResolvedValue({
+        data: { message: { ...mockMessage, content: 'Updated' } },
+      });
+      useChatStore.setState({
+        messages: { 'conv-456': [mockMessage] },
+        messageIdSets: { 'conv-456': new Set(['msg-123']) },
+      });
+
+      await useChatStore.getState().editMessage('msg-123', 'Updated content');
+
+      expect(mockedApi.patch).toHaveBeenCalledWith(
+        '/api/v1/conversations/conv-456/messages/msg-123',
+        {
+          content: 'Updated content',
+        }
+      );
+    });
+  });
+
+  describe('deleteMessage action', () => {
+    it('should delete a message', async () => {
+      mockedApi.delete.mockResolvedValue({ data: {} });
+      useChatStore.setState({
+        messages: { 'conv-456': [mockMessage] },
+        messageIdSets: { 'conv-456': new Set(['msg-123']) },
+      });
+
+      await useChatStore.getState().deleteMessage('msg-123');
+
+      expect(mockedApi.delete).toHaveBeenCalledWith(
+        '/api/v1/conversations/conv-456/messages/msg-123'
+      );
+    });
+  });
+
+  describe('addReaction / removeReaction actions', () => {
+    it('should add a reaction to a message', async () => {
+      mockedApi.post.mockResolvedValue({ data: {} });
+      useChatStore.setState({
+        messages: { 'conv-456': [mockMessage] },
+        messageIdSets: { 'conv-456': new Set(['msg-123']) },
+      });
+
+      await useChatStore.getState().addReaction('msg-123', '👍');
+
+      expect(mockedApi.post).toHaveBeenCalledWith('/api/v1/messages/msg-123/reactions', {
+        emoji: '👍',
+      });
+    });
+
+    it('should remove a reaction from a message', async () => {
+      mockedApi.delete.mockResolvedValue({ data: {} });
+      const messageWithReaction = {
+        ...mockMessage,
+        reactions: [
+          {
+            id: 'react-1',
+            emoji: '👍',
+            userId: 'user-789',
+            user: { id: 'user-789', username: 'testuser' },
+          },
+        ],
+      };
+      useChatStore.setState({
+        messages: { 'conv-456': [messageWithReaction] },
+        messageIdSets: { 'conv-456': new Set(['msg-123']) },
+      });
+
+      await useChatStore.getState().removeReaction('msg-123', '👍');
+
+      expect(mockedApi.delete).toHaveBeenCalledWith('/api/v1/messages/msg-123/reactions/👍');
+    });
+  });
+
+  describe('markAsRead action', () => {
+    it('should mark conversation as read', async () => {
+      mockedApi.post.mockResolvedValue({ data: {} });
+      useChatStore.setState({ conversations: [mockConversation] });
+
+      await useChatStore.getState().markAsRead('conv-456');
+
+      expect(mockedApi.post).toHaveBeenCalledWith('/api/v1/conversations/conv-456/read');
+    });
+
+    it('should update unread count locally', async () => {
+      mockedApi.post.mockResolvedValue({ data: {} });
+      useChatStore.setState({
+        conversations: [{ ...mockConversation, unreadCount: 5 }],
+      });
+
+      await useChatStore.getState().markAsRead('conv-456');
+
+      const conv = useChatStore.getState().conversations.find((c) => c.id === 'conv-456');
+      expect(conv?.unreadCount).toBe(0);
+    });
+  });
+
+  describe('createConversation action', () => {
+    it('should create a new conversation', async () => {
+      mockedApi.post.mockResolvedValue({ data: { conversation: mockConversation } });
+
+      const result = await useChatStore.getState().createConversation(['user-789']);
+
+      expect(mockedApi.post).toHaveBeenCalledWith('/api/v1/conversations', {
+        participant_ids: ['user-789'],
+      });
+      expect(result.id).toBe('conv-456');
+    });
+
+    it('should add new conversation to state', async () => {
+      mockedApi.post.mockResolvedValue({ data: { conversation: mockConversation } });
+
+      await useChatStore.getState().createConversation(['user-789']);
+
+      expect(useChatStore.getState().conversations).toHaveLength(1);
+    });
+  });
+
+  describe('addConversation / updateConversation actions', () => {
+    it('should add a conversation from socket event', () => {
+      useChatStore.getState().addConversation(mockConversation);
+
+      expect(useChatStore.getState().conversations).toHaveLength(1);
+    });
+
+    it('should not add duplicate conversation', () => {
+      useChatStore.setState({ conversations: [mockConversation] });
+
+      useChatStore.getState().addConversation(mockConversation);
+
+      expect(useChatStore.getState().conversations).toHaveLength(1);
+    });
+
+    it('should update existing conversation', () => {
+      useChatStore.setState({ conversations: [mockConversation] });
+
+      useChatStore.getState().updateConversation({ id: 'conv-456', name: 'Updated Name' });
+
+      const conv = useChatStore.getState().conversations.find((c) => c.id === 'conv-456');
+      expect(conv?.name).toBe('Updated Name');
+    });
+  });
+
+  describe('scheduled messages actions', () => {
+    it('should fetch scheduled messages', async () => {
+      const scheduledMessage = { ...mockMessage, scheduledAt: '2026-02-01T00:00:00Z' };
+      mockedApi.get.mockResolvedValue({ data: { messages: [scheduledMessage] } });
+
+      await useChatStore.getState().fetchScheduledMessages('conv-456');
+
+      expect(mockedApi.get).toHaveBeenCalledWith('/conversations/conv-456/scheduled-messages');
+    });
+
+    it('should schedule a message', async () => {
+      mockedApi.post.mockResolvedValue({ data: { message: mockMessage } });
+      useChatStore.setState({ conversations: [mockConversation] });
+
+      const scheduledAt = new Date('2026-02-01T00:00:00Z');
+      await useChatStore.getState().scheduleMessage('conv-456', 'Scheduled!', scheduledAt);
+
+      expect(mockedApi.post).toHaveBeenCalledWith(
+        '/conversations/conv-456/messages',
+        expect.objectContaining({
+          content: 'Scheduled!',
+          scheduled_at: scheduledAt.toISOString(),
+        })
+      );
+    });
+
+    it('should cancel a scheduled message', async () => {
+      mockedApi.delete.mockResolvedValue({ data: {} });
+      useChatStore.setState({
+        scheduledMessages: {
+          'conv-456': [{ ...mockMessage, scheduledAt: '2026-02-01T00:00:00Z' }],
+        },
+      });
+
+      await useChatStore.getState().cancelScheduledMessage('msg-123');
+
+      expect(mockedApi.delete).toHaveBeenCalledWith('/messages/msg-123/cancel-schedule');
+    });
+
+    it('should reschedule a message', async () => {
+      mockedApi.patch.mockResolvedValue({ data: { message: mockMessage } });
+      useChatStore.setState({
+        scheduledMessages: {
+          'conv-456': [{ ...mockMessage, scheduledAt: '2026-02-01T00:00:00Z' }],
+        },
+      });
+
+      const newDate = new Date('2026-03-01T00:00:00Z');
+      await useChatStore.getState().rescheduleMessage('msg-123', newDate);
+
+      expect(mockedApi.patch).toHaveBeenCalledWith('/messages/msg-123/reschedule', {
+        scheduled_at: newDate.toISOString(),
+      });
+    });
+  });
+
+  describe('typing indicator management', () => {
+    it('should add typing user', () => {
+      useChatStore.getState().setTypingUser('conv-456', 'user-123', true, '2026-01-01T00:00:00Z');
+
+      const typingUsers = useChatStore.getState().typingUsers['conv-456'];
+      expect(typingUsers).toContain('user-123');
+    });
+
+    it('should remove typing user', () => {
+      useChatStore.setState({ typingUsers: { 'conv-456': ['user-123'] } });
+
+      useChatStore.getState().setTypingUser('conv-456', 'user-123', false);
+
+      const typingUsers = useChatStore.getState().typingUsers['conv-456'];
+      expect(typingUsers).not.toContain('user-123');
     });
   });
 });
