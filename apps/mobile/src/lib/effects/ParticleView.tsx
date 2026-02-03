@@ -16,7 +16,14 @@ import { View, StyleSheet, ViewStyle, StyleProp, Dimensions } from 'react-native
 import { runOnJS, useFrameCallback } from 'react-native-reanimated';
 import Svg, { Circle, Rect, Polygon, G } from 'react-native-svg';
 
-import { ParticleEngine, Particle, ParticleType, ParticleBehavior } from './ParticleSystem';
+import {
+  ParticleEngine,
+  Particle,
+  ParticleType,
+  ParticleBehavior,
+  ParticleConfig,
+  EmitterConfig,
+} from './ParticleSystem';
 import BlurEngine from './BlurEngine';
 
 // ============================================================================
@@ -315,7 +322,7 @@ export default function ParticleView({
         type,
         count: maxParticles,
         colors: colors || undefined,
-      } as Partial<ParticleConfig>,
+      },
       behavior,
       emitter: {
         shape: emitterShape,
@@ -324,7 +331,7 @@ export default function ParticleView({
         burst,
         continuous,
         rate: 10,
-      } as Partial<EmitterConfig>,
+      },
       physics: {
         gravity: gravity ?? undefined,
         wind: wind ?? undefined,

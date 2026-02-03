@@ -28,16 +28,13 @@ import Animated, {
   withSpring,
   interpolateColor,
   runOnJS,
-  useAnimatedGestureHandler,
   useDerivedValue,
+  SharedValue,
 } from 'react-native-reanimated';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 
-import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
+import { SPRING_PRESETS, getSpringConfig } from '../../lib/animations/AnimationLibrary';
 
 // ============================================================================
 // Types
@@ -92,11 +89,6 @@ interface TabLayout {
   x: number;
   width: number;
 }
-
-type GestureContext = {
-  startX: number;
-  startIndex: number;
-};
 
 // ============================================================================
 // Component
@@ -157,57 +149,66 @@ export function FluidTabs({
     }));
   }, []);
 
+  const springCfg = getSpringConfig(springConfig);
+
   // Update indicator position when tab layouts or active tab changes
   React.useEffect(() => {
     const layout = tabLayouts[activeTab];
     if (!layout) return;
 
     if (animated) {
-      indicatorX.value = withSpring(layout.x, springConfig);
-      indicatorWidth.value = withSpring(layout.width, springConfig);
+      indicatorX.value = withSpring(layout.x, springCfg);
+      indicatorWidth.value = withSpring(layout.width, springCfg);
     } else {
       indicatorX.value = layout.x;
       indicatorWidth.value = layout.width;
     }
-  }, [activeTab, tabLayouts, animated, springConfig]);
+  }, [activeTab, tabLayouts, animated, springCfg]);
 
   // Handle tab press
-  const handleTabPress = useCallback((tab: TabItem) => {
-    if (tab.disabled) return;
+  const handleTabPress = useCallback(
+    (tab: TabItem) => {
+      if (tab.disabled) return;
 
-    if (hapticFeedback) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
+      if (hapticFeedback) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
 
-    onTabChange(tab.key);
-  }, [hapticFeedback, onTabChange]);
-
-  // Gesture handler for swipeable tabs
-  const gestureHandler = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    GestureContext
-  >({
-    onStart: (_, ctx) => {
-      ctx.startX = indicatorX.value;
-      ctx.startIndex = activeIndex.value;
+      onTabChange(tab.key);
     },
-    onEnd: (event, ctx) => {
+    [hapticFeedback, onTabChange]
+  );
+
+  // Context for gesture tracking
+  const gestureContext = useSharedValue({ startX: 0, startIndex: 0 });
+
+  // Gesture handler for swipeable tabs using new Gesture API
+  const panGesture = Gesture.Pan()
+    .enabled(swipeable)
+    .onStart(() => {
+      'worklet';
+      gestureContext.value = {
+        startX: indicatorX.value,
+        startIndex: activeIndex.value,
+      };
+    })
+    .onEnd((event) => {
+      'worklet';
       const swipeThreshold = containerWidth / tabs.length / 2;
 
       if (Math.abs(event.translationX) > swipeThreshold) {
         const direction = event.translationX > 0 ? -1 : 1;
-        let newIndex = ctx.startIndex + direction;
+        let newIndex = gestureContext.value.startIndex + direction;
         newIndex = Math.max(0, Math.min(tabs.length - 1, newIndex));
 
-        if (newIndex !== ctx.startIndex) {
+        if (newIndex !== gestureContext.value.startIndex) {
           const newTab = tabs[newIndex];
           if (newTab && !newTab.disabled) {
             runOnJS(handleTabPress)(newTab);
           }
         }
       }
-    },
-  });
+    });
 
   // Indicator animated style
   const indicatorAnimatedStyle = useAnimatedStyle(() => {
@@ -285,25 +286,22 @@ export function FluidTabs({
         onLayout={(e) => handleTabLayout(tab.key, e)}
       />
     ));
-  }, [tabs, activeTab, tabWidth, tabPadding, activeTextColor, inactiveTextColor, animated, handleTabPress]);
+  }, [
+    tabs,
+    activeTab,
+    tabWidth,
+    tabPadding,
+    activeTextColor,
+    inactiveTextColor,
+    animated,
+    handleTabPress,
+  ]);
 
   const content = (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor },
-        style,
-      ]}
-      onLayout={handleContainerLayout}
-    >
+    <View style={[styles.container, { backgroundColor }, style]} onLayout={handleContainerLayout}>
       {/* Indicator */}
       {indicatorStyle !== 'none' && (
-        <Animated.View
-          style={[
-            styles.indicator,
-            indicatorAnimatedStyle,
-          ]}
-        />
+        <Animated.View style={[styles.indicator, indicatorAnimatedStyle]} />
       )}
 
       {/* Tabs */}
@@ -317,20 +315,16 @@ export function FluidTabs({
           {tabElements}
         </ScrollView>
       ) : (
-        <View style={styles.tabsRow}>
-          {tabElements}
-        </View>
+        <View style={styles.tabsRow}>{tabElements}</View>
       )}
     </View>
   );
 
   if (swipeable) {
     return (
-      <PanGestureHandler onGestureEvent={gestureHandler}>
-        <Animated.View>
-          {content}
-        </Animated.View>
-      </PanGestureHandler>
+      <GestureDetector gesture={panGesture}>
+        <Animated.View>{content}</Animated.View>
+      </GestureDetector>
     );
   }
 
@@ -345,7 +339,7 @@ interface TabButtonProps {
   tab: TabItem;
   index: number;
   isActive: boolean;
-  activeIndex: Animated.SharedValue<number>;
+  activeIndex: SharedValue<number>;
   width?: number;
   padding: number;
   activeTextColor: string;
@@ -389,7 +383,9 @@ function TabButton({
           [index - 1, index, index + 1],
           [inactiveTextColor, activeTextColor, inactiveTextColor]
         )
-      : isActive ? activeTextColor : inactiveTextColor;
+      : isActive
+        ? activeTextColor
+        : inactiveTextColor;
 
     return {
       transform: [{ scale: scale.value }],
@@ -430,10 +426,7 @@ function TabButton({
         )}
 
         {/* Label */}
-        <Animated.Text
-          style={[styles.tabText, textStyle, textAnimatedStyle]}
-          numberOfLines={1}
-        >
+        <Animated.Text style={[styles.tabText, textStyle, textAnimatedStyle]} numberOfLines={1}>
           {tab.label}
         </Animated.Text>
 
@@ -487,7 +480,13 @@ export interface IconTabsProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function IconTabs({ tabs, activeIndex, onTabChange, showLabels = true, style }: IconTabsProps) {
+export function IconTabs({
+  tabs,
+  activeIndex,
+  onTabChange,
+  showLabels = true,
+  style,
+}: IconTabsProps) {
   const tabItems: TabItem[] = useMemo(() => {
     return tabs.map((tab, index) => ({
       key: String(index),
@@ -514,7 +513,12 @@ export interface SegmentedControlProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function SegmentedControl({ segments, selectedIndex, onValueChange, style }: SegmentedControlProps) {
+export function SegmentedControl({
+  segments,
+  selectedIndex,
+  onValueChange,
+  style,
+}: SegmentedControlProps) {
   const tabItems: TabItem[] = useMemo(() => {
     return segments.map((label, index) => ({
       key: String(index),

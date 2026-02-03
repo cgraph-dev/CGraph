@@ -20,6 +20,7 @@ import Animated, {
   withSpring,
   interpolate,
   Easing,
+  SharedValue,
 } from 'react-native-reanimated';
 import Svg, {
   Path,
@@ -79,7 +80,7 @@ interface AnimatedDataPointProps {
   cx: number;
   cy: number;
   color: string;
-  progress: Animated.SharedValue<number>;
+  progress: SharedValue<number>;
 }
 
 function AnimatedDataPoint({ cx, cy, color, progress }: AnimatedDataPointProps) {
@@ -109,7 +110,7 @@ interface AnimatedBarProps {
   barWidth: number;
   barHeight: number;
   fill: string;
-  progress: Animated.SharedValue<number>;
+  progress: SharedValue<number>;
 }
 
 function AnimatedBar({ x, chartHeight, barWidth, barHeight, fill, progress }: AnimatedBarProps) {
@@ -137,7 +138,7 @@ function AnimatedBar({ x, chartHeight, barWidth, barHeight, fill, progress }: An
 interface AnimatedPieSliceProps {
   path: string;
   color: string;
-  progress: Animated.SharedValue<number>;
+  progress: SharedValue<number>;
 }
 
 function AnimatedPieSlice({ path, color, progress }: AnimatedPieSliceProps) {

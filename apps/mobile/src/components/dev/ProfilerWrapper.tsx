@@ -90,7 +90,6 @@ export function getProfilerStats(id: string): {
   };
 }
 
-// @ts-expect-error - __DEV__ is a React Native global
 const isDev = typeof __DEV__ !== 'undefined' ? __DEV__ : process.env.NODE_ENV === 'development';
 
 /**

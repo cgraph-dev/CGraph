@@ -11,6 +11,7 @@
 
 import React, { useEffect, useCallback } from 'react';
 import {
+  View,
   Text,
   Pressable,
   Image,
@@ -28,6 +29,7 @@ import Animated, {
   withTiming,
   withDelay,
   withRepeat,
+  withSequence,
   FadeIn,
   FadeOut,
   FadeInUp,
@@ -179,11 +181,7 @@ export function AnimatedView({
   useEffect(() => {
     if (loop && LOOP_ANIMATIONS[loop]) {
       const loopConfig = LOOP_ANIMATIONS[loop];
-      loopProgress.value = withRepeat(
-        withTiming(1, { duration: loopConfig.duration }),
-        -1,
-        true
-      );
+      loopProgress.value = withRepeat(withTiming(1, { duration: loopConfig.duration }), -1, true);
     }
   }, [loop]);
 
@@ -200,7 +198,9 @@ export function AnimatedView({
     const current = keyframes[currentIndex] || {};
     const next = keyframes[nextIndex] || {};
 
-    const result: ViewStyle = {};
+    const result: ViewStyle = {
+      transform: [],
+    };
 
     // Interpolate numeric values
     if ('scale' in current && 'scale' in next) {
@@ -210,7 +210,7 @@ export function AnimatedView({
         [current.scale as number, next.scale as number],
         Extrapolation.CLAMP
       );
-      result.transform = [...(result.transform || []), { scale }];
+      (result.transform as any[]).push({ scale });
     }
 
     if ('translateX' in current && 'translateX' in next) {
@@ -220,7 +220,7 @@ export function AnimatedView({
         [current.translateX as number, next.translateX as number],
         Extrapolation.CLAMP
       );
-      result.transform = [...(result.transform || []), { translateX }];
+      (result.transform as any[]).push({ translateX });
     }
 
     if ('translateY' in current && 'translateY' in next) {
@@ -230,7 +230,7 @@ export function AnimatedView({
         [current.translateY as number, next.translateY as number],
         Extrapolation.CLAMP
       );
-      result.transform = [...(result.transform || []), { translateY }];
+      (result.transform as any[]).push({ translateY });
     }
 
     if ('opacity' in current && 'opacity' in next) {
@@ -245,24 +245,16 @@ export function AnimatedView({
     return result;
   });
 
-  const enteringConfig = EnteringAnimation
-    .delay(delay)
-    .duration(duration)
-    .springify()
-    .damping(spring.damping || 15)
-    .stiffness(spring.stiffness || 120);
+  // Configure animations - use springify only if available
+  const enteringConfig = EnteringAnimation.delay(delay).duration(duration);
 
-  const exitingConfig = ExitingAnimation
-    .duration(duration)
-    .springify()
-    .damping(spring.damping || 15)
-    .stiffness(spring.stiffness || 120);
+  const exitingConfig = ExitingAnimation.duration(duration);
 
   return (
     <Animated.View
       entering={enteringConfig}
       exiting={exitingConfig}
-      layout={LayoutAnimation.springify()}
+      layout={Layout}
       style={[style, loop ? loopStyle : undefined]}
     >
       {children}
@@ -312,10 +304,7 @@ export function AnimatedText({
   }
 
   return (
-    <Animated.Text
-      entering={EnteringAnimation.delay(delay).duration(300)}
-      style={style}
-    >
+    <Animated.Text entering={EnteringAnimation.delay(delay).duration(300)} style={style}>
       {children}
     </Animated.Text>
   );
@@ -481,11 +470,7 @@ export function AnimatedImage({
     loadProgress.value = withTiming(1, { duration: 500 });
 
     if (loadingEffect === 'shimmer') {
-      shimmerPosition.value = withRepeat(
-        withTiming(1, { duration: 1000 }),
-        -1,
-        false
-      );
+      shimmerPosition.value = withRepeat(withTiming(1, { duration: 1000 }), -1, false);
     }
   }, [loadingEffect]);
 
@@ -505,10 +490,7 @@ export function AnimatedImage({
   });
 
   return (
-    <Animated.View
-      entering={EnteringAnimation.delay(delay).duration(300)}
-      style={loadingStyle}
-    >
+    <Animated.View entering={EnteringAnimation.delay(delay).duration(300)} style={loadingStyle}>
       <Image source={source} style={style} />
     </Animated.View>
   );
@@ -551,13 +533,14 @@ export function AnimatedCounter({
     return () => clearInterval(interval);
   }, []);
 
-  const formattedValue = decimals > 0
-    ? displayValue.toFixed(decimals)
-    : Math.round(displayValue).toString();
+  const formattedValue =
+    decimals > 0 ? displayValue.toFixed(decimals) : Math.round(displayValue).toString();
 
   return (
     <Text style={style}>
-      {prefix}{formattedValue}{suffix}
+      {prefix}
+      {formattedValue}
+      {suffix}
     </Text>
   );
 }

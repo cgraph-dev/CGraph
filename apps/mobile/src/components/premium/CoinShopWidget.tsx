@@ -9,14 +9,7 @@
  */
 
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  ScrollView,
-  Modal,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Modal } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -77,15 +70,15 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
       <Pressable
         key={pkg.id}
         onPress={() => handleSelectPackage(pkg)}
-        style={({ pressed }) => [
-          pressed && { opacity: 0.8, transform: [{ scale: 0.98 }] },
-        ]}
+        style={({ pressed }) => (pressed ? { opacity: 0.8, transform: [{ scale: 0.98 }] } : {})}
       >
-        <GlassCard 
-          style={[
-            variant === 'compact' ? styles.compactPackage : styles.packageCard,
-            (pkg.popular || pkg.bestValue) && styles.highlightedPackage,
-          ]}
+        <GlassCard
+          style={
+            [
+              variant === 'compact' ? styles.compactPackage : styles.packageCard,
+              (pkg.popular || pkg.bestValue) && styles.highlightedPackage,
+            ] as any
+          }
         >
           {/* Badges */}
           {pkg.popular && (
@@ -117,18 +110,13 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
           </View>
 
           {/* Price */}
-          <LinearGradient
-            colors={['#F59E0B', '#D97706']}
-            style={styles.priceButton}
-          >
+          <LinearGradient colors={['#F59E0B', '#D97706']} style={styles.priceButton}>
             <Text style={styles.priceText}>${pkg.price.toFixed(2)}</Text>
           </LinearGradient>
 
           {/* Value indicator */}
           {variant !== 'compact' && (
-            <Text style={styles.valueText}>
-              ${(pricePerCoin * 100).toFixed(2)}/100 coins
-            </Text>
+            <Text style={styles.valueText}>${(pricePerCoin * 100).toFixed(2)}/100 coins</Text>
           )}
         </GlassCard>
       </Pressable>
@@ -170,14 +158,10 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
 
       {/* Packages Grid */}
       <Text style={styles.sectionTitle}>Get More Coins</Text>
-      <ScrollView 
-        horizontal={variant === 'compact'} 
+      <ScrollView
+        horizontal={variant === 'compact'}
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={
-          variant === 'compact' 
-            ? styles.compactScroll 
-            : styles.packagesGrid
-        }
+        contentContainerStyle={variant === 'compact' ? styles.compactScroll : styles.packagesGrid}
       >
         {packages.map(renderPackageCard)}
       </ScrollView>
@@ -192,7 +176,7 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
         <View style={styles.modalOverlay}>
           <GlassCard style={styles.modalContent}>
             <Text style={styles.modalTitle}>Confirm Purchase</Text>
-            
+
             {selectedPackage && (
               <View style={styles.modalDetails}>
                 <View style={styles.modalCoinRow}>
@@ -208,28 +192,20 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
                     )}
                   </View>
                 </View>
-                
+
                 <View style={styles.modalPrice}>
                   <Text style={styles.modalPriceLabel}>Total</Text>
-                  <Text style={styles.modalPriceAmount}>
-                    ${selectedPackage.price.toFixed(2)}
-                  </Text>
+                  <Text style={styles.modalPriceAmount}>${selectedPackage.price.toFixed(2)}</Text>
                 </View>
               </View>
             )}
 
             <View style={styles.modalActions}>
-              <Pressable
-                onPress={() => setShowConfirmModal(false)}
-                style={styles.cancelButton}
-              >
+              <Pressable onPress={() => setShowConfirmModal(false)} style={styles.cancelButton}>
                 <Text style={styles.cancelText}>Cancel</Text>
               </Pressable>
               <Pressable onPress={handleConfirmPurchase}>
-                <LinearGradient
-                  colors={['#F59E0B', '#D97706']}
-                  style={styles.confirmButton}
-                >
+                <LinearGradient colors={['#F59E0B', '#D97706']} style={styles.confirmButton}>
                   <Text style={styles.confirmText}>Purchase</Text>
                 </LinearGradient>
               </Pressable>

@@ -52,7 +52,7 @@ export interface GlowConfig {
 export interface ShadowConfig {
   preset?: ShadowPreset;
   color?: string;
-  offset?: { x: number; y: number };
+  offset?: { width: number; height: number };
   radius?: number;
   opacity?: number;
   elevation?: number; // Android elevation
@@ -328,63 +328,63 @@ export const GLOW_PRESETS: Record<GlowType, GlowConfig> = {
 
 export const SHADOW_PRESETS: Record<ShadowPreset, ShadowConfig> = {
   none: {
-    offset: { x: 0, y: 0 },
+    offset: { width: 0, height: 0 },
     radius: 0,
     opacity: 0,
     elevation: 0,
   },
   sm: {
     color: '#000000',
-    offset: { x: 0, y: 1 },
+    offset: { width: 0, height: 1 },
     radius: 2,
     opacity: 0.05,
     elevation: 1,
   },
   md: {
     color: '#000000',
-    offset: { x: 0, y: 4 },
+    offset: { width: 0, height: 4 },
     radius: 6,
     opacity: 0.1,
     elevation: 3,
   },
   lg: {
     color: '#000000',
-    offset: { x: 0, y: 10 },
+    offset: { width: 0, height: 10 },
     radius: 15,
     opacity: 0.15,
     elevation: 6,
   },
   xl: {
     color: '#000000',
-    offset: { x: 0, y: 20 },
+    offset: { width: 0, height: 20 },
     radius: 25,
     opacity: 0.2,
     elevation: 9,
   },
   '2xl': {
     color: '#000000',
-    offset: { x: 0, y: 25 },
+    offset: { width: 0, height: 25 },
     radius: 50,
     opacity: 0.25,
     elevation: 12,
   },
   glow: {
     color: '#10b981',
-    offset: { x: 0, y: 0 },
+    offset: { width: 0, height: 0 },
     radius: 20,
     opacity: 0.4,
     elevation: 8,
   },
   neon: {
     color: '#00ffff',
-    offset: { x: 0, y: 0 },
+    offset: { width: 0, height: 0 },
     radius: 30,
     opacity: 0.6,
     elevation: 10,
   },
   inner: {
     color: '#000000',
-    offset: { x: 0, y: 2 },
+    offset: { width: 0, height: 2 },
     radius: 4,
     opacity: 0.15,
     elevation: 0, // Inner shadows don't use elevation

@@ -4,6 +4,10 @@
  * Advanced input components with animations and gestures.
  */
 
+// Import for default export object
+import { ColorPicker } from './ColorPicker';
+import { Slider, RangeSlider, SliderGroup } from './SliderGroup';
+
 // ============================================================================
 // Color Picker
 // ============================================================================
@@ -16,17 +20,9 @@ export type { ColorPickerProps } from './ColorPicker';
 // Slider Group
 // ============================================================================
 
-export {
-  Slider,
-  RangeSlider,
-  SliderGroup,
-} from './SliderGroup';
+export { Slider, RangeSlider, SliderGroup } from './SliderGroup';
 
-export type {
-  SliderProps,
-  RangeSliderProps,
-  SliderGroupProps,
-} from './SliderGroup';
+export type { SliderProps, RangeSliderProps, SliderGroupProps } from './SliderGroup';
 
 // ============================================================================
 // Default Export

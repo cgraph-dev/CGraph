@@ -11,13 +11,7 @@
  */
 
 import React, { useEffect, useCallback, useMemo } from 'react';
-import {
-  StyleSheet,
-  ViewStyle,
-  StyleProp,
-  TextStyle,
-  Pressable,
-} from 'react-native';
+import { StyleSheet, ViewStyle, StyleProp, TextStyle, Pressable } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -33,7 +27,7 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 
-import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
+import { SPRING_PRESETS, getSpringConfig } from '../../lib/animations/AnimationLibrary';
 
 // ============================================================================
 // Types
@@ -89,7 +83,10 @@ export interface MorphingButtonProps {
 // Constants
 // ============================================================================
 
-const SIZE_CONFIG: Record<ButtonSize, { height: number; padding: number; fontSize: number; iconSize: number }> = {
+const SIZE_CONFIG: Record<
+  ButtonSize,
+  { height: number; padding: number; fontSize: number; iconSize: number }
+> = {
   sm: { height: 36, padding: 16, fontSize: 14, iconSize: 16 },
   md: { height: 44, padding: 20, fontSize: 16, iconSize: 20 },
   lg: { height: 52, padding: 24, fontSize: 18, iconSize: 24 },
@@ -157,21 +154,28 @@ export function MorphingButton({
   // Current state determines target color
   const targetColor = useMemo(() => {
     switch (state) {
-      case 'success': return successColor;
-      case 'error': return errorColor;
-      case 'loading': return STATE_COLORS.loading;
-      case 'disabled': return STATE_COLORS.disabled;
-      default: return baseColor;
+      case 'success':
+        return successColor;
+      case 'error':
+        return errorColor;
+      case 'loading':
+        return STATE_COLORS.loading;
+      case 'disabled':
+        return STATE_COLORS.disabled;
+      default:
+        return baseColor;
     }
   }, [state, successColor, errorColor, baseColor]);
 
   // Handle state changes
   useEffect(() => {
+    const cfg = getSpringConfig(springConfig);
+
     // Morph to circle when loading or showing success/error
     if (state === 'loading' || state === 'success' || state === 'error') {
-      morphProgress.value = withSpring(1, springConfig);
+      morphProgress.value = withSpring(1, cfg);
     } else {
-      morphProgress.value = withSpring(0, springConfig);
+      morphProgress.value = withSpring(0, cfg);
     }
 
     // Start loading animation
@@ -188,10 +192,7 @@ export function MorphingButton({
 
     // Success/error shake or bounce
     if (state === 'success') {
-      scale.value = withSequence(
-        withSpring(1.1, { damping: 5 }),
-        withSpring(1, springConfig)
-      );
+      scale.value = withSequence(withSpring(1.1, { damping: 5 }), withSpring(1, cfg));
 
       if (autoResetAfterSuccess) {
         setTimeout(() => {
@@ -217,11 +218,11 @@ export function MorphingButton({
 
   // Press handlers
   const handlePressIn = useCallback(() => {
-    scale.value = withSpring(pressScale, springConfig);
+    scale.value = withSpring(pressScale, getSpringConfig(springConfig));
   }, [pressScale, springConfig]);
 
   const handlePressOut = useCallback(() => {
-    scale.value = withSpring(1, springConfig);
+    scale.value = withSpring(1, getSpringConfig(springConfig));
   }, [springConfig]);
 
   const handlePress = useCallback(() => {
@@ -250,11 +251,7 @@ export function MorphingButton({
     const expandedWidth = sizeConfig.padding * 2 + 100; // Approximate text width
     const collapsedWidth = height; // Circle when collapsed
 
-    const width = interpolate(
-      morphProgress.value,
-      [0, 1],
-      [expandedWidth, collapsedWidth]
-    );
+    const width = interpolate(morphProgress.value, [0, 1], [expandedWidth, collapsedWidth]);
 
     const borderRadius = SHAPE_RADIUS[shape](height);
 
@@ -262,20 +259,13 @@ export function MorphingButton({
       width: shape === 'circle' ? height : width,
       height,
       borderRadius,
-      transform: [
-        { scale: scale.value },
-        { rotate: `${rotation.value}deg` },
-      ],
+      transform: [{ scale: scale.value }, { rotate: `${rotation.value}deg` }],
     };
   });
 
   // Animated background style
   const backgroundStyle = useAnimatedStyle(() => {
-    const currentColor = interpolateColor(
-      morphProgress.value,
-      [0, 1],
-      [baseColor, targetColor]
-    );
+    const currentColor = interpolateColor(morphProgress.value, [0, 1], [baseColor, targetColor]);
 
     return {
       backgroundColor: variant === 'solid' ? currentColor : 'transparent',
@@ -286,11 +276,7 @@ export function MorphingButton({
 
   // Animated text style
   const animatedTextStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(
-      morphProgress.value,
-      [0, 0.5],
-      [1, 0]
-    );
+    const opacity = interpolate(morphProgress.value, [0, 0.5], [1, 0]);
 
     return {
       opacity,
@@ -299,17 +285,11 @@ export function MorphingButton({
 
   // Animated icon style
   const iconStyle = useAnimatedStyle(() => {
-    const iconOpacity = interpolate(
-      morphProgress.value,
-      [0.5, 1],
-      [0, 1]
-    );
+    const iconOpacity = interpolate(morphProgress.value, [0.5, 1], [0, 1]);
 
     return {
       opacity: iconOpacity,
-      transform: [
-        { rotate: `${loadingRotation.value}deg` },
-      ],
+      transform: [{ rotate: `${loadingRotation.value}deg` }],
     };
   });
 
@@ -327,14 +307,15 @@ export function MorphingButton({
     }
   };
 
-  const content = variant === 'gradient' && gradientColors ? (
-    <LinearGradient
-      colors={gradientColors as [string, string, ...string[]]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 0 }}
-      style={[StyleSheet.absoluteFill, { borderRadius: SHAPE_RADIUS[shape](sizeConfig.height) }]}
-    />
-  ) : null;
+  const content =
+    variant === 'gradient' && gradientColors ? (
+      <LinearGradient
+        colors={gradientColors as [string, string, ...string[]]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={[StyleSheet.absoluteFill, { borderRadius: SHAPE_RADIUS[shape](sizeConfig.height) }]}
+      />
+    ) : null;
 
   return (
     <Pressable
@@ -349,7 +330,14 @@ export function MorphingButton({
 
         {/* Text content (visible when not morphed) */}
         {label && (
-          <Animated.Text style={[styles.label, { color: textColor, fontSize: sizeConfig.fontSize }, textStyle, animatedTextStyle]}>
+          <Animated.Text
+            style={[
+              styles.label,
+              { color: textColor, fontSize: sizeConfig.fontSize },
+              textStyle,
+              animatedTextStyle,
+            ]}
+          >
             {label}
           </Animated.Text>
         )}
@@ -392,19 +380,11 @@ function LoadingSpinner({ size, color }: IconProps) {
 }
 
 function CheckIcon({ size, color }: IconProps) {
-  return (
-    <Animated.Text style={[styles.iconText, { fontSize: size, color }]}>
-      ✓
-    </Animated.Text>
-  );
+  return <Animated.Text style={[styles.iconText, { fontSize: size, color }]}>✓</Animated.Text>;
 }
 
 function CrossIcon({ size, color }: IconProps) {
-  return (
-    <Animated.Text style={[styles.iconText, { fontSize: size, color }]}>
-      ✕
-    </Animated.Text>
-  );
+  return <Animated.Text style={[styles.iconText, { fontSize: size, color }]}>✕</Animated.Text>;
 }
 
 // ============================================================================
@@ -440,43 +420,19 @@ export function ActionButton({ icon, ...props }: ActionButtonProps) {
 // ============================================================================
 
 export function PrimaryButton(props: MorphingButtonProps) {
-  return (
-    <MorphingButton
-      {...props}
-      color="#10b981"
-      variant="solid"
-    />
-  );
+  return <MorphingButton {...props} color="#10b981" variant="solid" />;
 }
 
 export function SecondaryButton(props: MorphingButtonProps) {
-  return (
-    <MorphingButton
-      {...props}
-      color="#6366f1"
-      variant="solid"
-    />
-  );
+  return <MorphingButton {...props} color="#6366f1" variant="solid" />;
 }
 
 export function DangerButton(props: MorphingButtonProps) {
-  return (
-    <MorphingButton
-      {...props}
-      color="#ef4444"
-      variant="solid"
-    />
-  );
+  return <MorphingButton {...props} color="#ef4444" variant="solid" />;
 }
 
 export function GhostButton(props: MorphingButtonProps) {
-  return (
-    <MorphingButton
-      {...props}
-      variant="ghost"
-      textColor="#e5e7eb"
-    />
-  );
+  return <MorphingButton {...props} variant="ghost" textColor="#e5e7eb" />;
 }
 
 export function GradientButton(props: MorphingButtonProps) {

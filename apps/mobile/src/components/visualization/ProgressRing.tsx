@@ -11,12 +11,7 @@
  */
 
 import React, { useEffect, useMemo } from 'react';
-import {
-  StyleSheet,
-  View,
-  ViewStyle,
-  StyleProp,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle, StyleProp } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedProps,
@@ -25,16 +20,11 @@ import Animated, {
   withSpring,
   interpolate,
   Easing,
+  SharedValue,
 } from 'react-native-reanimated';
-import Svg, {
-  Circle,
-  Defs,
-  LinearGradient,
-  Stop,
-  G,
-} from 'react-native-svg';
+import Svg, { Circle, Defs, LinearGradient, Stop, G } from 'react-native-svg';
 
-import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
+import { SPRING_PRESETS, getSpringConfig } from '../../lib/animations/AnimationLibrary';
 
 // ============================================================================
 // Types
@@ -93,7 +83,7 @@ export function ProgressRing({
   const center = size / 2;
   const circumference = 2 * Math.PI * radius;
 
-  const springConfig = SPRING_PRESETS[springPreset];
+  const springConfig = getSpringConfig(SPRING_PRESETS[springPreset]);
 
   // Clamp progress
   const clampedProgress = Math.min(100, Math.max(0, progress));
@@ -162,14 +152,15 @@ export function ProgressRing({
 
       {/* Inner content */}
       <View style={styles.innerContent}>
-        {children || (showValue && (
-          <AnimatedProgressValue
-            value={displayValue}
-            prefix={valuePrefix}
-            suffix={valueSuffix}
-            color={color}
-          />
-        ))}
+        {children ||
+          (showValue && (
+            <AnimatedProgressValue
+              value={displayValue}
+              prefix={valuePrefix}
+              suffix={valueSuffix}
+              color={color}
+            />
+          ))}
       </View>
     </View>
   );
@@ -180,25 +171,24 @@ export function ProgressRing({
 // ============================================================================
 
 interface AnimatedProgressValueProps {
-  value: Animated.SharedValue<number>;
+  value: SharedValue<number>;
   prefix?: string;
   suffix?: string;
   color: string;
 }
 
 function AnimatedProgressValue({ value, prefix, suffix, color }: AnimatedProgressValueProps) {
-  const animatedStyle = Animated.useAnimatedProps(() => {
+  const animatedStyle = useAnimatedProps(() => {
     return {
       text: `${prefix}${Math.round(value.value)}${suffix}`,
     };
   });
 
   return (
-    <Animated.Text
-      style={[styles.valueText, { color }]}
-      animatedProps={animatedStyle as any}
-    >
-      {prefix}{Math.round(value.value)}{suffix}
+    <Animated.Text style={[styles.valueText, { color }]} animatedProps={animatedStyle as any}>
+      {prefix}
+      {Math.round(value.value)}
+      {suffix}
     </Animated.Text>
   );
 }
@@ -234,7 +224,7 @@ export function StackedProgressRing({
     <View style={[styles.stackedContainer, style]}>
       <View style={[styles.stackedRings, { width: size, height: size }]}>
         {rings.map((ring, index) => {
-          const ringSize = size - (index * (strokeWidth + spacing) * 2);
+          const ringSize = size - index * (strokeWidth + spacing) * 2;
           const offset = (size - ringSize) / 2;
 
           return (
@@ -391,7 +381,8 @@ export function GaugeRing({
 
       <View style={styles.gaugeContent}>
         <Animated.Text style={[styles.gaugeValue, { color }]}>
-          {Math.round(clampedValue)}{unit}
+          {Math.round(clampedValue)}
+          {unit}
         </Animated.Text>
         {label && <Animated.Text style={styles.gaugeLabel}>{label}</Animated.Text>}
       </View>

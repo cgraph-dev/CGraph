@@ -54,6 +54,9 @@ export interface ParticlePhysics {
   wind: Vector2D; // Wind direction and strength
 }
 
+/** Input type for partial physics configuration */
+export type ParticlePhysicsInput = Partial<ParticlePhysics>;
+
 export interface ParticleConfig {
   type: ParticleType;
   count: number; // Number of particles (10-500)
@@ -102,6 +105,10 @@ export interface EmitterConfig {
   continuous: boolean; // Keep emitting
 }
 
+/** Input type for partial emitter configuration */
+export type EmitterConfigInput = Partial<Omit<EmitterConfig, 'shape' | 'position' | 'size'>> &
+  Pick<EmitterConfig, 'shape' | 'position' | 'size'>;
+
 export interface Particle {
   id: number;
   type: ParticleType;
@@ -123,6 +130,20 @@ export interface Particle {
 }
 
 export interface ParticleSystemConfig {
+  particles: ParticleConfig | (Partial<ParticleConfig> & { type: ParticleType; count?: number });
+  emitter?: EmitterConfigInput;
+  physics?: ParticlePhysicsInput;
+  behavior?: ParticleBehavior;
+  bounds?: {
+    width?: number;
+    height?: number;
+    contain?: boolean; // Keep particles within bounds
+    wrap?: boolean; // Wrap around edges
+  };
+}
+
+/** Internal resolved config type with all required fields */
+interface ResolvedConfig {
   particles: ParticleConfig;
   emitter: EmitterConfig;
   physics: ParticlePhysics;
@@ -130,8 +151,8 @@ export interface ParticleSystemConfig {
   bounds: {
     width: number;
     height: number;
-    contain: boolean; // Keep particles within bounds
-    wrap: boolean; // Wrap around edges
+    contain: boolean;
+    wrap: boolean;
   };
 }
 
@@ -268,12 +289,12 @@ const BEHAVIOR_MODIFIERS: Record<ParticleBehavior, Partial<ParticlePhysics>> = {
 export class ParticleEngine {
   private particles: Particle[] = [];
   private nextId: number = 0;
-  private config: ParticleSystemConfig;
+  private config: ResolvedConfig;
   private emitAccumulator: number = 0;
   private frameCount: number = 0;
   private maxParticles: number;
 
-  constructor(config: Partial<ParticleSystemConfig> = {}) {
+  constructor(config: ParticleSystemConfig) {
     const capabilities = BlurEngine.getCapabilities();
 
     // Determine max particles based on device tier
@@ -284,13 +305,13 @@ export class ParticleEngine {
 
     this.config = {
       particles: {
-        type: 'dots',
-        count: 50,
-        ...PARTICLE_PRESETS.dots,
-        ...config.particles,
+        type: config.particles?.type || 'dots',
+        count: config.particles?.count || 50,
+        ...PARTICLE_PRESETS[config.particles?.type || 'dots'],
+        ...(config.particles?.colors && { colors: config.particles.colors }),
       } as ParticleConfig,
-      emitter: { ...DEFAULT_EMITTER, ...config.emitter },
-      physics: { ...DEFAULT_PHYSICS, ...config.physics },
+      emitter: { ...DEFAULT_EMITTER, ...config.emitter } as EmitterConfig,
+      physics: { ...DEFAULT_PHYSICS, ...config.physics } as ParticlePhysics,
       behavior: config.behavior || 'float',
       bounds: {
         width,

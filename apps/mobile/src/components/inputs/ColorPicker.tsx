@@ -23,24 +23,18 @@ import {
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  useAnimatedGestureHandler,
   withSpring,
   withTiming,
   runOnJS,
   interpolate,
   interpolateColor,
 } from 'react-native-reanimated';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  TapGestureHandler,
-  TapGestureHandlerGestureEvent,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import chroma from 'chroma-js';
 
-import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
+import { SPRING_PRESETS, getSpringConfig } from '../../lib/animations/AnimationLibrary';
 
 // ============================================================================
 // Types
@@ -67,11 +61,6 @@ interface HSL {
   l: number; // 0-100
 }
 
-type GestureContext = {
-  startX: number;
-  startY: number;
-};
-
 // ============================================================================
 // Constants
 // ============================================================================
@@ -79,10 +68,26 @@ type GestureContext = {
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const DEFAULT_SWATCHES = [
-  '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16',
-  '#22c55e', '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9',
-  '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef',
-  '#ec4899', '#f43f5e', '#ffffff', '#9ca3af', '#000000',
+  '#ef4444',
+  '#f97316',
+  '#f59e0b',
+  '#eab308',
+  '#84cc16',
+  '#22c55e',
+  '#10b981',
+  '#14b8a6',
+  '#06b6d4',
+  '#0ea5e9',
+  '#3b82f6',
+  '#6366f1',
+  '#8b5cf6',
+  '#a855f7',
+  '#d946ef',
+  '#ec4899',
+  '#f43f5e',
+  '#ffffff',
+  '#9ca3af',
+  '#000000',
 ];
 
 const SIZE_CONFIG = {
@@ -330,42 +335,37 @@ interface SliderProps {
 function HueSlider({ value, onChange, width, height, hapticFeedback }: SliderProps) {
   const thumbX = useSharedValue((value / 360) * width);
   const scale = useSharedValue(1);
+  const springCfg = getSpringConfig(SPRING_PRESETS.snappy);
 
   useEffect(() => {
-    thumbX.value = withSpring((value / 360) * width, SPRING_PRESETS.snappy);
+    thumbX.value = withSpring((value / 360) * width, springCfg);
   }, [value, width]);
 
-  const gestureHandler = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    GestureContext
-  >({
-    onStart: () => {
-      scale.value = withSpring(1.2, SPRING_PRESETS.snappy);
-    },
-    onActive: (event) => {
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      'worklet';
+      scale.value = withSpring(1.2, springCfg);
+    })
+    .onUpdate((event) => {
+      'worklet';
       const x = Math.max(0, Math.min(width, event.x));
       thumbX.value = x;
       const hue = (x / width) * 360;
       runOnJS(onChange)(hue);
-    },
-    onEnd: () => {
-      scale.value = withSpring(1, SPRING_PRESETS.snappy);
+    })
+    .onEnd(() => {
+      'worklet';
+      scale.value = withSpring(1, springCfg);
       if (hapticFeedback) {
         runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
       }
-    },
-  });
+    });
 
   const thumbStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: thumbX.value - height / 2 },
-      { scale: scale.value },
-    ],
+    transform: [{ translateX: thumbX.value - height / 2 }, { scale: scale.value }],
   }));
 
-  const hueColors = Array.from({ length: 12 }, (_, i) =>
-    chroma.hsl((i / 11) * 360, 1, 0.5).hex()
-  );
+  const hueColors = Array.from({ length: 12 }, (_, i) => chroma.hsl((i / 11) * 360, 1, 0.5).hex());
 
   return (
     <View style={[styles.slider, { width, height, borderRadius: height / 2 }]}>
@@ -376,17 +376,13 @@ function HueSlider({ value, onChange, width, height, hapticFeedback }: SliderPro
         style={[StyleSheet.absoluteFill, { borderRadius: height / 2 }]}
       />
 
-      <PanGestureHandler onGestureEvent={gestureHandler}>
+      <GestureDetector gesture={panGesture}>
         <Animated.View style={StyleSheet.absoluteFill}>
           <Animated.View
-            style={[
-              styles.thumb,
-              { width: height, height, borderRadius: height / 2 },
-              thumbStyle,
-            ]}
+            style={[styles.thumb, { width: height, height, borderRadius: height / 2 }, thumbStyle]}
           />
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
     </View>
   );
 }
@@ -399,40 +395,44 @@ interface SaturationSliderProps extends SliderProps {
   hue: number;
 }
 
-function SaturationSlider({ hue, value, onChange, width, height, hapticFeedback }: SaturationSliderProps) {
+function SaturationSlider({
+  hue,
+  value,
+  onChange,
+  width,
+  height,
+  hapticFeedback,
+}: SaturationSliderProps) {
   const thumbX = useSharedValue((value / 100) * width);
   const scale = useSharedValue(1);
+  const springCfg = getSpringConfig(SPRING_PRESETS.snappy);
 
   useEffect(() => {
-    thumbX.value = withSpring((value / 100) * width, SPRING_PRESETS.snappy);
+    thumbX.value = withSpring((value / 100) * width, springCfg);
   }, [value, width]);
 
-  const gestureHandler = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    GestureContext
-  >({
-    onStart: () => {
-      scale.value = withSpring(1.2, SPRING_PRESETS.snappy);
-    },
-    onActive: (event) => {
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      'worklet';
+      scale.value = withSpring(1.2, springCfg);
+    })
+    .onUpdate((event) => {
+      'worklet';
       const x = Math.max(0, Math.min(width, event.x));
       thumbX.value = x;
       const saturation = (x / width) * 100;
       runOnJS(onChange)(saturation);
-    },
-    onEnd: () => {
-      scale.value = withSpring(1, SPRING_PRESETS.snappy);
+    })
+    .onEnd(() => {
+      'worklet';
+      scale.value = withSpring(1, springCfg);
       if (hapticFeedback) {
         runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
       }
-    },
-  });
+    });
 
   const thumbStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: thumbX.value - height / 2 },
-      { scale: scale.value },
-    ],
+    transform: [{ translateX: thumbX.value - height / 2 }, { scale: scale.value }],
   }));
 
   const leftColor = chroma.hsl(hue, 0, 0.5).hex();
@@ -447,17 +447,13 @@ function SaturationSlider({ hue, value, onChange, width, height, hapticFeedback 
         style={[StyleSheet.absoluteFill, { borderRadius: height / 2 }]}
       />
 
-      <PanGestureHandler onGestureEvent={gestureHandler}>
+      <GestureDetector gesture={panGesture}>
         <Animated.View style={StyleSheet.absoluteFill}>
           <Animated.View
-            style={[
-              styles.thumb,
-              { width: height, height, borderRadius: height / 2 },
-              thumbStyle,
-            ]}
+            style={[styles.thumb, { width: height, height, borderRadius: height / 2 }, thumbStyle]}
           />
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
     </View>
   );
 }
@@ -482,37 +478,34 @@ function LightnessSlider({
 }: LightnessSliderProps) {
   const thumbX = useSharedValue((value / 100) * width);
   const scale = useSharedValue(1);
+  const springCfg = getSpringConfig(SPRING_PRESETS.snappy);
 
   useEffect(() => {
-    thumbX.value = withSpring((value / 100) * width, SPRING_PRESETS.snappy);
+    thumbX.value = withSpring((value / 100) * width, springCfg);
   }, [value, width]);
 
-  const gestureHandler = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    GestureContext
-  >({
-    onStart: () => {
-      scale.value = withSpring(1.2, SPRING_PRESETS.snappy);
-    },
-    onActive: (event) => {
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      'worklet';
+      scale.value = withSpring(1.2, springCfg);
+    })
+    .onUpdate((event) => {
+      'worklet';
       const x = Math.max(0, Math.min(width, event.x));
       thumbX.value = x;
       const lightness = (x / width) * 100;
       runOnJS(onChange)(lightness);
-    },
-    onEnd: () => {
-      scale.value = withSpring(1, SPRING_PRESETS.snappy);
+    })
+    .onEnd(() => {
+      'worklet';
+      scale.value = withSpring(1, springCfg);
       if (hapticFeedback) {
         runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
       }
-    },
-  });
+    });
 
   const thumbStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: thumbX.value - height / 2 },
-      { scale: scale.value },
-    ],
+    transform: [{ translateX: thumbX.value - height / 2 }, { scale: scale.value }],
   }));
 
   const leftColor = chroma.hsl(hue, saturation / 100, 0).hex();
@@ -528,17 +521,13 @@ function LightnessSlider({
         style={[StyleSheet.absoluteFill, { borderRadius: height / 2 }]}
       />
 
-      <PanGestureHandler onGestureEvent={gestureHandler}>
+      <GestureDetector gesture={panGesture}>
         <Animated.View style={StyleSheet.absoluteFill}>
           <Animated.View
-            style={[
-              styles.thumb,
-              { width: height, height, borderRadius: height / 2 },
-              thumbStyle,
-            ]}
+            style={[styles.thumb, { width: height, height, borderRadius: height / 2 }, thumbStyle]}
           />
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
     </View>
   );
 }
@@ -570,11 +559,7 @@ function Swatch({ color, size, selected, onPress }: SwatchProps) {
   }));
 
   return (
-    <Pressable
-      onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-    >
+    <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
       <Animated.View
         style={[
           styles.swatch,

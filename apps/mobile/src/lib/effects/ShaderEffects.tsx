@@ -23,6 +23,7 @@ import Animated, {
   withDelay,
   Easing,
   interpolate,
+  SharedValue,
 } from 'react-native-reanimated';
 
 // ============================================================================
@@ -338,7 +339,7 @@ export function GlitchEffect({ config, style, children }: GlitchEffectProps) {
 
 interface GlitchColorLayerProps {
   color: string;
-  offset: Animated.SharedValue<number>;
+  offset: SharedValue<number>;
 }
 
 function GlitchColorLayer({ color, offset }: GlitchColorLayerProps) {

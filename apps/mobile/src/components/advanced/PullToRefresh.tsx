@@ -11,14 +11,7 @@
  */
 
 import React, { useCallback, useState, useMemo } from 'react';
-import {
-  StyleSheet,
-  View,
-  ViewStyle,
-  StyleProp,
-  ScrollView,
-  ScrollViewProps,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle, StyleProp, ScrollView, ScrollViewProps } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -31,10 +24,11 @@ import Animated, {
   runOnJS,
   cancelAnimation,
   Easing,
+  SharedValue,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
-import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
+import { SPRING_PRESETS, getSpringConfig } from '../../lib/animations/AnimationLibrary';
 
 // ============================================================================
 // Types
@@ -42,12 +36,12 @@ import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
 
 export type RefreshIndicatorStyle = 'spinner' | 'dots' | 'progress' | 'arrows' | 'custom';
 
-export interface PullToRefreshProps extends Omit<ScrollViewProps, 'onScroll'> {
+export interface PullToRefreshProps extends Omit<ScrollViewProps, 'onScroll' | 'indicatorStyle'> {
   onRefresh: () => Promise<void>;
   children: React.ReactNode;
 
   // Appearance
-  indicatorStyle?: RefreshIndicatorStyle;
+  refreshIndicatorStyle?: RefreshIndicatorStyle;
   indicatorColor?: string;
   indicatorSize?: number;
   backgroundColor?: string;
@@ -58,7 +52,7 @@ export interface PullToRefreshProps extends Omit<ScrollViewProps, 'onScroll'> {
   enabled?: boolean;
 
   // Custom indicator
-  renderIndicator?: (progress: Animated.SharedValue<number>, isRefreshing: boolean) => React.ReactNode;
+  renderIndicator?: (progress: SharedValue<number>, isRefreshing: boolean) => React.ReactNode;
 
   // Style
   style?: StyleProp<ViewStyle>;
@@ -88,7 +82,7 @@ const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 export function PullToRefresh({
   onRefresh,
   children,
-  indicatorStyle = 'spinner',
+  refreshIndicatorStyle = 'spinner',
   indicatorColor = '#10b981',
   indicatorSize = DEFAULT_INDICATOR_SIZE,
   backgroundColor = '#111827',
@@ -109,6 +103,7 @@ export function PullToRefresh({
   const hasTriggeredHaptic = useSharedValue(false);
 
   const springConfig = SPRING_PRESETS[springPreset];
+  const springCfg = getSpringConfig(springConfig);
 
   // Trigger haptic feedback
   const triggerHaptic = useCallback(() => {
@@ -120,10 +115,10 @@ export function PullToRefresh({
   // Handle refresh complete
   const handleRefreshComplete = useCallback(() => {
     setIsRefreshing(false);
-    pullDistance.value = withSpring(0, springConfig);
+    pullDistance.value = withSpring(0, springCfg);
     refreshProgress.value = withTiming(0, { duration: 200 });
     indicatorOpacity.value = withTiming(0, { duration: 200 });
-  }, [springConfig]);
+  }, [springCfg]);
 
   // Handle refresh trigger
   const handleRefresh = useCallback(async () => {
@@ -173,11 +168,11 @@ export function PullToRefresh({
 
       if (offsetY < -threshold * resistance) {
         // Trigger refresh
-        pullDistance.value = withSpring(threshold, springConfig);
+        pullDistance.value = withSpring(threshold, springCfg);
         runOnJS(handleRefresh)();
       } else {
         // Snap back
-        pullDistance.value = withSpring(0, springConfig);
+        pullDistance.value = withSpring(0, springCfg);
         refreshProgress.value = withTiming(0, { duration: 200 });
         indicatorOpacity.value = withTiming(0, { duration: 200 });
       }
@@ -196,7 +191,7 @@ export function PullToRefresh({
       return renderIndicator(refreshProgress, isRefreshing);
     }
 
-    switch (indicatorStyle) {
+    switch (refreshIndicatorStyle) {
       case 'spinner':
         return (
           <SpinnerIndicator
@@ -236,7 +231,7 @@ export function PullToRefresh({
       default:
         return null;
     }
-  }, [indicatorStyle, indicatorColor, indicatorSize, renderIndicator, isRefreshing]);
+  }, [refreshIndicatorStyle, indicatorColor, indicatorSize, renderIndicator, isRefreshing]);
 
   return (
     <View style={[styles.container, { backgroundColor }, style]}>
@@ -264,7 +259,7 @@ export function PullToRefresh({
 // ============================================================================
 
 interface IndicatorProps {
-  progress: Animated.SharedValue<number>;
+  progress: SharedValue<number>;
   isRefreshing: boolean;
   color: string;
   size: number;
@@ -333,7 +328,7 @@ function DotsIndicator({ progress, isRefreshing, color, size }: IndicatorProps) 
 
 interface DotItemProps {
   index: number;
-  progress: Animated.SharedValue<number>;
+  progress: SharedValue<number>;
   isRefreshing: boolean;
   color: string;
   size: number;
@@ -357,7 +352,7 @@ function DotItem({ index, progress, isRefreshing, color, size }: DotItemProps) {
   const animatedStyle = useAnimatedStyle(() => {
     const dotProgress = interpolate(
       progress.value,
-      [(index * 0.2), (index * 0.2) + 0.5, 1],
+      [index * 0.2, index * 0.2 + 0.5, 1],
       [0, 1, 1],
       Extrapolate.CLAMP
     );
@@ -372,11 +367,7 @@ function DotItem({ index, progress, isRefreshing, color, size }: DotItemProps) {
 
   return (
     <Animated.View
-      style={[
-        styles.dot,
-        { width: size, height: size, backgroundColor: color },
-        animatedStyle,
-      ]}
+      style={[styles.dot, { width: size, height: size, backgroundColor: color }, animatedStyle]}
     />
   );
 }
@@ -389,11 +380,7 @@ function ProgressIndicator({ progress, isRefreshing, color, size }: IndicatorPro
   return (
     <View style={[styles.progressContainer, { width: size * 2, height: size / 5 }]}>
       <Animated.View
-        style={[
-          styles.progressBar,
-          { backgroundColor: color, height: size / 5 },
-          animatedStyle,
-        ]}
+        style={[styles.progressBar, { backgroundColor: color, height: size / 5 }, animatedStyle]}
       />
     </View>
   );
@@ -425,9 +412,7 @@ function ArrowsIndicator({ progress, isRefreshing, color, size }: IndicatorProps
 
   return (
     <Animated.View style={arrowStyle}>
-      <Animated.Text style={[styles.arrowText, { fontSize: size, color }]}>
-        ↻
-      </Animated.Text>
+      <Animated.Text style={[styles.arrowText, { fontSize: size, color }]}>↻</Animated.Text>
     </Animated.View>
   );
 }

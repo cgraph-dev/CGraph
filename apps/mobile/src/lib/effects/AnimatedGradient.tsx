@@ -20,6 +20,7 @@ import Animated, {
   withSequence,
   Easing,
   interpolate,
+  SharedValue,
 } from 'react-native-reanimated';
 
 import GradientEngine, {
@@ -133,7 +134,7 @@ export function AnimatedGradientView({
       <Animated.View style={combinedStyle}>
         <LinearGradient
           colors={gradientData.colors as [string, string, ...string[]]}
-          locations={gradientData.locations}
+          locations={gradientData.locations as [number, number, ...number[]]}
           start={gradientData.start}
           end={gradientData.end}
           style={[StyleSheet.absoluteFill, { borderRadius }]}
@@ -156,7 +157,7 @@ export function AnimatedGradientView({
 // ============================================================================
 
 interface ShimmerOverlayProps {
-  position: Animated.SharedValue<number>;
+  position: SharedValue<number>;
   borderRadius: number;
 }
 

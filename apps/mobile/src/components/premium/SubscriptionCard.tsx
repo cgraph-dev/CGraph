@@ -10,13 +10,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -50,12 +44,11 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   onSubscribe,
 }) => {
   const isCurrentPlan = currentTier === tier.id;
-  const displayPrice = yearly && tier.yearlyPrice 
-    ? tier.yearlyPrice / 12 
-    : tier.price;
-  const savings = yearly && tier.yearlyPrice
-    ? Math.round(((tier.price * 12 - tier.yearlyPrice) / (tier.price * 12)) * 100)
-    : 0;
+  const displayPrice = yearly && tier.yearlyPrice ? tier.yearlyPrice / 12 : tier.price;
+  const savings =
+    yearly && tier.yearlyPrice
+      ? Math.round(((tier.price * 12 - tier.yearlyPrice) / (tier.price * 12)) * 100)
+      : 0;
 
   const handleSubscribe = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -64,7 +57,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
   if (variant === 'compact') {
     return (
-      <GlassCard style={[styles.compactCard, tier.popular && styles.popularCard]}>
+      <GlassCard style={[styles.compactCard, tier.popular && styles.popularCard] as any}>
         <View style={styles.compactHeader}>
           <View style={[styles.tierBadge, { backgroundColor: tier.color }]}>
             <Text style={styles.tierBadgeText}>{tier.name}</Text>
@@ -75,24 +68,19 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
             </View>
           )}
         </View>
-        
+
         <View style={styles.compactPrice}>
           <Text style={styles.currency}>$</Text>
           <Text style={styles.amount}>{displayPrice.toFixed(2)}</Text>
           <Text style={styles.period}>/mo</Text>
         </View>
-        
-        <Pressable 
-          onPress={handleSubscribe} 
+
+        <Pressable
+          onPress={handleSubscribe}
           disabled={isCurrentPlan}
-          style={[
-            styles.compactButton,
-            isCurrentPlan && styles.currentButton,
-          ]}
+          style={[styles.compactButton, isCurrentPlan && styles.currentButton]}
         >
-          <Text style={styles.buttonText}>
-            {isCurrentPlan ? 'Current Plan' : 'Select'}
-          </Text>
+          <Text style={styles.buttonText}>{isCurrentPlan ? 'Current Plan' : 'Select'}</Text>
         </Pressable>
       </GlassCard>
     );
@@ -100,10 +88,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
   if (variant === 'featured') {
     return (
-      <LinearGradient
-        colors={[tier.color + '40', tier.color + '10']}
-        style={styles.featuredCard}
-      >
+      <LinearGradient colors={[tier.color + '40', tier.color + '10']} style={styles.featuredCard}>
         <View style={styles.featuredBorder}>
           {/* Header */}
           <View style={styles.featuredHeader}>
@@ -134,11 +119,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           <View style={styles.featuresList}>
             {tier.features.map((feature, index) => (
               <View key={index} style={styles.featureRow}>
-                <MaterialCommunityIcons 
-                  name="check-circle" 
-                  size={18} 
-                  color={tier.color} 
-                />
+                <MaterialCommunityIcons name="check-circle" size={18} color={tier.color} />
                 <Text style={styles.featureText}>{feature}</Text>
               </View>
             ))}
@@ -162,7 +143,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
   // Default variant
   return (
-    <GlassCard style={[styles.card, tier.popular && styles.popularCard]}>
+    <GlassCard style={[styles.card, tier.popular && styles.popularCard] as any}>
       {/* Badge */}
       {tier.popular && (
         <View style={[styles.cardBadge, { backgroundColor: tier.color }]}>
@@ -172,9 +153,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
       {/* Header */}
       <View style={styles.cardHeader}>
-        <Text style={[styles.cardTierName, { color: tier.color }]}>
-          {tier.name}
-        </Text>
+        <Text style={[styles.cardTierName, { color: tier.color }]}>{tier.name}</Text>
         <Text style={styles.cardDescription}>{tier.description}</Text>
       </View>
 
@@ -196,19 +175,15 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
       <ScrollView style={styles.cardFeatures} showsVerticalScrollIndicator={false}>
         {tier.features.map((feature, index) => (
           <View key={index} style={styles.featureRow}>
-            <MaterialCommunityIcons 
-              name="check" 
-              size={16} 
-              color="#10B981" 
-            />
+            <MaterialCommunityIcons name="check" size={16} color="#10B981" />
             <Text style={styles.cardFeatureText}>{feature}</Text>
           </View>
         ))}
       </ScrollView>
 
       {/* Action */}
-      <Pressable 
-        onPress={handleSubscribe} 
+      <Pressable
+        onPress={handleSubscribe}
         disabled={isCurrentPlan}
         style={({ pressed }) => [
           styles.cardButton,
@@ -216,9 +191,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           pressed && { opacity: 0.8 },
         ]}
       >
-        <Text style={styles.cardButtonText}>
-          {isCurrentPlan ? 'Current Plan' : 'Get Started'}
-        </Text>
+        <Text style={styles.cardButtonText}>{isCurrentPlan ? 'Current Plan' : 'Get Started'}</Text>
       </Pressable>
     </GlassCard>
   );

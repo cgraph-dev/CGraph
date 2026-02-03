@@ -73,7 +73,7 @@ function FallbackLayer({ config, index, totalLayers, borderRadius = 0 }: Fallbac
   return (
     <LinearGradient
       colors={gradient.colors as [string, string, ...string[]]}
-      locations={gradient.locations}
+      locations={gradient.locations as [number, number, ...number[]]}
       start={gradient.start}
       end={gradient.end}
       style={[StyleSheet.absoluteFill, { opacity: layerOpacity, borderRadius }]}

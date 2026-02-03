@@ -39,16 +39,10 @@ export {
   iosFeatures,
   useIOSFeatures,
   useDynamicIsland,
-  useLiveActivity,
   default as IOSFeatures,
 } from './ios/IOSFeatures';
 
-export type {
-  IOSCapabilities,
-  DynamicIslandContent,
-  LiveActivityState,
-  SFSymbolConfig,
-} from './ios/IOSFeatures';
+export type { IOSCapabilities, DynamicIslandState, SFSymbolConfig } from './ios/IOSFeatures';
 
 // ============================================================================
 // Android Features

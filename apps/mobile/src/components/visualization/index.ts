@@ -4,15 +4,17 @@
  * Data visualization components with animations.
  */
 
+// Import for default export object
+import { LineChart, BarChart, PieChart } from './AnimatedChart';
+import { ProgressRing, StackedProgressRing, GaugeRing } from './ProgressRing';
+import { StatCounter, StatGroup, ComparisonStat, Countdown } from './StatCounter';
+import { Heatmap, CalendarHeatmap, MatrixHeatmap } from './Heatmap';
+
 // ============================================================================
 // Animated Charts
 // ============================================================================
 
-export {
-  LineChart,
-  BarChart,
-  PieChart,
-} from './AnimatedChart';
+export { LineChart, BarChart, PieChart } from './AnimatedChart';
 
 export type {
   ChartProps,
@@ -26,28 +28,15 @@ export type {
 // Progress Ring
 // ============================================================================
 
-export {
-  ProgressRing,
-  StackedProgressRing,
-  GaugeRing,
-} from './ProgressRing';
+export { ProgressRing, StackedProgressRing, GaugeRing } from './ProgressRing';
 
-export type {
-  ProgressRingProps,
-  StackedProgressRingProps,
-  GaugeRingProps,
-} from './ProgressRing';
+export type { ProgressRingProps, StackedProgressRingProps, GaugeRingProps } from './ProgressRing';
 
 // ============================================================================
 // Stat Counter
 // ============================================================================
 
-export {
-  StatCounter,
-  StatGroup,
-  ComparisonStat,
-  Countdown,
-} from './StatCounter';
+export { StatCounter, StatGroup, ComparisonStat, Countdown } from './StatCounter';
 
 export type {
   StatCounterProps,
@@ -61,11 +50,7 @@ export type {
 // Heatmap
 // ============================================================================
 
-export {
-  Heatmap,
-  CalendarHeatmap,
-  MatrixHeatmap,
-} from './Heatmap';
+export { Heatmap, CalendarHeatmap, MatrixHeatmap } from './Heatmap';
 
 export type {
   HeatmapProps,

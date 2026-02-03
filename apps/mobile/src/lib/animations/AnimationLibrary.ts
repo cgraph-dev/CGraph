@@ -10,15 +10,34 @@
  * - Layout animation helpers
  */
 
-import { Easing, WithSpringConfig, WithTimingConfig } from 'react-native-reanimated';
+import { Easing, WithTimingConfig, WithSpringConfig } from 'react-native-reanimated';
 
 // ============================================================================
 // Spring Physics Presets
 // ============================================================================
 
-export interface SpringConfig extends WithSpringConfig {
+/**
+ * Our own SpringConfig interface for animation presets.
+ * Uses the stiffness/damping model (not duration-based).
+ */
+export interface SpringConfig {
+  damping?: number;
+  mass?: number;
+  stiffness?: number;
+  overshootClamping?: boolean;
+  velocity?: number;
+  // Metadata
   name?: string;
   description?: string;
+}
+
+/**
+ * Extract only the WithSpringConfig properties from a SpringConfig.
+ * Use this when passing to withSpring() to avoid type errors.
+ */
+export function getSpringConfig(config: SpringConfig): WithSpringConfig {
+  const { name, description, ...springConfig } = config;
+  return springConfig as WithSpringConfig;
 }
 
 export const SPRING_PRESETS: Record<string, SpringConfig> = {
@@ -540,19 +559,11 @@ export const EXIT_ANIMATIONS: Record<string, AnimationPreset> = {
 
 export const LOOP_ANIMATIONS = {
   pulse: {
-    keyframes: [
-      { scale: 1 },
-      { scale: 1.05 },
-      { scale: 1 },
-    ],
+    keyframes: [{ scale: 1 }, { scale: 1.05 }, { scale: 1 }],
     duration: 2000,
   },
   pulseBig: {
-    keyframes: [
-      { scale: 1 },
-      { scale: 1.1 },
-      { scale: 1 },
-    ],
+    keyframes: [{ scale: 1 }, { scale: 1.1 }, { scale: 1 }],
     duration: 1500,
   },
   shake: {
@@ -600,23 +611,11 @@ export const LOOP_ANIMATIONS = {
     duration: 1000,
   },
   heartbeat: {
-    keyframes: [
-      { scale: 1 },
-      { scale: 1.3 },
-      { scale: 1 },
-      { scale: 1.3 },
-      { scale: 1 },
-    ],
+    keyframes: [{ scale: 1 }, { scale: 1.3 }, { scale: 1 }, { scale: 1.3 }, { scale: 1 }],
     duration: 1300,
   },
   flash: {
-    keyframes: [
-      { opacity: 1 },
-      { opacity: 0 },
-      { opacity: 1 },
-      { opacity: 0 },
-      { opacity: 1 },
-    ],
+    keyframes: [{ opacity: 1 }, { opacity: 0 }, { opacity: 1 }, { opacity: 0 }, { opacity: 1 }],
     duration: 1000,
   },
   rubberBand: {
@@ -644,33 +643,19 @@ export const LOOP_ANIMATIONS = {
     duration: 1000,
   },
   glow: {
-    keyframes: [
-      { opacity: 0.5 },
-      { opacity: 1 },
-      { opacity: 0.5 },
-    ],
+    keyframes: [{ opacity: 0.5 }, { opacity: 1 }, { opacity: 0.5 }],
     duration: 2000,
   },
   float: {
-    keyframes: [
-      { translateY: 0 },
-      { translateY: -10 },
-      { translateY: 0 },
-    ],
+    keyframes: [{ translateY: 0 }, { translateY: -10 }, { translateY: 0 }],
     duration: 3000,
   },
   spin: {
-    keyframes: [
-      { rotate: '0deg' },
-      { rotate: '360deg' },
-    ],
+    keyframes: [{ rotate: '0deg' }, { rotate: '360deg' }],
     duration: 1000,
   },
   spinSlow: {
-    keyframes: [
-      { rotate: '0deg' },
-      { rotate: '360deg' },
-    ],
+    keyframes: [{ rotate: '0deg' }, { rotate: '360deg' }],
     duration: 3000,
   },
 };
@@ -687,9 +672,7 @@ export function getStaggerDelays(count: number, baseDelay: number = 50): number[
   return Array.from({ length: count }, (_, i) => i * baseDelay);
 }
 
-export function combineAnimations(
-  ...animations: AnimationPreset[]
-): AnimationPreset {
+export function combineAnimations(...animations: AnimationPreset[]): AnimationPreset {
   return animations.reduce(
     (combined, animation) => ({
       initial: { ...combined.initial, ...animation.initial },
@@ -703,10 +686,7 @@ export function combineAnimations(
   );
 }
 
-export function createDelayedAnimation(
-  animation: AnimationPreset,
-  delay: number
-): AnimationPreset {
+export function createDelayedAnimation(animation: AnimationPreset, delay: number): AnimationPreset {
   return {
     ...animation,
     delay,

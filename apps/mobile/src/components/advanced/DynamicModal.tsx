@@ -29,23 +29,24 @@ import Animated, {
   runOnJS,
   interpolate,
   Extrapolate,
-  useAnimatedGestureHandler,
   useAnimatedKeyboard,
 } from 'react-native-reanimated';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 
-import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
+import { SPRING_PRESETS, getSpringConfig } from '../../lib/animations/AnimationLibrary';
 
 // ============================================================================
 // Types
 // ============================================================================
 
-export type ModalPresentation = 'fullscreen' | 'pageSheet' | 'formSheet' | 'bottomSheet' | 'card' | 'custom';
+export type ModalPresentation =
+  | 'fullscreen'
+  | 'pageSheet'
+  | 'formSheet'
+  | 'bottomSheet'
+  | 'card'
+  | 'custom';
 
 export interface SnapPoint {
   height: number | string; // Pixel value or percentage
@@ -90,11 +91,6 @@ export interface DynamicModalProps {
   // Callbacks
   onSnapChange?: (index: number) => void;
 }
-
-type GestureContext = {
-  startY: number;
-  currentSnapIndex: number;
-};
 
 // ============================================================================
 // Constants
@@ -166,12 +162,15 @@ export function DynamicModal({
   }, [snapPoints]);
 
   // Get current modal height
-  const getModalHeight = useCallback((snapIndex: number) => {
-    if (presentation !== 'custom' && !snapPoints) {
-      return presentationConfig.height;
-    }
-    return snapPointHeights[snapIndex] || snapPointHeights[0] || presentationConfig.height;
-  }, [presentation, snapPoints, snapPointHeights, presentationConfig]);
+  const getModalHeight = useCallback(
+    (snapIndex: number) => {
+      if (presentation !== 'custom' && !snapPoints) {
+        return presentationConfig.height;
+      }
+      return snapPointHeights[snapIndex] || snapPointHeights[0] || presentationConfig.height;
+    },
+    [presentation, snapPoints, snapPointHeights, presentationConfig]
+  );
 
   // Keyboard handling
   const keyboard = useAnimatedKeyboard();
@@ -191,62 +190,74 @@ export function DynamicModal({
     return () => handler.remove();
   }, [visible, onClose]);
 
+  const springCfg = getSpringConfig(springConfig);
+
   // Animate visibility
   useEffect(() => {
     if (visible) {
       const targetY = SCREEN_HEIGHT - getModalHeight(initialSnapIndex);
-      translateY.value = withSpring(targetY, springConfig);
+      translateY.value = withSpring(targetY, springCfg);
       backdropProgress.value = withTiming(1, { duration: animationDuration });
       currentSnapIndex.value = initialSnapIndex;
     } else {
-      translateY.value = withSpring(SCREEN_HEIGHT, springConfig);
+      translateY.value = withSpring(SCREEN_HEIGHT, springCfg);
       backdropProgress.value = withTiming(0, { duration: animationDuration });
     }
   }, [visible, initialSnapIndex]);
 
   // Haptic feedback helper
-  const triggerHaptic = useCallback((style: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Light) => {
-    if (hapticFeedback) {
-      Haptics.impactAsync(style);
-    }
-  }, [hapticFeedback]);
+  const triggerHaptic = useCallback(
+    (style: Haptics.ImpactFeedbackStyle = Haptics.ImpactFeedbackStyle.Light) => {
+      if (hapticFeedback) {
+        Haptics.impactAsync(style);
+      }
+    },
+    [hapticFeedback]
+  );
 
   // Close modal
   const close = useCallback(() => {
-    translateY.value = withSpring(SCREEN_HEIGHT, springConfig);
+    translateY.value = withSpring(SCREEN_HEIGHT, springCfg);
     backdropProgress.value = withTiming(0, { duration: animationDuration }, () => {
       runOnJS(onClose)();
     });
-  }, [springConfig, animationDuration, onClose]);
+  }, [springCfg, animationDuration, onClose]);
 
   // Snap to index
-  const snapToIndex = useCallback((index: number) => {
-    const height = getModalHeight(index);
-    const targetY = SCREEN_HEIGHT - height;
+  const snapToIndex = useCallback(
+    (index: number) => {
+      const height = getModalHeight(index);
+      const targetY = SCREEN_HEIGHT - height;
 
-    translateY.value = withSpring(targetY, springConfig);
-    currentSnapIndex.value = index;
+      translateY.value = withSpring(targetY, springCfg);
+      currentSnapIndex.value = index;
 
-    if (onSnapChange) {
-      runOnJS(onSnapChange)(index);
-    }
+      if (onSnapChange) {
+        runOnJS(onSnapChange)(index);
+      }
 
-    runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Light);
-  }, [getModalHeight, springConfig, onSnapChange, triggerHaptic]);
-
-  // Gesture handler
-  const gestureHandler = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    GestureContext
-  >({
-    onStart: (_, ctx) => {
-      ctx.startY = translateY.value;
-      ctx.currentSnapIndex = currentSnapIndex.value;
-      isDragging.value = true;
+      runOnJS(triggerHaptic)(Haptics.ImpactFeedbackStyle.Light);
     },
-    onActive: (event, ctx) => {
+    [getModalHeight, springConfig, onSnapChange, triggerHaptic]
+  );
+
+  // Context for gesture tracking
+  const gestureContext = useSharedValue({ startY: 0, currentSnapIndex: 0 });
+
+  // Gesture handler using new Gesture API
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      'worklet';
+      gestureContext.value = {
+        startY: translateY.value,
+        currentSnapIndex: currentSnapIndex.value,
+      };
+      isDragging.value = true;
+    })
+    .onUpdate((event) => {
+      'worklet';
       // Only allow dragging down (positive Y) or within bounds
-      const newY = ctx.startY + event.translationY;
+      const newY = gestureContext.value.startY + event.translationY;
       const minY = SCREEN_HEIGHT - getModalHeight(snapPointHeights.length - 1);
       const maxY = SCREEN_HEIGHT;
 
@@ -260,8 +271,9 @@ export function DynamicModal({
         Extrapolate.CLAMP
       );
       backdropProgress.value = progress;
-    },
-    onEnd: (event, ctx) => {
+    })
+    .onEnd((event) => {
+      'worklet';
       isDragging.value = false;
 
       // Check if should dismiss
@@ -300,15 +312,7 @@ export function DynamicModal({
       }
 
       runOnJS(snapToIndex)(nearestIndex);
-    },
-  });
-
-  // Backdrop tap handler
-  const handleBackdropTap = useCallback(() => {
-    if (dismissOnBackdrop) {
-      close();
-    }
-  }, [dismissOnBackdrop, close]);
+    });
 
   // Animated styles
   const backdropStyle = useAnimatedStyle(() => ({
@@ -336,15 +340,23 @@ export function DynamicModal({
     return null;
   }
 
+  // Backdrop tap gesture
+  const backdropTap = Gesture.Tap().onEnd(() => {
+    'worklet';
+    if (dismissOnBackdrop) {
+      runOnJS(close)();
+    }
+  });
+
   return (
     <View style={styles.overlay} pointerEvents={visible ? 'auto' : 'none'}>
       {/* Backdrop */}
-      <TapGestureHandler onActivated={handleBackdropTap}>
+      <GestureDetector gesture={backdropTap}>
         <Animated.View style={[styles.backdrop, backdropStyle]} />
-      </TapGestureHandler>
+      </GestureDetector>
 
       {/* Modal */}
-      <PanGestureHandler onGestureEvent={gestureHandler}>
+      <GestureDetector gesture={panGesture}>
         <Animated.View
           style={[
             styles.modal,
@@ -365,11 +377,9 @@ export function DynamicModal({
           )}
 
           {/* Content */}
-          <View style={[styles.content, contentStyle]}>
-            {children}
-          </View>
+          <View style={[styles.content, contentStyle]}>{children}</View>
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
     </View>
   );
 }
@@ -388,12 +398,7 @@ export interface BottomSheetProps {
 
 export function BottomSheet({ visible, onClose, children, title, style }: BottomSheetProps) {
   return (
-    <DynamicModal
-      visible={visible}
-      onClose={onClose}
-      presentation="bottomSheet"
-      style={style}
-    >
+    <DynamicModal visible={visible} onClose={onClose} presentation="bottomSheet" style={style}>
       {title && (
         <View style={styles.sheetHeader}>
           <Animated.Text style={styles.sheetTitle}>{title}</Animated.Text>
@@ -415,21 +420,19 @@ export interface ActionSheetProps {
   cancelLabel?: string;
 }
 
-export function ActionSheet({ visible, onClose, actions, cancelLabel = 'Cancel' }: ActionSheetProps) {
+export function ActionSheet({
+  visible,
+  onClose,
+  actions,
+  cancelLabel = 'Cancel',
+}: ActionSheetProps) {
   return (
-    <DynamicModal
-      visible={visible}
-      onClose={onClose}
-      presentation="card"
-    >
+    <DynamicModal visible={visible} onClose={onClose} presentation="card">
       <View style={styles.actionSheet}>
         {actions.map((action, index) => (
           <Animated.Text
             key={index}
-            style={[
-              styles.actionItem,
-              action.destructive && styles.destructiveAction,
-            ]}
+            style={[styles.actionItem, action.destructive && styles.destructiveAction]}
             onPress={() => {
               action.onPress();
               onClose();
@@ -486,10 +489,7 @@ export function AlertModal({
             {cancelLabel}
           </Animated.Text>
           <Animated.Text
-            style={[
-              styles.alertConfirmButton,
-              destructive && styles.destructiveAction,
-            ]}
+            style={[styles.alertConfirmButton, destructive && styles.destructiveAction]}
             onPress={() => {
               onConfirm?.();
               onClose();

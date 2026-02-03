@@ -11,13 +11,7 @@
  */
 
 import React, { useEffect, useMemo } from 'react';
-import {
-  StyleSheet,
-  View,
-  ViewStyle,
-  StyleProp,
-  TextStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle, StyleProp, TextStyle } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -28,6 +22,7 @@ import Animated, {
   interpolate,
   Extrapolate,
   Easing,
+  SharedValue,
 } from 'react-native-reanimated';
 
 import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
@@ -186,16 +181,10 @@ export function StatCounter({
 
     return (
       <View
-        style={[
-          styles.changeContainer,
-          changePosition === 'below' && styles.changeBelowContainer,
-        ]}
+        style={[styles.changeContainer, changePosition === 'below' && styles.changeBelowContainer]}
       >
         <Animated.Text
-          style={[
-            styles.changeText,
-            { color: changeColor, fontSize: sizeConfig.change },
-          ]}
+          style={[styles.changeText, { color: changeColor, fontSize: sizeConfig.change }]}
         >
           {arrow} {Math.abs(change.percentage).toFixed(1)}%
         </Animated.Text>
@@ -208,13 +197,7 @@ export function StatCounter({
     if (!label) return null;
 
     return (
-      <Animated.Text
-        style={[
-          styles.label,
-          { fontSize: sizeConfig.label },
-          labelStyle,
-        ]}
-      >
+      <Animated.Text style={[styles.label, { fontSize: sizeConfig.label }, labelStyle]}>
         {label}
       </Animated.Text>
     );
@@ -249,7 +232,7 @@ export function StatCounter({
 // ============================================================================
 
 interface AnimatedNumberProps {
-  value: Animated.SharedValue<number>;
+  value: SharedValue<number>;
   format: (num: number) => string;
   prefix: string;
   suffix: string;
@@ -275,7 +258,9 @@ function AnimatedNumber({
 
   return (
     <Animated.Text style={[styles.value, { fontSize, color }, style]}>
-      {prefix}{displayValue}{suffix}
+      {prefix}
+      {displayValue}
+      {suffix}
     </Animated.Text>
   );
 }
@@ -310,13 +295,7 @@ export function StatGroup({
   return (
     <View style={[styles.statGroup, style]}>
       {stats.map((stat, index) => (
-        <View
-          key={`stat-${index}`}
-          style={[
-            styles.statGroupItem,
-            { width: `${100 / columns}%` },
-          ]}
-        >
+        <View key={`stat-${index}`} style={[styles.statGroupItem, { width: `${100 / columns}%` }]}>
           <DelayedStatCounter
             {...stat}
             animated={animated}
@@ -386,20 +365,12 @@ export function ComparisonStat({
     <View style={[styles.comparisonContainer, style]}>
       <View style={styles.comparisonStat}>
         <Animated.Text style={styles.comparisonLabel}>{currentLabel}</Animated.Text>
-        <StatCounter
-          value={currentValue}
-          format={format}
-          animated={animated}
-          size="lg"
-        />
+        <StatCounter value={currentValue} format={format} animated={animated} size="lg" />
       </View>
 
       <View style={styles.comparisonArrow}>
         <Animated.Text
-          style={[
-            styles.comparisonChange,
-            { color: isPositive ? '#10b981' : '#ef4444' },
-          ]}
+          style={[styles.comparisonChange, { color: isPositive ? '#10b981' : '#ef4444' }]}
         >
           {isPositive ? '↑' : '↓'} {Math.abs(percentage).toFixed(1)}%
         </Animated.Text>
@@ -535,9 +506,7 @@ function CountdownSegment({ value, fontSize, color }: CountdownSegmentProps) {
 
   return (
     <Animated.View style={[styles.countdownSegment, animatedStyle]}>
-      <Animated.Text style={[styles.countdownValue, { fontSize, color }]}>
-        {value}
-      </Animated.Text>
+      <Animated.Text style={[styles.countdownValue, { fontSize, color }]}>{value}</Animated.Text>
     </Animated.View>
   );
 }

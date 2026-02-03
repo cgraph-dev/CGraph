@@ -184,10 +184,7 @@ export function PressableFeedback({
   );
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: scale.value },
-      { translateY: translateY.value },
-    ],
+    transform: [{ scale: scale.value }, { translateY: translateY.value }],
     opacity: opacity.value,
     shadowRadius: shadowRadius.value,
     shadowOpacity: interpolate(shadowRadius.value, [4, 16], [0.15, 0.3]),
@@ -208,12 +205,7 @@ export function PressableFeedback({
         {/* Glow effect */}
         {pressStyles.includes('glow') && (
           <Animated.View
-            style={[
-              StyleSheet.absoluteFill,
-              styles.glow,
-              { shadowColor: glowColor },
-              glowStyle,
-            ]}
+            style={[StyleSheet.absoluteFill, styles.glow, { shadowColor: glowColor }, glowStyle]}
           />
         )}
         {children}
@@ -252,21 +244,23 @@ export function Skeleton({
   }, [animated]);
 
   const shimmerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: shimmerPosition.value * (typeof width === 'number' ? width : SCREEN_WIDTH) }],
+    transform: [
+      { translateX: shimmerPosition.value * (typeof width === 'number' ? width : SCREEN_WIDTH) },
+    ],
   }));
 
   return (
     <View
       style={[
         styles.skeleton,
-        { width, height, borderRadius, backgroundColor },
+        { width: width as any, height, borderRadius, backgroundColor },
         style,
       ]}
     >
       {animated && (
         <Animated.View style={[styles.shimmerContainer, shimmerStyle]}>
           <LinearGradient
-            colors={['transparent', shimmerColor, 'transparent']}
+            colors={['transparent', shimmerColor, 'transparent'] as [string, string, string]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={[styles.shimmer, { width: typeof width === 'number' ? width : SCREEN_WIDTH }]}
@@ -298,13 +292,7 @@ export function SkeletonGroup({
     switch (variant) {
       case 'avatar':
         return (
-          <Skeleton
-            key={index}
-            width={48}
-            height={48}
-            borderRadius={24}
-            animated={animated}
-          />
+          <Skeleton key={index} width={48} height={48} borderRadius={24} animated={animated} />
         );
 
       case 'card':
@@ -344,9 +332,7 @@ export function SkeletonGroup({
   };
 
   return (
-    <View style={style}>
-      {Array.from({ length: count }).map((_, i) => renderSkeleton(i))}
-    </View>
+    <View style={style}>{Array.from({ length: count }).map((_, i) => renderSkeleton(i))}</View>
   );
 }
 
@@ -410,7 +396,9 @@ export function SuccessAnimation({
   if (!visible && opacity.value === 0) return null;
 
   return (
-    <Animated.View style={[styles.feedbackContainer, { width: size, height: size }, style, containerStyle]}>
+    <Animated.View
+      style={[styles.feedbackContainer, { width: size, height: size }, style, containerStyle]}
+    >
       {/* Ring animation */}
       <Animated.View
         style={[
@@ -494,16 +482,15 @@ export function ErrorAnimation({
 
   const containerStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
-    transform: [
-      { scale: scale.value },
-      { rotate: `${rotation.value}deg` },
-    ],
+    transform: [{ scale: scale.value }, { rotate: `${rotation.value}deg` }],
   }));
 
   if (!visible && opacity.value === 0) return null;
 
   return (
-    <Animated.View style={[styles.feedbackContainer, { width: size, height: size }, style, containerStyle]}>
+    <Animated.View
+      style={[styles.feedbackContainer, { width: size, height: size }, style, containerStyle]}
+    >
       <View
         style={[
           styles.feedbackCircle,
@@ -630,10 +617,7 @@ function LoadingDot({ index, size, color }: { index: number; size: number; color
     scale.value = withDelay(
       index * 150,
       withRepeat(
-        withSequence(
-          withTiming(1.5, { duration: 300 }),
-          withTiming(1, { duration: 300 })
-        ),
+        withSequence(withTiming(1.5, { duration: 300 }), withTiming(1, { duration: 300 })),
         -1,
         false
       )
@@ -654,17 +638,24 @@ function LoadingDot({ index, size, color }: { index: number; size: number; color
   );
 }
 
-function LoadingBar({ index, width, height, color }: { index: number; width: number; height: number; color: string }) {
+function LoadingBar({
+  index,
+  width,
+  height,
+  color,
+}: {
+  index: number;
+  width: number;
+  height: number;
+  color: string;
+}) {
   const scaleY = useSharedValue(0.4);
 
   useEffect(() => {
     scaleY.value = withDelay(
       index * 100,
       withRepeat(
-        withSequence(
-          withTiming(1, { duration: 300 }),
-          withTiming(0.4, { duration: 300 })
-        ),
+        withSequence(withTiming(1, { duration: 300 }), withTiming(0.4, { duration: 300 })),
         -1,
         false
       )
@@ -677,10 +668,7 @@ function LoadingBar({ index, width, height, color }: { index: number; width: num
 
   return (
     <Animated.View
-      style={[
-        { width, height, borderRadius: width / 2, backgroundColor: color },
-        animatedStyle,
-      ]}
+      style={[{ width, height, borderRadius: width / 2, backgroundColor: color }, animatedStyle]}
     />
   );
 }
@@ -785,7 +773,9 @@ export function EmptyState({
     <Animated.View style={[styles.emptyState, style, containerStyle]}>
       {icon && <Animated.View style={[styles.emptyStateIcon, iconStyle]}>{icon}</Animated.View>}
       {title && <Animated.Text style={styles.emptyStateTitle}>{title}</Animated.Text>}
-      {description && <Animated.Text style={styles.emptyStateDescription}>{description}</Animated.Text>}
+      {description && (
+        <Animated.Text style={styles.emptyStateDescription}>{description}</Animated.Text>
+      )}
       {action && <View style={styles.emptyStateAction}>{action}</View>}
     </Animated.View>
   );
@@ -831,13 +821,7 @@ export function Ripple({
     <Pressable onPress={handlePress} style={[styles.rippleContainer, style]}>
       {children}
       {ripples.map((ripple) => (
-        <RippleCircle
-          key={ripple.id}
-          x={ripple.x}
-          y={ripple.y}
-          color={color}
-          duration={duration}
-        />
+        <RippleCircle key={ripple.id} x={ripple.x} y={ripple.y} color={color} duration={duration} />
       ))}
     </Pressable>
   );
@@ -863,23 +847,11 @@ function RippleCircle({
   }, [duration]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: x - 25 },
-      { translateY: y - 25 },
-      { scale: scale.value },
-    ],
+    transform: [{ translateX: x - 25 }, { translateY: y - 25 }, { scale: scale.value }],
     opacity: opacity.value,
   }));
 
-  return (
-    <Animated.View
-      style={[
-        styles.rippleCircle,
-        { backgroundColor: color },
-        animatedStyle,
-      ]}
-    />
-  );
+  return <Animated.View style={[styles.rippleCircle, { backgroundColor: color }, animatedStyle]} />;
 }
 
 // ============================================================================

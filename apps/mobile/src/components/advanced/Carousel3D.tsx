@@ -23,21 +23,18 @@ import {
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  useAnimatedGestureHandler,
   withSpring,
   withTiming,
   runOnJS,
   interpolate,
   Extrapolate,
   useDerivedValue,
+  SharedValue,
 } from 'react-native-reanimated';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 
-import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
+import { SPRING_PRESETS, getSpringConfig } from '../../lib/animations/AnimationLibrary';
 
 // ============================================================================
 // Types
@@ -84,11 +81,6 @@ export interface Carousel3DProps<T> {
   // Haptics
   hapticFeedback?: boolean;
 }
-
-type GestureContext = {
-  startX: number;
-  lastIndex: number;
-};
 
 // ============================================================================
 // Constants
@@ -154,32 +146,39 @@ export function Carousel3D<T>({
   }, [hapticFeedback]);
 
   // Notify index change
-  const notifyIndexChange = useCallback((index: number) => {
-    onIndexChange?.(index);
-  }, [onIndexChange]);
+  const notifyIndexChange = useCallback(
+    (index: number) => {
+      onIndexChange?.(index);
+    },
+    [onIndexChange]
+  );
 
   // Snap to index
-  const snapToIndex = useCallback((index: number, animated = true) => {
-    'worklet';
-    const clampedIndex = loop
-      ? ((index % itemCount) + itemCount) % itemCount
-      : Math.max(0, Math.min(itemCount - 1, index));
+  const snapToIndex = useCallback(
+    (index: number, animated = true) => {
+      'worklet';
+      const clampedIndex = loop
+        ? ((index % itemCount) + itemCount) % itemCount
+        : Math.max(0, Math.min(itemCount - 1, index));
 
-    currentIndex.value = clampedIndex;
+      currentIndex.value = clampedIndex;
 
-    const targetX = -clampedIndex * (itemWidth + spacing);
+      const targetX = -clampedIndex * (itemWidth + spacing);
+      const cfg = getSpringConfig(springConfig);
 
-    if (animated) {
-      translateX.value = withSpring(targetX, springConfig, () => {
-        isAnimating.value = false;
-      });
-    } else {
-      translateX.value = targetX;
-    }
+      if (animated) {
+        translateX.value = withSpring(targetX, cfg, () => {
+          isAnimating.value = false;
+        });
+      } else {
+        translateX.value = targetX;
+      }
 
-    runOnJS(triggerHaptic)();
-    runOnJS(notifyIndexChange)(clampedIndex);
-  }, [itemCount, itemWidth, spacing, loop, springConfig]);
+      runOnJS(triggerHaptic)();
+      runOnJS(notifyIndexChange)(clampedIndex);
+    },
+    [itemCount, itemWidth, spacing, loop, springConfig]
+  );
 
   // Auto-play effect
   useEffect(() => {
@@ -193,20 +192,26 @@ export function Carousel3D<T>({
     return () => clearInterval(interval);
   }, [autoPlay, autoPlayInterval, itemCount]);
 
-  // Gesture handler
-  const gestureHandler = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    GestureContext
-  >({
-    onStart: (_, ctx) => {
-      ctx.startX = translateX.value;
-      ctx.lastIndex = currentIndex.value;
+  // Context for gesture tracking
+  const gestureContext = useSharedValue({ startX: 0, lastIndex: 0 });
+
+  // Gesture handler using new Gesture API
+  const panGesture = Gesture.Pan()
+    .enabled(enabled)
+    .onStart(() => {
+      'worklet';
+      gestureContext.value = {
+        startX: translateX.value,
+        lastIndex: currentIndex.value,
+      };
       isAnimating.value = true;
-    },
-    onActive: (event, ctx) => {
-      translateX.value = ctx.startX + event.translationX;
-    },
-    onEnd: (event, ctx) => {
+    })
+    .onUpdate((event) => {
+      'worklet';
+      translateX.value = gestureContext.value.startX + event.translationX;
+    })
+    .onEnd((event) => {
+      'worklet';
       const velocity = event.velocityX;
       const itemSpacing = itemWidth + spacing;
 
@@ -216,7 +221,7 @@ export function Carousel3D<T>({
       if (Math.abs(velocity) > 500) {
         // Fast swipe - move at least one item in velocity direction
         const direction = velocity > 0 ? -1 : 1;
-        targetIndex = ctx.lastIndex + direction;
+        targetIndex = gestureContext.value.lastIndex + direction;
       } else {
         // Slow swipe - snap to nearest
         const rawIndex = -translateX.value / itemSpacing;
@@ -224,8 +229,7 @@ export function Carousel3D<T>({
       }
 
       snapToIndex(targetIndex);
-    },
-  });
+    });
 
   // Derived value for current position
   const position = useDerivedValue(() => {
@@ -253,18 +257,23 @@ export function Carousel3D<T>({
         {renderItem(item, index, index === Math.round(position.value))}
       </CarouselItem>
     ));
-  }, [data, layout, itemWidth, itemHeight, spacing, perspective, rotationAngle, depthScale, depthOpacity, visibleItems]);
+  }, [
+    data,
+    layout,
+    itemWidth,
+    itemHeight,
+    spacing,
+    perspective,
+    rotationAngle,
+    depthScale,
+    depthOpacity,
+    visibleItems,
+  ]);
 
   return (
     <View style={[styles.container, containerStyle]} onLayout={handleLayout}>
-      <PanGestureHandler enabled={enabled} onGestureEvent={gestureHandler}>
-        <Animated.View
-          style={[
-            styles.carousel,
-            { paddingLeft: centerOffset },
-            style,
-          ]}
-        >
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[styles.carousel, { paddingLeft: centerOffset }, style]}>
           <Animated.View
             style={[
               styles.itemsContainer,
@@ -276,14 +285,10 @@ export function Carousel3D<T>({
             {renderCarouselItems}
           </Animated.View>
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
 
       {/* Pagination dots */}
-      <Pagination
-        count={itemCount}
-        position={position}
-        style={styles.pagination}
-      />
+      <Pagination count={itemCount} position={position} style={styles.pagination} />
     </View>
   );
 }
@@ -295,7 +300,7 @@ export function Carousel3D<T>({
 interface CarouselItemProps {
   children: React.ReactNode;
   index: number;
-  position: Animated.SharedValue<number>;
+  position: SharedValue<number>;
   layout: CarouselLayout;
   itemWidth: number;
   itemHeight: number;
@@ -352,12 +357,7 @@ function CarouselItem({
           [rotationAngle, 0, -rotationAngle],
           Extrapolate.CLAMP
         );
-        translateZ = interpolate(
-          absOffset,
-          [0, 1],
-          [0, -100],
-          Extrapolate.CLAMP
-        );
+        translateZ = interpolate(absOffset, [0, 1], [0, -100], Extrapolate.CLAMP);
         break;
 
       case 'wheel':
@@ -368,12 +368,7 @@ function CarouselItem({
           [90, 0, -90],
           Extrapolate.CLAMP
         );
-        translateZ = interpolate(
-          absOffset,
-          [0, visibleItems],
-          [0, -200],
-          Extrapolate.CLAMP
-        );
+        translateZ = interpolate(absOffset, [0, visibleItems], [0, -200], Extrapolate.CLAMP);
         break;
 
       case 'stack':
@@ -400,12 +395,7 @@ function CarouselItem({
 
     return {
       opacity,
-      transform: [
-        { perspective },
-        { translateX },
-        { scale },
-        { rotateY: `${rotateY}deg` },
-      ],
+      transform: [{ perspective }, { translateX }, { scale }, { rotateY: `${rotateY}deg` }],
       zIndex: Math.round(100 - absOffset * 10),
     };
   });
@@ -431,7 +421,7 @@ function CarouselItem({
 
 interface PaginationProps {
   count: number;
-  position: Animated.SharedValue<number>;
+  position: SharedValue<number>;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -447,7 +437,7 @@ function Pagination({ count, position, style }: PaginationProps) {
 
 interface PaginationDotProps {
   index: number;
-  position: Animated.SharedValue<number>;
+  position: SharedValue<number>;
 }
 
 function PaginationDot({ index, position }: PaginationDotProps) {
@@ -478,11 +468,7 @@ export function ImageCarousel({ images, onImagePress, style }: ImageCarouselProp
     <Carousel3D
       data={images}
       renderItem={(uri, index) => (
-        <Animated.Image
-          source={{ uri }}
-          style={styles.carouselImage}
-          resizeMode="cover"
-        />
+        <Animated.Image source={{ uri }} style={styles.carouselImage} resizeMode="cover" />
       )}
       onItemPress={(_, index) => onImagePress?.(index)}
       style={style}

@@ -15,16 +15,15 @@ import { StyleSheet, View, ViewStyle, StyleProp, Dimensions } from 'react-native
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  useAnimatedGestureHandler,
   withSpring,
   runOnJS,
   interpolate,
   Extrapolate,
 } from 'react-native-reanimated';
-import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 
-import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
+import { SPRING_PRESETS, getSpringConfig } from '../../lib/animations/AnimationLibrary';
 
 // ============================================================================
 // Types
@@ -70,12 +69,6 @@ export interface SwipeableCardProps {
   // Haptics
   hapticFeedback?: boolean;
 }
-
-type GestureContext = {
-  startX: number;
-  startY: number;
-  triggeredThreshold: boolean;
-};
 
 // ============================================================================
 // Constants
@@ -134,26 +127,37 @@ export function SwipeableCard({
     return rightActions.length * 80;
   }, [rightActions.length]);
 
-  // Gesture handler
-  const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
-    onStart: (_, ctx) => {
-      ctx.startX = translateX.value;
-      ctx.startY = translateY.value;
-      ctx.triggeredThreshold = false;
+  // Context for gesture tracking
+  const gestureContext = useSharedValue({ startX: 0, startY: 0, triggeredThreshold: false });
+
+  // Helper to create spring config
+  const springCfg = getSpringConfig(springConfig);
+
+  // Gesture handler using new Gesture API
+  const panGesture = Gesture.Pan()
+    .enabled(enabled)
+    .onStart(() => {
+      'worklet';
+      gestureContext.value = {
+        startX: translateX.value,
+        startY: translateY.value,
+        triggeredThreshold: false,
+      };
       isActive.value = true;
 
       if (onSwipeStart) {
         runOnJS(onSwipeStart)();
       }
-    },
-    onActive: (event, ctx) => {
+    })
+    .onUpdate((event) => {
+      'worklet';
       // Determine primary direction
       const absX = Math.abs(event.translationX);
       const absY = Math.abs(event.translationY);
 
       if (absX > absY) {
         // Horizontal swipe
-        let newX = ctx.startX + event.translationX;
+        let newX = gestureContext.value.startX + event.translationX;
 
         // Apply rubber band effect at edges
         if (rubberBandEffect) {
@@ -172,15 +176,15 @@ export function SwipeableCard({
         translateY.value = 0;
 
         // Trigger haptic at threshold
-        if (!ctx.triggeredThreshold && Math.abs(newX) >= swipeThreshold) {
-          ctx.triggeredThreshold = true;
+        if (!gestureContext.value.triggeredThreshold && Math.abs(newX) >= swipeThreshold) {
+          gestureContext.value = { ...gestureContext.value, triggeredThreshold: true };
           if (hapticFeedback) {
             runOnJS(triggerHaptic)();
           }
         }
       } else if (upAction || downAction) {
         // Vertical swipe
-        let newY = ctx.startY + event.translationY;
+        let newY = gestureContext.value.startY + event.translationY;
 
         if (rubberBandEffect) {
           const maxY = 100;
@@ -196,8 +200,9 @@ export function SwipeableCard({
         translateY.value = newY;
         translateX.value = 0;
       }
-    },
-    onEnd: (event) => {
+    })
+    .onEnd(() => {
+      'worklet';
       isActive.value = false;
 
       const absX = Math.abs(translateX.value);
@@ -207,19 +212,19 @@ export function SwipeableCard({
         // Horizontal gesture end
         if (translateX.value > swipeThreshold && rightActions.length > 0) {
           // Snap to show right actions
-          translateX.value = withSpring(rightActionWidth, springConfig);
+          translateX.value = withSpring(rightActionWidth, springCfg);
           if (onSwipeRight) {
             runOnJS(onSwipeRight)();
           }
         } else if (translateX.value < -swipeThreshold && leftActions.length > 0) {
           // Snap to show left actions
-          translateX.value = withSpring(-leftActionWidth, springConfig);
+          translateX.value = withSpring(-leftActionWidth, springCfg);
           if (onSwipeLeft) {
             runOnJS(onSwipeLeft)();
           }
         } else {
           // Snap back to center
-          translateX.value = withSpring(0, springConfig);
+          translateX.value = withSpring(0, springCfg);
         }
       } else {
         // Vertical gesture end
@@ -238,20 +243,19 @@ export function SwipeableCard({
             runOnJS(downAction.onPress)();
           }
         }
-        translateY.value = withSpring(0, springConfig);
+        translateY.value = withSpring(0, springCfg);
       }
 
-      translateY.value = withSpring(0, springConfig);
+      translateY.value = withSpring(0, springCfg);
 
       if (onSwipeEnd) {
         runOnJS(onSwipeEnd)();
       }
-    },
-  });
+    });
 
   // Animated styles
   const cardAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
+    transform: [{ translateX: translateX.value }, { translateY: translateY.value }] as const,
   }));
 
   // Left actions style (revealed when swiping right)
@@ -286,9 +290,9 @@ export function SwipeableCard({
 
   // Close swipe
   const close = useCallback(() => {
-    translateX.value = withSpring(0, springConfig);
-    translateY.value = withSpring(0, springConfig);
-  }, [springConfig]);
+    translateX.value = withSpring(0, springCfg);
+    translateY.value = withSpring(0, springCfg);
+  }, [springCfg]);
 
   return (
     <View style={[styles.container, style]}>
@@ -327,16 +331,11 @@ export function SwipeableCard({
       )}
 
       {/* Main Card */}
-      <PanGestureHandler
-        enabled={enabled}
-        onGestureEvent={gestureHandler}
-        activeOffsetX={[-10, 10]}
-        activeOffsetY={upAction || downAction ? [-10, 10] : [-1000, 1000]}
-      >
+      <GestureDetector gesture={panGesture}>
         <Animated.View style={[styles.card, cardStyle, cardAnimatedStyle]}>
           {children}
         </Animated.View>
-      </PanGestureHandler>
+      </GestureDetector>
     </View>
   );
 }

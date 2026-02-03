@@ -15,7 +15,6 @@ import { StyleSheet, View, ViewStyle, StyleProp, TextStyle } from 'react-native'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  useAnimatedGestureHandler,
   withSpring,
   withTiming,
   runOnJS,
@@ -23,10 +22,10 @@ import Animated, {
   interpolateColor,
   Extrapolate,
 } from 'react-native-reanimated';
-import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 
-import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
+import { SPRING_PRESETS, getSpringConfig } from '../../lib/animations/AnimationLibrary';
 
 // ============================================================================
 // Types
@@ -90,11 +89,6 @@ export interface SliderGroupProps {
   hapticFeedback?: boolean;
 }
 
-type GestureContext = {
-  startX: number;
-  startValue: number;
-};
-
 // ============================================================================
 // Constants
 // ============================================================================
@@ -157,7 +151,7 @@ export function Slider({
   // Sync thumb position with value
   useEffect(() => {
     if (trackWidth > 0) {
-      thumbX.value = withSpring(valueToPosition(value), SPRING_PRESETS.snappy);
+      thumbX.value = withSpring(valueToPosition(value), getSpringConfig(SPRING_PRESETS.snappy));
     }
   }, [value, trackWidth, valueToPosition]);
 
@@ -172,26 +166,32 @@ export function Slider({
     [hapticFeedback]
   );
 
-  const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
-    onStart: (_, ctx) => {
-      ctx.startX = thumbX.value;
-      scale.value = withSpring(1.15, SPRING_PRESETS.snappy);
-    },
-    onActive: (event, ctx) => {
+  const gestureContext = useSharedValue({ startX: 0 });
+  const springCfg = getSpringConfig(SPRING_PRESETS.snappy);
+
+  const panGesture = Gesture.Pan()
+    .enabled(!disabled)
+    .onStart(() => {
+      'worklet';
+      gestureContext.value = { startX: thumbX.value };
+      scale.value = withSpring(1.15, springCfg);
+    })
+    .onUpdate((event) => {
+      'worklet';
       if (disabled) return;
 
       const maxX = trackWidth - sizeConfig.thumbSize;
-      const newX = Math.max(0, Math.min(maxX, ctx.startX + event.translationX));
+      const newX = Math.max(0, Math.min(maxX, gestureContext.value.startX + event.translationX));
       thumbX.value = newX;
 
       const newValue = positionToValue(newX);
       runOnJS(triggerStepHaptic)(newValue);
       runOnJS(onChange)(newValue);
-    },
-    onEnd: () => {
-      scale.value = withSpring(1, SPRING_PRESETS.snappy);
-    },
-  });
+    })
+    .onEnd(() => {
+      'worklet';
+      scale.value = withSpring(1, springCfg);
+    });
 
   // Animated styles
   const thumbStyle = useAnimatedStyle(() => ({
@@ -252,7 +252,7 @@ export function Slider({
         />
 
         {/* Thumb */}
-        <PanGestureHandler enabled={!disabled} onGestureEvent={gestureHandler}>
+        <GestureDetector gesture={panGesture}>
           <Animated.View
             style={[
               styles.thumb,
@@ -267,7 +267,7 @@ export function Slider({
               disabled && styles.disabledThumb,
             ]}
           />
-        </PanGestureHandler>
+        </GestureDetector>
       </View>
     </View>
   );
@@ -324,25 +324,33 @@ export function RangeSlider({
   // Sync positions
   useEffect(() => {
     if (trackWidth > 0) {
-      thumbX1.value = withSpring(valueToPosition(values[0]), SPRING_PRESETS.snappy);
-      thumbX2.value = withSpring(valueToPosition(values[1]), SPRING_PRESETS.snappy);
+      const springCfg = getSpringConfig(SPRING_PRESETS.snappy);
+      thumbX1.value = withSpring(valueToPosition(values[0]), springCfg);
+      thumbX2.value = withSpring(valueToPosition(values[1]), springCfg);
     }
   }, [values, trackWidth, valueToPosition]);
 
+  const gestureContext1 = useSharedValue({ startX: 0 });
+  const gestureContext2 = useSharedValue({ startX: 0 });
+  const springCfg = getSpringConfig(SPRING_PRESETS.snappy);
+
   // Gesture handler for thumb 1 (left)
-  const gestureHandler1 = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
-    onStart: (_, ctx) => {
-      ctx.startX = thumbX1.value;
-      scale1.value = withSpring(1.15, SPRING_PRESETS.snappy);
-    },
-    onActive: (event, ctx) => {
+  const panGesture1 = Gesture.Pan()
+    .enabled(!disabled)
+    .onStart(() => {
+      'worklet';
+      gestureContext1.value = { startX: thumbX1.value };
+      scale1.value = withSpring(1.15, springCfg);
+    })
+    .onUpdate((event) => {
+      'worklet';
       if (disabled) return;
 
       const maxX = trackWidth - sizeConfig.thumbSize;
       const otherThumbX = thumbX2.value;
       const minRangePixels = (minRange / (max - min)) * maxX;
 
-      let newX = ctx.startX + event.translationX;
+      let newX = gestureContext1.value.startX + event.translationX;
 
       // Left thumb - constrained by right thumb
       const maxAllowedX = otherThumbX - minRangePixels;
@@ -356,25 +364,28 @@ export function RangeSlider({
       if (hapticFeedback) {
         runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
       }
-    },
-    onEnd: () => {
-      scale1.value = withSpring(1, SPRING_PRESETS.snappy);
-    },
-  });
+    })
+    .onEnd(() => {
+      'worklet';
+      scale1.value = withSpring(1, springCfg);
+    });
 
   // Gesture handler for thumb 2 (right)
-  const gestureHandler2 = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
-    onStart: (_, ctx) => {
-      ctx.startX = thumbX2.value;
-      scale2.value = withSpring(1.15, SPRING_PRESETS.snappy);
-    },
-    onActive: (event, ctx) => {
+  const panGesture2 = Gesture.Pan()
+    .enabled(!disabled)
+    .onStart(() => {
+      'worklet';
+      gestureContext2.value = { startX: thumbX2.value };
+      scale2.value = withSpring(1.15, springCfg);
+    })
+    .onUpdate((event) => {
+      'worklet';
       if (disabled) return;
 
       const maxX = trackWidth - sizeConfig.thumbSize;
       const minRangePixels = (minRange / (max - min)) * maxX;
 
-      let newX = ctx.startX + event.translationX;
+      let newX = gestureContext2.value.startX + event.translationX;
 
       // Right thumb - constrained by left thumb
       const minAllowedX = thumbX1.value + minRangePixels;
@@ -388,11 +399,11 @@ export function RangeSlider({
       if (hapticFeedback) {
         runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
       }
-    },
-    onEnd: () => {
-      scale2.value = withSpring(1, SPRING_PRESETS.snappy);
-    },
-  });
+    })
+    .onEnd(() => {
+      'worklet';
+      scale2.value = withSpring(1, springCfg);
+    });
 
   const thumbStyle1 = useAnimatedStyle(() => ({
     transform: [{ translateX: thumbX1.value }, { scale: scale1.value }],
@@ -456,7 +467,7 @@ export function RangeSlider({
         />
 
         {/* Left Thumb */}
-        <PanGestureHandler enabled={!disabled} onGestureEvent={gestureHandler1}>
+        <GestureDetector gesture={panGesture1}>
           <Animated.View
             style={[
               styles.thumb,
@@ -471,10 +482,10 @@ export function RangeSlider({
               thumbStyle1,
             ]}
           />
-        </PanGestureHandler>
+        </GestureDetector>
 
         {/* Right Thumb */}
-        <PanGestureHandler enabled={!disabled} onGestureEvent={gestureHandler2}>
+        <GestureDetector gesture={panGesture2}>
           <Animated.View
             style={[
               styles.thumb,
@@ -489,7 +500,7 @@ export function RangeSlider({
               thumbStyle2,
             ]}
           />
-        </PanGestureHandler>
+        </GestureDetector>
       </View>
     </View>
   );
