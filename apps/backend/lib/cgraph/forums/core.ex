@@ -1,15 +1,13 @@
-defmodule Cgraph.Forums.Core do
+defmodule CGraph.Forums.Core do
   @moduledoc """
   Core forum operations - CRUD for forums.
   
   Extracted from the main Forums module to reduce complexity.
   """
   
-  import Ecto.Query
-  alias Cgraph.Repo
-  alias Cgraph.Forums.Forum
-  alias Cgraph.Forums.ForumMember
-  alias Cgraph.Forums.Subscription
+  import Ecto.Query, warn: false
+  alias CGraph.Repo
+  alias CGraph.Forums.{Forum, ForumMember, Subscription, Category}
 
   @doc """
   Lists all forums with optional filters.

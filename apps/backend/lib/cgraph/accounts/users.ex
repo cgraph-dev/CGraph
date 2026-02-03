@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.Users do
+defmodule CGraph.Accounts.Users do
   @moduledoc """
   User CRUD operations.
   
@@ -6,8 +6,8 @@ defmodule Cgraph.Accounts.Users do
   """
   
   import Ecto.Query
-  alias Cgraph.Repo
-  alias Cgraph.Accounts.User
+  alias CGraph.Repo
+  alias CGraph.Accounts.User
   
   @doc """
   Gets a user by ID.

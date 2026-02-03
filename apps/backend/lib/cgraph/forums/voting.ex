@@ -1,16 +1,13 @@
-defmodule Cgraph.Forums.Voting do
+defmodule CGraph.Forums.Voting do
   @moduledoc """
   Voting and karma operations for forums.
   
   Handles upvotes, downvotes, and karma calculations.
   """
   
-  import Ecto.Query
-  alias Cgraph.Repo
-  alias Cgraph.Forums.Post
-  alias Cgraph.Forums.PostVote
-  alias Cgraph.Forums.Comment
-  alias Cgraph.Forums.Vote
+  import Ecto.Query, warn: false
+  alias CGraph.Repo
+  alias CGraph.Forums.{Post, PostVote, Comment, Vote, Thread, ThreadVote, Forum, ForumVote}
   
   @doc """
   Votes on a post (upvote or downvote).

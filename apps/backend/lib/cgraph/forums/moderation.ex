@@ -1,13 +1,13 @@
-defmodule Cgraph.Forums.Moderation do
+defmodule CGraph.Forums.Moderation do
   @moduledoc """
   Moderation operations for forums.
   
   Handles post/thread hiding, bans, warnings, mod queue, etc.
   """
   
-  import Ecto.Query
-  alias Cgraph.Repo
-  alias Cgraph.Forums.{Post, Thread, Ban, ForumMember, Moderator}
+  import Ecto.Query, warn: false
+  alias CGraph.Repo
+  alias CGraph.Forums.{Post, Thread, Ban, ForumMember, Moderator, Comment}
   
   @doc """
   Gets the moderation queue for a forum.

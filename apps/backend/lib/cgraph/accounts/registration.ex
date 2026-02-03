@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.Registration do
+defmodule CGraph.Accounts.Registration do
   @moduledoc """
   User registration operations.
   
@@ -6,10 +6,10 @@ defmodule Cgraph.Accounts.Registration do
   """
   
   import Ecto.Query
-  alias Cgraph.Repo
-  alias Cgraph.Accounts.{User, Token}
-  alias Cgraph.Accounts.Users
-  alias Cgraph.Accounts.Authentication
+  alias CGraph.Repo
+  alias CGraph.Accounts.{User, Token}
+  alias CGraph.Accounts.Users
+  alias CGraph.Accounts.Authentication
   
   @verification_token_hours 24
   

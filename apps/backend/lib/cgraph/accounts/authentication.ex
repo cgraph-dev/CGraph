@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.Authentication do
+defmodule CGraph.Accounts.Authentication do
   @moduledoc """
   Authentication operations.
   
@@ -6,9 +6,9 @@ defmodule Cgraph.Accounts.Authentication do
   """
   
   import Ecto.Query
-  alias Cgraph.Repo
-  alias Cgraph.Accounts.{User, Session, Token}
-  alias Cgraph.Accounts.Users
+  alias CGraph.Repo
+  alias CGraph.Accounts.{User, Session, Token}
+  alias CGraph.Accounts.Users
   
   @session_validity_days 60
   @token_validity_hours 24

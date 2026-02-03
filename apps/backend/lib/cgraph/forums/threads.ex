@@ -1,14 +1,13 @@
-defmodule Cgraph.Forums.Threads do
+defmodule CGraph.Forums.Threads do
   @moduledoc """
-  Thread operations for forums.
+  Thread operations for forums (MyBB-style boards).
   
   Handles thread creation, updates, pinning, locking, etc.
   """
   
-  import Ecto.Query
-  alias Cgraph.Repo
-  alias Cgraph.Forums.Thread
-  alias Cgraph.Forums.ThreadPost
+  import Ecto.Query, warn: false
+  alias CGraph.Repo
+  alias CGraph.Forums.{Thread, ThreadPost, Board}
   
   @doc """
   Lists threads for a forum or board.
@@ -18,9 +17,9 @@ defmodule Cgraph.Forums.Threads do
     per_page = Keyword.get(opts, :per_page, 20)
     
     base_query = case forum_or_board do
-      %{__struct__: Cgraph.Forums.Forum} = forum ->
+      %{__struct__: CGraph.Forums.Forum} = forum ->
         from(t in Thread, where: t.forum_id == ^forum.id)
-      %{__struct__: Cgraph.Forums.Board} = board ->
+      %{__struct__: CGraph.Forums.Board} = board ->
         from(t in Thread, where: t.board_id == ^board.id)
       _ ->
         from(t in Thread)

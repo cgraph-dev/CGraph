@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.Sessions do
+defmodule CGraph.Accounts.Sessions do
   @moduledoc """
   Session management operations.
   
@@ -6,8 +6,8 @@ defmodule Cgraph.Accounts.Sessions do
   """
   
   import Ecto.Query
-  alias Cgraph.Repo
-  alias Cgraph.Accounts.Session
+  alias CGraph.Repo
+  alias CGraph.Accounts.Session
   
   @doc """
   Creates a new session.
