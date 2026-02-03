@@ -239,7 +239,7 @@ describe('calendarStore', () => {
       mockedApi.get.mockRejectedValueOnce(new Error('Not found'));
 
       const { fetchEvent } = useCalendarStore.getState();
-      const event = await fetchEvent('non-existent');
+      await fetchEvent('non-existent');
 
       // Store handles errors gracefully
       expect(useCalendarStore.getState().isLoadingEvent).toBe(false);

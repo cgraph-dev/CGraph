@@ -1,4 +1,5 @@
 /**
- * Search Store - Re-export from legacy
+ * Search Store
+ * Canonical implementation.
  */
-export * from '@/stores/searchStore';
+export * from './searchStore.impl';

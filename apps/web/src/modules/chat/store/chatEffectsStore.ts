@@ -1,4 +1,5 @@
 /**
- * Chat Effects Store - Re-export from legacy
+ * Chat Effects Store
+ * Canonical implementation.
  */
-export * from '@/stores/chatEffectsStore';
+export * from './chatEffectsStore.impl';

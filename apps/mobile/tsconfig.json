@@ -26,7 +26,9 @@
       "@cgraph/utils": ["../../packages/utils/src"],
       "@cgraph/config": ["../../packages/config/src"],
       "@cgraph/ui": ["../../packages/ui/src"],
-      "@cgraph/core": ["../../packages/core/src"]
+      "@cgraph/core": ["../../packages/core/src"],
+      "@cgraph/hooks": ["../../packages/hooks/src"],
+      "@cgraph/socket": ["../../packages/socket/src"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "*.js", ".expo/types/**/*.ts", "expo-env.d.ts"],

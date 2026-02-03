@@ -1,4 +1,5 @@
 /**
- * Notification Store - Re-export from legacy
+ * Notification Store
+ * Canonical implementation.
  */
-export * from '@/stores/notificationStore';
+export * from './notificationStore.impl';

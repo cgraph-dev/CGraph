@@ -1,4 +1,6 @@
 /**
- * Chat Store - Re-export from legacy
+ * Chat Store
+ *
+ * Canonical implementation. Legacy @/stores/chatStore.ts re-exports from here.
  */
-export * from '@/stores/chatStore';
+export * from './chatStore.impl';

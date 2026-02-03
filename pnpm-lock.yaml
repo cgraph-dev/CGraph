@@ -116,6 +116,21 @@ importers:
 
   apps/mobile:
     dependencies:
+      '@cgraph/crypto':
+        specifier: workspace:*
+        version: link:../../packages/crypto
+      '@cgraph/hooks':
+        specifier: workspace:*
+        version: link:../../packages/hooks
+      '@cgraph/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
+      '@cgraph/socket':
+        specifier: workspace:*
+        version: link:../../packages/socket
+      '@cgraph/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       '@expo/vector-icons':
         specifier: ^15.0.0
         version: 15.0.3(expo-font@14.0.11)(react-native@0.81.5)(react@19.1.0)

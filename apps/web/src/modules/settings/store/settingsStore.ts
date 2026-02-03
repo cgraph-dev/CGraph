@@ -1,4 +1,5 @@
 /**
- * Settings Store - Re-export from legacy
+ * Settings Store
+ * Canonical implementation.
  */
-export * from '@/stores/settingsStore';
+export * from './settingsStore.impl';

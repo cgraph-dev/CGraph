@@ -1,4 +1,5 @@
 /**
- * Friend Store - Re-export from legacy
+ * Friend Store
+ * Canonical implementation.
  */
-export * from '@/stores/friendStore';
+export * from './friendStore.impl';

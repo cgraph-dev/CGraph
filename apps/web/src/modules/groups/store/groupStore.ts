@@ -1,4 +1,5 @@
 /**
- * Group Store - Re-export from legacy
+ * Group Store
+ * Canonical implementation.
  */
-export * from '@/stores/groupStore';
+export * from './groupStore.impl';

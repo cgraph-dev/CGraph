@@ -1,4 +1,5 @@
 /**
- * Chat Bubble Store - Re-export from legacy
+ * Chat Bubble Store
+ * Canonical implementation.
  */
-export * from '@/stores/theme';
+export * from './chatBubbleStore.impl';

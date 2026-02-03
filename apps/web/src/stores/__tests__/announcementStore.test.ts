@@ -67,10 +67,8 @@ describe('announcementStore', () => {
       globalAnnouncements: [],
       forumAnnouncements: new Map(),
       currentAnnouncement: null,
-      readIds: new Set(),
+      readAnnouncementIds: new Set(),
       isLoading: false,
-      isCreating: false,
-      error: null,
     });
 
     vi.clearAllMocks();
@@ -131,7 +129,7 @@ describe('announcementStore', () => {
       });
 
       const { createAnnouncement } = useAnnouncementStore.getState();
-      const created = await createAnnouncement({
+      await createAnnouncement({
         title: 'Welcome to CGraph!',
         content: '<p>Welcome to our community platform.</p>',
         scope: 'global',

@@ -1,4 +1,5 @@
 /**
- * Moderation Store - Re-export from legacy
+ * Moderation Store
+ * Canonical implementation.
  */
-export * from '@/stores/moderationStore';
+export * from './moderationStore.impl';
