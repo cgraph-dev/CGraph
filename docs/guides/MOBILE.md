@@ -1330,7 +1330,7 @@ The mobile app includes a comprehensive animation library at `src/lib/animations
 Native Reanimated v4 and Gesture Handler v2.
 
 > **⚠️ Breaking Change (v0.9.11):** We migrated from Reanimated v3 to v4. See
-> [ADR-018: Reanimated v4 Migration](../adr/ADR-018-REANIMATED-V4-MIGRATION.md) for full details.
+> [ADR-018: Reanimated v4 Migration](../adr/018-reanimated-v4-migration.md) for full details.
 
 #### Gesture API (v4)
 

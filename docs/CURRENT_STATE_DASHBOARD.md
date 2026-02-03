@@ -176,15 +176,15 @@ apps/web/src/
 
 ## 📚 Quick Links
 
-| Resource              | Link                                                                         |
-| --------------------- | ---------------------------------------------------------------------------- |
-| Architecture          | [ARCHITECTURE_TRANSFORMATION_PLAN.md](ARCHITECTURE_TRANSFORMATION_PLAN.md)   |
-| Quality Gates         | [QUALITY_GATES.md](QUALITY_GATES.md)                                         |
-| Coding Standards      | [CODE_SIMPLIFICATION_GUIDELINES.md](CODE_SIMPLIFICATION_GUIDELINES.md)       |
-| Security Policy       | [SECURITY.md](../SECURITY.md)                                                |
-| Changelog             | [CHANGELOG.md](../CHANGELOG.md)                                              |
-| AI Instructions       | [CLAUDE.md](../CLAUDE.md)                                                    |
-| **Reanimated v4 ADR** | [ADR-018-REANIMATED-V4-MIGRATION.md](adr/ADR-018-REANIMATED-V4-MIGRATION.md) |
+| Resource              | Link                                                                       |
+| --------------------- | -------------------------------------------------------------------------- |
+| Architecture          | [ARCHITECTURE_TRANSFORMATION_PLAN.md](ARCHITECTURE_TRANSFORMATION_PLAN.md) |
+| Quality Gates         | [QUALITY_GATES.md](QUALITY_GATES.md)                                       |
+| Coding Standards      | [CODE_SIMPLIFICATION_GUIDELINES.md](CODE_SIMPLIFICATION_GUIDELINES.md)     |
+| Security Policy       | [SECURITY.md](../SECURITY.md)                                              |
+| Changelog             | [CHANGELOG.md](../CHANGELOG.md)                                            |
+| AI Instructions       | [CLAUDE.md](../CLAUDE.md)                                                  |
+| **Reanimated v4 ADR** | [018-reanimated-v4-migration.md](adr/018-reanimated-v4-migration.md)       |
 
 ---
 

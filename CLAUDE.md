@@ -320,7 +320,7 @@ Uses pnpm workspaces with Turborepo for task orchestration.
 ### Mobile Animation/Gesture Guidelines (CRITICAL)
 
 > **Migration Reference:**
-> [ADR-018: Reanimated v4 Migration](docs/adr/ADR-018-REANIMATED-V4-MIGRATION.md)
+> [ADR-018: Reanimated v4 Migration](docs/adr/018-reanimated-v4-migration.md)
 
 The mobile app uses **React Native Reanimated v4** and **Gesture Handler v2**. The legacy v3 APIs
 have been removed. When working on mobile animations:

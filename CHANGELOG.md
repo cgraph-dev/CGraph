@@ -12,7 +12,7 @@ Complete migration of the mobile app from React Native Reanimated v3 to v4 APIs.
 222 TypeScript errors that emerged from breaking changes in the Reanimated v4 update.
 
 > **Full Migration Guide:**
-> [ADR-018: Reanimated v4 Migration](docs/adr/ADR-018-REANIMATED-V4-MIGRATION.md)
+> [ADR-018: Reanimated v4 Migration](docs/adr/018-reanimated-v4-migration.md)
 
 ### 🎯 Key API Changes
 
@@ -114,7 +114,7 @@ const pan = Gesture.Pan()
 
 ### 📝 Documentation Added
 
-- New: `docs/adr/ADR-018-REANIMATED-V4-MIGRATION.md` - Complete migration guide
+- New: `docs/adr/018-reanimated-v4-migration.md` - Complete migration guide
 - Updated: `docs/guides/MOBILE.md` - New Gesture API section
 - Updated: `docs/CURRENT_STATE_DASHBOARD.md` - Version matrix, timeline
 
