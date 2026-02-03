@@ -85,7 +85,7 @@ interface QueueState {
   failedItems: QueueItem[];
 }
 
-let state: QueueState = {
+const state: QueueState = {
   items: [],
   isProcessing: false,
   isOnline: true,
@@ -94,7 +94,12 @@ let state: QueueState = {
 };
 
 // Event listeners
-type QueueEventType = 'itemAdded' | 'itemProcessed' | 'itemFailed' | 'syncComplete' | 'networkChange';
+type QueueEventType =
+  | 'itemAdded'
+  | 'itemProcessed'
+  | 'itemFailed'
+  | 'syncComplete'
+  | 'networkChange';
 type QueueEventListener = (data: unknown) => void;
 const listeners: Map<QueueEventType, Set<QueueEventListener>> = new Map();
 
@@ -202,7 +207,12 @@ export async function enqueue<T = unknown>(
   endpoint: string,
   method: QueueItem['method'],
   payload: T,
-  options: Partial<Pick<QueueItem, 'priority' | 'headers' | 'maxRetries' | 'onSuccessCallback' | 'onFailureCallback' | 'metadata'>> = {}
+  options: Partial<
+    Pick<
+      QueueItem,
+      'priority' | 'headers' | 'maxRetries' | 'onSuccessCallback' | 'onFailureCallback' | 'metadata'
+    >
+  > = {}
 ): Promise<QueueItem<T>> {
   const item: QueueItem<T> = {
     id: generateId(),

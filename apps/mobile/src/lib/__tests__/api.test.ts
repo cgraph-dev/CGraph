@@ -30,14 +30,14 @@ describe('API Client', () => {
   });
 
   describe('authentication headers', () => {
-    const originalAuth = api.defaults.headers.common?.['Authorization'];
+    const originalAuth = api.defaults.headers.common?.Authorization;
 
     afterEach(() => {
       // Restore original
       if (originalAuth) {
-        api.defaults.headers.common['Authorization'] = originalAuth;
+        api.defaults.headers.common.Authorization = originalAuth;
       } else if (api.defaults.headers.common) {
-        delete api.defaults.headers.common['Authorization'];
+        delete api.defaults.headers.common.Authorization;
       }
     });
 
@@ -45,19 +45,19 @@ describe('API Client', () => {
       if (!api.defaults.headers.common) {
         api.defaults.headers.common = {};
       }
-      api.defaults.headers.common['Authorization'] = 'Bearer test-token';
+      api.defaults.headers.common.Authorization = 'Bearer test-token';
 
-      expect(api.defaults.headers.common['Authorization']).toBe('Bearer test-token');
+      expect(api.defaults.headers.common.Authorization).toBe('Bearer test-token');
     });
 
     it('can clear authorization header', () => {
       if (!api.defaults.headers.common) {
         api.defaults.headers.common = {};
       }
-      api.defaults.headers.common['Authorization'] = 'Bearer test-token';
-      delete api.defaults.headers.common['Authorization'];
+      api.defaults.headers.common.Authorization = 'Bearer test-token';
+      delete api.defaults.headers.common.Authorization;
 
-      expect(api.defaults.headers.common['Authorization']).toBeUndefined();
+      expect(api.defaults.headers.common.Authorization).toBeUndefined();
     });
   });
 });

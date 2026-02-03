@@ -1566,7 +1566,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       }
 
       // E2EE: Encrypt message for direct conversations if E2EE is initialized
-      let plaintextForLocal = content;
+      const plaintextForLocal = content;
       if (isE2EEInitialized && otherParticipantId) {
         try {
           const encryptedMsg = await encryptMessage(otherParticipantId, content);

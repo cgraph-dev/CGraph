@@ -20,15 +20,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Linking,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Linking, ScrollView } from 'react-native';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -114,7 +106,7 @@ export default function MarkdownRenderer({
       { regex: /@(\w+)/g, type: 'mention' as const },
     ];
 
-    let remaining = text;
+    const remaining = text;
     let lastIndex = 0;
 
     // Simple parse - find all matches and their positions
@@ -335,11 +327,7 @@ export default function MarkdownRenderer({
           );
         case 'link':
           return (
-            <Text
-              key={index}
-              style={styles.link}
-              onPress={() => handleLinkPress(node.url || '')}
-            >
+            <Text key={index} style={styles.link} onPress={() => handleLinkPress(node.url || '')}>
               {node.content}
             </Text>
           );
@@ -390,10 +378,7 @@ export default function MarkdownRenderer({
         return (
           <Text
             key={index}
-            style={[
-              styles.paragraph,
-              { fontSize: baseFontSize, color: colors.text },
-            ]}
+            style={[styles.paragraph, { fontSize: baseFontSize, color: colors.text }]}
           >
             {renderInline(parseInline(block.content || ''))}
           </Text>
@@ -419,12 +404,7 @@ export default function MarkdownRenderer({
               </View>
             )}
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <Text
-                style={[
-                  styles.codeText,
-                  { color: isDark ? '#e2e8f0' : '#1e293b' },
-                ]}
-              >
+              <Text style={[styles.codeText, { color: isDark ? '#e2e8f0' : '#1e293b' }]}>
                 {block.content}
               </Text>
             </ScrollView>
@@ -486,10 +466,7 @@ export default function MarkdownRenderer({
         return (
           <View
             key={index}
-            style={[
-              styles.hr,
-              { backgroundColor: isDark ? '#374151' : '#e5e7eb' },
-            ]}
+            style={[styles.hr, { backgroundColor: isDark ? '#374151' : '#e5e7eb' }]}
           />
         );
 
@@ -500,11 +477,7 @@ export default function MarkdownRenderer({
 
   const blocks = parseBlocks(content);
 
-  return (
-    <View style={[styles.container, style]}>
-      {blocks.map(renderBlock)}
-    </View>
-  );
+  return <View style={[styles.container, style]}>{blocks.map(renderBlock)}</View>;
 }
 
 const styles = StyleSheet.create({

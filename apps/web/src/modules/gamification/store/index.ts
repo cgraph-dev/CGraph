@@ -7,6 +7,7 @@
  * - Seasonal events (seasonalEventSlice)
  * - Marketplace (marketplaceSlice)
  * - Referral program (referralSlice)
+ * - Avatar borders (avatarBorderStore)
  *
  * This module provides a single entry point for all gamification features
  * while maintaining backward compatibility with existing imports.
@@ -103,3 +104,6 @@ export interface GamificationData {
   referralCode: string;
   referralCount: number;
 }
+
+// Re-export avatar border store
+export * from './avatarBorderStore.impl';

@@ -4,18 +4,9 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  Image,
-  StyleSheet,
-  Animated,
-  ViewStyle,
-  ImageSourcePropType,
-  ImageStyle,
-} from 'react-native';
+import { View, Image, StyleSheet, Animated, ViewStyle, ImageSourcePropType } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AnimationColors } from '@/lib/animations/AnimationEngine';
-import Svg, { Circle, Path, Defs, RadialGradient, Stop } from 'react-native-svg';
 
 type BorderAnimation =
   | 'none'
@@ -81,7 +72,7 @@ export default function AnimatedAvatar({
     rotationAnim.stopAnimation();
     pulseAnim.stopAnimation();
     glowAnim.stopAnimation();
-    
+
     // Reset values
     rotationAnim.setValue(0);
     pulseAnim.setValue(1);
@@ -126,7 +117,7 @@ export default function AnimatedAvatar({
     if (particleEffect !== 'none') {
       generateParticles();
     }
-    
+
     return () => {
       rotationAnim.stopAnimation();
       pulseAnim.stopAnimation();
@@ -154,15 +145,7 @@ export default function AnimatedAvatar({
       case 'gradient':
         return [AnimationColors.primary, AnimationColors.purple];
       case 'rainbow':
-        return [
-          '#ff0000',
-          '#ff7f00',
-          '#ffff00',
-          '#00ff00',
-          '#0000ff',
-          '#4b0082',
-          '#9400d3',
-        ];
+        return ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#9400d3'];
       case 'neon':
         return [AnimationColors.neonCyan, AnimationColors.neonMagenta];
       case 'fire':
@@ -222,7 +205,7 @@ export default function AnimatedAvatar({
   });
 
   // Static glow value based on intensity
-  const glowOpacityValue = 0.7 + (glowIntensity * 0.3);
+  const glowOpacityValue = 0.7 + glowIntensity * 0.3;
 
   const borderWidth = 4;
   const containerSize = size + borderWidth * 2 + 8;
@@ -259,10 +242,7 @@ export default function AnimatedAvatar({
           {
             width: size + borderWidth * 2,
             height: size + borderWidth * 2,
-            transform: [
-              { rotate: rotationInterpolate },
-              { scale: pulseAnim },
-            ],
+            transform: [{ rotate: rotationInterpolate }, { scale: pulseAnim }],
           },
         ]}
       >
@@ -404,9 +384,7 @@ const renderParticle = (effect: ParticleEffect): React.ReactNode => {
     stars: '⭐',
   };
 
-  return (
-    <Animated.Text style={styles.particleText}>{particleMap[effect]}</Animated.Text>
-  );
+  return <Animated.Text style={styles.particleText}>{particleMap[effect]}</Animated.Text>;
 };
 
 const styles = StyleSheet.create({

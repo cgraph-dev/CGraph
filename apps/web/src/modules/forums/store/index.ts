@@ -31,10 +31,10 @@ export {
 } from './forumStore';
 
 // Forum hosting store
-export { useForumHostingStore } from './forumHostingStore';
+export * from './forumHostingStore.impl';
 
 // Announcement store
-export { useAnnouncementStore } from './announcementStore';
+export * from './announcementStore.impl';
 
 // Forum theme store
 export { useForumThemeStore } from './forumThemeStore';

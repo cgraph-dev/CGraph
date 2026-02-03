@@ -15,7 +15,12 @@
 // TYPES
 // =============================================================================
 
-// Use permissive types to work with Zustand's internal set/get signatures
+// Generic types for Zustand store compatibility
+// Using loose types to work with Zustand's flexible set/get signatures
+
+/** Zustand-compatible set function type - uses loose typing for flexibility */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ZustandSet = (partial: any) => void;
 
 export interface FieldSchema {
   [camelCase: string]: string; // camelCase -> snake_case mapping
@@ -35,11 +40,7 @@ export interface FieldSchema {
  *   toggleEnabled: createToggle(set, 'isEnabled'),
  * }));
  */
-export function createToggle(
-  set: (partial: any) => void,
-  field: string,
-  markDirty = true
-): () => void {
+export function createToggle(set: ZustandSet, field: string, markDirty = true): () => void {
   return () =>
     set((state: any) => ({
       [field]: !state[field],
@@ -51,7 +52,7 @@ export function createToggle(
  * Creates multiple toggle functions from a list of field names.
  */
 export function createToggles(
-  set: (partial: any) => void,
+  set: ZustandSet,
   fields: string[],
   markDirty = true
 ): Record<string, () => void> {
@@ -156,13 +157,15 @@ const saveTimers = new Map<string, ReturnType<typeof setTimeout>>();
  * );
  */
 export function createDebouncedSave(
-  saveFn: (state: any, set: (partial: any) => void) => Promise<void>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  saveFn: (state: any, set: ZustandSet) => Promise<void>,
   options: { delay?: number } = {}
 ) {
   const { delay = 500 } = options;
   const key = `save_${Date.now()}_${Math.random()}`;
 
-  return (state: any, set: (partial: any) => void): void => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (state: any, set: ZustandSet): void => {
     const existingTimer = saveTimers.get(key);
     if (existingTimer) {
       clearTimeout(existingTimer);

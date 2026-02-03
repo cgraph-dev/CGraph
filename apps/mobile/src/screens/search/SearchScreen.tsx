@@ -34,8 +34,6 @@ import {
   ActivityIndicator,
   Animated,
   Dimensions,
-  RefreshControl,
-  FlatList,
   Modal,
   Easing,
 } from 'react-native';
@@ -48,7 +46,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../../contexts/ThemeContext';
 import GlassCard from '../../components/ui/GlassCard';
 import AnimatedAvatar from '../../components/ui/AnimatedAvatar';
-import { EmptyState } from '../../components';
 import api from '../../lib/api';
 import debounce from 'lodash.debounce';
 import { createLogger } from '../../lib/logger';
@@ -149,7 +146,7 @@ function SkeletonLoader({ isDark }: { isDark: boolean }) {
         }),
       ])
     ).start();
-  }, []);
+  }, [shimmerAnim]);
 
   const opacity = shimmerAnim.interpolate({
     inputRange: [0, 1],
@@ -179,13 +176,20 @@ function SkeletonLoader({ isDark }: { isDark: boolean }) {
             <View
               style={[
                 skeletonStyles.line,
-                { width: '60%', backgroundColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)' },
+                {
+                  width: '60%',
+                  backgroundColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.12)',
+                },
               ]}
             />
             <View
               style={[
                 skeletonStyles.line,
-                { width: '40%', marginTop: 8, backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)' },
+                {
+                  width: '40%',
+                  marginTop: 8,
+                  backgroundColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                },
               ]}
             />
           </View>
@@ -209,7 +213,7 @@ function TrendingItem({
   onPress,
   isDark,
 }: {
-  item: typeof TRENDING_TOPICS[0];
+  item: (typeof TRENDING_TOPICS)[0];
   onPress: () => void;
   isDark: boolean;
 }) {
@@ -297,9 +301,7 @@ function TrendingItem({
           >
             {item.text}
           </Text>
-          <Text style={trendingStyles.searchCount}>
-            {item.searches.toLocaleString()} searches
-          </Text>
+          <Text style={trendingStyles.searchCount}>{item.searches.toLocaleString()} searches</Text>
         </View>
         <Ionicons
           name="chevron-forward"
@@ -417,22 +419,12 @@ function VoiceSearchButton({
         >
           {isListening ? (
             <View style={voiceStyles.waveContainer}>
-              <Animated.View
-                style={[voiceStyles.wave, { transform: [{ scaleY: waveAnim1 }] }]}
-              />
-              <Animated.View
-                style={[voiceStyles.wave, { transform: [{ scaleY: waveAnim2 }] }]}
-              />
-              <Animated.View
-                style={[voiceStyles.wave, { transform: [{ scaleY: waveAnim3 }] }]}
-              />
+              <Animated.View style={[voiceStyles.wave, { transform: [{ scaleY: waveAnim1 }] }]} />
+              <Animated.View style={[voiceStyles.wave, { transform: [{ scaleY: waveAnim2 }] }]} />
+              <Animated.View style={[voiceStyles.wave, { transform: [{ scaleY: waveAnim3 }] }]} />
             </View>
           ) : (
-            <Ionicons
-              name="mic"
-              size={20}
-              color={colors.textSecondary}
-            />
+            <Ionicons name="mic" size={20} color={colors.textSecondary} />
           )}
         </LinearGradient>
       </Animated.View>
@@ -527,10 +519,7 @@ function FilterModal({
         <Text style={[filterStyles.toggleLabel, { color: colors.text }]}>{label}</Text>
       </View>
       <View
-        style={[
-          filterStyles.toggleSwitch,
-          { backgroundColor: value ? '#3b82f6' : colors.surface },
-        ]}
+        style={[filterStyles.toggleSwitch, { backgroundColor: value ? '#3b82f6' : colors.surface }]}
       >
         <Animated.View
           style={[
@@ -580,7 +569,11 @@ function FilterModal({
             },
           ]}
         >
-          <BlurView intensity={80} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
+          <BlurView
+            intensity={80}
+            tint={isDark ? 'dark' : 'light'}
+            style={StyleSheet.absoluteFill}
+          />
           <View style={filterStyles.content}>
             {/* Header */}
             <View style={filterStyles.header}>
@@ -783,7 +776,7 @@ function AnimatedResultItem({
 
   useEffect(() => {
     const delay = index * 60;
-    
+
     Animated.parallel([
       Animated.timing(translateX, {
         toValue: 0,
@@ -836,7 +829,7 @@ export default function SearchScreen() {
   const [category, setCategory] = useState<SearchCategory>('all');
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
+  const [_refreshing, _setRefreshing] = useState(false);
 
   // Results
   const [users, setUsers] = useState<SearchUser[]>([]);
@@ -853,13 +846,13 @@ export default function SearchScreen() {
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>(defaultFilters);
   const [isVoiceListening, setIsVoiceListening] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [_showSuggestions, setShowSuggestions] = useState(false);
 
   // Animation refs
   const searchGlow = useRef(new Animated.Value(0)).current;
   const headerOpacity = useRef(new Animated.Value(0)).current;
   const headerTranslateY = useRef(new Animated.Value(-20)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const _pulseAnim = useRef(new Animated.Value(1)).current;
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<TextInput>(null);
 
@@ -956,7 +949,8 @@ export default function SearchScreen() {
 
         if (searchCategory === 'all' || searchCategory === 'users') {
           promises.push(
-            api.get('/api/v1/search/users', { params: { q: searchQuery } })
+            api
+              .get('/api/v1/search/users', { params: { q: searchQuery } })
               .then((res) => setUsers(res.data.users || res.data || []))
               .catch(() => setUsers([]))
           );
@@ -964,7 +958,8 @@ export default function SearchScreen() {
 
         if (searchCategory === 'all' || searchCategory === 'groups') {
           promises.push(
-            api.get('/api/v1/groups', { params: { search: searchQuery } })
+            api
+              .get('/api/v1/groups', { params: { search: searchQuery } })
               .then((res) => setGroups(res.data.groups || res.data || []))
               .catch(() => setGroups([]))
           );
@@ -972,7 +967,8 @@ export default function SearchScreen() {
 
         if (searchCategory === 'all' || searchCategory === 'forums') {
           promises.push(
-            api.get('/api/v1/forums', { params: { search: searchQuery } })
+            api
+              .get('/api/v1/forums', { params: { search: searchQuery } })
               .then((res) => setForums(res.data.forums || res.data || []))
               .catch(() => setForums([]))
           );
@@ -1013,7 +1009,7 @@ export default function SearchScreen() {
 
       const response = await api.get(endpoint);
       const data = response.data.data || response.data;
-      
+
       if (data) {
         logger.log('Found:', data);
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -1033,7 +1029,9 @@ export default function SearchScreen() {
           <AnimatedAvatar
             source={{ uri: item.avatar_url || '' }}
             size={48}
-            borderAnimation={item.is_premium ? 'holographic' : item.status === 'online' ? 'glow' : 'none'}
+            borderAnimation={
+              item.is_premium ? 'holographic' : item.status === 'online' ? 'glow' : 'none'
+            }
             isPremium={item.is_premium}
           />
           <View style={styles.resultInfo}>
@@ -1042,7 +1040,12 @@ export default function SearchScreen() {
                 {item.display_name || item.username}
               </Text>
               {item.is_verified && (
-                <Ionicons name="checkmark-circle" size={16} color="#3b82f6" style={{ marginLeft: 4 }} />
+                <Ionicons
+                  name="checkmark-circle"
+                  size={16}
+                  color="#3b82f6"
+                  style={{ marginLeft: 4 }}
+                />
               )}
               {item.is_premium && (
                 <LinearGradient
@@ -1059,7 +1062,12 @@ export default function SearchScreen() {
               @{item.username}
             </Text>
           </View>
-          <View style={[styles.statusDot, { backgroundColor: item.status === 'online' ? '#10b981' : colors.textTertiary }]} />
+          <View
+            style={[
+              styles.statusDot,
+              { backgroundColor: item.status === 'online' ? '#10b981' : colors.textTertiary },
+            ]}
+          />
         </View>
       </GlassCard>
     </AnimatedResultItem>
@@ -1067,7 +1075,7 @@ export default function SearchScreen() {
 
   const renderGroup = (item: SearchGroup, index: number) => {
     const gradient = ['#f59e0b', '#f97316'] as [string, string];
-    
+
     return (
       <AnimatedResultItem key={item.id} index={index} onPress={() => {}}>
         <GlassCard variant="frosted" intensity="subtle" style={styles.resultCard}>
@@ -1095,7 +1103,7 @@ export default function SearchScreen() {
 
   const renderForum = (item: SearchForum, index: number) => {
     const gradient = ['#ec4899', '#f43f5e'] as [string, string];
-    
+
     return (
       <AnimatedResultItem key={item.id} index={index} onPress={() => {}}>
         <GlassCard variant="frosted" intensity="subtle" style={styles.resultCard}>
@@ -1232,7 +1240,11 @@ export default function SearchScreen() {
                 {(filters.verifiedOnly || filters.premiumOnly || filters.hasAvatar) && (
                   <View style={styles.filterBadge}>
                     <Text style={styles.filterBadgeText}>
-                      {[filters.verifiedOnly, filters.premiumOnly, filters.hasAvatar].filter(Boolean).length}
+                      {
+                        [filters.verifiedOnly, filters.premiumOnly, filters.hasAvatar].filter(
+                          Boolean
+                        ).length
+                      }
                     </Text>
                   </View>
                 )}
@@ -1251,7 +1263,11 @@ export default function SearchScreen() {
                 colors={showIdSearch ? ['#3b82f6', '#8b5cf6'] : [colors.surface, colors.surface]}
                 style={styles.idToggleGradient}
               >
-                <Ionicons name="key" size={20} color={showIdSearch ? '#fff' : colors.textSecondary} />
+                <Ionicons
+                  name="key"
+                  size={20}
+                  color={showIdSearch ? '#fff' : colors.textSecondary}
+                />
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -1263,15 +1279,12 @@ export default function SearchScreen() {
         <GlassCard variant="neon" intensity="subtle" style={styles.idPanel}>
           <View style={styles.idPanelInner}>
             <View style={styles.idHeader}>
-              <LinearGradient
-                colors={['#3b82f6', '#8b5cf6']}
-                style={styles.idIconContainer}
-              >
+              <LinearGradient colors={['#3b82f6', '#8b5cf6']} style={styles.idIconContainer}>
                 <Ionicons name="key" size={16} color="#fff" />
               </LinearGradient>
               <Text style={[styles.idTitle, { color: colors.text }]}>Search by ID</Text>
             </View>
-            
+
             <View style={styles.idTypeRow}>
               {(['user', 'group', 'forum'] as const).map((type) => {
                 const isActive = idSearchType === type;
@@ -1285,10 +1298,7 @@ export default function SearchScreen() {
                     }}
                   >
                     {isActive ? (
-                      <LinearGradient
-                        colors={['#3b82f6', '#8b5cf6']}
-                        style={styles.idTypeButton}
-                      >
+                      <LinearGradient colors={['#3b82f6', '#8b5cf6']} style={styles.idTypeButton}>
                         <Text style={styles.idTypeTextActive}>
                           {type.charAt(0).toUpperCase() + type.slice(1)}
                         </Text>
@@ -1314,10 +1324,7 @@ export default function SearchScreen() {
                 onChangeText={setIdSearchValue}
               />
               <TouchableOpacity onPress={handleIdSearch}>
-                <LinearGradient
-                  colors={['#3b82f6', '#8b5cf6']}
-                  style={styles.idSearchButton}
-                >
+                <LinearGradient colors={['#3b82f6', '#8b5cf6']} style={styles.idSearchButton}>
                   <Ionicons name="arrow-forward" size={20} color="#fff" />
                 </LinearGradient>
               </TouchableOpacity>
@@ -1335,7 +1342,7 @@ export default function SearchScreen() {
       >
         {categories.map((cat) => {
           const isActive = category === cat.id;
-          
+
           return (
             <TouchableOpacity
               key={cat.id}
@@ -1345,17 +1352,16 @@ export default function SearchScreen() {
               }}
             >
               {isActive ? (
-                <LinearGradient
-                  colors={cat.gradient}
-                  style={styles.categoryButton}
-                >
+                <LinearGradient colors={cat.gradient} style={styles.categoryButton}>
                   <Ionicons name={cat.icon} size={16} color="#fff" />
                   <Text style={styles.categoryTextActive}>{cat.label}</Text>
                 </LinearGradient>
               ) : (
                 <View style={[styles.categoryButton, { backgroundColor: colors.surface }]}>
                   <Ionicons name={cat.icon} size={16} color={colors.textSecondary} />
-                  <Text style={[styles.categoryText, { color: colors.textSecondary }]}>{cat.label}</Text>
+                  <Text style={[styles.categoryText, { color: colors.textSecondary }]}>
+                    {cat.label}
+                  </Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -1364,22 +1370,17 @@ export default function SearchScreen() {
       </ScrollView>
 
       {/* Results */}
-      <ScrollView 
-        style={styles.results} 
+      <ScrollView
+        style={styles.results}
         contentContainerStyle={styles.resultsContent}
         showsVerticalScrollIndicator={false}
       >
         {loading && (
           <View style={styles.loadingContainer}>
-            <LinearGradient
-              colors={['#3b82f6', '#8b5cf6']}
-              style={styles.loadingGradient}
-            >
+            <LinearGradient colors={['#3b82f6', '#8b5cf6']} style={styles.loadingGradient}>
               <ActivityIndicator size="small" color="#fff" />
             </LinearGradient>
-            <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
-              Searching...
-            </Text>
+            <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Searching...</Text>
           </View>
         )}
 
@@ -1393,7 +1394,9 @@ export default function SearchScreen() {
                     <LinearGradient colors={['#8b5cf6', '#6366f1']} style={styles.sectionIconSmall}>
                       <Ionicons name="time" size={14} color="#fff" />
                     </LinearGradient>
-                    <Text style={[styles.sectionTitleSmall, { color: colors.text }]}>Recent Searches</Text>
+                    <Text style={[styles.sectionTitleSmall, { color: colors.text }]}>
+                      Recent Searches
+                    </Text>
                   </View>
                   <TouchableOpacity onPress={clearRecentSearches}>
                     <Text style={styles.clearText}>Clear All</Text>
@@ -1415,7 +1418,10 @@ export default function SearchScreen() {
                       onLongPress={() => removeRecentSearch(search)}
                     >
                       <Ionicons name="search" size={14} color={colors.textSecondary} />
-                      <Text style={[styles.recentChipText, { color: colors.text }]} numberOfLines={1}>
+                      <Text
+                        style={[styles.recentChipText, { color: colors.text }]}
+                        numberOfLines={1}
+                      >
                         {search}
                       </Text>
                       <TouchableOpacity
@@ -1437,7 +1443,9 @@ export default function SearchScreen() {
                   <LinearGradient colors={['#ef4444', '#f97316']} style={styles.sectionIconSmall}>
                     <Ionicons name="flame" size={14} color="#fff" />
                   </LinearGradient>
-                  <Text style={[styles.sectionTitleSmall, { color: colors.text }]}>Trending Now</Text>
+                  <Text style={[styles.sectionTitleSmall, { color: colors.text }]}>
+                    Trending Now
+                  </Text>
                 </View>
                 <View style={styles.liveBadge}>
                   <View style={styles.liveDot} />
@@ -1467,11 +1475,31 @@ export default function SearchScreen() {
               </Text>
               <View style={styles.quickActionsGrid}>
                 {[
-                  { icon: 'person-add', label: 'Find Friends', color: '#10b981', gradient: ['#10b981', '#059669'] },
-                  { icon: 'people', label: 'Join Groups', color: '#f59e0b', gradient: ['#f59e0b', '#d97706'] },
-                  { icon: 'newspaper', label: 'Explore Forums', color: '#ec4899', gradient: ['#ec4899', '#db2777'] },
-                  { icon: 'sparkles', label: 'Discover', color: '#8b5cf6', gradient: ['#8b5cf6', '#7c3aed'] },
-                ].map((action, index) => (
+                  {
+                    icon: 'person-add',
+                    label: 'Find Friends',
+                    color: '#10b981',
+                    gradient: ['#10b981', '#059669'],
+                  },
+                  {
+                    icon: 'people',
+                    label: 'Join Groups',
+                    color: '#f59e0b',
+                    gradient: ['#f59e0b', '#d97706'],
+                  },
+                  {
+                    icon: 'newspaper',
+                    label: 'Explore Forums',
+                    color: '#ec4899',
+                    gradient: ['#ec4899', '#db2777'],
+                  },
+                  {
+                    icon: 'sparkles',
+                    label: 'Discover',
+                    color: '#8b5cf6',
+                    gradient: ['#8b5cf6', '#7c3aed'],
+                  },
+                ].map((action) => (
                   <TouchableOpacity
                     key={action.label}
                     style={styles.quickActionCard}
@@ -1489,7 +1517,9 @@ export default function SearchScreen() {
                     >
                       <Ionicons name={action.icon as any} size={24} color="#fff" />
                     </LinearGradient>
-                    <Text style={[styles.quickActionLabel, { color: colors.text }]}>{action.label}</Text>
+                    <Text style={[styles.quickActionLabel, { color: colors.text }]}>
+                      {action.label}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -1528,19 +1558,18 @@ export default function SearchScreen() {
             {(category === 'all' || category === 'users') && users.length > 0 && (
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <LinearGradient
-                    colors={['#10b981', '#059669']}
-                    style={styles.sectionIcon}
-                  >
+                  <LinearGradient colors={['#10b981', '#059669']} style={styles.sectionIcon}>
                     <Ionicons name="person" size={12} color="#fff" />
                   </LinearGradient>
                   <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
                     USERS ({users.length})
                   </Text>
                 </View>
-                {(category === 'all' ? users.slice(0, 3) : users).map((user, i) => renderUser(user, i))}
+                {(category === 'all' ? users.slice(0, 3) : users).map((user, i) =>
+                  renderUser(user, i)
+                )}
                 {category === 'all' && users.length > 3 && (
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.viewAllButton}
                     onPress={() => {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -1559,19 +1588,18 @@ export default function SearchScreen() {
             {(category === 'all' || category === 'groups') && groups.length > 0 && (
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <LinearGradient
-                    colors={['#f59e0b', '#f97316']}
-                    style={styles.sectionIcon}
-                  >
+                  <LinearGradient colors={['#f59e0b', '#f97316']} style={styles.sectionIcon}>
                     <Ionicons name="people" size={12} color="#fff" />
                   </LinearGradient>
                   <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
                     GROUPS ({groups.length})
                   </Text>
                 </View>
-                {(category === 'all' ? groups.slice(0, 3) : groups).map((group, i) => renderGroup(group, i))}
+                {(category === 'all' ? groups.slice(0, 3) : groups).map((group, i) =>
+                  renderGroup(group, i)
+                )}
                 {category === 'all' && groups.length > 3 && (
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.viewAllButton}
                     onPress={() => {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -1590,19 +1618,18 @@ export default function SearchScreen() {
             {(category === 'all' || category === 'forums') && forums.length > 0 && (
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <LinearGradient
-                    colors={['#ec4899', '#f43f5e']}
-                    style={styles.sectionIcon}
-                  >
+                  <LinearGradient colors={['#ec4899', '#f43f5e']} style={styles.sectionIcon}>
                     <Ionicons name="newspaper" size={12} color="#fff" />
                   </LinearGradient>
                   <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
                     FORUMS ({forums.length})
                   </Text>
                 </View>
-                {(category === 'all' ? forums.slice(0, 3) : forums).map((forum, i) => renderForum(forum, i))}
+                {(category === 'all' ? forums.slice(0, 3) : forums).map((forum, i) =>
+                  renderForum(forum, i)
+                )}
                 {category === 'all' && forums.length > 3 && (
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.viewAllButton}
                     onPress={() => {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

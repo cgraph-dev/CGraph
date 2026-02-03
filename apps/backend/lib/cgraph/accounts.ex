@@ -22,6 +22,7 @@ defmodule CGraph.Accounts do
   defdelegate get_user_v2(id), to: UsersModule, as: :get_user
   defdelegate get_user_by_email_v2(email), to: UsersModule, as: :get_user_by_email
   defdelegate get_user_by_username_v2(username), to: UsersModule, as: :get_user_by_username
+  defdelegate list_users_v2(opts \\ []), to: UsersModule, as: :list_users
 
   # Authentication submodule delegations
   alias CGraph.Accounts.Authentication, as: AuthModule
@@ -38,6 +39,28 @@ defmodule CGraph.Accounts do
   alias CGraph.Accounts.Sessions, as: SessionsModule
   defdelegate list_user_sessions_v2(user_id), to: SessionsModule, as: :list_user_sessions
   defdelegate revoke_all_sessions_v2(user_id, except \\ nil), to: SessionsModule, as: :revoke_all
+
+  # Friends submodule delegations
+  alias CGraph.Accounts.Friends, as: FriendsModule
+  defdelegate send_friend_request_v2(from_user_id, to_user_id, message \\ nil), to: FriendsModule, as: :send_friend_request
+  defdelegate accept_friend_request_v2(user_id, friend_id), to: FriendsModule, as: :accept_friend_request
+  defdelegate decline_friend_request_v2(user_id, friend_id), to: FriendsModule, as: :decline_friend_request
+  defdelegate remove_friend_v2(user_id, friend_id), to: FriendsModule, as: :remove_friend
+  defdelegate block_user_v2(blocker_id, blocked_id), to: FriendsModule, as: :block_user
+  defdelegate unblock_user_v2(blocker_id, blocked_id), to: FriendsModule, as: :unblock_user
+  defdelegate list_friends_v2(user_id, opts \\ []), to: FriendsModule, as: :list_friends
+  defdelegate list_pending_requests_v2(user_id), to: FriendsModule, as: :list_pending_requests
+  defdelegate are_friends_v2?(user_id, friend_id), to: FriendsModule, as: :are_friends?
+
+  # Settings submodule delegations
+  alias CGraph.Accounts.Settings, as: SettingsModule
+  defdelegate get_user_settings_v2(user_id), to: SettingsModule, as: :get_user_settings
+  defdelegate update_user_settings_v2(user_id, attrs), to: SettingsModule, as: :update_user_settings
+
+  # Wallet auth submodule delegations
+  alias CGraph.Accounts.WalletAuth, as: WalletModule
+  defdelegate get_or_create_wallet_challenge_v2(address), to: WalletModule, as: :get_or_create_challenge
+  defdelegate verify_wallet_signature_v2(address, signature), to: WalletModule, as: :verify_signature
 
   # ============================================================================
   # Registration & Authentication

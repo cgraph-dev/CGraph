@@ -361,8 +361,9 @@ export default function ParticleView({
       if (colors) engineRef.current.setColors(colors);
       if (gravity !== undefined) engineRef.current.setGravity(gravity);
       if (wind) engineRef.current.setWind(wind.x, wind.y);
-      if (emitterPosition)
+      if (emitterPosition) {
         engineRef.current.setEmitterPosition(emitterPosition.x, emitterPosition.y);
+      }
     }
   }, [type, behavior, colors, gravity, wind, emitterPosition]);
 

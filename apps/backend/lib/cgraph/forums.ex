@@ -25,6 +25,14 @@ defmodule CGraph.Forums do
   # These delegate to extracted submodules for better code organization
   # ============================================================================
 
+  # Core submodule delegations (forum CRUD)
+  alias CGraph.Forums.Core, as: CoreModule
+  defdelegate get_forum_v2(id), to: CoreModule, as: :get_forum
+  defdelegate get_forum_by_slug_v2(slug), to: CoreModule, as: :get_forum_by_slug
+  defdelegate create_forum_v2(user, attrs), to: CoreModule, as: :create_forum
+  defdelegate update_forum_v2(forum, attrs), to: CoreModule, as: :update_forum
+  defdelegate delete_forum_v2(forum), to: CoreModule, as: :delete_forum
+
   # Posts submodule delegations
   alias CGraph.Forums.Posts, as: PostsModule
   defdelegate list_posts_v2(forum, opts \\ []), to: PostsModule, as: :list_posts
@@ -54,6 +62,26 @@ defmodule CGraph.Forums do
   defdelegate list_public_feed_v2(opts \\ []), to: FeedsModule, as: :list_public_feed
   defdelegate list_home_feed_v2(user, opts \\ []), to: FeedsModule, as: :list_home_feed
   defdelegate list_popular_feed_v2(opts \\ []), to: FeedsModule, as: :list_popular_feed
+
+  # Voting submodule delegations
+  alias CGraph.Forums.Voting, as: VotingModule
+  defdelegate vote_on_post_v2(user, post, vote_type), to: VotingModule, as: :vote_on_post
+  defdelegate remove_post_vote_v2(user, post), to: VotingModule, as: :remove_vote
+  defdelegate get_post_karma_v2(post), to: VotingModule, as: :get_post_karma
+  defdelegate get_user_vote_v2(user, post), to: VotingModule, as: :get_user_vote
+  defdelegate vote_on_comment_v2(user, comment, vote_type), to: VotingModule, as: :vote_on_comment
+
+  # Threads submodule delegations
+  alias CGraph.Forums.Threads, as: ThreadsModule
+  defdelegate list_threads_v2(forum_or_board, opts \\ []), to: ThreadsModule, as: :list_threads
+  defdelegate get_thread_v2(id), to: ThreadsModule, as: :get_thread
+  defdelegate create_thread_v2(forum, user, attrs), to: ThreadsModule, as: :create_thread
+  defdelegate update_thread_v2(thread, attrs), to: ThreadsModule, as: :update_thread
+  defdelegate pin_thread_v2(thread), to: ThreadsModule, as: :pin_thread
+  defdelegate unpin_thread_v2(thread), to: ThreadsModule, as: :unpin_thread
+  defdelegate lock_thread_v2(thread), to: ThreadsModule, as: :lock_thread
+  defdelegate unlock_thread_v2(thread), to: ThreadsModule, as: :unlock_thread
+  defdelegate increment_thread_views_v2(thread), to: ThreadsModule, as: :increment_views
 
   # ============================================================================
   # Forums
