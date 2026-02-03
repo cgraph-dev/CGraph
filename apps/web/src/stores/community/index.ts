@@ -3,8 +3,8 @@
  *
  * Unified community features combining:
  * - Forums management (forumStore)
- * - Groups/channels (groupSlice)
- * - Moderation tools (moderationSlice)
+ * - Groups/channels (groupStore)
+ * - Moderation tools (moderationStore)
  * - Forum hosting/customization (forumHostingStore)
  *
  * This module provides a single entry point for all community features
@@ -24,7 +24,7 @@ export {
   type PostAttachment,
 } from '@/stores/forumStore';
 
-// Re-export group slice
+// Re-export group store
 export {
   useGroupStore,
   type Group,
@@ -32,9 +32,9 @@ export {
   type Member,
   type ChannelMessage,
   type Role,
-} from './groupSlice';
+} from '@/stores/groupStore';
 
-// Re-export moderation slice
+// Re-export moderation store
 export {
   useModerationStore,
   type ModerationQueueItem,
@@ -42,7 +42,7 @@ export {
   type UserWarning,
   type Ban,
   type WarningType,
-} from './moderationSlice';
+} from '@/stores/moderationStore';
 
 // Re-export forum hosting store from root
 export {
@@ -73,5 +73,5 @@ export interface CommunityData {
 
 // Import types for the unified interface
 import type { Forum, Post } from '@/stores/forumStore';
-import type { Group } from './groupSlice';
-import type { ModerationQueueItem } from './moderationSlice';
+import type { Group } from '@/stores/groupStore';
+import type { ModerationQueueItem } from '@/stores/moderationStore';

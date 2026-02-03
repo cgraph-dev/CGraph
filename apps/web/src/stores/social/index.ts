@@ -3,7 +3,7 @@
  *
  * Unified social features combining:
  * - Friends management (friendStore)
- * - Notifications (notificationSlice)
+ * - Notifications (notificationStore)
  * - User profiles (profileStore)
  *
  * This module provides a single entry point for all social features
@@ -13,8 +13,8 @@
 // Re-export friend store from root
 export { useFriendStore, type Friend, type FriendRequest } from '@/stores/friendStore';
 
-// Re-export notification slice
-export { useNotificationStore, type Notification } from './notificationSlice';
+// Re-export notification store
+export { useNotificationStore, type Notification } from '@/stores/notificationStore';
 
 // Re-export profile store from root
 export {
@@ -46,7 +46,7 @@ export interface SocialData {
 
 // Import types for the unified interface
 import type { Friend, FriendRequest } from '@/stores/friendStore';
-import type { Notification } from './notificationSlice';
+import type { Notification } from '@/stores/notificationStore';
 import type { ExtendedProfile } from '@/stores/profileStore';
 
 // Combined selectors for common use cases
@@ -57,5 +57,5 @@ export const useSocialUnreadCount = () => {
 };
 
 // Re-import stores for selector
-import { useNotificationStore } from './notificationSlice';
+import { useNotificationStore } from '@/stores/notificationStore';
 import { useFriendStore } from '@/stores/friendStore';
