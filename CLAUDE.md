@@ -317,6 +317,54 @@ cd apps/backend && mix phx.server
 
 Uses pnpm workspaces with Turborepo for task orchestration.
 
+### Mobile Animation/Gesture Guidelines (CRITICAL)
+
+> **Migration Reference:**
+> [ADR-018: Reanimated v4 Migration](docs/adr/ADR-018-REANIMATED-V4-MIGRATION.md)
+
+The mobile app uses **React Native Reanimated v4** and **Gesture Handler v2**. The legacy v3 APIs
+have been removed. When working on mobile animations:
+
+**NEVER use these deprecated APIs:**
+
+```tsx
+// ❌ DEPRECATED - Will cause TypeScript errors
+useAnimatedGestureHandler({ ... })
+<PanGestureHandler onGestureEvent={...}>
+Animated.SharedValue<T>
+```
+
+**ALWAYS use the new Gesture API:**
+
+```tsx
+// ✅ CORRECT - Reanimated v4 / Gesture Handler v2
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { SharedValue, useSharedValue, withSpring } from 'react-native-reanimated';
+import { getSpringConfig, SPRING_PRESETS } from '@/lib/animations/AnimationLibrary';
+
+const ctx = useSharedValue({ startX: 0 });
+const pan = Gesture.Pan()
+  .onStart(() => {
+    'worklet';
+    ctx.value = { startX: x.value };
+  })
+  .onEnd(() => {
+    'worklet';
+    x.value = withSpring(0, getSpringConfig(SPRING_PRESETS.bouncy));
+  });
+
+<GestureDetector gesture={pan}>
+  <Animated.View />
+</GestureDetector>;
+```
+
+**Key rules:**
+
+- Store gesture context in `useSharedValue`, not in handler's ctx parameter
+- Always add `'worklet'` directive to gesture callbacks
+- Use `getSpringConfig()` helper when calling `withSpring()` with our SpringConfig presets
+- Import `SharedValue` directly, not as `Animated.SharedValue`
+
 ### Frontend State Management (Web)
 
 Zustand stores in `apps/web/src/stores/`:

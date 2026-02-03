@@ -1326,8 +1326,80 @@ export function useResponsive() {
 
 ### Animation Library
 
-The mobile app includes a comprehensive animation library at `src/lib/animations.ts` using React
-Native's Animated API:
+The mobile app includes a comprehensive animation library at `src/lib/animations/` using React
+Native Reanimated v4 and Gesture Handler v2.
+
+> **⚠️ Breaking Change (v0.9.11):** We migrated from Reanimated v3 to v4. See
+> [ADR-018: Reanimated v4 Migration](../adr/ADR-018-REANIMATED-V4-MIGRATION.md) for full details.
+
+#### Gesture API (v4)
+
+The new Gesture API replaces the deprecated `useAnimatedGestureHandler`:
+
+```tsx
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  SharedValue, // Direct import, NOT Animated.SharedValue
+} from 'react-native-reanimated';
+import { getSpringConfig, SPRING_PRESETS } from '@/lib/animations/AnimationLibrary';
+
+function SwipeCard() {
+  const translateX = useSharedValue(0);
+  const ctx = useSharedValue({ startX: 0 });
+
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      'worklet';
+      ctx.value = { startX: translateX.value };
+    })
+    .onUpdate((e) => {
+      'worklet';
+      translateX.value = ctx.value.startX + e.translationX;
+    })
+    .onEnd(() => {
+      'worklet';
+      translateX.value = withSpring(0, getSpringConfig(SPRING_PRESETS.bouncy));
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
+
+  return (
+    <GestureDetector gesture={panGesture}>
+      <Animated.View style={animatedStyle}>{/* Content */}</Animated.View>
+    </GestureDetector>
+  );
+}
+```
+
+**Key migration points:**
+
+- Replace `useAnimatedGestureHandler` with `Gesture.Pan()`, `Gesture.Tap()`, etc.
+- Replace `PanGestureHandler` with `GestureDetector`
+- Store context in `useSharedValue`, not in the gesture handler's `ctx` parameter
+- Add `'worklet'` directive to all gesture callbacks
+- Use `getSpringConfig()` helper when calling `withSpring()` with our extended SpringConfig
+
+#### Spring Configuration
+
+```tsx
+import { SPRING_PRESETS, getSpringConfig } from '@/lib/animations/AnimationLibrary';
+
+// Available presets
+SPRING_PRESETS.gentle; // damping: 15, stiffness: 100
+SPRING_PRESETS.bouncy; // damping: 10, stiffness: 180
+SPRING_PRESETS.stiff; // damping: 20, stiffness: 300
+SPRING_PRESETS.slow; // damping: 20, stiffness: 80
+
+// Use with withSpring (must extract WithSpringConfig-compatible props)
+translateX.value = withSpring(0, getSpringConfig(SPRING_PRESETS.bouncy));
+```
+
+#### Basic Animations (Legacy API)
 
 ```typescript
 // src/lib/animations.ts

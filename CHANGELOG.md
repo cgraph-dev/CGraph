@@ -4,6 +4,122 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.12] - 2026-02-03
+
+**📱 REACT NATIVE REANIMATED V4 MIGRATION**
+
+Complete migration of the mobile app from React Native Reanimated v3 to v4 APIs. This release fixes
+222 TypeScript errors that emerged from breaking changes in the Reanimated v4 update.
+
+> **Full Migration Guide:**
+> [ADR-018: Reanimated v4 Migration](docs/adr/ADR-018-REANIMATED-V4-MIGRATION.md)
+
+### 🎯 Key API Changes
+
+| Deprecated (v3)             | Replacement (v4)                                |
+| --------------------------- | ----------------------------------------------- |
+| `useAnimatedGestureHandler` | `Gesture.Pan()` + `GestureDetector`             |
+| `PanGestureHandler`         | `GestureDetector`                               |
+| `Animated.SharedValue<T>`   | Direct import `SharedValue<T>`                  |
+| `@react-navigation/stack`   | `@react-navigation/native-stack` v7             |
+| Extended `WithSpringConfig` | Standalone `SpringConfig` + `getSpringConfig()` |
+
+### 📁 Files Changed (28 total)
+
+#### Gesture Handler Migrations (6 files)
+
+- `src/components/advanced/Carousel3D.tsx` - Replaced gesture handler with Gesture API
+- `src/components/advanced/DynamicModal.tsx` - Pan + Tap gesture migration
+- `src/components/advanced/FluidTabs.tsx` - Pan gesture migration
+- `src/components/advanced/SwipeableCard.tsx` - Pan gesture migration
+- `src/components/inputs/ColorPicker.tsx` - Pan gesture migration
+- `src/components/inputs/SliderGroup.tsx` - Slider and RangeSlider gesture migration
+
+#### Type/SharedValue Fixes (11 files)
+
+- `src/lib/animations/AnimationLibrary.ts` - New `SpringConfig` interface + `getSpringConfig()`
+- `src/components/gamification/ProgressRing.tsx` - SharedValue import fix
+- `src/components/gamification/StatCounter.tsx` - SharedValue import fix
+- `src/components/advanced/AnimatedGradient.tsx` - SharedValue import fix
+- `src/components/advanced/ShaderEffects.tsx` - SharedValue import fix
+- `src/components/advanced/PullToRefresh.tsx` - SharedValue import + prop rename
+- `src/lib/animations/ParticleSystem.ts` - Interface partial types
+- `src/components/gamification/ParticleView.tsx` - Type fixes
+- `src/lib/animations/GradientEngine.ts` - ShadowConfig offset type
+- `src/components/feedback/FeedbackSystem.tsx` - LinearGradient tuple types
+- `src/components/AnimatedComponents.tsx` - Missing imports, transform types
+
+#### Navigation Transition Rewrite (1 file)
+
+- `src/lib/animations/TransitionConfig.ts` - Complete rewrite for native-stack v7
+
+#### Index/Barrel Fixes (7 files)
+
+- `src/components/advanced/index.ts` - Import components for default export
+- `src/components/visualization/index.ts` - Import components for default export
+- `src/components/inputs/index.ts` - Import components for default export
+- `src/components/platform/index.ts` - Remove non-existent exports
+- `src/components/buttons/MorphingButton.tsx` - getSpringConfig helper
+- `src/components/gamification/SubscriptionCard.tsx` - Type fixes
+- `src/components/gamification/CoinShopWidget.tsx` - Type fixes
+
+### 🛠️ New Helper Function
+
+```typescript
+// src/lib/animations/AnimationLibrary.ts
+
+// WithSpringConfig in v4 is a union type that can't be extended
+// This helper extracts spring-compatible config from our extended interface
+export function getSpringConfig(config: SpringConfig): WithSpringConfig {
+  const { name, description, ...springConfig } = config;
+  return springConfig as WithSpringConfig;
+}
+
+// Usage in worklets:
+translateX.value = withSpring(0, getSpringConfig(SPRING_PRESETS.bouncy));
+```
+
+### 🔄 Migration Pattern for Developers
+
+**Old (v3 - Deprecated):**
+
+```tsx
+const gestureHandler = useAnimatedGestureHandler({
+  onStart: (_, ctx) => { ctx.startX = x.value; },
+  onActive: (e, ctx) => { x.value = ctx.startX + e.translationX; },
+  onEnd: () => { x.value = withSpring(0); }
+});
+<PanGestureHandler onGestureEvent={gestureHandler}>
+```
+
+**New (v4):**
+
+```tsx
+const ctx = useSharedValue({ startX: 0 });
+const pan = Gesture.Pan()
+  .onStart(() => { 'worklet'; ctx.value = { startX: x.value }; })
+  .onUpdate((e) => { 'worklet'; x.value = ctx.value.startX + e.translationX; })
+  .onEnd(() => { 'worklet'; x.value = withSpring(0, getSpringConfig(SPRING_PRESETS.bouncy)); });
+<GestureDetector gesture={pan}>
+```
+
+### 📊 Migration Metrics
+
+| Metric             | Before   | After  |
+| ------------------ | -------- | ------ |
+| TypeScript Errors  | 222      | 0      |
+| Files Modified     | 0        | 28     |
+| Gesture Components | Legacy   | v4 API |
+| Navigation Stack   | JS-based | Native |
+
+### 📝 Documentation Added
+
+- New: `docs/adr/ADR-018-REANIMATED-V4-MIGRATION.md` - Complete migration guide
+- Updated: `docs/guides/MOBILE.md` - New Gesture API section
+- Updated: `docs/CURRENT_STATE_DASHBOARD.md` - Version matrix, timeline
+
+---
+
 ## [0.9.11] - 2026-02-02
 
 **🏗️ ARCHITECTURE TRANSFORMATION COMPLETE**
