@@ -15,6 +15,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi, beforeAll, afterAll } from 'vitest';
+import type { Theme } from '../ThemeEngine';
 
 // =============================================================================
 // MOCKS
@@ -45,11 +46,11 @@ const localStorageMock = (() => {
 class MockBroadcastChannel {
   name: string;
   onmessage: ((event: MessageEvent) => void) | null = null;
-  
+
   constructor(name: string) {
     this.name = name;
   }
-  
+
   postMessage = vi.fn();
   close = vi.fn();
   addEventListener = vi.fn();
@@ -122,11 +123,21 @@ beforeEach(() => {
 // =============================================================================
 
 // We need to import dynamically after mocks are set up
-let themeEngine: any;
-let setTheme: any;
-let getCurrentTheme: any;
-let getAllThemes: any;
-let subscribeToTheme: any;
+let themeEngine: {
+  getCurrentTheme: () => Theme;
+  getAllThemes: () => Theme[];
+  setTheme: (themeId: string) => void;
+  subscribe: (listener: (theme: Theme) => void) => () => void;
+  getPreferences: () => Record<string, unknown>;
+  updatePreferences: (prefs: Record<string, unknown>) => void;
+  createCustomTheme?: (theme: Partial<Theme>) => Theme;
+  deleteCustomTheme?: (themeId: string) => boolean;
+  resetToDefaults?: () => void;
+};
+let setTheme: (themeId: string) => void;
+let getCurrentTheme: () => Theme;
+let getAllThemes: () => Theme[];
+let subscribeToTheme: (listener: (theme: Theme) => void) => () => void;
 
 describe('ThemeEngine', () => {
   beforeAll(async () => {
@@ -155,13 +166,13 @@ describe('ThemeEngine', () => {
 
     it('should have 7 built-in themes', () => {
       const themes = themeEngine.getAllThemes();
-      const builtInThemes = themes.filter((t: any) => t.isBuiltIn);
+      const builtInThemes = themes.filter((t: Theme) => t.isBuiltIn);
       expect(builtInThemes.length).toBe(7);
     });
 
     it('should have required theme categories', () => {
       const themes = themeEngine.getAllThemes();
-      const categories = [...new Set(themes.map((t: any) => t.category))];
+      const categories = [...new Set(themes.map((t: Theme) => t.category))];
       expect(categories).toContain('dark');
       expect(categories).toContain('light');
       expect(categories).toContain('special');
@@ -233,9 +244,17 @@ describe('ThemeEngine', () => {
     it('should have all required color properties', () => {
       const themes = themeEngine.getAllThemes();
       const requiredColors = [
-        'primary', 'secondary', 'background', 'surface',
-        'textPrimary', 'textSecondary', 'surfaceBorder',
-        'error', 'warning', 'success', 'info',
+        'primary',
+        'secondary',
+        'background',
+        'surface',
+        'textPrimary',
+        'textSecondary',
+        'surfaceBorder',
+        'error',
+        'warning',
+        'success',
+        'info',
       ];
 
       for (const theme of themes) {
@@ -319,7 +338,7 @@ describe('ThemeEngine', () => {
       themeEngine.updateSettings({ fontScale: 0.3 }); // Below typical min
       const lowScale = themeEngine.getPreferences().settings.fontScale;
       expect(typeof lowScale).toBe('number');
-      
+
       themeEngine.updateSettings({ fontScale: 5 }); // Above typical max
       const highScale = themeEngine.getPreferences().settings.fontScale;
       expect(typeof highScale).toBe('number');
@@ -469,14 +488,17 @@ describe('ThemeEngine', () => {
     });
 
     it('should delete a custom theme', () => {
-      if (typeof themeEngine.createCustomTheme !== 'function' || typeof themeEngine.deleteCustomTheme !== 'function') {
+      if (
+        typeof themeEngine.createCustomTheme !== 'function' ||
+        typeof themeEngine.deleteCustomTheme !== 'function'
+      ) {
         expect(true).toBe(true);
         return;
       }
       const customTheme = createCompleteCustomTheme({ id: 'to-delete', name: 'To Delete' });
       const created = themeEngine.createCustomTheme(customTheme);
       const initialCount = themeEngine.getAllThemes().length;
-      
+
       const result = themeEngine.deleteCustomTheme(created.id);
       expect(result).toBe(true);
       expect(themeEngine.getAllThemes().length).toBe(initialCount - 1);
@@ -489,13 +511,16 @@ describe('ThemeEngine', () => {
       }
       const result = themeEngine.deleteCustomTheme('dark');
       expect(result).toBe(false);
-      
-      const theme = themeEngine.getAllThemes().find((t: any) => t.id === 'dark');
+
+      const theme = themeEngine.getAllThemes().find((t: Theme) => t.id === 'dark');
       expect(theme).toBeDefined();
     });
 
     it('should switch to dark theme when active custom theme is deleted', () => {
-      if (typeof themeEngine.createCustomTheme !== 'function' || typeof themeEngine.deleteCustomTheme !== 'function') {
+      if (
+        typeof themeEngine.createCustomTheme !== 'function' ||
+        typeof themeEngine.deleteCustomTheme !== 'function'
+      ) {
         expect(true).toBe(true);
         return;
       }
@@ -503,7 +528,7 @@ describe('ThemeEngine', () => {
       const created = themeEngine.createCustomTheme(customTheme);
       themeEngine.setTheme(created.id);
       expect(themeEngine.getCurrentTheme().id).toBe(created.id);
-      
+
       themeEngine.deleteCustomTheme(created.id);
       // Should fall back to a valid theme
       expect(themeEngine.getCurrentTheme()).toBeDefined();
@@ -518,23 +543,23 @@ describe('ThemeEngine', () => {
     it('should notify subscribers when theme changes', () => {
       const listener = vi.fn();
       const unsubscribe = themeEngine.subscribe(listener);
-      
+
       themeEngine.setTheme('light');
       expect(listener).toHaveBeenCalled();
-      
+
       unsubscribe();
     });
 
     it('should not notify after unsubscribe', () => {
       const listener = vi.fn();
       const unsubscribe = themeEngine.subscribe(listener);
-      
+
       themeEngine.setTheme('matrix');
       expect(listener).toHaveBeenCalledTimes(1);
-      
+
       unsubscribe();
       listener.mockClear();
-      
+
       themeEngine.setTheme('dark');
       expect(listener).not.toHaveBeenCalled();
     });
@@ -542,15 +567,15 @@ describe('ThemeEngine', () => {
     it('should handle multiple subscribers', () => {
       const listener1 = vi.fn();
       const listener2 = vi.fn();
-      
+
       const unsub1 = themeEngine.subscribe(listener1);
       const unsub2 = themeEngine.subscribe(listener2);
-      
+
       themeEngine.setTheme('holo-cyan');
-      
+
       expect(listener1).toHaveBeenCalled();
       expect(listener2).toHaveBeenCalled();
-      
+
       unsub1();
       unsub2();
     });
@@ -581,10 +606,10 @@ describe('ThemeEngine', () => {
     it('subscribeToTheme should work', () => {
       const listener = vi.fn();
       const unsubscribe = subscribeToTheme(listener);
-      
+
       setTheme('holo-purple');
       expect(listener).toHaveBeenCalled();
-      
+
       unsubscribe();
     });
   });
