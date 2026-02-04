@@ -112,9 +112,10 @@ const processMessagesWithReactions = (
             return String(u) === String(currentUserId);
           }
           // If u is an object, check various ID fields
-          const uAny = u as any;
+          const uRecord = u as Record<string, unknown>;
           return (
-            String(u.id) === String(currentUserId) || String(uAny.user_id) === String(currentUserId)
+            String(u.id) === String(currentUserId) ||
+            String(uRecord.user_id) === String(currentUserId)
           );
         }) || false;
 

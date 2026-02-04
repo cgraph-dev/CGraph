@@ -210,7 +210,7 @@ export function AnimatedView({
         [current.scale as number, next.scale as number],
         Extrapolation.CLAMP
       );
-      (result.transform as any[]).push({ scale });
+      (result.transform as unknown[]).push({ scale });
     }
 
     if ('translateX' in current && 'translateX' in next) {
@@ -220,7 +220,7 @@ export function AnimatedView({
         [current.translateX as number, next.translateX as number],
         Extrapolation.CLAMP
       );
-      (result.transform as any[]).push({ translateX });
+      (result.transform as unknown[]).push({ translateX });
     }
 
     if ('translateY' in current && 'translateY' in next) {
@@ -230,7 +230,7 @@ export function AnimatedView({
         [current.translateY as number, next.translateY as number],
         Extrapolation.CLAMP
       );
-      (result.transform as any[]).push({ translateY });
+      (result.transform as unknown[]).push({ translateY });
     }
 
     if ('opacity' in current && 'opacity' in next) {
