@@ -54,6 +54,41 @@ export function getMimeType(filename: string | undefined, defaultType: string): 
 }
 
 /**
+ * File icon mapping by extension.
+ */
+const FILE_ICON_MAP: Record<string, string> = {
+  pdf: 'document-text-outline',
+  doc: 'document-text-outline',
+  docx: 'document-text-outline',
+  xls: 'grid-outline',
+  xlsx: 'grid-outline',
+  ppt: 'easel-outline',
+  pptx: 'easel-outline',
+  zip: 'archive-outline',
+  rar: 'archive-outline',
+  '7z': 'archive-outline',
+  mp3: 'musical-notes-outline',
+  wav: 'musical-notes-outline',
+  aac: 'musical-notes-outline',
+  mp4: 'videocam-outline',
+  mov: 'videocam-outline',
+  avi: 'videocam-outline',
+  txt: 'document-outline',
+};
+
+/**
+ * Get appropriate Ionicon name for a file type based on extension.
+ *
+ * @param filename - The filename to get icon for
+ * @returns The Ionicon name string
+ */
+export function getFileIcon(filename?: string): string {
+  if (!filename) return 'document-outline';
+  const ext = filename.toLowerCase().split('.').pop();
+  return ext ? FILE_ICON_MAP[ext] || 'document-outline' : 'document-outline';
+}
+
+/**
  * Check if a MIME type represents an image.
  */
 export function isImageMimeType(mimeType: string): boolean {
