@@ -106,7 +106,7 @@ const MOCK_CALLS: CallRecord[] = [
 ];
 
 export default function CallHistoryScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const [calls, setCalls] = useState<CallRecord[]>(MOCK_CALLS);
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState<'all' | 'missed'>('all');
@@ -177,13 +177,12 @@ export default function CallHistoryScreen() {
   };
 
   const groupCallsByDate = useCallback((): CallSection[] => {
-    const filteredCalls = filter === 'missed'
-      ? calls.filter(c => c.direction === 'missed')
-      : calls;
+    const filteredCalls =
+      filter === 'missed' ? calls.filter((c) => c.direction === 'missed') : calls;
 
     const groups: { [key: string]: CallRecord[] } = {};
 
-    filteredCalls.forEach(call => {
+    filteredCalls.forEach((call) => {
       const section = getDateSection(call.timestamp);
       if (!groups[section]) {
         groups[section] = [];
@@ -194,26 +193,29 @@ export default function CallHistoryScreen() {
     return Object.entries(groups).map(([title, data]) => ({ title, data }));
   }, [calls, filter]);
 
-  const handleCallBack = useCallback((call: CallRecord) => {
-    HapticFeedback.medium();
-    if (call.type === 'video') {
-      navigation.navigate('VideoCall', {
-        recipientId: call.recipientId,
-        recipientName: call.recipientName,
-        recipientAvatar: call.recipientAvatar,
-      });
-    } else {
-      navigation.navigate('VoiceCall', {
-        recipientId: call.recipientId,
-        recipientName: call.recipientName,
-        recipientAvatar: call.recipientAvatar,
-      });
-    }
-  }, [navigation]);
+  const handleCallBack = useCallback(
+    (call: CallRecord) => {
+      HapticFeedback.medium();
+      if (call.type === 'video') {
+        navigation.navigate('VideoCall', {
+          recipientId: call.recipientId,
+          recipientName: call.recipientName,
+          recipientAvatar: call.recipientAvatar,
+        });
+      } else {
+        navigation.navigate('VoiceCall', {
+          recipientId: call.recipientId,
+          recipientName: call.recipientName,
+          recipientAvatar: call.recipientAvatar,
+        });
+      }
+    },
+    [navigation]
+  );
 
   const handleDeleteCall = useCallback((callId: string) => {
     HapticFeedback.medium();
-    setCalls(prev => prev.filter(c => c.id !== callId));
+    setCalls((prev) => prev.filter((c) => c.id !== callId));
   }, []);
 
   const getDirectionIcon = (direction: CallDirection) => {
@@ -229,14 +231,8 @@ export default function CallHistoryScreen() {
 
   const renderRightActions = (callId: string) => {
     return (
-      <TouchableOpacity
-        style={styles.deleteAction}
-        onPress={() => handleDeleteCall(callId)}
-      >
-        <LinearGradient
-          colors={[Colors.red[500], Colors.red[600]]}
-          style={styles.deleteGradient}
-        >
+      <TouchableOpacity style={styles.deleteAction} onPress={() => handleDeleteCall(callId)}>
+        <LinearGradient colors={[Colors.red[500], Colors.red[600]]} style={styles.deleteGradient}>
           <Ionicons name="trash" size={24} color="white" />
         </LinearGradient>
       </TouchableOpacity>
@@ -255,10 +251,7 @@ export default function CallHistoryScreen() {
     }).start();
 
     return (
-      <Swipeable
-        renderRightActions={() => renderRightActions(item.id)}
-        overshootRight={false}
-      >
+      <Swipeable renderRightActions={() => renderRightActions(item.id)} overshootRight={false}>
         <Animated.View
           style={{
             opacity: itemAnim,
@@ -291,10 +284,7 @@ export default function CallHistoryScreen() {
             <View style={styles.callInfo}>
               <View style={styles.callHeader}>
                 <Text
-                  style={[
-                    styles.callName,
-                    item.direction === 'missed' && styles.missedCallName,
-                  ]}
+                  style={[styles.callName, item.direction === 'missed' && styles.missedCallName]}
                 >
                   {item.recipientName}
                 </Text>
@@ -303,11 +293,7 @@ export default function CallHistoryScreen() {
 
               <View style={styles.callDetails}>
                 <View style={styles.callType}>
-                  <Ionicons
-                    name={directionIcon.name}
-                    size={14}
-                    color={directionIcon.color}
-                  />
+                  <Ionicons name={directionIcon.name} size={14} color={directionIcon.color} />
                   <Ionicons
                     name={item.type === 'video' ? 'videocam' : 'call'}
                     size={14}
@@ -319,10 +305,7 @@ export default function CallHistoryScreen() {
               </View>
             </View>
 
-            <TouchableOpacity
-              style={styles.callBackButton}
-              onPress={() => handleCallBack(item)}
-            >
+            <TouchableOpacity style={styles.callBackButton} onPress={() => handleCallBack(item)}>
               <Ionicons
                 name={item.type === 'video' ? 'videocam' : 'call'}
                 size={22}
@@ -352,9 +335,7 @@ export default function CallHistoryScreen() {
         </LinearGradient>
       </View>
       <Text style={styles.emptyTitle}>No calls yet</Text>
-      <Text style={styles.emptySubtitle}>
-        Your call history will appear here
-      </Text>
+      <Text style={styles.emptySubtitle}>Your call history will appear here</Text>
     </View>
   );
 
@@ -384,12 +365,7 @@ export default function CallHistoryScreen() {
                   setFilter('all');
                 }}
               >
-                <Text
-                  style={[
-                    styles.filterText,
-                    filter === 'all' && styles.filterTextActive,
-                  ]}
-                >
+                <Text style={[styles.filterText, filter === 'all' && styles.filterTextActive]}>
                   All
                 </Text>
               </TouchableOpacity>
@@ -401,12 +377,7 @@ export default function CallHistoryScreen() {
                   setFilter('missed');
                 }}
               >
-                <Text
-                  style={[
-                    styles.filterText,
-                    filter === 'missed' && styles.filterTextActive,
-                  ]}
-                >
+                <Text style={[styles.filterText, filter === 'missed' && styles.filterTextActive]}>
                   Missed
                 </Text>
               </TouchableOpacity>
@@ -416,7 +387,7 @@ export default function CallHistoryScreen() {
           {/* Call List */}
           <SectionList
             sections={sections}
-            keyExtractor={item => item.id}
+            keyExtractor={(item) => item.id}
             renderItem={renderCallItem}
             renderSectionHeader={renderSectionHeader}
             ListEmptyComponent={renderEmptyState}

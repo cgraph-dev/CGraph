@@ -50,7 +50,7 @@ function SafetyNumberBlock({ number }: SafetyNumberBlockProps) {
   // Split the safety number into blocks of 5 digits
   const blocks = number.match(/.{1,5}/g) || [];
   const rows = [];
-  
+
   for (let i = 0; i < blocks.length; i += 4) {
     rows.push(blocks.slice(i, i + 4));
   }
@@ -83,20 +83,18 @@ function QRCodePlaceholder({ size }: QRCodePlaceholderProps) {
   // This is a placeholder visualization
   const gridSize = 8;
   const cellSize = size / gridSize;
-  
+
   // Generate pseudo-random pattern based on fixed seed for visual consistency
   const cells = [];
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
       // Corner patterns (fixed)
-      const isCorner = 
-        (x < 2 && y < 2) || 
-        (x >= gridSize - 2 && y < 2) || 
-        (x < 2 && y >= gridSize - 2);
-      
+      const isCorner =
+        (x < 2 && y < 2) || (x >= gridSize - 2 && y < 2) || (x < 2 && y >= gridSize - 2);
+
       // Pseudo-random for middle
-      const isMiddle = !isCorner && ((x + y * gridSize) % 3 !== 0);
-      
+      const isMiddle = !isCorner && (x + y * gridSize) % 3 !== 0;
+
       if (isCorner || isMiddle) {
         cells.push(
           <View
@@ -116,11 +114,7 @@ function QRCodePlaceholder({ size }: QRCodePlaceholderProps) {
     }
   }
 
-  return (
-    <View style={[styles.qrCode, { width: size, height: size }]}>
-      {cells}
-    </View>
-  );
+  return <View style={[styles.qrCode, { width: size, height: size }]}>{cells}</View>;
 }
 
 // ============================================================================
@@ -128,9 +122,9 @@ function QRCodePlaceholder({ size }: QRCodePlaceholderProps) {
 // ============================================================================
 
 export default function E2EEVerificationScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const route = useRoute<RouteProp<RouteParams, 'E2EEVerification'>>();
-  
+
   const { userId, username } = route.params || { userId: '', username: 'User' };
 
   const [safetyData, setSafetyData] = useState<SafetyNumber | null>(null);
@@ -195,7 +189,7 @@ export default function E2EEVerificationScreen() {
     if (!safetyData) return;
 
     const action = safetyData.isVerified ? 'unverify' : 'verify';
-    
+
     Alert.alert(
       safetyData.isVerified ? 'Mark as Unverified' : 'Mark as Verified',
       safetyData.isVerified
@@ -241,7 +235,7 @@ export default function E2EEVerificationScreen() {
   // Copy safety number to clipboard
   const handleCopy = async () => {
     if (!safetyData) return;
-    
+
     await Clipboard.setStringAsync(safetyData.safetyNumber);
     HapticFeedback.light();
     Alert.alert('Copied', 'Safety number copied to clipboard');
@@ -328,10 +322,7 @@ export default function E2EEVerificationScreen() {
         <ScrollView contentContainerStyle={styles.content}>
           {/* User info card */}
           <BlurView intensity={40} tint="dark" style={styles.userCard}>
-            <LinearGradient
-              colors={['#10b981', '#059669']}
-              style={styles.userAvatar}
-            >
+            <LinearGradient colors={['#10b981', '#059669']} style={styles.userAvatar}>
               <Ionicons name="lock-closed" size={24} color="#fff" />
             </LinearGradient>
             <View style={styles.userInfo}>
@@ -356,9 +347,9 @@ export default function E2EEVerificationScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Safety Number</Text>
             <Text style={styles.sectionDescription}>
-              Compare these numbers with {username} to verify the security of your 
-              end-to-end encrypted conversation. If they match, you can be confident 
-              that your messages are secure.
+              Compare these numbers with {username} to verify the security of your end-to-end
+              encrypted conversation. If they match, you can be confident that your messages are
+              secure.
             </Text>
 
             <SafetyNumberBlock number={safetyData.safetyNumber} />
@@ -392,10 +383,7 @@ export default function E2EEVerificationScreen() {
 
           {/* Verification Button */}
           <TouchableOpacity
-            style={[
-              styles.verifyButton,
-              safetyData.isVerified && styles.verifyButtonVerified,
-            ]}
+            style={[styles.verifyButton, safetyData.isVerified && styles.verifyButtonVerified]}
             onPress={handleVerify}
             disabled={isVerifying}
           >

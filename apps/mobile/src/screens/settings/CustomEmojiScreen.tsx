@@ -54,11 +54,61 @@ const FALLBACK_CATEGORIES: EmojiCategory[] = [
 ];
 
 const FALLBACK_EMOJIS: CustomEmoji[] = [
-  { id: '1', name: 'Party Parrot', shortcode: 'partyparrot', imageUrl: '', category: 'reactions', createdBy: 'admin', createdAt: '2025-01-01', usageCount: 1234, isAnimated: true },
-  { id: '2', name: 'Thumbs Up', shortcode: 'thumbsup', imageUrl: '', category: 'reactions', createdBy: 'admin', createdAt: '2025-01-01', usageCount: 892, isAnimated: false },
-  { id: '3', name: 'Fire', shortcode: 'fire', imageUrl: '', category: 'reactions', createdBy: 'admin', createdAt: '2025-01-01', usageCount: 756, isAnimated: false },
-  { id: '4', name: 'LOL', shortcode: 'lol', imageUrl: '', category: 'memes', createdBy: 'user1', createdAt: '2025-02-15', usageCount: 543, isAnimated: true },
-  { id: '5', name: 'Sad Cat', shortcode: 'sadcat', imageUrl: '', category: 'memes', createdBy: 'user2', createdAt: '2025-03-20', usageCount: 321, isAnimated: false },
+  {
+    id: '1',
+    name: 'Party Parrot',
+    shortcode: 'partyparrot',
+    imageUrl: '',
+    category: 'reactions',
+    createdBy: 'admin',
+    createdAt: '2025-01-01',
+    usageCount: 1234,
+    isAnimated: true,
+  },
+  {
+    id: '2',
+    name: 'Thumbs Up',
+    shortcode: 'thumbsup',
+    imageUrl: '',
+    category: 'reactions',
+    createdBy: 'admin',
+    createdAt: '2025-01-01',
+    usageCount: 892,
+    isAnimated: false,
+  },
+  {
+    id: '3',
+    name: 'Fire',
+    shortcode: 'fire',
+    imageUrl: '',
+    category: 'reactions',
+    createdBy: 'admin',
+    createdAt: '2025-01-01',
+    usageCount: 756,
+    isAnimated: false,
+  },
+  {
+    id: '4',
+    name: 'LOL',
+    shortcode: 'lol',
+    imageUrl: '',
+    category: 'memes',
+    createdBy: 'user1',
+    createdAt: '2025-02-15',
+    usageCount: 543,
+    isAnimated: true,
+  },
+  {
+    id: '5',
+    name: 'Sad Cat',
+    shortcode: 'sadcat',
+    imageUrl: '',
+    category: 'memes',
+    createdBy: 'user2',
+    createdAt: '2025-03-20',
+    usageCount: 321,
+    isAnimated: false,
+  },
 ];
 
 // ============================================================================
@@ -89,13 +139,8 @@ function EmojiItem({ emoji, onPress, onLongPress }: EmojiItemProps) {
         {emoji.imageUrl ? (
           <Image source={{ uri: emoji.imageUrl }} style={styles.emojiImage} />
         ) : (
-          <LinearGradient
-            colors={['#10b981', '#059669']}
-            style={styles.emojiPlaceholder}
-          >
-            <Text style={styles.emojiPlaceholderText}>
-              :{emoji.shortcode.substring(0, 2)}:
-            </Text>
+          <LinearGradient colors={['#10b981', '#059669']} style={styles.emojiPlaceholder}>
+            <Text style={styles.emojiPlaceholderText}>:{emoji.shortcode.substring(0, 2)}:</Text>
           </LinearGradient>
         )}
         {emoji.isAnimated && (
@@ -167,15 +212,10 @@ function AddEmojiModal({ visible, onClose, onSubmit, categories }: AddEmojiModal
     setCategory('custom');
   };
 
-  const filteredCategories = categories.filter(c => c.id !== 'all');
+  const filteredCategories = categories.filter((c) => c.id !== 'all');
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      transparent
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.modalOverlay}>
         <BlurView intensity={80} tint="dark" style={styles.modalContent}>
           <View style={styles.modalHeader}>
@@ -239,10 +279,12 @@ function AddEmojiModal({ visible, onClose, onSubmit, categories }: AddEmojiModal
                   ]}
                   onPress={() => setCategory(cat.id)}
                 >
-                  <Text style={[
-                    styles.categoryButtonText,
-                    category === cat.id && styles.categoryButtonTextSelected,
-                  ]}>
+                  <Text
+                    style={[
+                      styles.categoryButtonText,
+                      category === cat.id && styles.categoryButtonTextSelected,
+                    ]}
+                  >
                     {cat.name}
                   </Text>
                 </TouchableOpacity>
@@ -252,10 +294,7 @@ function AddEmojiModal({ visible, onClose, onSubmit, categories }: AddEmojiModal
 
           {/* Submit Button */}
           <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-            <LinearGradient
-              colors={['#10b981', '#059669']}
-              style={styles.submitButtonGradient}
-            >
+            <LinearGradient colors={['#10b981', '#059669']} style={styles.submitButtonGradient}>
               <Ionicons name="add" size={20} color="#fff" />
               <Text style={styles.submitButtonText}>Add Emoji</Text>
             </LinearGradient>
@@ -271,8 +310,8 @@ function AddEmojiModal({ visible, onClose, onSubmit, categories }: AddEmojiModal
 // ============================================================================
 
 export default function CustomEmojiScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
-  
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+
   const [emojis, setEmojis] = useState<CustomEmoji[]>(FALLBACK_EMOJIS);
   const [categories, setCategories] = useState<EmojiCategory[]>(FALLBACK_CATEGORIES);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -288,17 +327,19 @@ export default function CustomEmojiScreen() {
       const data = response.data;
 
       if (data.emojis) {
-        setEmojis(data.emojis.map((e: any) => ({
-          id: e.id,
-          name: e.name || 'Unnamed',
-          shortcode: e.shortcode || 'emoji',
-          imageUrl: e.image_url || '',
-          category: e.category || 'custom',
-          createdBy: e.created_by || 'Unknown',
-          createdAt: e.created_at || '',
-          usageCount: e.usage_count || 0,
-          isAnimated: e.is_animated || false,
-        })));
+        setEmojis(
+          data.emojis.map((e: Record<string, unknown>) => ({
+            id: e.id,
+            name: e.name || 'Unnamed',
+            shortcode: e.shortcode || 'emoji',
+            imageUrl: e.image_url || '',
+            category: e.category || 'custom',
+            createdBy: e.created_by || 'Unknown',
+            createdAt: e.created_at || '',
+            usageCount: e.usage_count || 0,
+            isAnimated: e.is_animated || false,
+          }))
+        );
       }
 
       if (data.categories) {
@@ -321,7 +362,8 @@ export default function CustomEmojiScreen() {
   // Filter emojis
   const filteredEmojis = emojis.filter((emoji) => {
     const matchesCategory = selectedCategory === 'all' || emoji.category === selectedCategory;
-    const matchesSearch = searchQuery === '' ||
+    const matchesSearch =
+      searchQuery === '' ||
       emoji.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       emoji.shortcode.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
@@ -332,33 +374,35 @@ export default function CustomEmojiScreen() {
     Alert.alert(
       emoji.name,
       `Shortcode: :${emoji.shortcode}:\nCategory: ${emoji.category}\nUsed ${emoji.usageCount} times`,
-      [
-        { text: 'Copy Shortcode', onPress: () => {} },
-        { text: 'Close' },
-      ]
+      [{ text: 'Copy Shortcode', onPress: () => {} }, { text: 'Close' }]
     );
   };
 
   // Handle emoji options
   const handleEmojiLongPress = (emoji: CustomEmoji) => {
-    Alert.alert(
-      emoji.name,
-      'What would you like to do?',
-      [
-        { text: 'Copy Shortcode', onPress: () => {} },
-        { text: 'Delete', style: 'destructive', onPress: () => {
-          setEmojis(emojis.filter(e => e.id !== emoji.id));
-        }},
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
+    Alert.alert(emoji.name, 'What would you like to do?', [
+      { text: 'Copy Shortcode', onPress: () => {} },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => {
+          setEmojis(emojis.filter((e) => e.id !== emoji.id));
+        },
+      },
+      { text: 'Cancel', style: 'cancel' },
+    ]);
   };
 
   // Handle add emoji
-  const handleAddEmoji = async (name: string, shortcode: string, imageUri: string, category: string) => {
+  const handleAddEmoji = async (
+    name: string,
+    shortcode: string,
+    imageUri: string,
+    category: string
+  ) => {
     try {
       HapticFeedback.medium();
-      
+
       // In real app, upload image and create emoji via API
       const newEmoji: CustomEmoji = {
         id: Date.now().toString(),
@@ -450,20 +494,26 @@ export default function CustomEmojiScreen() {
                 setSelectedCategory(item.id);
               }}
             >
-              <Text style={[
-                styles.categoryTabText,
-                selectedCategory === item.id && styles.categoryTabTextSelected,
-              ]}>
+              <Text
+                style={[
+                  styles.categoryTabText,
+                  selectedCategory === item.id && styles.categoryTabTextSelected,
+                ]}
+              >
                 {item.name}
               </Text>
-              <View style={[
-                styles.categoryCount,
-                selectedCategory === item.id && styles.categoryCountSelected,
-              ]}>
-                <Text style={[
-                  styles.categoryCountText,
-                  selectedCategory === item.id && styles.categoryCountTextSelected,
-                ]}>
+              <View
+                style={[
+                  styles.categoryCount,
+                  selectedCategory === item.id && styles.categoryCountSelected,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.categoryCountText,
+                    selectedCategory === item.id && styles.categoryCountTextSelected,
+                  ]}
+                >
                   {item.count}
                 </Text>
               </View>
@@ -495,10 +545,7 @@ export default function CustomEmojiScreen() {
             <View style={styles.emptyContainer}>
               <Ionicons name="happy-outline" size={48} color="#6b7280" />
               <Text style={styles.emptyText}>No emojis found</Text>
-              <TouchableOpacity
-                style={styles.emptyButton}
-                onPress={() => setShowAddModal(true)}
-              >
+              <TouchableOpacity style={styles.emptyButton} onPress={() => setShowAddModal(true)}>
                 <Text style={styles.emptyButtonText}>Add your first emoji</Text>
               </TouchableOpacity>
             </View>

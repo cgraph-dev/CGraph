@@ -74,7 +74,8 @@ const MOCK_POSTS: WallPost[] = [
     userName: 'CyberNinja',
     userLevel: 42,
     isPremium: true,
-    content: 'Just hit level 42! 🎉 The grind was worth it. Thanks to everyone who supported me along the way!',
+    content:
+      'Just hit level 42! 🎉 The grind was worth it. Thanks to everyone who supported me along the way!',
     likesCount: 156,
     commentsCount: 23,
     sharesCount: 5,
@@ -92,7 +93,8 @@ const MOCK_POSTS: WallPost[] = [
     userName: 'PixelDragon',
     userLevel: 28,
     isPremium: false,
-    content: 'New achievement unlocked: "Night Owl" 🦉 Stayed up way too late but totally worth it!',
+    content:
+      'New achievement unlocked: "Night Owl" 🦉 Stayed up way too late but totally worth it!',
     imageUrl: 'https://picsum.photos/400/300',
     likesCount: 89,
     commentsCount: 12,
@@ -125,7 +127,7 @@ const MOCK_POSTS: WallPost[] = [
 ];
 
 export default function UserWallScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { colors } = useTheme();
   const [posts, setPosts] = useState<WallPost[]>(MOCK_POSTS);
   const [refreshing, setRefreshing] = useState(false);
@@ -170,8 +172,8 @@ export default function UserWallScreen() {
 
   const handleLike = useCallback((postId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setPosts(prev =>
-      prev.map(post =>
+    setPosts((prev) =>
+      prev.map((post) =>
         post.id === postId
           ? {
               ...post,
@@ -203,7 +205,7 @@ export default function UserWallScreen() {
       reactions: [],
     };
 
-    setPosts(prev => [newPost, ...prev]);
+    setPosts((prev) => [newPost, ...prev]);
     setNewPostText('');
     setShowComposer(false);
   }, [newPostText]);
@@ -274,12 +276,8 @@ export default function UserWallScreen() {
               />
               <View style={styles.postUserInfo}>
                 <View style={styles.postUserNameRow}>
-                  <Text style={[styles.postUserName, { color: colors.text }]}>
-                    {item.userName}
-                  </Text>
-                  {item.isPremium && (
-                    <Ionicons name="star" size={14} color={Colors.amber[500]} />
-                  )}
+                  <Text style={[styles.postUserName, { color: colors.text }]}>{item.userName}</Text>
+                  {item.isPremium && <Ionicons name="star" size={14} color={Colors.amber[500]} />}
                 </View>
                 <Text style={[styles.postTime, { color: colors.textSecondary }]}>
                   {formatTimestamp(item.createdAt)}
@@ -329,10 +327,7 @@ export default function UserWallScreen() {
 
           {/* Actions */}
           <View style={[styles.actionsRow, { borderTopColor: colors.border }]}>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={() => handleLike(item.id)}
-            >
+            <TouchableOpacity style={styles.actionButton} onPress={() => handleLike(item.id)}>
               <Ionicons
                 name={item.isLiked ? 'heart' : 'heart-outline'}
                 size={22}
@@ -350,16 +345,12 @@ export default function UserWallScreen() {
 
             <TouchableOpacity style={styles.actionButton}>
               <Ionicons name="chatbubble-outline" size={22} color={colors.textSecondary} />
-              <Text style={[styles.actionText, { color: colors.textSecondary }]}>
-                Comment
-              </Text>
+              <Text style={[styles.actionText, { color: colors.textSecondary }]}>Comment</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.actionButton}>
               <Ionicons name="share-outline" size={22} color={colors.textSecondary} />
-              <Text style={[styles.actionText, { color: colors.textSecondary }]}>
-                Share
-              </Text>
+              <Text style={[styles.actionText, { color: colors.textSecondary }]}>Share</Text>
             </TouchableOpacity>
           </View>
         </GlassCard>
@@ -417,10 +408,7 @@ export default function UserWallScreen() {
           </View>
 
           <TouchableOpacity
-            style={[
-              styles.postButton,
-              !newPostText.trim() && styles.postButtonDisabled,
-            ]}
+            style={[styles.postButton, !newPostText.trim() && styles.postButtonDisabled]}
             onPress={handlePost}
             disabled={!newPostText.trim()}
           >
@@ -477,7 +465,7 @@ export default function UserWallScreen() {
         <FlatList
           data={posts}
           renderItem={renderPost}
-          keyExtractor={item => item.id}
+          keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           refreshControl={

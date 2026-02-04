@@ -52,9 +52,33 @@ const FALLBACK_CATEGORIES: Category[] = [
     order: 0,
     isExpanded: true,
     forums: [
-      { id: 'f1', name: 'Announcements', description: 'Important news', threadCount: 15, postCount: 45, order: 0, color: '#ef4444' },
-      { id: 'f2', name: 'Introductions', description: 'Say hello!', threadCount: 234, postCount: 567, order: 1, color: '#10b981' },
-      { id: 'f3', name: 'Off-Topic', description: 'Casual chat', threadCount: 789, postCount: 2345, order: 2, color: '#6366f1' },
+      {
+        id: 'f1',
+        name: 'Announcements',
+        description: 'Important news',
+        threadCount: 15,
+        postCount: 45,
+        order: 0,
+        color: '#ef4444',
+      },
+      {
+        id: 'f2',
+        name: 'Introductions',
+        description: 'Say hello!',
+        threadCount: 234,
+        postCount: 567,
+        order: 1,
+        color: '#10b981',
+      },
+      {
+        id: 'f3',
+        name: 'Off-Topic',
+        description: 'Casual chat',
+        threadCount: 789,
+        postCount: 2345,
+        order: 2,
+        color: '#6366f1',
+      },
     ],
   },
   {
@@ -63,9 +87,33 @@ const FALLBACK_CATEGORIES: Category[] = [
     order: 1,
     isExpanded: true,
     forums: [
-      { id: 'f4', name: 'Help & Support', description: 'Get help here', threadCount: 456, postCount: 1234, order: 0, color: '#f59e0b' },
-      { id: 'f5', name: 'Bug Reports', description: 'Report issues', threadCount: 89, postCount: 234, order: 1, color: '#ef4444' },
-      { id: 'f6', name: 'Feature Requests', description: 'Suggest features', threadCount: 123, postCount: 456, order: 2, color: '#8b5cf6' },
+      {
+        id: 'f4',
+        name: 'Help & Support',
+        description: 'Get help here',
+        threadCount: 456,
+        postCount: 1234,
+        order: 0,
+        color: '#f59e0b',
+      },
+      {
+        id: 'f5',
+        name: 'Bug Reports',
+        description: 'Report issues',
+        threadCount: 89,
+        postCount: 234,
+        order: 1,
+        color: '#ef4444',
+      },
+      {
+        id: 'f6',
+        name: 'Feature Requests',
+        description: 'Suggest features',
+        threadCount: 123,
+        postCount: 456,
+        order: 2,
+        color: '#8b5cf6',
+      },
     ],
   },
 ];
@@ -86,7 +134,13 @@ interface ForumItemProps {
 
 function ForumItem({ forum, isActive, onDragStart, isDragging }: ForumItemProps) {
   return (
-    <View style={[styles.forumItem, isDragging && styles.forumItemDragging, isActive && styles.forumItemActive]}>
+    <View
+      style={[
+        styles.forumItem,
+        isDragging && styles.forumItemDragging,
+        isActive && styles.forumItemActive,
+      ]}
+    >
       <TouchableOpacity
         style={styles.dragHandle}
         onPressIn={() => {
@@ -100,7 +154,7 @@ function ForumItem({ forum, isActive, onDragStart, isDragging }: ForumItemProps)
 
       <View style={[styles.forumIcon, { backgroundColor: (forum.color || '#10b981') + '30' }]}>
         <Ionicons
-          name={(forum.icon as any) || 'chatbubbles'}
+          name={(forum.icon as unknown) || 'chatbubbles'}
           size={20}
           color={forum.color || '#10b981'}
         />
@@ -163,13 +217,15 @@ function CategoryHeader({ category, onToggle, onDragStart, isDragging }: Categor
 // ============================================================================
 
 export default function ForumReorderScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
-  
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+
   const [categories, setCategories] = useState<Category[]>(FALLBACK_CATEGORIES);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
-  const [draggedItem, setDraggedItem] = useState<{ type: 'category' | 'forum'; id: string } | null>(null);
+  const [draggedItem, setDraggedItem] = useState<{ type: 'category' | 'forum'; id: string } | null>(
+    null
+  );
 
   // Animated values for drag
   const dragY = useRef(new Animated.Value(0)).current;
@@ -181,14 +237,14 @@ export default function ForumReorderScreen() {
       // Get all forums - they're grouped by categories
       const response = await api.get('/api/v1/forums');
       const forumsData = response.data?.data || response.data?.forums || response.data || [];
-      
+
       // Group forums by category
       const categoryMap = new Map<string, Category>();
-      
-      for (const forum of (Array.isArray(forumsData) ? forumsData : [])) {
+
+      for (const forum of Array.isArray(forumsData) ? forumsData : []) {
         const catId = forum.category_id || forum.category?.id || 'uncategorized';
         const catName = forum.category_name || forum.category?.name || 'Uncategorized';
-        
+
         if (!categoryMap.has(catId)) {
           categoryMap.set(catId, {
             id: catId,
@@ -198,7 +254,7 @@ export default function ForumReorderScreen() {
             forums: [],
           });
         }
-        
+
         categoryMap.get(catId)!.forums.push({
           id: forum.id,
           name: forum.name || forum.title || 'Unnamed',
@@ -210,15 +266,15 @@ export default function ForumReorderScreen() {
           color: forum.color,
         });
       }
-      
+
       // Sort categories and forums by order
       const sortedCategories = Array.from(categoryMap.values())
         .sort((a, b) => a.order - b.order)
-        .map(cat => ({
+        .map((cat) => ({
           ...cat,
           forums: cat.forums.sort((a, b) => a.order - b.order),
         }));
-      
+
       if (sortedCategories.length > 0) {
         setCategories(sortedCategories);
       }
@@ -237,57 +293,63 @@ export default function ForumReorderScreen() {
   // Toggle category expansion
   const toggleCategory = (categoryId: string) => {
     HapticFeedback.light();
-    setCategories(categories.map(cat => 
-      cat.id === categoryId ? { ...cat, isExpanded: !cat.isExpanded } : cat
-    ));
+    setCategories(
+      categories.map((cat) =>
+        cat.id === categoryId ? { ...cat, isExpanded: !cat.isExpanded } : cat
+      )
+    );
   };
 
   // Move forum up within category
   const moveForumUp = (categoryId: string, forumId: string) => {
     HapticFeedback.light();
-    setCategories(categories.map(cat => {
-      if (cat.id !== categoryId) return cat;
-      
-      const idx = cat.forums.findIndex(f => f.id === forumId);
-      if (idx <= 0) return cat;
-      
-      const newForums = [...cat.forums];
-      [newForums[idx - 1], newForums[idx]] = [newForums[idx], newForums[idx - 1]];
-      newForums.forEach((f, i) => f.order = i);
-      
-      return { ...cat, forums: newForums };
-    }));
+    setCategories(
+      categories.map((cat) => {
+        if (cat.id !== categoryId) return cat;
+
+        const idx = cat.forums.findIndex((f) => f.id === forumId);
+        if (idx <= 0) return cat;
+
+        const newForums = [...cat.forums];
+        [newForums[idx - 1], newForums[idx]] = [newForums[idx], newForums[idx - 1]];
+        newForums.forEach((f, i) => (f.order = i));
+
+        return { ...cat, forums: newForums };
+      })
+    );
     setHasChanges(true);
   };
 
   // Move forum down within category
   const moveForumDown = (categoryId: string, forumId: string) => {
     HapticFeedback.light();
-    setCategories(categories.map(cat => {
-      if (cat.id !== categoryId) return cat;
-      
-      const idx = cat.forums.findIndex(f => f.id === forumId);
-      if (idx < 0 || idx >= cat.forums.length - 1) return cat;
-      
-      const newForums = [...cat.forums];
-      [newForums[idx], newForums[idx + 1]] = [newForums[idx + 1], newForums[idx]];
-      newForums.forEach((f, i) => f.order = i);
-      
-      return { ...cat, forums: newForums };
-    }));
+    setCategories(
+      categories.map((cat) => {
+        if (cat.id !== categoryId) return cat;
+
+        const idx = cat.forums.findIndex((f) => f.id === forumId);
+        if (idx < 0 || idx >= cat.forums.length - 1) return cat;
+
+        const newForums = [...cat.forums];
+        [newForums[idx], newForums[idx + 1]] = [newForums[idx + 1], newForums[idx]];
+        newForums.forEach((f, i) => (f.order = i));
+
+        return { ...cat, forums: newForums };
+      })
+    );
     setHasChanges(true);
   };
 
   // Move category up
   const moveCategoryUp = (categoryId: string) => {
     HapticFeedback.light();
-    const idx = categories.findIndex(c => c.id === categoryId);
+    const idx = categories.findIndex((c) => c.id === categoryId);
     if (idx <= 0) return;
-    
+
     const newCategories = [...categories];
     [newCategories[idx - 1], newCategories[idx]] = [newCategories[idx], newCategories[idx - 1]];
-    newCategories.forEach((c, i) => c.order = i);
-    
+    newCategories.forEach((c, i) => (c.order = i));
+
     setCategories(newCategories);
     setHasChanges(true);
   };
@@ -295,13 +357,13 @@ export default function ForumReorderScreen() {
   // Move category down
   const moveCategoryDown = (categoryId: string) => {
     HapticFeedback.light();
-    const idx = categories.findIndex(c => c.id === categoryId);
+    const idx = categories.findIndex((c) => c.id === categoryId);
     if (idx < 0 || idx >= categories.length - 1) return;
-    
+
     const newCategories = [...categories];
     [newCategories[idx], newCategories[idx + 1]] = [newCategories[idx + 1], newCategories[idx]];
-    newCategories.forEach((c, i) => c.order = i);
-    
+    newCategories.forEach((c, i) => (c.order = i));
+
     setCategories(newCategories);
     setHasChanges(true);
   };
@@ -313,10 +375,10 @@ export default function ForumReorderScreen() {
       HapticFeedback.medium();
 
       const orderData = {
-        categories: categories.map(cat => ({
+        categories: categories.map((cat) => ({
           id: cat.id,
           order: cat.order,
-          forums: cat.forums.map(f => ({
+          forums: cat.forums.map((f) => ({
             id: f.id,
             order: f.order,
           })),
@@ -343,7 +405,7 @@ export default function ForumReorderScreen() {
           }
         }
       }
-      
+
       HapticFeedback.success();
       setHasChanges(false);
       Alert.alert('Saved', 'Forum order has been updated');
@@ -359,15 +421,11 @@ export default function ForumReorderScreen() {
   // Handle back with unsaved changes
   const handleBack = () => {
     if (hasChanges) {
-      Alert.alert(
-        'Unsaved Changes',
-        'Do you want to save your changes?',
-        [
-          { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Save', onPress: () => handleSave().then(() => navigation.goBack()) },
-        ]
-      );
+      Alert.alert('Unsaved Changes', 'Do you want to save your changes?', [
+        { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Save', onPress: () => handleSave().then(() => navigation.goBack()) },
+      ]);
     } else {
       navigation.goBack();
     }
@@ -396,11 +454,7 @@ export default function ForumReorderScreen() {
           <Text style={styles.headerSubtitle}>Drag to rearrange</Text>
         </View>
         {hasChanges && (
-          <TouchableOpacity
-            style={styles.saveButton}
-            onPress={handleSave}
-            disabled={isSaving}
-          >
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave} disabled={isSaving}>
             {isSaving ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
@@ -445,14 +499,25 @@ export default function ForumReorderScreen() {
                     onPress={() => moveCategoryUp(category.id)}
                     disabled={catIndex === 0}
                   >
-                    <Ionicons name="arrow-up" size={18} color={catIndex === 0 ? '#4b5563' : '#9ca3af'} />
+                    <Ionicons
+                      name="arrow-up"
+                      size={18}
+                      color={catIndex === 0 ? '#4b5563' : '#9ca3af'}
+                    />
                   </TouchableOpacity>
                   <TouchableOpacity
-                    style={[styles.moveButton, catIndex === categories.length - 1 && styles.moveButtonDisabled]}
+                    style={[
+                      styles.moveButton,
+                      catIndex === categories.length - 1 && styles.moveButtonDisabled,
+                    ]}
                     onPress={() => moveCategoryDown(category.id)}
                     disabled={catIndex === categories.length - 1}
                   >
-                    <Ionicons name="arrow-down" size={18} color={catIndex === categories.length - 1 ? '#4b5563' : '#9ca3af'} />
+                    <Ionicons
+                      name="arrow-down"
+                      size={18}
+                      color={catIndex === categories.length - 1 ? '#4b5563' : '#9ca3af'}
+                    />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -474,14 +539,27 @@ export default function ForumReorderScreen() {
                           onPress={() => moveForumUp(category.id, forum.id)}
                           disabled={forumIndex === 0}
                         >
-                          <Ionicons name="arrow-up" size={16} color={forumIndex === 0 ? '#4b5563' : '#9ca3af'} />
+                          <Ionicons
+                            name="arrow-up"
+                            size={16}
+                            color={forumIndex === 0 ? '#4b5563' : '#9ca3af'}
+                          />
                         </TouchableOpacity>
                         <TouchableOpacity
-                          style={[styles.moveButton, forumIndex === category.forums.length - 1 && styles.moveButtonDisabled]}
+                          style={[
+                            styles.moveButton,
+                            forumIndex === category.forums.length - 1 && styles.moveButtonDisabled,
+                          ]}
                           onPress={() => moveForumDown(category.id, forum.id)}
                           disabled={forumIndex === category.forums.length - 1}
                         >
-                          <Ionicons name="arrow-down" size={16} color={forumIndex === category.forums.length - 1 ? '#4b5563' : '#9ca3af'} />
+                          <Ionicons
+                            name="arrow-down"
+                            size={16}
+                            color={
+                              forumIndex === category.forums.length - 1 ? '#4b5563' : '#9ca3af'
+                            }
+                          />
                         </TouchableOpacity>
                       </View>
                     </View>

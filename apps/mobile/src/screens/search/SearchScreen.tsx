@@ -43,7 +43,7 @@ import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import GlassCard from '../../components/ui/GlassCard';
 import AnimatedAvatar from '../../components/ui/AnimatedAvatar';
 import api from '../../lib/api';
@@ -292,7 +292,7 @@ function TrendingItem({
           colors={[item.color, `${item.color}99`]}
           style={trendingStyles.iconContainer}
         >
-          <Ionicons name={item.icon as any} size={16} color="#fff" />
+          <Ionicons name={item.icon as unknown} size={16} color="#fff" />
         </LinearGradient>
         <View style={trendingStyles.textContainer}>
           <Text
@@ -366,7 +366,7 @@ function VoiceSearchButton({
 }: {
   onPress: () => void;
   isListening: boolean;
-  colors: any;
+  colors: ThemeColors;
 }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const waveAnim1 = useRef(new Animated.Value(0)).current;
@@ -466,7 +466,7 @@ function FilterModal({
   onClose: () => void;
   filters: SearchFilters;
   onApply: (filters: SearchFilters) => void;
-  colors: any;
+  colors: ThemeColors;
   isDark: boolean;
 }) {
   const [localFilters, setLocalFilters] = useState(filters);
@@ -514,7 +514,11 @@ function FilterModal({
           colors={value ? ['#3b82f6', '#8b5cf6'] : [colors.surface, colors.surface]}
           style={filterStyles.toggleIcon}
         >
-          <Ionicons name={icon as any} size={16} color={value ? '#fff' : colors.textSecondary} />
+          <Ionicons
+            name={icon as unknown}
+            size={16}
+            color={value ? '#fff' : colors.textSecondary}
+          />
         </LinearGradient>
         <Text style={[filterStyles.toggleLabel, { color: colors.text }]}>{label}</Text>
       </View>
@@ -1515,7 +1519,7 @@ export default function SearchScreen() {
                       colors={action.gradient as [string, string]}
                       style={styles.quickActionGradient}
                     >
-                      <Ionicons name={action.icon as any} size={24} color="#fff" />
+                      <Ionicons name={action.icon as unknown} size={24} color="#fff" />
                     </LinearGradient>
                     <Text style={[styles.quickActionLabel, { color: colors.text }]}>
                       {action.label}

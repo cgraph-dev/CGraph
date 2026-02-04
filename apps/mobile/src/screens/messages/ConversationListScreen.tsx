@@ -18,7 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../lib/api';
 import socketManager from '../../lib/socket';
@@ -34,20 +34,20 @@ type Props = {
 };
 
 // Animated conversation item wrapper
-const AnimatedConversationItem = ({ 
-  item, 
-  index, 
-  onPress, 
-  colors, 
-  displayName, 
-  avatarUrl, 
+const AnimatedConversationItem = ({
+  item,
+  index,
+  onPress,
+  colors,
+  displayName,
+  avatarUrl,
   isOnline,
-  isPremium 
+  isPremium,
 }: {
   item: Conversation;
   index: number;
   onPress: () => void;
-  colors: any;
+  colors: ThemeColors;
   displayName: string;
   avatarUrl: string | undefined;
   isOnline: boolean;
@@ -83,7 +83,7 @@ const AnimatedConversationItem = ({
 
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
+
     // Press animation
     Animated.sequence([
       Animated.timing(scaleAnim, {
@@ -97,12 +97,20 @@ const AnimatedConversationItem = ({
         useNativeDriver: true,
       }),
     ]).start();
-    
+
     onPress();
   };
 
   // Determine avatar border animation based on status
-  const getBorderAnimation = (): 'none' | 'solid' | 'gradient' | 'pulse' | 'rainbow' | 'glow' | 'neon' | 'holographic' => {
+  const getBorderAnimation = ():
+    | 'none'
+    | 'solid'
+    | 'gradient'
+    | 'pulse'
+    | 'rainbow'
+    | 'glow'
+    | 'neon'
+    | 'holographic' => {
     if (isPremium) return 'holographic';
     if (isOnline) return 'glow';
     if (item.unread_count > 0) return 'pulse';
@@ -115,10 +123,7 @@ const AnimatedConversationItem = ({
         styles.animatedWrapper,
         {
           opacity: fadeAnim,
-          transform: [
-            { translateX: slideAnim },
-            { scale: scaleAnim },
-          ],
+          transform: [{ translateX: slideAnim }, { scale: scaleAnim }],
         },
       ]}
     >
@@ -153,14 +158,12 @@ const AnimatedConversationItem = ({
                     colors={isPremium ? ['#8b5cf6', '#ec4899'] : ['#10b981', '#059669']}
                     style={styles.avatarGradient}
                   >
-                    <Text style={styles.avatarInitial}>
-                      {displayName.charAt(0).toUpperCase()}
-                    </Text>
+                    <Text style={styles.avatarInitial}>{displayName.charAt(0).toUpperCase()}</Text>
                   </LinearGradient>
                   {isOnline && <View style={styles.onlineIndicator} />}
                 </View>
               )}
-              
+
               {/* Unread badge */}
               {item.unread_count > 0 && (
                 <View style={styles.unreadBadgeContainer}>
@@ -191,7 +194,7 @@ const AnimatedConversationItem = ({
                 >
                   {displayName}
                 </Text>
-                
+
                 {/* Typing indicator or time */}
                 {item.last_message && (
                   <View style={styles.timeContainer}>
@@ -201,17 +204,32 @@ const AnimatedConversationItem = ({
                   </View>
                 )}
               </View>
-              
+
               {item.last_message && (
                 <View style={styles.messagePreview}>
                   {item.last_message.type === 'image' && (
-                    <Ionicons name="image" size={14} color={colors.textSecondary} style={{ marginRight: 4 }} />
+                    <Ionicons
+                      name="image"
+                      size={14}
+                      color={colors.textSecondary}
+                      style={{ marginRight: 4 }}
+                    />
                   )}
                   {item.last_message.type === 'video' && (
-                    <Ionicons name="videocam" size={14} color={colors.textSecondary} style={{ marginRight: 4 }} />
+                    <Ionicons
+                      name="videocam"
+                      size={14}
+                      color={colors.textSecondary}
+                      style={{ marginRight: 4 }}
+                    />
                   )}
                   {item.last_message.type === 'voice' && (
-                    <Ionicons name="mic" size={14} color={colors.textSecondary} style={{ marginRight: 4 }} />
+                    <Ionicons
+                      name="mic"
+                      size={14}
+                      color={colors.textSecondary}
+                      style={{ marginRight: 4 }}
+                    />
                   )}
                   <Text
                     style={[
@@ -228,10 +246,10 @@ const AnimatedConversationItem = ({
 
             {/* Arrow indicator */}
             <View style={styles.arrowContainer}>
-              <Ionicons 
-                name="chevron-forward" 
-                size={20} 
-                color={item.unread_count > 0 ? colors.primary : colors.textTertiary} 
+              <Ionicons
+                name="chevron-forward"
+                size={20}
+                color={item.unread_count > 0 ? colors.primary : colors.textTertiary}
               />
             </View>
           </View>
@@ -247,10 +265,10 @@ export default function ConversationListScreen({ navigation }: Props) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
-  
+
   // Header animation
   const scrollY = useRef(new Animated.Value(0)).current;
-  
+
   // Set up navigation header with premium design
   useEffect(() => {
     navigation.setOptions({
@@ -281,20 +299,20 @@ export default function ConversationListScreen({ navigation }: Props) {
       ),
     });
   }, [colors, navigation]);
-  
+
   // Fetch conversations when user is available
   useEffect(() => {
     if (user?.id) {
       fetchConversations();
     }
   }, [user?.id]);
-  
+
   // Subscribe to global friend presence changes
   useEffect(() => {
     setOnlineUsers(new Set(socketManager.getOnlineFriends()));
-    
+
     const unsubscribe = socketManager.onGlobalStatusChange((userId, isOnline) => {
-      setOnlineUsers(prev => {
+      setOnlineUsers((prev) => {
         const next = new Set(prev);
         if (isOnline) {
           next.add(userId);
@@ -304,13 +322,13 @@ export default function ConversationListScreen({ navigation }: Props) {
         return next;
       });
     });
-    
+
     return () => unsubscribe();
   }, []);
-  
+
   const fetchBulkPresence = useCallback(async (participantIds: string[]) => {
     if (participantIds.length === 0) return;
-    
+
     try {
       const presenceData = await socketManager.getBulkFriendStatus(participantIds);
       const online = new Set<string>();
@@ -324,23 +342,24 @@ export default function ConversationListScreen({ navigation }: Props) {
       // Ignore errors
     }
   }, []);
-  
+
   const fetchConversations = async () => {
     try {
       const response = await api.get('/api/v1/conversations');
       const convos = response.data.data || [];
       setConversations(convos);
-      
+
       const participantIds = convos
         .map((conv: Conversation) => {
           const other = conv.participants?.find((p: ConversationParticipant) => {
-            const pUserId = p.userId || p.user_id || (p.user as any)?.id || p.id;
+            const pUserId =
+              p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
             return String(pUserId) !== String(user?.id);
           });
-          return other?.userId || other?.user_id || (other?.user as any)?.id;
+          return other?.userId || other?.user_id || (other?.user as Record<string, unknown>)?.id;
         })
         .filter(Boolean) as string[];
-      
+
       if (participantIds.length > 0) {
         fetchBulkPresence(participantIds);
       }
@@ -348,44 +367,50 @@ export default function ConversationListScreen({ navigation }: Props) {
       console.error('Error fetching conversations:', error);
     }
   };
-  
+
   const onRefresh = async () => {
     setRefreshing(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     await fetchConversations();
     setRefreshing(false);
   };
-  
+
   const renderConversation = ({ item, index }: { item: Conversation; index: number }) => {
     const currentUserId = user?.id;
-    
-    const otherParticipant = currentUserId ? item.participants?.find((p: ConversationParticipant) => {
-      const participantUserId = p.userId || p.user_id || (p.user as any)?.id || p.id;
-      return String(participantUserId) !== String(currentUserId);
-    }) : item.participants?.[0];
-    
-    const displayName = item.name ||
+
+    const otherParticipant = currentUserId
+      ? item.participants?.find((p: ConversationParticipant) => {
+          const participantUserId =
+            p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
+          return String(participantUserId) !== String(currentUserId);
+        })
+      : item.participants?.[0];
+
+    const displayName =
+      item.name ||
       otherParticipant?.nickname ||
-      (otherParticipant?.user as any)?.displayName ||
-      (otherParticipant?.user as any)?.display_name ||
+      (otherParticipant?.user as Record<string, unknown>)?.displayName ||
+      (otherParticipant?.user as Record<string, unknown>)?.display_name ||
       otherParticipant?.displayName ||
       otherParticipant?.display_name ||
-      (otherParticipant?.user as any)?.username ||
+      (otherParticipant?.user as Record<string, unknown>)?.username ||
       otherParticipant?.username ||
       'Unknown';
-    
-    const avatarUrl = (otherParticipant?.user as any)?.avatarUrl || 
-      (otherParticipant?.user as any)?.avatar_url ||
+
+    const avatarUrl =
+      (otherParticipant?.user as Record<string, unknown>)?.avatarUrl ||
+      (otherParticipant?.user as Record<string, unknown>)?.avatar_url ||
       otherParticipant?.avatarUrl ||
       otherParticipant?.avatar_url;
-    
-    const otherUserId = otherParticipant?.userId || 
-      otherParticipant?.user_id || 
-      (otherParticipant?.user as any)?.id ||
+
+    const otherUserId =
+      otherParticipant?.userId ||
+      otherParticipant?.user_id ||
+      (otherParticipant?.user as Record<string, unknown>)?.id ||
       '';
     const isOnline = onlineUsers.has(String(otherUserId));
-    const isPremium = (otherParticipant?.user as any)?.is_premium || false;
-    
+    const isPremium = (otherParticipant?.user as Record<string, unknown>)?.is_premium || false;
+
     return (
       <AnimatedConversationItem
         item={item}
@@ -399,7 +424,7 @@ export default function ConversationListScreen({ navigation }: Props) {
       />
     );
   };
-  
+
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
       <GlassCard variant="crystal" intensity="medium" style={styles.emptyCard}>
@@ -411,14 +436,12 @@ export default function ConversationListScreen({ navigation }: Props) {
         >
           <Ionicons name="chatbubbles" size={48} color="#fff" />
         </LinearGradient>
-        
-        <Text style={[styles.emptyTitle, { color: colors.text }]}>
-          No Messages Yet
-        </Text>
+
+        <Text style={[styles.emptyTitle, { color: colors.text }]}>No Messages Yet</Text>
         <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
           Start a conversation with friends{'\n'}and see your messages here
         </Text>
-        
+
         <TouchableOpacity
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -439,7 +462,7 @@ export default function ConversationListScreen({ navigation }: Props) {
       </GlassCard>
     </View>
   );
-  
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
@@ -447,8 +470,8 @@ export default function ConversationListScreen({ navigation }: Props) {
         renderItem={renderConversation}
         keyExtractor={(item) => item.id}
         refreshControl={
-          <RefreshControl 
-            refreshing={refreshing} 
+          <RefreshControl
+            refreshing={refreshing}
             onRefresh={onRefresh}
             tintColor={colors.primary}
             colors={[colors.primary]}
@@ -460,10 +483,9 @@ export default function ConversationListScreen({ navigation }: Props) {
           conversations.length === 0 && styles.emptyContainer,
         ]}
         showsVerticalScrollIndicator={false}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+          useNativeDriver: false,
+        })}
       />
     </View>
   );

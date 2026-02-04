@@ -1,6 +1,6 @@
 /**
  * E2EE Key Verification Screen for Mobile
- * 
+ *
  * Displays safety number for verifying end-to-end encryption with a contact.
  * Includes QR code scanning for cross-device verification.
  */
@@ -93,7 +93,7 @@ export function KeyVerificationScreen() {
         loading: false,
         error: null,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setState((s) => ({
         ...s,
         loading: false,
@@ -115,11 +115,8 @@ export function KeyVerificationScreen() {
               await api.post(`/api/v1/e2ee/keys/${userId}/verify`);
               setState((s) => ({ ...s, isVerified: true }));
               Alert.alert('Success', `${username} is now verified!`);
-            } catch (err: any) {
-              Alert.alert(
-                'Error',
-                err.response?.data?.message || 'Failed to mark as verified'
-              );
+            } catch (err: unknown) {
+              Alert.alert('Error', err.response?.data?.message || 'Failed to mark as verified');
             }
           },
         },
@@ -215,9 +212,7 @@ export function KeyVerificationScreen() {
           </View>
           <View style={styles.instructionItem}>
             <Text style={styles.instructionNumber}>3</Text>
-            <Text style={styles.instructionText}>
-              If they match, tap "Mark as Verified"
-            </Text>
+            <Text style={styles.instructionText}>If they match, tap "Mark as Verified"</Text>
           </View>
         </View>
 
@@ -230,18 +225,9 @@ export function KeyVerificationScreen() {
         </View>
 
         {/* QR Code Section */}
-        <TouchableOpacity
-          style={styles.qrToggle}
-          onPress={() => setShowQR(!showQR)}
-        >
-          <Ionicons
-            name={showQR ? 'chevron-up' : 'qr-code-outline'}
-            size={20}
-            color="#6366f1"
-          />
-          <Text style={styles.qrToggleText}>
-            {showQR ? 'Hide QR Code' : 'Show QR Code'}
-          </Text>
+        <TouchableOpacity style={styles.qrToggle} onPress={() => setShowQR(!showQR)}>
+          <Ionicons name={showQR ? 'chevron-up' : 'qr-code-outline'} size={20} color="#6366f1" />
+          <Text style={styles.qrToggleText}>{showQR ? 'Hide QR Code' : 'Show QR Code'}</Text>
         </TouchableOpacity>
 
         {showQR && state.safetyNumber && (
@@ -252,9 +238,7 @@ export function KeyVerificationScreen() {
               backgroundColor="white"
               color="black"
             />
-            <Text style={styles.qrHint}>
-              Scan with CGraph app to verify instantly
-            </Text>
+            <Text style={styles.qrHint}>Scan with CGraph app to verify instantly</Text>
           </View>
         )}
 
@@ -266,10 +250,7 @@ export function KeyVerificationScreen() {
 
         {/* Verify Button */}
         {!state.isVerified && (
-          <TouchableOpacity
-            style={styles.verifyButton}
-            onPress={handleMarkVerified}
-          >
+          <TouchableOpacity style={styles.verifyButton} onPress={handleMarkVerified}>
             <Ionicons name="shield-checkmark" size={20} color="white" />
             <Text style={styles.verifyButtonText}>Mark as Verified</Text>
           </TouchableOpacity>
@@ -279,8 +260,8 @@ export function KeyVerificationScreen() {
         <View style={styles.warningCard}>
           <Ionicons name="alert-circle-outline" size={16} color="#f59e0b" />
           <Text style={styles.warningText}>
-            If the numbers don't match, your messages may be intercepted.
-            Do not verify until you've confirmed they match.
+            If the numbers don't match, your messages may be intercepted. Do not verify until you've
+            confirmed they match.
           </Text>
         </View>
       </ScrollView>

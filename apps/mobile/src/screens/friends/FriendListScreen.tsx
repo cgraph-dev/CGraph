@@ -21,7 +21,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
 import socketManager from '../../lib/socket';
 import { UserBasic, FriendsStackParamList } from '../../types';
@@ -49,7 +49,7 @@ const AnimatedFriendItem = ({
   item: FriendItem;
   index: number;
   onPress: () => void;
-  colors: any;
+  colors: ThemeColors;
   isOnline: boolean;
 }) => {
   const slideAnim = useRef(new Animated.Value(60)).current;
@@ -99,7 +99,7 @@ const AnimatedFriendItem = ({
 
   const displayName = item.user.display_name || item.user.username || 'User';
   const avatarUrl = item.user.avatar_url;
-  const isPremium = (item.user as any).is_premium || false;
+  const isPremium = (item.user as Record<string, unknown>).is_premium || false;
 
   const getBorderAnimation = (): 'none' | 'glow' | 'holographic' | 'rainbow' => {
     if (isPremium) return 'holographic';
@@ -113,10 +113,7 @@ const AnimatedFriendItem = ({
         styles.friendItemWrapper,
         {
           opacity: fadeAnim,
-          transform: [
-            { translateX: slideAnim },
-            { scale: scaleAnim },
-          ],
+          transform: [{ translateX: slideAnim }, { scale: scaleAnim }],
         },
       ]}
     >
@@ -147,9 +144,7 @@ const AnimatedFriendItem = ({
                     colors={isPremium ? ['#8b5cf6', '#ec4899'] : ['#10b981', '#059669']}
                     style={styles.avatarGradient}
                   >
-                    <Text style={styles.avatarInitial}>
-                      {displayName.charAt(0).toUpperCase()}
-                    </Text>
+                    <Text style={styles.avatarInitial}>{displayName.charAt(0).toUpperCase()}</Text>
                   </LinearGradient>
                   {isOnline && <View style={styles.onlineIndicator} />}
                 </View>
@@ -163,15 +158,15 @@ const AnimatedFriendItem = ({
                   {displayName}
                 </Text>
                 {isPremium && (
-                  <LinearGradient
-                    colors={['#8b5cf6', '#ec4899']}
-                    style={styles.premiumBadge}
-                  >
+                  <LinearGradient colors={['#8b5cf6', '#ec4899']} style={styles.premiumBadge}>
                     <Ionicons name="diamond" size={10} color="#fff" />
                   </LinearGradient>
                 )}
               </View>
-              <Text style={[styles.friendUsername, { color: colors.textSecondary }]} numberOfLines={1}>
+              <Text
+                style={[styles.friendUsername, { color: colors.textSecondary }]}
+                numberOfLines={1}
+              >
                 @{item.user.username || item.user.id?.slice(0, 8) || 'unknown'}
               </Text>
             </View>
@@ -241,12 +236,12 @@ export default function FriendListScreen() {
     fetchFriends();
     fetchPendingCount();
   }, [fetchFriends, fetchPendingCount]);
-  
+
   useEffect(() => {
     setOnlineFriends(new Set(socketManager.getOnlineFriends()));
-    
+
     const unsubscribe = socketManager.onGlobalStatusChange((userId, isOnline) => {
-      setOnlineFriends(prev => {
+      setOnlineFriends((prev) => {
         const next = new Set(prev);
         if (isOnline) {
           next.add(userId);
@@ -256,15 +251,15 @@ export default function FriendListScreen() {
         return next;
       });
     });
-    
+
     return () => unsubscribe();
   }, []);
-  
+
   useEffect(() => {
     if (friends.length > 0) {
-      const friendUserIds = friends.map(f => f.user.id).filter(Boolean);
+      const friendUserIds = friends.map((f) => f.user.id).filter(Boolean);
       if (friendUserIds.length > 0) {
-        socketManager.getBulkFriendStatus(friendUserIds).then(presenceMap => {
+        socketManager.getBulkFriendStatus(friendUserIds).then((presenceMap) => {
           const online = new Set<string>();
           Object.entries(presenceMap).forEach(([userId, data]) => {
             if (data.online && !data.hidden) {
@@ -305,7 +300,7 @@ export default function FriendListScreen() {
 
   const renderFriend = ({ item, index }: { item: FriendItem; index: number }) => {
     const isOnline = onlineFriends.has(item.user.id);
-    
+
     return (
       <AnimatedFriendItem
         item={item}
@@ -322,10 +317,13 @@ export default function FriendListScreen() {
   }
 
   // Count online friends
-  const onlineCount = friends.filter(f => onlineFriends.has(f.user.id)).length;
+  const onlineCount = friends.filter((f) => onlineFriends.has(f.user.id)).length;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={['top']}
+    >
       {/* Premium Search Bar */}
       <View style={styles.searchContainer}>
         <GlassCard variant="frosted" intensity="subtle" style={styles.searchCard}>
@@ -397,10 +395,7 @@ export default function FriendListScreen() {
               <Ionicons name="mail" size={18} color={colors.primary} />
               <Text style={[styles.actionCardText, { color: colors.text }]}>Requests</Text>
               {pendingCount > 0 && (
-                <LinearGradient
-                  colors={['#ef4444', '#dc2626']}
-                  style={styles.badge}
-                >
+                <LinearGradient colors={['#ef4444', '#dc2626']} style={styles.badge}>
                   <Text style={styles.badgeText}>{pendingCount}</Text>
                 </LinearGradient>
               )}
@@ -438,8 +433,8 @@ export default function FriendListScreen() {
           filteredFriends.length === 0 && styles.emptyList,
         ]}
         refreshControl={
-          <RefreshControl 
-            refreshing={refreshing} 
+          <RefreshControl
+            refreshing={refreshing}
             onRefresh={onRefresh}
             tintColor={colors.primary}
           />
@@ -448,19 +443,14 @@ export default function FriendListScreen() {
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <GlassCard variant="crystal" intensity="medium" style={styles.emptyCard}>
-              <LinearGradient
-                colors={['#10b981', '#059669']}
-                style={styles.emptyIcon}
-              >
+              <LinearGradient colors={['#10b981', '#059669']} style={styles.emptyIcon}>
                 <Ionicons name="people" size={40} color="#fff" />
               </LinearGradient>
               <Text style={[styles.emptyTitle, { color: colors.text }]}>
                 {searchQuery ? 'No friends found' : 'No friends yet'}
               </Text>
               <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
-                {searchQuery
-                  ? 'Try a different search term'
-                  : 'Add friends to start chatting!'}
+                {searchQuery ? 'Try a different search term' : 'Add friends to start chatting!'}
               </Text>
               {!searchQuery && (
                 <TouchableOpacity
@@ -470,10 +460,7 @@ export default function FriendListScreen() {
                   }}
                   activeOpacity={0.8}
                 >
-                  <LinearGradient
-                    colors={['#10b981', '#059669']}
-                    style={styles.emptyButton}
-                  >
+                  <LinearGradient colors={['#10b981', '#059669']} style={styles.emptyButton}>
                     <Ionicons name="person-add" size={18} color="#fff" />
                     <Text style={styles.emptyButtonText}>Add Friend</Text>
                   </LinearGradient>

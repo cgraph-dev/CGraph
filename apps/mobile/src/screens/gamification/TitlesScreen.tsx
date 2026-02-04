@@ -1,16 +1,16 @@
 /**
  * TitlesScreen - Mobile
- * 
+ *
  * Title collection and management screen where users can view all titles,
  * equip/unequip titles, and purchase new titles from the shop.
- * 
+ *
  * Features:
  * - Tab-based filtering (Owned, All, Shop)
  * - Rarity filtering
  * - Title equipping with haptic feedback
  * - Shop integration for purchasing
  * - Premium title indicators
- * 
+ *
  * @version 1.0.0
  * @since v0.8.3
  */
@@ -70,12 +70,20 @@ const TABS: { id: TitleTab; name: string; icon: string }[] = [
   { id: 'shop', name: 'Shop', icon: 'cart' },
 ];
 
-const RARITY_COLORS: Record<TitleRarity, { bg: string; text: string; border: string; gradient: [string, string] }> = {
+const RARITY_COLORS: Record<
+  TitleRarity,
+  { bg: string; text: string; border: string; gradient: [string, string] }
+> = {
   common: { bg: '#374151', text: '#9ca3af', border: '#4b5563', gradient: ['#374151', '#1f2937'] },
   uncommon: { bg: '#064e3b', text: '#34d399', border: '#10b981', gradient: ['#064e3b', '#022c22'] },
   rare: { bg: '#1e3a8a', text: '#60a5fa', border: '#3b82f6', gradient: ['#1e3a8a', '#1e1b4b'] },
   epic: { bg: '#581c87', text: '#c084fc', border: '#a855f7', gradient: ['#581c87', '#3b0764'] },
-  legendary: { bg: '#78350f', text: '#fcd34d', border: '#f59e0b', gradient: ['#78350f', '#451a03'] },
+  legendary: {
+    bg: '#78350f',
+    text: '#fcd34d',
+    border: '#f59e0b',
+    gradient: ['#78350f', '#451a03'],
+  },
   mythic: { bg: '#831843', text: '#f472b6', border: '#ec4899', gradient: ['#831843', '#500724'] },
   unique: { bg: '#7f1d1d', text: '#fca5a5', border: '#ef4444', gradient: ['#7f1d1d', '#450a0a'] },
 };
@@ -92,7 +100,10 @@ const RARITIES: { id: TitleRarity | 'all'; name: string }[] = [
 ];
 
 // Transform API title to UserTitle format
-function transformTitle(apiTitle: any, equippedTitleId: string | null): UserTitle {
+function transformTitle(
+  apiTitle: Record<string, unknown>,
+  equippedTitleId: string | null
+): UserTitle {
   return {
     id: apiTitle.id,
     name: apiTitle.name,
@@ -123,7 +134,7 @@ interface TitleCardProps {
 function TitleCard({ title, onEquip, onUnequip, onPurchase, currentCoins }: TitleCardProps) {
   const colors = RARITY_COLORS[title.rarity];
   const canAfford = title.price ? currentCoins >= title.price : true;
-  
+
   const handleAction = () => {
     HapticFeedback.medium();
     if (title.equipped) {
@@ -134,7 +145,7 @@ function TitleCard({ title, onEquip, onUnequip, onPurchase, currentCoins }: Titl
       onPurchase(title.id);
     }
   };
-  
+
   return (
     <View style={[styles.titleCard, { borderColor: title.owned ? colors.border : '#37415180' }]}>
       <LinearGradient
@@ -143,34 +154,36 @@ function TitleCard({ title, onEquip, onUnequip, onPurchase, currentCoins }: Titl
       >
         {/* Header with rarity badge */}
         <View style={styles.titleHeader}>
-          <View style={[styles.rarityBadge, { backgroundColor: colors.bg, borderColor: colors.border }]}>
+          <View
+            style={[styles.rarityBadge, { backgroundColor: colors.bg, borderColor: colors.border }]}
+          >
             <Text style={[styles.rarityText, { color: colors.text }]}>
               {title.rarity.charAt(0).toUpperCase() + title.rarity.slice(1)}
             </Text>
           </View>
-          
+
           {title.equipped && (
             <View style={styles.equippedBadge}>
               <Ionicons name="checkmark-circle" size={16} color="#10b981" />
               <Text style={styles.equippedText}>Equipped</Text>
             </View>
           )}
-          
+
           {title.isPremium && !title.owned && (
             <View style={styles.premiumBadge}>
               <Ionicons name="diamond" size={14} color="#f59e0b" />
             </View>
           )}
         </View>
-        
+
         {/* Title Name with TitleBadge */}
         <View style={styles.titleNameRow}>
           <TitleBadge title={title.name} rarity={title.rarity} size="md" />
         </View>
-        
+
         {/* Description */}
         <Text style={styles.titleDescription}>{title.description}</Text>
-        
+
         {/* Requirement or Price */}
         {!title.owned && (
           <View style={styles.requirementContainer}>
@@ -190,18 +203,17 @@ function TitleCard({ title, onEquip, onUnequip, onPurchase, currentCoins }: Titl
             )}
           </View>
         )}
-        
+
         {/* Action Button */}
         {title.owned ? (
           <TouchableOpacity
-            style={[styles.actionButton, title.equipped ? styles.unequipButton : { backgroundColor: colors.border }]}
+            style={[
+              styles.actionButton,
+              title.equipped ? styles.unequipButton : { backgroundColor: colors.border },
+            ]}
             onPress={handleAction}
           >
-            <Ionicons
-              name={title.equipped ? 'close-circle' : 'ribbon'}
-              size={16}
-              color="#fff"
-            />
+            <Ionicons name={title.equipped ? 'close-circle' : 'ribbon'} size={16} color="#fff" />
             <Text style={styles.actionButtonText}>
               {title.equipped ? 'Unequip' : 'Equip Title'}
             </Text>
@@ -235,29 +247,31 @@ function TitleCard({ title, onEquip, onUnequip, onPurchase, currentCoins }: Titl
 export default function TitlesScreen() {
   const navigation = useNavigation();
   const { stats, refreshStats, isLoading } = useGamification();
-  
+
   const [activeTab, setActiveTab] = useState<TitleTab>('owned');
   const [selectedRarity, setSelectedRarity] = useState<TitleRarity | 'all'>('all');
   const [titles, setTitles] = useState<UserTitle[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [titlesLoading, setTitlesLoading] = useState(true);
   const [titlesError, setTitlesError] = useState<string | null>(null);
-  
+
   const currentCoins = stats?.coins || 0;
   const currentTitle = stats?.currentTitle || null;
   const equippedTitleId = stats?.equippedTitleId || null;
-  
+
   // Fetch titles from API
   useEffect(() => {
     let isMounted = true;
-    
+
     const fetchTitles = async () => {
       setTitlesLoading(true);
       setTitlesError(null);
       try {
         const data = await gamificationService.getTitles();
         if (isMounted) {
-          const userTitles = data.map((t: any) => transformTitle(t, equippedTitleId));
+          const userTitles = data.map((t: Record<string, unknown>) =>
+            transformTitle(t, equippedTitleId)
+          );
           setTitles(userTitles);
         }
       } catch (error) {
@@ -271,66 +285,73 @@ export default function TitlesScreen() {
         }
       }
     };
-    
+
     fetchTitles();
-    
+
     return () => {
       isMounted = false;
     };
   }, [equippedTitleId]);
-  
+
   // Filter titles based on tab and rarity
   const displayedTitles = useMemo(() => {
     let filtered = titles;
-    
+
     // Filter by tab
     switch (activeTab) {
       case 'owned':
-        filtered = filtered.filter(t => t.owned);
+        filtered = filtered.filter((t) => t.owned);
         break;
       case 'shop':
-        filtered = filtered.filter(t => !t.owned && t.price);
+        filtered = filtered.filter((t) => !t.owned && t.price);
         break;
       // 'all' shows everything
     }
-    
+
     // Filter by rarity
     if (selectedRarity !== 'all') {
-      filtered = filtered.filter(t => t.rarity === selectedRarity);
+      filtered = filtered.filter((t) => t.rarity === selectedRarity);
     }
-    
+
     return filtered;
   }, [titles, activeTab, selectedRarity]);
-  
+
   // Stats
-  const ownedCount = useMemo(() => titles.filter(t => t.owned).length, [titles]);
+  const ownedCount = useMemo(() => titles.filter((t) => t.owned).length, [titles]);
   const totalCount = titles.length;
-  
-  const handleEquip = useCallback(async (titleId: string) => {
-    try {
-      // Update local state optimistically
-      setTitles(prev => prev.map(t => ({
-        ...t,
-        equipped: t.id === titleId,
-      })));
-      
-      // Call API
-      await gamificationService.equipTitle(titleId);
-      HapticFeedback.success();
-    } catch (error) {
-      HapticFeedback.error();
-      // Revert on error
-      setTitles(prev => prev.map(t => ({
-        ...t,
-        equipped: t.name === currentTitle,
-      })));
-      Alert.alert('Error', 'Failed to equip title');
-    }
-  }, [currentTitle]);
-  
+
+  const handleEquip = useCallback(
+    async (titleId: string) => {
+      try {
+        // Update local state optimistically
+        setTitles((prev) =>
+          prev.map((t) => ({
+            ...t,
+            equipped: t.id === titleId,
+          }))
+        );
+
+        // Call API
+        await gamificationService.equipTitle(titleId);
+        HapticFeedback.success();
+      } catch (error) {
+        HapticFeedback.error();
+        // Revert on error
+        setTitles((prev) =>
+          prev.map((t) => ({
+            ...t,
+            equipped: t.name === currentTitle,
+          }))
+        );
+        Alert.alert('Error', 'Failed to equip title');
+      }
+    },
+    [currentTitle]
+  );
+
   const handleUnequip = useCallback(async () => {
     try {
-      setTitles(prev => prev.map(t => ({ ...t, equipped: false })));
+      setTitles((prev) => prev.map((t) => ({ ...t, equipped: false })));
       await gamificationService.unequipTitle();
       HapticFeedback.success();
     } catch (error) {
@@ -338,47 +359,49 @@ export default function TitlesScreen() {
       Alert.alert('Error', 'Failed to unequip title');
     }
   }, []);
-  
-  const handlePurchase = useCallback(async (titleId: string) => {
-    const title = titles.find(t => t.id === titleId);
-    if (!title || !title.price) return;
-    
-    Alert.alert(
-      'Purchase Title',
-      `Do you want to purchase "${title.name}" for ${(title.price ?? 0).toLocaleString()} coins?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Purchase',
-          onPress: async () => {
-            try {
-              await gamificationService.purchaseTitle(titleId);
-              setTitles(prev => prev.map(t => 
-                t.id === titleId ? { ...t, owned: true } : t
-              ));
-              await refreshStats();
-              HapticFeedback.success();
-              Alert.alert('Success!', `You now own the "${title.name}" title!`);
-            } catch (error) {
-              HapticFeedback.error();
-              Alert.alert('Error', 'Failed to purchase title');
-            }
+
+  const handlePurchase = useCallback(
+    async (titleId: string) => {
+      const title = titles.find((t) => t.id === titleId);
+      if (!title || !title.price) return;
+
+      Alert.alert(
+        'Purchase Title',
+        `Do you want to purchase "${title.name}" for ${(title.price ?? 0).toLocaleString()} coins?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Purchase',
+            onPress: async () => {
+              try {
+                await gamificationService.purchaseTitle(titleId);
+                setTitles((prev) =>
+                  prev.map((t) => (t.id === titleId ? { ...t, owned: true } : t))
+                );
+                await refreshStats();
+                HapticFeedback.success();
+                Alert.alert('Success!', `You now own the "${title.name}" title!`);
+              } catch (error) {
+                HapticFeedback.error();
+                Alert.alert('Error', 'Failed to purchase title');
+              }
+            },
           },
-        },
-      ]
-    );
-  }, [titles, refreshStats]);
-  
+        ]
+      );
+    },
+    [titles, refreshStats]
+  );
+
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     setTitlesError(null);
     HapticFeedback.light();
     try {
-      const [, data] = await Promise.all([
-        refreshStats(),
-        gamificationService.getTitles(),
-      ]);
-      const userTitles = data.map((t: any) => transformTitle(t, equippedTitleId));
+      const [, data] = await Promise.all([refreshStats(), gamificationService.getTitles()]);
+      const userTitles = data.map((t: Record<string, unknown>) =>
+        transformTitle(t, equippedTitleId)
+      );
       setTitles(userTitles);
     } catch (error) {
       console.error('[TitlesScreen] Refresh failed:', error);
@@ -387,7 +410,7 @@ export default function TitlesScreen() {
       setRefreshing(false);
     }
   }, [refreshStats, equippedTitleId]);
-  
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -395,32 +418,32 @@ export default function TitlesScreen() {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        
+
         <View style={styles.headerContent}>
           <Text style={styles.headerTitle}>Titles</Text>
           <Text style={styles.headerSubtitle}>
             {ownedCount} / {totalCount} collected
           </Text>
         </View>
-        
+
         <View style={styles.headerCoins}>
           <Text style={styles.coinEmoji}>🪙</Text>
           <Text style={styles.coinsText}>{(currentCoins ?? 0).toLocaleString()}</Text>
         </View>
       </LinearGradient>
-      
+
       {/* Current Title */}
       {currentTitle && (
         <View style={styles.currentTitleContainer}>
           <Text style={styles.currentTitleLabel}>Current Title:</Text>
-          <TitleBadge 
-            title={currentTitle} 
-            rarity={titles.find(t => t.name === currentTitle)?.rarity || 'common'} 
-            size="md" 
+          <TitleBadge
+            title={currentTitle}
+            rarity={titles.find((t) => t.name === currentTitle)?.rarity || 'common'}
+            size="md"
           />
         </View>
       )}
-      
+
       {/* Tabs */}
       <View style={styles.tabsContainer}>
         {TABS.map((tab) => (
@@ -433,7 +456,7 @@ export default function TitlesScreen() {
             }}
           >
             <Ionicons
-              name={tab.icon as any}
+              name={tab.icon as unknown}
               size={18}
               color={activeTab === tab.id ? '#8b5cf6' : '#6b7280'}
             />
@@ -443,7 +466,7 @@ export default function TitlesScreen() {
           </TouchableOpacity>
         ))}
       </View>
-      
+
       {/* Rarity Filter */}
       <View style={styles.rarityFilter}>
         <FlatList
@@ -452,21 +475,30 @@ export default function TitlesScreen() {
           data={RARITIES}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => {
-            const colors = item.id === 'all' 
-              ? { bg: '#374151', text: '#9ca3af', border: '#4b5563' } 
-              : RARITY_COLORS[item.id];
+            const colors =
+              item.id === 'all'
+                ? { bg: '#374151', text: '#9ca3af', border: '#4b5563' }
+                : RARITY_COLORS[item.id];
             return (
               <TouchableOpacity
                 style={[
                   styles.rarityChip,
-                  selectedRarity === item.id && { backgroundColor: colors.bg, borderColor: colors.border },
+                  selectedRarity === item.id && {
+                    backgroundColor: colors.bg,
+                    borderColor: colors.border,
+                  },
                 ]}
                 onPress={() => {
                   HapticFeedback.light();
                   setSelectedRarity(item.id);
                 }}
               >
-                <Text style={[styles.rarityChipText, selectedRarity === item.id && { color: colors.text }]}>
+                <Text
+                  style={[
+                    styles.rarityChipText,
+                    selectedRarity === item.id && { color: colors.text },
+                  ]}
+                >
                   {item.name}
                 </Text>
               </TouchableOpacity>
@@ -475,7 +507,7 @@ export default function TitlesScreen() {
           contentContainerStyle={styles.rarityFilterContent}
         />
       </View>
-      
+
       {/* Titles List */}
       <FlatList
         data={displayedTitles}
@@ -519,8 +551,8 @@ export default function TitlesScreen() {
                   {activeTab === 'owned' ? 'No titles owned yet' : 'No titles available'}
                 </Text>
                 <Text style={styles.emptySubtitle}>
-                  {activeTab === 'owned' 
-                    ? 'Unlock titles by completing achievements' 
+                  {activeTab === 'owned'
+                    ? 'Unlock titles by completing achievements'
                     : 'Check back later for new titles'}
                 </Text>
               </>

@@ -105,9 +105,11 @@ export default function ForumBoardScreen({ navigation, route }: Props) {
 
       const [boardRes, threadsRes] = await Promise.all([
         api.get(boardEndpoint),
-        api.get(`/api/v1/boards/${boardId}/threads`, {
-          params: { sort: sortBy },
-        }).catch(() => ({ data: { data: [] } })),
+        api
+          .get(`/api/v1/boards/${boardId}/threads`, {
+            params: { sort: sortBy },
+          })
+          .catch(() => ({ data: { data: [] } })),
       ]);
 
       setBoard(boardRes.data?.data);
@@ -133,7 +135,12 @@ export default function ForumBoardScreen({ navigation, route }: Props) {
   };
 
   const renderSortTabs = () => (
-    <View style={[styles.sortTabs, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+    <View
+      style={[
+        styles.sortTabs,
+        { backgroundColor: colors.surface, borderBottomColor: colors.border },
+      ]}
+    >
       {(['newest', 'popular', 'active'] as SortOption[]).map((sort) => (
         <TouchableOpacity
           key={sort}
@@ -209,11 +216,15 @@ export default function ForumBoardScreen({ navigation, route }: Props) {
         <View style={styles.threadStats}>
           <View style={styles.stat}>
             <Ionicons name="chatbubble-outline" size={14} color={colors.textSecondary} />
-            <Text style={[styles.statText, { color: colors.textSecondary }]}>{item.reply_count}</Text>
+            <Text style={[styles.statText, { color: colors.textSecondary }]}>
+              {item.reply_count}
+            </Text>
           </View>
           <View style={styles.stat}>
             <Ionicons name="eye-outline" size={14} color={colors.textSecondary} />
-            <Text style={[styles.statText, { color: colors.textSecondary }]}>{item.view_count}</Text>
+            <Text style={[styles.statText, { color: colors.textSecondary }]}>
+              {item.view_count}
+            </Text>
           </View>
           {item.last_reply_at && (
             <Text style={[styles.lastReply, { color: colors.textSecondary }]}>
@@ -231,12 +242,15 @@ export default function ForumBoardScreen({ navigation, route }: Props) {
     <View style={[styles.boardHeader, { backgroundColor: colors.surface }]}>
       <View style={styles.boardInfo}>
         <View style={[styles.boardIcon, { backgroundColor: colors.primary }]}>
-          <Ionicons name={board?.icon as any || 'chatbubbles'} size={24} color="#fff" />
+          <Ionicons name={(board?.icon as unknown) || 'chatbubbles'} size={24} color="#fff" />
         </View>
         <View style={styles.boardDetails}>
           <Text style={[styles.boardName, { color: colors.text }]}>{board?.name}</Text>
           {board?.description && (
-            <Text style={[styles.boardDescription, { color: colors.textSecondary }]} numberOfLines={2}>
+            <Text
+              style={[styles.boardDescription, { color: colors.textSecondary }]}
+              numberOfLines={2}
+            >
               {board.description}
             </Text>
           )}
@@ -286,7 +300,11 @@ export default function ForumBoardScreen({ navigation, route }: Props) {
           </>
         }
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
         }
         contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={() => <View style={{ height: 8 }} />}

@@ -29,7 +29,17 @@ type Props = {
 // ============================================================================
 
 export interface AvatarStyle {
-  borderStyle: 'none' | 'solid' | 'gradient' | 'rainbow' | 'pulse' | 'spin' | 'glow' | 'neon' | 'fire' | 'electric';
+  borderStyle:
+    | 'none'
+    | 'solid'
+    | 'gradient'
+    | 'rainbow'
+    | 'pulse'
+    | 'spin'
+    | 'glow'
+    | 'neon'
+    | 'fire'
+    | 'electric';
   borderWidth: number;
   borderColor: string;
   glowIntensity: number;
@@ -61,16 +71,28 @@ const STORAGE_KEY = 'cgraph-avatar-style';
 // ============================================================================
 
 const borderStyles: AvatarStyle['borderStyle'][] = [
-  'none', 'solid', 'gradient', 'rainbow', 'pulse', 'spin', 'glow', 'neon', 'fire', 'electric'
+  'none',
+  'solid',
+  'gradient',
+  'rainbow',
+  'pulse',
+  'spin',
+  'glow',
+  'neon',
+  'fire',
+  'electric',
 ];
 
 const shapes: AvatarStyle['shape'][] = [
-  'circle', 'rounded-square', 'hexagon', 'octagon', 'shield', 'diamond'
+  'circle',
+  'rounded-square',
+  'hexagon',
+  'octagon',
+  'shield',
+  'diamond',
 ];
 
-const animationSpeeds: AvatarStyle['animationSpeed'][] = [
-  'none', 'slow', 'normal', 'fast'
-];
+const animationSpeeds: AvatarStyle['animationSpeed'][] = ['none', 'slow', 'normal', 'fast'];
 
 const colorOptions = [
   { name: 'Emerald', color: '#10b981' },
@@ -99,7 +121,7 @@ function SettingsSection({ title, icon, iconColor, children }: SectionProps) {
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={[styles.sectionIcon, { backgroundColor: iconColor + '20' }]}>
-          <Ionicons name={icon as any} size={18} color={iconColor} />
+          <Ionicons name={icon as unknown} size={18} color={iconColor} />
         </View>
         <Text style={styles.sectionTitle}>{title}</Text>
       </View>
@@ -227,10 +249,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
     }
   };
 
-  const updateStyle = useCallback(<K extends keyof AvatarStyle>(
-    key: K,
-    value: AvatarStyle[K]
-  ) => {
+  const updateStyle = useCallback(<K extends keyof AvatarStyle>(key: K, value: AvatarStyle[K]) => {
     setStyle((prev) => {
       const newStyle = { ...prev, [key]: value };
       saveStyle(newStyle);
@@ -240,22 +259,18 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
 
   const resetToDefaults = () => {
     HapticFeedback.medium();
-    Alert.alert(
-      'Reset Settings',
-      'Are you sure you want to reset avatar settings to defaults?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Reset',
-          style: 'destructive',
-          onPress: () => {
-            setStyle(defaultStyle);
-            saveStyle(defaultStyle);
-            HapticFeedback.success();
-          },
+    Alert.alert('Reset Settings', 'Are you sure you want to reset avatar settings to defaults?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Reset',
+        style: 'destructive',
+        onPress: () => {
+          setStyle(defaultStyle);
+          saveStyle(defaultStyle);
+          HapticFeedback.success();
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const exportStyle = async () => {
@@ -273,11 +288,16 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
   // Get border gradient based on style
   const getBorderGradient = (): [string, string] => {
     switch (style.borderStyle) {
-      case 'rainbow': return ['#ec4899', '#8b5cf6'];
-      case 'fire': return ['#ef4444', '#f97316'];
-      case 'electric': return ['#3b82f6', '#06b6d4'];
-      case 'neon': return ['#22c55e', '#10b981'];
-      default: return [style.borderColor, '#8b5cf6'];
+      case 'rainbow':
+        return ['#ec4899', '#8b5cf6'];
+      case 'fire':
+        return ['#ef4444', '#f97316'];
+      case 'electric':
+        return ['#3b82f6', '#06b6d4'];
+      case 'neon':
+        return ['#22c55e', '#10b981'];
+      default:
+        return [style.borderColor, '#8b5cf6'];
     }
   };
 
@@ -319,14 +339,16 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
           <Text style={styles.previewTitle}>Live Preview</Text>
           <View style={styles.avatarPreview}>
             <LinearGradient
-              colors={style.borderStyle !== 'none' ? getBorderGradient() : ['transparent', 'transparent']}
+              colors={
+                style.borderStyle !== 'none' ? getBorderGradient() : ['transparent', 'transparent']
+              }
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={[
                 styles.avatarBorder,
-                { 
-                  borderRadius: style.shape === 'circle' ? 60 : 
-                                style.shape === 'rounded-square' ? 20 : 60,
+                {
+                  borderRadius:
+                    style.shape === 'circle' ? 60 : style.shape === 'rounded-square' ? 20 : 60,
                   padding: style.borderWidth,
                 },
                 style.glowIntensity > 0 && {
@@ -334,25 +356,31 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
                   shadowOffset: { width: 0, height: 0 },
                   shadowOpacity: style.glowIntensity / 100,
                   shadowRadius: style.glowIntensity / 5,
-                }
+                },
               ]}
             >
-              <View style={[
-                styles.avatarInner,
-                { 
-                  borderRadius: style.shape === 'circle' ? 54 : 
-                                style.shape === 'rounded-square' ? 16 : 54,
-                }
-              ]}>
+              <View
+                style={[
+                  styles.avatarInner,
+                  {
+                    borderRadius:
+                      style.shape === 'circle' ? 54 : style.shape === 'rounded-square' ? 16 : 54,
+                  },
+                ]}
+              >
                 {user?.avatar_url ? (
                   <Image
                     source={{ uri: user.avatar_url }}
                     style={[
                       styles.avatarImage,
-                      { 
-                        borderRadius: style.shape === 'circle' ? 54 : 
-                                      style.shape === 'rounded-square' ? 16 : 54,
-                      }
+                      {
+                        borderRadius:
+                          style.shape === 'circle'
+                            ? 54
+                            : style.shape === 'rounded-square'
+                              ? 16
+                              : 54,
+                      },
                     ]}
                   />
                 ) : (
@@ -360,10 +388,14 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
                     colors={['#10b981', '#059669']}
                     style={[
                       styles.avatarPlaceholder,
-                      { 
-                        borderRadius: style.shape === 'circle' ? 54 : 
-                                      style.shape === 'rounded-square' ? 16 : 54,
-                      }
+                      {
+                        borderRadius:
+                          style.shape === 'circle'
+                            ? 54
+                            : style.shape === 'rounded-square'
+                              ? 16
+                              : 54,
+                      },
                     ]}
                   >
                     <Text style={styles.avatarInitial}>
@@ -374,7 +406,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
               </View>
             </LinearGradient>
             {style.statusIndicator !== 'none' && (
-              <View 
+              <View
                 style={[
                   styles.statusIndicator,
                   style.statusIndicator === 'ring' && styles.statusRing,
@@ -383,13 +415,11 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
                   style.badgePosition === 'top-left' && { top: 4, left: 4 },
                   style.badgePosition === 'bottom-right' && { bottom: 4, right: 4 },
                   style.badgePosition === 'bottom-left' && { bottom: 4, left: 4 },
-                ]} 
+                ]}
               />
             )}
           </View>
-          <Text style={styles.previewSubtitle}>
-            {user?.display_name || 'Username'}
-          </Text>
+          <Text style={styles.previewSubtitle}>{user?.display_name || 'Username'}</Text>
         </BlurView>
       </View>
 
@@ -457,7 +487,9 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
           <OptionGrid
             options={animationSpeeds}
             selected={style.animationSpeed}
-            onSelect={(value) => updateStyle('animationSpeed', value as AvatarStyle['animationSpeed'])}
+            onSelect={(value) =>
+              updateStyle('animationSpeed', value as AvatarStyle['animationSpeed'])
+            }
           />
         </SettingsSection>
 
@@ -477,7 +509,9 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
           <OptionGrid
             options={['none', 'dot', 'ring'] as AvatarStyle['statusIndicator'][]}
             selected={style.statusIndicator}
-            onSelect={(value) => updateStyle('statusIndicator', value as AvatarStyle['statusIndicator'])}
+            onSelect={(value) =>
+              updateStyle('statusIndicator', value as AvatarStyle['statusIndicator'])
+            }
             columns={3}
           />
           <View style={styles.colorSection}>
@@ -510,9 +544,18 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
           </View>
           <Text style={styles.optionSubtitle}>Badge Position</Text>
           <OptionGrid
-            options={['top-right', 'bottom-right', 'top-left', 'bottom-left'] as AvatarStyle['badgePosition'][]}
+            options={
+              [
+                'top-right',
+                'bottom-right',
+                'top-left',
+                'bottom-left',
+              ] as AvatarStyle['badgePosition'][]
+            }
             selected={style.badgePosition}
-            onSelect={(value) => updateStyle('badgePosition', value as AvatarStyle['badgePosition'])}
+            onSelect={(value) =>
+              updateStyle('badgePosition', value as AvatarStyle['badgePosition'])
+            }
           />
         </SettingsSection>
 
@@ -537,10 +580,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
                 });
               }}
             >
-              <LinearGradient
-                colors={['#ec4899', '#8b5cf6']}
-                style={styles.presetGradient}
-              >
+              <LinearGradient colors={['#ec4899', '#8b5cf6']} style={styles.presetGradient}>
                 <Ionicons name="sparkles" size={24} color="#fff" />
               </LinearGradient>
               <Text style={styles.presetLabel}>Rainbow</Text>
@@ -564,10 +604,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
                 });
               }}
             >
-              <LinearGradient
-                colors={['#ef4444', '#f97316']}
-                style={styles.presetGradient}
-              >
+              <LinearGradient colors={['#ef4444', '#f97316']} style={styles.presetGradient}>
                 <Ionicons name="flame" size={24} color="#fff" />
               </LinearGradient>
               <Text style={styles.presetLabel}>Fire</Text>
@@ -591,10 +628,7 @@ export default function AvatarSettingsScreen({ navigation }: Props) {
                 });
               }}
             >
-              <LinearGradient
-                colors={['#3b82f6', '#06b6d4']}
-                style={styles.presetGradient}
-              >
+              <LinearGradient colors={['#3b82f6', '#06b6d4']} style={styles.presetGradient}>
                 <Ionicons name="flash" size={24} color="#fff" />
               </LinearGradient>
               <Text style={styles.presetLabel}>Electric</Text>

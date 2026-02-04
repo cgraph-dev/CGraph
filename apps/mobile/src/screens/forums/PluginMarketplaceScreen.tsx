@@ -63,7 +63,7 @@ interface Plugin {
   permissions: string[];
 }
 
-type PluginCategory = 
+type PluginCategory =
   | 'moderation'
   | 'analytics'
   | 'automation'
@@ -263,15 +263,14 @@ export default function PluginMarketplaceScreen({ navigation, route }: Props) {
             style={[
               styles.categoryChip,
               {
-                backgroundColor:
-                  selectedCategory === item.key ? colors.primary : colors.surface,
+                backgroundColor: selectedCategory === item.key ? colors.primary : colors.surface,
                 borderColor: colors.border,
               },
             ]}
             onPress={() => handleCategorySelect(item.key as PluginCategory | null)}
           >
             <Ionicons
-              name={item.icon as any}
+              name={item.icon as unknown}
               size={16}
               color={selectedCategory === item.key ? '#fff' : colors.text}
             />
@@ -336,7 +335,10 @@ export default function PluginMarketplaceScreen({ navigation, route }: Props) {
             )}
           </Text>
 
-          <Text style={[styles.pluginDescription, { color: colors.textSecondary }]} numberOfLines={2}>
+          <Text
+            style={[styles.pluginDescription, { color: colors.textSecondary }]}
+            numberOfLines={2}
+          >
             {item.short_description || item.description}
           </Text>
 
@@ -510,8 +512,8 @@ export default function PluginMarketplaceScreen({ navigation, route }: Props) {
                 {selectedPlugin.is_installed
                   ? 'Uninstall Plugin'
                   : selectedPlugin.is_premium
-                  ? `Purchase for $${selectedPlugin.price}`
-                  : 'Install Plugin'}
+                    ? `Purchase for $${selectedPlugin.price}`
+                    : 'Install Plugin'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -533,7 +535,12 @@ export default function PluginMarketplaceScreen({ navigation, route }: Props) {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Tab switcher */}
-      <View style={[styles.tabBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+      <View
+        style={[
+          styles.tabBar,
+          { backgroundColor: colors.surface, borderBottomColor: colors.border },
+        ]}
+      >
         <TouchableOpacity
           style={[
             styles.tab,
@@ -561,7 +568,10 @@ export default function PluginMarketplaceScreen({ navigation, route }: Props) {
         <TouchableOpacity
           style={[
             styles.tab,
-            activeTab === 'installed' && { borderBottomColor: colors.primary, borderBottomWidth: 2 },
+            activeTab === 'installed' && {
+              borderBottomColor: colors.primary,
+              borderBottomWidth: 2,
+            },
           ]}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -610,7 +620,11 @@ export default function PluginMarketplaceScreen({ navigation, route }: Props) {
         renderItem={renderPluginItem}
         keyExtractor={(item) => item.id}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+          />
         }
         contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={() => <View style={{ height: 12 }} />}

@@ -3,12 +3,12 @@
  *
  * Official landing page featuring:
  * - Instant hero animations on mount (no preloader for speed)
- * - Skeleton loaders for lazy-loaded sections
  * - Video hero section with clip-path masks
  * - Purple/lime/black color scheme
  * - Button text-swap animation
  * - 3D tilt cards with glare effect
  * - Scroll-triggered GSAP animations
+ * - Skeleton loaders for lazy-loaded sections
  */
 
 import { useState, useEffect, useRef, useCallback, lazy, Suspense, memo } from 'react';
@@ -17,9 +17,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { AnimatedAvatar } from '@/modules/settings/components/customize/AnimatedAvatar';
-import { motion } from 'framer-motion';
+import { AnimatedAvatar } from '@/components/customize/AnimatedAvatar';
 import { LogoIcon } from '@/components/Logo';
+import { motion } from 'framer-motion';
 import {
   CustomizationDemoSkeleton,
   ForumShowcaseSkeleton,
@@ -36,6 +36,7 @@ const ForumShowcase = lazy(() =>
 );
 
 gsap.registerPlugin(ScrollTrigger);
+
 // Performance: Throttle function for scroll handlers
 const throttle = <T extends (...args: Parameters<T>) => ReturnType<T>>(
   fn: T,
@@ -224,7 +225,7 @@ const FeatureShowcaseCard = memo(function FeatureShowcaseCard({
                 </div>
                 <div className="showcase-profile__info">
                   <span className="showcase-profile__name showcase-profile__name--premium">
-                    <span className="gl-nav__logo-text">CGraph</span> Elite
+                    CGraph Elite
                   </span>
                   <div className="showcase-profile__badges">
                     <span className="showcase-badge showcase-badge--founder">👑</span>
@@ -298,20 +299,38 @@ const FeatureShowcaseCard = memo(function FeatureShowcaseCard({
     }
   };
 
+  // Handle keyboard interaction for accessibility
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      setIsHovered(!isHovered);
+    }
+  };
+
   return (
     <motion.div
       className="showcase-card"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsHovered(true)}
+      onBlur={() => setIsHovered(false)}
+      onKeyDown={handleKeyDown}
       whileHover={{ scale: 1.02, y: -8 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      role="button"
+      tabIndex={0}
+      aria-pressed={isHovered}
+      aria-label={`${data.label} showcase - ${isHovered ? 'showing premium version' : 'hover to see premium version'}`}
     >
-      <div className="showcase-card__indicator">
+      <div className="showcase-card__indicator" aria-hidden="true">
         <span className={`showcase-card__dot ${isHovered ? 'showcase-card__dot--active' : ''}`} />
         <span className="showcase-card__hover-hint">{isHovered ? 'Premium' : 'Hover me'}</span>
       </div>
       {renderContent()}
       <div className="showcase-card__footer">
+        <span className="showcase-card__icon" aria-hidden="true">
+          {data.icon}
+        </span>
         <span className="showcase-card__label">{data.label}</span>
       </div>
     </motion.div>
@@ -499,14 +518,21 @@ function SecurityIconCard({ feature }: { feature: (typeof securityFeatures)[0] }
       className="about__icon-item"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onFocus={() => setIsHovered(true)}
+      onBlur={() => setIsHovered(false)}
+      role="button"
+      tabIndex={0}
+      aria-label={`${feature.title}: ${feature.description}`}
+      aria-expanded={isHovered}
     >
-      {feature.icon}
+      <span aria-hidden="true">{feature.icon}</span>
 
       {/* Preview Tooltip - Rendered via portal to escape parent transforms */}
       {tooltip && createPortal(tooltip, document.body)}
     </div>
   );
 }
+
 // =============================================================================
 // TILT CARD COMPONENT (GAMELAND-STYLE)
 // =============================================================================
@@ -678,7 +704,6 @@ function SwapButton({
 export default function LandingPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
-
   const [navHidden, setNavHidden] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
 
@@ -772,8 +797,8 @@ export default function LandingPage() {
 
   // GSAP animations on mount (hero + scroll-triggered elements)
   useEffect(() => {
-    let heroTl: gsap.core.Timeline | null = null;
     let gsapContextRef: gsap.Context | null = null;
+    let heroTl: gsap.core.Timeline | null = null;
 
     // Hero entrance animations - run immediately
     gsap.set('.hero__eyebrow', { y: 60, opacity: 0, scale: 0.98 });
@@ -1078,6 +1103,10 @@ export default function LandingPage() {
 
       {/* Feature Showcase */}
       <section ref={statsRef} className="stats-section zoom-section">
+        <div className="showcase-header">
+          <span className="showcase-header__badge">✨ See the Difference</span>
+          <h3 className="showcase-header__title">Hover to Discover Premium Features</h3>
+        </div>
         <div className="stats-grid">
           {showcaseCards.map((card) => (
             <FeatureShowcaseCard key={card.id} data={card} />

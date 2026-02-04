@@ -1,17 +1,17 @@
 /**
  * QuestsScreen - Mobile
- * 
+ *
  * Quest management screen with daily, weekly, and special quests.
  * Users can view available quests, track progress, accept new quests,
  * and claim rewards for completed quests.
- * 
+ *
  * Features:
  * - Tab-based quest filtering (Active, Daily, Weekly, Completed)
  * - Quest acceptance flow
  * - Progress tracking with objectives
  * - Reward claiming with haptic feedback
  * - Pull-to-refresh
- * 
+ *
  * @version 1.0.0
  * @since v0.8.3
  */
@@ -106,12 +106,12 @@ interface QuestCardProps {
 function QuestCard({ userQuest, onAccept, onClaim }: QuestCardProps) {
   const { quest, completed, claimed, accepted } = userQuest;
   const colors = QUEST_TYPE_COLORS[quest.type] || QUEST_TYPE_COLORS.daily;
-  
+
   // Calculate overall progress
   const totalObjectives = quest.objectives.length;
-  const completedObjectives = quest.objectives.filter(o => o.completed).length;
+  const completedObjectives = quest.objectives.filter((o) => o.completed).length;
   const progressPercent = totalObjectives > 0 ? (completedObjectives / totalObjectives) * 100 : 0;
-  
+
   // Time remaining
   const timeRemaining = useMemo(() => {
     if (!quest.expiresAt) return null;
@@ -124,7 +124,7 @@ function QuestCard({ userQuest, onAccept, onClaim }: QuestCardProps) {
     if (hours > 24) return `${Math.floor(hours / 24)}d ${hours % 24}h`;
     return `${hours}h ${minutes}m`;
   }, [quest.expiresAt]);
-  
+
   const handleAction = () => {
     HapticFeedback.medium();
     if (!accepted && onAccept) {
@@ -133,13 +133,10 @@ function QuestCard({ userQuest, onAccept, onClaim }: QuestCardProps) {
       onClaim(userQuest.id);
     }
   };
-  
+
   return (
     <View style={[styles.questCard, { borderColor: colors.primary + '40' }]}>
-      <LinearGradient
-        colors={[colors.secondary, '#1f2937']}
-        style={styles.questGradient}
-      >
+      <LinearGradient colors={[colors.secondary, '#1f2937']} style={styles.questGradient}>
         {/* Header */}
         <View style={styles.questHeader}>
           <View style={[styles.questTypeBadge, { backgroundColor: colors.primary + '30' }]}>
@@ -147,7 +144,7 @@ function QuestCard({ userQuest, onAccept, onClaim }: QuestCardProps) {
               {quest.type.charAt(0).toUpperCase() + quest.type.slice(1)}
             </Text>
           </View>
-          
+
           {timeRemaining && (
             <View style={styles.timeContainer}>
               <Ionicons name="time-outline" size={14} color="#9ca3af" />
@@ -155,19 +152,26 @@ function QuestCard({ userQuest, onAccept, onClaim }: QuestCardProps) {
             </View>
           )}
         </View>
-        
+
         {/* Quest Name */}
         <Text style={styles.questName}>{quest.name}</Text>
         <Text style={styles.questDescription}>{quest.description}</Text>
-        
+
         {/* Objectives */}
         <View style={styles.objectivesContainer}>
           {quest.objectives.map((objective, index) => (
             <View key={objective.id} style={styles.objectiveRow}>
-              <View style={[styles.objectiveCheck, objective.completed && styles.objectiveCheckComplete]}>
+              <View
+                style={[
+                  styles.objectiveCheck,
+                  objective.completed && styles.objectiveCheckComplete,
+                ]}
+              >
                 {objective.completed && <Ionicons name="checkmark" size={12} color="#fff" />}
               </View>
-              <Text style={[styles.objectiveText, objective.completed && styles.objectiveTextComplete]}>
+              <Text
+                style={[styles.objectiveText, objective.completed && styles.objectiveTextComplete]}
+              >
                 {objective.description}
               </Text>
               <Text style={styles.objectiveProgress}>
@@ -176,17 +180,22 @@ function QuestCard({ userQuest, onAccept, onClaim }: QuestCardProps) {
             </View>
           ))}
         </View>
-        
+
         {/* Progress Bar */}
         {accepted && !completed && (
           <View style={styles.progressSection}>
             <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: `${progressPercent}%`, backgroundColor: colors.primary }]} />
+              <View
+                style={[
+                  styles.progressFill,
+                  { width: `${progressPercent}%`, backgroundColor: colors.primary },
+                ]}
+              />
             </View>
             <Text style={styles.progressText}>{Math.round(progressPercent)}%</Text>
           </View>
         )}
-        
+
         {/* Rewards */}
         <View style={styles.rewardsContainer}>
           <Text style={styles.rewardsLabel}>Rewards:</Text>
@@ -204,22 +213,28 @@ function QuestCard({ userQuest, onAccept, onClaim }: QuestCardProps) {
             ))}
           </View>
         </View>
-        
+
         {/* Action Button */}
         {!accepted && onAccept && (
-          <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.primary }]} onPress={handleAction}>
+          <TouchableOpacity
+            style={[styles.actionButton, { backgroundColor: colors.primary }]}
+            onPress={handleAction}
+          >
             <Ionicons name="add-circle" size={18} color="#fff" />
             <Text style={styles.actionButtonText}>Accept Quest</Text>
           </TouchableOpacity>
         )}
-        
+
         {completed && !claimed && onClaim && (
-          <TouchableOpacity style={[styles.actionButton, { backgroundColor: '#f59e0b' }]} onPress={handleAction}>
+          <TouchableOpacity
+            style={[styles.actionButton, { backgroundColor: '#f59e0b' }]}
+            onPress={handleAction}
+          >
             <Ionicons name="gift" size={18} color="#fff" />
             <Text style={styles.actionButtonText}>Claim Rewards</Text>
           </TouchableOpacity>
         )}
-        
+
         {claimed && (
           <View style={styles.claimedBadge}>
             <Ionicons name="checkmark-circle" size={18} color="#10b981" />
@@ -237,73 +252,81 @@ function QuestCard({ userQuest, onAccept, onClaim }: QuestCardProps) {
 
 export default function QuestsScreen() {
   const navigation = useNavigation();
-  const { 
-    activeQuests, 
-    dailyQuests, 
-    weeklyQuests, 
-    refreshQuests, 
-    acceptQuest, 
+  const {
+    activeQuests,
+    dailyQuests,
+    weeklyQuests,
+    refreshQuests,
+    acceptQuest,
     claimQuestRewards,
     isLoading,
     stats,
   } = useGamification();
-  
+
   const [activeTab, setActiveTab] = useState<QuestTab>('active');
-  
+
   // Initial load
   useEffect(() => {
     refreshQuests();
   }, []);
-  
+
   // Filtered quests based on tab
   const displayedQuests = useMemo(() => {
     switch (activeTab) {
       case 'active':
-        return activeQuests.filter(q => q.accepted && !q.completed);
+        return activeQuests.filter((q) => q.accepted && !q.completed);
       case 'daily':
         return dailyQuests;
       case 'weekly':
         return weeklyQuests;
       case 'completed':
-        return [...activeQuests, ...dailyQuests, ...weeklyQuests].filter(q => q.completed);
+        return [...activeQuests, ...dailyQuests, ...weeklyQuests].filter((q) => q.completed);
       default:
         return [];
     }
   }, [activeTab, activeQuests, dailyQuests, weeklyQuests]);
-  
+
   // Stats
-  const totalActive = activeQuests.filter(q => q.accepted && !q.completed).length;
-  const totalCompleted = [...activeQuests, ...dailyQuests, ...weeklyQuests].filter(q => q.completed).length;
-  
-  const handleAcceptQuest = useCallback(async (questId: string) => {
-    try {
-      await acceptQuest(questId);
-      HapticFeedback.success();
-      Alert.alert('Quest Accepted!', 'Good luck on your quest!');
-    } catch (error) {
-      HapticFeedback.error();
-      Alert.alert('Error', 'Failed to accept quest. Please try again.');
-    }
-  }, [acceptQuest]);
-  
-  const handleClaimRewards = useCallback(async (userQuestId: string) => {
-    try {
-      const success = await claimQuestRewards(userQuestId);
-      if (success) {
+  const totalActive = activeQuests.filter((q) => q.accepted && !q.completed).length;
+  const totalCompleted = [...activeQuests, ...dailyQuests, ...weeklyQuests].filter(
+    (q) => q.completed
+  ).length;
+
+  const handleAcceptQuest = useCallback(
+    async (questId: string) => {
+      try {
+        await acceptQuest(questId);
         HapticFeedback.success();
-        Alert.alert('Rewards Claimed!', 'Your rewards have been added to your account.');
+        Alert.alert('Quest Accepted!', 'Good luck on your quest!');
+      } catch (error) {
+        HapticFeedback.error();
+        Alert.alert('Error', 'Failed to accept quest. Please try again.');
       }
-    } catch (error) {
-      HapticFeedback.error();
-      Alert.alert('Error', 'Failed to claim rewards. Please try again.');
-    }
-  }, [claimQuestRewards]);
-  
+    },
+    [acceptQuest]
+  );
+
+  const handleClaimRewards = useCallback(
+    async (userQuestId: string) => {
+      try {
+        const success = await claimQuestRewards(userQuestId);
+        if (success) {
+          HapticFeedback.success();
+          Alert.alert('Rewards Claimed!', 'Your rewards have been added to your account.');
+        }
+      } catch (error) {
+        HapticFeedback.error();
+        Alert.alert('Error', 'Failed to claim rewards. Please try again.');
+      }
+    },
+    [claimQuestRewards]
+  );
+
   const handleRefresh = useCallback(() => {
     HapticFeedback.light();
     refreshQuests();
   }, [refreshQuests]);
-  
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -311,14 +334,14 @@ export default function QuestsScreen() {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        
+
         <View style={styles.headerContent}>
           <Text style={styles.headerTitle}>Quests</Text>
           <Text style={styles.headerSubtitle}>
             {totalActive} active • {totalCompleted} completed
           </Text>
         </View>
-        
+
         <View style={styles.headerStats}>
           <View style={styles.questCountBadge}>
             <Ionicons name="map" size={20} color="#10b981" />
@@ -326,7 +349,7 @@ export default function QuestsScreen() {
           </View>
         </View>
       </LinearGradient>
-      
+
       {/* Tabs */}
       <View style={styles.tabsContainer}>
         {TABS.map((tab) => (
@@ -339,7 +362,7 @@ export default function QuestsScreen() {
             }}
           >
             <Ionicons
-              name={tab.icon as any}
+              name={tab.icon as unknown}
               size={18}
               color={activeTab === tab.id ? '#8b5cf6' : '#6b7280'}
             />
@@ -349,17 +372,13 @@ export default function QuestsScreen() {
           </TouchableOpacity>
         ))}
       </View>
-      
+
       {/* Quest List */}
       <FlatList
         data={displayedQuests}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <QuestCard
-            userQuest={item}
-            onAccept={handleAcceptQuest}
-            onClaim={handleClaimRewards}
-          />
+          <QuestCard userQuest={item} onAccept={handleAcceptQuest} onClaim={handleClaimRewards} />
         )}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
@@ -378,8 +397,8 @@ export default function QuestsScreen() {
               {activeTab === 'completed' ? 'No completed quests yet' : 'No quests available'}
             </Text>
             <Text style={styles.emptySubtitle}>
-              {activeTab === 'completed' 
-                ? 'Complete quests to see them here' 
+              {activeTab === 'completed'
+                ? 'Complete quests to see them here'
                 : 'Check back later for new quests'}
             </Text>
           </View>

@@ -22,7 +22,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme, ThemeColors } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
 import { GroupsStackParamList, Group } from '../../types';
 import GlassCard from '../../components/ui/GlassCard';
@@ -122,10 +122,7 @@ function FloatingParticles({ isActive }: { isActive: boolean }) {
             },
           ]}
         >
-          <LinearGradient
-            colors={['#8b5cf6', '#ec4899']}
-            style={styles.particleGradient}
-          />
+          <LinearGradient colors={['#8b5cf6', '#ec4899']} style={styles.particleGradient} />
         </Animated.View>
       ))}
     </View>
@@ -133,14 +130,13 @@ function FloatingParticles({ isActive }: { isActive: boolean }) {
 }
 
 // Animated member avatars stacked
-function MemberAvatarStack({ memberCount, colors }: { memberCount: number; colors: any }) {
+function MemberAvatarStack({ memberCount, colors }: { memberCount: number; colors: ThemeColors }) {
   const displayCount = Math.min(3, memberCount);
-  const anims = useRef(
-    Array.from({ length: 3 }, () => new Animated.Value(0))
-  ).current;
+  const anims = useRef(Array.from({ length: 3 }, () => new Animated.Value(0))).current;
 
   useEffect(() => {
-    Animated.stagger(100,
+    Animated.stagger(
+      100,
       anims.map((anim, index) =>
         Animated.spring(anim, {
           toValue: index < displayCount ? 1 : 0,
@@ -203,7 +199,7 @@ const MorphingGroupCard = ({
   item: Group;
   index: number;
   onPress: () => void;
-  colors: any;
+  colors: ThemeColors;
   isDark: boolean;
 }) => {
   // Entry animations
@@ -311,8 +307,8 @@ const MorphingGroupCard = ({
         const cardHeight = 90;
 
         // Calculate tilt based on touch position
-        const tiltXValue = ((locationY / cardHeight) - 0.5) * 10;
-        const tiltYValue = ((locationX / cardWidth) - 0.5) * -8;
+        const tiltXValue = (locationY / cardHeight - 0.5) * 10;
+        const tiltYValue = (locationX / cardWidth - 0.5) * -8;
 
         Animated.parallel([
           Animated.spring(tiltX, {
@@ -503,9 +499,7 @@ const MorphingGroupCard = ({
                     colors={isLargeGroup ? ['#8b5cf6', '#ec4899'] : ['#10b981', '#059669']}
                     style={styles.groupIconPlaceholder}
                   >
-                    <Text style={styles.groupIconText}>
-                      {item.name.charAt(0).toUpperCase()}
-                    </Text>
+                    <Text style={styles.groupIconText}>{item.name.charAt(0).toUpperCase()}</Text>
                   </LinearGradient>
                 )}
               </Animated.View>
@@ -537,10 +531,7 @@ const MorphingGroupCard = ({
                       transform: [{ scale: iconMorphScale }],
                     }}
                   >
-                    <LinearGradient
-                      colors={['#f59e0b', '#d97706']}
-                      style={styles.verifiedBadge}
-                    >
+                    <LinearGradient colors={['#f59e0b', '#d97706']} style={styles.verifiedBadge}>
                       <Ionicons name="flame" size={10} color="#fff" />
                     </LinearGradient>
                   </Animated.View>
@@ -594,7 +585,13 @@ const MorphingGroupCard = ({
 };
 
 // Animated header with particle effect
-function AnimatedHeader({ colors, onCreatePress }: { colors: any; onCreatePress: () => void }) {
+function AnimatedHeader({
+  colors,
+  onCreatePress,
+}: {
+  colors: ThemeColors;
+  onCreatePress: () => void;
+}) {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
@@ -648,10 +645,7 @@ function AnimatedHeader({ colors, onCreatePress }: { colors: any; onCreatePress:
           transform: [{ scale: pulseAnim }, { rotate: rotation }],
         }}
       >
-        <LinearGradient
-          colors={['#8b5cf6', '#7c3aed']}
-          style={styles.headerButtonGradient}
-        >
+        <LinearGradient colors={['#8b5cf6', '#7c3aed']} style={styles.headerButtonGradient}>
           <Ionicons name="add" size={20} color="#fff" />
         </LinearGradient>
       </Animated.View>
@@ -735,24 +729,19 @@ export default function GroupListScreen({ navigation }: Props) {
     ),
     [colors, isDark, navigation]
   );
-  
+
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
       <GlassCard variant="crystal" intensity="medium" style={styles.emptyCard}>
-        <LinearGradient
-          colors={['#8b5cf6', '#7c3aed']}
-          style={styles.emptyIconContainer}
-        >
+        <LinearGradient colors={['#8b5cf6', '#7c3aed']} style={styles.emptyIconContainer}>
           <Ionicons name="people" size={48} color="#fff" />
         </LinearGradient>
-        
-        <Text style={[styles.emptyTitle, { color: colors.text }]}>
-          No Groups Yet
-        </Text>
+
+        <Text style={[styles.emptyTitle, { color: colors.text }]}>No Groups Yet</Text>
         <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
           Join a community or create{'\n'}your own group
         </Text>
-        
+
         <View style={styles.emptyButtons}>
           <TouchableOpacity
             onPress={() => {
@@ -761,15 +750,12 @@ export default function GroupListScreen({ navigation }: Props) {
             }}
             activeOpacity={0.8}
           >
-            <LinearGradient
-              colors={['#8b5cf6', '#7c3aed']}
-              style={styles.emptyButton}
-            >
+            <LinearGradient colors={['#8b5cf6', '#7c3aed']} style={styles.emptyButton}>
               <Ionicons name="add" size={18} color="#fff" />
               <Text style={styles.emptyButtonText}>Create Group</Text>
             </LinearGradient>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -790,7 +776,7 @@ export default function GroupListScreen({ navigation }: Props) {
       </GlassCard>
     </View>
   );
-  
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <FlatList
@@ -798,16 +784,13 @@ export default function GroupListScreen({ navigation }: Props) {
         renderItem={renderGroup}
         keyExtractor={(item) => item.id}
         refreshControl={
-          <RefreshControl 
-            refreshing={refreshing} 
+          <RefreshControl
+            refreshing={refreshing}
             onRefresh={onRefresh}
             tintColor={colors.primary}
           />
         }
-        contentContainerStyle={[
-          styles.listContent,
-          groups.length === 0 && styles.emptyContainer,
-        ]}
+        contentContainerStyle={[styles.listContent, groups.length === 0 && styles.emptyContainer]}
         ListEmptyComponent={renderEmptyState}
         showsVerticalScrollIndicator={false}
       />

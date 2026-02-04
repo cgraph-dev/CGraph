@@ -52,11 +52,71 @@ type SortOrder = 'asc' | 'desc';
 
 function generateFallbackMembers(): Member[] {
   return [
-    { id: '1', username: 'admin', displayName: 'Administrator', avatarUrl: null, userGroup: 'Admin', userGroupColor: '#ef4444', isOnline: true, lastActive: new Date().toISOString(), joinedAt: '2024-01-01T00:00:00Z', postCount: 1234, reputation: 999 },
-    { id: '2', username: 'moderator', displayName: 'Mod User', avatarUrl: null, userGroup: 'Moderator', userGroupColor: '#3b82f6', isOnline: true, lastActive: new Date().toISOString(), joinedAt: '2024-02-15T00:00:00Z', postCount: 567, reputation: 450 },
-    { id: '3', username: 'john_doe', displayName: 'John Doe', avatarUrl: null, userGroup: 'Member', userGroupColor: '#10b981', isOnline: false, lastActive: '2026-01-12T10:00:00Z', joinedAt: '2025-03-20T00:00:00Z', postCount: 89, reputation: 42 },
-    { id: '4', username: 'jane_smith', displayName: 'Jane Smith', avatarUrl: null, userGroup: 'Premium', userGroupColor: '#8b5cf6', isOnline: true, lastActive: new Date().toISOString(), joinedAt: '2025-06-10T00:00:00Z', postCount: 234, reputation: 156 },
-    { id: '5', username: 'new_user', displayName: null, avatarUrl: null, userGroup: 'Member', userGroupColor: '#10b981', isOnline: false, lastActive: '2026-01-10T15:30:00Z', joinedAt: '2026-01-05T00:00:00Z', postCount: 5, reputation: 2 },
+    {
+      id: '1',
+      username: 'admin',
+      displayName: 'Administrator',
+      avatarUrl: null,
+      userGroup: 'Admin',
+      userGroupColor: '#ef4444',
+      isOnline: true,
+      lastActive: new Date().toISOString(),
+      joinedAt: '2024-01-01T00:00:00Z',
+      postCount: 1234,
+      reputation: 999,
+    },
+    {
+      id: '2',
+      username: 'moderator',
+      displayName: 'Mod User',
+      avatarUrl: null,
+      userGroup: 'Moderator',
+      userGroupColor: '#3b82f6',
+      isOnline: true,
+      lastActive: new Date().toISOString(),
+      joinedAt: '2024-02-15T00:00:00Z',
+      postCount: 567,
+      reputation: 450,
+    },
+    {
+      id: '3',
+      username: 'john_doe',
+      displayName: 'John Doe',
+      avatarUrl: null,
+      userGroup: 'Member',
+      userGroupColor: '#10b981',
+      isOnline: false,
+      lastActive: '2026-01-12T10:00:00Z',
+      joinedAt: '2025-03-20T00:00:00Z',
+      postCount: 89,
+      reputation: 42,
+    },
+    {
+      id: '4',
+      username: 'jane_smith',
+      displayName: 'Jane Smith',
+      avatarUrl: null,
+      userGroup: 'Premium',
+      userGroupColor: '#8b5cf6',
+      isOnline: true,
+      lastActive: new Date().toISOString(),
+      joinedAt: '2025-06-10T00:00:00Z',
+      postCount: 234,
+      reputation: 156,
+    },
+    {
+      id: '5',
+      username: 'new_user',
+      displayName: null,
+      avatarUrl: null,
+      userGroup: 'Member',
+      userGroupColor: '#10b981',
+      isOnline: false,
+      lastActive: '2026-01-10T15:30:00Z',
+      joinedAt: '2026-01-05T00:00:00Z',
+      postCount: 5,
+      reputation: 2,
+    },
   ];
 }
 
@@ -105,7 +165,12 @@ function MemberItem({ member, onPress }: MemberItemProps) {
           <Text style={styles.memberName} numberOfLines={1}>
             {member.displayName || member.username}
           </Text>
-          <View style={[styles.groupBadge, { backgroundColor: (member.userGroupColor || '#6b7280') + '30' }]}>
+          <View
+            style={[
+              styles.groupBadge,
+              { backgroundColor: (member.userGroupColor || '#6b7280') + '30' },
+            ]}
+          >
             <Text style={[styles.groupBadgeText, { color: member.userGroupColor || '#6b7280' }]}>
               {member.userGroup}
             </Text>
@@ -119,9 +184,7 @@ function MemberItem({ member, onPress }: MemberItemProps) {
           <Text style={styles.memberStat}>
             <Ionicons name="star" size={12} color="#f59e0b" /> {member.reputation}
           </Text>
-          <Text style={styles.memberStat}>
-            Joined {formatDate(member.joinedAt)}
-          </Text>
+          <Text style={styles.memberStat}>Joined {formatDate(member.joinedAt)}</Text>
         </View>
       </View>
 
@@ -135,8 +198,8 @@ function MemberItem({ member, onPress }: MemberItemProps) {
 // ============================================================================
 
 export default function MemberListScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
-  
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+
   const [members, setMembers] = useState<Member[]>([]);
   const [userGroups, setUserGroups] = useState<UserGroup[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -160,7 +223,7 @@ export default function MemberListScreen() {
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 
   // Transform API response
-  const transformApiMembers = (data: any[]): Member[] => {
+  const transformApiMembers = (data: unknown[]): Member[] => {
     return data.map((m) => ({
       id: m.id,
       username: m.username || 'Unknown',
@@ -177,60 +240,65 @@ export default function MemberListScreen() {
   };
 
   // Fetch members
-  const fetchMembers = useCallback(async (pageNum: number = 1, append: boolean = false) => {
-    try {
-      if (pageNum === 1) setIsLoading(true);
-      else setIsLoadingMore(true);
-      setError(null);
+  const fetchMembers = useCallback(
+    async (pageNum: number = 1, append: boolean = false) => {
+      try {
+        if (pageNum === 1) setIsLoading(true);
+        else setIsLoadingMore(true);
+        setError(null);
 
-      const params: Record<string, any> = {
-        page: pageNum,
-        per_page: 20,
-        sort_by: sortField,
-        sort_order: sortOrder,
-      };
+        const params: Record<string, any> = {
+          page: pageNum,
+          per_page: 20,
+          sort_by: sortField,
+          sort_order: sortOrder,
+        };
 
-      if (searchQuery) params.search = searchQuery;
-      if (filterGroup) params.group_id = filterGroup;
-      if (filterOnlineOnly) params.online_only = true;
+        if (searchQuery) params.search = searchQuery;
+        if (filterGroup) params.group_id = filterGroup;
+        if (filterOnlineOnly) params.online_only = true;
 
-      const response = await api.get('/api/v1/members', { params });
-      const data = response.data;
+        const response = await api.get('/api/v1/members', { params });
+        const data = response.data;
 
-      const memberList = transformApiMembers(data.members || []);
+        const memberList = transformApiMembers(data.members || []);
 
-      if (append) {
-        setMembers((prev) => [...prev, ...memberList]);
-      } else {
-        setMembers(memberList);
+        if (append) {
+          setMembers((prev) => [...prev, ...memberList]);
+        } else {
+          setMembers(memberList);
+        }
+
+        setTotalPages(data.total_pages || 1);
+        setTotalMembers(data.total || memberList.length);
+        setPage(pageNum);
+      } catch (err) {
+        console.error('[MemberList] API error, using fallback:', err);
+        if (!append) {
+          setMembers(generateFallbackMembers());
+          setTotalMembers(5);
+        }
+      } finally {
+        setIsLoading(false);
+        setIsLoadingMore(false);
       }
-
-      setTotalPages(data.total_pages || 1);
-      setTotalMembers(data.total || memberList.length);
-      setPage(pageNum);
-    } catch (err) {
-      console.error('[MemberList] API error, using fallback:', err);
-      if (!append) {
-        setMembers(generateFallbackMembers());
-        setTotalMembers(5);
-      }
-    } finally {
-      setIsLoading(false);
-      setIsLoadingMore(false);
-    }
-  }, [sortField, sortOrder, searchQuery, filterGroup, filterOnlineOnly]);
+    },
+    [sortField, sortOrder, searchQuery, filterGroup, filterOnlineOnly]
+  );
 
   // Fetch user groups for filter
   const fetchUserGroups = useCallback(async () => {
     try {
       const response = await api.get('/api/v1/user-groups');
       const groups = response.data.groups || [];
-      setUserGroups(groups.map((g: any) => ({
-        id: g.id,
-        name: g.name || 'Unknown',
-        color: g.color || null,
-        memberCount: g.member_count || 0,
-      })));
+      setUserGroups(
+        groups.map((g: Record<string, unknown>) => ({
+          id: g.id,
+          name: g.name || 'Unknown',
+          color: g.color || null,
+          memberCount: g.member_count || 0,
+        }))
+      );
     } catch (err) {
       console.error('[MemberList] Failed to fetch groups:', err);
     }
@@ -349,16 +417,15 @@ export default function MemberListScreen() {
               {sortOptions.map((opt) => (
                 <TouchableOpacity
                   key={opt.field}
-                  style={[
-                    styles.sortButton,
-                    sortField === opt.field && styles.sortButtonActive,
-                  ]}
+                  style={[styles.sortButton, sortField === opt.field && styles.sortButtonActive]}
                   onPress={() => handleSort(opt.field)}
                 >
-                  <Text style={[
-                    styles.sortButtonText,
-                    sortField === opt.field && styles.sortButtonTextActive,
-                  ]}>
+                  <Text
+                    style={[
+                      styles.sortButtonText,
+                      sortField === opt.field && styles.sortButtonTextActive,
+                    ]}
+                  >
                     {opt.label}
                   </Text>
                   {sortField === opt.field && (

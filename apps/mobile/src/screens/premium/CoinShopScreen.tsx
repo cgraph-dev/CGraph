@@ -151,7 +151,7 @@ function Animated3DCoin({ size = 70, delay = 0 }: { size?: number; delay?: numbe
 }
 
 // Animated counter component
-function AnimatedCounter({ value, style }: { value: number; style?: any }) {
+function AnimatedCounter({ value, style }: { value: number; style?: ViewStyle }) {
   const [displayValue, setDisplayValue] = useState(0);
   const animValue = useRef(new Animated.Value(0)).current;
 
@@ -416,7 +416,7 @@ const RARITY_COLORS: Record<string, readonly [string, string]> = {
 };
 
 const CoinShopScreen: React.FC = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { user } = useAuth();
   const { colors } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState<
@@ -708,7 +708,7 @@ const CoinShopScreen: React.FC = () => {
         >
           <GlassCard variant="crystal" intensity="medium" style={styles.itemCardInner}>
             <LinearGradient colors={RARITY_COLORS[item.rarity]} style={styles.itemIcon}>
-              <Ionicons name={item.icon as any} size={28} color="#fff" />
+              <Ionicons name={item.icon as unknown} size={28} color="#fff" />
             </LinearGradient>
 
             <View style={styles.itemInfo}>
@@ -929,7 +929,7 @@ const CoinShopScreen: React.FC = () => {
             activeOpacity={0.8}
           >
             <Ionicons
-              name={category.icon as any}
+              name={category.icon as unknown}
               size={20}
               color={selectedCategory === category.id ? '#fff' : 'rgba(255,255,255,0.6)'}
             />

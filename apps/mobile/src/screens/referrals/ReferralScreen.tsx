@@ -1,9 +1,9 @@
 /**
  * ReferralScreen - Mobile
- * 
+ *
  * Referral program dashboard allowing users to invite friends and earn rewards.
  * This screen is a powerful growth driver for the community through viral loops.
- * 
+ *
  * Features:
  * - Unique referral code and shareable link
  * - Stats overview (total, verified, pending)
@@ -14,7 +14,7 @@
  * - Copy to clipboard with haptic feedback
  * - Pull-to-refresh
  * - Animated progress bars
- * 
+ *
  * @version 1.0.0
  * @since v0.8.1
  */
@@ -216,10 +216,38 @@ function generateFallbackData() {
   ];
 
   const leaderboard: LeaderboardEntry[] = [
-    { rank: 1, userId: 'l1', username: 'TopRecruiter', avatarUrl: null, referralCount: 256, isCurrentUser: false },
-    { rank: 2, userId: 'l2', username: 'CommunityKing', avatarUrl: null, referralCount: 198, isCurrentUser: false },
-    { rank: 3, userId: 'l3', username: 'NetworkQueen', avatarUrl: null, referralCount: 187, isCurrentUser: false },
-    { rank: 42, userId: 'current', username: 'You', avatarUrl: null, referralCount: 8, isCurrentUser: true },
+    {
+      rank: 1,
+      userId: 'l1',
+      username: 'TopRecruiter',
+      avatarUrl: null,
+      referralCount: 256,
+      isCurrentUser: false,
+    },
+    {
+      rank: 2,
+      userId: 'l2',
+      username: 'CommunityKing',
+      avatarUrl: null,
+      referralCount: 198,
+      isCurrentUser: false,
+    },
+    {
+      rank: 3,
+      userId: 'l3',
+      username: 'NetworkQueen',
+      avatarUrl: null,
+      referralCount: 187,
+      isCurrentUser: false,
+    },
+    {
+      rank: 42,
+      userId: 'current',
+      username: 'You',
+      avatarUrl: null,
+      referralCount: 8,
+      isCurrentUser: true,
+    },
   ];
 
   return { referralCode, stats, referrals, rewardTiers, leaderboard };
@@ -241,16 +269,16 @@ function StatCard({ icon, iconColor, value, label, trend }: StatCardProps) {
   return (
     <BlurView intensity={40} tint="dark" style={styles.statCard}>
       <View style={[styles.statIcon, { backgroundColor: iconColor + '20' }]}>
-        <Ionicons name={icon as any} size={20} color={iconColor} />
+        <Ionicons name={icon as unknown} size={20} color={iconColor} />
       </View>
       <View style={styles.statValue}>
         <Text style={styles.statValueText}>{value}</Text>
         {trend !== undefined && trend !== 0 && (
           <View style={[styles.trendBadge, trend > 0 ? styles.trendUp : styles.trendDown]}>
-            <Ionicons 
-              name={trend > 0 ? 'trending-up' : 'trending-down'} 
-              size={12} 
-              color={trend > 0 ? '#10b981' : '#ef4444'} 
+            <Ionicons
+              name={trend > 0 ? 'trending-up' : 'trending-down'}
+              size={12}
+              color={trend > 0 ? '#10b981' : '#ef4444'}
             />
           </View>
         )}
@@ -275,9 +303,9 @@ function RewardTierCard({ tier, currentReferrals, onClaim }: RewardTierCardProps
   const canClaim = tier.achieved && !tier.claimed;
 
   return (
-    <BlurView 
-      intensity={tier.achieved ? 60 : 40} 
-      tint="dark" 
+    <BlurView
+      intensity={tier.achieved ? 60 : 40}
+      tint="dark"
       style={[
         styles.tierCard,
         tier.achieved && styles.tierCardAchieved,
@@ -286,26 +314,20 @@ function RewardTierCard({ tier, currentReferrals, onClaim }: RewardTierCardProps
     >
       <View style={styles.tierHeader}>
         <View style={styles.tierInfo}>
-          <Text style={[
-            styles.tierName,
-            tier.achieved && styles.tierNameAchieved
-          ]}>
+          <Text style={[styles.tierName, tier.achieved && styles.tierNameAchieved]}>
             {tier.name}
           </Text>
           <Text style={styles.tierDescription}>{tier.description}</Text>
         </View>
-        
+
         {tier.claimed && (
           <View style={styles.claimedBadge}>
             <Ionicons name="checkmark-circle" size={20} color={AnimationColors.primary} />
           </View>
         )}
-        
+
         {canClaim && (
-          <TouchableOpacity
-            onPress={() => onClaim(tier.id)}
-            style={styles.claimButton}
-          >
+          <TouchableOpacity onPress={() => onClaim(tier.id)} style={styles.claimButton}>
             <LinearGradient
               colors={[AnimationColors.primary, '#059669']}
               style={styles.claimButtonGradient}
@@ -320,12 +342,12 @@ function RewardTierCard({ tier, currentReferrals, onClaim }: RewardTierCardProps
       {/* Progress Bar */}
       <View style={styles.tierProgress}>
         <View style={styles.tierProgressBar}>
-          <View 
+          <View
             style={[
               styles.tierProgressFill,
               { width: `${progress}%` },
               tier.achieved && styles.tierProgressFillAchieved,
-            ]} 
+            ]}
           />
         </View>
         <Text style={styles.tierProgressText}>
@@ -337,20 +359,22 @@ function RewardTierCard({ tier, currentReferrals, onClaim }: RewardTierCardProps
       <View style={styles.tierRewards}>
         {tier.rewards.map((reward, index) => (
           <View key={index} style={styles.rewardTag}>
-            <Ionicons 
+            <Ionicons
               name={
-                reward.type === 'xp' ? 'sparkles' :
-                reward.type === 'coins' ? 'logo-bitcoin' :
-                reward.type === 'premium' ? 'star' :
-                reward.type === 'badge' ? 'medal' : 'ribbon'
-              } 
-              size={12} 
-              color={tier.achieved ? AnimationColors.primary : '#9ca3af'} 
+                reward.type === 'xp'
+                  ? 'sparkles'
+                  : reward.type === 'coins'
+                    ? 'logo-bitcoin'
+                    : reward.type === 'premium'
+                      ? 'star'
+                      : reward.type === 'badge'
+                        ? 'medal'
+                        : 'ribbon'
+              }
+              size={12}
+              color={tier.achieved ? AnimationColors.primary : '#9ca3af'}
             />
-            <Text style={[
-              styles.rewardTagText,
-              tier.achieved && styles.rewardTagTextAchieved
-            ]}>
+            <Text style={[styles.rewardTagText, tier.achieved && styles.rewardTagTextAchieved]}>
               {reward.description}
             </Text>
           </View>
@@ -389,27 +413,20 @@ function ReferralRow({ referral }: ReferralRowProps) {
         {referral.referredAvatarUrl ? (
           <Image source={{ uri: referral.referredAvatarUrl }} style={styles.referralAvatarImage} />
         ) : (
-          <LinearGradient
-            colors={['#3b82f6', '#8b5cf6']}
-            style={styles.referralAvatarPlaceholder}
-          >
-            <Text style={styles.referralAvatarInitial}>
-              {referral.referredUsername[0]}
-            </Text>
+          <LinearGradient colors={['#3b82f6', '#8b5cf6']} style={styles.referralAvatarPlaceholder}>
+            <Text style={styles.referralAvatarInitial}>{referral.referredUsername[0]}</Text>
           </LinearGradient>
         )}
       </View>
-      
+
       <View style={styles.referralInfo}>
         <Text style={styles.referralUsername}>{referral.referredUsername}</Text>
         <Text style={styles.referralTime}>{timeAgo}</Text>
       </View>
-      
+
       <View style={[styles.statusBadge, { backgroundColor: statusConfig.color + '20' }]}>
-        <Ionicons name={statusConfig.icon as any} size={14} color={statusConfig.color} />
-        <Text style={[styles.statusText, { color: statusConfig.color }]}>
-          {statusConfig.label}
-        </Text>
+        <Ionicons name={statusConfig.icon as unknown} size={14} color={statusConfig.color} />
+        <Text style={[styles.statusText, { color: statusConfig.color }]}>{statusConfig.label}</Text>
       </View>
     </View>
   );
@@ -429,7 +446,7 @@ export default function ReferralScreen() {
   const [copied, setCopied] = useState(false);
 
   // Transform API response to local types
-  const transformApiReferralCode = (data: any): ReferralCode => ({
+  const transformApiReferralCode = (data: Record<string, unknown>): ReferralCode => ({
     code: data.code || 'CGRAPH',
     url: data.url || `https://cgraph.app/join?ref=${data.code}`,
     usageCount: data.usage_count || data.usageCount || 0,
@@ -437,7 +454,7 @@ export default function ReferralScreen() {
     createdAt: data.created_at || data.createdAt || new Date().toISOString(),
   });
 
-  const transformApiStats = (data: any): ReferralStats => ({
+  const transformApiStats = (data: Record<string, unknown>): ReferralStats => ({
     totalReferrals: data.total_referrals || data.totalReferrals || 0,
     verifiedReferrals: data.verified_referrals || data.verifiedReferrals || 0,
     pendingReferrals: data.pending_referrals || data.pendingReferrals || 0,
@@ -446,11 +463,12 @@ export default function ReferralScreen() {
     totalRewardsEarned: {
       xp: data.total_rewards_earned?.xp || data.totalRewardsEarned?.xp || 0,
       coins: data.total_rewards_earned?.coins || data.totalRewardsEarned?.coins || 0,
-      premium_days: data.total_rewards_earned?.premium_days || data.totalRewardsEarned?.premium_days || 0,
+      premium_days:
+        data.total_rewards_earned?.premium_days || data.totalRewardsEarned?.premium_days || 0,
     },
   });
 
-  const transformApiReferral = (data: any): Referral => ({
+  const transformApiReferral = (data: Record<string, unknown>): Referral => ({
     id: data.id,
     referredUserId: data.referred_user_id || data.referredUserId,
     referredUsername: data.referred_username || data.referredUsername,
@@ -461,12 +479,12 @@ export default function ReferralScreen() {
     rewardsClaimed: data.rewards_claimed || data.rewardsClaimed || false,
   });
 
-  const transformApiRewardTier = (data: any): RewardTier => ({
+  const transformApiRewardTier = (data: Record<string, unknown>): RewardTier => ({
     id: data.id,
     name: data.name,
     description: data.description,
     referralsRequired: data.referrals_required || data.referralsRequired,
-    rewards: (data.rewards || []).map((r: any) => ({
+    rewards: (data.rewards || []).map((r: Record<string, unknown>) => ({
       type: r.type,
       amount: r.amount,
       description: r.description,
@@ -475,7 +493,10 @@ export default function ReferralScreen() {
     claimed: data.claimed || false,
   });
 
-  const transformApiLeaderboardEntry = (data: any, currentUserId?: string): LeaderboardEntry => ({
+  const transformApiLeaderboardEntry = (
+    data: Record<string, unknown>,
+    currentUserId?: string
+  ): LeaderboardEntry => ({
     rank: data.rank,
     userId: data.user_id || data.userId,
     username: data.username,
@@ -527,7 +548,11 @@ export default function ReferralScreen() {
       if (leaderboardRes?.data?.leaderboard || leaderboardRes?.data) {
         const leaderboardList = leaderboardRes.data.leaderboard || leaderboardRes.data;
         if (Array.isArray(leaderboardList)) {
-          setLeaderboard(leaderboardList.map((entry: any) => transformApiLeaderboardEntry(entry)));
+          setLeaderboard(
+            leaderboardList.map((entry: Record<string, unknown>) =>
+              transformApiLeaderboardEntry(entry)
+            )
+          );
           hasData = true;
         }
       }
@@ -569,7 +594,7 @@ export default function ReferralScreen() {
   // Share referral
   const shareReferral = async () => {
     if (!referralCode) return;
-    
+
     HapticFeedback.medium();
     try {
       await Share.share({
@@ -592,16 +617,14 @@ export default function ReferralScreen() {
   // Claim tier reward
   const handleClaimTier = (tierId: string) => {
     HapticFeedback.success();
-    setRewardTiers(prev => prev.map(t => 
-      t.id === tierId ? { ...t, claimed: true } : t
-    ));
+    setRewardTiers((prev) => prev.map((t) => (t.id === tierId ? { ...t, claimed: true } : t)));
     Alert.alert('🎉 Rewards Claimed!', 'Your rewards have been added to your account.');
   };
 
   // Calculate next tier
   const nextTier = useMemo(() => {
     if (!stats) return null;
-    const tier = rewardTiers.find(t => !t.achieved);
+    const tier = rewardTiers.find((t) => !t.achieved);
     if (!tier) return null;
     const progress = (stats.verifiedReferrals / tier.referralsRequired) * 100;
     return { tier, progress: Math.min(progress, 100) };
@@ -657,11 +680,7 @@ export default function ReferralScreen() {
                 onPress={() => copyToClipboard(referralCode.url)}
                 style={styles.copyButton}
               >
-                <Ionicons 
-                  name={copied ? 'checkmark' : 'copy'} 
-                  size={20} 
-                  color="#fff" 
-                />
+                <Ionicons name={copied ? 'checkmark' : 'copy'} size={20} color="#fff" />
               </TouchableOpacity>
               <TouchableOpacity onPress={shareReferral} style={styles.shareButton}>
                 <Ionicons name="share-social" size={20} color="#fff" />
@@ -678,7 +697,8 @@ export default function ReferralScreen() {
 
             {/* Usage */}
             <Text style={styles.usageText}>
-              Used {referralCode.usageCount} {referralCode.maxUsage ? `/ ${referralCode.maxUsage}` : ''} times
+              Used {referralCode.usageCount}{' '}
+              {referralCode.maxUsage ? `/ ${referralCode.maxUsage}` : ''} times
             </Text>
           </LinearGradient>
         )}
@@ -732,14 +752,18 @@ export default function ReferralScreen() {
             <View style={styles.nextTierRewards}>
               {nextTier.tier.rewards.slice(0, 3).map((reward, i) => (
                 <View key={i} style={styles.nextTierReward}>
-                  <Ionicons 
+                  <Ionicons
                     name={
-                      reward.type === 'xp' ? 'sparkles' :
-                      reward.type === 'coins' ? 'logo-bitcoin' :
-                      reward.type === 'premium' ? 'star' : 'gift'
-                    } 
-                    size={12} 
-                    color="#9ca3af" 
+                      reward.type === 'xp'
+                        ? 'sparkles'
+                        : reward.type === 'coins'
+                          ? 'logo-bitcoin'
+                          : reward.type === 'premium'
+                            ? 'star'
+                            : 'gift'
+                    }
+                    size={12}
+                    color="#9ca3af"
                   />
                   <Text style={styles.nextTierRewardText}>{reward.description}</Text>
                 </View>
@@ -752,7 +776,7 @@ export default function ReferralScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Reward Tiers</Text>
           <View style={styles.tiersContainer}>
-            {rewardTiers.map(tier => (
+            {rewardTiers.map((tier) => (
               <RewardTierCard
                 key={tier.id}
                 tier={tier}
@@ -773,34 +797,39 @@ export default function ReferralScreen() {
           </View>
           <BlurView intensity={40} tint="dark" style={styles.leaderboardCard}>
             {leaderboard.map((entry, index) => (
-              <View 
-                key={entry.userId} 
+              <View
+                key={entry.userId}
                 style={[
                   styles.leaderboardRow,
                   entry.isCurrentUser && styles.leaderboardRowHighlight,
                   index > 0 && styles.leaderboardRowBorder,
                 ]}
               >
-                <View style={[
-                  styles.leaderboardRank,
-                  entry.rank <= 3 && styles[`rank${entry.rank}` as 'rank1' | 'rank2' | 'rank3'],
-                ]}>
-                  <Text style={[
-                    styles.leaderboardRankText,
-                    entry.rank <= 3 && styles.leaderboardRankTextTop,
-                  ]}>
+                <View
+                  style={[
+                    styles.leaderboardRank,
+                    entry.rank <= 3 && styles[`rank${entry.rank}` as 'rank1' | 'rank2' | 'rank3'],
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.leaderboardRankText,
+                      entry.rank <= 3 && styles.leaderboardRankTextTop,
+                    ]}
+                  >
                     {entry.rank}
                   </Text>
                 </View>
-                <Text style={[
-                  styles.leaderboardUsername,
-                  entry.isCurrentUser && styles.leaderboardUsernameHighlight,
-                ]} numberOfLines={1}>
+                <Text
+                  style={[
+                    styles.leaderboardUsername,
+                    entry.isCurrentUser && styles.leaderboardUsernameHighlight,
+                  ]}
+                  numberOfLines={1}
+                >
                   {entry.username}
                 </Text>
-                <Text style={styles.leaderboardCount}>
-                  {entry.referralCount} referrals
-                </Text>
+                <Text style={styles.leaderboardCount}>{entry.referralCount} referrals</Text>
               </View>
             ))}
           </BlurView>

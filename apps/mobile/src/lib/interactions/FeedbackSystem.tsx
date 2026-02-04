@@ -16,6 +16,7 @@ import {
   View,
   ViewStyle,
   StyleProp,
+  GestureResponderEvent,
   Pressable,
   PressableProps,
   Dimensions,
@@ -137,7 +138,7 @@ export function PressableFeedback({
   const pressStyles = Array.isArray(pressStyle) ? pressStyle : [pressStyle];
 
   const handlePressIn = useCallback(
-    (e: any) => {
+    (e: GestureResponderEvent) => {
       if (pressStyles.includes('scale')) {
         scale.value = withSpring(scaleAmount, springConfig);
       }
@@ -161,7 +162,7 @@ export function PressableFeedback({
   );
 
   const handlePressOut = useCallback(
-    (e: any) => {
+    (e: GestureResponderEvent) => {
       scale.value = withSpring(1, springConfig);
       opacity.value = withTiming(1, { duration: 100 });
       glowOpacity.value = withTiming(0, { duration: 200 });
@@ -174,7 +175,7 @@ export function PressableFeedback({
   );
 
   const handlePress = useCallback(
-    (e: any) => {
+    (e: GestureResponderEvent) => {
       if (hapticFeedback) {
         Haptics.impactAsync(hapticStyle);
       }
@@ -796,7 +797,7 @@ export function Ripple({
   let rippleId = 0;
 
   const handlePress = useCallback(
-    (event: any) => {
+    (event: GestureResponderEvent) => {
       const { locationX, locationY } = event.nativeEvent;
 
       const newRipple = {

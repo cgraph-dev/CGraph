@@ -215,7 +215,7 @@ export function runKeyframeAnimation(
   if (animations.length === 1 && animations[0]) {
     target.value = animations[0];
   } else if (animations.length > 1) {
-    target.value = withSequence(...animations as [any, any, ...any[]]);
+    target.value = withSequence(...(animations as [any, any, ...any[]]));
   }
 }
 
@@ -230,9 +230,7 @@ export async function runTimeline(timeline: Timeline): Promise<void> {
           runKeyframeAnimation(step.target, step.animation);
           if (!step.parallel) {
             // Wait for animation to complete
-            await new Promise((resolve) =>
-              setTimeout(resolve, step.animation!.totalDuration)
-            );
+            await new Promise((resolve) => setTimeout(resolve, step.animation!.totalDuration));
           }
         }
         break;
@@ -273,11 +271,7 @@ export function createStaggeredAnimation(
   animation: KeyframeAnimation,
   config: ChoreographyConfig = {}
 ): void {
-  const {
-    stagger = 50,
-    direction = 'forward',
-    spring,
-  } = config;
+  const { stagger = 50, direction = 'forward', spring } = config;
 
   let indices: number[];
 
@@ -337,7 +331,7 @@ export function createStaggeredAnimation(
     if (animations.length === 1 && animations[0]) {
       target.value = withDelay(delay, animations[0]);
     } else if (animations.length > 1) {
-      target.value = withDelay(delay, withSequence(...animations as [any, any, ...any[]]));
+      target.value = withDelay(delay, withSequence(...(animations as [any, any, ...any[]])));
     }
   });
 }
@@ -408,23 +402,19 @@ export function createShakeAnimation(
   const { intensity = 10, duration = 500, shakes = 5 } = config;
 
   const shakeDuration = duration / (shakes * 2 + 1);
-  const shakeAnimations: any[] = [];
+  const shakeAnimations: unknown[] = [];
 
   for (let i = 0; i < shakes; i++) {
     const direction = i % 2 === 0 ? 1 : -1;
     const dampedIntensity = intensity * (1 - i / shakes);
 
-    shakeAnimations.push(
-      withTiming(direction * dampedIntensity, { duration: shakeDuration })
-    );
-    shakeAnimations.push(
-      withTiming(-direction * dampedIntensity, { duration: shakeDuration })
-    );
+    shakeAnimations.push(withTiming(direction * dampedIntensity, { duration: shakeDuration }));
+    shakeAnimations.push(withTiming(-direction * dampedIntensity, { duration: shakeDuration }));
   }
 
   shakeAnimations.push(withTiming(0, { duration: shakeDuration }));
 
-  target.value = withSequence(...shakeAnimations as [any, any, ...any[]]);
+  target.value = withSequence(...(shakeAnimations as [any, any, ...any[]]));
 }
 
 export function createBounceAnimation(
@@ -437,7 +427,7 @@ export function createBounceAnimation(
 ): void {
   const { toValue = -30, duration = 1000, bounces = 3 } = config;
 
-  const bounceAnimations: any[] = [];
+  const bounceAnimations: unknown[] = [];
   const bounceDuration = duration / (bounces * 2);
 
   for (let i = 0; i < bounces; i++) {
@@ -450,7 +440,7 @@ export function createBounceAnimation(
     );
   }
 
-  target.value = withSequence(...bounceAnimations as [any, any, ...any[]]);
+  target.value = withSequence(...(bounceAnimations as [any, any, ...any[]]));
 }
 
 export function stopAnimation(target: SharedValue<number>): void {
@@ -467,18 +457,16 @@ export function stopAllAnimations(targets: SharedValue<number>[]): void {
 
 export const CHOREOGRAPHY_PRESETS = {
   cascadeIn: (targets: SharedValue<number>[]) =>
-    createStaggeredAnimation(
-      targets,
-      KeyframeBuilder.create().to(0).spring(1).build(),
-      { stagger: 50, direction: 'forward' }
-    ),
+    createStaggeredAnimation(targets, KeyframeBuilder.create().to(0).spring(1).build(), {
+      stagger: 50,
+      direction: 'forward',
+    }),
 
   cascadeOut: (targets: SharedValue<number>[]) =>
-    createStaggeredAnimation(
-      targets,
-      KeyframeBuilder.create().to(1).spring(0).build(),
-      { stagger: 50, direction: 'reverse' }
-    ),
+    createStaggeredAnimation(targets, KeyframeBuilder.create().to(1).spring(0).build(), {
+      stagger: 50,
+      direction: 'reverse',
+    }),
 
   explodeIn: (targets: SharedValue<number>[]) =>
     createStaggeredAnimation(
@@ -488,11 +476,10 @@ export const CHOREOGRAPHY_PRESETS = {
     ),
 
   implodeOut: (targets: SharedValue<number>[]) =>
-    createStaggeredAnimation(
-      targets,
-      KeyframeBuilder.create().to(1).spring(0, 'snappy').build(),
-      { stagger: 30, direction: 'edges' }
-    ),
+    createStaggeredAnimation(targets, KeyframeBuilder.create().to(1).spring(0, 'snappy').build(), {
+      stagger: 30,
+      direction: 'edges',
+    }),
 
   wave: (targets: SharedValue<number>[]) =>
     createWaveAnimation(targets, 0, 1, { waveDuration: 2000, wavelength: 4 }),
@@ -500,12 +487,7 @@ export const CHOREOGRAPHY_PRESETS = {
   ripple: (targets: SharedValue<number>[]) =>
     createStaggeredAnimation(
       targets,
-      KeyframeBuilder.create()
-        .to(0)
-        .eased(1.2, 150)
-        .eased(0.9, 100)
-        .spring(1)
-        .build(),
+      KeyframeBuilder.create().to(0).eased(1.2, 150).eased(0.9, 100).spring(1).build(),
       { stagger: 40, direction: 'center' }
     ),
 };

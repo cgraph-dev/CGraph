@@ -79,20 +79,77 @@ const FALLBACK_STATS: DashboardStats = {
 };
 
 const FALLBACK_RECENT_USERS: RecentUser[] = [
-  { id: '1', username: 'newuser1', email: 'new1@example.com', createdAt: new Date().toISOString(), status: 'active' },
-  { id: '2', username: 'newuser2', email: 'new2@example.com', createdAt: new Date().toISOString(), status: 'pending' },
-  { id: '3', username: 'newuser3', email: 'new3@example.com', createdAt: new Date().toISOString(), status: 'active' },
+  {
+    id: '1',
+    username: 'newuser1',
+    email: 'new1@example.com',
+    createdAt: new Date().toISOString(),
+    status: 'active',
+  },
+  {
+    id: '2',
+    username: 'newuser2',
+    email: 'new2@example.com',
+    createdAt: new Date().toISOString(),
+    status: 'pending',
+  },
+  {
+    id: '3',
+    username: 'newuser3',
+    email: 'new3@example.com',
+    createdAt: new Date().toISOString(),
+    status: 'active',
+  },
 ];
 
 const FALLBACK_REPORTS: Report[] = [
-  { id: '1', type: 'post', reason: 'Spam content', reportedBy: 'user1', targetId: 'p1', targetName: 'Suspicious post', status: 'pending', createdAt: new Date().toISOString() },
-  { id: '2', type: 'user', reason: 'Harassment', reportedBy: 'user2', targetId: 'u1', targetName: 'BadUser', status: 'pending', createdAt: new Date().toISOString() },
+  {
+    id: '1',
+    type: 'post',
+    reason: 'Spam content',
+    reportedBy: 'user1',
+    targetId: 'p1',
+    targetName: 'Suspicious post',
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: '2',
+    type: 'user',
+    reason: 'Harassment',
+    reportedBy: 'user2',
+    targetId: 'u1',
+    targetName: 'BadUser',
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  },
 ];
 
 const FALLBACK_AUDIT: AuditLog[] = [
-  { id: '1', action: 'user.ban', actor: 'admin', target: 'spammer123', details: 'Banned for spam', timestamp: new Date().toISOString() },
-  { id: '2', action: 'post.delete', actor: 'moderator', target: 'Post #123', details: 'Removed inappropriate content', timestamp: new Date().toISOString() },
-  { id: '3', action: 'settings.update', actor: 'admin', target: 'Registration', details: 'Enabled email verification', timestamp: new Date().toISOString() },
+  {
+    id: '1',
+    action: 'user.ban',
+    actor: 'admin',
+    target: 'spammer123',
+    details: 'Banned for spam',
+    timestamp: new Date().toISOString(),
+  },
+  {
+    id: '2',
+    action: 'post.delete',
+    actor: 'moderator',
+    target: 'Post #123',
+    details: 'Removed inappropriate content',
+    timestamp: new Date().toISOString(),
+  },
+  {
+    id: '3',
+    action: 'settings.update',
+    actor: 'admin',
+    target: 'Registration',
+    details: 'Enabled email verification',
+    timestamp: new Date().toISOString(),
+  },
 ];
 
 // ============================================================================
@@ -170,7 +227,12 @@ function StatCard({ label, value, icon, color, trend }: StatCardProps) {
       <View style={styles.statHeader}>
         <Ionicons name={icon} size={20} color={color} />
         {trend && (
-          <View style={[styles.trendBadge, { backgroundColor: trend.isPositive ? '#10b98120' : '#ef444420' }]}>
+          <View
+            style={[
+              styles.trendBadge,
+              { backgroundColor: trend.isPositive ? '#10b98120' : '#ef444420' },
+            ]}
+          >
             <Ionicons
               name={trend.isPositive ? 'trending-up' : 'trending-down'}
               size={12}
@@ -209,18 +271,8 @@ function OverviewTab({ stats, recentUsers }: OverviewTabProps) {
           color="#10b981"
           trend={{ value: 12, isPositive: true }}
         />
-        <StatCard
-          label="Active Today"
-          value={stats.activeUsers}
-          icon="pulse"
-          color="#6366f1"
-        />
-        <StatCard
-          label="New Today"
-          value={stats.newUsersToday}
-          icon="person-add"
-          color="#f59e0b"
-        />
+        <StatCard label="Active Today" value={stats.activeUsers} icon="pulse" color="#6366f1" />
+        <StatCard label="New Today" value={stats.newUsersToday} icon="person-add" color="#f59e0b" />
         <StatCard
           label="Total Posts"
           value={stats.totalPosts.toLocaleString()}
@@ -228,12 +280,7 @@ function OverviewTab({ stats, recentUsers }: OverviewTabProps) {
           color="#3b82f6"
           trend={{ value: 8, isPositive: true }}
         />
-        <StatCard
-          label="Posts Today"
-          value={stats.postsToday}
-          icon="chatbubbles"
-          color="#8b5cf6"
-        />
+        <StatCard label="Posts Today" value={stats.postsToday} icon="chatbubbles" color="#8b5cf6" />
         <StatCard
           label="Pending Reports"
           value={stats.pendingReports}
@@ -254,14 +301,32 @@ function OverviewTab({ stats, recentUsers }: OverviewTabProps) {
               <Text style={styles.userName}>{user.username}</Text>
               <Text style={styles.userEmail}>{user.email}</Text>
             </View>
-            <View style={[
-              styles.statusBadge,
-              { backgroundColor: user.status === 'active' ? '#10b98120' : user.status === 'pending' ? '#f59e0b20' : '#ef444420' }
-            ]}>
-              <Text style={[
-                styles.statusText,
-                { color: user.status === 'active' ? '#10b981' : user.status === 'pending' ? '#f59e0b' : '#ef4444' }
-              ]}>
+            <View
+              style={[
+                styles.statusBadge,
+                {
+                  backgroundColor:
+                    user.status === 'active'
+                      ? '#10b98120'
+                      : user.status === 'pending'
+                        ? '#f59e0b20'
+                        : '#ef444420',
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.statusText,
+                  {
+                    color:
+                      user.status === 'active'
+                        ? '#10b981'
+                        : user.status === 'pending'
+                          ? '#f59e0b'
+                          : '#ef4444',
+                  },
+                ]}
+              >
                 {user.status}
               </Text>
             </View>
@@ -285,22 +350,24 @@ interface ReportsTabProps {
 function ReportsTab({ reports, onResolve, onDismiss }: ReportsTabProps) {
   const getTypeIcon = (type: string): keyof typeof Ionicons.glyphMap => {
     switch (type) {
-      case 'post': return 'document-text';
-      case 'user': return 'person';
-      case 'thread': return 'chatbubbles';
-      default: return 'alert';
+      case 'post':
+        return 'document-text';
+      case 'user':
+        return 'person';
+      case 'thread':
+        return 'chatbubbles';
+      default:
+        return 'alert';
     }
   };
 
-  const pendingReports = reports.filter(r => r.status === 'pending');
-  const resolvedReports = reports.filter(r => r.status !== 'pending');
+  const pendingReports = reports.filter((r) => r.status === 'pending');
+  const resolvedReports = reports.filter((r) => r.status !== 'pending');
 
   return (
     <View style={styles.tabContent}>
-      <Text style={styles.sectionTitle}>
-        Pending Reports ({pendingReports.length})
-      </Text>
-      
+      <Text style={styles.sectionTitle}>Pending Reports ({pendingReports.length})</Text>
+
       {pendingReports.length === 0 ? (
         <View style={styles.emptyState}>
           <Ionicons name="checkmark-circle" size={48} color="#10b981" />
@@ -371,11 +438,15 @@ function AuditTab({ logs }: AuditTabProps) {
   return (
     <View style={styles.tabContent}>
       <Text style={styles.sectionTitle}>Recent Activity</Text>
-      
+
       {logs.map((log) => (
         <View key={log.id} style={styles.auditItem}>
           <View style={[styles.auditIcon, { backgroundColor: getActionColor(log.action) + '20' }]}>
-            <Ionicons name={getActionIcon(log.action)} size={16} color={getActionColor(log.action)} />
+            <Ionicons
+              name={getActionIcon(log.action)}
+              size={16}
+              color={getActionColor(log.action)}
+            />
           </View>
           <View style={styles.auditContent}>
             <Text style={styles.auditAction}>{log.action.replace('.', ' → ')}</Text>
@@ -383,9 +454,7 @@ function AuditTab({ logs }: AuditTabProps) {
               <Text style={styles.auditActor}>{log.actor}</Text> → {log.target}
             </Text>
             <Text style={styles.auditMeta}>{log.details}</Text>
-            <Text style={styles.auditTime}>
-              {new Date(log.timestamp).toLocaleString()}
-            </Text>
+            <Text style={styles.auditTime}>{new Date(log.timestamp).toLocaleString()}</Text>
           </View>
         </View>
       ))}
@@ -407,7 +476,12 @@ function SettingsTab({ onNavigate }: SettingsTabProps) {
       title: 'General',
       items: [
         { id: 'site', label: 'Site Settings', icon: 'globe', screen: 'SiteSettings' },
-        { id: 'registration', label: 'Registration', icon: 'person-add', screen: 'RegistrationSettings' },
+        {
+          id: 'registration',
+          label: 'Registration',
+          icon: 'person-add',
+          screen: 'RegistrationSettings',
+        },
         { id: 'email', label: 'Email Configuration', icon: 'mail', screen: 'EmailSettings' },
       ],
     },
@@ -448,7 +522,7 @@ function SettingsTab({ onNavigate }: SettingsTabProps) {
                 }}
               >
                 <View style={styles.settingsItemIcon}>
-                  <Ionicons name={item.icon as any} size={20} color="#10b981" />
+                  <Ionicons name={item.icon as unknown} size={20} color="#10b981" />
                 </View>
                 <Text style={styles.settingsItemLabel}>{item.label}</Text>
                 <Ionicons name="chevron-forward" size={20} color="#6b7280" />
@@ -466,12 +540,12 @@ function SettingsTab({ onNavigate }: SettingsTabProps) {
 // ============================================================================
 
 export default function AdminDashboardScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
-  
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+
   const [activeTab, setActiveTab] = useState<AdminTab>('overview');
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
+
   const [stats, setStats] = useState<DashboardStats>(FALLBACK_STATS);
   const [recentUsers, setRecentUsers] = useState<RecentUser[]>(FALLBACK_RECENT_USERS);
   const [reports, setReports] = useState<Report[]>(FALLBACK_REPORTS);
@@ -481,10 +555,12 @@ export default function AdminDashboardScreen() {
   const fetchDashboardData = useCallback(async () => {
     try {
       setIsLoading(true);
-      
+
       const [metricsRes, usersRes, reportsRes, auditRes] = await Promise.allSettled([
         api.get('/api/v1/admin/metrics'),
-        api.get('/api/v1/admin/users', { params: { per_page: 10, sort: 'created_at', order: 'desc' } }),
+        api.get('/api/v1/admin/users', {
+          params: { per_page: 10, sort: 'created_at', order: 'desc' },
+        }),
         api.get('/api/v1/admin/reports'),
         api.get('/api/v1/admin/audit'),
       ]);
@@ -504,40 +580,58 @@ export default function AdminDashboardScreen() {
       }
 
       if (usersRes.status === 'fulfilled') {
-        const users = usersRes.value.data?.data || usersRes.value.data?.users || usersRes.value.data || [];
-        setRecentUsers(Array.isArray(users) ? users.slice(0, 10).map((u: any) => ({
-          id: u.id,
-          username: u.username,
-          email: u.email,
-          createdAt: u.created_at || u.inserted_at,
-          status: u.banned ? 'banned' : u.verified ? 'active' : 'pending',
-        })) : []);
+        const users =
+          usersRes.value.data?.data || usersRes.value.data?.users || usersRes.value.data || [];
+        setRecentUsers(
+          Array.isArray(users)
+            ? users.slice(0, 10).map((u: Record<string, unknown>) => ({
+                id: u.id,
+                username: u.username,
+                email: u.email,
+                createdAt: u.created_at || u.inserted_at,
+                status: u.banned ? 'banned' : u.verified ? 'active' : 'pending',
+              }))
+            : []
+        );
       }
 
       if (reportsRes.status === 'fulfilled') {
-        const reports = reportsRes.value.data?.data || reportsRes.value.data?.reports || reportsRes.value.data || [];
-        setReports(Array.isArray(reports) ? reports.map((r: any) => ({
-          id: r.id,
-          type: r.type || r.report_type || 'post',
-          reason: r.reason || '',
-          reportedBy: r.reported_by || r.reporter?.username || 'Anonymous',
-          targetId: r.target_id || r.content_id || '',
-          targetName: r.target_name || r.content_preview || 'Unknown',
-          status: r.status || 'pending',
-          createdAt: r.created_at || r.inserted_at,
-        })) : []);
+        const reports =
+          reportsRes.value.data?.data ||
+          reportsRes.value.data?.reports ||
+          reportsRes.value.data ||
+          [];
+        setReports(
+          Array.isArray(reports)
+            ? reports.map((r: Record<string, unknown>) => ({
+                id: r.id,
+                type: r.type || r.report_type || 'post',
+                reason: r.reason || '',
+                reportedBy: r.reported_by || r.reporter?.username || 'Anonymous',
+                targetId: r.target_id || r.content_id || '',
+                targetName: r.target_name || r.content_preview || 'Unknown',
+                status: r.status || 'pending',
+                createdAt: r.created_at || r.inserted_at,
+              }))
+            : []
+        );
       }
 
       if (auditRes.status === 'fulfilled') {
-        const logs = auditRes.value.data?.data || auditRes.value.data?.logs || auditRes.value.data || [];
-        setAuditLogs(Array.isArray(logs) ? logs.map((l: any) => ({
-          id: l.id,
-          action: l.action || '',
-          actor: l.actor || l.user?.username || 'System',
-          target: l.target || l.resource || '',
-          details: l.details || l.metadata || '',
-          timestamp: l.created_at || l.inserted_at,
-        })) : []);
+        const logs =
+          auditRes.value.data?.data || auditRes.value.data?.logs || auditRes.value.data || [];
+        setAuditLogs(
+          Array.isArray(logs)
+            ? logs.map((l: Record<string, unknown>) => ({
+                id: l.id,
+                action: l.action || '',
+                actor: l.actor || l.user?.username || 'System',
+                target: l.target || l.resource || '',
+                details: l.details || l.metadata || '',
+                timestamp: l.created_at || l.inserted_at,
+              }))
+            : []
+        );
       }
     } catch (err) {
       console.error('[AdminDashboard] Error fetching data:', err);
@@ -566,7 +660,7 @@ export default function AdminDashboardScreen() {
       {
         text: 'Resolve',
         onPress: () => {
-          setReports(reports.map(r => r.id === id ? { ...r, status: 'resolved' } : r));
+          setReports(reports.map((r) => (r.id === id ? { ...r, status: 'resolved' } : r)));
           setStats({ ...stats, pendingReports: stats.pendingReports - 1 });
           HapticFeedback.success();
         },
@@ -582,7 +676,7 @@ export default function AdminDashboardScreen() {
         text: 'Dismiss',
         style: 'destructive',
         onPress: () => {
-          setReports(reports.map(r => r.id === id ? { ...r, status: 'dismissed' } : r));
+          setReports(reports.map((r) => (r.id === id ? { ...r, status: 'dismissed' } : r)));
           setStats({ ...stats, pendingReports: stats.pendingReports - 1 });
         },
       },
@@ -607,7 +701,13 @@ export default function AdminDashboardScreen() {
           </View>
         );
       case 'reports':
-        return <ReportsTab reports={reports} onResolve={handleResolveReport} onDismiss={handleDismissReport} />;
+        return (
+          <ReportsTab
+            reports={reports}
+            onResolve={handleResolveReport}
+            onDismiss={handleDismissReport}
+          />
+        );
       case 'audit':
         return <AuditTab logs={auditLogs} />;
       case 'settings':

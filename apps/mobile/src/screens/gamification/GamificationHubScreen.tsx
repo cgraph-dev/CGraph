@@ -236,12 +236,9 @@ function AnimatedLevelOrb({ level, progress }: LevelOrbProps) {
                 styles.progressRingFill,
                 {
                   borderColor: '#FCD34D',
-                  borderTopColor:
-                    progress > 0.25 ? '#FCD34D' : 'transparent',
-                  borderRightColor:
-                    progress > 0.5 ? '#FCD34D' : 'transparent',
-                  borderBottomColor:
-                    progress > 0.75 ? '#FCD34D' : 'transparent',
+                  borderTopColor: progress > 0.25 ? '#FCD34D' : 'transparent',
+                  borderRightColor: progress > 0.5 ? '#FCD34D' : 'transparent',
+                  borderBottomColor: progress > 0.75 ? '#FCD34D' : 'transparent',
                   transform: [{ rotate: `${progress * 360}deg` }],
                 },
               ]}
@@ -370,10 +367,7 @@ function AnimatedFireStreak({ streak, canClaim, onClaim }: FireStreakProps) {
                 {
                   fontSize: 24 + i * 4,
                   opacity: flame.opacity,
-                  transform: [
-                    { scale: flame.scale },
-                    { translateY: flame.translateY },
-                  ],
+                  transform: [{ scale: flame.scale }, { translateY: flame.translateY }],
                 },
               ]}
             >
@@ -407,17 +401,10 @@ function AnimatedFireStreak({ streak, canClaim, onClaim }: FireStreakProps) {
               >
                 {/* Shimmer effect */}
                 <Animated.View
-                  style={[
-                    styles.shimmerOverlay,
-                    { transform: [{ translateX: shimmerTranslate }] },
-                  ]}
+                  style={[styles.shimmerOverlay, { transform: [{ translateX: shimmerTranslate }] }]}
                 >
                   <LinearGradient
-                    colors={[
-                      'transparent',
-                      'rgba(255,255,255,0.3)',
-                      'transparent',
-                    ]}
+                    colors={['transparent', 'rgba(255,255,255,0.3)', 'transparent']}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
                     style={StyleSheet.absoluteFill}
@@ -541,10 +528,7 @@ function StatCard({ icon, label, value, color, onPress, index = 0 }: StatCardPro
         ]}
       />
 
-      <LinearGradient
-        colors={[color + '30', '#1f293780']}
-        style={styles.statCard}
-      >
+      <LinearGradient colors={[color + '30', '#1f293780']} style={styles.statCard}>
         <Animated.View style={{ transform: [{ rotate }] }}>
           <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={28} color={color} />
         </Animated.View>
@@ -599,7 +583,7 @@ function QuickLink({ icon, label, description, color, onPress }: QuickLinkProps)
         style={styles.quickLinkGradient}
       >
         <View style={[styles.quickLinkIcon, { backgroundColor: color + '30' }]}>
-          <Ionicons name={icon as any} size={24} color={color} />
+          <Ionicons name={icon as unknown} size={24} color={color} />
         </View>
         <View style={styles.quickLinkContent}>
           <Text style={styles.quickLinkLabel}>{label}</Text>
@@ -616,7 +600,7 @@ function QuickLink({ icon, label, description, color, onPress }: QuickLinkProps)
 // ============================================================================
 
 export default function GamificationHubScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const {
     stats,
     activeQuests,
@@ -628,21 +612,21 @@ export default function GamificationHubScreen() {
     canClaimStreak,
     isLoading,
   } = useGamification();
-  
+
   // Initial load
   useEffect(() => {
     refreshStats();
     refreshAchievements();
     refreshQuests();
   }, []);
-  
+
   const handleRefresh = useCallback(() => {
     HapticFeedback.light();
     refreshStats();
     refreshAchievements();
     refreshQuests();
   }, [refreshStats, refreshAchievements, refreshQuests]);
-  
+
   const handleClaimStreak = useCallback(async () => {
     HapticFeedback.medium();
     try {
@@ -659,11 +643,11 @@ export default function GamificationHubScreen() {
       Alert.alert('Error', 'Failed to claim streak bonus');
     }
   }, [claimStreak]);
-  
+
   const navigateTo = (screen: string) => {
     navigation.navigate(screen);
   };
-  
+
   // Format values
   const level = stats?.level || 1;
   const xp = stats?.xp || 0;
@@ -673,13 +657,13 @@ export default function GamificationHubScreen() {
   const totalAchievements = stats?.totalAchievements || 0;
   const questsCompleted = stats?.questsCompleted || 0;
   const currentTitle = stats?.currentTitle || null;
-  
+
   // Active quests (limit to 2 for preview)
-  const previewQuests = activeQuests.filter(q => q.accepted && !q.completed).slice(0, 2);
-  
+  const previewQuests = activeQuests.filter((q) => q.accepted && !q.completed).slice(0, 2);
+
   // Recent achievement (last unlocked)
   const recentAchievement = completedAchievements[0] || null;
-  
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -687,22 +671,19 @@ export default function GamificationHubScreen() {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        
+
         <View style={styles.headerContent}>
           <Text style={styles.headerTitle}>Gamification</Text>
           <Text style={styles.headerSubtitle}>Your progress & rewards</Text>
         </View>
-        
+
         {/* Coins display */}
-        <TouchableOpacity 
-          style={styles.coinsButton}
-          onPress={() => navigateTo('CoinShop')}
-        >
+        <TouchableOpacity style={styles.coinsButton} onPress={() => navigateTo('CoinShop')}>
           <Text style={styles.coinEmoji}>🪙</Text>
           <Text style={styles.coinsText}>{(coins ?? 0).toLocaleString()}</Text>
         </TouchableOpacity>
       </LinearGradient>
-      
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -718,20 +699,13 @@ export default function GamificationHubScreen() {
       >
         {/* Level Progress Card */}
         <View style={styles.levelCard}>
-          <LinearGradient
-            colors={['#8b5cf620', '#1f2937']}
-            style={styles.levelCardGradient}
-          >
+          <LinearGradient colors={['#8b5cf620', '#1f2937']} style={styles.levelCardGradient}>
             <View style={styles.levelHeader}>
               <View>
                 <Text style={styles.levelLabel}>Level {level}</Text>
                 {currentTitle && (
                   <View style={styles.titleRow}>
-                    <TitleBadge 
-                      title={currentTitle} 
-                      rarity="rare" 
-                      size="sm" 
-                    />
+                    <TitleBadge title={currentTitle} rarity="rare" size="sm" />
                   </View>
                 )}
               </View>
@@ -740,8 +714,8 @@ export default function GamificationHubScreen() {
                 <Text style={styles.xpText}>{(xp ?? 0).toLocaleString()} XP</Text>
               </View>
             </View>
-            
-            <LevelProgress 
+
+            <LevelProgress
               level={level}
               currentXP={stats?.levelProgress || 0}
               totalXP={stats?.xpForNextLevel || 1000}
@@ -749,13 +723,10 @@ export default function GamificationHubScreen() {
             />
           </LinearGradient>
         </View>
-        
+
         {/* Streak Card */}
         <View style={styles.streakCard}>
-          <LinearGradient
-            colors={['#f9731630', '#1f2937']}
-            style={styles.streakCardGradient}
-          >
+          <LinearGradient colors={['#f9731630', '#1f2937']} style={styles.streakCardGradient}>
             <View style={styles.streakContent}>
               <View style={styles.streakInfo}>
                 <Text style={styles.streakEmoji}>🔥</Text>
@@ -764,12 +735,9 @@ export default function GamificationHubScreen() {
                   <Text style={styles.streakLabel}>Keep logging in daily!</Text>
                 </View>
               </View>
-              
+
               {canClaimStreak ? (
-                <TouchableOpacity
-                  style={styles.claimButton}
-                  onPress={handleClaimStreak}
-                >
+                <TouchableOpacity style={styles.claimButton} onPress={handleClaimStreak}>
                   <Text style={styles.claimButtonText}>Claim</Text>
                 </TouchableOpacity>
               ) : (
@@ -780,7 +748,7 @@ export default function GamificationHubScreen() {
             </View>
           </LinearGradient>
         </View>
-        
+
         {/* Stats Grid */}
         <Text style={styles.sectionTitle}>Stats Overview</Text>
         <View style={styles.statsGrid}>
@@ -813,7 +781,7 @@ export default function GamificationHubScreen() {
             onPress={() => navigateTo('Leaderboard')}
           />
         </View>
-        
+
         {/* Quick Links */}
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.quickLinks}>
@@ -846,7 +814,7 @@ export default function GamificationHubScreen() {
             onPress={() => navigateTo('CoinShop')}
           />
         </View>
-        
+
         {/* Active Quests Preview */}
         {previewQuests.length > 0 && (
           <>
@@ -856,7 +824,7 @@ export default function GamificationHubScreen() {
                 <Text style={styles.seeAllText}>See All</Text>
               </TouchableOpacity>
             </View>
-            {previewQuests.map(q => {
+            {previewQuests.map((q) => {
               const progress = Object.values(q.progress).reduce((a, b) => a + b, 0);
               const target = q.quest.objectives.reduce((a, o) => a + o.targetValue, 0);
               const progressPercent = target > 0 ? Math.round((progress / target) * 100) : 0;
@@ -872,7 +840,9 @@ export default function GamificationHubScreen() {
                       </View>
                       <View style={styles.questPreviewContent}>
                         <Text style={styles.questPreviewTitle}>{q.quest.name}</Text>
-                        <Text style={styles.questPreviewDescription} numberOfLines={1}>{q.quest.description}</Text>
+                        <Text style={styles.questPreviewDescription} numberOfLines={1}>
+                          {q.quest.description}
+                        </Text>
                       </View>
                       <Text style={styles.questPreviewProgress}>{progressPercent}%</Text>
                     </View>
@@ -885,7 +855,7 @@ export default function GamificationHubScreen() {
             })}
           </>
         )}
-        
+
         {/* Recent Achievement */}
         {recentAchievement && (
           <>
@@ -913,7 +883,7 @@ export default function GamificationHubScreen() {
             </View>
           </>
         )}
-        
+
         {/* Bottom spacing */}
         <View style={{ height: 100 }} />
       </ScrollView>

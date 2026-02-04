@@ -1,6 +1,6 @@
 /**
  * Report Screen for Mobile
- * 
+ *
  * Full-screen modal for reporting content/users.
  * Follows iOS/Android design patterns.
  */
@@ -38,7 +38,7 @@ const REPORT_CATEGORIES = [
   { value: 'other', label: 'Other', icon: 'ellipsis-horizontal' },
 ] as const;
 
-type ReportCategory = typeof REPORT_CATEGORIES[number]['value'];
+type ReportCategory = (typeof REPORT_CATEGORIES)[number]['value'];
 type TargetType = 'user' | 'message' | 'group' | 'forum' | 'post' | 'comment';
 
 type ReportRouteParams = {
@@ -53,7 +53,7 @@ export function ReportScreen() {
   const navigation = useNavigation();
   const route = useRoute<RouteProp<ReportRouteParams, 'Report'>>();
   const { colors } = useTheme();
-  
+
   const { targetType, targetId, targetName } = route.params;
 
   const [step, setStep] = useState<'category' | 'details'>('category');
@@ -79,7 +79,7 @@ export function ReportScreen() {
         [{ text: 'OK', onPress: () => navigation.goBack() }]
       );
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const message = error?.response?.data?.error || 'Failed to submit report. Please try again.';
       Alert.alert('Error', message);
     },
@@ -105,10 +105,7 @@ export function ReportScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity 
-          onPress={() => navigation.goBack()}
-          style={styles.closeButton}
-        >
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
           <Ionicons name="close" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Report</Text>
@@ -119,9 +116,7 @@ export function ReportScreen() {
         {step === 'category' && (
           <>
             <View style={styles.section}>
-              <Text style={styles.sectionTitle}>
-                Why are you reporting {targetLabel}?
-              </Text>
+              <Text style={styles.sectionTitle}>Why are you reporting {targetLabel}?</Text>
               <Text style={styles.sectionDescription}>
                 Select the reason that best describes the issue
               </Text>
@@ -139,9 +134,11 @@ export function ReportScreen() {
                 >
                   <View style={styles.categoryIcon}>
                     <Ionicons
-                      name={category.icon as any}
+                      name={category.icon as unknown}
                       size={20}
-                      color={selectedCategory === category.value ? colors.primary : colors.textSecondary}
+                      color={
+                        selectedCategory === category.value ? colors.primary : colors.textSecondary
+                      }
                     />
                   </View>
                   <Text
@@ -153,9 +150,13 @@ export function ReportScreen() {
                     {category.label}
                   </Text>
                   <Ionicons
-                    name={selectedCategory === category.value ? 'checkmark-circle' : 'chevron-forward'}
+                    name={
+                      selectedCategory === category.value ? 'checkmark-circle' : 'chevron-forward'
+                    }
                     size={20}
-                    color={selectedCategory === category.value ? colors.primary : colors.textSecondary}
+                    color={
+                      selectedCategory === category.value ? colors.primary : colors.textSecondary
+                    }
                   />
                 </TouchableOpacity>
               ))}
@@ -175,9 +176,7 @@ export function ReportScreen() {
           <>
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Provide Details</Text>
-              <Text style={styles.sectionDescription}>
-                Help our team understand what happened
-              </Text>
+              <Text style={styles.sectionDescription}>Help our team understand what happened</Text>
             </View>
 
             <View style={styles.warningBox}>
@@ -190,7 +189,7 @@ export function ReportScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Category</Text>
               <Text style={styles.categoryValue}>
-                {REPORT_CATEGORIES.find(c => c.value === selectedCategory)?.label}
+                {REPORT_CATEGORIES.find((c) => c.value === selectedCategory)?.label}
               </Text>
             </View>
 
@@ -237,7 +236,7 @@ export function ReportScreen() {
   );
 }
 
-function createStyles(colors: any) {
+function createStyles(colors: ThemeColors) {
   return StyleSheet.create({
     container: {
       flex: 1,

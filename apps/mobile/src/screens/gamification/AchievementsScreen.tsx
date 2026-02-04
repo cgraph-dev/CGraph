@@ -1,17 +1,17 @@
 /**
  * AchievementsScreen - Mobile
- * 
+ *
  * Full-screen achievements browser with filtering, progress tracking,
  * and detailed achievement views. Allows users to see all achievements,
  * their progress, and celebrate unlocked achievements.
- * 
+ *
  * Features:
  * - Category and rarity filtering
  * - Search functionality
  * - Progress indicators
  * - Animated unlock celebrations
  * - Detailed achievement modal
- * 
+ *
  * @version 1.0.0
  * @since v0.8.3
  */
@@ -104,10 +104,13 @@ interface AchievementCardProps {
 function AchievementCard({ achievement, onPress }: AchievementCardProps) {
   const colors = RARITY_COLORS[achievement.rarity];
   const progressPercent = Math.min(100, (achievement.progress / achievement.requirement) * 100);
-  
+
   return (
     <TouchableOpacity
-      style={[styles.achievementCard, { borderColor: achievement.unlocked ? colors.border : '#374151' }]}
+      style={[
+        styles.achievementCard,
+        { borderColor: achievement.unlocked ? colors.border : '#374151' },
+      ]}
       onPress={() => {
         HapticFeedback.light();
         onPress(achievement);
@@ -119,7 +122,12 @@ function AchievementCard({ achievement, onPress }: AchievementCardProps) {
         style={styles.achievementGradient}
       >
         {/* Icon */}
-        <View style={[styles.achievementIcon, { backgroundColor: achievement.unlocked ? colors.border + '40' : '#37415180' }]}>
+        <View
+          style={[
+            styles.achievementIcon,
+            { backgroundColor: achievement.unlocked ? colors.border + '40' : '#37415180' },
+          ]}
+        >
           <Text style={styles.iconEmoji}>{achievement.icon || '🏆'}</Text>
           {achievement.unlocked && (
             <View style={styles.unlockedBadge}>
@@ -127,36 +135,52 @@ function AchievementCard({ achievement, onPress }: AchievementCardProps) {
             </View>
           )}
         </View>
-        
+
         {/* Content */}
         <View style={styles.achievementContent}>
           <View style={styles.achievementHeader}>
-            <Text style={[styles.achievementName, { color: achievement.unlocked ? colors.text : '#9ca3af' }]} numberOfLines={1}>
+            <Text
+              style={[
+                styles.achievementName,
+                { color: achievement.unlocked ? colors.text : '#9ca3af' },
+              ]}
+              numberOfLines={1}
+            >
               {achievement.name}
             </Text>
-            <View style={[styles.rarityBadge, { backgroundColor: colors.bg, borderColor: colors.border }]}>
+            <View
+              style={[
+                styles.rarityBadge,
+                { backgroundColor: colors.bg, borderColor: colors.border },
+              ]}
+            >
               <Text style={[styles.rarityText, { color: colors.text }]}>
                 {achievement.rarity.charAt(0).toUpperCase() + achievement.rarity.slice(1)}
               </Text>
             </View>
           </View>
-          
+
           <Text style={styles.achievementDescription} numberOfLines={2}>
             {achievement.description}
           </Text>
-          
+
           {/* Progress bar */}
           {!achievement.unlocked && (
             <View style={styles.progressContainer}>
               <View style={styles.progressBar}>
-                <View style={[styles.progressFill, { width: `${progressPercent}%`, backgroundColor: colors.border }]} />
+                <View
+                  style={[
+                    styles.progressFill,
+                    { width: `${progressPercent}%`, backgroundColor: colors.border },
+                  ]}
+                />
               </View>
               <Text style={styles.progressText}>
                 {achievement.progress}/{achievement.requirement}
               </Text>
             </View>
           )}
-          
+
           {/* Rewards */}
           <View style={styles.rewardsRow}>
             {achievement.xpReward > 0 && (
@@ -190,30 +214,22 @@ interface DetailModalProps {
 
 function DetailModal({ achievement, visible, onClose }: DetailModalProps) {
   if (!achievement) return null;
-  
+
   const colors = RARITY_COLORS[achievement.rarity];
   const progressPercent = Math.min(100, (achievement.progress / achievement.requirement) * 100);
-  
+
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <BlurView intensity={80} tint="dark" style={styles.modalOverlay}>
         <TouchableOpacity style={styles.modalBackdrop} onPress={onClose} activeOpacity={1} />
-        
+
         <View style={[styles.modalContent, { borderColor: colors.border }]}>
-          <LinearGradient
-            colors={[colors.bg, '#1f2937', '#111827']}
-            style={styles.modalGradient}
-          >
+          <LinearGradient colors={[colors.bg, '#1f2937', '#111827']} style={styles.modalGradient}>
             {/* Close button */}
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
               <Ionicons name="close" size={24} color="#9ca3af" />
             </TouchableOpacity>
-            
+
             {/* Achievement icon large */}
             <View style={[styles.largeIcon, { backgroundColor: colors.border + '40' }]}>
               <Text style={styles.largeIconEmoji}>{achievement.icon || '🏆'}</Text>
@@ -223,31 +239,42 @@ function DetailModal({ achievement, visible, onClose }: DetailModalProps) {
                 </View>
               )}
             </View>
-            
+
             {/* Name and rarity */}
             <Text style={[styles.modalTitle, { color: colors.text }]}>{achievement.name}</Text>
-            <View style={[styles.modalRarityBadge, { backgroundColor: colors.bg, borderColor: colors.border }]}>
+            <View
+              style={[
+                styles.modalRarityBadge,
+                { backgroundColor: colors.bg, borderColor: colors.border },
+              ]}
+            >
               <Text style={[styles.modalRarityText, { color: colors.text }]}>
                 {achievement.rarity.charAt(0).toUpperCase() + achievement.rarity.slice(1)}
               </Text>
             </View>
-            
+
             {/* Description */}
             <Text style={styles.modalDescription}>{achievement.description}</Text>
-            
+
             {/* Progress */}
             {!achievement.unlocked && (
               <View style={styles.modalProgressSection}>
                 <Text style={styles.modalProgressLabel}>Progress</Text>
                 <View style={styles.modalProgressBar}>
-                  <View style={[styles.modalProgressFill, { width: `${progressPercent}%`, backgroundColor: colors.border }]} />
+                  <View
+                    style={[
+                      styles.modalProgressFill,
+                      { width: `${progressPercent}%`, backgroundColor: colors.border },
+                    ]}
+                  />
                 </View>
                 <Text style={styles.modalProgressText}>
-                  {achievement.progress} / {achievement.requirement} ({Math.round(progressPercent)}%)
+                  {achievement.progress} / {achievement.requirement} ({Math.round(progressPercent)}
+                  %)
                 </Text>
               </View>
             )}
-            
+
             {/* Unlock date */}
             {achievement.unlocked && achievement.unlockedAt && (
               <View style={styles.unlockedInfo}>
@@ -257,7 +284,7 @@ function DetailModal({ achievement, visible, onClose }: DetailModalProps) {
                 </Text>
               </View>
             )}
-            
+
             {/* Rewards */}
             <View style={styles.modalRewards}>
               <Text style={styles.modalRewardsLabel}>Rewards</Text>
@@ -290,21 +317,23 @@ function DetailModal({ achievement, visible, onClose }: DetailModalProps) {
 export default function AchievementsScreen() {
   const navigation = useNavigation();
   const { achievements, refreshAchievements, isLoading, stats } = useGamification();
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<AchievementCategory>('all');
   const [selectedRarity, setSelectedRarity] = useState<AchievementRarity | 'all'>('all');
-  const [selectedAchievement, setSelectedAchievement] = useState<AchievementWithProgress | null>(null);
+  const [selectedAchievement, setSelectedAchievement] = useState<AchievementWithProgress | null>(
+    null
+  );
   const [showModal, setShowModal] = useState(false);
-  
+
   // Initial load
   useEffect(() => {
     refreshAchievements();
   }, []);
-  
+
   // Filtered achievements
   const filteredAchievements = useMemo(() => {
-    return achievements.filter(a => {
+    return achievements.filter((a) => {
       if (selectedCategory !== 'all' && a.category !== selectedCategory) return false;
       if (selectedRarity !== 'all' && a.rarity !== selectedRarity) return false;
       if (searchQuery) {
@@ -314,22 +343,26 @@ export default function AchievementsScreen() {
       return true;
     });
   }, [achievements, selectedCategory, selectedRarity, searchQuery]);
-  
+
   // Stats
-  const totalUnlocked = useMemo(() => achievements.filter(a => a.unlocked).length, [achievements]);
+  const totalUnlocked = useMemo(
+    () => achievements.filter((a) => a.unlocked).length,
+    [achievements]
+  );
   const totalAchievements = achievements.length;
-  const progressPercent = totalAchievements > 0 ? Math.round((totalUnlocked / totalAchievements) * 100) : 0;
-  
+  const progressPercent =
+    totalAchievements > 0 ? Math.round((totalUnlocked / totalAchievements) * 100) : 0;
+
   const handleAchievementPress = useCallback((achievement: AchievementWithProgress) => {
     setSelectedAchievement(achievement);
     setShowModal(true);
   }, []);
-  
+
   const handleRefresh = useCallback(() => {
     HapticFeedback.light();
     refreshAchievements();
   }, [refreshAchievements]);
-  
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -337,21 +370,21 @@ export default function AchievementsScreen() {
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        
+
         <View style={styles.headerContent}>
           <Text style={styles.headerTitle}>Achievements</Text>
           <Text style={styles.headerSubtitle}>
             {totalUnlocked} / {totalAchievements} unlocked ({progressPercent}%)
           </Text>
         </View>
-        
+
         <View style={styles.headerStats}>
           <View style={styles.progressRing}>
             <Text style={styles.progressRingText}>{progressPercent}%</Text>
           </View>
         </View>
       </LinearGradient>
-      
+
       {/* Search */}
       <View style={styles.searchContainer}>
         <Ionicons name="search" size={20} color="#6b7280" style={styles.searchIcon} />
@@ -368,7 +401,7 @@ export default function AchievementsScreen() {
           </TouchableOpacity>
         )}
       </View>
-      
+
       {/* Category Tabs */}
       <View style={styles.categoryTabs}>
         <FlatList
@@ -385,11 +418,16 @@ export default function AchievementsScreen() {
               }}
             >
               <Ionicons
-                name={item.icon as any}
+                name={item.icon as unknown}
                 size={16}
                 color={selectedCategory === item.id ? '#fff' : '#6b7280'}
               />
-              <Text style={[styles.categoryTabText, selectedCategory === item.id && styles.categoryTabTextActive]}>
+              <Text
+                style={[
+                  styles.categoryTabText,
+                  selectedCategory === item.id && styles.categoryTabTextActive,
+                ]}
+              >
                 {item.name}
               </Text>
             </TouchableOpacity>
@@ -397,7 +435,7 @@ export default function AchievementsScreen() {
           contentContainerStyle={styles.categoryTabsContent}
         />
       </View>
-      
+
       {/* Rarity Filter */}
       <View style={styles.rarityFilter}>
         <FlatList
@@ -406,19 +444,30 @@ export default function AchievementsScreen() {
           data={RARITIES}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => {
-            const colors = item.id === 'all' ? { bg: '#374151', text: '#9ca3af', border: '#4b5563' } : RARITY_COLORS[item.id];
+            const colors =
+              item.id === 'all'
+                ? { bg: '#374151', text: '#9ca3af', border: '#4b5563' }
+                : RARITY_COLORS[item.id];
             return (
               <TouchableOpacity
                 style={[
                   styles.rarityChip,
-                  selectedRarity === item.id && { backgroundColor: colors.bg, borderColor: colors.border },
+                  selectedRarity === item.id && {
+                    backgroundColor: colors.bg,
+                    borderColor: colors.border,
+                  },
                 ]}
                 onPress={() => {
                   HapticFeedback.light();
                   setSelectedRarity(item.id);
                 }}
               >
-                <Text style={[styles.rarityChipText, selectedRarity === item.id && { color: colors.text }]}>
+                <Text
+                  style={[
+                    styles.rarityChipText,
+                    selectedRarity === item.id && { color: colors.text },
+                  ]}
+                >
                   {item.name}
                 </Text>
               </TouchableOpacity>
@@ -427,7 +476,7 @@ export default function AchievementsScreen() {
           contentContainerStyle={styles.rarityFilterContent}
         />
       </View>
-      
+
       {/* Achievements List */}
       <FlatList
         data={filteredAchievements}
@@ -453,7 +502,7 @@ export default function AchievementsScreen() {
           </View>
         }
       />
-      
+
       {/* Detail Modal */}
       <DetailModal
         achievement={selectedAchievement}

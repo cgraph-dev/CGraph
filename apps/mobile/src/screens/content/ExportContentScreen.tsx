@@ -74,7 +74,7 @@ interface ContentData {
 
 function generateHTML(data: ContentData, options: ExportOptions): string {
   const paperWidth = options.paperSize === 'a4' ? '210mm' : '8.5in';
-  
+
   return `
     <!DOCTYPE html>
     <html>
@@ -182,10 +182,14 @@ function generateHTML(data: ContentData, options: ExportOptions): string {
         ${data.content}
       </div>
       
-      ${options.includeReplies && data.replies && data.replies.length > 0 ? `
+      ${
+        options.includeReplies && data.replies && data.replies.length > 0
+          ? `
         <div class="replies">
           <h2 class="replies-title">Replies (${data.replies.length})</h2>
-          ${data.replies.map(reply => `
+          ${data.replies
+            .map(
+              (reply) => `
             <div class="reply">
               <div class="reply-meta">
                 ${options.includeUsernames ? `<strong>${reply.author}</strong>` : ''}
@@ -193,9 +197,13 @@ function generateHTML(data: ContentData, options: ExportOptions): string {
               </div>
               <div class="reply-content">${reply.content}</div>
             </div>
-          `).join('')}
+          `
+            )
+            .join('')}
         </div>
-      ` : ''}
+      `
+          : ''
+      }
       
       <div class="footer">
         Exported on ${new Date().toLocaleDateString()} • CGraph Forum
@@ -238,9 +246,9 @@ function OptionToggle({ label, value, onChange }: OptionToggleProps) {
 // ============================================================================
 
 export default function ExportContentScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const route = useRoute<RouteProp<RouteParams, 'ExportContent'>>();
-  
+
   const { type, id, title } = route.params || { type: 'thread', id: '', title: 'Content' };
 
   const [options, setOptions] = useState<ExportOptions>(DEFAULT_OPTIONS);
@@ -250,7 +258,7 @@ export default function ExportContentScreen() {
 
   // Update option
   const updateOption = <K extends keyof ExportOptions>(key: K, value: ExportOptions[K]) => {
-    setOptions(prev => ({ ...prev, [key]: value }));
+    setOptions((prev) => ({ ...prev, [key]: value }));
   };
 
   // Fetch content data
@@ -277,11 +285,12 @@ export default function ExportContentScreen() {
         author: data.author?.username || 'Unknown',
         date: new Date(data.created_at).toLocaleDateString(),
         content: data.content || '',
-        replies: data.replies?.map((r: any) => ({
-          author: r.author?.username || 'Unknown',
-          date: new Date(r.created_at).toLocaleDateString(),
-          content: r.content || '',
-        })) || [],
+        replies:
+          data.replies?.map((r: Record<string, unknown>) => ({
+            author: r.author?.username || 'Unknown',
+            date: new Date(r.created_at).toLocaleDateString(),
+            content: r.content || '',
+          })) || [],
       };
     } catch (error) {
       console.error('[ExportContent] Error fetching content:', error);
@@ -290,10 +299,19 @@ export default function ExportContentScreen() {
         title: title,
         author: 'DemoUser',
         date: new Date().toLocaleDateString(),
-        content: '<p>This is sample content for demonstration purposes.</p><p>In a real scenario, this would contain the actual thread or post content.</p>',
+        content:
+          '<p>This is sample content for demonstration purposes.</p><p>In a real scenario, this would contain the actual thread or post content.</p>',
         replies: [
-          { author: 'User1', date: new Date().toLocaleDateString(), content: 'First reply content here.' },
-          { author: 'User2', date: new Date().toLocaleDateString(), content: 'Second reply with more details.' },
+          {
+            author: 'User1',
+            date: new Date().toLocaleDateString(),
+            content: 'First reply content here.',
+          },
+          {
+            author: 'User2',
+            date: new Date().toLocaleDateString(),
+            content: 'Second reply with more details.',
+          },
         ],
       };
     }
@@ -310,8 +328,9 @@ export default function ExportContentScreen() {
 
       // Use share sheet to export content
       // The backend can provide a URL for PDF generation
-      const exportType = type === 'thread' ? 'threads' : type === 'post' ? 'posts' : 'conversations';
-      
+      const exportType =
+        type === 'thread' ? 'threads' : type === 'post' ? 'posts' : 'conversations';
+
       if (selectedFormat === 'pdf') {
         // For PDF, we'll request the backend to generate and provide a download link
         try {
@@ -319,7 +338,7 @@ export default function ExportContentScreen() {
             format: 'pdf',
             options,
           });
-          
+
           if (response.data.url) {
             await WebBrowser.openBrowserAsync(response.data.url);
           } else {
@@ -332,7 +351,7 @@ export default function ExportContentScreen() {
         } catch {
           // Fallback: share content as message
           await Share.share({
-            message: `Export: ${title}\n\n${content.content.replace(/<[^>]*>/g, '')}\n\n${content.replies?.map(r => `${r.author}: ${r.content}`).join('\n') || ''}`,
+            message: `Export: ${title}\n\n${content.content.replace(/<[^>]*>/g, '')}\n\n${content.replies?.map((r) => `${r.author}: ${r.content}`).join('\n') || ''}`,
             title: `${title} - Export`,
           });
         }
@@ -400,7 +419,9 @@ export default function ExportContentScreen() {
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
           <Text style={styles.headerTitle}>Export Content</Text>
-          <Text style={styles.headerSubtitle} numberOfLines={1}>{title}</Text>
+          <Text style={styles.headerSubtitle} numberOfLines={1}>
+            {title}
+          </Text>
         </View>
       </View>
 
@@ -414,10 +435,7 @@ export default function ExportContentScreen() {
           <Text style={styles.sectionTitle}>Export Format</Text>
           <View style={styles.formatOptions}>
             <TouchableOpacity
-              style={[
-                styles.formatOption,
-                selectedFormat === 'pdf' && styles.formatOptionSelected,
-              ]}
+              style={[styles.formatOption, selectedFormat === 'pdf' && styles.formatOptionSelected]}
               onPress={() => {
                 HapticFeedback.light();
                 setSelectedFormat('pdf');
@@ -428,15 +446,12 @@ export default function ExportContentScreen() {
                 size={32}
                 color={selectedFormat === 'pdf' ? '#10b981' : '#6b7280'}
               />
-              <Text style={[
-                styles.formatLabel,
-                selectedFormat === 'pdf' && styles.formatLabelSelected,
-              ]}>
+              <Text
+                style={[styles.formatLabel, selectedFormat === 'pdf' && styles.formatLabelSelected]}
+              >
                 PDF
               </Text>
-              <Text style={styles.formatDescription}>
-                Best for printing
-              </Text>
+              <Text style={styles.formatDescription}>Best for printing</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -454,15 +469,15 @@ export default function ExportContentScreen() {
                 size={32}
                 color={selectedFormat === 'html' ? '#10b981' : '#6b7280'}
               />
-              <Text style={[
-                styles.formatLabel,
-                selectedFormat === 'html' && styles.formatLabelSelected,
-              ]}>
+              <Text
+                style={[
+                  styles.formatLabel,
+                  selectedFormat === 'html' && styles.formatLabelSelected,
+                ]}
+              >
                 HTML
               </Text>
-              <Text style={styles.formatDescription}>
-                Best for archiving
-              </Text>
+              <Text style={styles.formatDescription}>Best for archiving</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -482,10 +497,12 @@ export default function ExportContentScreen() {
                   updateOption('paperSize', 'a4');
                 }}
               >
-                <Text style={[
-                  styles.paperLabel,
-                  options.paperSize === 'a4' && styles.paperLabelSelected,
-                ]}>
+                <Text
+                  style={[
+                    styles.paperLabel,
+                    options.paperSize === 'a4' && styles.paperLabelSelected,
+                  ]}
+                >
                   A4
                 </Text>
               </TouchableOpacity>
@@ -499,10 +516,12 @@ export default function ExportContentScreen() {
                   updateOption('paperSize', 'letter');
                 }}
               >
-                <Text style={[
-                  styles.paperLabel,
-                  options.paperSize === 'letter' && styles.paperLabelSelected,
-                ]}>
+                <Text
+                  style={[
+                    styles.paperLabel,
+                    options.paperSize === 'letter' && styles.paperLabelSelected,
+                  ]}
+                >
                   Letter
                 </Text>
               </TouchableOpacity>
@@ -567,18 +586,13 @@ export default function ExportContentScreen() {
             onPress={handleExport}
             disabled={isExporting}
           >
-            <LinearGradient
-              colors={['#10b981', '#059669']}
-              style={styles.exportButtonGradient}
-            >
+            <LinearGradient colors={['#10b981', '#059669']} style={styles.exportButtonGradient}>
               {isExporting ? (
                 <ActivityIndicator size="small" color="#fff" />
               ) : (
                 <>
                   <Ionicons name="download-outline" size={20} color="#fff" />
-                  <Text style={styles.exportButtonText}>
-                    Export {selectedFormat.toUpperCase()}
-                  </Text>
+                  <Text style={styles.exportButtonText}>Export {selectedFormat.toUpperCase()}</Text>
                 </>
               )}
             </LinearGradient>

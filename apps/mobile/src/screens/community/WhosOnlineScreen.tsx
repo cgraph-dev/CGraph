@@ -137,11 +137,7 @@ function FloatingOrbs() {
               height: orb.size,
               borderRadius: orb.size / 2,
               backgroundColor: orb.color,
-              transform: [
-                { translateX: orb.x },
-                { translateY: orb.y },
-                { scale: orb.scale },
-              ],
+              transform: [{ translateX: orb.x }, { translateY: orb.y }, { scale: orb.scale }],
               opacity: orb.opacity,
             },
           ]}
@@ -197,12 +193,7 @@ function WaveEffect({ scrollY }: { scrollY: Animated.Value }) {
 
   return (
     <Animated.View style={[styles.waveContainer, { opacity: waveOpacity }]}>
-      <Animated.View
-        style={[
-          styles.wave,
-          { transform: [{ translateX: wave1TranslateX }] },
-        ]}
-      >
+      <Animated.View style={[styles.wave, { transform: [{ translateX: wave1TranslateX }] }]}>
         <LinearGradient
           colors={['transparent', 'rgba(16, 185, 129, 0.2)', 'transparent']}
           start={{ x: 0, y: 0 }}
@@ -211,11 +202,7 @@ function WaveEffect({ scrollY }: { scrollY: Animated.Value }) {
         />
       </Animated.View>
       <Animated.View
-        style={[
-          styles.wave,
-          styles.wave2,
-          { transform: [{ translateX: wave2TranslateX }] },
-        ]}
+        style={[styles.wave, styles.wave2, { transform: [{ translateX: wave2TranslateX }] }]}
       >
         <LinearGradient
           colors={['transparent', 'rgba(139, 92, 246, 0.15)', 'transparent']}
@@ -305,8 +292,8 @@ function MagneticUserCard({
         const cardWidth = SCREEN_WIDTH - 32;
         const cardHeight = 70;
 
-        const tiltXValue = ((locationY / cardHeight) - 0.5) * 8;
-        const tiltYValue = ((locationX / cardWidth) - 0.5) * -6;
+        const tiltXValue = (locationY / cardHeight - 0.5) * 8;
+        const tiltYValue = (locationX / cardWidth - 0.5) * -6;
 
         Animated.parallel([
           Animated.spring(tiltX, {
@@ -436,10 +423,7 @@ function MagneticUserCard({
           {/* Animated online indicator */}
           <View style={styles.onlineIndicatorWrapper}>
             <Animated.View
-              style={[
-                styles.onlineIndicatorPulse,
-                { transform: [{ scale: statusPulse }] },
-              ]}
+              style={[styles.onlineIndicatorPulse, { transform: [{ scale: statusPulse }] }]}
             />
             <View style={styles.onlineIndicator} />
           </View>
@@ -484,10 +468,46 @@ function MagneticUserCard({
 
 function generateFallbackUsers(): OnlineUser[] {
   return [
-    { id: '1', username: 'admin', displayName: 'Administrator', avatarUrl: null, userGroup: 'Admin', userGroupColor: '#ef4444', lastActivity: new Date().toISOString(), currentActivity: 'Viewing Dashboard' },
-    { id: '2', username: 'moderator', displayName: 'Mod User', avatarUrl: null, userGroup: 'Moderator', userGroupColor: '#3b82f6', lastActivity: new Date().toISOString(), currentActivity: 'Reading Thread' },
-    { id: '3', username: 'jane_smith', displayName: 'Jane Smith', avatarUrl: null, userGroup: 'Premium', userGroupColor: '#8b5cf6', lastActivity: new Date().toISOString(), currentActivity: 'Posting Reply' },
-    { id: '4', username: 'active_user', displayName: 'Active User', avatarUrl: null, userGroup: 'Member', userGroupColor: '#10b981', lastActivity: new Date().toISOString(), currentActivity: 'Browsing Forum' },
+    {
+      id: '1',
+      username: 'admin',
+      displayName: 'Administrator',
+      avatarUrl: null,
+      userGroup: 'Admin',
+      userGroupColor: '#ef4444',
+      lastActivity: new Date().toISOString(),
+      currentActivity: 'Viewing Dashboard',
+    },
+    {
+      id: '2',
+      username: 'moderator',
+      displayName: 'Mod User',
+      avatarUrl: null,
+      userGroup: 'Moderator',
+      userGroupColor: '#3b82f6',
+      lastActivity: new Date().toISOString(),
+      currentActivity: 'Reading Thread',
+    },
+    {
+      id: '3',
+      username: 'jane_smith',
+      displayName: 'Jane Smith',
+      avatarUrl: null,
+      userGroup: 'Premium',
+      userGroupColor: '#8b5cf6',
+      lastActivity: new Date().toISOString(),
+      currentActivity: 'Posting Reply',
+    },
+    {
+      id: '4',
+      username: 'active_user',
+      displayName: 'Active User',
+      avatarUrl: null,
+      userGroup: 'Member',
+      userGroupColor: '#10b981',
+      lastActivity: new Date().toISOString(),
+      currentActivity: 'Browsing Forum',
+    },
   ];
 }
 
@@ -793,10 +813,7 @@ function AnimatedRecordBadge({
       <BlurView intensity={40} tint="dark" style={styles.recordBlur}>
         {/* Shimmer effect */}
         <Animated.View
-          style={[
-            styles.shimmerEffect,
-            { transform: [{ translateX: shimmerTranslate }] },
-          ]}
+          style={[styles.shimmerEffect, { transform: [{ translateX: shimmerTranslate }] }]}
         >
           <LinearGradient
             colors={['transparent', 'rgba(245, 158, 11, 0.2)', 'transparent']}
@@ -807,10 +824,7 @@ function AnimatedRecordBadge({
         </Animated.View>
 
         <Animated.View style={{ transform: [{ scale: trophyBounce }] }}>
-          <LinearGradient
-            colors={['#f59e0b', '#d97706']}
-            style={styles.trophyContainer}
-          >
+          <LinearGradient colors={['#f59e0b', '#d97706']} style={styles.trophyContainer}>
             <Ionicons name="trophy" size={24} color="#fff" />
           </LinearGradient>
         </Animated.View>
@@ -835,7 +849,7 @@ function AnimatedRecordBadge({
 // ============================================================================
 
 export default function WhosOnlineScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
   const [users, setUsers] = useState<OnlineUser[]>([]);
   const [stats, setStats] = useState<OnlineStats>(generateFallbackStats());
@@ -872,7 +886,7 @@ export default function WhosOnlineScreen() {
   }, []);
 
   // Transform API response
-  const transformApiUsers = (data: any[]): OnlineUser[] => {
+  const transformApiUsers = (data: unknown[]): OnlineUser[] => {
     return data.map((u) => ({
       id: u.id,
       username: u.username || 'Unknown',
@@ -909,11 +923,13 @@ export default function WhosOnlineScreen() {
 
       // Set activities
       if (data.activities) {
-        const activityGroups: ActivityGroup[] = data.activities.map((a: any) => ({
-          activity: a.activity || 'Unknown',
-          count: a.count || 0,
-          icon: getActivityIcon(a.activity),
-        }));
+        const activityGroups: ActivityGroup[] = data.activities.map(
+          (a: Record<string, unknown>) => ({
+            activity: a.activity || 'Unknown',
+            count: a.count || 0,
+            icon: getActivityIcon(a.activity),
+          })
+        );
         setActivities(activityGroups);
       }
     } catch (err) {
@@ -1039,11 +1055,7 @@ export default function WhosOnlineScreen() {
           }}
         >
           <BlurView intensity={30} tint="dark" style={styles.headerButtonBlur}>
-            <Ionicons
-              name="analytics"
-              size={22}
-              color={showActivities ? '#10b981' : '#fff'}
-            />
+            <Ionicons name="analytics" size={22} color={showActivities ? '#10b981' : '#fff'} />
           </BlurView>
         </TouchableOpacity>
       </Animated.View>
@@ -1068,10 +1080,9 @@ export default function WhosOnlineScreen() {
             />
           )}
           contentContainerStyle={styles.listContent}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: true }
-          )}
+          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
+            useNativeDriver: true,
+          })}
           scrollEventThrottle={16}
           refreshControl={
             <RefreshControl
@@ -1136,12 +1147,24 @@ export default function WhosOnlineScreen() {
                         },
                       ]}
                     >
-                      <View style={[styles.activityIcon, { backgroundColor: `${getActivityColor(index)}20` }]}>
+                      <View
+                        style={[
+                          styles.activityIcon,
+                          { backgroundColor: `${getActivityColor(index)}20` },
+                        ]}
+                      >
                         <Ionicons name={activity.icon} size={16} color={getActivityColor(index)} />
                       </View>
                       <Text style={styles.activityText}>{activity.activity}</Text>
-                      <View style={[styles.activityCountBadge, { backgroundColor: `${getActivityColor(index)}20` }]}>
-                        <Text style={[styles.activityCountText, { color: getActivityColor(index) }]}>
+                      <View
+                        style={[
+                          styles.activityCountBadge,
+                          { backgroundColor: `${getActivityColor(index)}20` },
+                        ]}
+                      >
+                        <Text
+                          style={[styles.activityCountText, { color: getActivityColor(index) }]}
+                        >
                           {activity.count}
                         </Text>
                       </View>
@@ -1161,10 +1184,7 @@ export default function WhosOnlineScreen() {
           }
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <LinearGradient
-                colors={['#374151', '#1f2937']}
-                style={styles.emptyIconContainer}
-              >
+              <LinearGradient colors={['#374151', '#1f2937']} style={styles.emptyIconContainer}>
                 <Ionicons name="people-outline" size={48} color="#9ca3af" />
               </LinearGradient>
               <Text style={styles.emptyText}>No members currently online</Text>

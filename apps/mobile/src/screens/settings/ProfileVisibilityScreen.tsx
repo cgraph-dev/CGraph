@@ -55,7 +55,12 @@ const DEFAULT_SETTINGS: VisibilitySettings = {
   showInSearch: true,
 };
 
-const VISIBILITY_OPTIONS: { value: VisibilityLevel; label: string; description: string; icon: keyof typeof Ionicons.glyphMap }[] = [
+const VISIBILITY_OPTIONS: {
+  value: VisibilityLevel;
+  label: string;
+  description: string;
+  icon: keyof typeof Ionicons.glyphMap;
+}[] = [
   {
     value: 'public',
     label: 'Public',
@@ -87,7 +92,7 @@ const MESSAGING_OPTIONS: { value: string; label: string }[] = [
 // ============================================================================
 
 interface VisibilityOptionProps {
-  option: typeof VISIBILITY_OPTIONS[0];
+  option: (typeof VISIBILITY_OPTIONS)[0];
   isSelected: boolean;
   onSelect: () => void;
 }
@@ -103,11 +108,7 @@ function VisibilityOption({ option, isSelected, onSelect }: VisibilityOptionProp
       activeOpacity={0.7}
     >
       <View style={[styles.visibilityIcon, isSelected && styles.visibilityIconSelected]}>
-        <Ionicons
-          name={option.icon}
-          size={24}
-          color={isSelected ? '#10b981' : '#6b7280'}
-        />
+        <Ionicons name={option.icon} size={24} color={isSelected ? '#10b981' : '#6b7280'} />
       </View>
       <View style={styles.visibilityInfo}>
         <Text style={[styles.visibilityLabel, isSelected && styles.visibilityLabelSelected]}>
@@ -115,9 +116,7 @@ function VisibilityOption({ option, isSelected, onSelect }: VisibilityOptionProp
         </Text>
         <Text style={styles.visibilityDescription}>{option.description}</Text>
       </View>
-      {isSelected && (
-        <Ionicons name="checkmark-circle" size={24} color="#10b981" />
-      )}
+      {isSelected && <Ionicons name="checkmark-circle" size={24} color="#10b981" />}
     </TouchableOpacity>
   );
 }
@@ -138,12 +137,8 @@ function ToggleSetting({ label, description, value, onChange, disabled }: Toggle
   return (
     <View style={[styles.settingRow, disabled && styles.settingRowDisabled]}>
       <View style={styles.settingInfo}>
-        <Text style={[styles.settingLabel, disabled && styles.settingLabelDisabled]}>
-          {label}
-        </Text>
-        {description && (
-          <Text style={styles.settingDescription}>{description}</Text>
-        )}
+        <Text style={[styles.settingLabel, disabled && styles.settingLabelDisabled]}>{label}</Text>
+        {description && <Text style={styles.settingDescription}>{description}</Text>}
       </View>
       <Switch
         value={value}
@@ -178,10 +173,7 @@ function SelectSetting({ label, value, options, onChange }: SelectSettingProps) 
         {options.map((option) => (
           <TouchableOpacity
             key={option.value}
-            style={[
-              styles.selectOption,
-              value === option.value && styles.selectOptionSelected,
-            ]}
+            style={[styles.selectOption, value === option.value && styles.selectOptionSelected]}
             onPress={() => {
               HapticFeedback.light();
               onChange(option.value);
@@ -207,8 +199,8 @@ function SelectSetting({ label, value, options, onChange }: SelectSettingProps) 
 // ============================================================================
 
 export default function ProfileVisibilityScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
-  
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
+
   const [settings, setSettings] = useState<VisibilitySettings>(DEFAULT_SETTINGS);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -290,15 +282,11 @@ export default function ProfileVisibilityScreen() {
   // Handle back with unsaved changes
   const handleBack = () => {
     if (hasChanges) {
-      Alert.alert(
-        'Unsaved Changes',
-        'You have unsaved changes. Do you want to save them?',
-        [
-          { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Save', onPress: () => handleSave().then(() => navigation.goBack()) },
-        ]
-      );
+      Alert.alert('Unsaved Changes', 'You have unsaved changes. Do you want to save them?', [
+        { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Save', onPress: () => handleSave().then(() => navigation.goBack()) },
+      ]);
     } else {
       navigation.goBack();
     }
@@ -329,11 +317,7 @@ export default function ProfileVisibilityScreen() {
           <Text style={styles.headerSubtitle}>Control who sees your profile</Text>
         </View>
         {hasChanges && (
-          <TouchableOpacity
-            style={styles.saveButton}
-            onPress={handleSave}
-            disabled={isSaving}
-          >
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave} disabled={isSaving}>
             {isSaving ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
@@ -438,7 +422,7 @@ export default function ProfileVisibilityScreen() {
                 label="Who can message you"
                 value={settings.allowMessaging}
                 options={MESSAGING_OPTIONS}
-                onChange={(v) => updateSetting('allowMessaging', v as any)}
+                onChange={(v) => updateSetting('allowMessaging', v as unknown)}
               />
             </View>
           </View>
@@ -467,8 +451,8 @@ export default function ProfileVisibilityScreen() {
             <View style={styles.infoCard}>
               <Ionicons name="information-circle" size={20} color="#f59e0b" />
               <Text style={styles.infoText}>
-                Private mode hides most profile details from others. Some visibility 
-                options are disabled.
+                Private mode hides most profile details from others. Some visibility options are
+                disabled.
               </Text>
             </View>
           )}

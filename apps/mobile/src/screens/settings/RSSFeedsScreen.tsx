@@ -160,9 +160,9 @@ function FeedItem({ feed, onCopy, onShare, onOpen }: FeedItemProps) {
 // ============================================================================
 
 export default function RSSFeedsScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const route = useRoute<RouteProp<RouteParams, 'RSSFeeds'>>();
-  
+
   const { forumId, forumName } = route.params || {};
   const feeds = generateFeeds(forumId, forumName);
 
@@ -238,9 +238,8 @@ export default function RSSFeedsScreen() {
           <View style={styles.infoContent}>
             <Text style={styles.infoTitle}>What is RSS?</Text>
             <Text style={styles.infoText}>
-              RSS (Really Simple Syndication) lets you subscribe to forum updates 
-              using your favorite RSS reader app. Get notified of new posts without 
-              visiting the site!
+              RSS (Really Simple Syndication) lets you subscribe to forum updates using your
+              favorite RSS reader app. Get notified of new posts without visiting the site!
             </Text>
           </View>
         </View>

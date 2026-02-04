@@ -1,13 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Switch,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
@@ -31,11 +23,11 @@ export interface ChatBubbleStyle {
   ownMessageText: string;
   otherMessageBg: string;
   otherMessageText: string;
-  
+
   // Shape
   borderRadius: number;
   tailStyle: 'none' | 'arrow' | 'bubble' | 'subtle';
-  
+
   // Effects
   useGradient: boolean;
   gradientDirection: 'to-right' | 'to-bottom' | 'to-bottom-right';
@@ -43,7 +35,7 @@ export interface ChatBubbleStyle {
   glassBlur: number;
   shadowIntensity: number;
   borderWidth: number;
-  
+
   // Layout
   maxWidth: number;
   avatarSize: 'small' | 'medium' | 'large';
@@ -60,17 +52,17 @@ const defaultStyle: ChatBubbleStyle = {
   ownMessageText: '#ffffff',
   otherMessageBg: '#374151',
   otherMessageText: '#ffffff',
-  
+
   borderRadius: 18,
   tailStyle: 'bubble',
-  
+
   useGradient: true,
   gradientDirection: 'to-right',
   glassEffect: false,
   glassBlur: 10,
   shadowIntensity: 30,
   borderWidth: 0,
-  
+
   maxWidth: 80,
   avatarSize: 'medium',
   showAvatar: true,
@@ -88,41 +80,51 @@ const STORAGE_KEY = 'cgraph-chat-bubble-style';
 // ============================================================================
 
 const presets: { id: string; label: string; colors: [string, string]; style: ChatBubbleStyle }[] = [
-  { 
-    id: 'default', 
-    label: 'Default', 
+  {
+    id: 'default',
+    label: 'Default',
     colors: ['#10b981', '#059669'],
-    style: { ...defaultStyle }
+    style: { ...defaultStyle },
   },
-  { 
-    id: 'minimal', 
-    label: 'Minimal', 
+  {
+    id: 'minimal',
+    label: 'Minimal',
     colors: ['#374151', '#4b5563'],
-    style: { ...defaultStyle, useGradient: false, borderRadius: 8, shadowIntensity: 0 }
+    style: { ...defaultStyle, useGradient: false, borderRadius: 8, shadowIntensity: 0 },
   },
-  { 
-    id: 'modern', 
-    label: 'Modern', 
+  {
+    id: 'modern',
+    label: 'Modern',
     colors: ['#8b5cf6', '#ec4899'],
-    style: { ...defaultStyle, ownMessageBg: '#8b5cf6', borderRadius: 24 }
+    style: { ...defaultStyle, ownMessageBg: '#8b5cf6', borderRadius: 24 },
   },
-  { 
-    id: 'retro', 
-    label: 'Retro', 
+  {
+    id: 'retro',
+    label: 'Retro',
     colors: ['#f59e0b', '#ef4444'],
-    style: { ...defaultStyle, ownMessageBg: '#f59e0b', borderRadius: 4, tailStyle: 'arrow' as const }
+    style: {
+      ...defaultStyle,
+      ownMessageBg: '#f59e0b',
+      borderRadius: 4,
+      tailStyle: 'arrow' as const,
+    },
   },
-  { 
-    id: 'bubble', 
-    label: 'Bubble', 
+  {
+    id: 'bubble',
+    label: 'Bubble',
     colors: ['#3b82f6', '#60a5fa'],
-    style: { ...defaultStyle, ownMessageBg: '#3b82f6', borderRadius: 24, tailStyle: 'bubble' as const }
+    style: {
+      ...defaultStyle,
+      ownMessageBg: '#3b82f6',
+      borderRadius: 24,
+      tailStyle: 'bubble' as const,
+    },
   },
-  { 
-    id: 'glass', 
-    label: 'Glass', 
+  {
+    id: 'glass',
+    label: 'Glass',
     colors: ['rgba(16,185,129,0.3)', 'rgba(139,92,246,0.3)'],
-    style: { ...defaultStyle, glassEffect: true, glassBlur: 20, borderWidth: 1 }
+    style: { ...defaultStyle, glassEffect: true, glassBlur: 20, borderWidth: 1 },
   },
 ];
 
@@ -157,7 +159,7 @@ function SettingsSection({ title, icon, iconColor, children }: SectionProps) {
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={[styles.sectionIcon, { backgroundColor: iconColor + '20' }]}>
-          <Ionicons name={icon as any} size={18} color={iconColor} />
+          <Ionicons name={icon as unknown} size={18} color={iconColor} />
         </View>
         <Text style={styles.sectionTitle}>{title}</Text>
       </View>
@@ -314,20 +316,20 @@ export default function ChatBubbleSettingsScreen({ navigation }: Props) {
     }
   };
 
-  const updateStyle = useCallback(<K extends keyof ChatBubbleStyle>(
-    key: K,
-    value: ChatBubbleStyle[K]
-  ) => {
-    setStyle((prev) => {
-      const newStyle = { ...prev, [key]: value };
-      saveStyle(newStyle);
-      return newStyle;
-    });
-  }, []);
+  const updateStyle = useCallback(
+    <K extends keyof ChatBubbleStyle>(key: K, value: ChatBubbleStyle[K]) => {
+      setStyle((prev) => {
+        const newStyle = { ...prev, [key]: value };
+        saveStyle(newStyle);
+        return newStyle;
+      });
+    },
+    []
+  );
 
   const applyPreset = (presetId: string) => {
     HapticFeedback.medium();
-    const preset = presets.find(p => p.id === presetId);
+    const preset = presets.find((p) => p.id === presetId);
     if (preset) {
       setStyle(preset.style);
       saveStyle(preset.style);
@@ -392,16 +394,25 @@ export default function ChatBubbleSettingsScreen({ navigation }: Props) {
       <View style={styles.previewContainer}>
         <BlurView intensity={30} tint="dark" style={styles.previewContent}>
           {/* Received message */}
-          <View style={[styles.messageRow, { justifyContent: style.alignReceived === 'left' ? 'flex-start' : 'flex-end' }]}>
+          <View
+            style={[
+              styles.messageRow,
+              { justifyContent: style.alignReceived === 'left' ? 'flex-start' : 'flex-end' },
+            ]}
+          >
             {style.showAvatar && (
-              <View style={[
-                styles.avatar,
-                { 
-                  backgroundColor: '#8b5cf6',
-                  width: style.avatarSize === 'small' ? 24 : style.avatarSize === 'large' ? 40 : 32,
-                  height: style.avatarSize === 'small' ? 24 : style.avatarSize === 'large' ? 40 : 32,
-                }
-              ]} />
+              <View
+                style={[
+                  styles.avatar,
+                  {
+                    backgroundColor: '#8b5cf6',
+                    width:
+                      style.avatarSize === 'small' ? 24 : style.avatarSize === 'large' ? 40 : 32,
+                    height:
+                      style.avatarSize === 'small' ? 24 : style.avatarSize === 'large' ? 40 : 32,
+                  },
+                ]}
+              />
             )}
             <View
               style={[
@@ -423,9 +434,18 @@ export default function ChatBubbleSettingsScreen({ navigation }: Props) {
           </View>
 
           {/* Sent message */}
-          <View style={[styles.messageRow, { justifyContent: style.alignSent === 'right' ? 'flex-end' : 'flex-start' }]}>
+          <View
+            style={[
+              styles.messageRow,
+              { justifyContent: style.alignSent === 'right' ? 'flex-end' : 'flex-start' },
+            ]}
+          >
             <LinearGradient
-              colors={style.useGradient ? [style.ownMessageBg, '#8b5cf6'] : [style.ownMessageBg, style.ownMessageBg]}
+              colors={
+                style.useGradient
+                  ? [style.ownMessageBg, '#8b5cf6']
+                  : [style.ownMessageBg, style.ownMessageBg]
+              }
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={[
@@ -444,14 +464,18 @@ export default function ChatBubbleSettingsScreen({ navigation }: Props) {
               )}
             </LinearGradient>
             {style.showAvatar && (
-              <View style={[
-                styles.avatar,
-                { 
-                  backgroundColor: '#10b981',
-                  width: style.avatarSize === 'small' ? 24 : style.avatarSize === 'large' ? 40 : 32,
-                  height: style.avatarSize === 'small' ? 24 : style.avatarSize === 'large' ? 40 : 32,
-                }
-              ]} />
+              <View
+                style={[
+                  styles.avatar,
+                  {
+                    backgroundColor: '#10b981',
+                    width:
+                      style.avatarSize === 'small' ? 24 : style.avatarSize === 'large' ? 40 : 32,
+                    height:
+                      style.avatarSize === 'small' ? 24 : style.avatarSize === 'large' ? 40 : 32,
+                  },
+                ]}
+              />
             )}
           </View>
         </BlurView>
@@ -469,7 +493,7 @@ export default function ChatBubbleSettingsScreen({ navigation }: Props) {
             }}
           >
             <Ionicons
-              name={tab.icon as any}
+              name={tab.icon as unknown}
               size={20}
               color={activeTab === tab.id ? '#10b981' : '#6b7280'}
             />
@@ -609,7 +633,9 @@ export default function ChatBubbleSettingsScreen({ navigation }: Props) {
                   { value: 'subtle', label: 'Subtle' },
                 ]}
                 selected={style.tailStyle}
-                onSelect={(value) => updateStyle('tailStyle', value as ChatBubbleStyle['tailStyle'])}
+                onSelect={(value) =>
+                  updateStyle('tailStyle', value as ChatBubbleStyle['tailStyle'])
+                }
               />
               <SliderRow
                 label="Border Width"
@@ -652,7 +678,9 @@ export default function ChatBubbleSettingsScreen({ navigation }: Props) {
                   { value: 'large', label: 'Large' },
                 ]}
                 selected={style.avatarSize}
-                onSelect={(value) => updateStyle('avatarSize', value as ChatBubbleStyle['avatarSize'])}
+                onSelect={(value) =>
+                  updateStyle('avatarSize', value as ChatBubbleStyle['avatarSize'])
+                }
               />
             </SettingsSection>
 
@@ -670,7 +698,9 @@ export default function ChatBubbleSettingsScreen({ navigation }: Props) {
                   { value: 'outside', label: 'Outside' },
                 ]}
                 selected={style.timestampPosition}
-                onSelect={(value) => updateStyle('timestampPosition', value as ChatBubbleStyle['timestampPosition'])}
+                onSelect={(value) =>
+                  updateStyle('timestampPosition', value as ChatBubbleStyle['timestampPosition'])
+                }
               />
             </SettingsSection>
 
@@ -682,7 +712,9 @@ export default function ChatBubbleSettingsScreen({ navigation }: Props) {
                   { value: 'right', label: 'Right' },
                 ]}
                 selected={style.alignSent}
-                onSelect={(value) => updateStyle('alignSent', value as ChatBubbleStyle['alignSent'])}
+                onSelect={(value) =>
+                  updateStyle('alignSent', value as ChatBubbleStyle['alignSent'])
+                }
               />
               <SegmentedRow
                 label="Other Messages"
@@ -691,7 +723,9 @@ export default function ChatBubbleSettingsScreen({ navigation }: Props) {
                   { value: 'right', label: 'Right' },
                 ]}
                 selected={style.alignReceived}
-                onSelect={(value) => updateStyle('alignReceived', value as ChatBubbleStyle['alignReceived'])}
+                onSelect={(value) =>
+                  updateStyle('alignReceived', value as ChatBubbleStyle['alignReceived'])
+                }
               />
               <SegmentedRow
                 label="Message Spacing"

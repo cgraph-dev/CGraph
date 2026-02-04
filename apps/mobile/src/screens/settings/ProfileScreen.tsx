@@ -27,7 +27,7 @@ type Props = {
 export default function ProfileScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const { user, updateUser } = useAuth();
-  
+
   const [displayName, setDisplayName] = useState(user?.display_name || '');
   const [username, setUsername] = useState(user?.username || '');
   const [bio, setBio] = useState(user?.bio || '');
@@ -35,10 +35,10 @@ export default function ProfileScreen({ navigation }: Props) {
   const [isChangingUsername, setIsChangingUsername] = useState(false);
 
   const canChangeUsername = user?.can_change_username ?? true;
-  const nextChangeDate = user?.username_next_change_at 
+  const nextChangeDate = user?.username_next_change_at
     ? new Date(user.username_next_change_at).toLocaleDateString()
     : null;
-  
+
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -46,19 +46,19 @@ export default function ProfileScreen({ navigation }: Props) {
       aspect: [1, 1],
       quality: 0.8,
     });
-    
+
     if (!result.canceled && result.assets[0]) {
       // Upload image
       const formData = new FormData();
       const uri = result.assets[0].uri;
       const filename = uri.split('/').pop() || 'avatar.jpg';
-      
+
       formData.append('avatar', {
         uri,
         name: filename,
         type: 'image/jpeg',
-      } as any);
-      
+      } as unknown);
+
       try {
         const response = await api.post('/api/v1/me/avatar', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -69,7 +69,7 @@ export default function ProfileScreen({ navigation }: Props) {
       }
     }
   };
-  
+
   const handleSave = async () => {
     setIsSaving(true);
     try {
@@ -88,10 +88,13 @@ export default function ProfileScreen({ navigation }: Props) {
 
   const handleChangeUsername = async () => {
     if (!username.trim() || username === user?.username) return;
-    
+
     // Validate username format
     if (!/^[a-zA-Z0-9_]{3,30}$/.test(username)) {
-      Alert.alert('Invalid Username', 'Username must be 3-30 characters and contain only letters, numbers, and underscores.');
+      Alert.alert(
+        'Invalid Username',
+        'Username must be 3-30 characters and contain only letters, numbers, and underscores.'
+      );
       return;
     }
 
@@ -106,25 +109,32 @@ export default function ProfileScreen({ navigation }: Props) {
       });
       Alert.alert('Success', 'Username changed successfully');
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { error?: { message?: string }; message?: string } } };
-      const errorMessage = error.response?.data?.error?.message 
-        || error.response?.data?.message 
-        || 'Failed to change username';
+      const error = err as {
+        response?: { data?: { error?: { message?: string }; message?: string } };
+      };
+      const errorMessage =
+        error.response?.data?.error?.message ||
+        error.response?.data?.message ||
+        'Failed to change username';
       Alert.alert('Error', errorMessage);
     } finally {
       setIsChangingUsername(false);
     }
   };
-  
+
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Avatar with Next-Gen Animation */}
       <View style={styles.avatarSection}>
         <TouchableOpacity style={styles.avatarContainer} onPress={pickImage}>
           <AnimatedAvatar
-            source={getValidImageUrl(user?.avatar_url) 
-              ? { uri: getValidImageUrl(user?.avatar_url)! }
-              : { uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username || 'U')}&background=10b981&color=fff&size=256` }}
+            source={
+              getValidImageUrl(user?.avatar_url)
+                ? { uri: getValidImageUrl(user?.avatar_url)! }
+                : {
+                    uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username || 'U')}&background=10b981&color=fff&size=256`,
+                  }
+            }
             size={120}
             borderAnimation={user?.is_premium ? 'cosmic' : 'gradient'}
             showStatus={true}
@@ -136,22 +146,24 @@ export default function ProfileScreen({ navigation }: Props) {
             <Ionicons name="camera" size={16} color={colors.text} />
           </View>
         </TouchableOpacity>
-        <Text style={[styles.changePhotoText, { color: colors.primary }]}>
-          Change photo
-        </Text>
+        <Text style={[styles.changePhotoText, { color: colors.primary }]}>Change photo</Text>
         {/* User Title Badge */}
         {user?.title && (
           <View style={{ marginTop: 12 }}>
             <TitleBadge
               title={user.title}
-              rarity={(user.title_rarity as any) || 'common'}
+              rarity={(user.title_rarity as unknown) || 'common'}
               animation="shimmer"
               showSparkles={true}
             />
           </View>
         )}
         {/* User ID Display */}
-        <GlassCard variant="frosted" intensity="subtle" style={{ marginTop: 16, paddingHorizontal: 20, paddingVertical: 8 }}>
+        <GlassCard
+          variant="frosted"
+          intensity="subtle"
+          style={{ marginTop: 16, paddingHorizontal: 20, paddingVertical: 8 }}
+        >
           <Text style={[styles.uidText, { color: colors.primary }]}>
             {user?.user_id_display || '#0000'}
           </Text>
@@ -160,7 +172,7 @@ export default function ProfileScreen({ navigation }: Props) {
           Your unique ID - Share this to add friends
         </Text>
       </View>
-      
+
       {/* Form */}
       <View style={styles.form}>
         <View style={styles.inputGroup}>
@@ -181,7 +193,7 @@ export default function ProfileScreen({ navigation }: Props) {
             maxLength={50}
           />
         </View>
-        
+
         <View style={styles.inputGroup}>
           <View style={styles.labelRow}>
             <Text style={[styles.label, { color: colors.text }]}>Username</Text>
@@ -225,13 +237,12 @@ export default function ProfileScreen({ navigation }: Props) {
             )}
           </View>
           <Text style={[styles.hint, { color: colors.textTertiary }]}>
-            {canChangeUsername 
+            {canChangeUsername
               ? 'Username can be changed every 14 days. Letters, numbers, and underscores only.'
-              : `You changed your username recently. Next change available on ${nextChangeDate}.`
-            }
+              : `You changed your username recently. Next change available on ${nextChangeDate}.`}
           </Text>
         </View>
-        
+
         <View style={styles.inputGroup}>
           <Text style={[styles.label, { color: colors.text }]}>Bio</Text>
           <TextInput
@@ -251,12 +262,10 @@ export default function ProfileScreen({ navigation }: Props) {
             maxLength={500}
             textAlignVertical="top"
           />
-          <Text style={[styles.charCount, { color: colors.textTertiary }]}>
-            {bio.length}/500
-          </Text>
+          <Text style={[styles.charCount, { color: colors.textTertiary }]}>{bio.length}/500</Text>
         </View>
       </View>
-      
+
       {/* Save Button */}
       <View style={styles.footer}>
         <TouchableOpacity

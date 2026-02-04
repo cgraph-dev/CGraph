@@ -461,9 +461,9 @@ export class CustomizationEngine {
 
     // Validate colors
     if (theme.colors) {
-      const validateColorShade = (shade: any, name: string) => {
+      const validateColorShade = (shade: unknown, name: string) => {
         const requiredKeys = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900'];
-        requiredKeys.forEach(key => {
+        requiredKeys.forEach((key) => {
           if (!shade[key] || !chroma.valid(shade[key])) {
             errors.push(`Invalid color in ${name}.${key}`);
           }
@@ -588,7 +588,9 @@ export class CustomizationEngine {
 
       return this.mergeTheme(theme);
     } catch (error) {
-      throw new Error(`Failed to import theme: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to import theme: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
   }
 

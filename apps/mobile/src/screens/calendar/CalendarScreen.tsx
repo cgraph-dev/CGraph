@@ -1,9 +1,9 @@
 /**
  * CalendarScreen - Mobile
- * 
+ *
  * Full-featured calendar view for events, birthdays, holidays, and reminders.
  * Designed for mobile with gesture-based navigation and touch-optimized interactions.
- * 
+ *
  * Features:
  * - Month/Week/Day view modes
  * - Event creation and editing
@@ -14,7 +14,7 @@
  * - Swipe navigation between months
  * - Event reminders and notifications
  * - Today quick-jump button
- * 
+ *
  * @version 1.0.0
  * @since v0.8.1
  */
@@ -75,8 +75,18 @@ interface EventCategory {
 
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 const EVENT_TYPE_CONFIG: Record<EventType, { icon: string; color: string }> = {
@@ -111,37 +121,40 @@ function DayCell({ date, isToday, isSelected, events, onPress }: DayCellProps) {
   }
 
   const hasEvents = events.length > 0;
-  const hasBirthday = events.some(e => e.type === 'birthday');
-  const hasHoliday = events.some(e => e.type === 'holiday');
+  const hasBirthday = events.some((e) => e.type === 'birthday');
+  const hasHoliday = events.some((e) => e.type === 'holiday');
 
   return (
     <TouchableOpacity
       onPress={() => onPress(date)}
-      style={[
-        styles.dayCell,
-        isSelected && styles.dayCellSelected,
-      ]}
+      style={[styles.dayCell, isSelected && styles.dayCellSelected]}
       activeOpacity={0.7}
     >
-      <View style={[
-        styles.dayNumber,
-        isToday && styles.dayNumberToday,
-        isSelected && styles.dayNumberSelected,
-      ]}>
-        <Text style={[
-          styles.dayText,
-          isToday && styles.dayTextToday,
-          isSelected && styles.dayTextSelected,
-        ]}>
+      <View
+        style={[
+          styles.dayNumber,
+          isToday && styles.dayNumberToday,
+          isSelected && styles.dayNumberSelected,
+        ]}
+      >
+        <Text
+          style={[
+            styles.dayText,
+            isToday && styles.dayTextToday,
+            isSelected && styles.dayTextSelected,
+          ]}
+        >
           {date.getDate()}
         </Text>
       </View>
-      
+
       {/* Event indicators */}
       {hasEvents && (
         <View style={styles.eventIndicators}>
           {hasBirthday && (
-            <View style={[styles.eventDot, { backgroundColor: EVENT_TYPE_CONFIG.birthday.color }]} />
+            <View
+              style={[styles.eventDot, { backgroundColor: EVENT_TYPE_CONFIG.birthday.color }]}
+            />
           )}
           {hasHoliday && (
             <View style={[styles.eventDot, { backgroundColor: EVENT_TYPE_CONFIG.holiday.color }]} />
@@ -174,31 +187,28 @@ function EventCard({ event, onPress }: EventCardProps) {
   };
 
   return (
-    <TouchableOpacity
-      onPress={() => onPress(event)}
-      activeOpacity={0.8}
-    >
+    <TouchableOpacity onPress={() => onPress(event)} activeOpacity={0.8}>
       <BlurView intensity={40} tint="dark" style={styles.eventCard}>
         <View style={[styles.eventColorBar, { backgroundColor: color }]} />
         <View style={styles.eventContent}>
           <View style={styles.eventHeader}>
             <View style={[styles.eventIcon, { backgroundColor: color + '30' }]}>
-              <Ionicons name={config.icon as any} size={16} color={color} />
+              <Ionicons name={config.icon as unknown} size={16} color={color} />
             </View>
             <View style={styles.eventInfo}>
-              <Text style={styles.eventTitle} numberOfLines={1}>{event.title}</Text>
+              <Text style={styles.eventTitle} numberOfLines={1}>
+                {event.title}
+              </Text>
               {!event.allDay && (
                 <Text style={styles.eventTime}>
                   {formatTime(event.startDate)}
                   {event.endDate && ` - ${formatTime(event.endDate)}`}
                 </Text>
               )}
-              {event.allDay && (
-                <Text style={styles.eventTime}>All day</Text>
-              )}
+              {event.allDay && <Text style={styles.eventTime}>All day</Text>}
             </View>
           </View>
-          
+
           {event.location && (
             <View style={styles.eventLocation}>
               <Ionicons name="location" size={12} color="#9ca3af" />
@@ -251,7 +261,7 @@ function EventForm({ visible, event, initialDate, onClose, onSave }: EventFormPr
 
   const handleSave = () => {
     if (!title.trim()) return;
-    
+
     HapticFeedback.success();
     onSave({
       id: event?.id,
@@ -273,26 +283,16 @@ function EventForm({ visible, event, initialDate, onClose, onSave }: EventFormPr
       onRequestClose={onClose}
     >
       <View style={styles.modalContainer}>
-        <LinearGradient
-          colors={['#111827', '#0f172a']}
-          style={StyleSheet.absoluteFillObject}
-        />
-        
+        <LinearGradient colors={['#111827', '#0f172a']} style={StyleSheet.absoluteFillObject} />
+
         {/* Header */}
         <View style={styles.modalHeader}>
           <TouchableOpacity onPress={onClose}>
             <Text style={styles.modalCancel}>Cancel</Text>
           </TouchableOpacity>
-          <Text style={styles.modalTitle}>
-            {event ? 'Edit Event' : 'New Event'}
-          </Text>
+          <Text style={styles.modalTitle}>{event ? 'Edit Event' : 'New Event'}</Text>
           <TouchableOpacity onPress={handleSave} disabled={!title.trim()}>
-            <Text style={[
-              styles.modalSave,
-              !title.trim() && styles.modalSaveDisabled
-            ]}>
-              Save
-            </Text>
+            <Text style={[styles.modalSave, !title.trim() && styles.modalSaveDisabled]}>Save</Text>
           </TouchableOpacity>
         </View>
 
@@ -323,18 +323,18 @@ function EventForm({ visible, event, initialDate, onClose, onSave }: EventFormPr
                     onPress={() => setEventType(type)}
                     style={[
                       styles.typeOption,
-                      isSelected && { backgroundColor: config.color + '30', borderColor: config.color },
+                      isSelected && {
+                        backgroundColor: config.color + '30',
+                        borderColor: config.color,
+                      },
                     ]}
                   >
-                    <Ionicons 
-                      name={config.icon as any} 
-                      size={18} 
-                      color={isSelected ? config.color : '#9ca3af'} 
+                    <Ionicons
+                      name={config.icon as unknown}
+                      size={18}
+                      color={isSelected ? config.color : '#9ca3af'}
                     />
-                    <Text style={[
-                      styles.typeOptionText,
-                      isSelected && { color: config.color },
-                    ]}>
+                    <Text style={[styles.typeOptionText, isSelected && { color: config.color }]}>
                       {type.charAt(0).toUpperCase() + type.slice(1)}
                     </Text>
                   </TouchableOpacity>
@@ -344,10 +344,7 @@ function EventForm({ visible, event, initialDate, onClose, onSave }: EventFormPr
           </View>
 
           {/* All Day Toggle */}
-          <TouchableOpacity
-            style={styles.toggleRow}
-            onPress={() => setAllDay(!allDay)}
-          >
+          <TouchableOpacity style={styles.toggleRow} onPress={() => setAllDay(!allDay)}>
             <Text style={styles.formLabel}>All Day</Text>
             <View style={[styles.toggle, allDay && styles.toggleActive]}>
               <View style={[styles.toggleKnob, allDay && styles.toggleKnobActive]} />
@@ -393,7 +390,7 @@ function generateFallbackEvents(): CalendarEvent[] {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth();
-  
+
   return [
     {
       id: '1',
@@ -442,8 +439,8 @@ function generateFallbackEvents(): CalendarEvent[] {
 }
 
 // Transform API response to CalendarEvent format
-function transformApiEvents(data: any[]): CalendarEvent[] {
-  return (data || []).map((event: any) => ({
+function transformApiEvents(data: unknown[]): CalendarEvent[] {
+  return (data || []).map((event: Record<string, unknown>) => ({
     id: event.id || String(Math.random()),
     title: event.title || event.name || 'Untitled',
     description: event.description || event.body || undefined,
@@ -478,14 +475,14 @@ export default function CalendarScreen() {
     try {
       const startOfMonth = new Date(currentYear, currentMonth, 1);
       const endOfMonth = new Date(currentYear, currentMonth + 1, 0);
-      
+
       const response = await api.get('/api/v1/calendar/events', {
         params: {
           start_date: startOfMonth.toISOString(),
           end_date: endOfMonth.toISOString(),
         },
       });
-      
+
       const data = response.data?.data || response.data?.events || response.data || [];
       setEvents(transformApiEvents(Array.isArray(data) ? data : []));
     } catch (error) {
@@ -503,11 +500,14 @@ export default function CalendarScreen() {
   }, [fetchEvents]);
 
   // Today's date for comparison
-  const today = useMemo(() => ({
-    year: new Date().getFullYear(),
-    month: new Date().getMonth(),
-    date: new Date().getDate(),
-  }), []);
+  const today = useMemo(
+    () => ({
+      year: new Date().getFullYear(),
+      month: new Date().getMonth(),
+      date: new Date().getDate(),
+    }),
+    []
+  );
 
   // Generate calendar days
   const calendarDays = useMemo(() => {
@@ -515,38 +515,41 @@ export default function CalendarScreen() {
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
     const startDay = firstDay.getDay();
     const daysInMonth = lastDay.getDate();
-    
+
     const days: (Date | null)[] = [];
-    
+
     // Padding for start
     for (let i = 0; i < startDay; i++) {
       days.push(null);
     }
-    
+
     // Days of month
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(new Date(currentYear, currentMonth, i));
     }
-    
+
     // Pad to complete last week
     while (days.length % 7 !== 0) {
       days.push(null);
     }
-    
+
     return days;
   }, [currentYear, currentMonth]);
 
   // Get events for a specific date
-  const getEventsForDate = useCallback((date: Date): CalendarEvent[] => {
-    return events.filter(event => {
-      const eventDate = new Date(event.startDate);
-      return (
-        eventDate.getFullYear() === date.getFullYear() &&
-        eventDate.getMonth() === date.getMonth() &&
-        eventDate.getDate() === date.getDate()
-      );
-    });
-  }, [events]);
+  const getEventsForDate = useCallback(
+    (date: Date): CalendarEvent[] => {
+      return events.filter((event) => {
+        const eventDate = new Date(event.startDate);
+        return (
+          eventDate.getFullYear() === date.getFullYear() &&
+          eventDate.getMonth() === date.getMonth() &&
+          eventDate.getDate() === date.getDate()
+        );
+      });
+    },
+    [events]
+  );
 
   // Selected date events
   const selectedDateEvents = useMemo(() => {
@@ -603,7 +606,9 @@ export default function CalendarScreen() {
   const handleSaveEvent = (eventData: Partial<CalendarEvent>) => {
     if (eventData.id) {
       // Update existing
-      setEvents(prev => prev.map(e => e.id === eventData.id ? { ...e, ...eventData } as CalendarEvent : e));
+      setEvents((prev) =>
+        prev.map((e) => (e.id === eventData.id ? ({ ...e, ...eventData } as CalendarEvent) : e))
+      );
     } else {
       // Create new
       const newEvent: CalendarEvent = {
@@ -614,7 +619,7 @@ export default function CalendarScreen() {
         type: eventData.type || 'event',
         ...eventData,
       };
-      setEvents(prev => [...prev, newEvent]);
+      setEvents((prev) => [...prev, newEvent]);
     }
   };
 
@@ -697,7 +702,7 @@ export default function CalendarScreen() {
         <BlurView intensity={40} tint="dark" style={styles.calendarCard}>
           {/* Day Headers */}
           <View style={styles.dayHeaders}>
-            {DAYS.map(day => (
+            {DAYS.map((day) => (
               <View key={day} style={styles.dayHeader}>
                 <Text style={styles.dayHeaderText}>{day}</Text>
               </View>
@@ -740,12 +745,8 @@ export default function CalendarScreen() {
               </View>
             ) : (
               <View style={styles.eventsList}>
-                {selectedDateEvents.map(event => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    onPress={handleEventPress}
-                  />
+                {selectedDateEvents.map((event) => (
+                  <EventCard key={event.id} event={event} onPress={handleEventPress} />
                 ))}
               </View>
             )}

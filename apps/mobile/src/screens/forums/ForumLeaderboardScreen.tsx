@@ -89,7 +89,7 @@ type LeaderboardItem = LeaderboardForum | TopContributor;
 interface PodiumProps {
   items: (LeaderboardForum | TopContributor)[];
   type: LeaderboardType;
-  onItemPress: (item: any) => void;
+  onItemPress: (item: unknown) => void;
 }
 
 function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
@@ -233,7 +233,7 @@ function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
   }, []);
 
   const renderPodiumItem = (
-    item: any,
+    item: unknown,
     rank: number,
     anim: Animated.Value,
     glow: Animated.Value,
@@ -257,17 +257,20 @@ function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
       outputRange: [0.5, 1],
     });
 
-    const name = type === 'forums'
-      ? `c/${(item as LeaderboardForum).slug}`
-      : `u/${(item as TopContributor).user?.username || 'unknown'}`;
+    const name =
+      type === 'forums'
+        ? `c/${(item as LeaderboardForum).slug}`
+        : `u/${(item as TopContributor).user?.username || 'unknown'}`;
 
-    const iconUrl = type === 'forums'
-      ? (item as LeaderboardForum).icon_url
-      : (item as TopContributor).user?.avatar_url;
+    const iconUrl =
+      type === 'forums'
+        ? (item as LeaderboardForum).icon_url
+        : (item as TopContributor).user?.avatar_url;
 
-    const initial = type === 'forums'
-      ? (item as LeaderboardForum).name.charAt(0)
-      : (item as TopContributor).user?.username?.charAt(0).toUpperCase() || '?';
+    const initial =
+      type === 'forums'
+        ? (item as LeaderboardForum).name.charAt(0)
+        : (item as TopContributor).user?.username?.charAt(0).toUpperCase() || '?';
 
     return (
       <Animated.View
@@ -299,22 +302,14 @@ function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
 
           {/* Crown for first place */}
           {rank === 1 && (
-            <Animated.View
-              style={[
-                styles.crownContainer,
-                { transform: [{ scale: crownBounce }] },
-              ]}
-            >
+            <Animated.View style={[styles.crownContainer, { transform: [{ scale: crownBounce }] }]}>
               <Text style={styles.crownEmoji}>👑</Text>
             </Animated.View>
           )}
 
           {/* Avatar */}
           <View style={styles.podiumAvatarWrapper}>
-            <LinearGradient
-              colors={colors.gradient}
-              style={styles.podiumAvatarBorder}
-            >
+            <LinearGradient colors={colors.gradient} style={styles.podiumAvatarBorder}>
               {iconUrl ? (
                 <Image source={{ uri: iconUrl }} style={styles.podiumAvatar} />
               ) : (
@@ -325,16 +320,15 @@ function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
             </LinearGradient>
 
             {/* Rank badge */}
-            <LinearGradient
-              colors={colors.gradient}
-              style={styles.podiumRankBadge}
-            >
+            <LinearGradient colors={colors.gradient} style={styles.podiumRankBadge}>
               <Text style={styles.podiumRankText}>{rank}</Text>
             </LinearGradient>
           </View>
 
           {/* Name */}
-          <Text style={styles.podiumName} numberOfLines={1}>{name}</Text>
+          <Text style={styles.podiumName} numberOfLines={1}>
+            {name}
+          </Text>
 
           {/* Pedestal */}
           <LinearGradient
@@ -355,24 +349,25 @@ function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
         </TouchableOpacity>
 
         {/* Particles for first place */}
-        {rank === 1 && particles.map((particle, i) => (
-          <Animated.View
-            key={i}
-            style={[
-              styles.particle,
-              {
-                opacity: particle.opacity,
-                transform: [
-                  { translateY: particle.y },
-                  { translateX: particle.x },
-                  { scale: particle.scale },
-                ],
-              },
-            ]}
-          >
-            <Text style={styles.particleEmoji}>✨</Text>
-          </Animated.View>
-        ))}
+        {rank === 1 &&
+          particles.map((particle, i) => (
+            <Animated.View
+              key={i}
+              style={[
+                styles.particle,
+                {
+                  opacity: particle.opacity,
+                  transform: [
+                    { translateY: particle.y },
+                    { translateX: particle.x },
+                    { scale: particle.scale },
+                  ],
+                },
+              ]}
+            >
+              <Text style={styles.particleEmoji}>✨</Text>
+            </Animated.View>
+          ))}
       </Animated.View>
     );
   };
@@ -446,8 +441,8 @@ function AnimatedListItem({ item, index, type, onPress, colors }: ListItemProps)
         const cardWidth = SCREEN_WIDTH - 32;
         const cardHeight = 80;
 
-        const tiltXValue = ((locationY / cardHeight) - 0.5) * 8;
-        const tiltYValue = ((locationX / cardWidth) - 0.5) * -6;
+        const tiltXValue = (locationY / cardHeight - 0.5) * 8;
+        const tiltYValue = (locationX / cardWidth - 0.5) * -6;
 
         Animated.parallel([
           Animated.spring(tiltX, {
@@ -524,9 +519,7 @@ function AnimatedListItem({ item, index, type, onPress, colors }: ListItemProps)
     outputRange: ['-6deg', '6deg'],
   });
 
-  const rank = type === 'forums'
-    ? (item as LeaderboardForum).rank
-    : (item as TopContributor).rank;
+  const rank = type === 'forums' ? (item as LeaderboardForum).rank : (item as TopContributor).rank;
 
   const getRankColor = (r: number): readonly [string, string] => {
     if (r <= 3) return ['#8B5CF6', '#7C3AED'] as const;
@@ -576,10 +569,7 @@ function AnimatedListItem({ item, index, type, onPress, colors }: ListItemProps)
         <GlassCard variant="frosted" intensity="subtle" style={styles.listItem}>
           <View style={styles.listItemContent}>
             {/* Rank badge */}
-            <LinearGradient
-              colors={getRankColor(rank)}
-              style={styles.rankBadge}
-            >
+            <LinearGradient colors={getRankColor(rank)} style={styles.rankBadge}>
               <Text style={styles.rankText}>{rank}</Text>
             </LinearGradient>
 
@@ -587,20 +577,17 @@ function AnimatedListItem({ item, index, type, onPress, colors }: ListItemProps)
             {forum.icon_url ? (
               <Image source={{ uri: forum.icon_url }} style={styles.itemIcon} />
             ) : (
-              <LinearGradient
-                colors={['#8B5CF6', '#7C3AED']}
-                style={styles.itemIcon}
-              >
+              <LinearGradient colors={['#8B5CF6', '#7C3AED']} style={styles.itemIcon}>
                 <Text style={styles.itemIconText}>{forum.name.charAt(0)}</Text>
               </LinearGradient>
             )}
 
             {/* Info */}
             <View style={styles.itemInfo}>
-              <Text style={styles.itemName} numberOfLines={1}>c/{forum.slug}</Text>
-              {forum.category && (
-                <Text style={styles.itemCategory}>{forum.category}</Text>
-              )}
+              <Text style={styles.itemName} numberOfLines={1}>
+                c/{forum.slug}
+              </Text>
+              {forum.category && <Text style={styles.itemCategory}>{forum.category}</Text>}
               <View style={styles.itemStats}>
                 <View style={styles.statBadge}>
                   <Ionicons name="people" size={12} color="#9CA3AF" />
@@ -611,7 +598,9 @@ function AnimatedListItem({ item, index, type, onPress, colors }: ListItemProps)
                   <Text style={styles.statText}>{(forum?.post_count ?? 0).toLocaleString()}</Text>
                 </View>
                 {forum.growth_rate > 0 && (
-                  <View style={[styles.growthBadge, { backgroundColor: 'rgba(16, 185, 129, 0.2)' }]}>
+                  <View
+                    style={[styles.growthBadge, { backgroundColor: 'rgba(16, 185, 129, 0.2)' }]}
+                  >
                     <Ionicons name="trending-up" size={10} color="#10B981" />
                     <Text style={[styles.statText, { color: '#10B981' }]}>
                       +{forum.growth_rate.toFixed(1)}%
@@ -623,7 +612,7 @@ function AnimatedListItem({ item, index, type, onPress, colors }: ListItemProps)
 
             {/* Rank change */}
             <View style={styles.rankChangeContainer}>
-              <Ionicons name={rankChange.icon as any} size={18} color={rankChange.color} />
+              <Ionicons name={rankChange.icon as unknown} size={18} color={rankChange.color} />
             </View>
           </View>
         </GlassCard>
@@ -664,10 +653,7 @@ function AnimatedListItem({ item, index, type, onPress, colors }: ListItemProps)
       <GlassCard variant="frosted" intensity="subtle" style={styles.listItem}>
         <View style={styles.listItemContent}>
           {/* Rank badge */}
-          <LinearGradient
-            colors={getRankColor(rank)}
-            style={styles.rankBadge}
-          >
+          <LinearGradient colors={getRankColor(rank)} style={styles.rankBadge}>
             <Text style={styles.rankText}>{rank}</Text>
           </LinearGradient>
 
@@ -675,10 +661,7 @@ function AnimatedListItem({ item, index, type, onPress, colors }: ListItemProps)
           {contributor.user?.avatar_url ? (
             <Image source={{ uri: contributor.user.avatar_url }} style={styles.itemAvatar} />
           ) : (
-            <LinearGradient
-              colors={['#8B5CF6', '#7C3AED']}
-              style={styles.itemAvatar}
-            >
+            <LinearGradient colors={['#8B5CF6', '#7C3AED']} style={styles.itemAvatar}>
               <Text style={styles.itemAvatarText}>
                 {contributor.user?.username?.charAt(0).toUpperCase() || '?'}
               </Text>
@@ -727,7 +710,9 @@ interface TabBarProps {
 function AnimatedTabBar({ activeTab, onTabChange, colors }: TabBarProps) {
   const indicatorAnim = useRef(new Animated.Value(activeTab === 'forums' ? 0 : 1)).current;
   const forumsScale = useRef(new Animated.Value(activeTab === 'forums' ? 1.1 : 1)).current;
-  const contributorsScale = useRef(new Animated.Value(activeTab === 'contributors' ? 1.1 : 1)).current;
+  const contributorsScale = useRef(
+    new Animated.Value(activeTab === 'contributors' ? 1.1 : 1)
+  ).current;
 
   useEffect(() => {
     Animated.parallel([
@@ -786,11 +771,7 @@ function AnimatedTabBar({ activeTab, onTabChange, colors }: TabBarProps) {
         activeOpacity={0.8}
       >
         <Animated.View style={{ transform: [{ scale: forumsScale }] }}>
-          <Ionicons
-            name="grid"
-            size={20}
-            color={activeTab === 'forums' ? '#FFF' : '#9CA3AF'}
-          />
+          <Ionicons name="grid" size={20} color={activeTab === 'forums' ? '#FFF' : '#9CA3AF'} />
         </Animated.View>
         <Text style={[styles.tabLabel, activeTab === 'forums' && styles.tabLabelActive]}>
           Top Forums
@@ -845,10 +826,7 @@ function AnimatedPeriodSelector({ period, onPeriodChange }: PeriodSelectorProps)
           {periods.map((p) => (
             <TouchableOpacity
               key={p.key}
-              style={[
-                styles.periodButton,
-                period === p.key && styles.periodButtonActive,
-              ]}
+              style={[styles.periodButton, period === p.key && styles.periodButtonActive]}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 onPeriodChange(p.key);
@@ -856,10 +834,7 @@ function AnimatedPeriodSelector({ period, onPeriodChange }: PeriodSelectorProps)
               activeOpacity={0.8}
             >
               {period === p.key ? (
-                <LinearGradient
-                  colors={['#8B5CF6', '#7C3AED']}
-                  style={styles.periodButtonGradient}
-                >
+                <LinearGradient colors={['#8B5CF6', '#7C3AED']} style={styles.periodButtonGradient}>
                   <Text style={styles.periodButtonTextActive}>{p.label}</Text>
                 </LinearGradient>
               ) : (
@@ -919,16 +894,10 @@ function EmptyState() {
     <View style={styles.emptyContainer}>
       <Animated.View
         style={{
-          transform: [
-            { translateY: floatAnim },
-            { scale: pulseAnim },
-          ],
+          transform: [{ translateY: floatAnim }, { scale: pulseAnim }],
         }}
       >
-        <LinearGradient
-          colors={['#374151', '#1F2937']}
-          style={styles.emptyIconContainer}
-        >
+        <LinearGradient colors={['#374151', '#1F2937']} style={styles.emptyIconContainer}>
           <Ionicons name="trophy" size={48} color="#9CA3AF" />
         </LinearGradient>
       </Animated.View>
@@ -1056,18 +1025,11 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
   return (
     <View style={styles.container}>
       {/* Background */}
-      <LinearGradient
-        colors={['#111827', '#0F172A', '#111827']}
-        style={StyleSheet.absoluteFill}
-      />
+      <LinearGradient colors={['#111827', '#0F172A', '#111827']} style={StyleSheet.absoluteFill} />
 
       {/* Tab bar */}
       {!forumId && (
-        <AnimatedTabBar
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-          colors={colors}
-        />
+        <AnimatedTabBar activeTab={activeTab} onTabChange={handleTabChange} colors={colors} />
       )}
 
       <FlatList<LeaderboardItem>
@@ -1078,9 +1040,10 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
             item={item}
             index={index}
             type={activeTab}
-            onPress={() => activeTab === 'forums'
-              ? handleForumPress(item as LeaderboardForum)
-              : handleContributorPress(item as TopContributor)
+            onPress={() =>
+              activeTab === 'forums'
+                ? handleForumPress(item as LeaderboardForum)
+                : handleContributorPress(item as TopContributor)
             }
             colors={colors}
           />
@@ -1088,19 +1051,17 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
         ListHeaderComponent={
           <>
             {/* Period selector */}
-            <AnimatedPeriodSelector
-              period={timePeriod}
-              onPeriodChange={handlePeriodChange}
-            />
+            <AnimatedPeriodSelector period={timePeriod} onPeriodChange={handlePeriodChange} />
 
             {/* Podium for top 3 */}
             {topThree.length > 0 && (
               <AnimatedPodium
                 items={topThree}
                 type={activeTab}
-                onItemPress={(item) => activeTab === 'forums'
-                  ? handleForumPress(item as LeaderboardForum)
-                  : handleContributorPress(item as TopContributor)
+                onItemPress={(item) =>
+                  activeTab === 'forums'
+                    ? handleForumPress(item as LeaderboardForum)
+                    : handleContributorPress(item as TopContributor)
                 }
               />
             )}
@@ -1115,11 +1076,7 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
           </>
         }
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor="#8B5CF6"
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#8B5CF6" />
         }
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={<EmptyState />}

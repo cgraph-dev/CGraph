@@ -336,7 +336,7 @@ const AnimatedReactionBubble = memo(
     reaction: { emoji: string; count: number; hasReacted: boolean };
     isOwnMessage: boolean;
     onPress: () => void;
-    colors: any;
+    colors: ThemeColors;
   }) => {
     const scaleAnim = useRef(new Animated.Value(1)).current;
     const bounceAnim = useRef(new Animated.Value(0)).current;
@@ -1254,7 +1254,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
 
       // Find other participant - API returns camelCase (userId, user.displayName)
       const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
-        const participantUserId = p.userId || p.user_id || (p.user as any)?.id || p.id;
+        const participantUserId =
+          p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
         return String(participantUserId) !== String(currentUserId);
       });
 
@@ -1262,7 +1263,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const rawOtherUserId =
         otherParticipant?.userId ||
         otherParticipant?.user_id ||
-        (otherParticipant?.user as any)?.id;
+        (otherParticipant?.user as Record<string, unknown>)?.id;
       const otherUserId = rawOtherUserId ? String(rawOtherUserId) : null;
 
       if (otherUserId) {
@@ -1271,21 +1272,24 @@ export default function ConversationScreen({ navigation, route }: Props) {
         // Store full other user info for profile access
         const otherUserInfo: UserBasic = {
           id: otherUserId,
-          username: (otherParticipant?.user as any)?.username || otherParticipant?.username || null,
+          username:
+            (otherParticipant?.user as Record<string, unknown>)?.username ||
+            otherParticipant?.username ||
+            null,
           display_name:
-            (otherParticipant?.user as any)?.displayName ||
-            (otherParticipant?.user as any)?.display_name ||
+            (otherParticipant?.user as Record<string, unknown>)?.displayName ||
+            (otherParticipant?.user as Record<string, unknown>)?.display_name ||
             null,
           avatar_url:
-            (otherParticipant?.user as any)?.avatarUrl ||
-            (otherParticipant?.user as any)?.avatar_url ||
+            (otherParticipant?.user as Record<string, unknown>)?.avatarUrl ||
+            (otherParticipant?.user as Record<string, unknown>)?.avatar_url ||
             null,
           status: 'offline',
         };
         setOtherUser(otherUserInfo);
 
         // Extract last seen from participant's user data
-        const lastSeen = (otherParticipant?.user as any)?.lastSeenAt || null;
+        const lastSeen = (otherParticipant?.user as Record<string, unknown>)?.lastSeenAt || null;
         setOtherParticipantLastSeen(lastSeen);
 
         // Use global friend presence first, then fall back to conversation presence
@@ -1299,11 +1303,11 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const displayName =
         conv.name ||
         otherParticipant?.nickname ||
-        (otherParticipant?.user as any)?.displayName ||
-        (otherParticipant?.user as any)?.display_name ||
+        (otherParticipant?.user as Record<string, unknown>)?.displayName ||
+        (otherParticipant?.user as Record<string, unknown>)?.display_name ||
         otherParticipant?.displayName ||
         otherParticipant?.display_name ||
-        (otherParticipant?.user as any)?.username ||
+        (otherParticipant?.user as Record<string, unknown>)?.username ||
         otherParticipant?.username ||
         'Conversation';
 
@@ -1339,7 +1343,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
             onPress={() => {
               if (otherParticipantId) {
                 // Navigate to FriendsTab and then to UserProfile screen
-                (navigation as any).navigate('FriendsTab', {
+                (navigation as NavigationProp<ParamListBase>).navigate('FriendsTab', {
                   screen: 'UserProfile',
                   params: { userId: otherParticipantId },
                 });
@@ -1425,7 +1429,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
     if (_conversation) {
       const conv = _conversation;
       const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
-        const participantUserId = p.userId || p.user_id || (p.user as any)?.id || p.id;
+        const participantUserId =
+          p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
         return String(participantUserId) !== String(user?.id);
       });
 
@@ -1434,13 +1439,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const displayName =
         conv.name ||
         otherParticipant?.nickname ||
-        (otherParticipant?.user as any)?.displayName ||
+        (otherParticipant?.user as Record<string, unknown>)?.displayName ||
         otherParticipant?.user?.display_name ||
-        (otherParticipant as any)?.displayName ||
+        (otherParticipant as Record<string, unknown>)?.displayName ||
         otherParticipant?.display_name ||
-        (otherParticipant?.user as any)?.username ||
+        (otherParticipant?.user as Record<string, unknown>)?.username ||
         otherParticipant?.user?.username ||
-        (otherParticipant as any)?.username ||
+        (otherParticipant as Record<string, unknown>)?.username ||
         'Conversation';
 
       updateHeader(displayName);
@@ -1654,7 +1659,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         uri: voiceData.uri,
         name: `voice_${Date.now()}.m4a`,
         type: 'audio/m4a',
-      } as any);
+      } as unknown);
       formData.append('duration', String(Math.round(voiceData.duration)));
       formData.append('waveform', JSON.stringify(voiceData.waveform));
       formData.append('conversation_id', conversationId);
@@ -2164,7 +2169,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
 
     channel
       .push(event, { message_id: selectedMessage.id })
-      .receive('ok', (response: any) => {
+      .receive('ok', (response: Record<string, unknown>) => {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         // Update local state with proper pin timestamp from server
         setMessages((prev) =>
@@ -2182,7 +2187,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
           )
         );
       })
-      .receive('error', (err: any) => {
+      .receive('error', (err: unknown) => {
         // Extract reason from various error formats
         const reason = typeof err === 'string' ? err : err?.reason || err?.error || '';
         logger.warn('Pin error:', reason);
@@ -2241,7 +2246,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
                 // Remove from local state
                 setMessages((prev) => prev.filter((m) => m.id !== selectedMessage.id));
               })
-              .receive('error', (err: any) => {
+              .receive('error', (err: unknown) => {
                 logger.error('Failed to unsend message:', err);
                 Alert.alert('Error', 'Failed to unsend message');
               });
@@ -2501,7 +2506,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
             uri: Platform.OS === 'ios' ? image.uri.replace('file://', '') : image.uri,
             name,
             type: mimeType,
-          } as any);
+          } as unknown);
           formData.append('context', 'message');
 
           const response = await api.post('/api/v1/upload', formData, {
@@ -2626,7 +2631,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         uri: Platform.OS === 'ios' ? uri.replace('file://', '') : uri,
         name,
         type: mimeType,
-      } as any);
+      } as unknown);
       formData.append('context', 'message');
 
       logger.debug('Uploading file:', { name, type: mimeType, uri: uri.substring(0, 50) });
@@ -2648,7 +2653,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         // Use caption if provided, otherwise default content
         const messageContent =
           caption || (type === 'image' ? 'Photo' : type === 'video' ? 'Video' : `${name}`);
-        const msgPayload: any = {
+        const msgPayload: Record<string, unknown> = {
           content: messageContent,
           content_type: type,
           file_url: fileUrl,
@@ -3177,10 +3182,11 @@ export default function ConversationScreen({ navigation, route }: Props) {
       // Get sender display name with fallbacks
       const senderDisplayName =
         item.sender?.display_name ||
-        (item.sender as any)?.displayName ||
+        (item.sender as Record<string, unknown>)?.displayName ||
         item.sender?.username ||
         'User';
-      const senderAvatarUrl = item.sender?.avatar_url || (item.sender as any)?.avatarUrl;
+      const senderAvatarUrl =
+        item.sender?.avatar_url || (item.sender as Record<string, unknown>)?.avatarUrl;
 
       // Check if this is a new message for entrance animation
       const isNewMessage = newMessageIds.has(item.id);
@@ -3447,7 +3453,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
             ]}
           >
             <View style={[styles.modernActionIconWrap, { backgroundColor: `${item.color}18` }]}>
-              <Ionicons name={item.icon as any} size={20} color={item.color} />
+              <Ionicons name={item.icon as unknown} size={20} color={item.color} />
             </View>
             <Text
               style={[styles.modernActionLabel, { color: item.danger ? item.color : colors.text }]}

@@ -195,17 +195,23 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
     <View style={styles.statsGrid}>
       <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
         <Ionicons name="document-text-outline" size={28} color={colors.primary} />
-        <Text style={[styles.statValue, { color: colors.text }]}>{(stats?.total_posts ?? 0).toLocaleString()}</Text>
+        <Text style={[styles.statValue, { color: colors.text }]}>
+          {(stats?.total_posts ?? 0).toLocaleString()}
+        </Text>
         <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Total Posts</Text>
       </View>
       <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
         <Ionicons name="chatbubbles-outline" size={28} color={colors.primary} />
-        <Text style={[styles.statValue, { color: colors.text }]}>{(stats?.total_comments ?? 0).toLocaleString()}</Text>
+        <Text style={[styles.statValue, { color: colors.text }]}>
+          {(stats?.total_comments ?? 0).toLocaleString()}
+        </Text>
         <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Comments</Text>
       </View>
       <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
         <Ionicons name="people-outline" size={28} color={colors.primary} />
-        <Text style={[styles.statValue, { color: colors.text }]}>{(stats?.total_members ?? 0).toLocaleString()}</Text>
+        <Text style={[styles.statValue, { color: colors.text }]}>
+          {(stats?.total_members ?? 0).toLocaleString()}
+        </Text>
         <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Members</Text>
       </View>
       <View style={[styles.statCard, { backgroundColor: colors.surface }]}>
@@ -229,7 +235,12 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
   const renderModQueueItem = ({ item }: { item: ModerationItem }) => (
     <View style={[styles.modItem, { backgroundColor: colors.surface }]}>
       <View style={styles.modItemHeader}>
-        <View style={[styles.typeBadge, { backgroundColor: item.type === 'post' ? colors.primary : colors.secondary }]}>
+        <View
+          style={[
+            styles.typeBadge,
+            { backgroundColor: item.type === 'post' ? colors.primary : colors.secondary },
+          ]}
+        >
           <Text style={styles.typeBadgeText}>{item.type}</Text>
         </View>
         <Text style={[styles.modItemDate, { color: colors.textSecondary }]}>
@@ -268,10 +279,14 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
     <View style={[styles.userItem, { backgroundColor: colors.surface }]}>
       <View style={styles.userInfo}>
         <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-          <Text style={styles.avatarText}>{item.user?.username?.charAt(0).toUpperCase() || '?'}</Text>
+          <Text style={styles.avatarText}>
+            {item.user?.username?.charAt(0).toUpperCase() || '?'}
+          </Text>
         </View>
         <View style={styles.userDetails}>
-          <Text style={[styles.username, { color: colors.text }]}>u/{item.user?.username || 'unknown'}</Text>
+          <Text style={[styles.username, { color: colors.text }]}>
+            u/{item.user?.username || 'unknown'}
+          </Text>
           <Text style={[styles.banReason, { color: colors.textSecondary }]}>{item.reason}</Text>
           <Text style={[styles.banDate, { color: colors.textSecondary }]}>
             Banned {new Date(item.banned_at).toLocaleDateString()}
@@ -291,10 +306,14 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
     <View style={[styles.userItem, { backgroundColor: colors.surface }]}>
       <View style={styles.userInfo}>
         <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
-          <Text style={styles.avatarText}>{item.user?.username?.charAt(0).toUpperCase() || '?'}</Text>
+          <Text style={styles.avatarText}>
+            {item.user?.username?.charAt(0).toUpperCase() || '?'}
+          </Text>
         </View>
         <View style={styles.userDetails}>
-          <Text style={[styles.username, { color: colors.text }]}>u/{item.user?.username || 'unknown'}</Text>
+          <Text style={[styles.username, { color: colors.text }]}>
+            u/{item.user?.username || 'unknown'}
+          </Text>
           <Text style={[styles.modPermissions, { color: colors.textSecondary }]}>
             {item.permissions?.join(', ') || 'Full permissions'}
           </Text>
@@ -322,23 +341,34 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Tab Bar */}
-      <View style={[styles.tabBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+      <View
+        style={[
+          styles.tabBar,
+          { backgroundColor: colors.surface, borderBottomColor: colors.border },
+        ]}
+      >
         {tabs.map((tab) => (
           <TouchableOpacity
             key={tab.key}
-            style={[styles.tab, activeTab === tab.key && { borderBottomColor: colors.primary, borderBottomWidth: 2 }]}
+            style={[
+              styles.tab,
+              activeTab === tab.key && { borderBottomColor: colors.primary, borderBottomWidth: 2 },
+            ]}
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               setActiveTab(tab.key);
             }}
           >
             <Ionicons
-              name={tab.icon as any}
+              name={tab.icon as unknown}
               size={20}
               color={activeTab === tab.key ? colors.primary : colors.textSecondary}
             />
             <Text
-              style={[styles.tabLabel, { color: activeTab === tab.key ? colors.primary : colors.textSecondary }]}
+              style={[
+                styles.tabLabel,
+                { color: activeTab === tab.key ? colors.primary : colors.textSecondary },
+              ]}
             >
               {tab.label}
             </Text>
@@ -351,7 +381,13 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
         <FlatList
           data={[{ key: 'overview' }]}
           renderItem={() => renderOverview()}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.primary}
+            />
+          }
           contentContainerStyle={styles.content}
         />
       )}
@@ -361,12 +397,20 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
           data={modQueue}
           renderItem={renderModQueueItem}
           keyExtractor={(item) => item.id}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.primary}
+            />
+          }
           contentContainerStyle={styles.content}
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Ionicons name="checkmark-circle-outline" size={64} color={colors.success} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No items in mod queue</Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No items in mod queue
+              </Text>
             </View>
           }
         />
@@ -377,12 +421,20 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
           data={bannedUsers}
           renderItem={renderBannedUser}
           keyExtractor={(item) => item.id}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.primary}
+            />
+          }
           contentContainerStyle={styles.content}
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Ionicons name="happy-outline" size={64} color={colors.textSecondary} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No banned users</Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No banned users
+              </Text>
             </View>
           }
         />
@@ -393,12 +445,20 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
           data={moderators}
           renderItem={renderModerator}
           keyExtractor={(item) => item.id}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.primary}
+            />
+          }
           contentContainerStyle={styles.content}
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <Ionicons name="people-outline" size={64} color={colors.textSecondary} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No moderators yet</Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                No moderators yet
+              </Text>
             </View>
           }
         />

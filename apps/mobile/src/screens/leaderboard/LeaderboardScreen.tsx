@@ -438,9 +438,12 @@ function generateFallbackData(category: LeaderboardCategory, page: number): Lead
 }
 
 // Transform API response to LeaderboardData format
-function transformApiResponse(data: any, category: LeaderboardCategory): LeaderboardData {
+function transformApiResponse(
+  data: Record<string, unknown>,
+  category: LeaderboardCategory
+): LeaderboardData {
   const entries: LeaderboardEntry[] = (data.entries || data.data || []).map(
-    (entry: any, index: number) => ({
+    (entry: Record<string, unknown>, index: number) => ({
       rank: entry.rank || index + 1,
       previousRank: entry.previous_rank || entry.previousRank || entry.rank || index + 1,
       userId: entry.user_id || entry.userId || entry.id,
@@ -586,12 +589,12 @@ export default function LeaderboardScreen() {
             <TouchableOpacity onPress={() => handleCategoryChange(item.id)} activeOpacity={0.8}>
               {category === item.id ? (
                 <LinearGradient colors={item.colors} style={styles.categoryPillActive}>
-                  <Ionicons name={item.icon as any} size={16} color="#fff" />
+                  <Ionicons name={item.icon as unknown} size={16} color="#fff" />
                   <Text style={styles.categoryPillTextActive}>{item.name}</Text>
                 </LinearGradient>
               ) : (
                 <View style={styles.categoryPill}>
-                  <Ionicons name={item.icon as any} size={16} color="#9ca3af" />
+                  <Ionicons name={item.icon as unknown} size={16} color="#9ca3af" />
                   <Text style={styles.categoryPillText}>{item.name}</Text>
                 </View>
               )}
