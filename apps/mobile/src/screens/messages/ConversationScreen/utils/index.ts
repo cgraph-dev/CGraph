@@ -368,3 +368,68 @@ export function getMessageStatusInfo(
       return { icon: 'checkmark-outline', color: colors.textTertiary };
   }
 }
+
+// =============================================================================
+// Message Validation Utilities
+// =============================================================================
+
+/**
+ * Check if a message is valid for rendering.
+ * Returns false for messages without ID, sender, or content.
+ */
+export function isValidMessage(message: Message): boolean {
+  if (!message.id) return false;
+
+  // Must have sender info
+  const hasSender = message.sender_id || message.sender?.id;
+  if (!hasSender) return false;
+
+  // Must have content or media
+  const hasTextContent =
+    message.content && message.content.trim().length > 0 && message.content !== '[Voice Message]';
+  const hasMediaUrl = message.metadata?.url || message.file_url;
+  const isVoiceWithUrl = message.type === 'voice' && hasMediaUrl;
+  const isFileWithUrl = (message.type === 'file' || message.type === 'image') && hasMediaUrl;
+
+  return hasTextContent || isVoiceWithUrl || isFileWithUrl;
+}
+
+/**
+ * Extract sender ID from message with proper string conversion.
+ */
+export function getMessageSenderId(message: Message): string {
+  if (message.sender_id) return String(message.sender_id);
+  if (message.sender?.id) return String(message.sender.id);
+  return '';
+}
+
+/**
+ * Check if message is from current user.
+ */
+export function isOwnMessage(message: Message, currentUserId: string | undefined): boolean {
+  if (!currentUserId) return false;
+  const senderId = getMessageSenderId(message);
+  return senderId !== '' && String(currentUserId) === senderId;
+}
+
+/**
+ * Extract sender display info from message.
+ */
+export function getSenderInfo(message: Message): {
+  displayName: string;
+  avatarUrl: string | undefined;
+} {
+  const displayName =
+    message.sender?.display_name ||
+    (message.sender as Record<string, unknown>)?.displayName ||
+    message.sender?.username ||
+    'User';
+
+  const avatarUrl =
+    message.sender?.avatar_url || (message.sender as Record<string, unknown>)?.avatarUrl;
+
+  return {
+    displayName: String(displayName),
+    avatarUrl: avatarUrl as string | undefined,
+  };
+}

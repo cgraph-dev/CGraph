@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   View,
-  Text,
   FlatList,
   TextInput,
   KeyboardAvoidingView,
@@ -10,6 +9,7 @@ import {
   RefreshControl,
   Alert,
   Animated,
+  Easing,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
@@ -18,15 +18,8 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useE2EE } from '../../lib/crypto/E2EEContext';
 import api from '../../lib/api';
-import socketManager from '../../lib/socket';
-import { normalizeMessage, normalizeMessages } from '../../lib/normalizers';
-import {
-  MessagesStackParamList,
-  Message,
-  Conversation,
-  ConversationParticipant,
-  UserBasic,
-} from '../../types';
+import { normalizeMessage } from '../../lib/normalizers';
+import { MessagesStackParamList, Message, ConversationParticipant } from '../../types';
 import { TelegramAttachmentPicker } from '../../components';
 import { createLogger } from '../../lib/logger';
 
@@ -55,12 +48,14 @@ import {
   useConversationSocket,
   useConversationHeader,
   usePresence,
+  useConversationData,
 } from './ConversationScreen/hooks';
 import {
-  processMessagesWithReactions,
   formatSimpleTime,
-  formatLastSeen,
   getMessageStatusInfo,
+  isValidMessage,
+  isOwnMessage as checkIsOwnMessage,
+  getSenderInfo,
 } from './ConversationScreen/utils';
 
 const logger = createLogger('ConversationScreen');
@@ -77,15 +72,31 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const { user } = useAuth();
   const { isInitialized: isE2EEInitialized, encryptMessage } = useE2EE();
 
-  const [_conversation, setConversation] = useState<Conversation | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  // Track deleted message IDs to prevent re-adding them (must be before useConversationData)
+  const deletedMessageIdsRef = useRef<Set<string>>(new Set());
+
+  // Conversation data hook - fetches conversation details and messages
+  const {
+    conversation: _conversation,
+    messages,
+    setMessages,
+    isLoading,
+    isRefreshing,
+    otherParticipantId,
+    otherUser,
+    fetchMessages,
+    fetchConversation,
+    onRefresh,
+    markMessageAsRead: _markMessageAsRead,
+  } = useConversationData({
+    conversationId,
+    userId: user?.id,
+    deletedMessageIdsRef,
+  });
+
   const [inputText, setInputText] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [otherParticipantId, setOtherParticipantId] = useState<string | null>(null);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
-  const [otherUser, setOtherUser] = useState<UserBasic | null>(null);
 
   // Presence and typing hook - manages online/typing state
   const {
@@ -210,9 +221,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
 
   // Track newly added messages for entrance animations
   const [newMessageIds, setNewMessageIds] = useState<Set<string>>(new Set());
-
-  // Track deleted message IDs to prevent re-adding them
-  const deletedMessageIdsRef = useRef<Set<string>>(new Set());
 
   // Track if component is mounted (for async operations)
   const isMountedRef = useRef(true);
@@ -458,90 +466,16 @@ export default function ConversationScreen({ navigation, route }: Props) {
   // Fetch messages on mount and when conversation changes
   useEffect(() => {
     fetchMessages();
-  }, [conversationId]);
+  }, [conversationId, fetchMessages]);
 
   // Fetch conversation when user is available - separate effect to handle auth loading
   useEffect(() => {
     if (user?.id) {
       fetchConversation();
     }
-  }, [conversationId, user?.id]);
+  }, [conversationId, user?.id, fetchConversation]);
 
-  const fetchConversation = async () => {
-    const currentUserId = user?.id;
-    if (!currentUserId) return;
-
-    try {
-      const response = await api.get(`/api/v1/conversations/${conversationId}`);
-      const conv = response.data.data || response.data;
-      setConversation(conv);
-
-      // Find other participant - API returns camelCase (userId, user.displayName)
-      const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
-        const participantUserId =
-          p.userId || p.user_id || (p.user as Record<string, unknown>)?.id || p.id;
-        return String(participantUserId) !== String(currentUserId);
-      });
-
-      // Store other participant's user ID for presence tracking
-      const rawOtherUserId =
-        otherParticipant?.userId ||
-        otherParticipant?.user_id ||
-        (otherParticipant?.user as Record<string, unknown>)?.id;
-      const otherUserId = rawOtherUserId ? String(rawOtherUserId) : null;
-
-      if (otherUserId) {
-        setOtherParticipantId(otherUserId);
-
-        // Store full other user info for profile access
-        const otherUserInfo: UserBasic = {
-          id: otherUserId,
-          username:
-            (otherParticipant?.user as Record<string, unknown>)?.username ||
-            otherParticipant?.username ||
-            null,
-          display_name:
-            (otherParticipant?.user as Record<string, unknown>)?.displayName ||
-            (otherParticipant?.user as Record<string, unknown>)?.display_name ||
-            null,
-          avatar_url:
-            (otherParticipant?.user as Record<string, unknown>)?.avatarUrl ||
-            (otherParticipant?.user as Record<string, unknown>)?.avatar_url ||
-            null,
-          status: 'offline',
-        };
-        setOtherUser(otherUserInfo);
-
-        // Extract last seen from participant's user data
-        const lastSeen = (otherParticipant?.user as Record<string, unknown>)?.lastSeenAt || null;
-        setOtherParticipantLastSeen(lastSeen);
-
-        // Use global friend presence first, then fall back to conversation presence
-        const presenceOnline =
-          socketManager.isFriendOnline(otherUserId) ||
-          socketManager.isUserOnline(conversationId, otherUserId);
-        setIsOtherUserOnline(presenceOnline);
-      }
-
-      // Extract display name - API uses camelCase (displayName, not display_name)
-      const displayName =
-        conv.name ||
-        otherParticipant?.nickname ||
-        (otherParticipant?.user as Record<string, unknown>)?.displayName ||
-        (otherParticipant?.user as Record<string, unknown>)?.display_name ||
-        otherParticipant?.displayName ||
-        otherParticipant?.display_name ||
-        (otherParticipant?.user as Record<string, unknown>)?.username ||
-        otherParticipant?.username ||
-        'Conversation';
-
-      updateHeader(displayName);
-    } catch (error) {
-      logger.error('Error fetching conversation:', error);
-    }
-  };
-
-  // Update header when online or typing status changes
+  // Update header when online or typing status changes, or conversation loads
   useEffect(() => {
     if (_conversation) {
       const conv = _conversation;
@@ -566,6 +500,12 @@ export default function ConversationScreen({ navigation, route }: Props) {
         'Conversation';
 
       updateHeader(displayName);
+
+      // Set last seen from participant's user data (if hook callback wasn't used)
+      if (otherParticipant) {
+        const lastSeen = (otherParticipant?.user as Record<string, unknown>)?.lastSeenAt || null;
+        setOtherParticipantLastSeen(lastSeen as string | null);
+      }
     }
   }, [
     isOtherUserOnline,
@@ -574,74 +514,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
     _conversation,
     updateHeader,
     user?.id,
+    setOtherParticipantLastSeen,
   ]);
-
-  const fetchMessages = async () => {
-    try {
-      const response = await api.get(`/api/v1/conversations/${conversationId}/messages`);
-      const rawMessages = response.data.data || response.data.messages || [];
-      if (isMountedRef.current) {
-        const normalized = normalizeMessages(rawMessages);
-        // Process reactions to set hasReacted based on current user
-        const withReactions = processMessagesWithReactions(normalized, user?.id);
-        // Deduplicate and filter out deleted messages
-        const uniqueMessages = withReactions.reduce((acc: Message[], msg: Message) => {
-          // Skip messages that were deleted in this session
-          if (deletedMessageIdsRef.current.has(msg.id)) {
-            return acc;
-          }
-          if (!acc.some((m) => m.id === msg.id)) {
-            acc.push(msg);
-          }
-          return acc;
-        }, []);
-
-        // Sort messages reverse chronologically (newest first) for inverted list
-        // Inverted FlatList displays from bottom, so newest appears at bottom visually
-        const sortedMessages = uniqueMessages.sort((a, b) => {
-          const dateA = new Date(a.inserted_at).getTime();
-          const dateB = new Date(b.inserted_at).getTime();
-          return dateB - dateA; // Newest first
-        });
-
-        setMessages(sortedMessages);
-
-        // Mark latest message as read if it's not from current user
-        const latestUnread = sortedMessages.find((m) => m.sender_id !== user?.id);
-        if (latestUnread) {
-          markMessageAsRead(latestUnread.id);
-        }
-      }
-    } catch (error) {
-      logger.error('Error fetching messages:', error);
-    } finally {
-      if (isMountedRef.current) {
-        setIsLoading(false);
-      }
-    }
-  };
-
-  // Mark message as read via WebSocket
-  const markMessageAsRead = useCallback(
-    (messageId: string) => {
-      const channel = socketManager.getChannel(`conversation:${conversationId}`);
-      if (channel) {
-        channel.push('mark_read', { message_id: messageId });
-      }
-    },
-    [conversationId]
-  );
-
-  const onRefresh = async () => {
-    setIsRefreshing(true);
-    try {
-      await fetchMessages();
-      await fetchConversation();
-      // fetchMessages already handles scrolling to bottom
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
 
   // Animated send button press effect
   const animateSendButton = () => {
@@ -854,72 +728,25 @@ export default function ConversationScreen({ navigation, route }: Props) {
   // Render a single message using the extracted MessageBubble component
   const renderMessage = useCallback(
     ({ item }: { item: Message }) => {
-      // Skip rendering messages without proper ID or that appear empty/invalid
-      if (!item.id) {
+      // Skip invalid messages (no ID, no sender, no content)
+      if (!isValidMessage(item)) {
         if (__DEV__) {
-          logger.debug('Skipping message without ID');
+          logger.debug('Skipping invalid message:', item.id);
         }
         return null;
       }
 
-      // Skip messages without valid sender info (ghost messages)
-      const hasSender = item.sender_id || item.sender?.id;
-      if (!hasSender) {
-        if (__DEV__) {
-          logger.debug('Skipping message without sender:', item.id);
-        }
-        return null;
-      }
-
-      // Skip messages that have no actual content
-      const hasTextContent =
-        item.content && item.content.trim().length > 0 && item.content !== '[Voice Message]';
-      const hasMediaUrl = item.metadata?.url || item.file_url;
-      const isVoiceWithUrl = item.type === 'voice' && hasMediaUrl;
-      const isFileWithUrl = (item.type === 'file' || item.type === 'image') && hasMediaUrl;
-
-      if (!hasTextContent && !isVoiceWithUrl && !isFileWithUrl) {
-        if (__DEV__) {
-          logger.debug('Skipping empty/invalid message:', item.id, {
-            type: item.type,
-            content: item.content?.substring(0, 20),
-            hasUrl: !!hasMediaUrl,
-          });
-        }
-        return null;
-      }
-
-      // Get current user ID - ensure string comparison
-      const currentUserId = user?.id ? String(user.id) : '';
-
-      // Get message sender ID
-      const messageSenderId = item.sender_id
-        ? String(item.sender_id)
-        : item.sender?.id
-          ? String(item.sender.id)
-          : '';
-
-      // Message is from current user if IDs match
-      const isOwnMessage = currentUserId !== '' && currentUserId === messageSenderId;
-
-      // Get sender display name with fallbacks
-      const senderDisplayName =
-        item.sender?.display_name ||
-        (item.sender as Record<string, unknown>)?.displayName ||
-        item.sender?.username ||
-        'User';
-      const senderAvatarUrl =
-        item.sender?.avatar_url || (item.sender as Record<string, unknown>)?.avatarUrl;
-
-      // Check if this is a new message for entrance animation
+      // Check ownership and get sender info using utilities
+      const isOwn = checkIsOwnMessage(item, user?.id);
+      const { displayName, avatarUrl } = getSenderInfo(item);
       const isNewMessage = newMessageIds.has(item.id);
 
       return (
         <MessageBubble
           item={item}
-          isOwnMessage={isOwnMessage}
-          senderDisplayName={senderDisplayName}
-          senderAvatarUrl={senderAvatarUrl as string | undefined}
+          isOwnMessage={isOwn}
+          senderDisplayName={displayName}
+          senderAvatarUrl={avatarUrl}
           isNewMessage={isNewMessage}
           colors={colors}
           formatTime={formatTime}
