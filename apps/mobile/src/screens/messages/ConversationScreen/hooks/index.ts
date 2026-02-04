@@ -22,3 +22,5 @@ export { useFilePickers } from './useFilePickers';
 export type { PickedAsset } from './useFilePickers';
 export { useMessageSending } from './useMessageSending';
 export type { UseMessageSendingReturn } from './useMessageSending';
+export { useMessageReactions } from './useMessageReactions';
+export type { UseMessageReactionsReturn } from './useMessageReactions';

@@ -4,24 +4,17 @@ import {
   Text,
   FlatList,
   TextInput,
-  TouchableOpacity,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
   RefreshControl,
   Alert,
   Animated,
-  Easing,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system/legacy';
-import * as ImagePicker from 'expo-image-picker';
-import * as DocumentPicker from 'expo-document-picker';
 import * as Haptics from 'expo-haptics';
-import * as Crypto from 'expo-crypto';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useE2EE } from '../../lib/crypto/E2EEContext';
@@ -53,10 +46,13 @@ import {
 import { styles } from './ConversationScreen/styles';
 import {
   useMediaViewer,
-  usePresence,
   useMessageActions,
   useReactions,
   useAttachments,
+  useConversationSocket,
+  useConversationHeader,
+  usePinAndDelete,
+  useMessageReactions,
   EMOJI_CATEGORIES,
 } from './ConversationScreen/hooks';
 import { getMimeType, processMessagesWithReactions } from './ConversationScreen/utils';
@@ -160,6 +156,44 @@ export default function ConversationScreen({ navigation, route }: Props) {
     clearAttachments,
     removeAttachment,
   } = useAttachments();
+
+  // Message reactions hook (add/remove reactions via API)
+  const {
+    handleAddReaction,
+    handleRemoveReaction,
+    handleQuickReaction: handleQuickReactionBase,
+    handleReactionTap,
+    addReactionToMessage,
+    removeReactionFromMessage,
+  } = useMessageReactions({ user, setMessages });
+
+  // Pin/delete handlers from hook - callbacks defined after setMessages is available
+  const onMessagePinnedCallback = useCallback(
+    (messageId: string, isPinned: boolean, pinnedAt?: string, pinnedById?: string) => {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === messageId
+            ? { ...m, is_pinned: isPinned, pinned_at: pinnedAt, pinned_by_id: pinnedById }
+            : m
+        )
+      );
+    },
+    []
+  );
+
+  const onMessageDeletedCallback = useCallback((messageId: string) => {
+    deletedMessageIdsRef.current.add(messageId);
+    setMessages((prev) => prev.filter((m) => m.id !== messageId));
+  }, []);
+
+  // usePinAndDelete hook for pin/unpin and delete operations
+  const { handleTogglePin: handleTogglePinBase, handleUnsend: handleUnsendBase } = usePinAndDelete({
+    conversationId,
+    userId: user?.id,
+    onMessagePinned: onMessagePinnedCallback,
+    onMessageDeleted: onMessageDeletedCallback,
+    onActionComplete: closeMessageActions,
+  });
 
   // Track newly added messages for entrance animations
   const [newMessageIds, setNewMessageIds] = useState<Set<string>>(new Set());
@@ -419,57 +453,11 @@ export default function ConversationScreen({ navigation, route }: Props) {
             user?: { id: string; username?: string; display_name?: string; avatar_url?: string };
           };
           if (reactionData.message_id && reactionData.emoji) {
-            const reactingUserId = String(reactionData.user_id);
-            const currentUserId = String(user?.id || '');
-
-            setMessages((prev) =>
-              prev.map((m) => {
-                if (m.id !== reactionData.message_id) return m;
-                const reactions = [...(m.reactions || [])];
-                const existingIdx = reactions.findIndex((r) => r.emoji === reactionData.emoji);
-
-                if (existingIdx >= 0) {
-                  // Add user to existing reaction
-                  const existing = reactions[existingIdx];
-                  const userAlreadyReacted = existing.users.some(
-                    (u) => String(u.id) === reactingUserId
-                  );
-                  if (!userAlreadyReacted) {
-                    reactions[existingIdx] = {
-                      ...existing,
-                      count: existing.count + 1,
-                      users: [
-                        ...existing.users,
-                        {
-                          id: reactionData.user_id,
-                          username: reactionData.user?.username || null,
-                          display_name: reactionData.user?.display_name,
-                          avatar_url: reactionData.user?.avatar_url,
-                          status: 'online',
-                        },
-                      ],
-                      hasReacted: existing.hasReacted || reactingUserId === currentUserId,
-                    };
-                  }
-                } else {
-                  // Create new reaction
-                  reactions.push({
-                    emoji: reactionData.emoji,
-                    count: 1,
-                    users: [
-                      {
-                        id: reactionData.user_id,
-                        username: reactionData.user?.username || null,
-                        display_name: reactionData.user?.display_name,
-                        avatar_url: reactionData.user?.avatar_url,
-                        status: 'online',
-                      },
-                    ],
-                    hasReacted: reactingUserId === currentUserId,
-                  });
-                }
-                return { ...m, reactions };
-              })
+            addReactionToMessage(
+              reactionData.message_id,
+              reactionData.emoji,
+              reactionData.user_id,
+              reactionData.user
             );
           }
           return;
@@ -479,32 +467,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
         if (event === 'reaction_removed') {
           const reactionData = payload as { message_id: string; emoji: string; user_id: string };
           if (reactionData.message_id && reactionData.emoji) {
-            const removedUserId = String(reactionData.user_id);
-            const currentUserId = String(user?.id || '');
-
-            setMessages((prev) =>
-              prev.map((m) => {
-                if (m.id !== reactionData.message_id) return m;
-                const reactions = [...(m.reactions || [])];
-                const existingIdx = reactions.findIndex((r) => r.emoji === reactionData.emoji);
-
-                if (existingIdx >= 0) {
-                  const existing = reactions[existingIdx];
-                  const newUsers = existing.users.filter((u) => String(u.id) !== removedUserId);
-                  if (newUsers.length === 0) {
-                    // Remove reaction entirely
-                    reactions.splice(existingIdx, 1);
-                  } else {
-                    reactions[existingIdx] = {
-                      ...existing,
-                      count: newUsers.length,
-                      users: newUsers,
-                      hasReacted: newUsers.some((u) => String(u.id) === currentUserId),
-                    };
-                  }
-                }
-                return { ...m, reactions };
-              })
+            removeReactionFromMessage(
+              reactionData.message_id,
+              reactionData.emoji,
+              reactionData.user_id
             );
           }
           return;
@@ -1118,155 +1084,19 @@ export default function ConversationScreen({ navigation, route }: Props) {
   // Cancel reply - use clearReply from hook
   const cancelReply = clearReply;
 
-  // Handle adding a reaction to a message
-  // Limit: 1 reaction per user per message - will replace existing reaction
-  const handleAddReaction = useCallback(
-    async (messageId: string, emoji: string) => {
-      try {
-        await api.post(`/api/v1/messages/${messageId}/reactions`, { emoji });
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-        // Optimistic update - add reaction locally (replacing any existing user reaction)
-        setMessages((prev) =>
-          prev.map((m) => {
-            if (m.id !== messageId) return m;
-            let reactions = [...(m.reactions || [])];
-            const currentUserId = user?.id;
-
-            // First, remove user's previous reaction if any (1 reaction per user limit)
-            reactions = reactions
-              .map((r) => {
-                if (r.hasReacted && r.emoji !== emoji) {
-                  const newUsers = r.users.filter((u) => u.id !== currentUserId);
-                  if (newUsers.length === 0) {
-                    return null; // Mark for removal
-                  }
-                  return {
-                    ...r,
-                    count: newUsers.length,
-                    hasReacted: false,
-                    users: newUsers,
-                  };
-                }
-                return r;
-              })
-              .filter(Boolean) as typeof reactions;
-
-            // Now add the new reaction
-            const existingIdx = reactions.findIndex((r) => r.emoji === emoji);
-
-            if (existingIdx >= 0) {
-              const existing = reactions[existingIdx];
-              if (!existing.hasReacted) {
-                reactions[existingIdx] = {
-                  ...existing,
-                  count: existing.count + 1,
-                  hasReacted: true,
-                  users: [
-                    ...existing.users,
-                    {
-                      id: currentUserId || '',
-                      username: user?.username || null,
-                      display_name: user?.display_name,
-                      avatar_url: user?.avatar_url,
-                      status: 'online',
-                    },
-                  ],
-                };
-              }
-            } else {
-              reactions.push({
-                emoji,
-                count: 1,
-                hasReacted: true,
-                users: [
-                  {
-                    id: currentUserId || '',
-                    username: user?.username || null,
-                    display_name: user?.display_name,
-                    avatar_url: user?.avatar_url,
-                    status: 'online',
-                  },
-                ],
-              });
-            }
-            return { ...m, reactions };
-          })
-        );
-      } catch (error: unknown) {
-        // 409 means user already has this exact reaction - silently ignore
-        if (error?.response?.status !== 409) {
-          logger.warn('Error adding reaction:', error?.message || error);
-        }
-      }
-    },
-    [user]
-  );
-
-  // Handle removing a reaction from a message
-  const handleRemoveReaction = useCallback(
-    async (messageId: string, emoji: string) => {
-      try {
-        await api.delete(`/api/v1/messages/${messageId}/reactions/${encodeURIComponent(emoji)}`);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-        // Optimistic update - remove reaction locally
-        setMessages((prev) =>
-          prev.map((m) => {
-            if (m.id !== messageId) return m;
-            const reactions = [...(m.reactions || [])];
-            const existingIdx = reactions.findIndex((r) => r.emoji === emoji);
-
-            if (existingIdx >= 0) {
-              const existing = reactions[existingIdx];
-              const newUsers = existing.users.filter((u) => u.id !== user?.id);
-              if (newUsers.length === 0) {
-                reactions.splice(existingIdx, 1);
-              } else {
-                reactions[existingIdx] = {
-                  ...existing,
-                  count: newUsers.length,
-                  hasReacted: false,
-                  users: newUsers,
-                };
-              }
-            }
-            return { ...m, reactions };
-          })
-        );
-      } catch (error) {
-        logger.error('Error removing reaction:', error);
-        Alert.alert('Error', 'Failed to remove reaction');
-      }
-    },
-    [user?.id]
-  );
-
-  // Handle quick reaction from message actions menu
+  // Quick reaction wrapper (uses hook's handleQuickReaction)
   const handleQuickReaction = useCallback(
     (emoji: string) => {
       if (selectedMessage) {
-        if (hasReacted(selectedMessage, emoji)) {
-          handleRemoveReaction(selectedMessage.id, emoji);
-        } else {
-          handleAddReaction(selectedMessage.id, emoji);
-        }
-        closeMessageActions();
+        handleQuickReactionBase(
+          selectedMessage,
+          emoji,
+          hasReacted(selectedMessage, emoji),
+          closeMessageActions
+        );
       }
     },
-    [selectedMessage, handleAddReaction, handleRemoveReaction, closeMessageActions, hasReacted]
-  );
-
-  // Handle reaction tap on message bubble
-  const handleReactionTap = useCallback(
-    (messageId: string, emoji: string, hasReacted: boolean) => {
-      if (hasReacted) {
-        handleRemoveReaction(messageId, emoji);
-      } else {
-        handleAddReaction(messageId, emoji);
-      }
-    },
-    [handleAddReaction, handleRemoveReaction]
+    [selectedMessage, hasReacted, closeMessageActions, handleQuickReactionBase]
   );
 
   // Open full reaction picker (wraps hook's openReactionPicker)
@@ -1277,111 +1107,19 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
   }, [selectedMessage, closeMessageActions, openReactionPickerBase]);
 
-  // Handle pin/unpin message
-  const handleTogglePin = useCallback(async () => {
-    if (!selectedMessage) return;
-
-    const channelTopic = `conversation:${conversationId}`;
-    const channel = socketManager.getChannel(channelTopic);
-    if (!channel) {
-      Alert.alert('Error', 'Not connected to conversation');
-      closeMessageActions();
-      return;
+  // Pin/unpin message wrapper (uses hook's handleTogglePin)
+  const handleTogglePin = useCallback(() => {
+    if (selectedMessage) {
+      handleTogglePinBase(selectedMessage);
     }
+  }, [selectedMessage, handleTogglePinBase]);
 
-    const isPinned = selectedMessage.is_pinned;
-    const event = isPinned ? 'unpin_message' : 'pin_message';
-
-    channel
-      .push(event, { message_id: selectedMessage.id })
-      .receive('ok', (response: Record<string, unknown>) => {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        // Update local state with proper pin timestamp from server
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === selectedMessage.id
-              ? {
-                  ...m,
-                  is_pinned: !isPinned,
-                  pinned_at: !isPinned
-                    ? response?.pinned_at || new Date().toISOString()
-                    : undefined,
-                  pinned_by_id: !isPinned ? response?.pinned_by_id || user?.id : undefined,
-                }
-              : m
-          )
-        );
-      })
-      .receive('error', (err: unknown) => {
-        // Extract reason from various error formats
-        const reason = typeof err === 'string' ? err : err?.reason || err?.error || '';
-        logger.warn('Pin error:', reason);
-
-        let errorMsg = `Failed to ${isPinned ? 'unpin' : 'pin'} message`;
-
-        if (reason === 'pin_limit_reached' || reason.includes('limit')) {
-          errorMsg = 'You can only pin up to 3 messages. Unpin a message first.';
-        } else if (reason === 'already_pinned') {
-          errorMsg = 'This message is already pinned.';
-        } else if (reason === 'unauthorized' || reason === 'not_authorized') {
-          errorMsg = 'You do not have permission to pin messages.';
-        } else if (reason === 'not_found') {
-          errorMsg = 'Message not found.';
-        }
-
-        Alert.alert('Pin Error', errorMsg);
-      });
-
-    closeMessageActions();
-  }, [selectedMessage, conversationId, closeMessageActions]);
-
-  // Handle unsend/delete message (for everyone)
-  const handleUnsend = useCallback(async () => {
-    if (!selectedMessage) return;
-
-    const isOwnMessage = String(user?.id) === String(selectedMessage.sender_id);
-    if (!isOwnMessage) {
-      Alert.alert('Error', 'You can only unsend your own messages');
-      closeMessageActions();
-      return;
+  // Unsend message wrapper (uses hook's handleUnsend)
+  const handleUnsend = useCallback(() => {
+    if (selectedMessage) {
+      handleUnsendBase(selectedMessage);
     }
-
-    Alert.alert(
-      'Unsend Message',
-      'This message will be deleted for everyone in this conversation. This cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Unsend',
-          style: 'destructive',
-          onPress: () => {
-            const channelTopic = `conversation:${conversationId}`;
-            const channel = socketManager.getChannel(channelTopic);
-            if (!channel) {
-              Alert.alert('Error', 'Not connected to conversation');
-              return;
-            }
-
-            channel
-              .push('delete_message', { message_id: selectedMessage.id })
-              .receive('ok', () => {
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                // Track deleted message ID to prevent re-adding
-                deletedMessageIdsRef.current.add(selectedMessage.id);
-                // Remove from local state
-                setMessages((prev) => prev.filter((m) => m.id !== selectedMessage.id));
-              })
-              .receive('error', (err: unknown) => {
-                logger.error('Failed to unsend message:', err);
-                Alert.alert('Error', 'Failed to unsend message');
-              });
-          },
-        },
-      ]
-    );
-
-    closeMessageActions();
-  }, [selectedMessage, user?.id, conversationId, closeMessageActions]);
+  }, [selectedMessage, handleUnsendBase]);
 
   // Send all pending attachments
   const sendPendingAttachments = async () => {
