@@ -9,7 +9,6 @@ import {
   RefreshControl,
   Alert,
   Animated,
-  Easing,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
@@ -17,8 +16,6 @@ import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useE2EE } from '../../lib/crypto/E2EEContext';
-import api from '../../lib/api';
-import { normalizeMessage } from '../../lib/normalizers';
 import { MessagesStackParamList, Message, ConversationParticipant } from '../../types';
 import { TelegramAttachmentPicker } from '../../components';
 import { createLogger } from '../../lib/logger';
@@ -49,6 +46,7 @@ import {
   useConversationHeader,
   usePresence,
   useConversationData,
+  useTextMessageSending,
 } from './ConversationScreen/hooks';
 import {
   formatSimpleTime,
@@ -94,7 +92,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
     deletedMessageIdsRef,
   });
 
-  const [inputText, setInputText] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
 
@@ -230,7 +227,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const _contentHeightRef = useRef(0);
 
   // Animation refs (only those not provided by hooks)
-  const sendButtonAnim = useRef(new Animated.Value(1)).current;
   const _inputFocusAnim = useRef(new Animated.Value(0)).current;
 
   const flatListRef = useRef<FlatList>(null);
@@ -291,6 +287,27 @@ export default function ConversationScreen({ navigation, route }: Props) {
     setIsSending,
     setIsVoiceMode,
     setMessages,
+    onScrollToBottom: scrollToBottom,
+  });
+
+  // Text message sending hook
+  const {
+    inputText,
+    setInputText,
+    sendButtonAnim: _sendButtonAnim,
+    sendMessage,
+  } = useTextMessageSending({
+    conversationId,
+    isSending,
+    setIsSending,
+    isE2EEInitialized,
+    otherParticipantId,
+    encryptMessage,
+    replyingTo,
+    setReplyingTo,
+    stopTypingIndicator,
+    setMessages,
+    setNewMessageIds,
     onScrollToBottom: scrollToBottom,
   });
 
@@ -516,119 +533,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
     user?.id,
     setOtherParticipantLastSeen,
   ]);
-
-  // Animated send button press effect
-  const animateSendButton = () => {
-    Animated.sequence([
-      Animated.timing(sendButtonAnim, {
-        toValue: 0.85,
-        duration: 100,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.quad),
-      }),
-      Animated.spring(sendButtonAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 200,
-        friction: 10,
-      }),
-    ]).start();
-  };
-
-  const sendMessage = async () => {
-    const content = inputText.trim();
-    if (!content || isSending) return;
-
-    // Trigger send button animation
-    animateSendButton();
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-    setIsSending(true);
-    setInputText('');
-    const currentReplyTo = replyingTo;
-    setReplyingTo(null); // Clear reply after capturing
-
-    // Stop typing indicator when sending
-    stopTypingIndicator();
-
-    try {
-      const clientMessageId = Crypto.randomUUID();
-      let messagePayload: Record<string, unknown> = {
-        content,
-        client_message_id: clientMessageId,
-      };
-      if (currentReplyTo) {
-        messagePayload.reply_to_id = currentReplyTo.id;
-      }
-
-      // E2EE: Encrypt message for direct conversations if E2EE is initialized
-      const plaintextForLocal = content;
-      if (isE2EEInitialized && otherParticipantId) {
-        try {
-          const encryptedMsg = await encryptMessage(otherParticipantId, content);
-          messagePayload = {
-            content: encryptedMsg.ciphertext,
-            is_encrypted: true,
-            ephemeral_public_key: encryptedMsg.ephemeralPublicKey,
-            nonce: encryptedMsg.nonce,
-            recipient_identity_key_id: encryptedMsg.recipientIdentityKeyId,
-            one_time_prekey_id: encryptedMsg.oneTimePreKeyId,
-            client_message_id: clientMessageId,
-          };
-          if (currentReplyTo) {
-            messagePayload.reply_to_id = currentReplyTo.id;
-          }
-          logger.log('Sent E2EE encrypted message');
-        } catch (encryptError) {
-          logger.error('E2EE encryption failed, falling back to plaintext:', encryptError);
-          // Fall through to plaintext
-        }
-      }
-
-      const response = await api.post(
-        `/api/v1/conversations/${conversationId}/messages`,
-        messagePayload
-      );
-      const rawMessage = response.data.data || response.data.message || response.data;
-      const normalized = normalizeMessage(rawMessage);
-
-      // For encrypted messages, store plaintext locally (we know what we sent)
-      if (messagePayload.is_encrypted) {
-        normalized.content = plaintextForLocal;
-      }
-
-      // Mark as new message for entrance animation
-      setNewMessageIds((prev) => new Set(prev).add(normalized.id));
-
-      // Add with deduplication - socket may also deliver this message
-      // Prepend for inverted list (newest first)
-      setMessages((prev) => {
-        const exists = prev.some((m) => m.id === normalized.id);
-        if (exists) return prev;
-        return [normalized, ...prev];
-      });
-
-      // Scroll to the new message (offset 0 for inverted list)
-      setTimeout(() => {
-        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-      }, 100);
-
-      // Clear new message flag after animation completes
-      setTimeout(() => {
-        setNewMessageIds((prev) => {
-          const next = new Set(prev);
-          next.delete(normalized.id);
-          return next;
-        });
-      }, 500);
-    } catch (error) {
-      logger.error('Error sending message:', error);
-      setInputText(content);
-      if (currentReplyTo) setReplyingTo(currentReplyTo); // Restore reply on error
-    } finally {
-      setIsSending(false);
-    }
-  };
 
   // Handle reply to message (wraps hook's setReplyingTo with focus)
   const handleReply = useCallback(() => {
