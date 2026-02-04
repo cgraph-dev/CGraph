@@ -27,12 +27,12 @@ type Props = {
 export default function LoginScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const { login } = useAuth();
-  
+
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isFocused, setIsFocused] = useState<'identifier' | 'password' | null>(null);
-  
+
   // Animation values for staggered entrance
   const fadeAnims = useRef([
     new Animated.Value(0),
@@ -42,7 +42,7 @@ export default function LoginScreen({ navigation }: Props) {
     new Animated.Value(0),
     new Animated.Value(0),
   ]).current;
-  
+
   const translateYAnims = useRef([
     new Animated.Value(15),
     new Animated.Value(15),
@@ -51,10 +51,10 @@ export default function LoginScreen({ navigation }: Props) {
     new Animated.Value(15),
     new Animated.Value(15),
   ]).current;
-  
+
   const buttonScale = useRef(new Animated.Value(1)).current;
   const glowOpacity = useRef(new Animated.Value(0.3)).current;
-  
+
   useEffect(() => {
     // Staggered entrance animations
     const animations = fadeAnims.map((anim, index) => {
@@ -73,9 +73,9 @@ export default function LoginScreen({ navigation }: Props) {
         }),
       ]);
     });
-    
+
     Animated.stagger(100, animations).start();
-    
+
     // Subtle pulsing glow effect
     Animated.loop(
       Animated.sequence([
@@ -92,14 +92,14 @@ export default function LoginScreen({ navigation }: Props) {
       ])
     ).start();
   }, []);
-  
+
   const handlePressIn = () => {
     Animated.spring(buttonScale, {
       toValue: 0.98,
       useNativeDriver: true,
     }).start();
   };
-  
+
   const handlePressOut = () => {
     Animated.spring(buttonScale, {
       toValue: 1,
@@ -108,29 +108,35 @@ export default function LoginScreen({ navigation }: Props) {
       useNativeDriver: true,
     }).start();
   };
-  
+
   const handleLogin = async () => {
     if (!identifier.trim() || !password.trim()) {
       Alert.alert('Error', 'Please enter email/username and password');
       return;
     }
-    
+
     setIsLoading(true);
     try {
       await login(identifier, password);
     } catch (error: unknown) {
       // Backend returns errors in multiple formats:
       // - {error: "message"} for simple errors
-      // - {error: {message: "..."}} for complex errors  
+      // - {error: {message: "..."}} for complex errors
       // - {error: "...", message: "...", details: {...}} for validation
       // - Network errors have no response
-      const err = error as { 
-        response?: { data?: { error?: string | { message?: string }; message?: string; details?: Record<string, string[]> } };
+      const err = error as {
+        response?: {
+          data?: {
+            error?: string | { message?: string };
+            message?: string;
+            details?: Record<string, string[]>;
+          };
+        };
         message?: string;
       };
-      
+
       let errorMessage = 'Invalid credentials';
-      
+
       if (err.response?.data) {
         const data = err.response.data;
         // Check for validation details first (most specific)
@@ -153,26 +159,27 @@ export default function LoginScreen({ navigation }: Props) {
         // Network connectivity issue
         errorMessage = 'Unable to connect to server. Please check your internet connection.';
       }
-      
+
       // Log for debugging in development
       if (__DEV__) {
-        console.log('Login error:', JSON.stringify(err.response?.data || err.message, null, 2));
+        if (__DEV__)
+          console.log('Login error:', JSON.stringify(err.response?.data || err.message, null, 2));
       }
-      
+
       Alert.alert('Login Failed', errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <View style={[styles.container, { backgroundColor: '#000' }]}>
       {/* Matrix Background Effect */}
       <MatrixAuthBackground theme="matrix-green" />
-      
+
       {/* Dark overlay with subtle green gradient */}
       <Animated.View style={[styles.overlay, { opacity: glowOpacity }]} />
-      
+
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -180,22 +187,20 @@ export default function LoginScreen({ navigation }: Props) {
         >
           <View style={styles.content}>
             {/* Header */}
-            <Animated.View style={[
-              styles.header,
-              {
-                opacity: fadeAnims[0],
-                transform: [{ translateY: translateYAnims[0] }],
-              }
-            ]}>
+            <Animated.View
+              style={[
+                styles.header,
+                {
+                  opacity: fadeAnims[0],
+                  transform: [{ translateY: translateYAnims[0] }],
+                },
+              ]}
+            >
               <Text style={styles.logo}>CGraph</Text>
-              <Text style={styles.subtitle}>
-                Welcome back
-              </Text>
-              <Text style={styles.subtitleSecondary}>
-                Sign in to your account to continue
-              </Text>
+              <Text style={styles.subtitle}>Welcome back</Text>
+              <Text style={styles.subtitleSecondary}>Sign in to your account to continue</Text>
             </Animated.View>
-            
+
             {/* Form Container with matrix-card styling */}
             <LinearGradient
               colors={['rgba(17, 24, 39, 0.95)', 'rgba(5, 46, 22, 0.15)']}
@@ -204,18 +209,21 @@ export default function LoginScreen({ navigation }: Props) {
               style={styles.formContainer}
             >
               <View style={styles.form}>
-                <Animated.View style={[
-                  styles.inputGroup,
-                  {
-                    opacity: fadeAnims[1],
-                    transform: [{ translateY: translateYAnims[1] }],
-                  }
-                ]}>
+                <Animated.View
+                  style={[
+                    styles.inputGroup,
+                    {
+                      opacity: fadeAnims[1],
+                      transform: [{ translateY: translateYAnims[1] }],
+                    },
+                  ]}
+                >
                   <Text style={styles.label}>Email or Username</Text>
                   <LinearGradient
-                    colors={isFocused === 'identifier' 
-                      ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
-                      : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
+                    colors={
+                      isFocused === 'identifier'
+                        ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
+                        : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
                     }
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
@@ -237,26 +245,26 @@ export default function LoginScreen({ navigation }: Props) {
                     />
                   </LinearGradient>
                 </Animated.View>
-                
-                <Animated.View style={[
-                  styles.inputGroup,
-                  {
-                    opacity: fadeAnims[2],
-                    transform: [{ translateY: translateYAnims[2] }],
-                  }
-                ]}>
+
+                <Animated.View
+                  style={[
+                    styles.inputGroup,
+                    {
+                      opacity: fadeAnims[2],
+                      transform: [{ translateY: translateYAnims[2] }],
+                    },
+                  ]}
+                >
                   <Text style={styles.label}>Password</Text>
                   <LinearGradient
-                    colors={isFocused === 'password'
-                      ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
-                      : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
+                    colors={
+                      isFocused === 'password'
+                        ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
+                        : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
                     }
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    style={[
-                      styles.inputGradient,
-                      isFocused === 'password' && styles.inputFocused,
-                    ]}
+                    style={[styles.inputGradient, isFocused === 'password' && styles.inputFocused]}
                   >
                     <TextInput
                       style={styles.input}
@@ -270,32 +278,29 @@ export default function LoginScreen({ navigation }: Props) {
                     />
                   </LinearGradient>
                 </Animated.View>
-                
-                <Animated.View style={[
-                  styles.forgotContainer,
-                  {
-                    opacity: fadeAnims[3],
-                    transform: [{ translateY: translateYAnims[3] }],
-                  }
-                ]}>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('ForgotPassword')}
-                  >
-                    <Text style={styles.forgotPassword}>
-                      Forgot password?
-                    </Text>
+
+                <Animated.View
+                  style={[
+                    styles.forgotContainer,
+                    {
+                      opacity: fadeAnims[3],
+                      transform: [{ translateY: translateYAnims[3] }],
+                    },
+                  ]}
+                >
+                  <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+                    <Text style={styles.forgotPassword}>Forgot password?</Text>
                   </TouchableOpacity>
                 </Animated.View>
-                
-                <Animated.View style={[
-                  {
-                    opacity: fadeAnims[4],
-                    transform: [
-                      { translateY: translateYAnims[4] },
-                      { scale: buttonScale },
-                    ],
-                  }
-                ]}>
+
+                <Animated.View
+                  style={[
+                    {
+                      opacity: fadeAnims[4],
+                      transform: [{ translateY: translateYAnims[4] }, { scale: buttonScale }],
+                    },
+                  ]}
+                >
                   <TouchableOpacity
                     activeOpacity={0.9}
                     onPressIn={handlePressIn}
@@ -320,14 +325,18 @@ export default function LoginScreen({ navigation }: Props) {
                     </LinearGradient>
                   </TouchableOpacity>
                 </Animated.View>
-                
+
                 {/* OAuth Divider and Buttons */}
-                <Animated.View style={[{
-                  opacity: fadeAnims[5],
-                  transform: [{ translateY: translateYAnims[5] }],
-                }]}>
+                <Animated.View
+                  style={[
+                    {
+                      opacity: fadeAnims[5],
+                      transform: [{ translateY: translateYAnims[5] }],
+                    },
+                  ]}
+                >
                   <AuthDivider text="Or continue with" />
-                  
+
                   <OAuthButtonGroup
                     variant="icon"
                     providers={['google', 'apple', 'facebook', 'tiktok']}
@@ -343,22 +352,20 @@ export default function LoginScreen({ navigation }: Props) {
                 </Animated.View>
               </View>
             </LinearGradient>
-            
+
             {/* Footer */}
-            <Animated.View style={[
-              styles.footer,
-              {
-                opacity: fadeAnims[5],
-                transform: [{ translateY: translateYAnims[5] }],
-              }
-            ]}>
-              <Text style={styles.footerText}>
-                Don't have an account?{' '}
-              </Text>
+            <Animated.View
+              style={[
+                styles.footer,
+                {
+                  opacity: fadeAnims[5],
+                  transform: [{ translateY: translateYAnims[5] }],
+                },
+              ]}
+            >
+              <Text style={styles.footerText}>Don't have an account? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                <Text style={styles.footerLink}>
-                  Sign up
-                </Text>
+                <Text style={styles.footerLink}>Sign up</Text>
               </TouchableOpacity>
             </Animated.View>
           </View>

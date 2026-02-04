@@ -74,10 +74,7 @@ export interface UseCallReturn {
     options?: { video?: boolean; audio?: boolean }
   ) => Promise<string | null>;
   /** Answer incoming call */
-  answerCall: (
-    roomId: string,
-    options?: { video?: boolean; audio?: boolean }
-  ) => Promise<boolean>;
+  answerCall: (roomId: string, options?: { video?: boolean; audio?: boolean }) => Promise<boolean>;
   /** End current call */
   endCall: () => Promise<void>;
   /** Toggle mute state */
@@ -120,7 +117,7 @@ export function useCall(socket: Socket | null): UseCallReturn {
   // Initialize manager when socket is available
   useEffect(() => {
     if (!socket) return;
-    
+
     const rtcManager = getWebRTCManager(socket);
     setManager(rtcManager);
 
@@ -171,7 +168,7 @@ export function useCall(socket: Socket | null): UseCallReturn {
       ) {
         // Optionally end call when app goes to background
         // For now, just log - user might want to continue call
-        console.log('[useCall] App went to background during call');
+        if (__DEV__) console.log('[useCall] App went to background during call');
       }
       appStateRef.current = nextAppState;
     });
@@ -295,14 +292,18 @@ export function useIncomingCallListener(
     channel
       .join()
       .receive('ok', () => {
-        console.log('[useIncomingCallListener] Joined call lobby');
+        if (__DEV__) console.log('[useIncomingCallListener] Joined call lobby');
       })
       .receive('error', (resp) => {
         console.error('[useIncomingCallListener] Failed to join:', resp);
       });
 
     channel.on('incoming_call', (payload: unknown) => {
-      const { caller_id, caller_name, room_id } = payload as { caller_id: string; caller_name: string; room_id: string };
+      const { caller_id, caller_name, room_id } = payload as {
+        caller_id: string;
+        caller_name: string;
+        room_id: string;
+      };
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       onIncomingCall(caller_id, caller_name, room_id);
     });

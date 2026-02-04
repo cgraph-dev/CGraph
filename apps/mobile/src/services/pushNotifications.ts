@@ -122,7 +122,7 @@ export async function getExpoPushToken(): Promise<string | null> {
       projectId,
     });
 
-    console.log('[Push] Got Expo push token:', token.substring(0, 30) + '...');
+    if (__DEV__) console.log('[Push] Got Expo push token:', token.substring(0, 30) + '...');
     return token;
   } catch (error) {
     console.error('[Push] Failed to get push token:', error);
@@ -148,7 +148,7 @@ export async function registerPushTokenWithBackend(token: string): Promise<PushT
     });
 
     if (response.status === 201 || response.status === 200) {
-      console.log('[Push] Token registered with backend successfully');
+      if (__DEV__) console.log('[Push] Token registered with backend successfully');
       return { success: true, token };
     }
 
@@ -169,7 +169,7 @@ export async function registerPushTokenWithBackend(token: string): Promise<PushT
 export async function unregisterPushToken(token: string): Promise<boolean> {
   try {
     await api.delete(`/api/v1/push-tokens/${encodeURIComponent(token)}`);
-    console.log('[Push] Token unregistered from backend');
+    if (__DEV__) console.log('[Push] Token unregistered from backend');
     return true;
   } catch (error) {
     console.error('[Push] Failed to unregister token:', error);

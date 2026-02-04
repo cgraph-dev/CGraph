@@ -18,17 +18,17 @@ const getApiUrl = (): string => {
   // Development mode - allow localhost and LAN connections
   if (__DEV__) {
     if (configuredUrl) {
-      console.log('[API] Using configured URL:', configuredUrl);
+      if (__DEV__) console.log('[API] Using configured URL:', configuredUrl);
       return configuredUrl;
     }
 
     // Android emulator uses 10.0.2.2 to reach host machine's localhost
     // iOS simulator can use localhost directly
     if (Platform.OS === 'android') {
-      console.log('[API] Android detected, using 10.0.2.2:4000');
+      if (__DEV__) console.log('[API] Android detected, using 10.0.2.2:4000');
       return 'http://10.0.2.2:4000';
     }
-    console.log('[API] iOS detected, using localhost:4000');
+    if (__DEV__) console.log('[API] iOS detected, using localhost:4000');
     return 'http://localhost:4000';
   }
 
@@ -47,8 +47,8 @@ const getApiUrl = (): string => {
 const API_URL = getApiUrl();
 
 if (__DEV__) {
-  console.log('[API] Base URL configured:', API_URL);
-  console.log('[API] Platform:', Platform.OS);
+  if (__DEV__) console.log('[API] Base URL configured:', API_URL);
+  if (__DEV__) console.log('[API] Platform:', Platform.OS);
 }
 
 const api = createHttpClient({

@@ -1000,7 +1000,7 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
 
   const handleContributorPress = (contributor: TopContributor) => {
     // Navigate to user profile
-    console.log('Navigate to user:', contributor.user?.username);
+    if (__DEV__) console.log('Navigate to user:', contributor.user?.username);
   };
 
   const currentData: LeaderboardItem[] = activeTab === 'forums' ? forums : contributors;

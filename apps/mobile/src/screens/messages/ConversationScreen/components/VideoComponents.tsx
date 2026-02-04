@@ -38,7 +38,7 @@ export const InlineVideoThumbnail = memo(function InlineVideoThumbnail({
 
   useEffect(() => {
     if (__DEV__) {
-      console.log('[Video] Loading thumbnail for:', videoUrl);
+      if (__DEV__) console.log('[Video] Loading thumbnail for:', videoUrl);
     }
     const errorSub = player.addListener('statusChange', (status) => {
       if (status.error) {
@@ -100,7 +100,7 @@ export const VideoPlayerComponent = memo(function VideoPlayerComponent({
 
   useEffect(() => {
     if (__DEV__) {
-      console.log('[Video] Playing video:', videoUrl);
+      if (__DEV__) console.log('[Video] Playing video:', videoUrl);
     }
 
     const playSub = player.addListener('playingChange', (event) => {
@@ -251,7 +251,7 @@ export const AttachmentVideoPreview = memo(function AttachmentVideoPreview({
 
   useEffect(() => {
     if (__DEV__) {
-      console.log('[Video] Attachment preview for:', uri);
+      if (__DEV__) console.log('[Video] Attachment preview for:', uri);
     }
     const errorSub = player.addListener('statusChange', (status) => {
       if (status.error) {

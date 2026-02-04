@@ -30,7 +30,7 @@ type Props = {
 export default function RegisterScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const { register } = useAuth();
-  
+
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -38,17 +38,13 @@ export default function RegisterScreen({ navigation }: Props) {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
-  
+
   // Animation values
-  const fadeAnims = useRef(
-    Array.from({ length: 8 }, () => new Animated.Value(0))
-  ).current;
-  const translateYAnims = useRef(
-    Array.from({ length: 8 }, () => new Animated.Value(15))
-  ).current;
+  const fadeAnims = useRef(Array.from({ length: 8 }, () => new Animated.Value(0))).current;
+  const translateYAnims = useRef(Array.from({ length: 8 }, () => new Animated.Value(15))).current;
   const buttonScale = useRef(new Animated.Value(1)).current;
   const glowOpacity = useRef(new Animated.Value(0.3)).current;
-  
+
   useEffect(() => {
     const animations = fadeAnims.map((anim, index) => {
       return Animated.parallel([
@@ -66,9 +62,9 @@ export default function RegisterScreen({ navigation }: Props) {
         }),
       ]);
     });
-    
+
     Animated.stagger(80, animations).start();
-    
+
     Animated.loop(
       Animated.sequence([
         Animated.timing(glowOpacity, {
@@ -84,14 +80,14 @@ export default function RegisterScreen({ navigation }: Props) {
       ])
     ).start();
   }, []);
-  
+
   const handlePressIn = () => {
     Animated.spring(buttonScale, {
       toValue: 0.98,
       useNativeDriver: true,
     }).start();
   };
-  
+
   const handlePressOut = () => {
     Animated.spring(buttonScale, {
       toValue: 1,
@@ -100,42 +96,39 @@ export default function RegisterScreen({ navigation }: Props) {
       useNativeDriver: true,
     }).start();
   };
-  
+
   const handleRegister = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert('Error', 'Please fill in email and password');
       return;
     }
-    
+
     if (password !== confirmPassword) {
       Alert.alert('Error', 'Passwords do not match');
       return;
     }
-    
+
     if (password.length < 8) {
       Alert.alert('Error', 'Password must be at least 8 characters');
       return;
     }
-    
+
     // Validate password complexity (matching backend requirements)
     const hasLowercase = /[a-z]/.test(password);
     const hasUppercase = /[A-Z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
     const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    
+
     if (!hasLowercase || !hasUppercase || !hasNumber || !hasSpecial) {
       const missing: string[] = [];
       if (!hasLowercase) missing.push('lowercase letter');
       if (!hasUppercase) missing.push('uppercase letter');
       if (!hasNumber) missing.push('number');
       if (!hasSpecial) missing.push('special character (!@#$%^&*)');
-      Alert.alert(
-        'Password Requirements',
-        `Password must contain: ${missing.join(', ')}`
-      );
+      Alert.alert('Password Requirements', `Password must contain: ${missing.join(', ')}`);
       return;
     }
-    
+
     // Validate username if provided
     if (username.trim() && username.trim().length < 3) {
       Alert.alert('Error', 'Username must be at least 3 characters');
@@ -146,7 +139,7 @@ export default function RegisterScreen({ navigation }: Props) {
       Alert.alert('Error', 'Please agree to the Terms of Service and Privacy Policy');
       return;
     }
-    
+
     setIsLoading(true);
     try {
       await register(email, username.trim() || null, password);
@@ -156,13 +149,19 @@ export default function RegisterScreen({ navigation }: Props) {
       // - {error: {message: "..."}} for complex errors
       // - {error: "...", message: "...", details: {...}} for validation
       // - Network errors have no response
-      const err = error as { 
-        response?: { data?: { error?: string | { message?: string }; message?: string; details?: Record<string, string[]> } };
+      const err = error as {
+        response?: {
+          data?: {
+            error?: string | { message?: string };
+            message?: string;
+            details?: Record<string, string[]>;
+          };
+        };
         message?: string;
       };
-      
+
       let errorMessage = 'Could not create account';
-      
+
       if (err.response?.data) {
         const data = err.response.data;
         // Check for validation details first (most specific)
@@ -192,285 +191,326 @@ export default function RegisterScreen({ navigation }: Props) {
         // Network connectivity issue
         errorMessage = 'Unable to connect to server. Please check your internet connection.';
       }
-      
+
       // Log for debugging in development
       if (__DEV__) {
-        console.log('Registration error:', JSON.stringify(err.response?.data || err.message, null, 2));
+        if (__DEV__)
+          console.log(
+            'Registration error:',
+            JSON.stringify(err.response?.data || err.message, null, 2)
+          );
       }
-      
+
       Alert.alert('Registration Failed', errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <View style={[styles.container, { backgroundColor: '#000' }]}>
       <MatrixAuthBackground />
       <Animated.View style={[styles.overlay, { opacity: glowOpacity }]} />
-      
-      <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.content}>
-            {/* Header */}
-            <Animated.View style={[
-              styles.header,
-              {
-                opacity: fadeAnims[0],
-                transform: [{ translateY: translateYAnims[0] }],
-              }
-            ]}>
-              <Text style={styles.logo}>CGraph</Text>
-              <Text style={styles.subtitle}>Create your account</Text>
-              <Text style={styles.subtitleSecondary}>Join the next generation of communication</Text>
-            </Animated.View>
-            
-            {/* Form Container with matrix-card styling */}
-            <LinearGradient
-              colors={['rgba(17, 24, 39, 0.95)', 'rgba(5, 46, 22, 0.15)']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.formContainer}
-            >
-              <View style={styles.form}>
-                <Animated.View style={[
-                  styles.inputGroup,
-                  { opacity: fadeAnims[1], transform: [{ translateY: translateYAnims[1] }] }
-                ]}>
-                  <Text style={styles.label}>Email</Text>
-                  <LinearGradient
-                    colors={focusedField === 'email'
-                      ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
-                      : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
-                    }
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={[styles.inputGradient, focusedField === 'email' && styles.inputFocused]}
-                  >
-                    <TextInput
-                      style={styles.input}
-                      placeholder="you@example.com"
-                      placeholderTextColor="#6b7280"
-                      value={email}
-                      onChangeText={setEmail}
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      onFocus={() => setFocusedField('email')}
-                      onBlur={() => setFocusedField(null)}
-                    />
-                  </LinearGradient>
-                </Animated.View>
-                
-                <Animated.View style={[
-                  styles.inputGroup,
-                  { opacity: fadeAnims[2], transform: [{ translateY: translateYAnims[2] }] }
-                ]}>
-                  <View style={styles.labelRow}>
-                    <Text style={styles.label}>Username</Text>
-                    <Text style={styles.labelHint}>(Optional)</Text>
-                  </View>
-                  <LinearGradient
-                    colors={focusedField === 'username'
-                      ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
-                      : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
-                    }
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={[styles.inputGradient, focusedField === 'username' && styles.inputFocused]}
-                  >
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Choose a username"
-                      placeholderTextColor="#6b7280"
-                      value={username}
-                      onChangeText={(text) => setUsername(text.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                      autoCapitalize="none"
-                      autoCorrect={false}
-                      maxLength={30}
-                      onFocus={() => setFocusedField('username')}
-                      onBlur={() => setFocusedField(null)}
-                    />
-                  </LinearGradient>
-                  <Text style={styles.inputHint}>
-                    You can set this later. Can be changed every 14 days.
-                  </Text>
-                </Animated.View>
-                
-                <Animated.View style={[
-                  styles.inputGroup,
-                  { opacity: fadeAnims[3], transform: [{ translateY: translateYAnims[3] }] }
-                ]}>
-                  <Text style={styles.label}>Password</Text>
-                  <LinearGradient
-                    colors={focusedField === 'password'
-                      ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
-                      : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
-                    }
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={[styles.inputGradient, focusedField === 'password' && styles.inputFocused]}
-                  >
-                    <TextInput
-                      style={styles.input}
-                      placeholder="••••••••"
-                      placeholderTextColor="#6b7280"
-                      value={password}
-                      onChangeText={setPassword}
-                      secureTextEntry
-                      onFocus={() => setFocusedField('password')}
-                      onBlur={() => setFocusedField(null)}
-                    />
-                  </LinearGradient>
-                  <Text style={styles.inputHint}>
-                    Min 8 characters with uppercase, lowercase, number, and special character
-                  </Text>
-                </Animated.View>
-                
-                <Animated.View style={[
-                  styles.inputGroup,
-                  { opacity: fadeAnims[4], transform: [{ translateY: translateYAnims[4] }] }
-                ]}>
-                  <Text style={styles.label}>Confirm Password</Text>
-                  <LinearGradient
-                    colors={focusedField === 'confirm'
-                      ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
-                      : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
-                    }
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={[styles.inputGradient, focusedField === 'confirm' && styles.inputFocused]}
-                  >
-                    <TextInput
-                      style={styles.input}
-                      placeholder="••••••••"
-                      placeholderTextColor="#6b7280"
-                      value={confirmPassword}
-                      onChangeText={setConfirmPassword}
-                      secureTextEntry
-                      onFocus={() => setFocusedField('confirm')}
-                      onBlur={() => setFocusedField(null)}
-                    />
-                  </LinearGradient>
-                </Animated.View>
 
-              {/* Terms of Service Agreement */}
-              <Animated.View style={[
-                styles.termsRow,
-                { opacity: fadeAnims[5], transform: [{ translateY: translateYAnims[5] }] }
-              ]}>
-                <TouchableOpacity 
-                  style={styles.termsRowInner}
-                  onPress={() => setAgreedToTerms(!agreedToTerms)}
-                  activeOpacity={0.7}
-                >
-                  <View style={[
-                    styles.checkbox,
-                    { 
-                      borderColor: agreedToTerms ? '#10b981' : 'rgba(55, 65, 81, 0.8)',
-                      backgroundColor: agreedToTerms ? '#10b981' : 'transparent',
-                    }
-                  ]}>
-                    {agreedToTerms && (
-                      <Ionicons name="checkmark" size={14} color="#fff" />
-                    )}
-                  </View>
-                  <Text style={styles.termsText}>
-                    I agree to the{' '}
-                    <Text 
-                      style={styles.termsLink}
-                      onPress={() => Linking.openURL('https://cgraph.org/terms')}
-                    >
-                      Terms of Service
-                    </Text>
-                    {' '}and{' '}
-                    <Text 
-                      style={styles.termsLink}
-                      onPress={() => Linking.openURL('https://cgraph.org/privacy')}
-                    >
-                      Privacy Policy
-                    </Text>
-                  </Text>
-                </TouchableOpacity>
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardView}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.content}>
+              {/* Header */}
+              <Animated.View
+                style={[
+                  styles.header,
+                  {
+                    opacity: fadeAnims[0],
+                    transform: [{ translateY: translateYAnims[0] }],
+                  },
+                ]}
+              >
+                <Text style={styles.logo}>CGraph</Text>
+                <Text style={styles.subtitle}>Create your account</Text>
+                <Text style={styles.subtitleSecondary}>
+                  Join the next generation of communication
+                </Text>
               </Animated.View>
-              
-              <Animated.View style={[{
-                opacity: fadeAnims[6],
-                transform: [
-                  { translateY: translateYAnims[6] },
-                  { scale: buttonScale },
-                ],
-              }]}>
-                <TouchableOpacity
-                  activeOpacity={0.9}
-                  onPressIn={handlePressIn}
-                  onPressOut={handlePressOut}
-                  onPress={handleRegister}
-                  disabled={isLoading}
-                >
-                  <LinearGradient
-                    colors={['#059669', '#047857', '#065f46']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={[styles.button, isLoading && styles.buttonDisabled]}
+
+              {/* Form Container with matrix-card styling */}
+              <LinearGradient
+                colors={['rgba(17, 24, 39, 0.95)', 'rgba(5, 46, 22, 0.15)']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.formContainer}
+              >
+                <View style={styles.form}>
+                  <Animated.View
+                    style={[
+                      styles.inputGroup,
+                      { opacity: fadeAnims[1], transform: [{ translateY: translateYAnims[1] }] },
+                    ]}
                   >
-                    {isLoading ? (
-                      <View style={styles.loadingContainer}>
-                        <ActivityIndicator color="#fff" size="small" />
-                        <Text style={styles.loadingText}>Creating account...</Text>
+                    <Text style={styles.label}>Email</Text>
+                    <LinearGradient
+                      colors={
+                        focusedField === 'email'
+                          ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
+                          : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
+                      }
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={[
+                        styles.inputGradient,
+                        focusedField === 'email' && styles.inputFocused,
+                      ]}
+                    >
+                      <TextInput
+                        style={styles.input}
+                        placeholder="you@example.com"
+                        placeholderTextColor="#6b7280"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        onFocus={() => setFocusedField('email')}
+                        onBlur={() => setFocusedField(null)}
+                      />
+                    </LinearGradient>
+                  </Animated.View>
+
+                  <Animated.View
+                    style={[
+                      styles.inputGroup,
+                      { opacity: fadeAnims[2], transform: [{ translateY: translateYAnims[2] }] },
+                    ]}
+                  >
+                    <View style={styles.labelRow}>
+                      <Text style={styles.label}>Username</Text>
+                      <Text style={styles.labelHint}>(Optional)</Text>
+                    </View>
+                    <LinearGradient
+                      colors={
+                        focusedField === 'username'
+                          ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
+                          : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
+                      }
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={[
+                        styles.inputGradient,
+                        focusedField === 'username' && styles.inputFocused,
+                      ]}
+                    >
+                      <TextInput
+                        style={styles.input}
+                        placeholder="Choose a username"
+                        placeholderTextColor="#6b7280"
+                        value={username}
+                        onChangeText={(text) =>
+                          setUsername(text.toLowerCase().replace(/[^a-z0-9_]/g, ''))
+                        }
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                        maxLength={30}
+                        onFocus={() => setFocusedField('username')}
+                        onBlur={() => setFocusedField(null)}
+                      />
+                    </LinearGradient>
+                    <Text style={styles.inputHint}>
+                      You can set this later. Can be changed every 14 days.
+                    </Text>
+                  </Animated.View>
+
+                  <Animated.View
+                    style={[
+                      styles.inputGroup,
+                      { opacity: fadeAnims[3], transform: [{ translateY: translateYAnims[3] }] },
+                    ]}
+                  >
+                    <Text style={styles.label}>Password</Text>
+                    <LinearGradient
+                      colors={
+                        focusedField === 'password'
+                          ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
+                          : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
+                      }
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={[
+                        styles.inputGradient,
+                        focusedField === 'password' && styles.inputFocused,
+                      ]}
+                    >
+                      <TextInput
+                        style={styles.input}
+                        placeholder="••••••••"
+                        placeholderTextColor="#6b7280"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                        onFocus={() => setFocusedField('password')}
+                        onBlur={() => setFocusedField(null)}
+                      />
+                    </LinearGradient>
+                    <Text style={styles.inputHint}>
+                      Min 8 characters with uppercase, lowercase, number, and special character
+                    </Text>
+                  </Animated.View>
+
+                  <Animated.View
+                    style={[
+                      styles.inputGroup,
+                      { opacity: fadeAnims[4], transform: [{ translateY: translateYAnims[4] }] },
+                    ]}
+                  >
+                    <Text style={styles.label}>Confirm Password</Text>
+                    <LinearGradient
+                      colors={
+                        focusedField === 'confirm'
+                          ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
+                          : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
+                      }
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={[
+                        styles.inputGradient,
+                        focusedField === 'confirm' && styles.inputFocused,
+                      ]}
+                    >
+                      <TextInput
+                        style={styles.input}
+                        placeholder="••••••••"
+                        placeholderTextColor="#6b7280"
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        secureTextEntry
+                        onFocus={() => setFocusedField('confirm')}
+                        onBlur={() => setFocusedField(null)}
+                      />
+                    </LinearGradient>
+                  </Animated.View>
+
+                  {/* Terms of Service Agreement */}
+                  <Animated.View
+                    style={[
+                      styles.termsRow,
+                      { opacity: fadeAnims[5], transform: [{ translateY: translateYAnims[5] }] },
+                    ]}
+                  >
+                    <TouchableOpacity
+                      style={styles.termsRowInner}
+                      onPress={() => setAgreedToTerms(!agreedToTerms)}
+                      activeOpacity={0.7}
+                    >
+                      <View
+                        style={[
+                          styles.checkbox,
+                          {
+                            borderColor: agreedToTerms ? '#10b981' : 'rgba(55, 65, 81, 0.8)',
+                            backgroundColor: agreedToTerms ? '#10b981' : 'transparent',
+                          },
+                        ]}
+                      >
+                        {agreedToTerms && <Ionicons name="checkmark" size={14} color="#fff" />}
                       </View>
-                    ) : (
-                      <Text style={styles.buttonText}>Create Account</Text>
-                    )}
-                  </LinearGradient>
+                      <Text style={styles.termsText}>
+                        I agree to the{' '}
+                        <Text
+                          style={styles.termsLink}
+                          onPress={() => Linking.openURL('https://cgraph.org/terms')}
+                        >
+                          Terms of Service
+                        </Text>{' '}
+                        and{' '}
+                        <Text
+                          style={styles.termsLink}
+                          onPress={() => Linking.openURL('https://cgraph.org/privacy')}
+                        >
+                          Privacy Policy
+                        </Text>
+                      </Text>
+                    </TouchableOpacity>
+                  </Animated.View>
+
+                  <Animated.View
+                    style={[
+                      {
+                        opacity: fadeAnims[6],
+                        transform: [{ translateY: translateYAnims[6] }, { scale: buttonScale }],
+                      },
+                    ]}
+                  >
+                    <TouchableOpacity
+                      activeOpacity={0.9}
+                      onPressIn={handlePressIn}
+                      onPressOut={handlePressOut}
+                      onPress={handleRegister}
+                      disabled={isLoading}
+                    >
+                      <LinearGradient
+                        colors={['#059669', '#047857', '#065f46']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={[styles.button, isLoading && styles.buttonDisabled]}
+                      >
+                        {isLoading ? (
+                          <View style={styles.loadingContainer}>
+                            <ActivityIndicator color="#fff" size="small" />
+                            <Text style={styles.loadingText}>Creating account...</Text>
+                          </View>
+                        ) : (
+                          <Text style={styles.buttonText}>Create Account</Text>
+                        )}
+                      </LinearGradient>
+                    </TouchableOpacity>
+                  </Animated.View>
+
+                  {/* OAuth Divider and Buttons */}
+                  <Animated.View
+                    style={[
+                      {
+                        opacity: fadeAnims[7],
+                        transform: [{ translateY: translateYAnims[7] }],
+                      },
+                    ]}
+                  >
+                    <AuthDivider text="Or continue with" />
+
+                    <OAuthButtonGroup
+                      variant="icon"
+                      providers={['google', 'apple', 'facebook', 'tiktok']}
+                      onSuccess={() => {
+                        // Auth context will handle navigation
+                      }}
+                      onError={(error) => {
+                        if (!error.message.includes('cancelled')) {
+                          console.error('OAuth error:', error);
+                        }
+                      }}
+                    />
+                  </Animated.View>
+                </View>
+              </LinearGradient>
+
+              {/* Footer */}
+              <Animated.View
+                style={[
+                  styles.footer,
+                  { opacity: fadeAnims[7], transform: [{ translateY: translateYAnims[7] }] },
+                ]}
+              >
+                <Text style={styles.footerText}>Already have an account? </Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                  <Text style={styles.footerLink}>Sign in</Text>
                 </TouchableOpacity>
               </Animated.View>
-              
-              {/* OAuth Divider and Buttons */}
-              <Animated.View style={[{
-                opacity: fadeAnims[7],
-                transform: [{ translateY: translateYAnims[7] }],
-              }]}>
-                <AuthDivider text="Or continue with" />
-                
-                <OAuthButtonGroup
-                  variant="icon"
-                  providers={['google', 'apple', 'facebook', 'tiktok']}
-                  onSuccess={() => {
-                    // Auth context will handle navigation
-                  }}
-                  onError={(error) => {
-                    if (!error.message.includes('cancelled')) {
-                      console.error('OAuth error:', error);
-                    }
-                  }}
-                />
-              </Animated.View>
-              </View>
-            </LinearGradient>
-            
-            {/* Footer */}
-            <Animated.View style={[
-              styles.footer,
-              { opacity: fadeAnims[7], transform: [{ translateY: translateYAnims[7] }] }
-            ]}>
-              <Text style={styles.footerText}>
-                Already have an account?{' '}
-              </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.footerLink}>Sign in</Text>
-              </TouchableOpacity>
-            </Animated.View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </View>
   );

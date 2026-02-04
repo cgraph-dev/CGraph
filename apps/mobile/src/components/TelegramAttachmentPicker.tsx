@@ -122,7 +122,9 @@ const TelegramAttachmentPicker = memo(
               .then((albumsList) => {
                 setAlbums(albumsList);
               })
-              .catch((e) => console.log('Could not load albums:', e));
+              .catch((e) => {
+                if (__DEV__) console.log('Could not load albums:', e);
+              });
           }
 
           const mediaOptions: MediaLibrary.AssetsOptions = {
@@ -140,7 +142,7 @@ const TelegramAttachmentPicker = memo(
 
           // Check if we got any assets - if not, we might be in limited mode
           if (media.assets.length === 0) {
-            console.log('No media assets found, enabling ImagePicker fallback');
+            if (__DEV__) console.log('No media assets found, enabling ImagePicker fallback');
             setUseImagePickerFallback(true);
             setAssets([]);
             setIsLoading(false);

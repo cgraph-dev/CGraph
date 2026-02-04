@@ -118,7 +118,7 @@ export function usePushNotifications(): UsePushNotificationsResult {
 
       if (result.success) {
         setIsRegistered(true);
-        console.log('[Push Hook] Registration successful');
+        if (__DEV__) console.log('[Push Hook] Registration successful');
       } else {
         setError(result.error || 'Registration failed');
         // Only log once per session, not on every re-render
@@ -146,13 +146,14 @@ export function usePushNotifications(): UsePushNotificationsResult {
   useEffect(() => {
     // Listener for notifications received while app is foregrounded
     notificationListener.current = pushService.addNotificationReceivedListener((notification) => {
-      console.log('[Push Hook] Notification received:', notification.request.content.title);
+      if (__DEV__)
+        console.log('[Push Hook] Notification received:', notification.request.content.title);
       // Could trigger a toast or badge update here
     });
 
     // Listener for user tapping on a notification
     responseListener.current = pushService.addNotificationResponseReceivedListener((response) => {
-      console.log('[Push Hook] Notification tapped');
+      if (__DEV__) console.log('[Push Hook] Notification tapped');
       const data = parseNotificationData(response);
       handleNotificationNavigation(data);
     });
@@ -160,7 +161,7 @@ export function usePushNotifications(): UsePushNotificationsResult {
     // Check if app was opened from a notification
     pushService.getLastNotificationResponse().then((response) => {
       if (response) {
-        console.log('[Push Hook] App opened from notification');
+        if (__DEV__) console.log('[Push Hook] App opened from notification');
         const data = parseNotificationData(response);
         handleNotificationNavigation(data);
       }

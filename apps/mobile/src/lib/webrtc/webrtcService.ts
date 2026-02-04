@@ -540,7 +540,7 @@ export class WebRTCManager {
 
     // Handle connection state changes
     pc.onconnectionstatechange = () => {
-      console.log(`[WebRTC] Connection state for ${userId}: ${pc.connectionState}`);
+      if (__DEV__) console.log(`[WebRTC] Connection state for ${userId}: ${pc.connectionState}`);
       if (pc.connectionState === 'connected') {
         this.state.status = 'connected';
         this.eventHandlers.onCallConnected?.();

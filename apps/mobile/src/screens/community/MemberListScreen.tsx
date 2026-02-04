@@ -335,7 +335,7 @@ export default function MemberListScreen() {
   // Navigate to member profile
   const handleMemberPress = (member: Member) => {
     // Navigate to profile screen
-    console.log('Navigate to profile:', member.id);
+    if (__DEV__) console.log('Navigate to profile:', member.id);
   };
 
   // Toggle sort

@@ -181,7 +181,7 @@ export async function handleDeepLink(
     const path = getDeepLinkPath(url);
     const params = parseDeepLinkParams(url);
 
-    console.log('[DeepLink] Handling:', { url, path, params });
+    if (__DEV__) console.log('[DeepLink] Handling:', { url, path, params });
 
     // Handle special cases that need custom logic
     if (path.startsWith('invite/')) {
