@@ -60,6 +60,7 @@ import {
   AttachmentVideoPreview,
 } from './ConversationScreen/components';
 import { styles, SCREEN_WIDTH, SCREEN_HEIGHT } from './ConversationScreen/styles';
+import { useMediaViewer } from './ConversationScreen/hooks';
 
 const logger = createLogger('ConversationScreen');
 
@@ -303,17 +304,25 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [otherUser, setOtherUser] = useState<UserBasic | null>(null);
 
-  // Image viewer state
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [imageGallery, setImageGallery] = useState<string[]>([]);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [showImageViewer, setShowImageViewer] = useState(false);
-  const imageGalleryRef = useRef<FlatList>(null);
-
-  // Video player state
-  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
-  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
-  const [selectedVideoDuration, setSelectedVideoDuration] = useState<number>(0);
+  // Media viewer hook (images, videos, files)
+  const {
+    selectedImage,
+    imageGallery,
+    currentImageIndex,
+    setCurrentImageIndex,
+    showImageViewer,
+    imageGalleryRef,
+    imageViewerAnim,
+    imageScaleAnim,
+    handleImagePress,
+    closeImageViewer,
+    showVideoPlayer,
+    selectedVideoUrl,
+    selectedVideoDuration,
+    handleVideoPress,
+    closeVideoPlayer,
+    handleFilePress,
+  } = useMediaViewer();
 
   // Message action menu state
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
@@ -356,8 +365,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
   // Animation refs
   const attachMenuAnim = useRef(new Animated.Value(0)).current;
   const waveAnim = useRef(new Animated.Value(0)).current;
-  const imageViewerAnim = useRef(new Animated.Value(0)).current;
-  const imageScaleAnim = useRef(new Animated.Value(0.8)).current;
   const messageActionsAnim = useRef(new Animated.Value(0)).current;
   const backdropAnim = useRef(new Animated.Value(0)).current;
   const menuScaleAnim = useRef(new Animated.Value(0.9)).current;
@@ -1330,105 +1337,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
       openAttachMenu();
     }
   }, [showAttachMenu, closeAttachMenu, openAttachMenu]);
-
-  // Handle image press - open fullscreen viewer with animation
-  // Can open a single image or a gallery of images with swipe support
-  const handleImagePress = useCallback(
-    (imageUrl: string, allImages?: string[], startIndex?: number) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-      // Set up gallery if multiple images provided
-      if (allImages && allImages.length > 1) {
-        setImageGallery(allImages);
-        setCurrentImageIndex(startIndex ?? 0);
-        setSelectedImage(allImages[startIndex ?? 0]);
-      } else {
-        setImageGallery([imageUrl]);
-        setCurrentImageIndex(0);
-        setSelectedImage(imageUrl);
-      }
-
-      setShowImageViewer(true);
-
-      // Animate in
-      Animated.parallel([
-        Animated.timing(imageViewerAnim, {
-          toValue: 1,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        Animated.spring(imageScaleAnim, {
-          toValue: 1,
-          useNativeDriver: true,
-          tension: 80,
-          friction: 8,
-        }),
-      ]).start(() => {
-        // Scroll to the correct image after modal opens
-        if (allImages && allImages.length > 1 && startIndex && startIndex > 0) {
-          setTimeout(() => {
-            imageGalleryRef.current?.scrollToIndex({ index: startIndex, animated: false });
-          }, 50);
-        }
-      });
-    },
-    [imageViewerAnim, imageScaleAnim]
-  );
-
-  // Close image viewer with animation
-  const closeImageViewer = useCallback(() => {
-    Animated.parallel([
-      Animated.timing(imageViewerAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(imageScaleAnim, {
-        toValue: 0.8,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setShowImageViewer(false);
-      setSelectedImage(null);
-      setImageGallery([]);
-      setCurrentImageIndex(0);
-    });
-  }, [imageViewerAnim, imageScaleAnim]);
-
-  // Handle video press - open fullscreen video player
-  const handleVideoPress = useCallback((videoUrl: string, duration?: number) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setSelectedVideoUrl(videoUrl);
-    setSelectedVideoDuration(duration || 0);
-    setShowVideoPlayer(true);
-  }, []);
-
-  // Close video player
-  const closeVideoPlayer = useCallback(() => {
-    setShowVideoPlayer(false);
-    setSelectedVideoUrl(null);
-    setSelectedVideoDuration(0);
-  }, []);
-
-  // Handle file press - open/download file
-  const handleFilePress = useCallback(async (fileUrl: string, filename?: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    try {
-      const canOpen = await Linking.canOpenURL(fileUrl);
-      if (canOpen) {
-        await Linking.openURL(fileUrl);
-      } else {
-        Alert.alert('Open File', `Would you like to open "${filename || 'this file'}"?`, [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Open', onPress: () => Linking.openURL(fileUrl) },
-        ]);
-      }
-    } catch (error) {
-      logger.error('Error opening file:', error);
-      Alert.alert('Error', 'Could not open file. Please try again.');
-    }
-  }, []);
 
   // Get appropriate icon for file type
   const getFileIcon = (filename?: string): keyof typeof Ionicons.glyphMap => {
