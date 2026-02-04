@@ -29,3 +29,4 @@ export type { UseAttachmentUploadReturn } from './useAttachmentUpload';
 export { useVoiceAndWave } from './useVoiceAndWave';
 export type { UseVoiceAndWaveReturn } from './useVoiceAndWave';
 export { useTextMessageSending } from './useTextMessageSending';
+export { usePinnedMessages } from './usePinnedMessages';

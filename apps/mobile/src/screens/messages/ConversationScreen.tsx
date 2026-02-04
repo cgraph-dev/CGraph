@@ -47,6 +47,7 @@ import {
   usePresence,
   useConversationData,
   useTextMessageSending,
+  usePinnedMessages,
 } from './ConversationScreen/hooks';
 import {
   formatSimpleTime,
@@ -403,66 +404,18 @@ export default function ConversationScreen({ navigation, route }: Props) {
     onReactionRemoved: handleSocketReactionRemoved,
   });
 
-  // Pinned messages - get all pinned, sorted by pin date (most recent first)
-  const pinnedMessages = useMemo(() => {
-    return messages
-      .filter((m) => m.is_pinned)
-      .sort((a, b) => {
-        const aDate = a.pinned_at ? new Date(a.pinned_at).getTime() : 0;
-        const bDate = b.pinned_at ? new Date(b.pinned_at).getTime() : 0;
-        return bDate - aDate;
-      });
-  }, [messages]);
-
-  // Current pinned message index for navigation
-  const [currentPinnedIndex, setCurrentPinnedIndex] = useState(0);
-
-  // Reset pinned index when pinned messages change (e.g., when unpinning)
-  useEffect(() => {
-    if (pinnedMessages.length === 0) {
-      setCurrentPinnedIndex(0);
-    } else if (currentPinnedIndex >= pinnedMessages.length) {
-      // If current index is out of bounds, reset to last valid index
-      setCurrentPinnedIndex(pinnedMessages.length - 1);
-    }
-  }, [pinnedMessages.length, currentPinnedIndex]);
-
-  // Get the current pinned message to display
-  const currentPinnedMessage =
-    pinnedMessages.length > 0
-      ? pinnedMessages[Math.min(currentPinnedIndex, pinnedMessages.length - 1)]
-      : null;
-
-  // Scroll to a specific message by ID
-  const scrollToMessage = useCallback(
-    (messageId: string) => {
-      const index = messages.findIndex((m) => m.id === messageId);
-      if (index !== -1 && flatListRef.current) {
-        flatListRef.current.scrollToIndex({
-          index,
-          animated: true,
-          viewPosition: 0.3, // Show message in upper third of screen
-        });
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-    },
-    [messages]
-  );
-
-  // Navigate to next/prev pinned message
-  const navigatePinnedMessages = useCallback(
-    (direction: 'next' | 'prev') => {
-      if (pinnedMessages.length <= 1) return;
-
-      if (direction === 'next') {
-        setCurrentPinnedIndex((prev) => (prev + 1) % pinnedMessages.length);
-      } else {
-        setCurrentPinnedIndex((prev) => (prev - 1 + pinnedMessages.length) % pinnedMessages.length);
-      }
-      Haptics.selectionAsync();
-    },
-    [pinnedMessages.length]
-  );
+  // Pinned messages hook - manages pinned message state and navigation
+  const {
+    pinnedMessages,
+    currentPinnedIndex,
+    currentPinnedMessage,
+    setCurrentPinnedIndex,
+    scrollToMessage,
+    navigatePinnedMessages,
+  } = usePinnedMessages({
+    messages,
+    flatListRef,
+  });
 
   // Wrap presence handleTextChange to also update local inputText
   const handleTextChange = useCallback(
