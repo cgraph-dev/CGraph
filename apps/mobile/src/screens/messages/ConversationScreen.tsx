@@ -58,6 +58,9 @@ import {
   EmptyConversation,
   MessageActionsMenu,
   ReactionPickerModal,
+  AttachmentPreviewModal,
+  ImageViewerModal,
+  VideoPlayerModal,
 } from './ConversationScreen/components';
 import { styles, SCREEN_WIDTH, SCREEN_HEIGHT } from './ConversationScreen/styles';
 import { useMediaViewer, EMOJI_CATEGORIES } from './ConversationScreen/hooks';
@@ -102,6 +105,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
   // Media viewer hook (images, videos, files)
   const {
     selectedImage,
+    setSelectedImage,
     imageGallery,
     currentImageIndex,
     setCurrentImageIndex,
@@ -2581,329 +2585,40 @@ export default function ConversationScreen({ navigation, route }: Props) {
       {renderReactionPickerModal()}
 
       {/* Attachment Preview Modal */}
-      <Modal
+      <AttachmentPreviewModal
         visible={showAttachmentPreview}
-        transparent
-        animationType="none"
-        onRequestClose={closeAttachmentPreview}
-        statusBarTranslucent
-      >
-        <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        >
-          <Animated.View
-            style={[
-              styles.attachmentPreviewContainer,
-              {
-                opacity: attachmentPreviewAnim,
-                backgroundColor: 'rgba(0,0,0,0.95)',
-              },
-            ]}
-          >
-            {/* Header */}
-            <View style={styles.attachmentPreviewHeader}>
-              <TouchableOpacity
-                onPress={closeAttachmentPreview}
-                style={styles.attachmentPreviewCloseBtn}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <Ionicons name="close" size={28} color="#fff" />
-              </TouchableOpacity>
-              <Text style={styles.attachmentPreviewTitle}>
-                {pendingAttachments.length} {pendingAttachments.length === 1 ? 'item' : 'items'}{' '}
-                selected
-              </Text>
-              <TouchableOpacity
-                onPress={addMoreAttachments}
-                style={styles.attachmentPreviewAddBtn}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <Ionicons name="add" size={28} color="#fff" />
-              </TouchableOpacity>
-            </View>
-
-            {/* Preview Area */}
-            <ScrollView
-              style={styles.attachmentPreviewScroll}
-              contentContainerStyle={styles.attachmentPreviewContent}
-              horizontal={pendingAttachments.length > 1}
-              pagingEnabled={pendingAttachments.length > 1}
-              showsHorizontalScrollIndicator={pendingAttachments.length > 1}
-            >
-              {pendingAttachments.map((attachment, index) => (
-                <Animated.View
-                  key={index}
-                  style={[
-                    styles.attachmentPreviewItem,
-                    pendingAttachments.length > 1 && { width: SCREEN_WIDTH - 40 },
-                    {
-                      transform: [
-                        {
-                          scale: attachmentPreviewAnim.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [0.8, 1],
-                          }),
-                        },
-                      ],
-                    },
-                  ]}
-                >
-                  {/* Remove button */}
-                  <TouchableOpacity
-                    style={styles.attachmentRemoveBtn}
-                    onPress={() => removeAttachment(index)}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  >
-                    <View style={styles.attachmentRemoveBtnInner}>
-                      <Ionicons name="close" size={18} color="#fff" />
-                    </View>
-                  </TouchableOpacity>
-
-                  {attachment.type === 'image' ? (
-                    <Image
-                      source={{ uri: attachment.uri }}
-                      style={styles.attachmentPreviewImage}
-                      resizeMode="contain"
-                    />
-                  ) : attachment.type === 'video' ? (
-                    <AttachmentVideoPreview uri={attachment.uri} duration={attachment.duration} />
-                  ) : (
-                    <View style={styles.attachmentPreviewFile}>
-                      <View
-                        style={[
-                          styles.attachmentPreviewFileIcon,
-                          { backgroundColor: colors.primary },
-                        ]}
-                      >
-                        <Ionicons
-                          name={
-                            attachment.mimeType?.includes('pdf')
-                              ? 'document-text'
-                              : attachment.mimeType?.includes('word')
-                                ? 'document'
-                                : attachment.mimeType?.includes('sheet') ||
-                                    attachment.mimeType?.includes('excel')
-                                  ? 'grid'
-                                  : 'document-attach'
-                          }
-                          size={48}
-                          color="#fff"
-                        />
-                      </View>
-                      <Text style={styles.attachmentPreviewFileName} numberOfLines={2}>
-                        {attachment.name}
-                      </Text>
-                      <Text style={styles.attachmentPreviewFileType}>
-                        {attachment.mimeType?.split('/').pop()?.toUpperCase() || 'FILE'}
-                      </Text>
-                    </View>
-                  )}
-
-                  {/* Index indicator for multiple attachments */}
-                  {pendingAttachments.length > 1 && (
-                    <View style={styles.attachmentIndexBadge}>
-                      <Text style={styles.attachmentIndexText}>
-                        {index + 1}/{pendingAttachments.length}
-                      </Text>
-                    </View>
-                  )}
-                </Animated.View>
-              ))}
-            </ScrollView>
-
-            {/* Bottom: Caption input + Send button */}
-            <View style={[styles.attachmentPreviewFooter, { backgroundColor: colors.surface }]}>
-              <View
-                style={[styles.attachmentCaptionContainer, { backgroundColor: colors.background }]}
-              >
-                <TextInput
-                  style={[styles.attachmentCaptionInput, { color: colors.text }]}
-                  placeholder="Add a caption..."
-                  placeholderTextColor={colors.textSecondary}
-                  value={attachmentCaption}
-                  onChangeText={setAttachmentCaption}
-                  multiline
-                  maxLength={500}
-                />
-              </View>
-              <TouchableOpacity
-                style={[styles.attachmentSendBtn, { backgroundColor: colors.primary }]}
-                onPress={sendPendingAttachments}
-                activeOpacity={0.8}
-              >
-                <Ionicons name="send" size={22} color="#fff" />
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
-        </KeyboardAvoidingView>
-      </Modal>
+        attachments={pendingAttachments}
+        caption={attachmentCaption}
+        animValue={attachmentPreviewAnim}
+        colors={colors}
+        onClose={closeAttachmentPreview}
+        onAddMore={addMoreAttachments}
+        onRemove={removeAttachment}
+        onCaptionChange={setAttachmentCaption}
+        onSend={sendPendingAttachments}
+      />
 
       {/* Full-screen Image Viewer Modal */}
-      <Modal
+      <ImageViewerModal
         visible={showImageViewer}
-        transparent
-        animationType="none"
-        onRequestClose={closeImageViewer}
-        statusBarTranslucent
-      >
-        <Animated.View style={[styles.imageViewerContainer, { opacity: imageViewerAnim }]}>
-          <TouchableOpacity
-            style={styles.imageViewerBackdrop}
-            activeOpacity={1}
-            onPress={closeImageViewer}
-          />
-          <Animated.View
-            style={[
-              styles.imageViewerContent,
-              {
-                transform: [{ scale: imageScaleAnim }],
-                opacity: imageViewerAnim,
-              },
-            ]}
-          >
-            {imageGallery.length > 1 ? (
-              /* Swipeable gallery for multiple images */
-              <FlatList
-                ref={imageGalleryRef}
-                data={imageGallery}
-                horizontal
-                pagingEnabled
-                showsHorizontalScrollIndicator={false}
-                initialScrollIndex={currentImageIndex}
-                getItemLayout={(_, index) => ({
-                  length: SCREEN_WIDTH,
-                  offset: SCREEN_WIDTH * index,
-                  index,
-                })}
-                onScroll={(e) => {
-                  // Update page number in real-time during scroll
-                  const newIndex = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
-                  if (
-                    newIndex !== currentImageIndex &&
-                    newIndex >= 0 &&
-                    newIndex < imageGallery.length
-                  ) {
-                    setCurrentImageIndex(newIndex);
-                    setSelectedImage(imageGallery[newIndex]);
-                  }
-                }}
-                scrollEventThrottle={16}
-                keyExtractor={(item, index) => `gallery-${index}-${item}`}
-                renderItem={({ item }) => (
-                  <View
-                    style={{
-                      width: SCREEN_WIDTH,
-                      height: SCREEN_HEIGHT,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Image
-                      source={{ uri: item }}
-                      style={styles.fullscreenImage}
-                      resizeMode="contain"
-                    />
-                  </View>
-                )}
-              />
-            ) : (
-              selectedImage && (
-                /* Single image view */
-                <Image
-                  source={{ uri: selectedImage }}
-                  style={styles.fullscreenImage}
-                  resizeMode="contain"
-                />
-              )
-            )}
-          </Animated.View>
-
-          {/* Image counter for gallery */}
-          {imageGallery.length > 1 && (
-            <View style={styles.imageCounterContainer}>
-              <Text style={styles.imageCounterText}>
-                {currentImageIndex + 1} / {imageGallery.length}
-              </Text>
-            </View>
-          )}
-
-          {/* Close button */}
-          <TouchableOpacity
-            style={styles.imageViewerCloseBtn}
-            onPress={closeImageViewer}
-            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-          >
-            <View style={styles.imageViewerCloseBtnInner}>
-              <Ionicons name="close" size={24} color="#fff" />
-            </View>
-          </TouchableOpacity>
-
-          {/* Action buttons */}
-          <Animated.View style={[styles.imageViewerActions, { opacity: imageViewerAnim }]}>
-            <TouchableOpacity
-              style={styles.imageViewerActionBtn}
-              onPress={() => {
-                if (selectedImage) {
-                  Linking.openURL(selectedImage);
-                }
-              }}
-            >
-              <Ionicons name="download-outline" size={22} color="#fff" />
-              <Text style={styles.imageViewerActionText}>Save</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.imageViewerActionBtn}
-              onPress={() => {
-                if (selectedImage) {
-                  // Share functionality could be added here
-                  Alert.alert('Share', 'Sharing will be available soon!');
-                }
-              }}
-            >
-              <Ionicons name="share-outline" size={22} color="#fff" />
-              <Text style={styles.imageViewerActionText}>Share</Text>
-            </TouchableOpacity>
-          </Animated.View>
-        </Animated.View>
-      </Modal>
+        selectedImage={selectedImage}
+        imageGallery={imageGallery}
+        currentIndex={currentImageIndex}
+        galleryRef={imageGalleryRef}
+        animValue={imageViewerAnim}
+        scaleAnim={imageScaleAnim}
+        onClose={closeImageViewer}
+        onIndexChange={setCurrentImageIndex}
+        onImageSelect={setSelectedImage}
+      />
 
       {/* Full-screen Video Player Modal */}
-      <Modal
+      <VideoPlayerModal
         visible={showVideoPlayer}
-        transparent
-        animationType="fade"
-        onRequestClose={closeVideoPlayer}
-        statusBarTranslucent
-      >
-        <View style={styles.videoPlayerContainer}>
-          <TouchableOpacity
-            style={styles.videoPlayerBackdrop}
-            activeOpacity={1}
-            onPress={closeVideoPlayer}
-          />
-          <View style={styles.videoPlayerContent}>
-            {selectedVideoUrl && (
-              <VideoPlayerComponent
-                videoUrl={selectedVideoUrl}
-                duration={selectedVideoDuration}
-                onClose={closeVideoPlayer}
-              />
-            )}
-          </View>
-
-          {/* Close button */}
-          <TouchableOpacity
-            style={styles.videoPlayerCloseBtn}
-            onPress={closeVideoPlayer}
-            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
-          >
-            <View style={styles.videoPlayerCloseBtnInner}>
-              <Ionicons name="close" size={24} color="#fff" />
-            </View>
-          </TouchableOpacity>
-        </View>
-      </Modal>
+        videoUrl={selectedVideoUrl}
+        duration={selectedVideoDuration}
+        onClose={closeVideoPlayer}
+      />
 
       {/* Enhanced Pinned Messages Bar with Animation */}
       {currentPinnedMessage && (

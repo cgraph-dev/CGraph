@@ -141,6 +141,7 @@ export function useMediaViewer() {
   return {
     // Image viewer
     selectedImage,
+    setSelectedImage,
     imageGallery,
     currentImageIndex,
     setCurrentImageIndex,

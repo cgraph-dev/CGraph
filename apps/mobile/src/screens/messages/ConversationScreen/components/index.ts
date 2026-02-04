@@ -16,3 +16,6 @@ export {
 export { EmptyConversation } from './EmptyConversation';
 export { MessageActionsMenu } from './MessageActionsMenu';
 export { ReactionPickerModal } from './ReactionPickerModal';
+export { AttachmentPreviewModal } from './AttachmentPreviewModal';
+export { ImageViewerModal } from './ImageViewerModal';
+export { VideoPlayerModal } from './VideoPlayerModal';
