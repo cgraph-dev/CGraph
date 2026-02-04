@@ -18,7 +18,7 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
   wait: number
 ): (...args: Parameters<T>) => void {
   let timeout: ReturnType<typeof setTimeout> | null = null;
-  
+
   return (...args: Parameters<T>) => {
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
@@ -33,7 +33,7 @@ export function throttle<T extends (...args: unknown[]) => unknown>(
   limit: number
 ): (...args: Parameters<T>) => void {
   let inThrottle = false;
-  
+
   return (...args: Parameters<T>) => {
     if (!inThrottle) {
       func(...args);
@@ -59,7 +59,7 @@ export async function retry<T>(
   baseDelay: number = 1000
 ): Promise<T> {
   let lastError: Error | undefined;
-  
+
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       return await fn();
@@ -70,7 +70,7 @@ export async function retry<T>(
       }
     }
   }
-  
+
   throw lastError;
 }
 
@@ -101,7 +101,7 @@ export function unique<T>(array: T[], keyFn?: (item: T) => unknown): T[] {
   if (!keyFn) {
     return [...new Set(array)];
   }
-  
+
   const seen = new Set();
   return array.filter((item) => {
     const key = keyFn(item);
@@ -114,10 +114,7 @@ export function unique<T>(array: T[], keyFn?: (item: T) => unknown): T[] {
 /**
  * Sort an array by multiple criteria
  */
-export function sortBy<T>(
-  array: T[],
-  ...criteria: ((a: T, b: T) => number)[]
-): T[] {
+export function sortBy<T>(array: T[], ...criteria: ((a: T, b: T) => number)[]): T[] {
   return [...array].sort((a, b) => {
     for (const criterion of criteria) {
       const result = criterion(a, b);
@@ -133,7 +130,7 @@ export function sortBy<T>(
 export function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== 'object') return obj;
   if (Array.isArray(obj)) return obj.map(deepClone) as unknown as T;
-  
+
   const cloned = {} as T;
   for (const key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -150,31 +147,25 @@ export function deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true;
   if (a === null || b === null) return false;
   if (typeof a !== typeof b) return false;
-  
+
   if (typeof a === 'object') {
     const aKeys = Object.keys(a as object);
     const bKeys = Object.keys(b as object);
-    
+
     if (aKeys.length !== bKeys.length) return false;
-    
+
     return aKeys.every((key) =>
-      deepEqual(
-        (a as Record<string, unknown>)[key],
-        (b as Record<string, unknown>)[key]
-      )
+      deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])
     );
   }
-  
+
   return false;
 }
 
 /**
  * Pick specific keys from an object
  */
-export function pick<T extends object, K extends keyof T>(
-  obj: T,
-  keys: K[]
-): Pick<T, K> {
+export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   return keys.reduce(
     (result, key) => {
       if (key in obj) {
@@ -189,10 +180,7 @@ export function pick<T extends object, K extends keyof T>(
 /**
  * Omit specific keys from an object
  */
-export function omit<T extends object, K extends keyof T>(
-  obj: T,
-  keys: K[]
-): Omit<T, K> {
+export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
   const result = { ...obj };
   keys.forEach((key) => delete result[key]);
   return result;
@@ -214,9 +202,13 @@ export function slugify(text: string): string {
  * Check if running in browser environment
  */
 export function isBrowser(): boolean {
-  return typeof globalThis !== 'undefined' && 
-    typeof (globalThis as any).window !== 'undefined' && 
-    typeof (globalThis as any).document !== 'undefined';
+  // Type-safe window/document checks for cross-environment compatibility
+  const g = globalThis as { window?: unknown; document?: unknown };
+  return (
+    typeof globalThis !== 'undefined' &&
+    typeof g.window !== 'undefined' &&
+    typeof g.document !== 'undefined'
+  );
 }
 
 /**

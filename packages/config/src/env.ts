@@ -82,10 +82,23 @@ function getEnvVar(key: string, defaultValue: string = ''): string {
   if (typeof process !== 'undefined' && process.env) {
     return process.env[key] || process.env[`VITE_${key}`] || defaultValue;
   }
-  // @ts-ignore - Vite specific
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
-    // @ts-ignore - Vite specific
-    return import.meta.env[key] || import.meta.env[`VITE_${key}`] || defaultValue;
+  // Vite-specific import.meta.env handling
+  const meta =
+    typeof globalThis !== 'undefined'
+      ? (globalThis as { import_meta?: { env?: Record<string, string> } }).import_meta
+      : undefined;
+  if (meta?.env) {
+    return meta.env[key] || meta.env[`VITE_${key}`] || defaultValue;
+  }
+  // Check for browser build-time injected import.meta
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const importMeta = import.meta as any as { env?: Record<string, string> };
+    if (importMeta.env) {
+      return importMeta.env[key] || importMeta.env[`VITE_${key}`] || defaultValue;
+    }
+  } catch {
+    // import.meta not available in this environment
   }
   return defaultValue;
 }

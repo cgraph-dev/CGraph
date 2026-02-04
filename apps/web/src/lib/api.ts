@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import { createHttpClient, extractApiError, withZod } from '@cgraph/utils';
 import { ZodSchema } from 'zod';
 import {
@@ -100,7 +101,10 @@ export const api = createHttpClient({
   },
 });
 
-export function parseWith<T>(promise: Promise<any>, schema: ZodSchema<T>): Promise<T> {
+export function parseWith<T>(
+  promise: Promise<AxiosResponse<unknown>>,
+  schema: ZodSchema<T>
+): Promise<T> {
   return withZod(promise, schema);
 }
 

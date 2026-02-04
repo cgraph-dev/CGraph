@@ -9,7 +9,7 @@
 
 import { useCallback, useEffect, useMemo } from 'react';
 import { useGroupStore } from '../store';
-import type { Group, Channel, Member, ChannelMessage } from '../store';
+import type { Channel, Member, ChannelMessage } from '../store';
 
 /**
  * Hook for group list management

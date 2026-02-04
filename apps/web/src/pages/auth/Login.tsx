@@ -75,19 +75,25 @@ export default function Login() {
       }
 
       // Request account access
-      const accounts = await window.ethereum.request({
+      const accounts = (await window.ethereum.request({
         method: 'eth_requestAccounts',
-      });
+      })) as string[];
       const walletAddress = accounts[0];
+      if (!walletAddress) {
+        throw new Error('No wallet address returned from MetaMask');
+      }
 
       // Step 1: Get challenge message with nonce from backend
       const challenge = await getWalletChallenge(walletAddress);
 
       // Step 2: Sign the challenge message with MetaMask
-      const signature = await window.ethereum.request({
+      const signature = (await window.ethereum.request({
         method: 'personal_sign',
         params: [challenge.message, walletAddress],
-      });
+      })) as string | undefined;
+      if (!signature) {
+        throw new Error('Signature not provided');
+      }
 
       // Step 3: Verify signature and login
       await loginWithWallet(walletAddress, signature);
@@ -375,7 +381,7 @@ export default function Login() {
 declare global {
   interface Window {
     ethereum?: {
-      request: (args: { method: string; params?: unknown[] }) => Promise<any>;
+      request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
       isMetaMask?: boolean;
     };
   }

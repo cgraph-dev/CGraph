@@ -851,7 +851,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
         params: { sort, page, per_page: 25 },
       });
 
-      const rawForums = ensureArray<any>(response.data, 'data');
+      const rawForums = ensureArray<Record<string, unknown>>(response.data, 'data');
       const forums = rawForums.map(mapForumFromApi);
       const meta = response.data.meta;
 
@@ -876,7 +876,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
       params: { limit, sort },
     });
 
-    const rawForums = ensureArray<any>(response.data, 'data');
+    const rawForums = ensureArray<Record<string, unknown>>(response.data, 'data');
     const forums = rawForums.map(mapForumFromApi);
     set({ topForums: forums });
   },

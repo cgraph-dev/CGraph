@@ -151,9 +151,12 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             <p style={styles.message}>
               We're sorry, but something unexpected happened. Please try again.
             </p>
-            
-            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-            {typeof (globalThis as any).process !== 'undefined' && (globalThis as any).process?.env?.NODE_ENV === 'development' && (
+
+            {/* Show error details in development mode only */}
+            {(() => {
+              const g = globalThis as { process?: { env?: { NODE_ENV?: string } } };
+              return typeof g.process !== 'undefined' && g.process?.env?.NODE_ENV === 'development';
+            })() && (
               <details style={styles.details}>
                 <summary style={styles.summary}>Error Details</summary>
                 <pre style={styles.stack}>
@@ -306,14 +309,16 @@ export const SuspenseErrorBoundary: React.FC<SuspenseErrorBoundaryProps> = ({
 
 const DefaultLoadingFallback: React.FC = () => (
   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-    <div style={{ 
-      width: '24px', 
-      height: '24px', 
-      border: '3px solid #e5e7eb',
-      borderTopColor: '#6366f1',
-      borderRadius: '50%',
-      animation: 'spin 1s linear infinite',
-    }} />
+    <div
+      style={{
+        width: '24px',
+        height: '24px',
+        border: '3px solid #e5e7eb',
+        borderTopColor: '#6366f1',
+        borderRadius: '50%',
+        animation: 'spin 1s linear infinite',
+      }}
+    />
     <style>{`
       @keyframes spin {
         to { transform: rotate(360deg); }

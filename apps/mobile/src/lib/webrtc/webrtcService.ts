@@ -14,20 +14,112 @@
 
 import { Channel, Socket } from 'phoenix';
 
-// Declare WebRTC types that come from react-native-webrtc
-// These will be available when the package is installed
-declare const RTCPeerConnection: any;
-declare const RTCSessionDescription: any;
-declare const RTCIceCandidate: any;
+// =============================================================================
+// WebRTC Type Definitions for React Native
+// These provide proper typing for react-native-webrtc package
+// =============================================================================
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyFunction = (...args: any[]) => any;
+/** Media stream track from react-native-webrtc */
+interface RTCMediaStreamTrack {
+  id: string;
+  kind: 'audio' | 'video';
+  enabled: boolean;
+  stop(): void;
+}
+
+/** RTCPeerConnection type for react-native-webrtc */
+interface RTCPeerConnectionType {
+  createOffer(): Promise<RTCSessionDescriptionInit>;
+  createAnswer(): Promise<RTCSessionDescriptionInit>;
+  setLocalDescription(desc: RTCSessionDescriptionInit): Promise<void>;
+  setRemoteDescription(desc: RTCSessionDescriptionInit): Promise<void>;
+  addIceCandidate(candidate: RTCIceCandidateInit): Promise<void>;
+  addTrack(track: RTCMediaStreamTrack, stream: RTCMediaStream): void;
+  close(): void;
+  connectionState: RTCPeerConnectionState;
+  onicecandidate: ((event: RTCIceCandidateEvent) => void) | null;
+  ontrack: ((event: RTCTrackEvent) => void) | null;
+  onconnectionstatechange: (() => void) | null;
+}
+
+/** RTCPeerConnection state values */
+type RTCPeerConnectionState =
+  | 'new'
+  | 'connecting'
+  | 'connected'
+  | 'disconnected'
+  | 'failed'
+  | 'closed';
+
+/** ICE Candidate event */
+interface RTCIceCandidateEvent {
+  candidate: RTCIceCandidateInit | null;
+}
+
+/** ICE Candidate initialization */
+interface RTCIceCandidateInit {
+  candidate?: string;
+  sdpMid?: string | null;
+  sdpMLineIndex?: number | null;
+  toJSON(): RTCIceCandidateInit;
+}
+
+/** Track event with remote streams */
+interface RTCTrackEvent {
+  streams: RTCMediaStream[];
+  track: RTCMediaStreamTrack;
+}
+
+/** Session description initialization */
+interface RTCSessionDescriptionInit {
+  type: RTCSessionDescriptionType;
+  sdp?: string;
+}
+
+type RTCSessionDescriptionType = 'offer' | 'answer' | 'pranswer' | 'rollback';
+
+// Declare WebRTC constructors from react-native-webrtc
+// These will be available when the package is installed
+declare const RTCPeerConnection: new (config: RTCConfiguration) => RTCPeerConnectionType;
+declare const RTCSessionDescription: new (
+  init: RTCSessionDescriptionInit
+) => RTCSessionDescriptionInit;
+declare const RTCIceCandidate: new (init: RTCIceCandidateInit) => RTCIceCandidateInit;
+
+/** RTCPeerConnection configuration */
+interface RTCConfiguration {
+  iceServers: RTCIceServer[];
+}
+
+interface RTCIceServer {
+  urls: string | string[];
+  username?: string;
+  credential?: string;
+}
+
+/** Navigator with mediaDevices for react-native-webrtc */
+interface NavigatorWithMedia extends Navigator {
+  mediaDevices: {
+    getUserMedia(constraints: MediaStreamConstraints): Promise<RTCMediaStream>;
+  };
+}
+
+interface MediaStreamConstraints {
+  audio?: boolean | MediaTrackConstraints;
+  video?: boolean | MediaTrackConstraints;
+}
+
+interface MediaTrackConstraints {
+  facingMode?: string;
+  width?: number;
+  height?: number;
+}
 
 // Extended MediaStream type for react-native-webrtc
 interface RTCMediaStream {
-  getTracks(): any[];
-  getAudioTracks(): any[];
-  getVideoTracks(): any[];
+  getTracks(): RTCMediaStreamTrack[];
+  getAudioTracks(): RTCMediaStreamTrack[];
+  getVideoTracks(): RTCMediaStreamTrack[];
   toURL(): string;
 }
 
@@ -88,8 +180,8 @@ export function isWebRTCAvailable(): boolean {
 export class WebRTCManager {
   private socket: Socket | null = null;
   private channel: Channel | null = null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private peerConnections: Map<string, any> = new Map();
+
+  private peerConnections: Map<string, RTCPeerConnectionType> = new Map();
   private localStream: RTCMediaStream | null = null;
   private eventHandlers: CallEventHandler = {};
 
@@ -141,14 +233,15 @@ export class WebRTCManager {
     options: { video?: boolean; audio?: boolean } = { video: true, audio: true }
   ): Promise<string | null> {
     if (!this.isSupported()) {
-      this.state.error = 'WebRTC is not available. Install react-native-webrtc for full functionality.';
+      this.state.error =
+        'WebRTC is not available. Install react-native-webrtc for full functionality.';
       this.eventHandlers.onError?.(this.state.error);
       return null;
     }
 
     try {
       // Get local media stream (requires react-native-webrtc)
-      this.localStream = await (navigator as any).mediaDevices.getUserMedia({
+      this.localStream = await (navigator as NavigatorWithMedia).mediaDevices.getUserMedia({
         video: options.video,
         audio: options.audio,
       });
@@ -197,7 +290,7 @@ export class WebRTCManager {
 
     try {
       // Get local media stream
-      this.localStream = await (navigator as any).mediaDevices.getUserMedia({
+      this.localStream = await (navigator as NavigatorWithMedia).mediaDevices.getUserMedia({
         video: options.video,
         audio: options.audio,
       });
@@ -211,7 +304,7 @@ export class WebRTCManager {
 
       // Notify server we're answering
       await this.pushToChannel('answer', { video: options.video });
-      
+
       this.state.roomId = roomId;
       this.state.status = 'connecting';
 
@@ -298,7 +391,8 @@ export class WebRTCManager {
     try {
       const channel = this.socket!.channel(`call:${roomId}`, {});
       await new Promise<void>((resolve, reject) => {
-        channel.join()
+        channel
+          .join()
           .receive('ok', () => {
             channel.push('reject', {});
             channel.leave();
@@ -317,7 +411,9 @@ export class WebRTCManager {
     return new Promise((resolve, reject) => {
       this.channel!.join()
         .receive('ok', () => resolve())
-        .receive('error', (resp: any) => reject(new Error(resp?.reason || 'Failed to join channel')));
+        .receive('error', (resp: { reason?: string }) =>
+          reject(new Error(resp?.reason || 'Failed to join channel'))
+        );
     });
   }
 
@@ -325,7 +421,9 @@ export class WebRTCManager {
     return new Promise((resolve, reject) => {
       this.channel!.push(event, payload)
         .receive('ok', resolve)
-        .receive('error', (resp: any) => reject(new Error(resp?.reason || 'Push failed')));
+        .receive('error', (resp: { reason?: string }) =>
+          reject(new Error(resp?.reason || 'Push failed'))
+        );
     });
   }
 
@@ -338,10 +436,10 @@ export class WebRTCManager {
       try {
         const pc = this.getOrCreatePeerConnection(from);
         await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
-        
+
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
-        
+
         await this.pushToChannel('answer_sdp', { to: from, sdp: answer.sdp });
       } catch (error) {
         console.error('[WebRTC] Error handling offer:', error);
@@ -363,7 +461,10 @@ export class WebRTCManager {
 
     // Handle ICE candidates
     this.channel.on('ice_candidate', async (payload: unknown) => {
-      const { from, candidate } = payload as { from: string; candidate: any };
+      const { from, candidate } = payload as {
+        from: string;
+        candidate: RTCIceCandidateInit | null;
+      };
       try {
         const pc = this.peerConnections.get(from);
         if (pc && candidate) {
@@ -406,8 +507,7 @@ export class WebRTCManager {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private getOrCreatePeerConnection(userId: string): any {
+  private getOrCreatePeerConnection(userId: string): RTCPeerConnectionType {
     if (this.peerConnections.has(userId)) {
       return this.peerConnections.get(userId)!;
     }
@@ -416,13 +516,13 @@ export class WebRTCManager {
 
     // Add local tracks
     if (this.localStream) {
-      this.localStream.getTracks().forEach((track: any) => {
+      this.localStream.getTracks().forEach((track: RTCMediaStreamTrack) => {
         pc.addTrack(track, this.localStream!);
       });
     }
 
     // Handle ICE candidates
-    pc.onicecandidate = (event: any) => {
+    pc.onicecandidate = (event: RTCIceCandidateEvent) => {
       if (event.candidate) {
         this.pushToChannel('ice_candidate', {
           to: userId,
@@ -432,7 +532,7 @@ export class WebRTCManager {
     };
 
     // Handle remote tracks
-    pc.ontrack = (event: any) => {
+    pc.ontrack = (event: RTCTrackEvent) => {
       const [stream] = event.streams;
       this.state.remoteStreams.set(userId, stream);
       this.eventHandlers.onRemoteStream?.(userId, stream);
@@ -456,7 +556,7 @@ export class WebRTCManager {
       const pc = this.getOrCreatePeerConnection(userId);
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      
+
       await this.pushToChannel('offer', {
         to: userId,
         sdp: offer.sdp,
