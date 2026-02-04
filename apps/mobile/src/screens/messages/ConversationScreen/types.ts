@@ -15,6 +15,7 @@ import type {
   ConversationParticipant,
   UserBasic,
 } from '../../../types';
+import type { ThemeColors } from '../../../contexts/ThemeContext';
 
 // =============================================================================
 // Navigation Types
@@ -105,25 +106,6 @@ export interface MessageInputProps {
 }
 
 // =============================================================================
-// Theme Types
-// =============================================================================
-
-export interface ThemeColors {
-  background: string;
-  surface: string;
-  text: string;
-  textSecondary: string;
-  primary: string;
-  primaryDark: string;
-  border: string;
-  error: string;
-  success: string;
-  warning: string;
-  messageBubbleOwn: string;
-  messageBubbleOther: string;
-}
-
-// =============================================================================
 // Message Types (extended)
 // =============================================================================
 
@@ -162,3 +144,4 @@ export interface PendingAttachment {
 // =============================================================================
 
 export type { Message, Conversation, ConversationParticipant, UserBasic, MessagesStackParamList };
+export type { ThemeColors };

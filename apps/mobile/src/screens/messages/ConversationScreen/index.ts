@@ -22,3 +22,6 @@ export * from './utils';
 
 // Components
 export * from './components';
+
+// Styles
+export { styles, SCREEN_WIDTH, SCREEN_HEIGHT } from './styles';
