@@ -26,3 +26,5 @@ export { useMessageReactions } from './useMessageReactions';
 export type { UseMessageReactionsReturn } from './useMessageReactions';
 export { useAttachmentUpload } from './useAttachmentUpload';
 export type { UseAttachmentUploadReturn } from './useAttachmentUpload';
+export { useVoiceAndWave } from './useVoiceAndWave';
+export type { UseVoiceAndWaveReturn } from './useVoiceAndWave';

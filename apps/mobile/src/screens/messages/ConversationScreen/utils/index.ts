@@ -285,3 +285,86 @@ export function shouldGroupMessages(current: Message, previous: Message): boolea
   // Group if within 5 minutes (300000 ms)
   return timeDiff < 300000;
 }
+
+// =============================================================================
+// Date/Time Formatting Utilities
+// =============================================================================
+
+/**
+ * Format a date string to simple local time (HH:MM format).
+ * Handles invalid dates gracefully. Use this for message timestamps.
+ *
+ * @param dateString - The date string to format
+ * @returns Formatted time string or empty string if invalid
+ */
+export function formatSimpleTime(dateString: string | undefined | null): string {
+  if (!dateString) return '';
+
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return '';
+    }
+    return date.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Format last seen timestamp for display.
+ * Returns human-readable relative time.
+ *
+ * @param lastSeenAt - The last seen timestamp
+ * @returns Formatted string like "just now", "5m ago", "yesterday", etc.
+ */
+export function formatLastSeen(lastSeenAt: string | null | undefined): string {
+  if (!lastSeenAt) return '';
+
+  const lastSeen = new Date(lastSeenAt);
+  if (isNaN(lastSeen.getTime())) return '';
+
+  const now = new Date();
+  const diffMs = now.getTime() - lastSeen.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays === 1) return 'yesterday';
+  if (diffDays < 7) return `${diffDays}d ago`;
+
+  return lastSeen.toLocaleDateString();
+}
+
+/**
+ * Get message status icon and color based on delivery state.
+ *
+ * @param status - Message status string
+ * @param colors - Theme colors object
+ * @returns Object with icon name and color
+ */
+export function getMessageStatusInfo(
+  status: string | undefined,
+  colors: { textTertiary: string }
+): { icon: string; color: string } {
+  switch (status) {
+    case 'sending':
+      return { icon: 'time-outline', color: colors.textTertiary };
+    case 'sent':
+      return { icon: 'checkmark-outline', color: colors.textTertiary };
+    case 'delivered':
+      return { icon: 'checkmark-done-outline', color: colors.textTertiary };
+    case 'read':
+      return { icon: 'checkmark-done-outline', color: '#3b82f6' };
+    case 'failed':
+      return { icon: 'alert-circle-outline', color: '#ef4444' };
+    default:
+      return { icon: 'checkmark-outline', color: colors.textTertiary };
+  }
+}

@@ -13,7 +13,6 @@ import {
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import * as FileSystem from 'expo-file-system/legacy';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -49,21 +48,19 @@ import {
   useMessageActions,
   useReactions,
   useAttachments,
-  useConversationSocket,
-  useConversationHeader,
-  useConversationData,
-  usePresence,
   usePinAndDelete,
   useMessageReactions,
   useAttachmentUpload,
-  EMOJI_CATEGORIES,
+  useVoiceAndWave,
 } from './ConversationScreen/hooks';
-import { getMimeType, processMessagesWithReactions } from './ConversationScreen/utils';
+import {
+  processMessagesWithReactions,
+  formatSimpleTime,
+  formatLastSeen,
+  getMessageStatusInfo,
+} from './ConversationScreen/utils';
 
 const logger = createLogger('ConversationScreen');
-
-// Fun waving emojis for empty conversation
-const WAVE_EMOJIS = ['👋', '✨', '💬', '🎉', '🌟'];
 
 type Props = {
   navigation: NativeStackNavigationProp<MessagesStackParamList, 'Conversation'>;
@@ -123,7 +120,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
     handleMessageLongPress,
     closeMessageActions,
     setReplyingTo,
-    handleCopyMessage,
+    handleCopyMessage: _handleCopyMessage,
     clearReply,
   } = useMessageActions();
 
@@ -150,13 +147,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
     setAttachmentCaption,
     openAttachmentPreview,
     closeAttachmentPreview,
-    openAttachMenu,
+    openAttachMenu: _openAttachMenu,
     closeAttachMenu,
     toggleAttachMenu,
     handleImagePicker,
-    handleCameraCapture,
-    handleDocumentPicker,
-    clearAttachments,
+    handleCameraCapture: _handleCameraCapture,
+    handleDocumentPicker: _handleDocumentPicker,
+    clearAttachments: _clearAttachments,
     removeAttachment,
   } = useAttachments();
 
@@ -205,13 +202,12 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const deletedMessageIdsRef = useRef<Set<string>>(new Set());
 
   // Track if we should scroll to bottom on next content size change
-  const shouldScrollToBottomRef = useRef(true);
-  const contentHeightRef = useRef(0);
+  const _shouldScrollToBottomRef = useRef(true);
+  const _contentHeightRef = useRef(0);
 
   // Animation refs (only those not provided by hooks)
-  const waveAnim = useRef(new Animated.Value(0)).current;
   const sendButtonAnim = useRef(new Animated.Value(1)).current;
-  const inputFocusAnim = useRef(new Animated.Value(0)).current;
+  const _inputFocusAnim = useRef(new Animated.Value(0)).current;
 
   const flatListRef = useRef<FlatList>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -226,7 +222,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
 
   // Attachment upload hook
   const {
-    uploadAndSendFile,
+    uploadAndSendFile: _uploadAndSendFile,
     sendPendingAttachments: sendPendingAttachmentsBase,
     addMoreAttachments,
   } = useAttachmentUpload({
@@ -243,6 +239,15 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const sendPendingAttachments = useCallback(async () => {
     await sendPendingAttachmentsBase(pendingAttachments, attachmentCaption);
   }, [sendPendingAttachmentsBase, pendingAttachments, attachmentCaption]);
+
+  // Voice message and wave greeting hook
+  const { waveAnim, handleVoiceComplete, handleSendWave } = useVoiceAndWave({
+    conversationId,
+    setIsSending,
+    setIsVoiceMode,
+    setMessages,
+    onScrollToBottom: scrollToBottom,
+  });
 
   // Pinned messages - get all pinned, sorted by pin date (most recent first)
   const pinnedMessages = useMemo(() => {
@@ -304,29 +309,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
     },
     [pinnedMessages.length]
   );
-
-  // Format last seen timestamp for display
-  const formatLastSeen = (lastSeenAt: string | null | undefined): string => {
-    if (!lastSeenAt) return '';
-
-    const lastSeen = new Date(lastSeenAt);
-    // Check if it's a valid date
-    if (isNaN(lastSeen.getTime())) return '';
-
-    const now = new Date();
-    const diffMs = now.getTime() - lastSeen.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return 'just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays === 1) return 'yesterday';
-    if (diffDays < 7) return `${diffDays}d ago`;
-
-    return lastSeen.toLocaleDateString();
-  };
 
   // Subscribe to presence changes (both conversation and global friend presence)
   useEffect(() => {
@@ -1024,72 +1006,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
   };
 
-  // Handle voice message completion - upload and send as a message
-  const handleVoiceComplete = async (voiceData: {
-    uri: string;
-    duration: number;
-    waveform: number[];
-  }) => {
-    setIsSending(true);
-    setIsVoiceMode(false);
-
-    try {
-      // Note: FileSystem.getInfoAsync is deprecated in Expo SDK 54+
-      // However, for file existence check, we can use try-catch on the formData
-      // If the file doesn't exist, the upload will fail anyway
-
-      // Create form data for upload
-      const formData = new FormData();
-      formData.append('audio', {
-        uri: voiceData.uri,
-        name: `voice_${Date.now()}.m4a`,
-        type: 'audio/m4a',
-      } as unknown);
-      formData.append('duration', String(Math.round(voiceData.duration)));
-      formData.append('waveform', JSON.stringify(voiceData.waveform));
-      formData.append('conversation_id', conversationId);
-
-      // Upload voice message
-      const response = await api.post('/api/v1/voice-messages', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      const rawMessage = response.data.data || response.data.message || response.data;
-
-      // Validate message has required fields before adding
-      if (!rawMessage || !rawMessage.id) {
-        logger.warn('Invalid message response:', rawMessage);
-        return;
-      }
-
-      const normalized = normalizeMessage(rawMessage);
-
-      // Add with deduplication - socket may also deliver this message
-      // Prepend for inverted list (newest first)
-      setMessages((prev) => {
-        const exists = prev.some((m) => m.id === normalized.id);
-        if (exists) return prev;
-        return [normalized, ...prev];
-      });
-
-      // Scroll to the new voice message (offset 0 for inverted list)
-      setTimeout(() => {
-        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-      }, 100);
-
-      // Clean up the temporary file
-      await FileSystem.deleteAsync(voiceData.uri, { idempotent: true });
-    } catch (error) {
-      logger.error('Error sending voice message:', error);
-      // Alert user of failure
-      Alert.alert('Error', 'Failed to send voice message. Please try again.');
-    } finally {
-      setIsSending(false);
-    }
-  };
-
   // Handle starting a call (audio or video)
   const handleStartCall = (type: 'audio' | 'video') => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -1151,86 +1067,22 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
   }, [selectedMessage, handleUnsendBase]);
 
-  // Send a wave greeting
-  const handleSendWave = async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const emoji = WAVE_EMOJIS[Math.floor(Math.random() * WAVE_EMOJIS.length)];
+  // Get message status icon and color - delegates to utility
+  const getMessageStatus = useCallback(
+    (message: Message, isOwn: boolean) => {
+      if (!isOwn) return null;
+      const status =
+        message.status || (message.read_at ? 'read' : message.delivered_at ? 'delivered' : 'sent');
+      return getMessageStatusInfo(status, colors);
+    },
+    [colors]
+  );
 
-    // Trigger wave animation
-    Animated.sequence([
-      Animated.timing(waveAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
-      Animated.timing(waveAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
-    ]).start();
-
-    // Send the wave message directly
-    try {
-      const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, {
-        content: emoji,
-        type: 'text',
-      });
-
-      const rawMessage = response.data.data || response.data.message || response.data;
-      if (rawMessage?.id) {
-        const normalized = normalizeMessage(rawMessage);
-        // Prepend for inverted list (newest first)
-        setMessages((prev) => {
-          const exists = prev.some((m) => m.id === normalized.id);
-          if (exists) return prev;
-          return [normalized, ...prev];
-        });
-        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-      }
-    } catch (error) {
-      logger.error('Error sending wave:', error);
-    }
-  };
-
-  // Get message status icon and color
-  const getMessageStatus = (message: Message, isOwn: boolean) => {
-    if (!isOwn) return null;
-
-    const status =
-      message.status || (message.read_at ? 'read' : message.delivered_at ? 'delivered' : 'sent');
-
-    switch (status) {
-      case 'sending':
-        return { icon: 'time-outline' as const, color: colors.textTertiary };
-      case 'sent':
-        return { icon: 'checkmark-outline' as const, color: colors.textTertiary };
-      case 'delivered':
-        return { icon: 'checkmark-done-outline' as const, color: colors.textTertiary };
-      case 'read':
-        return { icon: 'checkmark-done-outline' as const, color: '#3b82f6' };
-      case 'failed':
-        return { icon: 'alert-circle-outline' as const, color: '#ef4444' };
-      default:
-        return { icon: 'checkmark-outline' as const, color: colors.textTertiary };
-    }
-  };
-
-  /**
-   * Safely formats a date string to local time.
-   * Handles invalid dates gracefully to prevent RangeError.
-   */
-  const formatTime = (dateString: string | undefined | null): string => {
-    if (!dateString) return '';
-
-    try {
-      const date = new Date(dateString);
-      // Check if date is valid
-      if (isNaN(date.getTime())) {
-        logger.warn('Invalid date string:', dateString);
-        return '';
-      }
-      return date.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } catch (error) {
-      logger.error('Error formatting date:', error);
-      return '';
-    }
-  };
+  // Format time - delegates to utility
+  const formatTime = useCallback(
+    (dateString: string | undefined | null): string => formatSimpleTime(dateString),
+    []
+  );
 
   // Handle assets selected from TelegramAttachmentPicker
   // IMPORTANT: This must be defined BEFORE any early returns to comply with Rules of Hooks
