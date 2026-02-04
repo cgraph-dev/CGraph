@@ -89,7 +89,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const [otherParticipantLastSeen, setOtherParticipantLastSeen] = useState<string | null>(null);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
-  const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [otherUser, setOtherUser] = useState<UserBasic | null>(null);
 
   // Media viewer hook (images, videos, files)
@@ -113,36 +112,57 @@ export default function ConversationScreen({ navigation, route }: Props) {
     handleFilePress,
   } = useMediaViewer();
 
-  // Message action menu state
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
-  const [showMessageActions, setShowMessageActions] = useState(false);
-  const [replyingTo, setReplyingTo] = useState<Message | null>(null);
+  // Message action menu state (from useMessageActions hook)
+  const {
+    selectedMessage,
+    showMessageActions,
+    replyingTo,
+    backdropAnim,
+    menuScaleAnim,
+    messageActionsAnim,
+    actionItemAnims,
+    handleMessageLongPress,
+    closeMessageActions,
+    setReplyingTo,
+    handleCopyMessage,
+    clearReply,
+  } = useMessageActions();
 
-  // Reaction picker state
-  const [showReactionPicker, setShowReactionPicker] = useState(false);
-  const [reactionPickerMessage, setReactionPickerMessage] = useState<Message | null>(null);
-  const [selectedEmojiCategory, setSelectedEmojiCategory] =
-    useState<keyof typeof EMOJI_CATEGORIES>('Smileys');
+  // Reaction picker state (from useReactions hook)
+  const {
+    showReactionPicker,
+    reactionPickerMessage,
+    selectedEmojiCategory,
+    openReactionPicker: openReactionPickerBase,
+    closeReactionPicker,
+    setSelectedEmojiCategory,
+    hasReacted,
+  } = useReactions();
 
-  // Attachment preview state
-  const [pendingAttachments, setPendingAttachments] = useState<
-    Array<{
-      uri: string;
-      type: 'image' | 'file' | 'video';
-      name?: string;
-      mimeType?: string;
-      duration?: number;
-    }>
-  >([]);
-  const [showAttachmentPreview, setShowAttachmentPreview] = useState(false);
-  const [attachmentCaption, setAttachmentCaption] = useState('');
-  const attachmentPreviewAnim = useRef(new Animated.Value(0)).current;
+  // Attachment state (from useAttachments hook)
+  const {
+    pendingAttachments,
+    showAttachmentPreview,
+    attachmentCaption,
+    attachmentPreviewAnim,
+    showAttachMenu,
+    attachMenuAnim,
+    setPendingAttachments,
+    setAttachmentCaption,
+    openAttachmentPreview,
+    closeAttachmentPreview,
+    openAttachMenu,
+    closeAttachMenu,
+    toggleAttachMenu,
+    handleImagePicker,
+    handleCameraCapture,
+    handleDocumentPicker,
+    clearAttachments,
+    removeAttachment,
+  } = useAttachments();
 
   // Track newly added messages for entrance animations
   const [newMessageIds, setNewMessageIds] = useState<Set<string>>(new Set());
-
-  // Picker lock to prevent concurrent picker operations
-  const isPickerActiveRef = useRef(false);
 
   // Track deleted message IDs to prevent re-adding them
   const deletedMessageIdsRef = useRef<Set<string>>(new Set());
@@ -151,20 +171,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const shouldScrollToBottomRef = useRef(true);
   const contentHeightRef = useRef(0);
 
-  // Animation refs
-  const attachMenuAnim = useRef(new Animated.Value(0)).current;
+  // Animation refs (only those not provided by hooks)
   const waveAnim = useRef(new Animated.Value(0)).current;
-  const messageActionsAnim = useRef(new Animated.Value(0)).current;
-  const backdropAnim = useRef(new Animated.Value(0)).current;
-  const menuScaleAnim = useRef(new Animated.Value(0.9)).current;
   const sendButtonAnim = useRef(new Animated.Value(1)).current;
   const inputFocusAnim = useRef(new Animated.Value(0)).current;
-  const actionItemAnims = useRef([
-    new Animated.Value(0),
-    new Animated.Value(0),
-    new Animated.Value(0),
-    new Animated.Value(0),
-  ]).current;
 
   const flatListRef = useRef<FlatList>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1095,118 +1105,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
     );
   };
 
-  // Close attachment menu with animation - always animate to closed state
-  const closeAttachMenu = useCallback(() => {
-    setShowAttachMenu(false);
-    Animated.spring(attachMenuAnim, {
-      toValue: 0,
-      useNativeDriver: true,
-      tension: 100,
-      friction: 8,
-    }).start();
-  }, [attachMenuAnim]);
-
-  // Open attachment menu with animation
-  const openAttachMenu = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setShowAttachMenu(true);
-    Animated.spring(attachMenuAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      tension: 100,
-      friction: 8,
-    }).start();
-  }, [attachMenuAnim]);
-
-  // Toggle attachment menu with animation
-  const toggleAttachMenu = useCallback(() => {
-    if (showAttachMenu) {
-      closeAttachMenu();
-    } else {
-      openAttachMenu();
-    }
-  }, [showAttachMenu, closeAttachMenu, openAttachMenu]);
-
-  // Handle long press on message to show actions
-  const handleMessageLongPress = useCallback(
-    (message: Message) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      setSelectedMessage(message);
-      setShowMessageActions(true);
-
-      // Reset all animations
-      backdropAnim.setValue(0);
-      menuScaleAnim.setValue(0.9);
-      messageActionsAnim.setValue(0);
-      actionItemAnims.forEach((anim) => anim.setValue(0));
-
-      // Staggered entrance animation
-      Animated.parallel([
-        // Backdrop fade in
-        Animated.timing(backdropAnim, {
-          toValue: 1,
-          duration: 250,
-          useNativeDriver: true,
-        }),
-        // Menu slide up with spring
-        Animated.spring(messageActionsAnim, {
-          toValue: 1,
-          useNativeDriver: true,
-          tension: 65,
-          friction: 9,
-        }),
-        // Menu scale up
-        Animated.spring(menuScaleAnim, {
-          toValue: 1,
-          useNativeDriver: true,
-          tension: 100,
-          friction: 10,
-        }),
-      ]).start(() => {
-        // Stagger action items
-        const staggerDelay = 50;
-        actionItemAnims.forEach((anim, index) => {
-          setTimeout(() => {
-            Animated.spring(anim, {
-              toValue: 1,
-              useNativeDriver: true,
-              tension: 120,
-              friction: 8,
-            }).start();
-          }, index * staggerDelay);
-        });
-      });
-    },
-    [messageActionsAnim, backdropAnim, menuScaleAnim, actionItemAnims]
-  );
-
-  // Close message actions menu
-  const closeMessageActions = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-    Animated.parallel([
-      Animated.timing(backdropAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(messageActionsAnim, {
-        toValue: 0,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-      Animated.timing(menuScaleAnim, {
-        toValue: 0.9,
-        duration: 200,
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      setShowMessageActions(false);
-      setSelectedMessage(null);
-    });
-  }, [messageActionsAnim, backdropAnim, menuScaleAnim]);
-
-  // Handle reply to message
+  // Handle reply to message (wraps hook's setReplyingTo with focus)
   const handleReply = useCallback(() => {
     if (selectedMessage) {
       setReplyingTo(selectedMessage);
@@ -1214,12 +1113,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
       // Focus the input
       setTimeout(() => inputRef.current?.focus(), 100);
     }
-  }, [selectedMessage, closeMessageActions]);
+  }, [selectedMessage, closeMessageActions, setReplyingTo]);
 
-  // Cancel reply
-  const cancelReply = useCallback(() => {
-    setReplyingTo(null);
-  }, []);
+  // Cancel reply - use clearReply from hook
+  const cancelReply = clearReply;
 
   // Handle adding a reaction to a message
   // Limit: 1 reaction per user per message - will replace existing reaction
@@ -1349,10 +1246,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const handleQuickReaction = useCallback(
     (emoji: string) => {
       if (selectedMessage) {
-        const hasReacted = selectedMessage.reactions?.some(
-          (r) => r.emoji === emoji && r.hasReacted
-        );
-        if (hasReacted) {
+        if (hasReacted(selectedMessage, emoji)) {
           handleRemoveReaction(selectedMessage.id, emoji);
         } else {
           handleAddReaction(selectedMessage.id, emoji);
@@ -1360,7 +1254,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         closeMessageActions();
       }
     },
-    [selectedMessage, handleAddReaction, handleRemoveReaction, closeMessageActions]
+    [selectedMessage, handleAddReaction, handleRemoveReaction, closeMessageActions, hasReacted]
   );
 
   // Handle reaction tap on message bubble
@@ -1375,20 +1269,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
     [handleAddReaction, handleRemoveReaction]
   );
 
-  // Open full reaction picker
+  // Open full reaction picker (wraps hook's openReactionPicker)
   const openReactionPicker = useCallback(() => {
     if (selectedMessage) {
-      setReactionPickerMessage(selectedMessage);
+      openReactionPickerBase(selectedMessage);
       closeMessageActions();
-      setTimeout(() => setShowReactionPicker(true), 200);
     }
-  }, [selectedMessage, closeMessageActions]);
-
-  // Close reaction picker
-  const closeReactionPicker = useCallback(() => {
-    setShowReactionPicker(false);
-    setReactionPickerMessage(null);
-  }, []);
+  }, [selectedMessage, closeMessageActions, openReactionPickerBase]);
 
   // Handle pin/unpin message
   const handleTogglePin = useCallback(async () => {
@@ -1495,224 +1382,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
 
     closeMessageActions();
   }, [selectedMessage, user?.id, conversationId, closeMessageActions]);
-
-  // Handle image picker
-  const handlePickImage = async () => {
-    // Prevent concurrent picker operations
-    if (isPickerActiveRef.current) {
-      logger.debug('Picker already active, ignoring');
-      return;
-    }
-
-    isPickerActiveRef.current = true;
-    logger.debug('Starting image picker...');
-    closeAttachMenu();
-
-    // Longer delay to ensure modal is fully closed
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    try {
-      logger.debug('Requesting media library permission...');
-      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      logger.debug('Permission result:', permission.granted);
-      if (!permission.granted) {
-        Alert.alert('Permission needed', 'Please allow access to your photos to send images.');
-        return;
-      }
-
-      logger.debug('Launching image library...');
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        quality: 0.8,
-        allowsMultipleSelection: true,
-        selectionLimit: 10,
-      });
-      logger.debug(
-        'Image picker result:',
-        result.canceled ? 'canceled' : `${result.assets?.length} selected`
-      );
-
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        // Add to pending attachments and show preview
-        const newAttachments = result.assets.map((asset) => ({
-          uri: asset.uri,
-          type: 'image' as const,
-          name: asset.fileName || `photo_${Date.now()}.jpg`,
-          mimeType: asset.mimeType || 'image/jpeg',
-        }));
-        setPendingAttachments((prev) => [...prev, ...newAttachments]);
-        openAttachmentPreview();
-      }
-    } catch (error) {
-      logger.error('Error picking image:', error);
-      Alert.alert('Error', 'Failed to open photo library');
-    } finally {
-      isPickerActiveRef.current = false;
-    }
-  };
-
-  // Handle camera capture - opens native camera with photo/video toggle (like Telegram)
-  const handleTakePhoto = async () => {
-    // Prevent concurrent picker operations
-    if (isPickerActiveRef.current) {
-      logger.debug('Picker already active, ignoring');
-      return;
-    }
-
-    isPickerActiveRef.current = true;
-    logger.debug('Starting camera...');
-    closeAttachMenu();
-
-    // Longer delay to ensure modal is fully closed
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    try {
-      logger.debug('Requesting camera permission...');
-      const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
-      logger.debug('Camera permission:', cameraPermission.granted);
-      if (!cameraPermission.granted) {
-        Alert.alert('Permission needed', 'Please allow camera access.');
-        return;
-      }
-
-      // Note: Microphone permission is automatically requested by the camera when recording video
-      // No need to request it separately for expo-image-picker
-
-      logger.debug('Launching camera with photo/video support...');
-      // Open native camera with BOTH photo and video options - user can switch in camera UI
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ['images', 'videos'], // Allow both - user decides in native camera
-        quality: 0.8,
-        videoMaxDuration: 60, // 1 minute max for videos
-        videoQuality: 1, // High quality video
-      });
-      logger.debug('Camera result:', result.canceled ? 'canceled' : 'selected');
-
-      if (!result.canceled && result.assets[0]) {
-        // Add to pending attachments and show preview
-        const asset = result.assets[0];
-        const isVideo = asset.type === 'video' || asset.mimeType?.startsWith('video/');
-        logger.debug('Asset type:', asset.type, 'mimeType:', asset.mimeType, 'isVideo:', isVideo);
-        setPendingAttachments((prev) => [
-          ...prev,
-          {
-            uri: asset.uri,
-            type: isVideo ? ('video' as const) : ('image' as const),
-            name: asset.fileName || `camera_${Date.now()}.${isVideo ? 'mp4' : 'jpg'}`,
-            mimeType: asset.mimeType || (isVideo ? 'video/mp4' : 'image/jpeg'),
-            duration: asset.duration ?? undefined,
-          },
-        ]);
-        openAttachmentPreview();
-      }
-    } catch (error) {
-      logger.error('Error taking photo:', error);
-      Alert.alert('Error', 'Failed to open camera');
-    } finally {
-      isPickerActiveRef.current = false;
-    }
-  };
-
-  // Handle document picker
-  const handlePickDocument = async () => {
-    // Prevent concurrent picker operations
-    if (isPickerActiveRef.current) {
-      logger.debug('Picker already active, ignoring');
-      return;
-    }
-
-    isPickerActiveRef.current = true;
-    logger.debug('Starting document picker...');
-    closeAttachMenu();
-
-    // Longer delay to ensure modal is fully closed
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    try {
-      logger.debug('Launching document picker...');
-      // Note: multiple selection disabled - causes issues with bundle files on iOS
-      const result = await DocumentPicker.getDocumentAsync({
-        type: [
-          'application/pdf',
-          'text/*',
-          'application/msword',
-          'application/vnd.openxmlformats-officedocument.*',
-          'application/vnd.ms-excel',
-          'image/*',
-          'audio/*',
-          'video/*',
-        ],
-        copyToCacheDirectory: true,
-        multiple: false,
-      });
-      logger.debug('Document picker result:', result.canceled ? 'canceled' : 'selected');
-
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const asset = result.assets[0];
-        // Filter out directory bundles (like .band files)
-        if (asset.name?.endsWith('.band') || asset.mimeType === 'application/octet-stream') {
-          // Check if it might be a bundle/directory
-          Alert.alert(
-            'Unsupported File',
-            'This file type is not supported. Please choose a different file.'
-          );
-          return;
-        }
-        // Add single file to pending attachments
-        setPendingAttachments((prev) => [
-          ...prev,
-          {
-            uri: asset.uri,
-            type: 'file' as const,
-            name: asset.name || `file_${Date.now()}`,
-            mimeType: asset.mimeType || 'application/octet-stream',
-          },
-        ]);
-        openAttachmentPreview();
-      }
-    } catch (error) {
-      logger.error('Error picking document:', error);
-      Alert.alert('Error', 'Failed to open file picker');
-    } finally {
-      isPickerActiveRef.current = false;
-    }
-  };
-
-  // Open attachment preview modal
-  const openAttachmentPreview = useCallback(() => {
-    setShowAttachmentPreview(true);
-    Animated.spring(attachmentPreviewAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-      tension: 65,
-      friction: 10,
-    }).start();
-  }, [attachmentPreviewAnim]);
-
-  // Close attachment preview modal
-  const closeAttachmentPreview = useCallback(() => {
-    Animated.timing(attachmentPreviewAnim, {
-      toValue: 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => {
-      setShowAttachmentPreview(false);
-      setPendingAttachments([]);
-      setAttachmentCaption('');
-    });
-  }, [attachmentPreviewAnim]);
-
-  // Remove a specific attachment from pending list
-  const removeAttachment = (index: number) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setPendingAttachments((prev) => {
-      const newList = prev.filter((_, i) => i !== index);
-      if (newList.length === 0) {
-        closeAttachmentPreview();
-      }
-      return newList;
-    });
-  };
 
   // Send all pending attachments
   const sendPendingAttachments = async () => {
@@ -1836,8 +1505,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
       duration: 150,
       useNativeDriver: true,
     }).start(async () => {
-      setShowAttachmentPreview(false);
-      await handlePickImage();
+      closeAttachmentPreview();
+      await handleImagePicker();
     });
   };
 
