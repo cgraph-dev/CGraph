@@ -6,8 +6,22 @@
  * @module screens/messages/ConversationScreen
  */
 
-import type { Message } from '../../../types';
-import type { ProcessedMessage, ProcessedReaction } from './types';
+import type { Message } from '../../../../types';
+
+interface ProcessedReaction {
+  emoji: string;
+  count: number;
+  users: Array<{
+    id: string;
+    username: string | null;
+    display_name?: string | null;
+    avatar_url?: string | null;
+    status: string;
+  }>;
+  hasReacted: boolean;
+}
+
+type ProcessedMessage = Message;
 
 // =============================================================================
 // MIME Type Utilities

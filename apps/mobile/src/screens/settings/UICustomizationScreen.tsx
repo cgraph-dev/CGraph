@@ -21,13 +21,11 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Switch,
   Alert,
   Share,
   Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -38,277 +36,25 @@ import useCustomizationStore, {
   useCanRedo,
 } from '@/stores/customizationStore';
 import { PRESET_THEMES } from '@/lib/customization/PresetThemes';
-import type { ThemeConfig, ColorShade } from '@/lib/customization/CustomizationEngine';
+import type { ThemeConfig } from '@/lib/customization/CustomizationEngine';
 import { SettingsStackParamList } from '@/types';
+
+// Import extracted components
+import {
+  SettingsSection,
+  ToggleRow,
+  SliderRow,
+  ColorShadePicker,
+  PresetSelector,
+  haptic,
+} from './UICustomizationScreen/components';
+import { LivePreviewCard } from './UICustomizationScreen/components';
 
 type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'UICustomization'>;
 };
 
 type TabId = 'colors' | 'typography' | 'layout' | 'effects' | 'animations' | 'accessibility';
-
-// ============================================================================
-// HAPTIC HELPERS
-// ============================================================================
-
-const haptic = {
-  light: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
-  medium: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
-  success: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),
-};
-
-// ============================================================================
-// SETTINGS SECTION COMPONENT
-// ============================================================================
-
-interface SectionProps {
-  title: string;
-  icon: keyof typeof Ionicons.glyphMap;
-  iconColor: string;
-  children: React.ReactNode;
-}
-
-function SettingsSection({ title, icon, iconColor, children }: SectionProps) {
-  return (
-    <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <View style={[styles.sectionIcon, { backgroundColor: iconColor + '20' }]}>
-          <Ionicons name={icon} size={18} color={iconColor} />
-        </View>
-        <Text style={styles.sectionTitle}>{title}</Text>
-      </View>
-      <BlurView intensity={40} tint="dark" style={styles.sectionContent}>
-        {children}
-      </BlurView>
-    </View>
-  );
-}
-
-// ============================================================================
-// OPTION ROW COMPONENTS
-// ============================================================================
-
-interface ToggleRowProps {
-  label: string;
-  description?: string;
-  value: boolean;
-  onToggle: (value: boolean) => void;
-}
-
-function ToggleRow({ label, description, value, onToggle }: ToggleRowProps) {
-  return (
-    <View style={styles.optionRow}>
-      <View style={styles.optionInfo}>
-        <Text style={styles.optionLabel}>{label}</Text>
-        {description && <Text style={styles.optionDescription}>{description}</Text>}
-      </View>
-      <Switch
-        value={value}
-        onValueChange={(newValue) => {
-          haptic.light();
-          onToggle(newValue);
-        }}
-        trackColor={{ false: '#374151', true: '#10b981' }}
-        thumbColor={value ? '#fff' : '#9ca3af'}
-      />
-    </View>
-  );
-}
-
-interface SliderRowProps {
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  step?: number;
-  suffix?: string;
-  onValueChange: (value: number) => void;
-}
-
-function SliderRow({
-  label,
-  value,
-  min,
-  max,
-  step = 1,
-  suffix = '',
-  onValueChange,
-}: SliderRowProps) {
-  const percentage = ((value - min) / (max - min)) * 100;
-
-  return (
-    <View style={styles.optionRowVertical}>
-      <View style={styles.sliderHeader}>
-        <Text style={styles.optionLabel}>{label}</Text>
-        <Text style={styles.sliderValue}>
-          {value}
-          {suffix}
-        </Text>
-      </View>
-      <View style={styles.sliderContainer}>
-        <View style={styles.sliderTrack}>
-          <View style={[styles.sliderFill, { width: `${percentage}%` }]} />
-        </View>
-        <View style={styles.sliderButtons}>
-          <TouchableOpacity
-            style={styles.sliderButton}
-            onPress={() => {
-              haptic.light();
-              onValueChange(Math.max(min, value - step));
-            }}
-          >
-            <Ionicons name="remove" size={16} color="#fff" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.sliderButton}
-            onPress={() => {
-              haptic.light();
-              onValueChange(Math.min(max, value + step));
-            }}
-          >
-            <Ionicons name="add" size={16} color="#fff" />
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  );
-}
-
-interface ColorShadePickerProps {
-  label: string;
-  shades: ColorShade;
-  onSelect: (shade: keyof ColorShade) => void;
-}
-
-function ColorShadePicker({ label, shades, onSelect }: ColorShadePickerProps) {
-  const shadeKeys = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
-
-  return (
-    <View style={styles.optionRowVertical}>
-      <Text style={styles.optionLabel}>{label}</Text>
-      <View style={styles.colorShadeGrid}>
-        {shadeKeys.map((shade) => (
-          <TouchableOpacity
-            key={shade}
-            style={[styles.colorShadeBox, { backgroundColor: shades[shade] }]}
-            onPress={() => {
-              haptic.medium();
-              onSelect(shade);
-            }}
-          >
-            <Text style={styles.colorShadeLabel}>{shade}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    </View>
-  );
-}
-
-// ============================================================================
-// PRESET THEME SELECTOR
-// ============================================================================
-
-interface PresetSelectorProps {
-  currentThemeName: string;
-  onSelect: (theme: ThemeConfig) => void;
-}
-
-function PresetSelector({ currentThemeName, onSelect }: PresetSelectorProps) {
-  return (
-    <View style={styles.presetSection}>
-      <Text style={styles.presetTitle}>Quick Presets</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.presetScroll}>
-        {PRESET_THEMES.map((theme) => {
-          const isSelected = theme.name === currentThemeName;
-          return (
-            <TouchableOpacity
-              key={theme.name}
-              style={[styles.presetCard, isSelected && styles.presetCardSelected]}
-              onPress={() => {
-                haptic.medium();
-                onSelect(theme);
-              }}
-            >
-              <LinearGradient
-                colors={[theme.colors.primary[500], theme.colors.secondary[500]]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.presetGradient}
-              />
-              <Text style={styles.presetName}>{theme.name}</Text>
-              {isSelected && (
-                <View style={styles.presetCheck}>
-                  <Ionicons name="checkmark" size={12} color="#fff" />
-                </View>
-              )}
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-    </View>
-  );
-}
-
-// ============================================================================
-// LIVE PREVIEW CARD
-// ============================================================================
-
-function LivePreviewCard() {
-  const { theme, getColor, getSpacing, getBorderRadius } = useCustomization();
-
-  return (
-    <View style={styles.previewSection}>
-      <Text style={styles.previewTitle}>Live Preview</Text>
-      <BlurView
-        intensity={theme.effects.blur.intensity}
-        tint="dark"
-        style={[
-          styles.previewCard,
-          {
-            borderRadius: getBorderRadius('lg'),
-            padding: getSpacing('md'),
-          },
-        ]}
-      >
-        <View style={styles.previewHeader}>
-          <View style={[styles.previewAvatar, { backgroundColor: getColor('primary.500') }]}>
-            <Ionicons name="person" size={24} color="#fff" />
-          </View>
-          <View style={styles.previewInfo}>
-            <Text style={[styles.previewName, { color: getColor('text.primary') }]}>
-              Sample User
-            </Text>
-            <Text style={[styles.previewSubtext, { color: getColor('text.secondary') }]}>
-              This is how your theme looks
-            </Text>
-          </View>
-        </View>
-        <View
-          style={[
-            styles.previewButton,
-            {
-              backgroundColor: getColor('primary.500'),
-              borderRadius: getBorderRadius('md'),
-            },
-          ]}
-        >
-          <Text style={styles.previewButtonText}>Primary Button</Text>
-        </View>
-        <View
-          style={[
-            styles.previewButton,
-            {
-              backgroundColor: getColor('secondary.500'),
-              borderRadius: getBorderRadius('md'),
-            },
-          ]}
-        >
-          <Text style={styles.previewButtonText}>Secondary Button</Text>
-        </View>
-      </BlurView>
-    </View>
-  );
-}
 
 // ============================================================================
 // MAIN COMPONENT
@@ -501,6 +247,7 @@ export default function UICustomizationScreen({ navigation }: Props) {
         {/* Preset Themes */}
         <PresetSelector
           currentThemeName={theme.name}
+          themes={PRESET_THEMES}
           onSelect={(presetTheme) => updateTheme(presetTheme)}
         />
 

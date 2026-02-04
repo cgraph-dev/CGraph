@@ -170,7 +170,7 @@ export function useAttachments(): UseAttachmentsReturn {
             type: isVideo ? 'video' : 'image',
             name: asset.fileName || `attachment_${Date.now()}`,
             mimeType: asset.mimeType || (isVideo ? 'video/mp4' : 'image/jpeg'),
-            duration: asset.duration,
+            duration: asset.duration ?? undefined,
           };
         });
 
@@ -222,7 +222,7 @@ export function useAttachments(): UseAttachmentsReturn {
           type: isVideo ? 'video' : 'image',
           name: asset.fileName || `capture_${Date.now()}`,
           mimeType: asset.mimeType || (isVideo ? 'video/mp4' : 'image/jpeg'),
-          duration: asset.duration,
+          duration: asset.duration ?? undefined,
         };
 
         setPendingAttachments([attachment]);
