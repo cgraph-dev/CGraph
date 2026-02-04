@@ -1,6 +1,6 @@
 /**
  * OAuth Authentication Service for React Native
- * 
+ *
  * Handles OAuth flows for Google, Apple, Facebook, and TikTok
  * Uses native SDKs for better user experience on mobile
  */
@@ -100,21 +100,24 @@ async function verifyWithBackend(
     access_token: accessToken,
     id_token: idToken,
   });
-  
+
   const result: OAuthResult = response.data;
-  
+
   // CRITICAL: Store tokens in secure storage for persistent auth
   if (result.tokens) {
     await storage.secure.setItem('cgraph_auth_token', result.tokens.access_token);
     await storage.secure.setItem('cgraph_refresh_token', result.tokens.refresh_token);
-    await storage.general.setItem('cgraph_token_expiry', String(Date.now() + result.tokens.expires_in * 1000));
+    await storage.general.setItem(
+      'cgraph_token_expiry',
+      String(Date.now() + result.tokens.expires_in * 1000)
+    );
   }
-  
+
   // Store user data for quick access
   if (result.user) {
     await storage.setUserData(result.user);
   }
-  
+
   return result;
 }
 
@@ -125,30 +128,30 @@ export async function signInWithGoogle(config: OAuthConfig['google']): Promise<O
   if (!config?.webClientId) {
     throw new Error('Google OAuth not configured');
   }
-  
+
   const clientId = Platform.select({
     ios: config.iosClientId || config.webClientId,
     android: config.androidClientId || config.webClientId,
     default: config.webClientId,
   });
-  
+
   const redirectUri = getRedirectUri();
-  
+
   const request = new AuthSession.AuthRequest({
     clientId,
     scopes: ['openid', 'email', 'profile'],
     redirectUri,
   });
-  
+
   const result = await request.promptAsync(discovery.google);
-  
+
   if (result.type !== 'success') {
     if (result.type === 'cancel') {
       throw new Error('Sign in was cancelled');
     }
     throw new Error('Google sign in failed');
   }
-  
+
   // Exchange code for token
   const tokenResponse = await AuthSession.exchangeCodeAsync(
     {
@@ -161,13 +164,9 @@ export async function signInWithGoogle(config: OAuthConfig['google']): Promise<O
     },
     discovery.google
   );
-  
+
   // Verify with our backend
-  return verifyWithBackend(
-    'google',
-    tokenResponse.accessToken,
-    tokenResponse.idToken
-  );
+  return verifyWithBackend('google', tokenResponse.accessToken, tokenResponse.idToken);
 }
 
 /**
@@ -178,12 +177,12 @@ export async function signInWithApple(): Promise<OAuthResult> {
   if (Platform.OS !== 'ios') {
     throw new Error('Apple Sign In is only available on iOS');
   }
-  
+
   const isAvailable = await AppleAuthentication.isAvailableAsync();
   if (!isAvailable) {
     throw new Error('Apple Sign In is not available on this device');
   }
-  
+
   try {
     const credential = await AppleAuthentication.signInAsync({
       requestedScopes: [
@@ -191,19 +190,15 @@ export async function signInWithApple(): Promise<OAuthResult> {
         AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
       ],
     });
-    
+
     if (!credential.identityToken) {
       throw new Error('No identity token received from Apple');
     }
-    
+
     // Verify with our backend
-    return verifyWithBackend(
-      'apple',
-      credential.authorizationCode || '',
-      credential.identityToken
-    );
-  } catch (error: any) {
-    if (error.code === 'ERR_CANCELED') {
+    return verifyWithBackend('apple', credential.authorizationCode || '', credential.identityToken);
+  } catch (error: unknown) {
+    if ((error as { code?: string })?.code === 'ERR_CANCELED') {
       throw new Error('Sign in was cancelled');
     }
     throw error;
@@ -217,30 +212,30 @@ export async function signInWithFacebook(config: OAuthConfig['facebook']): Promi
   if (!config?.appId) {
     throw new Error('Facebook OAuth not configured');
   }
-  
+
   const redirectUri = getRedirectUri();
-  
+
   const request = new AuthSession.AuthRequest({
     clientId: config.appId,
     scopes: ['email', 'public_profile'],
     redirectUri,
     responseType: AuthSession.ResponseType.Token,
   });
-  
+
   const result = await request.promptAsync(discovery.facebook);
-  
+
   if (result.type !== 'success') {
     if (result.type === 'cancel') {
       throw new Error('Sign in was cancelled');
     }
     throw new Error('Facebook sign in failed');
   }
-  
+
   const accessToken = result.params.access_token;
   if (!accessToken) {
     throw new Error('No access token received from Facebook');
   }
-  
+
   // Verify with our backend
   return verifyWithBackend('facebook', accessToken);
 }
@@ -252,35 +247,35 @@ export async function signInWithTikTok(config: OAuthConfig['tiktok']): Promise<O
   if (!config?.clientKey) {
     throw new Error('TikTok OAuth not configured');
   }
-  
+
   const redirectUri = getRedirectUri();
-  
+
   const request = new AuthSession.AuthRequest({
     clientId: config.clientKey,
     scopes: ['user.info.basic'],
     redirectUri,
   });
-  
+
   const result = await request.promptAsync(discovery.tiktok);
-  
+
   if (result.type !== 'success') {
     if (result.type === 'cancel') {
       throw new Error('Sign in was cancelled');
     }
     throw new Error('TikTok sign in failed');
   }
-  
+
   // TikTok returns a code, exchange for token with backend
   const code = result.params.code;
   if (!code) {
     throw new Error('No authorization code received from TikTok');
   }
-  
+
   // Let backend handle the token exchange
   const response = await api.get(`/api/v1/auth/oauth/tiktok/callback`, {
     params: { code, state: result.params.state },
   });
-  
+
   return response.data;
 }
 
@@ -309,7 +304,9 @@ export async function signInWithOAuth(
 /**
  * Get list of available OAuth providers from backend
  */
-export async function getAvailableProviders(): Promise<{ id: OAuthProvider; name: string; enabled: boolean }[]> {
+export async function getAvailableProviders(): Promise<
+  { id: OAuthProvider; name: string; enabled: boolean }[]
+> {
   try {
     const response = await api.get('/api/v1/auth/oauth/providers');
     return response.data.providers;
@@ -321,7 +318,10 @@ export async function getAvailableProviders(): Promise<{ id: OAuthProvider; name
 /**
  * Provider display info
  */
-export const providerInfo: Record<OAuthProvider, { name: string; color: string; textColor: string }> = {
+export const providerInfo: Record<
+  OAuthProvider,
+  { name: string; color: string; textColor: string }
+> = {
   google: { name: 'Google', color: '#FFFFFF', textColor: '#000000' },
   apple: { name: 'Apple', color: '#000000', textColor: '#FFFFFF' },
   facebook: { name: 'Facebook', color: '#1877F2', textColor: '#FFFFFF' },

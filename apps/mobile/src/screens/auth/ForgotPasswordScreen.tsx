@@ -26,12 +26,12 @@ type Props = {
 
 export default function ForgotPasswordScreen({ navigation }: Props) {
   const { colors } = useTheme();
-  
+
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  
+
   // Animation values
   const fadeAnims = useRef([
     new Animated.Value(0),
@@ -47,7 +47,7 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
   ]).current;
   const buttonScale = useRef(new Animated.Value(1)).current;
   const glowOpacity = useRef(new Animated.Value(0.3)).current;
-  
+
   useEffect(() => {
     const animations = fadeAnims.map((anim, index) => {
       return Animated.parallel([
@@ -65,9 +65,9 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
         }),
       ]);
     });
-    
+
     Animated.stagger(100, animations).start();
-    
+
     Animated.loop(
       Animated.sequence([
         Animated.timing(glowOpacity, {
@@ -83,14 +83,14 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
       ])
     ).start();
   }, []);
-  
+
   const handlePressIn = () => {
     Animated.spring(buttonScale, {
       toValue: 0.98,
       useNativeDriver: true,
     }).start();
   };
-  
+
   const handlePressOut = () => {
     Animated.spring(buttonScale, {
       toValue: 1,
@@ -99,33 +99,30 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
       useNativeDriver: true,
     }).start();
   };
-  
+
   const handleSubmit = async () => {
     if (!email.trim()) {
       Alert.alert('Error', 'Please enter your email');
       return;
     }
-    
+
     setIsLoading(true);
     try {
       await api.post('/api/v1/auth/forgot-password', { email });
       setSent(true);
-    } catch (error: any) {
-      Alert.alert(
-        'Error',
-        error.response?.data?.message || 'Could not send reset email'
-      );
+    } catch (error: unknown) {
+      Alert.alert('Error', error.response?.data?.message || 'Could not send reset email');
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   if (sent) {
     return (
       <View style={styles.container}>
         <MatrixAuthBackground theme="matrix-green" />
         <Animated.View style={[styles.overlay, { opacity: glowOpacity }]} />
-        
+
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.successContent}>
             <LinearGradient
@@ -138,13 +135,8 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
                 <Ionicons name="mail" size={48} color="#10b981" />
               </View>
               <Text style={styles.title}>Check your email</Text>
-              <Text style={styles.description}>
-                We've sent a password reset link to {email}
-              </Text>
-              <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={() => navigation.navigate('Login')}
-              >
+              <Text style={styles.description}>We've sent a password reset link to {email}</Text>
+              <TouchableOpacity activeOpacity={0.9} onPress={() => navigation.navigate('Login')}>
                 <LinearGradient
                   colors={['#059669', '#047857', '#065f46']}
                   start={{ x: 0, y: 0 }}
@@ -160,12 +152,12 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
       </View>
     );
   }
-  
+
   return (
     <View style={styles.container}>
       <MatrixAuthBackground theme="matrix-green" />
       <Animated.View style={[styles.overlay, { opacity: glowOpacity }]} />
-      
+
       <SafeAreaView style={styles.safeArea}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -173,34 +165,35 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
         >
           <View style={styles.content}>
             {/* Back Button */}
-            <Animated.View style={[{
-              opacity: fadeAnims[0],
-              transform: [{ translateY: translateYAnims[0] }],
-            }]}>
-              <TouchableOpacity
-                style={styles.backButton}
-                onPress={() => navigation.goBack()}
-              >
+            <Animated.View
+              style={[
+                {
+                  opacity: fadeAnims[0],
+                  transform: [{ translateY: translateYAnims[0] }],
+                },
+              ]}
+            >
+              <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                 <Ionicons name="arrow-back" size={24} color="#fff" />
               </TouchableOpacity>
             </Animated.View>
-            
+
             {/* Header */}
-            <Animated.View style={[
-              styles.header,
-              {
-                opacity: fadeAnims[1],
-                transform: [{ translateY: translateYAnims[1] }],
-              }
-            ]}>
-              <Text style={styles.title}>
-                Forgot Password?
-              </Text>
+            <Animated.View
+              style={[
+                styles.header,
+                {
+                  opacity: fadeAnims[1],
+                  transform: [{ translateY: translateYAnims[1] }],
+                },
+              ]}
+            >
+              <Text style={styles.title}>Forgot Password?</Text>
               <Text style={styles.description}>
                 Enter your email address and we'll send you a link to reset your password.
               </Text>
             </Animated.View>
-            
+
             {/* Form */}
             <LinearGradient
               colors={['rgba(17, 24, 39, 0.95)', 'rgba(5, 46, 22, 0.15)']}
@@ -209,25 +202,25 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
               style={styles.formContainer}
             >
               <View style={styles.form}>
-                <Animated.View style={[
-                  styles.inputGroup,
-                  {
-                    opacity: fadeAnims[2],
-                    transform: [{ translateY: translateYAnims[2] }],
-                  }
-                ]}>
+                <Animated.View
+                  style={[
+                    styles.inputGroup,
+                    {
+                      opacity: fadeAnims[2],
+                      transform: [{ translateY: translateYAnims[2] }],
+                    },
+                  ]}
+                >
                   <Text style={styles.label}>Email</Text>
                   <LinearGradient
-                    colors={isFocused
-                      ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
-                      : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
+                    colors={
+                      isFocused
+                        ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
+                        : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
                     }
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
-                    style={[
-                      styles.inputGradient,
-                      isFocused && styles.inputFocused,
-                    ]}
+                    style={[styles.inputGradient, isFocused && styles.inputFocused]}
                   >
                     <TextInput
                       style={styles.input}
@@ -243,14 +236,15 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
                     />
                   </LinearGradient>
                 </Animated.View>
-                
-                <Animated.View style={[{
-                  opacity: fadeAnims[3],
-                  transform: [
-                    { translateY: translateYAnims[3] },
-                    { scale: buttonScale },
-                  ],
-                }]}>
+
+                <Animated.View
+                  style={[
+                    {
+                      opacity: fadeAnims[3],
+                      transform: [{ translateY: translateYAnims[3] }, { scale: buttonScale }],
+                    },
+                  ]}
+                >
                   <TouchableOpacity
                     activeOpacity={0.9}
                     onPressIn={handlePressIn}

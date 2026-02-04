@@ -1,9 +1,9 @@
 /**
  * QuestPanel Component - Mobile
- * 
+ *
  * Displays daily, weekly, and special quests for the user to complete.
  * Provides a core engagement loop with clear objectives and rewards.
- * 
+ *
  * Features:
  * - Quest categories: Daily, Weekly, Special, Story
  * - Progress tracking with animated progress bars
@@ -13,10 +13,10 @@
  * - Quest chains and story progression
  * - Collapsible sections for organization
  * - Pull-to-refresh functionality
- * 
+ *
  * Quests drive engagement by giving users clear goals and tangible
  * rewards, creating a satisfying gameplay loop within the app.
- * 
+ *
  * @version 1.0.0
  * @since v0.8.1
  */
@@ -81,12 +81,15 @@ interface QuestPanelProps {
 // CONSTANTS
 // ============================================================================
 
-const QUEST_TYPE_CONFIG: Record<QuestType, {
-  label: string;
-  icon: string;
-  colors: readonly [string, string];
-  bgColor: string;
-}> = {
+const QUEST_TYPE_CONFIG: Record<
+  QuestType,
+  {
+    label: string;
+    icon: string;
+    colors: readonly [string, string];
+    bgColor: string;
+  }
+> = {
   daily: {
     label: 'Daily',
     icon: 'sunny',
@@ -174,14 +177,8 @@ function CountdownTimer({ expiresAt, compact = false }: CountdownTimerProps) {
 
   return (
     <View style={[styles.timerContainer, isUrgent && styles.timerUrgent]}>
-      <Ionicons 
-        name="time-outline" 
-        size={12} 
-        color={isUrgent ? '#ef4444' : '#9ca3af'} 
-      />
-      <Text style={[styles.timerText, isUrgent && styles.timerTextUrgent]}>
-        {timeLeft}
-      </Text>
+      <Ionicons name="time-outline" size={12} color={isUrgent ? '#ef4444' : '#9ca3af'} />
+      <Text style={[styles.timerText, isUrgent && styles.timerTextUrgent]}>{timeLeft}</Text>
     </View>
   );
 }
@@ -243,14 +240,10 @@ interface RewardBadgeProps {
 
 function RewardBadge({ reward }: RewardBadgeProps) {
   const icon = REWARD_ICONS[reward.type] || 'gift';
-  
+
   return (
     <View style={styles.rewardBadge}>
-      <Ionicons 
-        name={icon as any} 
-        size={12} 
-        color={AnimationColors.primary} 
-      />
+      <Ionicons name={icon as unknown} size={12} color={AnimationColors.primary} />
       <Text style={styles.rewardText}>
         {reward.amount ? `+${reward.amount}` : ''} {reward.name || reward.type.toUpperCase()}
       </Text>
@@ -271,7 +264,7 @@ function QuestCard({ quest, onClaim }: QuestCardProps) {
   const [isClaiming, setIsClaiming] = useState(false);
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const claimAnim = useRef(new Animated.Value(0)).current;
-  
+
   const config = QUEST_TYPE_CONFIG[quest.type];
   const isComplete = quest.currentProgress >= quest.targetProgress;
   const canClaim = isComplete && quest.status !== 'claimed';
@@ -298,7 +291,7 @@ function QuestCard({ quest, onClaim }: QuestCardProps) {
 
   const handleClaim = async () => {
     if (!canClaim || isClaiming) return;
-    
+
     setIsClaiming(true);
     HapticFeedback.success();
 
@@ -329,9 +322,9 @@ function QuestCard({ quest, onClaim }: QuestCardProps) {
 
   return (
     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-      <BlurView 
-        intensity={40} 
-        tint="dark" 
+      <BlurView
+        intensity={40}
+        tint="dark"
         style={[
           styles.questCard,
           isLocked && styles.questCardLocked,
@@ -346,27 +339,23 @@ function QuestCard({ quest, onClaim }: QuestCardProps) {
             end={{ x: 1, y: 1 }}
             style={styles.questTypeIconContainer}
           >
-            <Ionicons name={config.icon as any} size={14} color="#fff" />
+            <Ionicons name={config.icon as unknown} size={14} color="#fff" />
           </LinearGradient>
-          <Text style={[styles.questTypeLabel, { color: config.colors[0] }]}>
-            {config.label}
-          </Text>
+          <Text style={[styles.questTypeLabel, { color: config.colors[0] }]}>{config.label}</Text>
         </View>
 
         {/* Quest Content */}
         <View style={styles.questContent}>
           <View style={styles.questHeader}>
             <View style={styles.questIconContainer}>
-              <Ionicons 
-                name={quest.iconName as any} 
-                size={24} 
-                color={isLocked ? '#6b7280' : config.colors[0]} 
+              <Ionicons
+                name={quest.iconName as unknown}
+                size={24}
+                color={isLocked ? '#6b7280' : config.colors[0]}
               />
             </View>
             <View style={styles.questInfo}>
-              <Text style={[styles.questTitle, isLocked && styles.textLocked]}>
-                {quest.title}
-              </Text>
+              <Text style={[styles.questTitle, isLocked && styles.textLocked]}>{quest.title}</Text>
               <Text style={[styles.questDescription, isLocked && styles.textLocked]}>
                 {quest.description}
               </Text>
@@ -391,9 +380,7 @@ function QuestCard({ quest, onClaim }: QuestCardProps) {
 
           {/* Footer */}
           <View style={styles.questFooter}>
-            {quest.expiresAt && !isLocked && (
-              <CountdownTimer expiresAt={quest.expiresAt} compact />
-            )}
+            {quest.expiresAt && !isLocked && <CountdownTimer expiresAt={quest.expiresAt} compact />}
 
             {isLocked && (
               <View style={styles.lockedIndicator}>
@@ -454,14 +441,14 @@ function QuestSection({ type, quests, onClaim, initialExpanded = true }: QuestSe
   const [isExpanded, setIsExpanded] = useState(initialExpanded);
   const heightAnim = useRef(new Animated.Value(initialExpanded ? 1 : 0)).current;
   const rotateAnim = useRef(new Animated.Value(initialExpanded ? 1 : 0)).current;
-  
+
   const config = QUEST_TYPE_CONFIG[type];
-  const completedCount = quests.filter(q => q.status === 'claimed').length;
+  const completedCount = quests.filter((q) => q.status === 'claimed').length;
 
   const toggleExpanded = () => {
     HapticFeedback.light();
     const toValue = isExpanded ? 0 : 1;
-    
+
     Animated.parallel([
       Animated.spring(heightAnim, {
         toValue,
@@ -501,7 +488,7 @@ function QuestSection({ type, quests, onClaim, initialExpanded = true }: QuestSe
               end={{ x: 1, y: 1 }}
               style={styles.sectionIcon}
             >
-              <Ionicons name={config.icon as any} size={18} color="#fff" />
+              <Ionicons name={config.icon as unknown} size={18} color="#fff" />
             </LinearGradient>
             <Text style={styles.sectionTitle}>{config.label} Quests</Text>
             <View style={styles.sectionCount}>
@@ -517,9 +504,8 @@ function QuestSection({ type, quests, onClaim, initialExpanded = true }: QuestSe
       </TouchableOpacity>
 
       <Animated.View style={[styles.sectionContent, { maxHeight: containerHeight }]}>
-        {isExpanded && quests.map(quest => (
-          <QuestCard key={quest.id} quest={quest} onClaim={onClaim} />
-        ))}
+        {isExpanded &&
+          quests.map((quest) => <QuestCard key={quest.id} quest={quest} onClaim={onClaim} />)}
       </Animated.View>
     </View>
   );
@@ -539,18 +525,23 @@ export default function QuestPanel({
   const [refreshing, setRefreshing] = useState(false);
 
   // Group quests by type
-  const questsByType = quests.reduce<Record<QuestType, Quest[]>>((acc, quest) => {
-    if (!acc[quest.type]) {
-      acc[quest.type] = [];
-    }
-    acc[quest.type].push(quest);
-    return acc;
-  }, {} as Record<QuestType, Quest[]>);
+  const questsByType = quests.reduce<Record<QuestType, Quest[]>>(
+    (acc, quest) => {
+      if (!acc[quest.type]) {
+        acc[quest.type] = [];
+      }
+      acc[quest.type].push(quest);
+      return acc;
+    },
+    {} as Record<QuestType, Quest[]>
+  );
 
   // Calculate overall progress
   const totalQuests = quests.length;
-  const completedQuests = quests.filter(q => q.status === 'claimed').length;
-  const availableQuests = quests.filter(q => q.status !== 'claimed' && q.status !== 'locked').length;
+  const completedQuests = quests.filter((q) => q.status === 'claimed').length;
+  const availableQuests = quests.filter(
+    (q) => q.status !== 'claimed' && q.status !== 'locked'
+  ).length;
 
   const handleRefresh = useCallback(async () => {
     if (!onRefresh) return;
@@ -585,10 +576,10 @@ export default function QuestPanel({
           {/* Overall Progress */}
           <View style={styles.overallProgress}>
             <View style={styles.overallProgressBar}>
-              <View 
+              <View
                 style={[
                   styles.overallProgressFill,
-                  { width: `${(completedQuests / totalQuests) * 100}%` }
+                  { width: `${(completedQuests / totalQuests) * 100}%` },
                 ]}
               />
             </View>
@@ -625,9 +616,7 @@ export default function QuestPanel({
           <View style={styles.emptyState}>
             <Ionicons name="trophy-outline" size={48} color="#6b7280" />
             <Text style={styles.emptyStateText}>No quests available</Text>
-            <Text style={styles.emptyStateSubtext}>
-              Check back later for new challenges!
-            </Text>
+            <Text style={styles.emptyStateSubtext}>Check back later for new challenges!</Text>
           </View>
         )}
       </ScrollView>

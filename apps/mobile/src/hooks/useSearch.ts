@@ -115,12 +115,12 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
 
         // Save to search history
         await searchService.saveSearchToHistory(query).catch(() => {});
-      } catch (error: any) {
+      } catch (error: unknown) {
         if (error.name !== 'AbortError') {
           setState((prev) => ({
             ...prev,
             isSearching: false,
-            error: error.message || 'Search failed',
+            error: error instanceof Error ? error.message : 'Search failed',
           }));
         }
       }
@@ -148,11 +148,11 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
       }));
 
       offsetRef.current += response.results.length;
-    } catch (error: any) {
+    } catch (error: unknown) {
       setState((prev) => ({
         ...prev,
         isSearching: false,
-        error: error.message || 'Failed to load more results',
+        error: error instanceof Error ? error.message : 'Failed to load more results',
       }));
     }
   }, [limit, state.query, state.isSearching, state.hasMore]);

@@ -185,7 +185,7 @@ function AnimatedProgressValue({ value, prefix, suffix, color }: AnimatedProgres
   });
 
   return (
-    <Animated.Text style={[styles.valueText, { color }]} animatedProps={animatedStyle as any}>
+    <Animated.Text style={[styles.valueText, { color }]} animatedProps={animatedStyle as unknown}>
       {prefix}
       {Math.round(value.value)}
       {suffix}

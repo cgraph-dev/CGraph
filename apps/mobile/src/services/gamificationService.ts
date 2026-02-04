@@ -1,9 +1,9 @@
 /**
  * Gamification Service
- * 
+ *
  * Connects mobile gamification components to the backend API.
  * Handles XP, levels, achievements, quests, leaderboards, and streaks.
- * 
+ *
  * @module services/gamificationService
  * @since v0.8.3
  */
@@ -185,7 +185,10 @@ export async function claimDailyStreak(): Promise<StreakClaimResult> {
 /**
  * Get XP transaction history
  */
-export async function getXpHistory(options?: { limit?: number; offset?: number }): Promise<XpTransaction[]> {
+export async function getXpHistory(options?: {
+  limit?: number;
+  offset?: number;
+}): Promise<XpTransaction[]> {
   const params = {
     limit: options?.limit || 50,
     offset: options?.offset || 0,
@@ -279,7 +282,10 @@ export async function purchaseTitle(titleId: string): Promise<void> {
 
 // ==================== TRANSFORMERS ====================
 
-function transformStats(data: any): GamificationStats {
+/** API response type for transform functions */
+type ApiData = Record<string, unknown>;
+
+function transformStats(data: ApiData): GamificationStats {
   return {
     xp: data.xp || 0,
     level: data.level || 1,
@@ -297,7 +303,7 @@ function transformStats(data: any): GamificationStats {
   };
 }
 
-function transformLevelInfo(data: any): LevelInfo {
+function transformLevelInfo(data: ApiData): LevelInfo {
   return {
     level: data.level || 1,
     xpForCurrentLevel: data.xp_for_current_level || data.xpForCurrentLevel || 0,
@@ -306,7 +312,7 @@ function transformLevelInfo(data: any): LevelInfo {
   };
 }
 
-function transformAchievement(data: any): AchievementWithProgress {
+function transformAchievement(data: ApiData): AchievementWithProgress {
   const achievement = data.achievement || data;
   return {
     id: achievement.id,
@@ -324,8 +330,8 @@ function transformAchievement(data: any): AchievementWithProgress {
   };
 }
 
-function transformLeaderboard(data: any, category: string): LeaderboardData {
-  const entries = (data.entries || []).map((entry: any, index: number) => ({
+function transformLeaderboard(data: ApiData, category: string): LeaderboardData {
+  const entries = ((data.entries as ApiData[]) || []).map((entry: ApiData, index: number) => ({
     rank: entry.rank || index + 1,
     userId: entry.user_id || entry.userId || entry.id,
     username: entry.username,
@@ -342,22 +348,24 @@ function transformLeaderboard(data: any, category: string): LeaderboardData {
   return {
     entries,
     category,
-    userRank: userRank ? {
-      rank: userRank.rank,
-      userId: userRank.user_id || userRank.userId,
-      username: userRank.username,
-      displayName: userRank.display_name || userRank.displayName || userRank.username,
-      avatar: userRank.avatar || null,
-      value: userRank.value || 0,
-      level: userRank.level || 1,
-      title: userRank.title || null,
-      isCurrentUser: true,
-    } : null,
+    userRank: userRank
+      ? {
+          rank: userRank.rank,
+          userId: userRank.user_id || userRank.userId,
+          username: userRank.username,
+          displayName: userRank.display_name || userRank.displayName || userRank.username,
+          avatar: userRank.avatar || null,
+          value: userRank.value || 0,
+          level: userRank.level || 1,
+          title: userRank.title || null,
+          isCurrentUser: true,
+        }
+      : null,
     totalEntries: data.total_entries || data.totalEntries || entries.length,
   };
 }
 
-function transformStreakResult(data: any): StreakClaimResult {
+function transformStreakResult(data: ApiData): StreakClaimResult {
   return {
     coins: data.coins || 0,
     streak: data.streak || 0,
@@ -365,7 +373,7 @@ function transformStreakResult(data: any): StreakClaimResult {
   };
 }
 
-function transformXpTransaction(data: any): XpTransaction {
+function transformXpTransaction(data: ApiData): XpTransaction {
   return {
     id: data.id,
     amount: data.amount || 0,
@@ -378,20 +386,20 @@ function transformXpTransaction(data: any): XpTransaction {
   };
 }
 
-function transformQuest(data: any): Quest {
+function transformQuest(data: ApiData): Quest {
   return {
     id: data.id,
     name: data.name,
     description: data.description,
     type: data.type || 'daily',
-    objectives: (data.objectives || []).map((obj: any) => ({
+    objectives: ((data.objectives as ApiData[]) || []).map((obj: ApiData) => ({
       id: obj.id,
       description: obj.description,
       targetValue: obj.target_value || obj.targetValue || 1,
       currentValue: obj.current_value || obj.currentValue || 0,
       completed: obj.completed || false,
     })),
-    rewards: (data.rewards || []).map((reward: any) => ({
+    rewards: ((data.rewards as ApiData[]) || []).map((reward: ApiData) => ({
       type: reward.type || 'xp',
       amount: reward.amount || 0,
       itemId: reward.item_id || reward.itemId,
@@ -400,7 +408,7 @@ function transformQuest(data: any): Quest {
   };
 }
 
-function transformUserQuest(data: any): UserQuest {
+function transformUserQuest(data: ApiData): UserQuest {
   const quest = data.quest || data;
   return {
     id: data.id || quest.id,
@@ -420,20 +428,20 @@ const gamificationService = {
   // Stats & Level
   getGamificationStats,
   getLevelInfo,
-  
+
   // Achievements
   getAchievements,
   getAchievement,
-  
+
   // Leaderboard
   getLeaderboard,
-  
+
   // Streaks
   claimDailyStreak,
-  
+
   // XP History
   getXpHistory,
-  
+
   // Quests
   getQuests,
   getActiveQuests,
@@ -441,7 +449,7 @@ const gamificationService = {
   getWeeklyQuests,
   acceptQuest,
   claimQuestRewards,
-  
+
   // Titles
   getTitles,
   equipTitle,

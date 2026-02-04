@@ -1,16 +1,18 @@
 import React, { useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  Easing,
-  ViewStyle,
-  TextStyle,
-} from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, ViewStyle, TextStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'premium' | 'legendary' | 'rare' | 'epic';
+type BadgeVariant =
+  | 'default'
+  | 'primary'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+  | 'premium'
+  | 'legendary'
+  | 'rare'
+  | 'epic';
 type BadgeSize = 'xs' | 'sm' | 'md' | 'lg';
 
 interface BadgeProps {
@@ -29,7 +31,7 @@ interface BadgeProps {
 
 /**
  * Badge - A premium animated status indicator component.
- * 
+ *
  * Features:
  * - Multiple variants (default, primary, success, warning, danger, info, premium, legendary, rare, epic)
  * - Animated entrance
@@ -109,40 +111,46 @@ export default function Badge({
     }
   }, [animated, pulse, glow]);
 
-  const variantStyles: Record<BadgeVariant, { bg: string; text: string; border: string; gradient?: string[] }> = {
+  const variantStyles: Record<
+    BadgeVariant,
+    { bg: string; text: string; border: string; gradient?: string[] }
+  > = {
     default: { bg: '#374151', text: '#D1D5DB', border: '#4B5563' },
     primary: { bg: 'rgba(139, 92, 246, 0.2)', text: '#A78BFA', border: 'rgba(139, 92, 246, 0.3)' },
     success: { bg: 'rgba(34, 197, 94, 0.2)', text: '#4ADE80', border: 'rgba(34, 197, 94, 0.3)' },
     warning: { bg: 'rgba(234, 179, 8, 0.2)', text: '#FACC15', border: 'rgba(234, 179, 8, 0.3)' },
     danger: { bg: 'rgba(239, 68, 68, 0.2)', text: '#F87171', border: 'rgba(239, 68, 68, 0.3)' },
     info: { bg: 'rgba(59, 130, 246, 0.2)', text: '#60A5FA', border: 'rgba(59, 130, 246, 0.3)' },
-    premium: { 
-      bg: 'rgba(251, 191, 36, 0.2)', 
-      text: '#FCD34D', 
+    premium: {
+      bg: 'rgba(251, 191, 36, 0.2)',
+      text: '#FCD34D',
       border: 'rgba(251, 191, 36, 0.5)',
       gradient: ['#F59E0B', '#EAB308', '#F59E0B'],
     },
-    legendary: { 
-      bg: 'rgba(251, 146, 60, 0.2)', 
-      text: '#FB923C', 
+    legendary: {
+      bg: 'rgba(251, 146, 60, 0.2)',
+      text: '#FB923C',
       border: 'rgba(251, 146, 60, 0.5)',
       gradient: ['#EA580C', '#F97316', '#FB923C'],
     },
-    rare: { 
-      bg: 'rgba(6, 182, 212, 0.2)', 
-      text: '#22D3EE', 
+    rare: {
+      bg: 'rgba(6, 182, 212, 0.2)',
+      text: '#22D3EE',
       border: 'rgba(6, 182, 212, 0.5)',
       gradient: ['#0891B2', '#06B6D4', '#22D3EE'],
     },
-    epic: { 
-      bg: 'rgba(168, 85, 247, 0.2)', 
-      text: '#C084FC', 
+    epic: {
+      bg: 'rgba(168, 85, 247, 0.2)',
+      text: '#C084FC',
       border: 'rgba(168, 85, 247, 0.5)',
       gradient: ['#7C3AED', '#8B5CF6', '#A855F7'],
     },
   };
 
-  const sizeStyles: Record<BadgeSize, { paddingH: number; paddingV: number; fontSize: number; dotSize: number }> = {
+  const sizeStyles: Record<
+    BadgeSize,
+    { paddingH: number; paddingV: number; fontSize: number; dotSize: number }
+  > = {
     xs: { paddingH: 6, paddingV: 2, fontSize: 10, dotSize: 4 },
     sm: { paddingH: 8, paddingV: 3, fontSize: 11, dotSize: 5 },
     md: { paddingH: 10, paddingV: 4, fontSize: 12, dotSize: 6 },
@@ -208,12 +216,17 @@ export default function Badge({
     >
       {gradient && currentVariant.gradient ? (
         <LinearGradient
-          colors={currentVariant.gradient as any}
+          colors={currentVariant.gradient as unknown}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={[styles.gradient, { borderRadius: 100 }]}
         >
-          <View style={[styles.innerContainer, { paddingHorizontal: currentSize.paddingH, paddingVertical: currentSize.paddingV }]}>
+          <View
+            style={[
+              styles.innerContainer,
+              { paddingHorizontal: currentSize.paddingH, paddingVertical: currentSize.paddingV },
+            ]}
+          >
             {badgeContent}
           </View>
         </LinearGradient>
@@ -226,79 +239,155 @@ export default function Badge({
 
 // Predefined badge variants for common use cases
 export function NewBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="success" size="sm" style={style} pulse>✨ New</Badge>;
+  return (
+    <Badge variant="success" size="sm" style={style} pulse>
+      ✨ New
+    </Badge>
+  );
 }
 
 export function HotBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="danger" size="sm" style={style} pulse glow>🔥 Hot</Badge>;
+  return (
+    <Badge variant="danger" size="sm" style={style} pulse glow>
+      🔥 Hot
+    </Badge>
+  );
 }
 
 export function NsfwBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="danger" size="sm" style={style}>NSFW</Badge>;
+  return (
+    <Badge variant="danger" size="sm" style={style}>
+      NSFW
+    </Badge>
+  );
 }
 
 export function PinnedBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="success" size="sm" style={style}>📌 Pinned</Badge>;
+  return (
+    <Badge variant="success" size="sm" style={style}>
+      📌 Pinned
+    </Badge>
+  );
 }
 
 export function PrivateBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="warning" size="sm" style={style}>🔒 Private</Badge>;
+  return (
+    <Badge variant="warning" size="sm" style={style}>
+      🔒 Private
+    </Badge>
+  );
 }
 
 export function PublicBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="info" size="sm" style={style}>🌐 Public</Badge>;
+  return (
+    <Badge variant="info" size="sm" style={style}>
+      🌐 Public
+    </Badge>
+  );
 }
 
 export function OwnerBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="premium" size="sm" style={style} glow gradient>👑 Owner</Badge>;
+  return (
+    <Badge variant="premium" size="sm" style={style} glow gradient>
+      👑 Owner
+    </Badge>
+  );
 }
 
 export function ModeratorBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="success" size="sm" style={style}>🛡️ Mod</Badge>;
+  return (
+    <Badge variant="success" size="sm" style={style}>
+      🛡️ Mod
+    </Badge>
+  );
 }
 
 export function MemberBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="default" size="sm" style={style}>Member</Badge>;
+  return (
+    <Badge variant="default" size="sm" style={style}>
+      Member
+    </Badge>
+  );
 }
 
 export function PremiumBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="premium" size="sm" style={style} glow gradient>⭐ Premium</Badge>;
+  return (
+    <Badge variant="premium" size="sm" style={style} glow gradient>
+      ⭐ Premium
+    </Badge>
+  );
 }
 
 export function LegendaryBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="legendary" size="sm" style={style} glow pulse gradient>🏆 Legendary</Badge>;
+  return (
+    <Badge variant="legendary" size="sm" style={style} glow pulse gradient>
+      🏆 Legendary
+    </Badge>
+  );
 }
 
 export function RareBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="rare" size="sm" style={style} glow>💎 Rare</Badge>;
+  return (
+    <Badge variant="rare" size="sm" style={style} glow>
+      💎 Rare
+    </Badge>
+  );
 }
 
 export function EpicBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="epic" size="sm" style={style} glow>⚡ Epic</Badge>;
+  return (
+    <Badge variant="epic" size="sm" style={style} glow>
+      ⚡ Epic
+    </Badge>
+  );
 }
 
 export function OnlineBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="success" size="xs" style={style} dot animated={false}>Online</Badge>;
+  return (
+    <Badge variant="success" size="xs" style={style} dot animated={false}>
+      Online
+    </Badge>
+  );
 }
 
 export function OfflineBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="default" size="xs" style={style} dot animated={false}>Offline</Badge>;
+  return (
+    <Badge variant="default" size="xs" style={style} dot animated={false}>
+      Offline
+    </Badge>
+  );
 }
 
 export function AwayBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="warning" size="xs" style={style} dot animated={false}>Away</Badge>;
+  return (
+    <Badge variant="warning" size="xs" style={style} dot animated={false}>
+      Away
+    </Badge>
+  );
 }
 
 export function BusyBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="danger" size="xs" style={style} dot animated={false}>Busy</Badge>;
+  return (
+    <Badge variant="danger" size="xs" style={style} dot animated={false}>
+      Busy
+    </Badge>
+  );
 }
 
 export function VerifiedBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="info" size="sm" style={style} glow>✓ Verified</Badge>;
+  return (
+    <Badge variant="info" size="sm" style={style} glow>
+      ✓ Verified
+    </Badge>
+  );
 }
 
 export function AdminBadge({ style }: { style?: ViewStyle }) {
-  return <Badge variant="danger" size="sm" style={style} glow>🛡️ Admin</Badge>;
+  return (
+    <Badge variant="danger" size="sm" style={style} glow>
+      🛡️ Admin
+    </Badge>
+  );
 }
 
 const styles = StyleSheet.create({

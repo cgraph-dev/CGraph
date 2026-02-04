@@ -1,13 +1,13 @@
 /**
  * Search Service
- * 
+ *
  * Backend API integration for search features:
  * - Global search
  * - User search
  * - Group search
  * - Message search
  * - Forum search
- * 
+ *
  * @module services/searchService
  * @since v0.9.0
  */
@@ -135,9 +135,9 @@ export interface SearchFilters {
  * Perform global search across all content types
  */
 export async function globalSearch(
-  query: string, 
-  options?: { 
-    limit?: number; 
+  query: string,
+  options?: {
+    limit?: number;
     offset?: number;
     filters?: SearchFilters;
   }
@@ -166,7 +166,7 @@ export async function getSearchSuggestions(query: string): Promise<SearchSuggest
  */
 export async function getRecentSearches(): Promise<SearchSuggestion[]> {
   const response = await api.get('/api/v1/search/recent');
-  return (response.data.data || response.data.searches || []).map((s: any) => ({
+  return (response.data.data || response.data.searches || []).map((s: ApiData) => ({
     type: 'recent' as const,
     query: s.query || s,
     icon: 'time-outline',
@@ -202,8 +202,8 @@ export async function saveSearchToHistory(query: string): Promise<void> {
  */
 export async function searchUsers(
   query: string,
-  options?: { 
-    limit?: number; 
+  options?: {
+    limit?: number;
     offset?: number;
     minLevel?: number;
     verified?: boolean;
@@ -330,7 +330,7 @@ export async function searchPosts(
 
 // ==================== HELPERS ====================
 
-function flattenFilters(filters?: SearchFilters): Record<string, any> {
+function flattenFilters(filters?: SearchFilters): Record<string, unknown> {
   if (!filters) return {};
   return {
     type: filters.type,
@@ -347,7 +347,10 @@ function flattenFilters(filters?: SearchFilters): Record<string, any> {
 
 // ==================== TRANSFORMERS ====================
 
-function transformSearchResult(data: any): SearchResult {
+/** API response type for transform functions */
+type ApiData = Record<string, unknown>;
+
+function transformSearchResult(data: ApiData): SearchResult {
   return {
     type: data.type,
     id: data.id,
@@ -361,7 +364,7 @@ function transformSearchResult(data: any): SearchResult {
   };
 }
 
-function transformGlobalSearchResponse(data: any, query: string): GlobalSearchResponse {
+function transformGlobalSearchResponse(data: ApiData, query: string): GlobalSearchResponse {
   return {
     query,
     results: (data.results || []).map(transformSearchResult),
@@ -379,7 +382,7 @@ function transformGlobalSearchResponse(data: any, query: string): GlobalSearchRe
   };
 }
 
-function transformSearchSuggestion(data: any): SearchSuggestion {
+function transformSearchSuggestion(data: ApiData): SearchSuggestion {
   return {
     type: data.type || 'trending',
     query: data.query || data,
@@ -388,7 +391,7 @@ function transformSearchSuggestion(data: any): SearchSuggestion {
   };
 }
 
-function transformUserSearchResult(data: any): UserSearchResult {
+function transformUserSearchResult(data: ApiData): UserSearchResult {
   return {
     id: data.id,
     username: data.username,
@@ -404,7 +407,7 @@ function transformUserSearchResult(data: any): UserSearchResult {
   };
 }
 
-function transformGroupSearchResult(data: any): GroupSearchResult {
+function transformGroupSearchResult(data: ApiData): GroupSearchResult {
   return {
     id: data.id,
     name: data.name,
@@ -418,7 +421,7 @@ function transformGroupSearchResult(data: any): GroupSearchResult {
   };
 }
 
-function transformMessageSearchResult(data: any): MessageSearchResult {
+function transformMessageSearchResult(data: ApiData): MessageSearchResult {
   return {
     id: data.id,
     content: data.content,
@@ -434,7 +437,7 @@ function transformMessageSearchResult(data: any): MessageSearchResult {
   };
 }
 
-function transformForumSearchResult(data: any): ForumSearchResult {
+function transformForumSearchResult(data: ApiData): ForumSearchResult {
   return {
     id: data.id,
     name: data.name,
@@ -447,7 +450,7 @@ function transformForumSearchResult(data: any): ForumSearchResult {
   };
 }
 
-function transformPostSearchResult(data: any): PostSearchResult {
+function transformPostSearchResult(data: ApiData): PostSearchResult {
   return {
     id: data.id,
     title: data.title,

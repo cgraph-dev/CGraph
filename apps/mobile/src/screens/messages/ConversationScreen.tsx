@@ -2053,7 +2053,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
             return { ...m, reactions };
           })
         );
-      } catch (error: any) {
+      } catch (error: unknown) {
         // 409 means user already has this exact reaction - silently ignore
         if (error?.response?.status !== 409) {
           logger.warn('Error adding reaction:', error?.message || error);
@@ -2573,7 +2573,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
           video.duration
         );
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Error sending attachments:', error);
       logger.error('Error response:', error?.response?.data);
       Alert.alert(
@@ -2684,7 +2684,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         logger.error('No file URL in response:', response.data);
         Alert.alert('Error', 'Upload failed - no file URL returned.');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Error uploading file:', error?.response?.data || error?.message || error);
       const errorMessage =
         error?.response?.data?.error?.message ||

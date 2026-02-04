@@ -1,6 +1,6 @@
 /**
  * Settings Service
- * 
+ *
  * Backend API integration for settings-related screens:
  * - Account settings
  * - Notification preferences
@@ -8,12 +8,24 @@
  * - UI Customization
  * - RSS Feeds
  * - Custom Emoji management
- * 
+ *
  * @module services/settingsService
  * @since v0.9.0
  */
 
 import api from '../lib/api';
+
+// ==================== FORM DATA FILE TYPE ====================
+
+/**
+ * File object for FormData uploads in React Native.
+ * This is the format expected by React Native's FormData.append().
+ */
+interface FormDataFile {
+  uri: string;
+  type: string;
+  name: string;
+}
 
 // ==================== TYPES ====================
 
@@ -224,7 +236,9 @@ export async function getAvatarSettings(): Promise<AvatarSettings> {
 /**
  * Update avatar settings
  */
-export async function updateAvatarSettings(settings: Partial<AvatarSettings>): Promise<AvatarSettings> {
+export async function updateAvatarSettings(
+  settings: Partial<AvatarSettings>
+): Promise<AvatarSettings> {
   const response = await api.patch('/api/v1/users/me/avatar', {
     border_style: settings.borderStyle,
     border_color: settings.borderColor,
@@ -238,14 +252,14 @@ export async function updateAvatarSettings(settings: Partial<AvatarSettings>): P
 /**
  * Upload new avatar image
  */
-export async function uploadAvatar(file: { uri: string; type: string; name: string }): Promise<string> {
+export async function uploadAvatar(file: {
+  uri: string;
+  type: string;
+  name: string;
+}): Promise<string> {
   const formData = new FormData();
-  formData.append('avatar', {
-    uri: file.uri,
-    type: file.type,
-    name: file.name,
-  } as any);
-  
+  formData.append('avatar', file as unknown as Blob);
+
   const response = await api.post('/api/v1/users/me/avatar/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
@@ -281,7 +295,9 @@ export async function getChatBubbleSettings(): Promise<ChatBubbleSettings> {
 /**
  * Update chat bubble settings
  */
-export async function updateChatBubbleSettings(settings: Partial<ChatBubbleSettings>): Promise<ChatBubbleSettings> {
+export async function updateChatBubbleSettings(
+  settings: Partial<ChatBubbleSettings>
+): Promise<ChatBubbleSettings> {
   const response = await api.patch('/api/v1/users/me/chat-bubble', {
     style: settings.style,
     color: settings.color,
@@ -312,14 +328,10 @@ export async function uploadCustomEmoji(
   category: string
 ): Promise<CustomEmoji> {
   const formData = new FormData();
-  formData.append('image', {
-    uri: file.uri,
-    type: file.type,
-    name: file.name,
-  } as any);
+  formData.append('image', file as unknown as Blob);
   formData.append('shortcode', shortcode);
   formData.append('category', category);
-  
+
   const response = await api.post('/api/v1/users/me/emojis', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
@@ -394,7 +406,10 @@ export async function removeRssFeed(feedId: string): Promise<void> {
 /**
  * Get RSS feed items
  */
-export async function getRssFeedItems(feedId: string, options?: { limit?: number; offset?: number }): Promise<RssFeedItem[]> {
+export async function getRssFeedItems(
+  feedId: string,
+  options?: { limit?: number; offset?: number }
+): Promise<RssFeedItem[]> {
   const params = {
     limit: options?.limit || 50,
     offset: options?.offset || 0,
@@ -406,7 +421,10 @@ export async function getRssFeedItems(feedId: string, options?: { limit?: number
 /**
  * Get all RSS feed items (aggregated)
  */
-export async function getAllRssFeedItems(options?: { limit?: number; offset?: number }): Promise<RssFeedItem[]> {
+export async function getAllRssFeedItems(options?: {
+  limit?: number;
+  offset?: number;
+}): Promise<RssFeedItem[]> {
   const params = {
     limit: options?.limit || 50,
     offset: options?.offset || 0,
@@ -443,7 +461,9 @@ export async function getUICustomization(): Promise<UICustomization> {
 /**
  * Update UI customization settings
  */
-export async function updateUICustomization(settings: Partial<UICustomization>): Promise<UICustomization> {
+export async function updateUICustomization(
+  settings: Partial<UICustomization>
+): Promise<UICustomization> {
   const response = await api.patch('/api/v1/users/me/ui-customization', {
     primary_color: settings.primaryColor,
     accent_color: settings.accentColor,
@@ -465,7 +485,9 @@ export async function updateUICustomization(settings: Partial<UICustomization>):
  */
 export async function getNotificationPreferences(): Promise<NotificationPreference[]> {
   const response = await api.get('/api/v1/users/me/notification-preferences');
-  return (response.data.data || response.data.preferences || []).map(transformNotificationPreference);
+  return (response.data.data || response.data.preferences || []).map(
+    transformNotificationPreference
+  );
 }
 
 /**
@@ -486,7 +508,10 @@ export async function updateNotificationPreference(
 
 // ==================== TRANSFORMERS ====================
 
-function transformAccountInfo(data: any): AccountInfo {
+/** API response type for transform functions */
+type ApiData = Record<string, unknown>;
+
+function transformAccountInfo(data: ApiData): AccountInfo {
   return {
     id: data.id,
     email: data.email,
@@ -501,7 +526,7 @@ function transformAccountInfo(data: any): AccountInfo {
   };
 }
 
-function transformDeviceSession(data: any): DeviceSession {
+function transformDeviceSession(data: ApiData): DeviceSession {
   return {
     id: data.id,
     deviceName: data.device_name || data.deviceName || 'Unknown Device',
@@ -514,7 +539,7 @@ function transformDeviceSession(data: any): DeviceSession {
   };
 }
 
-function transformAvatarSettings(data: any): AvatarSettings {
+function transformAvatarSettings(data: ApiData): AvatarSettings {
   return {
     url: data.url || data.avatar_url || null,
     borderStyle: data.border_style || data.borderStyle || 'default',
@@ -525,7 +550,7 @@ function transformAvatarSettings(data: any): AvatarSettings {
   };
 }
 
-function transformAvatarFrame(data: any): AvatarFrame {
+function transformAvatarFrame(data: ApiData): AvatarFrame {
   return {
     id: data.id,
     name: data.name,
@@ -537,7 +562,7 @@ function transformAvatarFrame(data: any): AvatarFrame {
   };
 }
 
-function transformAvatarBadge(data: any): AvatarBadge {
+function transformAvatarBadge(data: ApiData): AvatarBadge {
   return {
     id: data.id,
     name: data.name,
@@ -547,7 +572,7 @@ function transformAvatarBadge(data: any): AvatarBadge {
   };
 }
 
-function transformChatBubbleSettings(data: any): ChatBubbleSettings {
+function transformChatBubbleSettings(data: ApiData): ChatBubbleSettings {
   return {
     style: data.style || 'default',
     color: data.color || null,
@@ -558,7 +583,7 @@ function transformChatBubbleSettings(data: any): ChatBubbleSettings {
   };
 }
 
-function transformCustomEmoji(data: any): CustomEmoji {
+function transformCustomEmoji(data: ApiData): CustomEmoji {
   return {
     id: data.id,
     shortcode: data.shortcode,
@@ -570,7 +595,7 @@ function transformCustomEmoji(data: any): CustomEmoji {
   };
 }
 
-function transformEmojiPack(data: any): EmojiPack {
+function transformEmojiPack(data: ApiData): EmojiPack {
   return {
     id: data.id,
     name: data.name,
@@ -583,7 +608,7 @@ function transformEmojiPack(data: any): EmojiPack {
   };
 }
 
-function transformRssFeed(data: any): RssFeed {
+function transformRssFeed(data: ApiData): RssFeed {
   return {
     id: data.id,
     title: data.title || 'Untitled Feed',
@@ -597,7 +622,7 @@ function transformRssFeed(data: any): RssFeed {
   };
 }
 
-function transformRssFeedItem(data: any): RssFeedItem {
+function transformRssFeedItem(data: ApiData): RssFeedItem {
   return {
     id: data.id,
     feedId: data.feed_id || data.feedId,
@@ -611,7 +636,7 @@ function transformRssFeedItem(data: any): RssFeedItem {
   };
 }
 
-function transformUICustomization(data: any): UICustomization {
+function transformUICustomization(data: ApiData): UICustomization {
   return {
     primaryColor: data.primary_color || data.primaryColor || '#6366f1',
     accentColor: data.accent_color || data.accentColor || '#8b5cf6',
@@ -625,7 +650,7 @@ function transformUICustomization(data: any): UICustomization {
   };
 }
 
-function transformNotificationPreference(data: any): NotificationPreference {
+function transformNotificationPreference(data: ApiData): NotificationPreference {
   return {
     channel: data.channel,
     enabled: data.enabled ?? true,

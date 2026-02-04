@@ -1,12 +1,12 @@
 /**
  * Notifications Service
- * 
+ *
  * Backend API integration for notifications:
  * - Fetch notifications
  * - Mark as read
  * - Notification preferences
  * - Push token registration
- * 
+ *
  * @module services/notificationsService
  * @since v0.9.0
  */
@@ -15,7 +15,7 @@ import api from '../lib/api';
 
 // ==================== TYPES ====================
 
-export type NotificationType = 
+export type NotificationType =
   | 'message'
   | 'friend_request'
   | 'friend_accepted'
@@ -226,7 +226,9 @@ export async function getPushTokens(): Promise<PushToken[]> {
  */
 export async function getNotificationPreferences(): Promise<NotificationPreference[]> {
   const response = await api.get('/api/v1/users/me/notification-preferences');
-  return (response.data.data || response.data.preferences || []).map(transformNotificationPreference);
+  return (response.data.data || response.data.preferences || []).map(
+    transformNotificationPreference
+  );
 }
 
 /**
@@ -261,7 +263,10 @@ export async function enableAllNotifications(): Promise<void> {
 
 // ==================== TRANSFORMERS ====================
 
-function transformNotificationSender(data: any): NotificationSender | null {
+/** API response type for transform functions */
+type ApiData = Record<string, unknown>;
+
+function transformNotificationSender(data: ApiData): NotificationSender | null {
   if (!data) return null;
   return {
     id: data.id,
@@ -271,7 +276,7 @@ function transformNotificationSender(data: any): NotificationSender | null {
   };
 }
 
-function transformNotification(data: any): Notification {
+function transformNotification(data: ApiData): Notification {
   return {
     id: data.id,
     type: data.type,
@@ -287,18 +292,20 @@ function transformNotification(data: any): Notification {
   };
 }
 
-function transformNotificationGroup(data: any): NotificationGroup {
+function transformNotificationGroup(data: ApiData): NotificationGroup {
   return {
     type: data.type,
     count: data.count || 0,
-    latestNotification: transformNotification(data.latest_notification || data.latestNotification || data.latest),
+    latestNotification: transformNotification(
+      data.latest_notification || data.latestNotification || data.latest
+    ),
     unreadCount: data.unread_count ?? data.unreadCount ?? 0,
   };
 }
 
-function transformNotificationStats(data: any): NotificationStats {
+function transformNotificationStats(data: ApiData): NotificationStats {
   const byType: Record<NotificationType, number> = {} as Record<NotificationType, number>;
-  
+
   if (data.by_type) {
     Object.entries(data.by_type).forEach(([key, value]) => {
       byType[key as NotificationType] = value as number;
@@ -308,7 +315,7 @@ function transformNotificationStats(data: any): NotificationStats {
       byType[key as NotificationType] = value as number;
     });
   }
-  
+
   return {
     total: data.total || 0,
     unread: data.unread || 0,
@@ -316,7 +323,7 @@ function transformNotificationStats(data: any): NotificationStats {
   };
 }
 
-function transformPushToken(data: any): PushToken {
+function transformPushToken(data: ApiData): PushToken {
   return {
     id: data.id,
     token: data.token,
@@ -327,7 +334,7 @@ function transformPushToken(data: any): PushToken {
   };
 }
 
-function transformNotificationPreference(data: any): NotificationPreference {
+function transformNotificationPreference(data: ApiData): NotificationPreference {
   return {
     type: data.type,
     enabled: data.enabled ?? true,

@@ -57,7 +57,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
   if (variant === 'compact') {
     return (
-      <GlassCard style={[styles.compactCard, tier.popular && styles.popularCard] as any}>
+      <GlassCard style={[styles.compactCard, tier.popular && styles.popularCard] as unknown}>
         <View style={styles.compactHeader}>
           <View style={[styles.tierBadge, { backgroundColor: tier.color }]}>
             <Text style={styles.tierBadgeText}>{tier.name}</Text>
@@ -143,7 +143,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
   // Default variant
   return (
-    <GlassCard style={[styles.card, tier.popular && styles.popularCard] as any}>
+    <GlassCard style={[styles.card, tier.popular && styles.popularCard] as unknown}>
       {/* Badge */}
       {tier.popular && (
         <View style={[styles.cardBadge, { backgroundColor: tier.color }]}>

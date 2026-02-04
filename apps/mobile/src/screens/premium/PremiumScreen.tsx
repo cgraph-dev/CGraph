@@ -210,7 +210,7 @@ const PremiumScreen: React.FC = () => {
                   );
                 }
               }
-            } catch (error: any) {
+            } catch (error: unknown) {
               console.error('[PremiumScreen] Purchase error:', error);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert('Purchase Failed', error.message || 'Unable to complete purchase.');
@@ -248,7 +248,7 @@ const PremiumScreen: React.FC = () => {
               } else {
                 Alert.alert('No Purchases', 'No previous purchases found to restore.');
               }
-            } catch (error: any) {
+            } catch (error: unknown) {
               console.error('[PremiumScreen] Restore error:', error);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert('Restore Failed', error.message || 'Unable to restore purchases.');

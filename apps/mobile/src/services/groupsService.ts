@@ -1,12 +1,12 @@
 /**
  * Groups Service
- * 
+ *
  * Backend API integration for group management:
  * - Group CRUD operations
  * - Member management
  * - Invites
  * - Roles & permissions
- * 
+ *
  * @module services/groupsService
  * @since v0.9.0
  */
@@ -206,14 +206,13 @@ export async function deleteGroup(groupId: string): Promise<void> {
 /**
  * Upload group avatar
  */
-export async function uploadGroupAvatar(groupId: string, file: { uri: string; type: string; name: string }): Promise<string> {
+export async function uploadGroupAvatar(
+  groupId: string,
+  file: { uri: string; type: string; name: string }
+): Promise<string> {
   const formData = new FormData();
-  formData.append('avatar', {
-    uri: file.uri,
-    type: file.type,
-    name: file.name,
-  } as any);
-  
+  formData.append('avatar', file as unknown as Blob);
+
   const response = await api.post(`/api/v1/groups/${groupId}/avatar`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
@@ -223,14 +222,13 @@ export async function uploadGroupAvatar(groupId: string, file: { uri: string; ty
 /**
  * Upload group banner
  */
-export async function uploadGroupBanner(groupId: string, file: { uri: string; type: string; name: string }): Promise<string> {
+export async function uploadGroupBanner(
+  groupId: string,
+  file: { uri: string; type: string; name: string }
+): Promise<string> {
   const formData = new FormData();
-  formData.append('banner', {
-    uri: file.uri,
-    type: file.type,
-    name: file.name,
-  } as any);
-  
+  formData.append('banner', file as unknown as Blob);
+
   const response = await api.post(`/api/v1/groups/${groupId}/banner`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
@@ -286,13 +284,16 @@ export async function getFeaturedGroups(): Promise<Group[]> {
 /**
  * Get group members
  */
-export async function getGroupMembers(groupId: string, options?: {
-  limit?: number;
-  offset?: number;
-  role?: GroupRole;
-  status?: 'online' | 'offline' | 'all';
-  search?: string;
-}): Promise<GroupMember[]> {
+export async function getGroupMembers(
+  groupId: string,
+  options?: {
+    limit?: number;
+    offset?: number;
+    role?: GroupRole;
+    status?: 'online' | 'offline' | 'all';
+    search?: string;
+  }
+): Promise<GroupMember[]> {
   const params = {
     limit: options?.limit || 50,
     offset: options?.offset || 0,
@@ -315,7 +316,11 @@ export async function getGroupMember(groupId: string, userId: string): Promise<G
 /**
  * Update member role
  */
-export async function updateMemberRole(groupId: string, userId: string, role: GroupRole): Promise<GroupMember> {
+export async function updateMemberRole(
+  groupId: string,
+  userId: string,
+  role: GroupRole
+): Promise<GroupMember> {
   const response = await api.patch(`/api/v1/groups/${groupId}/members/${userId}`, { role });
   return transformGroupMember(response.data.data || response.data);
 }
@@ -323,7 +328,11 @@ export async function updateMemberRole(groupId: string, userId: string, role: Gr
 /**
  * Set member nickname
  */
-export async function setMemberNickname(groupId: string, userId: string, nickname: string | null): Promise<void> {
+export async function setMemberNickname(
+  groupId: string,
+  userId: string,
+  nickname: string | null
+): Promise<void> {
   await api.patch(`/api/v1/groups/${groupId}/members/${userId}`, { nickname });
 }
 
@@ -347,10 +356,13 @@ export async function getGroupInvites(groupId: string): Promise<GroupInvite[]> {
 /**
  * Create group invite
  */
-export async function createGroupInvite(groupId: string, options?: {
-  maxUses?: number;
-  expiresIn?: number; // hours
-}): Promise<GroupInvite> {
+export async function createGroupInvite(
+  groupId: string,
+  options?: {
+    maxUses?: number;
+    expiresIn?: number; // hours
+  }
+): Promise<GroupInvite> {
   const response = await api.post(`/api/v1/groups/${groupId}/invites`, {
     max_uses: options?.maxUses,
     expires_in: options?.expiresIn,
@@ -394,11 +406,15 @@ export async function getGroupBans(groupId: string): Promise<GroupBan[]> {
 /**
  * Ban member
  */
-export async function banMember(groupId: string, userId: string, options?: {
-  reason?: string;
-  deleteMessages?: boolean;
-  duration?: number; // hours, null for permanent
-}): Promise<GroupBan> {
+export async function banMember(
+  groupId: string,
+  userId: string,
+  options?: {
+    reason?: string;
+    deleteMessages?: boolean;
+    duration?: number; // hours, null for permanent
+  }
+): Promise<GroupBan> {
   const response = await api.post(`/api/v1/groups/${groupId}/bans`, {
     user_id: userId,
     reason: options?.reason,
@@ -428,13 +444,16 @@ export async function getGroupChannels(groupId: string): Promise<GroupCategory[]
 /**
  * Create channel
  */
-export async function createChannel(groupId: string, data: {
-  name: string;
-  type: 'text' | 'voice' | 'announcement' | 'forum';
-  categoryId?: string;
-  description?: string;
-  isPrivate?: boolean;
-}): Promise<GroupChannel> {
+export async function createChannel(
+  groupId: string,
+  data: {
+    name: string;
+    type: 'text' | 'voice' | 'announcement' | 'forum';
+    categoryId?: string;
+    description?: string;
+    isPrivate?: boolean;
+  }
+): Promise<GroupChannel> {
   const response = await api.post(`/api/v1/groups/${groupId}/channels`, {
     name: data.name,
     type: data.type,
@@ -466,7 +485,10 @@ export async function getGroupSettings(groupId: string): Promise<GroupSettings> 
 /**
  * Update group settings
  */
-export async function updateGroupSettings(groupId: string, settings: Partial<GroupSettings>): Promise<GroupSettings> {
+export async function updateGroupSettings(
+  groupId: string,
+  settings: Partial<GroupSettings>
+): Promise<GroupSettings> {
   const response = await api.patch(`/api/v1/groups/${groupId}/settings`, {
     default_role: settings.defaultRole,
     allow_invites: settings.allowInvites,
@@ -489,7 +511,10 @@ export async function getGroupStats(groupId: string): Promise<GroupStats> {
 
 // ==================== TRANSFORMERS ====================
 
-function transformGroupFeatures(data: any): GroupFeatures {
+/** API response type for transform functions */
+type ApiData = Record<string, unknown>;
+
+function transformGroupFeatures(data: ApiData): GroupFeatures {
   return {
     forums: data?.forums ?? true,
     events: data?.events ?? true,
@@ -500,7 +525,7 @@ function transformGroupFeatures(data: any): GroupFeatures {
   };
 }
 
-function transformGroup(data: any): Group {
+function transformGroup(data: ApiData): Group {
   return {
     id: data.id,
     name: data.name,
@@ -524,7 +549,7 @@ function transformGroup(data: any): Group {
   };
 }
 
-function transformGroupMember(data: any): GroupMember {
+function transformGroupMember(data: ApiData): GroupMember {
   return {
     id: data.id,
     userId: data.user_id || data.userId,
@@ -541,7 +566,7 @@ function transformGroupMember(data: any): GroupMember {
   };
 }
 
-function transformGroupInvite(data: any): GroupInvite {
+function transformGroupInvite(data: ApiData): GroupInvite {
   return {
     id: data.id,
     code: data.code,
@@ -557,7 +582,7 @@ function transformGroupInvite(data: any): GroupInvite {
   };
 }
 
-function transformGroupChannel(data: any): GroupChannel {
+function transformGroupChannel(data: ApiData): GroupChannel {
   return {
     id: data.id,
     name: data.name,
@@ -572,7 +597,7 @@ function transformGroupChannel(data: any): GroupChannel {
   };
 }
 
-function transformGroupCategory(data: any): GroupCategory {
+function transformGroupCategory(data: ApiData): GroupCategory {
   return {
     id: data.id,
     name: data.name,
@@ -582,7 +607,7 @@ function transformGroupCategory(data: any): GroupCategory {
   };
 }
 
-function transformGroupBan(data: any): GroupBan {
+function transformGroupBan(data: ApiData): GroupBan {
   return {
     id: data.id,
     userId: data.user_id || data.userId,
@@ -597,7 +622,7 @@ function transformGroupBan(data: any): GroupBan {
   };
 }
 
-function transformGroupSettings(data: any): GroupSettings {
+function transformGroupSettings(data: ApiData): GroupSettings {
   return {
     defaultRole: data.default_role || data.defaultRole || 'member',
     allowInvites: data.allow_invites ?? data.allowInvites ?? true,
@@ -609,7 +634,7 @@ function transformGroupSettings(data: any): GroupSettings {
   };
 }
 
-function transformGroupStats(data: any): GroupStats {
+function transformGroupStats(data: ApiData): GroupStats {
   return {
     memberCount: data.member_count ?? data.memberCount ?? 0,
     onlineCount: data.online_count ?? data.onlineCount ?? 0,

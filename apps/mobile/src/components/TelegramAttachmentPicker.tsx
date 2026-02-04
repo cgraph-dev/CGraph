@@ -709,7 +709,7 @@ const TelegramAttachmentPicker = memo(
                     ]}
                   >
                     <Ionicons
-                      name={tab.icon as any}
+                      name={tab.icon as unknown}
                       size={22}
                       color={activeTab === tab.id ? '#fff' : colors.textSecondary}
                     />

@@ -1,6 +1,6 @@
 /**
  * Payment Service for Mobile
- * 
+ *
  * Handles in-app purchases for Premium subscriptions and Coin purchases.
  * Uses expo-in-app-purchases for iOS/Android native purchases
  * with Stripe as fallback for web/testing.
@@ -52,7 +52,7 @@ export const PRODUCT_IDS = {
   PREMIUM_YEARLY: 'cgraph_premium_yearly',
   PREMIUM_PLUS_MONTHLY: 'cgraph_premium_plus_monthly',
   PREMIUM_PLUS_YEARLY: 'cgraph_premium_plus_yearly',
-  
+
   // Coin Bundles (consumables)
   COINS_100: 'cgraph_coins_100',
   COINS_500: 'cgraph_coins_500',
@@ -80,12 +80,12 @@ class PaymentService {
     try {
       // In a production app, this would initialize the native IAP SDK
       // For now, we'll use a backend-based approach
-      
+
       console.log('[PaymentService] Initializing...');
-      
+
       // Fetch products from backend
       await this.fetchProducts();
-      
+
       this.isInitialized = true;
       console.log('[PaymentService] Initialized successfully');
       return true;
@@ -121,7 +121,8 @@ class PaymentService {
               type: 'subscription',
             });
             // Yearly subscription
-            const yearlyPrice = tier.price_yearly || (tier.price_monthly || tier.price || 0) * 12 * 0.8;
+            const yearlyPrice =
+              tier.price_yearly || (tier.price_monthly || tier.price || 0) * 12 * 0.8;
             this.products.set(`cgraph_${tier.id}_yearly`, {
               id: `cgraph_${tier.id}_yearly`,
               title: `${tier.name} Yearly`,
@@ -166,17 +167,89 @@ class PaymentService {
   private loadFallbackProducts(): void {
     const fallbackProducts: Product[] = [
       // Subscriptions
-      { id: PRODUCT_IDS.PREMIUM_MONTHLY, title: 'Premium Monthly', description: 'Premium subscription - monthly', price: '$4.99', priceAmountMicros: 4990000, priceCurrencyCode: 'USD', type: 'subscription' },
-      { id: PRODUCT_IDS.PREMIUM_YEARLY, title: 'Premium Yearly', description: 'Premium subscription - yearly (20% off)', price: '$47.90', priceAmountMicros: 47900000, priceCurrencyCode: 'USD', type: 'subscription' },
-      { id: PRODUCT_IDS.PREMIUM_PLUS_MONTHLY, title: 'Premium+ Monthly', description: 'Premium+ subscription - monthly', price: '$9.99', priceAmountMicros: 9990000, priceCurrencyCode: 'USD', type: 'subscription' },
-      { id: PRODUCT_IDS.PREMIUM_PLUS_YEARLY, title: 'Premium+ Yearly', description: 'Premium+ subscription - yearly (20% off)', price: '$95.90', priceAmountMicros: 95900000, priceCurrencyCode: 'USD', type: 'subscription' },
-      
+      {
+        id: PRODUCT_IDS.PREMIUM_MONTHLY,
+        title: 'Premium Monthly',
+        description: 'Premium subscription - monthly',
+        price: '$4.99',
+        priceAmountMicros: 4990000,
+        priceCurrencyCode: 'USD',
+        type: 'subscription',
+      },
+      {
+        id: PRODUCT_IDS.PREMIUM_YEARLY,
+        title: 'Premium Yearly',
+        description: 'Premium subscription - yearly (20% off)',
+        price: '$47.90',
+        priceAmountMicros: 47900000,
+        priceCurrencyCode: 'USD',
+        type: 'subscription',
+      },
+      {
+        id: PRODUCT_IDS.PREMIUM_PLUS_MONTHLY,
+        title: 'Premium+ Monthly',
+        description: 'Premium+ subscription - monthly',
+        price: '$9.99',
+        priceAmountMicros: 9990000,
+        priceCurrencyCode: 'USD',
+        type: 'subscription',
+      },
+      {
+        id: PRODUCT_IDS.PREMIUM_PLUS_YEARLY,
+        title: 'Premium+ Yearly',
+        description: 'Premium+ subscription - yearly (20% off)',
+        price: '$95.90',
+        priceAmountMicros: 95900000,
+        priceCurrencyCode: 'USD',
+        type: 'subscription',
+      },
+
       // Coin bundles
-      { id: PRODUCT_IDS.COINS_100, title: '100 Coins', description: '100 CGraph Coins', price: '$0.99', priceAmountMicros: 990000, priceCurrencyCode: 'USD', type: 'consumable' },
-      { id: PRODUCT_IDS.COINS_500, title: '550 Coins', description: '500 + 50 Bonus Coins', price: '$4.99', priceAmountMicros: 4990000, priceCurrencyCode: 'USD', type: 'consumable' },
-      { id: PRODUCT_IDS.COINS_1200, title: '1,400 Coins', description: '1,200 + 200 Bonus Coins', price: '$9.99', priceAmountMicros: 9990000, priceCurrencyCode: 'USD', type: 'consumable' },
-      { id: PRODUCT_IDS.COINS_2500, title: '3,000 Coins', description: '2,500 + 500 Bonus Coins', price: '$19.99', priceAmountMicros: 19990000, priceCurrencyCode: 'USD', type: 'consumable' },
-      { id: PRODUCT_IDS.COINS_6000, title: '7,500 Coins', description: '6,000 + 1,500 Bonus Coins', price: '$49.99', priceAmountMicros: 49990000, priceCurrencyCode: 'USD', type: 'consumable' },
+      {
+        id: PRODUCT_IDS.COINS_100,
+        title: '100 Coins',
+        description: '100 CGraph Coins',
+        price: '$0.99',
+        priceAmountMicros: 990000,
+        priceCurrencyCode: 'USD',
+        type: 'consumable',
+      },
+      {
+        id: PRODUCT_IDS.COINS_500,
+        title: '550 Coins',
+        description: '500 + 50 Bonus Coins',
+        price: '$4.99',
+        priceAmountMicros: 4990000,
+        priceCurrencyCode: 'USD',
+        type: 'consumable',
+      },
+      {
+        id: PRODUCT_IDS.COINS_1200,
+        title: '1,400 Coins',
+        description: '1,200 + 200 Bonus Coins',
+        price: '$9.99',
+        priceAmountMicros: 9990000,
+        priceCurrencyCode: 'USD',
+        type: 'consumable',
+      },
+      {
+        id: PRODUCT_IDS.COINS_2500,
+        title: '3,000 Coins',
+        description: '2,500 + 500 Bonus Coins',
+        price: '$19.99',
+        priceAmountMicros: 19990000,
+        priceCurrencyCode: 'USD',
+        type: 'consumable',
+      },
+      {
+        id: PRODUCT_IDS.COINS_6000,
+        title: '7,500 Coins',
+        description: '6,000 + 1,500 Bonus Coins',
+        price: '$49.99',
+        priceAmountMicros: 49990000,
+        priceCurrencyCode: 'USD',
+        type: 'consumable',
+      },
     ];
 
     for (const product of fallbackProducts) {
@@ -218,7 +291,7 @@ class PaymentService {
         // Use premium subscription endpoint
         const tier = productId.includes('premium_plus') ? 'premium_plus' : 'premium';
         const billingInterval = productId.includes('yearly') ? 'year' : 'month';
-        
+
         const response = await api.post('/api/v1/premium/subscribe', {
           tier,
           billing_interval: billingInterval,
@@ -279,16 +352,19 @@ class PaymentService {
       }
 
       return null;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[PaymentService] Purchase failed:', error);
-      
+
       // Show user-friendly error
+      const axiosError = error as { response?: { data?: { message?: string; error?: string } } };
       Alert.alert(
         'Purchase Failed',
-        error.response?.data?.message || error.response?.data?.error || 'Unable to complete purchase. Please try again.',
+        axiosError.response?.data?.message ||
+          axiosError.response?.data?.error ||
+          'Unable to complete purchase. Please try again.',
         [{ text: 'OK' }]
       );
-      
+
       return null;
     }
   }
@@ -304,20 +380,23 @@ class PaymentService {
 
       // Check current subscription status - this is the "restore" for Stripe
       const status = await this.getSubscriptionStatus();
-      
+
       if (status.isActive && status.tier !== 'free') {
         // User has an active subscription
-        const productId = status.tier === 'premium_plus' 
-          ? PRODUCT_IDS.PREMIUM_PLUS_MONTHLY 
-          : PRODUCT_IDS.PREMIUM_MONTHLY;
+        const productId =
+          status.tier === 'premium_plus'
+            ? PRODUCT_IDS.PREMIUM_PLUS_MONTHLY
+            : PRODUCT_IDS.PREMIUM_MONTHLY;
 
-        return [{
-          productId,
-          transactionId: `restored_${Date.now()}`,
-          transactionDate: Date.now(),
-          transactionReceipt: '',
-          purchaseState: 'restored',
-        }];
+        return [
+          {
+            productId,
+            transactionId: `restored_${Date.now()}`,
+            transactionDate: Date.now(),
+            transactionReceipt: '',
+            purchaseState: 'restored',
+          },
+        ];
       }
 
       return [];
@@ -401,15 +480,16 @@ class PaymentService {
       });
 
       return response.data.success || false;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[PaymentService] Coin purchase failed:', error);
-      
+
+      const axiosError = error as { response?: { data?: { message?: string } } };
       Alert.alert(
         'Purchase Failed',
-        error.response?.data?.message || 'Unable to complete purchase.',
+        axiosError.response?.data?.message || 'Unable to complete purchase.',
         [{ text: 'OK' }]
       );
-      
+
       return false;
     }
   }
@@ -417,20 +497,25 @@ class PaymentService {
   /**
    * Claim daily free coins
    */
-  async claimDailyCoins(): Promise<{ success: boolean; coins: number; nextClaimAt: string | null }> {
+  async claimDailyCoins(): Promise<{
+    success: boolean;
+    coins: number;
+    nextClaimAt: string | null;
+  }> {
     try {
       const response = await api.post('/api/v1/shop/claim-daily');
-      
+
       return {
         success: true,
         coins: response.data.coins_awarded || 0,
         nextClaimAt: response.data.next_claim_at || null,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const axiosError = error as { response?: { data?: { next_claim_at?: string } } };
       return {
         success: false,
         coins: 0,
-        nextClaimAt: error.response?.data?.next_claim_at || null,
+        nextClaimAt: axiosError.response?.data?.next_claim_at || null,
       };
     }
   }

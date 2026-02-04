@@ -30,14 +30,14 @@ interface VoiceMessagePlayerProps {
 
 /**
  * Audio player component for voice messages in React Native.
- * 
+ *
  * Features:
  * - Play/pause controls with haptic feedback
  * - Waveform visualization with progress overlay
  * - Duration display with current position
  * - Loading state handling
  * - Error handling with retry
- * 
+ *
  * Uses expo-audio (SDK 54+) for modern audio playback.
  */
 export function VoiceMessagePlayer({
@@ -58,19 +58,16 @@ export function VoiceMessagePlayer({
   );
   const waveformContainerRef = useRef<View>(null);
   const progressAnim = useRef(new Animated.Value(0)).current;
-  
+
   // Create audio player with expo-audio hook
   const player = useAudioPlayer(audioUrl);
   const status = useAudioPlayerStatus(player);
-  
+
   // Derive playing state from player status
   const isPlaying = status.playing;
-  
+
   // Create animated values for each waveform bar
-  const barAnimations = useMemo(() => 
-    waveform.map(() => new Animated.Value(1)), 
-    [waveform.length]
-  );
+  const barAnimations = useMemo(() => waveform.map(() => new Animated.Value(1)), [waveform.length]);
 
   // Configure audio mode on mount
   useEffect(() => {
@@ -82,21 +79,21 @@ export function VoiceMessagePlayer({
   // Handle status updates from expo-audio
   useEffect(() => {
     if (!status) return;
-    
+
     const { currentTime: positionSec, duration: durationSec, playing } = status;
-    
+
     // Update duration if we got it from the audio
     if (durationSec && durationSec > 0) {
       setAudioDuration(durationSec);
     }
-    
+
     // Update current time and progress
     setCurrentTime(positionSec || 0);
     const effectiveDuration = durationSec || audioDuration;
     if (effectiveDuration > 0 && positionSec !== undefined) {
       setProgress(positionSec / effectiveDuration);
     }
-    
+
     // Handle playback finished - reset to beginning
     if (!playing && positionSec !== undefined && audioDuration > 0) {
       const duration = durationSec || audioDuration;
@@ -107,7 +104,7 @@ export function VoiceMessagePlayer({
         player.seekTo(0);
       }
     }
-    
+
     setIsLoading(false);
   }, [status, audioDuration, player]);
 
@@ -137,16 +134,16 @@ export function VoiceMessagePlayer({
           ])
         );
       });
-      
-      animations.forEach(anim => anim.start());
-      
+
+      animations.forEach((anim) => anim.start());
+
       return () => {
-        animations.forEach(anim => anim.stop());
-        barAnimations.forEach(anim => anim.setValue(1));
+        animations.forEach((anim) => anim.stop());
+        barAnimations.forEach((anim) => anim.setValue(1));
       };
     } else {
       // Reset all animations when not playing
-      barAnimations.forEach(anim => {
+      barAnimations.forEach((anim) => {
         Animated.timing(anim, {
           toValue: 1,
           duration: 100,
@@ -199,24 +196,27 @@ export function VoiceMessagePlayer({
   };
 
   // Handle seek when user taps on waveform
-  const handleSeek = useCallback(async (event: any) => {
-    const { locationX } = event.nativeEvent;
-    
-    // Measure the waveform container width
-    if (waveformContainerRef.current) {
-      waveformContainerRef.current.measure((_x: number, _y: number, width: number) => {
-        if (width > 0 && audioDuration > 0) {
-          const newProgress = Math.max(0, Math.min(1, locationX / width));
-          const newPosition = newProgress * audioDuration;
-          
-          setProgress(newProgress);
-          setCurrentTime(newPosition);
-          
-          player.seekTo(newPosition);
-        }
-      });
-    }
-  }, [audioDuration, player]);
+  const handleSeek = useCallback(
+    async (event: { nativeEvent: { locationX: number } }) => {
+      const { locationX } = event.nativeEvent;
+
+      // Measure the waveform container width
+      if (waveformContainerRef.current) {
+        waveformContainerRef.current.measure((_x: number, _y: number, width: number) => {
+          if (width > 0 && audioDuration > 0) {
+            const newProgress = Math.max(0, Math.min(1, locationX / width));
+            const newPosition = newProgress * audioDuration;
+
+            setProgress(newProgress);
+            setCurrentTime(newPosition);
+
+            player.seekTo(newPosition);
+          }
+        });
+      }
+    },
+    [audioDuration, player]
+  );
 
   // Waveform rendering constants
   const barWidth = 2;
@@ -226,18 +226,12 @@ export function VoiceMessagePlayer({
   // Render waveform with progress overlay and animation
   const renderWaveform = () => {
     return (
-      <TouchableOpacity 
-        activeOpacity={0.8}
-        onPress={handleSeek}
-      >
-        <View 
-          ref={waveformContainerRef}
-          style={styles.waveformContainer}
-        >
+      <TouchableOpacity activeOpacity={0.8} onPress={handleSeek}>
+        <View ref={waveformContainerRef} style={styles.waveformContainer}>
           {waveform.map((amplitude, index) => {
             const barProgress = index / waveform.length;
             const isPlayed = barProgress <= progress;
-            
+
             return (
               <Animated.View
                 key={index}
@@ -248,8 +242,12 @@ export function VoiceMessagePlayer({
                     width: barWidth,
                     marginHorizontal: barGap / 2,
                     backgroundColor: isPlayed
-                      ? (isSender ? '#fff' : colors.primary)
-                      : (isSender ? 'rgba(255,255,255,0.4)' : colors.border),
+                      ? isSender
+                        ? '#fff'
+                        : colors.primary
+                      : isSender
+                        ? 'rgba(255,255,255,0.4)'
+                        : colors.border,
                     transform: [{ scaleY: barAnimations[index] || 1 }],
                   },
                 ]}
@@ -270,10 +268,8 @@ export function VoiceMessagePlayer({
       <TouchableOpacity
         style={[
           styles.playButton,
-          { 
-            backgroundColor: isSender 
-              ? 'rgba(255,255,255,0.2)' 
-              : colors.background 
+          {
+            backgroundColor: isSender ? 'rgba(255,255,255,0.2)' : colors.background,
           },
         ]}
         onPress={handlePlayPause}
@@ -284,11 +280,7 @@ export function VoiceMessagePlayer({
         ) : error ? (
           <Ionicons name="reload" size={20} color={buttonColor} />
         ) : (
-          <Ionicons
-            name={isPlaying ? 'pause' : 'play'}
-            size={20}
-            color={buttonColor}
-          />
+          <Ionicons name={isPlaying ? 'pause' : 'play'} size={20} color={buttonColor} />
         )}
       </TouchableOpacity>
 

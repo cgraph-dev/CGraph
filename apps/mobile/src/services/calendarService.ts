@@ -1,12 +1,12 @@
 /**
  * Calendar Service
- * 
+ *
  * Backend API integration for calendar/events features:
  * - Event management
  * - Reminders
  * - Scheduling
  * - Group events
- * 
+ *
  * @module services/calendarService
  * @since v0.9.0
  */
@@ -195,7 +195,10 @@ export async function createEvent(data: CreateEventRequest): Promise<CalendarEve
 /**
  * Update event
  */
-export async function updateEvent(eventId: string, data: UpdateEventRequest): Promise<CalendarEvent> {
+export async function updateEvent(
+  eventId: string,
+  data: UpdateEventRequest
+): Promise<CalendarEvent> {
   const response = await api.patch(`/api/v1/calendar/events/${eventId}`, {
     title: data.title,
     description: data.description,
@@ -204,9 +207,12 @@ export async function updateEvent(eventId: string, data: UpdateEventRequest): Pr
     all_day: data.allDay,
     location: data.location,
     color: data.color,
-    recurrence: data.recurrence !== undefined 
-      ? (data.recurrence ? transformRecurrenceToApi(data.recurrence) : null)
-      : undefined,
+    recurrence:
+      data.recurrence !== undefined
+        ? data.recurrence
+          ? transformRecurrenceToApi(data.recurrence)
+          : null
+        : undefined,
     reminders: data.reminders,
     is_public: data.isPublic,
     update_future_occurrences: data.updateFutureOccurrences,
@@ -217,7 +223,10 @@ export async function updateEvent(eventId: string, data: UpdateEventRequest): Pr
 /**
  * Delete event
  */
-export async function deleteEvent(eventId: string, deleteFutureOccurrences?: boolean): Promise<void> {
+export async function deleteEvent(
+  eventId: string,
+  deleteFutureOccurrences?: boolean
+): Promise<void> {
   const params = deleteFutureOccurrences ? { delete_future: true } : {};
   await api.delete(`/api/v1/calendar/events/${eventId}`, { params });
 }
@@ -273,9 +282,11 @@ export async function removeReminder(eventId: string, reminderId: string): Promi
 /**
  * Get pending reminders
  */
-export async function getPendingReminders(): Promise<{ event: CalendarEvent; reminder: Reminder }[]> {
+export async function getPendingReminders(): Promise<
+  { event: CalendarEvent; reminder: Reminder }[]
+> {
   const response = await api.get('/api/v1/calendar/reminders/pending');
-  return (response.data.data || response.data.reminders || []).map((r: any) => ({
+  return (response.data.data || response.data.reminders || []).map((r: ApiData) => ({
     event: transformCalendarEvent(r.event),
     reminder: transformReminder(r.reminder),
   }));
@@ -309,13 +320,16 @@ export async function getGroupEvents(
 /**
  * Create group event
  */
-export async function createGroupEvent(groupId: string, data: Omit<CreateEventRequest, 'groupId'>): Promise<CalendarEvent> {
+export async function createGroupEvent(
+  groupId: string,
+  data: Omit<CreateEventRequest, 'groupId'>
+): Promise<CalendarEvent> {
   return createEvent({ ...data, groupId });
 }
 
 // ==================== HELPERS ====================
 
-function transformRecurrenceToApi(rule: RecurrenceRule): any {
+function transformRecurrenceToApi(rule: RecurrenceRule): Record<string, unknown> {
   return {
     frequency: rule.frequency,
     interval: rule.interval,
@@ -329,7 +343,10 @@ function transformRecurrenceToApi(rule: RecurrenceRule): any {
 
 // ==================== TRANSFORMERS ====================
 
-function transformRecurrenceRule(data: any): RecurrenceRule | null {
+/** API response type for transform functions */
+type ApiData = Record<string, unknown>;
+
+function transformRecurrenceRule(data: ApiData): RecurrenceRule | null {
   if (!data) return null;
   return {
     frequency: data.frequency,
@@ -342,7 +359,7 @@ function transformRecurrenceRule(data: any): RecurrenceRule | null {
   };
 }
 
-function transformReminder(data: any): Reminder {
+function transformReminder(data: ApiData): Reminder {
   return {
     id: data.id,
     type: data.type || 'notification',
@@ -350,7 +367,7 @@ function transformReminder(data: any): Reminder {
   };
 }
 
-function transformEventAttendee(data: any): EventAttendee {
+function transformEventAttendee(data: ApiData): EventAttendee {
   return {
     id: data.id,
     userId: data.user_id || data.userId,
@@ -362,7 +379,7 @@ function transformEventAttendee(data: any): EventAttendee {
   };
 }
 
-function transformCalendarEvent(data: any): CalendarEvent {
+function transformCalendarEvent(data: ApiData): CalendarEvent {
   return {
     id: data.id,
     title: data.title,
@@ -390,26 +407,26 @@ function transformCalendarEvent(data: any): CalendarEvent {
   };
 }
 
-function transformCalendarMonth(data: any, year: number, month: number): CalendarMonth {
+function transformCalendarMonth(data: ApiData, year: number, month: number): CalendarMonth {
   const days: Record<number, CalendarEvent[]> = {};
-  
+
   if (data.days) {
-    Object.entries(data.days).forEach(([day, events]) => {
-      days[parseInt(day)] = (events as any[]).map(transformCalendarEvent);
+    Object.entries(data.days as Record<string, ApiData[]>).forEach(([day, events]) => {
+      days[parseInt(day)] = events.map(transformCalendarEvent);
     });
   } else if (data.events) {
-    (data.events as any[]).forEach((event) => {
+    (data.events as ApiData[]).forEach((event) => {
       const eventDate = new Date(event.start_time || event.startTime);
       const day = eventDate.getDate();
       if (!days[day]) days[day] = [];
       days[day].push(transformCalendarEvent(event));
     });
   }
-  
+
   return { year, month, days };
 }
 
-function transformUpcomingEvent(data: any): UpcomingEvent {
+function transformUpcomingEvent(data: ApiData): UpcomingEvent {
   const event = transformCalendarEvent(data.event || data);
   const now = new Date();
   const eventDate = new Date(event.startTime);
@@ -417,7 +434,7 @@ function transformUpcomingEvent(data: any): UpcomingEvent {
   const tomorrow = new Date(now);
   tomorrow.setDate(tomorrow.getDate() + 1);
   const isTomorrow = eventDate.toDateString() === tomorrow.toDateString();
-  
+
   return {
     event,
     timeUntil: data.time_until || data.timeUntil || formatTimeUntil(eventDate),
@@ -432,7 +449,7 @@ function formatTimeUntil(date: Date): string {
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
-  
+
   if (days > 0) return `${days}d`;
   if (hours > 0) return `${hours}h`;
   if (minutes > 0) return `${minutes}m`;

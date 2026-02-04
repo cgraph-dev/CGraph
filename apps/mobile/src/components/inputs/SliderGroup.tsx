@@ -202,7 +202,7 @@ export function Slider({
     width: thumbX.value + sizeConfig.thumbSize / 2,
   }));
 
-  const handleLayout = useCallback((event: any) => {
+  const handleLayout = useCallback((event: { nativeEvent: { layout: { width: number } } }) => {
     setTrackWidth(event.nativeEvent.layout.width);
   }, []);
 
@@ -418,7 +418,7 @@ export function RangeSlider({
     width: thumbX2.value - thumbX1.value,
   }));
 
-  const handleLayout = useCallback((event: any) => {
+  const handleLayout = useCallback((event: { nativeEvent: { layout: { width: number } } }) => {
     setTrackWidth(event.nativeEvent.layout.width);
   }, []);
 

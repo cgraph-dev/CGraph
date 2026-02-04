@@ -9,12 +9,7 @@ interface SkeletonProps {
   style?: ViewStyle;
 }
 
-export function Skeleton({ 
-  width = '100%', 
-  height = 20, 
-  borderRadius = 8,
-  style 
-}: SkeletonProps) {
+export function Skeleton({ width = '100%', height = 20, borderRadius = 8, style }: SkeletonProps) {
   const { colors } = useTheme();
   const animatedValue = useRef(new Animated.Value(0)).current;
 
@@ -46,7 +41,7 @@ export function Skeleton({
     <Animated.View
       style={[
         {
-          width: width as any,
+          width: width as unknown,
           height,
           borderRadius,
           backgroundColor: colors.border,
@@ -60,7 +55,7 @@ export function Skeleton({
 
 export function ForumCardSkeleton() {
   const { colors } = useTheme();
-  
+
   return (
     <View style={[styles.forumCard, { backgroundColor: colors.surface }]}>
       <Skeleton width={48} height={48} borderRadius={24} />
@@ -75,7 +70,7 @@ export function ForumCardSkeleton() {
 
 export function PostCardSkeleton() {
   const { colors } = useTheme();
-  
+
   return (
     <View style={[styles.postCard, { backgroundColor: colors.surface }]}>
       <View style={styles.postHeader}>
@@ -99,7 +94,7 @@ export function PostCardSkeleton() {
 
 export function CommentSkeleton() {
   const { colors } = useTheme();
-  
+
   return (
     <View style={[styles.comment, { backgroundColor: colors.surface }]}>
       <View style={styles.commentHeader}>
@@ -117,7 +112,7 @@ export function CommentSkeleton() {
 
 export function UserCardSkeleton() {
   const { colors } = useTheme();
-  
+
   return (
     <View style={[styles.userCard, { backgroundColor: colors.surface }]}>
       <Skeleton width={40} height={40} borderRadius={8} />

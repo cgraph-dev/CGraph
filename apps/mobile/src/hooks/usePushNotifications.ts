@@ -10,7 +10,7 @@
  */
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp, ParamListBase } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
@@ -50,7 +50,7 @@ export function usePushNotifications(): UsePushNotificationsResult {
 
       if (!type || !id) return;
 
-      const nav = navigation as any;
+      const nav = navigation as NavigationProp<ParamListBase>;
 
       switch (type) {
         case 'message':

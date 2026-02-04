@@ -167,10 +167,7 @@ function AnimatedInputField({
         style={[
           styles.labelContainer,
           {
-            transform: [
-              { translateY: labelTranslateY },
-              { scale: labelScale },
-            ],
+            transform: [{ translateY: labelTranslateY }, { scale: labelScale }],
           },
         ]}
       >
@@ -235,12 +232,7 @@ function AnimatedInputField({
               ]}
             />
           </View>
-          <Text
-            style={[
-              styles.charCountText,
-              isNearLimit ? { color: '#EF4444' } : undefined,
-            ]}
-          >
+          <Text style={[styles.charCountText, isNearLimit ? { color: '#EF4444' } : undefined]}>
             {value.length}/{maxLength}
           </Text>
         </View>
@@ -259,14 +251,12 @@ interface PostTypeSelectorProps {
 }
 
 function PostTypeSelector({ selectedType, onTypeChange }: PostTypeSelectorProps) {
-  const scaleAnims = useRef(
-    POST_TYPES.map(() => new Animated.Value(1))
-  ).current;
+  const scaleAnims = useRef(POST_TYPES.map(() => new Animated.Value(1))).current;
 
   const indicatorAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const selectedIndex = POST_TYPES.findIndex(t => t.type === selectedType);
+    const selectedIndex = POST_TYPES.findIndex((t) => t.type === selectedType);
     Animated.spring(indicatorAnim, {
       toValue: selectedIndex,
       friction: 8,
@@ -325,10 +315,7 @@ function PostTypeSelector({ selectedType, onTypeChange }: PostTypeSelectorProps)
           {POST_TYPES.map((option, index) => (
             <Animated.View
               key={option.type}
-              style={[
-                styles.postTypeOption,
-                { transform: [{ scale: scaleAnims[index] }] },
-              ]}
+              style={[styles.postTypeOption, { transform: [{ scale: scaleAnims[index] }] }]}
             >
               <TouchableOpacity
                 style={styles.postTypeButton}
@@ -433,21 +420,9 @@ function AnimatedSubmitButton({ onPress, isDisabled, isLoading }: SubmitButtonPr
   });
 
   return (
-    <Animated.View
-      style={[
-        styles.submitButtonWrapper,
-        { transform: [{ scale: scaleAnim }] },
-      ]}
-    >
+    <Animated.View style={[styles.submitButtonWrapper, { transform: [{ scale: scaleAnim }] }]}>
       {/* Glow effect */}
-      {!isDisabled && (
-        <Animated.View
-          style={[
-            styles.submitButtonGlow,
-            { opacity: glowAnim },
-          ]}
-        />
-      )}
+      {!isDisabled && <Animated.View style={[styles.submitButtonGlow, { opacity: glowAnim }]} />}
 
       <TouchableOpacity
         onPressIn={handlePressIn}
@@ -465,10 +440,7 @@ function AnimatedSubmitButton({ onPress, isDisabled, isLoading }: SubmitButtonPr
           {/* Shimmer overlay */}
           {!isDisabled && !isLoading && (
             <Animated.View
-              style={[
-                styles.shimmerOverlay,
-                { transform: [{ translateX: shimmerTranslateX }] },
-              ]}
+              style={[styles.shimmerOverlay, { transform: [{ translateX: shimmerTranslateX }] }]}
             >
               <LinearGradient
                 colors={['transparent', 'rgba(255,255,255,0.2)', 'transparent']}
@@ -483,17 +455,8 @@ function AnimatedSubmitButton({ onPress, isDisabled, isLoading }: SubmitButtonPr
             <ActivityIndicator size="small" color="#FFF" />
           ) : (
             <>
-              <Ionicons
-                name="paper-plane"
-                size={20}
-                color={isDisabled ? '#6B7280' : '#FFF'}
-              />
-              <Text
-                style={[
-                  styles.submitButtonText,
-                  isDisabled && { color: '#6B7280' },
-                ]}
-              >
+              <Ionicons name="paper-plane" size={20} color={isDisabled ? '#6B7280' : '#FFF'} />
+              <Text style={[styles.submitButtonText, isDisabled && { color: '#6B7280' }]}>
                 Create Post
               </Text>
             </>
@@ -613,7 +576,7 @@ export default function CreatePostScreen({ navigation, route }: Props) {
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       navigation.goBack();
-    } catch (error: any) {
+    } catch (error: unknown) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Error', error.response?.data?.message || 'Failed to create post');
     } finally {
@@ -626,10 +589,7 @@ export default function CreatePostScreen({ navigation, route }: Props) {
   return (
     <View style={styles.container}>
       {/* Background */}
-      <LinearGradient
-        colors={['#111827', '#0F172A', '#111827']}
-        style={StyleSheet.absoluteFill}
-      />
+      <LinearGradient colors={['#111827', '#0F172A', '#111827']} style={StyleSheet.absoluteFill} />
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -648,10 +608,7 @@ export default function CreatePostScreen({ navigation, route }: Props) {
           showsVerticalScrollIndicator={false}
         >
           {/* Post Type Selector */}
-          <PostTypeSelector
-            selectedType={postType}
-            onTypeChange={setPostType}
-          />
+          <PostTypeSelector selectedType={postType} onTypeChange={setPostType} />
 
           {/* Title Input */}
           <AnimatedInputField
@@ -692,7 +649,7 @@ export default function CreatePostScreen({ navigation, route }: Props) {
                 <View style={styles.previewMeta}>
                   <View style={styles.previewBadge}>
                     <Ionicons
-                      name={POST_TYPES.find(t => t.type === postType)?.icon || 'document-text'}
+                      name={POST_TYPES.find((t) => t.type === postType)?.icon || 'document-text'}
                       size={12}
                       color="#8B5CF6"
                     />

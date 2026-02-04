@@ -22,38 +22,41 @@ type Props = {
 
 /**
  * CreateForumScreen - Mobile version of forum creation
- * 
+ *
  * Matches the web version's functionality with mobile-native UI.
- * 
+ *
  * Validation Rules:
  * - Name: 3-21 characters, letters/numbers/underscores only
  * - Description: Optional, max 500 chars
  */
 export default function CreateForumScreen({ navigation }: Props) {
   const { colors } = useTheme();
-  
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState(true);
   const [isNsfw, setIsNsfw] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   // Name validation - only allow valid characters
   const handleNameChange = (text: string) => {
     const sanitized = text.replace(/[^a-zA-Z0-9_]/g, '');
     setName(sanitized.slice(0, 21));
   };
-  
+
   // Validation
   const isValidName = name.length >= 3 && name.length <= 21 && /^[a-zA-Z0-9_]+$/.test(name);
   const canSubmit = isValidName && !isSubmitting;
-  
+
   const handleSubmit = async () => {
     if (!isValidName) {
-      Alert.alert('Invalid Name', 'Forum name must be 3-21 characters, containing only letters, numbers, and underscores.');
+      Alert.alert(
+        'Invalid Name',
+        'Forum name must be 3-21 characters, containing only letters, numbers, and underscores.'
+      );
       return;
     }
-    
+
     setIsSubmitting(true);
     try {
       const response = await api.post('/api/v1/forums', {
@@ -62,32 +65,28 @@ export default function CreateForumScreen({ navigation }: Props) {
         is_nsfw: isNsfw,
         is_private: !isPublic,
       });
-      
+
       const forum = response.data?.forum || response.data;
-      
-      Alert.alert(
-        'Forum Created!',
-        `Your forum "${name}" has been created successfully.`,
-        [
-          {
-            text: 'View Forum',
-            onPress: () => {
-              if (forum?.id) {
-                navigation.replace('Forum', { forumId: forum.id });
-              } else {
-                navigation.goBack();
-              }
-            },
+
+      Alert.alert('Forum Created!', `Your forum "${name}" has been created successfully.`, [
+        {
+          text: 'View Forum',
+          onPress: () => {
+            if (forum?.id) {
+              navigation.replace('Forum', { forumId: forum.id });
+            } else {
+              navigation.goBack();
+            }
           },
-        ]
-      );
-    } catch (error: any) {
+        },
+      ]);
+    } catch (error: unknown) {
       console.error('[CreateForumScreen] Error:', error);
-      
+
       let message = 'Failed to create forum. Please try again.';
-      
+
       const errorData = error.response?.data?.error;
-      
+
       if (typeof errorData === 'string') {
         message = errorData;
         if (error.response?.data?.message) {
@@ -95,7 +94,7 @@ export default function CreateForumScreen({ navigation }: Props) {
         }
       } else if (errorData?.message) {
         message = errorData.message;
-        
+
         if (errorData.details && typeof errorData.details === 'object') {
           const detailMessages = Object.entries(errorData.details)
             .map(([field, msgs]) => {
@@ -104,7 +103,7 @@ export default function CreateForumScreen({ navigation }: Props) {
               return `${fieldName}: ${msgArray.join(', ')}`;
             })
             .join('\n');
-          
+
           if (detailMessages) {
             message = detailMessages;
           }
@@ -114,24 +113,22 @@ export default function CreateForumScreen({ navigation }: Props) {
       } else if (error.message) {
         message = error.message;
       }
-      
+
       Alert.alert('Error', message);
     } finally {
       setIsSubmitting(false);
     }
   };
-  
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: colors.primary }]}>
         <Ionicons name="sparkles" size={32} color="#fff" />
         <Text style={styles.headerTitle}>Create Your Forum</Text>
-        <Text style={styles.headerSubtitle}>
-          Build your own MyBB-style community
-        </Text>
+        <Text style={styles.headerSubtitle}>Build your own MyBB-style community</Text>
       </View>
-      
+
       <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
         <View style={styles.form}>
           {/* Forum Name */}
@@ -158,15 +155,17 @@ export default function CreateForumScreen({ navigation }: Props) {
               <Text style={[styles.hintText, { color: colors.textTertiary }]}>
                 3-21 chars. Letters, numbers, underscores only.
               </Text>
-              <Text style={[
-                styles.charCount, 
-                { color: !isValidName && name.length > 0 ? colors.error : colors.textTertiary }
-              ]}>
+              <Text
+                style={[
+                  styles.charCount,
+                  { color: !isValidName && name.length > 0 ? colors.error : colors.textTertiary },
+                ]}
+              >
                 {name.length}/21
               </Text>
             </View>
           </View>
-          
+
           {/* Description */}
           <View style={styles.inputGroup}>
             <Text style={[styles.label, { color: colors.text }]}>Description</Text>
@@ -191,18 +190,18 @@ export default function CreateForumScreen({ navigation }: Props) {
               {description.length}/500
             </Text>
           </View>
-          
+
           {/* Settings */}
           <View style={styles.settingsSection}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>Settings</Text>
-            
+
             {/* Public Toggle */}
             <View style={[styles.settingRow, { borderColor: colors.border }]}>
               <View style={styles.settingInfo}>
-                <Ionicons 
-                  name={isPublic ? "globe-outline" : "lock-closed-outline"} 
-                  size={24} 
-                  color={isPublic ? colors.success : colors.warning} 
+                <Ionicons
+                  name={isPublic ? 'globe-outline' : 'lock-closed-outline'}
+                  size={24}
+                  color={isPublic ? colors.success : colors.warning}
                 />
                 <View style={styles.settingText}>
                   <Text style={[styles.settingLabel, { color: colors.text }]}>
@@ -220,19 +219,17 @@ export default function CreateForumScreen({ navigation }: Props) {
                 thumbColor="#fff"
               />
             </View>
-            
+
             {/* NSFW Toggle */}
             <View style={[styles.settingRow, { borderColor: colors.border }]}>
               <View style={styles.settingInfo}>
-                <Ionicons 
-                  name="warning-outline" 
-                  size={24} 
-                  color={isNsfw ? colors.error : colors.textTertiary} 
+                <Ionicons
+                  name="warning-outline"
+                  size={24}
+                  color={isNsfw ? colors.error : colors.textTertiary}
                 />
                 <View style={styles.settingText}>
-                  <Text style={[styles.settingLabel, { color: colors.text }]}>
-                    NSFW Content
-                  </Text>
+                  <Text style={[styles.settingLabel, { color: colors.text }]}>NSFW Content</Text>
                   <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
                     Contains adult content
                   </Text>
@@ -248,9 +245,11 @@ export default function CreateForumScreen({ navigation }: Props) {
           </View>
         </View>
       </ScrollView>
-      
+
       {/* Footer */}
-      <View style={[styles.footer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+      <View
+        style={[styles.footer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}
+      >
         <TouchableOpacity
           style={[styles.cancelButton, { borderColor: colors.border }]}
           onPress={() => navigation.goBack()}
@@ -269,10 +268,7 @@ export default function CreateForumScreen({ navigation }: Props) {
             <ActivityIndicator size="small" color="#fff" />
           ) : (
             <Text
-              style={[
-                styles.submitButtonText,
-                { color: canSubmit ? '#fff' : colors.textTertiary },
-              ]}
+              style={[styles.submitButtonText, { color: canSubmit ? '#fff' : colors.textTertiary }]}
             >
               Create Forum
             </Text>

@@ -1,9 +1,9 @@
 /**
  * MessageInput Component
- * 
+ *
  * Full-featured message composition input with attachments and emoji support.
  * The primary text input for conversations.
- * 
+ *
  * @module components/conversation/MessageInput
  * @since v0.7.29
  */
@@ -62,7 +62,7 @@ export interface MessageInputProps {
 
 /**
  * Message composition input with attachment and emoji support.
- * 
+ *
  * Features:
  * - Multiline auto-expanding input
  * - Attachment button with badge count
@@ -70,7 +70,7 @@ export interface MessageInputProps {
  * - Optional emoji picker button
  * - Typing indicator callbacks
  * - Keyboard aware with proper submit handling
- * 
+ *
  * @example
  * ```tsx
  * <MessageInput
@@ -162,7 +162,7 @@ export const MessageInput = memo(function MessageInput({
   }, [canSend, onSend, sendButtonScale, onTypingEnd]);
 
   const handleContentSizeChange = useCallback(
-    (event: any) => {
+    (event: { nativeEvent: { contentSize: { height: number } } }) => {
       const height = event.nativeEvent.contentSize.height;
       setInputHeight(Math.min(Math.max(40, height), maxHeight));
     },
@@ -195,10 +195,7 @@ export const MessageInput = memo(function MessageInput({
       <View style={[styles.inputContainer, { backgroundColor: inputBackgroundColor }]}>
         <TextInput
           ref={inputRef}
-          style={[
-            styles.input,
-            { color: textColor, height: inputHeight },
-          ]}
+          style={[styles.input, { color: textColor, height: inputHeight }]}
           value={value}
           onChangeText={handleTextChange}
           onContentSizeChange={handleContentSizeChange}
@@ -238,11 +235,7 @@ export const MessageInput = memo(function MessageInput({
           accessibilityLabel="Send message"
           accessibilityState={{ disabled: !canSend }}
         >
-          <Ionicons
-            name="send"
-            size={20}
-            color={canSend ? '#fff' : placeholderColor}
-          />
+          <Ionicons name="send" size={20} color={canSend ? '#fff' : placeholderColor} />
         </TouchableOpacity>
       </Animated.View>
     </View>

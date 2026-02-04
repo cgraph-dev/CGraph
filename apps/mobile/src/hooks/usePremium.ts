@@ -1,18 +1,18 @@
 /**
  * usePremium Hook
- * 
+ *
  * React hook for premium subscription and shop functionality.
  * Provides subscription status, coin balance, and shop features.
- * 
+ *
  * @module hooks/usePremium
  * @since v0.9.0
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import * as premiumService from '../services/premiumService';
-import { 
-  SubscriptionTier, 
-  UserSubscription, 
+import {
+  SubscriptionTier,
+  UserSubscription,
   PremiumPerk,
   CoinBalance,
   CoinPackage,
@@ -51,18 +51,24 @@ interface UsePremiumReturn extends PremiumState {
   // Subscription functions
   refreshSubscription: () => Promise<void>;
   loadTiers: () => Promise<void>;
-  subscribe: (tierId: string, paymentMethodId: string) => Promise<{ clientSecret: string; subscriptionId: string } | null>;
+  subscribe: (
+    tierId: string,
+    paymentMethodId: string
+  ) => Promise<{ clientSecret: string; subscriptionId: string } | null>;
   cancelSubscription: () => Promise<boolean>;
   resumeSubscription: () => Promise<boolean>;
   changeTier: (newTierId: string) => Promise<boolean>;
   loadPerks: () => Promise<void>;
-  
+
   // Coin functions
   refreshCoinBalance: () => Promise<void>;
   loadCoinPackages: () => Promise<void>;
-  purchaseCoins: (packageId: string, paymentMethodId: string) => Promise<{ clientSecret: string } | null>;
+  purchaseCoins: (
+    packageId: string,
+    paymentMethodId: string
+  ) => Promise<{ clientSecret: string } | null>;
   loadTransactions: () => Promise<void>;
-  
+
   // Shop functions
   loadShopCategories: () => Promise<void>;
   loadCategoryItems: (categoryId: string) => Promise<ShopItem[]>;
@@ -72,7 +78,7 @@ interface UsePremiumReturn extends PremiumState {
   unequipItem: (itemId: string) => Promise<boolean>;
   loadInventory: () => Promise<void>;
   giftItem: (itemId: string, recipientUsername: string, message?: string) => Promise<boolean>;
-  
+
   // Computed values
   isPremium: boolean;
   premiumTier: string;
@@ -82,7 +88,7 @@ interface UsePremiumReturn extends PremiumState {
 
 export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
   const { autoLoad = true } = options;
-  
+
   const [state, setState] = useState<PremiumState>({
     subscription: null,
     tiers: [],
@@ -112,60 +118,69 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
 
   const refreshSubscription = useCallback(async () => {
     if (isCacheValid(cacheRef.current.subscription)) {
-      setState(prev => ({ ...prev, subscription: cacheRef.current.subscription!.data }));
+      setState((prev) => ({ ...prev, subscription: cacheRef.current.subscription!.data }));
       return;
     }
 
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
-    
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
+
     try {
       const subscription = await premiumService.getUserSubscription();
       cacheRef.current.subscription = { data: subscription, timestamp: Date.now() };
-      setState(prev => ({ ...prev, subscription, isLoading: false }));
-    } catch (error: any) {
-      setState(prev => ({
+      setState((prev) => ({ ...prev, subscription, isLoading: false }));
+    } catch (error: unknown) {
+      setState((prev) => ({
         ...prev,
         isLoading: false,
-        error: error.message || 'Failed to load subscription',
+        error: error instanceof Error ? error.message : 'Failed to load subscription',
       }));
     }
   }, [isCacheValid]);
 
   const loadTiers = useCallback(async () => {
     if (isCacheValid(cacheRef.current.tiers)) {
-      setState(prev => ({ ...prev, tiers: cacheRef.current.tiers!.data }));
+      setState((prev) => ({ ...prev, tiers: cacheRef.current.tiers!.data }));
       return;
     }
 
     try {
       const tiers = await premiumService.getSubscriptionTiers();
       cacheRef.current.tiers = { data: tiers, timestamp: Date.now() };
-      setState(prev => ({ ...prev, tiers }));
+      setState((prev) => ({ ...prev, tiers }));
     } catch (error) {
       console.error('Failed to load tiers:', error);
     }
   }, [isCacheValid]);
 
-  const subscribe = useCallback(async (
-    tierId: string, 
-    paymentMethodId: string
-  ): Promise<{ clientSecret: string; subscriptionId: string } | null> => {
-    try {
-      return await premiumService.subscribe(tierId, paymentMethodId);
-    } catch (error: any) {
-      setState(prev => ({ ...prev, error: error.message || 'Failed to subscribe' }));
-      return null;
-    }
-  }, []);
+  const subscribe = useCallback(
+    async (
+      tierId: string,
+      paymentMethodId: string
+    ): Promise<{ clientSecret: string; subscriptionId: string } | null> => {
+      try {
+        return await premiumService.subscribe(tierId, paymentMethodId);
+      } catch (error: unknown) {
+        setState((prev) => ({
+          ...prev,
+          error: error instanceof Error ? error.message : 'Failed to subscribe',
+        }));
+        return null;
+      }
+    },
+    []
+  );
 
   const cancelSubscription = useCallback(async (): Promise<boolean> => {
     try {
       const subscription = await premiumService.cancelSubscription();
-      setState(prev => ({ ...prev, subscription }));
+      setState((prev) => ({ ...prev, subscription }));
       cacheRef.current.subscription = { data: subscription, timestamp: Date.now() };
       return true;
-    } catch (error: any) {
-      setState(prev => ({ ...prev, error: error.message || 'Failed to cancel subscription' }));
+    } catch (error: unknown) {
+      setState((prev) => ({
+        ...prev,
+        error: error instanceof Error ? error.message : 'Failed to cancel subscription',
+      }));
       return false;
     }
   }, []);
@@ -173,11 +188,14 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
   const resumeSubscription = useCallback(async (): Promise<boolean> => {
     try {
       const subscription = await premiumService.resumeSubscription();
-      setState(prev => ({ ...prev, subscription }));
+      setState((prev) => ({ ...prev, subscription }));
       cacheRef.current.subscription = { data: subscription, timestamp: Date.now() };
       return true;
-    } catch (error: any) {
-      setState(prev => ({ ...prev, error: error.message || 'Failed to resume subscription' }));
+    } catch (error: unknown) {
+      setState((prev) => ({
+        ...prev,
+        error: error instanceof Error ? error.message : 'Failed to resume subscription',
+      }));
       return false;
     }
   }, []);
@@ -185,11 +203,14 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
   const changeTier = useCallback(async (newTierId: string): Promise<boolean> => {
     try {
       const subscription = await premiumService.changeSubscriptionTier(newTierId);
-      setState(prev => ({ ...prev, subscription }));
+      setState((prev) => ({ ...prev, subscription }));
       cacheRef.current.subscription = { data: subscription, timestamp: Date.now() };
       return true;
-    } catch (error: any) {
-      setState(prev => ({ ...prev, error: error.message || 'Failed to change tier' }));
+    } catch (error: unknown) {
+      setState((prev) => ({
+        ...prev,
+        error: error instanceof Error ? error.message : 'Failed to change tier',
+      }));
       return false;
     }
   }, []);
@@ -197,7 +218,7 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
   const loadPerks = useCallback(async () => {
     try {
       const perks = await premiumService.getPremiumPerks();
-      setState(prev => ({ ...prev, perks }));
+      setState((prev) => ({ ...prev, perks }));
     } catch (error) {
       console.error('Failed to load perks:', error);
     }
@@ -207,14 +228,14 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
 
   const refreshCoinBalance = useCallback(async () => {
     if (isCacheValid(cacheRef.current.coinBalance)) {
-      setState(prev => ({ ...prev, coinBalance: cacheRef.current.coinBalance!.data }));
+      setState((prev) => ({ ...prev, coinBalance: cacheRef.current.coinBalance!.data }));
       return;
     }
 
     try {
       const coinBalance = await premiumService.getCoinBalance();
       cacheRef.current.coinBalance = { data: coinBalance, timestamp: Date.now() };
-      setState(prev => ({ ...prev, coinBalance }));
+      setState((prev) => ({ ...prev, coinBalance }));
     } catch (error) {
       console.error('Failed to load coin balance:', error);
     }
@@ -223,29 +244,35 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
   const loadCoinPackages = useCallback(async () => {
     try {
       const coinPackages = await premiumService.getCoinPackages();
-      setState(prev => ({ ...prev, coinPackages }));
+      setState((prev) => ({ ...prev, coinPackages }));
     } catch (error) {
       console.error('Failed to load coin packages:', error);
     }
   }, []);
 
-  const purchaseCoins = useCallback(async (
-    packageId: string, 
-    paymentMethodId: string
-  ): Promise<{ clientSecret: string } | null> => {
-    try {
-      const result = await premiumService.purchaseCoinPackage(packageId, paymentMethodId);
-      return { clientSecret: result.clientSecret };
-    } catch (error: any) {
-      setState(prev => ({ ...prev, error: error.message || 'Failed to purchase coins' }));
-      return null;
-    }
-  }, []);
+  const purchaseCoins = useCallback(
+    async (
+      packageId: string,
+      paymentMethodId: string
+    ): Promise<{ clientSecret: string } | null> => {
+      try {
+        const result = await premiumService.purchaseCoinPackage(packageId, paymentMethodId);
+        return { clientSecret: result.clientSecret };
+      } catch (error: unknown) {
+        setState((prev) => ({
+          ...prev,
+          error: error instanceof Error ? error.message : 'Failed to purchase coins',
+        }));
+        return null;
+      }
+    },
+    []
+  );
 
   const loadTransactions = useCallback(async () => {
     try {
       const transactions = await premiumService.getCoinTransactions();
-      setState(prev => ({ ...prev, transactions }));
+      setState((prev) => ({ ...prev, transactions }));
     } catch (error) {
       console.error('Failed to load transactions:', error);
     }
@@ -256,7 +283,7 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
   const loadShopCategories = useCallback(async () => {
     try {
       const shopCategories = await premiumService.getShopCategories();
-      setState(prev => ({ ...prev, shopCategories }));
+      setState((prev) => ({ ...prev, shopCategories }));
     } catch (error) {
       console.error('Failed to load shop categories:', error);
     }
@@ -274,7 +301,7 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
   const loadFeaturedItems = useCallback(async () => {
     try {
       const featuredItems = await premiumService.getFeaturedItems();
-      setState(prev => ({ ...prev, featuredItems }));
+      setState((prev) => ({ ...prev, featuredItems }));
     } catch (error) {
       console.error('Failed to load featured items:', error);
     }
@@ -283,17 +310,20 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
   const purchaseItem = useCallback(async (itemId: string): Promise<PurchaseResult | null> => {
     try {
       const result = await premiumService.purchaseItem(itemId);
-      
+
       // Update coin balance
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         coinBalance: prev.coinBalance ? { ...prev.coinBalance, balance: result.newBalance } : null,
         inventory: [...prev.inventory, result.item],
       }));
-      
+
       return result;
-    } catch (error: any) {
-      setState(prev => ({ ...prev, error: error.message || 'Failed to purchase item' }));
+    } catch (error: unknown) {
+      setState((prev) => ({
+        ...prev,
+        error: error instanceof Error ? error.message : 'Failed to purchase item',
+      }));
       return null;
     }
   }, []);
@@ -301,14 +331,14 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
   const equipItem = useCallback(async (itemId: string): Promise<boolean> => {
     try {
       await premiumService.equipItem(itemId);
-      
-      setState(prev => ({
+
+      setState((prev) => ({
         ...prev,
-        inventory: prev.inventory.map(item =>
+        inventory: prev.inventory.map((item) =>
           item.id === itemId ? { ...item, equipped: true } : item
         ),
       }));
-      
+
       return true;
     } catch (error) {
       console.error('Failed to equip item:', error);
@@ -319,14 +349,14 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
   const unequipItem = useCallback(async (itemId: string): Promise<boolean> => {
     try {
       await premiumService.unequipItem(itemId);
-      
-      setState(prev => ({
+
+      setState((prev) => ({
         ...prev,
-        inventory: prev.inventory.map(item =>
+        inventory: prev.inventory.map((item) =>
           item.id === itemId ? { ...item, equipped: false } : item
         ),
       }));
-      
+
       return true;
     } catch (error) {
       console.error('Failed to unequip item:', error);
@@ -337,32 +367,35 @@ export function usePremium(options: UsePremiumOptions = {}): UsePremiumReturn {
   const loadInventory = useCallback(async () => {
     try {
       const inventory = await premiumService.getInventory();
-      setState(prev => ({ ...prev, inventory }));
+      setState((prev) => ({ ...prev, inventory }));
     } catch (error) {
       console.error('Failed to load inventory:', error);
     }
   }, []);
 
-  const giftItem = useCallback(async (
-    itemId: string, 
-    recipientUsername: string, 
-    message?: string
-  ): Promise<boolean> => {
-    try {
-      await premiumService.giftItem(itemId, recipientUsername, message);
-      return true;
-    } catch (error: any) {
-      setState(prev => ({ ...prev, error: error.message || 'Failed to gift item' }));
-      return false;
-    }
-  }, []);
+  const giftItem = useCallback(
+    async (itemId: string, recipientUsername: string, message?: string): Promise<boolean> => {
+      try {
+        await premiumService.giftItem(itemId, recipientUsername, message);
+        return true;
+      } catch (error: unknown) {
+        setState((prev) => ({
+          ...prev,
+          error: error instanceof Error ? error.message : 'Failed to gift item',
+        }));
+        return false;
+      }
+    },
+    []
+  );
 
   // ==================== COMPUTED VALUES ====================
 
   const isPremium = state.subscription?.tier !== 'free' && state.subscription?.status === 'active';
   const premiumTier = state.subscription?.tier || 'free';
   const coins = state.coinBalance?.balance || 0;
-  const hasActiveSubscription = state.subscription?.status === 'active' && !state.subscription.cancelAtPeriodEnd;
+  const hasActiveSubscription =
+    state.subscription?.status === 'active' && !state.subscription.cancelAtPeriodEnd;
 
   // ==================== EFFECTS ====================
 

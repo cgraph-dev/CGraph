@@ -15,7 +15,15 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-type ErrorType = 'generic' | 'network' | 'notFound' | 'permission' | 'rateLimit' | 'server' | 'empty' | 'offline';
+type ErrorType =
+  | 'generic'
+  | 'network'
+  | 'notFound'
+  | 'permission'
+  | 'rateLimit'
+  | 'server'
+  | 'empty'
+  | 'offline';
 
 interface ErrorStateProps {
   type?: ErrorType;
@@ -31,7 +39,7 @@ interface ErrorStateProps {
 
 /**
  * ErrorState - Premium animated error display component.
- * 
+ *
  * Features:
  * - Multiple error types with predefined content
  * - Animated icon bounce/shake
@@ -58,7 +66,16 @@ export default function ErrorState({
   const buttonScale = useRef(new Animated.Value(1)).current;
 
   // Error type presets
-  const errorPresets: Record<ErrorType, { title: string; message: string; icon: string; iconType: 'ionicon' | 'material'; color: string }> = {
+  const errorPresets: Record<
+    ErrorType,
+    {
+      title: string;
+      message: string;
+      icon: string;
+      iconType: 'ionicon' | 'material';
+      color: string;
+    }
+  > = {
     generic: {
       title: 'Something went wrong',
       message: 'An unexpected error occurred. Please try again.',
@@ -109,7 +126,7 @@ export default function ErrorState({
       color: '#6B7280',
     },
     offline: {
-      title: 'You\'re Offline',
+      title: "You're Offline",
       message: 'Please connect to the internet to continue.',
       icon: 'cloud-offline',
       iconType: 'ionicon',
@@ -188,7 +205,7 @@ export default function ErrorState({
 
   const handleRetry = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
+
     // Button press animation
     Animated.sequence([
       Animated.timing(buttonScale, {
@@ -220,15 +237,12 @@ export default function ErrorState({
           styles.iconContainer,
           {
             backgroundColor: `${preset.color}15`,
-            transform: [
-              { translateY: iconBounce },
-              { translateX: iconShake },
-            ],
+            transform: [{ translateY: iconBounce }, { translateX: iconShake }],
           },
           variant === 'minimal' && styles.iconContainerMinimal,
         ]}
       >
-        <IconComponent name={preset.icon as any} size={iconSize} color={preset.color} />
+        <IconComponent name={preset.icon as unknown} size={iconSize} color={preset.color} />
       </Animated.View>
     );
   };
@@ -258,19 +272,12 @@ export default function ErrorState({
 
       {onRetry && (
         <Animated.View style={{ transform: [{ scale: buttonScale }] }}>
-          <TouchableOpacity
-            onPress={handleRetry}
-            activeOpacity={0.8}
-            style={styles.buttonWrapper}
-          >
+          <TouchableOpacity onPress={handleRetry} activeOpacity={0.8} style={styles.buttonWrapper}>
             <LinearGradient
               colors={[preset.color, adjustColor(preset.color, -20)]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={[
-                styles.retryButton,
-                variant === 'minimal' && styles.retryButtonMinimal,
-              ]}
+              style={[styles.retryButton, variant === 'minimal' && styles.retryButtonMinimal]}
             >
               <Ionicons name="refresh" size={18} color="#FFF" style={{ marginRight: 8 }} />
               <Text style={styles.retryText}>{displayRetryLabel}</Text>
@@ -328,12 +335,7 @@ export function PermissionError({ style }: { style?: ViewStyle }) {
 
 export function RateLimitError({ onRetry, style }: { onRetry?: () => void; style?: ViewStyle }) {
   return (
-    <ErrorState
-      type="rateLimit"
-      onRetry={onRetry}
-      retryLabel="Try Again Later"
-      style={style}
-    />
+    <ErrorState type="rateLimit" onRetry={onRetry} retryLabel="Try Again Later" style={style} />
   );
 }
 

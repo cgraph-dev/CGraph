@@ -397,7 +397,7 @@ function TabButton({
 
     return {
       color: isActive ? activeTextColor : inactiveTextColor,
-      fontWeight: fontWeight as any,
+      fontWeight: fontWeight as unknown,
     };
   });
 

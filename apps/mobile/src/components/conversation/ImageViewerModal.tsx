@@ -1,9 +1,9 @@
 /**
  * ImageViewerModal Component
- * 
+ *
  * Full-screen image viewer with gallery support and swipe navigation.
  * Optimized for viewing photos sent in conversations.
- * 
+ *
  * @module components/conversation/ImageViewerModal
  * @since v0.7.29
  */
@@ -46,14 +46,14 @@ export interface ImageViewerModalProps {
 
 /**
  * Full-screen image viewer with horizontal gallery swipe.
- * 
+ *
  * Features:
  * - Swipeable gallery for multiple images
  * - Fade and scale entrance animation
  * - Image counter for gallery navigation
  * - Save and share action buttons
  * - Tap background to dismiss
- * 
+ *
  * @example
  * ```tsx
  * <ImageViewerModal
@@ -79,7 +79,7 @@ export const ImageViewerModal = memo(function ImageViewerModal({
   const galleryRef = useRef<FlatList>(null);
 
   const handleScroll = useCallback(
-    (event: any) => {
+    (event: { nativeEvent: { contentOffset: { x: number } } }) => {
       const newIndex = Math.round(event.nativeEvent.contentOffset.x / SCREEN_WIDTH);
       if (newIndex !== currentIndex && newIndex >= 0 && newIndex < images.length) {
         onIndexChange(newIndex);
@@ -109,7 +109,7 @@ export const ImageViewerModal = memo(function ImageViewerModal({
   );
 
   const getItemLayout = useCallback(
-    (_: any, index: number) => ({
+    (_: unknown, index: number) => ({
       length: SCREEN_WIDTH,
       offset: SCREEN_WIDTH * index,
       index,
@@ -154,7 +154,11 @@ export const ImageViewerModal = memo(function ImageViewerModal({
               renderItem={renderImage}
             />
           ) : images[0] ? (
-            <Image source={{ uri: images[0] }} style={styles.fullscreenImage} resizeMode="contain" />
+            <Image
+              source={{ uri: images[0] }}
+              style={styles.fullscreenImage}
+              resizeMode="contain"
+            />
           ) : null}
         </Animated.View>
 

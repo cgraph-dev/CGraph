@@ -1,9 +1,9 @@
 /**
  * AttachmentPreviewModal Component
- * 
+ *
  * Preview modal for pending attachments before sending.
  * Supports images, videos, and documents with captions.
- * 
+ *
  * @module components/conversation/AttachmentPreviewModal
  * @since v0.7.29
  */
@@ -78,7 +78,7 @@ const getFileIcon = (mimeType?: string): string => {
 
 /**
  * Full-screen preview modal for attachments before sending.
- * 
+ *
  * Features:
  * - Horizontal swipe for multiple attachments
  * - Caption input with multiline support
@@ -86,7 +86,7 @@ const getFileIcon = (mimeType?: string): string => {
  * - Add more attachments button
  * - Video thumbnail preview
  * - File type icons for documents
- * 
+ *
  * @example
  * ```tsx
  * <AttachmentPreviewModal
@@ -154,7 +154,11 @@ export const AttachmentPreviewModal = memo(function AttachmentPreviewModal({
           ) : (
             <View style={styles.previewFile}>
               <View style={[styles.fileIcon, { backgroundColor: colors.primary }]}>
-                <Ionicons name={getFileIcon(attachment.mimeType) as any} size={48} color="#fff" />
+                <Ionicons
+                  name={getFileIcon(attachment.mimeType) as unknown}
+                  size={48}
+                  color="#fff"
+                />
               </View>
               <Text style={styles.fileName} numberOfLines={2}>
                 {attachment.name}

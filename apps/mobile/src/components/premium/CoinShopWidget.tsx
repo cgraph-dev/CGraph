@@ -77,7 +77,7 @@ export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
             [
               variant === 'compact' ? styles.compactPackage : styles.packageCard,
               (pkg.popular || pkg.bestValue) && styles.highlightedPackage,
-            ] as any
+            ] as unknown
           }
         >
           {/* Badges */}

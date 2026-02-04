@@ -1,12 +1,12 @@
 /**
  * Premium Service
- * 
+ *
  * Backend API integration for premium and shop features:
  * - Subscription management
  * - Coin shop
  * - Premium perks
  * - In-app purchases
- * 
+ *
  * @module services/premiumService
  * @since v0.9.0
  */
@@ -136,7 +136,10 @@ export async function getUserSubscription(): Promise<UserSubscription> {
 /**
  * Subscribe to a tier
  */
-export async function subscribe(tierId: string, paymentMethodId: string): Promise<{ clientSecret: string; subscriptionId: string }> {
+export async function subscribe(
+  tierId: string,
+  paymentMethodId: string
+): Promise<{ clientSecret: string; subscriptionId: string }> {
   const response = await api.post('/api/v1/subscriptions', {
     tier_id: tierId,
     payment_method_id: paymentMethodId,
@@ -202,7 +205,10 @@ export async function getCoinPackages(): Promise<CoinPackage[]> {
 /**
  * Purchase coin package
  */
-export async function purchaseCoinPackage(packageId: string, paymentMethodId: string): Promise<{ clientSecret: string; transactionId: string }> {
+export async function purchaseCoinPackage(
+  packageId: string,
+  paymentMethodId: string
+): Promise<{ clientSecret: string; transactionId: string }> {
   const response = await api.post('/api/v1/shop/coin-packages/purchase', {
     package_id: packageId,
     payment_method_id: paymentMethodId,
@@ -216,7 +222,11 @@ export async function purchaseCoinPackage(packageId: string, paymentMethodId: st
 /**
  * Get coin transaction history
  */
-export async function getCoinTransactions(options?: { limit?: number; offset?: number; type?: string }): Promise<CoinTransaction[]> {
+export async function getCoinTransactions(options?: {
+  limit?: number;
+  offset?: number;
+  type?: string;
+}): Promise<CoinTransaction[]> {
   const params = {
     limit: options?.limit || 50,
     offset: options?.offset || 0,
@@ -239,7 +249,10 @@ export async function getShopCategories(): Promise<ShopCategory[]> {
 /**
  * Get shop items by category
  */
-export async function getShopItems(categoryId: string, options?: { limit?: number; offset?: number; rarity?: string }): Promise<ShopItem[]> {
+export async function getShopItems(
+  categoryId: string,
+  options?: { limit?: number; offset?: number; rarity?: string }
+): Promise<ShopItem[]> {
   const params = {
     limit: options?.limit || 50,
     offset: options?.offset || 0,
@@ -307,7 +320,11 @@ export async function getInventory(options?: { category?: string }): Promise<Sho
 /**
  * Gift item to another user
  */
-export async function giftItem(itemId: string, recipientUsername: string, message?: string): Promise<GiftResult> {
+export async function giftItem(
+  itemId: string,
+  recipientUsername: string,
+  message?: string
+): Promise<GiftResult> {
   const response = await api.post(`/api/v1/shop/items/${itemId}/gift`, {
     recipient_username: recipientUsername,
     message,
@@ -317,7 +334,10 @@ export async function giftItem(itemId: string, recipientUsername: string, messag
 
 // ==================== TRANSFORMERS ====================
 
-function transformSubscriptionTier(data: any): SubscriptionTier {
+/** API response type for transform functions */
+type ApiData = Record<string, unknown>;
+
+function transformSubscriptionTier(data: ApiData): SubscriptionTier {
   return {
     id: data.id,
     name: data.name,
@@ -331,7 +351,7 @@ function transformSubscriptionTier(data: any): SubscriptionTier {
   };
 }
 
-function transformUserSubscription(data: any): UserSubscription {
+function transformUserSubscription(data: ApiData): UserSubscription {
   return {
     tier: data.tier || 'free',
     status: data.status || 'active',
@@ -342,7 +362,7 @@ function transformUserSubscription(data: any): UserSubscription {
   };
 }
 
-function transformPremiumPerk(data: any): PremiumPerk {
+function transformPremiumPerk(data: ApiData): PremiumPerk {
   return {
     id: data.id,
     name: data.name,
@@ -354,7 +374,7 @@ function transformPremiumPerk(data: any): PremiumPerk {
   };
 }
 
-function transformCoinBalance(data: any): CoinBalance {
+function transformCoinBalance(data: ApiData): CoinBalance {
   return {
     balance: data.balance || 0,
     lifetimeEarned: data.lifetime_earned ?? data.lifetimeEarned ?? 0,
@@ -363,7 +383,7 @@ function transformCoinBalance(data: any): CoinBalance {
   };
 }
 
-function transformCoinPackage(data: any): CoinPackage {
+function transformCoinPackage(data: ApiData): CoinPackage {
   return {
     id: data.id,
     name: data.name,
@@ -376,7 +396,7 @@ function transformCoinPackage(data: any): CoinPackage {
   };
 }
 
-function transformShopItem(data: any): ShopItem {
+function transformShopItem(data: ApiData): ShopItem {
   return {
     id: data.id,
     name: data.name,
@@ -394,7 +414,7 @@ function transformShopItem(data: any): ShopItem {
   };
 }
 
-function transformShopCategory(data: any): ShopCategory {
+function transformShopCategory(data: ApiData): ShopCategory {
   return {
     id: data.id,
     name: data.name,
@@ -404,7 +424,7 @@ function transformShopCategory(data: any): ShopCategory {
   };
 }
 
-function transformPurchaseResult(data: any): PurchaseResult {
+function transformPurchaseResult(data: ApiData): PurchaseResult {
   return {
     success: data.success ?? true,
     item: transformShopItem(data.item),
@@ -417,7 +437,7 @@ function transformPurchaseResult(data: any): PurchaseResult {
   };
 }
 
-function transformCoinTransaction(data: any): CoinTransaction {
+function transformCoinTransaction(data: ApiData): CoinTransaction {
   return {
     id: data.id,
     type: data.type,
@@ -428,7 +448,7 @@ function transformCoinTransaction(data: any): CoinTransaction {
   };
 }
 
-function transformGiftResult(data: any): GiftResult {
+function transformGiftResult(data: ApiData): GiftResult {
   return {
     success: data.success ?? true,
     recipientUsername: data.recipient_username || data.recipientUsername,

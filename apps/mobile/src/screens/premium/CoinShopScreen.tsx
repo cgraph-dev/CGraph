@@ -288,9 +288,39 @@ interface SpecialOffer {
 }
 
 const SPECIAL_OFFERS: SpecialOffer[] = [
-  { id: 'so1', title: 'Starter Pack', coins: 1000, originalPrice: 9.99, salePrice: 4.99, discount: 50, endsIn: 24, icon: '🚀', gradient: ['#3b82f6', '#2563eb'] },
-  { id: 'so2', title: 'Weekend Special', coins: 3000, originalPrice: 29.99, salePrice: 14.99, discount: 50, endsIn: 48, icon: '⚡', gradient: ['#8b5cf6', '#7c3aed'] },
-  { id: 'so3', title: 'Mega Bundle', coins: 10000, originalPrice: 99.99, salePrice: 39.99, discount: 60, endsIn: 12, icon: '💫', gradient: ['#f59e0b', '#d97706'] },
+  {
+    id: 'so1',
+    title: 'Starter Pack',
+    coins: 1000,
+    originalPrice: 9.99,
+    salePrice: 4.99,
+    discount: 50,
+    endsIn: 24,
+    icon: '🚀',
+    gradient: ['#3b82f6', '#2563eb'],
+  },
+  {
+    id: 'so2',
+    title: 'Weekend Special',
+    coins: 3000,
+    originalPrice: 29.99,
+    salePrice: 14.99,
+    discount: 50,
+    endsIn: 48,
+    icon: '⚡',
+    gradient: ['#8b5cf6', '#7c3aed'],
+  },
+  {
+    id: 'so3',
+    title: 'Mega Bundle',
+    coins: 10000,
+    originalPrice: 99.99,
+    salePrice: 39.99,
+    discount: 60,
+    endsIn: 12,
+    icon: '💫',
+    gradient: ['#f59e0b', '#d97706'],
+  },
 ];
 
 interface CoinBundle {
@@ -389,7 +419,9 @@ const CoinShopScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const { user } = useAuth();
   const { colors } = useTheme();
-  const [selectedCategory, setSelectedCategory] = useState<'bundles' | 'themes' | 'badges' | 'effects' | 'boosts'>('bundles');
+  const [selectedCategory, setSelectedCategory] = useState<
+    'bundles' | 'themes' | 'badges' | 'effects' | 'boosts'
+  >('bundles');
   const [userCoins, setUserCoins] = useState(0);
   const [canClaimDaily, setCanClaimDaily] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
@@ -400,7 +432,7 @@ const CoinShopScreen: React.FC = () => {
     const fetchData = async () => {
       try {
         await paymentService.initialize();
-        
+
         const [coinsRes, dailyRes] = await Promise.allSettled([
           api.get('/api/v1/coins'),
           api.get('/api/v1/coins/daily-status'),
@@ -434,7 +466,7 @@ const CoinShopScreen: React.FC = () => {
 
   const filteredItems = useMemo(() => {
     if (selectedCategory === 'bundles') return [];
-    return SHOP_ITEMS.filter(item => {
+    return SHOP_ITEMS.filter((item) => {
       if (selectedCategory === 'themes') return item.category === 'theme';
       if (selectedCategory === 'badges') return item.category === 'badge';
       if (selectedCategory === 'effects') return item.category === 'effect';
@@ -448,14 +480,12 @@ const CoinShopScreen: React.FC = () => {
     setSelectedCategory(categoryId);
   }, []);
 
-  const handlePurchaseBundle = useCallback(async (bundle: CoinBundle) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  const handlePurchaseBundle = useCallback(
+    async (bundle: CoinBundle) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
-    const totalCoins = bundle.coins + bundle.bonus;
-    Alert.alert(
-      'Purchase Coins',
-      `Get ${totalCoins} coins for $${bundle.price.toFixed(2)}?`,
-      [
+      const totalCoins = bundle.coins + bundle.bonus;
+      Alert.alert('Purchase Coins', `Get ${totalCoins} coins for $${bundle.price.toFixed(2)}?`, [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Buy Now',
@@ -464,31 +494,34 @@ const CoinShopScreen: React.FC = () => {
             try {
               // Map bundle ID to product ID
               const productIdMap: Record<string, string> = {
-                'small': PRODUCT_IDS.COINS_100,
-                'medium': PRODUCT_IDS.COINS_500,
-                'large': PRODUCT_IDS.COINS_1200,
-                'mega': PRODUCT_IDS.COINS_2500,
-                'ultra': PRODUCT_IDS.COINS_6000,
+                small: PRODUCT_IDS.COINS_100,
+                medium: PRODUCT_IDS.COINS_500,
+                large: PRODUCT_IDS.COINS_1200,
+                mega: PRODUCT_IDS.COINS_2500,
+                ultra: PRODUCT_IDS.COINS_6000,
               };
               const productId = productIdMap[bundle.id];
-              
+
               if (!productId) {
                 throw new Error('Invalid bundle');
               }
 
               const purchase = await paymentService.purchaseProduct(productId);
-              
+
               if (purchase && purchase.purchaseState === 'purchased') {
                 // Refresh coin balance
                 const coinsRes = await api.get('/api/v1/coins');
                 setUserCoins(coinsRes.data.balance || userCoins + totalCoins);
-                
+
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 Alert.alert('Success!', `You've received ${totalCoins} coins!`);
               } else if (purchase?.purchaseState === 'pending') {
-                Alert.alert('Processing', 'Your purchase is being processed. Coins will be added shortly.');
+                Alert.alert(
+                  'Processing',
+                  'Your purchase is being processed. Coins will be added shortly.'
+                );
               }
-            } catch (error: any) {
+            } catch (error: unknown) {
               console.error('[CoinShop] Purchase error:', error);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert('Purchase Failed', error.message || 'Unable to complete purchase.');
@@ -497,33 +530,32 @@ const CoinShopScreen: React.FC = () => {
             }
           },
         },
-      ]
-    );
-  }, [userCoins]);
+      ]);
+    },
+    [userCoins]
+  );
 
-  const handlePurchaseItem = useCallback(async (item: ShopItem) => {
-    if (userCoins < item.price) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      Alert.alert(
-        'Insufficient Coins',
-        `You need ${item.price - userCoins} more coins to purchase this item.`,
-        [
-          { text: 'OK', style: 'cancel' },
-          {
-            text: 'Buy Coins',
-            onPress: () => handleCategorySelect('bundles'),
-          },
-        ]
-      );
-      return;
-    }
+  const handlePurchaseItem = useCallback(
+    async (item: ShopItem) => {
+      if (userCoins < item.price) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        Alert.alert(
+          'Insufficient Coins',
+          `You need ${item.price - userCoins} more coins to purchase this item.`,
+          [
+            { text: 'OK', style: 'cancel' },
+            {
+              text: 'Buy Coins',
+              onPress: () => handleCategorySelect('bundles'),
+            },
+          ]
+        );
+        return;
+      }
 
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    Alert.alert(
-      'Purchase Item',
-      `Buy "${item.name}" for ${item.price} coins?`,
-      [
+      Alert.alert('Purchase Item', `Buy "${item.name}" for ${item.price} coins?`, [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Purchase',
@@ -532,12 +564,12 @@ const CoinShopScreen: React.FC = () => {
             try {
               // Call API to purchase item
               await api.post(`/api/v1/shop/${item.id}/purchase`);
-              
+
               // Update local state
               setUserCoins((prev: number) => prev - item.price);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
               Alert.alert('Success!', `You've purchased ${item.name}!`);
-            } catch (error: any) {
+            } catch (error: unknown) {
               console.error('[CoinShop] Item purchase error:', error);
               // Fallback to local-only for demo/offline
               if (error.response?.status === 404 || !error.response) {
@@ -546,16 +578,20 @@ const CoinShopScreen: React.FC = () => {
                 Alert.alert('Success!', `You've purchased ${item.name}!`);
               } else {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-                Alert.alert('Purchase Failed', error.response?.data?.message || 'Unable to complete purchase.');
+                Alert.alert(
+                  'Purchase Failed',
+                  error.response?.data?.message || 'Unable to complete purchase.'
+                );
               }
             } finally {
               setIsPurchasing(false);
             }
           },
         },
-      ]
-    );
-  }, [userCoins, handleCategorySelect]);
+      ]);
+    },
+    [userCoins, handleCategorySelect]
+  );
 
   const handleClaimDaily = useCallback(async () => {
     if (!canClaimDaily) {
@@ -568,7 +604,7 @@ const CoinShopScreen: React.FC = () => {
       // Call API to claim daily bonus
       const response = await api.post('/api/v1/coins/daily-claim');
       const coinsAwarded = response.data.coins || 50;
-      
+
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setUserCoins((prev: number) => prev + coinsAwarded);
       setCanClaimDaily(false);
@@ -578,9 +614,9 @@ const CoinShopScreen: React.FC = () => {
         `You've received ${coinsAwarded} free coins! Come back tomorrow for more.`,
         [{ text: 'Awesome!', style: 'default' }]
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[CoinShop] Daily claim error:', error);
-      
+
       // Fallback for offline/demo mode
       if (error.response?.status === 404 || !error.response) {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -588,7 +624,7 @@ const CoinShopScreen: React.FC = () => {
         setCanClaimDaily(false);
         Alert.alert(
           '🎁 Daily Bonus!',
-          'You\'ve received 50 free coins! Come back tomorrow for more.',
+          "You've received 50 free coins! Come back tomorrow for more.",
           [{ text: 'Awesome!', style: 'default' }]
         );
       } else if (error.response?.status === 429) {
@@ -636,10 +672,7 @@ const CoinShopScreen: React.FC = () => {
               )}
 
               <View style={styles.bundleIcon}>
-                <LinearGradient
-                  colors={['#f59e0b', '#d97706']}
-                  style={styles.bundleIconGradient}
-                >
+                <LinearGradient colors={['#f59e0b', '#d97706']} style={styles.bundleIconGradient}>
                   <Ionicons name="diamond" size={32} color="#fff" />
                 </LinearGradient>
               </View>
@@ -673,15 +706,8 @@ const CoinShopScreen: React.FC = () => {
           onPress={() => handlePurchaseItem(item)}
           activeOpacity={0.9}
         >
-          <GlassCard
-            variant="crystal"
-            intensity="medium"
-            style={styles.itemCardInner}
-          >
-            <LinearGradient
-              colors={RARITY_COLORS[item.rarity]}
-              style={styles.itemIcon}
-            >
+          <GlassCard variant="crystal" intensity="medium" style={styles.itemCardInner}>
+            <LinearGradient colors={RARITY_COLORS[item.rarity]} style={styles.itemIcon}>
               <Ionicons name={item.icon as any} size={28} color="#fff" />
             </LinearGradient>
 
@@ -840,7 +866,9 @@ const CoinShopScreen: React.FC = () => {
       </Animated.View>
 
       {/* Enhanced Balance Card */}
-      <Animated.View style={[styles.balanceCardWrapper, { transform: [{ scale: balanceScaleAnim }] }]}>
+      <Animated.View
+        style={[styles.balanceCardWrapper, { transform: [{ scale: balanceScaleAnim }] }]}
+      >
         <LinearGradient
           colors={['#1e1e2e', '#2d2d44']}
           start={{ x: 0, y: 0 }}

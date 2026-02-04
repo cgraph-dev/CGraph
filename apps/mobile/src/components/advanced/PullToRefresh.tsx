@@ -421,10 +421,10 @@ function ArrowsIndicator({ progress, isRefreshing, color, size }: IndicatorProps
 // Convenience Components
 // ============================================================================
 
-export interface RefreshableListProps extends PullToRefreshProps {
-  data: any[];
-  renderItem: (item: any, index: number) => React.ReactNode;
-  keyExtractor?: (item: any, index: number) => string;
+export interface RefreshableListProps<T = unknown> extends PullToRefreshProps {
+  data: T[];
+  renderItem: (item: T, index: number) => React.ReactNode;
+  keyExtractor?: (item: T, index: number) => string;
   ItemSeparator?: React.ComponentType;
 }
 

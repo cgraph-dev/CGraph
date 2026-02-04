@@ -332,7 +332,10 @@ export async function searchUsers(
 
 // ==================== TRANSFORMERS ====================
 
-function transformFriendUser(data: any): FriendUser {
+/** API response type for transform functions */
+type ApiData = Record<string, unknown>;
+
+function transformFriendUser(data: ApiData): FriendUser {
   return {
     id: data.id,
     username: data.username,
@@ -345,7 +348,7 @@ function transformFriendUser(data: any): FriendUser {
   };
 }
 
-function transformFriend(data: any): Friend {
+function transformFriend(data: ApiData): Friend {
   return {
     id: data.id,
     friendshipId: data.friendship_id || data.friendshipId || data.id,
@@ -359,7 +362,7 @@ function transformFriend(data: any): Friend {
   };
 }
 
-function transformFriendRequest(data: any): FriendRequest {
+function transformFriendRequest(data: ApiData): FriendRequest {
   return {
     id: data.id,
     from: transformFriendUser(data.from || data.sender),
@@ -371,7 +374,7 @@ function transformFriendRequest(data: any): FriendRequest {
   };
 }
 
-function transformUserBadge(data: any): UserBadge {
+function transformUserBadge(data: ApiData): UserBadge {
   return {
     id: data.id,
     name: data.name,
@@ -382,7 +385,7 @@ function transformUserBadge(data: any): UserBadge {
   };
 }
 
-function transformUserStats(data: any): UserStats {
+function transformUserStats(data: ApiData): UserStats {
   return {
     messagesCount: data.messages_count ?? data.messagesCount ?? 0,
     postsCount: data.posts_count ?? data.postsCount ?? 0,
@@ -393,7 +396,7 @@ function transformUserStats(data: any): UserStats {
   };
 }
 
-function transformUserProfile(data: any): UserProfile {
+function transformUserProfile(data: ApiData): UserProfile {
   return {
     id: data.id,
     username: data.username,
@@ -421,14 +424,14 @@ function transformUserProfile(data: any): UserProfile {
   };
 }
 
-function transformMutualFriend(data: any): MutualFriend {
+function transformMutualFriend(data: ApiData): MutualFriend {
   return {
     id: data.id,
     user: transformFriendUser(data.user || data),
   };
 }
 
-function transformMutualGroup(data: any): MutualGroup {
+function transformMutualGroup(data: ApiData): MutualGroup {
   return {
     id: data.id,
     name: data.name,
@@ -437,7 +440,7 @@ function transformMutualGroup(data: any): MutualGroup {
   };
 }
 
-function transformBlockedUser(data: any): BlockedUser {
+function transformBlockedUser(data: ApiData): BlockedUser {
   return {
     id: data.id,
     user: transformFriendUser(data.user || data),
@@ -446,7 +449,7 @@ function transformBlockedUser(data: any): BlockedUser {
   };
 }
 
-function transformFriendSuggestion(data: any): FriendSuggestion {
+function transformFriendSuggestion(data: ApiData): FriendSuggestion {
   return {
     id: data.id,
     user: transformFriendUser(data.user || data),

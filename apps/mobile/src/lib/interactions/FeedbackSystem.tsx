@@ -253,7 +253,7 @@ export function Skeleton({
     <View
       style={[
         styles.skeleton,
-        { width: width as any, height, borderRadius, backgroundColor },
+        { width: width as unknown, height, borderRadius, backgroundColor },
         style,
       ]}
     >

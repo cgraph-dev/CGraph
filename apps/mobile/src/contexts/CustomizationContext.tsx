@@ -77,11 +77,11 @@ export function CustomizationProvider({ children }: CustomizationProviderProps) 
   // Helper: Get color by path (e.g., "primary.500" or "text.primary")
   const getColor = (path: string): string => {
     const parts = path.split('.');
-    let current: any = theme.colors;
+    let current: Record<string, unknown> = theme.colors as Record<string, unknown>;
 
     for (const part of parts) {
       if (current[part] !== undefined) {
-        current = current[part];
+        current = current[part] as Record<string, unknown>;
       } else {
         return theme.colors.primary[500]; // Default fallback
       }
@@ -128,9 +128,7 @@ export function CustomizationProvider({ children }: CustomizationProviderProps) 
   }
 
   return (
-    <CustomizationContext.Provider value={contextValue}>
-      {children}
-    </CustomizationContext.Provider>
+    <CustomizationContext.Provider value={contextValue}>{children}</CustomizationContext.Provider>
   );
 }
 
