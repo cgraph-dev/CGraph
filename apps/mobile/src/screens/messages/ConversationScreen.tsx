@@ -51,7 +51,7 @@ import {
   MessageBubble,
 } from './ConversationScreen/components';
 import { styles } from './ConversationScreen/styles';
-import { useMediaViewer, EMOJI_CATEGORIES } from './ConversationScreen/hooks';
+import { useMediaViewer, usePresence, EMOJI_CATEGORIES } from './ConversationScreen/hooks';
 import { getMimeType, processMessagesWithReactions } from './ConversationScreen/utils';
 
 const logger = createLogger('ConversationScreen');
