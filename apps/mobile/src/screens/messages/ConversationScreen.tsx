@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   FlatList,
@@ -48,6 +48,8 @@ import {
   useConversationData,
   useTextMessageSending,
   usePinnedMessages,
+  useSocketEventHandlers,
+  useMessageActionWrappers,
 } from './ConversationScreen/hooks';
 import {
   formatSimpleTime,
@@ -312,83 +314,23 @@ export default function ConversationScreen({ navigation, route }: Props) {
     onScrollToBottom: scrollToBottom,
   });
 
-  // Socket event handlers for useConversationSocket
-  const handleSocketNewMessage = useCallback(
-    (message: Message) => {
-      setMessages((prev) => {
-        const exists = prev.some((m) => m.id === message.id);
-        if (exists) return prev;
-        return [message, ...prev];
-      });
-      // Scroll to bottom when receiving new message
-      scrollToBottom();
-    },
-    [scrollToBottom]
-  );
-
-  const handleSocketMessageUpdated = useCallback((message: Message) => {
-    setMessages((prev) => prev.map((m) => (m.id === message.id ? message : m)));
-  }, []);
-
-  const handleSocketMessageDeleted = useCallback((messageId: string) => {
-    setMessages((prev) => prev.filter((m) => m.id !== messageId));
-  }, []);
-
-  const handleSocketMessagePinned = useCallback(
-    (messageId: string, pinnedAt: string, pinnedById: string) => {
-      setMessages((prev) =>
-        prev.map((m) =>
-          m.id === messageId
-            ? { ...m, is_pinned: true, pinned_at: pinnedAt, pinned_by_id: pinnedById }
-            : m
-        )
-      );
-    },
-    []
-  );
-
-  const handleSocketMessageUnpinned = useCallback((messageId: string) => {
-    setMessages((prev) =>
-      prev.map((m) =>
-        m.id === messageId
-          ? { ...m, is_pinned: false, pinned_at: undefined, pinned_by_id: undefined }
-          : m
-      )
-    );
-  }, []);
-
-  const handleSocketMessageRead = useCallback(
-    (messageId: string, _userId: string) => {
-      setMessages((prev) =>
-        prev.map((m) => {
-          if (m.sender_id === user?.id && m.id <= messageId && !m.read_at) {
-            return { ...m, read_at: new Date().toISOString(), status: 'read' as const };
-          }
-          return m;
-        })
-      );
-    },
-    [user?.id]
-  );
-
-  const handleSocketReactionAdded = useCallback(
-    (data: {
-      messageId: string;
-      emoji: string;
-      userId: string;
-      user?: { id: string; username?: string; display_name?: string; avatar_url?: string };
-    }) => {
-      addReactionToMessage(data.messageId, data.emoji, data.userId, data.user);
-    },
-    [addReactionToMessage]
-  );
-
-  const handleSocketReactionRemoved = useCallback(
-    (data: { messageId: string; emoji: string; userId: string }) => {
-      removeReactionFromMessage(data.messageId, data.emoji, data.userId);
-    },
-    [removeReactionFromMessage]
-  );
+  // Socket event handlers hook - centralizes all socket callbacks
+  const {
+    handleSocketNewMessage,
+    handleSocketMessageUpdated,
+    handleSocketMessageDeleted,
+    handleSocketMessagePinned,
+    handleSocketMessageUnpinned,
+    handleSocketMessageRead,
+    handleSocketReactionAdded,
+    handleSocketReactionRemoved,
+  } = useSocketEventHandlers({
+    userId: user?.id,
+    setMessages,
+    scrollToBottom,
+    addReactionToMessage,
+    removeReactionFromMessage,
+  });
 
   // Integrate conversation socket hook for real-time events
   const { sendTyping: _socketSendTyping } = useConversationSocket({
@@ -415,6 +357,28 @@ export default function ConversationScreen({ navigation, route }: Props) {
   } = usePinnedMessages({
     messages,
     flatListRef,
+  });
+
+  // Message action wrappers hook - binds selected message to action handlers
+  const {
+    handleReply,
+    cancelReply,
+    handleQuickReaction,
+    openReactionPicker,
+    handleTogglePin,
+    handleUnsend,
+    getReactionState,
+  } = useMessageActionWrappers({
+    selectedMessage,
+    inputRef,
+    setReplyingTo,
+    closeMessageActions,
+    clearReply,
+    hasReacted,
+    handleQuickReactionBase: handleQuickReactionBase,
+    openReactionPickerBase: openReactionPickerBase,
+    handleTogglePinBase,
+    handleUnsendBase,
   });
 
   // Wrap presence handleTextChange to also update local inputText
@@ -486,56 +450,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
     user?.id,
     setOtherParticipantLastSeen,
   ]);
-
-  // Handle reply to message (wraps hook's setReplyingTo with focus)
-  const handleReply = useCallback(() => {
-    if (selectedMessage) {
-      setReplyingTo(selectedMessage);
-      closeMessageActions();
-      // Focus the input
-      setTimeout(() => inputRef.current?.focus(), 100);
-    }
-  }, [selectedMessage, closeMessageActions, setReplyingTo]);
-
-  // Cancel reply - use clearReply from hook
-  const cancelReply = clearReply;
-
-  // Quick reaction wrapper (uses hook's handleQuickReaction)
-  const handleQuickReaction = useCallback(
-    (emoji: string) => {
-      if (selectedMessage) {
-        handleQuickReactionBase(
-          selectedMessage,
-          emoji,
-          hasReacted(selectedMessage, emoji),
-          closeMessageActions
-        );
-      }
-    },
-    [selectedMessage, hasReacted, closeMessageActions, handleQuickReactionBase]
-  );
-
-  // Open full reaction picker (wraps hook's openReactionPicker)
-  const openReactionPicker = useCallback(() => {
-    if (selectedMessage) {
-      openReactionPickerBase(selectedMessage);
-      closeMessageActions();
-    }
-  }, [selectedMessage, closeMessageActions, openReactionPickerBase]);
-
-  // Pin/unpin message wrapper (uses hook's handleTogglePin)
-  const handleTogglePin = useCallback(() => {
-    if (selectedMessage) {
-      handleTogglePinBase(selectedMessage);
-    }
-  }, [selectedMessage, handleTogglePinBase]);
-
-  // Unsend message wrapper (uses hook's handleUnsend)
-  const handleUnsend = useCallback(() => {
-    if (selectedMessage) {
-      handleUnsendBase(selectedMessage);
-    }
-  }, [selectedMessage, handleUnsendBase]);
 
   // Get message status icon and color - delegates to utility
   const getMessageStatus = useCallback(
@@ -628,14 +542,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
       handleReactionTap,
       newMessageIds,
     ]
-  );
-
-  // Callback for checking reaction state - must be before any conditional returns
-  const getReactionState = useCallback(
-    (emoji: string) => {
-      return selectedMessage?.reactions?.some((r) => r.emoji === emoji && r.hasReacted) || false;
-    },
-    [selectedMessage]
   );
 
   if (isLoading) {

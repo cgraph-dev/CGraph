@@ -30,3 +30,5 @@ export { useVoiceAndWave } from './useVoiceAndWave';
 export type { UseVoiceAndWaveReturn } from './useVoiceAndWave';
 export { useTextMessageSending } from './useTextMessageSending';
 export { usePinnedMessages } from './usePinnedMessages';
+export { useSocketEventHandlers } from './useSocketEventHandlers';
+export { useMessageActionWrappers } from './useMessageActionWrappers';

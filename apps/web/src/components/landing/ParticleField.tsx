@@ -23,7 +23,7 @@ interface ParticleFieldProps {
   /** Number of particles */
   count?: number;
   /** Particle colors to use */
-  colors?: ('emerald' | 'purple' | 'cyan')[];
+  colors?: readonly ('emerald' | 'purple' | 'cyan')[];
   /** Additional CSS classes */
   className?: string;
 }
@@ -47,13 +47,19 @@ const COLOR_MAP = {
   emerald: { bg: '#10b981', glow: 'rgba(16, 185, 129, 0.6)' },
   purple: { bg: '#8b5cf6', glow: 'rgba(139, 92, 246, 0.6)' },
   cyan: { bg: '#06b6d4', glow: 'rgba(6, 182, 212, 0.6)' },
-};
+} as const;
+
+/** Default particle colors - stable reference to prevent unnecessary re-renders */
+const DEFAULT_COLORS: readonly ('emerald' | 'purple' | 'cyan')[] = ['emerald', 'purple', 'cyan'];
 
 // ============================================================================
 // PARTICLE GENERATION
 // ============================================================================
 
-function generateParticles(count: number, colors: ('emerald' | 'purple' | 'cyan')[]): Particle[] {
+function generateParticles(
+  count: number,
+  colors: readonly ('emerald' | 'purple' | 'cyan')[]
+): Particle[] {
   // Ensure we have at least one color
   const safeColors = colors.length > 0 ? colors : ['emerald' as const];
 
@@ -137,7 +143,7 @@ const ParticleElement = memo(function ParticleElement({
 
 export const ParticleField = memo(function ParticleField({
   count = 50,
-  colors = ['emerald', 'purple', 'cyan'],
+  colors = DEFAULT_COLORS,
   className,
 }: ParticleFieldProps) {
   const prefersReducedMotion = useReducedMotion();

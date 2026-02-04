@@ -696,7 +696,11 @@ function SwapButton({
     );
   }
 
-  return <button className={className}>{content}</button>;
+  return (
+    <button type="button" className={className}>
+      {content}
+    </button>
+  );
 }
 
 // =============================================================================
@@ -717,6 +721,7 @@ export default function LandingPage() {
   const aboutVisualRef = useRef<HTMLDivElement>(null);
   const aboutGlowRef = useRef<HTMLDivElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
   // Redirect authenticated users to messages
   useEffect(() => {
@@ -984,21 +989,17 @@ export default function LandingPage() {
         resizeObserver.observe(mainContainer);
       }
 
-      // Store for cleanup
-      (window as unknown as { _cgraphResizeObserver?: ResizeObserver })._cgraphResizeObserver =
-        resizeObserver;
+      // Store in ref for cleanup
+      resizeObserverRef.current = resizeObserver;
     }, 100); // Small delay to improve initial paint
 
     return () => {
       clearTimeout(timeoutId);
       heroTl?.kill();
       // Clean up ResizeObserver
-      const observer = (window as unknown as { _cgraphResizeObserver?: ResizeObserver })
-        ._cgraphResizeObserver;
-      if (observer) {
-        observer.disconnect();
-        delete (window as unknown as { _cgraphResizeObserver?: ResizeObserver })
-          ._cgraphResizeObserver;
+      if (resizeObserverRef.current) {
+        resizeObserverRef.current.disconnect();
+        resizeObserverRef.current = null;
       }
       // Properly revert GSAP context and kill ScrollTriggers
       if (gsapContextRef) {
