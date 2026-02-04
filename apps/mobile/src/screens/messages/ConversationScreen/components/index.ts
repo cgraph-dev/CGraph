@@ -19,3 +19,5 @@ export { ReactionPickerModal } from './ReactionPickerModal';
 export { AttachmentPreviewModal } from './AttachmentPreviewModal';
 export { ImageViewerModal } from './ImageViewerModal';
 export { VideoPlayerModal } from './VideoPlayerModal';
+export { PinnedMessagesBar } from './PinnedMessagesBar';
+export { ChatInputArea } from './ChatInputArea';

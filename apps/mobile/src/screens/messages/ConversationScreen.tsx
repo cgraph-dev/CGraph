@@ -11,10 +11,7 @@ import {
   ActivityIndicator,
   RefreshControl,
   Alert,
-  Modal,
   Animated,
-  Linking,
-  ScrollView,
   Easing,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -39,13 +36,7 @@ import {
   ConversationParticipant,
   UserBasic,
 } from '../../types';
-import {
-  VoiceMessageRecorder,
-  VoiceMessagePlayer,
-  TelegramAttachmentPicker,
-  RichMediaEmbed,
-  MorphingInputButton,
-} from '../../components';
+import { VoiceMessagePlayer, TelegramAttachmentPicker, RichMediaEmbed } from '../../components';
 import { createLogger } from '../../lib/logger';
 
 // Import modular components
@@ -53,16 +44,16 @@ import {
   AnimatedMessageWrapper,
   AnimatedReactionBubble,
   InlineVideoThumbnail,
-  VideoPlayerComponent,
-  AttachmentVideoPreview,
   EmptyConversation,
   MessageActionsMenu,
   ReactionPickerModal,
   AttachmentPreviewModal,
   ImageViewerModal,
   VideoPlayerModal,
+  PinnedMessagesBar,
+  ChatInputArea,
 } from './ConversationScreen/components';
-import { styles, SCREEN_WIDTH, SCREEN_HEIGHT } from './ConversationScreen/styles';
+import { styles } from './ConversationScreen/styles';
 import { useMediaViewer, EMOJI_CATEGORIES } from './ConversationScreen/hooks';
 import {
   getMimeType,
@@ -2620,160 +2611,17 @@ export default function ConversationScreen({ navigation, route }: Props) {
         onClose={closeVideoPlayer}
       />
 
-      {/* Enhanced Pinned Messages Bar with Animation */}
+      {/* Enhanced Pinned Messages Bar */}
       {currentPinnedMessage && (
-        <Animated.View
-          style={[
-            styles.pinnedBarEnhanced,
-            {
-              backgroundColor: colors.surface,
-              borderBottomColor: colors.border,
-            },
-          ]}
-        >
-          <TouchableOpacity
-            style={styles.pinnedBarTouchable}
-            onPress={() => scrollToMessage(currentPinnedMessage.id)}
-            activeOpacity={0.8}
-          >
-            {/* Animated gradient indicator */}
-            <LinearGradient
-              colors={[colors.primary, `${colors.primary}80`]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              style={styles.pinnedBarGradient}
-            />
-
-            {/* Media preview thumbnail */}
-            {(currentPinnedMessage.type === 'image' || currentPinnedMessage.type === 'video') &&
-              currentPinnedMessage.metadata?.url && (
-                <View style={styles.pinnedMediaPreview}>
-                  <Image
-                    source={{
-                      uri:
-                        currentPinnedMessage.metadata.thumbnail ||
-                        currentPinnedMessage.metadata.url,
-                    }}
-                    style={styles.pinnedMediaThumbnail}
-                  />
-                  {currentPinnedMessage.type === 'video' && (
-                    <View style={styles.pinnedVideoIcon}>
-                      <Ionicons name="play" size={10} color="#fff" />
-                    </View>
-                  )}
-                </View>
-              )}
-
-            {/* Voice message indicator */}
-            {(currentPinnedMessage.type === 'voice' || currentPinnedMessage.type === 'audio') && (
-              <View
-                style={[styles.pinnedVoiceIndicator, { backgroundColor: colors.primary + '20' }]}
-              >
-                <Ionicons name="mic" size={18} color={colors.primary} />
-              </View>
-            )}
-
-            {/* File indicator */}
-            {currentPinnedMessage.type === 'file' && (
-              <View
-                style={[styles.pinnedFileIndicator, { backgroundColor: colors.primary + '20' }]}
-              >
-                <Ionicons name="document-attach" size={18} color={colors.primary} />
-              </View>
-            )}
-
-            {/* Content */}
-            <View style={styles.pinnedBarContentEnhanced}>
-              <View style={styles.pinnedBarHeaderRow}>
-                <View style={styles.pinnedIconContainer}>
-                  <Ionicons name="pin" size={12} color={colors.primary} />
-                </View>
-                <Text style={[styles.pinnedBarLabelEnhanced, { color: colors.primary }]}>
-                  Pinned
-                  {pinnedMessages.length > 1 && (
-                    <Text style={styles.pinnedBarCounter}>
-                      {' '}
-                      · {currentPinnedIndex + 1}/{pinnedMessages.length}
-                    </Text>
-                  )}
-                </Text>
-                {currentPinnedMessage.sender && (
-                  <Text
-                    style={[styles.pinnedBarSender, { color: colors.textSecondary }]}
-                    numberOfLines={1}
-                  >
-                    by{' '}
-                    {currentPinnedMessage.sender.display_name ||
-                      currentPinnedMessage.sender.username}
-                  </Text>
-                )}
-              </View>
-              <Text
-                style={[styles.pinnedBarTextEnhanced, { color: colors.text }]}
-                numberOfLines={1}
-              >
-                {currentPinnedMessage.content &&
-                !currentPinnedMessage.content.match(/^(📷 Photo|Photo|🎥 Video|Video|\d+ photos?)$/)
-                  ? currentPinnedMessage.content
-                  : currentPinnedMessage.type === 'image'
-                    ? 'Photo'
-                    : currentPinnedMessage.type === 'video'
-                      ? '🎬 Video'
-                      : currentPinnedMessage.type === 'voice'
-                        ? '🎤 Voice message'
-                        : currentPinnedMessage.type === 'file'
-                          ? `📎 ${currentPinnedMessage.metadata?.filename || 'File'}`
-                          : 'Message'}
-              </Text>
-            </View>
-
-            {/* Progress dots for multiple pins */}
-            {pinnedMessages.length > 1 && (
-              <View style={styles.pinnedProgressContainer}>
-                {pinnedMessages.map((_, idx) => (
-                  <TouchableOpacity
-                    key={idx}
-                    onPress={() => {
-                      setCurrentPinnedIndex(idx);
-                      Haptics.selectionAsync();
-                    }}
-                    hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
-                  >
-                    <View
-                      style={[
-                        styles.pinnedProgressDot,
-                        {
-                          backgroundColor:
-                            idx === currentPinnedIndex ? colors.primary : colors.border,
-                        },
-                      ]}
-                    />
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-
-            {/* Navigation arrows */}
-            {pinnedMessages.length > 1 && (
-              <View style={styles.pinnedBarNavEnhanced}>
-                <TouchableOpacity
-                  onPress={() => navigatePinnedMessages('prev')}
-                  style={[styles.pinnedNavBtn, { backgroundColor: colors.input }]}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  <Ionicons name="chevron-up" size={16} color={colors.text} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => navigatePinnedMessages('next')}
-                  style={[styles.pinnedNavBtn, { backgroundColor: colors.input }]}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                >
-                  <Ionicons name="chevron-down" size={16} color={colors.text} />
-                </TouchableOpacity>
-              </View>
-            )}
-          </TouchableOpacity>
-        </Animated.View>
+        <PinnedMessagesBar
+          pinnedMessages={pinnedMessages}
+          currentPinnedMessage={currentPinnedMessage}
+          currentPinnedIndex={currentPinnedIndex}
+          colors={colors}
+          onScrollToMessage={scrollToMessage}
+          onSetCurrentIndex={setCurrentPinnedIndex}
+          onNavigate={navigatePinnedMessages}
+        />
       )}
 
       <FlatList
@@ -2801,101 +2649,24 @@ export default function ConversationScreen({ navigation, route }: Props) {
         }
       />
 
-      {/* Voice Recorder overlay */}
-      {isVoiceMode && (
-        <View style={[styles.voiceRecorderContainer, { backgroundColor: colors.surface }]}>
-          <VoiceMessageRecorder
-            onComplete={handleVoiceComplete}
-            onCancel={() => setIsVoiceMode(false)}
-            maxDuration={120}
-          />
-        </View>
-      )}
-
-      {/* Reply preview bar */}
-      {replyingTo && (
-        <View
-          style={[
-            styles.replyPreviewBar,
-            { backgroundColor: colors.surface, borderTopColor: colors.border },
-          ]}
-        >
-          <View style={[styles.replyPreviewLine, { backgroundColor: colors.primary }]} />
-          <View style={styles.replyPreviewContent}>
-            <Text style={[styles.replyPreviewLabel, { color: colors.primary }]}>
-              Replying to {replyingTo.sender?.display_name || replyingTo.sender?.username || 'User'}
-            </Text>
-            <Text
-              style={[styles.replyPreviewText, { color: colors.textSecondary }]}
-              numberOfLines={1}
-            >
-              {replyingTo.content ||
-                (replyingTo.type === 'image'
-                  ? 'Photo'
-                  : replyingTo.type === 'voice'
-                    ? 'Voice message'
-                    : 'File')}
-            </Text>
-          </View>
-          <TouchableOpacity onPress={cancelReply} style={styles.replyPreviewClose}>
-            <Ionicons name="close" size={20} color={colors.textSecondary} />
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Normal input area */}
-      {!isVoiceMode && (
-        <View
-          style={[
-            styles.inputContainer,
-            { backgroundColor: colors.surface, borderTopColor: colors.border },
-          ]}
-        >
-          <TouchableOpacity style={styles.attachButton} onPress={toggleAttachMenu}>
-            <Animated.View
-              style={{
-                transform: [
-                  {
-                    rotate: attachMenuAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: ['0deg', '45deg'],
-                    }),
-                  },
-                ],
-              }}
-            >
-              <Ionicons
-                name="add-circle"
-                size={28}
-                color={showAttachMenu ? colors.primary : colors.textSecondary}
-              />
-            </Animated.View>
-          </TouchableOpacity>
-
-          <TextInput
-            ref={inputRef}
-            style={[styles.input, { backgroundColor: colors.input, color: colors.text }]}
-            placeholder={replyingTo ? 'Reply...' : 'Message...'}
-            placeholderTextColor={colors.textTertiary}
-            value={inputText}
-            onChangeText={handleTextChange}
-            multiline
-            maxLength={4000}
-          />
-
-          {/* Morphing send/mic button with web-parity animations */}
-          <MorphingInputButton
-            hasText={inputText.trim().length > 0}
-            isSending={isSending}
-            onSend={sendMessage}
-            onMic={() => setIsVoiceMode(true)}
-            primaryColor={colors.primary}
-            surfaceColor={colors.surfaceHover}
-            textColor={colors.textSecondary}
-            disabled={isSending}
-          />
-        </View>
-      )}
+      {/* Chat Input Area with Voice Recording */}
+      <ChatInputArea
+        inputText={inputText}
+        replyingTo={replyingTo}
+        isVoiceMode={isVoiceMode}
+        isSending={isSending}
+        showAttachMenu={showAttachMenu}
+        attachMenuAnim={attachMenuAnim}
+        inputRef={inputRef}
+        colors={colors}
+        onTextChange={handleTextChange}
+        onSendMessage={sendMessage}
+        onToggleAttachMenu={toggleAttachMenu}
+        onStartVoice={() => setIsVoiceMode(true)}
+        onCancelVoice={() => setIsVoiceMode(false)}
+        onVoiceComplete={handleVoiceComplete}
+        onCancelReply={cancelReply}
+      />
     </KeyboardAvoidingView>
   );
 }

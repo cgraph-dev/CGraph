@@ -671,6 +671,37 @@ function SignInButton() {
   );
 }
 
+function SwapButton({
+  primary = false,
+  mainText,
+  altText,
+  href,
+}: {
+  primary?: boolean;
+  mainText: string;
+  altText: string;
+  href?: string;
+}) {
+  const className = `btn-swap ${primary ? 'btn-swap--primary' : ''}`;
+
+  const content = (
+    <>
+      <span className="btn-swap__main">{mainText}</span>
+      <span className="btn-swap__alt">{altText}</span>
+    </>
+  );
+
+  if (href) {
+    return (
+      <Link to={href} className={className}>
+        {content}
+      </Link>
+    );
+  }
+
+  return <button className={className}>{content}</button>;
+}
+
 // =============================================================================
 // MAIN COMPONENT
 // =============================================================================
@@ -982,12 +1013,6 @@ export default function LandingPage() {
 
   return (
     <div className="demo-landing">
-      {/* 2026: Scroll Progress Indicator */}
-      <ScrollProgressBar />
-
-      {/* 2026: Ambient Particle Background */}
-      <ParticleField count={40} colors={['emerald', 'purple', 'cyan']} />
-
       {/* Navigation */}
       <nav className={`gl-nav ${navHidden ? 'hidden' : ''} ${navScrolled ? 'scrolled' : ''}`}>
         <Link to="/" className="gl-nav__logo">
@@ -1053,21 +1078,8 @@ export default function LandingPage() {
           <span className="hero__eyebrow font-robert">The All-in-One Platform</span>
 
           <h1 className="hero__title">
-            <KineticText
-              text="Beyond"
-              animation="words"
-              as="span"
-              className="hero__title-beyond"
-              stagger={0.08}
-            />
-            <KineticText
-              text="Messaging"
-              animation="characters"
-              as="span"
-              className="hero__title-gradient kinetic-gradient"
-              stagger={0.03}
-              gradient
-            />
+            <span className="hero__title-beyond">Beyond</span>
+            <span className="hero__title-gradient">Messaging</span>
           </h1>
 
           <p className="hero__subtitle font-robert">
@@ -1076,12 +1088,8 @@ export default function LandingPage() {
           </p>
 
           <div className="hero__buttons">
-            <MagneticButton variant="hot" href="/register" glowing className="px-8 py-4 text-lg">
-              Start Free
-            </MagneticButton>
-            <MagneticButton variant="ghost" href="#features" className="px-8 py-4 text-lg">
-              Learn More
-            </MagneticButton>
+            <SwapButton primary mainText="Start Free" altText="No Credit Card" href="/register" />
+            <SwapButton mainText="Learn More" altText="Explore" href="#features" />
           </div>
         </div>
 
@@ -1161,9 +1169,7 @@ export default function LandingPage() {
               with AES-256, and we use Signal-inspired encryption protocols. Not even we can access
               your private conversations.
             </p>
-            <MagneticButton variant="secondary" href="/security" glowing>
-              Security Details
-            </MagneticButton>
+            <SwapButton mainText="Security Details" altText="Learn More" />
           </div>
 
           <div ref={aboutVisualRef} className="about__visual">
