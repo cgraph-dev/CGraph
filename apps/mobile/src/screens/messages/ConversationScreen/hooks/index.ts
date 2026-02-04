@@ -14,3 +14,6 @@ export { useReactions, EMOJI_CATEGORIES, QUICK_REACTIONS } from './useReactions'
 export type { UseReactionsReturn } from './useReactions';
 export { useAttachments } from './useAttachments';
 export type { UseAttachmentsReturn, AttachmentItem } from './useAttachments';
+export { useConversationSocket } from './useConversationSocket';
+export { useConversationHeader, formatLastSeen } from './useConversationHeader';
+export { useConversationData } from './useConversationData';
