@@ -40,7 +40,6 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTheme } from '../../contexts/ThemeContext';
 import GlassCard from '../../components/ui/GlassCard';
-import AnimatedAvatar from '../../components/ui/AnimatedAvatar';
 import api from '../../lib/api';
 import debounce from 'lodash.debounce';
 
@@ -49,13 +48,20 @@ import { styles } from './SearchScreen/styles';
 
 // Import extracted components
 import {
-  TrendingItem,
   VoiceSearchButton,
-  AnimatedResultItem,
   FilterModal,
   defaultFilters,
+  UserResultItem,
+  GroupResultItem,
+  ForumResultItem,
+  DiscoverySection,
 } from './SearchScreen/components';
-import type { SearchFilters } from './SearchScreen/components';
+import type {
+  SearchFilters,
+  SearchUser,
+  SearchGroup,
+  SearchForum,
+} from './SearchScreen/components';
 import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('Search');
@@ -63,34 +69,6 @@ const RECENT_SEARCHES_KEY = '@cgraph_recent_searches';
 const MAX_RECENT_SEARCHES = 10;
 
 type SearchCategory = 'all' | 'users' | 'groups' | 'forums';
-
-interface SearchUser {
-  id: string;
-  username: string;
-  display_name: string | null;
-  avatar_url: string | null;
-  status: string;
-  is_premium?: boolean;
-  is_verified?: boolean;
-}
-
-interface SearchGroup {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  icon_url: string | null;
-  member_count: number;
-}
-
-interface SearchForum {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  icon_url: string | null;
-  post_count: number;
-}
 
 interface CategoryConfig {
   id: SearchCategory;
@@ -104,15 +82,6 @@ const categories: CategoryConfig[] = [
   { id: 'users', label: 'Users', icon: 'person', gradient: ['#10b981', '#059669'] },
   { id: 'groups', label: 'Groups', icon: 'people', gradient: ['#f59e0b', '#f97316'] },
   { id: 'forums', label: 'Forums', icon: 'newspaper', gradient: ['#ec4899', '#f43f5e'] },
-];
-
-// Trending topics mock data
-const TRENDING_TOPICS = [
-  { id: '1', text: 'DeFi Updates', icon: 'trending-up', color: '#10b981', searches: 2400 },
-  { id: '2', text: 'NFT Collections', icon: 'images', color: '#8b5cf6', searches: 1850 },
-  { id: '3', text: 'Gaming Guilds', icon: 'game-controller', color: '#f59e0b', searches: 1200 },
-  { id: '4', text: 'Crypto News', icon: 'newspaper', color: '#ec4899', searches: 980 },
-  { id: '5', text: 'Web3 Dev', icon: 'code-slash', color: '#3b82f6', searches: 750 },
 ];
 
 export default function SearchScreen() {
@@ -315,113 +284,6 @@ export default function SearchScreen() {
   };
 
   const totalResults = users.length + groups.length + forums.length;
-
-  const renderUser = (item: SearchUser, index: number) => (
-    <AnimatedResultItem key={item.id} index={index} onPress={() => {}}>
-      <GlassCard variant="frosted" intensity="subtle" style={styles.resultCard}>
-        <View style={styles.resultInner}>
-          <AnimatedAvatar
-            source={{ uri: item.avatar_url || '' }}
-            size={48}
-            borderAnimation={
-              item.is_premium ? 'holographic' : item.status === 'online' ? 'glow' : 'none'
-            }
-            isPremium={item.is_premium}
-          />
-          <View style={styles.resultInfo}>
-            <View style={styles.nameRow}>
-              <Text style={[styles.resultTitle, { color: colors.text }]}>
-                {item.display_name || item.username}
-              </Text>
-              {item.is_verified && (
-                <Ionicons
-                  name="checkmark-circle"
-                  size={16}
-                  color="#3b82f6"
-                  style={{ marginLeft: 4 }}
-                />
-              )}
-              {item.is_premium && (
-                <LinearGradient
-                  colors={['#f59e0b', '#ef4444']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.premiumBadge}
-                >
-                  <Text style={styles.premiumText}>PRO</Text>
-                </LinearGradient>
-              )}
-            </View>
-            <Text style={[styles.resultSubtitle, { color: colors.textSecondary }]}>
-              @{item.username}
-            </Text>
-          </View>
-          <View
-            style={[
-              styles.statusDot,
-              { backgroundColor: item.status === 'online' ? '#10b981' : colors.textTertiary },
-            ]}
-          />
-        </View>
-      </GlassCard>
-    </AnimatedResultItem>
-  );
-
-  const renderGroup = (item: SearchGroup, index: number) => {
-    const gradient = ['#f59e0b', '#f97316'] as [string, string];
-
-    return (
-      <AnimatedResultItem key={item.id} index={index} onPress={() => {}}>
-        <GlassCard variant="frosted" intensity="subtle" style={styles.resultCard}>
-          <View style={styles.resultInner}>
-            <LinearGradient colors={gradient} style={styles.iconContainer}>
-              <Ionicons name="people" size={22} color="#fff" />
-            </LinearGradient>
-            <View style={styles.resultInfo}>
-              <Text style={[styles.resultTitle, { color: colors.text }]}>{item.name}</Text>
-              <View style={styles.statRow}>
-                <Ionicons name="people-outline" size={12} color={colors.textSecondary} />
-                <Text style={[styles.statText, { color: colors.textSecondary }]}>
-                  {(item?.member_count ?? 0).toLocaleString()} members
-                </Text>
-              </View>
-            </View>
-            <LinearGradient colors={gradient} style={styles.arrowContainer}>
-              <Ionicons name="chevron-forward" size={14} color="#fff" />
-            </LinearGradient>
-          </View>
-        </GlassCard>
-      </AnimatedResultItem>
-    );
-  };
-
-  const renderForum = (item: SearchForum, index: number) => {
-    const gradient = ['#ec4899', '#f43f5e'] as [string, string];
-
-    return (
-      <AnimatedResultItem key={item.id} index={index} onPress={() => {}}>
-        <GlassCard variant="frosted" intensity="subtle" style={styles.resultCard}>
-          <View style={styles.resultInner}>
-            <LinearGradient colors={gradient} style={styles.iconContainer}>
-              <Ionicons name="newspaper" size={22} color="#fff" />
-            </LinearGradient>
-            <View style={styles.resultInfo}>
-              <Text style={[styles.resultTitle, { color: colors.text }]}>c/{item.slug}</Text>
-              <View style={styles.statRow}>
-                <Ionicons name="document-text-outline" size={12} color={colors.textSecondary} />
-                <Text style={[styles.statText, { color: colors.textSecondary }]}>
-                  {(item?.post_count ?? 0).toLocaleString()} posts
-                </Text>
-              </View>
-            </View>
-            <LinearGradient colors={gradient} style={styles.arrowContainer}>
-              <Ionicons name="chevron-forward" size={14} color="#fff" />
-            </LinearGradient>
-          </View>
-        </GlassCard>
-      </AnimatedResultItem>
-    );
-  };
 
   const glowBorderColor = searchGlow.interpolate({
     inputRange: [0, 1],
@@ -679,161 +541,16 @@ export default function SearchScreen() {
         )}
 
         {!loading && !hasSearched && (
-          <View style={styles.discoverContainer}>
-            {/* Recent Searches */}
-            {recentSearches.length > 0 && (
-              <View style={styles.recentSection}>
-                <View style={styles.sectionHeaderRow}>
-                  <View style={styles.sectionHeaderLeft}>
-                    <LinearGradient colors={['#8b5cf6', '#6366f1']} style={styles.sectionIconSmall}>
-                      <Ionicons name="time" size={14} color="#fff" />
-                    </LinearGradient>
-                    <Text style={[styles.sectionTitleSmall, { color: colors.text }]}>
-                      Recent Searches
-                    </Text>
-                  </View>
-                  <TouchableOpacity onPress={clearRecentSearches}>
-                    <Text style={styles.clearText}>Clear All</Text>
-                  </TouchableOpacity>
-                </View>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  contentContainerStyle={styles.recentScrollContent}
-                >
-                  {recentSearches.map((search, index) => (
-                    <TouchableOpacity
-                      key={`${search}-${index}`}
-                      style={[styles.recentChip, { backgroundColor: colors.surface }]}
-                      onPress={() => {
-                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                        setQuery(search);
-                      }}
-                      onLongPress={() => removeRecentSearch(search)}
-                    >
-                      <Ionicons name="search" size={14} color={colors.textSecondary} />
-                      <Text
-                        style={[styles.recentChipText, { color: colors.text }]}
-                        numberOfLines={1}
-                      >
-                        {search}
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => removeRecentSearch(search)}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                      >
-                        <Ionicons name="close" size={14} color={colors.textSecondary} />
-                      </TouchableOpacity>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-            )}
-
-            {/* Trending Topics */}
-            <View style={styles.trendingSection}>
-              <View style={styles.sectionHeaderRow}>
-                <View style={styles.sectionHeaderLeft}>
-                  <LinearGradient colors={['#ef4444', '#f97316']} style={styles.sectionIconSmall}>
-                    <Ionicons name="flame" size={14} color="#fff" />
-                  </LinearGradient>
-                  <Text style={[styles.sectionTitleSmall, { color: colors.text }]}>
-                    Trending Now
-                  </Text>
-                </View>
-                <View style={styles.liveBadge}>
-                  <View style={styles.liveDot} />
-                  <Text style={styles.liveText}>LIVE</Text>
-                </View>
-              </View>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.trendingScrollContent}
-              >
-                {TRENDING_TOPICS.map((topic) => (
-                  <TrendingItem
-                    key={topic.id}
-                    item={topic}
-                    onPress={() => setQuery(topic.text)}
-                    isDark={isDark}
-                  />
-                ))}
-              </ScrollView>
-            </View>
-
-            {/* Quick Actions */}
-            <View style={styles.quickActionsSection}>
-              <Text style={[styles.sectionTitleSmall, { color: colors.text, marginBottom: 12 }]}>
-                Quick Actions
-              </Text>
-              <View style={styles.quickActionsGrid}>
-                {[
-                  {
-                    icon: 'person-add',
-                    label: 'Find Friends',
-                    color: '#10b981',
-                    gradient: ['#10b981', '#059669'],
-                  },
-                  {
-                    icon: 'people',
-                    label: 'Join Groups',
-                    color: '#f59e0b',
-                    gradient: ['#f59e0b', '#d97706'],
-                  },
-                  {
-                    icon: 'newspaper',
-                    label: 'Explore Forums',
-                    color: '#ec4899',
-                    gradient: ['#ec4899', '#db2777'],
-                  },
-                  {
-                    icon: 'sparkles',
-                    label: 'Discover',
-                    color: '#8b5cf6',
-                    gradient: ['#8b5cf6', '#7c3aed'],
-                  },
-                ].map((action) => (
-                  <TouchableOpacity
-                    key={action.label}
-                    style={styles.quickActionCard}
-                    onPress={() => {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                      if (action.label === 'Find Friends') setCategory('users');
-                      else if (action.label === 'Join Groups') setCategory('groups');
-                      else if (action.label === 'Explore Forums') setCategory('forums');
-                      inputRef.current?.focus();
-                    }}
-                  >
-                    <LinearGradient
-                      colors={action.gradient as [string, string]}
-                      style={styles.quickActionGradient}
-                    >
-                      <Ionicons name={action.icon as unknown} size={24} color="#fff" />
-                    </LinearGradient>
-                    <Text style={[styles.quickActionLabel, { color: colors.text }]}>
-                      {action.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-
-            {/* Search Tips */}
-            <GlassCard variant="frosted" intensity="subtle" style={styles.tipsCard}>
-              <View style={styles.tipsContent}>
-                <LinearGradient colors={['#3b82f6', '#8b5cf6']} style={styles.tipsIcon}>
-                  <Ionicons name="bulb" size={18} color="#fff" />
-                </LinearGradient>
-                <View style={styles.tipsTextContainer}>
-                  <Text style={[styles.tipsTitle, { color: colors.text }]}>Pro Tip</Text>
-                  <Text style={[styles.tipsText, { color: colors.textSecondary }]}>
-                    Use the ID search to find users, groups, or forums by their unique identifier
-                  </Text>
-                </View>
-              </View>
-            </GlassCard>
-          </View>
+          <DiscoverySection
+            recentSearches={recentSearches}
+            onSearchSelect={setQuery}
+            onRemoveSearch={removeRecentSearch}
+            onClearRecentSearches={clearRecentSearches}
+            onCategorySelect={setCategory}
+            onFocusInput={() => inputRef.current?.focus()}
+            colors={colors}
+            isDark={isDark}
+          />
         )}
 
         {!loading && hasSearched && totalResults === 0 && (
@@ -859,9 +576,9 @@ export default function SearchScreen() {
                     USERS ({users.length})
                   </Text>
                 </View>
-                {(category === 'all' ? users.slice(0, 3) : users).map((user, i) =>
-                  renderUser(user, i)
-                )}
+                {(category === 'all' ? users.slice(0, 3) : users).map((user, i) => (
+                  <UserResultItem key={user.id} user={user} index={i} colors={colors} />
+                ))}
                 {category === 'all' && users.length > 3 && (
                   <TouchableOpacity
                     style={styles.viewAllButton}
@@ -889,9 +606,9 @@ export default function SearchScreen() {
                     GROUPS ({groups.length})
                   </Text>
                 </View>
-                {(category === 'all' ? groups.slice(0, 3) : groups).map((group, i) =>
-                  renderGroup(group, i)
-                )}
+                {(category === 'all' ? groups.slice(0, 3) : groups).map((group, i) => (
+                  <GroupResultItem key={group.id} group={group} index={i} colors={colors} />
+                ))}
                 {category === 'all' && groups.length > 3 && (
                   <TouchableOpacity
                     style={styles.viewAllButton}
@@ -919,9 +636,9 @@ export default function SearchScreen() {
                     FORUMS ({forums.length})
                   </Text>
                 </View>
-                {(category === 'all' ? forums.slice(0, 3) : forums).map((forum, i) =>
-                  renderForum(forum, i)
-                )}
+                {(category === 'all' ? forums.slice(0, 3) : forums).map((forum, i) => (
+                  <ForumResultItem key={forum.id} forum={forum} index={i} colors={colors} />
+                ))}
                 {category === 'all' && forums.length > 3 && (
                   <TouchableOpacity
                     style={styles.viewAllButton}
