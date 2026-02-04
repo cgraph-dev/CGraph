@@ -17,13 +17,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { AnimatedAvatar } from '@/components/customize/AnimatedAvatar';
+import AnimatedAvatar from '@/components/ui/AnimatedAvatar';
 import { LogoIcon } from '@/components/Logo';
 import { motion } from 'framer-motion';
 import {
   CustomizationDemoSkeleton,
   ForumShowcaseSkeleton,
 } from '@/components/landing/LandingSkeletons';
+// 2026 Cutting-Edge Components
+import { ParticleField } from '@/components/landing/ParticleField';
+import { ScrollProgressBar, MagneticButton, KineticText } from '@/components/landing';
 import './landing-page.css';
 
 // Lazy load showcase components
@@ -150,10 +153,11 @@ const FeatureShowcaseCard = memo(function FeatureShowcaseCard({
               {/* Premium Avatar with AnimatedAvatar */}
               <div className="showcase-avatar showcase-avatar--premium">
                 <AnimatedAvatar
-                  borderType="legendary"
-                  borderColor="emerald"
-                  size={72}
-                  initials="CG"
+                  alt="CGraph Premium"
+                  size="2xl"
+                  fallbackText="CG"
+                  isPremium
+                  customStyle={{ borderStyle: 'supernova', borderColor: '#10b981' }}
                 />
                 <span className="showcase-avatar__label showcase-avatar__label--premium">
                   Legendary
@@ -217,10 +221,11 @@ const FeatureShowcaseCard = memo(function FeatureShowcaseCard({
                 <div className="showcase-profile__glow" />
                 <div className="showcase-profile__avatar showcase-profile__avatar--premium">
                   <AnimatedAvatar
-                    borderType="mythic"
-                    borderColor="purple"
-                    size={48}
-                    initials="CG"
+                    alt="CGraph Elite"
+                    size="lg"
+                    fallbackText="CG"
+                    isPremium
+                    customStyle={{ borderStyle: 'celestial', borderColor: '#8b5cf6' }}
                   />
                 </div>
                 <div className="showcase-profile__info">
@@ -666,37 +671,6 @@ function SignInButton() {
   );
 }
 
-function SwapButton({
-  primary = false,
-  mainText,
-  altText,
-  href,
-}: {
-  primary?: boolean;
-  mainText: string;
-  altText: string;
-  href?: string;
-}) {
-  const className = `btn-swap ${primary ? 'btn-swap--primary' : ''}`;
-
-  const content = (
-    <>
-      <span className="btn-swap__main">{mainText}</span>
-      <span className="btn-swap__alt">{altText}</span>
-    </>
-  );
-
-  if (href) {
-    return (
-      <Link to={href} className={className}>
-        {content}
-      </Link>
-    );
-  }
-
-  return <button className={className}>{content}</button>;
-}
-
 // =============================================================================
 // MAIN COMPONENT
 // =============================================================================
@@ -1008,6 +982,12 @@ export default function LandingPage() {
 
   return (
     <div className="demo-landing">
+      {/* 2026: Scroll Progress Indicator */}
+      <ScrollProgressBar />
+
+      {/* 2026: Ambient Particle Background */}
+      <ParticleField count={40} colors={['emerald', 'purple', 'cyan']} />
+
       {/* Navigation */}
       <nav className={`gl-nav ${navHidden ? 'hidden' : ''} ${navScrolled ? 'scrolled' : ''}`}>
         <Link to="/" className="gl-nav__logo">
@@ -1073,8 +1053,21 @@ export default function LandingPage() {
           <span className="hero__eyebrow font-robert">The All-in-One Platform</span>
 
           <h1 className="hero__title">
-            <span className="hero__title-beyond">Beyond</span>
-            <span className="hero__title-gradient">Messaging</span>
+            <KineticText
+              text="Beyond"
+              animation="words"
+              as="span"
+              className="hero__title-beyond"
+              stagger={0.08}
+            />
+            <KineticText
+              text="Messaging"
+              animation="characters"
+              as="span"
+              className="hero__title-gradient kinetic-gradient"
+              stagger={0.03}
+              gradient
+            />
           </h1>
 
           <p className="hero__subtitle font-robert">
@@ -1083,8 +1076,12 @@ export default function LandingPage() {
           </p>
 
           <div className="hero__buttons">
-            <SwapButton primary mainText="Start Free" altText="No Credit Card" href="/register" />
-            <SwapButton mainText="Learn More" altText="Explore" href="#features" />
+            <MagneticButton variant="hot" href="/register" glowing className="px-8 py-4 text-lg">
+              Start Free
+            </MagneticButton>
+            <MagneticButton variant="ghost" href="#features" className="px-8 py-4 text-lg">
+              Learn More
+            </MagneticButton>
           </div>
         </div>
 
@@ -1164,7 +1161,9 @@ export default function LandingPage() {
               with AES-256, and we use Signal-inspired encryption protocols. Not even we can access
               your private conversations.
             </p>
-            <SwapButton mainText="Security Details" altText="Learn More" />
+            <MagneticButton variant="secondary" href="/security" glowing>
+              Security Details
+            </MagneticButton>
           </div>
 
           <div ref={aboutVisualRef} className="about__visual">
@@ -1253,8 +1252,12 @@ export default function LandingPage() {
             Create forums, customize your space, and connect with like-minded people.
           </p>
           <div className="cta__buttons">
-            <SwapButton primary mainText="Create Account" altText="Join Now!" href="/register" />
-            <SwapButton mainText="Sign In" altText="Welcome Back" href="/login" />
+            <MagneticButton variant="hot" href="/register" glowing className="px-8 py-4 text-lg">
+              Create Account
+            </MagneticButton>
+            <MagneticButton variant="ghost" href="/login" className="px-8 py-4 text-lg">
+              Sign In
+            </MagneticButton>
           </div>
         </div>
       </section>

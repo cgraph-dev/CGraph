@@ -11,27 +11,122 @@
  * @updated v0.9.5 - Added animated background, transparent sections
  */
 
-/* ===== CSS Variables (matching landing page) ===== */
+/* ===== CSS Variables (matching landing page - 2026 Enhanced) ===== */
 .marketing-enhanced {
+  /* Primary colors */
   --color-primary: #10b981;
   --color-primary-dark: #059669;
   --color-primary-light: #34d399;
   --color-secondary: #8b5cf6;
   --color-secondary-dark: #7c3aed;
   --color-secondary-light: #a78bfa;
+
+  /* 2026: Cyan accent for tech/energy feel */
+  --color-accent-cyan: #06b6d4;
+  --color-accent-cyan-light: #22d3ee;
+  --color-accent-cyan-dark: #0891b2;
+  --color-accent-cyan-glow: rgba(6, 182, 212, 0.5);
+
+  /* 2026: Warm CTA color */
+  --color-cta-hot: #f97316;
+  --color-cta-hot-glow: rgba(249, 115, 22, 0.5);
+
+  /* Dark palette */
   --color-dark: #030712;
   --color-dark-alt: #0a0f1a;
   --color-dark-tertiary: #111827;
+  --color-void: #000000;
+  --color-dark-purple: #0a0612;
+  --color-dark-emerald: #020a07;
   --color-light: #FFFFFF;
   --color-gray: #9ca3af;
+
+  /* Gradients */
   --gradient-primary: linear-gradient(135deg, #10b981 0%, #8b5cf6 100%);
   --gradient-button: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
+  --gradient-hero-enhanced: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #8b5cf6 100%);
+  --gradient-text-animated: linear-gradient(90deg, #10b981, #06b6d4, #8b5cf6, #10b981);
+
+  /* Glow effects */
   --glow-emerald: 0 0 20px rgba(16, 185, 129, 0.5);
   --glow-purple: 0 0 20px rgba(139, 92, 246, 0.5);
-  
+  --glow-cyan: 0 0 30px rgba(6, 182, 212, 0.6);
+  --glow-hot: 0 0 30px rgba(249, 115, 22, 0.4);
+
   background: var(--color-dark);
   color: var(--color-light);
   font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* ===== 2026 Glassmorphism Styles ===== */
+.marketing-glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.marketing-glass-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transform: translateY(-4px);
+}
+
+/* Glassmorphism with emerald tint */
+.marketing-glass-card--emerald {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.marketing-glass-card--emerald:hover {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow:
+    0 12px 48px rgba(16, 185, 129, 0.15),
+    inset 0 1px 0 rgba(16, 185, 129, 0.2);
+}
+
+/* 2026: Animated gradient text */
+.marketing-gradient-text-animated {
+  background: var(--gradient-text-animated);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: marketing-gradient-shift 5s ease infinite;
+}
+
+@keyframes marketing-gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* 2026: Glow pulse for CTAs */
+.marketing-glow-button {
+  animation: marketing-glow-pulse 3s ease-in-out infinite;
+}
+
+@keyframes marketing-glow-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(16, 185, 129, 0.4),
+      0 0 40px rgba(16, 185, 129, 0.2),
+      0 0 60px rgba(16, 185, 129, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(16, 185, 129, 0.6),
+      0 0 60px rgba(16, 185, 129, 0.3),
+      0 0 90px rgba(16, 185, 129, 0.15);
+  }
 }
 
 /* ===== Animated Background (CSS-only for performance) ===== */

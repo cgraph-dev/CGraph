@@ -89,29 +89,49 @@ html.site-ready {
   --color-secondary-light: #a78bfa;
   --color-accent: #10b981;
   --color-accent-alt: #8b5cf6;
-  
-  /* Backgrounds - Gray-950 style */
+
+  /* NEW 2026: Cyan accent for tech/energy feel */
+  --color-accent-cyan: #06b6d4;
+  --color-accent-cyan-light: #22d3ee;
+  --color-accent-cyan-dark: #0891b2;
+  --color-accent-cyan-glow: rgba(6, 182, 212, 0.5);
+
+  /* NEW 2026: Warm CTA color for action triggers */
+  --color-cta-hot: #f97316;
+  --color-cta-hot-glow: rgba(249, 115, 22, 0.5);
+
+  /* Backgrounds - Enhanced dark palette for contrast */
   --color-dark: #030712;
   --color-dark-alt: #0a0f1a;
   --color-dark-tertiary: #111827;
+  --color-void: #000000;           /* True black for max contrast */
+  --color-dark-purple: #0a0612;    /* Black with purple tint */
+  --color-dark-emerald: #020a07;   /* Black with emerald tint */
   --color-light: #FFFFFF;
   --color-gray: #9ca3af;
   --color-gray-dark: #6b7280;
-  
+
   /* Status colors */
   --color-emerald: #10b981;
   --color-error: #ef4444;
   --color-warning: #f59e0b;
-  
-  /* Gradients */
+
+  /* Gradients - Enhanced with tri-color */
   --gradient-primary: linear-gradient(135deg, #10b981 0%, #8b5cf6 100%);
   --gradient-button: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
   --gradient-hero: linear-gradient(135deg, #030712 0%, #0a0f1a 50%, #111827 100%);
   --gradient-glow: radial-gradient(circle, rgba(16, 185, 129, 0.4) 0%, rgba(139, 92, 246, 0.2) 50%, transparent 70%);
-  
-  /* Glow effects */
+
+  /* NEW 2026: Tri-color gradient (Emerald → Cyan → Purple) */
+  --gradient-hero-enhanced: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #8b5cf6 100%);
+  --gradient-text-animated: linear-gradient(90deg, #10b981, #06b6d4, #8b5cf6, #10b981);
+  --gradient-cta-hot: linear-gradient(135deg, #f97316, #ef4444);
+
+  /* Glow effects - Enhanced */
   --glow-emerald: 0 0 20px rgba(16, 185, 129, 0.5);
   --glow-purple: 0 0 20px rgba(139, 92, 246, 0.5);
+  --glow-cyan: 0 0 30px rgba(6, 182, 212, 0.6);
+  --glow-hot: 0 0 30px rgba(249, 115, 22, 0.4);
   
   font-family: 'Inter', system-ui, sans-serif;
   background: var(--color-dark);
@@ -187,6 +207,356 @@ html.site-ready {
   50% {
     box-shadow: 0 0 18px rgba(168, 85, 247, 0.22), 0 0 32px rgba(168, 85, 247, 0.12);
   }
+}
+
+/* ==========================================================================
+   2026 CUTTING-EDGE ANIMATIONS
+   ========================================================================== */
+
+/* Breathing glow animation for CTAs */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(16, 185, 129, 0.4),
+      0 0 40px rgba(16, 185, 129, 0.2),
+      0 0 60px rgba(16, 185, 129, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(16, 185, 129, 0.6),
+      0 0 60px rgba(16, 185, 129, 0.3),
+      0 0 90px rgba(16, 185, 129, 0.15);
+  }
+}
+
+/* Cyan glow pulse variant */
+@keyframes glow-pulse-cyan {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(6, 182, 212, 0.4),
+      0 0 40px rgba(6, 182, 212, 0.2),
+      0 0 60px rgba(6, 182, 212, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 30px rgba(6, 182, 212, 0.6),
+      0 0 60px rgba(6, 182, 212, 0.3),
+      0 0 90px rgba(6, 182, 212, 0.15);
+  }
+}
+
+/* Neon flicker for cyberpunk feel */
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  96% { opacity: 0.9; }
+  97% { opacity: 1; }
+}
+
+/* Gradient text shift animation */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* CSS scroll-driven reveal animation (Chrome 115+, Safari 18+) */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(100px) scale(0.9);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Parallax background scroll animation */
+@keyframes parallax-bg {
+  from { transform: translateY(0); }
+  to { transform: translateY(-200px); }
+}
+
+/* Float animation for 3D elements */
+@keyframes gentle-float {
+  0%, 100% {
+    transform: translateY(0) rotateX(0) rotateY(0);
+  }
+  25% {
+    transform: translateY(-10px) rotateX(2deg) rotateY(2deg);
+  }
+  50% {
+    transform: translateY(-5px) rotateX(0) rotateY(-2deg);
+  }
+  75% {
+    transform: translateY(-8px) rotateX(-2deg) rotateY(1deg);
+  }
+}
+
+/* Particle drift animation */
+@keyframes particle-drift {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.4;
+  }
+  25% {
+    transform: translate(10px, -20px) scale(1.1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-5px, -10px) scale(0.9);
+    opacity: 0.3;
+  }
+  75% {
+    transform: translate(5px, -15px) scale(1.05);
+    opacity: 0.6;
+  }
+}
+
+/* ==========================================================================
+   GLASSMORPHISM COMPONENTS
+   ========================================================================== */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Glassmorphism with emerald tint */
+.glass-card--emerald {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.glass-card--emerald:hover {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow:
+    0 12px 48px rgba(16, 185, 129, 0.15),
+    inset 0 1px 0 rgba(16, 185, 129, 0.2);
+}
+
+/* Glassmorphism with purple tint */
+.glass-card--purple {
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.glass-card--purple:hover {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow:
+    0 12px 48px rgba(139, 92, 246, 0.15),
+    inset 0 1px 0 rgba(139, 92, 246, 0.2);
+}
+
+/* Glassmorphism with cyan tint */
+.glass-card--cyan {
+  background: rgba(6, 182, 212, 0.08);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.glass-card--cyan:hover {
+  background: rgba(6, 182, 212, 0.12);
+  border-color: rgba(6, 182, 212, 0.3);
+  box-shadow:
+    0 12px 48px rgba(6, 182, 212, 0.15),
+    inset 0 1px 0 rgba(6, 182, 212, 0.2);
+}
+
+/* ==========================================================================
+   BENTO GRID LAYOUT SYSTEM
+   ========================================================================== */
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 200px;
+  gap: 16px;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.bento-grid .bento-large {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.bento-grid .bento-medium {
+  grid-column: span 2;
+}
+
+.bento-grid .bento-small {
+  grid-column: span 1;
+}
+
+.bento-grid .bento-wide {
+  grid-column: span 3;
+}
+
+.bento-grid .bento-tall {
+  grid-row: span 2;
+}
+
+/* Responsive bento grid */
+@media (max-width: 1024px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .bento-grid .bento-large,
+  .bento-grid .bento-wide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+  }
+  .bento-grid .bento-large,
+  .bento-grid .bento-medium,
+  .bento-grid .bento-wide {
+    grid-column: span 1;
+  }
+  .bento-grid .bento-tall {
+    grid-row: span 1;
+  }
+}
+
+/* ==========================================================================
+   ANIMATED TEXT UTILITIES
+   ========================================================================== */
+
+.gradient-text-animated {
+  background: var(--gradient-text-animated);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 5s ease infinite;
+}
+
+.neon-text {
+  animation: neon-flicker 4s ease-in-out infinite;
+  text-shadow:
+    0 0 10px currentColor,
+    0 0 20px currentColor,
+    0 0 40px currentColor;
+}
+
+.glow-button {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.glow-button-cyan {
+  animation: glow-pulse-cyan 3s ease-in-out infinite;
+}
+
+/* Kinetic text gradient effect */
+.kinetic-gradient {
+  background: var(--gradient-text-animated);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 5s ease infinite;
+}
+
+/* Perspective utilities for 3D text animations */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.perspective-500 {
+  perspective: 500px;
+}
+
+/* ==========================================================================
+   SCROLL PROGRESS INDICATOR
+   ========================================================================== */
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--gradient-hero-enhanced);
+  transform-origin: 0%;
+  z-index: 9999;
+}
+
+/* ==========================================================================
+   PARTICLE FIELD CONTAINER
+   ========================================================================== */
+
+.particle-field {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.particle-field__particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  animation: particle-drift 8s ease-in-out infinite;
+}
+
+.particle-field__particle--emerald {
+  background: var(--color-primary);
+  box-shadow: 0 0 10px var(--color-primary);
+}
+
+.particle-field__particle--purple {
+  background: var(--color-secondary);
+  box-shadow: 0 0 10px var(--color-secondary);
+}
+
+.particle-field__particle--cyan {
+  background: var(--color-accent-cyan);
+  box-shadow: 0 0 10px var(--color-accent-cyan);
+}
+
+/* ==========================================================================
+   CURSOR TRAIL EFFECT
+   ========================================================================== */
+
+.cursor-trail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
 }
 
 .demo-landing .font-display {

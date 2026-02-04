@@ -14,16 +14,13 @@ import {
   Modal,
   Animated,
   Linking,
-  Pressable,
   ScrollView,
   Easing,
 } from 'react-native';
-import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RouteProp, NavigationProp, ParamListBase } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
@@ -58,16 +55,12 @@ import {
   InlineVideoThumbnail,
   VideoPlayerComponent,
   AttachmentVideoPreview,
+  EmptyConversation,
+  MessageActionsMenu,
+  ReactionPickerModal,
 } from './ConversationScreen/components';
 import { styles, SCREEN_WIDTH, SCREEN_HEIGHT } from './ConversationScreen/styles';
-import {
-  useMediaViewer,
-  useMessageActions,
-  useReactions,
-  useAttachments,
-  EMOJI_CATEGORIES,
-  QUICK_REACTIONS,
-} from './ConversationScreen/hooks';
+import { useMediaViewer, EMOJI_CATEGORIES } from './ConversationScreen/hooks';
 import {
   getMimeType,
   getFileIcon,
@@ -2507,6 +2500,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
     [user?.id, colors, handleMessageLongPress, renderMessageContent, newMessageIds]
   );
 
+  // Callback for checking reaction state - must be before any conditional returns
+  const getReactionState = useCallback(
+    (emoji: string) => {
+      return selectedMessage?.reactions?.some((r) => r.emoji === emoji && r.hasReacted) || false;
+    },
+    [selectedMessage]
+  );
+
   if (isLoading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
@@ -2515,526 +2516,53 @@ export default function ConversationScreen({ navigation, route }: Props) {
     );
   }
 
-  // Beautiful animated empty conversation state - inspired by Discord/Telegram
-  const EmptyConversation = () => {
-    const otherName = otherUser?.display_name || otherUser?.username || 'this person';
-    const otherAvatar = otherUser?.avatar_url;
-    const otherInitial = otherName.charAt(0).toUpperCase();
+  // Render wrapper for EmptyConversation component
+  const renderEmptyConversation = () => (
+    <EmptyConversation
+      otherUser={otherUser}
+      colors={colors}
+      waveAnim={waveAnim}
+      onSendWave={handleSendWave}
+      onSetInputText={setInputText}
+    />
+  );
 
-    // Animated wave hand for the greeting
-    const waveRotate = waveAnim.interpolate({
-      inputRange: [0, 0.5, 1],
-      outputRange: ['0deg', '20deg', '0deg'],
-    });
+  // Render MessageActionsMenu with all props
+  const renderMessageActionsMenu = () => (
+    <MessageActionsMenu
+      visible={showMessageActions}
+      selectedMessage={selectedMessage}
+      isOwnMessage={String(user?.id) === String(selectedMessage?.sender_id)}
+      isDark={isDark}
+      colors={colors}
+      messageActionsAnim={messageActionsAnim}
+      backdropAnim={backdropAnim}
+      menuScaleAnim={menuScaleAnim}
+      actionItemAnims={actionItemAnims}
+      onClose={closeMessageActions}
+      onReply={handleReply}
+      onTogglePin={handleTogglePin}
+      onUnsend={handleUnsend}
+      onQuickReaction={handleQuickReaction}
+      onOpenReactionPicker={openReactionPicker}
+      getReactionState={getReactionState}
+    />
+  );
 
-    return (
-      <View style={styles.emptyStateWrapper}>
-        {/* Large profile avatar */}
-        <View style={styles.emptyProfileSection}>
-          {otherAvatar ? (
-            <Image source={{ uri: otherAvatar }} style={styles.emptyAvatar} />
-          ) : (
-            <View style={[styles.emptyAvatarPlaceholder, { backgroundColor: colors.primary }]}>
-              <Text style={styles.emptyAvatarText}>{otherInitial}</Text>
-            </View>
-          )}
-          <View style={styles.emptyOnlineIndicator} />
-        </View>
-
-        {/* User name and info */}
-        <Text style={[styles.emptyUserName, { color: colors.text }]}>{otherName}</Text>
-
-        {/* Cute message with animated emoji */}
-        <View style={styles.emptyMessageRow}>
-          <Animated.Text style={[styles.emptyWaveEmoji, { transform: [{ rotate: waveRotate }] }]}>
-            👋
-          </Animated.Text>
-          <Text style={[styles.emptyMessageText, { color: colors.textSecondary }]}>
-            This is the very beginning of your{'\n'}conversation with {otherName}
-          </Text>
-        </View>
-
-        {/* Action buttons */}
-        <View style={styles.emptyActions}>
-          <TouchableOpacity
-            style={[styles.waveButton, { backgroundColor: colors.primary }]}
-            onPress={handleSendWave}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.waveButtonText}>👋 Wave to {otherName}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.sayHiButton, { borderColor: colors.border }]}
-            onPress={() => setInputText('Hey! How are you? 😊')}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.sayHiButtonText, { color: colors.text }]}>💬 Say Hi</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Fun conversation starters */}
-        <View style={styles.conversationStarters}>
-          <Text style={[styles.startersTitle, { color: colors.textTertiary }]}>Quick starters</Text>
-          <View style={styles.startersRow}>
-            {['Hello! 👋', "What's up? 🤔", 'Nice to meet you! ✨'].map((starter, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.starterChip,
-                  { backgroundColor: colors.surface, borderColor: colors.border },
-                ]}
-                onPress={() => setInputText(starter)}
-                activeOpacity={0.7}
-              >
-                <Text style={[styles.starterText, { color: colors.text }]}>{starter}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      </View>
-    );
-  };
-
-  // Message Actions Menu Component - Modern Discord/Telegram style
-  const MessageActionsMenu = () => {
-    if (!showMessageActions || !selectedMessage) return null;
-
-    const isOwnMessage = String(user?.id) === String(selectedMessage.sender_id);
-    const isPinned = selectedMessage.is_pinned;
-
-    // Check which quick reactions the user has already used on this message
-    const getReactionState = (emoji: string) => {
-      return selectedMessage.reactions?.some((r) => r.emoji === emoji && r.hasReacted) || false;
-    };
-
-    // Define action items
-    const actionItems = [
-      {
-        id: 'reply',
-        icon: 'arrow-undo',
-        label: 'Reply',
-        color: '#3b82f6',
-        gradient: ['#3b82f6', '#60a5fa'],
-        onPress: handleReply,
-        visible: true,
-      },
-      {
-        id: 'copy',
-        icon: 'copy-outline',
-        label: 'Copy',
-        color: '#8b5cf6',
-        gradient: ['#8b5cf6', '#a78bfa'],
-        onPress: async () => {
-          // Copy message content to clipboard
-          if (selectedMessage.content) {
-            await Clipboard.setStringAsync(selectedMessage.content);
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-          }
-          closeMessageActions();
-        },
-        visible: !!selectedMessage.content,
-      },
-      {
-        id: 'pin',
-        icon: isPinned ? 'pin-outline' : 'pin',
-        label: isPinned ? 'Unpin' : 'Pin',
-        color: isPinned ? '#f59e0b' : '#10b981',
-        gradient: isPinned ? ['#f59e0b', '#fbbf24'] : ['#10b981', '#34d399'],
-        onPress: handleTogglePin,
-        visible: true,
-      },
-      {
-        id: 'delete',
-        icon: 'trash-outline',
-        label: 'Unsend',
-        color: '#ef4444',
-        gradient: ['#ef4444', '#f87171'],
-        onPress: handleUnsend,
-        visible: isOwnMessage,
-        danger: true,
-      },
-    ].filter((item) => item.visible);
-
-    const slideUp = messageActionsAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [400, 0],
-    });
-
-    const backdropOpacity = backdropAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, 1],
-    });
-
-    // Render a pressable action item with animation
-    const renderActionItem = (item: (typeof actionItems)[0], index: number) => {
-      const itemAnim = actionItemAnims[index] || new Animated.Value(1);
-      const translateY = itemAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: [30, 0],
-      });
-      const itemOpacity = itemAnim.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 1],
-      });
-
-      return (
-        <Animated.View
-          key={item.id}
-          style={{
-            transform: [{ translateY }],
-            opacity: itemOpacity,
-          }}
-        >
-          <Pressable
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              item.onPress();
-            }}
-            style={({ pressed }) => [
-              styles.modernActionItem,
-              {
-                backgroundColor: pressed
-                  ? item.danger
-                    ? 'rgba(239, 68, 68, 0.15)'
-                    : 'rgba(255, 255, 255, 0.08)'
-                  : 'rgba(255, 255, 255, 0.04)',
-                transform: [{ scale: pressed ? 0.97 : 1 }],
-              },
-            ]}
-          >
-            <View style={[styles.modernActionIconWrap, { backgroundColor: `${item.color}18` }]}>
-              <Ionicons name={item.icon as unknown} size={20} color={item.color} />
-            </View>
-            <Text
-              style={[styles.modernActionLabel, { color: item.danger ? item.color : colors.text }]}
-            >
-              {item.label}
-            </Text>
-            <View style={styles.modernActionArrow}>
-              <Ionicons name="chevron-forward" size={16} color={colors.textSecondary} />
-            </View>
-          </Pressable>
-        </Animated.View>
-      );
-    };
-
-    return (
-      <Modal
-        visible={showMessageActions}
-        transparent
-        animationType="none"
-        onRequestClose={closeMessageActions}
-        statusBarTranslucent
-      >
-        <View style={styles.modernActionsOverlay}>
-          {/* Animated blur backdrop */}
-          <Animated.View style={[StyleSheet.absoluteFill, { opacity: backdropOpacity }]}>
-            <BlurView
-              intensity={Platform.OS === 'ios' ? 40 : 100}
-              tint={isDark ? 'dark' : 'light'}
-              style={StyleSheet.absoluteFill}
-            />
-            <Pressable
-              style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.4)' }]}
-              onPress={closeMessageActions}
-            />
-          </Animated.View>
-
-          {/* Centered content area */}
-          <View style={styles.modernActionsContent}>
-            {/* Message Preview Card */}
-            <Animated.View
-              style={[
-                styles.modernMessagePreview,
-                {
-                  backgroundColor: isDark ? 'rgba(30, 30, 35, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                  transform: [{ translateY: slideUp }, { scale: menuScaleAnim }],
-                  opacity: backdropOpacity,
-                },
-              ]}
-            >
-              <View style={styles.modernPreviewHeader}>
-                <View style={[styles.modernPreviewAvatar, { backgroundColor: colors.primary }]}>
-                  <Text style={styles.modernPreviewAvatarText}>
-                    {(
-                      selectedMessage.sender?.display_name ||
-                      selectedMessage.sender?.username ||
-                      'U'
-                    )
-                      .charAt(0)
-                      .toUpperCase()}
-                  </Text>
-                </View>
-                <View style={styles.modernPreviewMeta}>
-                  <Text
-                    style={[styles.modernPreviewName, { color: colors.text }]}
-                    numberOfLines={1}
-                  >
-                    {selectedMessage.sender?.display_name ||
-                      selectedMessage.sender?.username ||
-                      'Unknown'}
-                  </Text>
-                  <Text style={[styles.modernPreviewTime, { color: colors.textSecondary }]}>
-                    {new Date(selectedMessage.inserted_at).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}
-                  </Text>
-                </View>
-                {isPinned && (
-                  <View style={[styles.modernPinnedBadge, { backgroundColor: '#f59e0b20' }]}>
-                    <Ionicons name="pin" size={12} color="#f59e0b" />
-                  </View>
-                )}
-              </View>
-
-              {/* Message content preview */}
-              <View style={styles.modernPreviewBody}>
-                {selectedMessage.type === 'image' && selectedMessage.metadata?.url ? (
-                  <View style={styles.modernPreviewImageWrap}>
-                    <Image
-                      source={{ uri: selectedMessage.metadata.url }}
-                      style={styles.modernPreviewImage}
-                      resizeMode="cover"
-                    />
-                    <View style={styles.modernPreviewImageOverlay}>
-                      <Ionicons name="image" size={16} color="#fff" />
-                      <Text style={styles.modernPreviewImageText}>Photo</Text>
-                    </View>
-                  </View>
-                ) : selectedMessage.type === 'file' ? (
-                  <View
-                    style={[styles.modernPreviewFile, { backgroundColor: colors.surfaceHover }]}
-                  >
-                    <Ionicons name="document-outline" size={20} color={colors.primary} />
-                    <Text
-                      style={[styles.modernPreviewFileText, { color: colors.text }]}
-                      numberOfLines={1}
-                    >
-                      {selectedMessage.metadata?.filename || 'File'}
-                    </Text>
-                  </View>
-                ) : (
-                  <Text
-                    style={[styles.modernPreviewText, { color: colors.text }]}
-                    numberOfLines={3}
-                  >
-                    {selectedMessage.content || 'Message'}
-                  </Text>
-                )}
-              </View>
-
-              {/* Quick Reactions Bar */}
-              <View style={styles.quickReactionsBar}>
-                {QUICK_REACTIONS.map((emoji) => {
-                  const hasReacted = getReactionState(emoji);
-                  return (
-                    <TouchableOpacity
-                      key={emoji}
-                      style={[
-                        styles.quickReactionBtn,
-                        {
-                          backgroundColor: hasReacted
-                            ? colors.primary + '25'
-                            : isDark
-                              ? 'rgba(255,255,255,0.08)'
-                              : 'rgba(0,0,0,0.05)',
-                          borderColor: hasReacted ? colors.primary : 'transparent',
-                          borderWidth: hasReacted ? 1.5 : 0,
-                        },
-                      ]}
-                      onPress={() => handleQuickReaction(emoji)}
-                      activeOpacity={0.7}
-                    >
-                      <Text style={styles.quickReactionEmoji}>{emoji}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-                <TouchableOpacity
-                  style={[
-                    styles.quickReactionBtn,
-                    styles.quickReactionMore,
-                    { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' },
-                  ]}
-                  onPress={openReactionPicker}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons name="add" size={20} color={colors.textSecondary} />
-                </TouchableOpacity>
-              </View>
-            </Animated.View>
-
-            {/* Action Menu Card */}
-            <Animated.View
-              style={[
-                styles.modernActionsCard,
-                {
-                  backgroundColor: isDark ? 'rgba(30, 30, 35, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                  transform: [{ translateY: slideUp }, { scale: menuScaleAnim }],
-                  opacity: backdropOpacity,
-                },
-              ]}
-            >
-              <View style={styles.modernActionsHeader}>
-                <View style={[styles.modernActionsHandle, { backgroundColor: colors.border }]} />
-                <Text style={[styles.modernActionsTitle, { color: colors.textSecondary }]}>
-                  MESSAGE OPTIONS
-                </Text>
-              </View>
-
-              <View style={styles.modernActionsList}>
-                {actionItems.map((item, index) => renderActionItem(item, index))}
-              </View>
-            </Animated.View>
-
-            {/* Cancel Button */}
-            <Animated.View
-              style={[
-                {
-                  transform: [{ translateY: slideUp }, { scale: menuScaleAnim }],
-                  opacity: backdropOpacity,
-                },
-              ]}
-            >
-              <Pressable
-                onPress={closeMessageActions}
-                style={({ pressed }) => [
-                  styles.modernCancelButton,
-                  {
-                    backgroundColor: isDark
-                      ? pressed
-                        ? 'rgba(50, 50, 55, 0.98)'
-                        : 'rgba(40, 40, 45, 0.95)'
-                      : pressed
-                        ? 'rgba(240, 240, 245, 0.98)'
-                        : 'rgba(255, 255, 255, 0.95)',
-                    transform: [{ scale: pressed ? 0.98 : 1 }],
-                  },
-                ]}
-              >
-                <Text style={[styles.modernCancelText, { color: colors.primary }]}>Cancel</Text>
-              </Pressable>
-            </Animated.View>
-          </View>
-        </View>
-      </Modal>
-    );
-  };
-
-  // Full Emoji Reaction Picker Modal
-  const ReactionPickerModal = () => {
-    if (!showReactionPicker || !reactionPickerMessage) return null;
-
-    const categoryKeys = Object.keys(EMOJI_CATEGORIES) as (keyof typeof EMOJI_CATEGORIES)[];
-    const emojis = EMOJI_CATEGORIES[selectedEmojiCategory];
-
-    // Check if user has already reacted with an emoji
-    const hasReacted = (emoji: string) => {
-      return (
-        reactionPickerMessage.reactions?.some((r) => r.emoji === emoji && r.hasReacted) || false
-      );
-    };
-
-    return (
-      <Modal
-        visible={showReactionPicker}
-        transparent
-        animationType="slide"
-        onRequestClose={closeReactionPicker}
-        statusBarTranslucent
-      >
-        <View style={styles.reactionPickerOverlay}>
-          <Pressable style={styles.reactionPickerBackdrop} onPress={closeReactionPicker} />
-          <View
-            style={[
-              styles.reactionPickerContainer,
-              { backgroundColor: isDark ? '#1a1a2e' : '#ffffff' },
-            ]}
-          >
-            {/* Header */}
-            <View style={styles.reactionPickerHeader}>
-              <View style={[styles.reactionPickerHandle, { backgroundColor: colors.border }]} />
-              <Text style={[styles.reactionPickerTitle, { color: colors.text }]}>
-                😊 Add Reaction
-              </Text>
-              <TouchableOpacity style={styles.reactionPickerClose} onPress={closeReactionPicker}>
-                <Ionicons name="close" size={24} color={colors.textSecondary} />
-              </TouchableOpacity>
-            </View>
-
-            {/* Category tabs */}
-            <View style={styles.emojiCategoryTabs}>
-              <FlatList
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                data={categoryKeys}
-                keyExtractor={(item) => item}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={[
-                      styles.emojiCategoryTab,
-                      selectedEmojiCategory === item && {
-                        backgroundColor: colors.primary + '20',
-                        borderColor: colors.primary,
-                      },
-                    ]}
-                    onPress={() => setSelectedEmojiCategory(item)}
-                  >
-                    <Text
-                      style={[
-                        styles.emojiCategoryLabel,
-                        {
-                          color:
-                            selectedEmojiCategory === item ? colors.primary : colors.textSecondary,
-                        },
-                      ]}
-                    >
-                      {item}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-                contentContainerStyle={styles.emojiCategoryTabsContent}
-              />
-            </View>
-
-            {/* Emoji grid */}
-            <ScrollView style={styles.emojiScrollView} showsVerticalScrollIndicator={false}>
-              <View style={styles.emojiGrid}>
-                {emojis.map((emoji, index) => {
-                  const reacted = hasReacted(emoji);
-                  return (
-                    <TouchableOpacity
-                      key={`${emoji}-${index}`}
-                      style={[
-                        styles.emojiGridItem,
-                        reacted && {
-                          backgroundColor: colors.primary + '20',
-                          borderColor: colors.primary,
-                          borderWidth: 1,
-                        },
-                      ]}
-                      onPress={() => {
-                        if (reacted) {
-                          handleRemoveReaction(reactionPickerMessage.id, emoji);
-                        } else {
-                          handleAddReaction(reactionPickerMessage.id, emoji);
-                        }
-                        closeReactionPicker();
-                      }}
-                      activeOpacity={0.6}
-                    >
-                      <Text style={styles.emojiGridEmoji}>{emoji}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
-    );
-  };
+  // Render ReactionPickerModal with all props
+  const renderReactionPickerModal = () => (
+    <ReactionPickerModal
+      visible={showReactionPicker}
+      message={reactionPickerMessage}
+      selectedCategory={selectedEmojiCategory}
+      isDark={isDark}
+      colors={colors}
+      onClose={closeReactionPicker}
+      onSelectCategory={setSelectedEmojiCategory}
+      onAddReaction={handleAddReaction}
+      onRemoveReaction={handleRemoveReaction}
+    />
+  );
 
   return (
     <KeyboardAvoidingView
@@ -3049,8 +2577,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
         onSelectAssets={handleAttachmentPickerSelect}
         maxSelection={10}
       />
-      <MessageActionsMenu />
-      <ReactionPickerModal />
+      {renderMessageActionsMenu()}
+      {renderReactionPickerModal()}
 
       {/* Attachment Preview Modal */}
       <Modal
@@ -3540,7 +3068,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         keyExtractor={(item) => item.id}
         contentContainerStyle={[styles.messagesList, messages.length === 0 && styles.emptyList]}
         inverted={true}
-        ListEmptyComponent={EmptyConversation}
+        ListEmptyComponent={renderEmptyConversation}
         onScrollToIndexFailed={(info) => {
           // Handle scroll to index failure by scrolling to approximate offset
           flatListRef.current?.scrollToOffset({

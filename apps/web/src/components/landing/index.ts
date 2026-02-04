@@ -215,6 +215,32 @@ export {
 // Use: const ForumShowcase = lazy(() => import('./ForumShowcase'));
 
 // =============================================================================
+// 2026 CUTTING-EDGE COMPONENTS
+// =============================================================================
+
+export { GlassCard, type GlassCardProps, type GlassCardVariant } from './GlassCard';
+export {
+  MagneticButton,
+  type MagneticButtonProps,
+  type MagneticButtonVariant,
+} from './MagneticButton';
+export { ParticleField, type ParticleFieldProps } from './ParticleField';
+export {
+  KineticText,
+  type KineticTextProps,
+  type KineticTextAnimation,
+  type KineticTextAs,
+} from './KineticText';
+export { ScrollProgress as ScrollProgressBar, type ScrollProgressProps } from './ScrollProgress';
+export {
+  BentoGrid as BentoGridNew,
+  BentoItem,
+  type BentoGridProps,
+  type BentoItemProps,
+  type BentoItemSize,
+} from './BentoGrid';
+
+// =============================================================================
 // RE-EXPORTS FOR CONVENIENCE
 // =============================================================================
 
