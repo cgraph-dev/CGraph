@@ -14,3 +14,9 @@ export {
 } from './SettingsComponents';
 
 export { LivePreviewCard } from './LivePreviewCard';
+
+// Tab content components
+export { LayoutTab } from './LayoutTab';
+export { EffectsTab } from './EffectsTab';
+export { AnimationsTab } from './AnimationsTab';
+export { AccessibilityTab } from './AccessibilityTab';
