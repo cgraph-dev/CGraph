@@ -20,3 +20,5 @@ export { useConversationData } from './useConversationData';
 export { usePinAndDelete } from './usePinAndDelete';
 export { useFilePickers } from './useFilePickers';
 export type { PickedAsset } from './useFilePickers';
+export { useMessageSending } from './useMessageSending';
+export type { UseMessageSendingReturn } from './useMessageSending';
