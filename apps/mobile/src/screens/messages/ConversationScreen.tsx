@@ -53,6 +53,7 @@ import {
   useAttachmentUpload,
   useVoiceAndWave,
   useConversationSocket,
+  useConversationHeader,
 } from './ConversationScreen/hooks';
 import {
   processMessagesWithReactions,
@@ -223,6 +224,28 @@ export default function ConversationScreen({ navigation, route }: Props) {
       flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
     }, 100);
   }, []);
+
+  // Handle starting a call (audio or video)
+  const handleStartCall = useCallback((type: 'audio' | 'video') => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Alert.alert(
+      `${type === 'video' ? 'Video' : 'Voice'} Call`,
+      `${type === 'video' ? 'Video' : 'Voice'} calls are coming soon! Stay tuned for real-time encrypted calls.`,
+      [{ text: 'Got it', style: 'default' }]
+    );
+  }, []);
+
+  // Conversation header hook - manages navigation header with status
+  const { updateHeader } = useConversationHeader({
+    navigation,
+    colors,
+    isOtherUserOnline,
+    isOtherUserTyping,
+    otherParticipantLastSeen,
+    otherParticipantId,
+    otherUser,
+    onStartCall: handleStartCall,
+  });
 
   // Attachment upload hook
   const {
@@ -583,113 +606,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
   };
 
-  // Update header with current online and typing status
-  const updateHeader = useCallback(
-    (displayName: string) => {
-      // Determine status text with priority: typing > online > last seen > offline
-      const lastSeenText = formatLastSeen(otherParticipantLastSeen);
-      let statusText = lastSeenText ? `Last seen ${lastSeenText}` : 'Offline';
-      let statusColor = '#6b7280';
-      let showPulse = false;
-
-      if (isOtherUserTyping) {
-        statusText = 'Typing...';
-        statusColor = '#3b82f6';
-        showPulse = true;
-      } else if (isOtherUserOnline) {
-        statusText = 'Online';
-        statusColor = '#22c55e';
-        showPulse = true;
-      }
-
-      navigation.setOptions({
-        headerTitle: () => (
-          <TouchableOpacity
-            style={styles.headerTitleContainer}
-            onPress={() => {
-              if (otherParticipantId) {
-                // Navigate to FriendsTab and then to UserProfile screen
-                (navigation as NavigationProp<ParamListBase>).navigate('FriendsTab', {
-                  screen: 'UserProfile',
-                  params: { userId: otherParticipantId },
-                });
-              }
-            }}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.headerAvatar, { backgroundColor: colors.surfaceHover }]}>
-              {otherUser?.avatar_url ? (
-                <Image source={{ uri: otherUser.avatar_url }} style={styles.headerAvatarImage} />
-              ) : (
-                <Ionicons name="person" size={20} color={colors.textSecondary} />
-              )}
-            </View>
-            <View style={styles.headerTextContainer}>
-              <Text style={[styles.headerTitle, { color: colors.text }]}>{displayName}</Text>
-              <View style={styles.headerStatusRow}>
-                {(isOtherUserOnline || isOtherUserTyping) && (
-                  <View
-                    style={[
-                      styles.statusDot,
-                      { backgroundColor: statusColor },
-                      showPulse && styles.statusDotPulse,
-                    ]}
-                  />
-                )}
-                <Text
-                  style={[
-                    styles.headerSubtitle,
-                    {
-                      color:
-                        isOtherUserOnline || isOtherUserTyping ? statusColor : colors.textSecondary,
-                    },
-                    (isOtherUserOnline || isOtherUserTyping) && { fontWeight: '500' },
-                  ]}
-                >
-                  {statusText}
-                </Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-        ),
-        headerLeft: () => (
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-            activeOpacity={0.7}
-          >
-            <Ionicons name="chevron-back" size={28} color={colors.text} />
-          </TouchableOpacity>
-        ),
-        headerRight: () => (
-          <View style={styles.headerActions}>
-            <TouchableOpacity
-              style={[styles.headerActionBtn, { backgroundColor: colors.surface }]}
-              onPress={() => handleStartCall('audio')}
-            >
-              <Ionicons name="call-outline" size={20} color={colors.text} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.headerActionBtn, { backgroundColor: colors.surface }]}
-              onPress={() => handleStartCall('video')}
-            >
-              <Ionicons name="videocam-outline" size={22} color={colors.text} />
-            </TouchableOpacity>
-          </View>
-        ),
-      });
-    },
-    [
-      colors,
-      isOtherUserOnline,
-      isOtherUserTyping,
-      otherParticipantLastSeen,
-      otherParticipantId,
-      otherUser,
-      navigation,
-    ]
-  );
-
   // Update header when online or typing status changes
   useEffect(() => {
     if (_conversation) {
@@ -903,17 +819,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
     } finally {
       setIsSending(false);
     }
-  };
-
-  // Handle starting a call (audio or video)
-  const handleStartCall = (type: 'audio' | 'video') => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    // For now, show coming soon alert - calls can be implemented with WebRTC
-    Alert.alert(
-      `${type === 'video' ? 'Video' : 'Voice'} Call`,
-      `${type === 'video' ? 'Video' : 'Voice'} calls are coming soon! Stay tuned for real-time encrypted calls.`,
-      [{ text: 'Got it', style: 'default' }]
-    );
   };
 
   // Handle reply to message (wraps hook's setReplyingTo with focus)
