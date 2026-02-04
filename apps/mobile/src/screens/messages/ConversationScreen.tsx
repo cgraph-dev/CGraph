@@ -68,65 +68,14 @@ import {
   EMOJI_CATEGORIES,
   QUICK_REACTIONS,
 } from './ConversationScreen/hooks';
-import { getMimeType, getFileIcon, formatFileSize } from './ConversationScreen/utils';
+import {
+  getMimeType,
+  getFileIcon,
+  formatFileSize,
+  processMessagesWithReactions,
+} from './ConversationScreen/utils';
 
 const logger = createLogger('ConversationScreen');
-
-// Helper to process reactions and set hasReacted based on current user
-const processMessagesWithReactions = (
-  messages: Message[],
-  currentUserId: string | undefined
-): Message[] => {
-  if (!currentUserId) return messages;
-
-  return messages.map((msg) => {
-    if (!msg.reactions || msg.reactions.length === 0) return msg;
-
-    const processedReactions = msg.reactions.map((reaction) => {
-      // Check if current user is in the users array for this reaction
-      // Handle multiple formats:
-      // 1. Array of user objects: [{ id: "...", username: "..." }, ...]
-      // 2. Array of user IDs: ["user-id-1", "user-id-2", ...]
-      // 3. Mixed formats from different backend responses
-      const hasReacted =
-        reaction.users?.some((u) => {
-          // If u is a string (just user ID), compare directly
-          if (typeof u === 'string') {
-            return String(u) === String(currentUserId);
-          }
-          // If u is an object, check various ID fields
-          const uRecord = u as Record<string, unknown>;
-          return (
-            String(u.id) === String(currentUserId) ||
-            String(uRecord.user_id) === String(currentUserId)
-          );
-        }) || false;
-
-      // Normalize users array to always be objects with id field
-      const normalizedUsers =
-        reaction.users?.map((u) => {
-          if (typeof u === 'string') {
-            return {
-              id: u,
-              username: null,
-              display_name: null,
-              avatar_url: null,
-              status: 'offline' as const,
-            };
-          }
-          return u;
-        }) || [];
-
-      return {
-        ...reaction,
-        users: normalizedUsers,
-        hasReacted,
-      };
-    });
-
-    return { ...msg, reactions: processedReactions };
-  });
-};
 
 // Fun waving emojis for empty conversation
 const WAVE_EMOJIS = ['👋', '✨', '💬', '🎉', '🌟'];
