@@ -61,41 +61,9 @@ import {
 } from './ConversationScreen/components';
 import { styles, SCREEN_WIDTH, SCREEN_HEIGHT } from './ConversationScreen/styles';
 import { useMediaViewer } from './ConversationScreen/hooks';
+import { getMimeType, getFileIcon, formatFileSize } from './ConversationScreen/utils';
 
 const logger = createLogger('ConversationScreen');
-
-// Helper to get correct MIME type from file extension or asset
-const getMimeType = (filename: string | undefined, defaultType: string): string => {
-  if (!filename) return defaultType;
-
-  const ext = filename.toLowerCase().split('.').pop();
-  const mimeMap: Record<string, string> = {
-    // Images
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    png: 'image/png',
-    gif: 'image/gif',
-    webp: 'image/webp',
-    heic: 'image/heic',
-    heif: 'image/heif',
-    // Videos
-    mp4: 'video/mp4',
-    mov: 'video/quicktime',
-    m4v: 'video/x-m4v',
-    webm: 'video/webm',
-    '3gp': 'video/3gpp',
-    // Documents
-    pdf: 'application/pdf',
-    doc: 'application/msword',
-    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    xls: 'application/vnd.ms-excel',
-    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    txt: 'text/plain',
-    csv: 'text/csv',
-  };
-
-  return ext ? mimeMap[ext] || defaultType : defaultType;
-};
 
 // Helper to process reactions and set hasReacted based on current user
 const processMessagesWithReactions = (
@@ -1337,48 +1305,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
       openAttachMenu();
     }
   }, [showAttachMenu, closeAttachMenu, openAttachMenu]);
-
-  // Get appropriate icon for file type
-  const getFileIcon = (filename?: string): keyof typeof Ionicons.glyphMap => {
-    if (!filename) return 'document-outline';
-    const ext = filename.toLowerCase().split('.').pop();
-    switch (ext) {
-      case 'pdf':
-        return 'document-text-outline';
-      case 'doc':
-      case 'docx':
-        return 'document-text-outline';
-      case 'xls':
-      case 'xlsx':
-        return 'grid-outline';
-      case 'ppt':
-      case 'pptx':
-        return 'easel-outline';
-      case 'zip':
-      case 'rar':
-      case '7z':
-        return 'archive-outline';
-      case 'mp3':
-      case 'wav':
-      case 'aac':
-        return 'musical-notes-outline';
-      case 'mp4':
-      case 'mov':
-      case 'avi':
-        return 'videocam-outline';
-      case 'txt':
-        return 'document-outline';
-      default:
-        return 'document-outline';
-    }
-  };
-
-  // Format file size for display
-  const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
 
   // Handle long press on message to show actions
   const handleMessageLongPress = useCallback(
