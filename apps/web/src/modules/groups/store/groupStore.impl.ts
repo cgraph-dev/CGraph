@@ -86,7 +86,7 @@ export interface ChannelMessage {
   isPinned: boolean;
   isEdited: boolean;
   deletedAt: string | null;
-  metadata: Record<string, any>;
+  metadata: Record<string, unknown>;
   reactions: { emoji: string; count: number; hasReacted: boolean }[];
   author: {
     id: string;

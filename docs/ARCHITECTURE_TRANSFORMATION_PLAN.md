@@ -1,150 +1,2328 @@
 # CGraph Architecture Transformation Plan
 
-## Mission: Surpass Discord, Telegram, and WhatsApp
+## Mission: Outperform Meta, Google, and Discord
 
-**Current Score: 9.5/10** **Target Score: 9.5/10** **Timeline: 12 weeks** ✅ **ACHIEVED**
+**Current Score: 4.8/10** | **Target Score: 10/10** | **Philosophy: BUILD, DON'T DELETE**
 
-### Progress Summary (February 3, 2026 - Final Update)
-
-- ✅ **Phase 0-1 COMPLETE** - Cleanup and module structure created
-- ✅ **Phase 2 COMPLETE** - 108+ components in modules, all 12 modules populated with hooks
-- ✅ **Phase 3 COMPLETE** - Store implementations moved to modules, legacy re-exports
-- ✅ **Phase 4 COMPLETE** - 9 shared packages, mobile integrated with @cgraph packages
-- ✅ **Phase 5 PARTIAL** - 1282 tests passing, coverage ~9.5%
-- ✅ **Phase 6 COMPLETE** - Backend submodules with delegations (forums/_, accounts/_)
-- ✅ **Phase 7 COMPLETE** - TypeScript clean, 7 any types, 14 console statements (mostly
-  intentional)
-- 📊 **Architecture Score**: 4.2 → 9.5 (+5.3 points) 🎉
-- ✅ **Pushed**: All changes on origin/main
+> **We don't delete code because it's hard. We implement it properly and connect it.**
 
 ---
 
-## Gap Analysis (February 3, 2026 - Final Update)
+## 🔍 CODE QUALITY AUDIT (February 4, 2026)
 
-### Phase 2: Module Population ✅
+### Executive Summary
 
-| Module       | Components | Hooks | Store | Status |
-| ------------ | ---------- | ----- | ----- | ------ |
-| chat         | 29         | 7     | ✅    | ✅     |
-| forums       | 26         | 2     | ✅    | ✅     |
-| gamification | 10         | 1     | ✅    | ✅     |
-| settings     | 10         | 1     | ✅    | ✅     |
-| auth         | 7          | 3     | ✅    | ✅     |
-| groups       | 6          | 0     | ✅    | ✅     |
-| social       | 5          | 2     | ✅    | ✅     |
-| premium      | 5          | 1     | ✅    | ✅     |
-| calls        | 4          | 2     | ✅    | ✅     |
-| admin        | 3          | 0     | ✅    | ✅     |
-| moderation   | 2          | 0     | ✅    | ✅     |
-| search       | 1          | 0     | ✅    | ✅     |
+| Metric                | Current | Target   | Status      |
+| --------------------- | ------- | -------- | ----------- |
+| `any` types           | 203     | 0        | 🔴 Critical |
+| Files >300 lines      | 47      | 0        | 🔴 Critical |
+| Files >1000 lines     | 20      | 0        | 🔴 Critical |
+| `console.log` calls   | 276     | 0 (prod) | 🟡 Warning  |
+| `@ts-ignore` comments | 7       | 0        | 🟡 Warning  |
+| `eslint-disable`      | 40      | 0        | 🟡 Warning  |
+| TODO/FIXME comments   | 41      | 0        | 🟡 Warning  |
+| Test files (web)      | 49      | 200+     | 🔴 Critical |
+| Test files (mobile)   | 15      | 100+     | 🔴 Critical |
+| Backend tests         | 1,327   | 2,000+   | 🟡 Warning  |
+| Store files           | 107     | 30       | 🔴 Critical |
 
-**Completed:**
+### Critical Violations: Files Over 1,000 Lines
 
-- ✅ `apps/web/src/features/` - Deleted (was duplicate of modules/)
-- ✅ Duplicate stores removed
-- ✅ All module hooks populated
-- ✅ Module store indexes updated
+These files MUST be split. Meta would reject these in code review.
 
-### Phase 3: Store Consolidation 🟡
+| File                              | Lines     | Max | Action Required           |
+| --------------------------------- | --------- | --- | ------------------------- |
+| `ConversationScreen.tsx` (mobile) | **5,840** | 300 | Split into 20+ components |
+| `CustomizationDemo.tsx`           | 3,510     | 300 | Split into 12+ components |
+| `forums.ex` (backend)             | 3,379     | 500 | Split into 7+ contexts    |
+| `UICustomizationScreen.tsx`       | 2,120     | 300 | Split into 7+ components  |
+| `SearchScreen.tsx`                | 2,097     | 300 | Split into 7+ components  |
+| `accounts.ex` (backend)           | 1,864     | 500 | Split into 4+ contexts    |
+| `ForumAdmin.tsx`                  | 1,768     | 300 | Split into 6+ components  |
+| `gamification.ex` (backend)       | 1,661     | 500 | Split into 4+ contexts    |
+| `WhosOnlineScreen.tsx`            | 1,614     | 300 | Split into 6+ components  |
+| `IdentityCustomization.tsx`       | 1,581     | 300 | Split into 6+ components  |
+| `HolographicUIv4.tsx`             | 1,579     | 300 | Split into 6+ components  |
+| `ForumLeaderboardScreen.tsx`      | 1,490     | 300 | Split into 5+ components  |
+| `HolographicUI.tsx` (mobile)      | 1,458     | 300 | Split into 5+ components  |
+| `CustomEmojiPicker.tsx`           | 1,424     | 300 | Split into 5+ components  |
+| `TelegramAttachmentPicker.tsx`    | 1,424     | 300 | Split into 5+ components  |
+| `GamificationHubScreen.tsx`       | 1,403     | 300 | Split into 5+ components  |
+| `CoinShopScreen.tsx`              | 1,399     | 300 | Split into 5+ components  |
+| `EffectsCustomization.tsx`        | 1,369     | 300 | Split into 5+ components  |
+| `LandingPage.tsx`                 | 1,316     | 300 | Split into 5+ components  |
+| `jobs.ex` (backend)               | 1,253     | 500 | Split into 3+ modules     |
 
-| Location             | Count  | Status            |
-| -------------------- | ------ | ----------------- |
-| Legacy `stores/*.ts` | 29     | ⚠️ To consolidate |
-| Legacy slices        | 19     | ⚠️ To merge       |
-| Module stores        | 34     | ✅ Created        |
-| **Total legacy**     | **48** | Target: 12        |
+### Critical Violations: `any` Type Usage
 
-### Phase 4: Platform Parity ✅
+Location of worst offenders (MUST FIX):
 
-| Package                 | Status     | Contents                                                                    |
-| ----------------------- | ---------- | --------------------------------------------------------------------------- |
-| `packages/crypto`       | ✅ Created | aes.ts, types.ts, utils.ts                                                  |
-| `packages/hooks`        | ✅ Created | useDebounce, useAsync, useClickOutside, useKeyPress                         |
-| `packages/socket`       | ✅ Created | PhoenixClient, UserChannel, ConversationChannel, ForumChannel, GroupChannel |
-| `packages/state`        | ✅ Created | Store utils, types                                                          |
-| `packages/utils`        | ✅ Created | format, helpers, httpClient, permissions                                    |
-| `packages/shared-types` | ✅ Created | api, events, models, tiers                                                  |
-| `packages/ui`           | ✅ Created | Components, lib                                                             |
-| `packages/core`         | ✅ Created | Domain, services, observability                                             |
-| `packages/config`       | ✅ Created | Constants, env                                                              |
+```bash
+# WebRTC Service (19 any types) - NEEDS PROPER TYPES
+apps/mobile/src/lib/webrtc/webrtcService.ts
 
-**Facades:** 7 implemented (auth, chat, community, gamification, settings, marketplace, ui)
+# Store Helpers (4 any types) - NEEDS GENERICS
+apps/web/src/stores/utils/storeHelpers.ts
 
-### Phase 5: Test Coverage
+# Animation System (5 any types) - NEEDS PROPER TYPES
+apps/mobile/src/lib/animations/TimelineSystem.ts
+apps/mobile/src/lib/animations/AnimatedComponents.tsx
 
-| Metric          | Current | Target | Gap         |
-| --------------- | ------- | ------ | ----------- |
-| Tests passing   | 1045    | -      | ✅          |
-| Coverage        | ~8.5%   | 80%    | -72%        |
-| Thresholds      | 7%      | 80%    | ✅ Enforced |
-| E2EE tests      | 28      | 50     | -22         |
-| Facade tests    | 25      | 50     | -25         |
-| Utility tests   | 67      | -      | ✅ NEW      |
-| Store tests     | 47      | -      | ✅ NEW      |
-| Hook tests      | 28      | -      | ✅ NEW      |
-| Component tests | ~10     | 100    | -90         |
+# Forum Store (2 any types) - NEEDS API RESPONSE TYPES
+apps/web/src/modules/forums/store/forumStore.impl.ts
 
-### Phase 6: Backend Module Splitting
+# Payment Service (3 any types) - NEEDS ERROR TYPES
+apps/mobile/src/lib/payment.ts
+```
 
-| Module      | Lines | Target                | Status                  |
-| ----------- | ----- | --------------------- | ----------------------- |
-| forums.ex   | 3,316 | 8 modules (<400 each) | ✅ Split to forums/\*   |
-| accounts.ex | 1,814 | 5 modules (<400 each) | ✅ Split to accounts/\* |
+### Refactoring Plan: ConversationScreen.tsx (5,840 → 300 lines)
 
-**Created submodules:**
+```
+apps/mobile/src/screens/messages/ConversationScreen.tsx (5,840 lines)
+                    ↓ SPLIT INTO ↓
+
+apps/mobile/src/screens/messages/
+├── ConversationScreen.tsx (300 max) - Main orchestrator
+├── components/
+│   ├── ConversationHeader.tsx (150 max)
+│   ├── MessageList.tsx (200 max)
+│   ├── MessageItem.tsx (150 max)
+│   ├── MessageBubble.tsx (100 max)
+│   ├── MessageActions.tsx (100 max)
+│   ├── MessageReactions.tsx (100 max)
+│   ├── ReplyPreview.tsx (80 max)
+│   ├── TypingIndicator.tsx (50 max)
+│   ├── DateSeparator.tsx (30 max)
+│   ├── UnreadBanner.tsx (50 max)
+│   ├── ScrollToBottom.tsx (50 max)
+│   ├── AttachmentPreview.tsx (150 max)
+│   ├── VoiceMessagePlayer.tsx (150 max)
+│   ├── ImageGallery.tsx (150 max)
+│   ├── LinkPreview.tsx (100 max)
+│   ├── QuotedMessage.tsx (80 max)
+│   ├── ForwardedMessage.tsx (80 max)
+│   └── SystemMessage.tsx (50 max)
+├── hooks/
+│   ├── useConversation.ts (100 max)
+│   ├── useMessages.ts (100 max)
+│   ├── useTyping.ts (50 max)
+│   ├── useScrollPosition.ts (50 max)
+│   └── useMessageActions.ts (100 max)
+└── utils/
+    ├── messageGrouping.ts (50 max)
+    └── dateFormatting.ts (30 max)
+```
+
+### Refactoring Plan: forums.ex (3,379 → 500 lines per file)
+
+```
+apps/backend/lib/cgraph/forums.ex (3,379 lines)
+                    ↓ SPLIT INTO ↓
+
+apps/backend/lib/cgraph/forums/
+├── forums.ex (300 max) - Public API facade
+├── forum_service.ex (400 max) - Forum CRUD
+├── post_service.ex (400 max) - Post CRUD
+├── comment_service.ex (300 max) - Comment CRUD
+├── voting_service.ex (200 max) - Voting logic
+├── karma_service.ex (200 max) - Karma calculations
+├── moderation_service.ex (300 max) - Mod actions
+├── category_service.ex (200 max) - Categories
+├── subscription_service.ex (200 max) - Subscriptions
+├── invite_service.ex (200 max) - Invite links
+└── queries/
+    ├── forum_queries.ex (200 max)
+    ├── post_queries.ex (200 max)
+    └── feed_queries.ex (200 max)
+```
+
+### Store Consolidation Plan (107 → 30 stores)
+
+Current state is chaotic:
+
+- 67 stores in `/stores/`
+- 40 stores in `/modules/*/store/`
+- Duplicates and overlaps everywhere
+
+Target architecture:
+
+```
+apps/web/src/stores/
+├── facades/                    # 7 facade files (entry points)
+│   ├── authFacade.ts          # Auth, user, session, wallet
+│   ├── chatFacade.ts          # Messages, conversations, typing
+│   ├── communityFacade.ts     # Forums, groups, servers
+│   ├── gamificationFacade.ts  # XP, karma, achievements
+│   ├── settingsFacade.ts      # Privacy, notifications, profile
+│   ├── marketplaceFacade.ts   # Items, purchases, inventory
+│   └── uiFacade.ts            # Theme, sidebar, modals, toasts
+├── core/                       # 12 core stores (implementations)
+│   ├── authStore.ts
+│   ├── userStore.ts
+│   ├── chatStore.ts
+│   ├── forumStore.ts
+│   ├── groupStore.ts
+│   ├── gamificationStore.ts
+│   ├── settingsStore.ts
+│   ├── notificationStore.ts
+│   ├── presenceStore.ts
+│   ├── searchStore.ts
+│   ├── themeStore.ts
+│   └── customizationStore.ts
+└── utils/                      # Shared utilities
+    ├── createStore.ts
+    ├── persist.ts
+    └── devtools.ts
+```
+
+### Type Safety Fixes Required
+
+```typescript
+// ❌ CURRENT: webrtcService.ts line 19-30
+declare const RTCPeerConnection: any;
+declare const RTCSessionDescription: any;
+declare const RTCIceCandidate: any;
+type AnyFunction = (...args: any[]) => any;
+
+// ✅ REQUIRED: Proper WebRTC types
+import type {
+  RTCPeerConnection,
+  RTCSessionDescription,
+  RTCIceCandidate,
+  MediaStream,
+  MediaStreamTrack,
+} from 'react-native-webrtc';
+
+interface PeerConnection extends RTCPeerConnection {
+  userId: string;
+  connectionState: RTCPeerConnectionState;
+}
+```
+
+```typescript
+// ❌ CURRENT: storeHelpers.ts line 23
+export type ZustandSet = (partial: any) => void;
+
+// ✅ REQUIRED: Generic type
+export type ZustandSet<T> = (partial: T | Partial<T> | ((state: T) => T | Partial<T>)) => void;
+```
+
+```typescript
+// ❌ CURRENT: forumStore.impl.ts line 854
+const rawForums = ensureArray<any>(response.data, 'data');
+
+// ✅ REQUIRED: Typed response
+interface ForumListResponse {
+  data: Forum[];
+  meta: { cursor?: string; hasMore: boolean };
+}
+const rawForums = ensureArray<Forum>(response.data as ForumListResponse, 'data');
+```
+
+### Debug Statement Removal
+
+```bash
+# Files with console.log to remove (top 10)
+apps/web/src/lib/socket.ts                    # 12 calls
+apps/web/src/stores/chatStore.ts              # 8 calls
+apps/mobile/src/lib/webrtc/webrtcService.ts   # 15 calls
+apps/mobile/src/screens/messages/*            # 20+ calls
+apps/web/src/modules/forums/store/*           # 10 calls
+
+# Backend debug statements (51 total)
+apps/backend/lib/cgraph/messaging.ex          # 8 calls
+apps/backend/lib/cgraph/crypto/e2ee.ex        # 6 calls
+```
+
+Replace with proper logging:
+
+```typescript
+// ❌ FORBIDDEN
+console.log('Message sent:', message);
+
+// ✅ REQUIRED - Structured logging
+import { logger } from '@/lib/logger';
+logger.info('message.sent', { messageId: message.id, conversationId });
+```
+
+```elixir
+# ❌ FORBIDDEN
+IO.inspect(message, label: "sent message")
+
+# ✅ REQUIRED - Structured logging
+Logger.info("message.sent", message_id: message.id, conversation_id: conversation_id)
+```
+
+### ESLint/TypeScript Suppression Removal
+
+All 47 suppression comments must be fixed:
+
+```bash
+# Find and fix these
+grep -rn "@ts-ignore\|@ts-expect-error\|eslint-disable" apps/web/src apps/mobile/src
+
+# Each suppression needs:
+# 1. Understand WHY it was added
+# 2. Fix the underlying type/lint issue
+# 3. Remove the suppression comment
+```
+
+### Test Coverage Requirements
+
+| Area                | Current | Required | Gap  |
+| ------------------- | ------- | -------- | ---- |
+| Web Components      | ~5%     | 70%      | +65% |
+| Web Stores          | ~10%    | 80%      | +70% |
+| Web Hooks           | ~5%     | 70%      | +65% |
+| Mobile Screens      | ~3%     | 60%      | +57% |
+| Mobile Components   | ~5%     | 70%      | +65% |
+| Backend Contexts    | ~40%    | 80%      | +40% |
+| Backend Controllers | ~30%    | 70%      | +40% |
+| E2E Tests           | 0%      | 20%      | +20% |
+
+### Action Items Summary
+
+| Priority | Action                           | Files Affected  | Effort  |
+| -------- | -------------------------------- | --------------- | ------- |
+| P0       | Split ConversationScreen.tsx     | 1 → 20+ files   | 2 days  |
+| P0       | Split forums.ex                  | 1 → 12 files    | 1 day   |
+| P0       | Fix WebRTC types                 | 1 file          | 4 hours |
+| P1       | Split remaining >1000 line files | 18 files        | 5 days  |
+| P1       | Consolidate stores (107 → 30)    | 77 files        | 3 days  |
+| P1       | Remove all `any` types           | 203 occurrences | 2 days  |
+| P2       | Remove console.log (prod)        | 276 occurrences | 1 day   |
+| P2       | Remove suppression comments      | 47 occurrences  | 1 day   |
+| P2       | Remove TODO comments             | 41 occurrences  | 4 hours |
+| P3       | Add web component tests          | 200+ tests      | 5 days  |
+| P3       | Add mobile screen tests          | 100+ tests      | 3 days  |
+
+### Meta/Discord Code Review Readiness
+
+Would this pass a Meta code review? **NO** - Current state would be rejected.
+
+| Criterion        | Meta Standard    | CGraph Current   | Status     |
+| ---------------- | ---------------- | ---------------- | ---------- |
+| File size        | <300 lines       | 5,840 max        | ❌ FAIL    |
+| Type safety      | No `any`         | 203 `any`        | ❌ FAIL    |
+| Test coverage    | >70%             | ~10%             | ❌ FAIL    |
+| Debug logs       | 0 in prod        | 276              | ❌ FAIL    |
+| Suppressions     | 0                | 47               | ❌ FAIL    |
+| Error handling   | Structured       | console.error    | ❌ FAIL    |
+| Documentation    | JSDoc all public | Sparse           | ⚠️ PARTIAL |
+| Code duplication | DRY              | Some duplication | ⚠️ PARTIAL |
+
+After completing all action items: **YES** - Would pass Meta review.
+
+---
+
+## 📜 PROFESSIONAL CODING STANDARDS (MANDATORY)
+
+Every developer MUST follow these rules. No exceptions. This is how we outperform industry giants.
+
+### Rule 1: File Size Limits (Google/Meta Standard)
+
+| File Type  | Max Lines | Warning At | Action if Exceeded        |
+| ---------- | --------- | ---------- | ------------------------- |
+| Components | 300       | 200        | Split into sub-components |
+| Stores     | 400       | 300        | Extract slices            |
+| Hooks      | 150       | 100        | Compose smaller hooks     |
+| Utils      | 100       | 75         | Create focused modules    |
+| API files  | 200       | 150        | Split by resource         |
+
+**ESLint enforcement:**
+
+```javascript
+// .eslintrc.js - MANDATORY
+'max-lines': ['error', { max: 300, skipBlankLines: true, skipComments: true }],
+'max-lines-per-function': ['error', { max: 50 }],
+```
+
+### Rule 2: TypeScript Strictness (Google Standard)
+
+```typescript
+// ❌ FORBIDDEN - Will fail code review
+const data: any = response;
+function process(input: any): any {}
+// @ts-ignore
+// @ts-expect-error
+
+// ✅ REQUIRED - Professional code
+interface ApiResponse {
+  data: User[];
+  meta: Pagination;
+}
+const data: ApiResponse = response;
+function process(input: UserInput): ProcessedOutput {}
+```
+
+### Rule 3: Component Architecture (Meta Standard)
+
+```typescript
+// ❌ FORBIDDEN - God components
+const ForumPage = () => {
+  // 500+ lines of mixed concerns
+}
+
+// ✅ REQUIRED - Composition pattern
+const ForumPage = () => (
+  <ForumLayout>
+    <ForumHeader />
+    <ForumContent>
+      <ThreadList />
+      <Sidebar>
+        <ForumStats />
+        <MemberList />
+      </Sidebar>
+    </ForumContent>
+  </ForumLayout>
+);
+```
+
+### Rule 4: State Management (Discord Pattern)
+
+```typescript
+// ❌ FORBIDDEN - Direct store access everywhere
+import { useForumStore } from '@/stores/forumStore';
+const forums = useForumStore((state) => state.forums);
+
+// ✅ REQUIRED - Use facades for all external access
+import { useCommunityFacade } from '@/stores/facades';
+const { forums, createForum, joinForum } = useCommunityFacade();
+```
+
+### Rule 5: API Error Handling (Google SRE Standard)
+
+```typescript
+// ❌ FORBIDDEN - Silent failures
+try {
+  await api.call();
+} catch (e) {
+  console.log(e);
+}
+
+// ✅ REQUIRED - Proper error boundaries
+try {
+  await api.call();
+} catch (error) {
+  if (error instanceof NetworkError) {
+    toast.error('Connection lost. Retrying...');
+    await retryWithBackoff(api.call);
+  } else if (error instanceof ValidationError) {
+    setFieldErrors(error.fields);
+  } else {
+    logger.error('Unexpected error', { error, context });
+    toast.error('Something went wrong. Please try again.');
+  }
+}
+```
+
+### Rule 6: Platform Parity (WhatsApp Standard)
+
+```typescript
+// ❌ FORBIDDEN - Platform-specific logic in shared code
+if (Platform.OS === 'web') {
+  /* web stuff */
+}
+
+// ✅ REQUIRED - Abstract platform differences
+// packages/core/forum/createForum.ts (shared logic)
+export const createForum = async (data: CreateForumInput) => {
+  const validated = validateForumInput(data);
+  return api.forums.create(validated);
+};
+
+// apps/web/modules/forums/hooks/useCreateForum.ts
+import { createForum } from '@cgraph/core/forum';
+// apps/mobile/modules/forums/hooks/useCreateForum.ts
+import { createForum } from '@cgraph/core/forum';
+```
+
+### Rule 7: Testing (Industry Standard 70%+)
+
+```typescript
+// ❌ FORBIDDEN - Untested features
+export const ForumCard = ({ forum }) => { /* no test */ };
+
+// ✅ REQUIRED - Co-located tests
+// ForumCard.tsx
+export const ForumCard = ({ forum }: ForumCardProps) => { ... };
+
+// ForumCard.test.tsx (same folder)
+describe('ForumCard', () => {
+  it('displays forum name and member count', () => { });
+  it('shows premium badge for premium forums', () => { });
+  it('handles join button click', () => { });
+});
+```
+
+### Rule 8: Documentation (Self-Documenting Code)
+
+```typescript
+// ❌ FORBIDDEN - Cryptic code
+const x = u.f.filter((f) => f.t === 'p' && f.m > 5);
+
+// ✅ REQUIRED - Self-documenting
+const premiumForumsWithActiveMembers = user.forums.filter(
+  (forum) => forum.tier === 'premium' && forum.memberCount > 5
+);
+```
+
+### Rule 9: Discord/Meta Code Patterns (MANDATORY)
+
+These patterns are used by Discord (200M+ users) and Meta (3.4B+ users). We adopt them exactly.
+
+#### Pattern 1: Event-Driven Architecture (Telegram/Discord)
+
+```typescript
+// ❌ FORBIDDEN - Direct mutations
+const sendMessage = async (content: string) => {
+  await api.post('/messages', { content });
+  queryClient.invalidateQueries(['messages']); // Causes refetch storms
+};
+
+// ✅ REQUIRED - Optimistic updates + event-driven
+const sendMessage = async (content: string) => {
+  const tempId = `temp-${Date.now()}`;
+
+  // 1. Optimistic update (instant UI)
+  queryClient.setQueryData(['messages'], (old) => [
+    ...old,
+    { id: tempId, content, status: 'sending' },
+  ]);
+
+  // 2. Send to server
+  const result = await api.post('/messages', { content });
+
+  // 3. Replace temp with real (via WebSocket event, not refetch)
+  // Server broadcasts 'message:created' to all clients
+};
+```
+
+#### Pattern 2: Minimal Payload Broadcasting (Telegram)
+
+```typescript
+// ❌ FORBIDDEN - Broadcasting full objects
+socket.broadcast('message:created', {
+  id: message.id,
+  content: message.content,
+  sender: { id: sender.id, name: sender.name, avatar: sender.avatar, ... },
+  conversation: { id: conv.id, name: conv.name, members: [...] },
+  // 50+ fields...
+});
+
+// ✅ REQUIRED - Broadcast IDs, clients fetch what they need
+socket.broadcast('message:created', {
+  messageId: message.id,
+  conversationId: message.conversationId,
+  senderId: message.senderId,
+});
+
+// Client fetches from cache or API
+const message = useMessage(event.messageId);  // Usually already cached
+```
+
+#### Pattern 3: Request Coalescing (Meta TAO)
+
+```typescript
+// ❌ FORBIDDEN - N+1 requests
+const MessageList = ({ messages }) => {
+  return messages.map(msg => (
+    <Message key={msg.id} sender={useSender(msg.senderId)} />  // N requests!
+  ));
+};
+
+// ✅ REQUIRED - Batch and dedupe
+const MessageList = ({ messages }) => {
+  const senderIds = [...new Set(messages.map(m => m.senderId))];
+  const senders = useSenders(senderIds);  // Single batched request
+
+  return messages.map(msg => (
+    <Message key={msg.id} sender={senders[msg.senderId]} />
+  ));
+};
+```
+
+#### Pattern 4: Cursor Pagination (Discord/All Scale Apps)
+
+```typescript
+// ❌ FORBIDDEN - Offset pagination (O(n) at scale)
+const getMessages = (page: number) => api.get(`/messages?page=${page}&limit=50`); // Slow at page 1000
+
+// ✅ REQUIRED - Cursor pagination (O(1) always)
+const getMessages = (cursor?: string) => api.get(`/messages?cursor=${cursor}&limit=50`);
+
+// Cursor is typically: base64(lastMessageId + timestamp)
+```
+
+#### Pattern 5: Denormalized Counts (Reddit/Discord)
+
+```elixir
+# ❌ FORBIDDEN - Computing counts on read
+def get_forum(id) do
+  forum = Repo.get(Forum, id)
+  member_count = Repo.aggregate(Membership, :count, forum_id: id)  # Slow!
+  %{forum | member_count: member_count}
+end
+
+# ✅ REQUIRED - Denormalized count columns
+schema "forums" do
+  field :member_count, :integer, default: 0  # Updated on join/leave
+  field :post_count, :integer, default: 0    # Updated on create/delete
+end
+
+# Update counts atomically
+def add_member(forum, user) do
+  Multi.new()
+  |> Multi.insert(:membership, Membership.changeset(...))
+  |> Multi.update_all(:count, Forum, [id: forum.id], inc: [member_count: 1])
+  |> Repo.transaction()
+end
+```
+
+#### Pattern 6: Presence & Typing (Discord)
+
+```typescript
+// ✅ REQUIRED - Throttled presence updates
+const useTypingIndicator = (conversationId: string) => {
+  const throttledEmit = useThrottle(
+    () => socket.emit('typing:start', { conversationId }),
+    3000 // Max once per 3 seconds
+  );
+
+  const stopTyping = useDebounce(
+    () => socket.emit('typing:stop', { conversationId }),
+    5000 // Stop after 5s of inactivity
+  );
+
+  return {
+    onKeyPress: () => {
+      throttledEmit();
+      stopTyping();
+    },
+  };
+};
+```
+
+### Rule 10: Mobile-First Performance (WhatsApp)
+
+```typescript
+// ❌ FORBIDDEN - Desktop-first thinking
+const ConversationList = () => {
+  const conversations = useAllConversations();  // Loads everything
+  return <VirtualList items={conversations} />;
+};
+
+// ✅ REQUIRED - Windowed rendering + lazy loading
+const ConversationList = () => {
+  const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
+    queryKey: ['conversations'],
+    queryFn: ({ pageParam }) => api.getConversations({ cursor: pageParam }),
+    getNextPageParam: (last) => last.nextCursor,
+  });
+
+  return (
+    <FlashList
+      data={data?.pages.flatMap(p => p.items) ?? []}
+      renderItem={({ item }) => <ConversationItem id={item.id} />}
+      estimatedItemSize={72}
+      onEndReached={() => hasNextPage && fetchNextPage()}
+    />
+  );
+};
+```
+
+### Rule 11: Shared Code Between Platforms
+
+```typescript
+// packages/shared-types/src/index.ts
+// ALL types shared between web and mobile
+
+// packages/core/src/index.ts
+// Business logic (validation, transformations) - NO UI
+
+// packages/hooks/src/index.ts
+// React hooks that work on both platforms
+
+// ✅ REQUIRED structure for any new feature:
+// 1. Types in @cgraph/shared-types
+// 2. Logic in @cgraph/core
+// 3. Hooks in @cgraph/hooks
+// 4. UI in apps/web and apps/mobile (separate implementations)
+```
+
+### Rule 12: Error Boundaries & Recovery (Meta)
+
+```typescript
+// ✅ REQUIRED - Every major feature wrapped in error boundary
+const ForumPage = () => (
+  <ErrorBoundary
+    fallback={<ForumErrorState onRetry={() => window.location.reload()} />}
+    onError={(error) => logToSentry(error, { page: 'forum' })}
+  >
+    <ForumContent />
+  </ErrorBoundary>
+);
+
+// ✅ REQUIRED - Graceful degradation
+const MessageList = () => {
+  const { data, error, isLoading } = useMessages();
+
+  if (error) return <MessageListError error={error} />;
+  if (isLoading) return <MessageListSkeleton count={10} />;
+  if (!data?.length) return <EmptyMessages />;
+
+  return <Messages data={data} />;
+};
+```
+
+### Enforcement Mechanisms (MANDATORY SETUP)
+
+These tools MUST be configured to automatically enforce standards. No exceptions.
+
+#### 1. ESLint Configuration (apps/web/.eslintrc.js & apps/mobile/.eslintrc.js)
+
+```javascript
+module.exports = {
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/strict-type-checked',
+    'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
+  ],
+  rules: {
+    // File size limits (Google/Meta Standard)
+    'max-lines': ['error', { max: 300, skipBlankLines: true, skipComments: true }],
+    'max-lines-per-function': ['error', { max: 50, skipBlankLines: true, skipComments: true }],
+
+    // TypeScript strictness (ZERO TOLERANCE)
+    '@typescript-eslint/no-explicit-any': 'error',
+    '@typescript-eslint/no-unsafe-assignment': 'error',
+    '@typescript-eslint/no-unsafe-member-access': 'error',
+    '@typescript-eslint/no-unsafe-call': 'error',
+    '@typescript-eslint/no-unsafe-return': 'error',
+    '@typescript-eslint/explicit-function-return-type': 'error',
+    '@typescript-eslint/no-non-null-assertion': 'error',
+
+    // No debug statements in production
+    'no-console': ['error', { allow: ['warn', 'error'] }],
+    'no-debugger': 'error',
+
+    // No suppression comments
+    'no-warning-comments': ['error', { terms: ['todo', 'fixme', 'hack', 'xxx'] }],
+
+    // React best practices
+    'react/jsx-no-bind': ['error', { allowArrowFunctions: true }],
+    'react-hooks/exhaustive-deps': 'error',
+    'react/no-unstable-nested-components': 'error',
+
+    // Import organization
+    'import/order': [
+      'error',
+      {
+        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
+        'newlines-between': 'always',
+        alphabetize: { order: 'asc' },
+      },
+    ],
+  },
+  overrides: [
+    {
+      // Allow console in development/debug files
+      files: ['**/__dev__/**', '**/*.test.*'],
+      rules: {
+        'no-console': 'off',
+        'max-lines': 'off',
+      },
+    },
+  ],
+};
+```
+
+#### 2. TypeScript Configuration (tsconfig.json)
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}
+```
+
+#### 3. Pre-commit Hooks (.husky/pre-commit)
+
+```bash
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Run lint-staged for changed files
+npx lint-staged
+
+# Check file sizes
+echo "Checking file sizes..."
+for file in $(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx)$'); do
+  lines=$(wc -l < "$file")
+  if [ "$lines" -gt 300 ]; then
+    echo "ERROR: $file has $lines lines (max: 300)"
+    exit 1
+  fi
+done
+
+# Check for 'any' types in staged files
+echo "Checking for 'any' types..."
+if git diff --cached --name-only --diff-filter=ACM | xargs grep -l ': any\|as any\|<any>' 2>/dev/null; then
+  echo "ERROR: Found 'any' types in staged files. Fix before committing."
+  exit 1
+fi
+
+# Check for console.log
+echo "Checking for console.log..."
+if git diff --cached --name-only --diff-filter=ACM | xargs grep -l 'console\.log' 2>/dev/null | grep -v '__dev__\|\.test\.'; then
+  echo "ERROR: Found console.log in production code. Remove before committing."
+  exit 1
+fi
+
+echo "✅ Pre-commit checks passed"
+```
+
+#### 4. lint-staged Configuration (package.json)
+
+```json
+{
+  "lint-staged": {
+    "*.{ts,tsx}": ["eslint --fix --max-warnings 0", "prettier --write"],
+    "*.{ex,exs}": ["mix format"]
+  }
+}
+```
+
+#### 5. CI Pipeline Checks (.github/workflows/ci.yml)
+
+```yaml
+name: Code Quality
+
+on: [push, pull_request]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Lint (zero warnings)
+        run: pnpm lint --max-warnings 0
+
+      - name: Check file sizes
+        run: |
+          find apps/web/src apps/mobile/src -name "*.tsx" -exec sh -c '
+            lines=$(wc -l < "$1")
+            if [ "$lines" -gt 300 ]; then
+              echo "FAIL: $1 has $lines lines"
+              exit 1
+            fi
+          ' _ {} \;
+
+      - name: Check for any types
+        run: |
+          if grep -rn ": any\|as any" apps/web/src apps/mobile/src --include="*.ts" --include="*.tsx" | grep -v node_modules | grep -v ".test."; then
+            echo "FAIL: Found 'any' types"
+            exit 1
+          fi
+
+      - name: Test with coverage
+        run: pnpm test -- --coverage --coverageThreshold='{"global":{"statements":70}}'
+
+      - name: Backend checks
+        working-directory: apps/backend
+        run: |
+          mix format --check-formatted
+          mix credo --strict
+          mix dialyzer
+```
+
+#### 6. Credo Configuration (apps/backend/.credo.exs)
+
+```elixir
+%{
+  configs: [
+    %{
+      name: "default",
+      strict: true,
+      checks: [
+        # Readability
+        {Credo.Check.Readability.MaxLineLength, max_length: 120},
+        {Credo.Check.Readability.ModuleDoc, []},
+        {Credo.Check.Readability.FunctionNames, []},
+
+        # Design
+        {Credo.Check.Design.AliasUsage, if_called_more_often_than: 2},
+        {Credo.Check.Design.TagTODO, exit_status: 2},
+        {Credo.Check.Design.TagFIXME, exit_status: 2},
+
+        # Refactoring (file size limits)
+        {Credo.Check.Refactor.FunctionArity, max_arity: 5},
+        {Credo.Check.Refactor.CyclomaticComplexity, max_complexity: 10},
+        {Credo.Check.Refactor.Nesting, max_nesting: 3},
+        {Credo.Check.Refactor.LongQuoteBlocks, max_line_count: 100},
+
+        # Warnings
+        {Credo.Check.Warning.IoInspect, []},
+        {Credo.Check.Warning.IExPry, []},
+        {Credo.Check.Warning.Dbg, []},
+      ]
+    }
+  ]
+}
+```
+
+#### 7. Dialyzer Configuration (apps/backend/mix.exs)
+
+```elixir
+defp dialyzer do
+  [
+    plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
+    plt_add_apps: [:mix, :ex_unit],
+    flags: [
+      :unmatched_returns,
+      :error_handling,
+      :no_opaque,
+      :unknown,
+      :no_return
+    ]
+  ]
+end
+```
+
+#### 8. PR Template (.github/PULL_REQUEST_TEMPLATE.md)
+
+```markdown
+## Code Quality Checklist
+
+- [ ] All files under 300 lines
+- [ ] No `any` types
+- [ ] No `console.log` in production code
+- [ ] No `@ts-ignore` or `eslint-disable` comments
+- [ ] No TODO/FIXME comments (create issues instead)
+- [ ] All functions have explicit return types
+- [ ] Tests added/updated (coverage maintained >70%)
+- [ ] Mobile parity considered (feature works on both platforms)
+
+## Breaking Changes
+
+<!-- List any breaking changes -->
+
+## Testing
+
+<!-- Describe how this was tested -->
+```
+
+### Quality Gates (Automated Enforcement)
+
+| Gate            | Tool          | When       | Action on Fail |
+| --------------- | ------------- | ---------- | -------------- |
+| File size       | Custom script | Pre-commit | Block commit   |
+| `any` types     | ESLint        | Pre-commit | Block commit   |
+| console.log     | ESLint        | Pre-commit | Block commit   |
+| Type safety     | TypeScript    | CI         | Block merge    |
+| Lint warnings   | ESLint        | CI         | Block merge    |
+| Test coverage   | Vitest/Jest   | CI         | Block merge    |
+| Backend format  | mix format    | CI         | Block merge    |
+| Backend quality | Credo strict  | CI         | Block merge    |
+| Type specs      | Dialyzer      | CI         | Block merge    |
+
+---
+
+## 🚀 FEATURE IMPLEMENTATION: USER FORUM SYSTEM
+
+### Overview
+
+CGraph allows users to create and manage their own forums, similar to Discord servers but with
+Reddit-style discussions.
+
+### Tier Limits (from packages/shared-types/src/tiers.ts)
+
+| Tier           | Forums Owned | Storage   | AI Moderation    | Custom Features                         |
+| -------------- | ------------ | --------- | ---------------- | --------------------------------------- |
+| **Free**       | 1            | 100MB     | ❌               | Basic                                   |
+| **Premium**    | 5            | 5GB       | ✅               | Custom themes, video calls              |
+| **Enterprise** | Unlimited    | Unlimited | ✅ Custom models | API access, webhooks, dedicated support |
+
+> **Note:** Prices are configured in Stripe and fetched dynamically. See
+> `apps/backend/lib/cgraph/subscriptions/subscriptions.ex`.
+
+### Database Schema
+
+```elixir
+# lib/cgraph/forums/schemas/forum.ex
+defmodule CGraph.Forums.Forum do
+  schema "forums" do
+    field :name, :string
+    field :slug, :string                    # Unique URL-friendly name
+    field :description, :string
+    field :icon_url, :string
+    field :banner_url, :string
+    field :visibility, Ecto.Enum, values: [:public, :private, :unlisted]
+    field :member_count, :integer, default: 0
+    field :post_count, :integer, default: 0
+
+    belongs_to :owner, CGraph.Accounts.User
+    has_many :memberships, CGraph.Forums.Membership
+    has_many :members, through: [:memberships, :user]
+    has_many :threads, CGraph.Forums.Thread
+    has_many :invite_links, CGraph.Forums.InviteLink
+    has_many :categories, CGraph.Forums.Category
+
+    timestamps()
+  end
+end
+
+# lib/cgraph/forums/schemas/membership.ex
+defmodule CGraph.Forums.Membership do
+  schema "forum_memberships" do
+    field :role, Ecto.Enum, values: [:owner, :admin, :moderator, :member]
+    field :joined_at, :utc_datetime
+    field :invited_by_id, :binary_id
+
+    belongs_to :user, CGraph.Accounts.User
+    belongs_to :forum, CGraph.Forums.Forum
+
+    timestamps()
+  end
+end
+
+# lib/cgraph/forums/schemas/invite_link.ex
+defmodule CGraph.Forums.InviteLink do
+  schema "forum_invite_links" do
+    field :code, :string                    # e.g., "abc123xyz"
+    field :uses, :integer, default: 0
+    field :max_uses, :integer               # nil = unlimited
+    field :expires_at, :utc_datetime        # nil = never expires
+    field :is_active, :boolean, default: true
+
+    belongs_to :forum, CGraph.Forums.Forum
+    belongs_to :created_by, CGraph.Accounts.User
+
+    timestamps()
+  end
+end
+```
+
+### Backend Implementation
+
+```elixir
+# lib/cgraph/forums/forums.ex
+defmodule CGraph.Forums do
+  @moduledoc "Forum management with tier-based limits"
+
+  alias CGraph.{Repo, Accounts, Subscriptions}
+  alias CGraph.Forums.{Forum, Membership, InviteLink}
+
+  @doc """
+  Creates a forum for a user, respecting tier limits.
+
+  ## Examples
+      iex> create_forum(user, %{name: "My Forum"})
+      {:ok, %Forum{}}
+
+      iex> create_forum(free_user_at_limit, %{name: "Another Forum"})
+      {:error, :forum_limit_reached}
+  """
+  def create_forum(%User{} = user, attrs) do
+    with :ok <- check_forum_limit(user),
+         {:ok, forum} <- do_create_forum(user, attrs),
+         {:ok, _membership} <- create_owner_membership(forum, user) do
+      {:ok, forum}
+    end
+  end
+
+  defp check_forum_limit(user) do
+    current_count = count_owned_forums(user)
+    limit = get_forum_limit(user)
+
+    if current_count < limit do
+      :ok
+    else
+      {:error, :forum_limit_reached, %{current: current_count, limit: limit}}
+    end
+  end
+
+  defp get_forum_limit(user) do
+    # Tier limits from packages/shared-types/src/tiers.ts
+    case Subscriptions.get_user_tier(user) do
+      :free -> 1
+      :premium -> 5
+      :enterprise -> :unlimited
+    end
+  end
+
+  @doc "Generate an invite link for a forum"
+  def create_invite_link(%Forum{} = forum, %User{} = creator, opts \\ []) do
+    %InviteLink{}
+    |> InviteLink.changeset(%{
+      forum_id: forum.id,
+      created_by_id: creator.id,
+      code: generate_invite_code(),
+      max_uses: Keyword.get(opts, :max_uses),
+      expires_at: Keyword.get(opts, :expires_at)
+    })
+    |> Repo.insert()
+  end
+
+  @doc "Join a forum via invite code"
+  def join_via_invite(code, %User{} = user) do
+    with {:ok, invite} <- get_valid_invite(code),
+         :ok <- check_not_already_member(invite.forum, user),
+         {:ok, membership} <- create_membership(invite.forum, user, :member),
+         {:ok, _invite} <- increment_invite_uses(invite) do
+      # Notify forum owner
+      Notifications.notify(invite.forum.owner, :new_member, %{
+        forum: invite.forum,
+        user: user
+      })
+      {:ok, membership}
+    end
+  end
+
+  @doc "Get shareable invite URL"
+  def get_invite_url(%InviteLink{code: code}) do
+    "#{Application.get_env(:cgraph, :app_url)}/invite/#{code}"
+  end
+end
+```
+
+### Frontend Store (Web)
+
+```typescript
+// apps/web/src/modules/forums/store/forumStore.ts
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
+import type { Forum, CreateForumInput, InviteLink } from '@cgraph/shared-types';
+
+interface ForumState {
+  // State
+  ownedForums: Forum[];
+  joinedForums: Forum[];
+  currentForum: Forum | null;
+  forumLimit: number;
+  isLoading: boolean;
+
+  // Actions
+  createForum: (input: CreateForumInput) => Promise<Forum>;
+  joinForum: (inviteCode: string) => Promise<void>;
+  leaveForum: (forumId: string) => Promise<void>;
+  createInviteLink: (forumId: string, options?: InviteLinkOptions) => Promise<InviteLink>;
+  loadOwnedForums: () => Promise<void>;
+  loadJoinedForums: () => Promise<void>;
+}
+
+export const useForumStore = create<ForumState>()(
+  devtools(
+    persist(
+      immer((set, get) => ({
+        ownedForums: [],
+        joinedForums: [],
+        currentForum: null,
+        forumLimit: 1,
+        isLoading: false,
+
+        createForum: async (input) => {
+          const { ownedForums, forumLimit } = get();
+
+          // Check client-side limit
+          if (ownedForums.length >= forumLimit) {
+            throw new ForumLimitError(ownedForums.length, forumLimit);
+          }
+
+          set({ isLoading: true });
+          try {
+            const forum = await api.forums.create(input);
+            set((state) => {
+              state.ownedForums.push(forum);
+              state.isLoading = false;
+            });
+            return forum;
+          } catch (error) {
+            set({ isLoading: false });
+            throw error;
+          }
+        },
+
+        joinForum: async (inviteCode) => {
+          set({ isLoading: true });
+          try {
+            const membership = await api.forums.joinViaInvite(inviteCode);
+            set((state) => {
+              state.joinedForums.push(membership.forum);
+              state.isLoading = false;
+            });
+          } catch (error) {
+            set({ isLoading: false });
+            throw error;
+          }
+        },
+
+        createInviteLink: async (forumId, options = {}) => {
+          const inviteLink = await api.forums.createInviteLink(forumId, options);
+          return inviteLink;
+        },
+      })),
+      { name: 'forum-store' }
+    ),
+    { name: 'ForumStore' }
+  )
+);
+```
+
+### Frontend Components (Web)
+
+```typescript
+// apps/web/src/modules/forums/components/CreateForumButton.tsx
+import { useCommunityFacade } from '@/stores/facades';
+import { usePremiumFacade } from '@/stores/facades';
+
+export const CreateForumButton = () => {
+  const { ownedForums, forumLimit, createForum } = useCommunityFacade();
+  const { tier, openUpgradeModal } = usePremiumFacade();
+
+  const canCreateMore = ownedForums.length < forumLimit;
+  const remainingSlots = forumLimit - ownedForums.length;
+
+  const handleClick = async () => {
+    if (!canCreateMore) {
+      openUpgradeModal({
+        reason: 'forum_limit',
+        message: `Upgrade to create more forums. You've used all ${forumLimit} slots.`
+      });
+      return;
+    }
+    // Open create forum modal
+  };
+
+  return (
+    <Button onClick={handleClick} disabled={!canCreateMore}>
+      Create Forum ({remainingSlots} remaining)
+    </Button>
+  );
+};
+
+// apps/web/src/modules/forums/components/InviteLinkGenerator.tsx
+export const InviteLinkGenerator = ({ forum }: { forum: Forum }) => {
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
+  const { createInviteLink } = useCommunityFacade();
+
+  const generateLink = async () => {
+    const link = await createInviteLink(forum.id, {
+      maxUses: null,      // Unlimited
+      expiresAt: null,    // Never expires
+    });
+    setInviteLink(`https://cgraph.org/invite/${link.code}`);
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(inviteLink!);
+    toast.success('Invite link copied!');
+  };
+
+  return (
+    <GlassCard>
+      <h3>Invite Members</h3>
+      {inviteLink ? (
+        <div className="flex gap-2">
+          <Input value={inviteLink} readOnly />
+          <Button onClick={copyToClipboard}>Copy</Button>
+          <Button variant="secondary" onClick={generateLink}>New Link</Button>
+        </div>
+      ) : (
+        <Button onClick={generateLink}>Generate Invite Link</Button>
+      )}
+      <p className="text-sm text-muted">
+        Share this link to invite others to your forum
+      </p>
+    </GlassCard>
+  );
+};
+```
+
+### Mobile Implementation (React Native)
+
+```typescript
+// apps/mobile/src/modules/forums/screens/ForumScreen.tsx
+import { Share } from 'react-native';
+import { useForumStore } from '../store/forumStore';
+
+export const ForumScreen = ({ route }) => {
+  const { forumId } = route.params;
+  const { currentForum, createInviteLink } = useForumStore();
+
+  const shareInviteLink = async () => {
+    const link = await createInviteLink(forumId);
+    await Share.share({
+      message: `Join my forum "${currentForum.name}" on CGraph!`,
+      url: `https://cgraph.org/invite/${link.code}`,
+    });
+  };
+
+  return (
+    <SafeAreaView>
+      <ForumHeader forum={currentForum} />
+      <ThreadList forumId={forumId} />
+      <FAB icon="share" onPress={shareInviteLink} />
+    </SafeAreaView>
+  );
+};
+```
+
+### API Endpoints
+
+```elixir
+# lib/cgraph_web/controllers/api/v1/forum_controller.ex
+defmodule CGraphWeb.Api.V1.ForumController do
+  use CGraphWeb, :controller
+
+  # POST /api/v1/forums
+  def create(conn, params) do
+    user = conn.assigns.current_user
+
+    case Forums.create_forum(user, params) do
+      {:ok, forum} ->
+        conn
+        |> put_status(:created)
+        |> render(:show, forum: forum)
+
+      {:error, :forum_limit_reached, %{current: current, limit: limit}} ->
+        conn
+        |> put_status(:payment_required)
+        |> json(%{
+          error: "forum_limit_reached",
+          message: "You've reached your forum limit",
+          current: current,
+          limit: limit,
+          upgrade_url: "/pricing"
+        })
+    end
+  end
+
+  # POST /api/v1/forums/:id/invite-links
+  def create_invite_link(conn, %{"id" => forum_id} = params) do
+    user = conn.assigns.current_user
+    forum = Forums.get_forum!(forum_id)
+
+    with :ok <- authorize(user, :manage, forum),
+         {:ok, invite} <- Forums.create_invite_link(forum, user, params) do
+      render(conn, :invite_link, invite: invite)
+    end
+  end
+
+  # POST /api/v1/invites/:code/join
+  def join_via_invite(conn, %{"code" => code}) do
+    user = conn.assigns.current_user
+
+    case Forums.join_via_invite(code, user) do
+      {:ok, membership} ->
+        render(conn, :membership, membership: membership)
+
+      {:error, :invite_expired} ->
+        conn |> put_status(:gone) |> json(%{error: "invite_expired"})
+
+      {:error, :invite_max_uses} ->
+        conn |> put_status(:gone) |> json(%{error: "invite_max_uses_reached"})
+
+      {:error, :already_member} ->
+        conn |> put_status(:conflict) |> json(%{error: "already_member"})
+    end
+  end
+end
+```
+
+---
+
+## 🎨 USER CUSTOMIZATION SYSTEM (Complete Implementation Guide)
+
+### Philosophy: Users Express Identity, Others See It
+
+Every customization a user selects MUST be:
+
+1. **Visible to other users** - Profile themes, badges, borders visible on profiles/chat
+2. **Consistent across platforms** - Same look on web AND mobile
+3. **Persisted in backend** - Synced via API, not just local storage
+4. **Extensible** - `custom_config` field allows future additions without migrations
+
+### Customization Categories (Complete Inventory)
+
+#### 1. Identity Customizations (Visible to Everyone)
+
+| Feature            | Types Available            | Web Status     | Mobile Status   | Others Can See |
+| ------------------ | -------------------------- | -------------- | --------------- | -------------- |
+| **Avatar Borders** | 110+ (27 themes)           | ✅ Implemented | ⚠️ Partial      | ✅ Yes         |
+| **Profile Themes** | 18+ (6 categories)         | ✅ Implemented | ⚠️ Types only   | ✅ Yes         |
+| **Badges**         | Dynamic (achievements)     | ✅ Implemented | ⚠️ Display only | ✅ Yes         |
+| **Titles**         | Tier-based                 | ⚠️ Partial     | ❌ Missing      | ✅ Yes         |
+| **Profile Layout** | classic, compact, expanded | ⚠️ Partial     | ❌ Missing      | ✅ Yes         |
+
+#### 2. Chat Customizations (Visible in Conversations)
+
+| Feature                | Options                       | Web Status     | Mobile Status | Others Can See |
+| ---------------------- | ----------------------------- | -------------- | ------------- | -------------- |
+| **Bubble Style**       | default, glass, minimal, bold | ✅ Implemented | ⚠️ Partial    | ✅ Yes         |
+| **Bubble Color**       | Hex color                     | ✅ Implemented | ❌ Missing    | ✅ Yes         |
+| **Bubble Opacity**     | 0-100%                        | ✅ Implemented | ❌ Missing    | ✅ Yes         |
+| **Bubble Radius**      | 0-32px                        | ✅ Implemented | ❌ Missing    | ✅ Yes         |
+| **Text Size**          | 12-20px                       | ✅ Implemented | ❌ Missing    | ⚠️ Sender only |
+| **Font Family**        | Inter, system fonts           | ✅ Implemented | ❌ Missing    | ⚠️ Sender only |
+| **Message Effects**    | none, sparkle, glow, fire     | ✅ Implemented | ❌ Missing    | ✅ Yes         |
+| **Entrance Animation** | fade, slide, bounce, pop      | ✅ Implemented | ❌ Missing    | ✅ Yes         |
+
+#### 3. Theme Customizations (User's View Only)
+
+| Feature         | Options             | Web Status     | Mobile Status  | Synced |
+| --------------- | ------------------- | -------------- | -------------- | ------ |
+| **App Theme**   | dark, light, system | ✅ Implemented | ✅ Implemented | ✅ Yes |
+| **Chat Theme**  | 10+ presets         | ✅ Implemented | ⚠️ Partial     | ✅ Yes |
+| **Forum Theme** | default, compact    | ⚠️ Partial     | ❌ Missing     | ✅ Yes |
+
+#### 4. Effects & Animations (Performance-Aware)
+
+| Feature                | Options                   | Web Status     | Mobile Status  | Device Tier Adaptive |
+| ---------------------- | ------------------------- | -------------- | -------------- | -------------------- |
+| **Particle Effects**   | none, sparkle, snow, rain | ✅ Implemented | ⚠️ Partial     | ✅ Yes               |
+| **Background Effects** | solid, gradient, animated | ✅ Implemented | ⚠️ Partial     | ✅ Yes               |
+| **Animation Speed**    | slow, normal, fast        | ✅ Implemented | ✅ Implemented | ✅ Yes               |
+| **Glass Effect**       | default, blur, frosted    | ✅ Implemented | ❌ Missing     | ✅ Yes               |
+
+### Backend Schema (Already Implemented)
+
+```elixir
+# lib/cgraph/customizations/user_customization.ex - COMPLETE
+schema "user_customizations" do
+  # Identity (visible to others)
+  field :avatar_border_id, :string
+  field :title_id, :string
+  field :equipped_badges, {:array, :string}, default: []
+  field :profile_layout, :string, default: "classic"
+  field :profile_theme, :string, default: "classic-purple"
+
+  # Chat Styling (visible in conversations)
+  field :bubble_style, :string, default: "default"
+  field :bubble_color, :string      # Hex color
+  field :bubble_opacity, :integer   # 0-100
+  field :bubble_radius, :integer    # 0-32
+  field :message_effect, :string
+  field :entrance_animation, :string
+
+  # Extensibility (future-proof)
+  field :custom_config, :map, default: %{}  # Max 50KB
+
+  timestamps()
+end
+```
+
+### API Endpoints (Already Implemented)
+
+| Endpoint                           | Method | Purpose                                  |
+| ---------------------------------- | ------ | ---------------------------------------- |
+| `/api/v1/customizations`           | GET    | Get current user's customizations        |
+| `/api/v1/customizations`           | PUT    | Update customizations                    |
+| `/api/v1/users/:id/customizations` | GET    | Get another user's PUBLIC customizations |
+| `/api/v1/cosmetics/borders`        | GET    | List available avatar borders            |
+| `/api/v1/cosmetics/themes`         | GET    | List available profile themes            |
+
+### Implementation Tasks (Web)
+
+```bash
+# ✅ DONE - Web customization stores
+apps/web/src/stores/customization/customizationStore.ts
+apps/web/src/stores/avatarBorderStore.ts
+apps/web/src/stores/profileThemeStore.ts
+apps/web/src/stores/themeStore.ts
+
+# ✅ DONE - Web customization UI
+apps/web/src/pages/customize/Customize.tsx
+apps/web/src/pages/customize/IdentityCustomization.tsx
+apps/web/src/pages/customize/ChatCustomization.tsx
+apps/web/src/pages/customize/ThemeCustomization.tsx
+apps/web/src/pages/customize/EffectsCustomization.tsx
+
+# ⚠️ TODO - Apply customizations to other users' content
+apps/web/src/modules/chat/components/MessageBubble.tsx  # Show sender's bubble style
+apps/web/src/modules/social/components/UserProfileCard.tsx  # Show user's theme
+```
+
+### Implementation Tasks (Mobile - HIGH PRIORITY)
+
+```bash
+# ✅ DONE - Mobile customization store
+apps/mobile/src/stores/customizationStore.ts
+
+# ⚠️ PARTIAL - Need full UI screens
+apps/mobile/src/screens/settings/UICustomizationScreen.tsx
+
+# ❌ TODO - Mobile customization screens (MUST CREATE)
+apps/mobile/src/screens/customize/
+├── CustomizeScreen.tsx           # Main customization hub
+├── IdentityCustomization.tsx     # Avatar borders, badges, titles
+├── ChatCustomization.tsx         # Bubble styles, colors, effects
+├── ThemeCustomization.tsx        # App theme, chat theme
+└── EffectsCustomization.tsx      # Particles, animations
+
+# ❌ TODO - Apply customizations in mobile views
+apps/mobile/src/components/chat/MessageBubble.tsx  # Render sender's bubble style
+apps/mobile/src/components/profile/ProfileCard.tsx  # Render user's theme
+```
+
+### Visibility Rules (Discord/Meta Standard)
+
+```typescript
+// When rendering ANY user's content, fetch their customizations
+interface UserCustomizationPublic {
+  // Visible to everyone
+  avatarBorderId: string;
+  profileTheme: string;
+  equippedBadges: string[];
+  titleId: string;
+
+  // Visible in chat
+  bubbleStyle: string;
+  bubbleColor: string;
+  messageEffect: string;
+  entranceAnimation: string;
+}
+
+// Example: Rendering a message from another user
+const MessageBubble = ({ message, sender }: Props) => {
+  // Fetch sender's customizations (cached)
+  const senderCustom = useSenderCustomizations(sender.id);
+
+  return (
+    <div
+      style={{
+        backgroundColor: senderCustom.bubbleColor,
+        borderRadius: `${senderCustom.bubbleRadius}px`,
+        opacity: senderCustom.bubbleOpacity / 100,
+      }}
+      className={`bubble-${senderCustom.bubbleStyle}`}
+    >
+      {message.content}
+    </div>
+  );
+};
+```
+
+### Extensibility Pattern (Future-Proof)
+
+```typescript
+// custom_config field allows adding features without migrations
+interface CustomConfig {
+  // Future features go here
+  voiceVisualizerTheme?: string;
+  soundEffects?: {
+    messageSend?: string;
+    messageReceive?: string;
+  };
+  seasonalOverrides?: {
+    christmas?: boolean;
+    halloween?: boolean;
+  };
+  // Experimental features
+  experimental?: Record<string, unknown>;
+}
+
+// Backend validates size (max 50KB) and structure
+// New features can be added without database migrations
+```
+
+### Customization Sync Flow
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│   Web App   │    │   Backend   │    │ Mobile App  │
+└──────┬──────┘    └──────┬──────┘    └──────┬──────┘
+       │                  │                  │
+       │  PUT /customizations               │
+       │─────────────────>│                 │
+       │                  │                 │
+       │                  │ WebSocket broadcast
+       │                  │ "customization:updated"
+       │                  │─────────────────>
+       │                  │                 │
+       │<─────────────────│<────────────────│
+       │     GET updated customizations     │
+       │                  │                 │
+       └──────────────────┴─────────────────┘
+
+All clients receive real-time updates when a user changes their look.
+```
+
+### Avatar Border Themes (110+ Borders)
+
+| Theme     | Count | Unlock Method  | Examples                                      |
+| --------- | ----- | -------------- | --------------------------------------------- |
+| Free      | 4     | Default        | none, static, simple-glow, gentle-pulse       |
+| Starter   | 8     | Subscription   | rotating-ring, dual-ring, gradient-wave       |
+| Pro       | 12    | Subscription   | fire-inferno, ice-frost, cherry-blossom       |
+| Legendary | 8     | Achievements   | phoenix-rising, dragon-scale, void-portal     |
+| Mythic    | 8     | Top 100/Events | reality-warp, celestial-crown, transcendent   |
+| 8-Bit     | 8     | Level/Purchase | 8bit-pixels, 8bit-powerup, 8bit-rainbow       |
+| Japanese  | 10    | Level/Purchase | sakura-petals, koi-fish, samurai-blade        |
+| Chinese   | 10    | Level/Purchase | dragon-dance, lotus-bloom, jade-ring          |
+| Anime     | 10    | Level/Purchase | manga-speed-lines, power-aura, magical-circle |
+| Cyberpunk | 10    | Level/Purchase | cyber-circuit, hologram-glitch, matrix-code   |
+| Gothic    | 10    | Level/Purchase | blood-moon, bat-swarm, vampire-bite           |
+| Kawaii    | 10    | Level/Purchase | pastel-hearts, candy-swirl, unicorn-magic     |
+
+### Profile Theme Categories (18+ Themes)
+
+| Category  | Free           | Premium      | Elite         | Unlock                   |
+| --------- | -------------- | ------------ | ------------- | ------------------------ |
+| 8-Bit     | Arcade Classic | Neon Nights  | Pixel Dreams  | Level 15/50 achievements |
+| Japanese  | Zen Garden     | Sakura Bloom | Great Wave    | Level 20                 |
+| Anime     | Power Up       | Mystic Arts  | Ultimate Hero | Level 25                 |
+| Cyberpunk | Night City     | The Matrix   | Neural Pulse  | Level 20                 |
+| Gothic    | Shadow Realm   | Blood Moon   | Abyssal Void  | Level 20                 |
+| Kawaii    | Pastel Dream   | Candy Pop    | Rainbow Magic | Level 15                 |
+
+### Code Quality Standards for Customization
+
+```typescript
+// ✅ REQUIRED: All customization components must follow these patterns
+
+// 1. Use shared types from packages
+import type {
+  AvatarBorderConfig,
+  ProfileThemeConfig,
+  ChatCustomization,
+} from '@cgraph/shared-types';
+
+// 2. Fetch user customizations with caching
+const useSenderCustomizations = (userId: string) => {
+  return useQuery({
+    queryKey: ['customizations', userId],
+    queryFn: () => api.getUserCustomizations(userId),
+    staleTime: 5 * 60 * 1000, // Cache 5 min (slow-changing)
+    gcTime: 30 * 60 * 1000, // Keep in memory 30 min
+  });
+};
+
+// 3. Apply customizations with fallbacks
+const applyBubbleStyle = (custom: ChatCustomization | null) => ({
+  backgroundColor: custom?.bubbleColor ?? 'var(--bubble-default)',
+  borderRadius: `${custom?.bubbleRadius ?? 16}px`,
+  opacity: (custom?.bubbleOpacity ?? 100) / 100,
+});
+
+// 4. Respect device performance tier
+const useOptimizedEffects = () => {
+  const deviceTier = useDeviceTier(); // 'high' | 'mid' | 'low'
+  const effects = useEffects();
+
+  if (deviceTier === 'low') {
+    return { ...effects, particles: 'none', animations: 'minimal' };
+  }
+  return effects;
+};
+```
+
+### Testing Requirements
+
+```typescript
+// Every customization feature needs:
+// 1. Unit tests for store actions
+// 2. Integration tests for API sync
+// 3. Visual regression tests for themes
+// 4. Cross-platform parity tests
+
+describe('ChatBubbleCustomization', () => {
+  it('applies sender bubble color to messages', () => {
+    const sender = { id: '123', customizations: { bubbleColor: '#FF5733' } };
+    render(<MessageBubble message={msg} sender={sender} />);
+    expect(screen.getByTestId('bubble')).toHaveStyle({ backgroundColor: '#FF5733' });
+  });
+
+  it('falls back to default when customization is null', () => {
+    render(<MessageBubble message={msg} sender={{ id: '123' }} />);
+    expect(screen.getByTestId('bubble')).toHaveStyle({ backgroundColor: 'var(--bubble-default)' });
+  });
+
+  it('syncs customizations across web and mobile', async () => {
+    // Update on web
+    await webApi.updateCustomizations({ bubbleColor: '#00FF00' });
+    // Verify mobile receives update
+    await waitFor(() => {
+      expect(mobileStore.getState().theme.bubbleColor).toBe('#00FF00');
+    });
+  });
+});
+```
+
+---
+
+## 📱 PLATFORM PARITY: WEB ↔ MOBILE (Discord/Telegram Standard)
+
+### Philosophy: One Product, Two Platforms
+
+**Every feature on web MUST exist on mobile. Every feature on mobile MUST exist on web.**
+
+This is how Discord and Telegram work. Users expect identical functionality regardless of device.
+
+### Complete Page/Screen Parity Matrix
+
+#### Auth & Onboarding (100% Parity Required)
+
+| Feature         | Web Page                | Mobile Screen                 | Sync Status |
+| --------------- | ----------------------- | ----------------------------- | ----------- |
+| Login           | ✅ `Login.tsx`          | ✅ `LoginScreen.tsx`          | ✅ Synced   |
+| Register        | ✅ `Register.tsx`       | ✅ `RegisterScreen.tsx`       | ✅ Synced   |
+| Forgot Password | ✅ `ForgotPassword.tsx` | ✅ `ForgotPasswordScreen.tsx` | ✅ Synced   |
+| Reset Password  | ✅ `ResetPassword.tsx`  | ✅ `ResetPasswordScreen.tsx`  | ✅ Synced   |
+| Verify Email    | ✅ `VerifyEmail.tsx`    | ✅ `VerifyEmailScreen.tsx`    | ✅ Synced   |
+| Onboarding      | ✅ `Onboarding.tsx`     | ✅ `OnboardingScreen.tsx`     | ✅ Synced   |
+| OAuth Callback  | ✅ `OAuthCallback.tsx`  | ⚠️ Deep link handler          | ⚠️ Partial  |
+
+#### Messaging (100% Parity Required)
+
+| Feature               | Web Page                      | Mobile Screen                   | Sync Status   |
+| --------------------- | ----------------------------- | ------------------------------- | ------------- |
+| Conversation List     | ✅ `Messages.tsx`             | ✅ `ConversationListScreen.tsx` | ✅ Synced     |
+| Conversation          | ✅ `Conversation.tsx`         | ✅ `ConversationScreen.tsx`     | ⚠️ Partial    |
+| Enhanced Conversation | ✅ `EnhancedConversation.tsx` | ❌ Missing                      | ❌ Not synced |
+| New Conversation      | ⚠️ Modal                      | ✅ `NewConversationScreen.tsx`  | ⚠️ Partial    |
+| Message Search        | ✅ Component                  | ⚠️ Partial                      | ⚠️ Partial    |
+| Typing Indicators     | ✅ Yes                        | ✅ Yes                          | ✅ Synced     |
+| Read Receipts         | ✅ Yes                        | ⚠️ Partial                      | ⚠️ Partial    |
+| Reactions             | ✅ Yes                        | ⚠️ Partial                      | ⚠️ Partial    |
+| Reply/Quote           | ✅ Yes                        | ⚠️ Partial                      | ⚠️ Partial    |
+| Edit/Delete           | ✅ Yes                        | ⚠️ Partial                      | ⚠️ Partial    |
+
+#### Forums (100% Parity Required)
+
+| Feature            | Web Page                   | Mobile Screen                    | Sync Status   |
+| ------------------ | -------------------------- | -------------------------------- | ------------- |
+| Forum List         | ✅ `Forums.tsx`            | ✅ `ForumListScreen.tsx`         | ✅ Synced     |
+| Forum View         | ✅ `ForumBoardView.tsx`    | ✅ `ForumBoardScreen.tsx`        | ⚠️ Partial    |
+| Post View          | ✅ `ForumPost.tsx`         | ✅ `PostScreen.tsx`              | ⚠️ Partial    |
+| Create Forum       | ✅ `CreateForum.tsx`       | ✅ `CreateForumScreen.tsx`       | ⚠️ Partial    |
+| Create Post        | ✅ `CreatePost.tsx`        | ✅ `CreatePostScreen.tsx`        | ⚠️ Partial    |
+| Forum Admin        | ✅ `ForumAdmin.tsx`        | ✅ `ForumAdminScreen.tsx`        | ⚠️ Partial    |
+| Forum Settings     | ✅ `ForumSettings.tsx`     | ✅ `ForumSettingsScreen.tsx`     | ⚠️ Partial    |
+| Forum Leaderboard  | ✅ `ForumLeaderboard.tsx`  | ✅ `ForumLeaderboardScreen.tsx`  | ⚠️ Partial    |
+| Moderation Queue   | ✅ `ModerationQueue.tsx`   | ❌ Missing                       | ❌ Not synced |
+| Plugin Marketplace | ✅ `PluginMarketplace.tsx` | ✅ `PluginMarketplaceScreen.tsx` | ⚠️ Partial    |
+| Subscriptions      | ⚠️ Component               | ✅ `SubscriptionsScreen.tsx`     | ⚠️ Partial    |
+
+#### Groups/Servers (100% Parity Required)
+
+| Feature        | Web Page              | Mobile Screen                | Sync Status |
+| -------------- | --------------------- | ---------------------------- | ----------- |
+| Group List     | ✅ `Groups.tsx`       | ✅ `GroupListScreen.tsx`     | ⚠️ Partial  |
+| Group View     | ✅ `Groups.tsx`       | ✅ `GroupScreen.tsx`         | ⚠️ Partial  |
+| Channel View   | ✅ `GroupChannel.tsx` | ✅ `ChannelScreen.tsx`       | ⚠️ Partial  |
+| Group Settings | ⚠️ Component          | ✅ `GroupSettingsScreen.tsx` | ⚠️ Partial  |
+
+#### Customization (100% Parity Required - HIGH PRIORITY)
+
+| Feature                   | Web Page                          | Mobile Screen                     | Sync Status   |
+| ------------------------- | --------------------------------- | --------------------------------- | ------------- |
+| Customize Hub             | ✅ `Customize.tsx`                | ❌ Missing                        | ❌ **CREATE** |
+| Identity Customization    | ✅ `IdentityCustomization.tsx`    | ❌ Missing                        | ❌ **CREATE** |
+| Chat Customization        | ✅ `ChatCustomization.tsx`        | ✅ `ChatBubbleSettingsScreen.tsx` | ⚠️ Partial    |
+| Theme Customization       | ✅ `ThemeCustomization.tsx`       | ⚠️ `AppearanceScreen.tsx`         | ⚠️ Partial    |
+| Effects Customization     | ✅ `EffectsCustomization.tsx`     | ❌ Missing                        | ❌ **CREATE** |
+| Progression Customization | ✅ `ProgressionCustomization.tsx` | ❌ Missing                        | ❌ **CREATE** |
+| Avatar Settings           | ⚠️ Component                      | ✅ `AvatarSettingsScreen.tsx`     | ⚠️ Partial    |
+| UI Customization          | ⚠️ Component                      | ✅ `UICustomizationScreen.tsx`    | ⚠️ Partial    |
+
+#### Gamification (100% Parity Required)
+
+| Feature          | Web Page                     | Mobile Screen                  | Sync Status |
+| ---------------- | ---------------------------- | ------------------------------ | ----------- |
+| Gamification Hub | ✅ `GamificationHubPage.tsx` | ✅ `GamificationHubScreen.tsx` | ⚠️ Partial  |
+| Achievements     | ✅ `AchievementsPage.tsx`    | ✅ `AchievementsScreen.tsx`    | ⚠️ Partial  |
+| Quests           | ✅ `QuestsPage.tsx`          | ✅ `QuestsScreen.tsx`          | ⚠️ Partial  |
+| Titles           | ✅ `TitlesPage.tsx`          | ✅ `TitlesScreen.tsx`          | ⚠️ Partial  |
+| Leaderboard      | ✅ `LeaderboardPage.tsx`     | ✅ `LeaderboardScreen.tsx`     | ⚠️ Partial  |
+
+#### Premium & Shop (100% Parity Required)
+
+| Feature      | Web Page             | Mobile Screen           | Sync Status |
+| ------------ | -------------------- | ----------------------- | ----------- |
+| Premium Page | ✅ `PremiumPage.tsx` | ✅ `PremiumScreen.tsx`  | ⚠️ Partial  |
+| Coin Shop    | ✅ `CoinShop.tsx`    | ✅ `CoinShopScreen.tsx` | ⚠️ Partial  |
+
+#### Calls (100% Parity Required)
+
+| Feature      | Web Page            | Mobile Screen              | Sync Status          |
+| ------------ | ------------------- | -------------------------- | -------------------- |
+| Call Screen  | ✅ `CallScreen.tsx` | ✅ `CallScreen.tsx`        | ⚠️ Partial           |
+| Voice Call   | ⚠️ Component        | ✅ `VoiceCallScreen.tsx`   | ⚠️ Partial           |
+| Video Call   | ⚠️ Component        | ✅ `VideoCallScreen.tsx`   | ⚠️ Partial           |
+| Call History | ❌ Missing          | ✅ `CallHistoryScreen.tsx` | ❌ **CREATE on web** |
+
+#### Friends & Social (100% Parity Required)
+
+| Feature         | Web Page             | Mobile Screen                 | Sync Status   |
+| --------------- | -------------------- | ----------------------------- | ------------- |
+| Friends List    | ✅ `Friends.tsx`     | ✅ `FriendListScreen.tsx`     | ⚠️ Partial    |
+| Add Friend      | ⚠️ Component         | ✅ `AddFriendScreen.tsx`      | ⚠️ Partial    |
+| Friend Requests | ⚠️ Component         | ✅ `FriendRequestsScreen.tsx` | ⚠️ Partial    |
+| User Profile    | ✅ `UserProfile.tsx` | ✅ `UserProfileScreen.tsx`    | ⚠️ Partial    |
+| User Wall       | ⚠️ Component         | ✅ `UserWallScreen.tsx`       | ⚠️ Partial    |
+| Social Hub      | ✅ `Social.tsx`      | ❌ Missing                    | ❌ **CREATE** |
+
+#### Settings (100% Parity Required)
+
+| Feature             | Web Page                           | Mobile Screen                    | Sync Status          |
+| ------------------- | ---------------------------------- | -------------------------------- | -------------------- |
+| Settings Hub        | ✅ `Settings.tsx`                  | ✅ `SettingsScreen.tsx`          | ⚠️ Partial           |
+| Account             | ⚠️ Component                       | ✅ `AccountScreen.tsx`           | ⚠️ Partial           |
+| Profile             | ⚠️ Component                       | ✅ `ProfileScreen.tsx`           | ⚠️ Partial           |
+| Privacy             | ⚠️ Component                       | ✅ `PrivacyScreen.tsx`           | ⚠️ Partial           |
+| Notifications       | ⚠️ Component                       | ✅ `NotificationsScreen.tsx`     | ⚠️ Partial           |
+| Appearance/Theme    | ✅ `AppThemeSettings.tsx`          | ✅ `AppearanceScreen.tsx`        | ⚠️ Partial           |
+| Blocked Users       | ✅ `BlockedUsers.tsx`              | ✅ `BlockedUsersScreen.tsx`      | ⚠️ Partial           |
+| Two-Factor Auth     | ✅ `TwoFactorSetup.tsx`            | ✅ `TwoFactorSetupScreen.tsx`    | ⚠️ Partial           |
+| Badge Selection     | ✅ `BadgeSelection.tsx`            | ❌ Missing                       | ❌ **CREATE**        |
+| Title Selection     | ✅ `TitleSelection.tsx`            | ❌ Missing                       | ❌ **CREATE**        |
+| Email Notifications | ✅ `EmailNotificationSettings.tsx` | ❌ Missing                       | ❌ **CREATE**        |
+| Profile Visibility  | ⚠️ Component                       | ✅ `ProfileVisibilityScreen.tsx` | ⚠️ Partial           |
+| Custom Emoji        | ❌ Missing                         | ✅ `CustomEmojiScreen.tsx`       | ❌ **CREATE on web** |
+| RSS Feeds           | ❌ Missing                         | ✅ `RSSFeedsScreen.tsx`          | ❌ **CREATE on web** |
+
+#### Admin (100% Parity Required)
+
+| Feature         | Web Page                | Mobile Screen                 | Sync Status   |
+| --------------- | ----------------------- | ----------------------------- | ------------- |
+| Admin Dashboard | ✅ `AdminDashboard.tsx` | ✅ `AdminDashboardScreen.tsx` | ⚠️ Partial    |
+| Users Tab       | ✅ `UsersTab.tsx`       | ❌ Missing                    | ❌ **CREATE** |
+| Reports Tab     | ✅ `ReportsTab.tsx`     | ❌ Missing                    | ❌ **CREATE** |
+| Audit Tab       | ✅ `AuditTab.tsx`       | ❌ Missing                    | ❌ **CREATE** |
+| Settings Tab    | ✅ `SettingsTab.tsx`    | ❌ Missing                    | ❌ **CREATE** |
+| Forum Reorder   | ⚠️ Component            | ✅ `ForumReorderScreen.tsx`   | ⚠️ Partial    |
+
+#### Other Features
+
+| Feature           | Web Page               | Mobile Screen                     | Sync Status          |
+| ----------------- | ---------------------- | --------------------------------- | -------------------- |
+| Search            | ✅ `Search.tsx`        | ✅ `SearchScreen.tsx`             | ⚠️ Partial           |
+| Notifications     | ✅ `Notifications.tsx` | ✅ `NotificationsInboxScreen.tsx` | ⚠️ Partial           |
+| Referrals         | ✅ `ReferralPage.tsx`  | ✅ `ReferralScreen.tsx`           | ⚠️ Partial           |
+| Member List       | ✅ `MemberList.tsx`    | ✅ `MemberListScreen.tsx`         | ⚠️ Partial           |
+| Who's Online      | ✅ `WhosOnline.tsx`    | ✅ `WhosOnlineScreen.tsx`         | ⚠️ Partial           |
+| Calendar          | ✅ `CalendarPage.tsx`  | ✅ `CalendarScreen.tsx`           | ⚠️ Partial           |
+| E2EE Verification | ❌ Missing             | ✅ `E2EEVerificationScreen.tsx`   | ❌ **CREATE on web** |
+| Key Verification  | ❌ Missing             | ✅ `KeyVerificationScreen.tsx`    | ❌ **CREATE on web** |
+| Export Content    | ❌ Missing             | ✅ `ExportContentScreen.tsx`      | ❌ **CREATE on web** |
+| Report            | ⚠️ Component           | ✅ `ReportScreen.tsx`             | ⚠️ Partial           |
+| Username Change   | ⚠️ Component           | ✅ `UsernameChangeScreen.tsx`     | ⚠️ Partial           |
+
+### Animation Parity (CRITICAL)
+
+**Every animation on web MUST have an equivalent on mobile.**
+
+#### Web Animation System (Framer Motion)
+
+```typescript
+// apps/web/src/lib/animations/
+├── animationPresets.ts     // Standard animation configs
+├── useAnimatedValue.ts     // Animated value hook
+└── motion-variants.ts      // Reusable variants
+
+// Example: Message entrance animation
+const messageVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.2 } }
+};
+```
+
+#### Mobile Animation System (Reanimated v4)
+
+```typescript
+// apps/mobile/src/lib/animations/
+├── AnimationLibrary.ts     // Standard animation configs
+├── AnimatedComponents.tsx  // Animated wrapper components
+└── springConfigs.ts        // Spring presets
+
+// Example: Message entrance animation (MUST match web)
+const messageEnter = () => {
+  'worklet';
+  return {
+    initialValues: { opacity: 0, transform: [{ translateY: 20 }] },
+    animations: { opacity: withTiming(1), transform: [{ translateY: withTiming(0) }] }
+  };
+};
+```
+
+#### Animation Sync Requirements
+
+| Animation               | Web (Framer Motion) | Mobile (Reanimated) | Sync Status        |
+| ----------------------- | ------------------- | ------------------- | ------------------ |
+| Message Enter           | ✅ fade + slide up  | ⚠️ Partial          | ⚠️ **SYNC**        |
+| Message Exit            | ✅ fade out         | ⚠️ Partial          | ⚠️ **SYNC**        |
+| Typing Indicator        | ✅ bounce dots      | ⚠️ Partial          | ⚠️ **SYNC**        |
+| Avatar Border Glow      | ✅ CSS animation    | ⚠️ Partial          | ⚠️ **SYNC**        |
+| Profile Theme Particles | ✅ Canvas/CSS       | ⚠️ Partial          | ⚠️ **SYNC**        |
+| Button Press            | ✅ scale down       | ✅ Yes              | ✅ Synced          |
+| Page Transitions        | ✅ fade/slide       | ⚠️ Partial          | ⚠️ **SYNC**        |
+| Pull to Refresh         | N/A                 | ✅ Yes              | ✅ Mobile only     |
+| Swipe Actions           | ⚠️ Partial          | ✅ Yes              | ⚠️ **SYNC**        |
+| Modal Enter/Exit        | ✅ Yes              | ✅ Yes              | ⚠️ **SYNC timing** |
+| Toast Notifications     | ✅ slide + fade     | ⚠️ Partial          | ⚠️ **SYNC**        |
+| Skeleton Loading        | ✅ shimmer          | ⚠️ Partial          | ⚠️ **SYNC**        |
+| Reaction Pop            | ✅ scale + bounce   | ⚠️ Partial          | ⚠️ **SYNC**        |
+
+#### Shared Animation Config (packages/animations)
+
+```typescript
+// packages/animations/src/presets.ts
+// SHARED between web and mobile
+
+export const ANIMATION_PRESETS = {
+  messageEnter: {
+    duration: 200,
+    easing: 'easeOut',
+    from: { opacity: 0, y: 20 },
+    to: { opacity: 1, y: 0 },
+  },
+  messageExit: {
+    duration: 150,
+    easing: 'easeIn',
+    from: { opacity: 1, scale: 1 },
+    to: { opacity: 0, scale: 0.95 },
+  },
+  buttonPress: {
+    duration: 100,
+    scale: 0.97,
+  },
+  modalEnter: {
+    duration: 250,
+    easing: 'spring',
+    springConfig: { damping: 25, stiffness: 300 },
+  },
+} as const;
+
+// Web adapter
+export const toFramerMotion = (preset: AnimationPreset) => ({
+  initial: preset.from,
+  animate: preset.to,
+  transition: { duration: preset.duration / 1000, ease: preset.easing },
+});
+
+// Mobile adapter
+export const toReanimated = (preset: AnimationPreset) => ({
+  initialValues: preset.from,
+  animations: Object.fromEntries(
+    Object.entries(preset.to).map(([k, v]) => [k, withTiming(v, { duration: preset.duration })])
+  ),
+});
+```
+
+### Real-Time Sync Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         REAL-TIME SYNC SYSTEM                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   ┌─────────────┐                                    ┌─────────────┐        │
+│   │   Web App   │◄──────────────┬──────────────────►│ Mobile App  │        │
+│   └──────┬──────┘               │                   └──────┬──────┘        │
+│          │                      │                          │               │
+│          │ Phoenix Channel      │ Phoenix Channel          │               │
+│          │                      │                          │               │
+│          ▼                      │                          ▼               │
+│   ┌──────────────────────────────────────────────────────────────┐        │
+│   │                     PHOENIX CHANNELS                          │        │
+│   │  user:{userId}          - Personal notifications, presence    │        │
+│   │  conversation:{convId}  - Messages, typing, read receipts     │        │
+│   │  group:{groupId}        - Group events, member changes        │        │
+│   │  forum:{forumId}        - Posts, comments, votes              │        │
+│   │  presence:{scope}       - Online status, last seen            │        │
+│   │  customization:{userId} - Theme/style changes (others see)    │        │
+│   └──────────────────────────────────────────────────────────────┘        │
+│                                  │                                         │
+│                                  ▼                                         │
+│   ┌──────────────────────────────────────────────────────────────┐        │
+│   │                       BACKEND                                 │        │
+│   │  • Broadcasts events to ALL connected clients                 │        │
+│   │  • Stores state in PostgreSQL                                 │        │
+│   │  • Caches hot data in Redis                                   │        │
+│   │  • Every state change = broadcast to relevant channels        │        │
+│   └──────────────────────────────────────────────────────────────┘        │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Sync Events (All Platforms Must Handle)
+
+```typescript
+// packages/socket/src/events.ts
+// EVERY event must be handled identically on web and mobile
+
+export const SYNC_EVENTS = {
+  // Messages
+  'message:created': { messageId, conversationId, senderId },
+  'message:updated': { messageId, content, editedAt },
+  'message:deleted': { messageId, conversationId },
+  'message:reaction': { messageId, userId, emoji, action },
+
+  // Typing & Presence
+  'typing:start': { conversationId, userId },
+  'typing:stop': { conversationId, userId },
+  'presence:update': { userId, status, lastSeen },
+
+  // Customization (CRITICAL - others see your changes)
+  'customization:updated': { userId, changes },
+  'avatar_border:changed': { userId, borderId },
+  'profile_theme:changed': { userId, themeId },
+  'bubble_style:changed': { userId, style },
+
+  // Forums
+  'post:created': { postId, forumId, authorId },
+  'post:voted': { postId, userId, direction },
+  'comment:created': { commentId, postId, authorId },
+
+  // Groups
+  'member:joined': { groupId, userId },
+  'member:left': { groupId, userId },
+  'channel:message': { channelId, messageId },
+
+  // Gamification
+  'achievement:unlocked': { userId, achievementId },
+  'level:up': { userId, newLevel },
+  'xp:gained': { userId, amount, source },
+
+  // Notifications
+  'notification:new': { notificationId, type, data },
+} as const;
+```
+
+### Shared State Management
+
+```typescript
+// packages/state/src/stores/
+// Zustand stores that work on BOTH platforms
+
+// Base store interface (shared)
+interface MessageStore {
+  messages: Map<string, Message>;
+  addMessage: (msg: Message) => void;
+  updateMessage: (id: string, updates: Partial<Message>) => void;
+  deleteMessage: (id: string) => void;
+}
+
+// Implementation (shared logic)
+export const createMessageStore = () =>
+  create<MessageStore>((set) => ({
+    messages: new Map(),
+    addMessage: (msg) => set((s) => ({ messages: new Map(s.messages).set(msg.id, msg) })),
+    updateMessage: (id, updates) =>
+      set((s) => {
+        const map = new Map(s.messages);
+        const existing = map.get(id);
+        if (existing) map.set(id, { ...existing, ...updates });
+        return { messages: map };
+      }),
+    deleteMessage: (id) =>
+      set((s) => {
+        const map = new Map(s.messages);
+        map.delete(id);
+        return { messages: map };
+      }),
+  }));
+
+// Web uses: import { useMessageStore } from '@cgraph/state';
+// Mobile uses: import { useMessageStore } from '@cgraph/state';
+// IDENTICAL API, IDENTICAL BEHAVIOR
+```
+
+### Implementation Priority (Platform Parity)
+
+#### Phase 1: Critical Missing Screens (Week 1-2)
+
+**Mobile screens to CREATE:**
+
+```bash
+apps/mobile/src/screens/customize/
+├── CustomizeScreen.tsx           # Hub for all customization
+├── IdentityCustomization.tsx     # Avatar borders, badges, titles
+├── EffectsCustomization.tsx      # Particles, animations
+└── ProgressionCustomization.tsx  # XP display, level frames
+
+apps/mobile/src/screens/settings/
+├── BadgeSelectionScreen.tsx      # Choose displayed badges
+├── TitleSelectionScreen.tsx      # Choose title
+└── EmailNotificationsScreen.tsx  # Email preferences
+
+apps/mobile/src/screens/social/
+└── SocialHubScreen.tsx           # Social features hub
+```
+
+**Web pages to CREATE:**
+
+```bash
+apps/web/src/pages/calls/
+└── CallHistory.tsx               # Call history (exists on mobile)
+
+apps/web/src/pages/settings/
+├── CustomEmoji.tsx               # Custom emoji (exists on mobile)
+└── RSSFeeds.tsx                  # RSS feeds (exists on mobile)
+
+apps/web/src/pages/security/
+├── E2EEVerification.tsx          # E2EE verification (exists on mobile)
+└── KeyVerification.tsx           # Key verification (exists on mobile)
+
+apps/web/src/pages/content/
+└── ExportContent.tsx             # Export data (exists on mobile)
+```
+
+#### Phase 2: Animation Parity (Week 2-3)
+
+1. Create `packages/animations/` with shared configs
+2. Update web to use shared animation presets
+3. Update mobile to use shared animation presets
+4. Test that animations look identical
+
+#### Phase 3: Full Feature Parity (Week 3-4)
+
+1. Audit every ⚠️ Partial feature
+2. Ensure identical functionality
+3. Test on both platforms simultaneously
+4. Fix any sync issues
+
+### Testing Parity
+
+```typescript
+// Every feature needs cross-platform tests
+
+describe('Message Sending (Parity Test)', () => {
+  it('sends message identically on web and mobile', async () => {
+    // Setup: Same user logged in on both platforms
+    const webClient = createWebTestClient(userId);
+    const mobileClient = createMobileTestClient(userId);
+
+    // Action: Send from web
+    await webClient.sendMessage(conversationId, 'Hello from web');
+
+    // Verify: Appears on mobile in <1 second
+    await mobileClient.waitForMessage(conversationId, 'Hello from web', 1000);
+
+    // Action: Send from mobile
+    await mobileClient.sendMessage(conversationId, 'Hello from mobile');
+
+    // Verify: Appears on web in <1 second
+    await webClient.waitForMessage(conversationId, 'Hello from mobile', 1000);
+  });
+
+  it('shows sender customizations identically', async () => {
+    // Sender has custom bubble color
+    await api.updateCustomizations(senderId, { bubbleColor: '#FF5733' });
+
+    // Verify: Both platforms render the same color
+    const webBubble = await webClient.getMessageBubbleStyle(messageId);
+    const mobileBubble = await mobileClient.getMessageBubbleStyle(messageId);
+
+    expect(webBubble.backgroundColor).toBe('#FF5733');
+    expect(mobileBubble.backgroundColor).toBe('#FF5733');
+  });
+});
+```
+
+---
+
+## 🎯 IMPLEMENTATION ROADMAP (BUILD, DON'T DELETE)
+
+### Week 1-2: Connect Packages to Apps
+
+**Goal:** Make all 9 packages functional and used by both web and mobile.
+
+| Package              | Action                            | Connects To                 |
+| -------------------- | --------------------------------- | --------------------------- |
+| @cgraph/shared-types | Already used                      | ✅ Keep                     |
+| @cgraph/utils        | Connect to mobile                 | apps/mobile/lib             |
+| @cgraph/crypto       | **IMPLEMENT**: Make apps use it   | apps/web + mobile E2EE      |
+| @cgraph/hooks        | **IMPLEMENT**: Export from shared | apps/web/shared/hooks       |
+| @cgraph/socket       | **IMPLEMENT**: Phoenix channels   | apps/web + mobile sockets   |
+| @cgraph/core         | **IMPLEMENT**: Business logic     | Forums, Auth, Chat services |
+| @cgraph/state        | **IMPLEMENT**: Shared stores      | Both apps                   |
+| @cgraph/config       | **IMPLEMENT**: Shared config      | Both apps                   |
+| @cgraph/ui           | **IMPLEMENT**: Web components     | apps/web/shared             |
+
+### Week 3-4: Complete Forum System
+
+| Task                   | Web          | Mobile       | Backend      |
+| ---------------------- | ------------ | ------------ | ------------ |
+| Create forum flow      | ✅ Implement | ✅ Implement | ✅ Done      |
+| Join via invite        | ✅ Implement | ✅ Implement | ✅ Implement |
+| Invite link generation | ✅ Implement | ✅ Implement | ✅ Implement |
+| Tier-based limits      | ✅ Implement | ✅ Implement | ✅ Implement |
+| Forum settings         | ✅ Implement | ✅ Implement | ✅ Implement |
+| Member management      | ✅ Implement | ✅ Implement | ✅ Implement |
+
+### Week 5-6: Web-Mobile Feature Parity
+
+| Feature            | Web Status | Mobile Status | Action                   |
+| ------------------ | ---------- | ------------- | ------------------------ |
+| Forum creation     | ✅         | ❌            | Implement mobile         |
+| Thread creation    | ✅         | ⚠️ Partial    | Complete mobile          |
+| Real-time updates  | ✅         | ⚠️ Partial    | Connect Phoenix channels |
+| Push notifications | ❌         | ✅            | Implement web push       |
+| E2EE messaging     | ✅         | ⚠️ Basic      | Complete mobile          |
+| Voice calls        | ✅         | ❌            | Implement mobile         |
+| Video calls        | ✅         | ❌            | Implement mobile         |
+
+### Week 7-8: Scale & Performance
+
+| Task                  | Description                      |
+| --------------------- | -------------------------------- |
+| Database optimization | Add indexes for forum queries    |
+| Caching layer         | Redis caching for forum data     |
+| CDN setup             | Images and static assets         |
+| Load testing          | 10K concurrent users             |
+| Mobile optimization   | Reduce bundle size, lazy loading |
+
+---
+
+## Current Issues (To Fix During Implementation)
+
+### Large Files to Refactor (Not Delete)
+
+| File                   | Current | Target | Method                   |
+| ---------------------- | ------- | ------ | ------------------------ |
+| ConversationScreen.tsx | 5,840   | 300    | Extract 15 components    |
+| CustomizationDemo.tsx  | 3,510   | 300    | Extract 12 components    |
+| ForumAdmin.tsx         | 1,768   | 300    | Extract 6 components     |
+| socket.ts              | 1,560   | 300    | Extract channel handlers |
+
+### Module Exports to Complete
+
+```typescript
+// Every module index.ts must export:
+export * from './components';
+export * from './hooks';
+export * from './store';
+export * from './types';
+export * from './api';
+```
+
+### Store Organization (Merge, Don't Delete)
+
+```
+Current: 67 stores scattered
+Target: 12 module stores + 7 facades
+
+Action: Move stores into their modules, update facade imports
+```
+
+---
+
+## Score Progression (Implementation Focus)
+
+| Week    | Work                  | Points | Cumulative |
+| ------- | --------------------- | ------ | ---------- |
+| Current | Audit + Standards     | 4.8    | 4.8        |
+| 1-2     | Connect all packages  | +1.5   | 6.3        |
+| 3-4     | Forum system complete | +1.5   | 7.8        |
+| 5-6     | Web-Mobile parity     | +1.2   | 9.0        |
+| 7-8     | Scale + Performance   | +1.0   | **10.0**   |
+
+---
+
+## What Was Already Completed ✅
+
+### Phase 0-1: Cleanup & Module Structure (February 1-2, 2026)
+
+| Task                                                   | Status | Verified |
+| ------------------------------------------------------ | ------ | -------- |
+| Delete deprecated stores (customizationStore, pmStore) | ✅     | ✅       |
+| Remove duplicate landing pages                         | ✅     | ✅       |
+| Fix "migrateTo SecureStorage.ts" filename              | ✅     | ✅       |
+| Consolidate mobile context/ → contexts/                | ✅     | ✅       |
+| Refactor theme/index.ts (982 → 52 lines)               | ✅     | ✅       |
+| Move archive/demo/test → **dev**/                      | ✅     | ✅       |
+| Merge components/forum/ → forums/                      | ✅     | ✅       |
+| Create 12 module directories                           | ✅     | ✅       |
+| Create shared/ directory structure                     | ✅     | ✅       |
+
+### Phase 2: Module Population (February 2, 2026)
+
+| Module       | Components | Hooks | Store    | Status                |
+| ------------ | ---------- | ----- | -------- | --------------------- |
+| chat         | 29         | 7     | ✅       | ✅ Complete           |
+| forums       | 26         | 2     | ✅       | ✅ Complete           |
+| gamification | 10         | 1     | ✅       | ⚠️ Exports incomplete |
+| settings     | 10         | 1     | ✅       | ⚠️ Exports incomplete |
+| auth         | 7          | 3     | ✅       | ⚠️ Exports incomplete |
+| groups       | 6          | 0     | ✅       | ⚠️ Exports incomplete |
+| social       | 5          | 2     | ✅       | ⚠️ Exports incomplete |
+| premium      | 5          | 1     | ✅       | ⚠️ Exports incomplete |
+| calls        | 4          | 2     | ✅       | ⚠️ Exports incomplete |
+| admin        | 3          | 0     | ❌ Empty | ❌ Store empty        |
+| moderation   | 2          | 0     | ✅       | ⚠️ Exports incomplete |
+| search       | 1          | 0     | ✅       | ⚠️ Exports incomplete |
+
+**Total: 117 components, 28 hooks migrated to modules**
+
+### Phase 6: Backend Splitting (Partial)
+
+| Module      | Original | Extracted | Remaining | Progress |
+| ----------- | -------- | --------- | --------- | -------- |
+| forums.ex   | 3,379    | 1,591     | 1,788     | 53%      |
+| accounts.ex | 1,864    | 668       | 1,196     | 36%      |
+
+Created submodules:
 
 - `forums/core.ex`, `forums/threads.ex`, `forums/voting.ex`, `forums/moderation.ex`
 - `accounts/users.ex`, `accounts/authentication.ex`, `accounts/registration.ex`,
   `accounts/sessions.ex`
 
-### Phase 7: Performance Polish
+---
 
-| Task               | Status                                       |
-| ------------------ | -------------------------------------------- |
-| Console statements | ✅ 0 convertible (remaining are intentional) |
-| Reduce `any` types | ✅ 6 remaining (down from 14)                |
-| TypeScript         | ✅ Compiles clean                            |
-| ESLint             | ✅ 0 errors, 51 warnings                     |
-| Bundle size        | ⚠️ Not verified                              |
+## Comparison: CGraph vs Industry Giants
+
+### Current Advantages (What CGraph Does Better)
+
+| Feature             | CGraph                               | Discord   | Telegram       | WhatsApp  |
+| ------------------- | ------------------------------------ | --------- | -------------- | --------- |
+| E2EE Protocol       | Signal ✅                            | None ❌   | MTProto ⚠️     | Signal ✅ |
+| User-owned forums   | ✅ Yes                               | ❌ No     | ⚠️ Groups only | ❌ No     |
+| Forum invite system | ✅ Planned                           | ✅ Yes    | ⚠️ Basic       | ❌ No     |
+| Gamification        | ✅ XP/Karma                          | ❌ No     | ❌ No          | ❌ No     |
+| Subscription tiers  | ✅ 3 tiers (free/premium/enterprise) | ✅ Nitro  | ✅ Premium     | ❌ No     |
+| Open architecture   | ✅ Yes                               | ❌ Closed | ❌ Closed      | ❌ Closed |
+
+### Areas to Improve (In Progress)
+
+| Metric           | Discord | CGraph Now     | CGraph Target | Action           |
+| ---------------- | ------- | -------------- | ------------- | ---------------- |
+| Component size   | 300     | 5,840          | 300           | Refactor         |
+| Platform parity  | 40%     | <1%            | 70%           | Connect packages |
+| Test coverage    | 80%     | 8.5%           | 80%           | Add tests        |
+| Module isolation | Clean   | 30+ violations | Clean         | Use shared       |
 
 ---
 
-## What's Left To Do
-
-### Immediate (Week 1)
-
-1. **Delete duplicate structures:**
-   - `rm -rf apps/web/src/features/`
-   - Delete duplicate stores: forumSlice, friendSlice, profileSlice
-
-2. **Complete module population (calls, auth, admin):**
-   - Move `components/voice/*` → `modules/calls/components/`
-   - Move `components/auth/*` → `modules/auth/components/`
-   - Move `components/admin/*` → `modules/admin/components/`
-
-3. **Delete legacy components after migration:**
-   - After verifying, remove empty legacy component folders
-
-### Short-term (Week 2-3)
-
-4. **Store consolidation:**
-   - Merge 69 legacy stores into 12 module stores
-   - Update all imports to use module stores
-
-5. **Create packages/socket:**
-   - Phoenix channel client
-   - Conversation, forum, group channels
-
-### Medium-term (Week 4-6)
-
-6. **Test coverage to 80%:**
-   - Add 22 more E2EE tests
-   - Add 25 more facade tests
-   - Add 90 component tests
-
-7. **Backend module splitting:**
-   - Split forums.ex into 8 modules
-   - Split accounts.ex into 5 modules
+## Previous Gap Analysis (Reference Only)
 
 ---
 
@@ -1778,31 +3956,30 @@ module.exports = {
 
 ---
 
-## Metrics & Success Criteria
+## Metrics & Success Criteria (Updated February 4, 2026)
 
 ### Architecture Metrics
 
-| Metric              | Current      | Target    | Improvement |
-| ------------------- | ------------ | --------- | ----------- |
-| Store files         | 61           | 12        | -80%        |
-| Component folders   | 39           | 12        | -69%        |
-| Max file size       | 3,510        | 400       | -89%        |
-| Shared packages     | 9 components | 60+ items | +567%       |
-| Test coverage       | 3%           | 80%       | +2,567%     |
-| Bundle size         | ~1.2MB       | ~500KB    | -58%        |
-| Folder depth        | 9 levels     | 5 levels  | -44%        |
-| Backend god modules | 5            | 0         | -100%       |
+| Metric                  | Start   | Current            | Target | Status           |
+| ----------------------- | ------- | ------------------ | ------ | ---------------- |
+| Store files             | 61      | **67**             | 20     | ❌ Got worse     |
+| Component folders       | 39      | 12 modules         | 12     | ✅ Done          |
+| Max file size           | 3,510   | **5,840** (mobile) | 300    | ❌ Got worse     |
+| Dead packages           | 0       | **7 (9,300 LOC)**  | 0      | ❌ Critical      |
+| Test coverage           | 3%      | 8.5%               | 70%    | ⚠️ Slow progress |
+| Cross-module imports    | Unknown | **30+**            | 0      | ❌ Needs work    |
+| Module exports complete | 0/12    | 2/12               | 12/12  | ⚠️ Incomplete    |
 
 ### Quality Metrics
 
-| Metric                | Current | Target |
-| --------------------- | ------- | ------ |
-| TypeScript strict     | Yes     | Yes    |
-| ESLint errors         | 0       | 0      |
-| Circular dependencies | Unknown | 0      |
-| Console.log in prod   | 49      | 0      |
-| `any` types           | 234     | <20    |
-| Missing tests         | 97%     | <20%   |
+| Metric                 | Current | Target | Status      |
+| ---------------------- | ------- | ------ | ----------- |
+| TypeScript strict      | Yes     | Yes    | ✅          |
+| ESLint errors          | 0       | 0      | ✅          |
+| Console.log statements | 49      | <10    | ⚠️          |
+| `any` types            | 38      | <20    | ⚠️          |
+| Files >500 lines       | 153     | 0      | ❌ Critical |
+| Files >1000 lines      | 29      | 0      | ❌ Critical |
 
 ---
 
@@ -1853,30 +4030,165 @@ CGraph/
 
 ---
 
-## Final Score Projection
+## Final Score Projection (Outperform Industry Giants)
 
-| Aspect               | Before     | After      | Industry Benchmark   |
-| -------------------- | ---------- | ---------- | -------------------- |
-| Folder Organization  | 4/10       | 9/10       | Discord: 9/10        |
-| Component Structure  | 5/10       | 9/10       | Telegram: 8/10       |
-| State Management     | 4/10       | 9/10       | Discord: 9/10        |
-| Code Sharing         | 3/10       | 9/10       | WhatsApp: 8/10       |
-| File Size Discipline | 3/10       | 10/10      | All: 9/10            |
-| Naming Consistency   | 5/10       | 10/10      | All: 9/10            |
-| Test Coverage        | 2/10       | 9/10       | Industry: 8/10       |
-| Backend Modularity   | 5/10       | 9/10       | Industry: 8/10       |
-| Platform Parity      | 3/10       | 9/10       | WhatsApp: 9/10       |
-| **OVERALL**          | **3.7/10** | **9.2/10** | **Industry: 8.5/10** |
+| Aspect               | Start      | Current    | After Plan | Meta/Google | Discord    |
+| -------------------- | ---------- | ---------- | ---------- | ----------- | ---------- |
+| Folder Organization  | 4/10       | 6/10       | 10/10      | 9/10        | 9/10       |
+| Component Structure  | 5/10       | 4/10       | 10/10      | 9/10        | 9/10       |
+| State Management     | 4/10       | 3/10       | 10/10      | 9/10        | 9/10       |
+| Code Sharing         | 3/10       | 1/10       | 10/10      | 8/10        | 8/10       |
+| File Size Discipline | 3/10       | 2/10       | 10/10      | 9/10        | 9/10       |
+| Feature Completeness | 5/10       | 5/10       | 10/10      | 10/10       | 9/10       |
+| Test Coverage        | 2/10       | 3/10       | 10/10      | 9/10        | 8/10       |
+| Backend Modularity   | 5/10       | 7/10       | 10/10      | 9/10        | 8/10       |
+| Platform Parity      | 3/10       | 1/10       | 10/10      | 9/10        | 8/10       |
+| **OVERALL**          | **3.7/10** | **4.8/10** | **10/10**  | **9/10**    | **8.5/10** |
+
+---
+
+## What's Already Built (Solid Foundation)
+
+✅ **12 proper modules** - Structure matches Discord ✅ **117 components migrated** - Real
+implementation ✅ **Signal Protocol E2EE** - Industry-leading encryption ✅ **7 working facades** -
+Clean abstraction pattern ✅ **Phoenix/Elixir backend** - Same stack as Discord ✅ **TypeScript
+strict mode** - Professional quality ✅ **9 shared packages** - Platform parity infrastructure ✅
+**Stripe integration** - Subscription tiers ready
+
+---
+
+## Implementation Priorities (Build Order)
+
+### Phase 1: Complete Forum System (Week 1-2)
+
+- [ ] Forum creation with tier limits
+- [ ] Invite link generation & sharing
+- [ ] Join via invite flow (web + mobile)
+- [ ] Forum settings & member management
+- [ ] Real-time member count updates
+
+### Phase 2: Connect Packages (Week 2-3)
+
+- [ ] `@cgraph/crypto` → Used by web + mobile E2EE
+- [ ] `@cgraph/socket` → Phoenix channels for both apps
+- [ ] `@cgraph/hooks` → Shared hook library
+- [ ] `@cgraph/core` → Business logic layer
+- [ ] `@cgraph/state` → Shared store factories
+
+### Phase 3: Mobile Feature Parity (Week 3-4)
+
+- [ ] Forum creation on mobile
+- [ ] Thread creation on mobile
+- [ ] Voice calls on mobile
+- [ ] Video calls on mobile
+- [ ] Push notifications connected
+
+### Phase 4: Refactor Large Files (Week 4-5)
+
+- [ ] ConversationScreen.tsx → 15 components
+- [ ] CustomizationDemo.tsx → 12 components
+- [ ] ForumAdmin.tsx → 6 components
+- [ ] socket.ts → Extracted channel handlers
+
+### Phase 5: Complete Module Exports (Week 5-6)
+
+- [ ] All 12 modules export components, hooks, store, types
+- [ ] All facades updated to use module imports
+- [ ] Documentation for each module
+
+### Phase 6: Testing & Quality (Week 6-7)
+
+- [ ] 70%+ test coverage
+- [ ] Co-located component tests
+- [ ] E2E tests for critical flows
+- [ ] Performance benchmarks
+
+### Phase 7: Scale & Polish (Week 7-8)
+
+- [ ] Database query optimization
+- [ ] Redis caching implementation
+- [ ] CDN for static assets
+- [ ] Bundle size optimization
+- [ ] Load testing (10K concurrent)
+
+---
+
+## Commands for Developers
+
+```bash
+# Verify current state
+pnpm typecheck && pnpm lint && pnpm test
+
+# Run development (all apps)
+pnpm dev
+
+# Check package usage
+grep -rn "@cgraph/crypto" apps/ --include="*.ts" --include="*.tsx"
+
+# Find large files to refactor
+find apps/ -name "*.tsx" -exec wc -l {} \; | sort -rn | head -20
+
+# Count stores per module
+for dir in apps/web/src/modules/*/store; do
+  echo "$dir: $(find $dir -name '*.ts' | wc -l) files"
+done
+
+# Check module exports
+for module in apps/web/src/modules/*/index.ts; do
+  echo "=== $module ==="
+  grep "export \*" $module
+done
+
+# Run specific tests
+pnpm test -- --filter="forum"
+pnpm test -- --filter="invite"
+```
+
+---
+
+## Why CGraph Will Outperform Industry Giants
+
+### vs Discord
+
+- **Better E2EE**: Signal Protocol (Discord has none)
+- **User-owned forums**: Users create their own communities
+- **Better mobile**: React Native with native performance
+- **Open pricing**: Transparent tier system
+
+### vs Meta (WhatsApp/Messenger)
+
+- **Better privacy**: E2EE by default, no data mining
+- **Forum communities**: Not just 1:1 messaging
+- **Better gamification**: XP, achievements, karma
+- **Cross-platform**: True feature parity
+
+### vs Telegram
+
+- **Better encryption**: Signal Protocol > MTProto
+- **Better moderation**: Built-in tools for community management
+- **Subscription model**: Sustainable business without ads
+- **Professional codebase**: TypeScript + Elixir, not custom C++
+
+---
+
+## Core Philosophy
+
+> **"We don't delete code because it's hard. We implement it properly."**
+
+1. **Every package exists for a reason** - Connect it, don't delete it
+2. **Large files need refactoring** - Extract components, don't abandon them
+3. **Features need completion** - Mobile needs parity with web
+4. **Quality is non-negotiable** - Follow the coding standards
+5. **Build for scale** - 100M+ users from day one
 
 ---
 
 ## This Plan Will Make CGraph:
 
-1. **Easier to onboard** (new dev productive in 2 days, not 2 weeks)
-2. **Easier to maintain** (no 3,500-line files)
-3. **Easier to test** (co-located tests, 80% coverage)
-4. **Faster to build** (smaller bundles, lazy loading)
-5. **Platform consistent** (web and mobile share 60%+ code)
-6. **Industry leading** (surpassing Discord's architecture quality)
+1. **The most secure** - Signal Protocol E2EE everywhere
+2. **The most feature-rich** - Forums + Chat + Calls + Gamification
+3. **The most accessible** - Web + iOS + Android with parity
+4. **The most scalable** - Built on Discord's proven Elixir stack
+5. **The most professional** - Code that outperforms Meta/Google standards
 
-**Execute this plan. Become the best.**
+**Build. Ship. Outperform.**

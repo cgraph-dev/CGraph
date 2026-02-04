@@ -55,7 +55,7 @@ forum system.
 - **Forums & Groups**: Reddit-style karma, Discord-style servers with channels
 - **Gamification**: Achievements, leaderboards, XP system, seasonal events
 - **Push Notifications**: Expo (mobile), Web Push API (browser), email digests
-- **Subscription Tiers**: free (5), starter (10), pro (50), business (unlimited), enterprise
+- **Subscription Tiers**: free (1 forum), premium (5 forums), enterprise (unlimited)
 - **Payments**: Stripe integration for subscription management
 
 ## Common Commands
@@ -714,7 +714,7 @@ See `docs/PROJECT_STATUS.md` for full details.
 
 - **Payment Processing**: Stripe Checkout for subscriptions
 - **Webhooks**: `/api/webhooks/stripe` endpoint
-- **Subscription Tiers**: free, starter ($4.99), pro ($9.99), business ($19.99), enterprise
+- **Subscription Tiers**: free, premium, enterprise (prices configured in Stripe)
 
 ### Key Configuration Files
 

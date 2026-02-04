@@ -268,7 +268,7 @@ export interface ChatState {
     conversationId: string,
     content: string,
     replyToId?: string,
-    options?: { type?: string; metadata?: Record<string, any>; forceUnencrypted?: boolean }
+    options?: { type?: string; metadata?: Record<string, unknown>; forceUnencrypted?: boolean }
   ) => Promise<void>;
   sendEncryptedMessage: (
     conversationId: string,
@@ -311,7 +311,7 @@ export interface ChatState {
     conversationId: string,
     content: string,
     scheduledAt: Date,
-    options?: { type?: string; metadata?: Record<string, any>; replyToId?: string }
+    options?: { type?: string; metadata?: Record<string, unknown>; replyToId?: string }
   ) => Promise<void>;
   cancelScheduledMessage: (messageId: string) => Promise<void>;
   rescheduleMessage: (messageId: string, newScheduledAt: Date) => Promise<void>;
@@ -410,7 +410,7 @@ export const useChatStore = create<ChatState>()(
         conversationId: string,
         content: string,
         replyToId?: string,
-        options?: { type?: string; metadata?: Record<string, any>; forceUnencrypted?: boolean }
+        options?: { type?: string; metadata?: Record<string, unknown>; forceUnencrypted?: boolean }
       ) => {
         // Check if E2EE is available and get recipient for encryption
         const e2eeStore = useE2EEStore.getState();
@@ -490,7 +490,7 @@ export const useChatStore = create<ChatState>()(
         // This path should ONLY be reached for:
         // - Group conversations (not direct)
         // - Direct conversations where E2EE is not initialized
-        const payload: Record<string, any> = {
+        const payload: Record<string, unknown> = {
           content,
           client_message_id: clientMessageId,
           content_type: contentType,
@@ -928,10 +928,16 @@ export const useChatStore = create<ChatState>()(
         conversationId: string,
         content: string,
         scheduledAt: Date,
-        options: { type?: string; metadata?: Record<string, any>; replyToId?: string } = {}
+        options: { type?: string; metadata?: Record<string, unknown>; replyToId?: string } = {}
       ) => {
         try {
-          const payload: any = {
+          const payload: {
+            content: string;
+            content_type: string;
+            scheduled_at: string;
+            reply_to_id?: string;
+            metadata?: Record<string, unknown>;
+          } = {
             content,
             content_type: options.type || 'text',
             scheduled_at: scheduledAt.toISOString(),

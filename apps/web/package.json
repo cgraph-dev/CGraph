@@ -21,6 +21,14 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@cgraph/config": "workspace:*",
+    "@cgraph/core": "workspace:*",
+    "@cgraph/crypto": "workspace:*",
+    "@cgraph/hooks": "workspace:*",
+    "@cgraph/shared-types": "workspace:*",
+    "@cgraph/socket": "workspace:*",
+    "@cgraph/state": "workspace:*",
+    "@cgraph/ui": "workspace:*",
     "@cgraph/utils": "workspace:*",
     "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
