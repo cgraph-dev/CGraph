@@ -54,6 +54,7 @@ import {
   useVoiceAndWave,
   useConversationSocket,
   useConversationHeader,
+  usePresence,
 } from './ConversationScreen/hooks';
 import {
   processMessagesWithReactions,
@@ -82,12 +83,22 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [isOtherUserOnline, setIsOtherUserOnline] = useState(false);
   const [otherParticipantId, setOtherParticipantId] = useState<string | null>(null);
-  const [otherParticipantLastSeen, setOtherParticipantLastSeen] = useState<string | null>(null);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
-  const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
   const [otherUser, setOtherUser] = useState<UserBasic | null>(null);
+
+  // Presence and typing hook - manages online/typing state
+  const {
+    isOtherUserOnline,
+    isOtherUserTyping,
+    otherParticipantLastSeen,
+    setOtherParticipantLastSeen,
+    handleTextChange: presenceHandleTextChange,
+    stopTypingIndicator,
+  } = usePresence({
+    conversationId,
+    otherParticipantId,
+  });
 
   // Media viewer hook (images, videos, files)
   const {
@@ -215,7 +226,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const _inputFocusAnim = useRef(new Animated.Value(0)).current;
 
   const flatListRef = useRef<FlatList>(null);
-  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<TextInput>(null);
 
   // Callback for scrolling to bottom (used by upload hook)
@@ -429,88 +439,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
     [pinnedMessages.length]
   );
 
-  // Subscribe to presence changes (both conversation and global friend presence)
-  useEffect(() => {
-    if (!conversationId || !otherParticipantId) return;
-
-    // Initial check - first try global friend presence, then conversation presence
-    const isOnline =
-      socketManager.isFriendOnline(otherParticipantId) ||
-      socketManager.isUserOnline(conversationId, otherParticipantId);
-    setIsOtherUserOnline(isOnline);
-
-    // Subscribe to conversation-level status changes
-    const unsubscribeConv = socketManager.onStatusChange((convId, participantId, isOnline) => {
-      if (convId === conversationId && participantId === otherParticipantId) {
-        setIsOtherUserOnline(isOnline);
-      }
-    });
-
-    // Subscribe to global friend status changes
-    const unsubscribeGlobal = socketManager.onGlobalStatusChange((userId, isOnline) => {
-      if (userId === otherParticipantId) {
-        setIsOtherUserOnline(isOnline);
-      }
-    });
-
-    return () => {
-      unsubscribeConv();
-      unsubscribeGlobal();
-    };
-  }, [conversationId, otherParticipantId]);
-
-  // Subscribe to typing indicator changes
-  useEffect(() => {
-    if (!conversationId || !otherParticipantId) return;
-
-    // Initial check for any typing users
-    const typingUsers = socketManager.getTypingUsers(conversationId);
-    const otherTyping = typingUsers.some((t) => String(t.userId) === String(otherParticipantId));
-    setIsOtherUserTyping(otherTyping);
-
-    // Subscribe to typing changes
-    const unsubscribe = socketManager.onTypingChange((convId, userId, isTyping) => {
-      if (convId === conversationId && String(userId) === String(otherParticipantId)) {
-        setIsOtherUserTyping(isTyping);
-      }
-    });
-
-    return () => unsubscribe();
-  }, [conversationId, otherParticipantId]);
-
-  // Handle input text changes with typing indicator
+  // Wrap presence handleTextChange to also update local inputText
   const handleTextChange = useCallback(
     (text: string) => {
-      setInputText(text);
-
-      const channelTopic = `conversation:${conversationId}`;
-
-      // Send typing indicator when user starts typing
-      if (text.length > 0) {
-        socketManager.sendTyping(channelTopic, true);
-
-        // Clear existing timeout
-        if (typingTimeoutRef.current) {
-          clearTimeout(typingTimeoutRef.current);
-        }
-
-        // Set timeout to stop typing indicator after pause (aligned with backend)
-        typingTimeoutRef.current = setTimeout(() => {
-          socketManager.sendTyping(channelTopic, false);
-        }, 5000);
-      }
+      presenceHandleTextChange(text, setInputText);
     },
-    [conversationId]
+    [presenceHandleTextChange]
   );
-
-  // Stop typing indicator when sending message or unmounting
-  const stopTypingIndicator = useCallback(() => {
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-      typingTimeoutRef.current = null;
-    }
-    socketManager.sendTyping(`conversation:${conversationId}`, false);
-  }, [conversationId]);
 
   // Track component mount state for async operations
   useEffect(() => {
