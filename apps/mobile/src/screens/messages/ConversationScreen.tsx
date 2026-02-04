@@ -52,6 +52,7 @@ import {
   useMessageReactions,
   useAttachmentUpload,
   useVoiceAndWave,
+  useConversationSocket,
 } from './ConversationScreen/hooks';
 import {
   processMessagesWithReactions,
@@ -201,6 +202,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
   // Track deleted message IDs to prevent re-adding them
   const deletedMessageIdsRef = useRef<Set<string>>(new Set());
 
+  // Track if component is mounted (for async operations)
+  const isMountedRef = useRef(true);
+
   // Track if we should scroll to bottom on next content size change
   const _shouldScrollToBottomRef = useRef(true);
   const _contentHeightRef = useRef(0);
@@ -247,6 +251,98 @@ export default function ConversationScreen({ navigation, route }: Props) {
     setIsVoiceMode,
     setMessages,
     onScrollToBottom: scrollToBottom,
+  });
+
+  // Socket event handlers for useConversationSocket
+  const handleSocketNewMessage = useCallback(
+    (message: Message) => {
+      setMessages((prev) => {
+        const exists = prev.some((m) => m.id === message.id);
+        if (exists) return prev;
+        return [message, ...prev];
+      });
+      // Scroll to bottom when receiving new message
+      scrollToBottom();
+    },
+    [scrollToBottom]
+  );
+
+  const handleSocketMessageUpdated = useCallback((message: Message) => {
+    setMessages((prev) => prev.map((m) => (m.id === message.id ? message : m)));
+  }, []);
+
+  const handleSocketMessageDeleted = useCallback((messageId: string) => {
+    setMessages((prev) => prev.filter((m) => m.id !== messageId));
+  }, []);
+
+  const handleSocketMessagePinned = useCallback(
+    (messageId: string, pinnedAt: string, pinnedById: string) => {
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === messageId
+            ? { ...m, is_pinned: true, pinned_at: pinnedAt, pinned_by_id: pinnedById }
+            : m
+        )
+      );
+    },
+    []
+  );
+
+  const handleSocketMessageUnpinned = useCallback((messageId: string) => {
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === messageId
+          ? { ...m, is_pinned: false, pinned_at: undefined, pinned_by_id: undefined }
+          : m
+      )
+    );
+  }, []);
+
+  const handleSocketMessageRead = useCallback(
+    (messageId: string, _userId: string) => {
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.sender_id === user?.id && m.id <= messageId && !m.read_at) {
+            return { ...m, read_at: new Date().toISOString(), status: 'read' as const };
+          }
+          return m;
+        })
+      );
+    },
+    [user?.id]
+  );
+
+  const handleSocketReactionAdded = useCallback(
+    (data: {
+      messageId: string;
+      emoji: string;
+      userId: string;
+      user?: { id: string; username?: string; display_name?: string; avatar_url?: string };
+    }) => {
+      addReactionToMessage(data.messageId, data.emoji, data.userId, data.user);
+    },
+    [addReactionToMessage]
+  );
+
+  const handleSocketReactionRemoved = useCallback(
+    (data: { messageId: string; emoji: string; userId: string }) => {
+      removeReactionFromMessage(data.messageId, data.emoji, data.userId);
+    },
+    [removeReactionFromMessage]
+  );
+
+  // Integrate conversation socket hook for real-time events
+  const { sendTyping: _socketSendTyping } = useConversationSocket({
+    conversationId,
+    userId: user?.id,
+    onNewMessage: handleSocketNewMessage,
+    onMessageUpdated: handleSocketMessageUpdated,
+    onMessageDeleted: handleSocketMessageDeleted,
+    onMessagePinned: handleSocketMessagePinned,
+    onMessageUnpinned: handleSocketMessageUnpinned,
+    onMessageRead: handleSocketMessageRead,
+    onReactionAdded: handleSocketReactionAdded,
+    onReactionRemoved: handleSocketReactionRemoved,
   });
 
   // Pinned messages - get all pinned, sorted by pin date (most recent first)
@@ -393,214 +489,17 @@ export default function ConversationScreen({ navigation, route }: Props) {
     socketManager.sendTyping(`conversation:${conversationId}`, false);
   }, [conversationId]);
 
-  // Track if component is still mounted to prevent state updates after unmount
-  const isMountedRef = useRef(true);
-  const cleanupRef = useRef<(() => void) | null>(null);
-
+  // Track component mount state for async operations
   useEffect(() => {
     isMountedRef.current = true;
-    const channelTopic = `conversation:${conversationId}`;
-
-    const initializeConversation = async () => {
-      await socketManager.connect();
-      if (!isMountedRef.current) return;
-
-      // joinChannel has built-in debouncing - safe to call on every mount
-      socketManager.joinChannel(channelTopic);
-
-      const unsubscribe = socketManager.onChannelMessage(channelTopic, (event, payload) => {
-        if (!isMountedRef.current) return;
-
-        // Handle message read event
-        if (event === 'message_read') {
-          const readData = payload as { user_id: string; message_id: string };
-          if (readData.message_id && readData.user_id !== user?.id) {
-            // Mark all messages up to this one as read
-            setMessages((prev) =>
-              prev.map((m) => {
-                // Update messages sent by current user that are now read by recipient
-                if (m.sender_id === user?.id && m.id <= readData.message_id && !m.read_at) {
-                  return { ...m, read_at: new Date().toISOString(), status: 'read' as const };
-                }
-                return m;
-              })
-            );
-          }
-          return;
-        }
-
-        // Handle events with message_id only (delete, unpin, reactions)
-        if (event === 'message_deleted') {
-          const deleteData = payload as { message_id?: string; message?: { id: string } };
-          const messageId = deleteData.message_id || deleteData.message?.id;
-          if (messageId) {
-            // Track deleted message to prevent re-adding
-            deletedMessageIdsRef.current.add(messageId);
-            setMessages((prev) => prev.filter((m) => m.id !== messageId));
-          }
-          return;
-        }
-
-        if (event === 'message_unpinned') {
-          const unpinData = payload as { message_id?: string; message?: { id: string } };
-          const messageId = unpinData.message_id || unpinData.message?.id;
-          if (messageId) {
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === messageId
-                  ? { ...m, is_pinned: false, pinned_at: undefined, pinned_by_id: undefined }
-                  : m
-              )
-            );
-          }
-          return;
-        }
-
-        // Handle reaction added
-        if (event === 'reaction_added') {
-          const reactionData = payload as {
-            message_id: string;
-            emoji: string;
-            user_id: string;
-            user?: { id: string; username?: string; display_name?: string; avatar_url?: string };
-          };
-          if (reactionData.message_id && reactionData.emoji) {
-            addReactionToMessage(
-              reactionData.message_id,
-              reactionData.emoji,
-              reactionData.user_id,
-              reactionData.user
-            );
-          }
-          return;
-        }
-
-        // Handle reaction removed
-        if (event === 'reaction_removed') {
-          const reactionData = payload as { message_id: string; emoji: string; user_id: string };
-          if (reactionData.message_id && reactionData.emoji) {
-            removeReactionFromMessage(
-              reactionData.message_id,
-              reactionData.emoji,
-              reactionData.user_id
-            );
-          }
-          return;
-        }
-
-        const data = payload as { message: Record<string, unknown> };
-
-        // Validate message data before normalizing
-        if (!data.message || !data.message.id) {
-          if (__DEV__) {
-            logger.debug('Skipping invalid message payload:', data);
-          }
-          return;
-        }
-
-        const normalized = normalizeMessage(data.message);
-
-        // Additional validation - skip messages without sender info (except for pin events)
-        if (event !== 'message_pinned' && !normalized.sender_id && !normalized.sender?.id) {
-          if (__DEV__) {
-            logger.debug('Skipping message without sender:', normalized.id);
-          }
-          return;
-        }
-
-        // Validate message has actual content or media (except for pin events)
-        if (event !== 'message_pinned') {
-          const hasRealContent =
-            normalized.content &&
-            normalized.content.trim().length > 0 &&
-            normalized.content !== '[Voice Message]';
-          const hasMediaUrl = normalized.metadata?.url || normalized.file_url;
-          if (!hasRealContent && !hasMediaUrl) {
-            if (__DEV__) {
-              logger.debug('Skipping empty WebSocket message:', normalized.id);
-            }
-            return;
-          }
-        }
-
-        if (event === 'new_message') {
-          // Skip if message was deleted
-          if (deletedMessageIdsRef.current.has(normalized.id)) {
-            if (__DEV__) {
-              logger.debug('Skipping deleted message:', normalized.id);
-            }
-            return;
-          }
-
-          setMessages((prev) => {
-            // Check for duplicates before adding
-            const exists = prev.some((m) => m.id === normalized.id);
-            if (exists) {
-              if (__DEV__) {
-                logger.debug('Skipping duplicate message:', normalized.id);
-              }
-              return prev;
-            }
-            // Prepend for inverted list (newest first)
-            return [normalized, ...prev];
-          });
-
-          // Mark message as read if it's from someone else
-          if (normalized.sender_id !== user?.id) {
-            const channel = socketManager.getChannel(channelTopic);
-            if (channel) {
-              channel.push('mark_read', { message_id: normalized.id });
-            }
-          }
-
-          // Scroll to top (visually bottom in inverted list) when receiving new message
-          setTimeout(() => {
-            flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-          }, 100);
-        } else if (event === 'message_updated') {
-          // Skip if message was deleted
-          if (deletedMessageIdsRef.current.has(normalized.id)) {
-            return;
-          }
-          setMessages((prev) => prev.map((m) => (m.id === normalized.id ? normalized : m)));
-        } else if (event === 'message_pinned') {
-          // Update message to show as pinned
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === normalized.id
-                ? {
-                    ...m,
-                    is_pinned: true,
-                    pinned_at: normalized.pinned_at,
-                    pinned_by_id: normalized.pinned_by_id,
-                  }
-                : m
-            )
-          );
-        }
-      });
-
-      cleanupRef.current = unsubscribe;
-    };
-
-    fetchMessages();
-    initializeConversation();
-
     return () => {
       isMountedRef.current = false;
-      if (cleanupRef.current) {
-        cleanupRef.current();
-        cleanupRef.current = null;
-      }
-      // Stop typing indicator on unmount
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
-        typingTimeoutRef.current = null;
-      }
-      socketManager.sendTyping(`conversation:${conversationId}`, false);
-      // Don't leave channel - socket manager keeps channel alive for session
-      // The join debouncing will prevent duplicate joins on remount
     };
+  }, []);
+
+  // Fetch messages on mount and when conversation changes
+  useEffect(() => {
+    fetchMessages();
   }, [conversationId]);
 
   // Fetch conversation when user is available - separate effect to handle auth loading
