@@ -24,3 +24,5 @@ export { useMessageSending } from './useMessageSending';
 export type { UseMessageSendingReturn } from './useMessageSending';
 export { useMessageReactions } from './useMessageReactions';
 export type { UseMessageReactionsReturn } from './useMessageReactions';
+export { useAttachmentUpload } from './useAttachmentUpload';
+export type { UseAttachmentUploadReturn } from './useAttachmentUpload';

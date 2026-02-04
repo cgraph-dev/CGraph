@@ -51,8 +51,11 @@ import {
   useAttachments,
   useConversationSocket,
   useConversationHeader,
+  useConversationData,
+  usePresence,
   usePinAndDelete,
   useMessageReactions,
+  useAttachmentUpload,
   EMOJI_CATEGORIES,
 } from './ConversationScreen/hooks';
 import { getMimeType, processMessagesWithReactions } from './ConversationScreen/utils';
@@ -213,6 +216,33 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const flatListRef = useRef<FlatList>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<TextInput>(null);
+
+  // Callback for scrolling to bottom (used by upload hook)
+  const scrollToBottom = useCallback(() => {
+    setTimeout(() => {
+      flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+    }, 100);
+  }, []);
+
+  // Attachment upload hook
+  const {
+    uploadAndSendFile,
+    sendPendingAttachments: sendPendingAttachmentsBase,
+    addMoreAttachments,
+  } = useAttachmentUpload({
+    conversationId,
+    setIsSending,
+    setMessages,
+    closeAttachmentPreview,
+    attachmentPreviewAnim,
+    handleImagePicker,
+    onScrollToBottom: scrollToBottom,
+  });
+
+  // Wrapper for sendPendingAttachments to use current state
+  const sendPendingAttachments = useCallback(async () => {
+    await sendPendingAttachmentsBase(pendingAttachments, attachmentCaption);
+  }, [sendPendingAttachmentsBase, pendingAttachments, attachmentCaption]);
 
   // Pinned messages - get all pinned, sorted by pin date (most recent first)
   const pinnedMessages = useMemo(() => {
@@ -1120,231 +1150,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
       handleUnsendBase(selectedMessage);
     }
   }, [selectedMessage, handleUnsendBase]);
-
-  // Send all pending attachments
-  const sendPendingAttachments = async () => {
-    if (pendingAttachments.length === 0) return;
-
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const caption = attachmentCaption.trim();
-    const attachmentsToSend = [...pendingAttachments];
-    closeAttachmentPreview();
-    setIsSending(true);
-
-    try {
-      // Separate images, videos, and files
-      const images = attachmentsToSend.filter((a) => a.type === 'image');
-      const videos = attachmentsToSend.filter((a) => a.type === 'video');
-      const files = attachmentsToSend.filter((a) => a.type === 'file');
-
-      // Upload all images and collect URLs for grid message
-      if (images.length > 0) {
-        const uploadedUrls: string[] = [];
-
-        for (const image of images) {
-          const formData = new FormData();
-          const name = image.name || `photo_${Date.now()}.jpg`;
-          // Use helper to get correct MIME type from filename, fallback to asset's mimeType or jpeg
-          const mimeType = getMimeType(name, image.mimeType || 'image/jpeg');
-
-          formData.append('file', {
-            uri: Platform.OS === 'ios' ? image.uri.replace('file://', '') : image.uri,
-            name,
-            type: mimeType,
-          } as unknown);
-          formData.append('context', 'message');
-
-          const response = await api.post('/api/v1/upload', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' },
-            timeout: 60000,
-          });
-
-          const fileUrl =
-            response.data?.data?.url || response.data?.url || response.data?.file?.url;
-          if (fileUrl) {
-            uploadedUrls.push(fileUrl);
-          }
-        }
-
-        // Send all images as a single message with grid metadata
-        if (uploadedUrls.length > 0) {
-          // Use 'image' content_type for backend compatibility, store grid info in metadata
-          const msgPayload = {
-            content: caption || `${uploadedUrls.length} photo${uploadedUrls.length > 1 ? 's' : ''}`,
-            content_type: 'image', // Use standard 'image' type for backend compatibility
-            file_url: uploadedUrls[0], // Primary image
-            // Store grid_images in link_preview since backend persists it as a :map
-            link_preview:
-              uploadedUrls.length > 1
-                ? {
-                    grid_images: uploadedUrls,
-                    image_count: uploadedUrls.length,
-                  }
-                : undefined,
-          };
-          logger.debug('Sending message:', JSON.stringify(msgPayload));
-          const msgResponse = await api.post(
-            `/api/v1/conversations/${conversationId}/messages`,
-            msgPayload
-          );
-
-          const rawMessage = msgResponse.data.data || msgResponse.data.message || msgResponse.data;
-          if (__DEV__) {
-            logger.debug('Server response metadata:', JSON.stringify(rawMessage?.metadata));
-            logger.debug('Message ID:', rawMessage?.id);
-          }
-          // Don't add message here - let WebSocket handler add it to avoid duplicates
-          // The WebSocket broadcast happens server-side before we get the API response
-          // So by this point, the message is already added via WebSocket
-          if (rawMessage?.id) {
-            // Just scroll to show the new message that WebSocket already added
-            flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-          }
-        }
-      }
-
-      // Send files individually (each as separate message)
-      for (const file of files) {
-        await uploadAndSendFile(
-          file.uri,
-          file.type,
-          file.name,
-          files.indexOf(file) === 0 ? caption : undefined
-        );
-      }
-
-      // Send videos individually (each as separate message)
-      for (const video of videos) {
-        await uploadAndSendFile(
-          video.uri,
-          'video',
-          video.name,
-          videos.indexOf(video) === 0 && !files.length ? caption : undefined,
-          video.duration
-        );
-      }
-    } catch (error: unknown) {
-      logger.error('Error sending attachments:', error);
-      logger.error('Error response:', error?.response?.data);
-      Alert.alert(
-        'Error',
-        error?.response?.data?.error || 'Failed to send attachments. Please try again.'
-      );
-    } finally {
-      setIsSending(false);
-    }
-  };
-
-  // Add more attachments to pending list
-  const addMoreAttachments = async () => {
-    // Close preview temporarily
-    Animated.timing(attachmentPreviewAnim, {
-      toValue: 0,
-      duration: 150,
-      useNativeDriver: true,
-    }).start(async () => {
-      closeAttachmentPreview();
-      await handleImagePicker();
-    });
-  };
-
-  // Upload and send file as message
-  const uploadAndSendFile = async (
-    uri: string,
-    type: 'image' | 'file' | 'video',
-    filename?: string,
-    caption?: string,
-    duration?: number
-  ) => {
-    setIsSending(true);
-
-    try {
-      const formData = new FormData();
-      const defaultExt = type === 'image' ? 'jpg' : type === 'video' ? 'mp4' : 'bin';
-      const name = filename || `${type}_${Date.now()}.${defaultExt}`;
-
-      // Use helper for accurate MIME type detection
-      const defaultMime =
-        type === 'image'
-          ? 'image/jpeg'
-          : type === 'video'
-            ? 'video/mp4'
-            : 'application/octet-stream';
-      const mimeType = getMimeType(name, defaultMime);
-
-      formData.append('file', {
-        uri: Platform.OS === 'ios' ? uri.replace('file://', '') : uri,
-        name,
-        type: mimeType,
-      } as unknown);
-      formData.append('context', 'message');
-
-      logger.debug('Uploading file:', { name, type: mimeType, uri: uri.substring(0, 50) });
-
-      const response = await api.post('/api/v1/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        timeout: 120000, // 2 minute timeout for video uploads
-      });
-
-      logger.debug('Upload response:', JSON.stringify(response.data));
-
-      // Extract URL from various response formats
-      const fileUrl = response.data?.data?.url || response.data?.url || response.data?.file?.url;
-
-      if (fileUrl) {
-        // Send message with file attachment
-        // Use caption if provided, otherwise default content
-        const messageContent =
-          caption || (type === 'image' ? 'Photo' : type === 'video' ? 'Video' : `${name}`);
-        const msgPayload: Record<string, unknown> = {
-          content: messageContent,
-          content_type: type,
-          file_url: fileUrl,
-          file_name: name,
-          file_mime_type: mimeType,
-        };
-
-        // Add metadata for videos (duration, mimeType for proper detection)
-        if (type === 'video') {
-          msgPayload.metadata = {
-            duration: duration || 0,
-            mimeType: mimeType, // Include mimeType in metadata for normalizer detection
-          };
-        }
-
-        const msgResponse = await api.post(
-          `/api/v1/conversations/${conversationId}/messages`,
-          msgPayload
-        );
-
-        const rawMessage = msgResponse.data.data || msgResponse.data.message || msgResponse.data;
-        if (rawMessage?.id) {
-          const normalized = normalizeMessage(rawMessage);
-          // Prepend for inverted list (newest first)
-          setMessages((prev) => {
-            const exists = prev.some((m) => m.id === normalized.id);
-            if (exists) return prev;
-            return [normalized, ...prev];
-          });
-          flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
-        }
-      } else {
-        logger.error('No file URL in response:', response.data);
-        Alert.alert('Error', 'Upload failed - no file URL returned.');
-      }
-    } catch (error: unknown) {
-      logger.error('Error uploading file:', error?.response?.data || error?.message || error);
-      const errorMessage =
-        error?.response?.data?.error?.message ||
-        error?.message ||
-        'Failed to send file. Please try again.';
-      Alert.alert('Upload Error', errorMessage);
-    } finally {
-      setIsSending(false);
-    }
-  };
 
   // Send a wave greeting
   const handleSendWave = async () => {
