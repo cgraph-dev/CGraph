@@ -14,7 +14,6 @@ import {
   Animated,
   Easing,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
@@ -36,14 +35,11 @@ import {
   ConversationParticipant,
   UserBasic,
 } from '../../types';
-import { VoiceMessagePlayer, TelegramAttachmentPicker, RichMediaEmbed } from '../../components';
+import { TelegramAttachmentPicker } from '../../components';
 import { createLogger } from '../../lib/logger';
 
 // Import modular components
 import {
-  AnimatedMessageWrapper,
-  AnimatedReactionBubble,
-  InlineVideoThumbnail,
   EmptyConversation,
   MessageActionsMenu,
   ReactionPickerModal,
@@ -56,12 +52,7 @@ import {
 } from './ConversationScreen/components';
 import { styles } from './ConversationScreen/styles';
 import { useMediaViewer, EMOJI_CATEGORIES } from './ConversationScreen/hooks';
-import {
-  getMimeType,
-  getFileIcon,
-  formatFileSize,
-  processMessagesWithReactions,
-} from './ConversationScreen/utils';
+import { getMimeType, processMessagesWithReactions } from './ConversationScreen/utils';
 
 const logger = createLogger('ConversationScreen');
 
@@ -2050,324 +2041,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
     [openAttachmentPreview]
   );
 
-  // Extracted message content renderer - must be defined before renderMessage
-  const renderMessageContent = useCallback(
-    (item: Message, isOwnMessage: boolean, senderDisplayName: string) => {
-      return (
-        <>
-          {/* Reply preview if this message is a reply */}
-          {item.reply_to && (
-            <View
-              style={[
-                styles.replyContainer,
-                {
-                  backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.05)',
-                  borderLeftColor: isOwnMessage ? 'rgba(255,255,255,0.5)' : colors.primary,
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.replyAuthor,
-                  { color: isOwnMessage ? 'rgba(255,255,255,0.9)' : colors.primary },
-                ]}
-                numberOfLines={1}
-              >
-                {item.reply_to.sender?.display_name || item.reply_to.sender?.username || 'Unknown'}
-              </Text>
-              <Text
-                style={[
-                  styles.replyText,
-                  { color: isOwnMessage ? 'rgba(255,255,255,0.75)' : colors.textSecondary },
-                ]}
-                numberOfLines={2}
-              >
-                {item.reply_to.content ||
-                  (item.reply_to.type === 'image'
-                    ? 'Photo'
-                    : item.reply_to.type === 'file'
-                      ? 'File'
-                      : 'Message')}
-              </Text>
-            </View>
-          )}
-          {/* Image Grid messages - multiple photos in one message (check FIRST before single image) */}
-          {item.type === 'image' &&
-            item.metadata?.grid_images &&
-            Array.isArray(item.metadata.grid_images) &&
-            item.metadata.grid_images.length > 0 && (
-              <View style={styles.imageGrid}>
-                {(() => {
-                  const images = item.metadata.grid_images as string[];
-                  const count = images.length;
-
-                  // Calculate grid layout based on image count
-                  const gridStyle =
-                    count === 1
-                      ? styles.imageGridSingle
-                      : count === 2
-                        ? styles.imageGridTwo
-                        : count === 3
-                          ? styles.imageGridThree
-                          : count === 4
-                            ? styles.imageGridFour
-                            : styles.imageGridMany;
-
-                  return (
-                    <View style={gridStyle}>
-                      {images.slice(0, 4).map((imgUrl, idx) => (
-                        <TouchableOpacity
-                          key={idx}
-                          activeOpacity={0.9}
-                          onPress={() => handleImagePress(imgUrl, images, idx)}
-                          style={[
-                            styles.gridImageContainer,
-                            count === 1 && styles.gridImageFull,
-                            count === 2 && styles.gridImageHalf,
-                            count === 3 &&
-                              (idx === 0 ? styles.gridImageThreeMain : styles.gridImageThreeSide),
-                            count >= 4 && styles.gridImageQuarter,
-                          ]}
-                        >
-                          <Image
-                            source={{ uri: imgUrl }}
-                            style={styles.gridImage}
-                            resizeMode="cover"
-                          />
-                          {/* Show "+X more" overlay on 4th image if more than 4 */}
-                          {idx === 3 && count > 4 && (
-                            <View style={styles.gridMoreOverlay}>
-                              <Text style={styles.gridMoreText}>+{count - 4}</Text>
-                            </View>
-                          )}
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  );
-                })()}
-                {/* Photo count badge */}
-                {(item.metadata.grid_images as string[]).length > 1 && (
-                  <View style={styles.imageGridBadge}>
-                    <Text style={styles.imageGridBadgeText}>
-                      {(item.metadata.grid_images as string[]).length} photos
-                    </Text>
-                  </View>
-                )}
-              </View>
-            )}
-          {/* Single Image messages (only if NOT a grid) */}
-          {item.type === 'image' && item.metadata?.url && !item.metadata?.grid_images && (
-            <View>
-              <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={() => handleImagePress(item.metadata!.url!)}
-              >
-                <Image
-                  source={{ uri: item.metadata.url }}
-                  style={styles.messageImage}
-                  resizeMode="cover"
-                />
-                <View style={styles.imageOverlay}>
-                  <Ionicons name="expand-outline" size={16} color="rgba(255,255,255,0.9)" />
-                </View>
-              </TouchableOpacity>
-              <View style={styles.imageGridBadge}>
-                <Text style={styles.imageGridBadgeText}>Photo</Text>
-              </View>
-            </View>
-          )}
-          {/* File messages */}
-          {item.type === 'file' && item.metadata?.url && (
-            <TouchableOpacity
-              style={[
-                styles.fileAttachment,
-                { backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.15)' : colors.input },
-              ]}
-              onPress={() => handleFilePress(item.metadata!.url!, item.metadata?.filename)}
-              activeOpacity={0.7}
-            >
-              <View
-                style={[
-                  styles.fileIconContainer,
-                  {
-                    backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.2)' : colors.primary + '20',
-                  },
-                ]}
-              >
-                <Ionicons
-                  name={getFileIcon(item.metadata?.filename)}
-                  size={20}
-                  color={isOwnMessage ? '#fff' : colors.primary}
-                />
-              </View>
-              <View style={styles.fileInfo}>
-                <Text
-                  style={{ color: isOwnMessage ? '#fff' : colors.text, fontWeight: '600' }}
-                  numberOfLines={1}
-                >
-                  {item.metadata.filename || 'File'}
-                </Text>
-                {item.metadata.size && (
-                  <Text
-                    style={{
-                      color: isOwnMessage ? 'rgba(255,255,255,0.7)' : colors.textSecondary,
-                      fontSize: 12,
-                      marginTop: 2,
-                    }}
-                  >
-                    {formatFileSize(item.metadata.size)}
-                  </Text>
-                )}
-              </View>
-              <Ionicons
-                name="download-outline"
-                size={20}
-                color={isOwnMessage ? 'rgba(255,255,255,0.8)' : colors.textSecondary}
-              />
-            </TouchableOpacity>
-          )}
-          {/* Video messages */}
-          {(() => {
-            // Debug logging for video detection
-            if (
-              __DEV__ &&
-              (item.type === 'video' || item.metadata?.url?.match(/\.(mp4|mov|m4v)$/i))
-            ) {
-              console.log(
-                '[Video] Message type:',
-                item.type,
-                'URL:',
-                item.metadata?.url,
-                'mimeType:',
-                item.metadata?.mimeType
-              );
-            }
-            return null;
-          })()}
-          {item.type === 'video' && item.metadata?.url && (
-            <TouchableOpacity
-              activeOpacity={0.9}
-              onPress={() => handleVideoPress(item.metadata!.url!, item.metadata?.duration)}
-              style={styles.videoMessageContainer}
-            >
-              {/* Video thumbnail - show inline video frame or image thumbnail */}
-              {item.metadata.thumbnail ? (
-                <Image
-                  source={{ uri: item.metadata.thumbnail }}
-                  style={styles.videoThumbnail}
-                  resizeMode="cover"
-                />
-              ) : (
-                <InlineVideoThumbnail videoUrl={item.metadata.url} />
-              )}
-              {/* Play button overlay */}
-              <View style={styles.videoPlayOverlayMessage}>
-                <View style={styles.videoPlayButtonMessage}>
-                  <Ionicons name="play" size={32} color="#fff" />
-                </View>
-              </View>
-              {/* Duration badge */}
-              {item.metadata.duration && (
-                <View style={styles.videoDurationBadgeMessage}>
-                  <Text style={styles.videoDurationTextMessage}>
-                    {Math.floor(item.metadata.duration / 60)}:
-                    {String(Math.floor(item.metadata.duration % 60)).padStart(2, '0')}
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          )}
-          {/* Voice messages */}
-          {(item.type === 'voice' || item.type === 'audio') && item.metadata?.url && (
-            <VoiceMessagePlayer
-              audioUrl={item.metadata.url}
-              duration={item.metadata.duration || 0}
-              waveformData={item.metadata.waveform}
-              isSender={isOwnMessage}
-            />
-          )}
-          {/* Text content - hide for voice, video, and image messages with default placeholder content */}
-          {item.content &&
-            item.type !== 'voice' &&
-            item.type !== 'audio' &&
-            item.type !== 'video' &&
-            item.type !== 'image' &&
-            !item.content.match(/^(📷 Photo|Photo|🎥 Video|Video|📎 .+|\d+ photos?)$/) && (
-              <Text style={[styles.messageText, { color: isOwnMessage ? '#fff' : colors.text }]}>
-                {item.content}
-              </Text>
-            )}
-          {/* Show caption for media if it's not just a placeholder */}
-          {item.content &&
-            (item.type === 'video' || item.type === 'image') &&
-            !item.content.match(/^(📷 Photo|Photo|🎥 Video|Video|\d+ photos?)$/) && (
-              <Text style={[styles.messageText, { color: isOwnMessage ? '#fff' : colors.text }]}>
-                {item.content}
-              </Text>
-            )}
-          {/* Rich Media Embeds for URLs in text messages */}
-          {item.content && item.type === 'text' && item.content.match(/https?:\/\/[^\s]+/) && (
-            <RichMediaEmbed content={item.content} isOwnMessage={isOwnMessage} maxEmbeds={2} />
-          )}
-          <View style={styles.messageFooter}>
-            <Text
-              style={[
-                styles.messageTime,
-                { color: isOwnMessage ? 'rgba(255,255,255,0.75)' : colors.textTertiary },
-              ]}
-            >
-              {formatTime(item.inserted_at)}
-              {item.is_edited && ' • edited'}
-            </Text>
-            {/* Message status indicator for own messages */}
-            {isOwnMessage &&
-              (() => {
-                const statusInfo = getMessageStatus(item, isOwnMessage);
-                if (!statusInfo) return null;
-                return (
-                  <Ionicons
-                    name={statusInfo.icon}
-                    size={14}
-                    color={statusInfo.color}
-                    style={styles.messageStatusIcon}
-                  />
-                );
-              })()}
-          </View>
-          {/* Reactions display with animations */}
-          {item.reactions && item.reactions.length > 0 && (
-            <View
-              style={[
-                styles.reactionsContainer,
-                isOwnMessage ? styles.reactionsOwn : styles.reactionsOther,
-              ]}
-            >
-              {item.reactions.map((reaction, index) => (
-                <AnimatedReactionBubble
-                  key={`${reaction.emoji}-${index}`}
-                  reaction={reaction}
-                  isOwnMessage={isOwnMessage}
-                  onPress={() => handleReactionTap(item.id, reaction.emoji, reaction.hasReacted)}
-                  colors={colors}
-                />
-              ))}
-            </View>
-          )}
-        </>
-      );
-    },
-    [
-      colors,
-      handleImagePress,
-      handleFilePress,
-      getFileIcon,
-      formatFileSize,
-      formatTime,
-      getMessageStatus,
-      handleReactionTap,
-    ]
-  );
-
+  // Render a single message using the extracted MessageBubble component
   const renderMessage = useCallback(
     ({ item }: { item: Message }) => {
       // Skip rendering messages without proper ID or that appear empty/invalid
@@ -2408,8 +2082,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       // Get current user ID - ensure string comparison
       const currentUserId = user?.id ? String(user.id) : '';
 
-      // Get message sender ID - normalizer sets sender_id (snake_case)
-      // Fallback to sender.id for backwards compatibility
+      // Get message sender ID
       const messageSenderId = item.sender_id
         ? String(item.sender_id)
         : item.sender?.id
@@ -2432,68 +2105,35 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const isNewMessage = newMessageIds.has(item.id);
 
       return (
-        <AnimatedMessageWrapper isOwnMessage={isOwnMessage} index={0} isNew={isNewMessage}>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onLongPress={() => handleMessageLongPress(item)}
-            delayLongPress={400}
-          >
-            <View
-              style={[
-                styles.messageContainer,
-                isOwnMessage ? styles.ownMessage : styles.otherMessage,
-              ]}
-            >
-              {!isOwnMessage && (
-                <View style={styles.avatarSmall}>
-                  {senderAvatarUrl ? (
-                    <Image source={{ uri: senderAvatarUrl }} style={styles.avatarImage} />
-                  ) : (
-                    <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
-                      <Text style={styles.avatarText}>
-                        {senderDisplayName.charAt(0).toUpperCase()}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-              )}
-              {/* Pin indicator */}
-              {item.is_pinned && (
-                <View style={styles.pinnedIndicator}>
-                  <Ionicons name="pin" size={12} color={colors.primary} />
-                </View>
-              )}
-              {isOwnMessage ? (
-                <LinearGradient
-                  colors={['#22c55e', '#16a34a']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={[
-                    styles.messageBubble,
-                    styles.ownMessageBubble,
-                    item.is_pinned && styles.pinnedBubble,
-                  ]}
-                >
-                  {renderMessageContent(item, isOwnMessage, senderDisplayName)}
-                </LinearGradient>
-              ) : (
-                <View
-                  style={[
-                    styles.messageBubble,
-                    styles.otherMessageBubble,
-                    { backgroundColor: colors.surface },
-                    item.is_pinned && styles.pinnedBubble,
-                  ]}
-                >
-                  {renderMessageContent(item, isOwnMessage, senderDisplayName)}
-                </View>
-              )}
-            </View>
-          </TouchableOpacity>
-        </AnimatedMessageWrapper>
+        <MessageBubble
+          item={item}
+          isOwnMessage={isOwnMessage}
+          senderDisplayName={senderDisplayName}
+          senderAvatarUrl={senderAvatarUrl as string | undefined}
+          isNewMessage={isNewMessage}
+          colors={colors}
+          formatTime={formatTime}
+          getMessageStatus={getMessageStatus}
+          onLongPress={handleMessageLongPress}
+          onImagePress={handleImagePress}
+          onVideoPress={handleVideoPress}
+          onFilePress={handleFilePress}
+          onReactionTap={handleReactionTap}
+        />
       );
     },
-    [user?.id, colors, handleMessageLongPress, renderMessageContent, newMessageIds]
+    [
+      user?.id,
+      colors,
+      formatTime,
+      getMessageStatus,
+      handleMessageLongPress,
+      handleImagePress,
+      handleVideoPress,
+      handleFilePress,
+      handleReactionTap,
+      newMessageIds,
+    ]
   );
 
   // Callback for checking reaction state - must be before any conditional returns
