@@ -17,3 +17,6 @@ export type { UseAttachmentsReturn, AttachmentItem } from './useAttachments';
 export { useConversationSocket } from './useConversationSocket';
 export { useConversationHeader, formatLastSeen } from './useConversationHeader';
 export { useConversationData } from './useConversationData';
+export { usePinAndDelete } from './usePinAndDelete';
+export { useFilePickers } from './useFilePickers';
+export type { PickedAsset } from './useFilePickers';
