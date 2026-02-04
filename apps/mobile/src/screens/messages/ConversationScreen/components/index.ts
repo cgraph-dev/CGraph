@@ -21,3 +21,4 @@ export { ImageViewerModal } from './ImageViewerModal';
 export { VideoPlayerModal } from './VideoPlayerModal';
 export { PinnedMessagesBar } from './PinnedMessagesBar';
 export { ChatInputArea } from './ChatInputArea';
+export { MessageBubble } from './MessageBubble';

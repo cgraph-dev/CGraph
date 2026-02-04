@@ -24,9 +24,6 @@ import {
   CustomizationDemoSkeleton,
   ForumShowcaseSkeleton,
 } from '@/components/landing/LandingSkeletons';
-// 2026 Cutting-Edge Components
-import { ParticleField } from '@/components/landing/ParticleField';
-import { ScrollProgressBar, MagneticButton, KineticText } from '@/components/landing';
 import './landing-page.css';
 
 // Lazy load showcase components
@@ -1258,12 +1255,8 @@ export default function LandingPage() {
             Create forums, customize your space, and connect with like-minded people.
           </p>
           <div className="cta__buttons">
-            <MagneticButton variant="hot" href="/register" glowing className="px-8 py-4 text-lg">
-              Create Account
-            </MagneticButton>
-            <MagneticButton variant="ghost" href="/login" className="px-8 py-4 text-lg">
-              Sign In
-            </MagneticButton>
+            <SwapButton primary mainText="Create Account" altText="Join Now!" href="/register" />
+            <SwapButton mainText="Sign In" altText="Welcome Back" href="/login" />
           </div>
         </div>
       </section>

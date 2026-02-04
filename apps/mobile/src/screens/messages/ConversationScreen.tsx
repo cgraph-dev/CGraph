@@ -52,6 +52,7 @@ import {
   VideoPlayerModal,
   PinnedMessagesBar,
   ChatInputArea,
+  MessageBubble,
 } from './ConversationScreen/components';
 import { styles } from './ConversationScreen/styles';
 import { useMediaViewer, EMOJI_CATEGORIES } from './ConversationScreen/hooks';
