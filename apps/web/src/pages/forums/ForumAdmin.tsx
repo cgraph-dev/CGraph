@@ -16,14 +16,6 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeftIcon,
-  Cog6ToothIcon,
-  PaintBrushIcon,
-  UserGroupIcon,
-  FolderIcon,
-  ShieldCheckIcon,
-  ChartBarIcon,
-  TagIcon,
-  DocumentTextIcon,
   TrashIcon,
   PlusIcon,
   PencilIcon,
@@ -35,7 +27,6 @@ import {
   ExclamationTriangleIcon,
   SparklesIcon,
   UsersIcon,
-  FlagIcon,
   ChatBubbleLeftRightIcon,
   ArrowTrendingUpIcon,
   GlobeAltIcon,
@@ -46,147 +37,24 @@ import { useForumStore, type ForumCategory, type ForumModerator } from '@/stores
 import { useAuthStore } from '@/stores/authStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
-// Tab configuration
-type AdminTab =
-  | 'general'
-  | 'appearance'
-  | 'moderators'
-  | 'categories'
-  | 'members'
-  | 'posts'
-  | 'rules'
-  | 'analytics'
-  | 'modqueue';
-
-interface TabConfig {
-  id: AdminTab;
-  name: string;
-  icon: React.ComponentType<{ className?: string }>;
-  description: string;
-}
-
-const TABS: TabConfig[] = [
-  { id: 'general', name: 'General', icon: Cog6ToothIcon, description: 'Basic forum settings' },
-  {
-    id: 'appearance',
-    name: 'Appearance',
-    icon: PaintBrushIcon,
-    description: 'Customize look and feel',
-  },
-  { id: 'moderators', name: 'Moderators', icon: ShieldCheckIcon, description: 'Manage mod team' },
-  { id: 'categories', name: 'Categories', icon: FolderIcon, description: 'Organize content' },
-  { id: 'members', name: 'Members', icon: UserGroupIcon, description: 'Manage members' },
-  { id: 'posts', name: 'Post Settings', icon: TagIcon, description: 'Flairs and prefixes' },
-  { id: 'rules', name: 'Rules', icon: DocumentTextIcon, description: 'Community guidelines' },
-  { id: 'analytics', name: 'Analytics', icon: ChartBarIcon, description: 'Forum insights' },
-  { id: 'modqueue', name: 'Mod Queue', icon: FlagIcon, description: 'Reports and approvals' },
-];
-
-// Theme presets
-const THEME_PRESETS = [
-  { id: 'default', name: 'Default', primary: '#8B5CF6', secondary: '#6366F1', accent: '#EC4899' },
-  { id: 'ocean', name: 'Ocean', primary: '#0EA5E9', secondary: '#06B6D4', accent: '#14B8A6' },
-  { id: 'forest', name: 'Forest', primary: '#22C55E', secondary: '#10B981', accent: '#84CC16' },
-  { id: 'sunset', name: 'Sunset', primary: '#F97316', secondary: '#EF4444', accent: '#F59E0B' },
-  { id: 'midnight', name: 'Midnight', primary: '#6366F1', secondary: '#8B5CF6', accent: '#A855F7' },
-  { id: 'rose', name: 'Rose', primary: '#EC4899', secondary: '#F43F5E', accent: '#FB7185' },
-  {
-    id: 'monochrome',
-    name: 'Monochrome',
-    primary: '#71717A',
-    secondary: '#52525B',
-    accent: '#A1A1AA',
-  },
-  { id: 'neon', name: 'Neon', primary: '#00FF87', secondary: '#00D9FF', accent: '#FF00E5' },
-];
-
-// Member role options
-const MEMBER_ROLES = [
-  {
-    id: 'member',
-    name: 'Member',
-    color: 'text-gray-400',
-    permissions: ['post', 'comment', 'vote'],
-  },
-  {
-    id: 'trusted',
-    name: 'Trusted',
-    color: 'text-blue-400',
-    permissions: ['post', 'comment', 'vote', 'report'],
-  },
-  {
-    id: 'contributor',
-    name: 'Contributor',
-    color: 'text-green-400',
-    permissions: ['post', 'comment', 'vote', 'report', 'flair'],
-  },
-  { id: 'moderator', name: 'Moderator', color: 'text-purple-400', permissions: ['all'] },
-  { id: 'admin', name: 'Admin', color: 'text-yellow-400', permissions: ['all'] },
-];
-
-// Post flair presets
-const DEFAULT_FLAIRS = [
-  { id: 'discussion', name: 'Discussion', color: '#3B82F6', emoji: '💬' },
-  { id: 'question', name: 'Question', color: '#8B5CF6', emoji: '❓' },
-  { id: 'help', name: 'Help', color: '#F59E0B', emoji: '🆘' },
-  { id: 'solved', name: 'Solved', color: '#22C55E', emoji: '✅' },
-  { id: 'announcement', name: 'Announcement', color: '#EF4444', emoji: '📢' },
-  { id: 'guide', name: 'Guide', color: '#14B8A6', emoji: '📖' },
-  { id: 'news', name: 'News', color: '#0EA5E9', emoji: '📰' },
-  { id: 'bug', name: 'Bug', color: '#DC2626', emoji: '🐛' },
-  { id: 'feature', name: 'Feature Request', color: '#A855F7', emoji: '✨' },
-  { id: 'media', name: 'Media', color: '#EC4899', emoji: '🎬' },
-];
-
-interface ForumAppearance {
-  iconUrl: string;
-  bannerUrl: string;
-  primaryColor: string;
-  secondaryColor: string;
-  accentColor: string;
-  themePreset: string;
-  customCss: string;
-  headerStyle: 'default' | 'banner' | 'minimal' | 'gradient';
-  cardStyle: 'default' | 'compact' | 'cozy' | 'magazine';
-}
-
-interface ForumRule {
-  id: string;
-  title: string;
-  description: string;
-  order: number;
-}
-
-interface PostFlair {
-  id: string;
-  name: string;
-  color: string;
-  emoji?: string;
-  modOnly?: boolean;
-}
-
-interface MemberData {
-  id: string;
-  username: string;
-  displayName: string;
-  avatarUrl?: string;
-  role: string;
-  joinedAt: string;
-  postCount: number;
-  karma: number;
-}
-
-interface ModQueueItem {
-  id: string;
-  type: 'post' | 'comment' | 'report';
-  content: string;
-  author: string;
-  authorId: string;
-  reason?: string;
-  reportedBy?: string;
-  createdAt: string;
-  status: 'pending' | 'approved' | 'rejected';
-}
+// Import types and constants from module
+import type {
+  AdminTab,
+  ForumAppearance,
+  ForumRule,
+  PostFlair,
+  MemberData,
+  ModQueueItem,
+  ForumAnalytics,
+} from './ForumAdmin';
+import {
+  TABS,
+  THEME_PRESETS,
+  MEMBER_ROLES,
+  DEFAULT_FLAIRS,
+  DEFAULT_APPEARANCE,
+  DEFAULT_RULES,
+} from './ForumAdmin';
 
 export default function ForumAdmin() {
   const { forumSlug } = useParams();
