@@ -55,7 +55,17 @@ import {
   DEFAULT_APPEARANCE,
   DEFAULT_RULES,
 } from './ForumAdmin/constants';
-import { GeneralPanel, AnalyticsPanel, ModQueuePanel, AppearancePanel } from './ForumAdmin/panels';
+import {
+  GeneralPanel,
+  AnalyticsPanel,
+  ModQueuePanel,
+  AppearancePanel,
+  CategoriesPanel,
+  ModeratorsPanel,
+  MembersPanel,
+  PostsPanel,
+  RulesPanel,
+} from './ForumAdmin/panels';
 
 export default function ForumAdmin() {
   const { forumSlug } = useParams();
@@ -543,458 +553,69 @@ export default function ForumAdmin() {
 
             {/* Categories Tab */}
             {activeTab === 'categories' && (
-              <motion.div
-                key="categories"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <div>
-                  <h2 className="mb-2 text-2xl font-bold text-white">Categories</h2>
-                  <p className="text-gray-400">Organize posts into categories/subforums.</p>
-                </div>
-
-                <GlassCard className="p-6">
-                  <div className="mb-6 flex items-center gap-3">
-                    <input
-                      type="text"
-                      value={newCategoryName}
-                      onChange={(e) => setNewCategoryName(e.target.value)}
-                      placeholder="New category name..."
-                      className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white"
-                      onKeyDown={(e) => e.key === 'Enter' && addCategory()}
-                    />
-                    <motion.button
-                      onClick={addCategory}
-                      className="flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-white hover:bg-primary-700"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <PlusIcon className="h-5 w-5" />
-                      Add
-                    </motion.button>
-                  </div>
-
-                  {categories.length === 0 ? (
-                    <div className="py-8 text-center text-gray-400">
-                      <FolderIcon className="mx-auto mb-3 h-12 w-12 opacity-50" />
-                      <p>No categories yet. Add one to organize your posts.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {categories.map((category, index) => (
-                        <motion.div
-                          key={category.id}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="group flex items-center gap-3 rounded-lg bg-dark-700/50 p-3"
-                        >
-                          <div className="cursor-move text-gray-500">
-                            <EllipsisHorizontalIcon className="h-5 w-5" />
-                          </div>
-                          <FolderIcon className="h-5 w-5 text-primary-400" />
-                          {editingCategory === category.id ? (
-                            <input
-                              type="text"
-                              value={category.name}
-                              onChange={(e) => {
-                                const updated = [...categories];
-                                updated[index] = { ...category, name: e.target.value };
-                                setCategories(updated);
-                              }}
-                              onBlur={() => setEditingCategory(null)}
-                              onKeyDown={(e) => e.key === 'Enter' && setEditingCategory(null)}
-                              className="flex-1 rounded border border-dark-500 bg-dark-600 px-2 py-1 text-white"
-                              autoFocus
-                            />
-                          ) : (
-                            <span className="flex-1 text-white">{category.name}</span>
-                          )}
-                          <span className="text-sm text-gray-500">
-                            {category.postCount || 0} posts
-                          </span>
-                          <button
-                            onClick={() => setEditingCategory(category.id)}
-                            className="p-1 text-gray-400 opacity-0 transition-opacity hover:text-white group-hover:opacity-100"
-                          >
-                            <PencilIcon className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => removeCategory(category.id)}
-                            className="p-1 text-gray-400 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
-                          >
-                            <TrashIcon className="h-4 w-4" />
-                          </button>
-                        </motion.div>
-                      ))}
-                    </div>
-                  )}
-                </GlassCard>
-              </motion.div>
+              <CategoriesPanel
+                categories={categories}
+                newCategoryName={newCategoryName}
+                editingCategory={editingCategory}
+                onNewCategoryNameChange={setNewCategoryName}
+                onAddCategory={addCategory}
+                onEditCategory={setEditingCategory}
+                onUpdateCategory={(index, category) => {
+                  const updated = [...categories];
+                  updated[index] = category;
+                  setCategories(updated);
+                }}
+                onRemoveCategory={removeCategory}
+              />
             )}
 
             {/* Moderators Tab */}
             {activeTab === 'moderators' && (
-              <motion.div
-                key="moderators"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <div>
-                  <h2 className="mb-2 text-2xl font-bold text-white">Moderators</h2>
-                  <p className="text-gray-400">Manage your moderation team.</p>
-                </div>
-
-                <GlassCard className="p-6">
-                  <div className="mb-6 flex items-center gap-3">
-                    <div className="relative flex-1">
-                      <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
-                      <input
-                        type="text"
-                        value={newModUsername}
-                        onChange={(e) => setNewModUsername(e.target.value)}
-                        placeholder="Search username to add..."
-                        className="w-full rounded-lg border border-dark-600 bg-dark-700 py-2.5 pl-10 pr-4 text-white"
-                      />
-                    </div>
-                    <motion.button
-                      onClick={() => {
-                        if (newModUsername.trim()) {
-                          const newMod: ForumModerator = {
-                            id: `mod_${Date.now()}`,
-                            forumId: forum.id,
-                            userId: `user_${Date.now()}`,
-                            username: newModUsername.trim(),
-                            permissions: ['all'],
-                            addedAt: new Date().toISOString(),
-                          };
-                          setModerators([...moderators, newMod]);
-                          setNewModUsername('');
-                          HapticFeedback.success();
-                        }
-                      }}
-                      className="flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2.5 text-white hover:bg-primary-700"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <PlusIcon className="h-5 w-5" />
-                      Add
-                    </motion.button>
-                  </div>
-
-                  {/* Owner */}
-                  <div className="mb-4">
-                    <h4 className="mb-2 text-sm font-medium text-gray-400">Owner</h4>
-                    <div className="flex items-center gap-3 rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-orange-500">
-                        <span className="font-bold text-white">
-                          {user?.displayName?.[0] || 'O'}
-                        </span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-white">
-                            {user?.displayName || user?.username}
-                          </span>
-                          <span className="rounded-full bg-yellow-500/20 px-2 py-0.5 text-xs text-yellow-400">
-                            Owner
-                          </span>
-                        </div>
-                        <span className="text-sm text-gray-400">Full access to all settings</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Moderators List */}
-                  <h4 className="mb-2 text-sm font-medium text-gray-400">Moderators</h4>
-                  {moderators.length === 0 ? (
-                    <div className="py-8 text-center text-gray-400">
-                      <ShieldCheckIcon className="mx-auto mb-3 h-12 w-12 opacity-50" />
-                      <p>No moderators yet. Add team members to help manage your forum.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {moderators.map((mod) => (
-                        <motion.div
-                          key={mod.id}
-                          className="group flex items-center gap-3 rounded-lg bg-dark-700/50 p-3"
-                        >
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500">
-                            <span className="font-bold text-white">
-                              {mod.username?.[0]?.toUpperCase() || 'M'}
-                            </span>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium text-white">{mod.username}</span>
-                              <span className="rounded-full bg-purple-500/20 px-2 py-0.5 text-xs text-purple-400">
-                                Moderator
-                              </span>
-                            </div>
-                            <span className="text-sm text-gray-400">
-                              Added {new Date(mod.addedAt).toLocaleDateString()}
-                            </span>
-                          </div>
-                          <button
-                            onClick={() => {
-                              setModerators(moderators.filter((m) => m.id !== mod.id));
-                              HapticFeedback.medium();
-                            }}
-                            className="p-2 text-gray-400 opacity-0 transition-all hover:text-red-400 group-hover:opacity-100"
-                          >
-                            <TrashIcon className="h-5 w-5" />
-                          </button>
-                        </motion.div>
-                      ))}
-                    </div>
-                  )}
-                </GlassCard>
-              </motion.div>
+              <ModeratorsPanel
+                moderators={moderators}
+                newModUsername={newModUsername}
+                ownerDisplayName={user?.displayName || user?.username || ''}
+                forumId={forum.id}
+                onNewModUsernameChange={setNewModUsername}
+                onAddModerator={(mod) => setModerators([...moderators, mod])}
+                onRemoveModerator={(modId) =>
+                  setModerators(moderators.filter((m) => m.id !== modId))
+                }
+              />
             )}
 
             {/* Members Tab */}
             {activeTab === 'members' && (
-              <motion.div
-                key="members"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <div>
-                  <h2 className="mb-2 text-2xl font-bold text-white">Members</h2>
-                  <p className="text-gray-400">Manage forum members and their roles.</p>
-                </div>
-
-                <GlassCard className="p-6">
-                  <div className="mb-6 flex items-center gap-3">
-                    <div className="relative flex-1">
-                      <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" />
-                      <input
-                        type="text"
-                        value={memberSearch}
-                        onChange={(e) => setMemberSearch(e.target.value)}
-                        placeholder="Search members..."
-                        className="w-full rounded-lg border border-dark-600 bg-dark-700 py-2.5 pl-10 pr-4 text-white"
-                      />
-                    </div>
-                    <select
-                      value={memberFilter}
-                      onChange={(e) => setMemberFilter(e.target.value)}
-                      className="rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white"
-                    >
-                      <option value="all">All Roles</option>
-                      {MEMBER_ROLES.map((role) => (
-                        <option key={role.id} value={role.id}>
-                          {role.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="space-y-2">
-                    {members
-                      .filter(
-                        (m) =>
-                          (memberFilter === 'all' || m.role === memberFilter) &&
-                          (m.username.toLowerCase().includes(memberSearch.toLowerCase()) ||
-                            m.displayName.toLowerCase().includes(memberSearch.toLowerCase()))
-                      )
-                      .map((member) => (
-                        <motion.div
-                          key={member.id}
-                          className="flex items-center gap-3 rounded-lg bg-dark-700/50 p-3"
-                        >
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-purple-500">
-                            <span className="font-bold text-white">{member.displayName[0]}</span>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium text-white">{member.displayName}</span>
-                              <span
-                                className={`text-xs ${MEMBER_ROLES.find((r) => r.id === member.role)?.color}`}
-                              >
-                                @{member.username}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-3 text-sm text-gray-400">
-                              <span>{member.postCount} posts</span>
-                              <span>{member.karma} karma</span>
-                              <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>
-                            </div>
-                          </div>
-                          <select
-                            value={member.role}
-                            onChange={(e) => updateMemberRole(member.id, e.target.value)}
-                            className={`rounded-lg border border-dark-500 bg-dark-600 px-3 py-1.5 text-sm ${
-                              MEMBER_ROLES.find((r) => r.id === member.role)?.color
-                            }`}
-                          >
-                            {MEMBER_ROLES.map((role) => (
-                              <option key={role.id} value={role.id}>
-                                {role.name}
-                              </option>
-                            ))}
-                          </select>
-                        </motion.div>
-                      ))}
-                  </div>
-                </GlassCard>
-              </motion.div>
+              <MembersPanel
+                members={members}
+                memberSearch={memberSearch}
+                memberFilter={memberFilter}
+                onSearchChange={setMemberSearch}
+                onFilterChange={setMemberFilter}
+                onUpdateMemberRole={updateMemberRole}
+              />
             )}
 
             {/* Post Settings Tab */}
             {activeTab === 'posts' && (
-              <motion.div
-                key="posts"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <div>
-                  <h2 className="mb-2 text-2xl font-bold text-white">Post Settings</h2>
-                  <p className="text-gray-400">Configure post flairs and prefixes.</p>
-                </div>
-
-                <GlassCard className="p-6">
-                  <div className="mb-6 flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-white">Post Flairs</h3>
-                    <motion.button
-                      onClick={addFlair}
-                      className="flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-white hover:bg-primary-700"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <PlusIcon className="h-5 w-5" />
-                      Add Flair
-                    </motion.button>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    {flairs.map((flair) => (
-                      <motion.div
-                        key={flair.id}
-                        className="group flex items-center gap-3 rounded-lg bg-dark-700/50 p-3"
-                      >
-                        <div
-                          className="rounded-full px-3 py-1 text-sm font-medium text-white"
-                          style={{ backgroundColor: flair.color }}
-                        >
-                          {flair.emoji && <span className="mr-1">{flair.emoji}</span>}
-                          {flair.name}
-                        </div>
-                        <div className="flex-1" />
-                        <input
-                          type="color"
-                          value={flair.color}
-                          onChange={(e) => updateFlair(flair.id, 'color', e.target.value)}
-                          className="h-6 w-6 cursor-pointer rounded opacity-0 transition-opacity group-hover:opacity-100"
-                        />
-                        <button
-                          onClick={() => removeFlair(flair.id)}
-                          className="p-1 text-gray-400 opacity-0 transition-opacity hover:text-red-400 group-hover:opacity-100"
-                        >
-                          <TrashIcon className="h-4 w-4" />
-                        </button>
-                      </motion.div>
-                    ))}
-                  </div>
-                </GlassCard>
-              </motion.div>
+              <PostsPanel
+                flairs={flairs}
+                onAddFlair={addFlair}
+                onUpdateFlair={updateFlair}
+                onRemoveFlair={removeFlair}
+              />
             )}
 
             {/* Rules Tab */}
             {activeTab === 'rules' && (
-              <motion.div
-                key="rules"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <div>
-                  <h2 className="mb-2 text-2xl font-bold text-white">Community Rules</h2>
-                  <p className="text-gray-400">Define guidelines for your community.</p>
-                </div>
-
-                <GlassCard className="p-6">
-                  <div className="mb-6 flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-white">Rules</h3>
-                    <motion.button
-                      onClick={addRule}
-                      className="flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-white hover:bg-primary-700"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <PlusIcon className="h-5 w-5" />
-                      Add Rule
-                    </motion.button>
-                  </div>
-
-                  <div className="space-y-3">
-                    {rules.map((rule, index) => (
-                      <motion.div key={rule.id} className="group rounded-lg bg-dark-700/50 p-4">
-                        <div className="flex items-start gap-3">
-                          <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary-500/20 font-bold text-primary-400">
-                            {index + 1}
-                          </span>
-                          <div className="flex-1">
-                            {editingRule === rule.id ? (
-                              <div className="space-y-2">
-                                <input
-                                  type="text"
-                                  value={rule.title}
-                                  onChange={(e) => updateRule(rule.id, 'title', e.target.value)}
-                                  className="w-full rounded-lg border border-dark-500 bg-dark-600 px-3 py-2 font-medium text-white"
-                                  placeholder="Rule title"
-                                />
-                                <textarea
-                                  value={rule.description}
-                                  onChange={(e) =>
-                                    updateRule(rule.id, 'description', e.target.value)
-                                  }
-                                  className="w-full resize-none rounded-lg border border-dark-500 bg-dark-600 px-3 py-2 text-white"
-                                  rows={2}
-                                  placeholder="Rule description"
-                                />
-                                <button
-                                  onClick={() => setEditingRule(null)}
-                                  className="rounded bg-primary-600 px-3 py-1 text-sm text-white"
-                                >
-                                  Done
-                                </button>
-                              </div>
-                            ) : (
-                              <>
-                                <h4 className="font-semibold text-white">{rule.title}</h4>
-                                <p className="mt-1 text-sm text-gray-400">{rule.description}</p>
-                              </>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-                            <button
-                              onClick={() => setEditingRule(rule.id)}
-                              className="p-1 text-gray-400 hover:text-white"
-                            >
-                              <PencilIcon className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => removeRule(rule.id)}
-                              className="p-1 text-gray-400 hover:text-red-400"
-                            >
-                              <TrashIcon className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-                </GlassCard>
-              </motion.div>
+              <RulesPanel
+                rules={rules}
+                editingRule={editingRule}
+                onAddRule={addRule}
+                onEditRule={setEditingRule}
+                onUpdateRule={updateRule}
+                onRemoveRule={removeRule}
+              />
             )}
 
             {/* Analytics Tab */}
