@@ -24,8 +24,6 @@ import {
   CustomizationDemoSkeleton,
   ForumShowcaseSkeleton,
 } from '@/components/landing/LandingSkeletons';
-import { FloatingLogo } from '@/components/landing/FloatingLogo';
-import { useAdaptiveMotion } from '@/hooks/useAdaptiveMotion';
 import './landing-page.css';
 
 // Lazy load showcase components
@@ -719,9 +717,6 @@ export default function LandingPage() {
   const [navHidden, setNavHidden] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
 
-  // Performance-aware animation settings
-  const { shouldAnimate, motionScale, prefersReducedMotion } = useAdaptiveMotion();
-
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
@@ -1099,20 +1094,6 @@ export default function LandingPage() {
             <SwapButton mainText="Learn More" altText="Explore" href="#features" />
           </div>
         </div>
-
-        {/* 3D Floating Logo - respects user motion preferences */}
-        {shouldAnimate && !prefersReducedMotion && (
-          <div className="hero__logo-container">
-            <FloatingLogo
-              size={280}
-              primaryColor="#10b981"
-              secondaryColor="#8b5cf6"
-              glowColor="#06b6d4"
-              mouseIntensity={0.25 * motionScale}
-              floatAmplitude={12 * motionScale}
-            />
-          </div>
-        )}
 
         <div ref={scrollIndicatorRef} className="hero__scroll">
           <span>Scroll</span>
