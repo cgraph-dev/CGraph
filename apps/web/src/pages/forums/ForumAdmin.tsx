@@ -46,7 +46,7 @@ import type {
   MemberData,
   ModQueueItem,
   ForumAnalytics,
-} from './ForumAdmin';
+} from './ForumAdmin/types';
 import {
   TABS,
   THEME_PRESETS,
@@ -54,11 +54,8 @@ import {
   DEFAULT_FLAIRS,
   DEFAULT_APPEARANCE,
   DEFAULT_RULES,
-  GeneralPanel,
-  AnalyticsPanel,
-  ModQueuePanel,
-  AppearancePanel,
-} from './ForumAdmin';
+} from './ForumAdmin/constants';
+import { GeneralPanel, AnalyticsPanel, ModQueuePanel, AppearancePanel } from './ForumAdmin/panels';
 
 export default function ForumAdmin() {
   const { forumSlug } = useParams();

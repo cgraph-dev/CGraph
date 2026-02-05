@@ -24,7 +24,7 @@ import {
   AvatarControlPanel,
   ChatControlPanel,
   ProfileControlPanel,
-} from './CustomizationDemo';
+} from './CustomizationDemo/index';
 
 // =============================================================================
 // MAIN COMPONENT
