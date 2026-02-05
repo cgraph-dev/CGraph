@@ -62,6 +62,38 @@ defmodule CGraph.Accounts do
   defdelegate get_or_create_wallet_challenge_v2(address), to: WalletModule, as: :get_or_create_challenge
   defdelegate verify_wallet_signature_v2(address, signature), to: WalletModule, as: :verify_signature
 
+  # Search submodule delegations
+  alias CGraph.Accounts.Search, as: SearchModule
+  defdelegate search_users_v2(query, opts \\ []), to: SearchModule, as: :search_users
+  defdelegate get_user_suggestions_v2(query, opts \\ []), to: SearchModule, as: :get_user_suggestions
+
+  # Password reset submodule delegations
+  alias CGraph.Accounts.PasswordReset, as: PasswordResetModule
+  defdelegate request_password_reset_v2(email), to: PasswordResetModule, as: :request_password_reset
+  defdelegate reset_password_v2(token, password, confirmation), to: PasswordResetModule, as: :reset_password
+  defdelegate verify_password_reset_token_v2(token), to: PasswordResetModule, as: :verify_password_reset_token
+
+  # Email verification submodule delegations
+  alias CGraph.Accounts.EmailVerification, as: EmailVerificationModule
+  defdelegate send_verification_email_v2(user), to: EmailVerificationModule, as: :send_verification_email
+  defdelegate verify_email_v2(token), to: EmailVerificationModule, as: :verify_email
+  defdelegate resend_verification_email_v2(user), to: EmailVerificationModule, as: :resend_verification_email
+
+  # Member directory submodule delegations
+  alias CGraph.Accounts.MemberDirectory, as: MemberDirectoryModule
+  defdelegate list_members_v2(opts \\ []), to: MemberDirectoryModule, as: :list_members
+  defdelegate get_member_profile_v2(user_id, viewer), to: MemberDirectoryModule, as: :get_member_profile
+  defdelegate list_user_groups_v2(opts \\ []), to: MemberDirectoryModule, as: :list_user_groups
+  defdelegate get_member_stats_v2(), to: MemberDirectoryModule, as: :get_member_stats
+  defdelegate search_members_v2(opts \\ []), to: MemberDirectoryModule, as: :search_members
+
+  # Profile submodule delegations
+  alias CGraph.Accounts.Profile, as: ProfileModule
+  defdelegate get_profile_v2(user_id, viewer), to: ProfileModule, as: :get_profile
+  defdelegate update_signature_v2(user_id, signature), to: ProfileModule, as: :update_signature
+  defdelegate update_bio_v2(user_id, bio), to: ProfileModule, as: :update_bio
+  defdelegate update_profile_v2(user_id, attrs), to: ProfileModule, as: :update_profile
+
   # ============================================================================
   # Registration & Authentication
   # ============================================================================
