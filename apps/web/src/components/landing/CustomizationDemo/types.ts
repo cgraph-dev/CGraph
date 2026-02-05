@@ -99,8 +99,8 @@ export interface AnimatedAvatarProps {
 }
 
 export interface ProfileThemeShowcaseProps {
-  theme: import('@/types/avatar-borders').BorderTheme;
-  colors: { primary: string; secondary: string; glow: string };
+  theme: string;
+  colors?: { primary: string; secondary: string; glow: string };
   selectedThemeId?: string;
   onThemeSelect: (themeId: string) => void;
 }
@@ -121,9 +121,5 @@ export interface ProfileThemeConfig {
     glow?: string;
     border?: string;
   };
-  accent: {
-    color: string;
-    secondaryColor?: string;
-    glow?: string;
-  };
+  previewDescription?: string;
 }
