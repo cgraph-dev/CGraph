@@ -1,0 +1,36 @@
+/**
+ * AdminDashboard constants
+ */
+
+import type { NavItem, EventData } from './types';
+
+export const NAV_ITEMS: NavItem[] = [
+  { id: 'dashboard', icon: '📊', label: 'Dashboard', shortcut: '⌘1' },
+  { id: 'events', icon: '🎉', label: 'Events', shortcut: '⌘2' },
+  { id: 'marketplace', icon: '🏪', label: 'Marketplace', shortcut: '⌘3' },
+  { id: 'users', icon: '👥', label: 'Users', shortcut: '⌘4' },
+  { id: 'analytics', icon: '📈', label: 'Analytics', shortcut: '⌘5' },
+  { id: 'settings', icon: '⚙️', label: 'Settings' },
+];
+
+export const PLACEHOLDER_EVENTS: EventData[] = [
+  { id: 1, name: 'Winter Wonderland 2026', status: 'active', participants: 4521 },
+  { id: 2, name: "Valentine's Day Special", status: 'scheduled', participants: 0 },
+  { id: 3, name: 'Anniversary Celebration', status: 'draft', participants: 0 },
+];
+
+export const RISK_COLORS = {
+  low: 'bg-green-500/20 text-green-400',
+  medium: 'bg-yellow-500/20 text-yellow-400',
+  high: 'bg-orange-500/20 text-orange-400',
+  critical: 'bg-red-500/20 text-red-400',
+} as const;
+
+export const STATUS_COLORS = {
+  active: 'bg-green-500/20 text-green-400',
+  scheduled: 'bg-blue-500/20 text-blue-400',
+  draft: 'bg-gray-500/20 text-gray-400',
+  ended: 'bg-red-500/20 text-red-400',
+} as const;
+
+export const EVENT_FILTERS = ['All', 'Active', 'Scheduled', 'Draft', 'Ended'] as const;
