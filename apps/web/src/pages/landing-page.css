@@ -5284,3 +5284,71 @@ html.site-ready {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* =============================================================================
+   HERO FLOATING LOGO
+   ============================================================================= */
+
+.hero__logo-container {
+  position: absolute;
+  right: 10%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  pointer-events: none;
+}
+
+@media (max-width: 1024px) {
+  .hero__logo-container {
+    display: none;
+  }
+}
+
+@media (min-width: 1400px) {
+  .hero__logo-container {
+    right: 15%;
+  }
+}
+
+/* =============================================================================
+   INTERACTIVE DEMO SECTION
+   ============================================================================= */
+
+.interactive-demo-section {
+  padding: 6rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.interactive-demo-skeleton {
+  max-width: 600px;
+  margin: 0 auto;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.interactive-demo-skeleton__header {
+  height: 60px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+.interactive-demo-skeleton__content {
+  height: 350px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (max-width: 768px) {
+  .interactive-demo-section {
+    padding: 4rem 1rem;
+  }
+}

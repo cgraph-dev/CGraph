@@ -24,6 +24,8 @@ import {
   CustomizationDemoSkeleton,
   ForumShowcaseSkeleton,
 } from '@/components/landing/LandingSkeletons';
+import { FloatingLogo } from '@/components/landing/FloatingLogo';
+import { useAdaptiveMotion } from '@/hooks/useAdaptiveMotion';
 import './landing-page.css';
 
 // Lazy load showcase components
@@ -33,6 +35,10 @@ const CustomizationDemo = lazy(() =>
 
 const ForumShowcase = lazy(() =>
   import('@/components/landing/ForumShowcase').then((m) => ({ default: m.ForumShowcase }))
+);
+
+const InteractiveDemo = lazy(() =>
+  import('@/components/landing/InteractiveDemo').then((m) => ({ default: m.InteractiveDemo }))
 );
 
 gsap.registerPlugin(ScrollTrigger);
@@ -713,6 +719,9 @@ export default function LandingPage() {
   const [navHidden, setNavHidden] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
 
+  // Performance-aware animation settings
+  const { shouldAnimate, motionScale, prefersReducedMotion } = useAdaptiveMotion();
+
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
@@ -1091,6 +1100,20 @@ export default function LandingPage() {
           </div>
         </div>
 
+        {/* 3D Floating Logo - respects user motion preferences */}
+        {shouldAnimate && !prefersReducedMotion && (
+          <div className="hero__logo-container">
+            <FloatingLogo
+              size={280}
+              primaryColor="#10b981"
+              secondaryColor="#8b5cf6"
+              glowColor="#06b6d4"
+              mouseIntensity={0.25 * motionScale}
+              floatAmplitude={12 * motionScale}
+            />
+          </div>
+        )}
+
         <div ref={scrollIndicatorRef} className="hero__scroll">
           <span>Scroll</span>
           <div className="hero__scroll-line">
@@ -1115,6 +1138,29 @@ export default function LandingPage() {
             <FeatureShowcaseCard key={card.id} data={card} />
           ))}
         </div>
+      </section>
+
+      {/* Interactive Demo */}
+      <section className="interactive-demo-section zoom-section">
+        <div className="section-header">
+          <span className="section-header__badge section-header__badge--cyan">🎮 Try It Now</span>
+          <h2 className="section-header__title font-zentry">
+            Experience CGraph <span className="section-header__gradient">Live</span>
+          </h2>
+          <p className="section-header__desc">
+            No signup required. Explore our features in this interactive demo.
+          </p>
+        </div>
+        <Suspense
+          fallback={
+            <div className="interactive-demo-skeleton">
+              <div className="interactive-demo-skeleton__header" />
+              <div className="interactive-demo-skeleton__content" />
+            </div>
+          }
+        >
+          <InteractiveDemo />
+        </Suspense>
       </section>
 
       {/* Features */}
