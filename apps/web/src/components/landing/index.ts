@@ -207,6 +207,9 @@ export {
 // CustomizationDemo is dynamically imported in LandingPageOptimized
 // Use: const CustomizationDemo = lazy(() => import('./CustomizationDemo'));
 
+// InteractiveDemo for live feature demonstration
+export { InteractiveDemo, type default as InteractiveDemoDefault } from './InteractiveDemo';
+
 // =============================================================================
 // SHOWCASE SECTIONS (use dynamic imports for code-splitting)
 // =============================================================================
@@ -239,6 +242,7 @@ export {
   type BentoItemProps,
   type BentoItemSize,
 } from './BentoGrid';
+export { FloatingLogo } from './FloatingLogo';
 
 // =============================================================================
 // RE-EXPORTS FOR CONVENIENCE
