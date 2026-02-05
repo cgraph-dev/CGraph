@@ -113,7 +113,10 @@ export function useCoinShop() {
                   'Your purchase is being processed. Coins will be added shortly.'
                 );
               }
-            } catch (error: any) {
+            } catch (err) {
+              const error = err as Error & {
+                response?: { status: number; data?: { message?: string } };
+              };
               console.error('[CoinShop] Purchase error:', error);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert('Purchase Failed', error.message || 'Unable to complete purchase.');
@@ -155,7 +158,10 @@ export function useCoinShop() {
               setUserCoins((prev) => prev - item.price);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
               Alert.alert('Success!', `You've purchased ${item.name}!`);
-            } catch (error: any) {
+            } catch (err) {
+              const error = err as Error & {
+                response?: { status: number; data?: { message?: string } };
+              };
               console.error('[CoinShop] Item purchase error:', error);
               if (error.response?.status === 404 || !error.response) {
                 setUserCoins((prev) => prev - item.price);
@@ -198,7 +204,8 @@ export function useCoinShop() {
         `You've received ${coinsAwarded} free coins! Come back tomorrow for more.`,
         [{ text: 'Awesome!', style: 'default' }]
       );
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as Error & { response?: { status: number; data?: { message?: string } } };
       console.error('[CoinShop] Daily claim error:', error);
 
       if (error.response?.status === 404 || !error.response) {

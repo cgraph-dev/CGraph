@@ -133,16 +133,19 @@ export default function WhosOnlineScreen() {
 
   // Transform API response
   const transformApiUsers = (data: unknown[]): OnlineUser[] => {
-    return data.map((u: any) => ({
-      id: u.id,
-      username: u.username || 'Unknown',
-      displayName: u.display_name || null,
-      avatarUrl: u.avatar_url || null,
-      userGroup: u.user_group || 'Member',
-      userGroupColor: u.user_group_color || null,
-      lastActivity: u.last_activity || new Date().toISOString(),
-      currentActivity: u.current_activity || null,
-    }));
+    return data.map((u) => {
+      const user = u as Record<string, unknown>;
+      return {
+        id: user.id as string,
+        username: (user.username as string) || 'Unknown',
+        displayName: (user.display_name as string) || null,
+        avatarUrl: (user.avatar_url as string) || null,
+        userGroup: (user.user_group as string) || 'Member',
+        userGroupColor: (user.user_group_color as string) || null,
+        lastActivity: (user.last_activity as string) || new Date().toISOString(),
+        currentActivity: (user.current_activity as string) || null,
+      };
+    });
   };
 
   // Fetch online users

@@ -18,9 +18,17 @@
 // Generic types for Zustand store compatibility
 // Using loose types to work with Zustand's flexible set/get signatures
 
-/** Zustand-compatible set function type - uses loose typing for flexibility */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ZustandSet = (partial: any) => void;
+/** Base state type with common fields */
+export interface BaseStoreState {
+  isDirty?: boolean;
+  isSaving?: boolean;
+  error?: string | null;
+}
+
+/** Zustand-compatible set function type */
+export type ZustandSet<T extends BaseStoreState = BaseStoreState> = (
+  partial: Partial<T> | ((state: T) => Partial<T>)
+) => void;
 
 export interface FieldSchema {
   [camelCase: string]: string; // camelCase -> snake_case mapping
@@ -40,12 +48,19 @@ export interface FieldSchema {
  *   toggleEnabled: createToggle(set, 'isEnabled'),
  * }));
  */
-export function createToggle(set: ZustandSet, field: string, markDirty = true): () => void {
+export function createToggle<T extends BaseStoreState & Record<string, boolean>>(
+  set: ZustandSet<T>,
+  field: keyof T & string,
+  markDirty = true
+): () => void {
   return () =>
-    set((state: any) => ({
-      [field]: !state[field],
-      ...(markDirty ? { isDirty: true } : {}),
-    }));
+    set(
+      (state: T) =>
+        ({
+          [field]: !state[field],
+          ...(markDirty ? { isDirty: true } : {}),
+        }) as Partial<T>
+    );
 }
 
 /**
@@ -74,8 +89,8 @@ export function createToggles(
 /**
  * Converts camelCase object keys to snake_case for API calls.
  */
-export function toApiParams(
-  data: Record<string, any>,
+export function toApiParams<T extends Record<string, unknown>>(
+  data: T,
   schema: FieldSchema
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
@@ -91,7 +106,7 @@ export function toApiParams(
 /**
  * Converts snake_case API response to camelCase for store state.
  */
-export function fromApiParams<T extends Record<string, any>>(
+export function fromApiParams<T extends Record<string, unknown>>(
   apiData: Record<string, unknown>,
   schema: FieldSchema,
   defaults: T
@@ -104,7 +119,7 @@ export function fromApiParams<T extends Record<string, any>>(
   for (const [snakeKey, value] of Object.entries(apiData)) {
     const camelKey = reverseSchema[snakeKey] || snakeToCamel(snakeKey);
     if (camelKey in defaults) {
-      (result as Record<string, any>)[camelKey] = value;
+      (result as Record<string, unknown>)[camelKey] = value;
     }
   }
 
@@ -114,11 +129,11 @@ export function fromApiParams<T extends Record<string, any>>(
 /**
  * Creates a schema mapper with both toApi and fromApi methods.
  */
-export function createSchemaMapper<T extends Record<string, any> = Record<string, any>>(
+export function createSchemaMapper<T extends Record<string, unknown> = Record<string, unknown>>(
   schema: FieldSchema
 ) {
   return {
-    toApi: (updates: Partial<T>) => toApiParams(updates as Record<string, any>, schema),
+    toApi: (updates: Partial<T>) => toApiParams(updates as Record<string, unknown>, schema),
     fromApi: (apiData: Record<string, unknown>, defaults: T) =>
       fromApiParams(apiData, schema, defaults),
     schema,
@@ -156,16 +171,14 @@ const saveTimers = new Map<string, ReturnType<typeof setTimeout>>();
  *   { delay: 1000 }
  * );
  */
-export function createDebouncedSave(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  saveFn: (state: any, set: ZustandSet) => Promise<void>,
+export function createDebouncedSave<T extends BaseStoreState>(
+  saveFn: (state: T, set: ZustandSet<T>) => Promise<void>,
   options: { delay?: number } = {}
 ) {
   const { delay = 500 } = options;
   const key = `save_${Date.now()}_${Math.random()}`;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (state: any, set: ZustandSet): void => {
+  return (state: T, set: ZustandSet<T>): void => {
     const existingTimer = saveTimers.get(key);
     if (existingTimer) {
       clearTimeout(existingTimer);
