@@ -41,6 +41,7 @@ export { ProfileThemeShowcase } from './ProfileThemeShowcase';
 // Components - Previews
 export { AvatarPreview } from './AvatarPreview';
 export { ChatPreview } from './ChatPreview';
+export { ProfilePreview } from './ProfilePreview';
 
 // Components - Control Panels
 export { ThemeControlPanel } from './ThemeControlPanel';
