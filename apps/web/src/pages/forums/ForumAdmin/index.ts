@@ -31,4 +31,4 @@ export {
 } from './constants';
 
 // Panels
-export { GeneralPanel, AnalyticsPanel, ModQueuePanel } from './panels';
+export { GeneralPanel, AnalyticsPanel, ModQueuePanel, AppearancePanel } from './panels';

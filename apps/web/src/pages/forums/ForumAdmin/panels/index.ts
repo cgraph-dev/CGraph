@@ -9,3 +9,4 @@
 export { GeneralPanel } from './GeneralPanel';
 export { AnalyticsPanel } from './AnalyticsPanel';
 export { ModQueuePanel } from './ModQueuePanel';
+export { AppearancePanel } from './AppearancePanel';
