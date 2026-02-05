@@ -316,7 +316,10 @@ export const FloatingLogo = memo(function FloatingLogo({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      console.warn('FloatingLogo: Canvas ref not available');
+      return;
+    }
 
     const gl = canvas.getContext('webgl', {
       antialias: true,
@@ -325,9 +328,16 @@ export const FloatingLogo = memo(function FloatingLogo({
     });
 
     if (!gl) {
-      console.warn('WebGL not supported, falling back to static logo');
+      console.warn('FloatingLogo: WebGL not supported, showing fallback');
+      // Show fallback
+      const fallback = canvas.parentElement?.querySelector(
+        '.floating-logo__fallback'
+      ) as HTMLElement;
+      if (fallback) fallback.style.opacity = '1';
       return;
     }
+
+    console.log('FloatingLogo: WebGL context created successfully');
 
     // Create shaders and program
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
@@ -460,6 +470,7 @@ export const FloatingLogo = memo(function FloatingLogo({
         width: size,
         height: size,
         position: 'relative',
+        pointerEvents: 'auto',
       }}
     >
       {/* Glow backdrop */}
@@ -467,9 +478,9 @@ export const FloatingLogo = memo(function FloatingLogo({
         style={{
           position: 'absolute',
           inset: '-20%',
-          background: `radial-gradient(circle, ${glowColor}33 0%, transparent 70%)`,
-          filter: 'blur(20px)',
-          animation: 'glow-pulse 3s ease-in-out infinite',
+          background: `radial-gradient(circle, ${glowColor}40 0%, ${primaryColor}20 50%, transparent 70%)`,
+          filter: 'blur(30px)',
+          animation: 'floating-logo-glow 3s ease-in-out infinite',
         }}
       />
 
@@ -484,6 +495,30 @@ export const FloatingLogo = memo(function FloatingLogo({
           zIndex: 1,
         }}
       />
+
+      {/* CSS fallback logo if WebGL fails */}
+      <div
+        className="floating-logo__fallback"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: size * 0.5,
+          fontWeight: 700,
+          fontFamily: 'Orbitron, sans-serif',
+          background: `linear-gradient(135deg, ${primaryColor}, ${secondaryColor})`,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          opacity: 0,
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      >
+        C
+      </div>
     </motion.div>
   );
 });

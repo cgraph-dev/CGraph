@@ -5291,11 +5291,20 @@ html.site-ready {
 
 .hero__logo-container {
   position: absolute;
-  right: 10%;
+  right: 5%;
   top: 50%;
   transform: translateY(-50%);
-  z-index: 5;
+  z-index: 15;
   pointer-events: none;
+}
+
+.hero__logo-container .floating-logo {
+  pointer-events: auto;
+}
+
+@keyframes floating-logo-glow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
 
 @media (max-width: 1024px) {
@@ -5306,7 +5315,7 @@ html.site-ready {
 
 @media (min-width: 1400px) {
   .hero__logo-container {
-    right: 15%;
+    right: 10%;
   }
 }
 
