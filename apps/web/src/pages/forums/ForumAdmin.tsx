@@ -54,6 +54,9 @@ import {
   DEFAULT_FLAIRS,
   DEFAULT_APPEARANCE,
   DEFAULT_RULES,
+  GeneralPanel,
+  AnalyticsPanel,
+  ModQueuePanel,
 } from './ForumAdmin';
 
 export default function ForumAdmin() {
@@ -508,174 +511,25 @@ export default function ForumAdmin() {
           <AnimatePresence mode="wait">
             {/* General Tab */}
             {activeTab === 'general' && (
-              <motion.div
-                key="general"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <div>
-                  <h2 className="mb-2 text-2xl font-bold text-white">General Settings</h2>
-                  <p className="text-gray-400">Basic forum configuration and privacy settings.</p>
-                </div>
-
-                <GlassCard className="p-6">
-                  <h3 className="mb-4 text-lg font-semibold text-white">Forum Identity</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-300">
-                        Forum Name
-                      </label>
-                      <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-300">
-                        Description
-                      </label>
-                      <textarea
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        rows={4}
-                        className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        placeholder="Describe your forum..."
-                      />
-                    </div>
-                  </div>
-                </GlassCard>
-
-                <GlassCard className="p-6">
-                  <h3 className="mb-4 text-lg font-semibold text-white">Privacy & Access</h3>
-                  <div className="space-y-4">
-                    <label className="flex cursor-pointer items-start gap-4 rounded-lg bg-dark-700/50 p-4 transition-colors hover:bg-dark-700">
-                      <input
-                        type="radio"
-                        checked={isPublic}
-                        onChange={() => setIsPublic(true)}
-                        className="mt-1"
-                      />
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <GlobeAltIcon className="h-5 w-5 text-green-500" />
-                          <span className="font-medium text-white">Public</span>
-                        </div>
-                        <p className="mt-1 text-sm text-gray-400">Anyone can view and join</p>
-                      </div>
-                    </label>
-                    <label className="flex cursor-pointer items-start gap-4 rounded-lg bg-dark-700/50 p-4 transition-colors hover:bg-dark-700">
-                      <input
-                        type="radio"
-                        checked={!isPublic}
-                        onChange={() => setIsPublic(false)}
-                        className="mt-1"
-                      />
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <LockClosedIcon className="h-5 w-5 text-yellow-500" />
-                          <span className="font-medium text-white">Private</span>
-                        </div>
-                        <p className="mt-1 text-sm text-gray-400">Only members can view content</p>
-                      </div>
-                    </label>
-                  </div>
-
-                  <div className="mt-6 space-y-3">
-                    <label className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={isNsfw}
-                        onChange={(e) => setIsNsfw(e.target.checked)}
-                        className="h-5 w-5 rounded border-dark-600 bg-dark-700 text-primary-500"
-                      />
-                      <div>
-                        <span className="font-medium text-white">NSFW Content (18+)</span>
-                        <p className="text-sm text-gray-400">This forum contains adult content</p>
-                      </div>
-                    </label>
-                    <label className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={requireApproval}
-                        onChange={(e) => setRequireApproval(e.target.checked)}
-                        className="h-5 w-5 rounded border-dark-600 bg-dark-700 text-primary-500"
-                      />
-                      <div>
-                        <span className="font-medium text-white">Require Post Approval</span>
-                        <p className="text-sm text-gray-400">
-                          All posts must be approved by moderators
-                        </p>
-                      </div>
-                    </label>
-                  </div>
-                </GlassCard>
-
-                {/* Danger Zone */}
-                {isOwner && (
-                  <GlassCard className="border-red-500/30 p-6">
-                    <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-red-400">
-                      <ExclamationTriangleIcon className="h-5 w-5" />
-                      Danger Zone
-                    </h3>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h4 className="font-medium text-white">Delete Forum</h4>
-                        <p className="text-sm text-gray-400">
-                          Permanently delete this forum and all content
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => setShowDeleteConfirm(true)}
-                        className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                        Delete
-                      </button>
-                    </div>
-
-                    {showDeleteConfirm && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        className="mt-4 rounded-lg bg-dark-800 p-4"
-                      >
-                        <p className="mb-3 text-sm text-gray-300">
-                          Type <span className="font-mono text-red-400">{forum.name}</span> to
-                          confirm:
-                        </p>
-                        <input
-                          type="text"
-                          value={deleteConfirmText}
-                          onChange={(e) => setDeleteConfirmText(e.target.value)}
-                          className="mb-3 w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-white"
-                        />
-                        <div className="flex gap-3">
-                          <button
-                            onClick={() => {
-                              setShowDeleteConfirm(false);
-                              setDeleteConfirmText('');
-                            }}
-                            className="rounded-lg bg-dark-600 px-4 py-2 text-white hover:bg-dark-500"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={handleDelete}
-                            disabled={deleteConfirmText !== forum.name}
-                            className="rounded-lg bg-red-600 px-4 py-2 text-white hover:bg-red-700 disabled:bg-red-600/50"
-                          >
-                            Delete Forever
-                          </button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </GlassCard>
-                )}
-              </motion.div>
+              <GeneralPanel
+                name={name}
+                description={description}
+                isPublic={isPublic}
+                isNsfw={isNsfw}
+                requireApproval={requireApproval}
+                isOwner={isOwner}
+                forumName={forum.name}
+                showDeleteConfirm={showDeleteConfirm}
+                deleteConfirmText={deleteConfirmText}
+                onNameChange={setName}
+                onDescriptionChange={setDescription}
+                onPublicChange={setIsPublic}
+                onNsfwChange={setIsNsfw}
+                onRequireApprovalChange={setRequireApproval}
+                onShowDeleteConfirm={setShowDeleteConfirm}
+                onDeleteConfirmTextChange={setDeleteConfirmText}
+                onDelete={handleDelete}
+              />
             )}
 
             {/* Appearance Tab */}
@@ -1404,229 +1258,16 @@ export default function ForumAdmin() {
             )}
 
             {/* Analytics Tab */}
-            {activeTab === 'analytics' && (
-              <motion.div
-                key="analytics"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <div>
-                  <h2 className="mb-2 text-2xl font-bold text-white">Analytics</h2>
-                  <p className="text-gray-400">Forum performance and insights.</p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                  <GlassCard className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="rounded-lg bg-blue-500/20 p-2">
-                        <UsersIcon className="h-6 w-6 text-blue-400" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-white">{analytics.totalMembers}</p>
-                        <p className="text-sm text-gray-400">Total Members</p>
-                      </div>
-                    </div>
-                  </GlassCard>
-                  <GlassCard className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="rounded-lg bg-green-500/20 p-2">
-                        <ChatBubbleLeftRightIcon className="h-6 w-6 text-green-400" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-white">{analytics.totalPosts}</p>
-                        <p className="text-sm text-gray-400">Total Posts</p>
-                      </div>
-                    </div>
-                  </GlassCard>
-                  <GlassCard className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="rounded-lg bg-purple-500/20 p-2">
-                        <ArrowTrendingUpIcon className="h-6 w-6 text-purple-400" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold text-white">{analytics.postsThisWeek}</p>
-                        <p className="text-sm text-gray-400">Posts This Week</p>
-                      </div>
-                    </div>
-                  </GlassCard>
-                  <GlassCard className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="rounded-lg bg-yellow-500/20 p-2">
-                        <SparklesIcon className="h-6 w-6 text-yellow-400" />
-                      </div>
-                      <div>
-                        <p
-                          className={`text-2xl font-bold ${analytics.growthRate >= 0 ? 'text-green-400' : 'text-red-400'}`}
-                        >
-                          {analytics.growthRate >= 0 ? '+' : ''}
-                          {analytics.growthRate}%
-                        </p>
-                        <p className="text-sm text-gray-400">Growth Rate</p>
-                      </div>
-                    </div>
-                  </GlassCard>
-                </div>
-
-                <GlassCard className="p-6">
-                  <h3 className="mb-4 text-lg font-semibold text-white">Top Contributors</h3>
-                  <div className="space-y-3">
-                    {analytics.topPosters.map((poster, index) => (
-                      <div key={poster.username} className="flex items-center gap-3">
-                        <span
-                          className={`flex h-6 w-6 items-center justify-center rounded-full text-sm font-bold ${
-                            index === 0
-                              ? 'bg-yellow-500 text-black'
-                              : index === 1
-                                ? 'bg-gray-400 text-black'
-                                : 'bg-orange-600 text-white'
-                          }`}
-                        >
-                          {index + 1}
-                        </span>
-                        <span className="flex-1 text-white">{poster.username}</span>
-                        <span className="text-gray-400">{poster.count} posts</span>
-                      </div>
-                    ))}
-                  </div>
-                </GlassCard>
-              </motion.div>
-            )}
+            {activeTab === 'analytics' && <AnalyticsPanel analytics={analytics} />}
 
             {/* Mod Queue Tab */}
             {activeTab === 'modqueue' && (
-              <motion.div
-                key="modqueue"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <div>
-                  <h2 className="mb-2 text-2xl font-bold text-white">Moderation Queue</h2>
-                  <p className="text-gray-400">Review reports and pending content.</p>
-                </div>
-
-                <div className="mb-4 flex items-center gap-2">
-                  {(['all', 'pending', 'reports'] as const).map((filter) => (
-                    <button
-                      key={filter}
-                      onClick={() => setQueueFilter(filter)}
-                      className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                        queueFilter === filter
-                          ? 'bg-primary-500 text-white'
-                          : 'bg-dark-700 text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      {filter.charAt(0).toUpperCase() + filter.slice(1)}
-                    </button>
-                  ))}
-                </div>
-
-                <GlassCard className="p-6">
-                  {modQueue.filter(
-                    (item) =>
-                      queueFilter === 'all' ||
-                      (queueFilter === 'pending' && item.status === 'pending') ||
-                      (queueFilter === 'reports' && item.type === 'report')
-                  ).length === 0 ? (
-                    <div className="py-12 text-center text-gray-400">
-                      <CheckIcon className="mx-auto mb-3 h-12 w-12 text-green-400" />
-                      <p className="text-lg font-medium text-white">All caught up!</p>
-                      <p className="text-sm">No items need your attention.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {modQueue
-                        .filter(
-                          (item) =>
-                            queueFilter === 'all' ||
-                            (queueFilter === 'pending' && item.status === 'pending') ||
-                            (queueFilter === 'reports' && item.type === 'report')
-                        )
-                        .map((item) => (
-                          <motion.div
-                            key={item.id}
-                            className={`rounded-lg border p-4 ${
-                              item.status === 'pending'
-                                ? 'border-dark-600 bg-dark-700/50'
-                                : item.status === 'approved'
-                                  ? 'border-green-500/30 bg-green-500/10'
-                                  : 'border-red-500/30 bg-red-500/10'
-                            }`}
-                          >
-                            <div className="flex items-start gap-3">
-                              <div
-                                className={`rounded-lg p-2 ${
-                                  item.type === 'report' ? 'bg-red-500/20' : 'bg-blue-500/20'
-                                }`}
-                              >
-                                {item.type === 'report' ? (
-                                  <FlagIcon className="h-5 w-5 text-red-400" />
-                                ) : (
-                                  <DocumentTextIcon className="h-5 w-5 text-blue-400" />
-                                )}
-                              </div>
-                              <div className="flex-1">
-                                <div className="mb-1 flex items-center gap-2">
-                                  <span
-                                    className={`rounded-full px-2 py-0.5 text-xs ${
-                                      item.type === 'report'
-                                        ? 'bg-red-500/20 text-red-400'
-                                        : 'bg-blue-500/20 text-blue-400'
-                                    }`}
-                                  >
-                                    {item.type}
-                                  </span>
-                                  <span className="text-sm text-gray-400">by {item.author}</span>
-                                  <span className="text-xs text-gray-500">
-                                    {new Date(item.createdAt).toLocaleString()}
-                                  </span>
-                                </div>
-                                <p className="text-white">{item.content}</p>
-                                {item.reason && (
-                                  <p className="mt-1 text-sm text-red-400">Reason: {item.reason}</p>
-                                )}
-                              </div>
-                              {item.status === 'pending' && (
-                                <div className="flex items-center gap-2">
-                                  <motion.button
-                                    onClick={() => handleModQueueAction(item.id, 'approve')}
-                                    className="rounded-lg bg-green-500/20 p-2 text-green-400 hover:bg-green-500/30"
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                  >
-                                    <CheckIcon className="h-5 w-5" />
-                                  </motion.button>
-                                  <motion.button
-                                    onClick={() => handleModQueueAction(item.id, 'reject')}
-                                    className="rounded-lg bg-red-500/20 p-2 text-red-400 hover:bg-red-500/30"
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
-                                  >
-                                    <XMarkIcon className="h-5 w-5" />
-                                  </motion.button>
-                                </div>
-                              )}
-                              {item.status !== 'pending' && (
-                                <span
-                                  className={`rounded-full px-3 py-1 text-sm ${
-                                    item.status === 'approved'
-                                      ? 'bg-green-500/20 text-green-400'
-                                      : 'bg-red-500/20 text-red-400'
-                                  }`}
-                                >
-                                  {item.status}
-                                </span>
-                              )}
-                            </div>
-                          </motion.div>
-                        ))}
-                    </div>
-                  )}
-                </GlassCard>
-              </motion.div>
+              <ModQueuePanel
+                modQueue={modQueue}
+                queueFilter={queueFilter}
+                onFilterChange={setQueueFilter}
+                onAction={handleModQueueAction}
+              />
             )}
           </AnimatePresence>
         </div>

@@ -29,3 +29,6 @@ export {
   DEFAULT_APPEARANCE,
   DEFAULT_RULES,
 } from './constants';
+
+// Panels
+export { GeneralPanel, AnalyticsPanel, ModQueuePanel } from './panels';
