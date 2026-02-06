@@ -1,0 +1,37 @@
+/**
+ * TypingIndicator - animated typing dots
+ */
+
+import { motion } from 'framer-motion';
+
+interface TypingIndicatorProps {
+  isVisible: boolean;
+}
+
+export function TypingIndicator({ isVisible }: TypingIndicatorProps) {
+  if (!isVisible) return null;
+
+  return (
+    <motion.div
+      className="flex items-center gap-2"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+    >
+      <div className="flex space-x-1">
+        {[0, 1, 2].map((i) => (
+          <motion.div
+            key={i}
+            className="h-2 w-2 rounded-full bg-primary-400"
+            animate={{ y: [0, -8, 0] }}
+            transition={{
+              duration: 0.6,
+              repeat: Infinity,
+              delay: i * 0.1,
+            }}
+          />
+        ))}
+      </div>
+    </motion.div>
+  );
+}
