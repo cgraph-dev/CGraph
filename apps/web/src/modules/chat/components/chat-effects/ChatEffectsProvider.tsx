@@ -1,0 +1,43 @@
+/**
+ * ChatEffectsProvider - Context provider for chat effects settings
+ */
+
+import { memo, createContext, useContext, useMemo, type ReactNode } from 'react';
+import { useChatEffectSettings } from '@/stores/chatEffectsStore';
+import type { MessageEffect, MessageEffectConfig } from '@/stores/chatEffectsStore';
+import type { ChatEffectsProviderProps } from './types';
+
+interface ChatEffectsContextValue {
+  effect: MessageEffect;
+  config: MessageEffectConfig;
+  enabled: boolean;
+}
+
+const ChatEffectsContext = createContext<ChatEffectsContextValue | null>(null);
+
+export const useChatEffects = () => {
+  const context = useContext(ChatEffectsContext);
+  if (!context) {
+    throw new Error('useChatEffects must be used within ChatEffectsProvider');
+  }
+  return context;
+};
+
+export const ChatEffectsProvider = memo(function ChatEffectsProvider({
+  children,
+  effectOverride,
+  configOverride,
+}: ChatEffectsProviderProps) {
+  const settings = useChatEffectSettings();
+
+  const value = useMemo(
+    (): ChatEffectsContextValue => ({
+      effect: effectOverride ?? settings.effect,
+      config: configOverride ?? settings.config,
+      enabled: settings.enabled,
+    }),
+    [effectOverride, configOverride, settings]
+  );
+
+  return <ChatEffectsContext.Provider value={value}>{children}</ChatEffectsContext.Provider>;
+});
