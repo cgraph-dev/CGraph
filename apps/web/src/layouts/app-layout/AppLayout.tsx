@@ -1,3 +1,7 @@
+/**
+ * AppLayout Component - Main application shell with sidebar and content area
+ * @module layouts/app-layout
+ */
 import { Outlet } from 'react-router-dom';
 import { ToastContainer } from '@/shared/components/ui';
 import ShaderBackground from '@/components/shaders/ShaderBackground';

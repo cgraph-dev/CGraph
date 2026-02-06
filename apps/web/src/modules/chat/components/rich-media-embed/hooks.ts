@@ -1,3 +1,7 @@
+/**
+ * Rich Media Embed hooks - URL detection and metadata extraction
+ * @module modules/chat/components/rich-media-embed
+ */
 import { useState, useEffect } from 'react';
 import type { LinkMetadata } from './types';
 import {

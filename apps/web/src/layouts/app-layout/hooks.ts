@@ -1,3 +1,7 @@
+/**
+ * App Layout hooks - Navigation state, socket connections, and notifications
+ * @module layouts/app-layout
+ */
 import { useEffect, useMemo, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';

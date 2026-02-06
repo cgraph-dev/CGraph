@@ -1,3 +1,7 @@
+/**
+ * CompactQuestPanel Component - Sidebar-sized quest overview
+ * @module modules/gamification/components/quest-panel
+ */
 import { motion } from 'framer-motion';
 import { TrophyIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/react/24/solid';

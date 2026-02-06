@@ -1,3 +1,7 @@
+/**
+ * VideoEmbed Component - Video player with YouTube iframe support
+ * @module modules/chat/components/rich-media-embed
+ */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PlayCircleIcon } from '@heroicons/react/24/outline';

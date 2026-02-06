@@ -1,3 +1,7 @@
+/**
+ * LinkPreview Component - Open Graph link preview card
+ * @module modules/chat/components/rich-media-embed
+ */
 import { motion } from 'framer-motion';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';

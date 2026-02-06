@@ -1,3 +1,7 @@
+/**
+ * QuestObjectiveItem Component - Individual quest objective progress row
+ * @module modules/gamification/components/quest-panel
+ */
 import { motion } from 'framer-motion';
 import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/react/24/solid';
 import type { QuestObjective } from '@/stores/gamificationStore';

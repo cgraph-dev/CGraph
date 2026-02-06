@@ -1,3 +1,7 @@
+/**
+ * PostTypeTabs Component - Post type selector tabs
+ * @module pages/forums/create-post
+ */
 import { PhotoIcon, LinkIcon, ChartBarIcon } from '@heroicons/react/24/outline';
 import type { PostType } from './types';
 

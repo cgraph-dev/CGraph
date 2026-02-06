@@ -1,3 +1,7 @@
+/**
+ * PollForm Component - Poll creation form with dynamic option management
+ * @module pages/forums/create-post
+ */
 import { XMarkIcon } from '@heroicons/react/24/outline';
 
 interface PollFormProps {

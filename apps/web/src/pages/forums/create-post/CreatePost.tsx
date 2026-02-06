@@ -1,3 +1,7 @@
+/**
+ * CreatePost Component - Forum post creation page with markdown editor
+ * @module pages/forums/create-post
+ */
 import { Link } from 'react-router-dom';
 import { MarkdownEditor } from '@/components';
 import type { PostAttachment } from '@/stores/forumStore';

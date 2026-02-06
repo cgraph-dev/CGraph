@@ -1,3 +1,7 @@
+/**
+ * EventFormFields Component - Event metadata fields (location, description, category)
+ * @module modules/social/components/event-form
+ */
 import {
   MapPinIcon,
   DocumentTextIcon,

@@ -1,3 +1,7 @@
+/**
+ * SearchBar Component - Search input with filter toggle button
+ * @module modules/search/components/advanced-search
+ */
 import {
   MagnifyingGlassIcon,
   FunnelIcon,

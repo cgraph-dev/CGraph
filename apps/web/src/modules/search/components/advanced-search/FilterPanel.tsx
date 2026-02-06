@@ -1,3 +1,7 @@
+/**
+ * FilterPanel Component - Advanced search filter options panel
+ * @module modules/search/components/advanced-search
+ */
 import {
   CalendarIcon,
   UserIcon,

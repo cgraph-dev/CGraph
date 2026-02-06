@@ -1,3 +1,7 @@
+/**
+ * Member List constants - Status colors and labels
+ * @module modules/groups/components/member-list
+ */
 import type { StatusType } from './types';
 
 export const statusColors: Record<StatusType, string> = {

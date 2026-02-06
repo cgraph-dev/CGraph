@@ -1,3 +1,7 @@
+/**
+ * App Layout constants - Navigation items and route config
+ * @module layouts/app-layout
+ */
 import {
   ChatBubbleLeftRightIcon,
   UsersIcon,

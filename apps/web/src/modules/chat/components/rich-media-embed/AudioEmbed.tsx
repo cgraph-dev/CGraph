@@ -1,3 +1,7 @@
+/**
+ * AudioEmbed Component - Audio player with metadata display
+ * @module modules/chat/components/rich-media-embed
+ */
 import { MusicalNoteIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { LinkMetadata } from './types';

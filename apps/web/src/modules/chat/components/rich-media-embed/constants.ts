@@ -1,3 +1,7 @@
+/**
+ * Rich Media Embed constants - URL detection regex patterns
+ * @module modules/chat/components/rich-media-embed
+ */
 // Regex patterns for detecting embeddable content
 export const URL_REGEX = /(https?:\/\/[^\s]+)/g;
 export const YOUTUBE_REGEX = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/;

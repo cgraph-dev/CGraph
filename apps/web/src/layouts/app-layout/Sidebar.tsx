@@ -1,3 +1,7 @@
+/**
+ * Sidebar Component - Responsive navigation sidebar with badges
+ * @module layouts/app-layout
+ */
 import { NavLink, Link, type Location } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import AnimatedLogo from '@/components/AnimatedLogo';

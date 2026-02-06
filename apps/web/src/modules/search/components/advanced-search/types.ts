@@ -1,6 +1,12 @@
 /**
- * Advanced search filters - MyBB-style
+ * Advanced Search Module Types
+ *
+ * Type definitions for the MyBB-style advanced search components.
+ *
+ * @module modules/search/components/advanced-search
  */
+
+/** Advanced search filter state — MyBB-style */
 export interface AdvancedSearchFilters {
   // Query terms
   keywords: string;

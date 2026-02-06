@@ -1,3 +1,7 @@
+/**
+ * QuestPanel Component - Main quest tracking panel with variant support
+ * @module modules/gamification/components/quest-panel
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useGamificationStore, Quest } from '@/stores/gamificationStore';

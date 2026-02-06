@@ -1,3 +1,7 @@
+/**
+ * RichMediaEmbed Component - Auto-detecting rich media embed renderer
+ * @module modules/chat/components/rich-media-embed
+ */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';

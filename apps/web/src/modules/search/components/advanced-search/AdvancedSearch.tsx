@@ -1,3 +1,7 @@
+/**
+ * AdvancedSearch Component - Collapsible search form with filters
+ * @module modules/search/components/advanced-search
+ */
 import { useState, useCallback } from 'react';
 import { useForumStore } from '@/stores/forumStore';
 import { cn } from '@/lib/utils';

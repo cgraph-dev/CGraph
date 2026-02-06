@@ -1,3 +1,7 @@
+/**
+ * ImageEmbed Component - Image preview with lightbox expand
+ * @module modules/chat/components/rich-media-embed
+ */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PhotoIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';

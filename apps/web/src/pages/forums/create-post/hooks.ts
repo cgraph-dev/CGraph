@@ -1,3 +1,7 @@
+/**
+ * Create Post hooks - Form state management and submission logic
+ * @module pages/forums/create-post
+ */
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { createLogger } from '@/lib/logger';

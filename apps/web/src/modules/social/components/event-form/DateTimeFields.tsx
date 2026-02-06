@@ -1,3 +1,7 @@
+/**
+ * DateTimeFields Component - Date and time picker inputs for event scheduling
+ * @module modules/social/components/event-form
+ */
 import { ClockIcon } from '@heroicons/react/24/outline';
 import type { EventFormData } from '@/stores/calendarStore';
 import { formatDateTimeLocal, formatDateLocal } from './hooks';

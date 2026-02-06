@@ -1,3 +1,7 @@
+/**
+ * Advanced Search constants - Default filter values
+ * @module modules/search/components/advanced-search
+ */
 import type { AdvancedSearchFilters } from './types';
 
 export const defaultFilters: AdvancedSearchFilters = {

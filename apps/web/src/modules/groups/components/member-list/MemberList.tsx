@@ -1,3 +1,7 @@
+/**
+ * MemberList Component - Group member list with role sections and search
+ * @module modules/groups/components/member-list
+ */
 import { useState, useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { MagnifyingGlassIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';

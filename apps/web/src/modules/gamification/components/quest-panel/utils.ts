@@ -1,3 +1,7 @@
+/**
+ * Quest Panel utilities - Progress calculation and formatting helpers
+ * @module modules/gamification/components/quest-panel
+ */
 import type { Quest } from '@/stores/gamificationStore';
 import type { QuestTypeColor } from './types';
 
