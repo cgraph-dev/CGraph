@@ -13,3 +13,6 @@ export { ViewModeToggle } from './view-mode-toggle';
 export { ThreadLoadingSkeleton } from './loading-skeleton';
 export { EmptyCommentsState } from './empty-state';
 export { ReplyIndicator } from './reply-indicator';
+export { PostVoteSidebar } from './post-vote-sidebar';
+export { PostContent } from './post-content';
+export { CommentsSection } from './comments-section';

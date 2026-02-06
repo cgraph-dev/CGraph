@@ -3,7 +3,6 @@
  * @module modules/forums/components/thread-view/types
  */
 
-import type { ReactNode } from 'react';
 import type { Post, Comment, ThreadPrefix } from '@/stores/forumStore';
 
 /**
