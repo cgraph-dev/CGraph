@@ -1,2 +1,2 @@
 // Re-export from modularized directory
-export { default } from './app-layout';
+export { default } from './AppLayout';
