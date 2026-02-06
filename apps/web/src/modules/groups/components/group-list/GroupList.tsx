@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Plus, Search, LayoutGrid, List, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useGroups } from '../../hooks/useGroups';
+import { useGroups } from '../../../hooks/useGroups';
 import { GroupIcon } from './GroupIcon';
 import { GroupCard } from './GroupCard';
 import { GroupListItem } from './GroupListItem';
@@ -14,7 +14,7 @@ export function GroupList({
   showCreateButton = true,
 }: GroupListProps) {
   const navigate = useNavigate();
-  const { groups, isLoading, create } = useGroups();
+  const { groups, isLoading, createGroup } = useGroups();
   const [searchQuery, setSearchQuery] = useState('');
   const [currentVariant, setCurrentVariant] = useState<GroupListVariant>(variant);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -36,7 +36,7 @@ export function GroupList({
     description: string;
     isPublic: boolean;
   }) => {
-    await create(data.name, data.description, data.isPublic);
+    await createGroup(data);
     setShowCreateModal(false);
   };
 
@@ -183,5 +183,3 @@ export function GroupList({
     </div>
   );
 }
-
-export default GroupList;
