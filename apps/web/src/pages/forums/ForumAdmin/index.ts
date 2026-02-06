@@ -31,4 +31,21 @@ export {
 } from './constants';
 
 // Panels
-export { GeneralPanel, AnalyticsPanel, ModQueuePanel, AppearancePanel } from './panels';
+export {
+  GeneralPanel,
+  AnalyticsPanel,
+  ModQueuePanel,
+  AppearancePanel,
+  CategoriesPanel,
+  ModeratorsPanel,
+  MembersPanel,
+  PostsPanel,
+  RulesPanel,
+} from './panels';
+
+// Components
+export { Sidebar } from './Sidebar';
+export { AdminContent } from './AdminContent';
+
+// Hooks
+export { useForumAdmin } from './useForumAdmin';
