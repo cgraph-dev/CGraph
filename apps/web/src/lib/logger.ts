@@ -16,7 +16,7 @@
  * @since v0.7.58
  */
 
-import { captureError, captureMessage, addBreadcrumb } from '@/lib/errorTracking';
+import { captureError, captureMessage, addBreadcrumb } from '@/lib/error-tracking';
 
 // Vite provides import.meta.env.DEV - fallback to false for SSR/test environments
 const isDev = typeof import.meta !== 'undefined' && import.meta.env?.DEV === true;

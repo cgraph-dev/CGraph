@@ -26,7 +26,7 @@
  * @version 1.1.0
  */
 
-import { captureError } from '@/lib/errorTracking';
+import { captureError } from '@/lib/error-tracking';
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 

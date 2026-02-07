@@ -1,14 +1,28 @@
 /**
- * AnimatedLogo module barrel exports
+ * AnimatedLogo Module
+ *
+ * Animated circuit-board CGraph logo with splash screen,
+ * loading, and interactive animation variants.
+ *
+ * @module components/animated-logo
  */
 
-// Main component
+// ── Main Component ─────────────────────────────────────────────────────
 export { default } from './page';
 
-// Sub-components
+// ── Sub-components ─────────────────────────────────────────────────────
 export { CircuitBoardLogo } from './CircuitBoardLogo';
+export { SvgDefs } from './svg/SvgDefs';
+export { CLetterTraces } from './svg/CLetterTraces';
+export { GLetterTraces } from './svg/GLetterTraces';
+export { CircuitNodes } from './svg/CircuitNodes';
+export { CentralHub } from './svg/CentralHub';
+export { DataFlowParticles } from './svg/DataFlowParticles';
 
-// Types
+// ── Hooks ──────────────────────────────────────────────────────────────
+export { useSplashAnimation } from './useSplashAnimation';
+
+// ── Types ──────────────────────────────────────────────────────────────
 export type {
   AnimatedLogoProps,
   CircuitBoardLogoProps,
@@ -17,8 +31,9 @@ export type {
   SizeDimensions,
   SvgFilterIds,
 } from './types';
+export type { SplashAnimationState } from './useSplashAnimation';
 
-// Constants
+// ── Constants ──────────────────────────────────────────────────────────
 export {
   SIZE_MAP,
   COLOR_PALETTES,

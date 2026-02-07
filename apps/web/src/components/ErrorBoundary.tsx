@@ -1,5 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
-import { captureError, addBreadcrumb } from '@/lib/errorTracking';
+import { captureError, addBreadcrumb } from '@/lib/error-tracking';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('ErrorBoundary');

@@ -1,6 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { captureError, addBreadcrumb } from '@/lib/errorTracking';
+import { captureError, addBreadcrumb } from '@/lib/error-tracking';
 import { routeLogger } from '@/lib/logger';
 
 interface Props {
