@@ -40,9 +40,8 @@ export function useConversationParticipant(conversationId: string | undefined) {
   }, [conversation?.participants, user?.id]);
 
   // Type-safe extraction of userId and display name
-  const otherParticipantUserId = getParticipantUserId(
-    otherParticipant as unknown as Record<string, unknown>
-  );
+  const otherParticipantUserId =
+    getParticipantUserId(otherParticipant as unknown as Record<string, unknown>) ?? undefined;
   const conversationName =
     conversation?.name ||
     getParticipantDisplayName(otherParticipant as unknown as Record<string, unknown>);

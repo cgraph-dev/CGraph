@@ -14,7 +14,7 @@
 
 import { useRef, useEffect, useCallback, useState, memo } from 'react';
 import { motion } from 'framer-motion';
-import { LogoIcon } from '@/components/Logo';
+import { LogoIcon } from '@/components/logo';
 
 interface FloatingLogoProps {
   /** Size of the logo */

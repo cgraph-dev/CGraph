@@ -112,7 +112,7 @@ const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
 
 // Static pages
 const NotFound = lazy(() => import('@/pages/NotFound'));
-const LandingPage = lazy(() => import('@/pages/LandingPage'));
+const LandingPage = lazy(() => import('@/pages/landing-page'));
 
 // Legal pages
 const PrivacyPolicy = lazy(() => import('@/pages/legal/PrivacyPolicy'));

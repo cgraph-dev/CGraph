@@ -1,0 +1,227 @@
+/**
+ * Conversation Message List
+ *
+ * Renders grouped messages by date with animated message wrappers,
+ * reaction bubbles, typing indicator, and load-more functionality.
+ *
+ * @module pages/messages/conversation/ConversationMessages
+ */
+
+import { type RefObject } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { type Message } from '@/stores/chatStore';
+import { motion, AnimatePresence } from 'framer-motion';
+import { formatDateHeader } from '@/lib/chat/messageUtils';
+import type { MessageGroup } from '@/lib/chat/messageUtils';
+import { getMessageSenderId } from '@/lib/apiUtils';
+import { handleAddReaction } from '@/lib/chat/reactionUtils';
+import { createLogger } from '@/lib/logger';
+import {
+  AnimatedMessageWrapper,
+  AnimatedReactionBubble,
+  TypingIndicator,
+} from '@/modules/chat/components';
+import { GlassCard } from '@/shared/components/ui';
+import { MessageBubble } from '@/modules/chat/components';
+import type { UIPreferences } from './types';
+
+const logger = createLogger('ConversationMessages');
+
+/** Props for the ConversationMessages component */
+export interface ConversationMessagesProps {
+  /** Messages grouped by date */
+  groupedMessages: MessageGroup[];
+  /** Whether more messages can be loaded */
+  hasMore: boolean;
+  /** Whether messages are currently loading */
+  isLoading: boolean;
+  /** Users currently typing */
+  typing: string[];
+  /** Current user for ownership detection */
+  user: { id: string } | null;
+  /** UI display preferences */
+  uiPreferences: UIPreferences;
+  /** Ref to the bottom of messages for auto-scroll */
+  messagesEndRef: RefObject<HTMLDivElement | null>;
+  /** Ref to the messages scroll container */
+  messagesContainerRef: RefObject<HTMLDivElement | null>;
+  /** Active message context menu ID */
+  activeMessageMenu: string | null;
+  /** Message currently being edited */
+  editingMessageId: string | null;
+  /** Current edit text content */
+  editContent: string;
+  /** Callbacks */
+  onLoadMore: () => void;
+  onReply: (message: Message) => void;
+  onStartEdit: (message: Message) => void;
+  onDeleteMessage: (messageId: string) => void;
+  onPinMessage: (messageId: string) => void;
+  onOpenForward: (message: Message) => void;
+  onToggleMessageMenu: (messageId: string) => void;
+  onEditContentChange: (content: string) => void;
+  onSaveEdit: () => void;
+  onCancelEdit: () => void;
+}
+
+/**
+ * Message list with date-group headers, animated wrappers,
+ * reaction bubbles, and typing indicator.
+ */
+export function ConversationMessages({
+  groupedMessages,
+  hasMore,
+  isLoading,
+  typing,
+  user,
+  uiPreferences,
+  messagesEndRef,
+  messagesContainerRef,
+  activeMessageMenu,
+  editingMessageId,
+  editContent,
+  onLoadMore,
+  onReply,
+  onStartEdit,
+  onDeleteMessage,
+  onPinMessage,
+  onOpenForward,
+  onToggleMessageMenu,
+  onEditContentChange,
+  onSaveEdit,
+  onCancelEdit,
+}: ConversationMessagesProps) {
+  const navigate = useNavigate();
+
+  return (
+    <div
+      ref={messagesContainerRef}
+      className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4"
+      style={{ scrollBehavior: 'smooth' }}
+    >
+      {hasMore && (
+        <div className="text-center">
+          <button
+            onClick={onLoadMore}
+            disabled={isLoading}
+            className="text-sm text-primary-400 hover:text-primary-300 disabled:opacity-50"
+          >
+            {isLoading ? 'Loading...' : 'Load more messages'}
+          </button>
+        </div>
+      )}
+
+      {groupedMessages.map((group, groupIndex) => (
+        <div key={groupIndex}>
+          <motion.div
+            className="my-6 flex items-center justify-center"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, type: 'spring' }}
+          >
+            <GlassCard
+              variant={uiPreferences.glassEffect}
+              intensity="subtle"
+              glow={uiPreferences.enableGlow}
+              className="rounded-full px-4 py-2"
+            >
+              <span className="text-xs font-medium tracking-wide text-white">
+                {formatDateHeader(group.date)}
+              </span>
+            </GlassCard>
+          </motion.div>
+
+          <div className="space-y-1">
+            {group.messages.map((message, msgIndex) => {
+              const messageSenderId =
+                getMessageSenderId(message as unknown as Record<string, unknown>) || '';
+              const currentUserId = user?.id || '';
+
+              if (import.meta.env.DEV && msgIndex === 0) {
+                logger.debug('Web] First message debug:', {
+                  messageId: message.id,
+                  messageSenderId,
+                  currentUserId,
+                  isEqual: messageSenderId === currentUserId,
+                });
+              }
+
+              const isOwn =
+                messageSenderId.length > 0 &&
+                currentUserId.length > 0 &&
+                messageSenderId === currentUserId;
+
+              const prevMessage = group.messages[msgIndex - 1];
+              const prevSenderId = prevMessage
+                ? getMessageSenderId(prevMessage as unknown as Record<string, unknown>) || ''
+                : '';
+              const showAvatar = !isOwn && (msgIndex === 0 || prevSenderId !== messageSenderId);
+
+              return (
+                <AnimatedMessageWrapper
+                  key={message.id}
+                  isOwnMessage={isOwn}
+                  index={msgIndex}
+                  messageId={message.id}
+                  onSwipeReply={() => onReply(message)}
+                  enableGestures={true}
+                >
+                  <MessageBubble
+                    message={message}
+                    isOwn={isOwn}
+                    showAvatar={showAvatar}
+                    onReply={() => onReply(message)}
+                    uiPreferences={uiPreferences}
+                    onAvatarClick={(userId) => navigate(`/user/${userId}`)}
+                    onEdit={() => onStartEdit(message)}
+                    onDelete={() => onDeleteMessage(message.id)}
+                    onPin={() => onPinMessage(message.id)}
+                    onForward={() => onOpenForward(message)}
+                    isMenuOpen={activeMessageMenu === message.id}
+                    onToggleMenu={() => onToggleMessageMenu(message.id)}
+                    isEditing={editingMessageId === message.id}
+                    editContent={editContent}
+                    onEditContentChange={onEditContentChange}
+                    onSaveEdit={onSaveEdit}
+                    onCancelEdit={onCancelEdit}
+                  />
+                  {message.reactions && message.reactions.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {Object.entries(
+                        message.reactions.reduce<
+                          Record<string, { count: number; hasReacted: boolean }>
+                        >((acc, r) => {
+                          const entry = (acc[r.emoji] ??= { count: 0, hasReacted: false });
+                          entry.count++;
+                          if (user && r.userId === user.id) entry.hasReacted = true;
+                          return acc;
+                        }, {})
+                      ).map(([emoji, { count, hasReacted }]) => (
+                        <AnimatedReactionBubble
+                          key={emoji}
+                          reaction={{ emoji, count, hasReacted }}
+                          isOwnMessage={isOwn}
+                          onPress={() => handleAddReaction(message.id, emoji)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </AnimatedMessageWrapper>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      <AnimatePresence>
+        <TypingIndicator
+          typing={typing}
+          enableGlow={uiPreferences.enableGlow}
+          glassEffect="crystal"
+        />
+      </AnimatePresence>
+
+      <div ref={messagesEndRef} />
+    </div>
+  );
+}

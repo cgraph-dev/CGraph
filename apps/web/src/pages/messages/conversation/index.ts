@@ -1,12 +1,27 @@
 /**
- * Conversation module barrel exports
- * Re-exports all public API from this module
+ * Conversation Module
+ *
+ * Real-time messaging view with E2EE support, message reactions,
+ * voice/video calls, sticker/GIF pickers, and scheduled messages.
+ *
+ * @module pages/messages/conversation
  */
 
-// Main component
+// ── Main Component ─────────────────────────────────────────────────────
 export { default } from './page';
 
-// Types
+// ── Sub-components ─────────────────────────────────────────────────────
+export { ConversationMessages } from './ConversationMessages';
+export type { ConversationMessagesProps } from './ConversationMessages';
+export { E2EETesterModal, E2EEError, CallModals, InfoPanel } from './ConversationModals';
+export type {
+  E2EEModalProps,
+  E2EEErrorProps,
+  CallModalsProps,
+  InfoPanelProps,
+} from './ConversationModals';
+
+// ── Types ──────────────────────────────────────────────────────────────
 export type {
   UIPreferences,
   PendingE2EEMessage,
@@ -16,10 +31,9 @@ export type {
   CallHandlers,
   SearchResultClickParams,
 } from './types';
-
 export { DEFAULT_UI_PREFERENCES } from './types';
 
-// Hooks
+// ── Hooks ──────────────────────────────────────────────────────────────
 export {
   useConversationParticipant,
   usePresenceStatus,
@@ -28,7 +42,7 @@ export {
   useAutoScroll,
 } from './hooks';
 
-// Handler factories
+// ── Handler Factories ──────────────────────────────────────────────────
 export {
   createSendHandler,
   createE2EERetryHandler,
