@@ -8,7 +8,7 @@
  * @since 2026-01-20
  */
 
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { useModerationQueue } from './useModerationQueue';
 import { QueueHeader } from './QueueHeader';
 import { QueueFilters } from './QueueFilters';

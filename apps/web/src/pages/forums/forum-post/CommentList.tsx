@@ -6,7 +6,7 @@
  * @module pages/forums/forum-post/CommentList
  */
 
-import type { Comment } from '@/stores/forumStore';
+import type { Comment } from '@/modules/forums/store';
 import { CommentItem } from './comment-item';
 
 /** Props for CommentList */

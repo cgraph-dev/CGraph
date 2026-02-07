@@ -8,7 +8,7 @@ import { api } from '@/lib/api';
 import { socketManager } from '@/lib/socket';
 import { createLogger } from '@/lib/logger';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import type { Message } from '@/stores/chatStore';
+import type { Message } from '@/modules/chat/store';
 import type { GifResult } from '@/modules/chat/components/GifPicker';
 import type { Sticker } from '@/data/stickers';
 import type { PendingE2EEMessage, UIPreferences, VoiceMessageData } from './types';

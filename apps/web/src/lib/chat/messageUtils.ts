@@ -8,7 +8,7 @@
  */
 
 import { format, isToday, isYesterday, isSameDay } from 'date-fns';
-import type { Message } from '@/stores/chatStore';
+import type { Message } from '@/modules/chat/store';
 
 /**
  * Format a date for display as a message group header

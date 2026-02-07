@@ -6,7 +6,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { useAvatarBorderStore } from '@/stores/avatarBorderStore';
+import { useAvatarBorderStore } from '@/modules/gamification/store';
 import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
 
 import type { SectionProps } from './types';

@@ -5,8 +5,8 @@
  */
 
 import { memo } from 'react';
-import { useAuthStore } from '@/stores/authStore';
-import { useAvatarBorderStore } from '@/stores/avatarBorderStore';
+import { useAuthStore } from '@/modules/auth/store';
+import { useAvatarBorderStore } from '@/modules/gamification/store';
 import { getBorderById } from '@/data/avatar-borders';
 import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
 import type { MiniProfileCardProps } from './types';

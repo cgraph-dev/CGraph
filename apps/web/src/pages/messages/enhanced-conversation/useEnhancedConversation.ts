@@ -5,8 +5,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { createLogger } from '@/lib/logger';
-import { useChatStore, Message } from '@/stores/chatStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useChatStore, Message } from '@/modules/chat/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { socketManager } from '@/lib/socket';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { themeEngine } from '@/lib/ai/ThemeEngine';

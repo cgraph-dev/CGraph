@@ -6,7 +6,7 @@ import type {
   Achievement,
   AchievementCategory,
   AchievementRarity,
-} from '@/stores/gamificationStore';
+} from '@/modules/gamification/store';
 
 export interface BadgeCollectionProps {
   /** All achievements */

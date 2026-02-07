@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { api } from '@/lib/api';
 import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';

@@ -75,3 +75,6 @@ export {
 
 // Mappings
 export * from './mappings';
+
+// Legacy compatibility hooks
+export { useChatCustomization, useCustomizationInitializer } from './legacyHooks';

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '@/lib/api';
-import { useFriendStore } from '@/stores/friendStore';
+import { useFriendStore } from '@/modules/social/store';
 import { createLogger } from '@/lib/logger';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { toast } from '@/components/Toast';

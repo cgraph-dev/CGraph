@@ -2,7 +2,7 @@
  * Types for the Friends module
  */
 
-import type { Friend, FriendRequest } from '@/stores/friendStore';
+import type { Friend, FriendRequest } from '@/modules/social/store';
 
 /**
  * Tab types for friends navigation

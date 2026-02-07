@@ -21,8 +21,13 @@ export {
 export {
   useChatEffectsStore,
   useActiveMessageEffect,
+  useActiveBubbleStyle,
+  useChatEffectSettings,
   type MessageEffect,
+  type MessageEffectConfig,
   type BubbleStyle,
+  type BubbleStyleConfig,
+  type TypingIndicatorConfig,
   type ChatEffectsState,
 } from './chatEffectsStore';
 

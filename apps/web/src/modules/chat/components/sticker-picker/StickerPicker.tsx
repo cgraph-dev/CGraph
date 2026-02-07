@@ -24,7 +24,7 @@ import {
   getStickerPackById,
   getFreeStickerPacks,
 } from '@/data/stickers';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { cn } from '@/lib/utils';
 import { api } from '@/lib/api';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';

@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { SparklesIcon } from '@heroicons/react/24/outline';
-import { useGroupStore } from '@/stores/groupStore';
+import { useGroupStore } from '@/modules/groups/store';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { createLogger } from '@/lib/logger';

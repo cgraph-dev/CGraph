@@ -28,8 +28,8 @@ import {
   UserCircleIcon as UserCircleIconSolid,
 } from '@heroicons/react/24/solid';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useNotificationStore } from '@/stores/notificationStore';
-import { useChatStore } from '@/stores/chatStore';
+import { useNotificationStore } from '@/modules/social/store';
+import { useChatStore } from '@/modules/chat/store';
 
 export interface MobileNavProps {
   variant?: 'default' | 'floating' | 'minimal';

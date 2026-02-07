@@ -12,8 +12,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { IncomingCallModal } from './IncomingCallModal';
-import { useIncomingCallStore } from '@/stores/incomingCallStore';
-import { useChatStore } from '@/stores/chatStore';
+import { useIncomingCallStore } from '@/modules/calls/store';
+import { useChatStore } from '@/modules/chat/store';
 
 /**
  * IncomingCallHandler Component

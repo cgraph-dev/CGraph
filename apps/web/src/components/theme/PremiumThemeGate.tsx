@@ -6,7 +6,7 @@ import { useThemeStore } from '@/stores/theme';
 
 // Reserved for future use
 void CrownIcon;
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { GlassCard } from '@/shared/components/ui';
 
 /**

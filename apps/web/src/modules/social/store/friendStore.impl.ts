@@ -13,7 +13,7 @@
  * ## Usage
  *
  * ```tsx
- * import { useFriendStore } from '@/stores/friendStore';
+ * import { useFriendStore } from '@/modules/social/store';
  *
  * function FriendsList() {
  *   const { friends, fetchFriends } = useFriendStore();

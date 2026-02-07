@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { useCustomizationStore, getThemePreset } from '@/stores/customization';
 import toast from 'react-hot-toast';
 import {

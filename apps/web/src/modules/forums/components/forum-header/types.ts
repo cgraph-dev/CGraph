@@ -4,7 +4,7 @@
  * Type definitions for the forum header module
  */
 
-import type { Forum } from '@/stores/forumStore';
+import type { Forum } from '@/modules/forums/store';
 
 export type { Forum };
 

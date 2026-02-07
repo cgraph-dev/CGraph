@@ -3,7 +3,7 @@
  * @module pages/search/search/types
  */
 
-import type { SearchCategory } from '@/stores/searchStore';
+import type { SearchCategory } from '@/modules/search/store';
 
 /**
  * Category definition for search tabs

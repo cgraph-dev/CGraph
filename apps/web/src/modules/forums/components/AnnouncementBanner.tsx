@@ -12,7 +12,7 @@ import {
   InformationCircleIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
-import { useAnnouncementStore, type Announcement } from '@/stores/announcementStore';
+import { useAnnouncementStore, type Announcement } from '@/modules/forums/store';
 
 /**
  * AnnouncementBanner Component

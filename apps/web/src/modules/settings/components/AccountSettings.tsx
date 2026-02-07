@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('AccountSettings');

@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { useGroupStore } from '@/stores/groupStore';
+import { useGroupStore } from '@/modules/groups/store';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 /**

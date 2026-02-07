@@ -3,7 +3,7 @@
  * @module pages/forums/forums/types
  */
 
-import type { Post } from '@/stores/forumStore';
+import type { Post } from '@/modules/forums/store';
 
 /**
  * Sort option configuration

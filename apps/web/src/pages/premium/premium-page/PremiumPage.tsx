@@ -12,7 +12,7 @@ import { SparklesIcon, CurrencyDollarIcon, GiftIcon } from '@heroicons/react/24/
 import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { api } from '@/lib/api';
 import confetti from 'canvas-confetti';
 import { createLogger } from '@/lib/logger';

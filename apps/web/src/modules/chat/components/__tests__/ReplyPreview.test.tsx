@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { ReplyPreview } from '../ReplyPreview';
 import type { UIPreferences } from '../MessageBubble';
-import type { Message } from '@/stores/chatStore';
+import type { Message } from '@/modules/chat/store';
 
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', () => ({

@@ -24,7 +24,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useGamificationStore } from '@/stores/gamificationStore';
+import { useGamificationStore } from '@/modules/gamification/store';
 import LevelProgress from '@/modules/gamification/components/LevelProgress';
 import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
 import QuestPanel from '@/modules/gamification/components/QuestPanel';

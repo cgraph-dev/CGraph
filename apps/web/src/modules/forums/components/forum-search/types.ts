@@ -4,7 +4,7 @@
  * Type definitions for the forum search component.
  */
 
-import type { ForumCategory } from '@/stores/forumStore';
+import type { ForumCategory } from '@/modules/forums/store';
 
 /**
  * Individual search result

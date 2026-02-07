@@ -4,7 +4,7 @@
  * Type definitions for the messages page components.
  */
 
-import type { Conversation } from '@/stores/chatStore';
+import type { Conversation } from '@/modules/chat/store';
 
 /**
  * Online status map by conversation-user key
@@ -44,4 +44,4 @@ export interface ConversationSidebarProps {
 }
 
 // Re-export store types for convenience
-export type { Conversation } from '@/stores/chatStore';
+export type { Conversation } from '@/modules/chat/store';

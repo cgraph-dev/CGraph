@@ -2,7 +2,7 @@
  * Quest Panel utilities - Progress calculation and formatting helpers
  * @module modules/gamification/components/quest-panel
  */
-import type { Quest } from '@/stores/gamificationStore';
+import type { Quest } from '@/modules/gamification/store';
 import type { QuestTypeColor } from './types';
 
 /** Format time remaining from an expiry date string to a human-readable countdown */

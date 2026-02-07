@@ -6,8 +6,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useForumStore, Forum } from '@/stores/forumStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useForumStore, Forum } from '@/modules/forums/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { TrophyIcon as TrophyIconSolid } from '@heroicons/react/24/solid';

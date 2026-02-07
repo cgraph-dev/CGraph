@@ -9,7 +9,7 @@
 
 import { useState } from 'react';
 import { createLogger } from '@/lib/logger';
-import { useForumStore } from '@/stores/forumStore';
+import { useForumStore } from '@/modules/forums/store';
 import { toast } from '@/shared/components/ui';
 
 const logger = createLogger('ForumPost');

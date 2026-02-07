@@ -13,7 +13,7 @@ import {
 import { format, formatDistanceToNow, isPast, isToday, isTomorrow, isThisWeek } from 'date-fns';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useChatStore, Message } from '@/stores/chatStore';
+import { useChatStore, Message } from '@/modules/chat/store';
 import { toast } from '@/shared/components/ui';
 
 interface ScheduledMessagesListProps {

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useAuth, useTwoFactor, useSessions } from '../hooks';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 
 // Mock the auth store
 vi.mock('@/stores/authStore', () => ({

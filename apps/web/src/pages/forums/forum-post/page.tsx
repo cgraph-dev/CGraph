@@ -9,8 +9,8 @@
 
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useForumStore } from '@/stores/forumStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useForumStore } from '@/modules/forums/store';
+import { useAuthStore } from '@/modules/auth/store';
 import EditHistoryModal from '@/modules/forums/components/EditHistoryModal';
 
 import { useForumPostActions } from './useForumPostActions';

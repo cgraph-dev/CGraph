@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
-import { useChatCustomization } from '@/stores/unifiedCustomizationStore';
+import { useChatCustomization } from '@/stores/customization';
 import { useChatBubbleStore } from '@/stores/theme';
 import type { UserTheme } from '@/stores/theme';
 import { ThemedAvatar } from './ThemedAvatar';

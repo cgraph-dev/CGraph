@@ -15,7 +15,7 @@
 import { useState } from 'react';
 import { GlassCard } from '@/shared/components/ui';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 
 import type { ThreadViewProps } from './types';
 import {

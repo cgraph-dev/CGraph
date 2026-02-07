@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { StarIcon } from '@heroicons/react/24/solid';
 import { StarIcon as StarOutlineIcon } from '@heroicons/react/24/outline';
-import { useForumStore } from '@/stores/forumStore';
+import { useForumStore } from '@/modules/forums/store';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { createLogger } from '@/lib/logger';
 

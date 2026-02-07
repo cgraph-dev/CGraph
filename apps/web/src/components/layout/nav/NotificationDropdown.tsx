@@ -13,7 +13,7 @@ import { BellIcon } from '@heroicons/react/24/outline';
 import { BellIcon as BellIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useNotificationStore } from '@/stores/notificationStore';
+import { useNotificationStore } from '@/modules/social/store';
 
 /** Notification dropdown bell + panel */
 export function NotificationDropdown() {

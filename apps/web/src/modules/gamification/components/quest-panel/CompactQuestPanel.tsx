@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { TrophyIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleSolidIcon } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';
-import type { Quest } from '@/stores/gamificationStore';
+import type { Quest } from '@/modules/gamification/store';
 import { getQuestProgress, isQuestReady } from './utils';
 
 interface CompactQuestPanelProps {

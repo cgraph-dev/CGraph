@@ -3,7 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('PluginMarketplace');
-import { usePluginStore, MarketplacePlugin, getCategoryDisplayName } from '@/stores/pluginStore';
+import {
+  usePluginStore,
+  MarketplacePlugin,
+  getCategoryDisplayName,
+} from '@/modules/settings/store';
 import {
   PuzzlePieceIcon,
   MagnifyingGlassIcon,

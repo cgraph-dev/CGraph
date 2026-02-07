@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import { MagnifyingGlassIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { buildCommands, CATEGORY_LABELS, type Command } from './commandRegistry';
 
 export type { Command };

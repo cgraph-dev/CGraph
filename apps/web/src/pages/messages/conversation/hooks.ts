@@ -5,9 +5,9 @@
 
 import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { socketManager } from '@/lib/socket';
-import { useChatStore } from '@/stores/chatStore';
-import { useFriendStore } from '@/stores/friendStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useChatStore } from '@/modules/chat/store';
+import { useFriendStore } from '@/modules/social/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { getParticipantUserId, getParticipantDisplayName } from '@/lib/apiUtils';
 import { createLogger } from '@/lib/logger';
 import type { MutualFriend } from './types';

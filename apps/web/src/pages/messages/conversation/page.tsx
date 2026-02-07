@@ -10,8 +10,8 @@
 
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useChatStore, Message } from '@/stores/chatStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useChatStore, Message } from '@/modules/chat/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { AnimatePresence } from 'framer-motion';
 
 // Extracted module pieces

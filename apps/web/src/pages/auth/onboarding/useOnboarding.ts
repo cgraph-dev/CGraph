@@ -4,7 +4,7 @@
 
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 import { DEFAULT_PROFILE_DATA, ONBOARDING_STEPS } from './constants';

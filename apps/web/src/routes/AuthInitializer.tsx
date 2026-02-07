@@ -9,8 +9,8 @@
  */
 
 import { useEffect } from 'react';
-import { useAuthStore } from '@/stores/authStore';
-import { useGamificationStore } from '@/stores/gamificationStore';
+import { useAuthStore } from '@/modules/auth/store';
+import { useGamificationStore } from '@/modules/gamification/store';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { useCustomizationStore } from '@/stores/customization';
 import { ThemeRegistry } from '@/themes/ThemeRegistry';

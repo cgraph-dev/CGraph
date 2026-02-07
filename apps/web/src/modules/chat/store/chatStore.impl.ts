@@ -15,7 +15,7 @@
  * ## Usage
  *
  * ```tsx
- * import { useChatStore } from '@/stores/chatStore';
+ * import { useChatStore } from '@/modules/chat/store';
  *
  * function MessageList({ conversationId }) {
  *   const messages = useChatStore((s) => s.messages[conversationId] || []);
@@ -60,7 +60,7 @@ import {
   normalizeConversations,
 } from '@/lib/apiUtils';
 import { useE2EEStore } from '@/lib/crypto/e2eeStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { chatLogger as logger } from '@/lib/logger';
 import type { Message, Reaction, Conversation, ChatState } from './chatStore.types';
 

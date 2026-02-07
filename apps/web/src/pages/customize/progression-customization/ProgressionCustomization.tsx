@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useGamificationStore } from '@/stores/gamificationStore';
+import { useGamificationStore } from '@/modules/gamification/store';
 import { gamificationLogger as logger } from '@/lib/logger';
 import type { ProgressionCategory } from './types';
 import { MOCK_ACHIEVEMENTS, MOCK_LEADERBOARD, MOCK_QUESTS, MOCK_DAILY_REWARDS } from './mock-data';

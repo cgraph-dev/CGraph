@@ -5,7 +5,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChatBubbleLeftIcon, XMarkIcon } from '@heroicons/react/24/outline';
-import { useForumStore } from '@/stores/forumStore';
+import { useForumStore } from '@/modules/forums/store';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { GlassCard } from '@/shared/components/ui';
 

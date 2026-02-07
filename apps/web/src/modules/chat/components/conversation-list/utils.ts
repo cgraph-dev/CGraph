@@ -4,7 +4,7 @@
  */
 
 import { format, isToday, isYesterday } from 'date-fns';
-import type { Conversation } from '@/stores/chatStore';
+import type { Conversation } from '@/modules/chat/store';
 import { getAvatarBorderId } from '@/lib/utils';
 
 export function getConversationName(conversation: Conversation, currentUserId?: string): string {

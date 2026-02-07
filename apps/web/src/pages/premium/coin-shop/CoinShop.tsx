@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { CurrencyDollarIcon, ShoppingBagIcon } from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { Button } from '@/components';
 import { COIN_BUNDLES, SHOP_ITEMS } from './constants';
 import { useCoinShop } from './useCoinShop';

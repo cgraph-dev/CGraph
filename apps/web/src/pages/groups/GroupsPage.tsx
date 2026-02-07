@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useGroupStore } from '@/stores/groupStore';
+import { useGroupStore } from '@/modules/groups/store';
 import {
   ServerList,
   ChannelList,

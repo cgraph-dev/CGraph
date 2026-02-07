@@ -2,7 +2,7 @@
  * Constants for AnimatedBadge module
  */
 
-import type { AchievementRarity } from '@/stores/gamificationStore';
+import type { AchievementRarity } from '@/modules/gamification/store';
 import type { RarityColorConfig, SizeConfig } from './types';
 
 // ==================== RARITY CONFIGURATIONS ====================

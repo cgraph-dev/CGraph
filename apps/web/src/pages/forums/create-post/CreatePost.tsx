@@ -4,7 +4,7 @@
  */
 import { Link } from 'react-router-dom';
 import { MarkdownEditor } from '@/components';
-import type { PostAttachment } from '@/stores/forumStore';
+import type { PostAttachment } from '@/modules/forums/store';
 import AttachmentUploader from '@/modules/forums/components/AttachmentUploader';
 import {
   ArrowLeftIcon,

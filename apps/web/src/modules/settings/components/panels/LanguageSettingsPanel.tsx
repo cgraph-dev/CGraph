@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useSettingsStore } from '@/stores/settingsStore';
+import { useSettingsStore } from '@/modules/settings/store';
 import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';
 

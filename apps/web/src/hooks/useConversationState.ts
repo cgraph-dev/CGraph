@@ -13,9 +13,9 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useChatStore, Message, Conversation } from '@/stores/chatStore';
-import { useAuthStore } from '@/stores/authStore';
-import { useFriendStore } from '@/stores/friendStore';
+import { useChatStore, Message, Conversation } from '@/modules/chat/store';
+import { useAuthStore } from '@/modules/auth/store';
+import { useFriendStore } from '@/modules/social/store';
 import { socketManager } from '@/lib/socket';
 import { getParticipantUserId, getParticipantDisplayName } from '@/lib/apiUtils';
 

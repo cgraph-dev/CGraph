@@ -18,8 +18,8 @@
 
 import { AnimatePresence } from 'framer-motion';
 import { BookmarkIcon as PinIcon } from '@heroicons/react/24/outline';
-import { useChatStore } from '@/stores/chatStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useChatStore } from '@/modules/chat/store';
+import { useAuthStore } from '@/modules/auth/store';
 import type { ConversationListProps } from './types';
 import { useConversationList } from './useConversationList';
 import { ConversationListHeader } from './ConversationListHeader';

@@ -5,8 +5,8 @@
 
 import { useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useChatStore, type Conversation } from '@/stores/chatStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useChatStore, type Conversation } from '@/modules/chat/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { FilterType, UseConversationListReturn } from './types';
 import { getConversationName } from './utils';

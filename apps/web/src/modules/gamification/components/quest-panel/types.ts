@@ -6,7 +6,7 @@
  * @module modules/gamification/components/quest-panel
  */
 
-import type { Quest } from '@/stores/gamificationStore';
+import type { Quest } from '@/modules/gamification/store';
 
 export interface QuestPanelProps {
   /** Display variant: 'compact' for sidebar, 'full' for dedicated page */

@@ -13,8 +13,8 @@ import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('InlineModerationToolbar');
 import { motion, AnimatePresence } from 'framer-motion';
-import { useModerationStore } from '@/stores/moderationStore';
-import { useForumStore } from '@/stores/forumStore';
+import { useModerationStore } from '@/modules/moderation/store';
+import { useForumStore } from '@/modules/forums/store';
 import { cn } from '@/lib/utils';
 
 interface InlineModerationToolbarProps {

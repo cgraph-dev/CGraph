@@ -6,7 +6,7 @@
  * @module modules/groups/components/member-list
  */
 
-import type { Member } from '@/stores/groupStore';
+import type { Member } from '@/modules/groups/store';
 
 /** Props for the main MemberList component */
 export interface MemberListProps {

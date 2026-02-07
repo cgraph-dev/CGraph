@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useModerationStore } from '@/stores/moderationStore';
+import { useModerationStore } from '@/modules/moderation/store';
 import type { FilterState, UseModerationQueueReturn } from './types';
 import { DEFAULT_FILTER_STATE } from './constants';
 

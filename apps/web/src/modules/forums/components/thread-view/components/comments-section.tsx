@@ -8,7 +8,7 @@
 import { motion } from 'framer-motion';
 import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 import { ThreadedCommentTree } from '../../ThreadedCommentTree';
-import type { Comment } from '@/stores/forumStore';
+import type { Comment } from '@/modules/forums/store';
 import type { CommentViewMode } from '../types';
 import { ViewModeToggle, CommentCard, EmptyCommentsState, ReplyIndicator } from '.';
 import type { Virtualizer } from '@tanstack/react-virtual';

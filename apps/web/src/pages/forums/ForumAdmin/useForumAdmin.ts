@@ -4,8 +4,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useForumStore, type ForumCategory, type ForumModerator } from '@/stores/forumStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useForumStore, type ForumCategory, type ForumModerator } from '@/modules/forums/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { DEFAULT_FLAIRS, DEFAULT_APPEARANCE } from './constants';
 import type {

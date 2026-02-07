@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useCalendarStore, EventFormData, RecurrencePattern } from '@/stores/calendarStore';
+import { useCalendarStore, EventFormData, RecurrencePattern } from '@/modules/settings/store';
 import { createLogger } from '@/lib/logger';
 import type { EventFormProps } from './types';
 

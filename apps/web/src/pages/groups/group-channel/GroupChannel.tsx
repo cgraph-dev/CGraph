@@ -7,8 +7,8 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { useGroupStore } from '@/stores/groupStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useGroupStore } from '@/modules/groups/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { socketManager } from '@/lib/socket';
 import { createLogger } from '@/lib/logger';
 

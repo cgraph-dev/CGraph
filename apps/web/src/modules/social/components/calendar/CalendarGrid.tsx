@@ -7,7 +7,7 @@
  * @module modules/social/components/calendar/CalendarGrid
  */
 
-import type { CalendarEvent } from '@/stores/calendarStore';
+import type { CalendarEvent } from '@/modules/settings/store';
 import { formatTime, getCategoryColor, getEventTypeIcon, isToday } from './calendarUtils';
 import type { CalendarCategory } from './calendarUtils';
 

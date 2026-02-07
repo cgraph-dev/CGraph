@@ -6,7 +6,7 @@
 import { useState, useRef, useMemo, useCallback } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import type { Comment } from '@/stores/forumStore';
+import type { Comment } from '@/modules/forums/store';
 import type { CommentViewMode } from './types';
 
 /**

@@ -3,7 +3,7 @@
  */
 
 import { motion, AnimatePresence } from 'framer-motion';
-import type { ForumCategory, ForumModerator } from '@/stores/forumStore';
+import type { ForumCategory, ForumModerator } from '@/modules/forums/store';
 import type {
   AdminTab,
   ForumAppearance,

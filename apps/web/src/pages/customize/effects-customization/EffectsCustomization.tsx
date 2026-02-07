@@ -24,7 +24,7 @@ import {
   PhotoIcon,
   BeakerIcon,
 } from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { useCustomizationStore } from '@/stores/customization';
 import toast from 'react-hot-toast';
 

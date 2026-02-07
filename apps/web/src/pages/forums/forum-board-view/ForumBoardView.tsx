@@ -12,9 +12,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { createLogger } from '@/lib/logger';
 
-import { useForumHostingStore } from '@/stores/forumHostingStore';
-import { useForumStore } from '@/stores/forumStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useForumHostingStore } from '@/modules/forums/store';
+import { useForumStore } from '@/modules/forums/store';
+import { useAuthStore } from '@/modules/auth/store';
 
 import { BoardsList } from './BoardsList';
 import { ThreadsList } from './ThreadsList';

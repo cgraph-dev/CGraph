@@ -12,7 +12,7 @@ import {
   ArrowDownTrayIcon,
   PhotoIcon,
 } from '@heroicons/react/24/outline';
-import { useForumStore, type PostAttachment } from '@/stores/forumStore';
+import { useForumStore, type PostAttachment } from '@/modules/forums/store';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { GlassCard } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';

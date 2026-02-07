@@ -9,7 +9,7 @@ import {
   PlusIcon,
   UserGroupIcon,
 } from '@heroicons/react/24/outline';
-import { useGroupStore } from '@/stores/groupStore';
+import { useGroupStore } from '@/modules/groups/store';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';

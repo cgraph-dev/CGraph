@@ -11,7 +11,7 @@ import {
   InformationCircleIcon,
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import type { E2EEConnectionTesterProps } from './types';
 import { useE2EETests } from './useE2EETests';
 import { TestResultItem } from './TestResultItem';

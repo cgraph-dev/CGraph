@@ -3,7 +3,7 @@
  * Extracted from Conversation.tsx for modularity
  */
 
-import type { Message } from '@/stores/chatStore';
+import type { Message } from '@/modules/chat/store';
 import type { GifResult } from '@/modules/chat/components/GifPicker';
 import type { Sticker } from '@/data/stickers';
 

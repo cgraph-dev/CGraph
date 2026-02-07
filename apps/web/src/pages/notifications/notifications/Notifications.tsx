@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useNotificationStore, type Notification } from '@/stores/notificationStore';
+import { useNotificationStore, type Notification } from '@/modules/social/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AmbientParticles } from './AmbientParticles';
 import { NotificationHeader } from './NotificationHeader';

@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UsersIcon, BellIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { useFriendStore } from '@/stores/friendStore';
+import { useFriendStore } from '@/modules/social/store';
 import { MOCK_NOTIFICATIONS, MOCK_SEARCH_RESULTS } from './mock-data';
 import { FriendsTab } from './FriendsTab';
 import { NotificationsTab } from './NotificationsTab';

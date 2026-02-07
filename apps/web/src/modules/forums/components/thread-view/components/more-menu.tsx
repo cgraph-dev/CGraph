@@ -11,7 +11,7 @@ import {
   MapPinIcon,
   LockClosedIcon,
 } from '@heroicons/react/24/outline';
-import type { Post } from '@/stores/forumStore';
+import type { Post } from '@/modules/forums/store';
 
 interface MoreMenuProps {
   isOpen: boolean;

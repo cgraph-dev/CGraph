@@ -26,8 +26,8 @@ import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { getAvatarBorderId } from '@/lib/utils';
-import { useAuthStore } from '@/stores/authStore';
-import { useGroupStore } from '@/stores/groupStore';
+import { useAuthStore } from '@/modules/auth/store';
+import { useGroupStore } from '@/modules/groups/store';
 import { usePremiumStore } from '@/modules/premium/store';
 
 export interface SidebarProps {

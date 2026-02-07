@@ -5,7 +5,7 @@
 import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useActiveBubbleStyle, useChatEffectSettings } from '@/stores/chatEffectsStore';
+import { useActiveBubbleStyle, useChatEffectSettings } from '@/modules/chat/store';
 import type { MessageBubbleProps } from './types';
 
 export const MessageBubble = memo(function MessageBubble({

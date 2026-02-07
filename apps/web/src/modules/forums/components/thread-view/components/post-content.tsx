@@ -22,7 +22,7 @@ import { BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/24/solid';
 import { formatTimeAgo } from '@/lib/utils';
 import { UserStars } from '@/modules/gamification/components/UserStars';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
-import type { Post } from '@/stores/forumStore';
+import type { Post } from '@/modules/forums/store';
 import { PrefixBadge, RatingStars, ShareMenu, MoreMenu, CommentForm } from '.';
 
 interface PostContentProps {

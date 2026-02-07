@@ -1,4 +1,4 @@
 /**
  * Forum Hosting Store - Re-export from legacy
  */
-export * from '@/stores/forumHostingStore';
+export * from '@/modules/forums/store';

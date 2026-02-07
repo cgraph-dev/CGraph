@@ -4,7 +4,7 @@
  * Helper functions for building and traversing comment trees.
  */
 
-import type { Comment } from '@/stores/forumStore';
+import type { Comment } from '@/modules/forums/store';
 import type { CommentTreeNode } from './types';
 
 /**

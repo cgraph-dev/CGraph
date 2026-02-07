@@ -6,7 +6,7 @@
 
 import { motion } from 'framer-motion';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
-import type { QuestObjective } from '@/stores/gamificationStore';
+import type { QuestObjective } from '@/modules/gamification/store';
 
 interface ObjectiveItemProps {
   objective: QuestObjective;

@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { AnimatedBadgeWithTooltip } from './AnimatedBadge';
-import type { Achievement } from '@/stores/gamificationStore';
+import type { Achievement } from '@/modules/gamification/store';
 
 export interface BadgePickerModalProps {
   /** Whether the modal is visible */

@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { Message } from '@/stores/chatStore';
+import { Message } from '@/modules/chat/store';
 import type { UIPreferences } from './MessageBubble';
 
 export interface ReplyPreviewProps {

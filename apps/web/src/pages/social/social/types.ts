@@ -2,7 +2,7 @@
  * Social Hub - Type Definitions
  */
 
-import type { Friend, FriendRequest } from '@/stores/friendStore';
+import type { Friend, FriendRequest } from '@/modules/social/store';
 
 // =============================================================================
 // TAB TYPES

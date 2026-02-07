@@ -6,7 +6,7 @@ import {
   SpeakerWaveIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { toast } from '@/shared/components/ui';
 import { useWebRTC } from '@/hooks/useWebRTC';
 

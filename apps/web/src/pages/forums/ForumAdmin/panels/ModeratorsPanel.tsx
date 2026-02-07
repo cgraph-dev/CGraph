@@ -6,7 +6,7 @@ import {
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
-import type { ForumModerator } from '@/stores/forumStore';
+import type { ForumModerator } from '@/modules/forums/store';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 interface ModeratorsPanelProps {

@@ -13,7 +13,7 @@ import { AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useGamificationStore, Achievement } from '@/stores/gamificationStore';
+import { useGamificationStore, Achievement } from '@/modules/gamification/store';
 import AchievementNotification, {
   AchievementNotificationData,
 } from '@/modules/gamification/components/AchievementNotification';

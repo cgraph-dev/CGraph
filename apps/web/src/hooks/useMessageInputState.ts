@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import type { Message } from '@/stores/chatStore';
+import type { Message } from '@/modules/chat/store';
 
 // ============================================================================
 // Hook for managing message input and picker states

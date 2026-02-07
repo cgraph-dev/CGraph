@@ -3,7 +3,7 @@
  * @module modules/search/components/advanced-search
  */
 import { useState, useCallback } from 'react';
-import { useForumStore } from '@/stores/forumStore';
+import { useForumStore } from '@/modules/forums/store';
 import { cn } from '@/lib/utils';
 import type { AdvancedSearchFilters, AdvancedSearchProps } from './types';
 import { defaultFilters } from './constants';

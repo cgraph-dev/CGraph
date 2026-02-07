@@ -5,7 +5,7 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createLogger } from '@/lib/logger';
-import { useFriendStore } from '@/stores/friendStore';
+import { useFriendStore } from '@/modules/social/store';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { api } from '@/lib/api';
 

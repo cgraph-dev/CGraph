@@ -3,7 +3,7 @@
  * @module quests-page/types
  */
 
-import type { Quest } from '@/stores/gamificationStore';
+import type { Quest } from '@/modules/gamification/store';
 
 export type QuestTab = 'active' | 'daily' | 'weekly' | 'completed';
 

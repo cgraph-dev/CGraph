@@ -14,7 +14,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import type { Quest } from '@/stores/gamificationStore';
+import type { Quest } from '@/modules/gamification/store';
 import { getQuestTypeColor, getQuestProgress, isQuestReady } from './utils';
 import { QuestObjectiveItem } from './QuestObjectiveItem';
 

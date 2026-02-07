@@ -3,8 +3,8 @@
  */
 
 import { memo, createContext, useContext, useMemo } from 'react';
-import { useChatEffectSettings } from '@/stores/chatEffectsStore';
-import type { MessageEffect, MessageEffectConfig } from '@/stores/chatEffectsStore';
+import { useChatEffectSettings } from '@/modules/chat/store';
+import type { MessageEffect, MessageEffectConfig } from '@/modules/chat/store';
 import type { ChatEffectsProviderProps } from './types';
 
 interface ChatEffectsContextValue {

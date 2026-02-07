@@ -12,7 +12,7 @@ import {
   PlusIcon,
   CalendarIcon,
 } from '@heroicons/react/24/outline';
-import type { ViewMode } from '@/stores/calendarStore';
+import type { ViewMode } from '@/modules/settings/store';
 
 /** Props for CalendarHeader */
 export interface CalendarHeaderProps {

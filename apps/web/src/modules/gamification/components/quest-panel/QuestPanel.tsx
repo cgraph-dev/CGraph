@@ -4,7 +4,7 @@
  */
 import { useState, useEffect, useCallback } from 'react';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useGamificationStore, Quest } from '@/stores/gamificationStore';
+import { useGamificationStore, Quest } from '@/modules/gamification/store';
 import confetti from 'canvas-confetti';
 import type { QuestPanelProps } from './types';
 import { formatTimeRemaining } from './utils';

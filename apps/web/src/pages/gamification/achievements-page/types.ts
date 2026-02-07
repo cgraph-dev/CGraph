@@ -2,7 +2,7 @@ import type {
   AchievementCategory,
   AchievementRarity,
   Achievement,
-} from '@/stores/gamificationStore';
+} from '@/modules/gamification/store';
 
 export interface AchievementCardProps {
   achievement: Achievement;

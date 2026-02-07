@@ -23,7 +23,7 @@ import {
   FaceSmileIcon,
   AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { useCustomizationStore, getBubbleStyle, getBubbleAnimation } from '@/stores/customization';
 import toast from 'react-hot-toast';
 import type { ChatCategory, BubbleStyle, MessageEffect, ReactionStyle } from './types';

@@ -8,8 +8,8 @@
  */
 
 import { useNavigate } from 'react-router-dom';
-import { useForumStore } from '@/stores/forumStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useForumStore } from '@/modules/forums/store';
+import { useAuthStore } from '@/modules/auth/store';
 import Dropdown, { DropdownItem, DropdownDivider } from '@/components/Dropdown';
 import { toast } from '@/shared/components/ui';
 import {

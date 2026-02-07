@@ -10,7 +10,7 @@ import {
   TrophyIcon,
   QuestionMarkCircleIcon,
 } from '@heroicons/react/24/outline';
-import type { AchievementCategory, AchievementRarity } from '@/stores/gamificationStore';
+import type { AchievementCategory, AchievementRarity } from '@/modules/gamification/store';
 
 export const CATEGORY_ICONS: Record<
   AchievementCategory,

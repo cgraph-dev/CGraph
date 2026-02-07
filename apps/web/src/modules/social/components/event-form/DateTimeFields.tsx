@@ -3,7 +3,7 @@
  * @module modules/social/components/event-form
  */
 import { ClockIcon } from '@heroicons/react/24/outline';
-import type { EventFormData } from '@/stores/calendarStore';
+import type { EventFormData } from '@/modules/settings/store';
 import { formatDateTimeLocal, formatDateLocal } from './hooks';
 
 interface DateTimeFieldsProps {

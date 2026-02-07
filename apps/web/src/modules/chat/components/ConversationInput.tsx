@@ -21,7 +21,7 @@ import { StickerPicker, StickerButton } from '@/modules/chat/components/StickerP
 import { GifPicker, type GifResult } from '@/modules/chat/components/GifPicker';
 import { EmojiPicker } from '@/modules/chat/components/EmojiPicker';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import type { Message } from '@/stores/chatStore';
+import type { Message } from '@/modules/chat/store';
 import type { Sticker } from '@/data/stickers';
 
 interface ConversationInputProps {

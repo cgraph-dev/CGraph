@@ -9,7 +9,7 @@ import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { TITLES, type Title, type TitleRarity } from '@/data/titles';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import type { OwnedTitle, TitleTab, TitleStats } from './types';
 import { RARITY_ORDER } from './constants';
 

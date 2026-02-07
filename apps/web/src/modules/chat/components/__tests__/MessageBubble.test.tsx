@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MessageBubble, type UIPreferences, type MessageBubbleProps } from '../MessageBubble';
-import type { Message } from '@/stores/chatStore';
+import type { Message } from '@/modules/chat/store';
 
 // Mock dependencies
 vi.mock('@/stores/chatStore', () => ({

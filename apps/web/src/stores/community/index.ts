@@ -22,7 +22,7 @@ export {
   type Poll,
   type PollOption,
   type PostAttachment,
-} from '@/stores/forumStore';
+} from '@/modules/forums/store';
 
 // Re-export group store
 export {
@@ -32,7 +32,7 @@ export {
   type Member,
   type ChannelMessage,
   type Role,
-} from '@/stores/groupStore';
+} from '@/modules/groups/store';
 
 // Re-export moderation store
 export {
@@ -42,7 +42,7 @@ export {
   type UserWarning,
   type Ban,
   type WarningType,
-} from '@/stores/moderationStore';
+} from '@/modules/moderation/store';
 
 // Re-export forum hosting store from root
 export {
@@ -51,7 +51,7 @@ export {
   type Thread,
   type ThreadPost,
   type ForumMember,
-} from '@/stores/forumHostingStore';
+} from '@/modules/forums/store';
 
 // Unified community state type
 export interface CommunityData {
@@ -72,6 +72,6 @@ export interface CommunityData {
 }
 
 // Import types for the unified interface
-import type { Forum, Post } from '@/stores/forumStore';
-import type { Group } from '@/stores/groupStore';
-import type { ModerationQueueItem } from '@/stores/moderationStore';
+import type { Forum, Post } from '@/modules/forums/store';
+import type { Group } from '@/modules/groups/store';
+import type { ModerationQueueItem } from '@/modules/moderation/store';

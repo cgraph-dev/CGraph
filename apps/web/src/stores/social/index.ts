@@ -11,10 +11,10 @@
  */
 
 // Re-export friend store from root
-export { useFriendStore, type Friend, type FriendRequest } from '@/stores/friendStore';
+export { useFriendStore, type Friend, type FriendRequest } from '@/modules/social/store';
 
 // Re-export notification store
-export { useNotificationStore, type Notification } from '@/stores/notificationStore';
+export { useNotificationStore, type Notification } from '@/modules/social/store';
 
 // Re-export profile store from root
 export {
@@ -26,7 +26,7 @@ export {
   type UserBadge,
   type UserTitle,
   type BlockedUser,
-} from '@/stores/profileStore';
+} from '@/modules/social/store';
 
 // Unified social state type
 export interface SocialData {
@@ -45,9 +45,9 @@ export interface SocialData {
 }
 
 // Import types for the unified interface
-import type { Friend, FriendRequest } from '@/stores/friendStore';
-import type { Notification } from '@/stores/notificationStore';
-import type { ExtendedProfile } from '@/stores/profileStore';
+import type { Friend, FriendRequest } from '@/modules/social/store';
+import type { Notification } from '@/modules/social/store';
+import type { ExtendedProfile } from '@/modules/social/store';
 
 // Combined selectors for common use cases
 export const useSocialUnreadCount = () => {
@@ -57,5 +57,5 @@ export const useSocialUnreadCount = () => {
 };
 
 // Re-import stores for selector
-import { useNotificationStore } from '@/stores/notificationStore';
-import { useFriendStore } from '@/stores/friendStore';
+import { useNotificationStore } from '@/modules/social/store';
+import { useFriendStore } from '@/modules/social/store';

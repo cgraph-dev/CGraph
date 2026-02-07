@@ -6,7 +6,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
-import type { ModerationQueueItem } from '@/stores/moderationStore';
+import type { ModerationQueueItem } from '@/modules/moderation/store';
 import { QueueItemCard } from './QueueItemCard';
 
 interface QueueListProps {

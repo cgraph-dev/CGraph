@@ -10,7 +10,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
-import type { SearchCategory } from '@/stores/searchStore';
+import type { SearchCategory } from '@/modules/search/store';
 import type { SearchState } from './useSearch';
 import {
   ResultSection,

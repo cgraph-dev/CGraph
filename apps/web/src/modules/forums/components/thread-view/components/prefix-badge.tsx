@@ -3,7 +3,7 @@
  * @module modules/forums/components/thread-view/components/prefix-badge
  */
 
-import type { ThreadPrefix } from '@/stores/forumStore';
+import type { ThreadPrefix } from '@/modules/forums/store';
 
 interface PrefixBadgeProps {
   prefix: ThreadPrefix;

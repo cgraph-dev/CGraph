@@ -6,8 +6,8 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaceSmileIcon } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
-import { useChatStore } from '@/stores/chatStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useChatStore } from '@/modules/chat/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { AnimatedMessageWrapper } from '@/modules/chat/components/AnimatedMessageWrapper';
 import {
   AnimatedReactionBubble,

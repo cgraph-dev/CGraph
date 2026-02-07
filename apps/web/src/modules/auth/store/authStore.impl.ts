@@ -14,7 +14,7 @@
  * ## Usage
  *
  * ```tsx
- * import { useAuthStore } from '@/stores/authStore';
+ * import { useAuthStore } from '@/modules/auth/store';
  *
  * function LoginButton() {
  *   const { login, isAuthenticated, user } = useAuthStore();

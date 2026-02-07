@@ -4,7 +4,7 @@
  * Type definitions for the forum leaderboard component.
  */
 
-import type { Forum } from '@/stores/forumStore';
+import type { Forum } from '@/modules/forums/store';
 
 /**
  * Sort options for the leaderboard

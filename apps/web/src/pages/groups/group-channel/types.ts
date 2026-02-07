@@ -4,7 +4,7 @@
  * Type definitions for the group channel page components.
  */
 
-import type { ChannelMessage, Member } from '@/stores/groupStore';
+import type { ChannelMessage, Member } from '@/modules/groups/store';
 
 /**
  * Message item component props
@@ -79,4 +79,4 @@ export interface MembersSidebarProps {
 }
 
 // Re-export store types for convenience
-export type { ChannelMessage, Member } from '@/stores/groupStore';
+export type { ChannelMessage, Member } from '@/modules/groups/store';

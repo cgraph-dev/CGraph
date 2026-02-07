@@ -12,7 +12,7 @@ import { memo, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { THEME_COLORS } from '@/types/avatar-borders';
-import { useAvatarBorderStore } from '@/stores/avatarBorderStore';
+import { useAvatarBorderStore } from '@/modules/gamification/store';
 import type { AvatarBorderRendererProps, BorderColors } from './types';
 import {
   ANIMATION_KEYFRAMES,

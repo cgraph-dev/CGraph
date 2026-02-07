@@ -4,7 +4,7 @@
  */
 
 import { motion } from 'framer-motion';
-import type { ThreadPrefix as ThreadPrefixType } from '@/stores/forumStore';
+import type { ThreadPrefix as ThreadPrefixType } from '@/modules/forums/store';
 
 interface ThreadPrefixProps {
   prefix: ThreadPrefixType | null | undefined;

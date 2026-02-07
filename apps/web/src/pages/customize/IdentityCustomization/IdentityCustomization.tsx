@@ -20,8 +20,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/stores/authStore';
-import { useGamificationStore } from '@/stores/gamificationStore';
+import { useAuthStore } from '@/modules/auth/store';
+import { useGamificationStore } from '@/modules/gamification/store';
 import { useCustomizationStore, type ProfileCardStyle } from '@/stores/customization';
 import toast from 'react-hot-toast';
 

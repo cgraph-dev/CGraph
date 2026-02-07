@@ -4,10 +4,10 @@
  */
 import { useEffect, useMemo, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useAuthStore } from '@/stores/authStore';
-import { useChatStore } from '@/stores/chatStore';
-import { useGroupStore } from '@/stores/groupStore';
-import { useNotificationStore } from '@/stores/notificationStore';
+import { useAuthStore } from '@/modules/auth/store';
+import { useChatStore } from '@/modules/chat/store';
+import { useGroupStore } from '@/modules/groups/store';
+import { useNotificationStore } from '@/modules/social/store';
 import { useThemeEnhanced } from '@/contexts/ThemeContextEnhanced';
 import { socketManager } from '@/lib/socket';
 

@@ -8,7 +8,7 @@
  */
 
 import { Navigate } from 'react-router-dom';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { routeLogger } from '@/lib/logger';
 

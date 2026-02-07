@@ -4,7 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
-import { useFriendStore, Friend } from '@/stores/friendStore';
+import { useFriendStore, Friend } from '@/modules/social/store';
 import { extractErrorMessage } from '@/lib/apiUtils';
 import { motion } from 'framer-motion';
 import { UserPlusIcon, NoSymbolIcon, ClockIcon } from '@heroicons/react/24/outline';

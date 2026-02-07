@@ -1,5 +1,5 @@
 import { AnimatePresence } from 'framer-motion';
-import { Message } from '@/stores/chatStore';
+import { Message } from '@/modules/chat/store';
 import E2EEConnectionTester from '@/modules/chat/components/E2EEConnectionTester';
 import { E2EEErrorModal } from '@/modules/chat/components/E2EEErrorModal';
 import { ForwardMessageModal } from '@/modules/chat/components/ForwardMessageModal';

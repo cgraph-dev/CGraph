@@ -10,7 +10,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { handleOAuthCallback, OAuthProvider } from '@/lib/oauth';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('OAuthCallback');

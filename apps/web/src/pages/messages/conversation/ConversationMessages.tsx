@@ -9,7 +9,7 @@
 
 import { type RefObject } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { type Message } from '@/stores/chatStore';
+import { type Message } from '@/modules/chat/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDateHeader } from '@/lib/chat/messageUtils';
 import type { MessageGroup } from '@/lib/chat/messageUtils';

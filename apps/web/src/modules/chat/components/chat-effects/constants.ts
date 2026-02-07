@@ -2,7 +2,7 @@
  * Chat Effects Constants
  */
 
-import type { MessageEffect } from '@/stores/chatEffectsStore';
+import type { MessageEffect } from '@/modules/chat/store';
 
 /**
  * Effects that should show particle animations

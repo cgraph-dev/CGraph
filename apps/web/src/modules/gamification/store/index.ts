@@ -13,7 +13,7 @@
  * while maintaining backward compatibility with existing imports.
  */
 
-// Re-export the main gamification store from legacy location
+// Re-export the main gamification store
 export {
   useGamificationStore,
   type Achievement,
@@ -26,7 +26,7 @@ export {
   type AchievementRarity,
   type QuestType,
   XP_REWARDS,
-} from '@/stores/gamificationStore';
+} from './gamificationStore';
 
 // Also re-export types from the module's types file for compatibility
 export * from './types';
@@ -76,7 +76,7 @@ export {
 } from './referralSlice';
 
 // Import types for the unified interface
-import type { Achievement, Quest } from '@/stores/gamificationStore';
+import type { Achievement, Quest } from '@/modules/gamification/store';
 import type { PrestigeBonuses } from './prestigeSlice';
 import type { SeasonalEvent } from './seasonalEventSlice';
 

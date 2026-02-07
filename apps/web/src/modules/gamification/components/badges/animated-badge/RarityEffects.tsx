@@ -3,7 +3,7 @@
  */
 
 import { motion } from 'framer-motion';
-import type { AchievementRarity } from '@/stores/gamificationStore';
+import type { AchievementRarity } from '@/modules/gamification/store';
 import type { RarityColorConfig, SizeConfig } from './types';
 import { OrbitingParticle } from './OrbitingParticle';
 import {

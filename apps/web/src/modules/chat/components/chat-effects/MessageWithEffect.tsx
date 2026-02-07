@@ -4,7 +4,7 @@
 
 import { memo, useMemo, useRef } from 'react';
 import { motion, type TargetAndTransition } from 'framer-motion';
-import type { MessageEffect, MessageEffectConfig } from '@/stores/chatEffectsStore';
+import type { MessageEffect, MessageEffectConfig } from '@/modules/chat/store';
 import type { MessageWithEffectProps } from './types';
 import { MessageBubble } from './MessageBubble';
 import { MessageParticles } from './MessageParticles';

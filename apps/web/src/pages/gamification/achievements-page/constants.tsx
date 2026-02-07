@@ -7,7 +7,7 @@ import {
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import { TrophyIcon as TrophySolidIcon } from '@heroicons/react/24/solid';
-import type { AchievementRarity } from '@/stores/gamificationStore';
+import type { AchievementRarity } from '@/modules/gamification/store';
 import type { CategoryFilter, RarityColors } from './types';
 
 export const CATEGORIES: CategoryFilter[] = [

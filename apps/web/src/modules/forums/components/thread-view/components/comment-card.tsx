@@ -9,7 +9,7 @@ import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { formatTimeAgo } from '@/lib/utils';
-import type { Comment } from '@/stores/forumStore';
+import type { Comment } from '@/modules/forums/store';
 
 interface CommentCardProps {
   comment: Comment;

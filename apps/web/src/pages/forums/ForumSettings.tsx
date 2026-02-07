@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useForumStore } from '@/stores/forumStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useForumStore } from '@/modules/forums/store';
+import { useAuthStore } from '@/modules/auth/store';
 import {
   ArrowLeftIcon,
   Cog6ToothIcon,
@@ -90,7 +90,7 @@ export default function ForumSettings() {
 
   if (!forum) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
       </div>
     );
@@ -98,7 +98,7 @@ export default function ForumSettings() {
 
   if (!isOwner) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <p className="text-gray-400">You don't have permission to access this page.</p>
       </div>
     );
@@ -106,12 +106,12 @@ export default function ForumSettings() {
 
   return (
     <div className="flex-1 overflow-y-auto bg-dark-900">
-      <div className="max-w-3xl mx-auto py-8 px-4">
+      <div className="mx-auto max-w-3xl px-4 py-8">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="mb-8 flex items-center gap-4">
           <Link
             to={`/forums/${forumSlug}`}
-            className="p-2 rounded-lg hover:bg-dark-700 transition-colors"
+            className="rounded-lg p-2 transition-colors hover:bg-dark-700"
           >
             <ArrowLeftIcon className="h-5 w-5 text-gray-400" />
           </Link>
@@ -126,12 +126,12 @@ export default function ForumSettings() {
 
         {/* Messages */}
         {error && (
-          <div className="mb-6 p-4 bg-red-500/20 border border-red-500 rounded-lg text-red-400">
+          <div className="mb-6 rounded-lg border border-red-500 bg-red-500/20 p-4 text-red-400">
             {error}
           </div>
         )}
         {success && (
-          <div className="mb-6 p-4 bg-green-500/20 border border-green-500 rounded-lg text-green-400">
+          <div className="mb-6 rounded-lg border border-green-500 bg-green-500/20 p-4 text-green-400">
             {success}
           </div>
         )}
@@ -139,32 +139,28 @@ export default function ForumSettings() {
         {/* Settings Form */}
         <form onSubmit={handleSave} className="space-y-8">
           {/* General Settings */}
-          <section className="bg-dark-800 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">General</h2>
-            
+          <section className="rounded-xl bg-dark-800 p-6">
+            <h2 className="mb-4 text-lg font-semibold text-white">General</h2>
+
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Forum Name
-                </label>
+                <label className="mb-2 block text-sm font-medium text-gray-300">Forum Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Description
-                </label>
+                <label className="mb-2 block text-sm font-medium text-gray-300">Description</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={4}
-                  className="w-full px-4 py-2.5 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+                  className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   placeholder="Describe what your forum is about..."
                 />
               </div>
@@ -172,11 +168,11 @@ export default function ForumSettings() {
           </section>
 
           {/* Privacy Settings */}
-          <section className="bg-dark-800 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Privacy</h2>
-            
+          <section className="rounded-xl bg-dark-800 p-6">
+            <h2 className="mb-4 text-lg font-semibold text-white">Privacy</h2>
+
             <div className="space-y-4">
-              <label className="flex items-start gap-4 p-4 bg-dark-700 rounded-lg cursor-pointer hover:bg-dark-600 transition-colors">
+              <label className="flex cursor-pointer items-start gap-4 rounded-lg bg-dark-700 p-4 transition-colors hover:bg-dark-600">
                 <input
                   type="radio"
                   name="privacy"
@@ -189,13 +185,13 @@ export default function ForumSettings() {
                     <GlobeAltIcon className="h-5 w-5 text-green-500" />
                     <span className="font-medium text-white">Public</span>
                   </div>
-                  <p className="text-sm text-gray-400 mt-1">
+                  <p className="mt-1 text-sm text-gray-400">
                     Anyone can view, join, and participate in this forum.
                   </p>
                 </div>
               </label>
 
-              <label className="flex items-start gap-4 p-4 bg-dark-700 rounded-lg cursor-pointer hover:bg-dark-600 transition-colors">
+              <label className="flex cursor-pointer items-start gap-4 rounded-lg bg-dark-700 p-4 transition-colors hover:bg-dark-600">
                 <input
                   type="radio"
                   name="privacy"
@@ -208,7 +204,7 @@ export default function ForumSettings() {
                     <LockClosedIcon className="h-5 w-5 text-yellow-500" />
                     <span className="font-medium text-white">Private</span>
                   </div>
-                  <p className="text-sm text-gray-400 mt-1">
+                  <p className="mt-1 text-sm text-gray-400">
                     Only members can view content. Users must request to join or be invited.
                   </p>
                 </div>
@@ -217,15 +213,15 @@ export default function ForumSettings() {
           </section>
 
           {/* Content Settings */}
-          <section className="bg-dark-800 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Content</h2>
-            
-            <label className="flex items-center gap-3 cursor-pointer">
+          <section className="rounded-xl bg-dark-800 p-6">
+            <h2 className="mb-4 text-lg font-semibold text-white">Content</h2>
+
+            <label className="flex cursor-pointer items-center gap-3">
               <input
                 type="checkbox"
                 checked={isNsfw}
                 onChange={(e) => setIsNsfw(e.target.checked)}
-                className="w-5 h-5 rounded bg-dark-700 border-dark-600 text-primary-500 focus:ring-primary-500"
+                className="h-5 w-5 rounded border-dark-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
               />
               <div>
                 <span className="font-medium text-white">NSFW Content</span>
@@ -241,7 +237,7 @@ export default function ForumSettings() {
             <button
               type="submit"
               disabled={isSaving}
-              className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-600/50 text-white font-medium rounded-lg transition-colors"
+              className="rounded-lg bg-primary-600 px-6 py-2.5 font-medium text-white transition-colors hover:bg-primary-700 disabled:bg-primary-600/50"
             >
               {isSaving ? 'Saving...' : 'Save Changes'}
             </button>
@@ -249,12 +245,12 @@ export default function ForumSettings() {
         </form>
 
         {/* Danger Zone */}
-        <section className="mt-8 bg-red-500/10 border border-red-500/30 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-red-400 mb-4 flex items-center gap-2">
+        <section className="mt-8 rounded-xl border border-red-500/30 bg-red-500/10 p-6">
+          <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-red-400">
             <ExclamationTriangleIcon className="h-5 w-5" />
             Danger Zone
           </h2>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium text-white">Delete Forum</h3>
@@ -265,7 +261,7 @@ export default function ForumSettings() {
             <button
               type="button"
               onClick={() => setShowDeleteConfirm(true)}
-              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors flex items-center gap-2"
+              className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 font-medium text-white transition-colors hover:bg-red-700"
             >
               <TrashIcon className="h-4 w-4" />
               Delete
@@ -274,15 +270,16 @@ export default function ForumSettings() {
 
           {/* Delete Confirmation */}
           {showDeleteConfirm && (
-            <div className="mt-4 p-4 bg-dark-800 rounded-lg">
-              <p className="text-sm text-gray-300 mb-3">
-                Type <span className="font-mono text-red-400">{forum.name}</span> to confirm deletion:
+            <div className="mt-4 rounded-lg bg-dark-800 p-4">
+              <p className="mb-3 text-sm text-gray-300">
+                Type <span className="font-mono text-red-400">{forum.name}</span> to confirm
+                deletion:
               </p>
               <input
                 type="text"
                 value={deleteConfirmText}
                 onChange={(e) => setDeleteConfirmText(e.target.value)}
-                className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white mb-3"
+                className="mb-3 w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-white"
                 placeholder={forum.name}
               />
               <div className="flex gap-3">
@@ -292,7 +289,7 @@ export default function ForumSettings() {
                     setShowDeleteConfirm(false);
                     setDeleteConfirmText('');
                   }}
-                  className="px-4 py-2 bg-dark-600 hover:bg-dark-500 text-white rounded-lg transition-colors"
+                  className="rounded-lg bg-dark-600 px-4 py-2 text-white transition-colors hover:bg-dark-500"
                 >
                   Cancel
                 </button>
@@ -300,7 +297,7 @@ export default function ForumSettings() {
                   type="button"
                   onClick={handleDelete}
                   disabled={deleteConfirmText !== forum.name}
-                  className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-600/50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+                  className="rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-600/50"
                 >
                   Delete Forever
                 </button>

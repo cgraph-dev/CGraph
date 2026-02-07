@@ -4,8 +4,8 @@
 
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForumStore } from '@/stores/forumStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useForumStore } from '@/modules/forums/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { forumLogger as logger } from '@/lib/logger';
 import { DEFAULT_FORM_DATA, NAME_MIN_LENGTH, NAME_MAX_LENGTH } from './constants';
 import type { ForumFormData } from './types';

@@ -4,7 +4,7 @@
  * Helper functions for the messages page.
  */
 
-import type { Conversation } from '@/stores/chatStore';
+import type { Conversation } from '@/modules/chat/store';
 import { getAvatarBorderId } from '@/lib/utils';
 
 /**

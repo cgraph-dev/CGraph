@@ -5,8 +5,8 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useForumStore } from '@/stores/forumStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useForumStore } from '@/modules/forums/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { motion } from 'framer-motion';
 import { ForumHeader } from './forum-header';
 import { SortControls } from './sort-controls';

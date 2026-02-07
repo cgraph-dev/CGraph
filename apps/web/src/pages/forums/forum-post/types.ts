@@ -2,7 +2,7 @@
  * Types for the ForumPost module
  */
 
-import type { Comment } from '@/stores/forumStore';
+import type { Comment } from '@/modules/forums/store';
 
 /**
  * Props for the CommentItem component

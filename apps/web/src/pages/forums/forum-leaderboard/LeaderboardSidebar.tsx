@@ -6,7 +6,7 @@
 
 import { ArrowUpIcon, ArrowDownIcon, TrophyIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { TrophyIcon as TrophyIconSolid } from '@heroicons/react/24/solid';
-import type { Forum } from '@/stores/forumStore';
+import type { Forum } from '@/modules/forums/store';
 import { TopForumCard } from './TopForumCard';
 
 interface LeaderboardSidebarProps {

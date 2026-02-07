@@ -10,7 +10,7 @@ import {
   UsersIcon,
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
-import type { EventFormData, RecurrencePattern } from '@/stores/calendarStore';
+import type { EventFormData, RecurrencePattern } from '@/modules/settings/store';
 
 interface Category {
   id: string;

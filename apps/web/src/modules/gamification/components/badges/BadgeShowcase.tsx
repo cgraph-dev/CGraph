@@ -19,7 +19,7 @@ import { PlusIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { AnimatedBadgeWithTooltip } from './AnimatedBadge';
 import { BadgePickerModal } from './BadgePickerModal';
-import type { Achievement } from '@/stores/gamificationStore';
+import type { Achievement } from '@/modules/gamification/store';
 
 // Re-export extracted components for backwards compatibility
 export { CompactBadgeShowcase } from './CompactBadgeShowcase';

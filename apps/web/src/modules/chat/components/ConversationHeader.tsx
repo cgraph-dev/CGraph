@@ -23,7 +23,7 @@ import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import UserProfileCard from '@/modules/social/components/UserProfileCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { getAvatarBorderId } from '@/lib/utils';
-import type { Conversation } from '@/stores/chatStore';
+import type { Conversation } from '@/modules/chat/store';
 
 interface ConversationHeaderProps {
   conversationName: string;

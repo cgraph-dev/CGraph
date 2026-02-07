@@ -2,7 +2,7 @@
  * Type definitions for AnimatedBadge module
  */
 
-import type { Achievement, AchievementRarity } from '@/stores/gamificationStore';
+import type { Achievement, AchievementRarity } from '@/modules/gamification/store';
 
 export interface AnimatedBadgeProps {
   /** Achievement data */

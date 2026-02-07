@@ -4,7 +4,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import type { Achievement } from '@/stores/gamificationStore';
+import type { Achievement } from '@/modules/gamification/store';
 import type { RarityColorConfig } from './types';
 
 interface BadgeTooltipProps {

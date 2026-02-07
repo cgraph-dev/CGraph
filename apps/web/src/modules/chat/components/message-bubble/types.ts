@@ -4,7 +4,7 @@
  * Type definitions for the message bubble component and its sub-components.
  */
 
-import type { Message } from '@/stores/chatStore';
+import type { Message } from '@/modules/chat/store';
 import type { UIPreferences } from '@/pages/messages/conversation/types';
 
 /**

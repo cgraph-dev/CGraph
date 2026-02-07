@@ -3,7 +3,7 @@
  * @module pages/forums/moderation-queue
  */
 
-import type { ModerationQueueItem } from '@/stores/moderationStore';
+import type { ModerationQueueItem } from '@/modules/moderation/store';
 
 export interface FilterState {
   status: 'pending' | 'all';

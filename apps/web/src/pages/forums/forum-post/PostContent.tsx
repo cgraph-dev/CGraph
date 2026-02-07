@@ -13,7 +13,7 @@ import MarkdownRenderer from '@/components/MarkdownRenderer';
 import ThreadPrefix from '@/modules/forums/components/ThreadPrefix';
 import ThreadRating from '@/modules/forums/components/ThreadRating';
 import PollWidget from '@/modules/forums/components/PollWidget';
-import type { Post } from '@/stores/forumStore';
+import type { Post } from '@/modules/forums/store';
 import {
   MapPinIcon,
   LockClosedIcon,

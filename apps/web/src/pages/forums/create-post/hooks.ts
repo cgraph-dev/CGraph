@@ -5,8 +5,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { createLogger } from '@/lib/logger';
-import { useForumStore, type PostAttachment } from '@/stores/forumStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useForumStore, type PostAttachment } from '@/modules/forums/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { toast } from '@/shared/components/ui';
 import type { PostType } from './types';
 

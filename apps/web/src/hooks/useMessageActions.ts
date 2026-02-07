@@ -9,7 +9,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { useChatStore, Message } from '@/stores/chatStore';
+import { useChatStore, Message } from '@/modules/chat/store';
 import { api } from '@/lib/api';
 import { toast } from '@/components/Toast';
 import { createLogger } from '@/lib/logger';

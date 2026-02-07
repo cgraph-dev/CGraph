@@ -6,7 +6,7 @@
  * @module modules/social/components/calendar/calendarUtils
  */
 
-import type { EventType } from '@/stores/calendarStore';
+import type { EventType } from '@/modules/settings/store';
 
 /** Category colour type */
 export interface CalendarCategory {

@@ -7,7 +7,7 @@ import {
   FolderIcon,
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
-import type { ForumCategory } from '@/stores/forumStore';
+import type { ForumCategory } from '@/modules/forums/store';
 
 interface CategoriesPanelProps {
   categories: ForumCategory[];

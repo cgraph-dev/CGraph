@@ -4,7 +4,7 @@
  */
 
 import { motion } from 'framer-motion';
-import type { Group } from '@/stores/groupStore';
+import type { Group } from '@/modules/groups/store';
 import type { TabId } from './types';
 import { SETTINGS_TABS } from './constants';
 

@@ -2,7 +2,7 @@
  * ProfileCard - Type Definitions
  */
 
-import type { Achievement } from '@/stores/gamificationStore';
+import type { Achievement } from '@/modules/gamification/store';
 import type {
   ProfileTheme,
   ProfileCardConfig,

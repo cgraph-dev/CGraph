@@ -11,7 +11,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { XMarkIcon, ArrowsPointingOutIcon } from '@heroicons/react/24/outline';
-import type { Message } from '@/stores/chatStore';
+import type { Message } from '@/modules/chat/store';
 
 export interface GifMessageProps {
   message: Message;

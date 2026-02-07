@@ -6,8 +6,8 @@
 
 import { useState, useMemo } from 'react';
 import { Award } from 'lucide-react';
-import { useGamificationStore } from '@/stores/gamificationStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useGamificationStore } from '@/modules/gamification/store';
+import { useAuthStore } from '@/modules/auth/store';
 import VisibilityBadge from '@/modules/settings/components/VisibilityBadge';
 import { toast } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';

@@ -6,7 +6,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useChatEffectsStore } from '@/stores/chatEffectsStore';
+import { useChatEffectsStore } from '@/modules/chat/store';
 
 import type { ChatEffectSubTab } from './types';
 import { TypingPreview } from './TypingPreview';

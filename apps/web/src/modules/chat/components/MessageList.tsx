@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Message } from '@/stores/chatStore';
+import type { Message } from '@/modules/chat/store';
 import { createLogger } from '@/lib/logger';
 import { getMessageSenderId } from '@/lib/apiUtils';
 import { formatDateHeader, groupMessagesByDate } from '@/lib/chat/messageUtils';

@@ -3,7 +3,7 @@
  * @module modules/forums/components/thread-view/types
  */
 
-import type { Post, Comment, ThreadPrefix } from '@/stores/forumStore';
+import type { Post, Comment, ThreadPrefix } from '@/modules/forums/store';
 
 /**
  * View modes for comment display

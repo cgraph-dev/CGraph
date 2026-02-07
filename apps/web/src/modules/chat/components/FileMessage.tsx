@@ -9,7 +9,7 @@ import {
   DocumentTextIcon,
 } from '@heroicons/react/24/outline';
 import { formatBytes } from '@/lib/utils';
-import type { Message } from '@/stores/chatStore';
+import type { Message } from '@/modules/chat/store';
 
 interface FileMessageProps {
   message: Message;

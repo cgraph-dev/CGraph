@@ -1,4 +1,4 @@
-import type { ThreadPrefix, ForumCategory } from '@/stores/forumStore';
+import type { ThreadPrefix, ForumCategory } from '@/modules/forums/store';
 
 /**
  * Poll option input for creating polls

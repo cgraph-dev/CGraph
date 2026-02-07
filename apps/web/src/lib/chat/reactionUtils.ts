@@ -5,8 +5,8 @@
  * Used across conversation and chat components.
  */
 
-import { useAuthStore } from '@/stores/authStore';
-import { useChatStore } from '@/stores/chatStore';
+import { useAuthStore } from '@/modules/auth/store';
+import { useChatStore } from '@/modules/chat/store';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('ReactionUtils');

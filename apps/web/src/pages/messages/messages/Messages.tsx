@@ -6,8 +6,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { Outlet, useParams, useSearchParams, useNavigate } from 'react-router-dom';
-import { useChatStore } from '@/stores/chatStore';
-import { useAuthStore } from '@/stores/authStore';
+import { useChatStore } from '@/modules/chat/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { socketManager } from '@/lib/socket';
 import { createLogger } from '@/lib/logger';
 import { toast } from '@/shared/components/ui';

@@ -5,7 +5,7 @@
  */
 
 import { format } from 'date-fns';
-import { useChatStore } from '@/stores/chatStore';
+import { useChatStore } from '@/modules/chat/store';
 import { createLogger } from '@/lib/logger';
 import type { UIPreferences } from './types';
 

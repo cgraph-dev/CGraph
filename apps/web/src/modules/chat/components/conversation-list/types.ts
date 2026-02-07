@@ -3,7 +3,7 @@
  * @module modules/chat/components/conversation-list
  */
 
-import type { Conversation } from '@/stores/chatStore';
+import type { Conversation } from '@/modules/chat/store';
 
 export type FilterType = 'all' | 'direct' | 'group' | 'unread';
 

@@ -6,7 +6,7 @@
  * @module modules/groups/components/channel-list
  */
 
-import type { Channel } from '@/stores/groupStore';
+import type { Channel } from '@/modules/groups/store';
 
 /** Props for the main ChannelList component */
 export interface ChannelListProps {

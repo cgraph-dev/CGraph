@@ -11,7 +11,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useChatStore, type Message } from '@/stores/chatStore';
+import { useChatStore, type Message } from '@/modules/chat/store';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 interface ForwardMessageModalProps {

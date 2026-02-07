@@ -8,7 +8,7 @@
  */
 
 import { useEffect, useMemo } from 'react';
-import { useCalendarStore, type CalendarEvent } from '@/stores/calendarStore';
+import { useCalendarStore, type CalendarEvent } from '@/modules/settings/store';
 import { CalendarHeader } from './CalendarHeader';
 import { CalendarGrid } from './CalendarGrid';
 import { CalendarSidebar } from './CalendarSidebar';

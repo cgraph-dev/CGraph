@@ -10,14 +10,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import debounce from 'lodash.debounce';
-import { useSearchStore, type SearchCategory } from '@/stores/searchStore';
+import { useSearchStore, type SearchCategory } from '@/modules/search/store';
 import type {
   SearchUser,
   SearchGroup,
   SearchForum,
   SearchPost,
   SearchMessage,
-} from '@/stores/searchStore';
+} from '@/modules/search/store';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { categories } from './constants';
 import type { IdSearchType } from './types';

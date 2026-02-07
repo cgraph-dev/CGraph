@@ -8,7 +8,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { useChatStore, Message } from '@/stores/chatStore';
+import { useChatStore, Message } from '@/modules/chat/store';
 import { toast } from '@/components/Toast';
 import { createLogger } from '@/lib/logger';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';

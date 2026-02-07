@@ -4,7 +4,7 @@
  * Type definitions for the threaded comment tree components.
  */
 
-import type { Comment } from '@/stores/forumStore';
+import type { Comment } from '@/modules/forums/store';
 
 export interface ThreadedCommentTreeProps {
   /** All comments (flat array - will be converted to tree) */
@@ -46,4 +46,4 @@ export interface ThreadedCommentProps {
 }
 
 // Re-export Comment type for convenience
-export type { Comment } from '@/stores/forumStore';
+export type { Comment } from '@/modules/forums/store';

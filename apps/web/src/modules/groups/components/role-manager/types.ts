@@ -4,7 +4,7 @@
  * Type definitions for the role manager component.
  */
 
-import type { Role } from '@/stores/groupStore';
+import type { Role } from '@/modules/groups/store';
 
 /**
  * Permission definition

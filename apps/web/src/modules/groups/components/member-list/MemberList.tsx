@@ -6,7 +6,7 @@ import { useState, useMemo } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { MagnifyingGlassIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 void EllipsisVerticalIcon; // Reserved for member context menu
-import { useGroupStore, type Member } from '@/stores/groupStore';
+import { useGroupStore, type Member } from '@/modules/groups/store';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 void THEME_COLORS; // Reserved for role color theming
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';

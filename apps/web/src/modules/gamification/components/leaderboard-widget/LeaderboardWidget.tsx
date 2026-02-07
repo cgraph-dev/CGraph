@@ -15,7 +15,7 @@ import { useState, useMemo } from 'react';
 import { TrophyIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { LEADERBOARD_TYPES, TIME_PERIODS } from './constants';
 import { Podium } from './Podium';
 import { LeaderboardEntryRow } from './LeaderboardEntryRow';

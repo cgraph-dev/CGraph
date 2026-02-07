@@ -4,7 +4,7 @@ import { Palette, Download, Upload, Sparkles } from 'lucide-react';
 void Download; // Reserved for theme export feature
 void Upload; // Reserved for theme import feature
 import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import VisibilityBadge from '@/modules/settings/components/VisibilityBadge';
 
 /**

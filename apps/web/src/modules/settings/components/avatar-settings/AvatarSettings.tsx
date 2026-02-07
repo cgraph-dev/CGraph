@@ -7,7 +7,7 @@
 
 import { motion } from 'framer-motion';
 import { UserCircleIcon } from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import SyncStatusIndicator from '@/modules/settings/components/SyncStatusIndicator';
 import { useAvatarSettings } from './useAvatarSettings';
 import { AvatarPreviewCard } from './AvatarPreviewCard';

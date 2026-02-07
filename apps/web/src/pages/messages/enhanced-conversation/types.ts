@@ -2,7 +2,7 @@
  * Type definitions for EnhancedConversation module
  */
 
-import type { Message } from '@/stores/chatStore';
+import type { Message } from '@/modules/chat/store';
 
 export interface EnhancedMessageBubbleProps {
   message: Message;

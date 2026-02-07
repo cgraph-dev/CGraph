@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useState } from 'react';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 
 /**
  * Hook for authentication state and actions

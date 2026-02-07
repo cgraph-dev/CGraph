@@ -4,7 +4,7 @@
  * Type definitions for the notifications page components.
  */
 
-import type { Notification } from '@/stores/notificationStore';
+import type { Notification } from '@/modules/social/store';
 
 export type NotificationFilter = 'all' | 'unread';
 
@@ -45,4 +45,4 @@ export interface EmptyStateProps {
 }
 
 // Re-export Notification type for convenience
-export type { Notification } from '@/stores/notificationStore';
+export type { Notification } from '@/modules/social/store';

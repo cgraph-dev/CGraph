@@ -3,7 +3,7 @@
  * @module pages/groups
  */
 
-import type { Group, Channel } from '@/stores/groupStore';
+import type { Group, Channel } from '@/modules/groups/store';
 
 export interface ServerIconProps {
   group: Group;

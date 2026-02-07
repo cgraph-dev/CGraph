@@ -7,7 +7,7 @@ import type {
   BubbleStyleConfig,
   MessageEffectConfig,
   TypingIndicatorConfig,
-} from '@/stores/chatEffectsStore';
+} from '@/modules/chat/store';
 
 export interface MessageBubbleProps {
   children: React.ReactNode;

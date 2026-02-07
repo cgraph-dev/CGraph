@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import CalendarView from '@/modules/social/components/calendar';
 import EventForm from '@/modules/social/components/EventForm';
-import { CalendarEvent } from '@/stores/calendarStore';
+import { CalendarEvent } from '@/modules/settings/store';
 
 /**
  * Calendar Page

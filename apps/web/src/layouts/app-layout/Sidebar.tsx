@@ -10,7 +10,7 @@ import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { getAvatarBorderId } from '@/lib/utils';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
-import type { User } from '@/stores/authStore';
+import type { User } from '@/modules/auth/store';
 import type { NavItem } from './constants';
 
 interface SidebarProps {

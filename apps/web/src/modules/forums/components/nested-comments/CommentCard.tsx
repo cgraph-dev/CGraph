@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { CommentHeader } from './CommentHeader';
 import { CommentVoteButtons } from './CommentVoteButtons';
 import { ReplyForm, EditForm } from './CommentForms';

@@ -1,4 +1,4 @@
 /**
  * Announcement Store - Re-export from legacy
  */
-export * from '@/stores/announcementStore';
+export * from '@/modules/forums/store';

@@ -5,7 +5,7 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useCall } from '@/lib/webrtc';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/modules/auth/store';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 import type { CallUser, CallType, CallParticipant } from './types';

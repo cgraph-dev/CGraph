@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { chatLogger as logger } from '@/lib/logger';
-import type { Channel } from '@/stores/groupStore';
+import type { Channel } from '@/modules/groups/store';
 import { channelTypeIcons, channelTypes } from './constants';
 import type { CreateChannelModalProps } from './types';
 

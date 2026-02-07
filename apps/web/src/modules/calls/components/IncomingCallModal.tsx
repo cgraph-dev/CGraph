@@ -14,7 +14,7 @@ import { PhoneIcon, VideoCameraIcon, XMarkIcon, CheckIcon } from '@heroicons/rea
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { logger } from '@/lib/logger';
-import type { IncomingCall } from '@/stores/incomingCallStore';
+import type { IncomingCall } from '@/modules/calls/store';
 
 export interface IncomingCallModalProps {
   call: IncomingCall;

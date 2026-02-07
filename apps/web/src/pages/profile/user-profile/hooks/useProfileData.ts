@@ -5,7 +5,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
-import { useGamificationStore } from '@/stores/gamificationStore';
+import { useGamificationStore } from '@/modules/gamification/store';
 import { ACHIEVEMENT_DEFINITIONS } from '@/data/achievements';
 import type { UserProfileData, FriendshipStatus } from '@/types/profile.types';
 

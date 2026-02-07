@@ -3,7 +3,7 @@
  * @module modules/groups/components/group-settings
  */
 
-import type { Group } from '@/stores/groupStore';
+import type { Group } from '@/modules/groups/store';
 
 export interface GroupSettingsProps {
   groupId: string;

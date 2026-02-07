@@ -8,7 +8,7 @@
 
 import { Link } from 'react-router-dom';
 import { ClockIcon, MapPinIcon } from '@heroicons/react/24/outline';
-import type { CalendarEvent } from '@/stores/calendarStore';
+import type { CalendarEvent } from '@/modules/settings/store';
 import { formatTime, getCategoryColor, getEventTypeIcon, isToday } from './calendarUtils';
 import type { CalendarCategory } from './calendarUtils';
 

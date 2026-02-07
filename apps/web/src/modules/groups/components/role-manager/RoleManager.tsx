@@ -15,7 +15,7 @@ import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Reorder } from 'framer-motion';
 import { ShieldCheckIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { useGroupStore, type Role } from '@/stores/groupStore';
+import { useGroupStore, type Role } from '@/modules/groups/store';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { PERMISSIONS, ROLE_COLORS } from './constants';
 import { RoleEditor } from './RoleEditor';

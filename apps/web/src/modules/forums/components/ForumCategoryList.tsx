@@ -20,7 +20,7 @@ void EyeIcon; // Reserved for forum visibility indicator
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
-import type { ForumCategory, Forum } from '@/stores/forumStore';
+import type { ForumCategory, Forum } from '@/modules/forums/store';
 
 /**
  * ForumCategoryList Component

@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { OAuthProvider, openOAuthPopup, providerColors, providerNames } from '@/lib/oauth';
-import { useAuthStore, mapUserFromApi } from '@/stores/authStore';
+import { useAuthStore, mapUserFromApi } from '@/modules/auth/store';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('OAuthButtons');

@@ -10,11 +10,11 @@
  */
 
 import { Socket, Channel, Presence } from 'phoenix';
-import { useAuthStore } from '@/stores/authStore';
-import { useChatStore, Message, Conversation } from '@/stores/chatStore';
-import { useGroupStore, ChannelMessage } from '@/stores/groupStore';
+import { useAuthStore } from '@/modules/auth/store';
+import { useChatStore, Message, Conversation } from '@/modules/chat/store';
+import { useGroupStore, ChannelMessage } from '@/modules/groups/store';
 import { useE2EEStore } from '@/lib/crypto/e2eeStore';
-import { useIncomingCallStore, type IncomingCall } from '@/stores/incomingCallStore';
+import { useIncomingCallStore, type IncomingCall } from '@/modules/calls/store';
 import { socketLogger as logger } from '../logger';
 import { normalizeMessage, normalizeConversation } from '../apiUtils';
 import { setupForumHandlers, setupThreadHandlers } from './channelHandlers';

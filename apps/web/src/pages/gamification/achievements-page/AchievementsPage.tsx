@@ -25,7 +25,7 @@ import {
   type AchievementCategory,
   type AchievementRarity,
   type Achievement,
-} from '@/stores/gamificationStore';
+} from '@/modules/gamification/store';
 import { ACHIEVEMENT_DEFINITIONS } from '@/data/achievements';
 import LevelProgress from '@/modules/gamification/components/LevelProgress';
 

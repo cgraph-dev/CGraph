@@ -14,7 +14,7 @@ import { createLogger } from '@/lib/logger';
 import { ClipboardDocumentListIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useGamificationStore, type Quest } from '@/stores/gamificationStore';
+import { useGamificationStore, type Quest } from '@/modules/gamification/store';
 import { api } from '@/lib/api';
 import LevelProgress from '@/modules/gamification/components/LevelProgress';
 import type { QuestTab } from './types';
