@@ -16,7 +16,7 @@ import {
 import { useAuthStore } from '@/modules/auth/store';
 import { useAvatarBorderStore } from '@/modules/gamification/store';
 import { getBorderById } from '@/data/avatar-borders';
-import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
+import { AvatarBorderRenderer } from '@/modules/social/components/avatar/AvatarBorderRenderer';
 import {
   MAX_MUTUAL_FRIENDS_DISPLAY,
   MAX_BADGES_DISPLAY,

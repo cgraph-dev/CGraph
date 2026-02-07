@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import type { UserTheme } from '@/stores/theme';
-import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
+import { AvatarBorderRenderer } from '@/modules/social/components/avatar/AvatarBorderRenderer';
 import type { AvatarBorderConfig } from '@/types/avatar-borders';
 import { AVATAR_BORDERS } from '@/data/avatar-borders';
 

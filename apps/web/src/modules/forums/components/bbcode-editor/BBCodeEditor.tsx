@@ -12,7 +12,7 @@
  */
 
 import { useState, useRef, useCallback } from 'react';
-import BBCodeRenderer from '../BBCodeRenderer';
+import BBCodeRenderer from '@/components/BBCodeRenderer';
 import { validateBBCode, countBBCodeCharacters } from '@/lib/bbcode';
 import { cn } from '@/lib/utils';
 import { useTextSelection, useBBCodeInsertion, useDropdownClose } from './hooks';

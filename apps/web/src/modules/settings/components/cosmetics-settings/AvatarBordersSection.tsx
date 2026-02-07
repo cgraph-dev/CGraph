@@ -7,7 +7,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useAvatarBorderStore } from '@/modules/gamification/store';
-import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
+import { AvatarBorderRenderer } from '@/modules/social/components/avatar/AvatarBorderRenderer';
 
 import type { SectionProps } from './types';
 import { RARITY_COLORS } from './constants';

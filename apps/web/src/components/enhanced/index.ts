@@ -111,8 +111,8 @@ export type {
 // =============================================================================
 
 // Advanced Voice Visualizer
-export { default as AdvancedVoiceVisualizer } from '@/components/audio/AdvancedVoiceVisualizer';
-export type { AdvancedVoiceVisualizerProps } from '@/components/audio/AdvancedVoiceVisualizer';
+export { default as AdvancedVoiceVisualizer } from '@/modules/chat/components/audio/AdvancedVoiceVisualizer';
+export type { AdvancedVoiceVisualizerProps } from '@/modules/chat/components/audio/AdvancedVoiceVisualizer';
 
 // Spatial Audio Engine (NEW v0.7.35)
 export {

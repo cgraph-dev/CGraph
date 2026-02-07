@@ -6,7 +6,7 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
+import { AvatarBorderRenderer } from '@/modules/social/components/avatar/AvatarBorderRenderer';
 import { getBorderById } from '@/data/avatar-borders';
 import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
 import { AnimatedBadgeWithTooltip } from '@/modules/gamification/components/badges/AnimatedBadge';

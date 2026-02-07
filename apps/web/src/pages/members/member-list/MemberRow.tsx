@@ -10,8 +10,8 @@ import {
   StarIcon,
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
-import OnlineStatusIndicator from '@/components/common/OnlineStatusIndicator';
-import UserStars from '@/components/common/UserStars';
+import OnlineStatusIndicator from '@/modules/social/components/common/OnlineStatusIndicator';
+import UserStars from '@/modules/social/components/common/UserStars';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { formatDate, formatRelativeTime } from './utils';
 import type { Member } from './types';

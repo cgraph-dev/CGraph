@@ -8,7 +8,7 @@ import { memo } from 'react';
 import { useAuthStore } from '@/modules/auth/store';
 import { useAvatarBorderStore } from '@/modules/gamification/store';
 import { getBorderById } from '@/data/avatar-borders';
-import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
+import { AvatarBorderRenderer } from '@/modules/social/components/avatar/AvatarBorderRenderer';
 import type { MiniProfileCardProps } from './types';
 
 export const MiniProfileCard = memo(function MiniProfileCard({

@@ -4,10 +4,10 @@ import { StarIcon as StarIconOutline } from '@heroicons/react/24/outline';
 
 /**
  * UserStars Component
- * 
+ *
  * MyBB-style reputation/rank stars display.
  * Shows stars based on user's reputation or rank level.
- * 
+ *
  * Features:
  * - Configurable max stars
  * - Different star colors for different ranks
@@ -55,7 +55,7 @@ export function UserStars({
 }: UserStarsProps) {
   const colors = colorConfig[color];
   const sizeClass = sizeConfig[size];
-  
+
   // Calculate stars to display
   const fullStars = Math.floor(Math.min(count, maxStars));
   const hasHalf = allowHalf && count % 1 >= 0.5 && fullStars < maxStars;
@@ -65,9 +65,7 @@ export function UserStars({
 
   // Full stars
   for (let i = 0; i < fullStars; i++) {
-    stars.push(
-      <StarIconSolid key={`full-${i}`} className={`${sizeClass} ${colors.filled}`} />
-    );
+    stars.push(<StarIconSolid key={`full-${i}`} className={`${sizeClass} ${colors.filled}`} />);
   }
 
   // Half star
@@ -75,7 +73,7 @@ export function UserStars({
     stars.push(
       <div key="half" className="relative">
         <StarIconOutline className={`${sizeClass} ${colors.empty}`} />
-        <div className="absolute inset-0 overflow-hidden w-1/2">
+        <div className="absolute inset-0 w-1/2 overflow-hidden">
           <StarIconSolid className={`${sizeClass} ${colors.filled}`} />
         </div>
       </div>
@@ -84,25 +82,19 @@ export function UserStars({
 
   // Empty stars
   for (let i = 0; i < emptyStars; i++) {
-    stars.push(
-      <StarIconOutline key={`empty-${i}`} className={`${sizeClass} ${colors.empty}`} />
-    );
+    stars.push(<StarIconOutline key={`empty-${i}`} className={`${sizeClass} ${colors.empty}`} />);
   }
 
   if (stars.length === 0 && !showEmpty) {
     return null;
   }
 
-  return (
-    <div className={`inline-flex items-center gap-0.5 ${className}`}>
-      {stars}
-    </div>
-  );
+  return <div className={`inline-flex items-center gap-0.5 ${className}`}>{stars}</div>;
 }
 
 /**
  * ReputationStars Component
- * 
+ *
  * Extended version that converts reputation points to stars with color tiers.
  */
 interface ReputationStarsProps {
@@ -137,15 +129,17 @@ export function ReputationStars({
   className = '',
 }: ReputationStarsProps) {
   void _maxReputation; // Reserved for future use
-  
+
   // Find the appropriate tier
-  const tier = reputationTiers.find((t) => reputation >= t.minRep) ?? reputationTiers[reputationTiers.length - 1];
+  const tier =
+    reputationTiers.find((t) => reputation >= t.minRep) ??
+    reputationTiers[reputationTiers.length - 1];
   const currentTier = tier!; // Safe since we have fallback
-  
+
   // Calculate progress within tier for partial stars
   const nextTier = reputationTiers.find((t) => t.minRep > currentTier.minRep);
   let starProgress = currentTier.maxStars;
-  
+
   if (nextTier && currentTier.maxStars > 0) {
     const tierRange = nextTier.minRep - currentTier.minRep;
     const progressInTier = reputation - currentTier.minRep;
@@ -163,18 +157,14 @@ export function ReputationStars({
         showEmpty={true}
         allowHalf={true}
       />
-      {showValue && (
-        <span className="text-xs text-gray-500">
-          ({reputation})
-        </span>
-      )}
+      {showValue && <span className="text-xs text-gray-500">({reputation})</span>}
     </div>
   );
 }
 
 /**
  * PostCountStars Component
- * 
+ *
  * Shows stars based on user's post count (classic MyBB style).
  */
 interface PostCountStarsProps {
@@ -203,7 +193,7 @@ const postTiers: PostTier[] = [
 export function PostCountStars({ postCount, size = 'sm', className = '' }: PostCountStarsProps) {
   const tier = postTiers.find((t) => postCount >= t.minPosts) ?? postTiers[postTiers.length - 1];
   const currentTier = tier!; // Safe since we have fallback
-  
+
   if (currentTier.stars === 0) {
     return null;
   }
@@ -222,7 +212,7 @@ export function PostCountStars({ postCount, size = 'sm', className = '' }: PostC
 
 /**
  * RankBadge Component
- * 
+ *
  * Shows a text-based rank badge with optional stars.
  */
 interface RankBadgeProps {
@@ -258,10 +248,10 @@ export function RankBadge({
   className = '',
 }: RankBadgeProps) {
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full font-medium ${badgeColors[badgeColor]} ${badgeSizes[size]} ${className}`}>
-      {stars > 0 && (
-        <UserStars count={stars} maxStars={stars} color={starColor} size="xs" />
-      )}
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full font-medium ${badgeColors[badgeColor]} ${badgeSizes[size]} ${className}`}
+    >
+      {stars > 0 && <UserStars count={stars} maxStars={stars} color={starColor} size="xs" />}
       {rank}
     </span>
   );

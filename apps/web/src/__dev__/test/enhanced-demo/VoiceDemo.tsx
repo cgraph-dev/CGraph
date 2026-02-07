@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import { GlassCard } from '@/shared/components/ui';
-import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';
+import AdvancedVoiceVisualizer from '@/modules/chat/components/audio/AdvancedVoiceVisualizer';
 
 export function VoiceDemo() {
   const [isPlaying, setIsPlaying] = useState(false);

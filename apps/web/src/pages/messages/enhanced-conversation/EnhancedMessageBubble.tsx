@@ -15,7 +15,7 @@ import {
 } from '@/modules/chat/components/AnimatedReactionBubble';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
-import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';
+import AdvancedVoiceVisualizer from '@/modules/chat/components/audio/AdvancedVoiceVisualizer';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { getAvatarBorderId } from '@/lib/utils';
 import { createLogger } from '@/lib/logger';

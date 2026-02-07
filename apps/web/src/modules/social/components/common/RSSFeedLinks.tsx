@@ -1,9 +1,14 @@
 import React from 'react';
-import { RssIcon, LinkIcon, DocumentTextIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
+import {
+  RssIcon,
+  LinkIcon,
+  DocumentTextIcon,
+  ChatBubbleLeftIcon,
+} from '@heroicons/react/24/outline';
 
 /**
  * RSSFeedLinks Component
- * 
+ *
  * MyBB-style RSS feed links for forums, threads, etc.
  * Displays available RSS feeds with subscription options.
  */
@@ -37,7 +42,7 @@ export function RSSFeedLinks({
   if (compact) {
     return (
       <div className={`flex items-center gap-2 ${className}`}>
-        <RssIcon className="w-4 h-4 text-orange-500" />
+        <RssIcon className="h-4 w-4 text-orange-500" />
         {feeds.map((feed, index) => (
           <React.Fragment key={feed.id}>
             {index > 0 && <span className="text-gray-300">|</span>}
@@ -45,7 +50,7 @@ export function RSSFeedLinks({
               href={feed.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-orange-600 dark:text-orange-400 hover:underline"
+              className="text-sm text-orange-600 hover:underline dark:text-orange-400"
             >
               {feed.title}
             </a>
@@ -56,17 +61,22 @@ export function RSSFeedLinks({
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${className}`}>
+    <div
+      className={`rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 ${className}`}
+    >
       {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center gap-2">
-        <RssIcon className="w-5 h-5 text-orange-500" />
+      <div className="flex items-center gap-2 border-b border-gray-200 px-4 py-3 dark:border-gray-700">
+        <RssIcon className="h-5 w-5 text-orange-500" />
         <h3 className="font-semibold text-gray-900 dark:text-white">RSS Feeds</h3>
       </div>
 
       {/* Feed List */}
       <div className="divide-y divide-gray-100 dark:divide-gray-700">
         {feeds.map((feed) => (
-          <div key={feed.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+          <div
+            key={feed.id}
+            className="p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
+          >
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2">
@@ -75,7 +85,7 @@ export function RSSFeedLinks({
                     href={feed.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400"
+                    className="font-medium text-gray-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400"
                   >
                     {feed.title}
                   </a>
@@ -88,16 +98,16 @@ export function RSSFeedLinks({
                 <button
                   type="button"
                   onClick={() => copyToClipboard(feed.url)}
-                  className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
+                  className="rounded p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-600 dark:hover:text-gray-300"
                   title="Copy feed URL"
                 >
-                  <LinkIcon className="w-4 h-4" />
+                  <LinkIcon className="h-4 w-4" />
                 </button>
                 <a
                   href={feed.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1 text-sm bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
+                  className="rounded bg-orange-500 px-3 py-1 text-sm text-white transition-colors hover:bg-orange-600"
                 >
                   Subscribe
                 </a>
@@ -113,19 +123,19 @@ export function RSSFeedLinks({
 function FeedTypeIcon({ type }: { type: RSSFeed['type'] }) {
   switch (type) {
     case 'forum':
-      return <DocumentTextIcon className="w-4 h-4 text-blue-500" />;
+      return <DocumentTextIcon className="h-4 w-4 text-blue-500" />;
     case 'thread':
-      return <ChatBubbleLeftIcon className="w-4 h-4 text-green-500" />;
+      return <ChatBubbleLeftIcon className="h-4 w-4 text-green-500" />;
     case 'global':
-      return <RssIcon className="w-4 h-4 text-orange-500" />;
+      return <RssIcon className="h-4 w-4 text-orange-500" />;
     default:
-      return <RssIcon className="w-4 h-4 text-gray-400" />;
+      return <RssIcon className="h-4 w-4 text-gray-400" />;
   }
 }
 
 /**
  * RSSAutoDiscovery Component
- * 
+ *
  * Adds RSS autodiscovery link tags to the document head.
  * This helps RSS readers find feeds automatically.
  */
@@ -161,7 +171,7 @@ export function RSSAutoDiscovery({ feeds }: RSSAutoDiscoveryProps) {
 
 /**
  * ForumRSSButton Component
- * 
+ *
  * Simple RSS button for a specific forum/section.
  */
 interface ForumRSSButtonProps {
@@ -192,7 +202,7 @@ export function ForumRSSButton({
         href={feedUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className={`inline-flex items-center justify-center p-1.5 text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded transition-colors ${className}`}
+        className={`inline-flex items-center justify-center rounded p-1.5 text-orange-500 transition-colors hover:bg-orange-50 dark:hover:bg-orange-900/20 ${className}`}
         title={`RSS Feed for ${forumName}`}
       >
         <RssIcon className={sizeClasses[size]} />
@@ -206,9 +216,9 @@ export function ForumRSSButton({
         href={feedUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className={`inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors text-sm ${className}`}
+        className={`inline-flex items-center gap-1.5 rounded-lg bg-orange-500 px-3 py-1.5 text-sm text-white transition-colors hover:bg-orange-600 ${className}`}
       >
-        <RssIcon className="w-4 h-4" />
+        <RssIcon className="h-4 w-4" />
         <span>RSS</span>
       </a>
     );
@@ -219,7 +229,7 @@ export function ForumRSSButton({
       href={feedUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className={`inline-flex items-center gap-1 text-orange-600 dark:text-orange-400 hover:underline text-sm ${className}`}
+      className={`inline-flex items-center gap-1 text-sm text-orange-600 hover:underline dark:text-orange-400 ${className}`}
     >
       <RssIcon className={sizeClasses[size]} />
       <span>RSS Feed</span>

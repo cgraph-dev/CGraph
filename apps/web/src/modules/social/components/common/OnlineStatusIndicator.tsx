@@ -2,7 +2,7 @@ import React from 'react';
 
 /**
  * OnlineStatusIndicator Component
- * 
+ *
  * MyBB-style online status indicator showing:
  * - Online (green)
  * - Idle/Away (yellow)
@@ -70,14 +70,14 @@ export function OnlineStatusIndicator({
 
   const formatLastActive = (dateStr: string | null) => {
     if (!dateStr) return null;
-    
+
     const date = new Date(dateStr);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
-    
+
     if (diffMins < 1) return 'just now';
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
@@ -85,9 +85,10 @@ export function OnlineStatusIndicator({
     return date.toLocaleDateString();
   };
 
-  const tooltipText = status === 'offline' && lastActive
-    ? `${config.label} - Last seen ${formatLastActive(lastActive)}`
-    : config.label;
+  const tooltipText =
+    status === 'offline' && lastActive
+      ? `${config.label} - Last seen ${formatLastActive(lastActive)}`
+      : config.label;
 
   return (
     <div
@@ -97,16 +98,16 @@ export function OnlineStatusIndicator({
       {/* Status Dot with Ring Animation for Online */}
       <div className="relative flex items-center justify-center">
         {status === 'online' && (
-          <span className={`absolute ${sizeClass.ring} ${config.bgColor} rounded-full animate-ping opacity-75`} />
+          <span
+            className={`absolute ${sizeClass.ring} ${config.bgColor} animate-ping rounded-full opacity-75`}
+          />
         )}
         <span className={`relative ${sizeClass.dot} ${config.color} rounded-full`} />
       </div>
 
       {/* Label */}
       {showLabel && (
-        <span className={`${sizeClass.text} text-gray-600 dark:text-gray-400`}>
-          {config.label}
-        </span>
+        <span className={`${sizeClass.text} text-gray-600 dark:text-gray-400`}>{config.label}</span>
       )}
     </div>
   );
@@ -114,7 +115,7 @@ export function OnlineStatusIndicator({
 
 /**
  * OnlineStatusBadge Component
- * 
+ *
  * Larger badge version showing status with optional last active time
  */
 interface OnlineStatusBadgeProps {
@@ -125,17 +126,17 @@ interface OnlineStatusBadgeProps {
 
 export function OnlineStatusBadge({ status, lastActive, className = '' }: OnlineStatusBadgeProps) {
   const config = statusConfig[status];
-  
+
   const formatLastActive = (dateStr: string | null) => {
     if (!dateStr) return null;
-    
+
     const date = new Date(dateStr);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
-    
+
     if (diffMins < 1) return 'Active now';
     if (diffMins < 60) return `Active ${diffMins} min ago`;
     if (diffHours < 24) return `Active ${diffHours}h ago`;
@@ -144,14 +145,21 @@ export function OnlineStatusBadge({ status, lastActive, className = '' }: Online
   };
 
   return (
-    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${config.bgColor} ${className}`}>
-      <span className={`w-2.5 h-2.5 ${config.color} rounded-full`} />
-      <span className={`text-sm font-medium ${
-        status === 'online' ? 'text-green-700 dark:text-green-300' :
-        status === 'idle' ? 'text-yellow-700 dark:text-yellow-300' :
-        status === 'dnd' ? 'text-red-700 dark:text-red-300' :
-        'text-gray-600 dark:text-gray-400'
-      }`}>
+    <div
+      className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 ${config.bgColor} ${className}`}
+    >
+      <span className={`h-2.5 w-2.5 ${config.color} rounded-full`} />
+      <span
+        className={`text-sm font-medium ${
+          status === 'online'
+            ? 'text-green-700 dark:text-green-300'
+            : status === 'idle'
+              ? 'text-yellow-700 dark:text-yellow-300'
+              : status === 'dnd'
+                ? 'text-red-700 dark:text-red-300'
+                : 'text-gray-600 dark:text-gray-400'
+        }`}
+      >
         {status === 'offline' && lastActive ? formatLastActive(lastActive) : config.label}
       </span>
     </div>
@@ -160,7 +168,7 @@ export function OnlineStatusBadge({ status, lastActive, className = '' }: Online
 
 /**
  * OnlineStatusDropdown Component
- * 
+ *
  * Dropdown menu for users to change their online status
  */
 interface OnlineStatusDropdownProps {
@@ -198,22 +206,24 @@ export function OnlineStatusDropdown({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700
-                   bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700
-                   disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
       >
         <OnlineStatusIndicator status={currentStatus} size="sm" showTooltip={false} />
         <span className="text-sm text-gray-700 dark:text-gray-300">
           {statusConfig[currentStatus].label}
         </span>
-        <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg
+          className="h-4 w-4 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-48 py-1 bg-white dark:bg-gray-800 
-                        border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+        <div className="absolute left-0 top-full z-50 mt-1 w-48 rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-gray-700 dark:bg-gray-800">
           {availableStatuses.map((status) => (
             <button
               key={status}
@@ -222,17 +232,23 @@ export function OnlineStatusDropdown({
                 onChange(status);
                 setIsOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2 text-left
-                         hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors
-                         ${status === currentStatus ? 'bg-gray-50 dark:bg-gray-700' : ''}`}
+              className={`flex w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700 ${status === currentStatus ? 'bg-gray-50 dark:bg-gray-700' : ''}`}
             >
               <OnlineStatusIndicator status={status} size="sm" showTooltip={false} />
               <span className="text-sm text-gray-700 dark:text-gray-300">
                 {statusConfig[status].label}
               </span>
               {status === currentStatus && (
-                <svg className="w-4 h-4 text-blue-500 ml-auto" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                <svg
+                  className="ml-auto h-4 w-4 text-blue-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               )}
             </button>

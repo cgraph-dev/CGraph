@@ -9,7 +9,7 @@ import { useState, memo } from 'react';
 import { FaceSmileIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
 import { VoiceMessagePlayer } from '@/components/VoiceMessagePlayer';
-import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';
+import AdvancedVoiceVisualizer from '@/modules/chat/components/audio/AdvancedVoiceVisualizer';
 import MessageReactions from '@/modules/chat/components/MessageReactions';
 import RichMediaEmbed from '@/modules/chat/components/RichMediaEmbed';
 import { GifMessage } from '@/modules/chat/components/GifMessage';

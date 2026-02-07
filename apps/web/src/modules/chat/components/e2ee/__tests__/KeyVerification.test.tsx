@@ -210,7 +210,9 @@ describe('KeyVerification', () => {
 
       await waitFor(() => {
         // Use more specific selector for the button
-        expect(screen.getByRole('button', { name: /Show QR Code for Scanning/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /Show QR Code for Scanning/i })
+        ).toBeInTheDocument();
       });
     });
 
@@ -219,7 +221,9 @@ describe('KeyVerification', () => {
       render(<KeyVerification {...defaultProps} />);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /Show QR Code for Scanning/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole('button', { name: /Show QR Code for Scanning/i })
+        ).toBeInTheDocument();
       });
 
       await user.click(screen.getByRole('button', { name: /Show QR Code for Scanning/i }));
@@ -227,8 +231,7 @@ describe('KeyVerification', () => {
       // After clicking, should show "Hide QR Code" or the QR code itself
       await waitFor(() => {
         expect(
-          screen.queryByText(/Hide QR Code/i) || 
-          document.querySelector('[data-testid="qr-code"]')
+          screen.queryByText(/Hide QR Code/i) || document.querySelector('[data-testid="qr-code"]')
         ).toBeTruthy();
       });
     });
