@@ -3,7 +3,7 @@
  * Main admin interface with tabbed navigation
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { AdminTab } from './types';
 import { NAV_ITEMS } from './constants';

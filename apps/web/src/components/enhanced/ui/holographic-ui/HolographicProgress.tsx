@@ -17,7 +17,7 @@ export function HolographicProgress({
 }: HolographicProgressProps) {
   const theme = getTheme(colorTheme);
 
-  const heightClasses = {
+  const heightClasses: Record<string, string> = {
     sm: 'h-2',
     md: 'h-4',
     lg: 'h-6',

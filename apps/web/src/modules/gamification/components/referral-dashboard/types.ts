@@ -11,7 +11,7 @@ export interface ReferralLinkCardProps {
     url: string;
     code: string;
     usageCount: number;
-    maxUsage?: number;
+    maxUsage?: number | null;
   } | null;
   isLoading: boolean;
   copied: boolean;
@@ -49,7 +49,7 @@ export interface RecentReferralsProps {
   referrals: {
     id: string;
     referredUsername: string;
-    referredAvatarUrl?: string;
+    referredAvatarUrl?: string | null;
     createdAt: string;
     status: string;
   }[];
@@ -59,8 +59,8 @@ export interface LeaderboardProps {
   leaderboard: {
     userId: string;
     username: string;
-    displayName?: string;
-    avatarUrl?: string;
+    displayName?: string | null;
+    avatarUrl?: string | null;
     rank: number;
     referralCount: number;
   }[];

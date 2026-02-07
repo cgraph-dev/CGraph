@@ -66,4 +66,4 @@ export const REVEAL_DIRECTIONS = {
   right: { hidden: { opacity: 0, x: -50 }, visible: { opacity: 1, x: 0 } },
 };
 
-export const EASE_OUT_CUBIC = [0.22, 1, 0.36, 1];
+export const EASE_OUT_CUBIC: [number, number, number, number] = [0.22, 1, 0.36, 1];

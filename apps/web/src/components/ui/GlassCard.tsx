@@ -28,7 +28,7 @@ export interface GlassCardProps extends Omit<
   | 'onAnimationIteration'
 > {
   children: ReactNode;
-  variant?: 'default' | 'frosted' | 'crystal' | 'neon' | 'holographic';
+  variant?: 'default' | 'frosted' | 'crystal' | 'neon' | 'holographic' | 'aurora';
   intensity?: 'subtle' | 'medium' | 'strong';
   glow?: boolean;
   glowColor?: string;
@@ -68,6 +68,12 @@ const variantStyles = {
     background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)',
     blur: 'blur(16px)',
     border: '1px solid rgba(255, 255, 255, 0.2)',
+  },
+  aurora: {
+    background:
+      'linear-gradient(135deg, rgba(0, 255, 128, 0.08) 0%, rgba(0, 200, 255, 0.08) 50%, rgba(180, 100, 255, 0.08) 100%)',
+    blur: 'blur(20px)',
+    border: '1px solid rgba(100, 255, 218, 0.2)',
   },
 };
 

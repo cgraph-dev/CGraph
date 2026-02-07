@@ -4,7 +4,7 @@
  */
 
 import type { EventReward, BattlePassTier } from '@/stores/gamification';
-import type { BattlePassTierExtended, DisplayReward } from './types';
+import type { BattlePassTierExtended } from './types';
 
 /**
  * Icon mapping based on reward type

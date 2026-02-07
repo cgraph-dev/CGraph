@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { getTheme, NOTIFICATION_THEMES } from './constants';
 import { HolographicContainer } from './HolographicContainer';
-import type { HolographicNotificationProps } from './types';
+import type { HolographicNotificationProps, HolographicConfig } from './types';
 
 /**
  * HolographicNotification Component
@@ -19,7 +19,7 @@ export function HolographicNotification({
 }: HolographicNotificationProps) {
   const [isVisible, setIsVisible] = useState(true);
 
-  const colorTheme = NOTIFICATION_THEMES[type] ?? 'cyan';
+  const colorTheme = (NOTIFICATION_THEMES[type] ?? 'cyan') as HolographicConfig['colorTheme'];
 
   useEffect(() => {
     if (duration > 0) {

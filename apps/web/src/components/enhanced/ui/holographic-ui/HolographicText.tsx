@@ -18,7 +18,7 @@ export function HolographicText({
 }: HolographicTextProps) {
   const theme = getTheme(colorTheme);
 
-  const sizeClasses = {
+  const sizeClasses: Record<string, string> = {
     title: 'text-4xl font-bold tracking-wider',
     subtitle: 'text-2xl font-semibold tracking-wide',
     body: 'text-base',

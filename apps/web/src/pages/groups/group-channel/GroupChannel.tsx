@@ -157,7 +157,7 @@ export default function GroupChannel() {
       <div className="flex flex-1 flex-col">
         <ChannelHeader
           channelName={channel.name}
-          channelTopic={channel.topic}
+          channelTopic={channel.topic ?? undefined}
           showMembers={showMembers}
           onToggleMembers={() => setShowMembers(!showMembers)}
         />

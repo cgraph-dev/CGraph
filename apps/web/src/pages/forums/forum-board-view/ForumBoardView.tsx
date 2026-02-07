@@ -78,9 +78,7 @@ export function ForumBoardView() {
     setIsLoadingForum(true);
     try {
       const forumData = await fetchForum(forumSlug);
-      setForum(forumData);
-
-      // Load boards and threads for this forum
+      setForum(forumData as Forum);
       await Promise.all([fetchBoards(forumData.id), fetchRecentThreads(forumData.id)]);
     } catch (error) {
       logger.error('Failed to load forum:', error);
@@ -93,10 +91,10 @@ export function ForumBoardView() {
     if (!forum) return;
     if (forum.isSubscribed) {
       await unsubscribe(forum.id);
-      setForum({ ...forum, isSubscribed: false, memberCount: forum.memberCount - 1 });
+      setForum({ ...forum, isSubscribed: false, memberCount: (forum.memberCount ?? 0) - 1 });
     } else {
       await subscribe(forum.id);
-      setForum({ ...forum, isSubscribed: true, memberCount: forum.memberCount + 1 });
+      setForum({ ...forum, isSubscribed: true, memberCount: (forum.memberCount ?? 0) + 1 });
     }
   };
 
@@ -105,7 +103,7 @@ export function ForumBoardView() {
     await voteForum(forum.id, value);
     // Refetch forum to get updated scores
     const updated = await fetchForum(forumSlug!);
-    setForum(updated);
+    setForum(updated as Forum);
   };
 
   const isOwner = forum && user && forum.ownerId === user.id;
@@ -188,7 +186,7 @@ export function ForumBoardView() {
                         <ArrowUpIcon className="h-5 w-5" />
                       </button>
                       <span
-                        className={`px-2 font-bold ${forum.score > 0 ? 'text-orange-400' : 'text-gray-400'}`}
+                        className={`px-2 font-bold ${(forum.score ?? 0) > 0 ? 'text-orange-400' : 'text-gray-400'}`}
                       >
                         {forum.score}
                       </span>

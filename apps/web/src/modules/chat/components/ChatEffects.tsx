@@ -35,3 +35,6 @@ export {
   ChatEffectsProvider,
   useChatEffects,
 } from './chat-effects';
+
+// Default export for barrel compatibility
+export { ChatEffectsProvider as default } from './chat-effects';

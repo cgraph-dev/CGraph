@@ -2,7 +2,7 @@
  * ChatEffectsProvider - Context provider for chat effects settings
  */
 
-import { memo, createContext, useContext, useMemo, type ReactNode } from 'react';
+import { memo, createContext, useContext, useMemo } from 'react';
 import { useChatEffectSettings } from '@/stores/chatEffectsStore';
 import type { MessageEffect, MessageEffectConfig } from '@/stores/chatEffectsStore';
 import type { ChatEffectsProviderProps } from './types';
@@ -32,9 +32,10 @@ export const ChatEffectsProvider = memo(function ChatEffectsProvider({
 
   const value = useMemo(
     (): ChatEffectsContextValue => ({
-      effect: effectOverride ?? settings.effect,
-      config: configOverride ?? settings.config,
-      enabled: settings.enabled,
+      effect: effectOverride ?? settings.effect ?? 'none',
+      config: configOverride ??
+        settings.config ?? { effect: 'none', intensity: 'medium', duration: 1000 },
+      enabled: settings.enabled ?? false,
     }),
     [effectOverride, configOverride, settings]
   );

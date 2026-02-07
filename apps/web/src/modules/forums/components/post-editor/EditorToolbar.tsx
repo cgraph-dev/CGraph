@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { EyeIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import { TOOLBAR_BUTTONS } from './constants';

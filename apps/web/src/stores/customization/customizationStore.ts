@@ -18,7 +18,12 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { api } from '@/lib/api';
 import { safeLocalStorage } from '@/lib/safeStorage';
-import { createToggle, createSchemaMapper, createDebouncedSave } from '@/stores/utils/storeHelpers';
+import {
+  createToggle,
+  createSchemaMapper,
+  createDebouncedSave,
+  type ZustandSet,
+} from '@/stores/utils/storeHelpers';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('customizationStore');
@@ -431,7 +436,7 @@ const apiSchemaMapper = createSchemaMapper<CustomizationState>({
 // DEBOUNCED SAVE
 // =============================================================================
 
-const debouncedSave = createDebouncedSave(
+const debouncedSave = createDebouncedSave<CustomizationStore>(
   async (state, _set) => {
     const payload = apiSchemaMapper.toApi(state);
     await api.patch('/api/v1/me/customizations', payload);
@@ -445,95 +450,101 @@ const debouncedSave = createDebouncedSave(
 
 export const useCustomizationStore = create<CustomizationStore>()(
   persist(
-    (set, get) => ({
-      ...DEFAULT_STATE,
+    (set, get) => {
+      // Cast set to our ZustandSet type for compatibility with helper functions
+      const _set = set as unknown as ZustandSet<CustomizationStore>;
+      return {
+        ...DEFAULT_STATE,
 
-      // === Batch Update ===
-      updateSettings: (updates) => set({ ...updates, isDirty: true }),
+        // === Batch Update ===
+        updateSettings: (updates) => set({ ...updates, isDirty: true }),
 
-      // === Theme Actions ===
-      setTheme: (preset) => set({ themePreset: preset, isDirty: true }),
-      setEffect: (preset) => set({ effectPreset: preset, isDirty: true }),
-      setAnimationSpeed: (speed) => set({ animationSpeed: speed, isDirty: true }),
-      toggleParticles: createToggle(set, 'particlesEnabled'),
-      toggleGlow: createToggle(set, 'glowEnabled'),
-      toggleBlur: createToggle(set, 'blurEnabled'),
-      toggleAnimatedBackground: createToggle(set, 'animatedBackground'),
+        // === Theme Actions ===
+        setTheme: (preset) => set({ themePreset: preset, isDirty: true }),
+        setEffect: (preset) => set({ effectPreset: preset, isDirty: true }),
+        setAnimationSpeed: (speed) => set({ animationSpeed: speed, isDirty: true }),
+        toggleParticles: createToggle(_set, 'particlesEnabled'),
+        toggleGlow: createToggle(_set, 'glowEnabled'),
+        toggleBlur: createToggle(_set, 'blurEnabled'),
+        toggleAnimatedBackground: createToggle(_set, 'animatedBackground'),
 
-      // === Avatar Actions ===
-      setAvatarBorder: (type) => set({ avatarBorderType: type, avatarBorder: type, isDirty: true }),
-      setAvatarBorderColor: (color) => set({ avatarBorderColor: color, isDirty: true }),
-      setAvatarSize: (size) => set({ avatarSize: size, isDirty: true }),
-      selectBorderTheme: (theme) => set({ selectedBorderTheme: theme, isDirty: true }),
-      selectBorderId: (id) => set({ selectedBorderId: id, isDirty: true }),
+        // === Avatar Actions ===
+        setAvatarBorder: (type) =>
+          set({ avatarBorderType: type, avatarBorder: type, isDirty: true }),
+        setAvatarBorderColor: (color) => set({ avatarBorderColor: color, isDirty: true }),
+        setAvatarSize: (size) => set({ avatarSize: size, isDirty: true }),
+        selectBorderTheme: (theme) => set({ selectedBorderTheme: theme, isDirty: true }),
+        selectBorderId: (id) => set({ selectedBorderId: id, isDirty: true }),
 
-      // === Chat Actions ===
-      setChatBubbleStyle: (style) =>
-        set({ chatBubbleStyle: style, bubbleStyle: style, isDirty: true }),
-      setChatBubbleColor: (color) =>
-        set({ chatBubbleColor: color, chatTheme: color, isDirty: true }),
-      setBubbleBorderRadius: (radius) => set({ bubbleBorderRadius: radius, isDirty: true }),
-      setBubbleShadowIntensity: (intensity) =>
-        set({ bubbleShadowIntensity: intensity, isDirty: true }),
-      setBubbleAnimation: (animation) =>
-        set({ bubbleEntranceAnimation: animation, messageEffect: animation, isDirty: true }),
-      toggleBubbleGlass: createToggle(set, 'bubbleGlassEffect'),
-      toggleBubbleTail: createToggle(set, 'bubbleShowTail'),
-      toggleBubbleHover: createToggle(set, 'bubbleHoverEffect'),
-      toggleGroupMessages: createToggle(set, 'groupMessages'),
-      toggleTimestamps: createToggle(set, 'showTimestamps'),
-      toggleCompactMode: createToggle(set, 'compactMode'),
+        // === Chat Actions ===
+        setChatBubbleStyle: (style) =>
+          set({ chatBubbleStyle: style, bubbleStyle: style, isDirty: true }),
+        setChatBubbleColor: (color) =>
+          set({ chatBubbleColor: color, chatTheme: color, isDirty: true }),
+        setBubbleBorderRadius: (radius) => set({ bubbleBorderRadius: radius, isDirty: true }),
+        setBubbleShadowIntensity: (intensity) =>
+          set({ bubbleShadowIntensity: intensity, isDirty: true }),
+        setBubbleAnimation: (animation) =>
+          set({ bubbleEntranceAnimation: animation, messageEffect: animation, isDirty: true }),
+        toggleBubbleGlass: createToggle(_set, 'bubbleGlassEffect'),
+        toggleBubbleTail: createToggle(_set, 'bubbleShowTail'),
+        toggleBubbleHover: createToggle(_set, 'bubbleHoverEffect'),
+        toggleGroupMessages: createToggle(_set, 'groupMessages'),
+        toggleTimestamps: createToggle(_set, 'showTimestamps'),
+        toggleCompactMode: createToggle(_set, 'compactMode'),
 
-      // === Profile Actions ===
-      setProfileCardStyle: (style) =>
-        set({ profileCardStyle: style, profileLayout: style, isDirty: true }),
-      setProfileTheme: (themeId) =>
-        set({ selectedProfileThemeId: themeId, profileTheme: themeId, isDirty: true }),
-      toggleBadges: createToggle(set, 'showBadges'),
-      toggleBio: createToggle(set, 'showBio'),
-      toggleStatus: createToggle(set, 'showStatus'),
-      toggleGlowEffects: createToggle(set, 'glowEffects'),
-      toggleParticleEffects: createToggle(set, 'particleEffects'),
-      setEquippedTitle: (titleId) => set({ equippedTitle: titleId, title: titleId, isDirty: true }),
-      setEquippedBadges: (badgeIds) => set({ equippedBadges: badgeIds, isDirty: true }),
+        // === Profile Actions ===
+        setProfileCardStyle: (style) =>
+          set({ profileCardStyle: style, profileLayout: style, isDirty: true }),
+        setProfileTheme: (themeId) =>
+          set({ selectedProfileThemeId: themeId, profileTheme: themeId, isDirty: true }),
+        toggleBadges: createToggle(_set, 'showBadges'),
+        toggleBio: createToggle(_set, 'showBio'),
+        toggleStatus: createToggle(_set, 'showStatus'),
+        toggleGlowEffects: createToggle(_set, 'glowEffects'),
+        toggleParticleEffects: createToggle(_set, 'particleEffects'),
+        setEquippedTitle: (titleId) =>
+          set({ equippedTitle: titleId, title: titleId, isDirty: true }),
+        setEquippedBadges: (badgeIds) => set({ equippedBadges: badgeIds, isDirty: true }),
 
-      // === Legacy Batch Update Methods ===
-      updateChatStyle: (key, value) => set({ [key]: value, isDirty: true }),
-      updateEffects: (key, value) => set({ [key]: value, isDirty: true }),
-      updateIdentity: (key, value) => set({ [key]: value, isDirty: true }),
-      updateTheme: (key, value) => set({ [key]: value, isDirty: true }),
+        // === Legacy Batch Update Methods ===
+        updateChatStyle: (key, value) => set({ [key]: value, isDirty: true }),
+        updateEffects: (key, value) => set({ [key]: value, isDirty: true }),
+        updateIdentity: (key, value) => set({ [key]: value, isDirty: true }),
+        updateTheme: (key, value) => set({ [key]: value, isDirty: true }),
 
-      // === Sync Actions ===
-      fetchCustomizations: async (_userId?: string) => {
-        set({ isLoading: true, error: null });
+        // === Sync Actions ===
+        fetchCustomizations: async (_userId?: string) => {
+          set({ isLoading: true, error: null });
 
-        try {
-          const response = await api.get('/api/v1/me/customizations');
-          const data = response.data.data;
-          const parsed = apiSchemaMapper.fromApi(data, DEFAULT_STATE);
+          try {
+            const response = await api.get('/api/v1/me/customizations');
+            const data = response.data.data;
+            const parsed = apiSchemaMapper.fromApi(data, DEFAULT_STATE);
 
-          set({
-            ...parsed,
-            isLoading: false,
-            lastSyncedAt: Date.now(),
-            isDirty: false,
-          });
-        } catch (error) {
-          const message = error instanceof Error ? error.message : 'Failed to load';
-          logger.error('Failed to fetch customizations:', error);
-          set({ isLoading: false, error: message });
-        }
-      },
+            set({
+              ...parsed,
+              isLoading: false,
+              lastSyncedAt: Date.now(),
+              isDirty: false,
+            });
+          } catch (error) {
+            const message = error instanceof Error ? error.message : 'Failed to load';
+            logger.error('Failed to fetch customizations:', error);
+            set({ isLoading: false, error: message });
+          }
+        },
 
-      saveCustomizations: async (_userId?: string) => {
-        const state = get();
-        debouncedSave(state, set);
-      },
+        saveCustomizations: async (_userId?: string) => {
+          const state = get();
+          debouncedSave(state, _set);
+        },
 
-      resetToDefaults: () => set({ ...DEFAULT_STATE, isDirty: true }),
+        resetToDefaults: () => set({ ...DEFAULT_STATE, isDirty: true }),
 
-      clearError: () => set({ error: null }),
-    }),
+        clearError: () => set({ error: null }),
+      };
+    },
     {
       name: 'cgraph-customization',
       storage: createJSONStorage(() => safeLocalStorage),

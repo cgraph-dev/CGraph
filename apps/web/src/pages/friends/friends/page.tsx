@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react';
 import { useFriendStore, Friend } from '@/stores/friendStore';
 import { extractErrorMessage } from '@/lib/apiUtils';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { UserPlusIcon, NoSymbolIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 import { socketManager } from '@/lib/socket';

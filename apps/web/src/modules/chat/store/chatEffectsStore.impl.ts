@@ -740,6 +740,9 @@ export const useChatEffectSettings = () =>
     reduceMotion: state.reduceMotion,
     showEffectsInCompactMode: state.showEffectsInCompactMode,
     autoPlayEffects: state.autoPlayEffects,
+    effect: state.activeMessageEffect.effect,
+    config: state.activeMessageEffect,
+    enabled: state.autoPlayEffects,
   }));
 
 export default useChatEffectsStore;

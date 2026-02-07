@@ -123,17 +123,8 @@ beforeEach(() => {
 // =============================================================================
 
 // We need to import dynamically after mocks are set up
-let themeEngine: {
-  getCurrentTheme: () => Theme;
-  getAllThemes: () => Theme[];
-  setTheme: (themeId: string) => void;
-  subscribe: (listener: (theme: Theme) => void) => () => void;
-  getPreferences: () => Record<string, unknown>;
-  updatePreferences: (prefs: Record<string, unknown>) => void;
-  createCustomTheme?: (theme: Partial<Theme>) => Theme;
-  deleteCustomTheme?: (themeId: string) => boolean;
-  resetToDefaults?: () => void;
-};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let themeEngine: any;
 let setTheme: (themeId: string) => void;
 let getCurrentTheme: () => Theme;
 let getAllThemes: () => Theme[];
@@ -259,8 +250,8 @@ describe('ThemeEngine', () => {
 
       for (const theme of themes) {
         for (const colorKey of requiredColors) {
-          expect(theme.colors[colorKey]).toBeDefined();
-          expect(typeof theme.colors[colorKey]).toBe('string');
+          expect((theme.colors as Record<string, string>)[colorKey]).toBeDefined();
+          expect(typeof (theme.colors as Record<string, string>)[colorKey]).toBe('string');
         }
       }
     });
@@ -270,7 +261,7 @@ describe('ThemeEngine', () => {
       const theme = themeEngine.getCurrentTheme();
       const holoColors = ['holoGlow', 'holoAccent', 'holoScanline'];
       for (const holoColor of holoColors) {
-        expect(theme.colors[holoColor]).toBeDefined();
+        expect((theme.colors as Record<string, string>)[holoColor]).toBeDefined();
       }
     });
 
@@ -320,65 +311,65 @@ describe('ThemeEngine', () => {
   describe('Preferences Management', () => {
     it('should update font scale', () => {
       // Skip if updateSettings doesn't exist
-      if (typeof themeEngine.updateSettings !== 'function') {
+      if (typeof themeEngine.updatePreferences !== 'function') {
         expect(true).toBe(true); // Pass test
         return;
       }
-      themeEngine.updateSettings({ fontScale: 1.25 });
+      themeEngine.updatePreferences({ fontScale: 1.25 });
       const prefs = themeEngine.getPreferences();
       expect(prefs.settings.fontScale).toBe(1.25);
     });
 
     it('should clamp font scale to valid range', () => {
-      if (typeof themeEngine.updateSettings !== 'function') {
+      if (typeof themeEngine.updatePreferences !== 'function') {
         expect(true).toBe(true);
         return;
       }
       // Test that setting font scale works - implementation may or may not clamp
-      themeEngine.updateSettings({ fontScale: 0.3 }); // Below typical min
+      themeEngine.updatePreferences({ fontScale: 0.3 }); // Below typical min
       const lowScale = themeEngine.getPreferences().settings.fontScale;
       expect(typeof lowScale).toBe('number');
 
-      themeEngine.updateSettings({ fontScale: 5 }); // Above typical max
+      themeEngine.updatePreferences({ fontScale: 5 }); // Above typical max
       const highScale = themeEngine.getPreferences().settings.fontScale;
       expect(typeof highScale).toBe('number');
     });
 
     it('should update message display mode', () => {
-      if (typeof themeEngine.updateSettings !== 'function') {
+      if (typeof themeEngine.updatePreferences !== 'function') {
         expect(true).toBe(true);
         return;
       }
-      themeEngine.updateSettings({ messageDisplay: 'compact' });
+      themeEngine.updatePreferences({ messageDisplay: 'compact' });
       expect(themeEngine.getPreferences().settings.messageDisplay).toBe('compact');
     });
 
     it('should toggle reduce motion', () => {
-      if (typeof themeEngine.updateSettings !== 'function') {
+      if (typeof themeEngine.updatePreferences !== 'function') {
         expect(true).toBe(true);
         return;
       }
       const initialValue = themeEngine.getPreferences().settings.reduceMotion;
-      themeEngine.updateSettings({ reduceMotion: !initialValue });
+      themeEngine.updatePreferences({ reduceMotion: !initialValue });
       expect(themeEngine.getPreferences().settings.reduceMotion).toBe(!initialValue);
     });
 
     it('should toggle high contrast', () => {
-      if (typeof themeEngine.updateSettings !== 'function') {
+      if (typeof themeEngine.updatePreferences !== 'function') {
         expect(true).toBe(true);
         return;
       }
       const initialValue = themeEngine.getPreferences().settings.highContrast;
-      themeEngine.updateSettings({ highContrast: !initialValue });
+      themeEngine.updatePreferences({ highContrast: !initialValue });
       expect(themeEngine.getPreferences().settings.highContrast).toBe(!initialValue);
     });
 
     it('should persist preferences to localStorage', () => {
-      if (typeof themeEngine.updateSettings !== 'function') {
+      if (typeof themeEngine.updatePreferences !== 'function') {
         expect(true).toBe(true);
         return;
       }
-      themeEngine.updateSettings({ fontScale: 1.1 });
+      themeEngine.updatePreferences({ fontScale: 1.1 });
       expect(localStorageMock.setItem).toHaveBeenCalled();
     });
   });
@@ -626,20 +617,20 @@ describe('ThemeEngine', () => {
     });
 
     it('should handle null/undefined settings gracefully', () => {
-      if (typeof themeEngine.updateSettings !== 'function') {
+      if (typeof themeEngine.updatePreferences !== 'function') {
         expect(true).toBe(true);
         return;
       }
-      expect(() => themeEngine.updateSettings(null)).not.toThrow();
-      expect(() => themeEngine.updateSettings(undefined)).not.toThrow();
+      expect(() => themeEngine.updatePreferences(null)).not.toThrow();
+      expect(() => themeEngine.updatePreferences(undefined)).not.toThrow();
     });
 
     it('should validate message display values', () => {
-      if (typeof themeEngine.updateSettings !== 'function') {
+      if (typeof themeEngine.updatePreferences !== 'function') {
         expect(true).toBe(true);
         return;
       }
-      themeEngine.updateSettings({ messageDisplay: 'invalid' as any });
+      themeEngine.updatePreferences({ messageDisplay: 'invalid' as any });
       const currentDisplay = themeEngine.getPreferences()?.settings?.messageDisplay;
       // Either validation rejects it, or it accepts anything
       expect(currentDisplay).toBeDefined();

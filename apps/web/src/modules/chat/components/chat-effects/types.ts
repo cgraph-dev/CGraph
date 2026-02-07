@@ -7,7 +7,6 @@ import type {
   BubbleStyleConfig,
   MessageEffectConfig,
   TypingIndicatorConfig,
-  ReactionConfig,
 } from '@/stores/chatEffectsStore';
 
 export interface MessageBubbleProps {
@@ -16,6 +15,7 @@ export interface MessageBubbleProps {
   isOwn?: boolean;
   className?: string;
   animate?: boolean;
+  config?: Partial<MessageEffectConfig>;
 }
 
 export interface MessageWithEffectProps {
@@ -38,10 +38,25 @@ export interface TypingIndicatorProps {
   config?: TypingIndicatorConfig;
   username?: string;
   className?: string;
+  style?:
+    | 'dots'
+    | 'wave'
+    | 'bounce'
+    | 'pulse'
+    | 'typing-text'
+    | 'pencil'
+    | 'speech-bubble'
+    | 'spinner'
+    | 'custom';
+  speed?: 'slow' | 'normal' | 'fast';
+  size?: 'sm' | 'md' | 'lg';
+  color?: string;
 }
 
 export interface ReactionAnimationProps {
   emoji: string;
+  animation?: 'pop' | 'bounce' | 'float' | 'explode' | 'spin' | 'shake' | 'glow' | 'rainbow';
+  size?: 'small' | 'medium' | 'large';
   onComplete?: () => void;
   className?: string;
 }
@@ -49,6 +64,8 @@ export interface ReactionAnimationProps {
 export interface ChatEffectsProviderProps {
   children: React.ReactNode;
   loadFromServer?: boolean;
+  effectOverride?: MessageEffect;
+  configOverride?: MessageEffectConfig;
 }
 
 export interface Particle {

@@ -12,7 +12,7 @@ import { SectionHeader } from './SectionHeader';
 // TYPES
 // =============================================================================
 
-type BackgroundEffect = 'none' | 'shader';
+type BackgroundEffect = 'none' | 'shader' | 'matrix3d';
 type ShaderVariant = 'matrix' | 'fluid' | 'particles' | 'waves' | 'neural';
 
 interface BackgroundEffectsProps {

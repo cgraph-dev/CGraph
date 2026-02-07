@@ -18,7 +18,7 @@ export function HolographicAvatar({
 }: HolographicAvatarProps) {
   const theme = getTheme(colorTheme);
 
-  const sizeClasses = {
+  const sizeClasses: Record<string, string> = {
     sm: 'w-8 h-8 text-xs',
     md: 'w-12 h-12 text-sm',
     lg: 'w-16 h-16 text-lg',

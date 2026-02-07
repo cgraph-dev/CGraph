@@ -1,4 +1,3 @@
-import React from 'react';
 import { PaperClipIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import type { AttachmentsListProps } from './types';
 

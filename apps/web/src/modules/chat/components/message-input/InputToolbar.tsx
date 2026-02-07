@@ -18,7 +18,7 @@ interface InputToolbarProps {
 }
 
 export function InputToolbar({
-  attachmentMode,
+  attachmentMode: _attachmentMode,
   isRecording,
   canSend,
   disabled = false,

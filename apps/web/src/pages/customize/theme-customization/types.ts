@@ -27,7 +27,7 @@ export interface ThemeCardProps {
   theme: Theme;
   isActive: boolean;
   isPreviewing: boolean;
-  onApply: (theme: Theme) => void;
+  onApply: () => void;
   delay?: number;
 }
 

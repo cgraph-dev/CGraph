@@ -15,6 +15,9 @@ export {
   buildFeedUrl,
 } from './rss-feed';
 
+// Default export for barrel compatibility
+export { RSSFeedButton as default } from './rss-feed';
+
 export type {
   FeedType,
   FeedFormat,

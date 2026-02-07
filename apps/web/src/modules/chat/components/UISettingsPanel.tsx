@@ -4,10 +4,7 @@ import { SparklesIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { UIPreferences } from './MessageBubble';
 
-type GlassEffect = 'default' | 'frosted' | 'crystal' | 'neon' | 'holographic';
-type AnimationIntensity = 'low' | 'medium' | 'high';
-type VoiceTheme = 'matrix-green' | 'cyber-blue' | 'neon-pink' | 'amber';
-type EntranceAnimation = 'slide' | 'scale' | 'fade' | 'bounce';
+type AnimationIntensity = UIPreferences['animationIntensity'];
 
 export interface UISettingsPanelProps {
   uiPreferences: UIPreferences;
@@ -50,7 +47,9 @@ export function UISettingsPanel({
               <label className="mb-2 block text-sm font-medium text-gray-300">Glass Effect</label>
               <select
                 value={uiPreferences.glassEffect}
-                onChange={(e) => updatePreference('glassEffect', e.target.value as GlassEffect)}
+                onChange={(e) =>
+                  updatePreference('glassEffect', e.target.value as UIPreferences['glassEffect'])
+                }
                 className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
               >
                 <option value="default">Default</option>
@@ -67,7 +66,10 @@ export function UISettingsPanel({
               <select
                 value={uiPreferences.voiceVisualizerTheme}
                 onChange={(e) =>
-                  updatePreference('voiceVisualizerTheme', e.target.value as VoiceTheme)
+                  updatePreference(
+                    'voiceVisualizerTheme',
+                    e.target.value as UIPreferences['voiceVisualizerTheme']
+                  )
                 }
                 className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
               >
@@ -104,7 +106,10 @@ export function UISettingsPanel({
               <select
                 value={uiPreferences.messageEntranceAnimation}
                 onChange={(e) =>
-                  updatePreference('messageEntranceAnimation', e.target.value as EntranceAnimation)
+                  updatePreference(
+                    'messageEntranceAnimation',
+                    e.target.value as UIPreferences['messageEntranceAnimation']
+                  )
                 }
                 className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
               >

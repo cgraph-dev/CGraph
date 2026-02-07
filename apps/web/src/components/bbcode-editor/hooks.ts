@@ -10,7 +10,10 @@ import type { TextSelection } from './types';
 /**
  * Hook for managing text selection in textarea
  */
-export function useTextSelection(textareaRef: RefObject<HTMLTextAreaElement>, value: string) {
+export function useTextSelection(
+  textareaRef: RefObject<HTMLTextAreaElement | null>,
+  value: string
+) {
   const getSelection = useCallback((): TextSelection => {
     const textarea = textareaRef.current;
     if (!textarea) return { start: 0, end: 0, text: '' };
@@ -29,7 +32,7 @@ export function useTextSelection(textareaRef: RefObject<HTMLTextAreaElement>, va
  * Hook for inserting BBCode tags
  */
 export function useBBCodeInsertion(
-  textareaRef: RefObject<HTMLTextAreaElement>,
+  textareaRef: RefObject<HTMLTextAreaElement | null>,
   value: string,
   onChange: (value: string) => void,
   getSelection: () => TextSelection

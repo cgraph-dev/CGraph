@@ -2,7 +2,7 @@
  * LandingDemoWorkshop - Type Definitions
  */
 
-import type { ReactNode, CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 
 // =============================================================================
 // FEATURE & DATA TYPES

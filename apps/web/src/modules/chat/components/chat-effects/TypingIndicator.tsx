@@ -144,7 +144,7 @@ const SpinnerIndicator = ({ duration, size }: { duration: number; size: number }
 export const TypingIndicator = memo(function TypingIndicator({
   style = 'dots',
   speed = 'normal',
-  size = 'medium',
+  size = 'md',
   color,
   className = '',
 }: TypingIndicatorProps) {

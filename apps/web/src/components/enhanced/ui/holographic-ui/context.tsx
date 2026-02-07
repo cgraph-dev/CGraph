@@ -77,7 +77,7 @@ export function HoloProvider({ children, config: userConfig }: HoloProviderProps
   }, []);
 
   const theme = useMemo(() => {
-    const preset = config.preset === 'custom' ? 'cyan' : config.preset;
+    const preset = config.preset === 'custom' ? 'cyan' : (config.preset ?? 'cyan');
     const baseTheme = HOLO_PRESETS[preset];
     return { ...baseTheme, ...config.customTheme };
   }, [config.preset, config.customTheme]);

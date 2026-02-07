@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { PaperClipIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import type { EditorActionsProps } from './types';

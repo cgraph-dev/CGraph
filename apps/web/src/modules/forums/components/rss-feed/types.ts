@@ -8,6 +8,14 @@ export type FeedFormat = 'rss' | 'atom';
 export interface RSSFeedButtonProps {
   /** The type of feed */
   feedType: FeedType;
+  /** Forum slug for URL generation */
+  forumSlug?: string;
+  /** Category slug for URL generation */
+  categorySlug?: string;
+  /** Display variant */
+  variant?: 'default' | 'minimal' | 'compact';
+  /** Whether to show the label text */
+  showLabel?: boolean;
   /** The ID of the resource (forum_id, board_id, thread_id, or user_id) */
   resourceId?: string;
   /** The name/title to display */
@@ -26,9 +34,11 @@ export interface FeedSubscribeModalProps {
   isOpen: boolean;
   onClose: () => void;
   feedType: FeedType;
+  forumSlug?: string;
+  categorySlug?: string;
   resourceId?: string;
   resourceName?: string;
-  baseUrl: string;
+  baseUrl?: string;
 }
 
 export interface FeedReaderConfig {
@@ -48,12 +58,16 @@ export interface FeedReaderButtonsProps {
 }
 
 export interface FormatSelectorProps {
-  format: FeedFormat;
-  onChange: (format: FeedFormat) => void;
+  selectedFormat: FeedFormat;
+  onFormatChange: (format: FeedFormat) => void;
+  format?: FeedFormat;
+  onChange?: (format: FeedFormat) => void;
 }
 
 export interface RSSFeedLinkProps {
   feedType: FeedType;
+  forumSlug?: string;
+  categorySlug?: string;
   resourceId?: string;
   format?: FeedFormat;
   children?: React.ReactNode;

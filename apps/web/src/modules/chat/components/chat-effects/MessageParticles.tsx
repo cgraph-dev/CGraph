@@ -4,7 +4,6 @@
 
 import { memo, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { MessageEffect, MessageEffectConfig } from '@/stores/chatEffectsStore';
 import type { MessageParticlesProps, Particle } from './types';
 import { shouldShowParticles } from './constants';
 

@@ -13,7 +13,7 @@ export function useE2EETests(conversationId: string, recipientId: string) {
   const [isRunning, setIsRunning] = useState(false);
   const [tests, setTests] = useState<TestResult[]>(INITIAL_TESTS);
   const [overallStatus, setOverallStatus] = useState<OverallStatus>('idle');
-  const [testStartTime, setTestStartTime] = useState<number>(0);
+  const [_testStartTime, setTestStartTime] = useState<number>(0);
   const [totalDuration, setTotalDuration] = useState<number>(0);
 
   const runSingleTest = useCallback(

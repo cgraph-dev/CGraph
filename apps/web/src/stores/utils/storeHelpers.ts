@@ -26,8 +26,10 @@ export interface BaseStoreState {
 }
 
 /** Zustand-compatible set function type */
-export type ZustandSet<T extends BaseStoreState = BaseStoreState> = (
-  partial: Partial<T> | ((state: T) => Partial<T>)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type ZustandSet<T = any> = (
+  partial: Partial<T> | T | ((state: T) => Partial<T> | T),
+  replace?: boolean | undefined
 ) => void;
 
 export interface FieldSchema {
@@ -48,7 +50,7 @@ export interface FieldSchema {
  *   toggleEnabled: createToggle(set, 'isEnabled'),
  * }));
  */
-export function createToggle<T extends BaseStoreState & Record<string, boolean>>(
+export function createToggle<T extends BaseStoreState>(
   set: ZustandSet<T>,
   field: keyof T & string,
   markDirty = true
@@ -129,13 +131,11 @@ export function fromApiParams<T extends Record<string, unknown>>(
 /**
  * Creates a schema mapper with both toApi and fromApi methods.
  */
-export function createSchemaMapper<T extends Record<string, unknown> = Record<string, unknown>>(
-  schema: FieldSchema
-) {
+export function createSchemaMapper<T = Record<string, unknown>>(schema: FieldSchema) {
   return {
     toApi: (updates: Partial<T>) => toApiParams(updates as Record<string, unknown>, schema),
     fromApi: (apiData: Record<string, unknown>, defaults: T) =>
-      fromApiParams(apiData, schema, defaults),
+      fromApiParams(apiData, schema, defaults as Record<string, unknown>) as T,
     schema,
   };
 }
@@ -184,16 +184,16 @@ export function createDebouncedSave<T extends BaseStoreState>(
       clearTimeout(existingTimer);
     }
 
-    set({ isSaving: true, error: null });
+    set({ isSaving: true, error: null } as Partial<T>);
 
     const timer = setTimeout(async () => {
       saveTimers.delete(key);
       try {
         await saveFn(state, set);
-        set({ isSaving: false });
+        set({ isSaving: false } as Partial<T>);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Save failed';
-        set({ isSaving: false, error: errorMessage });
+        set({ isSaving: false, error: errorMessage } as Partial<T>);
       }
     }, delay);
 

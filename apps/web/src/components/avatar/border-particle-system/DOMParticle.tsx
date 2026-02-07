@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import type { ParticleType } from '@/types/avatar-borders';
 import type { DOMParticleProps } from './types';
 
 export const DOMParticle = memo(function DOMParticle({ particle, type }: DOMParticleProps) {

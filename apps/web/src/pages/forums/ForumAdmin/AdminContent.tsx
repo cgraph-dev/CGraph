@@ -51,7 +51,7 @@ interface AdminContentProps {
   onDelete: () => void;
   // Appearance
   appearance: ForumAppearance;
-  setAppearance: (appearance: ForumAppearance) => void;
+  setAppearance: React.Dispatch<React.SetStateAction<ForumAppearance>>;
   // Categories
   categories: ForumCategory[];
   newCategoryName: string;

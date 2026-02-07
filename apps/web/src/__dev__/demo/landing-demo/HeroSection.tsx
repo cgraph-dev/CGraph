@@ -3,7 +3,7 @@
  */
 
 import { forwardRef, RefObject } from 'react';
-import { LogoIcon } from '@/components/Logo';
+import { LogoIcon } from '@/components/logo';
 import { SignInButton, SwapButton } from './Buttons';
 
 interface HeroSectionProps {

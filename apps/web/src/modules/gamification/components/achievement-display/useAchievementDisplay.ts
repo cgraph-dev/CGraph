@@ -101,8 +101,8 @@ export function useAchievementDisplay(
     setSelectedAchievement(achievement);
   };
 
-  const isUnlocked = (achievement: Achievement) =>
-    achievement.unlockedAt || unlockedSet.has(achievement.id);
+  const isUnlocked = (achievement: Achievement): boolean =>
+    !!(achievement.unlockedAt || unlockedSet.has(achievement.id));
 
   const getProgress = (achievement: Achievement) => {
     if (!achievement.targetProgress) return 100;

@@ -299,7 +299,7 @@ export default function Conversation() {
           otherParticipant={otherParticipant}
           isOtherUserOnline={isOtherUserOnline}
           typing={typing}
-          uiPreferences={uiPreferences}
+          uiPreferences={uiPreferences as Parameters<typeof ConversationHeader>[0]['uiPreferences']}
           onStartVoiceCall={() => callModals.handleStartVoiceCall(uiPreferences.enableHaptic)}
           onStartVideoCall={() => callModals.handleStartVideoCall(uiPreferences.enableHaptic)}
           onToggleSearch={() => hapticToggle(setShowMessageSearch)}

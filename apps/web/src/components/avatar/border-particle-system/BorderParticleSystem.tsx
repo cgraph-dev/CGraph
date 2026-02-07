@@ -1,7 +1,7 @@
 import { memo, useMemo, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import type { BorderParticleSystemProps, Particle, ParticleColors } from './types';
+import type { BorderParticleSystemProps, Particle } from './types';
 import { PARTICLE_PRESETS } from './presets';
 import { random } from './utils';
 import { DOMParticle } from './DOMParticle';

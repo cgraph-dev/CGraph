@@ -170,6 +170,7 @@ export async function generatePDF(
     const totalPosts = thread.posts.length;
     for (let i = 0; i < totalPosts; i++) {
       const post = thread.posts[i];
+      if (!post) continue;
 
       // Reply header
       checkPageBreak(lineHeight * 4);

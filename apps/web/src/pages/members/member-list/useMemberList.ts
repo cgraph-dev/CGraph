@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';
 import { createLogger } from '@/lib/logger';
-import type { Member, UserGroup, SortField, SortOrder, MemberFilters } from './types';
+import type { Member, UserGroup, SortField, SortOrder } from './types';
 
 const logger = createLogger('MemberList');
 const PER_PAGE = 25;
@@ -155,7 +155,8 @@ export function useMemberList() {
   }, []);
 
   const hasActiveFilters = useMemo(
-    () => filterGroup || filterOnlineOnly || filterJoinedAfter || filterJoinedBefore || searchQuery,
+    () =>
+      !!(filterGroup || filterOnlineOnly || filterJoinedAfter || filterJoinedBefore || searchQuery),
     [filterGroup, filterOnlineOnly, filterJoinedAfter, filterJoinedBefore, searchQuery]
   );
 

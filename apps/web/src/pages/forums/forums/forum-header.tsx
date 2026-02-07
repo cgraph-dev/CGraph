@@ -3,7 +3,6 @@
  * @module pages/forums/forums/forum-header
  */
 
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';

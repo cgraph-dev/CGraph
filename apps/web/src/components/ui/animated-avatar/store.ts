@@ -8,7 +8,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 
 import { safeLocalStorage } from '@/lib/safeStorage';
 
-import type { AvatarStyle, BorderStyleType, AvatarStyleStore } from './types';
+import type { BorderStyleType, AvatarStyleStore } from './types';
 import { defaultAvatarStyle, DEFAULT_OWNED_STYLES } from './constants';
 
 export const useAvatarStyle = create<AvatarStyleStore>()(

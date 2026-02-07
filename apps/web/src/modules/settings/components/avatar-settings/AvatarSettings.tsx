@@ -67,8 +67,8 @@ export default function AvatarSettings() {
 
       {/* Preview Card */}
       <AvatarPreviewCard
-        avatarUrl={avatarUpload.preview || user?.avatarUrl}
-        displayName={user?.displayName}
+        avatarUrl={(avatarUpload.preview || user?.avatarUrl) ?? undefined}
+        displayName={user?.displayName ?? undefined}
       />
 
       {/* Avatar Upload */}

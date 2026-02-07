@@ -26,7 +26,6 @@ export function HolographicContainer({
     enableFlicker: userConfig?.enableFlicker ?? true,
     enableParallax: userConfig?.enableParallax ?? true,
     enable3D: userConfig?.enable3D ?? true,
-    enableAudio: userConfig?.enableAudio ?? false,
     glitchProbability: userConfig?.glitchProbability ?? 0.02,
     ...userConfig,
   };
@@ -51,7 +50,7 @@ export function HolographicContainer({
     if (!config.enableFlicker) return;
 
     const glitchInterval = setInterval(() => {
-      if (Math.random() < config.glitchProbability) {
+      if (Math.random() < (config.glitchProbability ?? 0.02)) {
         setIsGlitching(true);
         setTimeout(() => setIsGlitching(false), 100 + Math.random() * 150);
       }
@@ -92,7 +91,7 @@ export function HolographicContainer({
     mouseY.set(0);
   }, [mouseX, mouseY]);
 
-  const intensityMultiplier = INTENSITY_MULTIPLIERS[config.intensity];
+  const intensityMultiplier = INTENSITY_MULTIPLIERS[config.intensity ?? 'medium'];
 
   return (
     <motion.div

@@ -4,7 +4,6 @@
 
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from './animations';
-import type { ProfileData } from './types';
 
 interface WelcomeStepProps {
   avatarPreview: string | null;

@@ -3,7 +3,7 @@
  */
 
 import { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, type TargetAndTransition } from 'framer-motion';
 import type { ReactionAnimationProps } from './types';
 
 export const ReactionAnimation = memo(function ReactionAnimation({
@@ -13,15 +13,18 @@ export const ReactionAnimation = memo(function ReactionAnimation({
   onComplete,
   className = '',
 }: ReactionAnimationProps) {
-  const sizeMap = {
+  const sizeMap: Record<string, number> = {
     small: 16,
     medium: 24,
     large: 32,
   };
-  const fontSize = sizeMap[size];
+  const fontSize = sizeMap[size] ?? 24;
 
   const animationVariants = useMemo(() => {
-    const variants: Record<string, { initial: object; animate: object; exit?: object }> = {
+    const variants: Record<
+      string,
+      { initial: TargetAndTransition; animate: TargetAndTransition; exit?: TargetAndTransition }
+    > = {
       pop: {
         initial: { scale: 0, opacity: 0 },
         animate: {
@@ -108,9 +111,9 @@ export const ReactionAnimation = memo(function ReactionAnimation({
     <motion.div
       className={`inline-flex items-center justify-center ${className}`}
       style={{ fontSize }}
-      initial={animationVariants.initial}
-      animate={animationVariants.animate}
-      exit={animationVariants.exit}
+      initial={animationVariants?.initial}
+      animate={animationVariants?.animate}
+      exit={animationVariants?.exit}
       transition={{
         duration: getDuration(),
         ease: 'easeOut',

@@ -5,7 +5,8 @@
  */
 
 // Main component
-export { default, GroupList } from './GroupList';
+export { GroupList } from './GroupList';
+export { GroupList as default } from './GroupList';
 
 // Sub-components
 export { GroupIcon } from './GroupIcon';

@@ -2,19 +2,26 @@
  * MessageWithEffect - Message component with animation effects
  */
 
-import { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { memo, useMemo, useRef } from 'react';
+import { motion, type TargetAndTransition } from 'framer-motion';
 import type { MessageEffect, MessageEffectConfig } from '@/stores/chatEffectsStore';
 import type { MessageWithEffectProps } from './types';
 import { MessageBubble } from './MessageBubble';
 import { MessageParticles } from './MessageParticles';
 
-const getAnimationVariants = (effect: MessageEffect, config: MessageEffectConfig) => {
-  const duration =
-    config.animationSpeed === 'slow' ? 0.8 : config.animationSpeed === 'fast' ? 0.3 : 0.5;
-  const scale = config.size === 'small' ? 0.9 : config.size === 'large' ? 1.1 : 1;
+interface AnimationVariant {
+  initial: TargetAndTransition;
+  animate: TargetAndTransition;
+  exit: TargetAndTransition;
+}
 
-  const variants: Record<MessageEffect, { initial: object; animate: object; exit: object }> = {
+const getAnimationVariants = (effect: MessageEffect, config: Partial<MessageEffectConfig>) => {
+  const animationSpeed = (config as Record<string, unknown>).animationSpeed as string | undefined;
+  const size = (config as Record<string, unknown>).size as string | undefined;
+  const duration = animationSpeed === 'slow' ? 0.8 : animationSpeed === 'fast' ? 0.3 : 0.5;
+  const scale = size === 'small' ? 0.9 : size === 'large' ? 1.1 : 1;
+
+  const variants: Record<string, AnimationVariant> = {
     none: {
       initial: {},
       animate: {},
@@ -117,7 +124,6 @@ const getAnimationVariants = (effect: MessageEffect, config: MessageEffectConfig
           'linear-gradient(135deg, #9400d3, #4b0082, #0000ff, #00ff00, #ffff00, #ff7f00, #ff0000)',
         ],
         backgroundClip: 'text',
-        WebkitBackgroundClip: 'text',
         color: 'transparent',
         transition: { repeat: Infinity, duration: 3, repeatType: 'reverse' },
       },
@@ -254,11 +260,12 @@ const getAnimationVariants = (effect: MessageEffect, config: MessageEffectConfig
 
 export const MessageWithEffect = memo(function MessageWithEffect({
   children,
-  effect,
-  config,
+  effect = 'none',
+  config = {},
   isOwn = false,
   className = '',
 }: MessageWithEffectProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const { variants, duration } = useMemo(
     () => getAnimationVariants(effect, config),
     [effect, config]
@@ -266,26 +273,24 @@ export const MessageWithEffect = memo(function MessageWithEffect({
 
   if (effect === 'none') {
     return (
-      <MessageBubble isOwn={isOwn} config={config} className={className}>
+      <MessageBubble isOwn={isOwn} className={className}>
         {children}
       </MessageBubble>
     );
   }
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <motion.div
-        initial={variants.initial}
-        animate={variants.animate}
-        exit={variants.exit}
+        initial={variants?.initial}
+        animate={variants?.animate}
+        exit={variants?.exit}
         transition={{ duration }}
         className={className}
       >
-        <MessageBubble isOwn={isOwn} config={config}>
-          {children}
-        </MessageBubble>
+        <MessageBubble isOwn={isOwn}>{children}</MessageBubble>
       </motion.div>
-      <MessageParticles effect={effect} config={config} />
+      <MessageParticles effect={effect} config={config} containerRef={containerRef} />
     </div>
   );
 });

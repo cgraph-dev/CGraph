@@ -1,4 +1,4 @@
-import type { Board, Thread, ForumMember, Forum } from '../../../stores/forum-hosting-store';
+import type { Board, Thread, ForumMember, Forum } from '../../../stores/forumHostingStore';
 
 /**
  * Props for the main ForumBoardView component

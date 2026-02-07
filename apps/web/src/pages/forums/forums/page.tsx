@@ -12,6 +12,7 @@ import { ForumHeader } from './forum-header';
 import { SortControls } from './sort-controls';
 import { PostsList } from './posts-list';
 import { ForumSidebar } from './forum-sidebar';
+import type { ForumSidebarProps } from './types';
 
 /**
  * Ambient particle component for background effects
@@ -129,14 +130,14 @@ export default function Forums() {
               id: activeForum.id,
               name: activeForum.name,
               slug: activeForum.slug,
-              description: activeForum.description,
-              iconUrl: activeForum.iconUrl,
-              bannerUrl: activeForum.bannerUrl,
+              description: activeForum.description ?? undefined,
+              iconUrl: activeForum.iconUrl ?? undefined,
+              bannerUrl: activeForum.bannerUrl ?? undefined,
               memberCount: activeForum.memberCount,
-              isSubscribed: activeForum.isSubscribed,
-              ownerId: activeForum.ownerId,
+              isSubscribed: activeForum.isSubscribed ?? false,
+              ownerId: activeForum.ownerId ?? undefined,
               moderators: activeForum.moderators,
-              createdAt: activeForum.createdAt,
+              createdAt: activeForum.createdAt ?? '',
             }}
             userId={user?.id}
             onSubscribe={() => handleSubscribe(activeForum.id, activeForum.isSubscribed)}
@@ -178,13 +179,13 @@ export default function Forums() {
             ? {
                 id: activeForum.id,
                 slug: activeForum.slug,
-                description: activeForum.description,
+                description: activeForum.description ?? undefined,
                 memberCount: activeForum.memberCount,
-                createdAt: activeForum.createdAt,
+                createdAt: activeForum.createdAt ?? '',
               }
             : null
         }
-        forums={forums}
+        forums={forums as ForumSidebarProps['forums']}
         isLoadingForums={isLoadingForums}
       />
     </div>

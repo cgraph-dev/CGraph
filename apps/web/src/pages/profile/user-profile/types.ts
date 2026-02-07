@@ -79,5 +79,30 @@ export interface ProfileAboutProps {
   onBioChange: (value: string) => void;
 }
 
+/**
+ * Props for ProfileAvatar component
+ */
+export interface ProfileAvatarProps {
+  avatarUrl?: string;
+  displayName?: string;
+  isOwnProfile: boolean;
+  editMode: boolean;
+  isUploading: boolean;
+  onAvatarClick: () => void;
+  avatarInputRef: React.RefObject<HTMLInputElement | null>;
+  onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+/**
+ * Props for ProfileNameSection component
+ */
+export interface ProfileNameSectionProps {
+  displayName?: string;
+  username: string;
+  title?: string;
+  isOnline: boolean;
+  joinedAt?: string;
+}
+
 // Re-export profile types for convenience
 export type { UserProfileData, FriendshipStatus };

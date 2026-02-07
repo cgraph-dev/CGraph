@@ -56,12 +56,12 @@ export interface ForumHeaderProps {
  * Props for SortControls component
  */
 export interface SortControlsProps {
-  sortBy: 'hot' | 'new' | 'top';
+  sortBy: 'hot' | 'new' | 'top' | 'controversial';
   timeRange: 'hour' | 'day' | 'week' | 'month' | 'year' | 'all';
   showSortMenu: boolean;
   showTimeMenu: boolean;
   isAuthenticated: boolean;
-  onSortChange: (value: 'hot' | 'new' | 'top') => void;
+  onSortChange: (value: 'hot' | 'new' | 'top' | 'controversial') => void;
   onTimeRangeChange: (value: 'hour' | 'day' | 'week' | 'month' | 'year' | 'all') => void;
   onToggleSortMenu: () => void;
   onToggleTimeMenu: () => void;

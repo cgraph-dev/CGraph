@@ -55,7 +55,7 @@ vi.mock('@/components/VoiceMessagePlayer', () => ({
 }));
 
 const defaultUIPreferences: UIPreferences = {
-  glassEffect: 'default',
+  glassEffect: 'frosted',
   animationIntensity: 'medium',
   showParticles: false,
   enableGlow: false,

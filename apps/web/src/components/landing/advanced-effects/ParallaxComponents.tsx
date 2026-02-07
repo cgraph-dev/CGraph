@@ -3,7 +3,7 @@
  * 3D parallax layer and scene components with mouse tracking
  */
 
-import { useState, useEffect, type ReactNode } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { PARALLAX_DEFAULT_SENSITIVITY } from './constants';
 import type { ParallaxLayerProps, ParallaxSceneProps } from './types';
@@ -41,11 +41,6 @@ export function ParallaxLayer({ children, depth, className = '' }: ParallaxLayer
       {children}
     </motion.div>
   );
-}
-
-interface ParallaxContextValue {
-  mouseX: ReturnType<typeof useMotionValue<number>>;
-  mouseY: ReturnType<typeof useMotionValue<number>>;
 }
 
 export function ParallaxScene({

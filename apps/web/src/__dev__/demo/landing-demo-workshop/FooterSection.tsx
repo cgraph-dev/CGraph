@@ -4,7 +4,7 @@
  */
 
 import { Link } from 'react-router-dom';
-import { LogoIcon } from '@/components/Logo';
+import { LogoIcon } from '@/components/logo';
 import { footerLinks } from './constants';
 
 export function FooterSection() {

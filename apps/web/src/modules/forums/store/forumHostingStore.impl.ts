@@ -88,6 +88,24 @@ export interface ThreadAuthor {
   avatar_border_id?: string | null;
 }
 
+export interface Forum {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  iconUrl?: string | null;
+  bannerUrl?: string | null;
+  memberCount?: number;
+  threadCount?: number;
+  postCount?: number;
+  score?: number;
+  isPublic?: boolean;
+  createdAt?: string;
+  ownerId?: string;
+  userVote?: number | null;
+  isSubscribed?: boolean;
+}
+
 export interface ForumMember {
   id: string;
   forumId: string;

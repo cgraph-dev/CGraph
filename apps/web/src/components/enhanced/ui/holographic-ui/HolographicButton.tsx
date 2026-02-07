@@ -22,13 +22,13 @@ export function HolographicButton({
   const theme = getTheme(colorTheme);
   const [isPressed, setIsPressed] = useState(false);
 
-  const sizeClasses = {
+  const sizeClasses: Record<string, string> = {
     sm: 'px-4 py-2 text-sm',
     md: 'px-6 py-3 text-base',
     lg: 'px-8 py-4 text-lg',
   };
 
-  const variantStyles = {
+  const variantStyles: Record<string, { background: string; border: string }> = {
     primary: {
       background: `linear-gradient(135deg, ${theme.primary}20, ${theme.secondary}30)`,
       border: `2px solid ${theme.primary}`,

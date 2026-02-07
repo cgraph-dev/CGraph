@@ -120,8 +120,12 @@ export function usePaymentModal(
     setTransactionId('');
   }, []);
 
-  const isCardFormValid =
-    cardData.cardNumber && cardData.cardExpiry && cardData.cardCvc && cardData.cardName;
+  const isCardFormValid = !!(
+    cardData.cardNumber &&
+    cardData.cardExpiry &&
+    cardData.cardCvc &&
+    cardData.cardName
+  );
 
   return {
     // State

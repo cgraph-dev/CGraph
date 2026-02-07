@@ -9,11 +9,34 @@ import { FEED_TYPE_ENDPOINTS } from './constants';
  * Builds the full feed URL
  */
 export function buildFeedUrl(
-  baseUrl: string,
-  feedType: FeedType,
-  resourceId?: string,
-  format: FeedFormat = 'rss'
+  feedTypeOrBaseUrl: FeedType | string,
+  formatOrFeedType?: FeedFormat | FeedType,
+  forumSlugOrResourceId?: string,
+  categorySlug?: string
 ): string {
+  // Support both calling conventions:
+  // (feedType, format, forumSlug?, categorySlug?) — new convention
+  // (baseUrl, feedType, resourceId?, format?) — legacy convention
+  const isNewConvention = ['forum', 'board', 'thread', 'user', 'global'].includes(
+    feedTypeOrBaseUrl
+  );
+
+  if (isNewConvention) {
+    const feedType = feedTypeOrBaseUrl as FeedType;
+    const format = (formatOrFeedType as FeedFormat) ?? 'rss';
+    const forumSlug = forumSlugOrResourceId;
+    const parts = ['/api/v1/feeds', feedType];
+    if (forumSlug) parts.push(forumSlug);
+    if (categorySlug) parts.push(categorySlug);
+    const formatParam = format === 'atom' ? '?format=atom' : '';
+    return `${parts.join('/')}${formatParam}`;
+  }
+
+  // Legacy convention
+  const baseUrl = feedTypeOrBaseUrl;
+  const feedType = (formatOrFeedType as FeedType) ?? 'global';
+  const resourceId = forumSlugOrResourceId;
+  const format: FeedFormat = (categorySlug as FeedFormat) ?? 'rss';
   const endpoint = FEED_TYPE_ENDPOINTS[feedType](resourceId);
   const formatParam = format === 'atom' ? '?format=atom' : '';
   return `${baseUrl}${endpoint}${formatParam}`;

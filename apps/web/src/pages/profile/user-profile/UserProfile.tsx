@@ -258,7 +258,7 @@ export function UserProfile() {
 
       {/* Banner */}
       <ProfileBanner
-        bannerUrl={profile.bannerUrl}
+        bannerUrl={profile.bannerUrl ?? undefined}
         isOwnProfile={isOwnProfile}
         editMode={editMode}
         isUploading={isUploadingBanner}
@@ -344,7 +344,7 @@ export function UserProfile() {
           {/* About */}
           <div className="space-y-6 md:col-span-2">
             <ProfileAbout
-              bio={profile.bio}
+              bio={profile.bio ?? undefined}
               isOwnProfile={isOwnProfile}
               editMode={editMode}
               editedBio={editedBio}

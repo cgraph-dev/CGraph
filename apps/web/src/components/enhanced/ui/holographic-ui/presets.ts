@@ -100,7 +100,7 @@ export const HOLO_PRESETS: Record<HoloPreset, HoloTheme> = {
  * Get intensity multiplier based on config
  */
 export function getIntensityMultiplier(intensity: HoloConfig['intensity']): number {
-  return { subtle: 0.5, medium: 1, intense: 1.5 }[intensity];
+  return { subtle: 0.5, medium: 1, intense: 1.5 }[intensity ?? 'medium'];
 }
 
 /**

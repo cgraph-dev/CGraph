@@ -17,8 +17,8 @@ export default function AnimatedLogo({
   color = 'default',
 }: AnimatedLogoProps) {
   const [textVisible, setTextVisible] = useState(variant !== 'splash');
-  const dimensions = SIZE_MAP[size];
-  const c = COLOR_PALETTES[color];
+  const dimensions = SIZE_MAP[size] ?? SIZE_MAP['md']!;
+  const c = COLOR_PALETTES[color] ?? COLOR_PALETTES['default']!;
 
   useEffect(() => {
     if (variant === 'splash') {

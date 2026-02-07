@@ -295,7 +295,7 @@ interface FileSendContext {
   ) => Promise<void>;
   setReplyTo: (message: Message | null) => void;
   setIsSending: (value: boolean) => void;
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
 }
 
 /**

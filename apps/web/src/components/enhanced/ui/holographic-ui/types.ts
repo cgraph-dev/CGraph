@@ -10,6 +10,8 @@ import type { MotionProps } from 'framer-motion';
 // THEME TYPES
 // =============================================================================
 
+export type HoloColorTheme = 'cyan' | 'green' | 'purple' | 'gold';
+
 export interface HoloTheme {
   primary: string;
   secondary: string;
@@ -28,28 +30,31 @@ export interface HoloTheme {
 }
 
 export interface HoloConfig {
+  /** Color theme preset */
+  colorTheme?: HoloColorTheme;
   /** Visual intensity level */
-  intensity: 'subtle' | 'medium' | 'intense';
+  intensity?: 'subtle' | 'medium' | 'intense';
   /** Color preset or custom */
-  preset: 'cyan' | 'matrix' | 'purple' | 'gold' | 'midnight' | 'custom';
+  preset?: 'cyan' | 'matrix' | 'purple' | 'gold' | 'midnight' | 'custom';
   /** Custom theme colors */
   customTheme?: Partial<HoloTheme>;
+  customColors?: HoloTheme;
   /** Enable animated scanlines */
-  enableScanlines: boolean;
+  enableScanlines?: boolean;
   /** Enable random flicker effect */
-  enableFlicker: boolean;
+  enableFlicker?: boolean;
   /** Enable mouse-based parallax */
-  enableParallax: boolean;
+  enableParallax?: boolean;
   /** Enable 3D transforms */
-  enable3D: boolean;
+  enable3D?: boolean;
   /** Enable glow effects */
-  enableGlow: boolean;
+  enableGlow?: boolean;
   /** Enable particle effects */
-  enableParticles: boolean;
+  enableParticles?: boolean;
   /** Reduce motion for accessibility */
-  reduceMotion: boolean;
+  reduceMotion?: boolean;
   /** Glitch effect probability (0-1) */
-  glitchProbability: number;
+  glitchProbability?: number;
 }
 
 export type HoloPreset = 'cyan' | 'matrix' | 'purple' | 'gold' | 'midnight';
@@ -60,6 +65,8 @@ export type HoloPreset = 'cyan' | 'matrix' | 'purple' | 'gold' | 'midnight';
 
 export interface HoloContainerProps extends Omit<MotionProps, 'children'> {
   children: ReactNode;
+  config?: Partial<HoloConfig>;
+  colorTheme?: HoloColorTheme;
   preset?: HoloPreset;
   intensity?: HoloConfig['intensity'];
   enableScanlines?: boolean;
@@ -75,6 +82,7 @@ export interface HoloContainerProps extends Omit<MotionProps, 'children'> {
 export interface HoloTextProps {
   children: ReactNode;
   variant?: 'display' | 'title' | 'subtitle' | 'body' | 'caption' | 'label';
+  colorTheme?: HoloColorTheme;
   preset?: HoloPreset;
   animate?: boolean;
   glowIntensity?: number;
@@ -87,7 +95,8 @@ export interface HoloButtonProps {
   children: ReactNode;
   onClick?: () => void;
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  size?: string;
+  colorTheme?: HoloColorTheme;
   preset?: HoloPreset;
   disabled?: boolean;
   loading?: boolean;
@@ -101,6 +110,7 @@ export interface HoloCardProps {
   children: ReactNode;
   header?: ReactNode;
   footer?: ReactNode;
+  colorTheme?: HoloColorTheme;
   preset?: HoloPreset;
   hoverable?: boolean;
   onClick?: () => void;
@@ -110,8 +120,9 @@ export interface HoloCardProps {
 export interface HoloAvatarProps {
   src?: string;
   name: string;
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
-  status?: 'online' | 'offline' | 'away' | 'busy' | 'invisible';
+  size?: string;
+  status?: string;
+  colorTheme?: HoloColorTheme;
   preset?: HoloPreset;
   ring?: boolean;
   className?: string;
@@ -122,6 +133,7 @@ export interface HoloInputProps {
   onChange: (value: string) => void;
   placeholder?: string;
   type?: 'text' | 'password' | 'email' | 'number' | 'search';
+  colorTheme?: HoloColorTheme;
   preset?: HoloPreset;
   disabled?: boolean;
   error?: string;
@@ -134,7 +146,8 @@ export interface HoloProgressProps {
   value: number;
   max?: number;
   showLabel?: boolean;
-  size?: 'sm' | 'md' | 'lg';
+  size?: string;
+  colorTheme?: HoloColorTheme;
   preset?: HoloPreset;
   animated?: boolean;
   variant?: 'linear' | 'circular';
@@ -189,6 +202,7 @@ export interface HoloNotificationProps {
   message: string;
   description?: string;
   type?: 'info' | 'success' | 'warning' | 'error';
+  colorTheme?: HoloColorTheme;
   preset?: HoloPreset;
   duration?: number;
   onDismiss?: () => void;
@@ -209,3 +223,18 @@ export interface HoloProviderProps {
   children: ReactNode;
   config?: Partial<HoloConfig>;
 }
+
+// =============================================================================
+// LEGACY ALIASES (Holographic* -> Holo*)
+// =============================================================================
+
+export type HolographicTheme = HoloTheme;
+export type HolographicConfig = HoloConfig;
+export type HolographicContainerProps = HoloContainerProps;
+export type HolographicTextProps = HoloTextProps;
+export type HolographicButtonProps = HoloButtonProps;
+export type HolographicCardProps = HoloCardProps;
+export type HolographicAvatarProps = HoloAvatarProps;
+export type HolographicInputProps = HoloInputProps;
+export type HolographicProgressProps = HoloProgressProps;
+export type HolographicNotificationProps = HoloNotificationProps;

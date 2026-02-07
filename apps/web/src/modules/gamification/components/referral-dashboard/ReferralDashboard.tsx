@@ -20,7 +20,12 @@ import { RecentReferrals } from './RecentReferrals';
 import { ReferralLeaderboard } from './ReferralLeaderboard';
 import { RewardTiers } from './RewardTiers';
 import { HowItWorks } from './HowItWorks';
-import type { LeaderboardPeriod } from './types';
+import type {
+  LeaderboardPeriod,
+  ReferralLinkCardProps,
+  RecentReferralsProps,
+  LeaderboardProps,
+} from './types';
 
 const logger = createLogger('ReferralDashboard');
 
@@ -140,7 +145,7 @@ export default function ReferralDashboard() {
         {/* Main Content */}
         <div className="space-y-6 lg:col-span-2">
           <ReferralLinkCard
-            referralCode={referralCode}
+            referralCode={referralCode as ReferralLinkCardProps['referralCode']}
             isLoading={isLoading}
             copied={copied}
             copiedType={copiedType}
@@ -155,13 +160,13 @@ export default function ReferralDashboard() {
 
           <ProgressTierCard nextTier={nextTier} verifiedReferrals={stats?.verifiedReferrals || 0} />
 
-          <RecentReferrals referrals={recentReferrals} />
+          <RecentReferrals referrals={recentReferrals as RecentReferralsProps['referrals']} />
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
           <ReferralLeaderboard
-            leaderboard={leaderboard}
+            leaderboard={leaderboard as LeaderboardProps['leaderboard']}
             period={leaderboardPeriod}
             onPeriodChange={setLeaderboardPeriod}
           />

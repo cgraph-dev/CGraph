@@ -24,7 +24,11 @@ export function ForumHeader({
   activeTab,
   onTabChange,
 }: ForumHeaderProps) {
-  const tabs: Array<{ id: ForumTab; label: string; icon: React.ElementType }> = [
+  const tabs: Array<{
+    id: ForumTab;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+  }> = [
     { id: 'boards', label: 'Boards', icon: FolderIcon },
     { id: 'threads', label: 'Recent Threads', icon: ChatBubbleLeftRightIcon },
     { id: 'members', label: 'Members', icon: UsersIcon },
