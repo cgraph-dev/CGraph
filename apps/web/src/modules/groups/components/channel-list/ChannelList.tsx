@@ -15,7 +15,7 @@ import type { ChannelListProps } from './types';
  * - Unread indicators
  * - NSFW warnings
  * - Quick channel creation
- * - Drag and drop reordering (TODO)
+ * - Drag and drop reordering (@todo(ui) planned)
  */
 export function ChannelList({ className = '' }: ChannelListProps) {
   const {

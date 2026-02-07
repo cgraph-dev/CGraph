@@ -15,7 +15,9 @@ export function ChannelsTab({ groupId: _groupId }: ChannelsTabProps) {
     >
       <h2 className="mb-4 text-2xl font-bold text-white">Channels</h2>
       <p className="text-gray-400">Manage channels and categories.</p>
-      {/* TODO: Implement channel management */}
+      <div className="mt-6 rounded-xl border border-gray-700/50 bg-dark-800/50 p-8 text-center">
+        <p className="text-sm text-gray-500">Channel management coming soon</p>
+      </div>
     </motion.div>
   );
 }

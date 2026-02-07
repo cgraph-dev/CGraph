@@ -238,7 +238,7 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
           <span className="text-xs text-gray-400">{emojis.length} custom emojis</span>
           <button
             onClick={() => {
-              /* TODO: Open emoji upload modal */
+              /* @todo(ui) Wire emoji upload modal */
             }}
             className="flex items-center gap-1 text-xs text-orange-500 hover:text-orange-600"
           >

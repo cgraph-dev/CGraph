@@ -101,7 +101,7 @@ export function InviteModal({ groupId: _groupId, groupName, onClose }: InviteMod
   const handleGenerateInvite = useCallback(async () => {
     setIsGenerating(true);
     try {
-      // TODO: Call API to create invite
+      // @todo(api) Call invite creation endpoint
       const mockCode = Math.random().toString(36).substring(2, 10);
       const mockUrl = `https://cgraph.app/invite/${mockCode}`;
 
@@ -142,7 +142,7 @@ export function InviteModal({ groupId: _groupId, groupName, onClose }: InviteMod
     (inviteId: string) => {
       setInvites(invites.filter((i) => i.id !== inviteId));
       HapticFeedback.warning();
-      // TODO: Call API to delete invite
+      // @todo(api) Call invite deletion endpoint
     },
     [invites]
   );

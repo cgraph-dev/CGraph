@@ -40,7 +40,7 @@ export function RoleManager({ groupId, className = '' }: RoleManagerProps) {
   const handleReorder = (newOrder: Role[]) => {
     setRoles(newOrder);
     HapticFeedback.light();
-    // TODO: Save new order to backend
+    // @todo(api) Save new role order to backend
   };
 
   const handleCreateRole = useCallback(() => {
@@ -68,7 +68,7 @@ export function RoleManager({ groupId, className = '' }: RoleManagerProps) {
         setSelectedRole(null);
       }
       HapticFeedback.warning();
-      // TODO: Delete from backend
+      // @todo(api) Delete role from backend
     },
     [roles, selectedRole]
   );
@@ -79,7 +79,7 @@ export function RoleManager({ groupId, className = '' }: RoleManagerProps) {
 
       setRoles(roles.map((r) => (r.id === selectedRole.id ? { ...r, ...updates } : r)));
       setSelectedRole({ ...selectedRole, ...updates });
-      // TODO: Save to backend
+      // @todo(api) Save role updates to backend
     },
     [roles, selectedRole]
   );

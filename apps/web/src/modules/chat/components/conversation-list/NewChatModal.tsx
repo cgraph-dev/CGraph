@@ -10,15 +10,20 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { useChatStore } from '@/modules/chat/store';
+import { createLogger } from '@/lib/logger';
 import { getAvatarBorderId } from '@/lib/utils';
 import type { NewChatModalProps } from './types';
 import { MOCK_USERS } from './constants';
 
+const logger = createLogger('NewChatModal');
+
 export function NewChatModal({ onClose }: NewChatModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [isStarting, setIsStarting] = useState(false);
   const navigate = useNavigate();
-  void navigate; // Reserved for navigation after chat creation
+  const { createConversation } = useChatStore();
 
   const filteredUsers = MOCK_USERS.filter(
     (u) =>
@@ -26,11 +31,20 @@ export function NewChatModal({ onClose }: NewChatModalProps) {
       u.displayName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleStartChat = () => {
+  const handleStartChat = async () => {
     if (selectedUsers.length === 0) return;
-    // TODO: Create conversation and navigate
-    HapticFeedback.success();
-    onClose();
+    setIsStarting(true);
+    try {
+      const conversation = await createConversation(selectedUsers);
+      HapticFeedback.success();
+      onClose();
+      navigate(`/messages/${conversation.id}`);
+    } catch (error) {
+      logger.error('Failed to create conversation:', error);
+      HapticFeedback.error();
+    } finally {
+      setIsStarting(false);
+    }
   };
 
   return (
@@ -143,10 +157,14 @@ export function NewChatModal({ onClose }: NewChatModalProps) {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={handleStartChat}
-              disabled={selectedUsers.length === 0}
+              disabled={selectedUsers.length === 0 || isStarting}
               className="flex-1 rounded-xl bg-primary-600 py-2 font-semibold text-white disabled:opacity-50"
             >
-              {selectedUsers.length > 1 ? 'Create Group' : 'Start Chat'}
+              {isStarting
+                ? 'Creating...'
+                : selectedUsers.length > 1
+                  ? 'Create Group'
+                  : 'Start Chat'}
             </motion.button>
           </div>
         </GlassCard>

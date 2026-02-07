@@ -8,6 +8,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Outlet, useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { useChatStore } from '@/modules/chat/store';
 import { useAuthStore } from '@/modules/auth/store';
+import { NewChatModal } from '@/modules/chat/components/conversation-list';
 import { socketManager } from '@/lib/socket';
 import { createLogger } from '@/lib/logger';
 import { toast } from '@/shared/components/ui';
@@ -29,6 +30,7 @@ export default function Messages() {
     useChatStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
+  const [showNewChatModal, setShowNewChatModal] = useState(false);
   const [onlineStatus, setOnlineStatus] = useState<OnlineStatusMap>({});
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -138,9 +140,7 @@ export default function Messages() {
         isLoading={isLoadingConversations}
         onSearchChange={setSearchQuery}
         onOpenSearch={() => setIsSearchOpen(true)}
-        onNewConversation={() => {
-          // TODO: Open new conversation modal
-        }}
+        onNewConversation={() => setShowNewChatModal(true)}
       />
 
       {/* Conversation Content */}
@@ -154,6 +154,9 @@ export default function Messages() {
         onClose={() => setIsSearchOpen(false)}
         onResultClick={handleSearchResultClick}
       />
+
+      {/* New Chat Modal */}
+      {showNewChatModal && <NewChatModal onClose={() => setShowNewChatModal(false)} />}
     </div>
   );
 }

@@ -42,7 +42,7 @@ export function ProgressionCustomization() {
 
   // Handle claiming daily reward
   const handleClaimReward = (day: number) => {
-    // TODO: Implement API call to claim daily reward
+    // @todo(api) Implement claim daily reward endpoint
     logger.log(`Claiming reward for day ${day}`);
     // In production, this would:
     // 1. Call API to claim the reward

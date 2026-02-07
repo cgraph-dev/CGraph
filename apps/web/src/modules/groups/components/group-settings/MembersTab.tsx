@@ -15,7 +15,9 @@ export function MembersTab({ groupId: _groupId }: MembersTabProps) {
     >
       <h2 className="mb-4 text-2xl font-bold text-white">Members</h2>
       <p className="text-gray-400">Manage group members and their roles.</p>
-      {/* TODO: Implement member management */}
+      <div className="mt-6 rounded-xl border border-gray-700/50 bg-dark-800/50 p-8 text-center">
+        <p className="text-sm text-gray-500">Member management coming soon</p>
+      </div>
     </motion.div>
   );
 }

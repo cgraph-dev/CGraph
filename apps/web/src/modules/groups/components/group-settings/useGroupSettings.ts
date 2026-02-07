@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGroupStore } from '@/modules/groups/store';
+import { useAuthStore } from '@/modules/auth/store';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { createLogger } from '@/lib/logger';
 import type { TabId, OverviewFormData } from './types';
@@ -15,6 +16,7 @@ const logger = createLogger('GroupSettings');
 export function useGroupSettings(groupId: string) {
   const navigate = useNavigate();
   const { groups, leaveGroup, updateGroup, deleteGroup } = useGroupStore();
+  const { user } = useAuthStore();
 
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
@@ -23,7 +25,7 @@ export function useGroupSettings(groupId: string) {
   const [hasChanges, setHasChanges] = useState(false);
 
   const activeGroup = groups.find((g) => g.id === groupId);
-  const isOwner = activeGroup?.ownerId === 'current-user-id'; // TODO: Get from auth
+  const isOwner = activeGroup?.ownerId === user?.id;
 
   const [formData, setFormData] = useState<OverviewFormData>({
     name: activeGroup?.name || '',

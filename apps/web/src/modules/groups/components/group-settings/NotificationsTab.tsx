@@ -14,7 +14,9 @@ export function NotificationsTab() {
     >
       <h2 className="mb-4 text-2xl font-bold text-white">Notifications</h2>
       <p className="text-gray-400">Configure notification preferences for this group.</p>
-      {/* TODO: Implement notification settings */}
+      <div className="mt-6 rounded-xl border border-gray-700/50 bg-dark-800/50 p-8 text-center">
+        <p className="text-sm text-gray-500">Notification settings coming soon</p>
+      </div>
     </motion.div>
   );
 }

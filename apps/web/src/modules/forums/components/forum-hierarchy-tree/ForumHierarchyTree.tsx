@@ -145,7 +145,7 @@ export const ForumHierarchyTree = memo(function ForumHierarchyTree({
         <button
           className="mt-4 flex items-center gap-2 px-2 py-1.5 text-sm text-orange-500 hover:text-orange-600"
           onClick={() => {
-            /* TODO: Open create subforum modal */
+            /* @todo(ui) Wire create subforum modal */
           }}
         >
           <PlusIcon className="h-4 w-4" />

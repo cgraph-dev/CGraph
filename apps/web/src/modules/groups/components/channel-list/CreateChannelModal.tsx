@@ -18,7 +18,7 @@ export function CreateChannelModal({ groupId, categoryId, onClose }: CreateChann
 
     setIsCreating(true);
     try {
-      // TODO: Implement create channel API call
+      // @todo(api) Implement create channel API call
       logger.log('Creating channel:', { groupId, categoryId, name, type, isNsfw });
       HapticFeedback.success();
       onClose();
