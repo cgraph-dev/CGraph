@@ -28,12 +28,8 @@
 // =============================================================================
 
 const MAX_SKIP = 1000; // Maximum skipped messages to store
-// Reserved for future HKDF info parameters - kept for protocol compatibility
-// These will be used when NIST PQC algorithms are integrated
-// @ts-expect-error Reserved for future protocol enhancement
-const _MESSAGE_KEY_SEED_INFO = new TextEncoder().encode('DoubleRatchetMessageKeys');
-// @ts-expect-error Reserved for future protocol enhancement
-const _CHAIN_KEY_SEED_INFO = new TextEncoder().encode('DoubleRatchetChainKeys');
+// NOTE: HKDF seed info constants for message/chain keys removed (unused).
+// Recreate from git history when NIST PQC algorithms are integrated.
 const ROOT_KEY_SEED_INFO = new TextEncoder().encode('DoubleRatchetRootKeys');
 
 // Utility to ensure ArrayBuffer compatibility for Web Crypto API
@@ -882,17 +878,8 @@ export class DoubleRatchetEngine {
  * This provides security against both classical and quantum attackers.
  */
 export class PostQuantumDoubleRatchet extends DoubleRatchetEngine {
-  // Reserved for future Kyber-768 integration when NIST PQC is standardized in WebCrypto
-  // @ts-expect-error Reserved for future PQC implementation
-  private _kyberState: {
-    publicKey: Uint8Array | null;
-    secretKey: Uint8Array | null;
-    sharedSecret: Uint8Array | null;
-  } = {
-    publicKey: null,
-    secretKey: null,
-    sharedSecret: null,
-  };
+  // NOTE: _kyberState field removed (unused). Recreate from git history
+  // when Kyber-768 is standardized in WebCrypto for PQC integration.
 
   /**
    * Note: Kyber is not yet available in WebCrypto.

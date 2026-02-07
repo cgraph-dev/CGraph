@@ -1,57 +1,33 @@
 /**
  * Application Route Tree
  *
- * All route definitions organized by feature area:
- * dev/test, public, auth, and protected app routes.
+ * Composes route groups from modular sub-files for maintainability.
+ * Each route group (dev, public, auth, forums, settings) is defined
+ * in its own file under ./routeGroups/.
  *
  * @module routes/AppRoutes
  */
 
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { RouteErrorBoundary } from '@/components/RouteErrorBoundary';
 import AppLayout from '@/layouts/AppLayout';
-import AuthLayout from '@/layouts/AuthLayout';
+import { ProtectedRoute, AdminRoute, ProfileRedirectRoute } from './guards';
 import {
-  ProtectedRoute,
-  PublicRoute,
-  AdminRoute,
-  ProfileRedirectRoute,
-  LandingRoute,
-} from './guards';
+  DevRoutes,
+  LandingRoutes,
+  LegalRoutes,
+  CompanyRoutes,
+  AuthRoutes,
+  ForumRoutes,
+  SettingsRoutes,
+} from './routeGroups';
 import {
-  // Auth
-  Login,
-  Register,
-  ForgotPassword,
-  OAuthCallback,
-  Onboarding,
-  ResetPassword,
-  VerifyEmail,
   // Core
   Messages,
   Conversation,
+  Onboarding,
   // Groups
   Groups,
   GroupChannel,
-  // Forums
-  Forums,
-  ForumPost,
-  ForumLeaderboard,
-  CreateForum,
-  CreatePost,
-  ForumSettings,
-  ForumBoardView,
-  ForumAdmin,
-  PluginMarketplace,
-  ModerationQueue,
-  // Settings
-  Settings,
-  ThemeCustomization,
-  AppThemeSettings,
-  TitleSelection,
-  BadgeSelection,
-  TwoFactorSetup,
-  BlockedUsers,
   // Profile & Community
   UserProfile,
   UserLeaderboard,
@@ -72,96 +48,22 @@ import {
   AdminDashboard,
   // Static
   NotFound,
-  LandingPage,
-  // Legal
-  PrivacyPolicy,
-  TermsOfService,
-  CookiePolicy,
-  GDPR,
-  // Company
-  About,
-  Contact,
-  Careers,
-  Press,
-  Status,
-  Blog,
-  Documentation,
-  // Dev
-  MatrixTest,
-  EnhancedDemo,
-  ThemeApplicationTest,
-  LandingDemoWorkshop,
 } from './lazyPages';
 
 /** Complete application route tree */
 export function AppRoutes() {
   return (
     <Routes>
-      {/* ── Dev/Test routes ────────────────────────────────────────── */}
-      <Route path="/test/matrix" element={<MatrixTest />} />
-      <Route path="/test/enhanced" element={<EnhancedDemo />} />
-      <Route path="/test/theme" element={<ThemeApplicationTest />} />
-      <Route path="/demo/workshop" element={<LandingDemoWorkshop />} />
+      {/* ── Dev/Test ───────────────────────────────────────────────── */}
+      <DevRoutes />
 
-      {/* ── Landing (Discord-style) ───────────────────────────────── */}
-      <Route
-        path="/"
-        element={
-          <LandingRoute>
-            <LandingPage />
-          </LandingRoute>
-        }
-      />
-
-      {/* ── Legal pages (public) ──────────────────────────────────── */}
-      <Route path="/privacy" element={<PrivacyPolicy />} />
-      <Route path="/terms" element={<TermsOfService />} />
-      <Route path="/cookies" element={<CookiePolicy />} />
-      <Route path="/gdpr" element={<GDPR />} />
-
-      {/* ── Company pages (public) ────────────────────────────────── */}
-      <Route path="/about" element={<About />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/careers" element={<Careers />} />
-      <Route path="/press" element={<Press />} />
-      <Route path="/status" element={<Status />} />
-      <Route path="/blog" element={<Blog />} />
-      <Route path="/docs" element={<Documentation />} />
+      {/* ── Public routes ─────────────────────────────────────────── */}
+      <LandingRoutes />
+      <LegalRoutes />
+      <CompanyRoutes />
 
       {/* ── Auth routes ───────────────────────────────────────────── */}
-      <Route
-        path="/login"
-        element={
-          <PublicRoute>
-            <AuthLayout>
-              <Login />
-            </AuthLayout>
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <PublicRoute>
-            <AuthLayout>
-              <Register />
-            </AuthLayout>
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/forgot-password"
-        element={
-          <PublicRoute>
-            <AuthLayout>
-              <ForgotPassword />
-            </AuthLayout>
-          </PublicRoute>
-        }
-      />
-      <Route path="/auth/oauth/:provider/callback" element={<OAuthCallback />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/verify-email" element={<VerifyEmail />} />
+      <AuthRoutes />
 
       {/* ── Protected app routes ──────────────────────────────────── */}
       <Route
@@ -190,184 +92,10 @@ export function AppRoutes() {
         </Route>
 
         {/* Forums */}
-        <Route
-          path="forums"
-          element={
-            <RouteErrorBoundary routeName="Forums">
-              <Forums />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="forums/leaderboard"
-          element={
-            <RouteErrorBoundary routeName="Forum Leaderboard">
-              <ForumLeaderboard />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="forums/create"
-          element={
-            <RouteErrorBoundary routeName="Create Forum">
-              <CreateForum />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="forums/plugins"
-          element={
-            <RouteErrorBoundary routeName="Plugin Marketplace">
-              <PluginMarketplace />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="forums/moderation"
-          element={
-            <RouteErrorBoundary routeName="Moderation Queue">
-              <ModerationQueue />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="forums/:forumSlug"
-          element={
-            <RouteErrorBoundary routeName="Forum View">
-              <ForumBoardView />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="forums/:forumSlug/posts"
-          element={
-            <RouteErrorBoundary routeName="Forum Posts">
-              <Forums />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="forums/:forumSlug/create-post"
-          element={
-            <RouteErrorBoundary routeName="Create Post">
-              <CreatePost />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="forums/:forumSlug/settings"
-          element={
-            <RouteErrorBoundary routeName="Forum Settings">
-              <ForumSettings />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="forums/:forumSlug/admin"
-          element={
-            <RouteErrorBoundary routeName="Forum Admin">
-              <ForumAdmin />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="forums/:forumSlug/post/:postId"
-          element={
-            <RouteErrorBoundary routeName="Forum Post">
-              <ForumPost />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="forums/:forumSlug/boards/:boardSlug"
-          element={
-            <RouteErrorBoundary routeName="Forum Board">
-              <ForumBoardView />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="forums/:forumSlug/threads/:threadId"
-          element={
-            <RouteErrorBoundary routeName="Forum Thread">
-              <ForumPost />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="forums/:forumSlug/plugins"
-          element={
-            <RouteErrorBoundary routeName="Forum Plugins">
-              <PluginMarketplace />
-            </RouteErrorBoundary>
-          }
-        />
+        <ForumRoutes />
 
         {/* Settings */}
-        <Route
-          path="settings"
-          element={
-            <RouteErrorBoundary routeName="Settings">
-              <Settings />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="settings/:section"
-          element={
-            <RouteErrorBoundary routeName="Settings">
-              <Settings />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="settings/theme"
-          element={
-            <RouteErrorBoundary routeName="Theme Customization">
-              <ThemeCustomization />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="settings/app-theme"
-          element={
-            <RouteErrorBoundary routeName="App Theme">
-              <AppThemeSettings />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="settings/titles"
-          element={
-            <RouteErrorBoundary routeName="Title Selection">
-              <TitleSelection />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="settings/badges"
-          element={
-            <RouteErrorBoundary routeName="Badge Selection">
-              <BadgeSelection />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="settings/security/2fa-setup"
-          element={
-            <RouteErrorBoundary routeName="2FA Setup">
-              <TwoFactorSetup />
-            </RouteErrorBoundary>
-          }
-        />
-        <Route
-          path="settings/privacy/blocked"
-          element={
-            <RouteErrorBoundary routeName="Blocked Users">
-              <BlockedUsers />
-            </RouteErrorBoundary>
-          }
-        />
+        <SettingsRoutes />
 
         {/* Community */}
         <Route path="community/leaderboard" element={<UserLeaderboard />} />
