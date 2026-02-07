@@ -55,15 +55,15 @@ export function AppRoutes() {
   return (
     <Routes>
       {/* ── Dev/Test ───────────────────────────────────────────────── */}
-      <DevRoutes />
+      {DevRoutes()}
 
       {/* ── Public routes ─────────────────────────────────────────── */}
-      <LandingRoutes />
-      <LegalRoutes />
-      <CompanyRoutes />
+      {LandingRoutes()}
+      {LegalRoutes()}
+      {CompanyRoutes()}
 
       {/* ── Auth routes ───────────────────────────────────────────── */}
-      <AuthRoutes />
+      {AuthRoutes()}
 
       {/* ── Protected app routes ──────────────────────────────────── */}
       <Route
@@ -92,10 +92,10 @@ export function AppRoutes() {
         </Route>
 
         {/* Forums */}
-        <ForumRoutes />
+        {ForumRoutes()}
 
         {/* Settings */}
-        <SettingsRoutes />
+        {SettingsRoutes()}
 
         {/* Community */}
         <Route path="community/leaderboard" element={<UserLeaderboard />} />
