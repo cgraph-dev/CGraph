@@ -18,158 +18,27 @@
 import gsap from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
 
+// Re-export types and presets from the types module
+export type {
+  AnimationConfig,
+  SpringConfig,
+  GestureConfig,
+  SequenceStep,
+} from './AnimationEngine.types';
+export { ANIMATION_PRESETS } from './AnimationEngine.types';
+
+import type {
+  AnimationConfig,
+  SpringConfig,
+  GestureConfig,
+  SequenceStep,
+} from './AnimationEngine.types';
+import { ANIMATION_PRESETS } from './AnimationEngine.types';
+
 // Register GSAP plugins
 if (typeof window !== 'undefined') {
   gsap.registerPlugin(CustomEase);
 }
-
-// =============================================================================
-// TYPES
-// =============================================================================
-
-export interface AnimationConfig {
-  duration?: number;
-  delay?: number;
-  ease?: string | gsap.EaseFunction;
-  repeat?: number;
-  yoyo?: boolean;
-  stagger?: number;
-  onComplete?: () => void;
-  onStart?: () => void;
-  onUpdate?: (progress: number) => void;
-}
-
-export interface SpringConfig {
-  tension?: number;
-  friction?: number;
-  mass?: number;
-  velocity?: number;
-  clamp?: boolean;
-}
-
-export interface GestureConfig {
-  enableHaptic?: boolean;
-  threshold?: number;
-  direction?: 'horizontal' | 'vertical' | 'all';
-  bounds?: { min: number; max: number };
-}
-
-export interface SequenceStep {
-  target: HTMLElement | string;
-  animation: gsap.TweenVars;
-  label?: string;
-}
-
-// =============================================================================
-// ANIMATION PRESETS (Mobile-Inspired)
-// =============================================================================
-
-export const ANIMATION_PRESETS = {
-  // Entrance animations inspired by mobile
-  slideInFromRight: {
-    from: { x: 100, opacity: 0 },
-    to: { x: 0, opacity: 1, duration: 0.4, ease: 'power2.out' },
-  },
-  slideInFromLeft: {
-    from: { x: -100, opacity: 0 },
-    to: { x: 0, opacity: 1, duration: 0.4, ease: 'power2.out' },
-  },
-  slideInFromBottom: {
-    from: { y: 100, opacity: 0 },
-    to: { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' },
-  },
-  slideInFromTop: {
-    from: { y: -100, opacity: 0 },
-    to: { y: 0, opacity: 1, duration: 0.4, ease: 'power2.out' },
-  },
-
-  // Scale animations
-  scaleIn: {
-    from: { scale: 0, opacity: 0 },
-    to: { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out(1.7)' },
-  },
-  scaleOut: {
-    from: { scale: 1, opacity: 1 },
-    to: { scale: 0, opacity: 0, duration: 0.2, ease: 'back.in(1.7)' },
-  },
-
-  // Bounce animations (React Native style)
-  bounceIn: {
-    from: { scale: 0, opacity: 0 },
-    to: {
-      scale: 1,
-      opacity: 1,
-      duration: 0.6,
-      ease: 'elastic.out(1, 0.5)',
-    },
-  },
-
-  // Fade animations
-  fadeIn: {
-    from: { opacity: 0 },
-    to: { opacity: 1, duration: 0.3, ease: 'power1.out' },
-  },
-  fadeOut: {
-    from: { opacity: 1 },
-    to: { opacity: 0, duration: 0.2, ease: 'power1.in' },
-  },
-
-  // Rotation animations
-  rotateIn: {
-    from: { rotation: -180, scale: 0, opacity: 0 },
-    to: { rotation: 0, scale: 1, opacity: 1, duration: 0.5, ease: 'back.out(1.4)' },
-  },
-
-  // Flip animations
-  flipIn: {
-    from: { rotationY: -90, opacity: 0 },
-    to: { rotationY: 0, opacity: 1, duration: 0.5, ease: 'power2.out' },
-  },
-
-  // Shake animation (error feedback)
-  shake: {
-    from: { x: 0 },
-    to: {
-      x: 0,
-      keyframes: {
-        '0%': { x: 0 },
-        '25%': { x: -10 },
-        '50%': { x: 10 },
-        '75%': { x: -10 },
-        '100%': { x: 0 },
-      },
-      duration: 0.4,
-      ease: 'power2.inOut',
-    },
-  },
-
-  // Pulse animation
-  pulse: {
-    from: { scale: 1 },
-    to: {
-      scale: 1,
-      keyframes: {
-        '0%': { scale: 1 },
-        '50%': { scale: 1.05 },
-        '100%': { scale: 1 },
-      },
-      duration: 0.6,
-      ease: 'sine.inOut',
-    },
-  },
-
-  // Glow effect
-  glowPulse: {
-    from: { boxShadow: '0 0 5px rgba(16, 185, 129, 0.3)' },
-    to: {
-      boxShadow: '0 0 20px rgba(16, 185, 129, 0.6)',
-      duration: 1,
-      yoyo: true,
-      repeat: -1,
-      ease: 'sine.inOut',
-    },
-  },
-} as const;
 
 // =============================================================================
 // SPRING PHYSICS (React Native Reanimated Style)
@@ -324,9 +193,10 @@ export class AnimationEngine {
     preset: keyof typeof ANIMATION_PRESETS | gsap.TweenVars,
     config?: AnimationConfig
   ): gsap.core.Tween {
-    const animationConfig = typeof preset === 'string'
-      ? { ...ANIMATION_PRESETS[preset].to, ...config }
-      : { ...preset, ...config };
+    const animationConfig =
+      typeof preset === 'string'
+        ? { ...ANIMATION_PRESETS[preset].to, ...config }
+        : { ...preset, ...config };
 
     // Apply from values if preset includes them
     if (typeof preset === 'string' && ANIMATION_PRESETS[preset].from) {
@@ -410,12 +280,16 @@ export class AnimationEngine {
         ease: 'power2.out',
         delay: index * 0.05, // Stagger based on index
       })
-      .to(element, {
-        opacity: 1,
-        scale: 1,
-        duration: 0.3,
-        ease: 'back.out(1.4)',
-      }, '-=0.3');
+      .to(
+        element,
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 0.3,
+          ease: 'back.out(1.4)',
+        },
+        '-=0.3'
+      );
 
     return timeline;
   }
@@ -432,11 +306,15 @@ export class AnimationEngine {
         duration: 0.15,
         ease: 'power2.out',
       })
-      .to(element, {
-        y: -8,
-        duration: 0.1,
-        ease: 'power2.out',
-      }, '-=0.15')
+      .to(
+        element,
+        {
+          y: -8,
+          duration: 0.1,
+          ease: 'power2.out',
+        },
+        '-=0.15'
+      )
       .to(element, {
         scale: 1,
         y: 0,
@@ -453,10 +331,7 @@ export class AnimationEngine {
   /**
    * Card flip animation
    */
-  static flip3D(
-    element: HTMLElement,
-    direction: 'x' | 'y' = 'y'
-  ): gsap.core.Timeline {
+  static flip3D(element: HTMLElement, direction: 'x' | 'y' = 'y'): gsap.core.Timeline {
     const timeline = gsap.timeline();
     const rotation = direction === 'x' ? 'rotationX' : 'rotationY';
 
@@ -517,7 +392,7 @@ export class AnimationEngine {
    * Kill all active animations
    */
   static killAll(): void {
-    this.activeAnimations.forEach(tween => tween.kill());
+    this.activeAnimations.forEach((tween) => tween.kill());
     this.activeAnimations.clear();
     if (this.timeline) {
       this.timeline.kill();
@@ -540,7 +415,7 @@ export class AnimationEngine {
    * Pause all animations
    */
   static pauseAll(): void {
-    this.activeAnimations.forEach(tween => tween.pause());
+    this.activeAnimations.forEach((tween) => tween.pause());
     if (this.timeline) {
       this.timeline.pause();
     }
@@ -550,7 +425,7 @@ export class AnimationEngine {
    * Resume all animations
    */
   static resumeAll(): void {
-    this.activeAnimations.forEach(tween => tween.resume());
+    this.activeAnimations.forEach((tween) => tween.resume());
     if (this.timeline) {
       this.timeline.resume();
     }
