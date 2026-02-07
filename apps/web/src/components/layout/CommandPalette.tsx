@@ -8,43 +8,28 @@
  * - Recent searches
  * - Keyboard navigation
  * - Command categories
+ *
+ * @module components/layout/CommandPalette
  */
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import {
-  MagnifyingGlassIcon,
-  ChatBubbleLeftRightIcon,
-  UserGroupIcon,
-  Cog6ToothIcon,
-  HomeIcon,
-  NewspaperIcon,
-  SparklesIcon,
-  UserCircleIcon,
-  ArrowRightOnRectangleIcon,
-  ClockIcon,
-  HashtagIcon,
-  AtSymbolIcon,
-} from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useAuthStore } from '@/stores/authStore';
+import { buildCommands, CATEGORY_LABELS, type Command } from './commandRegistry';
+
+export type { Command };
 
 export interface CommandPaletteProps {
+  /** Whether the palette is open */
   isOpen: boolean;
+  /** Close callback */
   onClose: () => void;
+  /** Additional CSS classes */
   className?: string;
-}
-
-interface Command {
-  id: string;
-  label: string;
-  description?: string;
-  icon: React.ReactNode;
-  shortcut?: string;
-  action: () => void;
-  category: 'navigation' | 'actions' | 'user' | 'recent';
 }
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({
@@ -60,168 +45,32 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
-  const commands: Command[] = [
-    // Navigation
-    {
-      id: 'home',
-      label: 'Go to Home',
-      icon: <HomeIcon className="h-5 w-5" />,
-      shortcut: 'G H',
-      action: () => {
-        navigate('/');
-        onClose();
-      },
-      category: 'navigation',
-    },
-    {
-      id: 'messages',
-      label: 'Go to Messages',
-      icon: <ChatBubbleLeftRightIcon className="h-5 w-5" />,
-      shortcut: 'G M',
-      action: () => {
-        navigate('/messages');
-        onClose();
-      },
-      category: 'navigation',
-    },
-    {
-      id: 'groups',
-      label: 'Go to Groups',
-      icon: <UserGroupIcon className="h-5 w-5" />,
-      shortcut: 'G G',
-      action: () => {
-        navigate('/groups');
-        onClose();
-      },
-      category: 'navigation',
-    },
-    {
-      id: 'forums',
-      label: 'Go to Forums',
-      icon: <NewspaperIcon className="h-5 w-5" />,
-      shortcut: 'G F',
-      action: () => {
-        navigate('/forums');
-        onClose();
-      },
-      category: 'navigation',
-    },
-    {
-      id: 'settings',
-      label: 'Go to Settings',
-      icon: <Cog6ToothIcon className="h-5 w-5" />,
-      shortcut: 'G S',
-      action: () => {
-        navigate('/settings');
-        onClose();
-      },
-      category: 'navigation',
-    },
-    {
-      id: 'premium',
-      label: 'Go to Premium',
-      icon: <SparklesIcon className="h-5 w-5" />,
-      action: () => {
-        navigate('/premium');
-        onClose();
-      },
-      category: 'navigation',
-    },
-    // Actions
-    {
-      id: 'new-message',
-      label: 'New Message',
-      icon: <ChatBubbleLeftRightIcon className="h-5 w-5" />,
-      shortcut: 'N M',
-      action: () => {
-        navigate('/messages?new=true');
-        onClose();
-      },
-      category: 'actions',
-    },
-    {
-      id: 'create-group',
-      label: 'Create Group',
-      icon: <UserGroupIcon className="h-5 w-5" />,
-      shortcut: 'N G',
-      action: () => {
-        navigate('/groups/create');
-        onClose();
-      },
-      category: 'actions',
-    },
-    {
-      id: 'search-users',
-      label: 'Search Users',
-      icon: <AtSymbolIcon className="h-5 w-5" />,
-      action: () => {
-        navigate('/search?type=users');
-        onClose();
-      },
-      category: 'actions',
-    },
-    {
-      id: 'search-channels',
-      label: 'Search Channels',
-      icon: <HashtagIcon className="h-5 w-5" />,
-      action: () => {
-        navigate('/search?type=channels');
-        onClose();
-      },
-      category: 'actions',
-    },
-    // User
-    {
-      id: 'profile',
-      label: 'View Profile',
-      icon: <UserCircleIcon className="h-5 w-5" />,
-      shortcut: 'G P',
-      action: () => {
-        navigate('/profile');
-        onClose();
-      },
-      category: 'user',
-    },
-    {
-      id: 'logout',
-      label: 'Sign Out',
-      icon: <ArrowRightOnRectangleIcon className="h-5 w-5" />,
-      action: () => {
-        logout();
-        navigate('/login');
-        onClose();
-      },
-      category: 'user',
-    },
-  ];
-
-  // Filter commands based on query
-  const filteredCommands = query
-    ? commands.filter(
-        (cmd) =>
-          cmd.label.toLowerCase().includes(query.toLowerCase()) ||
-          cmd.description?.toLowerCase().includes(query.toLowerCase())
-      )
-    : commands;
-
-  // Group commands by category
-  const groupedCommands = filteredCommands.reduce(
-    (acc, cmd) => {
-      if (!acc[cmd.category]) {
-        acc[cmd.category] = [];
-      }
-      acc[cmd.category]!.push(cmd);
-      return acc;
-    },
-    {} as Record<string, Command[]>
+  const commands = useMemo(
+    () => buildCommands(navigate, onClose, logout),
+    [navigate, onClose, logout]
   );
 
-  const categoryLabels: Record<string, string> = {
-    navigation: 'Navigation',
-    actions: 'Actions',
-    user: 'User',
-    recent: 'Recent',
-  };
+  // Filter commands based on query
+  const filteredCommands = useMemo(() => {
+    if (!query) return commands;
+    const q = query.toLowerCase();
+    return commands.filter(
+      (cmd) => cmd.label.toLowerCase().includes(q) || cmd.description?.toLowerCase().includes(q)
+    );
+  }, [commands, query]);
+
+  // Group commands by category
+  const groupedCommands = useMemo(
+    () =>
+      filteredCommands.reduce(
+        (acc, cmd) => {
+          (acc[cmd.category] ??= []).push(cmd);
+          return acc;
+        },
+        {} as Record<string, Command[]>
+      ),
+    [filteredCommands]
+  );
 
   // Focus input when opened
   useEffect(() => {
@@ -305,7 +154,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                 {Object.entries(groupedCommands).map(([category, cmds]) => (
                   <div key={category} className="mb-2">
                     <p className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/40">
-                      {categoryLabels[category]}
+                      {CATEGORY_LABELS[category]}
                     </p>
                     {cmds.map((cmd) => {
                       const globalIndex = filteredCommands.indexOf(cmd);
