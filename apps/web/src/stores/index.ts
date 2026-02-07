@@ -10,22 +10,22 @@
  * ```
  *
  * @module stores
- * @version 3.0.0
+ * @version 4.0.0
  */
 
 // ============================================================================
 // User Domain (Auth, Profile, Settings, Friends)
 // ============================================================================
-export { useAuthStore } from './authStore';
-export type { User, AuthState } from './authStore';
+export { useAuthStore } from '../modules/auth/store';
+export type { User, AuthState } from '../modules/auth/store';
 
-export { useProfileStore } from './profileStore';
+export { useProfileStore } from '../modules/social/store';
 
 export { useSettingsStore } from '../modules/settings/store';
-export type { UserSettings } from './settingsStore';
+export type { UserSettings } from '../modules/settings/store';
 
 export { useFriendStore } from '../modules/social/store';
-export type { Friend, FriendRequest } from './friendStore';
+export type { Friend, FriendRequest } from '../modules/social/store';
 
 // ============================================================================
 // Chat Domain (Messages, Conversations, Effects)
@@ -42,8 +42,8 @@ export {
   type ChatState,
 } from '../modules/chat/store';
 
-export { useIncomingCallStore } from './incomingCallStore';
-export type { IncomingCall } from './incomingCallStore';
+export { useIncomingCallStore } from '../modules/calls/store';
+export type { IncomingCall } from '../modules/calls/store';
 
 // ============================================================================
 // Community Domain (Forums, Groups, Moderation)
@@ -51,7 +51,14 @@ export type { IncomingCall } from './incomingCallStore';
 export { useForumStore, useForumHostingStore, useAnnouncementStore } from '../modules/forums/store';
 
 export { useGroupStore } from '../modules/groups/store';
-export type { Group, Channel, Member, Role, ChannelMessage, ChannelCategory } from './groupStore';
+export type {
+  Group,
+  Channel,
+  Member,
+  Role,
+  ChannelMessage,
+  ChannelCategory,
+} from '../modules/groups/store';
 
 export { useModerationStore } from '../modules/moderation/store';
 
@@ -70,24 +77,18 @@ export {
 // Theme Domain (All Theme/Customization)
 // ============================================================================
 export { useThemeStore, THEME_COLORS } from './themeStore';
-export { useProfileThemeStore } from './profileThemeStore';
 export { useForumThemeStore } from './forumThemeStore';
-export { useCustomizationStore } from './unifiedCustomizationStore';
+export { useCustomizationStore } from './customization';
 
 // ============================================================================
 // Marketplace Domain (Economy, Items)
 // ============================================================================
-export { useAvatarBorderStore } from './avatarBorderStore';
+export { useAvatarBorderStore } from '../modules/gamification/store';
 
 // ============================================================================
 // Utility Domain (Notifications, Search, Misc)
 // ============================================================================
 export { useNotificationStore } from '../modules/social/store';
 export { useSearchStore } from '../modules/search/store';
-export { usePluginStore } from './pluginStore';
-export { useCalendarStore } from './calendarStore';
-
-// ============================================================================
-// Utilities
-// ============================================================================
-export * from './utils/storeHelpers';
+export { usePluginStore } from '../modules/settings/store';
+export { useCalendarStore } from '../modules/settings/store';

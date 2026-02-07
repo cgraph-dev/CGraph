@@ -52,7 +52,7 @@ const mockAuthStore = {
   checkAuth: vi.fn().mockResolvedValue(undefined),
 };
 
-vi.mock('@/stores/authStore', () => ({
+vi.mock('@/modules/auth/store', () => ({
   useAuthStore: (selector?: (state: typeof mockAuthStore) => unknown) => {
     if (selector) {
       return selector(mockAuthStore);

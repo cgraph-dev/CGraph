@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, afterEach } from 'vitest';
-import { useAuthStore, mapUserFromApi } from '../authStore';
+import { useAuthStore, mapUserFromApi } from '@/modules/auth/store';
 
 // Mock user data from API (snake_case as from backend)
 const mockApiUser = {

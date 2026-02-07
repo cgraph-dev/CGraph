@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { useGamificationStore, XP_REWARDS } from '../gamificationStore';
+import { useGamificationStore, XP_REWARDS } from '@/modules/gamification/store';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({

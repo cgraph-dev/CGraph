@@ -6,8 +6,8 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { useIncomingCallStore } from '../incomingCallStore';
-import type { IncomingCall } from '../incomingCallStore';
+import { useIncomingCallStore } from '@/modules/calls/store';
+import type { IncomingCall } from '@/modules/calls/store';
 
 // Mock incoming call
 const mockCall: IncomingCall = {

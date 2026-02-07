@@ -5,8 +5,8 @@
  */
 
 import { describe, it, expect, beforeEach, vi, type MockedFunction } from 'vitest';
-import { useAnnouncementStore } from '../announcementStore';
-import type { Announcement } from '../announcementStore';
+import { useAnnouncementStore } from '@/modules/forums/store';
+import type { Announcement } from '@/modules/forums/store';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({

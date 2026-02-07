@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { useSearchStore } from '../searchStore';
+import { useSearchStore } from '@/modules/search/store';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({

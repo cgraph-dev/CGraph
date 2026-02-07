@@ -44,7 +44,7 @@ export interface MemberContextMenuProps {
 /** Props for role-grouped member section */
 export interface RoleSectionProps {
   /** Role to display */
-  role: import('@/stores/groupStore').Role;
+  role: import('@/modules/groups/store').Role;
   /** Members with this role */
   members: Member[];
   /** Click handler for member rows */

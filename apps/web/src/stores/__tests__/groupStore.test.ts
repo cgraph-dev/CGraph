@@ -7,8 +7,8 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
-import { useGroupStore } from '../groupStore';
-import type { Group, Channel, Member, ChannelMessage, Role } from '../groupStore';
+import { useGroupStore } from '@/modules/groups/store';
+import type { Group, Channel, Member, ChannelMessage, Role } from '@/modules/groups/store';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({

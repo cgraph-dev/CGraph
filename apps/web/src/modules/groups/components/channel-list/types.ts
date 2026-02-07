@@ -17,7 +17,7 @@ export interface ChannelListProps {
 /** Props for the collapsible category section */
 export interface CategorySectionProps {
   /** Channel category data */
-  category: import('@/stores/groupStore').ChannelCategory;
+  category: import('@/modules/groups/store').ChannelCategory;
   /** Whether this section is expanded */
   isExpanded: boolean;
   /** Currently active channel ID for highlighting */

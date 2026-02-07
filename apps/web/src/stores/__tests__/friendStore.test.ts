@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, afterEach } from 'vitest';
-import { useFriendStore, type Friend, type FriendRequest } from '../friendStore';
+import { useFriendStore, type Friend, type FriendRequest } from '@/modules/social/store';
 
 // Mock friend data
 const mockFriend: Friend = {

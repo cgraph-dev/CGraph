@@ -7,8 +7,8 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
-import { useForumStore } from '../forumStore';
-import type { Forum, Post, Comment, ForumCategory } from '../forumStore';
+import { useForumStore } from '@/modules/forums/store';
+import type { Forum, Post, Comment, ForumCategory } from '@/modules/forums/store';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({

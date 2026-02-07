@@ -178,10 +178,17 @@ export async function loadIdentityKeyPair(): Promise<IdentityKeyPair | null> {
   }
 }
 
+/** Signed pre-key data loaded from secure storage */
+interface LoadedSignedPreKey {
+  keyPair: { publicKey: CryptoKey; privateKey: CryptoKey };
+  keyId: number;
+  signature: ArrayBuffer;
+}
+
 /**
  * Load signed prekey from ENCRYPTED storage
  */
-export async function loadSignedPreKey(): Promise<any | null> {
+export async function loadSignedPreKey(): Promise<LoadedSignedPreKey | null> {
   if (!SecureStorage.isReady()) {
     return null;
   }

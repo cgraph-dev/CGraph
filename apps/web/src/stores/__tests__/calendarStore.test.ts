@@ -6,8 +6,8 @@
  */
 
 import { describe, it, expect, beforeEach, vi, type MockedFunction } from 'vitest';
-import { useCalendarStore } from '../calendarStore';
-import type { CalendarEvent, EventCategory, EventRSVP } from '../calendarStore';
+import { useCalendarStore } from '@/modules/settings/store';
+import type { CalendarEvent, EventCategory, EventRSVP } from '@/modules/settings/store';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({

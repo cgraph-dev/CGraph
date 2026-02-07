@@ -9,6 +9,7 @@ export { useThemeStore } from './themeStore';
 
 // Import for local use
 import type { ColorPreset as ColorPresetType } from './themeStore';
+import { useProfileTheme } from './themeStore';
 
 // Types
 export type {
@@ -65,16 +66,6 @@ export {
   getThemePreset,
 } from './themeStore';
 
-// Re-export profile theme types and hooks from legacy store
-export {
-  useActiveProfileTheme,
-  useProfileCardConfig,
-  type ProfileTheme,
-  type ProfileThemePreset,
-  type ProfileHoverEffect,
-  type ProfileThemeColors,
-} from '../profileThemeStore';
-
 // Re-export forum theme types and hooks from legacy store
 export {
   useForumThemeStore,
@@ -87,6 +78,94 @@ export {
 
 // Re-export UserTheme type from deprecated themeStore
 export type { UserTheme } from '../themeStore';
+
+// ============================================================================
+// Profile Theme Types & Hooks (inlined from deleted profileThemeStore)
+// ============================================================================
+
+export type ProfileThemePreset =
+  | 'minimalist-dark'
+  | 'minimalist-light'
+  | 'gradient-aurora'
+  | 'cyberpunk-neon'
+  | 'fantasy-castle'
+  | 'space-explorer'
+  | 'ocean-deep'
+  | 'forest-mystic'
+  | 'desert-oasis'
+  | 'arctic-tundra'
+  | 'volcanic-fury'
+  | 'steampunk'
+  | 'synthwave'
+  | 'vaporwave'
+  | 'gothic'
+  | 'kawaii'
+  | 'industrial'
+  | 'nature-zen'
+  | 'abstract-art'
+  | 'gaming-rgb'
+  | 'holographic'
+  | 'custom';
+
+export type ProfileHoverEffect =
+  | 'none'
+  | 'scale'
+  | 'tilt'
+  | 'glow'
+  | 'particles'
+  | 'border-animate';
+
+export type ProfileBackgroundType =
+  | 'color'
+  | 'gradient'
+  | 'image'
+  | 'video'
+  | 'animated'
+  | 'particles';
+
+export interface ProfileBackground {
+  type: ProfileBackgroundType;
+  value: string;
+  overlay?: boolean;
+  overlayOpacity?: number;
+  parallax?: boolean;
+  blur?: number;
+}
+
+export interface ProfileThemeColors {
+  primary: string;
+  secondary: string;
+  accent: string;
+  background: string;
+  surface: string;
+  text: string;
+  textMuted: string;
+}
+
+export interface ProfileTheme {
+  id: string;
+  name: string;
+  preset: ProfileThemePreset;
+  colors: ProfileThemeColors;
+  background: ProfileBackground;
+  cardLayout: string;
+  hoverEffect: ProfileHoverEffect;
+  fontFamily: string;
+  glassmorphism: boolean;
+  borderRadius: 'none' | 'sm' | 'md' | 'lg' | 'full';
+  showParticles: boolean;
+  particleType?: string;
+  musicEnabled: boolean;
+  musicUrl?: string;
+  musicAutoplay: boolean;
+  musicVolume: number;
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const useActiveProfileTheme = () => useProfileTheme().preset;
+export const useProfileCardConfig = () => useProfileTheme().cardConfig;
 
 // ChatBubbleStyle alias for compatibility
 import type { ChatBubbleConfig as ChatBubbleConfigType } from './themeStore';

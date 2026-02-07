@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, afterEach, vi, beforeEach, type MockedFunction } from 'vitest';
-import { useChatStore, type Message, type Conversation } from '../chatStore';
+import { useChatStore, type Message, type Conversation } from '@/modules/chat/store';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({

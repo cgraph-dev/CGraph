@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { useSettingsStore } from '../settingsStore';
+import { useSettingsStore } from '@/modules/settings/store';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({

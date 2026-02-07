@@ -25,7 +25,7 @@ export {
   type AchievementRarity,
   type QuestType,
   XP_REWARDS,
-} from '../gamificationStore';
+} from '@/modules/gamification/store/gamificationStore';
 
 // Re-export prestige slice
 export {
@@ -100,6 +100,6 @@ export interface GamificationData {
 }
 
 // Import types for the unified interface
-import type { Achievement, Quest } from '../gamificationStore';
+import type { Achievement, Quest } from '@/modules/gamification/store/gamificationStore';
 import type { PrestigeBonuses } from './prestigeSlice';
 import type { SeasonalEvent } from './seasonalEventSlice';

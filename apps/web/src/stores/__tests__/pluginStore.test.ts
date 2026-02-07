@@ -6,8 +6,8 @@
  */
 
 import { describe, it, expect, beforeEach, vi, type MockedFunction } from 'vitest';
-import { usePluginStore } from '../pluginStore';
-import type { MarketplacePlugin, InstalledPlugin } from '../pluginStore';
+import { usePluginStore } from '@/modules/settings/store';
+import type { MarketplacePlugin, InstalledPlugin } from '@/modules/settings/store';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({

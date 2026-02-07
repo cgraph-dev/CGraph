@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, afterEach, vi, beforeEach } from 'vitest';
-import { useNotificationStore, type Notification } from '../notificationStore';
+import { useNotificationStore, type Notification } from '@/modules/social/store';
 
 // Mock the api module
 vi.mock('@/lib/api', () => ({

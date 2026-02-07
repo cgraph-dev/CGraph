@@ -7,8 +7,8 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
-import { useProfileStore } from '../profileStore';
-import type { ExtendedProfile, UserSignature, BlockedUser } from '../profileStore';
+import { useProfileStore } from '@/modules/social/store';
+import type { ExtendedProfile, UserSignature, BlockedUser } from '@/modules/social/store';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({

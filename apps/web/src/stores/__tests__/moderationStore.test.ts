@@ -7,8 +7,8 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
-import { useModerationStore } from '../moderationStore';
-import type { ModerationQueueItem, UserWarning, Ban } from '../moderationStore';
+import { useModerationStore } from '@/modules/moderation/store';
+import type { ModerationQueueItem, UserWarning, Ban } from '@/modules/moderation/store';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({
