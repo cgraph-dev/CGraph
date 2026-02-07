@@ -20,6 +20,9 @@ import { useChatCustomization } from '@/stores/unifiedCustomizationStore';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { ChatBubbleLeftIcon, SwatchIcon, CheckIcon, CloudIcon } from '@heroicons/react/24/outline';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ChatBubbleSettings');
 
 export default function ChatBubbleSettingsHybrid() {
   // === LOCAL UI STATE (localStorage only) ===
@@ -44,7 +47,7 @@ export default function ChatBubbleSettingsHybrid() {
       await updateChat({ bubbleColor: color });
       HapticFeedback.success();
     } catch (error) {
-      console.error('Failed to sync color:', error);
+      logger.error('Failed to sync color:', error);
       // Local state still works even if sync fails
       HapticFeedback.error();
     }
@@ -58,7 +61,7 @@ export default function ChatBubbleSettingsHybrid() {
     try {
       await updateChat({ bubbleRadius: radius });
     } catch (error) {
-      console.error('Failed to sync radius:', error);
+      logger.error('Failed to sync radius:', error);
     }
   };
 
@@ -70,7 +73,7 @@ export default function ChatBubbleSettingsHybrid() {
       await updateChat({ textSize: size });
       HapticFeedback.success();
     } catch (error) {
-      console.error('Failed to sync text size:', error);
+      logger.error('Failed to sync text size:', error);
     }
   };
 
