@@ -56,12 +56,10 @@ import { registerTokenHandlers } from '@/lib/tokenService';
 import { authLogger } from '@/lib/logger';
 import { AxiosError } from 'axios';
 
-// Type for API error responses
-interface ApiErrorResponse {
-  error?: string;
-  message?: string;
-  errors?: Record<string, string[]>;
-}
+// Types
+export type { ApiErrorResponse, User, WalletChallenge, AuthState } from './authStore.types';
+
+import type { ApiErrorResponse, User, WalletChallenge, AuthState } from './authStore.types';
 
 // Helper to extract error message from API errors
 function getApiErrorMessage(error: unknown, fallback: string): string {
@@ -73,52 +71,6 @@ function getApiErrorMessage(error: unknown, fallback: string): string {
     return error.message;
   }
   return fallback;
-}
-
-export interface User {
-  id: string;
-  uid: string; // Random 10-digit UID (e.g., "4829173650")
-  userId: number; // Legacy sequential ID (for backward compatibility)
-  userIdDisplay: string; // Formatted UID for display (e.g., "#4829173650")
-  email: string;
-  username: string | null;
-  displayName: string | null;
-  avatarUrl: string | null;
-  walletAddress: string | null;
-  emailVerifiedAt: string | null;
-  twoFactorEnabled: boolean;
-  status: 'online' | 'idle' | 'dnd' | 'offline';
-  statusMessage: string | null;
-  karma: number;
-  isVerified: boolean;
-  isPremium: boolean;
-  isAdmin: boolean;
-  canChangeUsername: boolean;
-  usernameNextChangeAt: string | null;
-  createdAt: string;
-
-  // Profile fields
-  bio?: string;
-  location?: string;
-  website?: string;
-  occupation?: string;
-  bannerUrl?: string | null;
-
-  // Gamification fields
-  level?: number;
-  xp?: number;
-  title?: string;
-  titleColor?: string;
-  badges?: string[];
-  streak?: number;
-  coins?: number;
-
-  // Subscription/Premium info
-  subscription?: {
-    tier?: 'free' | 'plus' | 'pro' | 'premium';
-    status?: 'active' | 'inactive' | 'cancelled';
-    expiresAt?: string;
-  } | null;
 }
 
 // Map API user response to frontend User type
@@ -154,31 +106,6 @@ export function mapUserFromApi(apiUser: Record<string, unknown>): User {
     badges: apiUser.badges as string[] | undefined,
     streak: (apiUser.streak as number) || 0,
   };
-}
-
-interface WalletChallenge {
-  message: string;
-  nonce: string;
-}
-
-export interface AuthState {
-  user: User | null;
-  token: string | null;
-  refreshToken: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
-
-  // Actions
-  login: (email: string, password: string) => Promise<void>;
-  getWalletChallenge: (walletAddress: string) => Promise<WalletChallenge>;
-  loginWithWallet: (walletAddress: string, signature: string) => Promise<void>;
-  register: (email: string, username: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
-  refreshSession: () => Promise<void>;
-  updateUser: (data: Partial<User>) => void;
-  clearError: () => void;
-  checkAuth: () => Promise<void>;
 }
 
 /**
