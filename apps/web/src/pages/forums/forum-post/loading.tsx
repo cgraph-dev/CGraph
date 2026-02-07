@@ -9,7 +9,7 @@ interface PostSkeletonProps {
   forumSlug?: string;
 }
 
-export function PostSkeleton({ forumSlug }: PostSkeletonProps) {
+export function PostSkeleton({ forumSlug: _forumSlug }: PostSkeletonProps) {
   return (
     <div className="flex-1 overflow-y-auto bg-dark-900 p-4">
       <div className="mx-auto max-w-4xl">

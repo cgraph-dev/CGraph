@@ -3,10 +3,19 @@
  * @module pages/search/search
  */
 
-// Main component
+// ── Main component ──────────────────────────────────────────────────
 export { Search, Search as default } from './page';
 
-// Result components
+// ── Sub-components ──────────────────────────────────────────────────
+export { SearchHeader } from './SearchHeader';
+export type { SearchHeaderProps } from './SearchHeader';
+
+export { IdSearchBar } from './IdSearchBar';
+export type { IdSearchBarProps } from './IdSearchBar';
+
+export { SearchResults } from './SearchResults';
+export type { SearchResultsProps } from './SearchResults';
+
 export {
   ResultSection,
   UserResult,
@@ -16,7 +25,11 @@ export {
   MessageResult,
 } from './result-components';
 
-// Types
+// ── Hooks ───────────────────────────────────────────────────────────
+export { useSearch } from './useSearch';
+export type { SearchState } from './useSearch';
+
+// ── Types ───────────────────────────────────────────────────────────
 export type {
   CategoryDefinition,
   ResultSectionProps,
@@ -28,5 +41,5 @@ export type {
   IdSearchType,
 } from './types';
 
-// Constants
+// ── Constants ───────────────────────────────────────────────────────
 export { categories } from './constants';
