@@ -8,10 +8,9 @@
  * - 5 badge slots with animated backgrounds
  * - Empty slot placeholders with add functionality
  * - Drag and drop reordering (future)
- * - Cross-forum visibility - badges follow user everywhere
+ * - Cross-forum visibility — badges follow user everywhere
  *
- * @version 1.0.0
- * @since 2026-01-18
+ * @module gamification/components/badges/BadgeShowcase
  */
 
 import { useState, useCallback } from 'react';
@@ -19,9 +18,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PlusIcon, SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { AnimatedBadgeWithTooltip } from './AnimatedBadge';
+import { BadgePickerModal } from './BadgePickerModal';
 import type { Achievement } from '@/stores/gamificationStore';
 
-// ==================== TYPE DEFINITIONS ====================
+// Re-export extracted components for backwards compatibility
+export { CompactBadgeShowcase } from './CompactBadgeShowcase';
+export type { CompactBadgeShowcaseProps } from './CompactBadgeShowcase';
+
+// ── Type definitions ──────────────────────────────────────────────────
 
 export interface BadgeShowcaseProps {
   /** Array of equipped achievements (max 5) */
@@ -48,7 +52,7 @@ export interface BadgeShowcaseProps {
   className?: string;
 }
 
-// ==================== SIZE CONFIGURATIONS ====================
+// ── Size config ───────────────────────────────────────────────────────
 
 const SIZE_CONFIG = {
   sm: { slot: 48, badge: 'sm' as const, gap: 8 },
@@ -56,7 +60,7 @@ const SIZE_CONFIG = {
   lg: { slot: 80, badge: 'lg' as const, gap: 16 },
 };
 
-// ==================== EMPTY SLOT COMPONENT ====================
+// ── Sub-components ────────────────────────────────────────────────────
 
 interface EmptySlotProps {
   size: number;
@@ -88,8 +92,6 @@ function EmptySlot({ size, onClick, isEditable, index }: EmptySlotProps) {
     </motion.button>
   );
 }
-
-// ==================== BADGE SLOT COMPONENT ====================
 
 interface BadgeSlotProps {
   badge: Achievement;
@@ -151,14 +153,13 @@ function BadgeSlot({ badge, size, isEditable, onUnequip, index }: BadgeSlotProps
   );
 }
 
-// ==================== MAIN COMPONENT ====================
+// ── Main component ────────────────────────────────────────────────────
 
 export function BadgeShowcase({
   equippedBadges,
   availableBadges = [],
   onEquipBadge,
   onUnequipBadge,
-
   onReorderBadges: _onReorderBadges,
   isEditable = false,
   maxSlots = 5,
@@ -170,12 +171,10 @@ export function BadgeShowcase({
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const config = SIZE_CONFIG[size];
 
-  // Get available badges that aren't already equipped
   const unequippedBadges = availableBadges.filter(
     (badge) => !equippedBadges.find((eq) => eq.id === badge.id)
   );
 
-  // Calculate empty slots
   const emptySlots = Math.max(0, maxSlots - equippedBadges.length);
 
   const handleEquipBadge = useCallback(
@@ -208,7 +207,6 @@ export function BadgeShowcase({
         )}
         style={{ gap: config.gap }}
       >
-        {/* Equipped badges */}
         <AnimatePresence mode="popLayout">
           {equippedBadges.map((badge, index) => (
             <BadgeSlot
@@ -222,7 +220,6 @@ export function BadgeShowcase({
           ))}
         </AnimatePresence>
 
-        {/* Empty slots */}
         {Array.from({ length: emptySlots }).map((_, index) => (
           <EmptySlot
             key={`empty-${index}`}
@@ -235,147 +232,12 @@ export function BadgeShowcase({
       </div>
 
       {/* Badge picker modal */}
-      <AnimatePresence>
-        {isPickerOpen && isEditable && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            {/* Backdrop */}
-            <motion.div
-              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-              onClick={() => setIsPickerOpen(false)}
-            />
-
-            {/* Picker content */}
-            <motion.div
-              className={cn(
-                'relative z-10 w-full max-w-lg',
-                'rounded-2xl bg-dark-800',
-                'border border-white/10',
-                'shadow-2xl shadow-black/50',
-                'overflow-hidden'
-              )}
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-            >
-              {/* Header */}
-              <div className="flex items-center justify-between border-b border-white/10 p-4">
-                <div className="flex items-center gap-2">
-                  <SparklesIcon className="h-5 w-5 text-primary-400" />
-                  <h2 className="text-lg font-bold text-white">Select Badge</h2>
-                </div>
-                <button
-                  className="rounded-lg p-1 transition-colors hover:bg-white/10"
-                  onClick={() => setIsPickerOpen(false)}
-                >
-                  <XMarkIcon className="h-5 w-5 text-gray-400" />
-                </button>
-              </div>
-
-              {/* Badge grid */}
-              <div className="max-h-[400px] overflow-y-auto p-4">
-                {unequippedBadges.length === 0 ? (
-                  <div className="py-8 text-center">
-                    <p className="text-gray-400">No more badges available</p>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Unlock more achievements to equip them here
-                    </p>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-4 gap-3 sm:grid-cols-5">
-                    {unequippedBadges.map((badge) => (
-                      <motion.button
-                        key={badge.id}
-                        className={cn(
-                          'rounded-xl p-2',
-                          'bg-dark-700/50 hover:bg-dark-600/50',
-                          'border border-transparent hover:border-primary-500/30',
-                          'transition-colors'
-                        )}
-                        onClick={() => handleEquipBadge(badge)}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <AnimatedBadgeWithTooltip
-                          achievement={badge}
-                          size="sm"
-                          animated
-                          showProgress={false}
-                        />
-                        <p className="mt-1 truncate text-center text-[10px] text-gray-400">
-                          {badge.title}
-                        </p>
-                      </motion.button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Footer hint */}
-              <div className="border-t border-white/10 bg-dark-700/50 px-4 py-3">
-                <p className="text-center text-xs text-gray-500">
-                  Equipped badges are visible on your profile across all forums
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// ==================== COMPACT SHOWCASE (for cards/mentions) ====================
-
-export interface CompactBadgeShowcaseProps {
-  /** Array of equipped achievements */
-  badges: Achievement[];
-  /** Maximum badges to show */
-  maxVisible?: number;
-  /** Size */
-  size?: 'xs' | 'sm';
-  /** Additional className */
-  className?: string;
-}
-
-export function CompactBadgeShowcase({
-  badges,
-  maxVisible = 3,
-  size = 'xs',
-  className,
-}: CompactBadgeShowcaseProps) {
-  const visibleBadges = badges.slice(0, maxVisible);
-  const hiddenCount = badges.length - maxVisible;
-
-  if (badges.length === 0) return null;
-
-  return (
-    <div className={cn('flex items-center gap-1', className)}>
-      {visibleBadges.map((badge, index) => (
-        <motion.div
-          key={badge.id}
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.05 }}
-          style={{ marginLeft: index > 0 ? -8 : 0 }}
-        >
-          <AnimatedBadgeWithTooltip achievement={badge} size={size} animated showProgress={false} />
-        </motion.div>
-      ))}
-
-      {hiddenCount > 0 && (
-        <motion.span
-          className="ml-1 text-xs text-gray-400"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          +{hiddenCount}
-        </motion.span>
-      )}
+      <BadgePickerModal
+        isOpen={isPickerOpen && isEditable}
+        unequippedBadges={unequippedBadges}
+        onSelect={handleEquipBadge}
+        onClose={() => setIsPickerOpen(false)}
+      />
     </div>
   );
 }
