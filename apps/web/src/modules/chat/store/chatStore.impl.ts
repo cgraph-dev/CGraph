@@ -62,6 +62,18 @@ import {
 import { useE2EEStore } from '@/lib/crypto/e2eeStore';
 import { useAuthStore } from '@/stores/authStore';
 import { chatLogger as logger } from '@/lib/logger';
+import type { Message, Reaction, Conversation, ChatState } from './chatStore.types';
+
+// Re-export all types for backward compatibility
+export type {
+  Message,
+  MessageMetadata,
+  Reaction,
+  Conversation,
+  ConversationParticipant,
+  TypingUserInfo,
+  ChatState,
+} from './chatStore.types';
 
 /**
  * Finds the conversation ID that contains a given message.
@@ -112,209 +124,6 @@ function updateMessageReactions(
   }
 
   return updatedMessages;
-}
-
-export interface Message {
-  id: string;
-  conversationId: string;
-  senderId: string;
-  content: string;
-  encryptedContent: string | null;
-  isEncrypted: boolean;
-  messageType:
-    | 'text'
-    | 'image'
-    | 'video'
-    | 'file'
-    | 'audio'
-    | 'voice'
-    | 'sticker'
-    | 'gif'
-    | 'system';
-  replyToId: string | null;
-  replyTo: Message | null;
-  isPinned: boolean;
-  isEdited: boolean;
-  deletedAt: string | null;
-  metadata: MessageMetadata;
-  reactions: Reaction[];
-  sender: {
-    id: string;
-    username: string;
-    displayName: string | null;
-    avatarUrl: string | null;
-    avatarBorderId?: string | null;
-    // Sender theme for customization
-    theme?: string | null;
-  };
-  // Sender theme (may also be at root level)
-  senderTheme?: string | null;
-  createdAt: string;
-  updatedAt: string;
-  // E2EE metadata for decryption
-  ephemeralPublicKey?: string;
-  nonce?: string;
-  senderIdentityKey?: string;
-  // Message scheduling
-  scheduledAt?: string | null;
-  scheduleStatus?: 'immediate' | 'scheduled' | 'sent' | 'cancelled';
-}
-
-/**
- * Message metadata - extensible with typed common properties
- */
-export interface MessageMetadata {
-  // File/media metadata
-  url?: string;
-  filename?: string;
-  size?: number;
-  mimeType?: string;
-  thumbnailUrl?: string;
-  duration?: number;
-  waveform?: number[];
-  width?: number;
-  height?: number;
-  // Read receipts
-  readBy?: Array<{ userId: string; readAt: string }>;
-  // Sticker metadata
-  stickerId?: string;
-  stickerPackId?: string;
-  // GIF metadata
-  gifId?: string;
-  gifUrl?: string;
-  // Allow additional properties
-  [key: string]: unknown;
-}
-
-export interface Reaction {
-  id: string;
-  emoji: string;
-  userId: string;
-  user: {
-    id: string;
-    username: string;
-  };
-}
-
-export interface Conversation {
-  id: string;
-  type: 'direct' | 'group';
-  name: string | null;
-  avatarUrl: string | null;
-  participants: ConversationParticipant[];
-  lastMessage: Message | null;
-  unreadCount: number;
-  isGroup?: boolean; // Convenience property (derived from type === 'group')
-  isPinned?: boolean; // Whether the conversation is pinned
-  isMuted?: boolean; // Whether notifications are muted
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ConversationParticipant {
-  id: string;
-  userId: string;
-  user: {
-    id: string;
-    username: string;
-    displayName: string | null;
-    avatarUrl: string | null;
-    status: string;
-    lastSeenAt?: string | null;
-    avatarBorderId?: string | null;
-    // Gamification fields (optional - may not be present in all contexts)
-    level?: number;
-    xp?: number;
-    karma?: number;
-    streak?: number;
-    bio?: string | null;
-    badges?: string[];
-    theme?: string | null;
-    sharedForums?: Array<{ id: string; name: string }>;
-  };
-  nickname: string | null;
-  isMuted: boolean;
-  mutedUntil: string | null;
-  joinedAt: string;
-}
-
-// Typing user with timestamp for accurate display
-export interface TypingUserInfo {
-  userId: string;
-  startedAt?: string;
-}
-
-export interface ChatState {
-  conversations: Conversation[];
-  activeConversationId: string | null;
-  messages: Record<string, Message[]>;
-  // O(1) message ID lookup for deduplication - scales to millions of messages
-  messageIdSets: Record<string, Set<string>>;
-  isLoadingConversations: boolean;
-  isLoadingMessages: boolean;
-  typingUsers: Record<string, string[]>;
-  typingUsersInfo: Record<string, TypingUserInfo[]>;
-  hasMoreMessages: Record<string, boolean>;
-  // TTL cache to prevent repeated fetchConversations calls (scales to high traffic)
-  conversationsLastFetchedAt: number | null;
-  // Scheduled messages
-  scheduledMessages: Record<string, Message[]>;
-  isLoadingScheduledMessages: boolean;
-
-  // Actions
-  fetchConversations: () => Promise<void>;
-  fetchMessages: (conversationId: string, before?: string) => Promise<void>;
-  sendMessage: (
-    conversationId: string,
-    content: string,
-    replyToId?: string,
-    options?: { type?: string; metadata?: Record<string, unknown>; forceUnencrypted?: boolean }
-  ) => Promise<void>;
-  sendEncryptedMessage: (
-    conversationId: string,
-    recipientId: string,
-    content: string,
-    replyToId?: string
-  ) => Promise<void>;
-  decryptAndAddMessage: (message: Message) => Promise<void>;
-  editMessage: (messageId: string, content: string) => Promise<void>;
-  deleteMessage: (messageId: string) => Promise<void>;
-  addReaction: (messageId: string, emoji: string) => Promise<void>;
-  removeReaction: (messageId: string, emoji: string) => Promise<void>;
-  setActiveConversation: (conversationId: string | null) => void;
-  addMessage: (message: Message) => void;
-  updateMessage: (message: Message) => void;
-  removeMessage: (messageId: string, conversationId: string) => void;
-  setTypingUser: (
-    conversationId: string,
-    userId: string,
-    isTyping: boolean,
-    startedAt?: string
-  ) => void;
-  markAsRead: (conversationId: string) => Promise<void>;
-  createConversation: (userIds: string[]) => Promise<Conversation>;
-  getRecipientId: (conversationId: string, currentUserId: string) => string | null;
-  // Real-time conversation updates from socket
-  addConversation: (conversation: Conversation) => void;
-  updateConversation: (conversation: Partial<Conversation> & { id: string }) => void;
-  // Real-time reaction updates from socket
-  addReactionToMessage: (
-    messageId: string,
-    emoji: string,
-    userId: string,
-    username?: string
-  ) => void;
-  removeReactionFromMessage: (messageId: string, emoji: string, userId: string) => void;
-  // Message scheduling
-  fetchScheduledMessages: (conversationId: string) => Promise<void>;
-  scheduleMessage: (
-    conversationId: string,
-    content: string,
-    scheduledAt: Date,
-    options?: { type?: string; metadata?: Record<string, unknown>; replyToId?: string }
-  ) => Promise<void>;
-  cancelScheduledMessage: (messageId: string) => Promise<void>;
-  rescheduleMessage: (messageId: string, newScheduledAt: Date) => Promise<void>;
 }
 
 export const useChatStore = create<ChatState>()(
