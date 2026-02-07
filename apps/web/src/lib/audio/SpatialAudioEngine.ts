@@ -16,97 +16,42 @@
  */
 
 // =============================================================================
-// TYPES
+// RE-EXPORTS FOR BACKWARD COMPATIBILITY
 // =============================================================================
 
-export interface Position3D {
-  x: number;
-  y: number;
-  z: number;
-}
+export type {
+  Position3D,
+  Orientation3D,
+  AudioSource,
+  AudioZone,
+  ReverbConfig,
+  VoiceActivityState,
+  SpatialAudioConfig,
+  AudioAnalysisResult,
+} from './spatialAudio.types';
 
-export interface Orientation3D {
-  yaw: number; // Rotation around Y axis (left/right)
-  pitch: number; // Rotation around X axis (up/down)
-  roll: number; // Rotation around Z axis (tilt)
-}
-
-export interface AudioSource {
-  id: string;
-  userId?: string;
-  position: Position3D;
-  orientation?: Orientation3D;
-  stream?: MediaStream;
-  gainNode?: GainNode;
-  pannerNode?: PannerNode;
-  volume: number;
-  muted: boolean;
-  spatialEnabled: boolean;
-}
-
-export interface AudioZone {
-  id: string;
-  name: string;
-  position: Position3D;
-  radius: number;
-  shape: 'sphere' | 'cube' | 'cylinder';
-  reverb: ReverbConfig;
-  occlusion: number; // 0-1, how much sound is blocked
-  gainModifier: number; // Volume multiplier in zone
-}
-
-export interface ReverbConfig {
-  enabled: boolean;
-  type: 'room' | 'hall' | 'cathedral' | 'cave' | 'outdoor';
-  decay: number; // 0.1-20 seconds
-  wetDry: number; // 0-1, mix of reverb vs dry
-  preDelay: number; // ms before reverb starts
-}
-
-export interface VoiceActivityState {
-  isSpeaking: boolean;
-  confidence: number;
-  volume: number;
-  frequency: number;
-}
-
-export interface SpatialAudioConfig {
-  enabled: boolean;
-  hrtfEnabled: boolean;
-  maxDistance: number;
-  rolloffFactor: number;
-  distanceModel: 'linear' | 'inverse' | 'exponential';
-  coneInnerAngle: number;
-  coneOuterAngle: number;
-  coneOuterGain: number;
-  enableVAD: boolean;
-  enableNoiseCancellation: boolean;
-  enableAutoGainControl: boolean;
-  enableEchoCancellation: boolean;
-}
-
-export interface AudioAnalysisResult {
-  rms: number;
-  peak: number;
-  frequency: Float32Array;
-  waveform: Float32Array;
-  voiceActivity: VoiceActivityState;
-}
+export { REVERB_CONFIGS, DEFAULT_SPATIAL_CONFIG } from './spatialAudio.constants';
+export { VADProcessor } from './voiceActivityDetection';
+export { AudioZoneManager } from './audioZoneManager';
+export { SpatialAudioRoom } from './SpatialRoomAudio';
 
 // =============================================================================
-// REVERB IMPULSE RESPONSES
+// IMPORTS
 // =============================================================================
 
-// Simplified impulse response generation for different environments
-const REVERB_CONFIGS: Record<string, { decay: number; density: number; diffusion: number }> = {
-  room: { decay: 0.5, density: 0.7, diffusion: 0.8 },
-  hall: { decay: 2.0, density: 0.8, diffusion: 0.9 },
-  cathedral: { decay: 5.0, density: 0.9, diffusion: 0.95 },
-  cave: { decay: 3.0, density: 0.6, diffusion: 0.5 },
-  outdoor: { decay: 0.2, density: 0.3, diffusion: 0.4 },
-};
+import type {
+  Position3D,
+  Orientation3D,
+  AudioSource,
+  AudioZone,
+  VoiceActivityState,
+  SpatialAudioConfig,
+  AudioAnalysisResult,
+} from './spatialAudio.types';
+import { DEFAULT_SPATIAL_CONFIG } from './spatialAudio.constants';
+import { VADProcessor } from './voiceActivityDetection';
+import { AudioZoneManager } from './audioZoneManager';
 
-// Import logger for production-safe debugging
 import { createLogger } from '@/lib/logger';
 const logger = createLogger('SpatialAudio');
 
@@ -119,12 +64,12 @@ export class SpatialAudioEngine {
   private listenerPosition: Position3D = { x: 0, y: 0, z: 0 };
   private listenerOrientation: Orientation3D = { yaw: 0, pitch: 0, roll: 0 };
   private sources: Map<string, AudioSource> = new Map();
-  private zones: Map<string, AudioZone> = new Map();
-  private convolverNodes: Map<string, ConvolverNode> = new Map();
   private analyserNodes: Map<string, AnalyserNode> = new Map();
   private config: SpatialAudioConfig;
-  private vadState: Map<string, VoiceActivityState> = new Map();
-  private animationFrameId: number | null = null;
+
+  // Delegates
+  private vadProcessor: VADProcessor;
+  private zoneManager: AudioZoneManager;
 
   // Master nodes
   private masterGain: GainNode | null = null;
@@ -132,21 +77,9 @@ export class SpatialAudioEngine {
   private masterAnalyser: AnalyserNode | null = null;
 
   constructor(config: Partial<SpatialAudioConfig> = {}) {
-    this.config = {
-      enabled: true,
-      hrtfEnabled: true,
-      maxDistance: 100,
-      rolloffFactor: 1,
-      distanceModel: 'inverse',
-      coneInnerAngle: 360,
-      coneOuterAngle: 360,
-      coneOuterGain: 0,
-      enableVAD: true,
-      enableNoiseCancellation: true,
-      enableAutoGainControl: true,
-      enableEchoCancellation: true,
-      ...config,
-    };
+    this.config = { ...DEFAULT_SPATIAL_CONFIG, ...config };
+    this.vadProcessor = new VADProcessor(this.config.enableVAD);
+    this.zoneManager = new AudioZoneManager();
   }
 
   // ===========================================================================
@@ -160,6 +93,10 @@ export class SpatialAudioEngine {
       latencyHint: 'interactive',
       sampleRate: 48000,
     });
+
+    // Wire up delegates
+    this.vadProcessor.setAudioContext(this.audioContext);
+    this.zoneManager.setAudioContext(this.audioContext);
 
     // Create master chain
     this.masterGain = this.audioContext.createGain();
@@ -188,8 +125,8 @@ export class SpatialAudioEngine {
       await this.initializeHRTF();
     }
 
-    // Start analysis loop
-    this.startAnalysisLoop();
+    // Start analysis loop (delegated to VADProcessor)
+    this.vadProcessor.startVAD();
 
     logger.debug(' Engine initialized');
   }
@@ -291,6 +228,7 @@ export class SpatialAudioEngine {
     analyser.fftSize = 512;
     analyser.smoothingTimeConstant = 0.7;
     this.analyserNodes.set(id, analyser);
+    this.vadProcessor.registerAnalyser(id, analyser);
 
     // Connect nodes
     sourceNode.connect(gainNode).connect(pannerNode).connect(analyser).connect(this.masterGain!);
@@ -321,8 +259,8 @@ export class SpatialAudioEngine {
       source.pannerNode?.disconnect();
       this.analyserNodes.get(id)?.disconnect();
       this.analyserNodes.delete(id);
+      this.vadProcessor.unregisterAnalyser(id);
       this.sources.delete(id);
-      this.vadState.delete(id);
       logger.debug(`Removed source: ${id}`);
     }
   }
@@ -341,8 +279,8 @@ export class SpatialAudioEngine {
         source.pannerNode.setPosition(position.x, position.y, position.z);
       }
 
-      // Apply zone effects based on new position
-      this.applyZoneEffects(source);
+      // Apply zone effects based on new position (delegated)
+      this.zoneManager.applyZoneEffects(source);
     }
   }
 
@@ -382,183 +320,27 @@ export class SpatialAudioEngine {
   }
 
   // ===========================================================================
-  // AUDIO ZONES
+  // AUDIO ZONES (delegated to AudioZoneManager)
   // ===========================================================================
 
   addZone(zone: AudioZone): void {
-    this.zones.set(zone.id, zone);
-
-    // Create reverb convolver for this zone if reverb is enabled
-    if (zone.reverb.enabled && this.audioContext) {
-      const convolver = this.createReverbConvolver(zone.reverb);
-      this.convolverNodes.set(zone.id, convolver);
-    }
-
-    logger.debug(`Added zone: ${zone.name}`);
+    this.zoneManager.addAudioZone(zone);
   }
 
   removeZone(id: string): void {
-    this.convolverNodes.get(id)?.disconnect();
-    this.convolverNodes.delete(id);
-    this.zones.delete(id);
-  }
-
-  private createReverbConvolver(config: ReverbConfig): ConvolverNode {
-    const ctx = this.audioContext!;
-    const convolver = ctx.createConvolver();
-
-    // Generate impulse response
-    const reverbParams = REVERB_CONFIGS[config.type] || REVERB_CONFIGS.room;
-    if (!reverbParams) {
-      return convolver;
-    }
-
-    const duration = config.decay;
-    const sampleRate = ctx.sampleRate;
-    const length = sampleRate * duration;
-
-    const impulse = ctx.createBuffer(2, length, sampleRate);
-
-    for (let channel = 0; channel < 2; channel++) {
-      const channelData = impulse.getChannelData(channel);
-      for (let i = 0; i < length; i++) {
-        // Exponential decay with noise
-        const decay = Math.pow(1 - i / length, reverbParams.decay);
-        const noise = (Math.random() * 2 - 1) * reverbParams.density;
-        channelData[i] = noise * decay * reverbParams.diffusion;
-      }
-    }
-
-    convolver.buffer = impulse;
-    return convolver;
-  }
-
-  private applyZoneEffects(source: AudioSource): void {
-    // Find which zones the source is in
-    for (const [, zone] of this.zones) {
-      const distance = this.calculateDistance(source.position, zone.position);
-
-      if (distance <= zone.radius) {
-        // Source is in this zone, apply effects
-        if (source.gainNode && this.audioContext) {
-          const adjustedVolume = source.volume * zone.gainModifier * (1 - zone.occlusion);
-          source.gainNode.gain.setValueAtTime(adjustedVolume, this.audioContext.currentTime);
-        }
-
-        // Apply reverb if enabled
-        const convolver = this.convolverNodes.get(zone.id);
-        if (convolver && source.pannerNode) {
-          // Route through convolver based on wet/dry mix
-          // (simplified - full implementation would use a mixer)
-        }
-      }
-    }
-  }
-
-  private calculateDistance(a: Position3D, b: Position3D): number {
-    const dx = a.x - b.x;
-    const dy = a.y - b.y;
-    const dz = a.z - b.z;
-    return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    this.zoneManager.removeAudioZone(id);
   }
 
   // ===========================================================================
-  // VOICE ACTIVITY DETECTION
+  // VOICE ACTIVITY DETECTION (delegated to VADProcessor)
   // ===========================================================================
-
-  private startAnalysisLoop(): void {
-    if (this.animationFrameId) return;
-
-    const analyze = () => {
-      this.analyzeAllSources();
-      this.animationFrameId = requestAnimationFrame(analyze);
-    };
-
-    analyze();
-  }
-
-  private stopAnalysisLoop(): void {
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-      this.animationFrameId = null;
-    }
-  }
-
-  private analyzeAllSources(): void {
-    for (const [id] of this.sources) {
-      const analysis = this.analyzeSource(id);
-      if (analysis && this.config.enableVAD) {
-        this.vadState.set(id, analysis.voiceActivity);
-      }
-    }
-  }
 
   analyzeSource(id: string): AudioAnalysisResult | null {
-    const analyser = this.analyserNodes.get(id);
-    if (!analyser) return null;
-
-    const frequencyData = new Float32Array(analyser.frequencyBinCount);
-    const waveformData = new Float32Array(analyser.fftSize);
-
-    analyser.getFloatFrequencyData(frequencyData);
-    analyser.getFloatTimeDomainData(waveformData);
-
-    // Calculate RMS
-    let rmsSum = 0;
-    let peak = 0;
-    for (let i = 0; i < waveformData.length; i++) {
-      const sample = waveformData[i];
-      if (sample !== undefined) {
-        rmsSum += sample * sample;
-        peak = Math.max(peak, Math.abs(sample));
-      }
-    }
-    const rms = Math.sqrt(rmsSum / waveformData.length);
-
-    // Calculate dominant frequency
-    let maxMagnitude = -Infinity;
-    let dominantBin = 0;
-    for (let i = 0; i < frequencyData.length; i++) {
-      const freq = frequencyData[i];
-      if (freq !== undefined && freq > maxMagnitude) {
-        maxMagnitude = freq;
-        dominantBin = i;
-      }
-    }
-    const sampleRate = this.audioContext?.sampleRate || 48000;
-    const dominantFrequency = (dominantBin * sampleRate) / (analyser.fftSize * 2);
-
-    // Voice activity detection
-    const voiceActivity = this.detectVoiceActivity(rms, dominantFrequency);
-
-    return {
-      rms,
-      peak,
-      frequency: frequencyData,
-      waveform: waveformData,
-      voiceActivity,
-    };
-  }
-
-  private detectVoiceActivity(rms: number, frequency: number): VoiceActivityState {
-    // Simple VAD based on energy and frequency
-    // Human voice range: ~85-300 Hz (fundamental)
-    const isVoiceFrequency = frequency >= 85 && frequency <= 400;
-    const hasEnergy = rms > 0.01;
-
-    const isSpeaking = hasEnergy && isVoiceFrequency;
-    const confidence = isSpeaking ? Math.min(1, rms * 10) : 0;
-
-    return {
-      isSpeaking,
-      confidence,
-      volume: rms,
-      frequency,
-    };
+    return this.vadProcessor.analyzeSource(id);
   }
 
   getVoiceActivityState(id: string): VoiceActivityState | null {
-    return this.vadState.get(id) || null;
+    return this.vadProcessor.getVoiceActivityState(id);
   }
 
   // ===========================================================================
@@ -633,16 +415,12 @@ export class SpatialAudioEngine {
   // ===========================================================================
 
   destroy(): void {
-    this.stopAnalysisLoop();
+    this.vadProcessor.destroy();
+    this.zoneManager.destroy();
 
     // Disconnect all sources
     for (const [id] of this.sources) {
       this.removeAudioSource(id);
-    }
-
-    // Disconnect all zones
-    for (const [id] of this.zones) {
-      this.removeZone(id);
     }
 
     // Close audio context
@@ -661,7 +439,7 @@ export class SpatialAudioEngine {
   }
 
   getZones(): Map<string, AudioZone> {
-    return new Map(this.zones);
+    return this.zoneManager.getZones();
   }
 
   getConfig(): SpatialAudioConfig {
@@ -670,6 +448,7 @@ export class SpatialAudioEngine {
 
   updateConfig(config: Partial<SpatialAudioConfig>): void {
     this.config = { ...this.config, ...config };
+    this.vadProcessor.setVADEnabled(this.config.enableVAD);
 
     // Update existing panner nodes with new config
     for (const [, source] of this.sources) {
@@ -681,79 +460,7 @@ export class SpatialAudioEngine {
 }
 
 // =============================================================================
-// SPATIAL AUDIO ROOM
-// =============================================================================
-
-/**
- * Spatial audio room for VR/AR chat environments
- */
-export class SpatialAudioRoom {
-  private engine: SpatialAudioEngine;
-  private roomId: string;
-  private users: Map<string, { sourceId: string; position: Position3D }> = new Map();
-
-  constructor(roomId: string, config?: Partial<SpatialAudioConfig>) {
-    this.roomId = roomId;
-    this.engine = new SpatialAudioEngine(config);
-  }
-
-  async initialize(): Promise<void> {
-    await this.engine.initialize();
-  }
-
-  async addUser(userId: string, stream: MediaStream, position: Position3D): Promise<void> {
-    const sourceId = `${this.roomId}-${userId}`;
-    await this.engine.addAudioSource(sourceId, stream, position, { userId });
-    this.users.set(userId, { sourceId, position });
-  }
-
-  removeUser(userId: string): void {
-    const user = this.users.get(userId);
-    if (user) {
-      this.engine.removeAudioSource(user.sourceId);
-      this.users.delete(userId);
-    }
-  }
-
-  updateUserPosition(userId: string, position: Position3D): void {
-    const user = this.users.get(userId);
-    if (user) {
-      user.position = position;
-      this.engine.updateSourcePosition(user.sourceId, position);
-    }
-  }
-
-  setListenerUser(userId: string): void {
-    const user = this.users.get(userId);
-    if (user) {
-      this.engine.setListenerPosition(user.position);
-    }
-  }
-
-  setListenerPosition(position: Position3D, orientation?: Orientation3D): void {
-    this.engine.setListenerPosition(position);
-    if (orientation) {
-      this.engine.setListenerOrientation(orientation);
-    }
-  }
-
-  addZone(zone: AudioZone): void {
-    this.engine.addZone(zone);
-  }
-
-  getUserVoiceActivity(userId: string): VoiceActivityState | null {
-    const user = this.users.get(userId);
-    return user ? this.engine.getVoiceActivityState(user.sourceId) : null;
-  }
-
-  destroy(): void {
-    this.engine.destroy();
-    this.users.clear();
-  }
-}
-
-// =============================================================================
-// EXPORTS
+// SINGLETON EXPORT
 // =============================================================================
 
 export const spatialAudioEngine = new SpatialAudioEngine();

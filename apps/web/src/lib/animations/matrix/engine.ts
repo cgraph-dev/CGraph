@@ -2,17 +2,14 @@
  * Matrix Cipher Background Animation - Core Engine (Hyper-Optimized)
  *
  * @description Ultra high-performance canvas-based animation engine for the Matrix rain effect.
- * Implements advanced rendering optimizations including:
- * - Single-pass batch rendering with pre-computed glow textures
- * - Object pooling to eliminate GC pressure
- * - Pre-rendered character atlas for instant drawing
- * - Delta-time interpolation for smooth animation
- * - Continuous encrypt/decrypt morphing animation per character
- * - GPU-accelerated compositing where available
+ * Orchestrator that delegates to specialized modules:
+ * - MatrixRenderer: All canvas drawing operations
+ * - ColumnManager: Column lifecycle (create, update, recycle)
+ * - AnimationController: Animation loop, delta time, fixed-timestep accumulator
  *
  * Utilities → ./internals.ts | Types → ./types.ts | Engine class → this file
  *
- * @version 2.1.0
+ * @version 3.0.0
  * @since v0.6.3
  * @author CGraph Development Team
  */
@@ -28,19 +25,12 @@ import type {
   ThemePreset,
 } from './types';
 import { getResponsiveConfig, createConfig } from './config';
-import { getCharacterSet, getRandomChar } from './characters';
-import { parseColor, toRGBA, getTheme } from './themes';
-import {
-  MIN_FRAME_TIME,
-  PERFORMANCE_SAMPLE_SIZE,
-  CHARACTER_MORPH_PHASES,
-  MORPH_CHARS_PER_FRAME,
-  createCharacterAtlas,
-  ObjectPool,
-  type CharacterAtlas,
-  type CachedGlyph,
-  type MorphState,
-} from './internals';
+import { getCharacterSet } from './characters';
+import { getTheme } from './themes';
+import { createCharacterAtlas, ObjectPool, type CharacterAtlas } from './internals';
+import { MatrixRenderer } from './renderer';
+import { ColumnManager } from './columnManager';
+import { AnimationController } from './animationController';
 
 // =============================================================================
 // MATRIX ENGINE CLASS
@@ -67,14 +57,10 @@ export class MatrixEngine {
   private config: MatrixConfig;
   private state: MatrixEngineState;
 
-  // Animation control
-  private animationFrameId: number | null = null;
-  private lastFrameTime: number = 0;
-  private frameTimes: number[] = [];
-  private frameInterval: number = 1000 / 60;
-  private deltaTime: number = 0;
-  private accumulator: number = 0;
-  private fixedTimeStep: number = 1000 / 60;
+  // Delegate modules
+  private renderer: MatrixRenderer;
+  private columnManager: ColumnManager;
+  private animationController: AnimationController;
 
   // Character set cache
   private characters: string[] = [];
@@ -87,19 +73,8 @@ export class MatrixEngine {
   private depthLayers: DepthLayer[] = [];
   private columnsByLayer: Map<number, MatrixColumn[]> = new Map();
 
-  // Cipher morph state per column
-  private morphStates: Map<string, MorphState[]> = new Map();
-
   // Object pools
   private characterPool: ObjectPool<MatrixCharacter>;
-
-  // Batch rendering buffer
-  private renderQueue: Array<{
-    glyph: CachedGlyph;
-    x: number;
-    y: number;
-    alpha: number;
-  }> = [];
 
   // Event callbacks
   private onStart?: () => void;
@@ -122,6 +97,11 @@ export class MatrixEngine {
     this.state = this.createInitialState();
     this.characters = this.generateCharacterSet();
     this.initDepthLayers();
+
+    // Initialize delegate modules
+    this.renderer = new MatrixRenderer();
+    this.columnManager = new ColumnManager();
+    this.animationController = new AnimationController();
 
     // Initialize object pool for characters
     this.characterPool = new ObjectPool<MatrixCharacter>(
@@ -274,14 +254,12 @@ export class MatrixEngine {
 
     this.initializeColumns();
 
-    this.lastFrameTime = performance.now();
-    this.frameInterval = 1000 / this.config.performance.targetFPS;
-    this.fixedTimeStep = 1000 / 60; // Physics at 60Hz
-    this.accumulator = 0;
-
     this.state.state = 'running';
     this.state.isPaused = false;
-    this.animationLoop();
+    this.animationController.start(
+      this.config.performance.targetFPS,
+      this.createAnimationCallbacks()
+    );
 
     this.onStart?.();
   }
@@ -306,10 +284,7 @@ export class MatrixEngine {
    * Stop the animation completely
    */
   public stop(): void {
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-      this.animationFrameId = null;
-    }
+    this.animationController.stop();
 
     this.state.state = 'stopped';
     this.state.columns = [];
@@ -333,10 +308,7 @@ export class MatrixEngine {
     this.state.isPaused = true;
     this.state.state = 'paused';
 
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-      this.animationFrameId = null;
-    }
+    this.animationController.stop();
 
     this.onPause?.();
   }
@@ -349,8 +321,7 @@ export class MatrixEngine {
 
     this.state.isPaused = false;
     this.state.state = 'running';
-    this.lastFrameTime = performance.now();
-    this.animationLoop();
+    this.animationController.resume(this.createAnimationCallbacks());
 
     this.onResume?.();
   }
@@ -374,7 +345,7 @@ export class MatrixEngine {
   public updateConfig(updates: DeepPartial<MatrixConfig>): void {
     this.config = createConfig({ ...this.config, ...updates } as Partial<MatrixConfig>);
     this.characters = this.generateCharacterSet();
-    this.frameInterval = 1000 / this.config.performance.targetFPS;
+    this.animationController.setFrameInterval(this.config.performance.targetFPS);
 
     if (updates.effects?.depthLayers !== undefined) {
       this.initDepthLayers();
@@ -438,8 +409,7 @@ export class MatrixEngine {
 
     // Clean up object pools
     this.characterPool.clear();
-    this.morphStates.clear();
-    this.renderQueue.length = 0;
+    this.animationController.resetMetrics();
 
     // Clear atlas
     this.atlas = null;
@@ -516,10 +486,10 @@ export class MatrixEngine {
       if (this.config.performance.throttleOnBlur) {
         if (document.hidden && this.state.state === 'running') {
           // Reduce FPS when hidden
-          this.frameInterval = 1000 / this.config.performance.throttledFPS;
+          this.animationController.setFrameInterval(this.config.performance.throttledFPS);
         } else if (!document.hidden && this.state.state === 'running') {
           // Restore FPS when visible
-          this.frameInterval = 1000 / this.config.performance.targetFPS;
+          this.animationController.setFrameInterval(this.config.performance.targetFPS);
         }
       }
     };
@@ -599,305 +569,43 @@ export class MatrixEngine {
       return;
     }
 
-    const { columns: colConfig, effects, performance: perfConfig } = this.config;
-
-    // Calculate total columns based on density
-    const maxPossibleColumns = Math.floor(width / colConfig.spacing);
-    const targetColumns = Math.min(
-      Math.floor(maxPossibleColumns * colConfig.density),
-      perfConfig.maxColumns
+    this.columnManager.initializeColumns(
+      this.config,
+      this.state,
+      this.depthLayers,
+      this.columnsByLayer,
+      this.characters
     );
-
-    // Distribute columns across depth layers
-    const columnsPerLayer = Math.ceil(targetColumns / effects.depthLayers);
-
-    this.columnsByLayer.forEach((columns, layerIndex) => {
-      columns.length = 0;
-      const layer = this.depthLayers[layerIndex];
-
-      if (!layer) return; // Skip if layer doesn't exist
-
-      for (let i = 0; i < columnsPerLayer; i++) {
-        const column = this.createColumn(layerIndex, i, columnsPerLayer);
-        columns.push(column);
-      }
-
-      layer.columnCount = columns.length;
-    });
-
-    // Update state
-    this.state.columns = Array.from(this.columnsByLayer.values()).flat();
-    this.state.metrics.activeColumns = this.state.columns.length;
   }
 
+  // =========================================================================
+  // ANIMATION LOOP (delegated to AnimationController)
+  // =========================================================================
+
   /**
-   * Create a single column
+   * Create animation callbacks for the controller
    */
-  private createColumn(
-    layerIndex: number,
-    columnIndex: number,
-    totalInLayer: number
-  ): MatrixColumn {
-    const { width, height } = this.state.dimensions;
-    const { columns: colConfig, font } = this.config;
-    const layer = this.depthLayers[layerIndex];
-
-    // Default multipliers if layer is undefined
-    const speedMultiplier = layer?.speedMultiplier ?? 1;
-    const sizeMultiplier = layer?.sizeMultiplier ?? 1;
-
-    // Calculate X position with some randomness
-    const baseX = (columnIndex / totalInLayer) * width;
-    const xVariation = (Math.random() - 0.5) * colConfig.spacing;
-    const x = baseX + xVariation;
-
-    // Calculate speed with layer adjustment
-    const baseSpeed =
-      colConfig.minSpeed + Math.random() * (colConfig.maxSpeed - colConfig.minSpeed);
-    const speed = baseSpeed * speedMultiplier;
-
-    // Calculate column length
-    const length = Math.floor(
-      colConfig.minLength + Math.random() * (colConfig.maxLength - colConfig.minLength)
-    );
-
-    // Initial Y position (can be offscreen for stagger effect)
-    const y = colConfig.randomizeStart
-      ? Math.random() * height * 2 - height
-      : -length * font.baseSize;
-
-    // Font size variation
-    const fontSize = font.sizeVariation
-      ? font.minSize + Math.random() * (font.maxSize - font.minSize)
-      : font.baseSize;
-
+  private createAnimationCallbacks() {
     return {
-      index: columnIndex,
-      x: Math.round(x),
-      y,
-      speed,
-      length,
-      characters: this.createCharacters(length),
-      active: true,
-      depth: layerIndex,
-      opacityMod: 0.7 + Math.random() * 0.3,
-      frameCount: 0,
-      respawnDelay: 0,
-      fontSize: fontSize * sizeMultiplier,
+      update: (dt: number) => this.update(dt),
+      render: (interpolation: number) => this.render(interpolation),
+      onError: this._errorHandler,
+      ensureColumns: () => {
+        if (this.state.state !== 'running' || this.state.isPaused) {
+          this.animationController.stop();
+          return false;
+        }
+        if (this.state.columns.length === 0) {
+          this.initializeColumns();
+          return this.state.columns.length > 0;
+        }
+        return true;
+      },
     };
   }
 
   /**
-   * Create characters for a column with morph state
-   */
-  private createCharacters(length: number): MatrixCharacter[] {
-    const { characters: charConfig } = this.config;
-
-    return Array.from({ length }, (_, i) => ({
-      value: getRandomChar(this.characters),
-      opacity: 1 - i / length,
-      isHead: i === 0,
-      brightness: i === 0 ? 1.2 : 1 - (i / length) * 0.5,
-      age: 0,
-      changeTimer: Math.floor(
-        charConfig.minChangeInterval +
-          Math.random() * (charConfig.maxChangeInterval - charConfig.minChangeInterval)
-      ),
-      scale: 0.9 + Math.random() * 0.2,
-      morphPhase: 0,
-      morphTarget: '',
-      isEncrypting: Math.random() > 0.5,
-    }));
-  }
-
-  /**
-   * Update a single column with delta-time scaling
-   */
-  private updateColumn(column: MatrixColumn, speedScale: number = 1): void {
-    const { height } = this.state.dimensions;
-    const { columns: colConfig, characters: charConfig } = this.config;
-
-    if (!column.active) {
-      // Handle respawn delay
-      column.respawnDelay -= speedScale;
-      if (column.respawnDelay <= 0) {
-        this.respawnColumn(column);
-      }
-      return;
-    }
-
-    // Move column down with speed scaling
-    column.y += column.speed * this.config.effects.speedMultiplier * speedScale;
-    column.frameCount++;
-
-    // Update characters with cipher morphing
-    const morphCount = Math.ceil(MORPH_CHARS_PER_FRAME * speedScale);
-    let morphed = 0;
-
-    column.characters.forEach((char, i) => {
-      char.age += speedScale;
-
-      // Continuous cipher morph animation
-      if (char.morphPhase > 0) {
-        char.morphPhase -= speedScale * 0.5;
-        if (char.morphPhase <= 0) {
-          char.morphPhase = 0;
-          char.value = char.morphTarget || char.value;
-          char.isEncrypting = !char.isEncrypting;
-          // Queue next morph cycle
-          char.changeTimer = Math.floor(
-            charConfig.minChangeInterval +
-              Math.random() * (charConfig.maxChangeInterval - charConfig.minChangeInterval)
-          );
-        } else {
-          // Show scrambled character during morph
-          char.value = getRandomChar(this.characters);
-        }
-      } else if (char.changeTimer > 0) {
-        char.changeTimer -= speedScale;
-      } else if (morphed < morphCount && Math.random() < charConfig.changeFrequency * 2) {
-        // Start morph cycle
-        char.morphTarget = getRandomChar(this.characters);
-        char.morphPhase = CHARACTER_MORPH_PHASES;
-        morphed++;
-      }
-
-      // Update opacity based on position in column
-      const normalizedPosition = i / column.length;
-      char.opacity = Math.max(0.1, 1 - normalizedPosition * 0.9);
-    });
-
-    // Check if column is off screen
-    const columnHeight = column.length * column.fontSize;
-    if (column.y - columnHeight > height) {
-      column.active = false;
-      column.respawnDelay = Math.floor(
-        colConfig.minRespawnDelay +
-          Math.random() * (colConfig.maxRespawnDelay - colConfig.minRespawnDelay)
-      );
-    }
-  }
-
-  /**
-   * Respawn a column at the top
-   */
-  private respawnColumn(column: MatrixColumn): void {
-    const { width } = this.state.dimensions;
-    const { columns: colConfig } = this.config;
-    const layer = this.depthLayers[column.depth];
-
-    // Default speed multiplier if layer is undefined
-    const speedMultiplier = layer?.speedMultiplier ?? 1;
-
-    // New random X position
-    const xVariation = (Math.random() - 0.5) * colConfig.spacing * 3;
-    column.x = Math.max(0, Math.min(width, column.x + xVariation));
-
-    // Reset position above screen
-    column.y = -column.length * column.fontSize * (1 + Math.random());
-
-    // New speed
-    const baseSpeed =
-      colConfig.minSpeed + Math.random() * (colConfig.maxSpeed - colConfig.minSpeed);
-    column.speed = baseSpeed * speedMultiplier;
-
-    // New length
-    column.length = Math.floor(
-      colConfig.minLength + Math.random() * (colConfig.maxLength - colConfig.minLength)
-    );
-
-    // Regenerate characters
-    column.characters = this.createCharacters(column.length);
-    column.active = true;
-    column.frameCount = 0;
-    column.opacityMod = 0.7 + Math.random() * 0.3;
-  }
-
-  // =========================================================================
-  // ANIMATION LOOP
-  // =========================================================================
-
-  /**
-   * Main animation loop - Optimized with delta-time interpolation
-   */
-  private animationLoop = (): void => {
-    if (this.state.state !== 'running' || this.state.isPaused) {
-      return;
-    }
-
-    // Check if we need to initialize columns (happens if dimensions were 0 at start)
-    if (this.state.columns.length === 0) {
-      this.initializeColumns();
-      if (this.state.columns.length === 0) {
-        // Still no columns, schedule retry
-        this.animationFrameId = requestAnimationFrame(this.animationLoop);
-        return;
-      }
-    }
-
-    const now = performance.now();
-    this.deltaTime = now - this.lastFrameTime;
-
-    // Prevent spiral of death with max delta
-    const cappedDelta = Math.min(this.deltaTime, 100);
-
-    // Frame rate limiting with interpolation
-    if (this.deltaTime < this.frameInterval - MIN_FRAME_TIME) {
-      this.animationFrameId = requestAnimationFrame(this.animationLoop);
-      return;
-    }
-
-    // Track frame time for FPS calculation
-    this.frameTimes.push(this.deltaTime);
-    if (this.frameTimes.length > PERFORMANCE_SAMPLE_SIZE) {
-      this.frameTimes.shift();
-    }
-
-    // Update state metrics
-    this.state.metrics.frameTime = this.deltaTime;
-    this.state.metrics.lastFrameTimestamp = now;
-    this.state.metrics.frameCount++;
-    this.state.metrics.fps = this.calculateFPS();
-
-    // Fixed timestep physics with interpolation
-    this.accumulator += cappedDelta;
-    const interpolationAlpha = this.accumulator / this.fixedTimeStep;
-
-    // Update with error handling
-    try {
-      // Physics updates at fixed rate
-      while (this.accumulator >= this.fixedTimeStep) {
-        this.update(this.fixedTimeStep / 1000); // Convert to seconds
-        this.accumulator -= this.fixedTimeStep;
-      }
-
-      // Render with interpolation
-      this.render(Math.min(1, interpolationAlpha));
-    } catch (error) {
-      if (this._errorHandler && error instanceof Error) {
-        this._errorHandler(error);
-      }
-      // Stop animation on critical error to prevent infinite error loop
-      this.stop();
-      return;
-    }
-
-    this.lastFrameTime = now;
-    this.animationFrameId = requestAnimationFrame(this.animationLoop);
-  };
-
-  /**
-   * Calculate current FPS
-   */
-  private calculateFPS(): number {
-    if (this.frameTimes.length === 0) return 0;
-
-    const avgFrameTime = this.frameTimes.reduce((a, b) => a + b, 0) / this.frameTimes.length;
-    return Math.round(1000 / avgFrameTime);
-  }
-
-  /**
-   * Update all columns with delta time
+   * Update all columns with delta time (called by AnimationController)
    */
   private update(dt: number = 1 / 60): void {
     let totalChars = 0;
@@ -907,7 +615,14 @@ export class MatrixEngine {
 
     this.columnsByLayer.forEach((columns) => {
       columns.forEach((column) => {
-        this.updateColumn(column, speedScale);
+        this.columnManager.updateColumn(
+          column,
+          this.config,
+          this.state,
+          this.depthLayers,
+          this.characters,
+          speedScale
+        );
         if (column.active) {
           activeCount++;
           totalChars += column.characters.length;
@@ -917,222 +632,34 @@ export class MatrixEngine {
 
     this.state.metrics.activeColumns = activeCount;
     this.state.metrics.totalCharacters = totalChars;
+
+    // Sync metrics from animation controller
+    this.state.metrics.fps = this.animationController.fps;
+    this.state.metrics.frameTime = this.animationController.frameTime;
+    this.state.metrics.frameCount = this.animationController.frameCount;
+    this.state.metrics.lastFrameTimestamp = this.animationController.lastFrameTimestamp;
   }
 
   // =========================================================================
-  // RENDERING - Hyper-optimized single-pass batch rendering
+  // RENDERING (delegated to MatrixRenderer)
   // =========================================================================
 
   /**
-   * Main render function - Uses pre-rendered glyphs for maximum performance
+   * Main render function - delegates to MatrixRenderer
    */
   private render(interpolation: number = 1): void {
     if (!this.ctx || !this.canvas || !this.atlas) return;
 
-    const { width, height } = this.state.dimensions;
-    const { theme, effects } = this.config;
-
-    // Clear render queue
-    this.renderQueue.length = 0;
-
-    // Apply background fade (creates trail effect) - single draw call
-    this.ctx.fillStyle = toRGBA(
-      ...(Object.values(parseColor(theme.backgroundColor)) as [number, number, number]),
-      effects.backgroundFade
+    this.renderer.render(
+      this.ctx,
+      this.config,
+      this.state,
+      this.atlas,
+      this.depthLayers,
+      this.columnsByLayer,
+      this.animationController.currentDeltaTime,
+      interpolation
     );
-    this.ctx.fillRect(0, 0, width, height);
-
-    // Build render queue from all layers (back to front)
-    for (let i = this.depthLayers.length - 1; i >= 0; i--) {
-      const columns = this.columnsByLayer.get(i) || [];
-      const layer = this.depthLayers[i];
-
-      if (layer) {
-        this.buildLayerRenderQueue(columns, layer, interpolation);
-      }
-    }
-
-    // Execute batched render
-    this.executeBatchRender();
-
-    // Post-processing effects (minimal overhead)
-    if (effects.enableVignette) {
-      this.renderVignette();
-    }
-
-    if (effects.enableScanlines) {
-      this.renderScanlines();
-    }
-
-    // Debug overlay
-    if (this.config.debug.showFPS) {
-      this.renderDebugInfo();
-    }
-  }
-
-  /**
-   * Build render queue for a depth layer - prepares glyphs for batch drawing
-   */
-  private buildLayerRenderQueue(
-    columns: MatrixColumn[],
-    layer: DepthLayer,
-    interpolation: number
-  ): void {
-    if (!this.atlas) return;
-
-    const glyphPadding = Math.ceil(this.config.font.baseSize * 0.8);
-
-    columns.forEach((column) => {
-      if (!column.active) return;
-
-      // Interpolated Y position for smooth motion
-      const interpolatedY =
-        column.y +
-        column.speed *
-          this.config.effects.speedMultiplier *
-          interpolation *
-          (this.deltaTime / 1000) *
-          60;
-
-      column.characters.forEach((char, i) => {
-        const y = interpolatedY - i * column.fontSize;
-
-        // Skip if off screen (with glow padding)
-        if (y < -column.fontSize * 2 || y > this.state.dimensions.height + column.fontSize) {
-          return;
-        }
-
-        // Determine glyph variant based on position and morph state
-        let glyphKey: string;
-        let alpha = column.opacityMod * layer.opacityMultiplier;
-
-        const isMorphing = char.morphPhase > 0;
-        const morphFlicker = isMorphing ? 0.7 + Math.random() * 0.3 : 1;
-
-        if (char.isHead) {
-          glyphKey = isMorphing ? 'head-bright' : 'head';
-          alpha *= 1.0 * morphFlicker;
-        } else if (i < column.length * 0.2) {
-          glyphKey = isMorphing ? 'head' : 'body-high';
-          alpha *= 0.95 * char.opacity * morphFlicker;
-        } else if (i < column.length * 0.4) {
-          glyphKey = 'body-mid';
-          alpha *= 0.85 * char.opacity * morphFlicker;
-        } else if (i < column.length * 0.7) {
-          glyphKey = 'body-low';
-          alpha *= 0.7 * char.opacity;
-        } else {
-          glyphKey = 'tail';
-          alpha *= 0.5 * char.opacity;
-        }
-
-        // Get pre-rendered glyph from atlas
-        const charMap = this.atlas?.glyphs.get(glyphKey);
-        const glyph = charMap?.get(char.value);
-
-        if (glyph) {
-          this.renderQueue.push({
-            glyph,
-            x: column.x - glyph.width / 2 + glyphPadding,
-            y: y - glyphPadding,
-            alpha: Math.min(1, Math.max(0, alpha)),
-          });
-        }
-      });
-    });
-  }
-
-  /**
-   * Execute batched render with global alpha optimization
-   */
-  private executeBatchRender(): void {
-    if (!this.ctx) return;
-
-    // Group by alpha for fewer state changes
-    const alphaGroups = new Map<number, typeof this.renderQueue>();
-
-    for (const item of this.renderQueue) {
-      const alphaKey = Math.round(item.alpha * 20) / 20; // Quantize to 5% steps
-      if (!alphaGroups.has(alphaKey)) {
-        alphaGroups.set(alphaKey, []);
-      }
-      alphaGroups.get(alphaKey)!.push(item);
-    }
-
-    // Render each alpha group
-    for (const [alpha, items] of alphaGroups) {
-      this.ctx.globalAlpha = alpha;
-
-      for (const item of items) {
-        this.ctx.drawImage(item.glyph.canvas as CanvasImageSource, item.x, item.y);
-      }
-    }
-
-    // Reset alpha
-    this.ctx.globalAlpha = 1;
-  }
-
-  /**
-   * Render vignette effect
-   */
-  private renderVignette(): void {
-    if (!this.ctx) return;
-
-    const { width, height } = this.state.dimensions;
-    const { vignetteIntensity } = this.config.effects;
-
-    const gradient = this.ctx.createRadialGradient(
-      width / 2,
-      height / 2,
-      0,
-      width / 2,
-      height / 2,
-      Math.max(width, height) * 0.7
-    );
-
-    gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
-    gradient.addColorStop(0.5, 'rgba(0, 0, 0, 0)');
-    gradient.addColorStop(1, `rgba(0, 0, 0, ${vignetteIntensity})`);
-
-    this.ctx.fillStyle = gradient;
-    this.ctx.fillRect(0, 0, width, height);
-  }
-
-  /**
-   * Render scanline effect
-   */
-  private renderScanlines(): void {
-    if (!this.ctx) return;
-
-    const { width, height } = this.state.dimensions;
-    const { scanlineOpacity } = this.config.effects;
-
-    this.ctx.fillStyle = `rgba(0, 0, 0, ${scanlineOpacity})`;
-
-    for (let y = 0; y < height; y += 4) {
-      this.ctx.fillRect(0, y, width, 2);
-    }
-  }
-
-  /**
-   * Render debug information
-   */
-  private renderDebugInfo(): void {
-    if (!this.ctx) return;
-
-    const { fps, activeColumns, totalCharacters } = this.state.metrics;
-
-    this.ctx.save();
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    this.ctx.fillRect(10, 10, 150, 70);
-
-    this.ctx.font = '12px monospace';
-    this.ctx.fillStyle = '#00ff41';
-    this.ctx.textAlign = 'left';
-    this.ctx.fillText(`FPS: ${fps}`, 20, 30);
-    this.ctx.fillText(`Columns: ${activeColumns}`, 20, 50);
-    this.ctx.fillText(`Characters: ${totalCharacters}`, 20, 70);
-    this.ctx.restore();
   }
 }
 
@@ -1149,5 +676,12 @@ export class MatrixEngine {
 export function createMatrixEngine(config?: DeepPartial<MatrixConfig>): MatrixEngine {
   return new MatrixEngine(config);
 }
+
+// Re-export sub-modules for direct access
+export { MatrixRenderer } from './renderer';
+export { ColumnManager } from './columnManager';
+export { AnimationController } from './animationController';
+export type { AnimationCallbacks } from './animationController';
+export type { RenderQueueItem } from './renderer';
 
 export default MatrixEngine;
