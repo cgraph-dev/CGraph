@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SparklesIcon, FireIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
@@ -42,6 +42,7 @@ export default function LevelProgress({
   const { level, currentXP, totalXP, loginStreak } = useGamificationStore();
   const [recentXPGain, setRecentXPGain] = useState<{ amount: number; source: string } | null>(null);
   const [prevTotalXP, setPrevTotalXP] = useState(totalXP);
+  const xpTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   // Calculate XP needed for next level
   const xpForCurrentLevel = calculateXPForLevel(level);
@@ -58,9 +59,11 @@ export default function LevelProgress({
       setRecentXPGain({ amount: gained, source: 'Action completed' });
       HapticFeedback.success();
 
-      setTimeout(() => setRecentXPGain(null), 3000);
+      clearTimeout(xpTimeoutRef.current);
+      xpTimeoutRef.current = setTimeout(() => setRecentXPGain(null), 3000);
     }
     setPrevTotalXP(totalXP);
+    return () => clearTimeout(xpTimeoutRef.current);
   }, [totalXP, prevTotalXP]);
 
   // Streak multiplier display

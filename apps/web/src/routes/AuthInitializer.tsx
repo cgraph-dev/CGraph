@@ -43,8 +43,7 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
       .finally(() => {
         authLogger.debug('Auth check complete');
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [checkAuth]);
 
   // Fetch gamification data when authenticated
   useEffect(() => {
@@ -54,20 +53,14 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
         gamificationLogger.error(error, 'Gamification fetch failed');
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated]);
-
-  // Initialize unified customization store when authenticated
+  }, [isAuthenticated, fetchGamificationData]);
   useEffect(() => {
     if (isAuthenticated) {
       fetchCustomizations().catch((error) => {
         authLogger.error('Customization initialization failed:', error);
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated]);
-
-  // Apply global theme CSS variables
+  }, [isAuthenticated, fetchCustomizations]);
   useEffect(() => {
     const appThemeId = localStorage.getItem('cgraph-app-theme') || 'default';
     ThemeRegistry.applyTheme(appThemeId);
@@ -92,8 +85,7 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
         themeLogger.error(error, 'Theme sync failed');
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, userId]);
+  }, [isAuthenticated, userId, syncWithServer]);
 
   return <>{children}</>;
 }

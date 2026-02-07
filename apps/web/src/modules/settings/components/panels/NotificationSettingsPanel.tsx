@@ -24,8 +24,7 @@ export function NotificationSettingsPanel() {
       const state = await webPush.getPushState();
       setPushState(state);
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchSettings]);
 
   const handleToggle = useCallback(
     async (key: keyof typeof settings.notifications, value: boolean) => {

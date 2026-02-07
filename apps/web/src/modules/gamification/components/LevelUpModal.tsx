@@ -68,7 +68,7 @@ export default function LevelUpModal({
       });
 
       // Additional bursts
-      setTimeout(() => {
+      const t1 = setTimeout(() => {
         confetti({
           particleCount: 50,
           angle: 60,
@@ -78,7 +78,7 @@ export default function LevelUpModal({
         });
       }, 250);
 
-      setTimeout(() => {
+      const t2 = setTimeout(() => {
         confetti({
           particleCount: 50,
           angle: 120,
@@ -89,10 +89,17 @@ export default function LevelUpModal({
       }, 400);
 
       // Show rewards after level animation
-      setTimeout(() => setShowRewards(true), 2000);
+      const t3 = setTimeout(() => setShowRewards(true), 2000);
+
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+      };
     } else {
       setShowRewards(false);
     }
+    return undefined;
   }, [isOpen]);
 
   const hasRewards =

@@ -91,7 +91,6 @@ export function useSearch(): SearchState {
     clearResults,
   } = useSearchStore();
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
     debounce((q: string) => {
       if (q.trim()) {
@@ -113,8 +112,7 @@ export function useSearch(): SearchState {
       }
       search(q);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams, setQuery, setCategory, search]);
 
   const handleInputChange = (value: string) => {
     setInputValue(value);

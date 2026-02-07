@@ -1,23 +1,16 @@
 /**
  * Unified Store Exports
  *
- * This is the single entry point for all Zustand stores.
- * Import from here for consistent access to application state.
- *
- * Stores are migrating to module-based organization.
- * This file maintains backward compatibility by re-exporting from modules.
+ * Single entry point for all Zustand stores.
+ * All stores route through canonical module paths.
  *
  * @example
  * ```typescript
- * // RECOMMENDED: Use facades for aggregated state
- * import { useChatFacade, useAuthFacade } from '@/stores';
- *
- * // Also works: Direct store imports (backward compatible)
  * import { useAuthStore, useChatStore } from '@/stores';
  * ```
  *
  * @module stores
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 // ============================================================================
@@ -36,7 +29,6 @@ export type { Friend, FriendRequest } from './friendStore';
 
 // ============================================================================
 // Chat Domain (Messages, Conversations, Effects)
-// Re-exported from modules/chat/store
 // ============================================================================
 export {
   useChatStore,
@@ -55,7 +47,6 @@ export type { IncomingCall } from './incomingCallStore';
 
 // ============================================================================
 // Community Domain (Forums, Groups, Moderation)
-// Re-exported from modules
 // ============================================================================
 export { useForumStore, useForumHostingStore, useAnnouncementStore } from '../modules/forums/store';
 
@@ -66,7 +57,6 @@ export { useModerationStore } from '../modules/moderation/store';
 
 // ============================================================================
 // Gamification Domain (XP, Achievements, Events)
-// Re-exported from modules/gamification/store
 // ============================================================================
 export {
   useGamificationStore,
@@ -91,7 +81,6 @@ export { useAvatarBorderStore } from './avatarBorderStore';
 
 // ============================================================================
 // Utility Domain (Notifications, Search, Misc)
-// Re-exported from modules where available
 // ============================================================================
 export { useNotificationStore } from '../modules/social/store';
 export { useSearchStore } from '../modules/search/store';
@@ -99,32 +88,6 @@ export { usePluginStore } from './pluginStore';
 export { useCalendarStore } from './calendarStore';
 
 // ============================================================================
-// Utilities and Middleware
+// Utilities
 // ============================================================================
-// Middleware utilities are available but not re-exported (internal use)
-// export * from './middleware';
 export * from './utils/storeHelpers';
-
-// ============================================================================
-// Domain Facades (Recommended for new code)
-// ============================================================================
-// Facades aggregate related stores into unified interfaces (29 stores → 7 domains)
-export {
-  useAuthFacade,
-  useChatFacade,
-  useCommunityFacade,
-  useGamificationFacade,
-  useSettingsFacade,
-  useMarketplaceFacade,
-  useUIFacade,
-} from './facades';
-
-export type {
-  AuthFacade,
-  ChatFacade,
-  CommunityFacade,
-  GamificationFacade,
-  SettingsFacade,
-  MarketplaceFacade,
-  UIFacade,
-} from './facades';

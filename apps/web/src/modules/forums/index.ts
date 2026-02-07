@@ -40,5 +40,6 @@ export {
   useAnnouncementStore,
   useForumThemeStore,
 } from './store';
-// export * from './types';  // Will add when types are consolidated
+// Types not re-exported: name collisions with store types (Forum, Post, Comment, etc.)
+// Import directly from '@/modules/forums/types' when needed
 // export * from './api';  // Uncomment when API is migrated

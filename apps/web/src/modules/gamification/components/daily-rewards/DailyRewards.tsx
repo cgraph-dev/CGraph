@@ -10,7 +10,7 @@
  * - Monthly special bonuses
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRightIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { GiftIcon as GiftIconSolid, StarIcon } from '@heroicons/react/24/solid';
@@ -47,6 +47,14 @@ export function DailyRewards({
 
   const [isClaiming, setIsClaiming] = useState(false);
   const [claimedReward, setClaimedReward] = useState<DailyReward | null>(null);
+  const claimedTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  useEffect(
+    () => () => {
+      if (claimedTimerRef.current) clearTimeout(claimedTimerRef.current);
+    },
+    []
+  );
 
   const timeUntilClaim = useTimeUntilClaim(nextClaimTime);
   const todayReward = useTodayReward(rewards, currentDay);
@@ -69,7 +77,10 @@ export function DailyRewards({
         colors: [...CONFETTI_COLORS, primaryColor],
       });
 
-      setTimeout(() => setClaimedReward(null), ANIMATION_DURATIONS.claimedOverlay);
+      claimedTimerRef.current = setTimeout(
+        () => setClaimedReward(null),
+        ANIMATION_DURATIONS.claimedOverlay
+      );
     } finally {
       setIsClaiming(false);
     }

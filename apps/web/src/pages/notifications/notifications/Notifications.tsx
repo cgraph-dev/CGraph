@@ -33,8 +33,7 @@ export default function Notifications() {
 
   useEffect(() => {
     fetchNotifications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchNotifications]);
 
   const filteredNotifications =
     filter === 'unread' ? notifications.filter((n) => !n.isRead) : notifications;

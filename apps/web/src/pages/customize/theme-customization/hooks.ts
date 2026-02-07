@@ -57,8 +57,7 @@ export function useThemeCustomization() {
     if (user?.id) {
       fetchCustomizations(user.id);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+  }, [user?.id, fetchCustomizations]);
 
   // Create selectedThemes object from store state
   const selectedThemes: Record<ThemeCategory, string> = {
@@ -166,7 +165,6 @@ export function useThemeCustomization() {
     },
     // selectedThemes is derived from store values that change on each render,
     // so we depend on the individual values instead
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [profileTheme, chatTheme, forumTheme, appTheme]
   );
 

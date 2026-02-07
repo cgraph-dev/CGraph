@@ -84,8 +84,7 @@ export default function EffectsCustomization() {
     if (user?.id) {
       fetchCustomizations(user.id);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+  }, [user?.id, fetchCustomizations]);
 
   // Apply current selection to store on mount
   useEffect(() => {

@@ -3,7 +3,7 @@
  * @module pages/leaderboard
  */
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { UserGroupIcon, ChartBarIcon, ClockIcon, BoltIcon } from '@heroicons/react/24/outline';
 
@@ -37,6 +37,14 @@ export default function LeaderboardPage() {
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [showConfetti, setShowConfetti] = useState(false);
+  const confettiTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  useEffect(
+    () => () => {
+      if (confettiTimerRef.current) clearTimeout(confettiTimerRef.current);
+    },
+    []
+  );
 
   const currentCategory = useMemo(
     () => CATEGORIES.find((c) => c.id === category) ?? CATEGORIES[0]!,
@@ -65,14 +73,14 @@ export default function LeaderboardPage() {
         setLeaderboard(response.data);
         if (page === 1) {
           setShowConfetti(true);
-          setTimeout(() => setShowConfetti(false), 5000);
+          confettiTimerRef.current = setTimeout(() => setShowConfetti(false), 5000);
         }
       } catch {
         // Mock data for demo
         setLeaderboard(generateMockData(page, user as Parameters<typeof generateMockData>[1]));
         if (page === 1) {
           setShowConfetti(true);
-          setTimeout(() => setShowConfetti(false), 5000);
+          confettiTimerRef.current = setTimeout(() => setShowConfetti(false), 5000);
         }
       } finally {
         setIsLoading(false);
@@ -84,8 +92,7 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     fetchLeaderboard();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category, timePeriod, page]);
+  }, [fetchLeaderboard]);
 
   // Filter entries by search
   const filteredEntries = useMemo(() => {

@@ -5,4 +5,5 @@
 export * from './components';
 export * from './store';
 export * from './hooks';
-// export * from './types';  // TODO: Add premium types
+// Types not re-exported: name collisions with store types (PremiumTier, PremiumFeature, etc.)
+// Import directly from '@/modules/premium/types' when needed

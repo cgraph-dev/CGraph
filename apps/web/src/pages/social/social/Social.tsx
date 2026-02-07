@@ -47,8 +47,7 @@ export function Social() {
   useEffect(() => {
     fetchFriends();
     fetchPendingRequests();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchFriends, fetchPendingRequests]);
 
   // Filter friends by search
   const filteredFriends = friends.filter(

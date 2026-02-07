@@ -3,7 +3,7 @@
  * @module pages/settings/two-factor-setup
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { api } from '@/lib/api';
 import type { TwoFactorSetupData, SetupStep, UseTwoFactorSetupReturn } from './types';
 import { STEPS } from './constants';
@@ -16,6 +16,16 @@ export function useTwoFactorSetup(): UseTwoFactorSetupReturn {
   const [error, setError] = useState('');
   const [copiedSecret, setCopiedSecret] = useState(false);
   const [copiedBackup, setCopiedBackup] = useState(false);
+  const secretTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const backupTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  useEffect(
+    () => () => {
+      if (secretTimerRef.current) clearTimeout(secretTimerRef.current);
+      if (backupTimerRef.current) clearTimeout(backupTimerRef.current);
+    },
+    []
+  );
 
   // Generate 2FA secret on entering scan step
   useEffect(() => {
@@ -99,7 +109,7 @@ export function useTwoFactorSetup(): UseTwoFactorSetupReturn {
     if (setupData?.secret) {
       navigator.clipboard.writeText(setupData.secret);
       setCopiedSecret(true);
-      setTimeout(() => setCopiedSecret(false), 2000);
+      secretTimerRef.current = setTimeout(() => setCopiedSecret(false), 2000);
     }
   }, [setupData?.secret]);
 
@@ -107,7 +117,7 @@ export function useTwoFactorSetup(): UseTwoFactorSetupReturn {
     if (setupData?.backupCodes) {
       navigator.clipboard.writeText(setupData.backupCodes.join('\n'));
       setCopiedBackup(true);
-      setTimeout(() => setCopiedBackup(false), 2000);
+      backupTimerRef.current = setTimeout(() => setCopiedBackup(false), 2000);
     }
   }, [setupData?.backupCodes]);
 

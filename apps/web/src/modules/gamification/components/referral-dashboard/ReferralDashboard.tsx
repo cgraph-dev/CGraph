@@ -9,7 +9,7 @@
  * - Recent referrals
  */
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { GiftIcon } from '@heroicons/react/24/outline';
 import { useReferralStore } from '@/stores/gamification';
 import { createLogger } from '@/lib/logger';
@@ -50,6 +50,14 @@ export default function ReferralDashboard() {
   // UI State
   const [copied, setCopied] = useState(false);
   const [copiedType, setCopiedType] = useState<'code' | 'url' | null>(null);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  useEffect(
+    () => () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    },
+    []
+  );
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [leaderboardPeriod, setLeaderboardPeriod] = useState<LeaderboardPeriod>('all');
 
@@ -74,7 +82,7 @@ export default function ReferralDashboard() {
       await navigator.clipboard.writeText(text);
       setCopied(true);
       setCopiedType(type);
-      setTimeout(() => {
+      copyTimerRef.current = setTimeout(() => {
         setCopied(false);
         setCopiedType(null);
       }, 2000);

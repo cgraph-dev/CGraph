@@ -1,4 +1,4 @@
-import { useState, useCallback, memo } from 'react';
+import { useState, useCallback, memo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ACHIEVEMENTS } from './constants';
 
@@ -6,6 +6,14 @@ export const GamificationDemo = memo(function GamificationDemo() {
   const [xp, setXp] = useState(2450);
   const [level, setLevel] = useState(24);
   const [unlockedAchievement, setUnlockedAchievement] = useState<string | null>(null);
+  const achievementTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  useEffect(
+    () => () => {
+      if (achievementTimerRef.current) clearTimeout(achievementTimerRef.current);
+    },
+    []
+  );
 
   const xpToNextLevel = 3000;
   const progress = (xp / xpToNextLevel) * 100;
@@ -26,7 +34,7 @@ export const GamificationDemo = memo(function GamificationDemo() {
       const randomAchievement = ACHIEVEMENTS[Math.floor(Math.random() * ACHIEVEMENTS.length)];
       if (randomAchievement) {
         setUnlockedAchievement(randomAchievement.id);
-        setTimeout(() => setUnlockedAchievement(null), 3000);
+        achievementTimerRef.current = setTimeout(() => setUnlockedAchievement(null), 3000);
       }
     }
   }, [unlockedAchievement]);

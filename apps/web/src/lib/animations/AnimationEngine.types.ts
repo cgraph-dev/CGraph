@@ -8,10 +8,8 @@
  * @since v0.7.33
  */
 
-// Need value import for gsap namespace types (gsap.EaseFunction, gsap.TweenVars)
-// @ts-expect-error -- gsap is used only for namespace type access
-// noinspection JSUnusedLocalSymbols
-import gsap from 'gsap';
+// gsap namespace types (gsap.EaseFunction, gsap.TweenVars) are globally
+// declared via `declare namespace gsap` in gsap's type definitions — no import needed.
 
 // =============================================================================
 // TYPES

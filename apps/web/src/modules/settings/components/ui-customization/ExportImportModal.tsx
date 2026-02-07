@@ -3,7 +3,7 @@
  * @module modules/settings/components/ui-customization
  */
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
@@ -18,6 +18,14 @@ interface ExportImportModalProps {
 export function ExportImportModal({ exportData, onImport, onClose }: ExportImportModalProps) {
   const [importText, setImportText] = useState('');
   const [copied, setCopied] = useState(false);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  useEffect(
+    () => () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    },
+    []
+  );
 
   return (
     <motion.div
@@ -60,7 +68,7 @@ export function ExportImportModal({ exportData, onImport, onClose }: ExportImpor
                   onClick={() => {
                     navigator.clipboard.writeText(exportData);
                     setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
+                    copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
                     HapticFeedback.success();
                   }}
                   className="absolute right-2 top-2 rounded-lg bg-primary-600 px-3 py-1 text-sm text-white transition-colors hover:bg-primary-500"

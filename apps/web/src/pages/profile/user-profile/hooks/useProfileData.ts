@@ -2,7 +2,7 @@
  * Custom hook for fetching and managing profile data
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
 import { useGamificationStore } from '@/modules/gamification/store';
@@ -61,6 +61,19 @@ export function useProfileData({
     return achievements.filter((a) => a.unlocked).slice(0, showAllAchievements ? undefined : 6);
   }, [achievements, isOwnProfile, showAllAchievements]);
 
+  // Refs for gamification values used as fallbacks in fetch (not as triggers)
+  const myLevelRef = useRef(myLevel);
+  const myTotalXPRef = useRef(myTotalXP);
+  const myStreakRef = useRef(myStreak);
+  const totalUnlockedRef = useRef(totalUnlocked);
+
+  useEffect(() => {
+    myLevelRef.current = myLevel;
+    myTotalXPRef.current = myTotalXP;
+    myStreakRef.current = myStreak;
+    totalUnlockedRef.current = totalUnlocked;
+  }, [myLevel, myTotalXP, myStreak, totalUnlocked]);
+
   // Fetch profile data
   useEffect(() => {
     async function fetchProfile() {
@@ -90,11 +103,12 @@ export function useProfileData({
           location: userData.location,
           website: userData.website,
           // Gamification stats (from API or own data if own profile)
-          level: userData.level || (isOwnProfile ? myLevel : 1),
-          totalXP: userData.total_xp || (isOwnProfile ? myTotalXP : 0),
+          level: userData.level || (isOwnProfile ? myLevelRef.current : 1),
+          totalXP: userData.total_xp || (isOwnProfile ? myTotalXPRef.current : 0),
           currentXP: userData.current_xp || 0,
-          loginStreak: userData.login_streak || (isOwnProfile ? myStreak : 0),
-          achievementCount: userData.achievement_count || (isOwnProfile ? totalUnlocked : 0),
+          loginStreak: userData.login_streak || (isOwnProfile ? myStreakRef.current : 0),
+          achievementCount:
+            userData.achievement_count || (isOwnProfile ? totalUnlockedRef.current : 0),
           totalAchievements: ACHIEVEMENT_DEFINITIONS.length,
           messagesSent: userData.messages_sent || 0,
           postsCreated: userData.posts_created || 0,
@@ -113,8 +127,7 @@ export function useProfileData({
     }
 
     fetchProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, isOwnProfile]);
 
   return {
     profile,

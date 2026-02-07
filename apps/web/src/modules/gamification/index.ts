@@ -5,4 +5,5 @@
 export * from './components';
 export * from './store';
 export * from './hooks';
-// export * from './types';  // TODO: Add gamification types
+// Types not re-exported: name collisions with store types (Achievement, AchievementCategory, etc.)
+// Import directly from '@/modules/gamification/types' when needed

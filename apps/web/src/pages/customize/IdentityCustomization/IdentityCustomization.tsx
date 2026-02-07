@@ -79,8 +79,7 @@ export default function IdentityCustomization() {
     if (user?.id) {
       fetchCustomizations(user.id);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
+  }, [user?.id, fetchCustomizations]);
 
   // Filter borders by search and rarity
   const filteredBorders = MOCK_BORDERS.filter((border) => {

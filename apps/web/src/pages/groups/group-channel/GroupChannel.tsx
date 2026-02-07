@@ -66,8 +66,7 @@ export default function GroupChannel() {
       setActiveChannel(null);
       socketManager.leaveGroupChannel(channelId);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [channelId, groupId]);
+  }, [channelId, groupId, setActiveChannel, fetchChannelMessages, fetchMembers]);
 
   // Scroll to bottom on new messages
   useEffect(() => {

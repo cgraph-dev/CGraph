@@ -49,8 +49,7 @@ export default function Friends() {
   useEffect(() => {
     fetchFriends();
     fetchPendingRequests();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchFriends, fetchPendingRequests]);
 
   useEffect(() => {
     let isMounted = true;

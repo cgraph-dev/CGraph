@@ -84,21 +84,31 @@ export default function SyncStatusIndicator({
 export function useSyncStatus() {
   const [status, setStatus] = React.useState<SyncStatus>('idle');
   const [errorMessage, setErrorMessage] = React.useState<string | undefined>();
+  const timerRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  const setSaving = () => setStatus('saving');
+  // Cleanup on unmount
+  React.useEffect(() => () => clearTimeout(timerRef.current), []);
+
+  const setSaving = () => {
+    clearTimeout(timerRef.current);
+    setStatus('saving');
+  };
 
   const setSaved = () => {
     setStatus('saved');
-    setTimeout(() => setStatus('idle'), 2000); // Auto-hide after 2s
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setStatus('idle'), 2000); // Auto-hide after 2s
   };
 
   const setError = (message?: string) => {
     setStatus('error');
     setErrorMessage(message);
-    setTimeout(() => setStatus('idle'), 4000); // Auto-hide after 4s
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setStatus('idle'), 4000); // Auto-hide after 4s
   };
 
   const reset = () => {
+    clearTimeout(timerRef.current);
     setStatus('idle');
     setErrorMessage(undefined);
   };

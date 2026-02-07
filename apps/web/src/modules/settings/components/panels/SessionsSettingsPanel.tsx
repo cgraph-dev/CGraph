@@ -79,8 +79,7 @@ export function SessionsSettingsPanel() {
 
   useEffect(() => {
     fetchSessions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchSessions]);
 
   const revokeSession = async (sessionId: string) => {
     setIsRevoking(sessionId);

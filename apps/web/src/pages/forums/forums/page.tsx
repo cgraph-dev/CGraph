@@ -78,21 +78,18 @@ export default function Forums() {
 
   useEffect(() => {
     fetchForums();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchForums]);
 
   useEffect(() => {
     if (forumSlug) {
       fetchForum(forumSlug);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [forumSlug]);
+  }, [forumSlug, fetchForum]);
 
   useEffect(() => {
     setPage(1);
     fetchPosts(forumSlug, 1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [forumSlug, sortBy, timeRange]);
+  }, [forumSlug, sortBy, timeRange, fetchPosts]);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;

@@ -64,11 +64,7 @@ export default function CalendarView({ onCreateEvent, onEventClick }: CalendarVi
     return days;
   }, [currentYear, currentMonth]);
 
-  const upcomingEvents = useMemo(
-    () => getUpcomingEvents(5),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [getUpcomingEvents, events]
-  );
+  const upcomingEvents = useMemo(() => getUpcomingEvents(5), [getUpcomingEvents, events]);
 
   return (
     <div className="container mx-auto max-w-7xl px-4 py-6">

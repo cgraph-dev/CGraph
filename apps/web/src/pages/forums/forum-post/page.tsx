@@ -43,15 +43,13 @@ export default function ForumPost() {
       fetchPost(postId);
       fetchComments(postId);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [postId]);
+  }, [postId, fetchPost, fetchComments]);
 
   useEffect(() => {
     if (forumSlug && (!currentForum || currentForum.slug !== forumSlug)) {
       fetchForum(forumSlug);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [forumSlug, currentForum?.slug]);
+  }, [forumSlug, currentForum, fetchForum]);
 
   if (!currentPost) {
     return <PostSkeleton forumSlug={forumSlug} />;

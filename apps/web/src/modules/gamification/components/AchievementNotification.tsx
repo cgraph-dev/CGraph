@@ -91,6 +91,8 @@ function AchievementToast({
 
   // Confetti on unlock
   useEffect(() => {
+    let confettiTimer: ReturnType<typeof setTimeout> | undefined;
+
     if (isUnlock) {
       HapticFeedback.success();
 
@@ -114,7 +116,7 @@ function AchievementToast({
 
       if (achievement.rarity === 'legendary' || achievement.rarity === 'mythic') {
         // Additional burst for high-rarity achievements
-        setTimeout(() => {
+        confettiTimer = setTimeout(() => {
           confetti({
             particleCount: 50,
             spread: 90,
@@ -126,6 +128,8 @@ function AchievementToast({
     } else {
       HapticFeedback.light();
     }
+
+    return () => clearTimeout(confettiTimer);
   }, [isUnlock, achievement.rarity, colors]);
 
   // Progress animation

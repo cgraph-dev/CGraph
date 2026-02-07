@@ -10,4 +10,5 @@
 export * from './components';
 export * from './store';
 export * from './hooks';
-// export * from './types';  // TODO: Add groups types
+// Types not re-exported: name collision with components (GroupSettings)
+// Import directly from '@/modules/groups/types' when needed

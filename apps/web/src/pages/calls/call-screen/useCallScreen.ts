@@ -80,6 +80,7 @@ export function useCallScreen() {
     }
 
     initCall();
+    // Call init must only happen once on mount — re-running would create duplicate WebRTC streams
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

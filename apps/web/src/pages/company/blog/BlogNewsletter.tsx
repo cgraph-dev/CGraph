@@ -4,18 +4,26 @@
  * @since v0.9.6
  */
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { newsletter } from './constants';
 
 export function BlogNewsletter() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const subscribedTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  useEffect(
+    () => () => {
+      if (subscribedTimerRef.current) clearTimeout(subscribedTimerRef.current);
+    },
+    []
+  );
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     setSubscribed(true);
-    setTimeout(() => setSubscribed(false), 3000);
+    subscribedTimerRef.current = setTimeout(() => setSubscribed(false), 3000);
     setEmail('');
   };
 
