@@ -26,8 +26,7 @@ export interface BaseStoreState {
 }
 
 /** Zustand-compatible set function type */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ZustandSet<T = any> = (
+export type ZustandSet<T = Record<string, unknown>> = (
   partial: Partial<T> | T | ((state: T) => Partial<T> | T),
   replace?: boolean | undefined
 ) => void;
