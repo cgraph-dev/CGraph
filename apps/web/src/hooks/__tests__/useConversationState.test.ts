@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 
 // Mock the stores before importing the hook
-vi.mock('@/stores/chatStore', () => ({
+vi.mock('@/modules/chat/store', () => ({
   useChatStore: vi.fn((selector) => {
     const state = {
       conversations: [
@@ -38,7 +38,7 @@ vi.mock('@/stores/chatStore', () => ({
   }),
 }));
 
-vi.mock('@/stores/presenceStore', () => ({
+vi.mock('@/modules/presence/store', () => ({
   usePresenceStore: vi.fn((selector) => {
     const state = {
       presenceUsers: { 'conv-1': ['user-1'] },
@@ -47,13 +47,13 @@ vi.mock('@/stores/presenceStore', () => ({
   }),
 }));
 
-vi.mock('@/stores/authStore', () => ({
+vi.mock('@/modules/auth/store', () => ({
   useAuthStore: vi.fn(() => ({
     user: { id: 'current-user-1' },
   })),
 }));
 
-vi.mock('@/stores/friendStore', () => ({
+vi.mock('@/modules/social/store', () => ({
   useFriendStore: vi.fn(() => ({
     friends: [],
     fetchFriends: vi.fn(),

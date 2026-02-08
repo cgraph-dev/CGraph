@@ -1,24 +1,11 @@
 /**
  * Matrix Cipher Background Animation - React Hook
  *
- * @description Custom React hook for integrating the Matrix animation engine.
+ * Custom React hook for integrating the Matrix animation engine.
  * Provides a declarative API for controlling the animation lifecycle.
  *
  * @version 1.0.0
  * @since v0.6.3
- * @author CGraph Development Team
- *
- * @example
- * ```tsx
- * function MyComponent() {
- *   const { canvasRef, start, stop, setTheme } = useMatrix({
- *     autoStart: true,
- *     theme: 'cyber-blue',
- *   });
- *
- *   return <canvas ref={canvasRef} className="fixed inset-0" />;
- * }
- * ```
  */
 
 import { useRef, useEffect, useState, useCallback, useMemo } from 'react';
@@ -37,6 +24,10 @@ const logger = createLogger('MatrixAnimation');
 import { MatrixEngine, createMatrixEngine } from './engine';
 import { getTheme, THEME_REGISTRY } from './themes';
 import { createConfig } from './config';
+
+// Re-export submodule hooks for backwards compatibility
+export { useMatrixThemes } from './useMatrixThemes';
+export { useMatrixPerformance } from './useMatrixPerformance';
 
 // =============================================================================
 // HOOK IMPLEMENTATION
@@ -228,51 +219,37 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
   // CONTROL METHODS
   // =========================================================================
 
-  /**
-   * Start the animation
-   */
+  /** Start the animation */
   const start = useCallback(() => {
     engineRef.current?.start();
   }, []);
 
-  /**
-   * Stop the animation
-   */
+  /** Stop the animation */
   const stop = useCallback(() => {
     engineRef.current?.stop();
   }, []);
 
-  /**
-   * Pause the animation
-   */
+  /** Pause the animation */
   const pause = useCallback(() => {
     engineRef.current?.pause();
   }, []);
 
-  /**
-   * Resume the animation
-   */
+  /** Resume the animation */
   const resume = useCallback(() => {
     engineRef.current?.resume();
   }, []);
 
-  /**
-   * Toggle pause/resume
-   */
+  /** Toggle pause/resume */
   const toggle = useCallback(() => {
     engineRef.current?.toggle();
   }, []);
 
-  /**
-   * Update configuration
-   */
+  /** Update configuration */
   const updateConfig = useCallback((updates: DeepPartial<MatrixConfig>) => {
     engineRef.current?.updateConfig(updates);
   }, []);
 
-  /**
-   * Change theme
-   */
+  /** Change theme */
   const setTheme = useCallback((theme: MatrixTheme | ThemePreset) => {
     if (typeof theme === 'string') {
       engineRef.current?.setTheme(getTheme(theme));
@@ -306,73 +283,6 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
     isRunning,
     isPaused,
     fps,
-  };
-}
-
-// =============================================================================
-// ADDITIONAL HOOKS
-// =============================================================================
-
-/**
- * Hook for theme selection
- *
- * @returns Theme utilities
- */
-export function useMatrixThemes() {
-  const themes = useMemo(() => {
-    return Object.entries(THEME_REGISTRY).map(([key, theme]) => ({
-      id: key as ThemePreset,
-      name: theme.name,
-      primaryColor: theme.primaryColor,
-      theme,
-    }));
-  }, []);
-
-  const getThemeById = useCallback((id: ThemePreset): MatrixTheme => {
-    return getTheme(id);
-  }, []);
-
-  return {
-    themes,
-    getTheme: getThemeById,
-    defaultTheme: THEME_REGISTRY['matrix-green'],
-  };
-}
-
-/**
- * Hook for monitoring animation performance
- *
- * @param engineState - Current engine state
- * @returns Performance metrics
- */
-export function useMatrixPerformance(engineState: MatrixEngineState) {
-  const [avgFps, setAvgFps] = useState(0);
-  const fpsHistory = useRef<number[]>([]);
-
-  useEffect(() => {
-    fpsHistory.current.push(engineState.metrics.fps);
-
-    if (fpsHistory.current.length > 60) {
-      fpsHistory.current.shift();
-    }
-
-    const avg =
-      fpsHistory.current.reduce((a: number, b: number) => a + b, 0) / fpsHistory.current.length;
-    setAvgFps(Math.round(avg));
-  }, [engineState.metrics.fps]);
-
-  const isPerformanceGood = avgFps >= 50;
-  const isPerformanceOk = avgFps >= 30;
-
-  return {
-    currentFps: engineState.metrics.fps,
-    averageFps: avgFps,
-    frameTime: engineState.metrics.frameTime,
-    activeColumns: engineState.metrics.activeColumns,
-    totalCharacters: engineState.metrics.totalCharacters,
-    isPerformanceGood,
-    isPerformanceOk,
-    performanceLevel: isPerformanceGood ? 'good' : isPerformanceOk ? 'ok' : 'poor',
   };
 }
 

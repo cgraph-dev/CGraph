@@ -3,8 +3,8 @@ import { renderHook, act } from '@testing-library/react';
 import { useAuth, useTwoFactor, useSessions } from '../hooks';
 import { useAuthStore } from '@/modules/auth/store';
 
-// Mock the auth store
-vi.mock('@/stores/authStore', () => ({
+// Mock the auth store (must match the import path used in hooks/index.ts)
+vi.mock('@/modules/auth/store', () => ({
   useAuthStore: vi.fn(),
 }));
 

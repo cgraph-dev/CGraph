@@ -1,13 +1,18 @@
 /**
- * Moderation Store — Thread & Post Actions
+ * Moderation Store — Thread & Post Actions (Orchestrator)
  * @module modules/moderation/store
  *
- * Thread moderation, post moderation, and bulk (inline) moderation operations.
+ * Re-exports combined thread, post, and bulk moderation actions.
+ * Implementation split across:
+ *   - moderationStore.threads.posts.ts  (post moderation)
+ *   - moderationStore.threads.bulk.ts   (bulk / inline moderation)
  */
 
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 import type { ModerationState } from './moderationStore.types';
+import { createPostActions } from './moderationStore.threads.posts';
+import { createBulkActions } from './moderationStore.threads.bulk';
 
 type Set = (
   partial:
@@ -181,143 +186,8 @@ export function createThreadActions(set: Set, get: Get) {
       }
     },
 
-    // ========================================
-    // POST MODERATION
-    // ========================================
-
-    movePost: async (postId: string, targetThreadId: string) => {
-      try {
-        await api.post(`/api/v1/admin/posts/${postId}/move`, {
-          target_thread_id: targetThreadId,
-        });
-        await get().logModAction('move_post', 'post', postId, undefined, { targetThreadId });
-      } catch (error) {
-        logger.error(' Failed to move post:', error);
-        throw error;
-      }
-    },
-
-    softDeletePost: async (postId: string, reason?: string) => {
-      try {
-        await api.post(`/api/v1/admin/posts/${postId}/soft-delete`, { reason });
-        await get().logModAction('soft_delete_post', 'post', postId, reason);
-      } catch (error) {
-        logger.error(' Failed to soft-delete post:', error);
-        throw error;
-      }
-    },
-
-    restorePost: async (postId: string) => {
-      try {
-        await api.post(`/api/v1/admin/posts/${postId}/restore`);
-        await get().logModAction('restore_post', 'post', postId);
-      } catch (error) {
-        logger.error(' Failed to restore post:', error);
-        throw error;
-      }
-    },
-
-    approvePost: async (postId: string) => {
-      try {
-        await api.post(`/api/v1/admin/posts/${postId}/approve`);
-        await get().logModAction('approve_post', 'post', postId);
-      } catch (error) {
-        logger.error(' Failed to approve post:', error);
-        throw error;
-      }
-    },
-
-    unapprovePost: async (postId: string) => {
-      try {
-        await api.post(`/api/v1/admin/posts/${postId}/unapprove`);
-        await get().logModAction('unapprove_post', 'post', postId);
-      } catch (error) {
-        logger.error(' Failed to unapprove post:', error);
-        throw error;
-      }
-    },
-
-    // ========================================
-    // BULK MODERATION (Inline)
-    // ========================================
-
-    toggleBulkSelection: (type: 'threads' | 'posts' | 'comments', id: string) => {
-      set((state) => {
-        const current = state.bulkSelection[type];
-        const updated = current.includes(id) ? current.filter((i) => i !== id) : [...current, id];
-        return {
-          bulkSelection: {
-            ...state.bulkSelection,
-            [type]: updated,
-          },
-        };
-      });
-    },
-
-    clearBulkSelection: () => {
-      set({ bulkSelection: { threads: [], posts: [], comments: [] } });
-    },
-
-    bulkMoveThreads: async (targetForumId: string) => {
-      const threadIds = get().bulkSelection.threads;
-      if (threadIds.length === 0) return;
-
-      try {
-        await api.post('/api/v1/admin/threads/bulk/move', {
-          thread_ids: threadIds,
-          target_forum_id: targetForumId,
-        });
-        get().clearBulkSelection();
-      } catch (error) {
-        logger.error(' Failed to bulk move threads:', error);
-        throw error;
-      }
-    },
-
-    bulkDeleteThreads: async (reason?: string) => {
-      const threadIds = get().bulkSelection.threads;
-      if (threadIds.length === 0) return;
-
-      try {
-        await api.post('/api/v1/admin/threads/bulk/delete', {
-          thread_ids: threadIds,
-          reason,
-        });
-        get().clearBulkSelection();
-      } catch (error) {
-        logger.error(' Failed to bulk delete threads:', error);
-        throw error;
-      }
-    },
-
-    bulkLockThreads: async () => {
-      const threadIds = get().bulkSelection.threads;
-      if (threadIds.length === 0) return;
-
-      try {
-        await api.post('/api/v1/admin/threads/bulk/lock', {
-          thread_ids: threadIds,
-        });
-        get().clearBulkSelection();
-      } catch (error) {
-        logger.error(' Failed to bulk lock threads:', error);
-        throw error;
-      }
-    },
-
-    bulkApproveThreads: async () => {
-      const threadIds = get().bulkSelection.threads;
-      if (threadIds.length === 0) return;
-
-      try {
-        await api.post('/api/v1/admin/threads/bulk/approve', {
-          thread_ids: threadIds,
-        });
-        get().clearBulkSelection();
-      } catch (error) {
-        logger.error(' Failed to bulk approve threads:', error);
-        throw error;
-      }
-    },
+    // Post & Bulk actions (delegated to submodules)
+    ...createPostActions(set, get),
+    ...createBulkActions(set, get),
   };
 }

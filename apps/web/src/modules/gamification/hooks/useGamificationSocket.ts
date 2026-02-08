@@ -1,14 +1,7 @@
-import { useEffect, useCallback, useRef } from 'react';
-import { create } from 'zustand';
-import { Socket, Channel } from 'phoenix';
-import { createLogger } from '@/lib/logger';
-
-const logger = createLogger('GamificationSocket');
-
 /**
- * Gamification WebSocket Hook
+ * Gamification WebSocket Hooks
  *
- * Provides real-time updates for:
+ * Provides React hooks for real-time gamification updates:
  * - XP/Level gains
  * - Achievement unlocks
  * - Cosmetic unlocks
@@ -16,296 +9,37 @@ const logger = createLogger('GamificationSocket');
  * - Event progress
  * - Marketplace notifications
  *
- * Designed for scale with:
- * - Automatic reconnection with exponential backoff
- * - Message queuing during disconnection
- * - Heartbeat monitoring
- * - Event batching
+ * The socket store and types are split into submodules:
+ * - ./gamification-socket.types   — Type definitions
+ * - ./gamificationSocketStore     — Zustand store
  */
 
-// ==================== TYPES ====================
+import { useEffect, useCallback, useRef } from 'react';
 
-export interface XPGainEvent {
-  amount: number;
-  source: string;
-  newTotal: number;
-  levelUp?: {
-    oldLevel: number;
-    newLevel: number;
-    rewards: Array<{ type: string; id: string; name: string }>;
-  };
-}
+// Re-export types for consumers that import from this file
+export type {
+  XPGainEvent,
+  AchievementUnlockEvent,
+  CosmeticUnlockEvent,
+  PrestigeUpdateEvent,
+  EventProgressEvent,
+  MarketplaceNotificationEvent,
+  GamificationState,
+  GamificationSocketStore,
+} from './gamification-socket.types';
 
-export interface AchievementUnlockEvent {
-  achievementId: string;
-  title: string;
-  description: string;
-  icon: string;
-  rarity: string;
-  xpReward: number;
-  coinReward: number;
-}
+import type {
+  XPGainEvent,
+  AchievementUnlockEvent,
+  CosmeticUnlockEvent,
+  PrestigeUpdateEvent,
+  EventProgressEvent,
+  MarketplaceNotificationEvent,
+} from './gamification-socket.types';
 
-export interface CosmeticUnlockEvent {
-  type: 'avatar_border' | 'profile_theme' | 'chat_effect' | 'title' | 'badge';
-  itemId: string;
-  name: string;
-  rarity: string;
-  previewUrl?: string;
-}
-
-export interface PrestigeUpdateEvent {
-  oldLevel: number;
-  newLevel: number;
-  prestigePoints: number;
-  newBonuses: {
-    xpBonus: number;
-    coinBonus: number;
-    karmaBonus: number;
-    dropRateBonus: number;
-  };
-  exclusiveRewards: Array<{ type: string; id: string; name: string }>;
-}
-
-export interface EventProgressEvent {
-  eventId: string;
-  eventName: string;
-  points: number;
-  tier: number;
-  milestone?: {
-    threshold: number;
-    reward: { type: string; name: string };
-  };
-}
-
-export interface MarketplaceNotificationEvent {
-  type: 'listing_sold' | 'purchase_complete' | 'offer_received' | 'price_drop';
-  data: Record<string, unknown>;
-}
-
-export interface GamificationState {
-  xp: number;
-  level: number;
-  coins: number;
-  streakDays: number;
-  connected: boolean;
-  lastError: string | null;
-}
-
-// ==================== STORE ====================
-
-interface GamificationSocketStore {
-  socket: Socket | null;
-  channel: Channel | null;
-  state: GamificationState;
-  listeners: Map<string, Set<(data: unknown) => void>>;
-  messageQueue: Array<{ event: string; payload: unknown }>;
-
-  // Actions
-  connect: (token: string, userId: string) => void;
-  disconnect: () => void;
-  subscribe: (event: string, callback: (data: unknown) => void) => () => void;
-  getState: () => Promise<GamificationState>;
-  sendHeartbeat: () => void;
-}
-
-const SOCKET_URL = import.meta.env.VITE_WS_URL || 'wss://api.cgraph.io/socket';
-const RECONNECT_DELAYS = [1000, 2000, 4000, 8000, 16000, 32000];
-
-export const useGamificationSocketStore = create<GamificationSocketStore>((set, get) => ({
-  socket: null,
-  channel: null,
-  state: {
-    xp: 0,
-    level: 1,
-    coins: 0,
-    streakDays: 0,
-    connected: false,
-    lastError: null,
-  },
-  listeners: new Map(),
-  messageQueue: [],
-
-  connect: (token: string, userId: string) => {
-    const existing = get().socket;
-    if (existing?.isConnected()) {
-      return;
-    }
-
-    const socket = new Socket(SOCKET_URL, {
-      params: { token },
-      reconnectAfterMs: (tries) =>
-        RECONNECT_DELAYS[Math.min(tries - 1, RECONNECT_DELAYS.length - 1)] ?? 10000,
-      heartbeatIntervalMs: 30000,
-    });
-
-    socket.onError((error) => {
-      logger.error('Socket error:', error);
-      set((state) => ({
-        state: { ...state.state, lastError: 'Connection error', connected: false },
-      }));
-    });
-
-    socket.onClose(() => {
-      set((state) => ({
-        state: { ...state.state, connected: false },
-      }));
-    });
-
-    socket.connect();
-
-    const channel = socket.channel(`gamification:${userId}`, {});
-
-    channel
-      .join()
-      .receive('ok', (response: unknown) => {
-        logger.debug('Joined successfully', response);
-        set((state) => ({
-          state: { ...state.state, connected: true, lastError: null },
-        }));
-
-        // Flush queued messages
-        const queue = get().messageQueue;
-        queue.forEach(({ event, payload }) => {
-          channel.push(event, payload as Record<string, unknown>);
-        });
-        set({ messageQueue: [] });
-      })
-      .receive('error', (err: unknown) => {
-        const error = err as Record<string, unknown>;
-        logger.error('Join failed:', error);
-        set((state) => ({
-          state: { ...state.state, lastError: (error.reason as string) || 'Join failed' },
-        }));
-      });
-
-    // Set up event listeners
-    const events = [
-      'initial_state',
-      'xp_gained',
-      'level_up',
-      'achievement_unlocked',
-      'cosmetic_unlocked',
-      'prestige_updated',
-      'event_progress',
-      'event_milestone',
-      'event_started',
-      'event_ending_soon',
-      'event_ended',
-      'listing_sold',
-      'item_purchased',
-      'price_alert',
-    ];
-
-    events.forEach((event) => {
-      channel.on(event, (p: unknown) => {
-        const payload = p as Record<string, unknown>;
-        // Update internal state for initial_state
-        if (event === 'initial_state') {
-          set((state) => ({
-            state: {
-              ...state.state,
-              xp: (payload.xp as number) ?? state.state.xp,
-              level: (payload.level as number) ?? state.state.level,
-              coins: (payload.coins as number) ?? state.state.coins,
-              streakDays: (payload.streak_days as number) ?? state.state.streakDays,
-            },
-          }));
-        }
-
-        // Notify all listeners
-        const listeners = get().listeners.get(event);
-        if (listeners) {
-          listeners.forEach((callback) => callback(payload));
-        }
-
-        // Also notify wildcard listeners
-        const wildcardListeners = get().listeners.get('*');
-        if (wildcardListeners) {
-          wildcardListeners.forEach((callback) => callback({ event, payload }));
-        }
-      });
-    });
-
-    set({ socket, channel });
-  },
-
-  disconnect: () => {
-    const { socket, channel } = get();
-
-    if (channel) {
-      channel.leave();
-    }
-
-    if (socket) {
-      socket.disconnect();
-    }
-
-    set({
-      socket: null,
-      channel: null,
-      state: { ...get().state, connected: false },
-    });
-  },
-
-  subscribe: (event: string, callback: (data: unknown) => void) => {
-    const listeners = get().listeners;
-
-    if (!listeners.has(event)) {
-      listeners.set(event, new Set());
-    }
-
-    listeners.get(event)!.add(callback);
-    set({ listeners: new Map(listeners) });
-
-    // Return unsubscribe function
-    return () => {
-      const currentListeners = get().listeners;
-      const eventListeners = currentListeners.get(event);
-      if (eventListeners) {
-        eventListeners.delete(callback);
-        if (eventListeners.size === 0) {
-          currentListeners.delete(event);
-        }
-        set({ listeners: new Map(currentListeners) });
-      }
-    };
-  },
-
-  getState: async () => {
-    const { channel, state } = get();
-
-    if (!channel) {
-      return state;
-    }
-
-    return new Promise((resolve) => {
-      channel
-        .push('get_state', {})
-        .receive('ok', (res: unknown) => {
-          const response = res as Record<string, unknown>;
-          const newState = {
-            ...state,
-            xp: (response.xp as number) ?? state.xp,
-            level: (response.level as number) ?? state.level,
-            coins: (response.coins as number) ?? state.coins,
-            streakDays: (response.streak_days as number) ?? state.streakDays,
-          };
-          set({ state: newState });
-          resolve(newState);
-        })
-        .receive('error', () => resolve(state))
-        .receive('timeout', () => resolve(state));
-    });
-  },
-
-  sendHeartbeat: () => {
-    const { channel } = get();
-    if (channel) {
-      channel.push('heartbeat', {});
-    }
-  },
-}));
+// Re-export the store
+export { useGamificationSocketStore } from './gamificationSocketStore';
+import { useGamificationSocketStore } from './gamificationSocketStore';
 
 // ==================== HOOKS ====================
 
@@ -400,8 +134,6 @@ export function useMarketplaceNotifications(
 export function useGamificationToasts() {
   const showToast = useCallback(
     (type: 'xp' | 'level' | 'achievement' | 'cosmetic' | 'prestige' | 'event', data: unknown) => {
-      // This should integrate with your toast/notification system
-      // For now, dispatch a custom event that can be caught by a toast provider
       window.dispatchEvent(
         new CustomEvent('gamification:toast', {
           detail: { type, data },
@@ -413,7 +145,6 @@ export function useGamificationToasts() {
 
   useXPUpdates((data) => {
     if (data.amount >= 100) {
-      // Only show for significant gains
       showToast('xp', data);
     }
     if (data.levelUp) {

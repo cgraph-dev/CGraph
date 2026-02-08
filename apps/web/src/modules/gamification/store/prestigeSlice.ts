@@ -4,6 +4,21 @@ import { safeLocalStorage } from '@/lib/safeStorage';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 
+// Re-export all types from submodule
+export type {
+  PrestigeBonuses,
+  LifetimeStats,
+  PrestigeHistoryEntry,
+  PrestigeReward,
+  PrestigeTier,
+  PrestigeRequirements,
+  PrestigeData,
+  PrestigeState,
+} from './prestige-types';
+
+import type { PrestigeState, PrestigeTier } from './prestige-types';
+import { calculateBonuses, calculateXpRequired, getDefaultRewardsForLevel } from './prestige-utils';
+
 const logger = createLogger('prestigeStore');
 
 /**
@@ -15,127 +30,6 @@ const logger = createLogger('prestigeStore');
  * - Exclusive rewards
  * - Prestige history
  */
-
-// ==================== TYPE DEFINITIONS ====================
-
-export interface PrestigeBonuses {
-  xp: number; // Percentage as decimal (0.05 = 5%)
-  coins: number;
-  karma: number;
-  dropRate: number;
-}
-
-export interface LifetimeStats {
-  xp: number;
-  karma: number;
-  coinsEarned: number;
-  messages: number;
-}
-
-export interface PrestigeHistoryEntry {
-  level: number;
-  prestigedAt: string;
-  xpAtPrestige: number;
-  lifetimeXpAtPrestige: number;
-}
-
-export interface PrestigeReward {
-  type: 'title' | 'border' | 'effect' | 'badge' | 'xp_bonus' | 'coins';
-  name?: string;
-  id?: string;
-  amount?: number;
-}
-
-export interface PrestigeTier {
-  level: number;
-  xpRequired: number;
-  bonuses: PrestigeBonuses;
-  exclusiveRewards: PrestigeReward[];
-}
-
-export interface PrestigeRequirements {
-  requiredXp: number;
-  currentXp: number;
-  progress: number;
-  nextLevel: number;
-}
-
-export interface PrestigeData {
-  level: number;
-  xp: number;
-  xpToNext: number;
-  bonuses: PrestigeBonuses;
-  lifetime: LifetimeStats;
-  totalResets: number;
-  lastPrestigeAt: string | null;
-  exclusiveTitles: string[];
-  exclusiveBorders: string[];
-  exclusiveEffects: string[];
-}
-
-// ==================== STATE INTERFACE ====================
-
-export interface PrestigeState {
-  // Current prestige data
-  prestige: PrestigeData | null;
-  requirements: PrestigeRequirements | null;
-  canPrestige: boolean;
-
-  // Tier information
-  allTiers: PrestigeTier[];
-
-  // Leaderboard
-  leaderboard: Array<{
-    rank: number;
-    userId: string;
-    username: string;
-    displayName: string;
-    avatarUrl: string;
-    prestigeLevel: number;
-    lifetimeXp: number;
-    totalResets: number;
-  }>;
-
-  // Loading states
-  isLoading: boolean;
-  isPrestiging: boolean;
-
-  // Actions
-  fetchPrestige: () => Promise<void>;
-  fetchRewards: () => Promise<void>;
-  fetchLeaderboard: (limit?: number, offset?: number) => Promise<void>;
-  performPrestige: () => Promise<{ success: boolean; rewards?: PrestigeReward[] }>;
-
-  // Computed
-  getProgressPercent: () => number;
-  getBonusForLevel: (level: number) => PrestigeBonuses;
-  getXpWithBonus: (baseXp: number) => number;
-  getCoinWithBonus: (baseCoins: number) => number;
-}
-
-// ==================== BONUS CALCULATION ====================
-
-const BONUS_RATES = {
-  xp: 0.05, // 5% per prestige level
-  coins: 0.03, // 3% per prestige level
-  karma: 0.02, // 2% per prestige level
-  dropRate: 0.01, // 1% per prestige level
-};
-
-function calculateBonuses(level: number): PrestigeBonuses {
-  return {
-    xp: level * BONUS_RATES.xp,
-    coins: level * BONUS_RATES.coins,
-    karma: level * BONUS_RATES.karma,
-    dropRate: level * BONUS_RATES.dropRate,
-  };
-}
-
-function calculateXpRequired(level: number): number {
-  if (level < 0) return 0;
-  if (level === 0) return 100000;
-  return Math.round(100000 * Math.pow(1.5, level));
-}
 
 // ==================== STORE IMPLEMENTATION ====================
 
@@ -286,33 +180,6 @@ export const usePrestigeStore = create<PrestigeState>()(
     }
   )
 );
-
-// ==================== HELPERS ====================
-
-function getDefaultRewardsForLevel(level: number): PrestigeReward[] {
-  const rewards: PrestigeReward[] = [
-    { type: 'title', name: `Prestige ${level}` },
-    { type: 'xp_bonus', amount: 0.05 },
-  ];
-
-  if (level >= 3) {
-    rewards.push({ type: 'badge', name: 'Dedicated Player Badge' });
-  }
-  if (level >= 5) {
-    rewards.push({ type: 'effect', name: 'Prestige Glow Effect' });
-  }
-  if (level >= 10) {
-    rewards.push({ type: 'border', name: 'Prestige Master Border' });
-  }
-  if (level >= 15) {
-    rewards.push({ type: 'title', name: 'Legendary Prestige' });
-  }
-  if (level >= 20) {
-    rewards.push({ type: 'border', name: 'Transcendent Border' });
-  }
-
-  return rewards;
-}
 
 // ==================== SELECTOR HOOKS ====================
 

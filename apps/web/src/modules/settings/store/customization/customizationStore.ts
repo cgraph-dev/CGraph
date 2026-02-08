@@ -18,12 +18,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { api } from '@/lib/api';
 import { safeLocalStorage } from '@/lib/safeStorage';
-import {
-  createToggle,
-  createSchemaMapper,
-  createDebouncedSave,
-  type ZustandSet,
-} from '@/lib/storeHelpers';
+import { createToggle, type ZustandSet } from '@/lib/storeHelpers';
 import { createLogger } from '@/lib/logger';
 
 // Re-export types and constants from the types module
@@ -86,75 +81,16 @@ export {
   useSyncState,
 } from './customizationStore.selectors';
 
-import type { CustomizationState, CustomizationStore } from './customizationStore.types';
+import type { CustomizationStore } from './customizationStore.types';
 import {
   THEME_COLORS,
   AVATAR_BORDERS,
   RARITY_COLORS,
   DEFAULT_STATE,
 } from './customizationStore.types';
+import { apiSchemaMapper, debouncedSave, PERSIST_PARTIALIZE } from './customizationStore.schema';
 
 const logger = createLogger('customizationStore');
-
-// =============================================================================
-// API SCHEMA MAPPING
-// =============================================================================
-
-const apiSchemaMapper = createSchemaMapper<CustomizationState>({
-  // Theme
-  themePreset: 'theme_preset',
-  effectPreset: 'effect_preset',
-  animationSpeed: 'animation_speed',
-  particlesEnabled: 'particles_enabled',
-  glowEnabled: 'glow_enabled',
-  blurEnabled: 'blur_enabled',
-  animatedBackground: 'animated_background',
-
-  // Avatar
-  avatarBorderType: 'avatar_border_type',
-  avatarBorderColor: 'avatar_border_color',
-  avatarSize: 'avatar_size',
-  selectedBorderTheme: 'selected_border_theme',
-  selectedBorderId: 'selected_border_id',
-
-  // Chat
-  chatBubbleStyle: 'chat_bubble_style',
-  chatBubbleColor: 'chat_bubble_color',
-  bubbleBorderRadius: 'bubble_border_radius',
-  bubbleShadowIntensity: 'bubble_shadow_intensity',
-  bubbleEntranceAnimation: 'bubble_entrance_animation',
-  bubbleGlassEffect: 'bubble_glass_effect',
-  bubbleShowTail: 'bubble_show_tail',
-  bubbleHoverEffect: 'bubble_hover_effect',
-  groupMessages: 'group_messages',
-  showTimestamps: 'show_timestamps',
-  compactMode: 'compact_mode',
-
-  // Profile
-  profileCardStyle: 'profile_card_style',
-  selectedProfileThemeId: 'selected_profile_theme_id',
-  showBadges: 'show_badges',
-  showBio: 'show_bio',
-  showStatus: 'show_status',
-  glowEffects: 'glow_effects',
-  particleEffects: 'particle_effects',
-
-  // Identity
-  equippedTitle: 'equipped_title',
-  equippedBadges: 'equipped_badges',
-});
-
-// =============================================================================
-// DEBOUNCED SAVE
-// =============================================================================
-
-const debouncedSave = createDebouncedSave<CustomizationStore>(
-  async (state, _set) => {
-    const payload = apiSchemaMapper.toApi(state);
-    await api.patch('/api/v1/me/customizations', payload);
-  },
-  { delay: 1000 }
-);
 
 // =============================================================================
 // STORE CREATION
@@ -163,7 +99,6 @@ const debouncedSave = createDebouncedSave<CustomizationStore>(
 export const useCustomizationStore = create<CustomizationStore>()(
   persist(
     (set, get) => {
-      // Cast set to our ZustandSet type for compatibility with helper functions
       const _set = set as unknown as ZustandSet<CustomizationStore>;
       return {
         ...DEFAULT_STATE,
@@ -260,40 +195,7 @@ export const useCustomizationStore = create<CustomizationStore>()(
     {
       name: 'cgraph-customization',
       storage: createJSONStorage(() => safeLocalStorage),
-      partialize: (state) => ({
-        themePreset: state.themePreset,
-        effectPreset: state.effectPreset,
-        animationSpeed: state.animationSpeed,
-        particlesEnabled: state.particlesEnabled,
-        glowEnabled: state.glowEnabled,
-        blurEnabled: state.blurEnabled,
-        animatedBackground: state.animatedBackground,
-        avatarBorderType: state.avatarBorderType,
-        avatarBorderColor: state.avatarBorderColor,
-        avatarSize: state.avatarSize,
-        selectedBorderTheme: state.selectedBorderTheme,
-        selectedBorderId: state.selectedBorderId,
-        chatBubbleStyle: state.chatBubbleStyle,
-        chatBubbleColor: state.chatBubbleColor,
-        bubbleBorderRadius: state.bubbleBorderRadius,
-        bubbleShadowIntensity: state.bubbleShadowIntensity,
-        bubbleEntranceAnimation: state.bubbleEntranceAnimation,
-        bubbleGlassEffect: state.bubbleGlassEffect,
-        bubbleShowTail: state.bubbleShowTail,
-        bubbleHoverEffect: state.bubbleHoverEffect,
-        groupMessages: state.groupMessages,
-        showTimestamps: state.showTimestamps,
-        compactMode: state.compactMode,
-        profileCardStyle: state.profileCardStyle,
-        selectedProfileThemeId: state.selectedProfileThemeId,
-        showBadges: state.showBadges,
-        showBio: state.showBio,
-        showStatus: state.showStatus,
-        glowEffects: state.glowEffects,
-        particleEffects: state.particleEffects,
-        equippedTitle: state.equippedTitle,
-        equippedBadges: state.equippedBadges,
-      }),
+      partialize: PERSIST_PARTIALIZE,
     }
   )
 );
@@ -302,7 +204,6 @@ export const useCustomizationStore = create<CustomizationStore>()(
 // LEGACY EXPORTS (for backward compatibility during migration)
 // =============================================================================
 
-// Re-export with old names for gradual migration
 export const useCustomizationStoreV2 = useCustomizationStore;
 export const themeColors = THEME_COLORS;
 export const avatarBorders = AVATAR_BORDERS;

@@ -1,0 +1,25 @@
+/**
+ * Animation Presets Library
+ *
+ * Barrel file re-exporting all animation presets submodules.
+ */
+
+export { springs, tweens, staggerConfigs, entranceVariants } from './presets';
+export { chatBubbleAnimations } from './chat-bubbles';
+export type { ChatBubbleStyleId } from './chat-bubbles';
+export {
+  hoverAnimations,
+  createPulseAnimation,
+  createFireAnimation,
+  createElectricAnimation,
+  particleAnimations,
+  backgroundAnimations,
+  getStaggerDelay,
+  createRepeatTransition,
+  createSpring,
+  getRarityGlow,
+  getTierGlow,
+} from './effects';
+
+// Default export
+export { springs as default } from './presets';

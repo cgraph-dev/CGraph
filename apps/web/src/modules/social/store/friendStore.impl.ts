@@ -4,48 +4,6 @@
  * Manages friend list, friend requests, and user blocking functionality.
  * Provides real-time presence updates and friend status tracking.
  *
- * ## Features
- * - Friend list with online/offline status
- * - Incoming and outgoing friend requests
- * - User blocking and unblocking
- * - Real-time status updates via Phoenix Channels
- *
- * ## Usage
- *
- * ```tsx
- * import { useFriendStore } from '@/modules/social/store';
- *
- * function FriendsList() {
- *   const { friends, fetchFriends } = useFriendStore();
- *
- *   useEffect(() => {
- *     fetchFriends();
- *   }, []);
- *
- *   return (
- *     <div>
- *       {friends.map((friend) => (
- *         <FriendItem key={friend.id} friend={friend} />
- *       ))}
- *     </div>
- *   );
- * }
- * ```
- *
- * ## State
- * - `friends` - List of user's friends
- * - `pendingRequests` - Incoming friend requests
- * - `sentRequests` - Outgoing friend requests
- * - `isLoading` - Loading state
- * - `error` - Last error message
- *
- * ## Actions
- * - `fetchFriends()` - Load friend list
- * - `sendFriendRequest(userId)` - Send friend request
- * - `acceptRequest(requestId)` - Accept incoming request
- * - `rejectRequest(requestId)` - Reject incoming request
- * - `removeFriend(friendId)` - Remove friend
- *
  * @module stores/friendStore
  * @version 0.9.9
  * @since v0.1.0
@@ -56,114 +14,11 @@ import { createIdempotencyKey } from '@cgraph/utils';
 import { api } from '@/lib/api';
 import { ensureArray, extractErrorMessage } from '@/lib/apiUtils';
 
-export interface Friend {
-  id: string;
-  username: string;
-  displayName: string | null;
-  avatarUrl: string | null;
-  avatarBorderId?: string | null;
-  avatar_border_id?: string | null;
-  status: 'online' | 'idle' | 'dnd' | 'offline';
-  statusMessage: string | null;
-  friendshipId: string;
-  createdAt: string;
-}
+// Re-export types so existing consumers keep working
+export type { Friend, FriendRequest, FriendState } from './friend-types';
 
-export interface FriendRequest {
-  id: string;
-  user: {
-    id: string;
-    username: string;
-    displayName: string | null;
-    avatarUrl: string | null;
-    avatarBorderId?: string | null;
-    avatar_border_id?: string | null;
-  };
-  createdAt: string;
-  type: 'incoming' | 'outgoing';
-}
-
-// Helper to normalize API response to our FriendRequest format
-function normalizeRequest(
-  data: Record<string, unknown>,
-  type: 'incoming' | 'outgoing'
-): FriendRequest {
-  // Backend returns 'from' for incoming and 'to' for outgoing requests
-  const userData = (type === 'incoming' ? data.from : data.to) as
-    | Record<string, unknown>
-    | undefined;
-
-  return {
-    id: data.id as string,
-    user: userData
-      ? {
-          id: userData.id as string,
-          username: (userData.username as string) || 'Unknown',
-          displayName:
-            (userData.display_name as string | null) ||
-            (userData.displayName as string | null) ||
-            null,
-          avatarUrl:
-            (userData.avatar_url as string | null) || (userData.avatarUrl as string | null) || null,
-          avatarBorderId:
-            (userData.avatar_border_id as string | null) ||
-            (userData.avatarBorderId as string | null) ||
-            null,
-          avatar_border_id: (userData.avatar_border_id as string | null) || null,
-        }
-      : {
-          id: 'unknown',
-          username: 'Unknown User',
-          displayName: null,
-          avatarUrl: null,
-        },
-    createdAt: (data.sent_at as string) || (data.created_at as string) || new Date().toISOString(),
-    type,
-  };
-}
-
-// Helper to normalize friend data from API
-function normalizeFriend(data: Record<string, unknown>): Friend {
-  const userData = data.user as Record<string, unknown> | undefined;
-
-  return {
-    id: (userData?.id as string) || (data.id as string),
-    username: (userData?.username as string) || 'Unknown',
-    displayName:
-      (userData?.display_name as string | null) || (userData?.displayName as string | null) || null,
-    avatarUrl:
-      (userData?.avatar_url as string | null) || (userData?.avatarUrl as string | null) || null,
-    avatarBorderId:
-      (userData?.avatar_border_id as string | null) ||
-      (userData?.avatarBorderId as string | null) ||
-      null,
-    avatar_border_id: (userData?.avatar_border_id as string | null) || null,
-    status: 'offline',
-    statusMessage: null,
-    friendshipId: data.id as string,
-    createdAt: (data.since as string) || (data.created_at as string) || new Date().toISOString(),
-  };
-}
-
-export interface FriendState {
-  friends: Friend[];
-  pendingRequests: FriendRequest[];
-  sentRequests: FriendRequest[];
-  isLoading: boolean;
-  error: string | null;
-
-  // Actions
-  fetchFriends: () => Promise<void>;
-  fetchPendingRequests: () => Promise<void>;
-  fetchSentRequests: () => Promise<void>;
-  sendRequest: (usernameOrId: string) => Promise<void>;
-  acceptRequest: (requestId: string) => Promise<void>;
-  declineRequest: (requestId: string) => Promise<void>;
-  removeFriend: (friendId: string) => Promise<void>;
-  blockUser: (userId: string) => Promise<void>;
-  unblockUser: (userId: string) => Promise<void>;
-  clearError: () => void;
-}
+import type { FriendState } from './friend-types';
+import { normalizeFriend, normalizeRequest } from './friend-normalizers';
 
 export const useFriendStore = create<FriendState>()((set, get) => ({
   friends: [],

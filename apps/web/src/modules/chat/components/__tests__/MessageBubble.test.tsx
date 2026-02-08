@@ -4,15 +4,12 @@ import { MessageBubble, type UIPreferences, type MessageBubbleProps } from '../M
 import type { Message } from '@/modules/chat/store';
 
 // Mock dependencies
-vi.mock('@/stores/chatStore', () => ({
-  useChatStore: {
-    getState: () => ({
-      addReaction: vi.fn().mockResolvedValue(undefined),
-    }),
-  },
+vi.mock('@/lib/chat', () => ({
+  aggregateReactions: vi.fn(() => []),
+  handleRemoveReaction: vi.fn(),
 }));
 
-vi.mock('@/stores/authStore', () => ({
+vi.mock('@/modules/auth/store', () => ({
   useAuthStore: {
     getState: () => ({
       user: { id: 'current-user-1' },
@@ -20,7 +17,7 @@ vi.mock('@/stores/authStore', () => ({
   },
 }));
 
-vi.mock('@/components/profile/UserProfileCard', () => ({
+vi.mock('@/modules/social/components/UserProfileCard', () => ({
   default: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="profile-card">{children}</div>
   ),
@@ -30,23 +27,23 @@ vi.mock('@/components/theme/ThemedAvatar', () => ({
   ThemedAvatar: ({ alt }: { alt: string }) => <div data-testid="avatar">{alt}</div>,
 }));
 
-vi.mock('@/components/audio/AdvancedVoiceVisualizer', () => ({
+vi.mock('@/modules/chat/components/audio/AdvancedVoiceVisualizer', () => ({
   default: () => <div data-testid="voice-visualizer">Voice Visualizer</div>,
 }));
 
-vi.mock('@/components/chat/MessageReactions', () => ({
+vi.mock('@/modules/chat/components/MessageReactions', () => ({
   default: () => <div data-testid="reactions">Reactions</div>,
 }));
 
-vi.mock('@/components/chat/RichMediaEmbed', () => ({
+vi.mock('@/modules/chat/components/RichMediaEmbed', () => ({
   default: () => <div data-testid="rich-embed">Rich Embed</div>,
 }));
 
-vi.mock('@/components/chat/GifMessage', () => ({
+vi.mock('@/modules/chat/components/GifMessage', () => ({
   GifMessage: () => <div data-testid="gif-message">GIF</div>,
 }));
 
-vi.mock('@/components/chat/FileMessage', () => ({
+vi.mock('@/modules/chat/components/FileMessage', () => ({
   FileMessage: () => <div data-testid="file-message">File</div>,
 }));
 

@@ -1,18 +1,17 @@
 /**
- * Socket Manager
- *
- * Singleton manager for Phoenix WebSocket connections.
- * Orchestrates connection lifecycle and delegates channel-specific
- * logic to dedicated submodules for maintainability.
- *
- * @module lib/socket/SocketManager
+ * Socket Manager — Singleton orchestrator for Phoenix WebSocket connections.
+ * Delegates channel logic to dedicated submodules.
  */
 
-import { Socket, Channel, Presence } from 'phoenix';
+import type { Channel } from 'phoenix';
 import { useAuthStore } from '@/modules/auth/store';
-import { useChatStore } from '@/modules/chat/store';
 import { socketLogger as logger } from '../logger';
-import { setupForumHandlers, setupThreadHandlers } from './channelHandlers';
+import { connectSocket, disconnectSocket, type SocketManagerState } from './connectionLifecycle';
+import {
+  sendTyping as sendTypingImpl,
+  sendReaction as sendReactionImpl,
+  peekConversationsPresence as peekPresenceImpl,
+} from './socketUtils';
 import {
   joinUserChannel as joinUserChannelImpl,
   leaveUserChannel as leaveUserChannelImpl,
@@ -34,6 +33,22 @@ import {
   joinGroupChannel as joinGroupChannelImpl,
   leaveGroupChannel as leaveGroupChannelImpl,
 } from './groupChannel';
+import {
+  joinForum as joinForumImpl,
+  leaveForum as leaveForumImpl,
+  subscribeToForum as subscribeToForumImpl,
+  unsubscribeFromForum as unsubscribeFromForumImpl,
+} from './forumChannel';
+import {
+  joinThread as joinThreadImpl,
+  leaveThread as leaveThreadImpl,
+  voteOnThread as voteOnThreadImpl,
+  voteOnComment as voteOnCommentImpl,
+  sendComment as sendCommentImpl,
+  sendThreadTyping as sendThreadTypingImpl,
+  voteOnPoll as voteOnPollImpl,
+  getThreadViewers as getThreadViewersImpl,
+} from './threadChannel';
 import type {
   ForumChannelCallbacks,
   ThreadChannelCallbacks,
@@ -43,155 +58,77 @@ import type {
   ThreadPollData,
 } from './types';
 
-// ── Socket URL resolution ─────────────────────────────────────────────
-
-function getSocketUrl(): string {
-  const envUrl = import.meta.env.VITE_SOCKET_URL ?? import.meta.env.VITE_WS_URL;
-
-  if (envUrl !== undefined && envUrl !== '') {
-    return envUrl;
-  }
-
-  if (typeof window !== 'undefined') {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    return `${protocol}//${window.location.host}/socket`;
-  }
-
-  return 'ws://localhost:4000/socket';
-}
-
-const SOCKET_URL = getSocketUrl();
-
-logger.debug('Configured URL:', SOCKET_URL);
-logger.debug('VITE_WS_URL:', import.meta.env.VITE_WS_URL);
-logger.debug('VITE_API_URL:', import.meta.env.VITE_API_URL);
-
-// ── Socket Manager Class ──────────────────────────────────────────────
-
 export class SocketManager {
-  private socket: Socket | null = null;
-  private channels: Map<string, Channel> = new Map();
-  private presences: Map<string, Presence> = new Map();
-  private onlineUsers: Map<string, Set<string>> = new Map();
-  private reconnectTimer: number | null = null;
-  private statusListeners: Set<
-    (conversationId: string, userId: string, isOnline: boolean) => void
-  > = new Set();
-  private connectionPromise: Promise<void> | null = null;
-  private lastJoinAttempts: Map<string, number> = new Map();
-  private channelHandlersSetUp: Set<string> = new Set();
+  private state: SocketManagerState = {
+    socket: null,
+    channels: new Map(),
+    presences: new Map(),
+    onlineUsers: new Map(),
+    reconnectTimer: null,
+    connectionPromise: null,
+    channelHandlersSetUp: new Set(),
+    lastJoinAttempts: new Map(),
+    forumCallbacks: new Map(),
+    threadCallbacks: new Map(),
+  };
+  private statusListeners = new Set<(cId: string, uId: string, online: boolean) => void>();
   private readonly JOIN_DEBOUNCE_MS = 1000;
+  private peekTimeouts = new Set<ReturnType<typeof setTimeout>>();
 
-  // Forum/thread callback registries
-  private forumCallbacks: Map<string, ForumChannelCallbacks> = new Map();
-  private threadCallbacks: Map<string, ThreadChannelCallbacks> = new Map();
-
-  // Peek timeout tracking
-  private peekTimeouts: Set<ReturnType<typeof setTimeout>> = new Set();
+  // State accessors
+  private get socket() {
+    return this.state.socket;
+  }
+  private get channels() {
+    return this.state.channels;
+  }
+  private get presences() {
+    return this.state.presences;
+  }
+  private get onlineUsers() {
+    return this.state.onlineUsers;
+  }
+  private get channelHandlersSetUp() {
+    return this.state.channelHandlersSetUp;
+  }
+  private get lastJoinAttempts() {
+    return this.state.lastJoinAttempts;
+  }
+  private get forumCallbacks() {
+    return this.state.forumCallbacks;
+  }
+  private get threadCallbacks() {
+    return this.state.threadCallbacks;
+  }
 
   // ── Connection Lifecycle ──────────────────────────────────────────
 
   connect(): Promise<void> {
-    if (this.connectionPromise) {
-      return this.connectionPromise;
-    }
-
-    const token = useAuthStore.getState().token;
-    logger.debug('connect() called, token exists:', !!token);
-    if (!token) {
-      logger.warn('Cannot connect to socket: no auth token');
-      return Promise.resolve();
-    }
-
-    if (this.socket?.isConnected()) {
-      logger.debug('Already connected');
-      return Promise.resolve();
-    }
-
-    logger.debug('Connecting to:', SOCKET_URL);
-    this.connectionPromise = new Promise<void>((resolve, reject) => {
-      const connectionTimeout = setTimeout(() => {
-        logger.error('Socket connection timeout after 15s');
-        this.connectionPromise = null;
-        reject(new Error('Socket connection timeout'));
-      }, 15000);
-
-      this.socket = new Socket(SOCKET_URL, {
-        params: { token },
-        reconnectAfterMs: (tries: number) => Math.min(1000 * Math.pow(2, tries - 1), 30000),
-        heartbeatIntervalMs: 30000,
-      });
-
-      this.socket.onOpen(() => {
-        clearTimeout(connectionTimeout);
-        logger.log('Socket connected to:', SOCKET_URL);
-        if (this.reconnectTimer) {
-          clearTimeout(this.reconnectTimer);
-          this.reconnectTimer = null;
-        }
-        this.connectionPromise = null;
-        resolve();
-      });
-
-      this.socket.onClose(() => {
-        logger.log('Socket disconnected');
-        this.connectionPromise = null;
-      });
-
-      this.socket.onError((error: unknown) => {
-        clearTimeout(connectionTimeout);
-        logger.error('Socket error:', error);
-        this.connectionPromise = null;
-        reject(error);
-      });
-
-      this.socket.connect();
-    }).catch((err) => {
-      logger.warn('Socket connection failed, app will work in offline mode:', err);
-    });
-
-    return this.connectionPromise ?? Promise.resolve();
+    return connectSocket(this.state);
   }
 
   disconnect() {
-    this.channels.forEach((channel) => channel.leave());
-    this.channels.clear();
-    this.presences.clear();
-    this.onlineUsers.clear();
-    this.channelHandlersSetUp.clear();
-    this.lastJoinAttempts.clear();
-    this.forumCallbacks.clear();
-    this.threadCallbacks.clear();
-    this.socket?.disconnect();
-    this.socket = null;
-    this.connectionPromise = null;
+    disconnectSocket(this.state);
   }
 
   async reconnectWithNewToken(): Promise<void> {
     logger.log('Reconnecting socket with new token...');
-    const channelTopics = Array.from(this.channels.keys());
     this.disconnect();
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((r) => setTimeout(r, 100));
     await this.connect();
-
     const userId = useAuthStore.getState().user?.id;
     if (userId) {
       this.joinUserChannel(userId);
       this.joinPresenceLobby();
     }
-
-    logger.log(`Socket reconnected. Previous channels: ${channelTopics.length}`);
   }
 
   isConnected(): boolean {
     return this.socket?.isConnected() ?? false;
   }
-
-  getSocket(): Socket | null {
+  getSocket() {
     return this.socket;
   }
-
-  // ── User Channel (delegated) ─────────────────────────────────────
 
   joinUserChannel(userId: string): Channel | null {
     return joinUserChannelImpl(
@@ -206,8 +143,6 @@ export class SocketManager {
   leaveUserChannel(userId: string) {
     leaveUserChannelImpl(userId, this.channels);
   }
-
-  // ── Presence (delegated) ──────────────────────────────────────────
 
   joinPresenceLobby(): Channel | null {
     return joinPresenceLobbyImpl(
@@ -231,15 +166,13 @@ export class SocketManager {
     return getOnlineFriendsImpl(this.onlineUsers);
   }
 
-  onStatusChange(
-    callback: (conversationId: string, userId: string, isOnline: boolean) => void
-  ): () => void {
-    this.statusListeners.add(callback);
-    return () => this.statusListeners.delete(callback);
+  onStatusChange(cb: (cId: string, uId: string, online: boolean) => void): () => void {
+    this.statusListeners.add(cb);
+    return () => this.statusListeners.delete(cb);
   }
 
-  private notifyStatusChange(conversationId: string, userId: string, isOnline: boolean) {
-    this.statusListeners.forEach((callback) => callback(conversationId, userId, isOnline));
+  private notifyStatusChange(cId: string, uId: string, online: boolean) {
+    this.statusListeners.forEach((cb) => cb(cId, uId, online));
   }
 
   getOnlineUsers(conversationId: string): string[] {
@@ -253,8 +186,6 @@ export class SocketManager {
   getAllOnlineStatuses(): Map<string, Set<string>> {
     return getAllOnlineStatusesImpl(this.onlineUsers);
   }
-
-  // ── Conversation Channels (delegated) ─────────────────────────────
 
   joinConversation(conversationId: string): Channel | null {
     return joinConversationImpl(
@@ -282,8 +213,6 @@ export class SocketManager {
     );
   }
 
-  // ── Group Channels (delegated) ────────────────────────────────────
-
   joinGroupChannel(channelId: string): Channel | null {
     return joinGroupChannelImpl(this.socket, channelId, this.channels, this.connect.bind(this));
   }
@@ -292,174 +221,68 @@ export class SocketManager {
     leaveGroupChannelImpl(channelId, this.channels);
   }
 
-  // ── Forum Channels ───────────────────────────────────────────────
-
   joinForum(forumId: string, callbacks?: ForumChannelCallbacks): Channel | null {
-    const topic = `forum:${forumId}`;
-
-    if (callbacks) {
-      this.forumCallbacks.set(forumId, callbacks);
-    }
-
-    const existingChannel = this.channels.get(topic);
-    if (existingChannel) {
-      const state = existingChannel.state;
-      if (state === 'joined' || state === 'joining') return existingChannel;
-      this.channels.delete(topic);
-      this.channelHandlersSetUp.delete(topic);
-      this.presences.delete(topic);
-    }
-
-    if (!this.socket?.isConnected()) {
-      logger.warn('Cannot join forum: socket not connected');
-      return null;
-    }
-
-    const channel = this.socket.channel(topic, {});
-    this.channels.set(topic, channel);
-
-    setupForumHandlers(
-      channel,
-      topic,
+    return joinForumImpl(
+      this.socket,
       forumId,
       {
         channels: this.channels,
         presences: this.presences,
         channelHandlersSetUp: this.channelHandlersSetUp,
       },
-      () => this.forumCallbacks
+      this.forumCallbacks,
+      callbacks
     );
-
-    channel
-      .join()
-      .receive('ok', () => logger.log(`Joined forum channel: ${forumId}`))
-      .receive('error', (resp: unknown) => {
-        logger.error(`Failed to join forum channel ${forumId}:`, resp);
-        this.channels.delete(topic);
-        this.channelHandlersSetUp.delete(topic);
-        this.forumCallbacks.delete(forumId);
-      });
-
-    return channel;
   }
 
   leaveForum(forumId: string) {
-    const topic = `forum:${forumId}`;
-    const channel = this.channels.get(topic);
-    if (channel) {
-      logger.log(`Leaving forum: ${forumId}`);
-      channel.leave();
-      this.channels.delete(topic);
-      this.channelHandlersSetUp.delete(topic);
-      this.presences.delete(topic);
-      this.forumCallbacks.delete(forumId);
-    }
+    leaveForumImpl(
+      forumId,
+      {
+        channels: this.channels,
+        presences: this.presences,
+        channelHandlersSetUp: this.channelHandlersSetUp,
+      },
+      this.forumCallbacks
+    );
   }
 
   subscribeToForum(forumId: string): Promise<{ subscribed: boolean }> {
-    const topic = `forum:${forumId}`;
-    const channel = this.channels.get(topic);
-    if (!channel || channel.state !== 'joined') {
-      return Promise.reject(new Error('Not connected to forum channel'));
-    }
-    return new Promise((resolve, reject) => {
-      channel
-        .push('subscribe', {})
-        .receive('ok', (resp: unknown) => resolve(resp as { subscribed: boolean }))
-        .receive('error', (resp: unknown) => reject(resp));
-    });
+    return subscribeToForumImpl(forumId, this.channels);
   }
 
   unsubscribeFromForum(forumId: string): Promise<{ subscribed: boolean }> {
-    const topic = `forum:${forumId}`;
-    const channel = this.channels.get(topic);
-    if (!channel || channel.state !== 'joined') {
-      return Promise.reject(new Error('Not connected to forum channel'));
-    }
-    return new Promise((resolve, reject) => {
-      channel
-        .push('unsubscribe', {})
-        .receive('ok', (resp: unknown) => resolve(resp as { subscribed: boolean }))
-        .receive('error', (resp: unknown) => reject(resp));
-    });
+    return unsubscribeFromForumImpl(forumId, this.channels);
   }
 
-  // ── Thread Channels ───────────────────────────────────────────────
-
   joinThread(threadId: string, callbacks?: ThreadChannelCallbacks): Channel | null {
-    const topic = `thread:${threadId}`;
-
-    if (callbacks) {
-      this.threadCallbacks.set(threadId, callbacks);
-    }
-
-    const existingChannel = this.channels.get(topic);
-    if (existingChannel) {
-      const state = existingChannel.state;
-      if (state === 'joined' || state === 'joining') return existingChannel;
-      this.channels.delete(topic);
-      this.channelHandlersSetUp.delete(topic);
-      this.presences.delete(topic);
-    }
-
-    if (!this.socket?.isConnected()) {
-      logger.warn('Cannot join thread: socket not connected');
-      return null;
-    }
-
-    const channel = this.socket.channel(topic, {});
-    this.channels.set(topic, channel);
-
-    setupThreadHandlers(
-      channel,
-      topic,
+    return joinThreadImpl(
+      this.socket,
       threadId,
       {
         channels: this.channels,
         presences: this.presences,
         channelHandlersSetUp: this.channelHandlersSetUp,
       },
-      () => this.threadCallbacks
+      this.threadCallbacks,
+      callbacks
     );
-
-    channel
-      .join()
-      .receive('ok', () => logger.log(`Joined thread channel: ${threadId}`))
-      .receive('error', (resp: unknown) => {
-        logger.error(`Failed to join thread channel ${threadId}:`, resp);
-        this.channels.delete(topic);
-        this.channelHandlersSetUp.delete(topic);
-        this.threadCallbacks.delete(threadId);
-      });
-
-    return channel;
   }
 
   leaveThread(threadId: string) {
-    const topic = `thread:${threadId}`;
-    const channel = this.channels.get(topic);
-    if (channel) {
-      logger.log(`Leaving thread: ${threadId}`);
-      channel.leave();
-      this.channels.delete(topic);
-      this.channelHandlersSetUp.delete(topic);
-      this.presences.delete(topic);
-      this.threadCallbacks.delete(threadId);
-    }
+    leaveThreadImpl(
+      threadId,
+      {
+        channels: this.channels,
+        presences: this.presences,
+        channelHandlersSetUp: this.channelHandlersSetUp,
+      },
+      this.threadCallbacks
+    );
   }
 
   voteOnThread(threadId: string, value: 1 | -1 | 0): Promise<ThreadVotePayload> {
-    const topic = `thread:${threadId}`;
-    const channel = this.channels.get(topic);
-    if (!channel || channel.state !== 'joined') {
-      return Promise.reject(new Error('Not connected to thread channel'));
-    }
-    return new Promise((resolve, reject) => {
-      channel
-        .push('vote', { value })
-        .receive('ok', (resp: unknown) => resolve(resp as ThreadVotePayload))
-        .receive('error', (resp: unknown) => reject(resp));
-    });
+    return voteOnThreadImpl(threadId, value, this.channels);
   }
 
   voteOnComment(
@@ -467,17 +290,7 @@ export class SocketManager {
     commentId: string,
     value: 1 | -1 | 0
   ): Promise<CommentVotePayload> {
-    const topic = `thread:${threadId}`;
-    const channel = this.channels.get(topic);
-    if (!channel || channel.state !== 'joined') {
-      return Promise.reject(new Error('Not connected to thread channel'));
-    }
-    return new Promise((resolve, reject) => {
-      channel
-        .push('vote_comment', { comment_id: commentId, value })
-        .receive('ok', (resp: unknown) => resolve(resp as CommentVotePayload))
-        .receive('error', (resp: unknown) => reject(resp));
-    });
+    return voteOnCommentImpl(threadId, commentId, value, this.channels);
   }
 
   sendComment(
@@ -485,62 +298,23 @@ export class SocketManager {
     content: string,
     parentId?: string
   ): Promise<{ comment_id: string }> {
-    const topic = `thread:${threadId}`;
-    const channel = this.channels.get(topic);
-    if (!channel || channel.state !== 'joined') {
-      return Promise.reject(new Error('Not connected to thread channel'));
-    }
-    return new Promise((resolve, reject) => {
-      channel
-        .push('new_comment', { content, parent_id: parentId })
-        .receive('ok', (resp: unknown) => resolve(resp as { comment_id: string }))
-        .receive('error', (resp: unknown) => reject(resp));
-    });
+    return sendCommentImpl(threadId, content, this.channels, parentId);
   }
 
   sendThreadTyping(threadId: string, isTyping: boolean) {
-    const topic = `thread:${threadId}`;
-    const channel = this.channels.get(topic);
-    if (channel?.state === 'joined') {
-      channel.push('typing', { typing: isTyping, is_typing: isTyping });
-    }
+    sendThreadTypingImpl(threadId, isTyping, this.channels);
   }
 
   voteOnPoll(threadId: string, optionId: string): Promise<{ poll: ThreadPollData }> {
-    const topic = `thread:${threadId}`;
-    const channel = this.channels.get(topic);
-    if (!channel || channel.state !== 'joined') {
-      return Promise.reject(new Error('Not connected to thread channel'));
-    }
-    return new Promise((resolve, reject) => {
-      channel
-        .push('vote_poll', { option_id: optionId })
-        .receive('ok', (resp: unknown) => resolve(resp as { poll: ThreadPollData }))
-        .receive('error', (resp: unknown) => reject(resp));
-    });
+    return voteOnPollImpl(threadId, optionId, this.channels);
   }
 
   getThreadViewers(threadId: string): Promise<{ viewers: ThreadViewerPayload[] }> {
-    const topic = `thread:${threadId}`;
-    const channel = this.channels.get(topic);
-    if (!channel || channel.state !== 'joined') {
-      return Promise.reject(new Error('Not connected to thread channel'));
-    }
-    return new Promise((resolve, reject) => {
-      channel
-        .push('get_viewers', {})
-        .receive('ok', (resp: unknown) => resolve(resp as { viewers: ThreadViewerPayload[] }))
-        .receive('error', (resp: unknown) => reject(resp));
-    });
+    return getThreadViewersImpl(threadId, this.channels);
   }
 
-  // ── Utility Methods ───────────────────────────────────────────────
-
   sendTyping(topic: string, isTyping: boolean) {
-    const channel = this.channels.get(topic);
-    if (channel) {
-      channel.push('typing', { typing: isTyping, is_typing: isTyping });
-    }
+    sendTypingImpl(topic, isTyping, this.channels);
   }
 
   sendReaction(
@@ -549,12 +323,7 @@ export class SocketManager {
     emoji: string,
     action: 'add' | 'remove'
   ): void {
-    const topic = `conversation:${conversationId}`;
-    const channel = this.channels.get(topic);
-    if (channel?.state === 'joined') {
-      const eventName = action === 'add' ? 'add_reaction' : 'remove_reaction';
-      channel.push(eventName, { message_id: messageId, emoji });
-    }
+    sendReactionImpl(conversationId, messageId, emoji, action, this.channels);
   }
 
   getChannel(topic: string): Channel | undefined {
@@ -562,50 +331,14 @@ export class SocketManager {
   }
 
   async peekConversationsPresence(conversationIds: string[]): Promise<() => void> {
-    if (!this.socket?.isConnected()) {
-      try {
-        await this.connect();
-      } catch {
-        return () => {};
-      }
-    }
-
-    const channelsToLeave: string[] = [];
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
-
-    conversationIds.forEach((convId) => {
-      const topic = `conversation:${convId}`;
-      const existingChannel = this.channels.get(topic);
-      if (!existingChannel || existingChannel.state !== 'joined') {
-        this.joinConversation(convId);
-        channelsToLeave.push(convId);
-      }
-    });
-
-    if (channelsToLeave.length > 0) {
-      timeoutId = setTimeout(() => {
-        if (timeoutId) this.peekTimeouts.delete(timeoutId);
-        channelsToLeave.forEach((convId) => {
-          const { activeConversationId } = useChatStore.getState();
-          if (convId !== activeConversationId) {
-            this.leaveConversation(convId);
-          }
-        });
-      }, 2000);
-      this.peekTimeouts.add(timeoutId);
-    }
-
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-        this.peekTimeouts.delete(timeoutId);
-      }
-      channelsToLeave.forEach((convId) => {
-        const { activeConversationId } = useChatStore.getState();
-        if (convId !== activeConversationId) {
-          this.leaveConversation(convId);
-        }
-      });
-    };
+    return peekPresenceImpl(
+      conversationIds,
+      this.socket,
+      this.channels,
+      this.peekTimeouts,
+      this.connect.bind(this),
+      this.joinConversation.bind(this),
+      this.leaveConversation.bind(this)
+    );
   }
 }

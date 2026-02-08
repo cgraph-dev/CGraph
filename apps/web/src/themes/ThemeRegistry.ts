@@ -8,6 +8,8 @@
 import type { AppTheme, ThemeAPI, ThemeCategory } from './theme-types';
 import { defaultTheme } from './presets/default-theme';
 import { matrixTheme } from './presets/matrix-theme';
+import { getCSSVariables, injectCSSVariables, applyBodyClasses } from './css-variables';
+import { validateAccessibility } from './accessibility';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('ThemeRegistry');
@@ -109,8 +111,9 @@ class ThemeRegistryClass {
     }
 
     this.currentTheme = theme;
-    this.injectCSSVariables(theme);
-    this.applyBodyClasses(theme);
+    injectCSSVariables(theme);
+    applyBodyClasses(theme);
+    this.cssVariablesInjected = true;
 
     // Emit theme change event
     window.dispatchEvent(
@@ -207,185 +210,17 @@ class ThemeRegistryClass {
   }
 
   /**
-   * Get CSS variables from theme
+   * Get CSS variables from theme (delegates to css-variables module)
    */
   getCSSVariables(theme: AppTheme): Record<string, string> {
-    const vars: Record<string, string> = {};
-
-    // Colors
-    Object.entries(theme.colors).forEach(([key, value]) => {
-      vars[`--theme-color-${this.kebabCase(key)}`] = value;
-    });
-
-    // Typography
-    Object.entries(theme.typography.fontFamily).forEach(([key, value]) => {
-      vars[`--theme-font-${key}`] = value;
-    });
-    Object.entries(theme.typography.fontSize).forEach(([key, value]) => {
-      vars[`--theme-font-size-${key}`] = value;
-    });
-    Object.entries(theme.typography.fontWeight).forEach(([key, value]) => {
-      vars[`--theme-font-weight-${key}`] = String(value);
-    });
-    Object.entries(theme.typography.lineHeight).forEach(([key, value]) => {
-      vars[`--theme-line-height-${key}`] = String(value);
-    });
-    Object.entries(theme.typography.letterSpacing).forEach(([key, value]) => {
-      vars[`--theme-letter-spacing-${key}`] = value;
-    });
-
-    // Layout
-    Object.entries(theme.layout.borderRadius).forEach(([key, value]) => {
-      vars[`--theme-radius-${key}`] = value;
-    });
-    Object.entries(theme.layout.spacing).forEach(([key, value]) => {
-      vars[`--theme-spacing-${key}`] = value;
-    });
-    Object.entries(theme.layout.shadows).forEach(([key, value]) => {
-      vars[`--theme-shadow-${key}`] = value;
-    });
-    Object.entries(theme.layout.transitions).forEach(([key, value]) => {
-      vars[`--theme-transition-${key}`] = value;
-    });
-
-    // Components
-    Object.entries(theme.components).forEach(([component, styles]) => {
-      Object.entries(styles as Record<string, string>).forEach(([key, value]) => {
-        vars[`--theme-${component}-${this.kebabCase(key)}`] = value;
-      });
-    });
-
-    return vars;
+    return getCSSVariables(theme);
   }
 
   /**
-   * Inject CSS variables into document
+   * Validate theme against accessibility standards (delegates to accessibility module)
    */
-  private injectCSSVariables(theme: AppTheme): void {
-    const root = document.documentElement;
-    const vars = this.getCSSVariables(theme);
-
-    Object.entries(vars).forEach(([key, value]) => {
-      root.style.setProperty(key, value);
-    });
-
-    this.cssVariablesInjected = true;
-  }
-
-  /**
-   * Apply body classes for theme
-   */
-  private applyBodyClasses(theme: AppTheme): void {
-    // Remove existing theme classes
-    document.body.classList.forEach((className) => {
-      if (className.startsWith('theme-')) {
-        document.body.classList.remove(className);
-      }
-    });
-
-    // Add new theme classes
-    document.body.classList.add(`theme-${theme.id}`);
-    document.body.classList.add(`theme-category-${theme.category}`);
-
-    if (theme.isPremium) {
-      document.body.classList.add('theme-premium');
-    }
-
-    // Add effect classes
-    if (theme.effects.scanlines) {
-      document.body.classList.add('theme-effect-scanlines');
-    }
-    if (theme.effects.vignette) {
-      document.body.classList.add('theme-effect-vignette');
-    }
-    if (theme.effects.chromatic) {
-      document.body.classList.add('theme-effect-chromatic');
-    }
-  }
-
-  /**
-   * Convert camelCase to kebab-case
-   */
-  private kebabCase(str: string): string {
-    return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-  }
-
-  /**
-   * Validate theme against accessibility standards
-   */
-  validateAccessibility(theme: AppTheme): {
-    valid: boolean;
-    errors: string[];
-    warnings: string[];
-  } {
-    const errors: string[] = [];
-    const warnings: string[] = [];
-
-    // Check contrast ratios (simplified check)
-    const bgLuminance = this.getLuminance(theme.colors.background);
-    const textLuminance = this.getLuminance(theme.colors.textPrimary);
-    const contrastRatio = this.getContrastRatio(bgLuminance, textLuminance);
-
-    if (contrastRatio < 4.5) {
-      errors.push(
-        `Text contrast ratio ${contrastRatio.toFixed(2)}:1 is below WCAG AA standard (4.5:1)`
-      );
-    } else if (contrastRatio < 7) {
-      warnings.push(
-        `Text contrast ratio ${contrastRatio.toFixed(2)}:1 is below WCAG AAA standard (7:1)`
-      );
-    }
-
-    // Check focus indicators
-    if (!theme.accessibility.focusIndicators) {
-      errors.push('Focus indicators are disabled - required for accessibility');
-    }
-
-    return {
-      valid: errors.length === 0,
-      errors,
-      warnings,
-    };
-  }
-
-  /**
-   * Calculate relative luminance of a color
-   */
-  private getLuminance(color: string): number {
-    const rgb = this.hexToRgb(color);
-    if (!rgb) return 0;
-
-    const [r, g, b] = [rgb.r, rgb.g, rgb.b].map((val) => {
-      const normalized = val / 255;
-      return normalized <= 0.03928
-        ? normalized / 12.92
-        : Math.pow((normalized + 0.055) / 1.055, 2.4);
-    }) as [number, number, number];
-
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  }
-
-  /**
-   * Convert hex color to RGB
-   */
-  private hexToRgb(hex: string): { r: number; g: number; b: number } | null {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-      ? {
-          r: parseInt(result[1] ?? '0', 16),
-          g: parseInt(result[2] ?? '0', 16),
-          b: parseInt(result[3] ?? '0', 16),
-        }
-      : null;
-  }
-
-  /**
-   * Calculate contrast ratio between two luminance values
-   */
-  private getContrastRatio(l1: number, l2: number): number {
-    const lighter = Math.max(l1, l2);
-    const darker = Math.min(l1, l2);
-    return (lighter + 0.05) / (darker + 0.05);
+  validateAccessibility(theme: AppTheme) {
+    return validateAccessibility(theme);
   }
 }
 
