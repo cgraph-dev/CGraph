@@ -35,7 +35,8 @@ import type { UIPreferences, PendingE2EEMessage } from './types';
 import { DEFAULT_UI_PREFERENCES } from './types';
 
 // External hooks
-import { useMessageActions, useScheduleMessage, useCallModals } from '@/hooks';
+import { useMessageActions, useScheduleMessage } from '@/modules/chat/hooks';
+import { useCallModals } from '@/modules/calls/hooks';
 
 // Utilities
 import { groupMessagesByDate } from '@/lib/chat/messageUtils';

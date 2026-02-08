@@ -74,7 +74,7 @@ vi.mock('@/lib/apiUtils', () => ({
 }));
 
 // Import after mocks
-import { useConversationState } from '../useConversationState';
+import { useConversationState } from '@/modules/chat/hooks/useConversationState';
 
 describe('useConversationState', () => {
   beforeEach(() => {

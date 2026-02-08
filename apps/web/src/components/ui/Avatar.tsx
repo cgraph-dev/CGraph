@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { getAvatarBorderStyle } from '@/hooks/useCustomizationApplication';
+import { getAvatarBorderStyle } from '@/modules/settings/hooks/useCustomizationApplication';
 
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 

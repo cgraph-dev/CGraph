@@ -14,7 +14,7 @@ import { useGamificationStore } from '@/modules/gamification/store';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
 import { ThemeRegistry } from '@/themes/ThemeRegistry';
-import { useCustomizationApplication } from '@/hooks/useCustomizationApplication';
+import { useCustomizationApplication } from '@/modules/settings/hooks/useCustomizationApplication';
 import { authLogger, themeLogger, gamificationLogger } from '@/lib/logger';
 
 /**

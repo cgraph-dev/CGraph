@@ -17,7 +17,7 @@ import {
   getMessageBubbleClass,
   getMessageEffectClass,
   getReactionStyleClass,
-} from '@/hooks/useCustomizationApplication';
+} from '@/modules/settings/hooks/useCustomizationApplication';
 
 // Reserved for advanced border styling
 void getAvatarBorderStyle;

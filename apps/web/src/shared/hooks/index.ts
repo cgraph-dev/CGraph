@@ -18,7 +18,7 @@ export { useWindowSize } from '@/hooks/useWindowSize';
 export { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 
 // Presence hooks
-export { usePresence, useUserOnline } from '@/hooks/usePresence';
+export { usePresence, useUserOnline } from '@/modules/social/hooks/usePresence';
 
 // Toast hooks
 export { useToast, type ToastOptions, type UseToastReturn } from '@/hooks/useToast';
@@ -27,4 +27,4 @@ export { useToast, type ToastOptions, type UseToastReturn } from '@/hooks/useToa
 export { useNotification } from '@/hooks/useNotification';
 
 // Subscription hooks
-export { useSubscription } from '@/hooks/useSubscription';
+export { useSubscription } from '@/modules/premium/hooks/useSubscription';

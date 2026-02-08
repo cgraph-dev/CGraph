@@ -10,7 +10,7 @@ import {
 import { VideoCameraSlashIcon } from '@heroicons/react/24/solid';
 import { useAuthStore } from '@/modules/auth/store';
 import { toast } from '@/shared/components/ui';
-import { useWebRTC } from '@/hooks/useWebRTC';
+import { useWebRTC } from '@/modules/calls/hooks/useWebRTC';
 
 interface VideoCallModalProps {
   isOpen: boolean;
