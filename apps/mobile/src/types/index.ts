@@ -3,9 +3,9 @@ export interface User {
   id: string;
   email: string;
   username: string | null;
-  uid: string;  // Random 10-digit UID (e.g., "4829173650")
-  user_id: number;  // Legacy sequential ID
-  user_id_display: string;  // Formatted UID (e.g., "#4829173650")
+  uid: string; // Random 10-digit UID (e.g., "4829173650")
+  user_id: number; // Legacy sequential ID
+  user_id_display: string; // Formatted UID (e.g., "#4829173650")
   display_name?: string;
   avatar_url?: string;
   bio?: string;
@@ -18,8 +18,8 @@ export interface User {
   username_changed_at?: string;
   can_change_username: boolean;
   username_next_change_at?: string;
-  title?: string;  // User's custom title badge
-  title_rarity?: string;  // Rarity tier for the title (common, rare, epic, legendary, mythic, etc.)
+  title?: string; // User's custom title badge
+  title_rarity?: string; // Rarity tier for the title (common, rare, epic, legendary, mythic, etc.)
   inserted_at: string;
   updated_at: string;
 }
@@ -422,6 +422,15 @@ export type SettingsStackParamList = {
   // Security screens
   TwoFactorSetup: undefined;
   BlockedUsers: undefined;
+  KeyVerification: { userId: string; username: string };
+  EmailNotifications: undefined;
+  // Customize hub screens
+  Customize: undefined;
+  IdentityCustomization: undefined;
+  EffectsCustomization: undefined;
+  ProgressionCustomization: undefined;
+  BadgeSelection: undefined;
+  TitleSelection: undefined;
   ExportContent: { type: 'thread' | 'post' | 'conversation'; id: string; title: string };
 };
 

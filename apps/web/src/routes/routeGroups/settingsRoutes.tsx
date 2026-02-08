@@ -14,6 +14,10 @@ import {
   BadgeSelection,
   TwoFactorSetup,
   BlockedUsers,
+  CustomEmoji,
+  RSSFeeds,
+  E2EEVerification,
+  KeyVerification,
 } from '../lazyPages';
 
 /** All settings-related protected routes */
@@ -81,6 +85,38 @@ export function SettingsRoutes() {
         element={
           <RouteErrorBoundary routeName="Blocked Users">
             <BlockedUsers />
+          </RouteErrorBoundary>
+        }
+      />
+      <Route
+        path="settings/custom-emoji"
+        element={
+          <RouteErrorBoundary routeName="Custom Emoji">
+            <CustomEmoji />
+          </RouteErrorBoundary>
+        }
+      />
+      <Route
+        path="settings/rss-feeds"
+        element={
+          <RouteErrorBoundary routeName="RSS Feeds">
+            <RSSFeeds />
+          </RouteErrorBoundary>
+        }
+      />
+      <Route
+        path="settings/security/e2ee/:userId"
+        element={
+          <RouteErrorBoundary routeName="E2EE Verification">
+            <E2EEVerification />
+          </RouteErrorBoundary>
+        }
+      />
+      <Route
+        path="settings/security/verify-key/:userId"
+        element={
+          <RouteErrorBoundary routeName="Key Verification">
+            <KeyVerification />
           </RouteErrorBoundary>
         }
       />

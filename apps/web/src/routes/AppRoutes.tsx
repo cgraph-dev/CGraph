@@ -33,6 +33,7 @@ import {
   UserLeaderboard,
   // Calls
   CallScreen,
+  CallHistory,
   // Premium
   PremiumPage,
   CoinShop,
@@ -141,6 +142,7 @@ export function AppRoutes() {
 
         {/* Calls */}
         <Route path="call/:recipientId/:callType" element={<CallScreen />} />
+        <Route path="calls/history" element={<CallHistory />} />
 
         {/* Onboarding & User profile */}
         <Route path="onboarding" element={<Onboarding />} />

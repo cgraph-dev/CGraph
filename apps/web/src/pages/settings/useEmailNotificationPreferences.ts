@@ -2,7 +2,7 @@
  * Hook encapsulating fetch/save logic for email notification preferences.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/modules/auth/store';
 import { api } from '@/lib/api';
@@ -20,12 +20,7 @@ export function useEmailNotificationPreferences() {
   const [saving, setSaving] = useState(false);
   const [preferences, setPreferences] = useState<EmailPreferences>(DEFAULT_EMAIL_PREFERENCES);
 
-  useEffect(() => {
-    fetchPreferences();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.id]);
-
-  const fetchPreferences = async () => {
+  const fetchPreferences = useCallback(async () => {
     if (!user?.id) return;
 
     try {
@@ -49,7 +44,11 @@ export function useEmailNotificationPreferences() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
+
+  useEffect(() => {
+    fetchPreferences();
+  }, [fetchPreferences]);
 
   const savePreferences = async () => {
     if (!user?.id) return;

@@ -46,11 +46,18 @@ export const TitleSelection = lazy(() => import('@/pages/settings/TitleSelection
 export const BadgeSelection = lazy(() => import('@/pages/settings/BadgeSelection'));
 export const TwoFactorSetup = lazy(() => import('@/pages/settings/TwoFactorSetup'));
 export const BlockedUsers = lazy(() => import('@/pages/settings/BlockedUsers'));
+export const CustomEmoji = lazy(() => import('@/pages/settings/CustomEmoji'));
+export const RSSFeeds = lazy(() => import('@/pages/settings/RSSFeeds'));
 export const UserProfile = lazy(() => import('@/pages/profile/UserProfile'));
 export const UserLeaderboard = lazy(() => import('@/pages/community/UserLeaderboard'));
 
+// ── Security ───────────────────────────────────────────────────────────
+export const E2EEVerification = lazy(() => import('@/pages/security/E2EEVerification'));
+export const KeyVerification = lazy(() => import('@/pages/security/KeyVerification'));
+
 // ── Calls ──────────────────────────────────────────────────────────────
 export const CallScreen = lazy(() => import('@/pages/calls/CallScreen'));
+export const CallHistory = lazy(() => import('@/pages/calls/CallHistory'));
 
 // ── Premium & Gamification ─────────────────────────────────────────────
 export const PremiumPage = lazy(() => import('@/pages/premium/PremiumPage'));

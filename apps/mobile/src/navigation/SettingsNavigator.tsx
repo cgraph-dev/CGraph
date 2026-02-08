@@ -24,6 +24,16 @@ import { E2EEVerificationScreen } from '../screens/security';
 import { AdminDashboardScreen, ForumReorderScreen } from '../screens/admin';
 import { ExportContentScreen } from '../screens/content';
 import {
+  CustomizeScreen,
+  IdentityCustomizationScreen,
+  EffectsCustomizationScreen,
+  ProgressionCustomizationScreen,
+  BadgeSelectionScreen,
+  TitleSelectionScreen,
+} from '../screens/customize';
+import EmailNotificationsScreen from '../screens/settings/EmailNotificationsScreen';
+import KeyVerificationScreen from '../screens/settings/KeyVerificationScreen';
+import {
   GamificationHubScreen,
   AchievementsScreen,
   QuestsScreen,
@@ -34,7 +44,7 @@ const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
 export default function SettingsNavigator() {
   const { colors } = useTheme();
-  
+
   return (
     <Stack.Navigator
       screenOptions={{
@@ -48,21 +58,9 @@ export default function SettingsNavigator() {
         headerShadowVisible: false,
       }}
     >
-      <Stack.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{ title: 'Settings' }}
-      />
-      <Stack.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{ title: 'Edit Profile' }}
-      />
-      <Stack.Screen
-        name="Account"
-        component={AccountScreen}
-        options={{ title: 'Account' }}
-      />
+      <Stack.Screen name="Settings" component={SettingsScreen} options={{ title: 'Settings' }} />
+      <Stack.Screen name="Profile" component={ProfileScreen} options={{ title: 'Edit Profile' }} />
+      <Stack.Screen name="Account" component={AccountScreen} options={{ title: 'Account' }} />
       <Stack.Screen
         name="Appearance"
         component={AppearanceScreen}
@@ -88,21 +86,13 @@ export default function SettingsNavigator() {
         component={NotificationsScreen}
         options={{ title: 'Notifications' }}
       />
-      <Stack.Screen
-        name="Privacy"
-        component={PrivacyScreen}
-        options={{ title: 'Privacy' }}
-      />
+      <Stack.Screen name="Privacy" component={PrivacyScreen} options={{ title: 'Privacy' }} />
       <Stack.Screen
         name="Premium"
         component={PremiumScreen}
         options={{ title: 'CGraph Premium' }}
       />
-      <Stack.Screen
-        name="CoinShop"
-        component={CoinShopScreen}
-        options={{ title: 'Coin Shop' }}
-      />
+      <Stack.Screen name="CoinShop" component={CoinShopScreen} options={{ title: 'Coin Shop' }} />
       <Stack.Screen
         name="Calendar"
         component={CalendarScreen}
@@ -189,6 +179,47 @@ export default function SettingsNavigator() {
         name="ExportContent"
         component={ExportContentScreen}
         options={{ title: 'Export', headerShown: false }}
+      />
+      {/* Customize Hub Screens */}
+      <Stack.Screen
+        name="Customize"
+        component={CustomizeScreen}
+        options={{ title: 'Customize', headerShown: false }}
+      />
+      <Stack.Screen
+        name="IdentityCustomization"
+        component={IdentityCustomizationScreen}
+        options={{ title: 'Identity', headerShown: false }}
+      />
+      <Stack.Screen
+        name="EffectsCustomization"
+        component={EffectsCustomizationScreen}
+        options={{ title: 'Effects & Themes', headerShown: false }}
+      />
+      <Stack.Screen
+        name="ProgressionCustomization"
+        component={ProgressionCustomizationScreen}
+        options={{ title: 'Progression', headerShown: false }}
+      />
+      <Stack.Screen
+        name="BadgeSelection"
+        component={BadgeSelectionScreen}
+        options={{ title: 'Badges', headerShown: false }}
+      />
+      <Stack.Screen
+        name="TitleSelection"
+        component={TitleSelectionScreen}
+        options={{ title: 'Titles', headerShown: false }}
+      />
+      <Stack.Screen
+        name="KeyVerification"
+        component={KeyVerificationScreen}
+        options={{ title: 'Key Verification', headerShown: false }}
+      />
+      <Stack.Screen
+        name="EmailNotifications"
+        component={EmailNotificationsScreen}
+        options={{ title: 'Email Notifications', headerShown: false }}
       />
     </Stack.Navigator>
   );
