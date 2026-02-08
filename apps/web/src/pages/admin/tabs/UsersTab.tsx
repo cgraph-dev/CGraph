@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { adminApi } from '@/lib/api/admin';
+import { adminApi } from '@/modules/admin/api';
 import { format } from 'date-fns';
 import { formatTimeAgo } from '@/lib/utils';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';

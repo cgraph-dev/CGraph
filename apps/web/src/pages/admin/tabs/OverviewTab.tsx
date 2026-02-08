@@ -17,7 +17,7 @@ import {
   SignalIcon,
   BoltIcon,
 } from '@heroicons/react/24/outline';
-import { adminApi } from '@/lib/api/admin';
+import { adminApi } from '@/modules/admin/api';
 import {
   LoadingState,
   MetricCard,
