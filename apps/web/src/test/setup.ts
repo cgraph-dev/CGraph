@@ -11,6 +11,35 @@ import { afterEach, beforeAll, afterAll, vi } from 'vitest';
 import { setupServer } from 'msw/node';
 import { handlers } from '../mocks/handlers';
 
+// Mock logger to prevent circular dependency issues in test environment
+// (logger → error-tracking → react.tsx can fail during module evaluation)
+vi.mock('@/lib/logger', () => {
+  const noop = () => {};
+  const createLogger = (_namespace: string) => ({
+    debug: noop,
+    info: noop,
+    log: noop,
+    warn: noop,
+    error: noop,
+    time: noop,
+    timeEnd: noop,
+    breadcrumb: noop,
+  });
+  return {
+    createLogger,
+    logger: createLogger('CGraph'),
+    socketLogger: createLogger('Socket'),
+    e2eeLogger: createLogger('E2EE'),
+    authLogger: createLogger('Auth'),
+    apiLogger: createLogger('API'),
+    forumLogger: createLogger('Forum'),
+    chatLogger: createLogger('Chat'),
+    themeLogger: createLogger('Theme'),
+    gamificationLogger: createLogger('Gamification'),
+    routeLogger: createLogger('Route'),
+  };
+});
+
 // MSW server for API mocking
 const server = setupServer(...handlers);
 
