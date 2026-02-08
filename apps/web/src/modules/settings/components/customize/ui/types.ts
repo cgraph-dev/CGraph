@@ -3,7 +3,7 @@
  * @module modules/settings/components/customize/ui
  */
 
-import type { ThemePreset } from '@/stores/customization';
+import type { ThemePreset } from '@/modules/settings/store/customization';
 import type { ReactNode } from 'react';
 
 export interface AnimatedToggleProps {

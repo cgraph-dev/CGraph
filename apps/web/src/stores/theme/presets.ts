@@ -8,7 +8,7 @@
  * @since v0.9.7
  */
 
-import { createConfigPresets, classifyByRules } from '@/stores/utils/storeHelpers';
+import { createConfigPresets, classifyByRules } from '@/lib/storeHelpers';
 import type {
   ColorPreset,
   ColorDefinition,

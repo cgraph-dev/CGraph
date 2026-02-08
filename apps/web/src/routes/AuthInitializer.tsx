@@ -12,7 +12,7 @@ import { useEffect } from 'react';
 import { useAuthStore } from '@/modules/auth/store';
 import { useGamificationStore } from '@/modules/gamification/store';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
-import { useCustomizationStore } from '@/stores/customization';
+import { useCustomizationStore } from '@/modules/settings/store/customization';
 import { ThemeRegistry } from '@/themes/ThemeRegistry';
 import { useCustomizationApplication } from '@/hooks/useCustomizationApplication';
 import { authLogger, themeLogger, gamificationLogger } from '@/lib/logger';

@@ -22,7 +22,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
 import { useGamificationStore } from '@/modules/gamification/store';
-import { useCustomizationStore, type ProfileCardStyle } from '@/stores/customization';
+import {
+  useCustomizationStore,
+  type ProfileCardStyle,
+} from '@/modules/settings/store/customization';
 import toast from 'react-hot-toast';
 
 // Import from borderCollections for mapping

@@ -11,7 +11,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { GlassCard, Avatar } from '@/shared/components/ui';
-import { useCustomizationStore } from '@/stores/customization';
+import { useCustomizationStore } from '@/modules/settings/store/customization';
 import {
   getAvatarBorderStyle,
   getMessageBubbleClass,

@@ -18,7 +18,7 @@ import {
   THEME_COLORS as themeColors,
   type ChatBubbleStyle,
   type BubbleAnimation,
-} from '@/stores/customization';
+} from '@/modules/settings/store/customization';
 
 // =============================================================================
 // BUBBLE STYLE OPTIONS

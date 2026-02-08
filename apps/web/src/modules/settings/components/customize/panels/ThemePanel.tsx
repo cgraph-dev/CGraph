@@ -17,7 +17,7 @@ import {
   useCustomizationStore,
   THEME_COLORS as themeColors,
   type EffectPreset,
-} from '@/stores/customization';
+} from '@/modules/settings/store/customization';
 
 // =============================================================================
 // EFFECT PRESETS

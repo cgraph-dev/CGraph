@@ -1,4 +1,4 @@
-import type { ItemType, MarketplaceListing } from '@/stores/gamification';
+import type { ItemType, MarketplaceListing } from '@/modules/gamification/store';
 
 export type MarketplaceTab = 'browse' | 'my-listings' | 'history' | 'create';
 

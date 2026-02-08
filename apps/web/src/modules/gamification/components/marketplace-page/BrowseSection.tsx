@@ -5,7 +5,7 @@ import {
   type ItemType,
   type MarketplaceListing,
   type SortOption,
-} from '@/stores/gamification';
+} from '@/modules/gamification/store';
 import { ITEM_TYPE_LABELS } from './types';
 import { ListingCard } from './ListingCard';
 import { ListingDetailModal } from './ListingDetailModal';

@@ -11,7 +11,7 @@ import {
   BORDER_ID_TO_TYPE,
   PROFILE_THEME_TO_COLOR,
   TITLE_DISPLAY_NAMES,
-} from '@/stores/customization';
+} from '@/modules/settings/store/customization';
 import { usePrefersReducedMotion } from '@/hooks';
 import { getThemeById, type ProfileThemeConfig } from '@/data/profileThemes';
 import { TiltCard } from '@/shared/components/ui';

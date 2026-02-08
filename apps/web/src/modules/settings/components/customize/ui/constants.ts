@@ -3,7 +3,7 @@
  * @module modules/settings/components/customize/ui
  */
 
-import type { ThemePreset } from '@/stores/customization';
+import type { ThemePreset } from '@/modules/settings/store/customization';
 
 export const springs = {
   snappy: { type: 'spring' as const, stiffness: 400, damping: 30 },

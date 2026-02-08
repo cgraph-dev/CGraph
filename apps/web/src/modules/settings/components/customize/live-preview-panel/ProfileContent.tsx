@@ -4,7 +4,11 @@
 
 import { motion } from 'framer-motion';
 import { AnimatedAvatar } from '../AnimatedAvatar';
-import type { AvatarBorderType, ThemePreset, TitleDisplay } from '@/stores/customization';
+import type {
+  AvatarBorderType,
+  ThemePreset,
+  TitleDisplay,
+} from '@/modules/settings/store/customization';
 import { springs } from '@/lib/animationPresets';
 import { GlowText, FireText } from '@/shared/components/ui';
 import { MOCK_BADGES } from './constants';

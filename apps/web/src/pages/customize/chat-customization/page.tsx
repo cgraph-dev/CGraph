@@ -24,7 +24,11 @@ import {
   AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
-import { useCustomizationStore, getBubbleStyle, getBubbleAnimation } from '@/stores/customization';
+import {
+  useCustomizationStore,
+  getBubbleStyle,
+  getBubbleAnimation,
+} from '@/modules/settings/store/customization';
 import toast from 'react-hot-toast';
 import type { ChatCategory, BubbleStyle, MessageEffect, ReactionStyle } from './types';
 import { BUBBLE_STYLES, MESSAGE_EFFECTS, REACTION_STYLES } from './constants';

@@ -12,7 +12,7 @@ import {
   useCustomizationStore,
   THEME_COLORS as themeColors,
   type ProfileCardStyle,
-} from '@/stores/customization';
+} from '@/modules/settings/store/customization';
 
 // =============================================================================
 // PROFILE CARD STYLE OPTIONS

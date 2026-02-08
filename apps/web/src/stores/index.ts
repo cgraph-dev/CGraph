@@ -76,9 +76,9 @@ export {
 // ============================================================================
 // Theme Domain (All Theme/Customization)
 // ============================================================================
-export { useThemeStore, THEME_COLORS } from './themeStore';
-export { useForumThemeStore } from './forumThemeStore';
-export { useCustomizationStore } from './customization';
+export { useThemeStore, THEME_COLORS } from './theme';
+export { useForumThemeStore } from './theme';
+export { useCustomizationStore } from '../modules/settings/store/customization';
 
 // ============================================================================
 // Marketplace Domain (Economy, Items)

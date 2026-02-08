@@ -10,7 +10,7 @@
  */
 
 import { useEffect } from 'react';
-import { useCustomizationStore } from '@/stores/customization';
+import { useCustomizationStore } from '@/modules/settings/store/customization';
 
 /**
  * Profile Theme Color Mappings

@@ -12,7 +12,7 @@ import {
   useCustomizationStore,
   THEME_COLORS as themeColors,
   PROFILE_THEME_TO_COLOR,
-} from '@/stores/customization';
+} from '@/modules/settings/store/customization';
 import { ChatBubble } from './ChatBubble';
 import { ProfileCardPreview } from './ProfileCardPreview';
 

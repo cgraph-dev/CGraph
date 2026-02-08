@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useMarketplaceStore } from '@/stores/gamification';
+import { useMarketplaceStore } from '@/modules/gamification/store';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { ITEM_TYPE_LABELS, RARITY_COLORS, type ListingDetailModalProps } from './types';
 

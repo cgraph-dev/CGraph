@@ -12,7 +12,7 @@ import {
   useCustomizationStore,
   AVATAR_BORDERS as avatarBorders,
   type AvatarBorderType,
-} from '@/stores/customization';
+} from '@/modules/settings/store/customization';
 
 // =============================================================================
 // BORDER TYPE OPTIONS

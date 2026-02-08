@@ -23,7 +23,7 @@ import {
   createSchemaMapper,
   createDebouncedSave,
   type ZustandSet,
-} from '@/stores/utils/storeHelpers';
+} from '@/lib/storeHelpers';
 import { createLogger } from '@/lib/logger';
 
 // Re-export types and constants from the types module

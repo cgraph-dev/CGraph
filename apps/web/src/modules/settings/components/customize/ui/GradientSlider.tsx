@@ -5,7 +5,7 @@
 
 import { memo } from 'react';
 
-import { THEME_COLORS as themeColors } from '@/stores/customization';
+import { THEME_COLORS as themeColors } from '@/modules/settings/store/customization';
 
 import type { GradientSliderProps } from './types';
 

@@ -66,7 +66,7 @@ export {
   getThemePreset,
 } from './themeStore';
 
-// Re-export forum theme types and hooks from legacy store
+// Re-export forum theme types and hooks from forums module
 export {
   useForumThemeStore,
   useActiveForumTheme,
@@ -74,10 +74,10 @@ export {
   type ForumThemePreset,
   type ForumTitleAnimation,
   type ForumRoleStyle,
-} from '../forumThemeStore';
+} from '../../modules/forums/store/forumThemeStore';
 
-// Re-export UserTheme type from deprecated themeStore
-export type { UserTheme } from '../themeStore';
+// Re-export UserTheme type from types
+export type { UserTheme } from './types';
 
 // ============================================================================
 // Profile Theme Types & Hooks (inlined from deleted profileThemeStore)

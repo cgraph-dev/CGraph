@@ -1,4 +1,4 @@
-import { useMarketplaceStore } from '@/stores/gamification';
+import { useMarketplaceStore } from '@/modules/gamification/store';
 
 export function MarketplaceStats() {
   const stats = useMarketplaceStore((state) => state.stats);

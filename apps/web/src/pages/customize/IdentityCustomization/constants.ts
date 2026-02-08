@@ -3,7 +3,7 @@
  */
 
 import type { Border, Title, Badge, ProfileLayout, RarityOption, Rarity } from './types';
-import type { AvatarBorderType } from '@/stores/customization';
+import type { AvatarBorderType } from '@/modules/settings/store/customization';
 
 export const RARITIES: RarityOption[] = [
   { value: 'common', label: 'Common', color: 'text-gray-400' },

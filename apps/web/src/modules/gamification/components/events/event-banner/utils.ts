@@ -3,7 +3,7 @@
  * @module modules/gamification/components/events/event-banner/utils
  */
 
-import type { EventReward, BattlePassTier } from '@/stores/gamification';
+import type { EventReward, BattlePassTier } from '@/modules/gamification/store';
 import type { BattlePassTierExtended } from './types';
 
 /**

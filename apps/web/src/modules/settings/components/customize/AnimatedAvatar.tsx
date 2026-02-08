@@ -8,8 +8,8 @@
  */
 
 import { memo, useMemo } from 'react';
-import type { AvatarBorderType, ThemePreset } from '@/stores/customization';
-import { THEME_COLORS as themeColors } from '@/stores/customization';
+import type { AvatarBorderType, ThemePreset } from '@/modules/settings/store/customization';
+import { THEME_COLORS as themeColors } from '@/modules/settings/store/customization';
 import { usePrefersReducedMotion } from '@/hooks';
 import { renderBorderEffect } from './animated-avatar-borders';
 

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSeasonalEventStore, useFeaturedEvent } from '@/stores/gamification';
+import { useSeasonalEventStore, useFeaturedEvent } from '@/modules/gamification/store';
 import { XMarkIcon, SparklesIcon, ClockIcon, TrophyIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useMarketplaceStore } from '@/stores/gamification';
+import { useMarketplaceStore } from '@/modules/gamification/store';
 
 export function HistorySection() {
   const { transactionHistory, userTotals, fetchHistory } = useMarketplaceStore();

@@ -3,7 +3,7 @@
  * @module modules/gamification/components/events/event-banner/types
  */
 
-import type { SeasonalEvent, EventReward, BattlePassTier } from '@/stores/gamification';
+import type { SeasonalEvent, EventReward, BattlePassTier } from '@/modules/gamification/store';
 
 /**
  * Extended reward with icon support (for display purposes)

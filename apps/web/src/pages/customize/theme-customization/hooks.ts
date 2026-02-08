@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuthStore } from '@/modules/auth/store';
-import { useCustomizationStore, getThemePreset } from '@/stores/customization';
+import { useCustomizationStore, getThemePreset } from '@/modules/settings/store/customization';
 import toast from 'react-hot-toast';
 import {
   ALL_PROFILE_THEMES,

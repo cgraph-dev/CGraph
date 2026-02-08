@@ -9,7 +9,7 @@ import {
   useCustomizationStore,
   THEME_COLORS as themeColors,
   CHAT_THEME_TO_COLOR,
-} from '@/stores/customization';
+} from '@/modules/settings/store/customization';
 import { chatBubbleAnimations, hoverAnimations } from '@/lib/animationPresets';
 import type { ChatBubbleProps } from './types';
 

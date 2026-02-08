@@ -1,5 +1,5 @@
 /**
- * @deprecated Import from '@/stores/gamification' instead
+ * @deprecated Import from '@/modules/gamification/store' instead
  * This file is maintained for backward compatibility only.
  */
 export * from './seasonalEventSlice';

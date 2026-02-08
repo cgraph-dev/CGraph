@@ -11,7 +11,7 @@
 
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { GiftIcon } from '@heroicons/react/24/outline';
-import { useReferralStore } from '@/stores/gamification';
+import { useReferralStore } from '@/modules/gamification/store';
 import { createLogger } from '@/lib/logger';
 import { ReferralLinkCard } from './ReferralLinkCard';
 import { StatsCards } from './StatsCards';

@@ -9,7 +9,7 @@
 
 import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import type { AvatarBorderType } from '@/stores/customization';
+import type { AvatarBorderType } from '@/modules/settings/store/customization';
 
 interface BorderEffectParams {
   borderType: AvatarBorderType;

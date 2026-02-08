@@ -276,3 +276,18 @@ export interface ThemeActions {
 }
 
 export type ThemeStore = ThemeState & ThemeActions;
+
+// =============================================================================
+// USER THEME (for passing theme settings to components)
+// =============================================================================
+
+export interface UserTheme {
+  colorPreset?: ColorPreset;
+  avatarBorder?: AvatarBorderType;
+  avatarBorderColor?: ColorPreset;
+  chatBubbleColor?: ColorPreset;
+  chatBubbleStyle?: string;
+  animationSpeed?: AnimationSpeed;
+  particlesEnabled?: boolean;
+  glowEnabled?: boolean;
+}

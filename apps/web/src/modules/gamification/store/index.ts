@@ -46,6 +46,8 @@ export {
 // Re-export seasonal events slice
 export {
   useSeasonalEventStore,
+  useFeaturedEvent,
+  useCurrentEventProgress,
   type SeasonalEvent,
   type EventProgress,
   type EventReward,
@@ -63,6 +65,7 @@ export {
   type MarketplaceStats,
   type ItemType,
   type CurrencyType,
+  type SortOption,
 } from './marketplaceSlice';
 
 // Re-export referral slice
