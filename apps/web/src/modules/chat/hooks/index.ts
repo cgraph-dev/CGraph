@@ -14,6 +14,8 @@ export { useConversationUI } from './useConversationUI';
 export { useMessageActions } from './useMessageActions';
 export { useMessageInputState } from './useMessageInputState';
 export { useScheduleMessage } from './useScheduleMessage';
+export { useScheduleMessageModal } from './useScheduleMessageModal';
+export { useScheduledMessages } from './useScheduledMessages';
 
 // E2EE hooks
 export { useE2EEError } from './useE2EEError';

@@ -6,192 +6,51 @@
  * 2. Message Effects - 15+ send/receive animations
  * 3. Reaction Styles - 10+ emoji reaction animations
  *
- * Features:
- * - Live preview of chat bubbles
- * - Interactive animation demos
- * - Search/filter functionality
- * - Lock system for premium styles
- * - One-click apply
+ * State & logic live in useChatCustomization hook.
  */
 
-import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  MagnifyingGlassIcon,
-  ChatBubbleLeftRightIcon,
-  SparklesIcon,
-  FaceSmileIcon,
-  AdjustmentsHorizontalIcon,
-} from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/modules/auth/store';
-import {
-  useCustomizationStore,
-  getBubbleStyle,
-  getBubbleAnimation,
-} from '@/modules/settings/store/customization';
-import toast from 'react-hot-toast';
-import type { ChatCategory, BubbleStyle, MessageEffect, ReactionStyle } from './types';
-import { BUBBLE_STYLES, MESSAGE_EFFECTS, REACTION_STYLES } from './constants';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import type { BubbleStyle, MessageEffect, ReactionStyle } from './types';
 import {
   BubbleStylesSection,
   MessageEffectsSection,
   ReactionStylesSection,
   AdvancedControlsSection,
 } from './sections';
+import { useChatCustomization } from './useChatCustomization';
 
 // ==================== MAIN COMPONENT ====================
 
 export default function ChatCustomization() {
-  const { user } = useAuthStore();
-  const store = useCustomizationStore();
   const {
     bubbleStyle,
     messageEffect,
     reactionStyle,
     isSaving,
     error,
-    fetchCustomizations,
-    saveCustomizations,
-    updateChatStyle,
-    setChatBubbleStyle,
-    setBubbleAnimation,
-    updateSettings,
-  } = store;
-
-  // Fine-grained chat controls - initialize from store
-  const [bubbleBorderRadius, setBubbleBorderRadius] = useState(store.bubbleBorderRadius ?? 16);
-  const [bubbleShadowIntensity, setBubbleShadowIntensity] = useState(
-    store.bubbleShadowIntensity ?? 50
-  );
-  const [enableGlassEffect, setEnableGlassEffect] = useState(store.bubbleGlassEffect ?? false);
-  const [enableBubbleTail, setEnableBubbleTail] = useState(store.bubbleShowTail ?? true);
-  const [enableHoverEffects, setEnableHoverEffects] = useState(store.bubbleHoverEffect ?? true);
-  const [selectedEntranceAnimation, setSelectedEntranceAnimation] = useState<string>(
-    store.bubbleEntranceAnimation ?? 'fade'
-  );
-
-  const [activeCategory, setActiveCategory] = useState<ChatCategory>('bubbles');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [previewingLockedItem, setPreviewingLockedItem] = useState<string | null>(null);
-
-  // Fetch customizations on mount
-  useEffect(() => {
-    if (user?.id) {
-      fetchCustomizations(user.id);
-    }
-  }, [user?.id, fetchCustomizations]);
-
-  // Handle preview for locked items - updates the unified store directly
-  const handlePreviewItem = (
-    category: 'bubble' | 'effect' | 'reaction',
-    id: string,
-    isUnlocked: boolean
-  ) => {
-    if (category === 'bubble') {
-      updateChatStyle('bubbleStyle', id);
-      // Also update the canonical chat bubble style using centralized mapping
-      const bubbleStyleType = getBubbleStyle(id);
-      setChatBubbleStyle(bubbleStyleType);
-      setPreviewingLockedItem(isUnlocked ? null : id);
-    } else if (category === 'effect') {
-      updateChatStyle('messageEffect', id);
-      // Also update the canonical bubble animation using centralized mapping
-      const animationType = getBubbleAnimation(id);
-      setBubbleAnimation(animationType);
-      setPreviewingLockedItem(isUnlocked ? null : id);
-    } else {
-      updateChatStyle('reactionStyle', id);
-      setPreviewingLockedItem(isUnlocked ? null : id);
-    }
-  };
-
-  const handleSaveChatSettings = async () => {
-    if (!user?.id) {
-      toast.error('User not authenticated');
-      return;
-    }
-
-    // Block save if previewing a locked item
-    if (previewingLockedItem) {
-      toast.error(
-        'Please purchase premium to save this customization, or select an unlocked item.'
-      );
-      return;
-    }
-
-    try {
-      // Update advanced controls in store before saving
-      updateSettings({
-        bubbleBorderRadius,
-        bubbleShadowIntensity,
-        bubbleGlassEffect: enableGlassEffect,
-        bubbleShowTail: enableBubbleTail,
-        bubbleHoverEffect: enableHoverEffects,
-        bubbleEntranceAnimation: selectedEntranceAnimation as
-          | 'none'
-          | 'slide'
-          | 'fade'
-          | 'scale'
-          | 'bounce'
-          | 'flip',
-      });
-
-      await saveCustomizations(user.id);
-      toast.success('Chat settings saved successfully!');
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to save chat settings');
-    }
-  };
-
-  const categories = [
-    {
-      id: 'bubbles' as ChatCategory,
-      label: 'Bubble Styles',
-      icon: ChatBubbleLeftRightIcon,
-      count: BUBBLE_STYLES.length,
-    },
-    {
-      id: 'effects' as ChatCategory,
-      label: 'Message Effects',
-      icon: SparklesIcon,
-      count: MESSAGE_EFFECTS.length,
-    },
-    {
-      id: 'reactions' as ChatCategory,
-      label: 'Reaction Styles',
-      icon: FaceSmileIcon,
-      count: REACTION_STYLES.length,
-    },
-    {
-      id: 'advanced' as ChatCategory,
-      label: 'Fine Controls',
-      icon: AdjustmentsHorizontalIcon,
-      count: 5,
-    },
-  ];
-
-  // Filter items by search
-  const getFilteredItems = (): (BubbleStyle | MessageEffect | ReactionStyle)[] => {
-    const query = searchQuery.toLowerCase();
-    if (activeCategory === 'bubbles') {
-      return BUBBLE_STYLES.filter(
-        (item) =>
-          item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query)
-      );
-    } else if (activeCategory === 'effects') {
-      return MESSAGE_EFFECTS.filter(
-        (item) =>
-          item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query)
-      );
-    } else {
-      return REACTION_STYLES.filter(
-        (item) =>
-          item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query)
-      );
-    }
-  };
-
-  const filteredItems = getFilteredItems();
+    activeCategory,
+    setActiveCategory,
+    searchQuery,
+    setSearchQuery,
+    categories,
+    filteredItems,
+    previewingLockedItem,
+    bubbleBorderRadius,
+    setBubbleBorderRadius,
+    bubbleShadowIntensity,
+    setBubbleShadowIntensity,
+    enableGlassEffect,
+    setEnableGlassEffect,
+    enableBubbleTail,
+    setEnableBubbleTail,
+    enableHoverEffects,
+    setEnableHoverEffects,
+    selectedEntranceAnimation,
+    handleEntranceAnimationChange,
+    handlePreviewItem,
+    handleSaveChatSettings,
+  } = useChatCustomization();
 
   return (
     <div className="space-y-6">
@@ -274,16 +133,11 @@ export default function ChatCustomization() {
               enableGlassEffect={enableGlassEffect}
               onGlassEffectChange={setEnableGlassEffect}
               enableBubbleTail={enableBubbleTail}
-              onBubbleTailChange={(val) => {
-                setEnableBubbleTail(val);
-              }}
+              onBubbleTailChange={setEnableBubbleTail}
               enableHoverEffects={enableHoverEffects}
               onHoverEffectsChange={setEnableHoverEffects}
               selectedEntranceAnimation={selectedEntranceAnimation}
-              onEntranceAnimationChange={(anim) => {
-                setSelectedEntranceAnimation(anim);
-                setBubbleAnimation(anim as 'none' | 'slide' | 'fade' | 'scale' | 'bounce' | 'flip');
-              }}
+              onEntranceAnimationChange={handleEntranceAnimationChange}
             />
           )}
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ChatBubbleLeftRightIcon,
   DocumentTextIcon,
@@ -10,6 +10,17 @@ import {
 } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
+import type {
+  ForumStats,
+  ForumStatisticsProps,
+} from '@/modules/forums/components/forum-statistics/ForumStatistics.types';
+import {
+  transformStatisticsData,
+  STATS_REFRESH_INTERVAL,
+  MAX_VISIBLE_ONLINE_MEMBERS,
+} from '@/modules/forums/components/forum-statistics/transformStatisticsData';
+import { StatCard } from '@/modules/forums/components/forum-statistics/StatCard';
+import { StatBadge } from '@/modules/forums/components/forum-statistics/StatBadge';
 
 const logger = createLogger('ForumStatistics');
 
@@ -24,47 +35,6 @@ const logger = createLogger('ForumStatistics');
  * - Posts today
  * - Active users
  */
-
-interface ForumStats {
-  // Totals
-  totalThreads: number;
-  totalPosts: number;
-  totalMembers: number;
-
-  // Newest
-  newestMember: {
-    id: string;
-    username: string;
-    displayName: string | null;
-  } | null;
-
-  // Activity
-  postsToday: number;
-  threadsToday: number;
-  newMembersToday: number;
-
-  // Online
-  usersOnline: number;
-  guestsOnline: number;
-  membersOnline: {
-    id: string;
-    username: string;
-    displayName: string | null;
-  }[];
-  mostUsersOnline: number;
-  mostUsersOnlineDate: string | null;
-
-  // Active
-  activeUsers24h: number;
-}
-
-interface ForumStatisticsProps {
-  forumId?: string; // If provided, show stats for specific forum
-  showOnlineList?: boolean;
-  showRecordStats?: boolean;
-  compact?: boolean;
-  className?: string;
-}
 
 export function ForumStatistics({
   forumId,
@@ -84,35 +54,9 @@ export function ForumStatistics({
 
       try {
         const endpoint = forumId ? `/api/v1/forums/${forumId}/statistics` : '/api/v1/statistics';
-
         const response = await api.get(endpoint);
         const data = response.data.statistics || response.data;
-
-        setStats({
-          totalThreads: data.total_threads || 0,
-          totalPosts: data.total_posts || 0,
-          totalMembers: data.total_members || 0,
-          newestMember: data.newest_member
-            ? {
-                id: data.newest_member.id,
-                username: data.newest_member.username,
-                displayName: data.newest_member.display_name || null,
-              }
-            : null,
-          postsToday: data.posts_today || 0,
-          threadsToday: data.threads_today || 0,
-          newMembersToday: data.new_members_today || 0,
-          usersOnline: data.users_online || 0,
-          guestsOnline: data.guests_online || 0,
-          membersOnline: (data.members_online || []).map((m: Record<string, unknown>) => ({
-            id: m.id as string,
-            username: m.username as string,
-            displayName: (m.display_name as string) || null,
-          })),
-          mostUsersOnline: data.most_users_online || 0,
-          mostUsersOnlineDate: data.most_users_online_date || null,
-          activeUsers24h: data.active_users_24h || 0,
-        });
+        setStats(transformStatisticsData(data));
       } catch (err) {
         logger.error('[ForumStatistics] Failed to fetch:', err);
         setError('Failed to load statistics');
@@ -122,9 +66,7 @@ export function ForumStatistics({
     }
 
     fetchStats();
-
-    // Refresh every 60 seconds
-    const interval = setInterval(fetchStats, 60000);
+    const interval = setInterval(fetchStats, STATS_REFRESH_INTERVAL);
     return () => clearInterval(interval);
   }, [forumId]);
 
@@ -236,7 +178,7 @@ export function ForumStatistics({
           {/* Online Members List */}
           {showOnlineList && stats.membersOnline.length > 0 && (
             <div className="mb-4 flex flex-wrap gap-2">
-              {stats.membersOnline.slice(0, 20).map((member) => (
+              {stats.membersOnline.slice(0, MAX_VISIBLE_ONLINE_MEMBERS).map((member) => (
                 <a
                   key={member.id}
                   href={`/profile/${member.username}`}
@@ -245,9 +187,9 @@ export function ForumStatistics({
                   {member.displayName || member.username}
                 </a>
               ))}
-              {stats.membersOnline.length > 20 && (
+              {stats.membersOnline.length > MAX_VISIBLE_ONLINE_MEMBERS && (
                 <span className="text-sm text-gray-500">
-                  and {stats.membersOnline.length - 20} more...
+                  and {stats.membersOnline.length - MAX_VISIBLE_ONLINE_MEMBERS} more...
                 </span>
               )}
             </div>
@@ -287,49 +229,6 @@ export function ForumStatistics({
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-// Stat Card Component
-interface StatCardProps {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-  subValue?: string;
-  iconColor?: string;
-}
-
-function StatCard({ icon, label, value, subValue, iconColor = 'text-gray-500' }: StatCardProps) {
-  return (
-    <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-3 dark:bg-gray-700/50">
-      <div className={iconColor}>{icon}</div>
-      <div>
-        <div className="text-2xl font-bold text-gray-900 dark:text-white">
-          {value.toLocaleString()}
-        </div>
-        <div className="text-sm text-gray-500">{label}</div>
-        {subValue && (
-          <div className="mt-1 text-xs text-green-600 dark:text-green-400">{subValue}</div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Stat Badge Component (for compact view)
-interface StatBadgeProps {
-  icon: React.ReactNode;
-  label: string;
-  value: number;
-}
-
-function StatBadge({ icon, label, value }: StatBadgeProps) {
-  return (
-    <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
-      {icon}
-      <span className="font-medium">{value.toLocaleString()}</span>
-      <span className="text-gray-400">{label}</span>
     </div>
   );
 }

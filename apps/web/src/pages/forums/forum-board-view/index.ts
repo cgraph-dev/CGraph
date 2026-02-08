@@ -9,12 +9,14 @@
  */
 
 export { ForumBoardView } from './ForumBoardView';
+export { ForumBoardBanner } from './ForumBoardBanner';
 export { BoardsList } from './BoardsList';
 export { BoardRow } from './BoardRow';
 export { ThreadsList } from './ThreadsList';
 export { ThreadRow } from './ThreadRow';
 export { MembersList } from './MembersList';
 export { MemberCard } from './MemberCard';
+export { useForumBoardView } from './useForumBoardView';
 
 // Types
 export type {

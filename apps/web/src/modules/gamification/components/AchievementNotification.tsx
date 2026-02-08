@@ -1,29 +1,14 @@
-import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TrophyIcon, XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { Achievement } from '@/modules/gamification/store';
-import confetti from 'canvas-confetti';
-
-/**
- * Achievement Notification Component
- *
- * A toast-style notification that celebrates achievement unlocks.
- * Features:
- * - Slide-in animation from right with bounce
- * - Rarity-based styling (common to mythic)
- * - Progress bar animation for partial completion
- * - Confetti celebration on unlock
- * - Auto-dismiss with progress indicator
- * - Click to view details or dismiss
- * - Queue system for multiple achievements
- * - Sound effects (optional)
- * - Persistent history in notification center
- *
- * The notification appears in the top-right corner and creates
- * a satisfying moment of recognition without disrupting the user's flow.
- */
+import { RARITY_COLORS } from '@/modules/gamification/components/achievement-notification/constants';
+import {
+  useUnlockCelebration,
+  useAnimatedProgress,
+  useAutoDismiss,
+} from '@/modules/gamification/components/achievement-notification/useAchievementEffects';
 
 export interface AchievementNotificationData {
   achievement: Achievement & {
@@ -74,99 +59,11 @@ function AchievementToast({
   onViewDetails?: (achievement: Achievement) => void;
 }) {
   const { achievement, isUnlock } = data;
-  const [progress, setProgress] = useState(0);
-  const [autoDismissProgress, setAutoDismissProgress] = useState(0);
+  const colors = RARITY_COLORS[achievement.rarity];
 
-  // Rarity colors
-  const rarityColors = {
-    common: { from: '#6b7280', to: '#4b5563', glow: '#6b7280' },
-    uncommon: { from: '#10b981', to: '#059669', glow: '#10b981' },
-    rare: { from: '#3b82f6', to: '#2563eb', glow: '#3b82f6' },
-    epic: { from: '#8b5cf6', to: '#7c3aed', glow: '#8b5cf6' },
-    legendary: { from: '#f59e0b', to: '#d97706', glow: '#f59e0b' },
-    mythic: { from: '#ec4899', to: '#db2777', glow: '#ec4899' },
-  };
-
-  const colors = rarityColors[achievement.rarity];
-
-  // Confetti on unlock
-  useEffect(() => {
-    let confettiTimer: ReturnType<typeof setTimeout> | undefined;
-
-    if (isUnlock) {
-      HapticFeedback.success();
-
-      // Different confetti patterns based on rarity
-      const particleCount = {
-        common: 30,
-        uncommon: 50,
-        rare: 75,
-        epic: 100,
-        legendary: 150,
-        mythic: 200,
-      }[achievement.rarity];
-
-      confetti({
-        particleCount,
-        spread: 60,
-        origin: { x: 1, y: 0.3 },
-        colors: [colors.from, colors.to, colors.glow],
-        shapes: achievement.rarity === 'mythic' ? ['star'] : ['circle', 'square'],
-      });
-
-      if (achievement.rarity === 'legendary' || achievement.rarity === 'mythic') {
-        // Additional burst for high-rarity achievements
-        confettiTimer = setTimeout(() => {
-          confetti({
-            particleCount: 50,
-            spread: 90,
-            origin: { x: 1, y: 0.3 },
-            colors: [colors.from, colors.to],
-          });
-        }, 200);
-      }
-    } else {
-      HapticFeedback.light();
-    }
-
-    return () => clearTimeout(confettiTimer);
-  }, [isUnlock, achievement.rarity, colors]);
-
-  // Progress animation
-  useEffect(() => {
-    const targetProgress = (achievement.progress / achievement.maxProgress) * 100;
-    const duration = 1000;
-    const steps = 60;
-    const increment = targetProgress / steps;
-    let currentStep = 0;
-
-    const interval = setInterval(() => {
-      currentStep++;
-      setProgress(Math.min(currentStep * increment, targetProgress));
-      if (currentStep >= steps) clearInterval(interval);
-    }, duration / steps);
-
-    return () => clearInterval(interval);
-  }, [achievement.progress, achievement.maxProgress]);
-
-  // Auto-dismiss after 5 seconds
-  useEffect(() => {
-    const duration = 5000;
-    const steps = 60;
-    const increment = 100 / steps;
-    let currentStep = 0;
-
-    const interval = setInterval(() => {
-      currentStep++;
-      setAutoDismissProgress(Math.min(currentStep * increment, 100));
-      if (currentStep >= steps) {
-        clearInterval(interval);
-        onDismiss();
-      }
-    }, duration / steps);
-
-    return () => clearInterval(interval);
-  }, [onDismiss]);
+  useUnlockCelebration(isUnlock, achievement.rarity);
+  const progress = useAnimatedProgress(achievement.progress, achievement.maxProgress);
+  const autoDismissProgress = useAutoDismiss(onDismiss);
 
   return (
     <motion.div
@@ -291,7 +188,7 @@ function AchievementToast({
                     <>
                       <span className="text-gray-500">•</span>
                       <span className="text-purple-400">
-                        New Title: "{achievement.titleReward}"
+                        New Title: &quot;{achievement.titleReward}&quot;
                       </span>
                     </>
                   )}

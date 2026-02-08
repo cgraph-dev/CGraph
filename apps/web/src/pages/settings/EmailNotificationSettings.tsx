@@ -5,117 +5,20 @@
  * - Enable/disable email notifications globally
  * - Configure digest email frequency (daily/weekly/monthly)
  * - Toggle notifications for specific events
- * - Preview email templates
- *
- * @version 1.0.0
- * @since 2026-01-20
  */
 
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import toast from 'react-hot-toast';
 import { GlassCard } from '@/shared/components/ui';
-import { useAuthStore } from '@/modules/auth/store';
-import { api } from '@/lib/api';
-import { createLogger } from '@/lib/logger';
-
-const logger = createLogger('EmailNotificationSettings');
-
-interface EmailPreferences {
-  emailNotificationsEnabled: boolean;
-  emailDigestEnabled: boolean;
-  emailDigestFrequency: 'daily' | 'weekly' | 'monthly';
-  emailOnNewMessage: boolean;
-  emailOnFriendRequest: boolean;
-  emailOnMention: boolean;
-  emailOnReply: boolean;
-  emailOnAchievement: boolean;
-}
+import { ToggleSwitch } from '@/pages/settings/ToggleSwitch';
+import { useEmailNotificationPreferences } from '@/pages/settings/useEmailNotificationPreferences';
+import {
+  DIGEST_FREQUENCIES,
+  NOTIFICATION_TRIGGERS,
+} from '@/pages/settings/emailNotificationSettings.constants';
 
 export default function EmailNotificationSettings() {
-  const { user } = useAuthStore();
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [preferences, setPreferences] = useState<EmailPreferences>({
-    emailNotificationsEnabled: true,
-    emailDigestEnabled: true,
-    emailDigestFrequency: 'weekly',
-    emailOnNewMessage: true,
-    emailOnFriendRequest: true,
-    emailOnMention: true,
-    emailOnReply: true,
-    emailOnAchievement: false,
-  });
-
-  useEffect(() => {
-    fetchPreferences();
-  }, [user?.id]);
-
-  const fetchPreferences = async () => {
-    if (!user?.id) return;
-
-    try {
-      setLoading(true);
-      const response = await api.get(`/users/${user.id}`);
-      const userData = response.data;
-
-      setPreferences({
-        emailNotificationsEnabled: userData.email_notifications_enabled ?? true,
-        emailDigestEnabled: userData.email_digest_enabled ?? true,
-        emailDigestFrequency: userData.email_digest_frequency ?? 'weekly',
-        emailOnNewMessage: userData.email_on_new_message ?? true,
-        emailOnFriendRequest: userData.email_on_friend_request ?? true,
-        emailOnMention: userData.email_on_mention ?? true,
-        emailOnReply: userData.email_on_reply ?? true,
-        emailOnAchievement: userData.email_on_achievement ?? false,
-      });
-    } catch (error) {
-      logger.error('Failed to fetch email preferences:', error);
-      toast.error('Failed to load email preferences');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const savePreferences = async () => {
-    if (!user?.id) return;
-
-    try {
-      setSaving(true);
-
-      await api.patch(`/users/${user.id}`, {
-        email_notifications_enabled: preferences.emailNotificationsEnabled,
-        email_digest_enabled: preferences.emailDigestEnabled,
-        email_digest_frequency: preferences.emailDigestFrequency,
-        email_on_new_message: preferences.emailOnNewMessage,
-        email_on_friend_request: preferences.emailOnFriendRequest,
-        email_on_mention: preferences.emailOnMention,
-        email_on_reply: preferences.emailOnReply,
-        email_on_achievement: preferences.emailOnAchievement,
-      });
-
-      toast.success('Email preferences saved successfully!');
-    } catch (error) {
-      logger.error('Failed to save email preferences:', error);
-      toast.error('Failed to save email preferences');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const togglePreference = (key: keyof EmailPreferences) => {
-    setPreferences((prev) => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
-
-  const setDigestFrequency = (frequency: 'daily' | 'weekly' | 'monthly') => {
-    setPreferences((prev) => ({
-      ...prev,
-      emailDigestFrequency: frequency,
-    }));
-  };
+  const { loading, saving, preferences, savePreferences, togglePreference, setDigestFrequency } =
+    useEmailNotificationPreferences();
 
   if (loading) {
     return (
@@ -127,6 +30,8 @@ export default function EmailNotificationSettings() {
       </div>
     );
   }
+
+  const notificationsEnabled = preferences.emailNotificationsEnabled;
 
   return (
     <div className="space-y-6">
@@ -147,20 +52,10 @@ export default function EmailNotificationSettings() {
               Receive email notifications for important events and updates
             </p>
           </div>
-
-          <motion.button
-            onClick={() => togglePreference('emailNotificationsEnabled')}
-            className={`relative h-8 w-14 rounded-full transition-colors ${
-              preferences.emailNotificationsEnabled ? 'bg-primary-600' : 'bg-white/10'
-            }`}
-            whileTap={{ scale: 0.95 }}
-          >
-            <motion.div
-              className="absolute top-1 h-6 w-6 rounded-full bg-white shadow-lg"
-              animate={{ x: preferences.emailNotificationsEnabled ? 30 : 4 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            />
-          </motion.button>
+          <ToggleSwitch
+            enabled={notificationsEnabled}
+            onToggle={() => togglePreference('emailNotificationsEnabled')}
+          />
         </div>
       </GlassCard>
 
@@ -173,28 +68,18 @@ export default function EmailNotificationSettings() {
               Receive a summary of your activity and highlights
             </p>
           </div>
-
-          <motion.button
-            onClick={() => togglePreference('emailDigestEnabled')}
-            className={`relative h-8 w-14 rounded-full transition-colors ${
-              preferences.emailDigestEnabled ? 'bg-primary-600' : 'bg-white/10'
-            }`}
-            whileTap={{ scale: 0.95 }}
-            disabled={!preferences.emailNotificationsEnabled}
-          >
-            <motion.div
-              className="absolute top-1 h-6 w-6 rounded-full bg-white shadow-lg"
-              animate={{ x: preferences.emailDigestEnabled ? 30 : 4 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-            />
-          </motion.button>
+          <ToggleSwitch
+            enabled={preferences.emailDigestEnabled}
+            onToggle={() => togglePreference('emailDigestEnabled')}
+            disabled={!notificationsEnabled}
+          />
         </div>
 
-        {preferences.emailDigestEnabled && preferences.emailNotificationsEnabled && (
+        {preferences.emailDigestEnabled && notificationsEnabled && (
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
             <label className="mb-3 block text-sm font-medium text-white/80">Digest Frequency</label>
             <div className="grid grid-cols-3 gap-3">
-              {(['daily', 'weekly', 'monthly'] as const).map((frequency) => (
+              {DIGEST_FREQUENCIES.map((frequency) => (
                 <motion.button
                   key={frequency}
                   onClick={() => setDigestFrequency(frequency)}
@@ -219,38 +104,7 @@ export default function EmailNotificationSettings() {
         <h3 className="mb-6 text-lg font-semibold text-white">Notification Triggers</h3>
 
         <div className="space-y-4">
-          {[
-            {
-              key: 'emailOnNewMessage' as const,
-              icon: '💬',
-              title: 'New Messages',
-              description: 'When you receive a new direct message',
-            },
-            {
-              key: 'emailOnFriendRequest' as const,
-              icon: '👥',
-              title: 'Friend Requests',
-              description: 'When someone sends you a friend request',
-            },
-            {
-              key: 'emailOnMention' as const,
-              icon: '@',
-              title: 'Mentions',
-              description: 'When someone mentions you in a post or comment',
-            },
-            {
-              key: 'emailOnReply' as const,
-              icon: '💬',
-              title: 'Replies',
-              description: 'When someone replies to your post or comment',
-            },
-            {
-              key: 'emailOnAchievement' as const,
-              icon: '🏆',
-              title: 'Achievements',
-              description: 'When you unlock a new achievement',
-            },
-          ].map((item) => (
+          {NOTIFICATION_TRIGGERS.map((item) => (
             <motion.div
               key={item.key}
               className="flex items-center justify-between rounded-lg bg-white/5 p-4"
@@ -263,21 +117,11 @@ export default function EmailNotificationSettings() {
                   <p className="text-sm text-white/60">{item.description}</p>
                 </div>
               </div>
-
-              <motion.button
-                onClick={() => togglePreference(item.key)}
-                className={`relative h-8 w-14 rounded-full transition-colors ${
-                  preferences[item.key] ? 'bg-primary-600' : 'bg-white/10'
-                }`}
-                whileTap={{ scale: 0.95 }}
-                disabled={!preferences.emailNotificationsEnabled}
-              >
-                <motion.div
-                  className="absolute top-1 h-6 w-6 rounded-full bg-white shadow-lg"
-                  animate={{ x: preferences[item.key] ? 30 : 4 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                />
-              </motion.button>
+              <ToggleSwitch
+                enabled={!!preferences[item.key]}
+                onToggle={() => togglePreference(item.key)}
+                disabled={!notificationsEnabled}
+              />
             </motion.div>
           ))}
         </div>
@@ -293,12 +137,7 @@ export default function EmailNotificationSettings() {
       >
         {saving ? (
           <>
-            <svg
-              className="h-5 w-5 animate-spin"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
+            <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle
                 className="opacity-25"
                 cx="12"
@@ -306,12 +145,12 @@ export default function EmailNotificationSettings() {
                 r="10"
                 stroke="currentColor"
                 strokeWidth="4"
-              ></circle>
+              />
               <path
                 className="opacity-75"
                 fill="currentColor"
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
+              />
             </svg>
             Saving...
           </>

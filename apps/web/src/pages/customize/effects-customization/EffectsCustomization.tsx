@@ -6,182 +6,34 @@
  * 2. Background Effects - 10+ animated backgrounds (gradients, waves, matrix)
  * 3. UI Animations - 8+ interface animation sets (smooth, bouncy, instant)
  *
- * Features:
- * - Live preview of particle systems
- * - Interactive background demos
- * - Animation speed controls
- * - Lock system for premium effects
- * - Performance impact indicators
- *
  * @module pages/customize/effects-customization
  */
 
-import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  MagnifyingGlassIcon,
-  SparklesIcon,
-  PhotoIcon,
-  BeakerIcon,
-} from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/modules/auth/store';
-import { useCustomizationStore } from '@/modules/settings/store/customization';
-import toast from 'react-hot-toast';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
-import type { EffectCategory, ParticleEffect, BackgroundEffect, AnimationSet } from './types';
-import {
-  PARTICLE_ID_TO_EFFECT,
-  PARTICLE_EFFECTS,
-  BACKGROUND_EFFECTS,
-  ANIMATION_SETS,
-} from './constants';
+import type { ParticleEffect, BackgroundEffect, AnimationSet } from './types';
 import { ParticleEffectsSection, BackgroundEffectsSection, AnimationSetsSection } from './sections';
+import { useEffectsCustomization } from './useEffectsCustomization';
+import { SaveButton } from './SaveButton';
 
 export default function EffectsCustomization() {
-  const { user } = useAuthStore();
-  const store = useCustomizationStore();
   const {
+    activeCategory,
+    searchQuery,
+    previewingLockedItem,
     particleEffect,
     backgroundEffect,
     animationSpeed,
     isSaving,
     error,
-    fetchCustomizations,
-    saveCustomizations,
-    updateEffects,
-    setEffect,
-    updateSettings,
-    setAnimationSpeed,
-  } = store;
-
-  const [activeCategory, setActiveCategory] = useState<EffectCategory>('particles');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [previewingLockedItem, setPreviewingLockedItem] = useState<string | null>(null);
-
-  // Apply particle effect to store for live preview
-  const applyParticleToStore = useCallback(
-    (particleId: string) => {
-      const effectPreset = PARTICLE_ID_TO_EFFECT[particleId] || 'minimal';
-      setEffect(effectPreset);
-      // Use updateSettings instead of toggle to prevent infinite loop
-      updateSettings({ particlesEnabled: particleId !== 'particle-none' });
-    },
-    [setEffect, updateSettings]
-  );
-
-  // Apply background effect to store for live preview
-  const applyBackgroundToStore = useCallback(
-    (bgId: string) => {
-      // Background effects map to animated background - use updateSettings instead of toggle
-      const isAnimated = BACKGROUND_EFFECTS.find((bg) => bg.id === bgId)?.animated || false;
-      updateSettings({ animatedBackground: isAnimated });
-    },
-    [updateSettings]
-  );
-
-  // Fetch customizations on mount
-  useEffect(() => {
-    if (user?.id) {
-      fetchCustomizations(user.id);
-    }
-  }, [user?.id, fetchCustomizations]);
-
-  // Apply current selection to store on mount
-  useEffect(() => {
-    if (particleEffect) {
-      const effectPreset = PARTICLE_ID_TO_EFFECT[particleEffect] || 'minimal';
-      setEffect(effectPreset);
-    }
-  }, [particleEffect, setEffect]);
-
-  // Handle preview for locked items
-  const handlePreviewItem = (
-    category: 'particle' | 'background' | 'animation',
-    id: string,
-    isUnlocked: boolean
-  ) => {
-    if (category === 'particle') {
-      updateEffects('particleEffect', id);
-      applyParticleToStore(id);
-      setPreviewingLockedItem(isUnlocked ? null : id);
-    } else if (category === 'background') {
-      updateEffects('backgroundEffect', id);
-      applyBackgroundToStore(id);
-      setPreviewingLockedItem(isUnlocked ? null : id);
-    } else {
-      // For animations, extract the speed value from the animation set
-      const animation = ANIMATION_SETS.find((a) => a.id === id);
-      const speedValue = animation?.speed || 'normal';
-      updateEffects('animationSpeed', speedValue);
-      // Also update store directly for immediate preview
-      setAnimationSpeed(speedValue as 'slow' | 'normal' | 'fast');
-      setPreviewingLockedItem(isUnlocked ? null : id);
-    }
-  };
-
-  const handleSaveEffectsSettings = async () => {
-    if (!user?.id) {
-      toast.error('User not authenticated');
-      return;
-    }
-
-    // Block save if previewing a locked item
-    if (previewingLockedItem) {
-      toast.error('Please purchase premium to save this effect, or select an unlocked item.');
-      return;
-    }
-
-    try {
-      await saveCustomizations(user.id);
-      toast.success('Effects settings saved successfully!');
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to save effects settings');
-    }
-  };
-
-  const categories = [
-    {
-      id: 'particles' as EffectCategory,
-      label: 'Particle Effects',
-      icon: SparklesIcon,
-      count: PARTICLE_EFFECTS.length,
-    },
-    {
-      id: 'backgrounds' as EffectCategory,
-      label: 'Background Effects',
-      icon: PhotoIcon,
-      count: BACKGROUND_EFFECTS.length,
-    },
-    {
-      id: 'animations' as EffectCategory,
-      label: 'UI Animations',
-      icon: BeakerIcon,
-      count: ANIMATION_SETS.length,
-    },
-  ];
-
-  // Filter items by search
-  const getFilteredItems = () => {
-    const query = searchQuery.toLowerCase();
-    if (activeCategory === 'particles') {
-      return PARTICLE_EFFECTS.filter(
-        (item) =>
-          item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query)
-      );
-    } else if (activeCategory === 'backgrounds') {
-      return BACKGROUND_EFFECTS.filter(
-        (item) =>
-          item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query)
-      );
-    } else {
-      return ANIMATION_SETS.filter(
-        (item) =>
-          item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query)
-      );
-    }
-  };
-
-  const filteredItems = getFilteredItems();
+    filteredItems,
+    categories,
+    setActiveCategory,
+    setSearchQuery,
+    handlePreviewItem,
+    handleSaveEffectsSettings,
+  } = useEffectsCustomization();
 
   return (
     <div className="space-y-6">
@@ -264,41 +116,7 @@ export default function EffectsCustomization() {
       </AnimatePresence>
 
       {/* Save Button */}
-      <div className="flex justify-end border-t border-white/10 pt-4">
-        <button
-          onClick={handleSaveEffectsSettings}
-          disabled={isSaving}
-          className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-primary-600 to-purple-600 px-6 py-3 font-semibold text-white shadow-lg shadow-primary-500/25 transition-all hover:from-primary-700 hover:to-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isSaving ? (
-            <>
-              <svg
-                className="h-5 w-5 animate-spin"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-              Saving...
-            </>
-          ) : (
-            'Save Effects Settings'
-          )}
-        </button>
-      </div>
+      <SaveButton isSaving={isSaving} onClick={handleSaveEffectsSettings} />
 
       {/* Error Display */}
       {error && (

@@ -5,3 +5,4 @@
  */
 
 export { useCustomizationApplication } from './useCustomizationApplication';
+export { useUsernameChange } from './useUsernameChange';

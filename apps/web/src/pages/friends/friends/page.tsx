@@ -3,146 +3,44 @@
  * Orchestrates friend list, requests, and search functionality
  */
 
-import { useState, useEffect } from 'react';
-import { useFriendStore, Friend } from '@/modules/social/store';
-import { extractErrorMessage } from '@/lib/apiUtils';
 import { motion } from 'framer-motion';
-import { UserPlusIcon, NoSymbolIcon, ClockIcon } from '@heroicons/react/24/outline';
-import { useNavigate } from 'react-router-dom';
-import { socketManager } from '@/lib/socket';
 
-import { FriendListItem } from './friend-list-item';
-import { FriendRequestCard } from './friend-request-card';
 import { FriendsHeader, AddFriendForm, FriendsTabBar, FriendsSearchBar } from './header-components';
+import { PendingTab, FriendsListTab, BlockedTab } from './friends-tab-panels';
 import { WelcomePanel } from './welcome-panel';
-import type { FriendsTab, TabDefinition } from './types';
+import { useFriendsPage } from './useFriendsPage';
 
 export default function Friends() {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<FriendsTab>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showAddFriend, setShowAddFriend] = useState(false);
-  const [addFriendInput, setAddFriendInput] = useState('');
-  const [addFriendError, setAddFriendError] = useState('');
-  const [addFriendSuccess, setAddFriendSuccess] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
-  // Track online friend IDs for presence updates - value used to trigger re-renders
-  const [, setOnlineFriendIds] = useState<string[]>([]);
-
   const {
+    activeTab,
+    setActiveTab,
+    tabs,
+    searchQuery,
+    setSearchQuery,
+    showAddFriend,
+    setShowAddFriend,
+    addFriendInput,
+    setAddFriendInput,
+    addFriendError,
+    addFriendSuccess,
+    isSubmitting,
+    handleAddFriend,
+    dropdownOpen,
+    setDropdownOpen,
     friends,
+    filteredFriends,
     pendingRequests,
     sentRequests,
     isLoading,
     error,
-    fetchFriends,
-    fetchPendingRequests,
-    sendRequest,
+    clearError,
     acceptRequest,
     declineRequest,
     removeFriend,
     blockUser,
-    clearError,
-  } = useFriendStore();
-
-  useEffect(() => {
-    fetchFriends();
-    fetchPendingRequests();
-  }, [fetchFriends, fetchPendingRequests]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    const connectPresence = async () => {
-      await socketManager.connect();
-      socketManager.joinPresenceLobby();
-
-      if (isMounted) {
-        setOnlineFriendIds(socketManager.getOnlineFriends());
-      }
-    };
-
-    connectPresence();
-
-    const unsubscribe = socketManager.onStatusChange((conversationId) => {
-      if (conversationId === 'lobby') {
-        setOnlineFriendIds(socketManager.getOnlineFriends());
-      }
-    });
-
-    return () => {
-      isMounted = false;
-      unsubscribe();
-    };
-  }, []);
-
-  const onlineCount = friends.filter((friend) => socketManager.isFriendOnline(friend.id)).length;
-
-  const tabs: TabDefinition[] = [
-    { id: 'all', label: 'All', count: friends.length },
-    { id: 'online', label: 'Online', count: onlineCount },
-    { id: 'pending', label: 'Pending', count: pendingRequests.length + sentRequests.length },
-    { id: 'blocked', label: 'Blocked', count: 0 },
-  ];
-
-  const filteredFriends = friends.filter((friend) => {
-    const matchesSearch =
-      friend.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      friend.displayName?.toLowerCase().includes(searchQuery.toLowerCase());
-
-    if (activeTab === 'online') {
-      return matchesSearch && socketManager.isFriendOnline(friend.id);
-    }
-
-    return matchesSearch;
-  });
-
-  const handleAddFriend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAddFriendError('');
-    setAddFriendSuccess(false);
-
-    if (!addFriendInput.trim()) {
-      setAddFriendError('Please enter a username');
-      return;
-    }
-
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-
-    try {
-      await sendRequest(addFriendInput.trim());
-      setAddFriendSuccess(true);
-      setAddFriendInput('');
-      setTimeout(() => setAddFriendSuccess(false), 3000);
-    } catch (err: unknown) {
-      let errorMsg = extractErrorMessage(err, error || 'Failed to send friend request');
-      if (errorMsg.includes('Idempotency-Key') || errorMsg.includes('idempotency')) {
-        errorMsg = 'Please wait a moment before trying again';
-      }
-      setAddFriendError(errorMsg);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleStartChat = (friendId: string) => {
-    navigate(`/messages?userId=${friendId}`);
-  };
-
-  const getStatusColor = (status: Friend['status']) => {
-    switch (status) {
-      case 'online':
-        return 'bg-green-500';
-      case 'idle':
-        return 'bg-yellow-500';
-      case 'dnd':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
+    handleStartChat,
+    getStatusColor,
+  } = useFriendsPage();
 
   return (
     <div className="flex h-full flex-1 overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
@@ -210,131 +108,33 @@ export default function Friends() {
               exit={{ opacity: 0 }}
               className="p-3"
             >
-              {pendingRequests.length > 0 && (
-                <div className="mb-4">
-                  <motion.h3
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="mb-2 bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text px-1 text-xs font-semibold uppercase tracking-wider text-transparent"
-                  >
-                    Incoming — {pendingRequests.length}
-                  </motion.h3>
-                  <div className="space-y-2">
-                    {pendingRequests.map((request, index) => (
-                      <motion.div
-                        key={request.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{
-                          type: 'spring',
-                          stiffness: 300,
-                          damping: 20,
-                          delay: index * 0.05,
-                        }}
-                      >
-                        <FriendRequestCard
-                          request={request}
-                          type="incoming"
-                          onAccept={() => acceptRequest(request.id)}
-                          onDecline={() => declineRequest(request.id)}
-                        />
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {sentRequests.length > 0 && (
-                <div>
-                  <motion.h3
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: pendingRequests.length * 0.05 }}
-                    className="mb-2 bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text px-1 text-xs font-semibold uppercase tracking-wider text-transparent"
-                  >
-                    Sent — {sentRequests.length}
-                  </motion.h3>
-                  <div className="space-y-2">
-                    {sentRequests.map((request, index) => (
-                      <motion.div
-                        key={request.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{
-                          type: 'spring',
-                          stiffness: 300,
-                          damping: 20,
-                          delay: (pendingRequests.length + index) * 0.05,
-                        }}
-                      >
-                        <FriendRequestCard
-                          request={request}
-                          type="outgoing"
-                          onDecline={() => declineRequest(request.id)}
-                        />
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {pendingRequests.length === 0 && sentRequests.length === 0 && (
-                <div className="py-12 text-center">
-                  <ClockIcon className="mx-auto mb-3 h-12 w-12 text-gray-600" />
-                  <p className="text-sm text-gray-400">No pending requests</p>
-                </div>
-              )}
+              <PendingTab
+                pendingRequests={pendingRequests}
+                sentRequests={sentRequests}
+                acceptRequest={acceptRequest}
+                declineRequest={declineRequest}
+              />
             </motion.div>
           )}
 
           {!isLoading && (activeTab === 'all' || activeTab === 'online') && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              {filteredFriends.length > 0 ? (
-                <div>
-                  {filteredFriends.map((friend, index) => (
-                    <motion.div
-                      key={friend.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 20,
-                        delay: index * 0.05,
-                      }}
-                    >
-                      <FriendListItem
-                        friend={friend}
-                        statusColor={getStatusColor(friend.status)}
-                        onMessage={() => handleStartChat(friend.id)}
-                        onRemove={() => removeFriend(friend.id)}
-                        onBlock={() => blockUser(friend.id)}
-                        dropdownOpen={dropdownOpen === friend.id}
-                        setDropdownOpen={(open) => setDropdownOpen(open ? friend.id : null)}
-                      />
-                    </motion.div>
-                  ))}
-                </div>
-              ) : (
-                <div className="px-4 py-12 text-center">
-                  <UserPlusIcon className="mx-auto mb-3 h-12 w-12 text-gray-600" />
-                  <p className="text-sm text-gray-400">
-                    {searchQuery ? 'No friends found' : 'No friends yet'}
-                  </p>
-                </div>
-              )}
+              <FriendsListTab
+                filteredFriends={filteredFriends}
+                searchQuery={searchQuery}
+                getStatusColor={getStatusColor}
+                handleStartChat={handleStartChat}
+                removeFriend={removeFriend}
+                blockUser={blockUser}
+                dropdownOpen={dropdownOpen}
+                setDropdownOpen={setDropdownOpen}
+              />
             </motion.div>
           )}
 
           {!isLoading && activeTab === 'blocked' && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="px-4 py-12 text-center"
-            >
-              <NoSymbolIcon className="mx-auto mb-3 h-12 w-12 text-gray-600" />
-              <p className="text-sm text-gray-400">No blocked users</p>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <BlockedTab />
             </motion.div>
           )}
         </div>

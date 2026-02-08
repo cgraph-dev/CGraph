@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -13,11 +13,13 @@ import {
   AlertDescription,
   Badge,
 } from '@/shared/components/ui';
-import { Loader2, AlertCircle, CheckCircle2, Clock, History } from 'lucide-react';
-import { useDebounce } from '@/shared/hooks';
-import { createLogger } from '@/lib/logger';
-
-const logger = createLogger('UsernameChangeModal');
+import { Loader2, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import {
+  useUsernameChange,
+  COOLDOWN_DAYS_PREMIUM,
+  COOLDOWN_DAYS_STANDARD,
+} from '@/modules/settings/hooks/useUsernameChange';
+import { UsernameHistorySection } from '@/modules/settings/components/UsernameHistory';
 
 interface UsernameChangeModalProps {
   isOpen: boolean;
@@ -28,22 +30,6 @@ interface UsernameChangeModalProps {
   onSuccess?: (newUsername: string) => void;
 }
 
-interface UsernameHistory {
-  id: string;
-  oldUsername: string;
-  newUsername: string;
-  changedAt: Date;
-  changedByAdmin: boolean;
-}
-
-interface CheckResult {
-  available: boolean;
-  message?: string;
-}
-
-const COOLDOWN_DAYS_STANDARD = 30;
-const COOLDOWN_DAYS_PREMIUM = 7;
-
 export const UsernameChangeModal: React.FC<UsernameChangeModalProps> = ({
   isOpen,
   onClose,
@@ -52,169 +38,21 @@ export const UsernameChangeModal: React.FC<UsernameChangeModalProps> = ({
   isPremium = false,
   onSuccess,
 }) => {
-  const [newUsername, setNewUsername] = useState('');
-  const [isChecking, setIsChecking] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [checkResult, setCheckResult] = useState<CheckResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [showHistory, setShowHistory] = useState(false);
-  const [history, setHistory] = useState<UsernameHistory[]>([]);
-  const [loadingHistory, setLoadingHistory] = useState(false);
-
-  // AbortController refs for cleanup on unmount
-  const availabilityAbortRef = useRef<AbortController | null>(null);
-  const historyAbortRef = useRef<AbortController | null>(null);
-
-  const debouncedUsername = useDebounce(newUsername, 500);
-  const cooldownDays = isPremium ? COOLDOWN_DAYS_PREMIUM : COOLDOWN_DAYS_STANDARD;
-
-  // Calculate remaining cooldown days
-  const getRemainingDays = useCallback((): number => {
-    if (!lastChangeDate) return 0;
-    const now = new Date();
-    const daysSinceChange = Math.floor(
-      (now.getTime() - lastChangeDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    return Math.max(0, cooldownDays - daysSinceChange);
-  }, [lastChangeDate, cooldownDays]);
-
-  const remainingDays = getRemainingDays();
-  const canChange = remainingDays === 0;
-
-  // Username validation regex
-  const isValidFormat = (username: string): boolean => {
-    return /^[a-zA-Z0-9_-]{3,32}$/.test(username);
-  };
-
-  // Check username availability
-  useEffect(() => {
-    if (!debouncedUsername || debouncedUsername === currentUsername) {
-      setCheckResult(null);
-      return;
-    }
-
-    if (!isValidFormat(debouncedUsername)) {
-      setCheckResult({
-        available: false,
-        message:
-          'Username must be 3-32 characters and contain only letters, numbers, underscores, and hyphens',
-      });
-      return;
-    }
-
-    // Abort previous check if still in flight
-    availabilityAbortRef.current?.abort();
-    availabilityAbortRef.current = new AbortController();
-    const signal = availabilityAbortRef.current.signal;
-
-    const checkAvailability = async () => {
-      setIsChecking(true);
-      try {
-        const response = await fetch(
-          `/api/users/check-username?username=${encodeURIComponent(debouncedUsername)}`,
-          { signal }
-        );
-        const data = await response.json();
-        if (!signal.aborted) {
-          setCheckResult({
-            available: data.available,
-            message: data.available
-              ? 'Username is available!'
-              : data.reason || 'Username is not available',
-          });
-        }
-      } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
-          setCheckResult({
-            available: false,
-            message: 'Unable to check availability',
-          });
-        }
-      } finally {
-        if (!signal.aborted) {
-          setIsChecking(false);
-        }
-      }
-    };
-
-    checkAvailability();
-
-    return () => {
-      availabilityAbortRef.current?.abort();
-    };
-  }, [debouncedUsername, currentUsername]);
-
-  // Load history
-  const loadHistory = useCallback(async () => {
-    // Abort previous history load if still in flight
-    historyAbortRef.current?.abort();
-    historyAbortRef.current = new AbortController();
-    const signal = historyAbortRef.current.signal;
-
-    setLoadingHistory(true);
-    try {
-      const response = await fetch('/api/users/me/username-history', { signal });
-      const data = await response.json();
-      if (!signal.aborted) {
-        setHistory(data.history || []);
-      }
-    } catch (error) {
-      if (error instanceof Error && error.name !== 'AbortError') {
-        logger.error('Failed to load username history');
-      }
-    } finally {
-      if (!signal.aborted) {
-        setLoadingHistory(false);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    if (showHistory && history.length === 0) {
-      loadHistory();
-    }
-
-    // Cleanup on unmount
-    return () => {
-      historyAbortRef.current?.abort();
-    };
-  }, [showHistory, history.length, loadHistory]);
-
-  // Handle submit
-  const handleSubmit = async () => {
-    if (!canChange || !checkResult?.available) return;
-
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/users/me/change-username', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: newUsername }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Failed to change username');
-      }
-
-      onSuccess?.(newUsername);
-      onClose();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
+  const {
+    newUsername,
+    setNewUsername,
+    isChecking,
+    isSubmitting,
+    checkResult,
+    error,
+    showHistory,
+    toggleHistory,
+    history,
+    loadingHistory,
+    remainingDays,
+    canChange,
+    handleSubmit,
+  } = useUsernameChange({ currentUsername, lastChangeDate, isPremium, onSuccess, onClose });
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -311,46 +149,13 @@ export const UsernameChangeModal: React.FC<UsernameChangeModalProps> = ({
             </Alert>
           )}
 
-          {/* History toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowHistory(!showHistory)}
-            className="text-muted-foreground w-full justify-start"
-          >
-            <History className="mr-2 h-4 w-4" />
-            {showHistory ? 'Hide' : 'Show'} username history
-          </Button>
-
-          {/* History list */}
-          {showHistory && (
-            <div className="max-h-40 overflow-y-auto rounded-md border p-3">
-              {loadingHistory ? (
-                <div className="flex justify-center py-2">
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                </div>
-              ) : history.length === 0 ? (
-                <p className="text-muted-foreground py-2 text-center text-sm">
-                  No username changes recorded
-                </p>
-              ) : (
-                <ul className="space-y-2">
-                  {history.map((item) => (
-                    <li key={item.id} className="flex items-center justify-between text-sm">
-                      <span>
-                        <span className="text-muted-foreground">{item.oldUsername}</span>
-                        <span className="mx-2">→</span>
-                        <span className="font-medium">{item.newUsername}</span>
-                      </span>
-                      <span className="text-muted-foreground text-xs">
-                        {formatDate(item.changedAt)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
+          {/* History section */}
+          <UsernameHistorySection
+            showHistory={showHistory}
+            onToggle={toggleHistory}
+            history={history}
+            loading={loadingHistory}
+          />
         </div>
 
         <DialogFooter className="gap-2">

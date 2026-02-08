@@ -11,3 +11,6 @@ export {
   usePostModeration,
   useInlineModeration,
 } from './useModeration';
+
+export { useReportForm, REPORT_CATEGORIES } from './useReportForm';
+export type { ReportCategory, ReportStep, TargetType, ReportDialogProps } from './useReportForm';

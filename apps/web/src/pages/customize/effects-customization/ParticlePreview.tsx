@@ -10,14 +10,15 @@
 import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { SparklesIcon } from '@heroicons/react/24/outline';
-import type {
-  SnowParticle,
-  StarsParticle,
-  BubblesParticle,
-  SparklesParticle,
-  ConfettiParticle,
-  FirefliesParticle,
-} from './types';
+import {
+  generateSnowParticles,
+  generateStarsParticles,
+  generateBubblesParticles,
+  generateSparklesParticles,
+  generateConfettiParticles,
+  generateFirefliesParticles,
+  getGpuStyles,
+} from '@/pages/customize/effects-customization/particleDataGenerators';
 
 interface ParticlePreviewProps {
   type: string;
@@ -29,95 +30,23 @@ export const ParticlePreview = memo(function ParticlePreview({
   shouldAnimate,
 }: ParticlePreviewProps) {
   // Memoize particle positions to prevent recalculation on re-render
-  const snowData = useMemo(
-    (): SnowParticle[] =>
-      type === 'snow'
-        ? Array.from({ length: 8 }, (_, i) => ({
-            id: i,
-            startX: Math.random() * 100,
-            endX: Math.random() * 100,
-            delay: Math.random() * 2,
-            duration: 3 + Math.random() * 2,
-          }))
-        : [],
-    [type]
-  );
-
-  const starsData = useMemo(
-    (): StarsParticle[] =>
-      type === 'stars'
-        ? Array.from({ length: 12 }, (_, i) => ({
-            id: i,
-            top: Math.random() * 100,
-            left: Math.random() * 100,
-            delay: Math.random() * 2,
-            duration: 2 + Math.random(),
-          }))
-        : [],
-    [type]
-  );
-
-  const bubblesData = useMemo(
-    (): BubblesParticle[] =>
-      type === 'bubbles'
-        ? Array.from({ length: 6 }, (_, i) => ({
-            id: i,
-            size: 20 + Math.random() * 20,
-            left: Math.random() * 80,
-            delay: Math.random() * 3,
-            duration: 4 + Math.random() * 2,
-          }))
-        : [],
-    [type]
-  );
-
+  const snowData = useMemo(() => (type === 'snow' ? generateSnowParticles() : []), [type]);
+  const starsData = useMemo(() => (type === 'stars' ? generateStarsParticles() : []), [type]);
+  const bubblesData = useMemo(() => (type === 'bubbles' ? generateBubblesParticles() : []), [type]);
   const sparklesData = useMemo(
-    (): SparklesParticle[] =>
-      type === 'sparkles'
-        ? Array.from({ length: 10 }, (_, i) => ({
-            id: i,
-            top: Math.random() * 100,
-            left: Math.random() * 100,
-            fontSize: 8 + Math.random() * 8,
-            delay: Math.random() * 2,
-            duration: 1 + Math.random(),
-          }))
-        : [],
+    () => (type === 'sparkles' ? generateSparklesParticles() : []),
     [type]
   );
-
-  const confettiData = useMemo((): ConfettiParticle[] => {
-    const colors = ['#ef4444', '#22c55e', '#3b82f6', '#eab308', '#ec4899'] as const;
-    return type === 'confetti'
-      ? Array.from({ length: 10 }, (_, i) => ({
-          id: i,
-          left: Math.random() * 100,
-          color: colors[i % colors.length]!,
-          delay: Math.random() * 2,
-          duration: 2 + Math.random() * 2,
-        }))
-      : [];
-  }, [type]);
-
+  const confettiData = useMemo(
+    () => (type === 'confetti' ? generateConfettiParticles() : []),
+    [type]
+  );
   const firefliesData = useMemo(
-    (): FirefliesParticle[] =>
-      type === 'fireflies'
-        ? Array.from({ length: 8 }, (_, i) => ({
-            id: i,
-            top: Math.random() * 100,
-            left: Math.random() * 100,
-            delay: Math.random() * 2,
-            duration: 3 + Math.random() * 2,
-          }))
-        : [],
+    () => (type === 'fireflies' ? generateFirefliesParticles() : []),
     [type]
   );
 
-  // GPU layer promotion styles for better performance
-  const gpuStyles = {
-    willChange: shouldAnimate ? 'transform, opacity' : 'auto',
-    transform: 'translateZ(0)',
-  } as const;
+  const gpuStyles = getGpuStyles(shouldAnimate);
 
   if (type === 'none') {
     return (

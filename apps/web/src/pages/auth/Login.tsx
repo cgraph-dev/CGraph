@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useAuthStore } from '@/modules/auth/store';
 import { OAuthButtonGroup } from '@/modules/auth/components/OAuthButtons';
 import {
   TextScramble,
   GlitchText,
   prefersReducedMotion,
 } from '@/modules/auth/components/AuthEffects';
+import { AuthErrorAlert } from '@/pages/auth/register/AuthErrorAlert';
+import { useLoginForm } from '@/pages/auth/login/useLoginForm';
+import { LoginFormFields } from '@/pages/auth/login/LoginFormFields';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('Login');
@@ -17,10 +18,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.2,
-    },
+    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
   },
 };
 
@@ -35,74 +33,20 @@ const itemVariants = {
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, getWalletChallenge, loginWithWallet, isLoading, error, clearError } =
-    useAuthStore();
   const reduced = prefersReducedMotion();
 
-  // Auto-dismiss error after 5 seconds (enough time to read)
-  useEffect(() => {
-    if (!error) return;
-
-    const timer = setTimeout(() => {
-      clearError();
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, [error, clearError]);
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    clearError();
-
-    try {
-      await login(email, password);
-      navigate('/messages');
-    } catch {
-      // Error is handled by store
-    }
-  };
-
-  const handleWalletConnect = async () => {
-    clearError();
-
-    try {
-      // Check if MetaMask is installed
-      if (typeof window.ethereum === 'undefined') {
-        throw new Error('Please install MetaMask to use wallet login');
-      }
-
-      // Request account access
-      const accounts = (await window.ethereum.request({
-        method: 'eth_requestAccounts',
-      })) as string[];
-      const walletAddress = accounts[0];
-      if (!walletAddress) {
-        throw new Error('No wallet address returned from MetaMask');
-      }
-
-      // Step 1: Get challenge message with nonce from backend
-      const challenge = await getWalletChallenge(walletAddress);
-
-      // Step 2: Sign the challenge message with MetaMask
-      const signature = (await window.ethereum.request({
-        method: 'personal_sign',
-        params: [challenge.message, walletAddress],
-      })) as string | undefined;
-      if (!signature) {
-        throw new Error('Signature not provided');
-      }
-
-      // Step 3: Verify signature and login
-      await loginWithWallet(walletAddress, signature);
-      navigate('/messages');
-    } catch (err) {
-      // Error is handled by store or shown locally
-      logger.error('Wallet login error:', err);
-    }
-  };
+  const {
+    email,
+    setEmail,
+    password,
+    setPassword,
+    showPassword,
+    setShowPassword,
+    isLoading,
+    error,
+    handleSubmit,
+    handleWalletConnect,
+  } = useLoginForm();
 
   return (
     <motion.div
@@ -147,124 +91,21 @@ export default function Login() {
         </p>
       </motion.div>
 
-      {/* Error Alert with matrix styling */}
-      {error && (
-        <motion.div
-          initial={{ opacity: 0, y: -10, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -10, scale: 0.95 }}
-          className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400 shadow-lg shadow-red-500/10 backdrop-blur-sm"
-        >
-          <div className="flex items-center gap-2">
-            <svg
-              className="h-5 w-5 flex-shrink-0"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            {/* Defensive rendering to prevent React error #31 when error is an object */}
-            {typeof error === 'string'
-              ? error
-              : (error as { message?: string })?.message || 'An error occurred'}
-          </div>
-        </motion.div>
-      )}
+      {/* Error Alert — reused from register */}
+      <AuthErrorAlert error={error} />
 
       {/* Login Form with staggered animations */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        <motion.div variants={reduced ? {} : itemVariants}>
-          <label htmlFor="identifier" className="mb-2 block text-sm font-medium text-gray-300">
-            Email or Username
-          </label>
-          <motion.input
-            id="identifier"
-            type="text"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="username"
-            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
-            placeholder="you@example.com or username"
-            whileFocus={reduced ? {} : { scale: 1.01 }}
-          />
-        </motion.div>
-
-        <motion.div variants={reduced ? {} : itemVariants}>
-          <label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-300">
-            Password
-          </label>
-          <div className="relative">
-            <motion.input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-              className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
-              placeholder="••••••••"
-              whileFocus={reduced ? {} : { scale: 1.01 }}
-            />
-            <motion.button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-all duration-200 hover:text-primary-400"
-              whileHover={reduced ? {} : { scale: 1.2 }}
-              whileTap={reduced ? {} : { scale: 0.9 }}
-            >
-              {showPassword ? (
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                  />
-                </svg>
-              ) : (
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                  />
-                </svg>
-              )}
-            </motion.button>
-          </div>
-        </motion.div>
-
-        <motion.div
-          variants={reduced ? {} : itemVariants}
-          className="flex items-center justify-between"
-        >
-          <label className="group flex cursor-pointer items-center gap-2">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-dark-600 bg-dark-700 text-primary-500 transition-all checked:border-primary-600 checked:bg-primary-600 focus:ring-primary-500/50 focus:ring-offset-0"
-            />
-            <span className="text-sm text-gray-400 transition-colors group-hover:text-gray-300">
-              Remember me
-            </span>
-          </label>
-          <Link to="/forgot-password" className="matrix-link text-sm">
-            Forgot password?
-          </Link>
-        </motion.div>
+        <LoginFormFields
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          showPassword={showPassword}
+          setShowPassword={setShowPassword}
+          itemVariants={reduced ? undefined : itemVariants}
+          reduced={reduced}
+        />
 
         <motion.button
           type="submit"

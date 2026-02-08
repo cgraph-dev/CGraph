@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { InviteModal } from '../InviteModal';
+import { InviteModal } from '../invite-modal';
 import type { InvitesTabProps } from './types';
 
 export function InvitesTab({ groupId, groupName }: InvitesTabProps) {

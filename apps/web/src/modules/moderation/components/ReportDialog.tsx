@@ -3,90 +3,19 @@
  *
  * Modal dialog for reporting content/users that violates community guidelines.
  * Supports reporting messages, users, posts, and comments.
- *
- * @example
- * ```tsx
- * <ReportDialog
- *   isOpen={showReport}
- *   onClose={() => setShowReport(false)}
- *   targetType="message"
- *   targetId={message.id}
- * />
- * ```
  */
 
-import { useState } from 'react';
 import {
   XMarkIcon,
   ExclamationTriangleIcon,
   FlagIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
-import { useMutation } from '@tanstack/react-query';
-import { api } from '@/lib/api';
-
-// Report categories with descriptions
-const REPORT_CATEGORIES = [
-  {
-    value: 'harassment',
-    label: 'Harassment',
-    description: 'Bullying, intimidation, or targeted abuse',
-  },
-  {
-    value: 'hate_speech',
-    label: 'Hate Speech',
-    description: 'Discrimination based on protected characteristics',
-  },
-  {
-    value: 'violence_threat',
-    label: 'Violence or Threats',
-    description: 'Threats of violence or harm',
-  },
-  {
-    value: 'spam',
-    label: 'Spam',
-    description: 'Unwanted promotional content or repetitive messages',
-  },
-  { value: 'scam', label: 'Scam or Fraud', description: 'Deceptive content or financial fraud' },
-  { value: 'impersonation', label: 'Impersonation', description: 'Pretending to be someone else' },
-  {
-    value: 'nsfw_unlabeled',
-    label: 'Adult Content',
-    description: 'NSFW content not properly labeled',
-  },
-  {
-    value: 'doxxing',
-    label: 'Doxxing',
-    description: 'Sharing private information without consent',
-  },
-  { value: 'self_harm', label: 'Self-Harm', description: 'Content promoting self-harm or suicide' },
-  {
-    value: 'copyright',
-    label: 'Copyright Violation',
-    description: 'Unauthorized use of copyrighted material',
-  },
-  { value: 'other', label: 'Other', description: 'Violation not listed above' },
-] as const;
-
-type ReportCategory = (typeof REPORT_CATEGORIES)[number]['value'];
-type TargetType = 'user' | 'message' | 'group' | 'forum' | 'post' | 'comment';
-
-interface ReportDialogProps {
-  isOpen: boolean;
-  onClose: () => void;
-  targetType: TargetType;
-  targetId: string;
-  targetName?: string; // Optional display name of what's being reported
-}
-
-interface ReportPayload {
-  report: {
-    target_type: TargetType;
-    target_id: string;
-    category: ReportCategory;
-    description?: string;
-  };
-}
+import {
+  useReportForm,
+  REPORT_CATEGORIES,
+  type ReportDialogProps,
+} from '@/modules/moderation/hooks/useReportForm';
 
 export function ReportDialog({
   isOpen,
@@ -95,40 +24,17 @@ export function ReportDialog({
   targetId,
   targetName,
 }: ReportDialogProps) {
-  const [step, setStep] = useState<'category' | 'details' | 'success'>('category');
-  const [selectedCategory, setSelectedCategory] = useState<ReportCategory | null>(null);
-  const [description, setDescription] = useState('');
-
-  const reportMutation = useMutation({
-    mutationFn: async (payload: ReportPayload) => {
-      const response = await api.post('/v1/reports', payload);
-      return response.data;
-    },
-    onSuccess: () => {
-      setStep('success');
-    },
-  });
-
-  const handleSubmit = () => {
-    if (!selectedCategory) return;
-
-    reportMutation.mutate({
-      report: {
-        target_type: targetType,
-        target_id: targetId,
-        category: selectedCategory,
-        description: description.trim() || undefined,
-      },
-    });
-  };
-
-  const handleClose = () => {
-    setStep('category');
-    setSelectedCategory(null);
-    setDescription('');
-    reportMutation.reset();
-    onClose();
-  };
+  const {
+    step,
+    setStep,
+    selectedCategory,
+    setSelectedCategory,
+    description,
+    setDescription,
+    reportMutation,
+    handleSubmit,
+    handleClose,
+  } = useReportForm(targetType, targetId, onClose);
 
   if (!isOpen) return null;
 
@@ -159,108 +65,23 @@ export function ReportDialog({
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-4">
           {step === 'category' && (
-            <div className="space-y-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                You're reporting {targetLabel}. Select the reason that best describes the issue.
-              </p>
-
-              <div className="space-y-2">
-                {REPORT_CATEGORIES.map((category) => (
-                  <label
-                    key={category.value}
-                    className={`block cursor-pointer rounded-lg border p-3 transition-colors ${
-                      selectedCategory === category.value
-                        ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
-                        : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
-                    } `}
-                  >
-                    <div className="flex items-start gap-3">
-                      <input
-                        type="radio"
-                        name="category"
-                        value={category.value}
-                        checked={selectedCategory === category.value}
-                        onChange={() => setSelectedCategory(category.value)}
-                        className="mt-1 text-red-600 focus:ring-red-500"
-                      />
-                      <div>
-                        <div className="font-medium text-gray-900 dark:text-gray-100">
-                          {category.label}
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                          {category.description}
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
+            <CategoryStep
+              targetLabel={targetLabel}
+              selectedCategory={selectedCategory}
+              onSelect={setSelectedCategory}
+            />
           )}
 
           {step === 'details' && (
-            <div className="space-y-4">
-              <div className="flex items-start gap-2 rounded-lg bg-yellow-50 p-3 dark:bg-yellow-900/20">
-                <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
-                <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                  Provide additional details to help our moderation team review this report. Do not
-                  include personal information about yourself.
-                </p>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Category
-                </label>
-                <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {REPORT_CATEGORIES.find((c) => c.value === selectedCategory)?.label}
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="description"
-                  className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
-                >
-                  Additional Details (Optional)
-                </label>
-                <textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe what happened..."
-                  maxLength={2000}
-                  rows={4}
-                  className="w-full resize-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-red-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
-                />
-                <div className="mt-1 text-right text-xs text-gray-500">
-                  {description.length}/2000
-                </div>
-              </div>
-
-              {reportMutation.error && (
-                <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
-                  {reportMutation.error instanceof Error
-                    ? reportMutation.error.message
-                    : 'Failed to submit report. Please try again.'}
-                </div>
-              )}
-            </div>
+            <DetailsStep
+              selectedCategory={selectedCategory}
+              description={description}
+              onDescriptionChange={setDescription}
+              error={reportMutation.error}
+            />
           )}
 
-          {step === 'success' && (
-            <div className="py-8 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-                <CheckCircleIcon className="h-8 w-8 text-green-600 dark:text-green-400" />
-              </div>
-              <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Report Submitted
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Thank you for helping keep CGraph safe. Our moderation team will review this report.
-              </p>
-            </div>
-          )}
+          {step === 'success' && <SuccessStep />}
         </div>
 
         {/* Footer */}
@@ -338,6 +159,131 @@ export function ReportDialog({
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+// ── Sub-components ─────────────────────────────────────────
+
+import type { ReportCategory } from '@/modules/moderation/hooks/useReportForm';
+
+function CategoryStep({
+  targetLabel,
+  selectedCategory,
+  onSelect,
+}: {
+  targetLabel: string;
+  selectedCategory: ReportCategory | null;
+  onSelect: (value: ReportCategory) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        You're reporting {targetLabel}. Select the reason that best describes the issue.
+      </p>
+      <div className="space-y-2">
+        {REPORT_CATEGORIES.map((category) => (
+          <label
+            key={category.value}
+            className={`block cursor-pointer rounded-lg border p-3 transition-colors ${
+              selectedCategory === category.value
+                ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600'
+            } `}
+          >
+            <div className="flex items-start gap-3">
+              <input
+                type="radio"
+                name="category"
+                value={category.value}
+                checked={selectedCategory === category.value}
+                onChange={() => onSelect(category.value)}
+                className="mt-1 text-red-600 focus:ring-red-500"
+              />
+              <div>
+                <div className="font-medium text-gray-900 dark:text-gray-100">{category.label}</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                  {category.description}
+                </div>
+              </div>
+            </div>
+          </label>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DetailsStep({
+  selectedCategory,
+  description,
+  onDescriptionChange,
+  error,
+}: {
+  selectedCategory: ReportCategory | null;
+  description: string;
+  onDescriptionChange: (value: string) => void;
+  error: Error | null;
+}) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-start gap-2 rounded-lg bg-yellow-50 p-3 dark:bg-yellow-900/20">
+        <ExclamationTriangleIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
+        <p className="text-sm text-yellow-800 dark:text-yellow-200">
+          Provide additional details to help our moderation team review this report. Do not include
+          personal information about yourself.
+        </p>
+      </div>
+
+      <div>
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Category
+        </label>
+        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          {REPORT_CATEGORIES.find((c) => c.value === selectedCategory)?.label}
+        </div>
+      </div>
+
+      <div>
+        <label
+          htmlFor="description"
+          className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+        >
+          Additional Details (Optional)
+        </label>
+        <textarea
+          id="description"
+          value={description}
+          onChange={(e) => onDescriptionChange(e.target.value)}
+          placeholder="Describe what happened..."
+          maxLength={2000}
+          rows={4}
+          className="w-full resize-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-red-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
+        />
+        <div className="mt-1 text-right text-xs text-gray-500">{description.length}/2000</div>
+      </div>
+
+      {error && (
+        <div className="rounded-lg bg-red-50 p-3 text-sm text-red-600 dark:bg-red-900/20 dark:text-red-400">
+          {error instanceof Error ? error.message : 'Failed to submit report. Please try again.'}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SuccessStep() {
+  return (
+    <div className="py-8 text-center">
+      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+        <CheckCircleIcon className="h-8 w-8 text-green-600 dark:text-green-400" />
+      </div>
+      <h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+        Report Submitted
+      </h3>
+      <p className="text-sm text-gray-600 dark:text-gray-400">
+        Thank you for helping keep CGraph safe. Our moderation team will review this report.
+      </p>
     </div>
   );
 }

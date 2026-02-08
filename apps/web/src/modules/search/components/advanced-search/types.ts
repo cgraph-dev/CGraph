@@ -46,6 +46,16 @@ export interface AdvancedSearchFilters {
   hasPoll?: boolean;
 }
 
+export interface Forum {
+  id: string;
+  name: string;
+}
+
+/** Shared helper – any sub-component that reads & mutates filters */
+export interface FilterUpdateFn {
+  <K extends keyof AdvancedSearchFilters>(key: K, value: AdvancedSearchFilters[K]): void;
+}
+
 export interface AdvancedSearchProps {
   onSearch: (filters: AdvancedSearchFilters) => void;
   isLoading?: boolean;

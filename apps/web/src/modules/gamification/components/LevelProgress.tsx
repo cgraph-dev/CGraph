@@ -4,34 +4,24 @@ import { SparklesIcon, FireIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useGamificationStore } from '@/modules/gamification/store';
-
-/**
- * Level Progress Widget
- *
- * Displays the user's current level, XP progress, and advancement status.
- * Features:
- * - Animated progress bar with gradient fill
- * - Level-up celebration animations
- * - XP gain notifications with source attribution
- * - Streak multiplier indicator
- * - Next level preview with required XP
- * - Compact and expanded view modes
- * - Real-time updates via store subscriptions
- *
- * This widget provides constant positive reinforcement for user actions,
- * making progress visible and rewarding without being intrusive.
- */
+import {
+  calculateXPForLevel,
+  getStreakMultiplier,
+  XP_NOTIFICATION_DURATION,
+  glowPulseCompact,
+  glowPulseExpanded,
+  glowTransitionCompact,
+  glowTransitionExpanded,
+  shimmerTransition,
+  progressBarTransitionCompact,
+  progressBarTransitionExpanded,
+  barShimmerTransition,
+} from '@/modules/gamification/components/level-progress.constants';
 
 interface LevelProgressProps {
   variant?: 'compact' | 'expanded';
   showStreak?: boolean;
   className?: string;
-}
-
-// XP calculation helper
-function calculateXPForLevel(level: number): number {
-  const baseXP = 100;
-  return Math.floor(baseXP * Math.pow(level, 1.8));
 }
 
 export default function LevelProgress({
@@ -44,42 +34,31 @@ export default function LevelProgress({
   const [prevTotalXP, setPrevTotalXP] = useState(totalXP);
   const xpTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
-  // Calculate XP needed for next level
   const xpForCurrentLevel = calculateXPForLevel(level);
   const xpForNextLevel = calculateXPForLevel(level + 1);
   const neededXP = xpForNextLevel - xpForCurrentLevel;
   const progressXP = currentXP;
   const progressPercent = neededXP > 0 ? Math.min((progressXP / neededXP) * 100, 100) : 0;
   const streak = loginStreak;
+  const streakMultiplier = getStreakMultiplier(streak);
 
-  // Detect XP gains and show notification
   useEffect(() => {
     if (totalXP > prevTotalXP) {
       const gained = totalXP - prevTotalXP;
       setRecentXPGain({ amount: gained, source: 'Action completed' });
       HapticFeedback.success();
-
       clearTimeout(xpTimeoutRef.current);
-      xpTimeoutRef.current = setTimeout(() => setRecentXPGain(null), 3000);
+      xpTimeoutRef.current = setTimeout(() => setRecentXPGain(null), XP_NOTIFICATION_DURATION);
     }
     setPrevTotalXP(totalXP);
     return () => clearTimeout(xpTimeoutRef.current);
   }, [totalXP, prevTotalXP]);
-
-  // Streak multiplier display
-  function getStreakMultiplier(days: number): number {
-    if (days >= 7) return 2.0;
-    if (days >= 3) return 1.5;
-    return 1.0;
-  }
-  const streakMultiplier = getStreakMultiplier(streak);
 
   if (variant === 'compact') {
     return (
       <div className={`relative ${className}`}>
         <GlassCard variant="frosted" glow className="p-3">
           <div className="flex items-center gap-3">
-            {/* Level Badge */}
             <motion.div
               className="relative h-12 w-12 flex-shrink-0"
               whileHover={{ scale: 1.1, rotate: 5 }}
@@ -93,16 +72,12 @@ export default function LevelProgress({
               </div>
               <motion.div
                 className="absolute inset-0 rounded-full bg-gradient-to-br from-primary-400 to-purple-400"
-                animate={{
-                  opacity: [0.3, 0.6, 0.3],
-                  scale: [1, 1.2, 1],
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
+                animate={glowPulseCompact}
+                transition={glowTransitionCompact}
                 style={{ filter: 'blur(8px)' }}
               />
             </motion.div>
 
-            {/* Progress Info */}
             <div className="min-w-0 flex-1">
               <div className="mb-1 flex items-center justify-between">
                 <span className="text-sm font-semibold text-white">Level {level}</span>
@@ -110,27 +85,22 @@ export default function LevelProgress({
                   {progressXP.toLocaleString()} / {neededXP.toLocaleString()} XP
                 </span>
               </div>
-
-              {/* Progress Bar */}
               <div className="relative h-2 overflow-hidden rounded-full bg-dark-800">
                 <motion.div
                   className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary-500 via-purple-500 to-pink-500"
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercent}%` }}
-                  transition={{ duration: 1, ease: 'easeOut' }}
+                  transition={progressBarTransitionCompact}
                 />
                 <motion.div
                   className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-primary-400 to-purple-400 opacity-50"
-                  animate={{
-                    x: ['0%', '100%'],
-                  }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                  animate={{ x: ['0%', '100%'] }}
+                  transition={barShimmerTransition}
                   style={{ width: '20%', filter: 'blur(4px)' }}
                 />
               </div>
             </div>
 
-            {/* Streak Indicator */}
             {showStreak && streak > 0 && (
               <motion.div
                 className="flex items-center gap-1 rounded-lg border border-orange-500/30 bg-orange-500/20 px-2 py-1"
@@ -144,7 +114,6 @@ export default function LevelProgress({
           </div>
         </GlassCard>
 
-        {/* XP Gain Notification */}
         <AnimatePresence>
           {recentXPGain && (
             <motion.div
@@ -161,12 +130,10 @@ export default function LevelProgress({
     );
   }
 
-  // Expanded variant
   return (
     <div className={className}>
       <GlassCard variant="holographic" glow borderGradient className="p-6">
         <div className="space-y-4">
-          {/* Header */}
           <div className="flex items-center justify-between">
             <h3 className="flex items-center gap-2 text-lg font-bold text-white">
               <SparklesIcon className="h-5 w-5 text-primary-400" />
@@ -175,7 +142,6 @@ export default function LevelProgress({
             <span className="text-xs text-gray-400">{totalXP.toLocaleString()} Total XP</span>
           </div>
 
-          {/* Level Display */}
           <div className="flex items-center gap-4">
             <motion.div
               className="relative h-20 w-20 flex-shrink-0"
@@ -191,11 +157,8 @@ export default function LevelProgress({
               </div>
               <motion.div
                 className="absolute inset-0 rounded-full bg-gradient-to-br from-primary-400 to-purple-400"
-                animate={{
-                  opacity: [0.2, 0.5, 0.2],
-                  scale: [1, 1.3, 1],
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
+                animate={glowPulseExpanded}
+                transition={glowTransitionExpanded}
                 style={{ filter: 'blur(12px)' }}
               />
             </motion.div>
@@ -209,32 +172,24 @@ export default function LevelProgress({
                   {(neededXP - progressXP).toLocaleString()} XP to level {level + 1}
                 </span>
               </div>
-
-              {/* Progress Bar */}
               <div className="relative h-3 overflow-hidden rounded-full bg-dark-800">
                 <motion.div
                   className="absolute inset-y-0 left-0 rounded-full"
-                  style={{
-                    background: 'linear-gradient(90deg, #10b981, #8b5cf6, #ec4899)',
-                  }}
+                  style={{ background: 'linear-gradient(90deg, #10b981, #8b5cf6, #ec4899)' }}
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercent}%` }}
-                  transition={{ duration: 1.5, ease: 'easeOut' }}
+                  transition={progressBarTransitionExpanded}
                 />
-                {/* Shimmer effect */}
                 <motion.div
                   className="absolute inset-0 opacity-50"
                   style={{
                     background:
                       'linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)',
                   }}
-                  animate={{
-                    x: ['-100%', '200%'],
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                  animate={{ x: ['-100%', '200%'] }}
+                  transition={shimmerTransition}
                 />
               </div>
-
               <div className="mt-2 flex items-center justify-between text-xs">
                 <span className="text-gray-500">{progressPercent.toFixed(1)}% complete</span>
                 {showStreak && streak > 0 && (
@@ -248,7 +203,6 @@ export default function LevelProgress({
             </div>
           </div>
 
-          {/* Stats Grid */}
           <div className="grid grid-cols-3 gap-3 border-t border-white/10 pt-3">
             <div className="text-center">
               <div className="bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-2xl font-bold text-transparent">
@@ -272,7 +226,6 @@ export default function LevelProgress({
         </div>
       </GlassCard>
 
-      {/* XP Gain Notification */}
       <AnimatePresence>
         {recentXPGain && (
           <motion.div

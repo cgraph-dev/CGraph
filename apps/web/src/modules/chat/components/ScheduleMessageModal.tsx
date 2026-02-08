@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { createLogger } from '@/lib/logger';
-
-const logger = createLogger('ScheduleMessageModal');
 import { ClockIcon, XMarkIcon, CalendarIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
-import { add, format, isBefore, isAfter, addHours, type Duration } from 'date-fns';
 import { GlassCard } from '@/shared/components/ui';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { toast } from '@/shared/components/ui';
+import { useScheduleMessageModal } from '@/modules/chat/hooks/useScheduleMessageModal';
+import { ScheduledTimePreview } from '@/modules/chat/components/ScheduledTimePreview';
+import {
+  QUICK_SCHEDULE_OPTIONS,
+  resolveScheduleDate,
+  formatDateTimeLocal,
+} from '@/modules/chat/components/scheduleMessageUtils';
 
 interface ScheduleMessageModalProps {
   isOpen: boolean;
@@ -20,14 +20,6 @@ interface ScheduleMessageModalProps {
  * ScheduleMessageModal Component
  *
  * Modal for scheduling messages to be sent at a future date/time.
- *
- * Features:
- * - Date/time picker for custom scheduling
- * - Quick scheduling buttons (1 hour, tomorrow, next week)
- * - Timezone display
- * - Validation (future time only, max 1 year)
- * - Message preview
- * - Glassmorphism design
  */
 export function ScheduleMessageModal({
   isOpen,
@@ -35,92 +27,19 @@ export function ScheduleMessageModal({
   onSchedule,
   messagePreview,
 }: ScheduleMessageModalProps) {
-  const [scheduledAt, setScheduledAt] = useState<Date | null>(null);
-  const [customDateTime, setCustomDateTime] = useState('');
-  const [isScheduling, setIsScheduling] = useState(false);
-
-  // Initialize with 1 hour from now
-  useEffect(() => {
-    if (isOpen) {
-      const oneHourLater = addHours(new Date(), 1);
-      setScheduledAt(oneHourLater);
-      setCustomDateTime(format(oneHourLater, "yyyy-MM-dd'T'HH:mm"));
-    }
-  }, [isOpen]);
-
-  const handleQuickSchedule = (duration: Duration) => {
-    const scheduledTime = add(new Date(), duration);
-    setScheduledAt(scheduledTime);
-    setCustomDateTime(format(scheduledTime, "yyyy-MM-dd'T'HH:mm"));
-    HapticFeedback.light();
-  };
-
-  const handleCustomDateTimeChange = (dateTimeString: string) => {
-    setCustomDateTime(dateTimeString);
-    const selectedDate = new Date(dateTimeString);
-
-    // Validate it's a future date
-    if (isBefore(selectedDate, new Date())) {
-      toast.error('Scheduled time must be in the future');
-      return;
-    }
-
-    // Validate it's not more than 1 year in the future
-    const oneYearFromNow = add(new Date(), { years: 1 });
-    if (isAfter(selectedDate, oneYearFromNow)) {
-      toast.error('Cannot schedule more than 1 year in advance');
-      return;
-    }
-
-    setScheduledAt(selectedDate);
-  };
-
-  const handleSchedule = async () => {
-    if (!scheduledAt || isScheduling) return;
-
-    // Final validation
-    if (isBefore(scheduledAt, new Date())) {
-      toast.error('Scheduled time must be in the future');
-      return;
-    }
-
-    setIsScheduling(true);
-    try {
-      await onSchedule(scheduledAt);
-      toast.success(`Message scheduled for ${format(scheduledAt, 'PPpp')}`);
-      HapticFeedback.success();
-      handleClose();
-    } catch (error) {
-      logger.error('Failed to schedule message:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to schedule message';
-      toast.error(errorMessage);
-      HapticFeedback.error();
-    } finally {
-      setIsScheduling(false);
-    }
-  };
-
-  const handleClose = () => {
-    setScheduledAt(null);
-    setCustomDateTime('');
-    onClose();
-  };
-
-  // Quick schedule options
-  const quickScheduleOptions = [
-    { label: '1 hour', duration: { hours: 1 }, icon: '⏰' },
-    { label: '3 hours', duration: { hours: 3 }, icon: '⏰' },
-    { label: 'Tomorrow 9am', duration: { days: 1 }, time: '09:00', icon: '🌅' },
-    { label: 'Next week', duration: { weeks: 1 }, icon: '📅' },
-  ];
-
-  const getMinDateTime = () => {
-    return format(new Date(), "yyyy-MM-dd'T'HH:mm");
-  };
-
-  const getMaxDateTime = () => {
-    return format(add(new Date(), { years: 1 }), "yyyy-MM-dd'T'HH:mm");
-  };
+  const {
+    scheduledAt,
+    setScheduledAt,
+    customDateTime,
+    setCustomDateTime,
+    isScheduling,
+    handleClose,
+    handleQuickSchedule,
+    handleCustomDateTimeChange,
+    handleSchedule,
+    getMinDateTime,
+    getMaxDateTime,
+  } = useScheduleMessageModal({ isOpen, onClose, onSchedule });
 
   return (
     <AnimatePresence>
@@ -176,39 +95,19 @@ export function ScheduleMessageModal({
                 <div className="mb-6">
                   <p className="mb-3 text-sm font-medium text-gray-300">Quick Schedule:</p>
                   <div className="grid grid-cols-2 gap-2">
-                    {quickScheduleOptions.map((option) => {
+                    {QUICK_SCHEDULE_OPTIONS.map((option) => {
+                      const resolved = resolveScheduleDate(option);
                       const isActive =
-                        scheduledAt &&
-                        customDateTime ===
-                          format(
-                            option.time
-                              ? (() => {
-                                  const date = add(new Date(), option.duration);
-                                  const [hours = '0', minutes = '0'] = option.time.split(':');
-                                  date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                                  if (isBefore(date, new Date())) {
-                                    date.setDate(date.getDate() + 1);
-                                  }
-                                  return date;
-                                })()
-                              : add(new Date(), option.duration),
-                            "yyyy-MM-dd'T'HH:mm"
-                          );
+                        scheduledAt && customDateTime === formatDateTimeLocal(resolved);
 
                       return (
                         <motion.button
                           key={option.label}
                           onClick={() => {
                             if (option.time) {
-                              const date = add(new Date(), option.duration);
-                              const [hours = '0', minutes = '0'] = option.time.split(':');
-                              date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                              // If the time has passed today, schedule for tomorrow
-                              if (isBefore(date, new Date())) {
-                                date.setDate(date.getDate() + 1);
-                              }
+                              const date = resolveScheduleDate(option);
                               setScheduledAt(date);
-                              setCustomDateTime(format(date, "yyyy-MM-dd'T'HH:mm"));
+                              setCustomDateTime(formatDateTimeLocal(date));
                             } else {
                               handleQuickSchedule(option.duration);
                             }
@@ -251,34 +150,7 @@ export function ScheduleMessageModal({
                 </div>
 
                 {/* Scheduled Time Preview */}
-                {scheduledAt && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mb-6 rounded-xl border border-primary-500/20 bg-gradient-to-r from-primary-500/10 to-purple-500/10 p-4"
-                  >
-                    <p className="mb-1 text-sm font-medium text-gray-300">Message will be sent:</p>
-                    <p className="text-lg font-bold text-white">
-                      {format(scheduledAt, 'EEEE, MMMM d, yyyy')}
-                    </p>
-                    <p className="text-md text-primary-400">at {format(scheduledAt, 'h:mm a')}</p>
-                    <p className="mt-2 text-xs text-gray-500">
-                      {(() => {
-                        const now = new Date();
-                        const diff = scheduledAt.getTime() - now.getTime();
-                        const hours = Math.floor(diff / (1000 * 60 * 60));
-                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-                        if (hours < 24) {
-                          return `in ${hours} hour${hours !== 1 ? 's' : ''} and ${minutes} minute${minutes !== 1 ? 's' : ''}`;
-                        } else {
-                          const days = Math.floor(hours / 24);
-                          return `in ${days} day${days !== 1 ? 's' : ''}`;
-                        }
-                      })()}
-                    </p>
-                  </motion.div>
-                )}
+                {scheduledAt && <ScheduledTimePreview scheduledAt={scheduledAt} />}
 
                 {/* Action Buttons */}
                 <div className="flex gap-3">

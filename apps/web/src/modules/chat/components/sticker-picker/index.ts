@@ -23,6 +23,12 @@ export { ANIMATION_CONFIGS, RARITY_ICONS, STICKER_SIZE_CLASSES } from './constan
 // Components
 export { StickerItem } from './StickerItem';
 export { PackTab } from './PackTab';
+export { StickerSearchBar } from './StickerSearchBar';
+export { StickerGrid } from './StickerGrid';
+export { PackInfoBanner } from './PackInfoBanner';
 export { StickerMessage } from './StickerMessage';
 export { StickerButton } from './StickerButton';
 export { StickerPicker, default } from './StickerPicker';
+
+// Hooks
+export { useStickerPicker } from './useStickerPicker';

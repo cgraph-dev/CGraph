@@ -2,26 +2,23 @@
  * SubscriptionCard Component
  *
  * Displays a subscription tier with features, pricing, and CTA.
- * Features:
- * - Multiple variants (default, compact, featured)
- * - Animated hover effects
- * - Feature list with icons
- * - Price display with billing toggle
- * - Popular/recommended badges
+ * Constants extracted to subscriptionCard.constants.tsx
+ * Compact variant extracted to CompactSubscriptionCard.tsx
  */
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  CheckIcon,
-  SparklesIcon,
-  BoltIcon,
-  RocketLaunchIcon,
-  StarIcon,
-} from '@heroicons/react/24/outline';
+import { CheckIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import {
+  TIER_ICONS,
+  TIER_COLORS,
+  TIER_GRADIENTS,
+  Crown,
+} from '@/modules/premium/components/subscriptionCard.constants';
+import { CompactSubscriptionCard } from '@/modules/premium/components/CompactSubscriptionCard';
 import type { SubscriptionTier, SubscriptionPlan } from '@/modules/premium/store/types';
 
 export interface SubscriptionCardProps {
@@ -35,33 +32,6 @@ export interface SubscriptionCardProps {
   maxFeatures?: number;
   className?: string;
 }
-
-const TIER_ICONS: Record<SubscriptionTier, React.ReactNode> = {
-  free: <StarIcon className="h-6 w-6" />,
-  plus: <BoltIcon className="h-6 w-6" />,
-  pro: <SparklesIcon className="h-6 w-6" />,
-  ultimate: <RocketLaunchIcon className="h-6 w-6" />,
-};
-
-const TIER_COLORS: Record<SubscriptionTier, string> = {
-  free: 'gray',
-  plus: 'blue',
-  pro: 'purple',
-  ultimate: 'amber',
-};
-
-const TIER_GRADIENTS: Record<SubscriptionTier, string> = {
-  free: 'from-gray-500 to-gray-600',
-  plus: 'from-blue-500 to-cyan-500',
-  pro: 'from-purple-500 to-pink-500',
-  ultimate: 'from-amber-500 to-orange-600',
-};
-
-const Crown: React.FC<{ className?: string }> = ({ className }) => (
-  <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
-    <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm0 0v2a1 1 0 001 1h12a1 1 0 001-1v-2" />
-  </svg>
-);
 
 export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   plan,
@@ -98,38 +68,13 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
   if (variant === 'compact') {
     return (
-      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className={className}>
-        <GlassCard
-          variant={isCurrentPlan ? 'neon' : 'frosted'}
-          className={`cursor-pointer p-4 ${isCurrentPlan ? 'ring-2 ring-primary-500' : ''}`}
-          onClick={handleSelect}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className={`rounded-lg bg-gradient-to-br p-2 ${tierGradient} text-white`}>
-                {TIER_ICONS[plan.tier]}
-              </div>
-              <div>
-                <h3 className="font-semibold text-white">{plan.name}</h3>
-                <p className="text-sm text-white/60">{plan.description}</p>
-              </div>
-            </div>
-            <div className="text-right">
-              {plan.priceMonthly === 0 ? (
-                <span className="text-lg font-bold text-white">Free</span>
-              ) : (
-                <>
-                  <span className="text-lg font-bold text-white">${price}</span>
-                  <span className="text-sm text-white/60">/mo</span>
-                </>
-              )}
-            </div>
-          </div>
-          {isCurrentPlan && (
-            <div className="mt-2 text-xs font-medium text-primary-400">✓ Current Plan</div>
-          )}
-        </GlassCard>
-      </motion.div>
+      <CompactSubscriptionCard
+        plan={plan}
+        isCurrentPlan={isCurrentPlan}
+        billingInterval={billingInterval}
+        onSelect={onSelect}
+        className={className}
+      />
     );
   }
 

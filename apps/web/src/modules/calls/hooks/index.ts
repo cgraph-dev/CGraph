@@ -6,3 +6,4 @@
 
 export { useWebRTC } from './useWebRTC';
 export { useCallModals } from './useCallModals';
+export { useVideoCall } from './useVideoCall';
