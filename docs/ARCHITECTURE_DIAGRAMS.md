@@ -1,6 +1,6 @@
 # CGraph Architecture Diagrams
 
-> **Version: 0.9.8** | Last Updated: January 2026
+> **Version: 0.9.13** | Last Updated: February 2026
 
 Visual documentation of CGraph's system architecture.
 
@@ -340,7 +340,79 @@ flowchart TB
 
 ---
 
-## 10. Request Flow
+## 10. Facade Hook Architecture (Discord-style)
+
+```mermaid
+flowchart TB
+    subgraph Facades["Domain Facade Hooks"]
+        AF["useAuthFacade<br/>Auth + Session"]
+        CF["useChatFacade<br/>Messages + Effects"]
+        GF["useGamificationFacade<br/>XP + Prestige + Events"]
+        SF["useSettingsFacade<br/>Preferences + Theme"]
+        CMF["useCommunityFacade<br/>Forums + Groups"]
+        MF["useMarketplaceFacade<br/>Listings + Borders"]
+        UF["useUIFacade<br/>Notifications + Search"]
+    end
+
+    subgraph Stores["Zustand Stores (Primitive Selectors)"]
+        AS["authStore"]
+        CS["chatStore"]
+        CES["chatEffectsStore"]
+        CBS["chatBubbleStore"]
+        GS["gamificationStore"]
+        PS["prestigeStore"]
+        SES["seasonalEventStore"]
+        RS["referralStore"]
+        SS["settingsStore"]
+        CUS["customizationStore"]
+        TS["themeStore"]
+        FS["forumStore"]
+        GRS["groupStore"]
+        ANS["announcementStore"]
+        MS["marketplaceStore"]
+        ABS["avatarBorderStore"]
+        NS["notificationStore"]
+        SRS["searchStore"]
+        CAS["calendarStore"]
+    end
+
+    subgraph Components["React Components"]
+        COMP["Components use facades<br/>not stores directly"]
+    end
+
+    COMP --> Facades
+    AF --> AS
+    CF --> CS
+    CF --> CES
+    CF --> CBS
+    GF --> GS
+    GF --> PS
+    GF --> SES
+    GF --> RS
+    SF --> SS
+    SF --> CUS
+    SF --> TS
+    CMF --> FS
+    CMF --> GRS
+    CMF --> ANS
+    MF --> MS
+    MF --> ABS
+    UF --> NS
+    UF --> SRS
+    UF --> CAS
+
+    style Facades fill:#10b981,color:#fff
+    style Stores fill:#3b82f6,color:#fff
+    style Components fill:#8b5cf6,color:#fff
+```
+
+**Pattern**: Components → Facade Hook → Multiple Stores. Each facade uses primitive selectors
+(individual field subscriptions) to prevent re-render storms, then returns a stable `useMemo`'d
+object.
+
+---
+
+## 11. Request Flow
 
 ```mermaid
 flowchart LR
@@ -378,4 +450,4 @@ flowchart LR
 
 ---
 
-<sub>**CGraph Architecture Diagrams** • Version 0.9.8 • Last updated: January 2026</sub>
+<sub>**CGraph Architecture Diagrams** • Version 0.9.13 • Last updated: February 2026</sub>

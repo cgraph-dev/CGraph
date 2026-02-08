@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.12** | Generated: February 3, 2026
+> **Version: 0.9.13** | Generated: February 8, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
@@ -13,12 +13,12 @@ Real-time overview of project health, architecture status, and operational state
 | **Build**         | ✅     | 10/10 | All apps building successfully              |
 | **TypeScript**    | ✅     | 10/10 | 0 errors across all packages                |
 | **Lint**          | ✅     | 10/10 | 0 errors, ESLint 9 flat config              |
-| **Architecture**  | ✅     | 8/10  | Module-based architecture complete          |
-| **Tests**         | ✅     | 9/10  | 1,210 tests passing                         |
+| **Architecture**  | ✅     | 9/10  | Facade hooks + module architecture complete |
+| **Tests**         | ✅     | 9/10  | 1,342 tests passing (+132 facade tests)     |
 | **Security**      | ⚠️     | 7/10  | No critical CVEs; E2EE audit pending        |
-| **Documentation** | ✅     | 9/10  | Updated with Reanimated v4 migration guides |
+| **Documentation** | ✅     | 9/10  | Updated with facade & platform parity docs  |
 
-**Composite Score: 8.5/10** — Production-ready with strong architecture
+**Composite Score: 9.0/10** — Production-ready with strong architecture
 
 ---
 
@@ -119,7 +119,7 @@ Remaining:          18 (26%)
 | Hosting (API) | Fly.io               | ✅     | Multi-region               |
 | Hosting (Web) | Vercel               | ✅     | Edge functions             |
 
-### Module Architecture (v0.9.11)
+### Module Architecture (v0.9.13)
 
 ```
 apps/web/src/
@@ -128,10 +128,37 @@ apps/web/src/
 │   ├── groups/        ├── gamification/  ├── social/
 │   ├── settings/      ├── calls/         ├── moderation/
 │   ├── premium/       ├── search/        └── admin/
+├── hooks/facades/     # 7 Discord-style composition hooks
+│   ├── useAuthFacade.ts          # authStore
+│   ├── useChatFacade.ts          # chatStore + effects + bubble
+│   ├── useGamificationFacade.ts  # gamification + prestige + events + referrals
+│   ├── useSettingsFacade.ts      # settings + customization + theme
+│   ├── useCommunityFacade.ts     # forums + groups + announcements
+│   ├── useMarketplaceFacade.ts   # marketplace + avatar borders
+│   └── useUIFacade.ts            # notifications + search + calendar
+├── pages/                # 62 lazy-loaded pages (168 build chunks)
+│   ├── calls/call-history/  # CallHistory (modular: types/hooks/animations)
+│   ├── security/            # E2EEVerification, KeyVerification
+│   └── settings/            # CustomEmoji, RSSFeeds + existing
 └── shared/            # Shared primitives (187 files migrated)
     ├── components/ui/ # 90+ UI components
     ├── hooks/         # Shared hooks
     └── utils/         # Utility functions
+```
+
+### Mobile Platform Parity (v0.9.13)
+
+```
+apps/mobile/src/screens/
+├── customize/              # 6 new customization screens
+│   ├── CustomizeScreen.tsx          # Hub for all customization
+│   ├── IdentityCustomization.tsx    # Avatar borders, badges, titles
+│   ├── EffectsCustomization.tsx     # Particles, animations
+│   ├── ProgressionCustomization.tsx # XP display, level frames
+│   ├── BadgeSelectionScreen.tsx     # Choose displayed badges
+│   └── TitleSelectionScreen.tsx     # Choose title
+└── settings/
+    └── EmailNotificationsScreen.tsx # Email preferences
 ```
 
 ---
@@ -188,4 +215,4 @@ apps/web/src/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.12 • Updated: February 3, 2026</sub>
+<sub>**CGraph Dashboard** • Version 0.9.13 • Updated: February 8, 2026</sub>
