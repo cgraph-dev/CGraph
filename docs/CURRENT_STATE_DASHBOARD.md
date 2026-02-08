@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.13** | Generated: February 8, 2026
+> **Version: 0.9.14** | Generated: February 8, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
@@ -119,7 +119,7 @@ Remaining:          18 (26%)
 | Hosting (API) | Fly.io               | ✅     | Multi-region               |
 | Hosting (Web) | Vercel               | ✅     | Edge functions             |
 
-### Module Architecture (v0.9.13)
+### Module Architecture (v0.9.14)
 
 ```
 apps/web/src/
@@ -136,6 +136,14 @@ apps/web/src/
 │   ├── useCommunityFacade.ts     # forums + groups + announcements
 │   ├── useMarketplaceFacade.ts   # marketplace + avatar borders
 │   └── useUIFacade.ts            # notifications + search + calendar
+├── lib/socket/        # Modular socket management (split from monolith)
+│   ├── SocketManager.ts          # Core orchestrator (616 lines)
+│   ├── userChannel.ts            # User channel events
+│   ├── presenceManager.ts        # Presence lobby + queries
+│   ├── conversationChannel.ts    # DM conversation channels
+│   ├── groupChannel.ts           # Group channel handlers
+│   ├── channelHandlers.ts        # Forum + thread handlers
+│   └── types.ts                  # Shared payload types
 ├── pages/                # 62 lazy-loaded pages (168 build chunks)
 │   ├── calls/call-history/  # CallHistory (modular: types/hooks/animations)
 │   ├── security/            # E2EEVerification, KeyVerification

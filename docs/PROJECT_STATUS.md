@@ -1,6 +1,6 @@
 # CGraph Project Status
 
-> **Version: 0.9.13** | Last Updated: February 8, 2026 | Commit: `042b18b`
+> **Version: 0.9.14** | Last Updated: February 8, 2026 | Commit: `1be9e1d`
 
 This document consolidates the project status, feature tracking, and development roadmap.
 
@@ -31,6 +31,8 @@ This document consolidates the project status, feature tracking, and development
 | `console.log` calls   | 325     | **2**       | ✅ 99% reduction      |
 | Settings.tsx lines    | 1,172   | **221**     | ✅ 81% reduction      |
 | UserProfile.tsx lines | 1,157   | **715**     | ✅ 38% reduction      |
+| SocketManager.ts      | 960     | **616**     | ✅ 36% reduction      |
+| ChatBubbleSettings    | 933     | **305**     | ✅ 67% reduction      |
 | Store facades         | 0       | **7**       | ✅ Consolidation done |
 | Facade hooks (new)    | 0       | **7**       | ✅ Discord-style      |
 | Lazy-loaded pages     | 50      | **62**      | ✅ +12 new pages      |

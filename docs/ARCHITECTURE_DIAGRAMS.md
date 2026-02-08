@@ -1,6 +1,6 @@
 # CGraph Architecture Diagrams
 
-> **Version: 0.9.13** | Last Updated: February 2026
+> **Version: 0.9.14** | Last Updated: February 2026
 
 Visual documentation of CGraph's system architecture.
 
@@ -412,7 +412,39 @@ object.
 
 ---
 
-## 11. Request Flow
+## 11. Socket Module Architecture
+
+```mermaid
+graph TD
+    SM["SocketManager<br/>(Orchestrator — 616 lines)"] --> UC["userChannel.ts<br/>E2EE · Calls · Presence"]
+    SM --> PM["presenceManager.ts<br/>Lobby · Online Queries"]
+    SM --> CC["conversationChannel.ts<br/>Messages · Typing · Reactions"]
+    SM --> GC["groupChannel.ts<br/>Group Messages · Typing"]
+    SM --> CH["channelHandlers.ts<br/>Forum + Thread Handlers"]
+
+    UC --> |"e2ee:key_revoked"| E2EE["useE2EEStore"]
+    UC --> |"incoming_call"| CALL["useIncomingCallStore"]
+    UC --> |"conversation_*"| CHAT["useChatStore"]
+    PM --> |"friend_online/offline"| STATUS["Status Listeners"]
+    CC --> |"new_message / typing"| CHAT
+    GC --> |"new_message / typing"| GRP["useGroupStore"]
+    CH --> |"new_thread / comment"| FRM["useForumStore"]
+
+    style SM fill:#4f46e5,color:#fff
+    style UC fill:#7c3aed,color:#fff
+    style PM fill:#2563eb,color:#fff
+    style CC fill:#0891b2,color:#fff
+    style GC fill:#059669,color:#fff
+    style CH fill:#d97706,color:#fff
+```
+
+> Each channel module is a **pure function** that receives socket state references and wires up
+> Phoenix channel event handlers. The SocketManager delegates via thin wrapper methods, preserving
+> the same public API while splitting a 960-line monolith into 5 focused modules.
+
+---
+
+## 12. Request Flow
 
 ```mermaid
 flowchart LR
@@ -450,4 +482,4 @@ flowchart LR
 
 ---
 
-<sub>**CGraph Architecture Diagrams** • Version 0.9.13 • Last updated: February 2026</sub>
+<sub>**CGraph Architecture Diagrams** • Version 0.9.14 • Last updated: February 2026</sub>
