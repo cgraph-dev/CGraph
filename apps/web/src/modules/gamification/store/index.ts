@@ -79,7 +79,7 @@ export {
 } from './referralSlice';
 
 // Import types for the unified interface
-import type { Achievement, Quest } from '@/modules/gamification/store';
+import type { Achievement, Quest } from './gamificationStore';
 import type { PrestigeBonuses } from './prestigeSlice';
 import type { SeasonalEvent } from './seasonalEventSlice';
 
