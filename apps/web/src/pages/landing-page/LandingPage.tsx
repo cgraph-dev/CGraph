@@ -16,6 +16,7 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/modules/auth/store';
+import { CursorTrail, useCursorTrailEnabled } from '@/components/landing/CursorTrail';
 import '../landing-page.css';
 
 // Sub-components
@@ -47,6 +48,7 @@ import { useLandingAnimations } from './useLandingAnimations';
 export default function LandingPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
+  const cursorTrailEnabled = useCursorTrailEnabled();
 
   // Section refs for GSAP animations
   const heroRef = useRef<HTMLDivElement>(null);
@@ -100,6 +102,7 @@ export default function LandingPage() {
 
   return (
     <div className="demo-landing">
+      {cursorTrailEnabled && <CursorTrail />}
       <LandingNav navHidden={navHidden} navScrolled={navScrolled} />
       <LandingHero heroRef={heroRef} scrollIndicatorRef={scrollIndicatorRef} />
       <FeatureShowcaseSection statsRef={statsRef} />
