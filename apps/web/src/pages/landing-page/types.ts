@@ -42,6 +42,8 @@ export interface LandingHeroProps {
   heroRef: RefObject<HTMLDivElement | null>;
   /** Reference to the scroll indicator for animations */
   scrollIndicatorRef: RefObject<HTMLDivElement | null>;
+  /** Motion scale factor from useAdaptiveMotion (0-1) */
+  motionScale?: number;
 }
 
 /** Props for the LandingSecurity component */

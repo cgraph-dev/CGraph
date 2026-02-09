@@ -2,12 +2,13 @@
  * Landing Page CTA Section
  *
  * Call-to-action section encouraging users to create an account
- * or sign in, with animated badge and swap buttons.
+ * or sign in, with animated badge, swap buttons, and magnetic buttons.
  *
  * @module pages/landing-page/LandingCTA
  */
 
 import { SwapButton } from '../landing';
+import { MagneticButton } from '@/components/landing/MagneticButton';
 import type { LandingCTAProps } from './types';
 
 /**
@@ -27,7 +28,9 @@ export function LandingCTA({ ctaRef }: LandingCTAProps) {
           Create forums, customize your space, and connect with like-minded people.
         </p>
         <div className="cta__buttons">
-          <SwapButton primary mainText="Create Account" altText="Join Now!" href="/register" />
+          <MagneticButton variant="primary" glowing href="/register">
+            Create Account
+          </MagneticButton>
           <SwapButton mainText="Sign In" altText="Welcome Back" href="/login" />
         </div>
       </div>

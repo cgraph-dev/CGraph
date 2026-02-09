@@ -14,6 +14,8 @@ import {
   CustomizationDemoSkeleton,
   ForumShowcaseSkeleton,
 } from '@/components/landing/LandingSkeletons';
+import { BentoGrid, BentoItem } from '@/components/landing/BentoGrid';
+import { GlassCard } from '@/components/landing/GlassCard';
 
 // Lazy load showcase components
 const CustomizationDemo = lazy(() =>
@@ -89,7 +91,7 @@ interface FeaturesGridProps {
 }
 
 /**
- * Feature grid section with tilt-on-hover cards.
+ * Feature grid section with bento layout and glass cards.
  */
 export function FeaturesGridSection({ featuresRef }: FeaturesGridProps) {
   return (
@@ -106,11 +108,15 @@ export function FeaturesGridSection({ featuresRef }: FeaturesGridProps) {
         </p>
       </div>
 
-      <div className="features__grid">
-        {features.map((feature) => (
-          <TiltCard key={feature.title} {...feature} />
+      <BentoGrid className="features__grid">
+        {features.map((feature, index) => (
+          <BentoItem key={feature.title} size={index < 2 ? 'wide' : 'small'}>
+            <GlassCard variant="emerald" hoverable className="h-full">
+              <TiltCard {...feature} />
+            </GlassCard>
+          </BentoItem>
         ))}
-      </div>
+      </BentoGrid>
     </section>
   );
 }

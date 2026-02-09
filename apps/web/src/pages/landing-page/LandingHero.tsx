@@ -10,6 +10,8 @@
 
 import { SwapButton } from '../landing';
 import { FloatingLogo } from '@/components/landing/FloatingLogo';
+import { KineticText } from '@/components/landing/KineticText';
+import { ParticleField } from '@/components/landing/ParticleField';
 import type { LandingHeroProps } from './types';
 
 /**
@@ -17,16 +19,22 @@ import type { LandingHeroProps } from './types';
  *
  * Background layers include gradient, aurora, grid, particles,
  * streaks, spotlight, noise, and vignette effects composed
- * entirely via CSS classes.
+ * entirely via CSS classes. Integrates KineticText for animated
+ * typography, ParticleField for ambient effects, and FloatingLogo
+ * for the 3D-style interactive logo.
  */
-export function LandingHero({ heroRef, scrollIndicatorRef }: LandingHeroProps) {
+export function LandingHero({ heroRef, scrollIndicatorRef, motionScale = 1 }: LandingHeroProps) {
   return (
     <section ref={heroRef} className="hero">
       <div className="hero__bg">
         <div className="hero__gradient-bg" />
         <div className="hero__bg-aurora" />
         <div className="hero__bg-grid" />
-        <div className="hero__bg-particles" />
+        <ParticleField
+          count={Math.round(50 * motionScale)}
+          colors={['emerald', 'purple', 'cyan']}
+          className="pointer-events-none absolute inset-0"
+        />
         <div className="hero__bg-streaks" />
         <div className="hero__bg-spotlight" />
         <div className="hero__bg-interactive" />
@@ -40,8 +48,13 @@ export function LandingHero({ heroRef, scrollIndicatorRef }: LandingHeroProps) {
         <span className="hero__eyebrow font-robert">The All-in-One Platform</span>
 
         <h1 className="hero__title">
-          <span className="hero__title-beyond">Beyond</span>
-          <span className="hero__title-gradient">Messaging</span>
+          <KineticText text="Beyond" animation="words" as="span" className="hero__title-beyond" />
+          <KineticText
+            text="Messaging"
+            animation="gradient"
+            as="span"
+            className="hero__title-gradient"
+          />
         </h1>
 
         <p className="hero__subtitle font-robert">
