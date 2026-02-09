@@ -34,11 +34,26 @@ export function ChannelItem({ channel, isActive }: ChannelItemProps) {
               transition={{ type: 'spring', stiffness: 350, damping: 30 }}
             />
           )}
+
+          {/* Unread glow indicator — left bar pulse */}
+          {channel.unreadCount > 0 && !routeActive && !isActive && (
+            <motion.div
+              className="absolute left-0 top-1/4 h-1/2 w-0.5 rounded-r-full bg-primary-400"
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          )}
           {/* Channel icon */}
           <Icon className={`h-5 w-5 flex-shrink-0 ${routeActive ? 'text-white' : iconColor}`} />
 
-          {/* Channel name */}
-          <span className="flex-1 truncate text-sm font-medium">{channel.name}</span>
+          {/* Channel name — bolder + glow pulse when unread */}
+          <span
+            className={`flex-1 truncate text-sm ${
+              channel.unreadCount > 0 ? 'font-semibold text-white' : 'font-medium'
+            }`}
+          >
+            {channel.name}
+          </span>
 
           {/* NSFW badge */}
           {channel.isNsfw && (

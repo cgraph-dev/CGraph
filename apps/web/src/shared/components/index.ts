@@ -15,3 +15,9 @@ export * from './layout';
 
 // Feedback components (Toast, Alert, Loading states)
 export * from './feedback';
+
+// Animated state components (Empty, Error)
+export { AnimatedEmptyState, AnimatedErrorState } from './AnimatedEmptyState';
+
+// Avatar lightbox (zoom-to-fullscreen)
+export { AvatarLightbox } from './AvatarLightbox';
