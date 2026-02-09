@@ -11,11 +11,9 @@ import { useAuthFacade } from '../useAuthFacade';
 import { useAuthStore } from '@/modules/auth/store';
 import type { User } from '@/modules/auth/store';
 
-// Mock the auth store
-vi.mock('@/modules/auth/store', () => {
-  const store = vi.fn();
-  return { useAuthStore: store };
-});
+vi.mock('@/modules/auth/store', () => ({
+  useAuthStore: vi.fn(),
+}));
 
 const mockUser: User = {
   id: 'user-123',
@@ -52,7 +50,7 @@ const mockActions = {
   updateUser: vi.fn(),
 };
 
-function setupMockStore(overrides: Record<string, unknown> = {}) {
+function setupStore(overrides: Record<string, unknown> = {}) {
   const state: Record<string, unknown> = {
     isAuthenticated: false,
     user: null,
@@ -61,7 +59,6 @@ function setupMockStore(overrides: Record<string, unknown> = {}) {
     ...mockActions,
     ...overrides,
   };
-
   (useAuthStore as unknown as ReturnType<typeof vi.fn>).mockImplementation(
     (selector: (s: typeof state) => unknown) => selector(state)
   );
@@ -70,214 +67,188 @@ function setupMockStore(overrides: Record<string, unknown> = {}) {
 describe('useAuthFacade', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    setupMockStore();
+    setupStore();
   });
 
-  describe('default state (unauthenticated)', () => {
-    it('returns false for isAuthenticated', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.isAuthenticated).toBe(false);
-    });
+  // ── Default / unauthenticated state ──────────────────────────────
 
-    it('returns null user and derived fields', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.user).toBeNull();
-      expect(result.current.userId).toBeNull();
-      expect(result.current.username).toBeNull();
-      expect(result.current.displayName).toBeNull();
-      expect(result.current.avatarUrl).toBeNull();
-    });
-
-    it('returns false for premium/admin/verified when no user', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.isPremium).toBe(false);
-      expect(result.current.isAdmin).toBe(false);
-      expect(result.current.isVerified).toBe(false);
-    });
-
-    it('returns loading and error state', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.isLoading).toBe(false);
-      expect(result.current.error).toBeNull();
-    });
+  it('returns false for isAuthenticated by default', () => {
+    const { result } = renderHook(() => useAuthFacade());
+    expect(result.current.isAuthenticated).toBe(false);
   });
 
-  describe('authenticated state', () => {
-    beforeEach(() => {
-      setupMockStore({
-        isAuthenticated: true,
-        user: mockUser,
-      });
-    });
-
-    it('returns true for isAuthenticated', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.isAuthenticated).toBe(true);
-    });
-
-    it('derives userId from user object', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.userId).toBe('user-123');
-    });
-
-    it('derives username from user object', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.username).toBe('testuser');
-    });
-
-    it('derives displayName from user object', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.displayName).toBe('Test User');
-    });
-
-    it('derives avatarUrl from user object', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.avatarUrl).toBe('https://example.com/avatar.png');
-    });
-
-    it('derives isPremium from user object', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.isPremium).toBe(true);
-    });
-
-    it('derives isVerified from user object', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.isVerified).toBe(true);
-    });
-
-    it('derives isAdmin from user object', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.isAdmin).toBe(false);
-    });
+  it('returns null user and all derived fields when unauthenticated', () => {
+    const { result } = renderHook(() => useAuthFacade());
+    expect(result.current.user).toBeNull();
+    expect(result.current.userId).toBeNull();
+    expect(result.current.username).toBeNull();
+    expect(result.current.displayName).toBeNull();
+    expect(result.current.avatarUrl).toBeNull();
   });
 
-  describe('loading state', () => {
-    it('exposes isLoading when true', () => {
-      setupMockStore({ isLoading: true });
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.isLoading).toBe(true);
-    });
+  it('returns false for premium/admin/verified when no user', () => {
+    const { result } = renderHook(() => useAuthFacade());
+    expect(result.current.isPremium).toBe(false);
+    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.isVerified).toBe(false);
   });
 
-  describe('error state', () => {
-    it('exposes error string', () => {
-      setupMockStore({ error: 'Invalid credentials' });
-      const { result } = renderHook(() => useAuthFacade());
-      expect(result.current.error).toBe('Invalid credentials');
-    });
+  it('returns loading false and error null by default', () => {
+    const { result } = renderHook(() => useAuthFacade());
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.error).toBeNull();
   });
 
-  describe('actions', () => {
-    it('login returns true on success', async () => {
-      mockActions.login.mockResolvedValueOnce(undefined);
-      const { result } = renderHook(() => useAuthFacade());
+  // ── Authenticated state derivation ───────────────────────────────
 
-      let success: boolean = false;
-      await act(async () => {
-        success = await result.current.login('test@example.com', 'password123');
-      });
+  it('derives all user fields when authenticated', () => {
+    setupStore({ isAuthenticated: true, user: mockUser });
+    const { result } = renderHook(() => useAuthFacade());
 
-      expect(success).toBe(true);
-      expect(mockActions.login).toHaveBeenCalledWith('test@example.com', 'password123');
-    });
-
-    it('login returns false on failure', async () => {
-      mockActions.login.mockRejectedValueOnce(new Error('Invalid'));
-      const { result } = renderHook(() => useAuthFacade());
-
-      let success: boolean = true;
-      await act(async () => {
-        success = await result.current.login('test@example.com', 'wrong');
-      });
-
-      expect(success).toBe(false);
-    });
-
-    it('register returns true on success', async () => {
-      mockActions.register.mockResolvedValueOnce(undefined);
-      const { result } = renderHook(() => useAuthFacade());
-
-      let success: boolean = false;
-      await act(async () => {
-        success = await result.current.register('test@example.com', 'testuser', 'password123');
-      });
-
-      expect(success).toBe(true);
-      expect(mockActions.register).toHaveBeenCalledWith(
-        'test@example.com',
-        'testuser',
-        'password123'
-      );
-    });
-
-    it('register returns false on failure', async () => {
-      mockActions.register.mockRejectedValueOnce(new Error('Username taken'));
-      const { result } = renderHook(() => useAuthFacade());
-
-      let success: boolean = true;
-      await act(async () => {
-        success = await result.current.register('test@example.com', 'taken', 'password123');
-      });
-
-      expect(success).toBe(false);
-    });
-
-    it('logout delegates to store', async () => {
-      mockActions.logout.mockResolvedValueOnce(undefined);
-      const { result } = renderHook(() => useAuthFacade());
-
-      await act(async () => {
-        await result.current.logout();
-      });
-
-      expect(mockActions.logout).toHaveBeenCalled();
-    });
-
-    it('clearError delegates to store', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      result.current.clearError();
-      expect(mockActions.clearError).toHaveBeenCalled();
-    });
-
-    it('updateUser delegates to store', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      const updates = { displayName: 'New Name' };
-      result.current.updateUser(updates);
-      expect(mockActions.updateUser).toHaveBeenCalledWith(updates);
-    });
+    expect(result.current.isAuthenticated).toBe(true);
+    expect(result.current.userId).toBe('user-123');
+    expect(result.current.username).toBe('testuser');
+    expect(result.current.displayName).toBe('Test User');
+    expect(result.current.avatarUrl).toBe('https://example.com/avatar.png');
+    expect(result.current.isPremium).toBe(true);
+    expect(result.current.isVerified).toBe(true);
+    expect(result.current.isAdmin).toBe(false);
   });
 
-  describe('interface completeness', () => {
-    it('returns all expected keys', () => {
-      setupMockStore({ isAuthenticated: true, user: mockUser });
-      const { result } = renderHook(() => useAuthFacade());
-      const keys = Object.keys(result.current);
+  it('derives isAdmin as true for admin user', () => {
+    setupStore({ isAuthenticated: true, user: { ...mockUser, isAdmin: true } });
+    const { result } = renderHook(() => useAuthFacade());
+    expect(result.current.isAdmin).toBe(true);
+  });
 
-      expect(keys).toContain('isAuthenticated');
-      expect(keys).toContain('user');
-      expect(keys).toContain('isLoading');
-      expect(keys).toContain('error');
-      expect(keys).toContain('userId');
-      expect(keys).toContain('username');
-      expect(keys).toContain('displayName');
-      expect(keys).toContain('avatarUrl');
-      expect(keys).toContain('isPremium');
-      expect(keys).toContain('isAdmin');
-      expect(keys).toContain('isVerified');
-      expect(keys).toContain('login');
-      expect(keys).toContain('register');
-      expect(keys).toContain('logout');
-      expect(keys).toContain('clearError');
-      expect(keys).toContain('updateUser');
-    });
+  it('derives null for undefined optional user fields', () => {
+    const partial = { ...mockUser, displayName: undefined, avatarUrl: undefined };
+    setupStore({ isAuthenticated: true, user: partial });
+    const { result } = renderHook(() => useAuthFacade());
+    expect(result.current.displayName).toBeNull();
+    expect(result.current.avatarUrl).toBeNull();
+  });
 
-    it('all action properties are functions', () => {
-      const { result } = renderHook(() => useAuthFacade());
-      expect(typeof result.current.login).toBe('function');
-      expect(typeof result.current.register).toBe('function');
-      expect(typeof result.current.logout).toBe('function');
-      expect(typeof result.current.clearError).toBe('function');
-      expect(typeof result.current.updateUser).toBe('function');
+  // ── Loading / error ──────────────────────────────────────────────
+
+  it('exposes isLoading true', () => {
+    setupStore({ isLoading: true });
+    const { result } = renderHook(() => useAuthFacade());
+    expect(result.current.isLoading).toBe(true);
+  });
+
+  it('exposes error string', () => {
+    setupStore({ error: 'Invalid credentials' });
+    const { result } = renderHook(() => useAuthFacade());
+    expect(result.current.error).toBe('Invalid credentials');
+  });
+
+  // ── Action delegation ────────────────────────────────────────────
+
+  it('login delegates to store and returns true on success', async () => {
+    mockActions.login.mockResolvedValueOnce(undefined);
+    const { result } = renderHook(() => useAuthFacade());
+
+    let success = false;
+    await act(async () => {
+      success = await result.current.login('a@b.com', 'pw');
     });
+    expect(success).toBe(true);
+    expect(mockActions.login).toHaveBeenCalledWith('a@b.com', 'pw');
+  });
+
+  it('login catches rejection and returns false', async () => {
+    mockActions.login.mockRejectedValueOnce(new Error('fail'));
+    const { result } = renderHook(() => useAuthFacade());
+
+    let success = true;
+    await act(async () => {
+      success = await result.current.login('a@b.com', 'bad');
+    });
+    expect(success).toBe(false);
+  });
+
+  it('register delegates to store and returns true on success', async () => {
+    mockActions.register.mockResolvedValueOnce(undefined);
+    const { result } = renderHook(() => useAuthFacade());
+
+    let success = false;
+    await act(async () => {
+      success = await result.current.register('a@b.com', 'user', 'pw');
+    });
+    expect(success).toBe(true);
+    expect(mockActions.register).toHaveBeenCalledWith('a@b.com', 'user', 'pw');
+  });
+
+  it('register catches rejection and returns false', async () => {
+    mockActions.register.mockRejectedValueOnce(new Error('taken'));
+    const { result } = renderHook(() => useAuthFacade());
+
+    let success = true;
+    await act(async () => {
+      success = await result.current.register('a@b.com', 'taken', 'pw');
+    });
+    expect(success).toBe(false);
+  });
+
+  it('logout delegates to store', async () => {
+    mockActions.logout.mockResolvedValueOnce(undefined);
+    const { result } = renderHook(() => useAuthFacade());
+
+    await act(async () => {
+      await result.current.logout();
+    });
+    expect(mockActions.logout).toHaveBeenCalledOnce();
+  });
+
+  it('clearError delegates to store', () => {
+    const { result } = renderHook(() => useAuthFacade());
+    result.current.clearError();
+    expect(mockActions.clearError).toHaveBeenCalledOnce();
+  });
+
+  it('updateUser delegates with partial update payload', () => {
+    const { result } = renderHook(() => useAuthFacade());
+    const updates = { displayName: 'New', avatarUrl: 'https://new.png' };
+    result.current.updateUser(updates);
+    expect(mockActions.updateUser).toHaveBeenCalledWith(updates);
+  });
+
+  // ── Interface completeness ───────────────────────────────────────
+
+  it('returns exactly 16 keys matching AuthFacade interface', () => {
+    setupStore({ isAuthenticated: true, user: mockUser });
+    const { result } = renderHook(() => useAuthFacade());
+    const keys = Object.keys(result.current);
+
+    const expected = [
+      'isAuthenticated',
+      'user',
+      'isLoading',
+      'error',
+      'userId',
+      'username',
+      'displayName',
+      'avatarUrl',
+      'isPremium',
+      'isAdmin',
+      'isVerified',
+      'login',
+      'register',
+      'logout',
+      'clearError',
+      'updateUser',
+    ];
+    for (const k of expected) expect(keys).toContain(k);
+    expect(keys).toHaveLength(expected.length);
+  });
+
+  it('all action properties are functions', () => {
+    const { result } = renderHook(() => useAuthFacade());
+    expect(typeof result.current.login).toBe('function');
+    expect(typeof result.current.register).toBe('function');
+    expect(typeof result.current.logout).toBe('function');
+    expect(typeof result.current.clearError).toBe('function');
+    expect(typeof result.current.updateUser).toBe('function');
   });
 });

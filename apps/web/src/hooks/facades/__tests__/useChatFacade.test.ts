@@ -9,7 +9,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import { useChatFacade } from '../useChatFacade';
 
-// Mock all chat-related stores
+// ── Mock stores ────────────────────────────────────────────────────
+
 const mockChatState: Record<string, unknown> = {
   conversations: [],
   activeConversationId: null,
@@ -31,179 +32,246 @@ const mockChatState: Record<string, unknown> = {
 };
 
 const mockEffectsState: Record<string, unknown> = {
-  activeMessageEffect: {
-    type: 'none',
-    intensity: 0,
-  },
+  activeMessageEffect: { type: 'none', intensity: 0 },
 };
 
 const mockBubbleState = {
-  style: {
-    variant: 'default',
-    borderRadius: 12,
-    opacity: 1,
-  },
+  style: { variant: 'default', borderRadius: 12, opacity: 1 },
 };
 
 vi.mock('@/modules/chat/store', () => ({
-  useChatStore: vi.fn((selector: (s: typeof mockChatState) => unknown) => selector(mockChatState)),
-  useChatEffectsStore: vi.fn((selector: (s: typeof mockEffectsState) => unknown) =>
-    selector(mockEffectsState)
+  useChatStore: vi.fn((sel: (s: typeof mockChatState) => unknown) => sel(mockChatState)),
+  useChatEffectsStore: vi.fn((sel: (s: typeof mockEffectsState) => unknown) =>
+    sel(mockEffectsState)
   ),
   useChatBubbleStore: vi.fn(() => mockBubbleState),
 }));
 
+// Helper to reset mutable mock state
+function resetChatState() {
+  mockChatState.conversations = [];
+  mockChatState.activeConversationId = null;
+  mockChatState.messages = {};
+  mockChatState.isLoadingConversations = false;
+  mockChatState.isLoadingMessages = false;
+  mockChatState.hasMoreMessages = {};
+  mockChatState.typingUsers = {};
+}
+
 describe('useChatFacade', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    resetChatState();
   });
 
-  describe('default state', () => {
-    it('returns empty conversations list', () => {
-      const { result } = renderHook(() => useChatFacade());
-      expect(result.current.conversations).toEqual([]);
-    });
+  // ── Default state ────────────────────────────────────────────────
 
-    it('returns null activeConversationId', () => {
-      const { result } = renderHook(() => useChatFacade());
-      expect(result.current.activeConversationId).toBeNull();
-    });
+  it('returns empty conversations list by default', () => {
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.conversations).toEqual([]);
+  });
 
-    it('returns empty activeMessages when no active conversation', () => {
-      const { result } = renderHook(() => useChatFacade());
-      expect(result.current.activeMessages).toEqual([]);
-    });
+  it('returns null activeConversationId by default', () => {
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.activeConversationId).toBeNull();
+  });
 
-    it('returns false for hasMoreMessages when no active conversation', () => {
-      const { result } = renderHook(() => useChatFacade());
-      expect(result.current.hasMoreMessages).toBe(false);
-    });
+  it('returns empty activeMessages when no active conversation', () => {
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.activeMessages).toEqual([]);
+  });
 
-    it('returns empty typingUsers', () => {
-      const { result } = renderHook(() => useChatFacade());
-      expect(result.current.typingUsers).toEqual({});
-    });
+  it('returns false for hasMoreMessages when no active conversation', () => {
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.hasMoreMessages).toBe(false);
+  });
 
-    it('returns loading states as false', () => {
-      const { result } = renderHook(() => useChatFacade());
-      expect(result.current.isLoadingConversations).toBe(false);
-      expect(result.current.isLoadingMessages).toBe(false);
+  it('returns loading states as false by default', () => {
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.isLoadingConversations).toBe(false);
+    expect(result.current.isLoadingMessages).toBe(false);
+  });
+
+  it('returns empty typingUsers by default', () => {
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.typingUsers).toEqual({});
+  });
+
+  // ── Derived message state ────────────────────────────────────────
+
+  it('returns messages for active conversation', () => {
+    const msgs = [
+      { id: 'msg-1', content: 'Hello' },
+      { id: 'msg-2', content: 'World' },
+    ];
+    mockChatState.activeConversationId = 'conv-1';
+    mockChatState.messages = { 'conv-1': msgs };
+
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.activeMessages).toEqual(msgs);
+  });
+
+  it('returns empty array when active conversation has no messages', () => {
+    mockChatState.activeConversationId = 'conv-new';
+    mockChatState.messages = {};
+
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.activeMessages).toEqual([]);
+  });
+
+  it('returns hasMoreMessages false when map says false', () => {
+    mockChatState.activeConversationId = 'conv-1';
+    mockChatState.hasMoreMessages = { 'conv-1': false };
+
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.hasMoreMessages).toBe(false);
+  });
+
+  it('defaults hasMoreMessages to true for unknown conversation', () => {
+    mockChatState.activeConversationId = 'conv-unknown';
+    mockChatState.hasMoreMessages = {};
+
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.hasMoreMessages).toBe(true);
+  });
+
+  // ── Populated state ──────────────────────────────────────────────
+
+  it('exposes populated conversations', () => {
+    const convos = [
+      { id: 'c-1', name: 'General' },
+      { id: 'c-2', name: 'Random' },
+    ];
+    mockChatState.conversations = convos;
+
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.conversations).toHaveLength(2);
+  });
+
+  it('exposes populated typingUsers', () => {
+    mockChatState.typingUsers = { 'conv-1': ['alice', 'bob'] };
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.typingUsers).toEqual({ 'conv-1': ['alice', 'bob'] });
+  });
+
+  // ── Effects integration ──────────────────────────────────────────
+
+  it('exposes activeEffect from effects store', () => {
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.activeEffect).toEqual({ type: 'none', intensity: 0 });
+  });
+
+  it('exposes activeBubbleStyle from bubble store', () => {
+    const { result } = renderHook(() => useChatFacade());
+    expect(result.current.activeBubbleStyle).toEqual({
+      variant: 'default',
+      borderRadius: 12,
+      opacity: 1,
     });
   });
 
-  describe('derived message state', () => {
-    it('returns messages for active conversation', () => {
-      const messages = [
-        { id: 'msg-1', content: 'Hello' },
-        { id: 'msg-2', content: 'World' },
-      ];
-      mockChatState.activeConversationId = 'conv-123';
-      mockChatState.messages = { 'conv-123': messages };
+  // ── Action delegation ────────────────────────────────────────────
 
-      const { result } = renderHook(() => useChatFacade());
-      expect(result.current.activeMessages).toEqual(messages);
-    });
-
-    it('returns empty array for conversation with no messages', () => {
-      mockChatState.activeConversationId = 'conv-456';
-      mockChatState.messages = {};
-
-      const { result } = renderHook(() => useChatFacade());
-      expect(result.current.activeMessages).toEqual([]);
-    });
-
-    it('returns hasMoreMessages for active conversation', () => {
-      mockChatState.activeConversationId = 'conv-123';
-      mockChatState.hasMoreMessages = { 'conv-123': false };
-
-      const { result } = renderHook(() => useChatFacade());
-      expect(result.current.hasMoreMessages).toBe(false);
-    });
-
-    it('defaults hasMoreMessages to true for unknown conversation', () => {
-      mockChatState.activeConversationId = 'conv-unknown';
-      mockChatState.hasMoreMessages = {};
-
-      const { result } = renderHook(() => useChatFacade());
-      expect(result.current.hasMoreMessages).toBe(true);
-    });
+  it('fetchConversations delegates to chat store', () => {
+    const { result } = renderHook(() => useChatFacade());
+    result.current.fetchConversations();
+    expect(mockChatState.fetchConversations).toHaveBeenCalledOnce();
   });
 
-  describe('effects integration', () => {
-    it('exposes activeEffect from effects store', () => {
-      const { result } = renderHook(() => useChatFacade());
-      expect(result.current.activeEffect).toEqual({
-        type: 'none',
-        intensity: 0,
-      });
-    });
-
-    it('exposes activeBubbleStyle from bubble store', () => {
-      const { result } = renderHook(() => useChatFacade());
-      expect(result.current.activeBubbleStyle).toEqual({
-        variant: 'default',
-        borderRadius: 12,
-        opacity: 1,
-      });
-    });
+  it('setActiveConversation delegates with id', () => {
+    const { result } = renderHook(() => useChatFacade());
+    result.current.setActiveConversation('conv-5');
+    expect(mockChatState.setActiveConversation).toHaveBeenCalledWith('conv-5');
   });
 
-  describe('interface completeness', () => {
-    it('exposes all conversation actions', () => {
-      const { result } = renderHook(() => useChatFacade());
-      expect(typeof result.current.fetchConversations).toBe('function');
-      expect(typeof result.current.setActiveConversation).toBe('function');
-      expect(typeof result.current.createConversation).toBe('function');
-    });
+  it('sendMessage delegates with correct args', () => {
+    const { result } = renderHook(() => useChatFacade());
+    result.current.sendMessage('conv-1', 'hi', undefined, undefined);
+    expect(mockChatState.sendMessage).toHaveBeenCalledWith('conv-1', 'hi', undefined, undefined);
+  });
 
-    it('exposes all message actions', () => {
-      const { result } = renderHook(() => useChatFacade());
-      expect(typeof result.current.fetchMessages).toBe('function');
-      expect(typeof result.current.sendMessage).toBe('function');
-      expect(typeof result.current.deleteMessage).toBe('function');
-      expect(typeof result.current.editMessage).toBe('function');
-    });
+  it('deleteMessage delegates with messageId', () => {
+    const { result } = renderHook(() => useChatFacade());
+    result.current.deleteMessage('msg-42');
+    expect(mockChatState.deleteMessage).toHaveBeenCalledWith('msg-42');
+  });
 
-    it('exposes all reaction actions', () => {
-      const { result } = renderHook(() => useChatFacade());
-      expect(typeof result.current.addReaction).toBe('function');
-      expect(typeof result.current.removeReaction).toBe('function');
-    });
+  it('editMessage delegates with messageId and content', () => {
+    const { result } = renderHook(() => useChatFacade());
+    result.current.editMessage('msg-42', 'edited');
+    expect(mockChatState.editMessage).toHaveBeenCalledWith('msg-42', 'edited');
+  });
 
-    it('exposes typing action', () => {
-      const { result } = renderHook(() => useChatFacade());
-      expect(typeof result.current.setTypingUser).toBe('function');
-    });
+  it('addReaction delegates with messageId and emoji', () => {
+    const { result } = renderHook(() => useChatFacade());
+    result.current.addReaction('msg-1', '👍');
+    expect(mockChatState.addReaction).toHaveBeenCalledWith('msg-1', '👍');
+  });
 
-    it('returns all expected keys', () => {
-      const { result } = renderHook(() => useChatFacade());
-      const keys = Object.keys(result.current);
+  it('removeReaction delegates with messageId and emoji', () => {
+    const { result } = renderHook(() => useChatFacade());
+    result.current.removeReaction('msg-1', '👍');
+    expect(mockChatState.removeReaction).toHaveBeenCalledWith('msg-1', '👍');
+  });
 
-      const expectedKeys = [
-        'conversations',
-        'activeConversationId',
-        'isLoadingConversations',
-        'activeMessages',
-        'isLoadingMessages',
-        'hasMoreMessages',
-        'typingUsers',
-        'fetchConversations',
-        'setActiveConversation',
-        'createConversation',
-        'fetchMessages',
-        'sendMessage',
-        'deleteMessage',
-        'editMessage',
-        'addReaction',
-        'removeReaction',
-        'setTypingUser',
-        'activeEffect',
-        'activeBubbleStyle',
-      ];
+  it('setTypingUser delegates with all args', () => {
+    const { result } = renderHook(() => useChatFacade());
+    result.current.setTypingUser('conv-1', 'user-1', true, '2026-01-01');
+    expect(mockChatState.setTypingUser).toHaveBeenCalledWith(
+      'conv-1',
+      'user-1',
+      true,
+      '2026-01-01'
+    );
+  });
 
-      for (const key of expectedKeys) {
-        expect(keys).toContain(key);
-      }
-    });
+  // ── Interface completeness ───────────────────────────────────────
+
+  it('returns all 19 expected keys', () => {
+    const { result } = renderHook(() => useChatFacade());
+    const keys = Object.keys(result.current);
+
+    const expected = [
+      'conversations',
+      'activeConversationId',
+      'isLoadingConversations',
+      'activeMessages',
+      'isLoadingMessages',
+      'hasMoreMessages',
+      'typingUsers',
+      'fetchConversations',
+      'setActiveConversation',
+      'createConversation',
+      'fetchMessages',
+      'sendMessage',
+      'deleteMessage',
+      'editMessage',
+      'addReaction',
+      'removeReaction',
+      'setTypingUser',
+      'activeEffect',
+      'activeBubbleStyle',
+    ];
+    for (const k of expected) expect(keys).toContain(k);
+    expect(keys).toHaveLength(expected.length);
+  });
+
+  it('all action properties are functions', () => {
+    const { result } = renderHook(() => useChatFacade());
+    const actions = [
+      'fetchConversations',
+      'setActiveConversation',
+      'createConversation',
+      'fetchMessages',
+      'sendMessage',
+      'deleteMessage',
+      'editMessage',
+      'addReaction',
+      'removeReaction',
+      'setTypingUser',
+    ] as const;
+    for (const a of actions) {
+      expect(typeof result.current[a]).toBe('function');
+    }
   });
 });
