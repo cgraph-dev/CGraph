@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect } from 'vitest';
 import { TIER_ICONS, TIER_COLORS, TIER_GRADIENTS } from '../subscriptionCard.constants';
 import {

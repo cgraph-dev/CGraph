@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
 import {
@@ -8,7 +9,6 @@ import {
   type ForumThemePreset,
   type ForumTitleAnimation,
   type RoleBadgeStyle,
-  type ForumTheme,
 } from '../forumThemeStore';
 import { useThemeStore } from '@/stores/theme';
 

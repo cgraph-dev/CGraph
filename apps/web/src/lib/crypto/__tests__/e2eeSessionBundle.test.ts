@@ -8,8 +8,6 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import {
-  generateECDHKeyPair,
-  generateECDSAKeyPair,
   exportPublicKey,
   arrayBufferToBase64,
   generateKeyBundle,

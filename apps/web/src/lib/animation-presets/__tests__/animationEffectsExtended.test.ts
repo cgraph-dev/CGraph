@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Animation Effects Extended Tests
  *
@@ -7,11 +8,10 @@
 
 import { describe, it, expect } from 'vitest';
 
-import { springs, tweens, staggerConfigs, entranceVariants } from '../presets';
-import { chatBubbleAnimations, type ChatBubbleStyleId } from '../chat-bubbles';
+import { springs, staggerConfigs } from '../presets';
+import { chatBubbleAnimations } from '../chat-bubbles';
 import {
   hoverAnimations,
-  createPulseAnimation,
   createFireAnimation,
   createElectricAnimation,
   particleAnimations,

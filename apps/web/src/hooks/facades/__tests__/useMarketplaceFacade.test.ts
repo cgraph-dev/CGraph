@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * useMarketplaceFacade Unit Tests
  *

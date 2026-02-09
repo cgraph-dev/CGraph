@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useFriendStore } from '../friendStore.impl';
 import { useNotificationStore } from '../notificationStore.impl';

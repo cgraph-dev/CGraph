@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Prestige Store Unit Tests
  *

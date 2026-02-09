@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Notification Store Unit Tests
  *

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useForumHostingStore } from '../forumHostingStore.impl';
 

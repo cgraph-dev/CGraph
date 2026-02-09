@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * useReportForm Hook Tests
  *

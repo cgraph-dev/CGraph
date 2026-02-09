@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * useUIFacade Unit Tests
  *

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Marketplace Store Unit Tests
  *

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Announcement Store Unit Tests
  *

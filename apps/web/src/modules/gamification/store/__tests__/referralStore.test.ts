@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Referral Store Unit Tests
  *

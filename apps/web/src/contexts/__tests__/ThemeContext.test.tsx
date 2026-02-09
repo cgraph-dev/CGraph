@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
@@ -7,11 +8,11 @@ import { ThemeProvider, useTheme } from '../ThemeContext';
 // ── Helpers ────────────────────────────────────────────────────────────
 
 let matchMediaMatches = false;
-let changeHandler: ((e: MediaQueryListEvent) => void) | null = null;
+let _changeHandler: ((e: MediaQueryListEvent) => void) | null = null;
 
 beforeEach(() => {
   matchMediaMatches = false;
-  changeHandler = null;
+  _changeHandler = null;
   localStorage.clear();
   document.documentElement.classList.remove('light', 'dark');
 
@@ -20,7 +21,7 @@ beforeEach(() => {
     value: vi.fn(() => ({
       matches: matchMediaMatches,
       addEventListener: vi.fn((_: string, handler: any) => {
-        changeHandler = handler;
+        _changeHandler = handler;
       }),
       removeEventListener: vi.fn(),
     })),

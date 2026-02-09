@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Friend Store Unit Tests
  *

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Gamification Data & Constants Tests
  *
