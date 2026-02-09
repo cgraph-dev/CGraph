@@ -1,405 +1,379 @@
-/**
- * ThemeContextEnhanced - Unit Tests
- *
- * Tests for the React context provider and hooks that wrap ThemeEngine.
- *
- * @version 4.0.1
- * @since v0.7.36
- */
-
-import { describe, it, expect, beforeEach, vi, beforeAll, afterAll } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
-import React, { ReactNode } from 'react';
-
-// =============================================================================
-// MOCKS
-// =============================================================================
-
-// Mock localStorage
-const localStorageMock = (() => {
-  let store: Record<string, string> = {};
-  return {
-    getItem: vi.fn((key: string) => store[key] || null),
-    setItem: vi.fn((key: string, value: string) => {
-      store[key] = value;
-    }),
-    removeItem: vi.fn((key: string) => {
-      delete store[key];
-    }),
-    clear: vi.fn(() => {
-      store = {};
-    }),
-    get length() {
-      return Object.keys(store).length;
-    },
-    key: vi.fn((index: number) => Object.keys(store)[index] || null),
-  };
-})();
-
-// Mock BroadcastChannel
-class MockBroadcastChannel {
-  name: string;
-  onmessage: ((event: MessageEvent) => void) | null = null;
-
-  constructor(name: string) {
-    this.name = name;
-  }
-
-  postMessage = vi.fn();
-  close = vi.fn();
-  addEventListener = vi.fn();
-  removeEventListener = vi.fn();
-  dispatchEvent = vi.fn(() => true);
-}
-
-// Mock matchMedia
-const mockMatchMedia = vi.fn(() => ({
-  matches: false,
-  media: '',
-  onchange: null,
-  addListener: vi.fn(),
-  removeListener: vi.fn(),
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
-  dispatchEvent: vi.fn(),
-}));
-
-// Save original globals
-const originalLocalStorage = global.localStorage;
-const originalBroadcastChannel = (global as any).BroadcastChannel;
-const originalMatchMedia = global.matchMedia;
-
-// =============================================================================
-// TEST SETUP
-// =============================================================================
-
-beforeAll(() => {
-  Object.defineProperty(global, 'localStorage', { value: localStorageMock, writable: true });
-  (global as any).BroadcastChannel = MockBroadcastChannel;
-  // Don't replace document - jsdom provides it and @testing-library/react needs document.body
-  // Just mock documentElement.style methods on the existing document
-  if (document.documentElement) {
-    vi.spyOn(document.documentElement.style, 'setProperty').mockImplementation(() => {});
-    vi.spyOn(document.documentElement.style, 'removeProperty').mockImplementation(() => '');
-  }
-  Object.defineProperty(global, 'matchMedia', { value: mockMatchMedia, writable: true });
-});
-
-afterAll(() => {
-  Object.defineProperty(global, 'localStorage', { value: originalLocalStorage, writable: true });
-  (global as any).BroadcastChannel = originalBroadcastChannel;
-  Object.defineProperty(global, 'matchMedia', { value: originalMatchMedia, writable: true });
-  vi.restoreAllMocks();
-});
-
-beforeEach(() => {
-  localStorageMock.clear();
-  vi.clearAllMocks();
-});
-
-// =============================================================================
-// IMPORT AFTER MOCKS
-// =============================================================================
-
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, act } from '@testing-library/react';
+import '@testing-library/jest-dom/vitest';
+import { renderHook } from '@testing-library/react';
 import {
   ThemeProviderEnhanced,
   useThemeEnhanced,
   useThemeColors,
+  useIsSpecialTheme,
   useReducedMotion,
-} from '@/contexts/ThemeContextEnhanced';
+} from '../ThemeContextEnhanced';
 
-// Wrapper for hook tests
-const wrapper = ({ children }: { children: ReactNode }) =>
-  React.createElement(ThemeProviderEnhanced, null, children);
+// ---------------------------------------------------------------------------
+// Shared theme fixtures (used inside and outside the factory)
+// ---------------------------------------------------------------------------
 
-// =============================================================================
-// TESTS
-// =============================================================================
+const DARK_THEME = {
+  id: 'dark',
+  name: 'Dark',
+  category: 'dark' as const,
+  isBuiltIn: true,
+  colors: {
+    holoPrimary: '#00ff88',
+    holoSecondary: '#00ccff',
+    holoAccent: '#ff00ff',
+    holoGlow: 'rgba(0,255,136,0.3)',
+    holoScanline: 'rgba(0,255,136,0.05)',
+    holoBackground: '#0a0a0a',
+    primary: '#00ff88',
+    background: '#121212',
+  },
+  animations: {
+    enableScanlines: true,
+    enableFlicker: false,
+    enableGlow: true,
+    enableParallax: false,
+  },
+};
 
-describe('ThemeContextEnhanced', () => {
-  // ===========================================================================
-  // PROVIDER TESTS
-  // ===========================================================================
+const LIGHT_THEME = { ...DARK_THEME, id: 'light', name: 'Light', category: 'light' as const };
+const SPECIAL_THEME = { ...DARK_THEME, id: 'neon', name: 'Neon', category: 'special' as const };
 
-  describe('ThemeProviderEnhanced', () => {
-    it('should provide default theme context', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+const DEFAULT_PREFS = {
+  activeThemeId: 'dark',
+  settings: {
+    fontScale: 1,
+    messageDisplay: 'cozy' as const,
+    messageSpacing: 1,
+    reduceMotion: false,
+    highContrast: false,
+    respectSystemPreference: false,
+  },
+  customThemes: [],
+};
 
-      expect(result.current.theme).toBeDefined();
-      expect(result.current.theme.id).toBe('dark');
-      expect(result.current.preferences).toBeDefined();
-      expect(result.current.availableThemes).toBeDefined();
-      expect(result.current.availableThemes.length).toBeGreaterThanOrEqual(7);
-    });
+// ---------------------------------------------------------------------------
+// vi.mock – factory must be self-contained (hoisted above all declarations)
+// ---------------------------------------------------------------------------
 
-    it('should throw error when used outside provider', () => {
-      // Suppress console.error for this test
-      const originalError = console.error;
-      console.error = vi.fn();
+vi.mock('@/lib/theme/ThemeEngine', () => {
+  const dark = {
+    id: 'dark',
+    name: 'Dark',
+    category: 'dark',
+    isBuiltIn: true,
+    colors: {
+      holoPrimary: '#00ff88',
+      holoSecondary: '#00ccff',
+      holoAccent: '#ff00ff',
+      holoGlow: 'rgba(0,255,136,0.3)',
+      holoScanline: 'rgba(0,255,136,0.05)',
+      holoBackground: '#0a0a0a',
+      primary: '#00ff88',
+      background: '#121212',
+    },
+    animations: {
+      enableScanlines: true,
+      enableFlicker: false,
+      enableGlow: true,
+      enableParallax: false,
+    },
+  };
+  const light = { ...dark, id: 'light', name: 'Light', category: 'light' };
+  const prefs = {
+    activeThemeId: 'dark',
+    settings: {
+      fontScale: 1,
+      messageDisplay: 'cozy',
+      messageSpacing: 1,
+      reduceMotion: false,
+      highContrast: false,
+      respectSystemPreference: false,
+    },
+    customThemes: [],
+  };
+  return {
+    themeEngine: {
+      getCurrentTheme: vi.fn(() => dark),
+      getPreferences: vi.fn(() => prefs),
+      setTheme: vi.fn(),
+      updateSettings: vi.fn(),
+      subscribe: vi.fn(() => vi.fn()),
+      createCustomTheme: vi.fn((t: Record<string, unknown>) => ({ ...t, isBuiltIn: false })),
+      deleteCustomTheme: vi.fn(() => true),
+    },
+    getAllThemes: vi.fn(() => [dark, light]),
+    THEME_REGISTRY: { dark, light } as Record<string, unknown>,
+  };
+});
 
-      expect(() => {
-        renderHook(() => useThemeEnhanced());
-      }).toThrow('useThemeEnhanced must be used within a ThemeProviderEnhanced');
+// Re-import the mocked module so we can access the spies in tests
+import { themeEngine } from '@/lib/theme/ThemeEngine';
+const mockEngine = themeEngine as unknown as {
+  getCurrentTheme: ReturnType<typeof vi.fn>;
+  getPreferences: ReturnType<typeof vi.fn>;
+  setTheme: ReturnType<typeof vi.fn>;
+  updateSettings: ReturnType<typeof vi.fn>;
+  subscribe: ReturnType<typeof vi.fn>;
+  createCustomTheme: ReturnType<typeof vi.fn>;
+  deleteCustomTheme: ReturnType<typeof vi.fn>;
+};
 
-      console.error = originalError;
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function wrapper({ children }: { children: React.ReactNode }) {
+  return <ThemeProviderEnhanced>{children}</ThemeProviderEnhanced>;
+}
+
+// ---------------------------------------------------------------------------
+// Tests
+// ---------------------------------------------------------------------------
+
+describe('ThemeProviderEnhanced', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockEngine.getCurrentTheme.mockReturnValue(DARK_THEME);
+    mockEngine.getPreferences.mockReturnValue(DEFAULT_PREFS);
+  });
+
+  // --- Rendering ---
+
+  it('renders children', () => {
+    render(
+      <ThemeProviderEnhanced>
+        <div data-testid="child">Hello</div>
+      </ThemeProviderEnhanced>
+    );
+    expect(screen.getByTestId('child')).toBeInTheDocument();
+  });
+
+  it('renders multiple children', () => {
+    render(
+      <ThemeProviderEnhanced>
+        <span data-testid="a">A</span>
+        <span data-testid="b">B</span>
+      </ThemeProviderEnhanced>
+    );
+    expect(screen.getByTestId('a')).toBeInTheDocument();
+    expect(screen.getByTestId('b')).toBeInTheDocument();
+  });
+
+  // --- Context values ---
+
+  it('provides the current theme through context', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    expect(result.current.theme).toEqual(DARK_THEME);
+  });
+
+  it('provides preferences through context', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    expect(result.current.preferences).toEqual(DEFAULT_PREFS);
+  });
+
+  it('provides available themes', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    expect(result.current.availableThemes).toHaveLength(2);
+  });
+
+  it('resolves base theme to dark when category is dark', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    expect(result.current.resolvedBaseTheme).toBe('dark');
+  });
+
+  it('resolves base theme to light when category is light', () => {
+    mockEngine.getCurrentTheme.mockReturnValue(LIGHT_THEME);
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    expect(result.current.resolvedBaseTheme).toBe('light');
+  });
+
+  it('reports isSystemPreference from settings', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    expect(result.current.isSystemPreference).toBe(false);
+  });
+
+  // --- Theme switching ---
+
+  it('calls themeEngine.setTheme when setTheme is invoked', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    act(() => result.current.setTheme('light'));
+    expect(mockEngine.setTheme).toHaveBeenCalledWith('light');
+  });
+
+  it('toggleDarkMode switches from dark to light', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    act(() => result.current.toggleDarkMode());
+    expect(mockEngine.setTheme).toHaveBeenCalledWith('light');
+  });
+
+  it('toggleDarkMode switches from light to dark', () => {
+    mockEngine.getCurrentTheme.mockReturnValue(LIGHT_THEME);
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    act(() => result.current.toggleDarkMode());
+    expect(mockEngine.setTheme).toHaveBeenCalledWith('dark');
+  });
+
+  // --- Settings ---
+
+  it('setFontScale clamps upper bound to 1.4', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    act(() => result.current.setFontScale(2.0));
+    expect(mockEngine.updateSettings).toHaveBeenCalledWith({ fontScale: 1.4 });
+  });
+
+  it('setFontScale clamps lower bound to 0.8', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    act(() => result.current.setFontScale(0.3));
+    expect(mockEngine.updateSettings).toHaveBeenCalledWith({ fontScale: 0.8 });
+  });
+
+  it('setMessageDisplay updates display mode', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    act(() => result.current.setMessageDisplay('compact'));
+    expect(mockEngine.updateSettings).toHaveBeenCalledWith({ messageDisplay: 'compact' });
+  });
+
+  it('setMessageSpacing clamps value to max 2', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    act(() => result.current.setMessageSpacing(5));
+    expect(mockEngine.updateSettings).toHaveBeenCalledWith({ messageSpacing: 2 });
+  });
+
+  it('toggleReduceMotion flips the current value', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    act(() => result.current.toggleReduceMotion());
+    expect(mockEngine.updateSettings).toHaveBeenCalledWith({ reduceMotion: true });
+  });
+
+  it('toggleHighContrast flips the current value', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    act(() => result.current.toggleHighContrast());
+    expect(mockEngine.updateSettings).toHaveBeenCalledWith({ highContrast: true });
+  });
+
+  it('toggleSystemPreference flips the current value', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    act(() => result.current.toggleSystemPreference());
+    expect(mockEngine.updateSettings).toHaveBeenCalledWith({
+      respectSystemPreference: true,
     });
   });
 
-  // ===========================================================================
-  // THEME SWITCHING VIA CONTEXT
-  // ===========================================================================
+  // --- Custom themes ---
 
-  describe('Theme Switching', () => {
-    it('should switch theme via setTheme', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      act(() => {
-        result.current.setTheme('light');
-      });
-
-      expect(result.current.theme.id).toBe('light');
-    });
-
-    it('should switch to matrix theme', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      act(() => {
-        result.current.setTheme('matrix');
-      });
-
-      expect(result.current.theme.id).toBe('matrix');
-      expect(result.current.theme.category).toBe('special');
-    });
-
-    it('should switch to holographic themes', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      const holoThemes = ['holo-cyan', 'holo-purple', 'holo-gold', 'midnight'];
-
-      for (const themeId of holoThemes) {
-        act(() => {
-          result.current.setTheme(themeId);
-        });
-        expect(result.current.theme.id).toBe(themeId);
-      }
-    });
-
-    it('should toggle dark mode', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      act(() => {
-        result.current.toggleDarkMode();
-      });
-
-      expect(result.current.theme.id).toBe('light');
-
-      act(() => {
-        result.current.toggleDarkMode();
-      });
-
-      expect(result.current.theme.id).toBe('dark');
-    });
+  it('createCustomTheme delegates to themeEngine', () => {
+    const newTheme = {
+      id: 'custom-1',
+      name: 'My Theme',
+      category: 'dark' as const,
+      colors: {},
+      animations: {},
+    };
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    act(() => result.current.createCustomTheme(newTheme as never));
+    expect(mockEngine.createCustomTheme).toHaveBeenCalledWith(newTheme);
   });
 
-  // ===========================================================================
-  // PREFERENCE MANAGEMENT
-  // ===========================================================================
-
-  describe('Preference Management', () => {
-    it('should update font scale', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      act(() => {
-        result.current.setFontScale(1.25);
-      });
-
-      expect(result.current.preferences.settings.fontScale).toBe(1.25);
+  it('deleteCustomTheme delegates to themeEngine and returns result', () => {
+    const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+    let deleted: boolean | undefined;
+    act(() => {
+      deleted = result.current.deleteCustomTheme('custom-1');
     });
-
-    it('should update message display', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      act(() => {
-        result.current.setMessageDisplay('compact');
-      });
-
-      expect(result.current.preferences.settings.messageDisplay).toBe('compact');
-    });
-
-    it('should update message spacing', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      act(() => {
-        result.current.setMessageSpacing(1.5);
-      });
-
-      expect(result.current.preferences.settings.messageSpacing).toBe(1.5);
-    });
-
-    it('should toggle reduce motion', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      const initial = result.current.preferences.settings.reduceMotion;
-
-      act(() => {
-        result.current.toggleReduceMotion();
-      });
-
-      expect(result.current.preferences.settings.reduceMotion).toBe(!initial);
-    });
-
-    it('should toggle high contrast', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      const initial = result.current.preferences.settings.highContrast;
-
-      act(() => {
-        result.current.toggleHighContrast();
-      });
-
-      expect(result.current.preferences.settings.highContrast).toBe(!initial);
-    });
-
-    it('should toggle system preference', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      const initial = result.current.preferences.settings.respectSystemPreference;
-
-      act(() => {
-        result.current.toggleSystemPreference();
-      });
-
-      expect(result.current.preferences.settings.respectSystemPreference).toBe(!initial);
-    });
+    expect(mockEngine.deleteCustomTheme).toHaveBeenCalledWith('custom-1');
+    expect(deleted).toBe(true);
   });
 
-  // ===========================================================================
-  // CUSTOM THEMES VIA CONTEXT
-  // ===========================================================================
+  // --- Subscription ---
 
-  describe('Custom Themes', () => {
-    it('should have createCustomTheme method available', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      expect(typeof result.current.createCustomTheme).toBe('function');
-    });
-
-    it('should have deleteCustomTheme method available', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      expect(typeof result.current.deleteCustomTheme).toBe('function');
-    });
-
-    it('should not delete built-in themes', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      let deleteResult: boolean = false;
-      act(() => {
-        deleteResult = result.current.deleteCustomTheme('dark');
-      });
-
-      expect(deleteResult).toBe(false);
-    });
+  it('subscribes to theme changes on mount', () => {
+    renderHook(() => useThemeEnhanced(), { wrapper });
+    expect(mockEngine.subscribe).toHaveBeenCalledTimes(1);
   });
 
-  // ===========================================================================
-  // CONVENIENCE HOOKS
-  // ===========================================================================
+  // --- Initial theme ---
 
-  describe('Convenience Hooks', () => {
-    it('useThemeColors should return color object', () => {
-      const { result } = renderHook(() => useThemeColors(), { wrapper });
-
-      expect(result.current).toBeDefined();
-      expect(result.current.primary).toBeDefined();
-      expect(result.current.background).toBeDefined();
-      expect(result.current.textPrimary).toBeDefined();
-    });
-
-    it('useReducedMotion should return boolean', () => {
-      const { result } = renderHook(() => useReducedMotion(), { wrapper });
-
-      expect(typeof result.current).toBe('boolean');
-    });
-
-    it('useReducedMotion should update when preference changes', () => {
-      const { result: themeResult } = renderHook(() => useThemeEnhanced(), { wrapper });
-      const { result: motionResult } = renderHook(() => useReducedMotion(), { wrapper });
-
-      const initial = motionResult.current;
-
-      act(() => {
-        themeResult.current.toggleReduceMotion();
-      });
-
-      // Re-render hook to get updated value
-      const { result: updatedResult } = renderHook(() => useReducedMotion(), { wrapper });
-      expect(updatedResult.current).toBe(!initial);
-    });
+  it('applies initialTheme when provided and in registry', () => {
+    function wrapperWithInitial({ children }: { children: React.ReactNode }) {
+      return <ThemeProviderEnhanced initialTheme="light">{children}</ThemeProviderEnhanced>;
+    }
+    renderHook(() => useThemeEnhanced(), { wrapper: wrapperWithInitial });
+    expect(mockEngine.setTheme).toHaveBeenCalledWith('light');
   });
 
-  // ===========================================================================
-  // DERIVED VALUES
-  // ===========================================================================
+  it('does not apply initialTheme when ID is not in registry', () => {
+    function wrapperBad({ children }: { children: React.ReactNode }) {
+      return <ThemeProviderEnhanced initialTheme="nonexistent">{children}</ThemeProviderEnhanced>;
+    }
+    renderHook(() => useThemeEnhanced(), { wrapper: wrapperBad });
+    expect(mockEngine.setTheme).not.toHaveBeenCalled();
+  });
+});
 
-  describe('Derived Values', () => {
-    it('should compute isSystemPreference correctly', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+// ---------------------------------------------------------------------------
+// Hook error boundary
+// ---------------------------------------------------------------------------
 
-      expect(typeof result.current.isSystemPreference).toBe('boolean');
-    });
+describe('useThemeEnhanced', () => {
+  it('throws when used outside provider', () => {
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    expect(() => renderHook(() => useThemeEnhanced())).toThrow(
+      'useThemeEnhanced must be used within a ThemeProviderEnhanced'
+    );
+    spy.mockRestore();
+  });
+});
 
-    it('should compute resolvedBaseTheme correctly for dark themes', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+// ---------------------------------------------------------------------------
+// Convenience hooks
+// ---------------------------------------------------------------------------
 
-      act(() => {
-        result.current.setTheme('dark');
-      });
+describe('useThemeColors', () => {
+  it('returns the theme colors object', () => {
+    const { result } = renderHook(() => useThemeColors(), { wrapper });
+    expect(result.current).toEqual(DARK_THEME.colors);
+  });
+});
 
-      expect(result.current.resolvedBaseTheme).toBe('dark');
-    });
-
-    it('should compute resolvedBaseTheme correctly for light themes', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      act(() => {
-        result.current.setTheme('light');
-      });
-
-      expect(result.current.resolvedBaseTheme).toBe('light');
-    });
+describe('useIsSpecialTheme', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockEngine.getCurrentTheme.mockReturnValue(DARK_THEME);
+    mockEngine.getPreferences.mockReturnValue(DEFAULT_PREFS);
   });
 
-  // ===========================================================================
-  // THEME COLORS UPDATE
-  // ===========================================================================
+  it('returns false for non-special themes', () => {
+    const { result } = renderHook(() => useIsSpecialTheme(), { wrapper });
+    expect(result.current).toBe(false);
+  });
 
-  describe('Color Updates', () => {
-    it('should have different colors for different themes', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
+  it('returns true for special themes', () => {
+    mockEngine.getCurrentTheme.mockReturnValue(SPECIAL_THEME);
+    const { result } = renderHook(() => useIsSpecialTheme(), { wrapper });
+    expect(result.current).toBe(true);
+  });
+});
 
-      act(() => {
-        result.current.setTheme('dark');
-      });
-      const darkBg = result.current.theme.colors.background;
+describe('useReducedMotion', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockEngine.getCurrentTheme.mockReturnValue(DARK_THEME);
+    mockEngine.getPreferences.mockReturnValue(DEFAULT_PREFS);
+  });
 
-      act(() => {
-        result.current.setTheme('light');
-      });
-      const lightBg = result.current.theme.colors.background;
+  it('returns false when reduceMotion is off', () => {
+    const { result } = renderHook(() => useReducedMotion(), { wrapper });
+    expect(result.current).toBe(false);
+  });
 
-      expect(darkBg).not.toBe(lightBg);
+  it('returns true when reduceMotion is on', () => {
+    mockEngine.getPreferences.mockReturnValue({
+      ...DEFAULT_PREFS,
+      settings: { ...DEFAULT_PREFS.settings, reduceMotion: true },
     });
-
-    it('should have holographic colors for holo themes', () => {
-      const { result } = renderHook(() => useThemeEnhanced(), { wrapper });
-
-      act(() => {
-        result.current.setTheme('holo-cyan');
-      });
-
-      expect(result.current.theme.colors.holoGlow).toBeDefined();
-      expect(result.current.theme.colors.holoAccent).toBeDefined();
-    });
+    const { result } = renderHook(() => useReducedMotion(), { wrapper });
+    expect(result.current).toBe(true);
   });
 });
