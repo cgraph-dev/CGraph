@@ -41,6 +41,21 @@ export interface Message {
     avatarUrl: string | null;
     avatarBorderId?: string | null;
     theme?: string | null;
+    // Sender customization fields (populated from backend user_customizations)
+    equippedTitleId?: string | null;
+    bubbleStyle?: string | null;
+    bubbleColor?: string | null;
+    bubbleRadius?: number | null;
+    bubbleOpacity?: number | null;
+    messageEffect?: string | null;
+    reactionStyle?: string | null;
+    chatTheme?: string | null;
+    profileTheme?: string | null;
+    entranceAnimation?: string | null;
+    glassEffect?: string | null;
+    textColor?: string | null;
+    textSize?: number | null;
+    fontFamily?: string | null;
   };
   senderTheme?: string | null;
   createdAt: string;

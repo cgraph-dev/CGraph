@@ -54,8 +54,6 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
   """
   @spec list_for_board(String.t(), keyword()) :: {list(Thread.t()), map()}
   def list_for_board(board_id, opts \\ []) do
-    limit = Keyword.get(opts, :limit, 20)
-    offset = Keyword.get(opts, :offset, 0)
     sort = Keyword.get(opts, :sort, :latest)
     include_sticky = Keyword.get(opts, :include_sticky, true)
 
@@ -74,19 +72,15 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
         |> where([t], t.is_sticky == false)
         |> sort_threads(sort, false)
       end
-      |> limit(^limit)
-      |> offset(^offset)
 
-    threads = Repo.all(query)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
 
-    total =
-      from(t in Thread,
-        where: t.board_id == ^board_id and is_nil(t.deleted_at),
-        select: count(t.id)
-      )
-      |> Repo.one()
-
-    {threads, %{total: total, limit: limit, offset: offset}}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """

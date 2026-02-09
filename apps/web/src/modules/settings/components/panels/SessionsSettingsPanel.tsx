@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { DevicePhoneMobileIcon } from '@heroicons/react/24/outline';
+import { DevicePhoneMobileIcon, ComputerDesktopIcon, DeviceTabletIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 import { toast } from '@/shared/components/ui';
@@ -46,6 +46,17 @@ function parseBrowser(userAgent: string): string {
   if (userAgent.includes('Edge')) return 'Microsoft Edge';
   if (userAgent.includes('Opera')) return 'Opera';
   return 'Unknown Browser';
+}
+
+function getDeviceIcon(device: string) {
+  const d = device.toLowerCase();
+  if (d.includes('iphone') || d.includes('android') || d.includes('mobile'))
+    return DevicePhoneMobileIcon;
+  if (d.includes('ipad') || d.includes('tablet'))
+    return DeviceTabletIcon;
+  if (d.includes('mac') || d.includes('windows') || d.includes('linux') || d.includes('desktop'))
+    return ComputerDesktopIcon;
+  return GlobeAltIcon;
 }
 
 export function SessionsSettingsPanel() {
@@ -142,9 +153,14 @@ export function SessionsSettingsPanel() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <DevicePhoneMobileIcon
-                    className={`h-8 w-8 ${session.current ? 'text-primary-400' : 'text-gray-400'}`}
-                  />
+                  {(() => {
+                    const DeviceIcon = getDeviceIcon(session.device);
+                    return (
+                      <DeviceIcon
+                        className={`h-8 w-8 ${session.current ? 'text-primary-400' : 'text-gray-400'}`}
+                      />
+                    );
+                  })()}
                   <div>
                     <h3 className="font-medium text-white">
                       {session.browser || session.device}

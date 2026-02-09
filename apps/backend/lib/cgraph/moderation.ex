@@ -334,17 +334,19 @@ defmodule CGraph.Moderation do
   List reports created by a specific user.
   """
   def list_user_reports(user_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    limit = Keyword.get(opts, :limit, 20)
-    offset = (page - 1) * limit
+    query =
+      from(r in Report,
+        where: r.reporter_id == ^user_id
+      )
 
-    from(r in Report,
-      where: r.reporter_id == ^user_id,
-      order_by: [desc: r.inserted_at],
-      limit: ^limit,
-      offset: ^offset
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 20
     )
-    |> Repo.all()
+
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """

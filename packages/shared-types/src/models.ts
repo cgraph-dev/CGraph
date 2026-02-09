@@ -16,6 +16,7 @@ export interface User {
   avatarUrl: string | null;
   walletAddress: string | null;
   bio: string | null;
+  pronouns: string | null;
   status: UserStatus;
   statusMessage: string | null;
   emailVerifiedAt: string | null;

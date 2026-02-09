@@ -6,6 +6,11 @@ import GroupListScreen from '../screens/groups/GroupListScreen';
 import GroupScreen from '../screens/groups/GroupScreen';
 import ChannelScreen from '../screens/groups/ChannelScreen';
 import GroupSettingsScreen from '../screens/groups/GroupSettingsScreen';
+import GroupRolesScreen from '../screens/groups/GroupRolesScreen';
+import GroupMembersScreen from '../screens/groups/GroupMembersScreen';
+import GroupChannelsScreen from '../screens/groups/GroupChannelsScreen';
+import GroupInvitesScreen from '../screens/groups/GroupInvitesScreen';
+import GroupModerationScreen from '../screens/groups/GroupModerationScreen';
 
 const Stack = createNativeStackNavigator<GroupsStackParamList>();
 
@@ -44,6 +49,31 @@ export default function GroupsNavigator() {
         name="GroupSettings"
         component={GroupSettingsScreen}
         options={{ title: 'Group Settings', presentation: 'modal' }}
+      />
+      <Stack.Screen
+        name="GroupRoles"
+        component={GroupRolesScreen}
+        options={{ title: 'Roles' }}
+      />
+      <Stack.Screen
+        name="GroupMembers"
+        component={GroupMembersScreen}
+        options={{ title: 'Members' }}
+      />
+      <Stack.Screen
+        name="GroupChannels"
+        component={GroupChannelsScreen}
+        options={{ title: 'Channels' }}
+      />
+      <Stack.Screen
+        name="GroupInvites"
+        component={GroupInvitesScreen}
+        options={{ title: 'Invites' }}
+      />
+      <Stack.Screen
+        name="GroupModeration"
+        component={GroupModerationScreen}
+        options={{ title: 'Moderation' }}
       />
     </Stack.Navigator>
   );

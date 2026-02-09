@@ -133,6 +133,7 @@ export function MessageList({
                   isOwnMessage={isOwn}
                   index={msgIndex}
                   messageId={message.id}
+                  isEditing={editingMessageId === message.id}
                   onSwipeReply={() => onReply(message)}
                   enableGestures={true}
                 >

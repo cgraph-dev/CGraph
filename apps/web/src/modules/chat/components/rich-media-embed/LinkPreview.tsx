@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { springs } from '@/lib/animation-presets/presets';
 import type { LinkMetadata } from './types';
 
 interface LinkPreviewProps {
@@ -18,13 +19,24 @@ export default function LinkPreview({ embed }: LinkPreviewProps) {
       href={embed.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="block max-w-md"
+      className="block max-w-md overflow-hidden"
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: 'auto', opacity: 1 }}
+      transition={{
+        height: { ...springs.snappy, duration: 0.35 },
+        opacity: { duration: 0.25, delay: 0.1 },
+      }}
       whileHover={{ scale: 1.01 }}
       onClick={() => HapticFeedback.light()}
     >
       <GlassCard variant="crystal" glow borderGradient className="overflow-hidden p-0">
         {embed.image && (
-          <div className="relative h-48 overflow-hidden">
+          <motion.div
+            className="relative h-48 overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+          >
             <img
               src={embed.image}
               alt={embed.title || 'Preview'}
@@ -32,7 +44,7 @@ export default function LinkPreview({ embed }: LinkPreviewProps) {
               loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-dark-900 via-transparent to-transparent" />
-          </div>
+          </motion.div>
         )}
         <div className="p-4">
           <div className="flex items-start gap-3">

@@ -383,6 +383,32 @@
   border: 2px solid rgba(139, 92, 246, 0.5);
 }
 
+/* Cloud — asymmetric, soft edges */
+.bubble-cloud {
+  border-radius: 1.5rem 1.5rem 1.5rem 0.5rem;
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.15) 0%, rgba(99, 102, 241, 0.08) 100%);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.1);
+}
+
+.bubble-cloud.is-own {
+  border-radius: 1.5rem 1.5rem 0.5rem 1.5rem;
+}
+
+/* Modern — subtle gradient, thin accent border */
+.bubble-modern {
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+  border-left: 3px solid #8b5cf6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.bubble-modern.is-own {
+  border-left: none;
+  border-right: 3px solid #8b5cf6;
+}
+
 /* ==================== MESSAGE EFFECTS ==================== */
 
 .message-effect-slide {
@@ -444,6 +470,30 @@
 @keyframes sparkle {
   0%, 100% { filter: brightness(1); }
   50% { filter: brightness(1.5) drop-shadow(0 0 10px currentColor); }
+}
+
+/* Confetti — brief colorful burst */
+.message-effect-confetti {
+  animation: confetti-burst calc(0.8s / var(--animation-speed)) ease-out;
+}
+
+@keyframes confetti-burst {
+  0% { transform: scale(0.8); opacity: 0; filter: hue-rotate(0deg); }
+  30% { transform: scale(1.05); opacity: 1; filter: hue-rotate(90deg); }
+  60% { filter: hue-rotate(180deg); }
+  100% { transform: scale(1); opacity: 1; filter: hue-rotate(0deg); }
+}
+
+/* Ripple — expanding ring effect */
+.message-effect-ripple {
+  animation: ripple-in calc(0.6s / var(--animation-speed)) ease-out;
+  position: relative;
+}
+
+@keyframes ripple-in {
+  0% { transform: scale(0.9); opacity: 0; box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); }
+  100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
 }
 
 /* ==================== REACTION STYLES ==================== */

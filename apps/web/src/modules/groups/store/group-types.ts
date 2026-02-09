@@ -55,6 +55,8 @@ export interface Member {
   id: string;
   userId: string;
   nickname: string | null;
+  notifications?: 'all' | 'mentions' | 'none';
+  suppressEveryone?: boolean;
   user: {
     id: string;
     username: string;
@@ -108,6 +110,7 @@ export interface GroupState {
   isLoadingMessages: boolean;
   hasMoreMessages: Record<string, boolean>;
   typingUsers: Record<string, string[]>;
+  justJoinedGroupName: string | null;
 
   // Actions
   fetchGroups: () => Promise<void>;
@@ -134,4 +137,5 @@ export interface GroupState {
     groupId: string,
     options?: { maxUses?: number; expiresIn?: number }
   ) => Promise<{ code: string; expiresAt: string }>;
+  clearJoinCelebration: () => void;
 }

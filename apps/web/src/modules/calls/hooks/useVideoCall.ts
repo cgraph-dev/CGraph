@@ -34,6 +34,8 @@ export function useVideoCall({
     endCall: endWebRTCCall,
     toggleMute,
     toggleVideo,
+    startScreenShare,
+    stopScreenShare,
     isCallActive,
     isConnecting,
   } = useWebRTC({
@@ -119,6 +121,14 @@ export function useVideoCall({
     setIsFullscreen((prev) => !prev);
   }, []);
 
+  const handleToggleScreenShare = useCallback(async () => {
+    if (callState.isScreenSharing) {
+      await stopScreenShare();
+    } else {
+      await startScreenShare();
+    }
+  }, [callState.isScreenSharing, startScreenShare, stopScreenShare]);
+
   return {
     callState,
     localStream,
@@ -133,5 +143,6 @@ export function useVideoCall({
     handleToggleMute,
     handleToggleVideo,
     handleToggleFullscreen,
+    handleToggleScreenShare,
   };
 }

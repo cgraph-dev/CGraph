@@ -13,17 +13,22 @@ defmodule CGraph.Forums.Moderation do
   Gets the moderation queue for a forum.
   """
   def get_mod_queue(forum, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
     status = Keyword.get(opts, :status, "pending")
     
-    from(p in Post,
+    query = from(p in Post,
       where: p.forum_id == ^forum.id and p.is_flagged == true,
       where: p.moderation_status == ^status,
-      order_by: [desc: p.flagged_at],
       preload: [:author]
     )
-    |> Repo.paginate(page: page, page_size: per_page)
+
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :flagged_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
+
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
   
   @doc """

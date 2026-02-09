@@ -1,4 +1,4 @@
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, LayoutGroup } from 'framer-motion';
 import { ChannelItem } from './ChannelItem';
 import { CategorySection } from './ChannelCategory';
 import { CreateChannelModal } from './CreateChannelModal';
@@ -38,6 +38,7 @@ export function ChannelList({ className = '' }: ChannelListProps) {
   }
 
   return (
+    <LayoutGroup>
     <div className={`space-y-1 py-2 ${className}`}>
       {/* Uncategorized channels */}
       {uncategorizedChannels.length > 0 && (
@@ -71,6 +72,7 @@ export function ChannelList({ className = '' }: ChannelListProps) {
         )}
       </AnimatePresence>
     </div>
+    </LayoutGroup>
   );
 }
 

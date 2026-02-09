@@ -39,32 +39,21 @@ defmodule CGraph.Gamification.Events do
   List events with pagination and filtering.
   """
   def list_events_paginated(filters \\ %{}, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    
-    base_query = from(e in SeasonalEvent, order_by: [desc: e.starts_at])
+    base_query = from(e in SeasonalEvent)
     
     query = base_query
     |> filter_by_status(filters[:status])
     |> filter_by_type(filters[:event_type])
     |> filter_by_active(Keyword.get(opts, :include_inactive, false))
-    
-    total = Repo.aggregate(query, :count, :id)
-    total_pages = max(1, ceil(total / per_page))
-    
-    events = query
-    |> limit(^per_page)
-    |> offset(^((page - 1) * per_page))
-    |> Repo.all()
-    
-    pagination = %{
-      page: page,
-      per_page: per_page,
-      total: total,
-      total_pages: total_pages
-    }
-    
-    {events, pagination}
+
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :starts_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
+
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
   
   defp filter_by_status(query, nil), do: query

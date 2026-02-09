@@ -159,4 +159,105 @@ defmodule CgraphWeb.API.V1.MessageControllerTest do
       assert json_response(conn, 200)
     end
   end
+
+  describe "sender_data customization fields" do
+    setup %{conn: conn} do
+      user = user_fixture()
+      other_user = user_fixture()
+
+      # Create customization for other_user (the sender)
+      {:ok, _customization} =
+        CGraph.Customizations.update_user_customizations(other_user.id, %{
+          title_id: "legend",
+          bubble_style: "neon",
+          bubble_color: "#ff00ff",
+          chat_theme: "midnight",
+          entrance_animation: "slide_up",
+          glass_effect: true,
+          text_color: "#ffffff",
+          font_family: "monospace"
+        })
+
+      %{conversation: conversation} = conversation_fixture(user, other_user)
+      _message = message_fixture(conversation, other_user, %{content: "Customized message"})
+
+      conn = log_in_user(conn, user)
+      %{conn: conn, conversation: conversation, sender: other_user}
+    end
+
+    test "includes equippedTitleId in sender data", %{conn: conn, conversation: conversation} do
+      conn = get(conn, ~p"/api/v1/conversations/#{conversation.id}/messages")
+
+      assert %{"data" => messages} = json_response(conn, 200)
+      msg = Enum.find(messages, &(&1["content"] == "Customized message"))
+      assert msg["sender"]["equippedTitleId"] == "legend"
+    end
+
+    test "includes bubbleStyle in sender data", %{conn: conn, conversation: conversation} do
+      conn = get(conn, ~p"/api/v1/conversations/#{conversation.id}/messages")
+
+      assert %{"data" => messages} = json_response(conn, 200)
+      msg = Enum.find(messages, &(&1["content"] == "Customized message"))
+      assert msg["sender"]["bubbleStyle"] == "neon"
+    end
+
+    test "includes chatTheme in sender data", %{conn: conn, conversation: conversation} do
+      conn = get(conn, ~p"/api/v1/conversations/#{conversation.id}/messages")
+
+      assert %{"data" => messages} = json_response(conn, 200)
+      msg = Enum.find(messages, &(&1["content"] == "Customized message"))
+      assert msg["sender"]["chatTheme"] == "midnight"
+    end
+
+    test "includes all customization fields in sender data", %{conn: conn, conversation: conversation} do
+      conn = get(conn, ~p"/api/v1/conversations/#{conversation.id}/messages")
+
+      assert %{"data" => messages} = json_response(conn, 200)
+      msg = Enum.find(messages, &(&1["content"] == "Customized message"))
+      sender = msg["sender"]
+
+      # Verify all customization fields are present and correct
+      assert sender["equippedTitleId"] == "legend"
+      assert sender["bubbleStyle"] == "neon"
+      assert sender["bubbleColor"] == "#ff00ff"
+      assert sender["chatTheme"] == "midnight"
+      assert sender["entranceAnimation"] == "slide_up"
+      assert sender["glassEffect"] == true
+      assert sender["textColor"] == "#ffffff"
+      assert sender["fontFamily"] == "monospace"
+    end
+
+    test "sender data includes base fields alongside customization", %{conn: conn, conversation: conversation, sender: sender} do
+      conn = get(conn, ~p"/api/v1/conversations/#{conversation.id}/messages")
+
+      assert %{"data" => messages} = json_response(conn, 200)
+      msg = Enum.find(messages, &(&1["content"] == "Customized message"))
+      sender_data = msg["sender"]
+
+      # Base fields should always be present
+      assert sender_data["id"] == sender.id
+      assert sender_data["username"] == sender.username
+      assert sender_data["displayName"] == sender.display_name
+      assert is_binary(sender_data["status"])
+    end
+
+    test "sender without customization returns base fields only", %{conn: conn} do
+      # Create a fresh user without customization
+      fresh_user = user_fixture()
+      other = user_fixture()
+      %{conversation: conv} = conversation_fixture(fresh_user, other)
+      _msg = message_fixture(conv, fresh_user, %{content: "Plain message"})
+
+      conn = log_in_user(build_conn(), other)
+      conn = get(conn, ~p"/api/v1/conversations/#{conv.id}/messages")
+
+      assert %{"data" => messages} = json_response(conn, 200)
+      msg = Enum.find(messages, &(&1["content"] == "Plain message"))
+      sender_data = msg["sender"]
+
+      # Base fields present
+      assert sender_data["id"] == fresh_user.id
+      assert sender_data["username"] == fresh_user.username
+    end
+  end
 end

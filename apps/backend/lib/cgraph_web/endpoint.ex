@@ -55,6 +55,8 @@ defmodule CGraphWeb.Endpoint do
 
   plug Plug.RequestId
   plug CGraphWeb.Plugs.CorrelationId
+  plug CGraphWeb.Plugs.TraceContext
+  plug CGraphWeb.Plugs.GeoRouter
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
   # Cache raw body for webhook signature verification (must be before Plug.Parsers)

@@ -1,4 +1,28 @@
+import { motion } from 'framer-motion';
+import { staggerConfigs } from '@/lib/animation-presets/presets';
 import { ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+
+const containerVariants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: staggerConfigs.standard.staggerChildren },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
+};
+
+const errorIconVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  show: {
+    opacity: 1,
+    scale: 1,
+    x: [0, -5, 5, -3, 3, 0],
+    transition: { x: { duration: 0.4, delay: 0.3 }, scale: { duration: 0.3 } },
+  },
+};
 
 interface ErrorStateProps {
   title?: string;
@@ -18,27 +42,33 @@ export default function ErrorState({
   className = '',
 }: ErrorStateProps) {
   return (
-    <div
+    <motion.div
       role="alert"
       aria-live="polite"
       className={`flex flex-col items-center justify-center py-12 px-4 text-center ${className}`}
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
     >
-      <div className="flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 mb-4">
+      <motion.div variants={errorIconVariants} className="flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 mb-4">
         {icon || <ExclamationTriangleIcon className="h-8 w-8 text-red-500" />}
-      </div>
-      <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-      <p className="text-gray-400 text-sm max-w-md mb-6">{message}</p>
+      </motion.div>
+      <motion.h3 variants={itemVariants} className="text-lg font-semibold text-white mb-2">{title}</motion.h3>
+      <motion.p variants={itemVariants} className="text-gray-400 text-sm max-w-md mb-6">{message}</motion.p>
       {onRetry && (
-        <button
+        <motion.button
+          variants={itemVariants}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.97 }}
           onClick={onRetry}
           className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-900"
           aria-label={retryLabel}
         >
           <ArrowPathIcon className="h-4 w-4" />
           <span>{retryLabel}</span>
-        </button>
+        </motion.button>
       )}
-    </div>
+    </motion.div>
   );
 }
 

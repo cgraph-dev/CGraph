@@ -17,6 +17,7 @@ import { useAuthStore } from '@/modules/auth/store';
 import { useAvatarBorderStore } from '@/modules/gamification/store';
 import { getBorderById } from '@/data/avatar-borders';
 import { AvatarBorderRenderer } from '@/modules/social/components/avatar/AvatarBorderRenderer';
+import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
 import {
   MAX_MUTUAL_FRIENDS_DISPLAY,
   MAX_BADGES_DISPLAY,
@@ -51,8 +52,15 @@ export const FullProfileCard = memo(function FullProfileCard({
         <XMarkIcon className="h-5 w-5" />
       </button>
 
-      {/* Banner Background */}
-      <div className="h-32 rounded-t-2xl bg-gradient-to-br from-primary-500/20 via-purple-500/20 to-pink-500/20" />
+      {/* Banner Background — uses profile theme CSS variables for own profile */}
+      <div
+        className="h-32 rounded-t-2xl"
+        style={{
+          background: isOwnProfile
+            ? `linear-gradient(to bottom right, color-mix(in srgb, var(--profile-primary, #9333ea) 20%, transparent), color-mix(in srgb, var(--profile-secondary, #a855f7) 20%, transparent), color-mix(in srgb, var(--profile-accent, #c084fc) 20%, transparent))`
+            : 'linear-gradient(to bottom right, rgba(147,51,234,0.2), rgba(168,85,247,0.2), rgba(192,132,252,0.2))',
+        }}
+      />
 
       {/* Profile Content */}
       <div className="px-6 pb-6">
@@ -73,8 +81,16 @@ export const FullProfileCard = memo(function FullProfileCard({
           </div>
 
           <div className="mt-12 flex-1">
-            <h2 className="text-2xl font-bold text-white">{user.displayName}</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-bold text-white">{user.displayName}</h2>
+              {user.equippedTitle && (
+                <TitleBadge title={user.equippedTitle.id} size="sm" animated showTooltip />
+              )}
+            </div>
             <p className="text-sm text-white/60">@{user.username}</p>
+            {user.pronouns && (
+              <p className="text-xs text-white/40">{user.pronouns}</p>
+            )}
           </div>
         </div>
 

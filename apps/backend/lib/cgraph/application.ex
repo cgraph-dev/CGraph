@@ -31,10 +31,16 @@ defmodule CGraph.Application do
       # Start the Ecto repository (CRITICAL)
       CGraph.Repo,
 
+      # Start the read replica repository (falls back to primary if no replica)
+      CGraph.ReadRepo,
+
       # Start the PubSub system
       {Phoenix.PubSub, name: CGraph.PubSub},
 
       # === SUPERVISION HIERARCHY ===
+
+      # 0. OpenTelemetry distributed tracing (before other services)
+      {Task, fn -> CGraph.Telemetry.OpenTelemetry.setup() end},
 
       # 1. Caching Layer
       CGraph.CacheSupervisor,
@@ -47,6 +53,9 @@ defmodule CGraph.Application do
 
       # Start in-app metrics collector/exporter
       CGraph.Metrics,
+
+      # 4. Database query analysis (N+1 detection, slow query logging)
+      CGraph.Telemetry.SlowQueryReporter,
 
       # Start Finch for HTTP requests (used by Swoosh, Tesla)
       {Finch, name: CGraph.Finch},
@@ -94,6 +103,9 @@ defmodule CGraph.Application do
         # Initialize tier limits cache after Repo is started
         init_tier_limits_cache()
         
+        # Warm up critical caches on deploy
+        warm_up_caches()
+
         {:ok, pid}
 
       {:error, reason} ->
@@ -117,6 +129,57 @@ defmodule CGraph.Application do
     end)
   end
 
+  defp warm_up_caches do
+    require Logger
+    # Warm up critical caches on startup to avoid thundering herd
+    # Runs in a separate process to not block application startup
+    spawn(fn ->
+      Process.sleep(2000)  # Wait for all services to initialize
+
+      try do
+        Logger.info("[Application] Starting cache warm-up...")
+        start = System.monotonic_time(:millisecond)
+
+        # Warm up top active users (most frequently accessed)
+        warm_user_cache()
+
+        duration = System.monotonic_time(:millisecond) - start
+        Logger.info("[Application] Cache warm-up completed in #{duration}ms")
+      rescue
+        e -> Logger.warning("[Application] Cache warm-up failed: #{inspect(e)}")
+      end
+    end)
+  end
+
+  defp warm_user_cache do
+    require Logger
+
+    try do
+      import Ecto.Query
+
+      # Pre-load top 1000 most recently active users
+      users = CGraph.Accounts.User
+        |> where([u], not is_nil(u.last_login_at))
+        |> order_by([u], desc: u.last_login_at)
+        |> limit(1000)
+        |> select([u], %{id: u.id, username: u.username})
+        |> CGraph.Repo.all()
+
+      items = Enum.map(users, fn user ->
+        {"user:#{user.id}:basic", fn ->
+          CGraph.Repo.get(CGraph.Accounts.User, user.id)
+        end}
+      end)
+
+      if length(items) > 0 do
+        CGraph.Cache.warm_up(items, concurrency: 10)
+        Logger.info("[Application] Warmed #{length(items)} user cache entries")
+      end
+    rescue
+      e -> Logger.warning("[Application] User cache warm-up failed: #{inspect(e)}")
+    end
+  end
+
   defp redis_available? do
     case System.get_env("REDIS_URL") do
       nil -> false
@@ -128,6 +191,39 @@ defmodule CGraph.Application do
   @impl true
   def config_change(changed, _new, removed) do
     CGraphWeb.Endpoint.config_change(changed, removed)
+    :ok
+  end
+
+  @impl true
+  def prep_stop(_state) do
+    require Logger
+    Logger.info("[Application] SIGTERM received — starting graceful shutdown...")
+
+    # 1. Mark as draining (readiness check returns 503)
+    Application.put_env(:cgraph, :draining, true)
+
+    # 2. Broadcast server_restart to all WebSocket clients
+    #    Clients will auto-reconnect after 5s to another instance
+    Phoenix.PubSub.broadcast(CGraph.PubSub, "system:events", {:server_restart, %{
+      message: "Server is restarting, you will be reconnected shortly.",
+      reconnect_after_ms: 5000
+    }})
+
+    # 3. Drain Oban queues (finish in-progress jobs, don't start new ones)
+    try do
+      Logger.info("[Application] Draining Oban queues...")
+      Oban.drain_queue(queue: :default, with_safety: true)
+      Oban.drain_queue(queue: :notifications, with_safety: true)
+      Oban.drain_queue(queue: :mailers, with_safety: true)
+    rescue
+      e -> Logger.warning("[Application] Oban drain failed: #{inspect(e)}")
+    end
+
+    # 4. Wait for in-flight requests to complete (max 25s, leaving 5s buffer)
+    Logger.info("[Application] Waiting for in-flight requests to complete...")
+    Process.sleep(5_000)
+
+    Logger.info("[Application] Graceful shutdown complete")
     :ok
   end
 

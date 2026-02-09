@@ -16,8 +16,21 @@
  * @module modules/chat/components/conversation-list
  */
 
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { BookmarkIcon as PinIcon } from '@heroicons/react/24/outline';
+import { staggerConfigs } from '@/lib/animation-presets/presets';
+
+const listContainer = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: staggerConfigs.fast.staggerChildren },
+  },
+};
+
+const listItem = {
+  hidden: { opacity: 0, x: -12 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.2 } },
+};
 import { useChatStore } from '@/modules/chat/store';
 import { useAuthStore } from '@/modules/auth/store';
 import type { ConversationListProps } from './types';
@@ -63,15 +76,18 @@ export function ConversationList({ className = '' }: ConversationListProps) {
               <PinIcon className="h-3 w-3" />
               Pinned
             </div>
-            {pinnedConversations.map((conv) => (
-              <ConversationItem
-                key={conv.id}
-                conversation={conv}
-                currentUserId={user?.id}
-                typingUsers={typingUsers[conv.id] || []}
-                onClick={() => handleConversationClick(conv)}
-              />
-            ))}
+            <motion.div variants={listContainer} initial="hidden" animate="show">
+              {pinnedConversations.map((conv) => (
+                <motion.div key={conv.id} variants={listItem}>
+                  <ConversationItem
+                    conversation={conv}
+                    currentUserId={user?.id}
+                    typingUsers={typingUsers[conv.id] || []}
+                    onClick={() => handleConversationClick(conv)}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         )}
 
@@ -83,15 +99,18 @@ export function ConversationList({ className = '' }: ConversationListProps) {
                 All Messages
               </div>
             )}
-            {regularConversations.map((conv) => (
-              <ConversationItem
-                key={conv.id}
-                conversation={conv}
-                currentUserId={user?.id}
-                typingUsers={typingUsers[conv.id] || []}
-                onClick={() => handleConversationClick(conv)}
-              />
-            ))}
+            <motion.div variants={listContainer} initial="hidden" animate="show">
+              {regularConversations.map((conv) => (
+                <motion.div key={conv.id} variants={listItem}>
+                  <ConversationItem
+                    conversation={conv}
+                    currentUserId={user?.id}
+                    typingUsers={typingUsers[conv.id] || []}
+                    onClick={() => handleConversationClick(conv)}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         )}
 

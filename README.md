@@ -14,8 +14,8 @@
 
 **Current version:** 0.9.11 (February 2026)
 
-[🌐 Website](https://cgraph.app) · [📚 Documentation](https://docs.cgraph.app) ·
-[🔌 API Reference](https://api.cgraph.app/docs)
+[🌐 Website](https://cgraph.org) · [📚 Documentation](https://docs.cgraph.org) ·
+[🔌 API Reference](https://api.cgraph.org/docs)
 
 </div>
 
@@ -24,7 +24,7 @@
 ## ⚠️ Proprietary Software
 
 CGraph is **proprietary software**. Self-hosting is not permitted. All users must access CGraph
-through the officially hosted platform at [cgraph.app](https://cgraph.app).
+through the officially hosted platform at [cgraph.org](https://cgraph.org).
 
 See [LICENSE](LICENSE) for complete terms.
 
@@ -138,11 +138,11 @@ rich forums, end-to-end encryption, and gamification—all in one seamless exper
 
 ## Getting Started
 
-Visit **[cgraph.app](https://cgraph.app)** to create your account and start using CGraph.
+Visit **[cgraph.org](https://cgraph.org)** to create your account and start using CGraph.
 
 ### Web App
 
-Access CGraph directly in your browser at [app.cgraph.app](https://app.cgraph.app).
+Access CGraph directly in your browser at [app.cgraph.org](https://app.cgraph.org).
 
 ### Mobile Apps
 
@@ -152,11 +152,11 @@ Access CGraph directly in your browser at [app.cgraph.app](https://app.cgraph.ap
 ### API Access
 
 For developers, CGraph provides a public API. See our
-[API Documentation](https://api.cgraph.app/docs).
+[API Documentation](https://api.cgraph.org/docs).
 
 ```bash
 # Example: Get current user
-curl -H "Authorization: Bearer YOUR_TOKEN" https://api.cgraph.app/v1/me
+curl -H "Authorization: Bearer YOUR_TOKEN" https://api.cgraph.org/v1/me
 ```
 
 ---
@@ -171,7 +171,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN" https://api.cgraph.app/v1/me
 | **Business**   | $19.99/mo  | Unlimited forums/groups, API access, analytics, 1GB   |
 | **Enterprise** | Custom     | SSO/SAML, dedicated support, SLA, custom integrations |
 
-Visit [cgraph.app/pricing](https://cgraph.app/pricing) for full details.
+Visit [cgraph.org/pricing](https://cgraph.org/pricing) for full details.
 
 ---
 
@@ -245,23 +245,23 @@ See [CLAUDE.md](CLAUDE.md) for detailed architecture documentation.
 
 ## Support
 
-- **Help Center**: [help.cgraph.app](https://help.cgraph.app)
-- **Email**: support@cgraph.app
-- **Status**: [status.cgraph.app](https://status.cgraph.app)
+- **Help Center**: [help.cgraph.org](https://help.cgraph.org)
+- **Email**: hello@cgraph.org
+- **Status**: [status.cgraph.org](https://status.cgraph.org)
 
 ---
 
 ## Legal
 
-- [Terms of Service](https://cgraph.app/terms)
-- [Privacy Policy](https://cgraph.app/privacy)
+- [Terms of Service](https://cgraph.org/terms)
+- [Privacy Policy](https://cgraph.org/privacy)
 - [License](LICENSE)
 
 ---
 
 <div align="center">
 
-**[cgraph.app](https://cgraph.app)**
+**[cgraph.org](https://cgraph.org)**
 
 © 2025-2026 CGraph. All Rights Reserved.
 

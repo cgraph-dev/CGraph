@@ -1,0 +1,25 @@
+{
+  "name": "@cgraph/api-client",
+  "version": "0.1.0",
+  "description": "Typed HTTP API client for CGraph platform — shared between web and mobile",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./endpoints/*": "./src/endpoints/*"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@cgraph/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  }
+}

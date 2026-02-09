@@ -17,6 +17,13 @@ type Set = (
 ) => void;
 type Get = () => ChatState;
 
+/**
+ * Maximum number of messages kept in memory per conversation.
+ * When exceeded, the oldest messages are pruned from the front of the array.
+ * Users can still fetch older messages via "Load more" (cursor-based pagination).
+ */
+const MAX_MESSAGES_PER_CONVERSATION = 500;
+
 /** Create operations actions for the chat store. */
 export function createOperationsActions(set: Set, get: Get) {
   return {
@@ -74,6 +81,20 @@ export function createOperationsActions(set: Set, get: Get) {
           const newIdSet = new Set(idSet);
           newIdSet.add(message.id);
 
+          // Append the new message
+          let updatedMessages = [...conversationMessages, message];
+
+          // Prune oldest messages if we exceed the cap
+          if (updatedMessages.length > MAX_MESSAGES_PER_CONVERSATION) {
+            const pruneCount = updatedMessages.length - MAX_MESSAGES_PER_CONVERSATION;
+            const pruned = updatedMessages.slice(0, pruneCount);
+            updatedMessages = updatedMessages.slice(pruneCount);
+            // Remove pruned IDs from the dedup set
+            for (const p of pruned) {
+              newIdSet.delete(p.id);
+            }
+          }
+
           // Only update lastMessage if this is the newest message
           const shouldUpdateLastMessage =
             !state.conversations.find((c) => c.id === message.conversationId)?.lastMessage ||
@@ -86,7 +107,7 @@ export function createOperationsActions(set: Set, get: Get) {
           return {
             messages: {
               ...state.messages,
-              [message.conversationId]: [...conversationMessages, message],
+              [message.conversationId]: updatedMessages,
             },
             messageIdSets: {
               ...state.messageIdSets,

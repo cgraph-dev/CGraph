@@ -211,15 +211,18 @@ defmodule CGraph.Gamification do
   Get coin transaction history for a user.
   """
   def list_coin_transactions(user_id, opts \\ []) do
-    limit = Keyword.get(opts, :limit, 50)
-    offset = Keyword.get(opts, :offset, 0)
+    query =
+      CoinTransaction
+      |> where([t], t.user_id == ^user_id)
 
-    CoinTransaction
-    |> where([t], t.user_id == ^user_id)
-    |> order_by([t], desc: t.inserted_at)
-    |> limit(^limit)
-    |> offset(^offset)
-    |> Repo.all()
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 50
+    )
+
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   # ==================== STREAK MANAGEMENT ====================

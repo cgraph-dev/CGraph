@@ -67,6 +67,35 @@ export const PARTICLE_COUNT = 8;
 export const PARTICLE_DURATION_MS = 600;
 
 // =============================================================================
+// SUPER REACTION CONFIG (premium feature)
+// =============================================================================
+
+export const SUPER_PARTICLE_COUNT = 14;
+export const SUPER_PARTICLE_DURATION_MS = 1000;
+export const SUPER_PARTICLE_DISTANCE = 80;
+
+export const SUPER_BOUNCE_ANIMATION = {
+  scale: [1, 1.8, 0.7, 1.3, 0.95, 1.1, 1],
+  rotateZ: [0, -20, 20, -10, 10, -3, 0],
+  y: [0, -25, 0],
+  transition: {
+    duration: 0.8,
+    times: [0, 0.15, 0.35, 0.5, 0.65, 0.8, 1],
+    ease: 'easeInOut' as const,
+  },
+};
+
+export const SUPER_GLOW_BURST_ANIMATION = {
+  scale: [0, 3, 0],
+  opacity: [0, 0.8, 0],
+};
+
+export const SUPER_GLOW_BURST_TRANSITION = {
+  duration: 0.7,
+  ease: 'easeOut' as const,
+} as const;
+
+// =============================================================================
 // QUICK REACTIONS (used by ReactionPicker)
 // =============================================================================
 

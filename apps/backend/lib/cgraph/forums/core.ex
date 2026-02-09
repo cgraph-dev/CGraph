@@ -13,19 +13,22 @@ defmodule CGraph.Forums.Core do
   Lists all forums with optional filters.
   """
   def list_forums(opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    
     query =
       from(f in Forum,
         where: f.is_public == true,
-        order_by: [desc: f.member_count, desc: f.inserted_at],
         preload: [:owner]
       )
     
-    query
-    |> maybe_filter_by_category(opts[:category_id])
-    |> Repo.paginate(page: page, page_size: per_page)
+    query = query |> maybe_filter_by_category(opts[:category_id])
+
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :member_count,
+      sort_direction: :desc,
+      default_limit: 20
+    )
+
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
   
   @doc """

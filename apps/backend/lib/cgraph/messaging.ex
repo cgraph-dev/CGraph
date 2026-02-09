@@ -97,7 +97,7 @@ defmodule CGraph.Messaging do
     query = from m in Message,
       where: m.conversation_id == ^conversation.id,
       order_by: [desc: m.inserted_at],
-      preload: [:sender, [reactions: :user], [reply_to: :sender]]
+      preload: [[sender: :customization], [reactions: :user], [reply_to: [sender: :customization]]]
 
     query = if before_id do
       from m in query, where: m.id < ^before_id
@@ -130,7 +130,7 @@ defmodule CGraph.Messaging do
     query = from m in Message,
       where: m.id == ^message_id,
       where: m.conversation_id == ^conversation.id,
-      preload: [:sender, [reactions: :user], [reply_to: :sender]]
+      preload: [[sender: :customization], [reactions: :user], [reply_to: [sender: :customization]]]
 
     case Repo.one(query) do
       nil -> {:error, :not_found}
@@ -169,7 +169,7 @@ defmodule CGraph.Messaging do
     if client_id do
       case Repo.get_by(Message, conversation_id: conversation_id, client_message_id: client_id) do
         nil -> :not_found
-        message -> {:ok, Repo.preload(message, [:sender, :reactions, [reply_to: :sender]])}
+        message -> {:ok, Repo.preload(message, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])}
       end
     else
       :not_found
@@ -194,7 +194,7 @@ defmodule CGraph.Messaging do
         # to ensure proper serialization and consistent camelCase format for WebSocket clients.
         # Do not broadcast here to avoid duplicate messages.
 
-        {:ok, Repo.preload(message, [:sender, :reactions, [reply_to: :sender]])}
+        {:ok, Repo.preload(message, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])}
 
       error -> error
     end
@@ -368,10 +368,8 @@ defmodule CGraph.Messaging do
 
   @doc """
   Add a reaction to a message.
-  Limit: 1 reaction per user per message. If user already has a different reaction,
-  it will be replaced with the new one.
-  Returns {:ok, reaction, replaced_emoji} on success, {:error, :already_exists} if same emoji.
-  replaced_emoji is nil if no reaction was replaced.
+  Allows multiple different emoji reactions per user per message (Discord/Telegram pattern).
+  Returns {:ok, reaction} on success, {:error, :already_exists} if same emoji already used.
   """
   def add_reaction(user, message, emoji) do
     # Check if already reacted with this exact emoji
@@ -384,22 +382,7 @@ defmodule CGraph.Messaging do
     if existing_same do
       {:error, :already_exists}
     else
-      # Check if user has any other reaction on this message (limit 1 per user)
-      existing_other = Repo.get_by(Reaction,
-        user_id: user.id,
-        message_id: message.id
-      )
-
-      # If user has a different reaction, remove it first
-      replaced_emoji = if existing_other do
-        old_emoji = existing_other.emoji
-        Repo.delete(existing_other)
-        old_emoji
-      else
-        nil
-      end
-
-      # Add the new reaction
+      # Allow multiple unique emoji per user per message
       case %Reaction{}
         |> Reaction.changeset(%{
           user_id: user.id,
@@ -407,7 +390,7 @@ defmodule CGraph.Messaging do
           emoji: emoji
         })
         |> Repo.insert() do
-        {:ok, reaction} -> {:ok, reaction, replaced_emoji}
+        {:ok, reaction} -> {:ok, reaction, nil}
         {:error, changeset} -> {:error, changeset}
       end
     end
@@ -538,7 +521,7 @@ defmodule CGraph.Messaging do
     |> Message.changeset(attrs)
     |> Repo.insert()
     |> case do
-      {:ok, message} -> {:ok, Repo.preload(message, [:sender, :reactions])}
+      {:ok, message} -> {:ok, Repo.preload(message, [[sender: :customization], :reactions])}
       error -> error
     end
   end
@@ -549,7 +532,7 @@ defmodule CGraph.Messaging do
   def get_message(message_id) when is_binary(message_id) do
     case Repo.get(Message, message_id) do
       nil -> {:error, :not_found}
-      message -> {:ok, Repo.preload(message, [:sender, :reactions])}
+      message -> {:ok, Repo.preload(message, [[sender: :customization], :reactions])}
     end
   end
 
@@ -626,34 +609,21 @@ defmodule CGraph.Messaging do
   Returns messages with schedule_status = 'scheduled', ordered by scheduled_at.
   """
   def list_scheduled_messages(conversation, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 50)
-    offset = (page - 1) * per_page
-
     query =
       from m in Message,
         where: m.conversation_id == ^conversation.id,
         where: m.schedule_status == "scheduled",
         where: not is_nil(m.scheduled_at),
         where: is_nil(m.deleted_at),
-        order_by: [asc: m.scheduled_at],
-        limit: ^per_page,
-        offset: ^offset,
         preload: [:sender]
 
-    messages = Repo.all(query)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :scheduled_at,
+      sort_direction: :asc
+    )
 
-    count_query =
-      from m in Message,
-        where: m.conversation_id == ^conversation.id,
-        where: m.schedule_status == "scheduled",
-        where: not is_nil(m.scheduled_at),
-        where: is_nil(m.deleted_at),
-        select: count(m.id)
-
-    total = Repo.one(count_query) || 0
-
-    {messages, total}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """

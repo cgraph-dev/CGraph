@@ -11,13 +11,17 @@ defmodule CGraph.Gamification.Marketplace do
 
   # Listings
   def list_listings(opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    query = MarketplaceItem |> order_by([desc: :listed_at])
-    total = Repo.aggregate(query, :count, :id)
-    listings = query |> limit(^per_page) |> offset(^((page - 1) * per_page)) |> Repo.all()
-    pagination = %{page: page, per_page: per_page, total: total, total_pages: max(1, ceil(total / per_page))}
-    {:ok, listings, pagination}
+    query = MarketplaceItem
+
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :listed_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
+
+    {listings, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
+    {:ok, listings, page_info}
   end
   def get_listing(id) do
     case Repo.get(MarketplaceItem, id) do

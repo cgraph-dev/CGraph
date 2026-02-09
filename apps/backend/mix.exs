@@ -108,6 +108,14 @@ defmodule CGraph.MixProject do
       {:telemetry_metrics_prometheus_core, "~> 1.2"},
       {:sentry, "~> 11.0"},
 
+      # OpenTelemetry distributed tracing
+      {:opentelemetry, "~> 1.5"},
+      {:opentelemetry_api, "~> 1.4"},
+      {:opentelemetry_exporter, "~> 1.8"},
+      {:opentelemetry_phoenix, "~> 2.0"},
+      {:opentelemetry_ecto, "~> 1.2"},
+      {:opentelemetry_oban, "~> 1.1"},
+
       # Utilities
       {:ecto_ulid, "~> 0.3"},
       {:timex, "~> 3.7"},

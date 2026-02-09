@@ -21,6 +21,7 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@cgraph/animation-constants": "workspace:^",
     "@cgraph/config": "workspace:*",
     "@cgraph/core": "workspace:*",
     "@cgraph/crypto": "workspace:*",
@@ -40,6 +41,7 @@
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.0",
+    "@sentry/react": "^10.38.0",
     "@stripe/react-stripe-js": "^3.5.0",
     "@stripe/stripe-js": "^5.5.0",
     "@tanstack/query-sync-storage-persister": "^5.90.18",

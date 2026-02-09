@@ -2,8 +2,11 @@
  * Comment Actions
  *
  * Vote buttons, reply button, and mark best answer action.
+ * Animated with Framer Motion — scale bounce on vote, floating +1/-1 indicator.
  */
 
+import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpIcon, ArrowDownIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import {
   ArrowUpIcon as ArrowUpIconSolid,
@@ -31,13 +34,25 @@ export function CommentActions({
   onReply,
   onMarkBestAnswer,
 }: CommentActionsProps) {
+  const [voteAnim, setVoteAnim] = useState<string | null>(null);
+
+  const handleVote = useCallback((value: 1 | -1) => {
+    onVote(value);
+    setVoteAnim(value === 1 ? '+1' : '-1');
+    setTimeout(() => setVoteAnim(null), 600);
+  }, [onVote]);
+
   return (
     <div className="mt-3 flex items-center gap-4">
       {/* Vote Buttons */}
-      <div className="flex items-center gap-1">
-        <button
-          onClick={() => onVote(1)}
+      <div className="relative flex items-center gap-1">
+        <motion.button
+          onClick={() => handleVote(1)}
           disabled={isVoting}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          animate={currentVote === 1 ? { scale: [1, 1.3, 1], rotate: [0, -15, 0] } : {}}
+          transition={{ type: 'spring', stiffness: 400, damping: 15 }}
           className={`rounded p-1 transition-colors ${
             currentVote === 1
               ? 'text-green-500'
@@ -50,17 +65,25 @@ export function CommentActions({
           ) : (
             <ArrowUpIcon className="h-4 w-4" />
           )}
-        </button>
-        <span
+        </motion.button>
+        <motion.span
+          key={score}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
           className={`min-w-[2ch] text-center text-sm font-medium ${
             score > 0 ? 'text-green-500' : score < 0 ? 'text-red-500' : 'text-gray-400'
           }`}
         >
           {score}
-        </span>
-        <button
-          onClick={() => onVote(-1)}
+        </motion.span>
+        <motion.button
+          onClick={() => handleVote(-1)}
           disabled={isVoting}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          animate={currentVote === -1 ? { scale: [1, 1.3, 1], rotate: [0, 15, 0] } : {}}
+          transition={{ type: 'spring', stiffness: 400, damping: 15 }}
           className={`rounded p-1 transition-colors ${
             currentVote === -1
               ? 'text-red-500'
@@ -73,26 +96,47 @@ export function CommentActions({
           ) : (
             <ArrowDownIcon className="h-4 w-4" />
           )}
-        </button>
+        </motion.button>
+
+        {/* Floating +1/-1 indicator */}
+        <AnimatePresence>
+          {voteAnim && (
+            <motion.span
+              initial={{ opacity: 1, y: 0, scale: 0.8 }}
+              animate={{ opacity: 0, y: -20, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.6, ease: 'easeOut' as const }}
+              className={`pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 text-xs font-bold ${
+                voteAnim === '+1' ? 'text-green-400' : 'text-red-400'
+              }`}
+            >
+              {voteAnim}
+            </motion.span>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Reply Button */}
-      <button
+      <motion.button
         onClick={onReply}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         className="flex items-center gap-1 rounded px-2 py-1 text-sm text-gray-400 hover:bg-dark-600 hover:text-white"
       >
         <ChatBubbleLeftIcon className="h-4 w-4" />
         Reply
-      </button>
+      </motion.button>
 
       {/* Mark Best Answer */}
       {canMarkBestAnswer && !isBestAnswer && (
-        <button
+        <motion.button
           onClick={onMarkBestAnswer}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           className="flex items-center gap-1 rounded px-2 py-1 text-sm text-gray-400 hover:bg-green-500/20 hover:text-green-400"
         >
           ✓ Mark as Best
-        </button>
+        </motion.button>
       )}
     </div>
   );

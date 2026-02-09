@@ -58,6 +58,10 @@ export interface SettingsTab {
   >;
 }
 
+export interface AuditLogTabProps {
+  groupId: string;
+}
+
 export type TabId =
   | 'overview'
   | 'roles'
@@ -65,4 +69,5 @@ export type TabId =
   | 'invites'
   | 'channels'
   | 'notifications'
+  | 'audit-log'
   | 'danger';

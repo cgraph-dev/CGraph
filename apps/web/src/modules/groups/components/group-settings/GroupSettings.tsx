@@ -23,6 +23,7 @@ import { MembersTab } from './MembersTab';
 import { InvitesTab } from './InvitesTab';
 import { ChannelsTab } from './ChannelsTab';
 import { NotificationsTab } from './NotificationsTab';
+import { AuditLogTab } from './AuditLogTab';
 import { DangerTab } from './DangerTab';
 import { ConfirmModal } from './ConfirmModal';
 import { SaveBar } from './SaveBar';
@@ -92,7 +93,9 @@ export function GroupSettings({ groupId, onClose: _onClose }: GroupSettingsProps
 
           {activeTab === 'channels' && <ChannelsTab key="channels" groupId={groupId} />}
 
-          {activeTab === 'notifications' && <NotificationsTab key="notifications" />}
+          {activeTab === 'notifications' && <NotificationsTab key="notifications" groupId={groupId} />}
+
+          {activeTab === 'audit-log' && <AuditLogTab key="audit-log" groupId={groupId} />}
 
           {activeTab === 'danger' && (
             <DangerTab

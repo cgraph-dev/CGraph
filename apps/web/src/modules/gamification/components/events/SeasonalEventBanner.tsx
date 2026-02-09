@@ -4,6 +4,7 @@ import { useSeasonalEventStore, useFeaturedEvent } from '@/modules/gamification/
 import { XMarkIcon, SparklesIcon, ClockIcon, TrophyIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
+import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
 
 const logger = createLogger('SeasonalEventBanner');
 
@@ -38,17 +39,10 @@ export default function SeasonalEventBanner({
     fetchEvents();
   }, [fetchEvents]);
 
-  // Auto-refresh time remaining every minute
-  useEffect(() => {
-    if (!featuredEvent) return;
-
-    const interval = setInterval(() => {
-      // Force re-render to update time
-      fetchEvents();
-    }, 60000); // 1 minute
-
-    return () => clearInterval(interval);
-  }, [featuredEvent, fetchEvents]);
+  // Auto-refresh time remaining — adaptive: 60s active, 240s hidden
+  useAdaptiveInterval(fetchEvents, 60_000, {
+    enabled: !!featuredEvent,
+  });
 
   if (!featuredEvent || !featuredEvent.isActive) {
     return null;

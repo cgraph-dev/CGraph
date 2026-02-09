@@ -16,6 +16,7 @@ import { VoiceMessagePlayer, RichMediaEmbed } from '../../../../components';
 import { AnimatedMessageWrapper, AnimatedReactionBubble, InlineVideoThumbnail } from '.';
 import { styles } from '../styles';
 import { getFileIcon, formatFileSize } from '../utils';
+import { MarkdownText } from '../../../../components/chat/MarkdownText';
 
 interface MessageBubbleProps {
   item: Message;
@@ -95,7 +96,7 @@ export function MessageBubble({
           {/* Message bubble with gradient for own messages */}
           {isOwnMessage ? (
             <LinearGradient
-              colors={['#22c55e', '#16a34a']}
+              colors={[colors.primary, `${colors.primary}CC`]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={[
@@ -268,18 +269,18 @@ function MessageContent({
         item.type !== 'video' &&
         item.type !== 'image' &&
         !item.content.match(/^(📷 Photo|Photo|🎥 Video|Video|📎 .+|\d+ photos?)$/) && (
-          <Text style={[styles.messageText, { color: isOwnMessage ? '#fff' : colors.text }]}>
+          <MarkdownText style={styles.messageText} color={isOwnMessage ? '#fff' : colors.text}>
             {item.content}
-          </Text>
+          </MarkdownText>
         )}
 
       {/* Show caption for media if it's not just a placeholder */}
       {item.content &&
         (item.type === 'video' || item.type === 'image') &&
         !item.content.match(/^(📷 Photo|Photo|🎥 Video|Video|\d+ photos?)$/) && (
-          <Text style={[styles.messageText, { color: isOwnMessage ? '#fff' : colors.text }]}>
+          <MarkdownText style={styles.messageText} color={isOwnMessage ? '#fff' : colors.text}>
             {item.content}
-          </Text>
+          </MarkdownText>
         )}
 
       {/* Rich Media Embeds for URLs in text messages */}

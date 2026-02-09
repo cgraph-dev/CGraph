@@ -8,14 +8,26 @@
  * @module App
  */
 
-import { useEffect, Suspense } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { PageTransition } from '@/shared/components/PageTransition';
 import { IncomingCallHandler } from '@/modules/calls/components/IncomingCallHandler';
+import { BackgroundEffectRenderer } from '@/modules/settings/components/BackgroundEffectRenderer';
 import { AuthInitializer } from '@/routes/AuthInitializer';
 import { AppRoutes } from '@/routes/AppRoutes';
+import { QuickSwitcher } from '@/shared/components/QuickSwitcher';
+import { KeyboardShortcutsModal } from '@/shared/components/KeyboardShortcutsModal';
+import { GroupJoinCelebration } from '@/modules/groups/components/GroupJoinCelebration';
+import { useGroupStore } from '@/modules/groups/store';
+import { initErrorTracking, reportWebVitals } from '@/lib/error-tracking';
 import '@/themes/theme-globals.css';
 import '@/styles/customization-effects.css';
+
+// Initialize error tracking on module load
+initErrorTracking();
+reportWebVitals();
 
 /** Scrolls to top on route navigation */
 function ScrollToTop() {
@@ -29,13 +41,40 @@ function ScrollToTop() {
 }
 
 export default function App() {
+  const [quickSwitcherOpen, setQuickSwitcherOpen] = useState(false);
+  const justJoinedGroupName = useGroupStore((s) => s.justJoinedGroupName);
+  const clearJoinCelebration = useGroupStore((s) => s.clearJoinCelebration);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setQuickSwitcherOpen((v) => !v);
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
+
   return (
     <AuthInitializer>
       <ScrollToTop />
       <IncomingCallHandler />
-      <Suspense fallback={<LoadingSpinner />}>
-        <AppRoutes />
-      </Suspense>
+      <BackgroundEffectRenderer />
+      <QuickSwitcher isOpen={quickSwitcherOpen} onClose={() => setQuickSwitcherOpen(false)} />
+      <KeyboardShortcutsModal />
+      <GroupJoinCelebration
+        groupName={justJoinedGroupName ?? ''}
+        show={!!justJoinedGroupName}
+        onComplete={clearJoinCelebration}
+      />
+      <AnimatePresence mode="wait">
+        <PageTransition>
+          <Suspense fallback={<LoadingSpinner />}>
+            <AppRoutes />
+          </Suspense>
+        </PageTransition>
+      </AnimatePresence>
     </AuthInitializer>
   );
 }

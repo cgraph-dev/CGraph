@@ -1,21 +1,65 @@
 /**
  * AnimatedReactionBubble Component
  *
- * Animated reaction bubble with bounce effects on interaction.
+ * Animated reaction bubble with spring bounce effects using Reanimated v4.
+ * Supports a "super reaction" mode with expanded particle burst.
  *
  * @module screens/messages/ConversationScreen/components
  */
 
-import React, { useRef, memo } from 'react';
-import { TouchableOpacity, Text, Animated, Easing, StyleSheet } from 'react-native';
+import React, { memo } from 'react';
+import { Pressable, Text, StyleSheet, View } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withSequence,
+  withTiming,
+  withDelay,
+  FadeIn,
+  FadeOut,
+  Easing,
+} from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
+import { SPRING_PRESETS } from '@/lib/animations/AnimationLibrary';
 import type { AnimatedReactionBubbleProps } from '../types';
+
+const SUPER_PARTICLE_COUNT = 10;
+
+/**
+ * A single burst particle that flies outward from the reaction bubble.
+ */
+function BurstParticle({ emoji, index, total }: { emoji: string; index: number; total: number }) {
+  const angle = (index / total) * Math.PI * 2;
+  const distance = 50 + Math.random() * 30;
+
+  return (
+    <Animated.Text
+      entering={FadeIn.duration(150).delay(index * 20)}
+      exiting={FadeOut.duration(200)}
+      style={[
+        styles.particle,
+        {
+          transform: [
+            { translateX: Math.cos(angle) * distance },
+            { translateY: Math.sin(angle) * distance },
+            { scale: 1.3 },
+          ],
+        },
+      ]}
+    >
+      {emoji}
+    </Animated.Text>
+  );
+}
 
 /**
  * Displays a single reaction bubble with animation effects.
  *
  * Features:
- * - Scale animation on press
+ * - Reanimated v4 spring scale on press
  * - Bounce animation for the emoji
+ * - Super reaction: particle burst (premium)
  * - Visual distinction for user's own reactions
  */
 export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
@@ -23,90 +67,102 @@ export const AnimatedReactionBubble = memo(function AnimatedReactionBubble({
   isOwnMessage,
   onPress,
   colors,
-}: AnimatedReactionBubbleProps) {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const bounceAnim = useRef(new Animated.Value(0)).current;
+  isSuperReaction,
+}: AnimatedReactionBubbleProps & { isSuperReaction?: boolean }) {
+  const scale = useSharedValue(1);
+  const emojiY = useSharedValue(0);
+  const [showBurst, setShowBurst] = React.useState(false);
+
+  const animStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const emojiStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: emojiY.value }],
+  }));
 
   const handlePress = () => {
-    // Bounce animation on tap
-    Animated.sequence([
-      Animated.spring(scaleAnim, {
-        toValue: 1.3,
-        useNativeDriver: true,
-        tension: 300,
-        friction: 5,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 200,
-        friction: 10,
-      }),
-    ]).start();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
-    // Also trigger the emoji bounce
-    Animated.sequence([
-      Animated.timing(bounceAnim, {
-        toValue: -8,
-        duration: 100,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.quad),
-      }),
-      Animated.spring(bounceAnim, {
-        toValue: 0,
-        useNativeDriver: true,
-        tension: 300,
-        friction: 8,
-      }),
-    ]).start();
+    // Bounce sequence
+    const peakScale = isSuperReaction ? 1.6 : 1.3;
+    scale.value = withSequence(
+      withSpring(peakScale, SPRING_PRESETS.bouncy),
+      withSpring(1, SPRING_PRESETS.snappy),
+    );
+
+    // Emoji vertical bounce
+    emojiY.value = withSequence(
+      withTiming(-8, { duration: 100, easing: Easing.out(Easing.quad) }),
+      withSpring(0, SPRING_PRESETS.snappy),
+    );
+
+    // Super reaction particle burst
+    if (isSuperReaction) {
+      setShowBurst(true);
+      setTimeout(() => setShowBurst(false), 800);
+    }
 
     onPress();
   };
 
   return (
-    <TouchableOpacity
-      style={[
-        styles.reactionBubble,
-        {
-          backgroundColor: reaction.hasReacted
-            ? isOwnMessage
-              ? 'rgba(255,255,255,0.25)'
-              : colors.primary + '25'
-            : isOwnMessage
-              ? 'rgba(255,255,255,0.12)'
-              : colors.surface,
-          borderColor: reaction.hasReacted ? colors.primary : 'transparent',
-          borderWidth: reaction.hasReacted ? 1.5 : 0,
-        },
-      ]}
-      onPress={handlePress}
-      activeOpacity={0.7}
-    >
-      <Animated.Text
-        style={[
-          styles.reactionEmoji,
-          {
-            transform: [{ scale: scaleAnim }, { translateY: bounceAnim }],
-          },
-        ]}
-      >
-        {reaction.emoji}
-      </Animated.Text>
-      {reaction.count > 1 && (
-        <Text
+    <View style={styles.wrapper}>
+      <Pressable onPress={handlePress}>
+        <Animated.View
           style={[
-            styles.reactionCount,
-            { color: isOwnMessage ? 'rgba(255,255,255,0.9)' : colors.text },
+            styles.reactionBubble,
+            animStyle,
+            {
+              backgroundColor: reaction.hasReacted
+                ? isOwnMessage
+                  ? 'rgba(255,255,255,0.25)'
+                  : colors.primary + '25'
+                : isOwnMessage
+                  ? 'rgba(255,255,255,0.12)'
+                  : colors.surface,
+              borderColor: reaction.hasReacted ? colors.primary : 'transparent',
+              borderWidth: reaction.hasReacted ? 1.5 : 0,
+            },
           ]}
         >
-          {reaction.count}
-        </Text>
+          <Animated.Text style={[styles.reactionEmoji, emojiStyle]}>
+            {reaction.emoji}
+          </Animated.Text>
+          {reaction.count > 1 && (
+            <Text
+              style={[
+                styles.reactionCount,
+                { color: isOwnMessage ? 'rgba(255,255,255,0.9)' : colors.text },
+              ]}
+            >
+              {reaction.count}
+            </Text>
+          )}
+        </Animated.View>
+      </Pressable>
+
+      {/* Super reaction burst particles */}
+      {showBurst && (
+        <View style={styles.burstContainer} pointerEvents="none">
+          {Array.from({ length: SUPER_PARTICLE_COUNT }).map((_, i) => (
+            <BurstParticle
+              key={i}
+              emoji={reaction.emoji}
+              index={i}
+              total={SUPER_PARTICLE_COUNT}
+            />
+          ))}
+        </View>
       )}
-    </TouchableOpacity>
+    </View>
   );
 });
 
 const styles = StyleSheet.create({
+  wrapper: {
+    position: 'relative',
+  },
   reactionBubble: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -123,6 +179,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginLeft: 2,
     fontWeight: '500',
+  },
+  burstContainer: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  particle: {
+    position: 'absolute',
+    fontSize: 14,
   },
 });
 

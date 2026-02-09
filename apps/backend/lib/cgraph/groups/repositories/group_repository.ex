@@ -64,30 +64,22 @@ defmodule CGraph.Groups.Repositories.GroupRepository do
   """
   @spec list_for_user(String.t(), keyword()) :: {list(Group.t()), map()}
   def list_for_user(user_id, opts \\ []) do
-    limit = Keyword.get(opts, :limit, 50)
-    offset = Keyword.get(opts, :offset, 0)
-
     query =
       from g in Group,
         join: m in Member,
         on: m.group_id == g.id,
         where: m.user_id == ^user_id,
         where: is_nil(m.left_at),
-        order_by: [desc: m.inserted_at],
-        preload: [:owner],
-        limit: ^limit,
-        offset: ^offset
+        preload: [:owner]
 
-    groups = Repo.all(query)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 50
+    )
 
-    total =
-      from(m in Member,
-        where: m.user_id == ^user_id and is_nil(m.left_at),
-        select: count(m.id)
-      )
-      |> Repo.one()
-
-    {groups, %{total: total, limit: limit, offset: offset}}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """
@@ -95,8 +87,6 @@ defmodule CGraph.Groups.Repositories.GroupRepository do
   """
   @spec list_discoverable(keyword()) :: {list(Group.t()), map()}
   def list_discoverable(opts \\ []) do
-    limit = Keyword.get(opts, :limit, 20)
-    offset = Keyword.get(opts, :offset, 0)
     sort = Keyword.get(opts, :sort, :popular)
 
     base_query =
@@ -105,6 +95,7 @@ defmodule CGraph.Groups.Repositories.GroupRepository do
         where: g.is_discoverable == true,
         preload: [:owner]
 
+    # Apply sort-specific ordering before pagination
     query =
       case sort do
         :popular ->
@@ -116,19 +107,23 @@ defmodule CGraph.Groups.Repositories.GroupRepository do
         _ ->
           from g in base_query, order_by: [desc: g.member_count]
       end
-      |> limit(^limit)
-      |> offset(^offset)
 
-    groups = Repo.all(query)
+    sort_field = case sort do
+      :newest -> :inserted_at
+      :name -> :name
+      _ -> :member_count
+    end
 
-    total =
-      from(g in Group,
-        where: g.is_public == true and g.is_discoverable == true,
-        select: count(g.id)
-      )
-      |> Repo.one()
+    sort_dir = if sort == :name, do: :asc, else: :desc
 
-    {groups, %{total: total, limit: limit, offset: offset}}
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: sort_field,
+      sort_direction: sort_dir,
+      default_limit: 20
+    )
+
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """

@@ -14,7 +14,7 @@ defmodule CGraph.Accounts.User do
 
   @derive {Jason.Encoder, only: [
     :id, :uid, :user_id, :username, :display_name, :email, :avatar_url, :bio,
-    :wallet_address, :is_verified, :is_premium, :status, :last_seen_at,
+    :pronouns, :wallet_address, :is_verified, :is_premium, :status, :last_seen_at,
     :inserted_at
   ]}
 
@@ -46,6 +46,7 @@ defmodule CGraph.Accounts.User do
     field :avatar_url, :string
     field :banner_url, :string
     field :bio, :string
+    field :pronouns, :string
     field :status, :string, default: "online"
     field :custom_status, :string
     field :status_message, :string
@@ -128,6 +129,7 @@ defmodule CGraph.Accounts.User do
     has_many :messages, CGraph.Messaging.Message, foreign_key: :sender_id
     has_many :posts, CGraph.Forums.Post, foreign_key: :author_id
     has_many :comments, CGraph.Forums.Comment, foreign_key: :author_id
+    has_one :customization, CGraph.Customizations.UserCustomization, foreign_key: :user_id
 
     timestamps()
   end
@@ -305,9 +307,10 @@ defmodule CGraph.Accounts.User do
   """
   def profile_changeset(user, attrs) do
     user
-    |> cast(attrs, [:display_name, :bio, :avatar_url, :banner_url, :custom_status])
+    |> cast(attrs, [:display_name, :bio, :avatar_url, :banner_url, :custom_status, :pronouns])
     |> validate_length(:bio, max: 500)
     |> validate_length(:custom_status, max: 100)
+    |> validate_length(:pronouns, max: 50)
   end
 
   @doc """
@@ -402,7 +405,7 @@ defmodule CGraph.Accounts.User do
     user
     |> cast(attrs, [
       :username, :display_name, :bio, :avatar_url, :banner_url,
-      :custom_status, :status, :is_admin, :is_verified, :is_premium, :is_profile_private
+      :custom_status, :pronouns, :status, :is_admin, :is_verified, :is_premium, :is_profile_private
     ])
     |> validate_length(:bio, max: 500)
     |> validate_length(:custom_status, max: 100)

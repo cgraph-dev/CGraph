@@ -295,6 +295,8 @@ defmodule CGraphWeb.Router do
     get "/me/sessions", UserController, :sessions
     delete "/me/sessions/:id", UserController, :revoke_session
     post "/me/export", UserController, :request_data_export
+    post "/me/delete-account", AccountDeletionController, :create
+    delete "/me/delete-account", AccountDeletionController, :delete
 
     # User Settings
     get "/settings", SettingsController, :show
@@ -363,16 +365,25 @@ defmodule CGraphWeb.Router do
       resources "/channels", ChannelController do
         resources "/messages", ChannelMessageController, only: [:index, :create]
         post "/typing", ChannelMessageController, :typing
+        resources "/permissions", PermissionOverwriteController, only: [:index, :create, :update, :delete]
+        resources "/pins", PinnedMessageController, only: [:index, :create, :delete]
       end
 
       resources "/members", GroupMemberController, only: [:index, :create, :update, :delete]
+      patch "/members/me/notifications", GroupMemberController, :update_notifications
       post "/members/:id/kick", GroupMemberController, :kick
       post "/members/:id/ban", GroupMemberController, :ban
       post "/members/:id/mute", GroupMemberController, :mute
 
       resources "/roles", RoleController
       resources "/invites", InviteController, only: [:index, :create, :delete]
+      resources "/categories", ChannelCategoryController
+      resources "/emojis", GroupEmojiController, except: [:show]
       get "/audit-log", GroupController, :audit_log
+
+      # Automod rules
+      resources "/automod/rules", AutomodController, only: [:index, :show, :create, :update, :delete]
+      patch "/automod/rules/:id/toggle", AutomodController, :toggle
     end
 
     # Join group via invite

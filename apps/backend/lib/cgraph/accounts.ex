@@ -507,27 +507,16 @@ defmodule CGraph.Accounts do
   List users with pagination.
   """
   def list_users(opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
+    query = from u in User
 
-    query = from u in User,
-      order_by: [asc: u.username]
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :username,
+      sort_direction: :asc,
+      default_limit: 20
+    )
 
-    total = Repo.aggregate(query, :count, :id)
-
-    users = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{
-      page: page,
-      per_page: per_page,
-      total: total,
-      total_pages: ceil(total / per_page)
-    }
-
-    {users, meta}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """
@@ -547,28 +536,17 @@ defmodule CGraph.Accounts do
   List top users by karma with pagination.
   """
   def list_top_users_by_karma(opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-
     query = from u in User,
-      where: u.deleted_at |> is_nil(),
-      order_by: [desc: u.karma, asc: u.username]
+      where: u.deleted_at |> is_nil()
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :karma,
+      sort_direction: :desc,
+      default_limit: 20
+    )
 
-    users = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{
-      page: page,
-      per_page: per_page,
-      total: total,
-      total_pages: ceil(total / per_page)
-    }
-
-    {users, meta}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """
@@ -808,8 +786,6 @@ defmodule CGraph.Accounts do
   List user's friends.
   """
   def list_friends(user, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 50)
     status = Keyword.get(opts, :status, "accepted")
 
     query = from f in Friendship,
@@ -817,77 +793,63 @@ defmodule CGraph.Accounts do
       where: f.status == ^status,
       preload: [:user, :friend]
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 50
+    )
 
-    friendships = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-      |> Enum.map(fn f ->
-        # Return the other user in the friendship
-        if f.user_id == user.id do
-          %{f | friend: f.friend}
-        else
-          %{f | friend: f.user}
-        end
-      end)
+    {friendships, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
 
-    meta = %{
-      page: page,
-      per_page: per_page,
-      total: total,
-      total_pages: ceil(total / per_page)
-    }
+    friendships = Enum.map(friendships, fn f ->
+      # Return the other user in the friendship
+      if f.user_id == user.id do
+        %{f | friend: f.friend}
+      else
+        %{f | friend: f.user}
+      end
+    end)
 
-    {friendships, meta}
+    {friendships, page_info}
   end
 
   @doc """
   List incoming friend requests.
   """
   def list_friend_requests(user, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-
     query = from f in Friendship,
       where: f.friend_id == ^user.id,
       where: f.status == :pending,
       preload: [:user]
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
 
-    requests = query
-      |> order_by([f], desc: f.inserted_at)
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {requests, meta}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """
   List sent friend requests.
   """
   def list_sent_friend_requests(user, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-
     query = from f in Friendship,
       where: f.user_id == ^user.id,
       where: f.status == :pending,
       preload: [:friend]
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
 
-    requests = query
-      |> order_by([f], desc: f.inserted_at)
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {requests, meta}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """
@@ -1080,25 +1042,20 @@ defmodule CGraph.Accounts do
   List blocked users.
   """
   def list_blocked_users(user, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 50)
-
     # Use atom :blocked for Ecto.Enum type
     query = from f in Friendship,
       where: f.user_id == ^user.id,
       where: f.status == :blocked,
       preload: [:friend]
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 50
+    )
 
-    # Return the friendship records with friend preloaded
-    blocks = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {blocks, meta}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """
@@ -1219,8 +1176,6 @@ defmodule CGraph.Accounts do
   Search users by username, display name, email, or UID (random 10-digit like #4829173650).
   """
   def search_users(query, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
     search_term = "%#{query}%"
 
     # Check if query is a UID format (10-digit string or legacy numeric)
@@ -1249,18 +1204,16 @@ defmodule CGraph.Accounts do
     end
 
     db_query = from u in User,
-      where: ^conditions,
-      order_by: [asc: u.username]
+      where: ^conditions
 
-    total = Repo.aggregate(db_query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :username,
+      sort_direction: :asc,
+      default_limit: 20
+    )
 
-    users = db_query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {users, meta}
+    CGraph.Pagination.paginate(db_query, pagination_opts)
   end
 
   # Parse UID query - handles formats like #4829173650 or 4829173650 (10-digit string)
@@ -1629,9 +1582,6 @@ defmodule CGraph.Accounts do
   List members with filtering and pagination.
   """
   def list_members(opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    offset = (page - 1) * per_page
     sort_by = Keyword.get(opts, :sort_by, :username)
     sort_order = Keyword.get(opts, :sort_order, :asc)
     search = Keyword.get(opts, :search)
@@ -1648,23 +1598,17 @@ defmodule CGraph.Accounts do
     base_query = apply_online_filter(base_query, online_only)
     base_query = apply_member_sort(base_query, sort_by, sort_order)
 
-    total_count = Repo.aggregate(base_query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: sort_by,
+      sort_direction: sort_order,
+      default_limit: 20
+    )
 
-    members =
-      base_query
-      |> limit(^per_page)
-      |> offset(^offset)
-      |> Repo.all()
-      |> Enum.map(&enrich_member/1)
+    {members, page_info} = CGraph.Pagination.paginate(base_query, pagination_opts)
+    members = Enum.map(members, &enrich_member/1)
 
-    pagination = %{
-      page: page,
-      per_page: per_page,
-      total_count: total_count,
-      total_pages: ceil(total_count / per_page)
-    }
-
-    {members, pagination}
+    {members, page_info}
   end
 
   defp apply_member_search(query, nil), do: query

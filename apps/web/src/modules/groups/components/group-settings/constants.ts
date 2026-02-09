@@ -10,6 +10,7 @@ import {
   LinkIcon,
   HashtagIcon,
   BellIcon,
+  ClipboardDocumentListIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline';
 import type { SettingsTab } from './types';
@@ -21,5 +22,6 @@ export const SETTINGS_TABS: SettingsTab[] = [
   { id: 'invites', label: 'Invites', icon: LinkIcon },
   { id: 'channels', label: 'Channels', icon: HashtagIcon },
   { id: 'notifications', label: 'Notifications', icon: BellIcon },
+  { id: 'audit-log', label: 'Audit Log', icon: ClipboardDocumentListIcon },
   { id: 'danger', label: 'Danger Zone', icon: ExclamationTriangleIcon },
 ];

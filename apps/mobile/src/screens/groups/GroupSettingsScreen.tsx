@@ -19,7 +19,7 @@ type Props = {
 };
 
 export default function GroupSettingsScreen({ navigation, route }: Props) {
-  const { groupId: _groupId } = route.params;
+  const { groupId } = route.params;
   const { colors } = useTheme();
   
   const settingsItems = [
@@ -31,27 +31,27 @@ export default function GroupSettingsScreen({ navigation, route }: Props) {
     {
       title: 'Roles',
       icon: 'shield-outline' as const,
-      onPress: () => {},
+      onPress: () => navigation.navigate('GroupRoles', { groupId }),
     },
     {
       title: 'Channels',
       icon: 'list-outline' as const,
-      onPress: () => {},
+      onPress: () => navigation.navigate('GroupChannels', { groupId }),
     },
     {
       title: 'Members',
       icon: 'people-outline' as const,
-      onPress: () => {},
+      onPress: () => navigation.navigate('GroupMembers', { groupId }),
     },
     {
       title: 'Invites',
       icon: 'link-outline' as const,
-      onPress: () => {},
+      onPress: () => navigation.navigate('GroupInvites', { groupId }),
     },
     {
       title: 'Moderation',
       icon: 'hammer-outline' as const,
-      onPress: () => {},
+      onPress: () => navigation.navigate('GroupModeration', { groupId }),
     },
   ];
   

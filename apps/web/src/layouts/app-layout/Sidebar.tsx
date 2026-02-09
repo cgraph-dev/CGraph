@@ -4,12 +4,14 @@
  */
 import { NavLink, Link, type Location } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { springs, staggerConfigs } from '@/lib/animation-presets/presets';
 import AnimatedLogo from '@/components/AnimatedLogo';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { getAvatarBorderId } from '@/lib/utils';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import { PresenceStatusSelector } from '@/shared/components/PresenceStatusSelector';
 import type { User } from '@/modules/auth/store';
 import type { NavItem } from './constants';
 
@@ -67,13 +69,13 @@ export default function Sidebar({
         className="relative mb-6"
         initial={{ scale: 0, rotate: -180 }}
         animate={{ scale: 1, rotate: 0 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+        transition={{ ...springs.bouncy, delay: 0.1 }}
       >
         <Link to="/" title="Back to Home">
           <motion.div
             whileHover={{ scale: 1.1, rotate: 5 }}
             whileTap={{ scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+            transition={springs.snappy}
             role="img"
             aria-label="CGraph logo - Click to go home"
           >
@@ -94,10 +96,8 @@ export default function Sidebar({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{
-                type: 'spring',
-                stiffness: 300,
-                damping: 20,
-                delay: 0.1 + index * 0.05,
+                ...springs.bouncy,
+                delay: 0.1 + index * staggerConfigs.grid.staggerChildren,
               }}
             >
               <NavLink
@@ -111,7 +111,7 @@ export default function Sidebar({
                 <motion.div
                   whileHover={{ scale: 1.08 }}
                   whileTap={{ scale: 0.95 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  transition={springs.snappy}
                   className="relative"
                 >
                   {isActive ? (
@@ -181,7 +181,7 @@ export default function Sidebar({
                       className="absolute -left-3 top-1/2 h-8 w-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary-400 to-purple-500"
                       layoutId="activeIndicator"
                       initial={false}
-                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                      transition={springs.bouncy}
                       style={{
                         boxShadow: '0 0 10px rgba(16, 185, 129, 0.8)',
                       }}
@@ -200,7 +200,7 @@ export default function Sidebar({
         <motion.div
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+          transition={springs.snappy}
         >
           <button
             onClick={() => {
@@ -237,7 +237,7 @@ export default function Sidebar({
         <motion.div
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.95 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+          transition={springs.snappy}
           className="relative"
         >
           <div
@@ -269,6 +269,9 @@ export default function Sidebar({
             transition={{ duration: 2.5, repeat: Infinity }}
           />
         </motion.div>
+
+        {/* Presence Status Selector */}
+        <PresenceStatusSelector compact />
       </div>
     </aside>
   );

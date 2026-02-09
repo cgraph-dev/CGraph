@@ -1,6 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { createLogger } from '@/lib/logger';
+import { api } from '@/lib/api';
 
 const logger = createLogger('InviteModal');
 
@@ -38,39 +39,54 @@ export const MAX_USES_OPTIONS = [
   { value: 100, label: '100 uses' },
 ];
 
-const MOCK_INVITES: Invite[] = [
-  {
-    id: '1',
-    code: 'abc123',
-    url: 'https://cgraph.app/invite/abc123',
-    maxUses: null,
-    uses: 12,
-    expiresAt: null,
-    createdBy: { id: '1', username: 'admin' },
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-  },
-];
-
-export function useInviteManager() {
+export function useInviteManager(groupId?: string) {
   const [activeTab, setActiveTab] = useState<'create' | 'manage'>('create');
   const [inviteLink, setInviteLink] = useState('');
   const [copied, setCopied] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [expiration, setExpiration] = useState<number | null>(24 * 60 * 60);
   const [maxUses, setMaxUses] = useState<number | null>(null);
-  const [invites, setInvites] = useState<Invite[]>(MOCK_INVITES);
+  const [invites, setInvites] = useState<Invite[]>([]);
+
+  // Fetch existing invites
+  useEffect(() => {
+    if (!groupId) return;
+    api.get(`/api/v1/groups/${groupId}/invites`)
+      .then((res) => {
+        const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+        setInvites(data.map((inv: Record<string, any>) => ({
+          id: inv.id,
+          code: inv.code,
+          url: inv.url || `${window.location.origin}/invite/${inv.code}`,
+          maxUses: inv.max_uses ?? null,
+          uses: inv.uses ?? 0,
+          expiresAt: inv.expires_at ?? null,
+          createdBy: {
+            id: inv.created_by?.id ?? inv.creator?.id ?? '',
+            username: inv.created_by?.username ?? inv.creator?.username ?? 'unknown',
+          },
+          createdAt: inv.created_at ?? inv.inserted_at ?? new Date().toISOString(),
+        })));
+      })
+      .catch(() => {});
+  }, [groupId]);
 
   const handleGenerateInvite = useCallback(async () => {
+    if (!groupId) return;
     setIsGenerating(true);
     try {
-      // @todo(api) Call invite creation endpoint
-      const mockCode = Math.random().toString(36).substring(2, 10);
-      const mockUrl = `https://cgraph.app/invite/${mockCode}`;
+      const res = await api.post(`/api/v1/groups/${groupId}/invites`, {
+        max_uses: maxUses,
+        expires_in: expiration,
+      });
+      const inv = res.data?.data || res.data;
+      const inviteCode = inv.code;
+      const inviteUrl = inv.url || `${window.location.origin}/invite/${inviteCode}`;
 
       const newInvite: Invite = {
-        id: Date.now().toString(),
-        code: mockCode,
-        url: mockUrl,
+        id: inv.id || Date.now().toString(),
+        code: inviteCode,
+        url: inviteUrl,
         maxUses,
         uses: 0,
         expiresAt: expiration ? new Date(Date.now() + expiration * 1000).toISOString() : null,
@@ -79,7 +95,7 @@ export function useInviteManager() {
       };
 
       setInvites([newInvite, ...invites]);
-      setInviteLink(mockUrl);
+      setInviteLink(inviteUrl);
       HapticFeedback.success();
     } catch (error) {
       logger.error('Failed to generate invite:', error);
@@ -87,7 +103,7 @@ export function useInviteManager() {
     } finally {
       setIsGenerating(false);
     }
-  }, [expiration, maxUses, invites]);
+  }, [groupId, expiration, maxUses, invites]);
 
   const handleCopyLink = useCallback(async (link: string) => {
     try {
@@ -104,9 +120,11 @@ export function useInviteManager() {
     (inviteId: string) => {
       setInvites(invites.filter((i) => i.id !== inviteId));
       HapticFeedback.warning();
-      // @todo(api) Call invite deletion endpoint
+      if (groupId) {
+        api.delete(`/api/v1/groups/${groupId}/invites/${inviteId}`).catch(() => {});
+      }
     },
-    [invites]
+    [invites, groupId]
   );
 
   const formatExpiration = (expiresAt: string | null) => {

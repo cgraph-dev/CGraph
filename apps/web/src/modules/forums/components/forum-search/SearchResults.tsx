@@ -6,6 +6,19 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { MagnifyingGlassIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { staggerConfigs } from '@/lib/animation-presets/presets';
+
+const resultContainer = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: staggerConfigs.fast.staggerChildren },
+  },
+};
+
+const resultItem = {
+  hidden: { opacity: 0, y: 8 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.18 } },
+};
 import { GlassCard } from '@/shared/components/ui';
 import { SearchResultItem } from './SearchResultItem';
 import type { SearchResult } from './types';
@@ -48,18 +61,19 @@ export function SearchResults({
             {isLoading ? (
               <LoadingState primaryColor={primaryColor} />
             ) : results.length > 0 ? (
-              <div className="divide-y divide-dark-700">
+              <motion.div className="divide-y divide-dark-700" variants={resultContainer} initial="hidden" animate="show">
                 {results.map((result, index) => (
-                  <SearchResultItem
-                    key={result.id}
-                    result={result}
-                    index={index}
-                    isSelected={index === selectedIndex}
-                    primaryColor={primaryColor}
-                    onClick={() => onResultClick(result)}
-                  />
+                  <motion.div key={result.id} variants={resultItem}>
+                    <SearchResultItem
+                      result={result}
+                      index={index}
+                      isSelected={index === selectedIndex}
+                      primaryColor={primaryColor}
+                      onClick={() => onResultClick(result)}
+                    />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             ) : query.length >= 2 ? (
               <NoResultsState query={query} />
             ) : suggestions.length > 0 ? (

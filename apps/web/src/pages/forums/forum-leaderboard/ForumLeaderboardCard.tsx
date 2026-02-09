@@ -5,7 +5,8 @@
  */
 
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -29,6 +30,15 @@ export function ForumLeaderboardCard({
   isAuthenticated,
 }: ForumLeaderboardCardProps) {
   const badge = getRankBadge(rank);
+  const [voteAnim, setVoteAnim] = useState<string | null>(null);
+
+  const handleVote = useCallback((value: 1 | -1) => {
+    if (!isAuthenticated) return;
+    HapticFeedback.light();
+    onVote(forum, value);
+    setVoteAnim(value === 1 ? '+1' : '-1');
+    setTimeout(() => setVoteAnim(null), 600);
+  }, [isAuthenticated, onVote, forum]);
 
   return (
     <GlassCard variant="crystal" className="group relative overflow-hidden">
@@ -40,17 +50,14 @@ export function ForumLeaderboardCard({
 
       <div className="relative z-10 flex">
         {/* Voting Column - Enhanced */}
-        <div className="flex w-16 flex-col items-center justify-center gap-1 bg-dark-800/50 p-2 backdrop-blur-sm">
+        <div className="relative flex w-16 flex-col items-center justify-center gap-1 bg-dark-800/50 p-2 backdrop-blur-sm">
           <motion.button
-            onClick={() => {
-              if (isAuthenticated) {
-                HapticFeedback.light();
-                onVote(forum, 1);
-              }
-            }}
+            onClick={() => handleVote(1)}
             disabled={!isAuthenticated}
             whileHover={isAuthenticated ? { scale: 1.1 } : {}}
             whileTap={isAuthenticated ? { scale: 0.9 } : {}}
+            animate={forum.userVote === 1 ? { scale: [1, 1.3, 1], rotate: [0, -15, 0] } : {}}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
             className={`rounded p-1 transition-colors ${
               forum.userVote === 1 ? 'text-orange-500' : 'text-gray-500 hover:text-orange-400'
             } ${!isAuthenticated ? 'cursor-not-allowed opacity-50' : ''}`}
@@ -83,15 +90,12 @@ export function ForumLeaderboardCard({
           </motion.span>
 
           <motion.button
-            onClick={() => {
-              if (isAuthenticated) {
-                HapticFeedback.light();
-                onVote(forum, -1);
-              }
-            }}
+            onClick={() => handleVote(-1)}
             disabled={!isAuthenticated}
             whileHover={isAuthenticated ? { scale: 1.1 } : {}}
             whileTap={isAuthenticated ? { scale: 0.9 } : {}}
+            animate={forum.userVote === -1 ? { scale: [1, 1.3, 1], rotate: [0, 15, 0] } : {}}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
             className={`rounded p-1 transition-colors ${
               forum.userVote === -1 ? 'text-blue-500' : 'text-gray-500 hover:text-blue-400'
             } ${!isAuthenticated ? 'cursor-not-allowed opacity-50' : ''}`}
@@ -107,6 +111,23 @@ export function ForumLeaderboardCard({
               <ArrowDownIcon className="h-6 w-6" />
             )}
           </motion.button>
+
+          {/* Floating +1/-1 indicator */}
+          <AnimatePresence>
+            {voteAnim && (
+              <motion.span
+                initial={{ opacity: 1, y: 0, scale: 0.8 }}
+                animate={{ opacity: 0, y: -24, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
+                className={`pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 text-xs font-bold ${
+                  voteAnim === '+1' ? 'text-orange-400' : 'text-blue-400'
+                }`}
+              >
+                {voteAnim}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Rank Badge - Enhanced */}

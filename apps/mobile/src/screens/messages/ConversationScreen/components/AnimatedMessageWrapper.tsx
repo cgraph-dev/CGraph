@@ -1,20 +1,29 @@
 /**
  * AnimatedMessageWrapper Component
  *
- * Provides smooth entrance animations for message bubbles.
+ * Provides smooth entrance animations for message bubbles
+ * using Reanimated v4 (ADR-018 compliant).
  *
  * @module screens/messages/ConversationScreen/components
  */
 
-import React, { useRef, useEffect, memo } from 'react';
-import { Animated } from 'react-native';
+import React, { memo } from 'react';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  SlideInRight,
+  SlideInLeft,
+  Layout,
+} from 'react-native-reanimated';
+import { getStaggerDelay } from '@/lib/animations/AnimationLibrary';
 import type { AnimatedMessageProps } from '../types';
 
 /**
- * Wraps message content with entrance animations.
+ * Wraps message content with Reanimated v4 entrance animations.
  *
- * Animates messages sliding in from the side (direction based on sender)
- * with fade and scale effects for smooth appearance.
+ * Own messages slide in from the right, others from the left.
+ * Uses Layout.springify() for smooth position changes when
+ * messages are inserted or deleted above.
  */
 export const AnimatedMessageWrapper = memo(function AnimatedMessageWrapper({
   children,
@@ -22,43 +31,19 @@ export const AnimatedMessageWrapper = memo(function AnimatedMessageWrapper({
   index,
   isNew,
 }: AnimatedMessageProps) {
-  const slideAnim = useRef(new Animated.Value(isNew ? 30 : 0)).current;
-  const fadeAnim = useRef(new Animated.Value(isNew ? 0 : 1)).current;
-  const scaleAnim = useRef(new Animated.Value(isNew ? 0.9 : 1)).current;
+  const delay = getStaggerDelay(index, 30);
 
-  useEffect(() => {
-    if (isNew) {
-      Animated.parallel([
-        Animated.spring(slideAnim, {
-          toValue: 0,
-          useNativeDriver: true,
-          tension: 100,
-          friction: 12,
-        }),
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
-        }),
-        Animated.spring(scaleAnim, {
-          toValue: 1,
-          useNativeDriver: true,
-          tension: 120,
-          friction: 8,
-        }),
-      ]).start();
-    }
-  }, [isNew, slideAnim, fadeAnim, scaleAnim]);
+  const entering = isNew
+    ? isOwnMessage
+      ? SlideInRight.delay(delay).springify().damping(18).stiffness(200)
+      : SlideInLeft.delay(delay).springify().damping(18).stiffness(200)
+    : FadeIn.duration(100);
 
   return (
     <Animated.View
-      style={{
-        opacity: fadeAnim,
-        transform: [
-          { translateX: isOwnMessage ? slideAnim : Animated.multiply(slideAnim, -1) },
-          { scale: scaleAnim },
-        ],
-      }}
+      entering={entering}
+      exiting={FadeOut.duration(200)}
+      layout={Layout.springify().damping(18).stiffness(200)}
     >
       {children}
     </Animated.View>

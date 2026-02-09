@@ -44,13 +44,15 @@ RUN mix release
 # Runtime stage - MUST match the Alpine version from build stage
 FROM alpine:3.20 AS runtime
 
-# Install runtime dependencies
+# Install runtime dependencies (including PgBouncer for sidecar mode)
 RUN apk add --no-cache \
     libstdc++ \
     openssl \
     ncurses-libs \
     libgcc \
-    ca-certificates
+    ca-certificates \
+    pgbouncer \
+    gettext
 
 # Create non-root user
 RUN addgroup -g 1000 cgraph && \
@@ -60,6 +62,10 @@ WORKDIR /app
 
 # Copy release from builder
 COPY --from=builder --chown=cgraph:cgraph /app/_build/prod/rel/cgraph ./
+
+# Copy PgBouncer configuration for sidecar mode
+COPY --chown=cgraph:cgraph ../../infrastructure/pgbouncer/pgbouncer.ini /etc/pgbouncer/pgbouncer.ini
+COPY --chown=cgraph:cgraph ../../infrastructure/pgbouncer/start.sh /usr/local/bin/start-pgbouncer.sh
 
 # Set user
 USER cgraph

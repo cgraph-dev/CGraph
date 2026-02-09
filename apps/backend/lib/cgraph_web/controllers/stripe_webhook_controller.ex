@@ -44,7 +44,7 @@ defmodule CGraphWeb.StripeWebhookController do
           json(conn, %{received: true})
 
         {:error, reason} ->
-          Logger.warning("Stripe webhook verification failed: #{inspect(reason)}")
+          Logger.warning("Stripe webhook verification failed", reason: inspect(reason))
 
           conn
           |> put_status(:bad_request)
@@ -58,7 +58,7 @@ defmodule CGraphWeb.StripeWebhookController do
   # ===========================================================================
 
   defp handle_event(%Stripe.Event{type: "customer.subscription.created", data: %{object: subscription}}) do
-    Logger.info("Processing subscription.created for #{subscription.id}")
+    Logger.info("Processing subscription.created", subscription_id: subscription.id)
 
     with {:ok, user} <- find_user_by_stripe_customer(subscription.customer),
          {:ok, tier} <- determine_tier_from_subscription(subscription),
@@ -68,15 +68,15 @@ defmodule CGraphWeb.StripeWebhookController do
            tier: tier,
            current_period_end: subscription.current_period_end
          }) do
-      Logger.info("Subscription activated for user #{user.id}, tier: #{tier}")
+      Logger.info("Subscription activated", user_id: user.id, tier: tier)
     else
       {:error, reason} ->
-        Logger.error("Failed to process subscription.created: #{inspect(reason)}")
+        Logger.error("Failed to process subscription.created", reason: inspect(reason))
     end
   end
 
   defp handle_event(%Stripe.Event{type: "customer.subscription.updated", data: %{object: subscription}}) do
-    Logger.info("Processing subscription.updated for #{subscription.id}")
+    Logger.info("Processing subscription.updated", subscription_id: subscription.id)
 
     with {:ok, user} <- find_user_by_stripe_subscription(subscription.id),
          {:ok, tier} <- determine_tier_from_subscription(subscription) do
@@ -89,35 +89,35 @@ defmodule CGraphWeb.StripeWebhookController do
           })
 
         "past_due" ->
-          Logger.warning("Subscription past due for user #{user.id}")
+          Logger.warning("Subscription past due", user_id: user.id)
           # Optionally send reminder email
 
         "canceled" ->
           Subscriptions.cancel_subscription(user)
 
         status ->
-          Logger.info("Subscription status changed to #{status} for user #{user.id}")
+          Logger.info("Subscription status changed", status: status, user_id: user.id)
       end
     else
       {:error, reason} ->
-        Logger.error("Failed to process subscription.updated: #{inspect(reason)}")
+        Logger.error("Failed to process subscription.updated", reason: inspect(reason))
     end
   end
 
   defp handle_event(%Stripe.Event{type: "customer.subscription.deleted", data: %{object: subscription}}) do
-    Logger.info("Processing subscription.deleted for #{subscription.id}")
+    Logger.info("Processing subscription.deleted", subscription_id: subscription.id)
 
     with {:ok, user} <- find_user_by_stripe_subscription(subscription.id),
          {:ok, _user} <- Subscriptions.cancel_subscription(user) do
-      Logger.info("Subscription cancelled for user #{user.id}")
+      Logger.info("Subscription cancelled", user_id: user.id)
     else
       {:error, reason} ->
-        Logger.error("Failed to process subscription.deleted: #{inspect(reason)}")
+        Logger.error("Failed to process subscription.deleted", reason: inspect(reason))
     end
   end
 
   defp handle_event(%Stripe.Event{type: "invoice.payment_succeeded", data: %{object: invoice}}) do
-    Logger.info("Payment succeeded for invoice #{invoice.id}")
+    Logger.info("Payment succeeded", invoice_id: invoice.id)
 
     if invoice.subscription do
       with {:ok, user} <- find_user_by_stripe_subscription(invoice.subscription) do
@@ -133,7 +133,7 @@ defmodule CGraphWeb.StripeWebhookController do
   end
 
   defp handle_event(%Stripe.Event{type: "invoice.payment_failed", data: %{object: invoice}}) do
-    Logger.warning("Payment failed for invoice #{invoice.id}")
+    Logger.warning("Payment failed", invoice_id: invoice.id)
 
     if invoice.subscription do
       with {:ok, user} <- find_user_by_stripe_subscription(invoice.subscription) do
@@ -148,7 +148,7 @@ defmodule CGraphWeb.StripeWebhookController do
   end
 
   defp handle_event(%Stripe.Event{type: "checkout.session.completed", data: %{object: session}}) do
-    Logger.info("Checkout session completed: #{session.id}")
+    Logger.info("Checkout session completed", session_id: session.id)
 
     with {:ok, user} <- find_user_by_metadata(session.metadata),
          subscription_id when not is_nil(subscription_id) <- session.subscription do
@@ -162,7 +162,7 @@ defmodule CGraphWeb.StripeWebhookController do
   end
 
   defp handle_event(%Stripe.Event{type: type}) do
-    Logger.debug("Unhandled Stripe event type: #{type}")
+    Logger.debug("Unhandled Stripe event type", event_type: type)
     :ok
   end
 

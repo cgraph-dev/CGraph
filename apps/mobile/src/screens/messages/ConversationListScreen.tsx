@@ -7,13 +7,18 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   StyleSheet,
   RefreshControl,
-  Animated,
   Dimensions,
 } from 'react-native';
+import Animated, {
+  FadeInRight,
+  FadeOutLeft,
+  Layout,
+  useSharedValue,
+  useAnimatedScrollHandler,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
@@ -53,51 +58,8 @@ const AnimatedConversationItem = ({
   isOnline: boolean;
   isPremium?: boolean;
 }) => {
-  const slideAnim = useRef(new Animated.Value(50)).current;
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.95)).current;
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 400,
-        delay: index * 50,
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 350,
-        delay: index * 50,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 8,
-        tension: 40,
-        delay: index * 50,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [index]);
-
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-
-    // Press animation
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 0.98,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 8,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
     onPress();
   };
 
@@ -119,13 +81,13 @@ const AnimatedConversationItem = ({
 
   return (
     <Animated.View
-      style={[
-        styles.animatedWrapper,
-        {
-          opacity: fadeAnim,
-          transform: [{ translateX: slideAnim }, { scale: scaleAnim }],
-        },
-      ]}
+      style={styles.animatedWrapper}
+      entering={FadeInRight.springify()
+        .damping(18)
+        .stiffness(200)
+        .delay(index * 40)}
+      exiting={FadeOutLeft.duration(200)}
+      layout={Layout.springify()}
     >
       <TouchableOpacity
         activeOpacity={0.8}
@@ -135,7 +97,10 @@ const AnimatedConversationItem = ({
         <GlassCard
           variant={item.unread_count > 0 ? 'neon' : 'frosted'}
           intensity="subtle"
-          style={styles.conversationCard}
+          style={[
+            styles.conversationCard,
+            item.unread_count > 0 && styles.unreadCard,
+          ]}
           glowColor={item.unread_count > 0 ? '#10b981' : undefined}
         >
           <View style={styles.conversationInner}>
@@ -267,7 +232,12 @@ export default function ConversationListScreen({ navigation }: Props) {
   const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
 
   // Header animation
-  const scrollY = useRef(new Animated.Value(0)).current;
+  const scrollY = useSharedValue(0);
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
 
   // Set up navigation header with premium design
   useEffect(() => {
@@ -465,7 +435,7 @@ export default function ConversationListScreen({ navigation }: Props) {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <FlatList
+      <Animated.FlatList
         data={conversations}
         renderItem={renderConversation}
         keyExtractor={(item) => item.id}
@@ -483,9 +453,7 @@ export default function ConversationListScreen({ navigation }: Props) {
           conversations.length === 0 && styles.emptyContainer,
         ]}
         showsVerticalScrollIndicator={false}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
-          useNativeDriver: false,
-        })}
+        onScroll={scrollHandler}
       />
     </View>
   );
@@ -525,6 +493,10 @@ const styles = StyleSheet.create({
   conversationCard: {
     padding: 0,
     borderRadius: 16,
+  },
+  unreadCard: {
+    borderLeftWidth: 3,
+    borderLeftColor: '#10b981',
   },
   conversationInner: {
     flexDirection: 'row',

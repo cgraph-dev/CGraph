@@ -66,20 +66,20 @@ defmodule CGraph.Workers.SendEmailNotification do
 
         case Mailer.deliver_verification_email(user, token) do
           {:ok, _email} ->
-            Logger.info("Verification email sent to user #{user_id}")
+            Logger.info("Verification email sent", user_id: user_id)
             :ok
 
           {:error, :no_email} ->
-            Logger.debug("User #{user_id} has no email address")
+            Logger.debug("User has no email address", user_id: user_id)
             :ok  # Don't retry
 
           {:error, reason} ->
-            Logger.error("Verification email failed: #{inspect(reason)}")
+            Logger.error("Verification email failed", user_id: user_id, reason: inspect(reason))
             {:error, reason}
         end
 
       {:error, :user_not_found} ->
-        Logger.warning("Email notification failed: user #{user_id} not found")
+        Logger.warning("Email notification failed: user not found", user_id: user_id)
         :ok
     end
   end
@@ -92,20 +92,20 @@ defmodule CGraph.Workers.SendEmailNotification do
 
         case Mailer.deliver_password_reset_email(user, token) do
           {:ok, _email} ->
-            Logger.info("Password reset email sent to user #{user_id}")
+            Logger.info("Password reset email sent", user_id: user_id)
             :ok
 
           {:error, :no_email} ->
-            Logger.debug("User #{user_id} has no email address")
+            Logger.debug("User has no email address", user_id: user_id)
             :ok
 
           {:error, reason} ->
-            Logger.error("Password reset email failed: #{inspect(reason)}")
+            Logger.error("Password reset email failed", user_id: user_id, reason: inspect(reason))
             {:error, reason}
         end
 
       {:error, :user_not_found} ->
-        Logger.warning("Password reset email failed: user #{user_id} not found")
+        Logger.warning("Password reset email failed: user not found", user_id: user_id)
         :ok
     end
   end
@@ -116,20 +116,20 @@ defmodule CGraph.Workers.SendEmailNotification do
       {:ok, user} ->
         case Mailer.deliver_welcome_email(user) do
           {:ok, _email} ->
-            Logger.info("Welcome email sent to user #{user_id}")
+            Logger.info("Welcome email sent", user_id: user_id)
             :ok
 
           {:error, :no_email} ->
-            Logger.debug("User #{user_id} has no email address")
+            Logger.debug("User has no email address", user_id: user_id)
             :ok
 
           {:error, reason} ->
-            Logger.error("Welcome email failed: #{inspect(reason)}")
+            Logger.error("Welcome email failed", user_id: user_id, reason: inspect(reason))
             {:error, reason}
         end
 
       {:error, :user_not_found} ->
-        Logger.warning("Welcome email failed: user #{user_id} not found")
+        Logger.warning("Welcome email failed: user not found", user_id: user_id)
         :ok
     end
   end
@@ -143,25 +143,25 @@ defmodule CGraph.Workers.SendEmailNotification do
 
         case Mailer.deliver_security_alert(user, alert_type, details) do
           {:ok, _email} ->
-            Logger.info("Security alert email sent to user #{user_id}")
+            Logger.info("Security alert email sent", user_id: user_id)
             :ok
 
           {:error, :no_email} ->
-            Logger.debug("User #{user_id} has no email address")
+            Logger.debug("User has no email address", user_id: user_id)
             :ok
 
           {:error, reason} ->
-            Logger.error("Security alert email failed: #{inspect(reason)}")
+            Logger.error("Security alert email failed", user_id: user_id, reason: inspect(reason))
             {:error, reason}
         end
 
       {:error, :user_not_found} ->
-        Logger.warning("Security alert email failed: user #{user_id} not found")
+        Logger.warning("Security alert email failed: user not found", user_id: user_id)
         :ok
     end
   rescue
     ArgumentError ->
-      Logger.warning("Invalid alert_type: #{args["alert_type"]}")
+      Logger.warning("Invalid alert_type", alert_type: args["alert_type"])
       :ok
   end
 
@@ -173,20 +173,20 @@ defmodule CGraph.Workers.SendEmailNotification do
 
         case Mailer.deliver_two_factor_email(user, code) do
           {:ok, _email} ->
-            Logger.info("2FA code email sent to user #{user_id}")
+            Logger.info("2FA code email sent", user_id: user_id)
             :ok
 
           {:error, :no_email} ->
-            Logger.debug("User #{user_id} has no email address")
+            Logger.debug("User has no email address", user_id: user_id)
             :ok
 
           {:error, reason} ->
-            Logger.error("2FA code email failed: #{inspect(reason)}")
+            Logger.error("2FA code email failed", user_id: user_id, reason: inspect(reason))
             {:error, reason}
         end
 
       {:error, :user_not_found} ->
-        Logger.warning("2FA code email failed: user #{user_id} not found")
+        Logger.warning("2FA code email failed: user not found", user_id: user_id)
         :ok
     end
   end
@@ -202,20 +202,20 @@ defmodule CGraph.Workers.SendEmailNotification do
 
         case Mailer.deliver_account_locked_email(user, details) do
           {:ok, _email} ->
-            Logger.info("Account locked email sent to user #{user_id}")
+            Logger.info("Account locked email sent", user_id: user_id)
             :ok
 
           {:error, :no_email} ->
-            Logger.debug("User #{user_id} has no email address")
+            Logger.debug("User has no email address", user_id: user_id)
             :ok
 
           {:error, reason} ->
-            Logger.error("Account locked email failed: #{inspect(reason)}")
+            Logger.error("Account locked email failed", user_id: user_id, reason: inspect(reason))
             {:error, reason}
         end
 
       {:error, :user_not_found} ->
-        Logger.warning("Account locked email failed: user #{user_id} not found")
+        Logger.warning("Account locked email failed: user not found", user_id: user_id)
         :ok
     end
   end
@@ -228,20 +228,20 @@ defmodule CGraph.Workers.SendEmailNotification do
 
         case Mailer.deliver_export_ready_email(user, download_url) do
           {:ok, _email} ->
-            Logger.info("Export ready email sent to user #{user_id}")
+            Logger.info("Export ready email sent", user_id: user_id)
             :ok
 
           {:error, :no_email} ->
-            Logger.debug("User #{user_id} has no email address")
+            Logger.debug("User has no email address", user_id: user_id)
             :ok
 
           {:error, reason} ->
-            Logger.error("Export ready email failed: #{inspect(reason)}")
+            Logger.error("Export ready email failed", user_id: user_id, reason: inspect(reason))
             {:error, reason}
         end
 
       {:error, :user_not_found} ->
-        Logger.warning("Export ready email failed: user #{user_id} not found")
+        Logger.warning("Export ready email failed: user not found", user_id: user_id)
         :ok
     end
   end
@@ -262,40 +262,40 @@ defmodule CGraph.Workers.SendEmailNotification do
       case Mailer.deliver_notification_email(user, notification_data) do
         {:ok, _email} ->
           update_notification_email_status(notification_id, :sent)
-          Logger.info("Notification email sent to user #{user_id}")
+          Logger.info("Notification email sent", user_id: user_id)
           :ok
 
         {:error, reason} ->
           update_notification_email_status(notification_id, :failed)
-          Logger.error("Notification email failed: #{inspect(reason)}")
+          Logger.error("Notification email failed", user_id: user_id, reason: inspect(reason))
           {:error, reason}
       end
     else
       {:error, :user_not_found} ->
-        Logger.warning("Email notification failed: user #{user_id} not found")
+        Logger.warning("Email notification failed: user not found", user_id: user_id)
         :ok
 
       {:error, :notification_not_found} ->
-        Logger.warning("Email notification failed: notification #{notification_id} not found")
+        Logger.warning("Email notification failed: notification not found", notification_id: notification_id)
         :ok
 
       {:error, :no_email} ->
-        Logger.debug("User #{user_id} has no email address")
+        Logger.debug("User has no email address", user_id: user_id)
         :ok
 
       {:error, :email_not_verified} ->
-        Logger.debug("User #{user_id} email not verified")
+        Logger.debug("User email not verified", user_id: user_id)
         :ok
 
       error ->
-        Logger.error("Email notification failed: #{inspect(error)}")
+        Logger.error("Email notification failed", error: inspect(error))
         error
     end
   end
 
   # Fallback for unknown email types
   def perform(%Oban.Job{args: args}) do
-    Logger.warning("Unknown email notification type: #{inspect(args)}")
+    Logger.warning("Unknown email notification type", args: inspect(args))
     :ok
   end
 
@@ -433,6 +433,6 @@ defmodule CGraph.Workers.SendEmailNotification do
     |> Repo.update_all(set: status_field)
   rescue
     e ->
-      Logger.warning("Failed to update notification email status: #{inspect(e)}")
+      Logger.warning("Failed to update notification email status", error: inspect(e))
   end
 end

@@ -28,5 +28,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
   isLoadingMessages: false,
   hasMoreMessages: {},
   typingUsers: {},
+  justJoinedGroupName: null,
+  clearJoinCelebration: () => set({ justJoinedGroupName: null }),
   ...createGroupActions(set, get),
 }));

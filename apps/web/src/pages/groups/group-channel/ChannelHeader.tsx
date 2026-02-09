@@ -18,6 +18,9 @@ export function ChannelHeader({
   channelTopic,
   showMembers,
   onToggleMembers,
+  showPinnedMessages,
+  onTogglePinnedMessages,
+  pinnedCount,
 }: ChannelHeaderProps) {
   return (
     <header className="flex h-12 items-center justify-between border-b border-dark-700 bg-dark-800 px-4">
@@ -36,8 +39,21 @@ export function ChannelHeader({
         <button className="rounded p-1.5 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white">
           <BellIcon className="h-5 w-5" />
         </button>
-        <button className="rounded p-1.5 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white">
+        <button
+          onClick={onTogglePinnedMessages}
+          className={`relative rounded p-1.5 transition-colors ${
+            showPinnedMessages
+              ? 'bg-dark-600 text-white'
+              : 'text-gray-400 hover:bg-dark-700 hover:text-white'
+          }`}
+          title="Pinned Messages"
+        >
           <BookmarkIcon className="h-5 w-5" />
+          {(pinnedCount ?? 0) > 0 && (
+            <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-primary-600 px-1 text-[10px] font-bold text-white">
+              {pinnedCount}
+            </span>
+          )}
         </button>
         <button
           onClick={onToggleMembers}

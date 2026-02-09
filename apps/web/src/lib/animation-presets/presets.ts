@@ -2,35 +2,36 @@
  * Animation Presets - Core Presets
  *
  * Spring, tween, stagger, and entrance animation configurations.
+ *
+ * Numeric constants are sourced from @cgraph/animation-constants —
+ * the canonical shared package for platform-agnostic values.
+ * This file wraps them with Framer-Motion–specific fields (e.g. `type: 'spring'`).
  */
 
 import { type Variants } from 'framer-motion';
+import {
+  springs as sharedSprings,
+  stagger as sharedStagger,
+} from '@cgraph/animation-constants';
 
 // =============================================================================
-// SPRING PRESETS
+// SPRING PRESETS (sourced from @cgraph/animation-constants + FM type tag)
 // =============================================================================
+
+const toFMSpring = (s: { stiffness: number; damping: number; mass: number }) =>
+  ({ type: 'spring' as const, stiffness: s.stiffness, damping: s.damping } as const);
 
 export const springs = {
-  /** Gentle, slow spring for delicate movements */
-  gentle: { type: 'spring' as const, stiffness: 120, damping: 14 },
-  /** Default balanced spring */
-  default: { type: 'spring' as const, stiffness: 200, damping: 20 },
-  /** Bouncy, playful spring */
-  bouncy: { type: 'spring' as const, stiffness: 300, damping: 10 },
-  /** Quick, snappy spring for UI interactions */
-  snappy: { type: 'spring' as const, stiffness: 400, damping: 25 },
-  /** Very bouncy for emphasis */
-  superBouncy: { type: 'spring' as const, stiffness: 500, damping: 8 },
-  /** Dramatic, theatrical spring */
-  dramatic: { type: 'spring' as const, stiffness: 80, damping: 12 },
-  /** Wobbly, unstable spring */
-  wobbly: { type: 'spring' as const, stiffness: 250, damping: 5 },
-  /** Stiff, immediate spring */
-  stiff: { type: 'spring' as const, stiffness: 600, damping: 30 },
-  /** Smooth, elegant spring for cards */
-  smooth: { type: 'spring' as const, stiffness: 150, damping: 15 },
-  /** Ultra-smooth for large movements */
-  ultraSmooth: { type: 'spring' as const, stiffness: 100, damping: 20 },
+  gentle: toFMSpring(sharedSprings.gentle),
+  default: toFMSpring(sharedSprings.default),
+  bouncy: toFMSpring(sharedSprings.bouncy),
+  snappy: toFMSpring(sharedSprings.snappy),
+  superBouncy: toFMSpring(sharedSprings.superBouncy),
+  dramatic: toFMSpring(sharedSprings.dramatic),
+  wobbly: toFMSpring(sharedSprings.wobbly),
+  stiff: toFMSpring(sharedSprings.stiff),
+  smooth: toFMSpring(sharedSprings.smooth),
+  ultraSmooth: toFMSpring(sharedSprings.ultraSmooth),
 } as const;
 
 // =============================================================================
@@ -51,18 +52,14 @@ export const tweens = {
 } as const;
 
 // =============================================================================
-// STAGGER CONFIGURATIONS
+// STAGGER CONFIGURATIONS (sourced from @cgraph/animation-constants)
 // =============================================================================
 
 export const staggerConfigs = {
-  /** Fast stagger for lists */
-  fast: { staggerChildren: 0.03, delayChildren: 0 },
-  /** Standard stagger */
-  standard: { staggerChildren: 0.05, delayChildren: 0.1 },
-  /** Slow stagger for dramatic reveals */
+  fast: sharedStagger.fast,
+  standard: sharedStagger.standard,
   slow: { staggerChildren: 0.1, delayChildren: 0.2 },
-  /** Very fast for grids */
-  grid: { staggerChildren: 0.02, delayChildren: 0 },
+  grid: sharedStagger.grid,
 } as const;
 
 // =============================================================================

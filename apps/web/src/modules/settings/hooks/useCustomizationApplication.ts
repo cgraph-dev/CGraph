@@ -174,6 +174,8 @@ export function getMessageBubbleClass(bubbleStyle: string): string {
     default: 'bubble-default',
     rounded: 'bubble-rounded',
     sharp: 'bubble-sharp',
+    cloud: 'bubble-cloud',
+    modern: 'bubble-modern',
     minimal: 'bubble-minimal',
     glass: 'bubble-glass',
     neon: 'bubble-neon',

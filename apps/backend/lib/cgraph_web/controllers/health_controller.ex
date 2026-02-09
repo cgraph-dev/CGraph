@@ -43,6 +43,20 @@ defmodule CGraphWeb.HealthController do
   Used by load balancers to route traffic only to healthy instances.
   """
   def ready(conn, _params) do
+    # Check if server is draining (graceful shutdown in progress)
+    if Application.get_env(:cgraph, :draining, false) do
+      conn
+      |> put_status(503)
+      |> json(%{
+        status: "draining",
+        message: "Server is shutting down gracefully"
+      })
+    else
+      ready_check(conn)
+    end
+  end
+
+  defp ready_check(conn) do
     start_time = System.monotonic_time(:millisecond)
 
     checks = %{

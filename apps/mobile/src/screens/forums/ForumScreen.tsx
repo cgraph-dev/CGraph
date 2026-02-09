@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
+import { VoteButtons } from './components/VoteButtons';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
 import { safeFormatMessageTime } from '../../lib/dateUtils';
@@ -103,25 +104,13 @@ export default function ForumScreen({ navigation, route }: Props) {
       onPress={() => navigation.navigate('Post', { postId: item.id })}
     >
       {/* Vote buttons */}
-      <View style={styles.voteContainer}>
-        <TouchableOpacity onPress={() => handleVote(item.id, 1)}>
-          <Ionicons
-            name={item.my_vote === 1 ? 'arrow-up' : 'arrow-up-outline'}
-            size={24}
-            color={item.my_vote === 1 ? colors.primary : colors.textSecondary}
-          />
-        </TouchableOpacity>
-        <Text style={[styles.voteCount, { color: colors.text }]}>
-          {item.vote_count}
-        </Text>
-        <TouchableOpacity onPress={() => handleVote(item.id, -1)}>
-          <Ionicons
-            name={item.my_vote === -1 ? 'arrow-down' : 'arrow-down-outline'}
-            size={24}
-            color={item.my_vote === -1 ? colors.error : colors.textSecondary}
-          />
-        </TouchableOpacity>
-      </View>
+      <VoteButtons
+        voteCount={item.vote_count}
+        myVote={(item.my_vote || 0) as 0 | 1 | -1}
+        onVote={(dir) => handleVote(item.id, dir)}
+        size={24}
+        colors={colors}
+      />
       
       {/* Post content */}
       <View style={styles.postContent}>

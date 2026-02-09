@@ -25,6 +25,8 @@ export function createGroupActions(
   | 'isLoadingMessages'
   | 'hasMoreMessages'
   | 'typingUsers'
+  | 'justJoinedGroupName'
+  | 'clearJoinCelebration'
 > {
   return {
     fetchGroups: async () => {
@@ -182,6 +184,7 @@ export function createGroupActions(
           groups: state.groups.some((g) => g.id === group.id)
             ? state.groups
             : [...state.groups, group],
+          justJoinedGroupName: group.name,
         }));
       }
     },

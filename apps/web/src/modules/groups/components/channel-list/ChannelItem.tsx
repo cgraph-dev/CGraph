@@ -20,12 +20,20 @@ export function ChannelItem({ channel, isActive }: ChannelItemProps) {
         <motion.div
           whileHover={{ x: 2 }}
           whileTap={{ scale: 0.98 }}
-          className={`flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors ${
+          className={`relative flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors ${
             routeActive || isActive
-              ? 'bg-primary-600/20 text-white'
+              ? 'text-white'
               : 'text-gray-400 hover:bg-dark-700 hover:text-gray-200'
           }`}
         >
+          {/* Active indicator with shared layout animation */}
+          {(routeActive || isActive) && (
+            <motion.div
+              layoutId="activeChannelIndicator"
+              className="absolute inset-0 rounded-lg bg-primary-600/20"
+              transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+            />
+          )}
           {/* Channel icon */}
           <Icon className={`h-5 w-5 flex-shrink-0 ${routeActive ? 'text-white' : iconColor}`} />
 
@@ -51,9 +59,15 @@ export function ChannelItem({ channel, isActive }: ChannelItemProps) {
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5"
+              transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+              className="relative flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5"
             >
-              <span className="text-[10px] font-bold text-white">
+              <motion.div
+                animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute inset-0 rounded-full bg-red-500"
+              />
+              <span className="relative text-[10px] font-bold text-white">
                 {channel.unreadCount > 99 ? '99+' : channel.unreadCount}
               </span>
             </motion.div>

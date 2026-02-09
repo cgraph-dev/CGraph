@@ -13,9 +13,6 @@ defmodule CGraph.Forums.Threads do
   Lists threads for a forum or board.
   """
   def list_threads(forum_or_board, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    
     base_query = case forum_or_board do
       %{__struct__: CGraph.Forums.Forum} = forum ->
         from(t in Thread, where: t.forum_id == ^forum.id)
@@ -25,14 +22,18 @@ defmodule CGraph.Forums.Threads do
         from(t in Thread)
     end
     
-    base_query
-    |> order_by([t], [
-      desc: t.is_pinned,
-      desc: t.last_post_at,
-      desc: t.inserted_at
-    ])
+    base_query = base_query
+    |> order_by([t], [desc: t.is_pinned])
     |> preload([:author, :last_poster])
-    |> Repo.paginate(page: page, page_size: per_page)
+
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :last_post_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
+
+    CGraph.Pagination.paginate(base_query, pagination_opts)
   end
   
   @doc """
@@ -136,15 +137,19 @@ defmodule CGraph.Forums.Threads do
   Lists posts in a thread.
   """
   def list_posts(thread, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    
-    from(p in ThreadPost,
+    query = from(p in ThreadPost,
       where: p.thread_id == ^thread.id,
-      order_by: [asc: p.inserted_at],
       preload: [:author]
     )
-    |> Repo.paginate(page: page, page_size: per_page)
+
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :asc,
+      default_limit: 20
+    )
+
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
   
   @doc """

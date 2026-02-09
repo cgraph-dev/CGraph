@@ -5,6 +5,7 @@
  */
 
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import type { ToggleProps } from './types';
 
 export function Toggle({ value, onChange }: ToggleProps) {
@@ -17,7 +18,8 @@ export function Toggle({ value, onChange }: ToggleProps) {
       }`}
     >
       <motion.div
-        animate={{ x: value ? 24 : 0 }}
+        animate={{ x: value ? 24 : 2 }}
+        transition={springs.snappy}
         className="h-6 w-6 rounded-full bg-white shadow-lg"
       />
     </motion.button>

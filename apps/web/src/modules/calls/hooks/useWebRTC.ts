@@ -26,8 +26,10 @@ export interface UseWebRTCReturn {
   callState: CallState;
   /** Local video stream (for self-view) */
   localStream: MediaStream | null;
-  /** Remote video stream (for other participant) */
+  /** Remote video stream (for other participant — first remote stream for 1:1 compat) */
   remoteStream: MediaStream | null;
+  /** All remote streams keyed by userId (for group calls) */
+  remoteStreams: Map<string, MediaStream>;
   /** Start a voice or video call */
   startCall: (
     targetUserId: string,
@@ -287,6 +289,7 @@ export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
     callState,
     localStream: callState.localStream,
     remoteStream,
+    remoteStreams: callState.remoteStreams,
     startCall,
     answerCall,
     endCall,

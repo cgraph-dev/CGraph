@@ -33,6 +33,11 @@ import {
 } from '../screens/customize';
 import EmailNotificationsScreen from '../screens/settings/EmailNotificationsScreen';
 import KeyVerificationScreen from '../screens/settings/KeyVerificationScreen';
+import PrivacyPolicyScreen from '../screens/legal/PrivacyPolicyScreen';
+import TermsOfServiceScreen from '../screens/legal/TermsOfServiceScreen';
+import CookiePolicyScreen from '../screens/legal/CookiePolicyScreen';
+import GDPRScreen from '../screens/legal/GDPRScreen';
+import SessionsScreen from '../screens/settings/SessionsScreen';
 import {
   GamificationHubScreen,
   AchievementsScreen,
@@ -220,6 +225,32 @@ export default function SettingsNavigator() {
         name="EmailNotifications"
         component={EmailNotificationsScreen}
         options={{ title: 'Email Notifications', headerShown: false }}
+      />
+      {/* Legal Screens */}
+      <Stack.Screen
+        name="PrivacyPolicy"
+        component={PrivacyPolicyScreen}
+        options={{ title: 'Privacy Policy' }}
+      />
+      <Stack.Screen
+        name="TermsOfService"
+        component={TermsOfServiceScreen}
+        options={{ title: 'Terms of Service' }}
+      />
+      <Stack.Screen
+        name="CookiePolicy"
+        component={CookiePolicyScreen}
+        options={{ title: 'Cookie Policy' }}
+      />
+      <Stack.Screen
+        name="GDPR"
+        component={GDPRScreen}
+        options={{ title: 'GDPR Information' }}
+      />
+      <Stack.Screen
+        name="Sessions"
+        component={SessionsScreen}
+        options={{ title: 'Active Sessions', headerShown: false }}
       />
     </Stack.Navigator>
   );

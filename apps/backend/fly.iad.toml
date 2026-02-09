@@ -1,0 +1,67 @@
+# CGraph Backend — US East (iad) Secondary Region
+# Phase 1: Read replica in US East for lower latency for US users
+#
+# Deploy: fly deploy -c fly.iad.toml
+# This configuration mirrors the primary (fra) region with read-focused workload
+#
+# Architecture:
+#   US users → iad region → reads from local replica, writes forwarded to fra primary
+#   EU users → fra region → reads/writes to primary
+
+app = "cgraph-backend-iad"
+primary_region = "iad"      # US East (Ashburn, Virginia)
+kill_signal = "SIGTERM"
+kill_timeout = "30s"
+
+[experimental]
+  auto_rollback = true
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  MIX_ENV = "prod"
+  PHX_SERVER = "true"
+  PORT = "4000"
+  ECTO_IPV6 = "true"
+  ERL_AFLAGS = "-proto_dist inet6_tcp"
+  ELIXIR_ERL_OPTIONS = "+S 2:2 +SDcpu 2:2 +sbwt short +swt low +stbt ts"
+  ERL_CRASH_DUMP_SECONDS = "10"
+  # Mark as secondary region for geo-routing logic
+  CGRAPH_REGION = "iad"
+  CGRAPH_PRIMARY_REGION = "fra"
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1    # Start with 1 machine in secondary region
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 2000
+    soft_limit = 1800
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "3s"
+    grace_period = "30s"
+    method = "GET"
+    path = "/health"
+
+  [[http_service.checks]]
+    interval = "5s"
+    timeout = "2s"
+    grace_period = "15s"
+    method = "GET"
+    path = "/ready"
+
+[[vm]]
+  cpu_kind = "performance"
+  cpus = 2
+  memory = "4gb"
+
+[processes]
+  app = ""

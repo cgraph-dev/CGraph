@@ -142,26 +142,25 @@ defmodule CGraph.Accounts.AuditLog do
       AuditLog.list(action: "login_success", from: ~U[2026-01-01 00:00:00Z])
   """
   def list(opts \\ []) do
-    limit = Keyword.get(opts, :limit, 100)
-    offset = Keyword.get(opts, :offset, 0)
-
     query =
-      from(a in __MODULE__,
-        order_by: [desc: a.inserted_at],
-        limit: ^limit,
-        offset: ^offset
-      )
+      from(a in __MODULE__)
+      |> maybe_filter_by(:actor_id, Keyword.get(opts, :actor_id))
+      |> maybe_filter_by(:action, Keyword.get(opts, :action))
+      |> maybe_filter_by(:resource_type, Keyword.get(opts, :resource_type))
+      |> maybe_filter_from(Keyword.get(opts, :from))
+      |> maybe_filter_to(Keyword.get(opts, :to))
 
-    query
-    |> maybe_filter_by(:actor_id, Keyword.get(opts, :actor_id))
-    |> maybe_filter_by(:action, Keyword.get(opts, :action))
-    |> maybe_filter_by(:resource_type, Keyword.get(opts, :resource_type))
-    |> maybe_filter_from(Keyword.get(opts, :from))
-    |> maybe_filter_to(Keyword.get(opts, :to))
-    |> Repo.all()
-    |> then(&{:ok, &1})
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 100
+    )
+
+    {results, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
+    {:ok, results, page_info}
   rescue
-    _ -> {:ok, []}
+    _ -> {:ok, [], %{}}
   end
 
   @doc """

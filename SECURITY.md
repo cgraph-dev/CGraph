@@ -24,7 +24,7 @@ and confidentially.
 1. **Do NOT** create a public GitHub issue for security vulnerabilities
 2. **Do NOT** disclose the vulnerability publicly until we have resolved it
 3. **Do NOT** exploit the vulnerability beyond what is necessary to demonstrate it
-4. Email: **security@cgraph.app**
+4. Email: **security@cgraph.org**
 5. Include:
    - Description of the vulnerability
    - Steps to reproduce
@@ -131,7 +131,7 @@ Security researchers acting in good faith can expect:
 
 ### Bug Bounty
 
-We offer rewards for qualifying security vulnerabilities. Contact security@cgraph.app for details.
+We offer rewards for qualifying security vulnerabilities. Contact security@cgraph.org for details.
 
 | Severity | Reward Range |
 | -------- | ------------ |
@@ -149,7 +149,7 @@ Security patches are announced via:
 
 - Email to affected users (for critical issues)
 - In-app notifications
-- Status page at status.cgraph.app
+- Status page at status.cgraph.org
 
 ### Prohibited Activities
 
@@ -163,9 +163,9 @@ The following activities are strictly prohibited and may result in legal action:
 
 ## Contact
 
-- Security: security@cgraph.app
-- General: hello@cgraph.app
-- Website: [cgraph.app](https://cgraph.app)
+- Security: security@cgraph.org
+- General: hello@cgraph.org
+- Website: [cgraph.org](https://cgraph.org)
 
 ---
 

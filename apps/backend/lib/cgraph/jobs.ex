@@ -663,7 +663,7 @@ defmodule CGraph.Jobs do
       scheduled_at: DateTime.utc_now()
     })
 
-    Logger.info("[Jobs] Scheduled recurring job: #{name} with cron: #{cron}")
+    Logger.info("[Jobs] Scheduled recurring job", name: name, cron: cron)
 
     {:reply, :ok, %{state | recurring_jobs: recurring}}
   end
@@ -671,7 +671,7 @@ defmodule CGraph.Jobs do
   def handle_call({:cancel_recurring, name}, _from, state) do
     if Map.has_key?(state.recurring_jobs, name) do
       recurring = Map.delete(state.recurring_jobs, name)
-      Logger.info("[Jobs] Cancelled recurring job: #{name}")
+      Logger.info("[Jobs] Cancelled recurring job", name: name)
       {:reply, :ok, %{state | recurring_jobs: recurring}}
     else
       {:reply, {:error, :not_found}, state}
@@ -705,7 +705,7 @@ defmodule CGraph.Jobs do
         {updated_workflow, jobs} = start_ready_steps(workflow_state)
         :ets.insert(@workflow_table, {workflow_id, updated_workflow})
 
-        Logger.info("[Jobs] Started workflow #{workflow_id} with #{length(jobs)} initial jobs")
+        Logger.info("[Jobs] Started workflow", workflow_id: workflow_id, job_count: length(jobs))
 
         {:reply, {:ok, workflow_id}, state}
 
@@ -739,7 +739,7 @@ defmodule CGraph.Jobs do
       [{^workflow_id, workflow_state}] when workflow_state.status == :running ->
         updated = %{workflow_state | status: :paused}
         :ets.insert(@workflow_table, {workflow_id, updated})
-        Logger.info("[Jobs] Paused workflow #{workflow_id}")
+        Logger.info("[Jobs] Paused workflow", workflow_id: workflow_id)
         {:reply, :ok, state}
 
       [{^workflow_id, _}] ->
@@ -756,7 +756,7 @@ defmodule CGraph.Jobs do
         updated = %{workflow_state | status: :running}
         {updated_workflow, _jobs} = start_ready_steps(updated)
         :ets.insert(@workflow_table, {workflow_id, updated_workflow})
-        Logger.info("[Jobs] Resumed workflow #{workflow_id}")
+        Logger.info("[Jobs] Resumed workflow", workflow_id: workflow_id)
         {:reply, :ok, state}
 
       [{^workflow_id, _}] ->
@@ -780,7 +780,7 @@ defmodule CGraph.Jobs do
           completed_at: DateTime.utc_now()
         }
         :ets.insert(@workflow_table, {workflow_id, updated})
-        Logger.info("[Jobs] Cancelled workflow #{workflow_id}")
+        Logger.info("[Jobs] Cancelled workflow", workflow_id: workflow_id)
         {:reply, :ok, state}
 
       [] ->
@@ -1001,7 +1001,7 @@ defmodule CGraph.Jobs do
   defp process_workflow_step_completion(workflow_id, step_id, result) do
     case :ets.lookup(@workflow_table, workflow_id) do
       [{^workflow_id, workflow_state}] -> apply_step_completion(workflow_id, workflow_state, step_id, result)
-      [] -> Logger.warning("[Jobs] Received completion for unknown workflow: #{workflow_id}")
+      [] -> Logger.warning("[Jobs] Received completion for unknown workflow", workflow_id: workflow_id)
     end
   end
 
@@ -1033,7 +1033,7 @@ defmodule CGraph.Jobs do
   defp process_workflow_step_failure(workflow_id, step_id, error) do
     case :ets.lookup(@workflow_table, workflow_id) do
       [{^workflow_id, workflow_state}] -> apply_step_failure(workflow_state, step_id, error)
-      [] -> Logger.warning("[Jobs] Received failure for unknown workflow: #{workflow_id}")
+      [] -> Logger.warning("[Jobs] Received failure for unknown workflow", workflow_id: workflow_id)
     end
   end
 
@@ -1074,12 +1074,12 @@ defmodule CGraph.Jobs do
           })
         rescue
           e ->
-            Logger.error("[Jobs] Workflow callback failed: #{inspect(e)}")
+            Logger.error("[Jobs] Workflow callback failed", error: inspect(e))
         end
       end)
     end
 
-    Logger.info("[Jobs] Workflow #{workflow_state.id} #{status}")
+    Logger.info("[Jobs] Workflow status changed", workflow_id: workflow_state.id, status: status)
   end
 
   defp calculate_duration(%{started_at: started, completed_at: nil}) do
@@ -1147,7 +1147,7 @@ defmodule CGraph.Jobs do
       update_progress(job.id, 0, "Started")
     end
 
-    Logger.debug("[Jobs] Started job #{job.id} (#{job.worker})")
+    Logger.debug("[Jobs] Started job", job_id: job.id, worker: job.worker)
   end
 
   defp handle_telemetry_event([:oban, :job, :stop], measurements, metadata, _config) do
@@ -1166,7 +1166,7 @@ defmodule CGraph.Jobs do
       send(self(), {:workflow_step_completed, workflow_id, step_id, job.args})
     end
 
-    Logger.debug("[Jobs] Completed job #{job.id} in #{duration_ms}ms")
+    Logger.debug("[Jobs] Completed job", job_id: job.id, duration_ms: duration_ms)
   end
 
   defp handle_telemetry_event([:oban, :job, :exception], _measurements, metadata, _config) do
@@ -1182,7 +1182,7 @@ defmodule CGraph.Jobs do
       send(self(), {:workflow_step_failed, workflow_id, step_id, error})
     end
 
-    Logger.error("[Jobs] Job #{job.id} failed: #{inspect(error)}")
+    Logger.error("[Jobs] Job failed", job_id: job.id, error: inspect(error))
   end
 
   # ---------------------------------------------------------------------------
@@ -1207,7 +1207,7 @@ defmodule CGraph.Jobs do
     Enum.each(expired, &:ets.delete(@progress_table, &1))
 
     unless Enum.empty?(expired) do
-      Logger.debug("[Jobs] Cleaned up #{length(expired)} expired progress records")
+      Logger.debug("[Jobs] Cleaned up expired progress records", count: length(expired))
     end
   end
 
@@ -1227,7 +1227,7 @@ defmodule CGraph.Jobs do
     Enum.each(expired, &:ets.delete(@workflow_table, &1))
 
     unless Enum.empty?(expired) do
-      Logger.debug("[Jobs] Cleaned up #{length(expired)} expired workflows")
+      Logger.debug("[Jobs] Cleaned up expired workflows", count: length(expired))
     end
   end
 

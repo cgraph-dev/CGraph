@@ -12,6 +12,7 @@ export { MembersTab } from './MembersTab';
 export { InvitesTab } from './InvitesTab';
 export { ChannelsTab } from './ChannelsTab';
 export { NotificationsTab } from './NotificationsTab';
+export { AuditLogTab } from './AuditLogTab';
 export { DangerTab } from './DangerTab';
 export { ConfirmModal } from './ConfirmModal';
 export { SaveBar } from './SaveBar';
@@ -28,6 +29,7 @@ export type {
   InvitesTabProps,
   ChannelsTabProps,
   DangerTabProps,
+  AuditLogTabProps,
   ConfirmModalProps,
   SettingsTab,
   TabId,

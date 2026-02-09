@@ -4,9 +4,24 @@
  * Displays search results, recent searches, or empty states
  */
 
+import { motion } from 'framer-motion';
 import { ClockIcon } from '@heroicons/react/24/outline';
+import { staggerConfigs } from '@/lib/animation-presets/presets';
+import { MessageSkeleton } from '@/components/ui/skeletons';
 import type { SearchResultsProps } from './types';
 import { SearchResultCard } from './SearchResultCard';
+
+const resultContainer = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: staggerConfigs.fast.staggerChildren },
+  },
+};
+
+const resultItem = {
+  hidden: { opacity: 0, y: 8 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.18 } },
+};
 
 /**
  * Search results list with loading and empty states
@@ -19,13 +34,11 @@ export function SearchResults({
   onJumpToMessage,
   onRecentSearchClick,
 }: SearchResultsProps) {
-  // Loading state
+  // Loading state — skeleton shimmer
   if (isLoading) {
     return (
       <div className="flex-1 overflow-y-auto p-4">
-        <div className="flex h-32 items-center justify-center">
-          <div className="border-accent-500 h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
-        </div>
+        <MessageSkeleton count={4} alternating={false} />
       </div>
     );
   }
@@ -33,26 +46,33 @@ export function SearchResults({
   // Results found
   if (searchQuery && results.length > 0) {
     return (
-      <div className="flex-1 space-y-2 overflow-y-auto p-4">
+      <motion.div className="flex-1 space-y-2 overflow-y-auto p-4" variants={resultContainer} initial="hidden" animate="show">
         <p className="mb-2 text-xs text-white/50">
           {results.length} result{results.length !== 1 ? 's' : ''} found
         </p>
         {results.map((result) => (
-          <SearchResultCard key={result.id} result={result} onJumpToMessage={onJumpToMessage} />
+          <motion.div key={result.id} variants={resultItem}>
+            <SearchResultCard result={result} onJumpToMessage={onJumpToMessage} />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     );
   }
 
   // No results
   if (searchQuery && results.length === 0) {
     return (
-      <div className="flex-1 overflow-y-auto p-4">
+      <motion.div
+        className="flex-1 overflow-y-auto p-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.25 }}
+      >
         <div className="py-8 text-center">
           <p className="text-white/60">No messages found</p>
           <p className="mt-1 text-sm text-white/40">Try different keywords or adjust filters</p>
         </div>
-      </div>
+      </motion.div>
     );
   }
 

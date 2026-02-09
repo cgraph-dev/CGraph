@@ -1,3 +1,5 @@
+import { motion } from 'framer-motion';
+import { springs, staggerConfigs } from '@/lib/animation-presets/presets';
 import { 
   InboxIcon, 
   ChatBubbleLeftRightIcon, 
@@ -5,6 +7,23 @@ import {
   DocumentTextIcon,
   PlusIcon,
 } from '@heroicons/react/24/outline';
+
+const containerVariants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: staggerConfigs.standard.staggerChildren },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
+};
+
+const iconVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  show: { opacity: 1, scale: 1, transition: springs.gentle },
+};
 
 interface EmptyStateProps {
   title?: string;
@@ -25,26 +44,32 @@ export default function EmptyState({
   className = '',
 }: EmptyStateProps) {
   return (
-    <div
+    <motion.div
       role="status"
       aria-label={title}
       className={`flex flex-col items-center justify-center py-12 px-4 text-center ${className}`}
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
     >
-      <div className="flex items-center justify-center w-16 h-16 rounded-full bg-dark-700 mb-4">
+      <motion.div variants={iconVariants} className="flex items-center justify-center w-16 h-16 rounded-full bg-dark-700 mb-4">
         {icon || <InboxIcon className="h-8 w-8 text-gray-500" />}
-      </div>
-      <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-      <p className="text-gray-400 text-sm max-w-md mb-6">{message}</p>
+      </motion.div>
+      <motion.h3 variants={itemVariants} className="text-lg font-semibold text-white mb-2">{title}</motion.h3>
+      <motion.p variants={itemVariants} className="text-gray-400 text-sm max-w-md mb-6">{message}</motion.p>
       {action && (
-        <button
+        <motion.button
+          variants={itemVariants}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.97 }}
           onClick={action.onClick}
           className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-900"
         >
           <PlusIcon className="h-4 w-4" />
           <span>{action.label}</span>
-        </button>
+        </motion.button>
       )}
-    </div>
+    </motion.div>
   );
 }
 

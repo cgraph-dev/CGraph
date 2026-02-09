@@ -12,11 +12,10 @@ interface InviteModalProps {
   onClose: () => void;
 }
 
-export function InviteModal({ groupId: _groupId, groupName, onClose }: InviteModalProps) {
-  void _groupId; // Reserved for future API integration
+export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
   const { theme } = useThemeStore();
   const colors = THEME_COLORS[theme.colorPreset];
-  const mgr = useInviteManager();
+  const mgr = useInviteManager(groupId);
 
   return (
     <motion.div

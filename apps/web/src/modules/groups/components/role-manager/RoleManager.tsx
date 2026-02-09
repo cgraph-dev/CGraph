@@ -20,6 +20,7 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { PERMISSIONS, ROLE_COLORS } from './constants';
 import { RoleEditor } from './RoleEditor';
 import type { RoleManagerProps } from './types';
+import { api } from '@/lib/api';
 
 export function RoleManager({ groupId, className = '' }: RoleManagerProps) {
   const { groups } = useGroupStore();
@@ -40,7 +41,11 @@ export function RoleManager({ groupId, className = '' }: RoleManagerProps) {
   const handleReorder = (newOrder: Role[]) => {
     setRoles(newOrder);
     HapticFeedback.light();
-    // @todo(api) Save new role order to backend
+    // Persist new role order to backend
+    const roleIds = newOrder.map((r) => r.id).filter((id) => !id.startsWith('temp-'));
+    if (roleIds.length > 0) {
+      api.post(`/api/v1/groups/${groupId}/roles/reorder`, { role_ids: roleIds }).catch(() => {});
+    }
   };
 
   const handleCreateRole = useCallback(() => {
@@ -68,20 +73,49 @@ export function RoleManager({ groupId, className = '' }: RoleManagerProps) {
         setSelectedRole(null);
       }
       HapticFeedback.warning();
-      // @todo(api) Delete role from backend
+      if (!roleId.startsWith('temp-')) {
+        api.delete(`/api/v1/groups/${groupId}/roles/${roleId}`).catch(() => {});
+      }
     },
-    [roles, selectedRole]
+    [roles, selectedRole, groupId]
   );
 
   const handleUpdateRole = useCallback(
     (updates: Partial<Role>) => {
       if (!selectedRole) return;
 
-      setRoles(roles.map((r) => (r.id === selectedRole.id ? { ...r, ...updates } : r)));
-      setSelectedRole({ ...selectedRole, ...updates });
-      // @todo(api) Save role updates to backend
+      const updatedRole = { ...selectedRole, ...updates };
+      setRoles(roles.map((r) => (r.id === selectedRole.id ? updatedRole : r)));
+      setSelectedRole(updatedRole);
+
+      if (selectedRole.id.startsWith('temp-')) {
+        // Create new role on backend
+        api.post(`/api/v1/groups/${groupId}/roles`, {
+          name: updatedRole.name,
+          color: updatedRole.color,
+          permissions: updatedRole.permissions,
+          position: updatedRole.position,
+          is_mentionable: updatedRole.isMentionable,
+        }).then((res) => {
+          const newId = res.data?.data?.id || res.data?.id;
+          if (newId) {
+            setRoles((prev) => prev.map((r) => r.id === selectedRole.id ? { ...r, id: newId } : r));
+            setSelectedRole((prev) => prev ? { ...prev, id: newId } : prev);
+          }
+          setIsCreating(false);
+        }).catch(() => {});
+      } else {
+        // Update existing role on backend
+        api.put(`/api/v1/groups/${groupId}/roles/${selectedRole.id}`, {
+          name: updatedRole.name,
+          color: updatedRole.color,
+          permissions: updatedRole.permissions,
+          position: updatedRole.position,
+          is_mentionable: updatedRole.isMentionable,
+        }).catch(() => {});
+      }
     },
-    [roles, selectedRole]
+    [roles, selectedRole, groupId]
   );
 
   return (

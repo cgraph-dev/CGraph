@@ -3,6 +3,7 @@ import { VideoCameraSlashIcon } from '@heroicons/react/24/solid';
 import { useVideoCall } from '@/modules/calls/hooks/useVideoCall';
 import { VideoCallTopBar } from '@/modules/calls/components/VideoCallTopBar';
 import { VideoCallControls } from '@/modules/calls/components/VideoCallControls';
+import { VideoGrid } from '@/modules/calls/components/VideoGrid';
 
 interface VideoCallModalProps {
   isOpen: boolean;
@@ -13,6 +14,8 @@ interface VideoCallModalProps {
   otherParticipantAvatar?: string;
   /** If provided, answer this incoming call instead of starting a new one */
   incomingRoomId?: string;
+  /** For group calls — additional participant info */
+  isGroupCall?: boolean;
 }
 
 export function VideoCallModal({
@@ -23,6 +26,7 @@ export function VideoCallModal({
   otherParticipantName,
   otherParticipantAvatar,
   incomingRoomId,
+  isGroupCall = false,
 }: VideoCallModalProps) {
   const {
     callState,
@@ -38,6 +42,7 @@ export function VideoCallModal({
     handleToggleMute,
     handleToggleVideo,
     handleToggleFullscreen,
+    handleToggleScreenShare,
   } = useVideoCall({ isOpen, conversationId, otherParticipantId, incomingRoomId, onClose });
 
   if (!isOpen) return null;
@@ -73,68 +78,83 @@ export function VideoCallModal({
 
           {/* Main Video Area */}
           <div className="relative h-full w-full bg-dark-950">
-            {/* Remote Participant Video */}
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-dark-800 to-dark-900">
-              {remoteStream && callState.status === 'connected' ? (
-                <video
-                  ref={remoteVideoRef}
-                  autoPlay
-                  playsInline
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center">
-                  <div className="mb-4 h-32 w-32 overflow-hidden rounded-full bg-gradient-to-br from-primary-500 to-purple-600">
-                    {otherParticipantAvatar ? (
-                      <img
-                        src={otherParticipantAvatar}
-                        alt={otherParticipantName}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-5xl font-bold text-white">
-                        {otherParticipantName.charAt(0).toUpperCase()}
+            {/* Group call — multi-participant grid */}
+            {isGroupCall || callState.participants.length > 1 ? (
+              <VideoGrid
+                localStream={localStream}
+                remoteStreams={callState.remoteStreams}
+                participants={callState.participants}
+                isVideoEnabled={callState.isVideoEnabled}
+                isMuted={callState.isMuted}
+              />
+            ) : (
+              <>
+                {/* 1:1 — Single remote participant */}
+                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-dark-800 to-dark-900">
+                  {remoteStream && callState.status === 'connected' ? (
+                    <video
+                      ref={remoteVideoRef}
+                      autoPlay
+                      playsInline
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="mb-4 h-32 w-32 overflow-hidden rounded-full bg-gradient-to-br from-primary-500 to-purple-600">
+                        {otherParticipantAvatar ? (
+                          <img
+                            src={otherParticipantAvatar}
+                            alt={otherParticipantName}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-5xl font-bold text-white">
+                            {otherParticipantName.charAt(0).toUpperCase()}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                  {(callState.status === 'ringing' || isConnecting) && (
-                    <motion.p
-                      animate={{ opacity: [0.5, 1, 0.5] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                      className="text-gray-400"
-                    >
-                      Connecting...
-                    </motion.p>
+                      {(callState.status === 'ringing' || isConnecting) && (
+                        <motion.p
+                          animate={{ opacity: [0.5, 1, 0.5] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                          className="text-gray-400"
+                        >
+                          Connecting...
+                        </motion.p>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
-            </div>
 
-            {/* Local Participant Video (Picture-in-Picture) */}
-            <div className="absolute bottom-20 right-4 h-40 w-56 overflow-hidden rounded-lg border-2 border-white/20 bg-dark-800 shadow-2xl">
-              {localStream && callState.isVideoEnabled ? (
-                <video
-                  ref={localVideoRef}
-                  autoPlay
-                  playsInline
-                  muted
-                  className="h-full w-full object-cover"
-                  style={{ transform: 'scaleX(-1)' }}
-                />
-              ) : (
-                <div className="flex h-full w-full items-center justify-center bg-dark-900">
-                  <VideoCameraSlashIcon className="h-12 w-12 text-gray-600" />
+                {/* Local PiP */}
+                <div className="absolute bottom-20 right-4 h-40 w-56 overflow-hidden rounded-lg border-2 border-white/20 bg-dark-800 shadow-2xl">
+                  {localStream && callState.isVideoEnabled ? (
+                    <video
+                      ref={localVideoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="h-full w-full object-cover"
+                      style={{ transform: 'scaleX(-1)' }}
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-dark-900">
+                      <VideoCameraSlashIcon className="h-12 w-12 text-gray-600" />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </div>
 
           <VideoCallControls
             isMuted={callState.isMuted}
             isVideoEnabled={callState.isVideoEnabled}
+            isScreenSharing={callState.isScreenSharing}
             onToggleMute={handleToggleMute}
             onEndCall={handleEndCall}
             onToggleVideo={handleToggleVideo}
+            onToggleScreenShare={handleToggleScreenShare}
           />
 
           {/* WebRTC Connection Info (Development) */}

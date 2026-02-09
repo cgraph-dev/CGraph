@@ -73,6 +73,28 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   end
 
   @doc """
+  Update the current user's notification preferences for this group.
+  PATCH /api/v1/groups/:group_id/members/me/notifications
+  """
+  def update_notifications(conn, %{"group_id" => group_id} = params) do
+    user = conn.assigns.current_user
+
+    notif_params = %{
+      "notifications" => Map.get(params, "notifications"),
+      "suppress_everyone" => Map.get(params, "suppress_everyone")
+    } |> Enum.reject(fn {_k, v} -> is_nil(v) end) |> Map.new()
+
+    with {:ok, group} <- Groups.get_group(group_id),
+         member when not is_nil(member) <- Groups.get_member_by_user(group, user.id),
+         {:ok, updated_member} <- Groups.update_member_notifications(member, notif_params) do
+      render(conn, :show, member: updated_member)
+    else
+      nil -> {:error, :not_found}
+      error -> error
+    end
+  end
+
+  @doc """
   Kick a member from the group.
   DELETE /api/v1/groups/:group_id/members/:id
   """

@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
+import { VoteButtons } from './components/VoteButtons';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { PostCardSkeleton, CommentSkeleton } from '../../components/Skeleton';
@@ -308,25 +309,13 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
 
           {/* Post actions */}
           <View style={styles.postActions}>
-            <View style={styles.voteButtons}>
-              <TouchableOpacity onPress={() => handleVotePost(1)}>
-                <Ionicons
-                  name={post.my_vote === 1 ? 'arrow-up' : 'arrow-up-outline'}
-                  size={22}
-                  color={post.my_vote === 1 ? colors.primary : colors.textSecondary}
-                />
-              </TouchableOpacity>
-              <Text style={[styles.voteCount, { color: colors.text }]}>
-                {post.vote_count}
-              </Text>
-              <TouchableOpacity onPress={() => handleVotePost(-1)}>
-                <Ionicons
-                  name={post.my_vote === -1 ? 'arrow-down' : 'arrow-down-outline'}
-                  size={22}
-                  color={post.my_vote === -1 ? colors.error : colors.textSecondary}
-                />
-              </TouchableOpacity>
-            </View>
+            <VoteButtons
+              voteCount={post.vote_count}
+              myVote={(post.my_vote || 0) as 0 | 1 | -1}
+              onVote={(dir) => handleVotePost(dir)}
+              size={22}
+              colors={colors}
+            />
             
             <View style={styles.postAction}>
               <Ionicons name="chatbubble-outline" size={18} color={colors.textSecondary} />

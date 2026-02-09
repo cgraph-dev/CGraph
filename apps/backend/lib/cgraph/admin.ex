@@ -201,8 +201,6 @@ defmodule CGraph.Admin do
     status = Keyword.get(opts, :status)
     sort = Keyword.get(opts, :sort, :inserted_at)
     order = Keyword.get(opts, :order, :desc)
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 50)
 
     query = from(u in User)
 
@@ -221,25 +219,18 @@ defmodule CGraph.Admin do
       _ -> query
     end
 
-    query = from u in query, order_by: [{^order, ^sort}]
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: sort,
+      sort_direction: order,
+      default_limit: 50
+    )
 
-    # Get total count
-    total = Repo.aggregate(query, :count)
-
-    # Paginate
-    users = query
-    |> limit(^per_page)
-    |> offset(^((page - 1) * per_page))
-    |> Repo.all()
+    {users, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
 
     {:ok, %{
       users: users,
-      pagination: %{
-        total: total,
-        page: page,
-        per_page: per_page,
-        total_pages: ceil(total / per_page)
-      }
+      pagination: page_info
     }}
   end
 

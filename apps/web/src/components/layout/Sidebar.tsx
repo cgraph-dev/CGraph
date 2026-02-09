@@ -96,8 +96,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
   ];
 
-  const sidebarWidth = isCollapsed ? 'w-16' : 'w-64';
-
   if (variant === 'floating') {
     return (
       <motion.div
@@ -105,9 +103,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         animate={{ x: 0, opacity: 1 }}
         className={`fixed bottom-4 left-4 top-4 z-40 ${className}`}
       >
+        <motion.div
+          animate={{ width: isCollapsed ? 64 : 256 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 28, mass: 0.8 }}
+          className="h-full overflow-hidden"
+        >
         <GlassCard
           variant="crystal"
-          className={`h-full ${sidebarWidth} flex flex-col p-2 transition-all duration-300`}
+          className="h-full flex flex-col p-2"
         >
           {/* Toggle button */}
           <button
@@ -238,6 +241,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           )}
         </GlassCard>
+        </motion.div>
       </motion.div>
     );
   }
@@ -246,7 +250,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <motion.aside
       animate={{ width: isCollapsed ? 64 : 256 }}
-      transition={{ duration: 0.2 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 28, mass: 0.8 }}
       className={`relative flex flex-col border-r border-white/5 bg-dark-900 ${variant === 'compact' ? 'py-2' : 'py-4'} ${className} `}
     >
       {/* Toggle button */}

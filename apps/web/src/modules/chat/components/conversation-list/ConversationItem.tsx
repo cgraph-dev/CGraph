@@ -50,7 +50,11 @@ export function ConversationItem({
           whileHover={{ x: 2 }}
           onClick={onClick}
           className={`relative flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors ${
-            isActive ? 'border-l-2 border-primary-500 bg-primary-600/10' : 'hover:bg-dark-700/50'
+            isActive
+              ? 'border-l-2 border-primary-500 bg-primary-600/10'
+              : conversation.unreadCount > 0
+                ? 'border-l-2 border-primary-400/50 bg-primary-500/5 hover:bg-dark-700/50'
+                : 'hover:bg-dark-700/50'
           }`}
           onMouseEnter={() => setShowMenu(true)}
           onMouseLeave={() => setShowMenu(false)}
@@ -95,10 +99,19 @@ export function ConversationItem({
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   className="ml-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary-600 px-1.5"
+                  style={{
+                    boxShadow: '0 0 8px rgba(16, 185, 129, 0.4)',
+                  }}
                 >
                   <span className="text-[10px] font-bold text-white">
                     {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
                   </span>
+                  {/* Pulse ring */}
+                  <motion.div
+                    className="absolute inset-0 rounded-full border border-primary-400/60"
+                    animate={{ scale: [1, 1.5, 1], opacity: [0.6, 0, 0.6] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  />
                 </motion.div>
               )}
             </div>

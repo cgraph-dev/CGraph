@@ -48,6 +48,9 @@ export interface SocketManagerState {
   lastJoinAttempts: Map<string, number>;
   forumCallbacks: Map<string, ForumChannelCallbacks>;
   threadCallbacks: Map<string, ThreadChannelCallbacks>;
+  // Session resumption state
+  sessionId: string | null;
+  lastSequence: number;
 }
 
 /**
@@ -97,6 +100,15 @@ export function connectSocket(state: SocketManagerState): Promise<void> {
 
     state.socket.onClose(() => {
       logger.log('Socket disconnected');
+      // Preserve session info for resumption on reconnect  
+      if (state.sessionId) {
+        try {
+          sessionStorage.setItem('ws_session_id', state.sessionId);
+          sessionStorage.setItem('ws_last_sequence', String(state.lastSequence));
+        } catch {
+          // sessionStorage unavailable
+        }
+      }
       state.connectionPromise = null;
     });
 
@@ -130,4 +142,41 @@ export function disconnectSocket(state: SocketManagerState) {
   state.socket?.disconnect();
   state.socket = null;
   state.connectionPromise = null;
+}
+
+/**
+ * Get session resumption params for user channel join.
+ * Returns saved session_id and last_sequence if available.
+ */
+export function getResumeParams(): Record<string, unknown> {
+  try {
+    const sessionId = sessionStorage.getItem('ws_session_id');
+    const lastSeq = sessionStorage.getItem('ws_last_sequence');
+
+    if (sessionId && lastSeq) {
+      return {
+        resume_session_id: sessionId,
+        last_sequence: parseInt(lastSeq, 10),
+      };
+    }
+  } catch {
+    // sessionStorage unavailable
+  }
+  return {};
+}
+
+/**
+ * Update sequence tracking from a received event payload.
+ */
+export function updateSequence(state: SocketManagerState, payload: Record<string, unknown>): void {
+  if (typeof payload._seq === 'number') {
+    state.lastSequence = payload._seq;
+  }
+  if (typeof payload._session_id === 'string') {
+    state.sessionId = payload._session_id;
+  }
+  // Handle resume_complete with new session_id
+  if (typeof payload.new_session_id === 'string') {
+    state.sessionId = payload.new_session_id;
+  }
 }

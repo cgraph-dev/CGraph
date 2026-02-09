@@ -23,7 +23,7 @@ export function CategorySection({
         className="group flex w-full items-center justify-between px-1 py-1 text-xs font-semibold uppercase tracking-wider text-gray-500 transition-colors hover:text-gray-300"
       >
         <div className="flex items-center gap-1">
-          <motion.div animate={{ rotate: isExpanded ? 0 : -90 }} transition={{ duration: 0.2 }}>
+          <motion.div animate={{ rotate: isExpanded ? 0 : -90 }} transition={{ type: 'spring', stiffness: 400, damping: 25 }}>
             <ChevronDownIcon className="h-3 w-3" />
           </motion.div>
           <span>{category.name}</span>
@@ -54,15 +54,26 @@ export function CategorySection({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 30, mass: 0.8 }}
             className="overflow-hidden"
           >
-            {category.channels?.map((channel) => (
-              <ChannelItem
+            {category.channels?.map((channel, index) => (
+              <motion.div
                 key={channel.id}
-                channel={channel}
-                isActive={channel.id === activeChannelId}
-              />
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 500,
+                  damping: 30,
+                  delay: index * 0.04,
+                }}
+              >
+                <ChannelItem
+                  channel={channel}
+                  isActive={channel.id === activeChannelId}
+                />
+              </motion.div>
             ))}
           </motion.div>
         )}

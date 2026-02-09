@@ -1,0 +1,181 @@
+groups:
+  # ==========================================================================
+  # CGraph SLO Recording Rules
+  # ==========================================================================
+  # These rules pre-compute SLO metrics for efficient dashboard queries.
+  # Reference: Google SRE Book, Chapter 4 - Service Level Objectives
+  #
+  # SLO Targets:
+  #   - API Availability: 99.9% (43.8min downtime/month)
+  #   - Message Delivery p99: < 1 second
+  #   - Forum Feed p99: < 200ms
+  #   - Search p99: < 500ms
+  # ==========================================================================
+
+  - name: cgraph_slo_availability
+    interval: 30s
+    rules:
+      # --- API Availability (target: 99.9%) ---
+      - record: cgraph:api_availability:ratio_5m
+        expr: >
+          1 - (
+            sum(rate(http_requests_total{status=~"5.."}[5m]))
+            /
+            sum(rate(http_requests_total[5m]))
+          )
+
+      - record: cgraph:api_availability:ratio_1h
+        expr: >
+          1 - (
+            sum(rate(http_requests_total{status=~"5.."}[1h]))
+            /
+            sum(rate(http_requests_total[1h]))
+          )
+
+      - record: cgraph:api_availability:ratio_30d
+        expr: >
+          1 - (
+            sum(rate(http_requests_total{status=~"5.."}[30d]))
+            /
+            sum(rate(http_requests_total[30d]))
+          )
+
+      # --- Error Budget (how much budget remains this month) ---
+      - record: cgraph:api_error_budget:remaining
+        expr: >
+          1 - (
+            (1 - cgraph:api_availability:ratio_30d) / (1 - 0.999)
+          )
+
+      # --- Burn Rate (how fast we're consuming error budget) ---
+      # Burn rate > 1 means consuming faster than allowed
+      # Burn rate > 14.4 = 2% budget consumed in 1 hour (page immediately)
+      - record: cgraph:api_error_budget:burn_rate_1h
+        expr: >
+          (1 - cgraph:api_availability:ratio_1h) / (1 - 0.999)
+
+      - record: cgraph:api_error_budget:burn_rate_5m
+        expr: >
+          (1 - cgraph:api_availability:ratio_5m) / (1 - 0.999)
+
+  - name: cgraph_slo_latency
+    interval: 30s
+    rules:
+      # --- Message Delivery Latency (target: p99 < 1s) ---
+      - record: cgraph:message_delivery:latency_p99
+        expr: >
+          histogram_quantile(0.99,
+            sum(rate(cgraph_message_delivery_duration_seconds_bucket[5m])) by (le)
+          )
+
+      - record: cgraph:message_delivery:latency_p95
+        expr: >
+          histogram_quantile(0.95,
+            sum(rate(cgraph_message_delivery_duration_seconds_bucket[5m])) by (le)
+          )
+
+      - record: cgraph:message_delivery:latency_p50
+        expr: >
+          histogram_quantile(0.50,
+            sum(rate(cgraph_message_delivery_duration_seconds_bucket[5m])) by (le)
+          )
+
+      # --- Forum Feed Latency (target: p99 < 200ms) ---
+      - record: cgraph:forum_feed:latency_p99
+        expr: >
+          histogram_quantile(0.99,
+            sum(rate(cgraph_forum_feed_duration_seconds_bucket[5m])) by (le)
+          )
+
+      # --- Search Latency (target: p99 < 500ms) ---
+      - record: cgraph:search:latency_p99
+        expr: >
+          histogram_quantile(0.99,
+            sum(rate(cgraph_search_duration_seconds_bucket[5m])) by (le)
+          )
+
+  - name: cgraph_slo_alerts
+    interval: 60s
+    rules:
+      # =======================================================================
+      # Multi-window, multi-burn-rate alerts (Google SRE recommended)
+      # =======================================================================
+
+      # CRITICAL: Fast burn — 14.4x burn rate over 1h AND 6x over 6h
+      # Consumes 2% of 30-day budget in 1 hour
+      - alert: CGraphHighErrorBudgetBurn_Critical
+        expr: >
+          cgraph:api_error_budget:burn_rate_1h > 14.4
+          and
+          cgraph:api_error_budget:burn_rate_1h > 6
+        for: 2m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: "CGraph API error budget burning critically fast"
+          description: >
+            API error budget is being consumed at {{ $value }}x the normal rate.
+            At this rate, the entire monthly error budget will be exhausted in
+            {{ printf "%.1f" (div 720 $value) }} hours.
+          runbook: "https://docs.cgraph.org/runbooks/high-error-rate"
+
+      # WARNING: Slow burn — 1x burn rate sustained over 6h
+      - alert: CGraphHighErrorBudgetBurn_Warning
+        expr: >
+          cgraph:api_error_budget:burn_rate_1h > 1
+        for: 30m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "CGraph API error budget being consumed"
+          description: >
+            API error budget burn rate is {{ $value }}x normal.
+            Budget remaining: {{ printf "%.1f" (mul (query "cgraph:api_error_budget:remaining") 100) }}%
+
+      # CRITICAL: Error budget nearly exhausted
+      - alert: CGraphErrorBudgetExhausted
+        expr: cgraph:api_error_budget:remaining < 0.1
+        for: 5m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: "CGraph API error budget nearly exhausted (<10% remaining)"
+          description: >
+            Only {{ printf "%.1f" (mul $value 100) }}% of the monthly error budget remains.
+            Consider freezing deployments until the budget resets.
+
+      # WARNING: Message delivery latency SLO breach
+      - alert: CGraphMessageLatencySLOBreach
+        expr: cgraph:message_delivery:latency_p99 > 1.0
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "Message delivery p99 latency exceeds 1s SLO"
+          description: "Current p99: {{ $value }}s (target: <1s)"
+
+      # WARNING: Forum feed latency SLO breach
+      - alert: CGraphForumFeedLatencySLOBreach
+        expr: cgraph:forum_feed:latency_p99 > 0.2
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "Forum feed p99 latency exceeds 200ms SLO"
+          description: "Current p99: {{ printf \"%.0f\" (mul $value 1000) }}ms (target: <200ms)"
+
+      # WARNING: Search latency SLO breach
+      - alert: CGraphSearchLatencySLOBreach
+        expr: cgraph:search:latency_p99 > 0.5
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: "Search p99 latency exceeds 500ms SLO"
+          description: "Current p99: {{ printf \"%.0f\" (mul $value 1000) }}ms (target: <500ms)"

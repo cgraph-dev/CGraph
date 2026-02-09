@@ -5,6 +5,7 @@
  */
 
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 
 import type { ToggleProps } from './types';
 
@@ -25,17 +26,19 @@ export function Toggle({ enabled, onChange, label, description, icon, disabled }
         </div>
       </div>
 
-      <button
+      <motion.button
         onClick={onChange}
         disabled={disabled}
+        whileTap={{ scale: 0.95 }}
         className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${enabled ? 'bg-primary-500' : 'bg-dark-600'} ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'} `}
+        style={enabled ? { boxShadow: '0 0 8px rgba(16, 185, 129, 0.4)' } : undefined}
       >
         <motion.div
           className="absolute top-1 h-4 w-4 rounded-full bg-white shadow-md"
           animate={{ left: enabled ? 24 : 4 }}
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+          transition={springs.snappy}
         />
-      </button>
+      </motion.button>
     </div>
   );
 }

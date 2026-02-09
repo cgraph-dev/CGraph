@@ -34,13 +34,9 @@ defmodule CGraphWeb.MarketplaceController do
     max_price = params["max_price"] && String.to_integer(params["max_price"])
     currency = params["currency"]
     sort_by = params["sort"] || "newest"
-    limit = min(String.to_integer(params["limit"] || "20"), 50)
-    offset = String.to_integer(params["offset"] || "0")
     
     query = from m in MarketplaceItem,
-      where: m.listing_status == "active",
-      limit: ^limit,
-      offset: ^offset
+      where: m.listing_status == "active"
     
     # Apply filters
     query = if item_type, do: from(m in query, where: m.item_type == ^item_type), else: query
@@ -49,17 +45,24 @@ defmodule CGraphWeb.MarketplaceController do
     query = if min_price, do: from(m in query, where: m.price >= ^min_price), else: query
     query = if max_price, do: from(m in query, where: m.price <= ^max_price), else: query
     
-    # Apply sorting
-    query = case sort_by do
-      "newest" -> from(m in query, order_by: [desc: m.listed_at])
-      "oldest" -> from(m in query, order_by: [asc: m.listed_at])
-      "price_low" -> from(m in query, order_by: [asc: m.price])
-      "price_high" -> from(m in query, order_by: [desc: m.price])
-      "rarity" -> from(m in query, order_by: [desc: m.item_rarity])
-      _ -> from(m in query, order_by: [desc: m.listed_at])
+    {sort_field, sort_dir} = case sort_by do
+      "oldest" -> {:listed_at, :asc}
+      "price_low" -> {:price, :asc}
+      "price_high" -> {:price, :desc}
+      "rarity" -> {:item_rarity, :desc}
+      _ -> {:listed_at, :desc}
     end
-    
-    listings = Repo.all(Repo.preload(query, [:seller]))
+
+    pagination_opts = CGraph.Pagination.parse_params(
+      params,
+      sort_field: sort_field,
+      sort_direction: sort_dir,
+      default_limit: 20,
+      max_limit: 50
+    )
+
+    {listings, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
+    listings = Repo.preload(listings, [:seller])
     
     # Get market stats
     stats = get_market_stats()
@@ -70,9 +73,8 @@ defmodule CGraphWeb.MarketplaceController do
       listings: Enum.map(listings, &serialize_listing/1),
       stats: stats,
       pagination: %{
-        limit: limit,
-        offset: offset,
-        hasMore: length(listings) == limit
+        cursor: page_info.end_cursor,
+        hasMore: page_info.has_next_page
       },
       filters: %{
         types: MarketplaceItem.item_types(),
@@ -290,22 +292,26 @@ defmodule CGraphWeb.MarketplaceController do
   def history(conn, params) do
     user = conn.assigns.current_user
     type = params["type"]  # "buys", "sells", or nil for all
-    limit = min(String.to_integer(params["limit"] || "20"), 50)
-    offset = String.to_integer(params["offset"] || "0")
     
     query = from m in MarketplaceItem,
-      where: m.listing_status == "sold",
-      limit: ^limit,
-      offset: ^offset,
-      order_by: [desc: m.sold_at]
+      where: m.listing_status == "sold"
     
     query = case type do
       "buys" -> from(m in query, where: m.buyer_id == ^user.id)
       "sells" -> from(m in query, where: m.seller_id == ^user.id)
       _ -> from(m in query, where: m.buyer_id == ^user.id or m.seller_id == ^user.id)
     end
-    
-    transactions = Repo.all(Repo.preload(query, [:seller, :buyer]))
+
+    pagination_opts = CGraph.Pagination.parse_params(
+      params,
+      sort_field: :sold_at,
+      sort_direction: :desc,
+      default_limit: 20,
+      max_limit: 50
+    )
+
+    {transactions, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
+    transactions = Repo.preload(transactions, [:seller, :buyer])
     
     # Calculate totals
     totals = calculate_user_totals(user.id)
@@ -319,9 +325,8 @@ defmodule CGraphWeb.MarketplaceController do
       end),
       totals: totals,
       pagination: %{
-        limit: limit,
-        offset: offset,
-        hasMore: length(transactions) == limit
+        cursor: page_info.end_cursor,
+        hasMore: page_info.has_next_page
       }
     })
   end

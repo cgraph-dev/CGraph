@@ -39,6 +39,9 @@ export interface ChannelHeaderProps {
   channelTopic?: string;
   showMembers: boolean;
   onToggleMembers: () => void;
+  showPinnedMessages?: boolean;
+  onTogglePinnedMessages?: () => void;
+  pinnedCount?: number;
 }
 
 /**

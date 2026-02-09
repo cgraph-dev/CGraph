@@ -8,10 +8,12 @@
  * @since v0.7.33
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 import { motion, useSpring, useAnimation, AnimatePresence } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { cn } from '@/lib/utils';
+import { useCustomizationStore } from '@/modules/settings/store/customization';
+import { getReactionStyleClass } from '@/modules/settings/hooks/useCustomizationApplication';
 import { ReactionParticle } from '@/modules/chat/components/animatedReactionBubble/ReactionParticle';
 import {
   SPRING_SCALE,
@@ -24,6 +26,11 @@ import {
   SHIMMER_TRANSITION,
   PARTICLE_COUNT,
   PARTICLE_DURATION_MS,
+  SUPER_PARTICLE_COUNT,
+  SUPER_PARTICLE_DURATION_MS,
+  SUPER_BOUNCE_ANIMATION,
+  SUPER_GLOW_BURST_ANIMATION,
+  SUPER_GLOW_BURST_TRANSITION,
 } from '@/modules/chat/components/animatedReactionBubble/constants';
 
 // Re-export extracted pieces so existing imports keep working
@@ -45,6 +52,8 @@ export interface AnimatedReactionBubbleProps {
   isOwnMessage: boolean;
   onPress: () => void;
   className?: string;
+  /** Premium super-reaction with bigger burst + glow ring + screen shake */
+  isSuperReaction?: boolean;
 }
 
 // =============================================================================
@@ -56,10 +65,18 @@ export function AnimatedReactionBubble({
   isOwnMessage,
   onPress,
   className,
+  isSuperReaction = false,
 }: AnimatedReactionBubbleProps) {
   const bubbleRef = useRef<HTMLButtonElement>(null);
   const [showParticles, setShowParticles] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
+
+  // Get user's preferred reaction animation style
+  const reactionStyle = useCustomizationStore((s) => s.reactionStyle);
+  const reactionCssClass = useMemo(
+    () => getReactionStyleClass(reactionStyle ?? 'bounce'),
+    [reactionStyle]
+  );
 
   const scale = useSpring(1, SPRING_SCALE);
   const rotateZ = useSpring(0, SPRING_ROTATE);
@@ -69,12 +86,17 @@ export function AnimatedReactionBubble({
   const handlePress = useCallback(() => {
     HapticFeedback.medium();
 
+    const duration = isSuperReaction
+      ? SUPER_PARTICLE_DURATION_MS
+      : PARTICLE_DURATION_MS;
     setShowParticles(true);
-    setTimeout(() => setShowParticles(false), PARTICLE_DURATION_MS);
+    setTimeout(() => setShowParticles(false), duration);
 
-    controls.start(BOUNCE_ANIMATION);
+    controls.start(
+      isSuperReaction ? SUPER_BOUNCE_ANIMATION : BOUNCE_ANIMATION
+    );
     onPress();
-  }, [controls, onPress]);
+  }, [controls, onPress, isSuperReaction]);
 
   const handleMouseEnter = () => {
     scale.set(1.1);
@@ -90,6 +112,7 @@ export function AnimatedReactionBubble({
     'relative flex items-center gap-1.5 px-3 py-1.5 rounded-full',
     'transition-all duration-200 cursor-pointer select-none',
     'border backdrop-blur-sm',
+    reactionCssClass,
     reaction.hasReacted
       ? isOwnMessage
         ? 'bg-white/25 border-white/40 shadow-lg shadow-white/20'
@@ -118,10 +141,30 @@ export function AnimatedReactionBubble({
       <AnimatePresence>
         {showParticles && (
           <div className="absolute inset-0">
-            {[...Array(PARTICLE_COUNT)].map((_, i) => (
-              <ReactionParticle key={i} emoji={reaction.emoji} index={i} />
-            ))}
+            {[...Array(isSuperReaction ? SUPER_PARTICLE_COUNT : PARTICLE_COUNT)].map(
+              (_, i) => (
+                <ReactionParticle
+                  key={i}
+                  emoji={reaction.emoji}
+                  index={i}
+                  isSuper={isSuperReaction}
+                />
+              )
+            )}
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* Super reaction glow burst ring */}
+      <AnimatePresence>
+        {showParticles && isSuperReaction && (
+          <motion.div
+            className="pointer-events-none absolute inset-0 rounded-full border-2 border-primary-400/80"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={SUPER_GLOW_BURST_ANIMATION}
+            exit={{ opacity: 0 }}
+            transition={SUPER_GLOW_BURST_TRANSITION}
+          />
         )}
       </AnimatePresence>
 

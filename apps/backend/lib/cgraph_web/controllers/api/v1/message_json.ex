@@ -172,7 +172,7 @@ defmodule CGraphWeb.API.V1.MessageJSON do
   defp sender_data(nil), do: nil
   defp sender_data(%Ecto.Association.NotLoaded{}), do: nil
   defp sender_data(%User{} = user) do
-    %{
+    base = %{
       id: user.id,
       username: user.username,
       displayName: user.display_name,
@@ -180,6 +180,30 @@ defmodule CGraphWeb.API.V1.MessageJSON do
       avatarBorderId: user.avatar_border_id,
       status: user.status || "offline"
     }
+
+    # Include customization data if the association is preloaded
+    case user.customization do
+      %CGraph.Customizations.UserCustomization{} = c ->
+        Map.merge(base, %{
+          equippedTitleId: c.title_id,
+          bubbleStyle: c.bubble_style,
+          bubbleColor: c.bubble_color,
+          bubbleRadius: c.bubble_radius,
+          bubbleOpacity: c.bubble_opacity,
+          messageEffect: c.message_effect,
+          reactionStyle: c.reaction_style,
+          chatTheme: c.chat_theme,
+          profileTheme: c.profile_theme,
+          entranceAnimation: c.entrance_animation,
+          glassEffect: c.glass_effect,
+          textColor: c.text_color,
+          textSize: c.text_size,
+          fontFamily: c.font_family
+        })
+
+      _ ->
+        base
+    end
   end
 
   # Handle reactions that may not be loaded

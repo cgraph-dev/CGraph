@@ -185,12 +185,6 @@ defmodule CGraph.Notifications do
   Returns `{notifications, meta}` tuple with pagination info.
   """
   def list_notifications(%User{} = user, opts \\ []) do
-    # Support both old and new pagination params
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    limit = Keyword.get(opts, :limit, per_page)
-    offset = Keyword.get(opts, :offset, (page - 1) * per_page)
-
     # Support both filter modes and unread_only boolean
     filter = Keyword.get(opts, :filter, "all")
     unread_only = Keyword.get(opts, :unread_only, filter == "unread")
@@ -202,7 +196,6 @@ defmodule CGraph.Notifications do
 
     query = Notification
     |> where([n], n.user_id == ^user.id)
-    |> order_by([n], desc: n.inserted_at)
     |> preload(:actor)
 
     query = if unread_only do
@@ -217,15 +210,14 @@ defmodule CGraph.Notifications do
       query
     end
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
 
-    notifications = query
-      |> limit(^limit)
-      |> offset(^offset)
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {notifications, meta}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """

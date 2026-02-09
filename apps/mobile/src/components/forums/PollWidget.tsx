@@ -3,7 +3,7 @@
  * Interactive poll system with voting and results visualization
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { Poll } from '@/types';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface PollWidgetProps {
   poll: Poll;
@@ -28,12 +29,16 @@ export default function PollWidget({
   onVote,
   onClose,
 }: PollWidgetProps) {
+  const { user } = useAuth();
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const totalVotes = poll.options.reduce((sum, option) => sum + option.votes, 0);
   const isPollClosed = Boolean(poll.closed || (poll.timeout && new Date(poll.timeout) < new Date()));
-  const hasVoted = false; // TODO: Check if user has voted
+  const hasVoted = useMemo(() => {
+    if (!user?.id) return false;
+    return poll.options.some((opt) => opt.voters?.includes(user.id));
+  }, [poll.options, user?.id]);
 
   const handleOptionToggle = (optionId: string) => {
     if (hasVoted || isPollClosed) return;

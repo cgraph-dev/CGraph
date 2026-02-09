@@ -19,6 +19,7 @@ import { useForumTree } from './useForumTree';
 import { TreeNode } from './TreeNode';
 import { TreeControls } from './TreeControls';
 import { LoadingState, ErrorState, EmptyState } from './States';
+import { api } from '@/lib/api';
 
 export const ForumHierarchyTree = memo(function ForumHierarchyTree({
   rootForumId,
@@ -145,7 +146,12 @@ export const ForumHierarchyTree = memo(function ForumHierarchyTree({
         <button
           className="mt-4 flex items-center gap-2 px-2 py-1.5 text-sm text-orange-500 hover:text-orange-600"
           onClick={() => {
-            /* @todo(ui) Wire create subforum modal */
+            const name = window.prompt('Enter subforum name:');
+            if (name?.trim() && rootForumId) {
+              api.post(`/api/v1/forums/${rootForumId}/create_subforum`, {
+                name: name.trim(),
+              }).catch(() => {});
+            }
           }}
         >
           <PlusIcon className="h-4 w-4" />

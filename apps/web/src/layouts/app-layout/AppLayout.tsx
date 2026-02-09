@@ -2,13 +2,13 @@
  * AppLayout Component - Main application shell with sidebar and content area
  * @module layouts/app-layout
  */
-import { Outlet } from 'react-router-dom';
 import { ToastContainer } from '@/shared/components/ui';
 import ShaderBackground from '@/components/shaders/ShaderBackground';
 import { pageTransitions, buttonVariantsSubtle } from '@/lib/animations/transitions';
 import { useAppLayout } from './hooks';
 import { navItems } from './constants';
 import Sidebar from './Sidebar';
+import { AnimatedOutlet } from './AnimatedOutlet';
 
 // Reserved for future animation enhancements
 void pageTransitions;
@@ -75,7 +75,7 @@ export default function AppLayout() {
               : undefined,
         }}
       >
-        <Outlet />
+        <AnimatedOutlet />
       </main>
 
       {/* Toast Notifications */}

@@ -202,7 +202,7 @@ By contributing, you agree to:
 
 For authorized contributors only:
 
-- Contact: engineering@cgraph.app
+- Contact: engineering@cgraph.org
 - Internal Slack: #cgraph-dev
 
 ---

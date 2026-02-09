@@ -55,15 +55,12 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
   """
   @spec list_for_group(String.t(), keyword()) :: {list(Member.t()), map()}
   def list_for_group(group_id, opts \\ []) do
-    limit = Keyword.get(opts, :limit, 50)
-    offset = Keyword.get(opts, :offset, 0)
     role_id = Keyword.get(opts, :role_id)
 
     base_query =
       from m in Member,
         where: m.group_id == ^group_id,
         where: is_nil(m.left_at),
-        order_by: [asc: m.inserted_at],
         preload: [:user, :roles]
 
     query =
@@ -74,19 +71,15 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
       else
         base_query
       end
-      |> limit(^limit)
-      |> offset(^offset)
 
-    members = Repo.all(query)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :asc,
+      default_limit: 50
+    )
 
-    total =
-      from(m in Member,
-        where: m.group_id == ^group_id and is_nil(m.left_at),
-        select: count(m.id)
-      )
-      |> Repo.one()
-
-    {members, %{total: total, limit: limit, offset: offset}}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """

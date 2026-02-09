@@ -76,29 +76,30 @@ export function useMessageActions(): UseMessageActionsReturn {
         // Backdrop fade in
         Animated.timing(backdropAnim, {
           toValue: 1,
-          duration: 250,
+          duration: 200,
           useNativeDriver: true,
           easing: Easing.out(Easing.cubic),
         }),
-        // Menu scale and slide
+        // Menu scale — bouncier spring for Telegram-like feel
         Animated.spring(menuScaleAnim, {
           toValue: 1,
-          tension: 100,
-          friction: 8,
+          tension: 180,
+          friction: 10,
           useNativeDriver: true,
         }),
-        Animated.timing(messageActionsAnim, {
+        // Menu slide up with overshoot
+        Animated.spring(messageActionsAnim, {
           toValue: 1,
-          duration: 300,
+          tension: 120,
+          friction: 9,
           useNativeDriver: true,
-          easing: Easing.out(Easing.back(1.2)),
         }),
-        // Staggered action items
+        // Staggered action items — faster cascade
         ...actionItemAnims.map((anim, index) =>
           Animated.timing(anim, {
             toValue: 1,
-            duration: 200,
-            delay: 50 + index * 30,
+            duration: 180,
+            delay: 40 + index * 25,
             useNativeDriver: true,
             easing: Easing.out(Easing.cubic),
           })

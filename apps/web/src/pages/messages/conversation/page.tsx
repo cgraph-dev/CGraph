@@ -28,6 +28,10 @@ import {
 import { themeEngine } from '@/lib/ai/ThemeEngine';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { formatLastSeen } from '@/lib/chat/messageUtils';
+import {
+  FullScreenChatEffect,
+  useChatEffect,
+} from '@/modules/chat/components/chat-effects/FullScreenChatEffect';
 
 export default function Conversation() {
   // Apply adaptive theme on mount
@@ -37,6 +41,7 @@ export default function Conversation() {
   }, []);
 
   const ctx = useConversationPage();
+  const chatEffect = useChatEffect();
 
   // ── Loading state ────────────────────────────────────────────────────
   if (!ctx.conversation) {
@@ -53,6 +58,10 @@ export default function Conversation() {
       {/* Main Chat Area */}
       <div className="relative flex h-full flex-1 flex-col overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
         <AmbientBackground uiPreferences={ctx.uiPreferences} />
+        <FullScreenChatEffect
+          effect={chatEffect.activeEffect}
+          onComplete={chatEffect.clear}
+        />
 
         <ConversationHeader
           conversationName={ctx.conversationName}

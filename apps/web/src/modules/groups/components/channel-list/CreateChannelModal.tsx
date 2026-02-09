@@ -6,6 +6,7 @@ import { chatLogger as logger } from '@/lib/logger';
 import type { Channel } from '@/modules/groups/store';
 import { channelTypeIcons, channelTypes } from './constants';
 import type { CreateChannelModalProps } from './types';
+import { api } from '@/lib/api';
 
 export function CreateChannelModal({ groupId, categoryId, onClose }: CreateChannelModalProps) {
   const [name, setName] = useState('');
@@ -18,8 +19,13 @@ export function CreateChannelModal({ groupId, categoryId, onClose }: CreateChann
 
     setIsCreating(true);
     try {
-      // @todo(api) Implement create channel API call
-      logger.log('Creating channel:', { groupId, categoryId, name, type, isNsfw });
+      await api.post(`/api/v1/groups/${groupId}/channels`, {
+        name: name.trim(),
+        type,
+        category_id: categoryId || null,
+        is_nsfw: isNsfw,
+      });
+      logger.log('Created channel:', { groupId, categoryId, name, type, isNsfw });
       HapticFeedback.success();
       onClose();
     } catch (error) {

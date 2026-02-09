@@ -373,6 +373,11 @@ export type GroupsStackParamList = {
   Group: { groupId: string };
   Channel: { groupId: string; channelId: string };
   GroupSettings: { groupId: string };
+  GroupRoles: { groupId: string };
+  GroupMembers: { groupId: string };
+  GroupChannels: { groupId: string };
+  GroupInvites: { groupId: string };
+  GroupModeration: { groupId: string };
 };
 
 export type ForumsStackParamList = {
@@ -432,6 +437,13 @@ export type SettingsStackParamList = {
   BadgeSelection: undefined;
   TitleSelection: undefined;
   ExportContent: { type: 'thread' | 'post' | 'conversation'; id: string; title: string };
+  // Legal screens
+  PrivacyPolicy: undefined;
+  TermsOfService: undefined;
+  CookiePolicy: undefined;
+  GDPR: undefined;
+  // Session management
+  Sessions: undefined;
 };
 
 // Friend types

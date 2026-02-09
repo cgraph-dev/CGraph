@@ -19,15 +19,11 @@ defmodule CGraph.Reputation do
   Get user reputation with pagination.
   """
   def get_user_reputation(user_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    offset = (page - 1) * per_page
     type = Keyword.get(opts, :type)
 
     base_query =
       from r in ReputationEntry,
         where: r.to_user_id == ^user_id,
-        order_by: [desc: r.inserted_at],
         preload: [:from_user, :post]
 
     base_query =
@@ -37,24 +33,17 @@ defmodule CGraph.Reputation do
         _ -> base_query
       end
 
-    total_count = Repo.aggregate(base_query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
 
-    entries =
-      base_query
-      |> limit(^per_page)
-      |> offset(^offset)
-      |> Repo.all()
-
-    pagination = %{
-      page: page,
-      per_page: per_page,
-      total_count: total_count,
-      total_pages: max(1, ceil(total_count / per_page))
-    }
-
+    {entries, page_info} = CGraph.Pagination.paginate(base_query, pagination_opts)
     summary = get_reputation_summary(user_id)
 
-    {entries, pagination, summary}
+    {entries, page_info, summary}
   end
 
   @doc """

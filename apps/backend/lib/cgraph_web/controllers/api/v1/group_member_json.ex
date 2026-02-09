@@ -45,6 +45,8 @@ defmodule CGraphWeb.API.V1.GroupMemberJSON do
       nickname: member.nickname,
       joined_at: member.inserted_at,
       muted_until: member.muted_until,
+      notifications: member.notifications,
+      suppress_everyone: member.suppress_everyone,
       roles: render_roles(member.roles),
       user: render_user(member.user)
     }

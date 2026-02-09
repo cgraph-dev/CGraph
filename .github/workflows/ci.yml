@@ -252,10 +252,11 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build backend image
-        run: docker build -f infrastructure/docker/Dockerfile.backend -t cgraph-backend:ci .
+        run: docker build -f apps/backend/Dockerfile -t cgraph-backend:ci apps/backend
 
       - name: Build web image
-        run: docker build -f infrastructure/docker/Dockerfile.web -t cgraph-web:ci .
+        run: docker build -f apps/web/Dockerfile -t cgraph-web:ci apps/web
+        if: hashFiles('apps/web/Dockerfile') != ''
 
   # ============================================
   # Coverage Summary (reports combined)
@@ -327,12 +328,13 @@ jobs:
       - name: Lint Dockerfile (backend)
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: infrastructure/docker/Dockerfile.backend
+          dockerfile: apps/backend/Dockerfile
 
       - name: Lint Dockerfile (web)
         uses: hadolint/hadolint-action@v3.1.0
         with:
-          dockerfile: infrastructure/docker/Dockerfile.web
+          dockerfile: apps/web/Dockerfile
+        if: hashFiles('apps/web/Dockerfile') != ''
 
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
@@ -390,3 +392,59 @@ jobs:
             results.sarif
           if-no-files-found: ignore
         if: always()
+
+  # ============================================
+  # Quality Gate (required status check)
+  # ============================================
+  # This job gates PRs — configure as a required status check in GitHub branch protection.
+  # All CI jobs must pass before merging is allowed.
+  quality-gate:
+    name: Quality Gate
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+      - typecheck
+      - backend-test
+      - frontend-test
+      - mobile-test
+      - docker-build
+      - coverage-report
+      - security
+    if: always()
+    steps:
+      - name: Check all jobs passed
+        run: |
+          echo "Quality Gate — checking all CI jobs"
+          echo "===================================="
+          echo "lint:          ${{ needs.lint.result }}"
+          echo "typecheck:     ${{ needs.typecheck.result }}"
+          echo "backend-test:  ${{ needs.backend-test.result }}"
+          echo "frontend-test: ${{ needs.frontend-test.result }}"
+          echo "mobile-test:   ${{ needs.mobile-test.result }}"
+          echo "docker-build:  ${{ needs.docker-build.result }}"
+          echo "coverage:      ${{ needs.coverage-report.result }}"
+          echo "security:      ${{ needs.security.result }}"
+          echo "===================================="
+
+          # Fail if any required job failed or was cancelled
+          if [[ "${{ needs.lint.result }}" == "failure" || \
+                "${{ needs.typecheck.result }}" == "failure" || \
+                "${{ needs.backend-test.result }}" == "failure" || \
+                "${{ needs.frontend-test.result }}" == "failure" || \
+                "${{ needs.mobile-test.result }}" == "failure" || \
+                "${{ needs.docker-build.result }}" == "failure" || \
+                "${{ needs.security.result }}" == "failure" ]]; then
+            echo "::error::Quality gate FAILED — one or more required jobs did not pass"
+            exit 1
+          fi
+
+          if [[ "${{ needs.lint.result }}" == "cancelled" || \
+                "${{ needs.typecheck.result }}" == "cancelled" || \
+                "${{ needs.backend-test.result }}" == "cancelled" || \
+                "${{ needs.frontend-test.result }}" == "cancelled" || \
+                "${{ needs.mobile-test.result }}" == "cancelled" ]]; then
+            echo "::error::Quality gate FAILED — one or more jobs were cancelled"
+            exit 1
+          fi
+
+          echo "Quality gate PASSED — all checks green"

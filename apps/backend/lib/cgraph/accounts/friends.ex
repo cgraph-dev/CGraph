@@ -214,17 +214,11 @@ defmodule CGraph.Accounts.Friends do
   Gets the list of friends for a user.
   """
   def list_friends(user_id, opts \\ []) do
-    limit = Keyword.get(opts, :limit, 50)
-    offset = Keyword.get(opts, :offset, 0)
-
     query =
       from f in Friendship,
         where: f.user_id == ^user_id,
         where: f.status == :accepted,
         join: u in User, on: u.id == f.friend_id,
-        order_by: [asc: u.display_name],
-        limit: ^limit,
-        offset: ^offset,
         select: %{
           id: f.id,
           friend_id: f.friend_id,
@@ -239,7 +233,15 @@ defmodule CGraph.Accounts.Friends do
           }
         }
 
-    Repo.all(query)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :id,
+      sort_direction: :desc,
+      default_limit: 50
+    )
+
+    {friends, _page_info} = CGraph.Pagination.paginate(query, pagination_opts)
+    friends
   end
 
   @doc """

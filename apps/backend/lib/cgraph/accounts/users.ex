@@ -99,16 +99,20 @@ defmodule CGraph.Accounts.Users do
   Lists users with optional filters.
   """
   def list_users(opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
     search = Keyword.get(opts, :search)
     
     query = from(u in User, where: is_nil(u.deleted_at))
     
-    query
-    |> maybe_search(search)
-    |> order_by([u], desc: u.inserted_at)
-    |> Repo.paginate(page: page, page_size: per_page)
+    query = query |> maybe_search(search)
+
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
+
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
   
   @doc """

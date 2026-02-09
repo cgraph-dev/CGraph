@@ -240,8 +240,10 @@ defmodule CGraph.Cache do
         value
 
       {:error, :not_found} ->
-        # Check if we should use locking
-        if Keyword.get(opts, :lock, false) do
+        # Default to lock-based stampede protection (opt-OUT with lock: false)
+        use_lock = Keyword.get(opts, :lock, true)
+
+        if use_lock do
           fetch_with_lock(key, compute_fn, opts)
         else
           compute_and_cache(key, compute_fn, opts)
@@ -589,7 +591,16 @@ defmodule CGraph.Cache do
 
   defp fetch_with_lock(key, compute_fn, opts) do
     lock_key = "lock:#{key}"
+    fetch_with_lock(key, compute_fn, opts, lock_key, 0)
+  end
 
+  # Retry with exponential backoff (up to 5 attempts)
+  defp fetch_with_lock(key, compute_fn, opts, _lock_key, attempt) when attempt >= 5 do
+    # Max retries exhausted — compute without lock to avoid deadlock
+    compute_and_cache(key, compute_fn, opts)
+  end
+
+  defp fetch_with_lock(key, compute_fn, opts, lock_key, attempt) do
     case acquire_lock(lock_key) do
       :ok ->
         try do
@@ -603,12 +614,16 @@ defmodule CGraph.Cache do
         end
 
       :locked ->
-        # Wait and retry
-        Process.sleep(50)
+        # Exponential backoff: 25ms, 50ms, 100ms, 200ms, 400ms
+        backoff_ms = 25 * :math.pow(2, attempt) |> trunc()
+        Process.sleep(backoff_ms)
 
         case get(key) do
-          {:ok, value} -> value
-          _ -> compute_and_cache(key, compute_fn, opts)
+          {:ok, value} ->
+            value
+
+          _ ->
+            fetch_with_lock(key, compute_fn, opts, lock_key, attempt + 1)
         end
     end
   end

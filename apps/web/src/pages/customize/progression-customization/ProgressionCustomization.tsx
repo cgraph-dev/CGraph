@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGamificationStore } from '@/modules/gamification/store';
 import { gamificationLogger as logger } from '@/lib/logger';
+import { api } from '@/lib/api';
 import type { ProgressionCategory } from './types';
 import { MOCK_ACHIEVEMENTS, MOCK_LEADERBOARD, MOCK_QUESTS, MOCK_DAILY_REWARDS } from './mock-data';
 import { getCategoryConfigs } from './categories';
@@ -41,14 +42,13 @@ export function ProgressionCustomization() {
   const currentStreak = MOCK_DAILY_REWARDS.filter((r) => r.claimed).length;
 
   // Handle claiming daily reward
-  const handleClaimReward = (day: number) => {
-    // @todo(api) Implement claim daily reward endpoint
-    logger.log(`Claiming reward for day ${day}`);
-    // In production, this would:
-    // 1. Call API to claim the reward
-    // 2. Update local state to mark the reward as claimed
-    // 3. Show a success toast
-    // For now, just log the claim
+  const handleClaimReward = async (day: number) => {
+    try {
+      await api.post('/api/v1/gamification/streak/claim', { day });
+      logger.log(`Claimed reward for day ${day}`);
+    } catch (error) {
+      logger.error('Failed to claim daily reward:', error);
+    }
   };
 
   // Filter achievements by search

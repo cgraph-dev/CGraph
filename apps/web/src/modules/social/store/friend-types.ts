@@ -13,6 +13,7 @@ export interface Friend {
   avatarUrl: string | null;
   avatarBorderId?: string | null;
   avatar_border_id?: string | null;
+  equippedTitleId?: string | null;
   status: 'online' | 'idle' | 'dnd' | 'offline';
   statusMessage: string | null;
   friendshipId: string;

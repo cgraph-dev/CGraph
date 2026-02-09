@@ -1,4 +1,22 @@
 import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
+
+/** Hex color map for animated backgroundColor transitions */
+const statusHexColors: Record<OnlineStatus, string> = {
+  online: '#22c55e',
+  idle: '#eab308',
+  dnd: '#ef4444',
+  offline: '#9ca3af',
+  invisible: '#9ca3af',
+};
+const glowColors: Record<OnlineStatus, string> = {
+  online: 'rgba(34,197,94,0.6)',
+  idle: 'rgba(234,179,8,0.5)',
+  dnd: 'rgba(239,68,68,0.5)',
+  offline: 'transparent',
+  invisible: 'transparent',
+};
 
 /**
  * OnlineStatusIndicator Component
@@ -95,14 +113,37 @@ export function OnlineStatusIndicator({
       className={`inline-flex items-center gap-1.5 ${className}`}
       title={showTooltip ? tooltipText : undefined}
     >
-      {/* Status Dot with Ring Animation for Online */}
+      {/* Status Dot with Animated Presence, Color Crossfade & Breathing Pulse */}
       <div className="relative flex items-center justify-center">
-        {status === 'online' && (
-          <span
-            className={`absolute ${sizeClass.ring} ${config.bgColor} animate-ping rounded-full opacity-75`}
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={status}
+            className={`relative ${sizeClass.dot} rounded-full`}
+            style={{ backgroundColor: statusHexColors[status] }}
+            initial={{ scale: 0 }}
+            animate={{
+              scale: 1,
+              backgroundColor: statusHexColors[status],
+              boxShadow:
+                status === 'online'
+                  ? [
+                      `0 0 0 0 ${glowColors.online}`,
+                      `0 0 6px 2px ${glowColors.online}`,
+                      `0 0 0 0 ${glowColors.online}`,
+                    ]
+                  : `0 0 0 0 transparent`,
+            }}
+            exit={{ scale: 0 }}
+            transition={{
+              scale: springs.bouncy,
+              backgroundColor: { duration: 0.4, ease: 'easeInOut' },
+              boxShadow:
+                status === 'online'
+                  ? { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
+                  : { duration: 0.2 },
+            }}
           />
-        )}
-        <span className={`relative ${sizeClass.dot} ${config.color} rounded-full`} />
+        </AnimatePresence>
       </div>
 
       {/* Label */}
@@ -148,7 +189,29 @@ export function OnlineStatusBadge({ status, lastActive, className = '' }: Online
     <div
       className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 ${config.bgColor} ${className}`}
     >
-      <span className={`h-2.5 w-2.5 ${config.color} rounded-full`} />
+      <motion.span
+        key={status}
+        className={`h-2.5 w-2.5 ${config.color} rounded-full`}
+        initial={{ scale: 0 }}
+        animate={{
+          scale: 1,
+          boxShadow:
+            status === 'online'
+              ? [
+                  `0 0 0 0 ${glowColors.online}`,
+                  `0 0 4px 1px ${glowColors.online}`,
+                  `0 0 0 0 ${glowColors.online}`,
+                ]
+              : `0 0 0 0 transparent`,
+        }}
+        transition={{
+          scale: springs.bouncy,
+          boxShadow:
+            status === 'online'
+              ? { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
+              : { duration: 0.2 },
+        }}
+      />
       <span
         className={`text-sm font-medium ${
           status === 'online'

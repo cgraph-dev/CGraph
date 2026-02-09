@@ -28,24 +28,19 @@ defmodule CGraph.Groups do
   List groups for a user.
   """
   def list_groups(user, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-
     query = from g in Group,
       join: m in Member, on: m.group_id == g.id,
       where: m.user_id == ^user.id,
-      order_by: [desc: g.updated_at],
       preload: [:channels]
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :updated_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
 
-    groups = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {groups, meta}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """
@@ -274,24 +269,19 @@ defmodule CGraph.Groups do
   def list_channel_messages(channel_or_id, opts \\ [])
 
   def list_channel_messages(channel_id, opts) when is_binary(channel_id) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, Keyword.get(opts, :limit, 50))
-
     query = from m in Message,
       where: m.channel_id == ^channel_id,
-      order_by: [desc: m.inserted_at],
-      preload: [:sender, :reactions]
+      preload: [[sender: :customization], :reactions]
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 50
+    )
 
-    messages = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-      |> Enum.reverse()
-
-    meta = %{page: page, per_page: per_page, total: total, has_more: length(messages) == per_page}
-    {messages, meta}
+    {messages, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
+    {Enum.reverse(messages), page_info}
   end
 
   def list_channel_messages(channel, opts) when is_struct(channel) do
@@ -313,7 +303,7 @@ defmodule CGraph.Groups do
     case result do
       {:ok, message} ->
         broadcast_channel_message(channel, message)
-        {:ok, Repo.preload(message, [:sender, :reactions])}
+        {:ok, Repo.preload(message, [[sender: :customization], :reactions])}
       error -> error
     end
   end
@@ -346,8 +336,6 @@ defmodule CGraph.Groups do
   List members of a group.
   """
   def list_group_members(group, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 50)
     role_filter = Keyword.get(opts, :role)
 
     query = from m in Member,
@@ -362,15 +350,14 @@ defmodule CGraph.Groups do
       query
     end
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 50
+    )
 
-    members = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {members, meta}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """
@@ -424,6 +411,15 @@ defmodule CGraph.Groups do
   def update_member(member, attrs) do
     member
     |> Member.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Update a member's notification preferences (self-service).
+  """
+  def update_member_notifications(member, attrs) do
+    member
+    |> Member.update_changeset(attrs)
     |> Repo.update()
   end
 
@@ -857,14 +853,11 @@ defmodule CGraph.Groups do
   Get audit log entries.
   """
   def get_audit_log(group, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 50)
     action_filter = Keyword.get(opts, :action)
     user_filter = Keyword.get(opts, :user_id)
 
     query = from a in AuditLog,
       where: a.group_id == ^group.id,
-      order_by: [desc: a.inserted_at],
       preload: [:user]
 
     query = if action_filter do
@@ -879,15 +872,14 @@ defmodule CGraph.Groups do
       query
     end
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 50
+    )
 
-    entries = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {entries, meta}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """
@@ -908,7 +900,7 @@ defmodule CGraph.Groups do
     |> Repo.insert()
     |> case do
       {:ok, message} ->
-        {:ok, Repo.preload(message, [:sender, :reactions])}
+        {:ok, Repo.preload(message, [[sender: :customization], :reactions])}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         if idempotency_conflict?(changeset) do
@@ -916,7 +908,7 @@ defmodule CGraph.Groups do
 
           case get_channel_message_by_client_id(channel.id, client_message_id) do
             nil -> {:error, changeset}
-            message -> {:ok, Repo.preload(message, [:sender, :reactions])}
+            message -> {:ok, Repo.preload(message, [[sender: :customization], :reactions])}
           end
         else
           {:error, changeset}
@@ -947,7 +939,7 @@ defmodule CGraph.Groups do
     from(m in Message,
       where: m.channel_id == ^channel_id,
       where: m.client_message_id == ^client_message_id,
-      preload: [:sender, reactions: :user]
+      preload: [[sender: :customization], reactions: :user]
     )
     |> Repo.one()
   end
@@ -962,29 +954,28 @@ defmodule CGraph.Groups do
   Search groups.
   """
   def search_groups(query, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
     user = Keyword.get(opts, :user)
     search_term = "%#{query}%"
 
     db_query = from g in Group,
       where: ilike(g.name, ^search_term) or ilike(g.description, ^search_term),
-      where: g.is_public == true,
-      order_by: [desc: g.member_count]
+      where: g.is_public == true
 
-    total = Repo.aggregate(db_query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :member_count,
+      sort_direction: :desc,
+      default_limit: 20
+    )
 
-    groups = db_query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-      |> Enum.map(fn g ->
-        is_member = if user, do: member?(user, g), else: false
-        Map.put(g, :is_member, is_member)
-      end)
+    {groups, page_info} = CGraph.Pagination.paginate(db_query, pagination_opts)
 
-    meta = %{page: page, per_page: per_page, total: total}
-    {groups, meta}
+    groups = Enum.map(groups, fn g ->
+      is_member = if user, do: member?(user, g), else: false
+      Map.put(g, :is_member, is_member)
+    end)
+
+    {groups, page_info}
   end
 
   @doc """
@@ -1135,6 +1126,211 @@ defmodule CGraph.Groups do
       pinned_by_id: user.id
     })
     |> Repo.insert()
+  end
+
+  # ---------------------------------------------------------------------------
+  # Permission Overwrites
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  List permission overwrites for a channel.
+  """
+  def list_permission_overwrites(channel) do
+    alias CGraph.Groups.PermissionOverwrite
+
+    PermissionOverwrite
+    |> where([po], po.channel_id == ^channel.id)
+    |> Repo.all()
+  end
+
+  @doc """
+  Get a specific permission overwrite.
+  """
+  def get_permission_overwrite(channel_id, overwrite_id) do
+    alias CGraph.Groups.PermissionOverwrite
+
+    case Repo.get_by(PermissionOverwrite, id: overwrite_id, channel_id: channel_id) do
+      nil -> {:error, :not_found}
+      overwrite -> {:ok, overwrite}
+    end
+  end
+
+  @doc """
+  Create a permission overwrite for a channel.
+  """
+  def create_permission_overwrite(channel, attrs) do
+    alias CGraph.Groups.PermissionOverwrite
+
+    %PermissionOverwrite{}
+    |> PermissionOverwrite.changeset(Map.put(attrs, :channel_id, channel.id))
+    |> Repo.insert()
+  end
+
+  @doc """
+  Update a permission overwrite.
+  """
+  def update_permission_overwrite(overwrite, attrs) do
+    alias CGraph.Groups.PermissionOverwrite
+
+    overwrite
+    |> PermissionOverwrite.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Delete a permission overwrite.
+  """
+  def delete_permission_overwrite(overwrite) do
+    Repo.delete(overwrite)
+  end
+
+  # ---------------------------------------------------------------------------
+  # Pinned Messages
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  List pinned messages for a channel, ordered by position.
+  """
+  def list_pinned_messages(channel) do
+    alias CGraph.Groups.PinnedMessage
+
+    PinnedMessage
+    |> where([pm], pm.channel_id == ^channel.id)
+    |> order_by([pm], asc: pm.position, asc: pm.inserted_at)
+    |> Repo.all()
+  end
+
+  @doc """
+  Get a specific pinned message.
+  """
+  def get_pinned_message(channel_id, pinned_id) do
+    alias CGraph.Groups.PinnedMessage
+
+    case Repo.get_by(PinnedMessage, id: pinned_id, channel_id: channel_id) do
+      nil -> {:error, :not_found}
+      pinned -> {:ok, pinned}
+    end
+  end
+
+  @doc """
+  Unpin a message from a channel.
+  """
+  def unpin_message(pinned_message) do
+    Repo.delete(pinned_message)
+  end
+
+  # ---------------------------------------------------------------------------
+  # Channel Categories
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  List channel categories for a group, ordered by position.
+  """
+  def list_channel_categories(group) do
+    alias CGraph.Groups.ChannelCategory
+
+    ChannelCategory
+    |> where([cc], cc.group_id == ^group.id)
+    |> order_by([cc], asc: cc.position)
+    |> Repo.all()
+  end
+
+  @doc """
+  Get a specific channel category.
+  """
+  def get_channel_category(group, category_id) do
+    alias CGraph.Groups.ChannelCategory
+
+    case Repo.get_by(ChannelCategory, id: category_id, group_id: group.id) do
+      nil -> {:error, :not_found}
+      category -> {:ok, category}
+    end
+  end
+
+  @doc """
+  Create a channel category.
+  """
+  def create_channel_category(group, attrs) do
+    alias CGraph.Groups.ChannelCategory
+
+    %ChannelCategory{}
+    |> ChannelCategory.changeset(Map.put(attrs, :group_id, group.id))
+    |> Repo.insert()
+  end
+
+  @doc """
+  Update a channel category.
+  """
+  def update_channel_category(category, attrs) do
+    alias CGraph.Groups.ChannelCategory
+
+    category
+    |> ChannelCategory.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Delete a channel category.
+  """
+  def delete_channel_category(category) do
+    Repo.delete(category)
+  end
+
+  # ---------------------------------------------------------------------------
+  # Group Emojis
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  List custom emojis for a group.
+  """
+  def list_group_emojis(group) do
+    alias CGraph.Groups.GroupEmoji
+
+    GroupEmoji
+    |> where([ge], ge.group_id == ^group.id)
+    |> order_by([ge], asc: ge.name)
+    |> Repo.all()
+  end
+
+  @doc """
+  Get a specific custom emoji.
+  """
+  def get_group_emoji(group, emoji_id) do
+    alias CGraph.Groups.GroupEmoji
+
+    case Repo.get_by(GroupEmoji, id: emoji_id, group_id: group.id) do
+      nil -> {:error, :not_found}
+      emoji -> {:ok, emoji}
+    end
+  end
+
+  @doc """
+  Create a custom emoji in a group.
+  """
+  def create_group_emoji(group, user, attrs) do
+    alias CGraph.Groups.GroupEmoji
+
+    %GroupEmoji{}
+    |> GroupEmoji.changeset(Map.merge(attrs, %{group_id: group.id, uploaded_by_id: user.id}))
+    |> Repo.insert()
+  end
+
+  @doc """
+  Update a custom emoji (rename).
+  """
+  def update_group_emoji(emoji, attrs) do
+    alias CGraph.Groups.GroupEmoji
+
+    emoji
+    |> GroupEmoji.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Delete a custom emoji.
+  """
+  def delete_group_emoji(emoji) do
+    Repo.delete(emoji)
   end
 
   defp member_has_permission?(member, permission) do

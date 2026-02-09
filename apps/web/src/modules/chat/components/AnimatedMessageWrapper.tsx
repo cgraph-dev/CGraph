@@ -19,6 +19,8 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 import { motion, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { useGesture } from '@use-gesture/react';
 import { AnimationEngine, HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { springs, staggerConfigs } from '@/lib/animation-presets/presets';
+import { useCustomizationStore } from '@/modules/settings/store/customization';
 
 // =============================================================================
 // TYPES
@@ -29,11 +31,16 @@ export interface AnimatedMessageWrapperProps {
   isOwnMessage: boolean;
   index: number;
   isNew?: boolean;
+  isEditing?: boolean;
+  isDeleting?: boolean;
   messageId?: string;
   onSwipeReply?: () => void;
   onLongPress?: () => void;
   enableGestures?: boolean;
 }
+
+/** Maps animation speed to stagger delay multiplier */
+const SPEED_MULTIPLIERS = { slow: 2, normal: 1, fast: 0.5 } as const;
 
 // =============================================================================
 // ANIMATION VARIANTS
@@ -41,42 +48,38 @@ export interface AnimatedMessageWrapperProps {
 
 const messageVariants = {
   initial: (isOwnMessage: boolean) => ({
-    x: isOwnMessage ? 100 : -100,
+    x: isOwnMessage ? 20 : -20,
     opacity: 0,
-    scale: 0.9,
-    rotateZ: isOwnMessage ? 5 : -5,
+    scale: 0.97,
   }),
-  animate: (custom: { index: number }) => ({
+  animate: (custom: { index: number; speedMultiplier: number }) => ({
     x: 0,
     opacity: 1,
     scale: 1,
-    rotateZ: 0,
     transition: {
-      type: 'spring' as const,
-      stiffness: 260,
-      damping: 20,
-      delay: custom.index * 0.03,
+      ...springs.snappy,
+      delay: custom.index * staggerConfigs.fast.staggerChildren * custom.speedMultiplier,
     },
   }),
   exit: (isOwnMessage: boolean) => ({
-    x: isOwnMessage ? 100 : -100,
+    x: isOwnMessage ? 20 : -20,
     opacity: 0,
-    scale: 0.8,
+    scale: 0.95,
+    height: 0,
+    marginBottom: 0,
     transition: {
-      duration: 0.2,
+      duration: 0.25,
       ease: 'easeIn' as const,
+      height: { delay: 0.15, duration: 0.2 },
+      marginBottom: { delay: 0.15, duration: 0.2 },
     },
   }),
   hover: {
-    scale: 1.02,
-    transition: {
-      type: 'spring' as const,
-      stiffness: 400,
-      damping: 25,
-    },
+    scale: 1.01,
+    transition: springs.snappy,
   },
   tap: {
-    scale: 0.98,
+    scale: 0.99,
   },
 };
 
@@ -89,6 +92,8 @@ export function AnimatedMessageWrapper({
   isOwnMessage,
   index,
   isNew = false,
+  isEditing = false,
+  isDeleting = false,
   messageId: _messageId,
   onSwipeReply,
   onLongPress,
@@ -97,6 +102,10 @@ export function AnimatedMessageWrapper({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [isLongPressing, setIsLongPressing] = useState(false);
   const [showReplyIcon, setShowReplyIcon] = useState(false);
+  const [showEditFlash, setShowEditFlash] = useState(false);
+
+  const animationSpeed = useCustomizationStore((s) => s.animationSpeed);
+  const speedMultiplier = SPEED_MULTIPLIERS[animationSpeed] ?? 1;
 
   // Spring physics for swipe gesture
   const x = useSpring(0, { stiffness: 300, damping: 30 });
@@ -169,6 +178,16 @@ export function AnimatedMessageWrapper({
     }
   }, [isNew, isOwnMessage, index]);
 
+  // Flash highlight when message is being edited
+  useEffect(() => {
+    if (isEditing) {
+      setShowEditFlash(true);
+      const timer = setTimeout(() => setShowEditFlash(false), 1500);
+      return () => clearTimeout(timer);
+    }
+    setShowEditFlash(false);
+  }, [isEditing]);
+
   // Get gesture handlers separately to avoid type conflicts with framer-motion
   const gestureHandlers = enableGestures ? bind() : {};
 
@@ -177,7 +196,7 @@ export function AnimatedMessageWrapper({
       <motion.div
         ref={wrapperRef}
         className="relative touch-none select-none"
-        custom={{ index, isOwnMessage }}
+        custom={{ index, isOwnMessage, speedMultiplier }}
         variants={messageVariants}
         initial={isNew ? 'initial' : false}
         animate="animate"
@@ -223,6 +242,26 @@ export function AnimatedMessageWrapper({
           {/* Long press visual feedback */}
           {isLongPressing && (
             <div className="pointer-events-none absolute inset-0 animate-pulse rounded-2xl border-2 border-primary-500" />
+          )}
+
+          {/* Delete red flash overlay */}
+          {isDeleting && (
+            <motion.div
+              className="pointer-events-none absolute inset-0 rounded-2xl bg-red-500/25"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.6, 0.3] }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            />
+          )}
+
+          {/* Edit flash highlight */}
+          {showEditFlash && (
+            <motion.div
+              className="pointer-events-none absolute inset-0 rounded-2xl bg-yellow-400/20"
+              initial={{ opacity: 0.6 }}
+              animate={{ opacity: 0 }}
+              transition={{ duration: 1.5, ease: 'easeOut' }}
+            />
           )}
 
           {/* Message content */}

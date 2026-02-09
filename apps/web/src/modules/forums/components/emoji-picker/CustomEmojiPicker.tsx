@@ -17,6 +17,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PlusIcon } from '@heroicons/react/24/outline';
+import { api } from '@/lib/api';
 
 import { CustomEmojiPickerProps, CustomEmoji } from './types';
 import { useCustomEmojis, useEmojiSearch } from './hooks';
@@ -238,7 +239,24 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
           <span className="text-xs text-gray-400">{emojis.length} custom emojis</span>
           <button
             onClick={() => {
-              /* @todo(ui) Wire emoji upload modal */
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.accept = 'image/png,image/gif,image/webp';
+              input.onchange = async (e) => {
+                const file = (e.target as HTMLInputElement).files?.[0];
+                if (!file) return;
+                const name = window.prompt('Emoji name (no spaces):', file.name.replace(/\.[^.]+$/, ''));
+                if (!name?.trim()) return;
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('name', name.trim().replace(/\s+/g, '_'));
+                try {
+                  await api.post('/api/v1/emojis', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                  });
+                } catch { /* silently fail */ }
+              };
+              input.click();
             }}
             className="flex items-center gap-1 text-xs text-orange-500 hover:text-orange-600"
           >

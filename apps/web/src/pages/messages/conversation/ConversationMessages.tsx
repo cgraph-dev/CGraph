@@ -7,8 +7,9 @@
  * @module pages/messages/conversation/ConversationMessages
  */
 
-import { type RefObject } from 'react';
+import { type RefObject, useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { type Message } from '@/modules/chat/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDateHeader } from '@/lib/chat/messageUtils';
@@ -23,7 +24,23 @@ import {
 } from '@/modules/chat/components';
 import { GlassCard } from '@/shared/components/ui';
 import { MessageBubble } from '@/modules/chat/components';
+import { ScrollToBottomButton } from '@/modules/chat/components/ScrollToBottomButton';
+import { MessageListSkeleton } from '@/components/ui/skeletons';
 import type { UIPreferences } from './types';
+
+// ---------------------------------------------------------------------------
+// Virtualizer row types
+// ---------------------------------------------------------------------------
+
+type VirtualRow =
+  | { type: 'date-header'; date: Date; key: string }
+  | {
+      type: 'message';
+      message: Message;
+      groupMessages: Message[];
+      msgIndex: number;
+      key: string;
+    };
 
 const logger = createLogger('ConversationMessages');
 
@@ -93,10 +110,87 @@ export function ConversationMessages({
 }: ConversationMessagesProps) {
   const navigate = useNavigate();
 
+  // Track message IDs we've already rendered so we can detect truly new ones
+  const seenIdsRef = useRef<Set<string>>(new Set());
+  const allCurrentIds = new Set(
+    groupedMessages.flatMap((g) => g.messages.map((m) => m.id)),
+  );
+  // A message is "new" if we haven't seen it before in this component's lifetime
+  const newIds = new Set<string>();
+  allCurrentIds.forEach((id) => {
+    if (!seenIdsRef.current.has(id)) newIds.add(id);
+  });
+  // Update the seen set (runs synchronously before render output)
+  seenIdsRef.current = allCurrentIds;
+
+  // Track whether user has scrolled up from bottom
+  const [isScrolledUp, setIsScrolledUp] = useState(false);
+  const handleScroll = useCallback(() => {
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+    setIsScrolledUp(distanceFromBottom > 150);
+  }, [messagesContainerRef]);
+
+  useEffect(() => {
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', handleScroll, { passive: true });
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, [messagesContainerRef, handleScroll]);
+
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messagesEndRef]);
+
+  // ── Flatten groups into a single virtualizable list ─────────────────
+  const flatRows = useMemo<VirtualRow[]>(() => {
+    const rows: VirtualRow[] = [];
+    for (const group of groupedMessages) {
+      rows.push({
+        type: 'date-header',
+        date: group.date,
+        key: `dh-${group.date.toISOString()}`,
+      });
+      group.messages.forEach((message, msgIndex) => {
+        rows.push({
+          type: 'message',
+          message,
+          groupMessages: group.messages,
+          msgIndex,
+          key: `msg-${message.id}`,
+        });
+      });
+    }
+    return rows;
+  }, [groupedMessages]);
+
+  // ── Virtualizer ─────────────────────────────────────────────────────
+  const virtualizer = useVirtualizer({
+    count: flatRows.length,
+    getScrollElement: () => messagesContainerRef.current,
+    estimateSize: (index) => {
+      const row = flatRows[index];
+      // Date headers are smaller; messages are taller on average
+      return row?.type === 'date-header' ? 56 : 80;
+    },
+    overscan: 10,
+    getItemKey: (index) => flatRows[index]?.key ?? String(index),
+  });
+
+  // Auto-scroll to bottom when new messages arrive (unless user scrolled up)
+  const prevCountRef = useRef(flatRows.length);
+  useEffect(() => {
+    if (flatRows.length > prevCountRef.current && !isScrolledUp) {
+      virtualizer.scrollToIndex(flatRows.length - 1, { align: 'end' });
+    }
+    prevCountRef.current = flatRows.length;
+  }, [flatRows.length, isScrolledUp, virtualizer]);
+
   return (
     <div
       ref={messagesContainerRef}
-      className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4"
+      className="min-h-0 flex-1 overflow-y-auto p-4"
       style={{ scrollBehavior: 'smooth' }}
     >
       {hasMore && (
@@ -111,107 +205,150 @@ export function ConversationMessages({
         </div>
       )}
 
-      {groupedMessages.map((group, groupIndex) => (
-        <div key={groupIndex}>
-          <motion.div
-            className="my-6 flex items-center justify-center"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, type: 'spring' }}
-          >
-            <GlassCard
-              variant={uiPreferences.glassEffect}
-              intensity="subtle"
-              glow={uiPreferences.enableGlow}
-              className="rounded-full px-4 py-2"
-            >
-              <span className="text-xs font-medium tracking-wide text-white">
-                {formatDateHeader(group.date)}
-              </span>
-            </GlassCard>
-          </motion.div>
+      {/* Skeleton loading state when no messages yet */}
+      {isLoading && groupedMessages.length === 0 && (
+        <MessageListSkeleton count={8} />
+      )}
 
-          <div className="space-y-1">
-            {group.messages.map((message, msgIndex) => {
-              const messageSenderId =
-                getMessageSenderId(message as unknown as Record<string, unknown>) || '';
-              const currentUserId = user?.id || '';
+      {/* Virtualized message list */}
+      <div
+        style={{
+          height: `${virtualizer.getTotalSize()}px`,
+          width: '100%',
+          position: 'relative',
+        }}
+      >
+        {virtualizer.getVirtualItems().map((virtualRow) => {
+          const row = flatRows[virtualRow.index];
+          if (!row) return null;
 
-              if (import.meta.env.DEV && msgIndex === 0) {
-                logger.debug('Web] First message debug:', {
-                  messageId: message.id,
-                  messageSenderId,
-                  currentUserId,
-                  isEqual: messageSenderId === currentUserId,
-                });
-              }
-
-              const isOwn =
-                messageSenderId.length > 0 &&
-                currentUserId.length > 0 &&
-                messageSenderId === currentUserId;
-
-              const prevMessage = group.messages[msgIndex - 1];
-              const prevSenderId = prevMessage
-                ? getMessageSenderId(prevMessage as unknown as Record<string, unknown>) || ''
-                : '';
-              const showAvatar = !isOwn && (msgIndex === 0 || prevSenderId !== messageSenderId);
-
-              return (
-                <AnimatedMessageWrapper
-                  key={message.id}
-                  isOwnMessage={isOwn}
-                  index={msgIndex}
-                  messageId={message.id}
-                  onSwipeReply={() => onReply(message)}
-                  enableGestures={true}
+          if (row.type === 'date-header') {
+            return (
+              <div
+                key={row.key}
+                data-index={virtualRow.index}
+                ref={virtualizer.measureElement}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  transform: `translateY(${virtualRow.start}px)`,
+                }}
+              >
+                <motion.div
+                  className="my-6 flex items-center justify-center"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, type: 'spring' }}
                 >
-                  <MessageBubble
-                    message={message}
-                    isOwn={isOwn}
-                    showAvatar={showAvatar}
-                    onReply={() => onReply(message)}
-                    uiPreferences={uiPreferences}
-                    onAvatarClick={(userId) => navigate(`/user/${userId}`)}
-                    onEdit={() => onStartEdit(message)}
-                    onDelete={() => onDeleteMessage(message.id)}
-                    onPin={() => onPinMessage(message.id)}
-                    onForward={() => onOpenForward(message)}
-                    isMenuOpen={activeMessageMenu === message.id}
-                    onToggleMenu={() => onToggleMessageMenu(message.id)}
-                    isEditing={editingMessageId === message.id}
-                    editContent={editContent}
-                    onEditContentChange={onEditContentChange}
-                    onSaveEdit={onSaveEdit}
-                    onCancelEdit={onCancelEdit}
-                  />
-                  {message.reactions && message.reactions.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-1.5">
-                      {Object.entries(
-                        message.reactions.reduce<
-                          Record<string, { count: number; hasReacted: boolean }>
-                        >((acc, r) => {
-                          const entry = (acc[r.emoji] ??= { count: 0, hasReacted: false });
-                          entry.count++;
-                          if (user && r.userId === user.id) entry.hasReacted = true;
-                          return acc;
-                        }, {})
-                      ).map(([emoji, { count, hasReacted }]) => (
-                        <AnimatedReactionBubble
-                          key={emoji}
-                          reaction={{ emoji, count, hasReacted }}
-                          isOwnMessage={isOwn}
-                          onPress={() => handleAddReaction(message.id, emoji)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </AnimatedMessageWrapper>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+                  <GlassCard
+                    variant={uiPreferences.glassEffect}
+                    intensity="subtle"
+                    glow={uiPreferences.enableGlow}
+                    className="rounded-full px-4 py-2"
+                  >
+                    <span className="text-xs font-medium tracking-wide text-white">
+                      {formatDateHeader(row.date)}
+                    </span>
+                  </GlassCard>
+                </motion.div>
+              </div>
+            );
+          }
+
+          // ── Message row ──────────────────────────────────────────
+          const { message, groupMessages, msgIndex } = row;
+          const messageSenderId =
+            getMessageSenderId(message as unknown as Record<string, unknown>) || '';
+          const currentUserId = user?.id || '';
+
+          if (import.meta.env.DEV && msgIndex === 0) {
+            logger.debug('Web] First message debug:', {
+              messageId: message.id,
+              messageSenderId,
+              currentUserId,
+              isEqual: messageSenderId === currentUserId,
+            });
+          }
+
+          const isOwn =
+            messageSenderId.length > 0 &&
+            currentUserId.length > 0 &&
+            messageSenderId === currentUserId;
+
+          const prevMessage = groupMessages[msgIndex - 1];
+          const prevSenderId = prevMessage
+            ? getMessageSenderId(prevMessage as unknown as Record<string, unknown>) || ''
+            : '';
+          const showAvatar = !isOwn && (msgIndex === 0 || prevSenderId !== messageSenderId);
+
+          return (
+            <div
+              key={row.key}
+              data-index={virtualRow.index}
+              ref={virtualizer.measureElement}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+            >
+              <AnimatedMessageWrapper
+                isOwnMessage={isOwn}
+                index={msgIndex}
+                isNew={newIds.has(message.id)}
+                messageId={message.id}
+                onSwipeReply={() => onReply(message)}
+                enableGestures={true}
+              >
+                <MessageBubble
+                  message={message}
+                  isOwn={isOwn}
+                  showAvatar={showAvatar}
+                  onReply={() => onReply(message)}
+                  uiPreferences={uiPreferences}
+                  onAvatarClick={(avatarUserId) => navigate(`/user/${avatarUserId}`)}
+                  onEdit={() => onStartEdit(message)}
+                  onDelete={() => onDeleteMessage(message.id)}
+                  onPin={() => onPinMessage(message.id)}
+                  onForward={() => onOpenForward(message)}
+                  isMenuOpen={activeMessageMenu === message.id}
+                  onToggleMenu={() => onToggleMessageMenu(message.id)}
+                  isEditing={editingMessageId === message.id}
+                  editContent={editContent}
+                  onEditContentChange={onEditContentChange}
+                  onSaveEdit={onSaveEdit}
+                  onCancelEdit={onCancelEdit}
+                />
+                {message.reactions && message.reactions.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {Object.entries(
+                      message.reactions.reduce<
+                        Record<string, { count: number; hasReacted: boolean }>
+                      >((acc, r) => {
+                        const entry = (acc[r.emoji] ??= { count: 0, hasReacted: false });
+                        entry.count++;
+                        if (user && r.userId === user.id) entry.hasReacted = true;
+                        return acc;
+                      }, {})
+                    ).map(([emoji, { count, hasReacted }]) => (
+                      <AnimatedReactionBubble
+                        key={emoji}
+                        reaction={{ emoji, count, hasReacted }}
+                        isOwnMessage={isOwn}
+                        onPress={() => handleAddReaction(message.id, emoji)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </AnimatedMessageWrapper>
+            </div>
+          );
+        })}
+      </div>
 
       <AnimatePresence>
         <TypingIndicator
@@ -222,6 +359,11 @@ export function ConversationMessages({
       </AnimatePresence>
 
       <div ref={messagesEndRef} />
+
+      <ScrollToBottomButton
+        visible={isScrolledUp}
+        onClick={scrollToBottom}
+      />
     </div>
   );
 }

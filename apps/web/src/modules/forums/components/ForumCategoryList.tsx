@@ -1,5 +1,18 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { staggerConfigs } from '@/lib/animation-presets/presets';
+
+const staggerContainer = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: staggerConfigs.standard.staggerChildren },
+  },
+};
+
+const staggerItem = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.25 } },
+};
 void Link; // Reserved for forum navigation links
 import {
   FolderIcon,
@@ -163,25 +176,30 @@ export function ForumCategoryList({
 
   if (variant === 'compact') {
     return (
-      <div className={`space-y-2 ${className}`}>
-        {categories.map((category) => renderCompactCategory(category))}
-      </div>
+      <motion.div className={`space-y-2 ${className}`} variants={staggerContainer} initial="hidden" animate="show">
+        {categories.map((category) => (
+          <motion.div key={category.id} variants={staggerItem}>
+            {renderCompactCategory(category)}
+          </motion.div>
+        ))}
+      </motion.div>
     );
   }
 
   if (variant === 'cards') {
     return (
-      <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 ${className}`}>
+      <motion.div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 ${className}`} variants={staggerContainer} initial="hidden" animate="show">
         {categories.map((category, index) => (
-          <ForumCategoryCard
-            key={category.id}
-            category={category}
-            index={index}
-            primaryColor={primaryColor}
-            onCategoryClick={onCategoryClick}
-          />
+          <motion.div key={category.id} variants={staggerItem}>
+            <ForumCategoryCard
+              category={category}
+              index={index}
+              primaryColor={primaryColor}
+              onCategoryClick={onCategoryClick}
+            />
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     );
   }
 
@@ -201,10 +219,12 @@ export function ForumCategoryList({
       )}
 
       {/* Category List */}
+      <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-4">
       {categories
         .sort((a, b) => a.order - b.order)
         .map((category) => (
-          <GlassCard key={category.id} variant="frosted" className="overflow-hidden">
+          <motion.div key={category.id} variants={staggerItem}>
+          <GlassCard variant="frosted" className="overflow-hidden">
             {renderCategoryHeader(category)}
 
             <AnimatePresence>
@@ -234,7 +254,9 @@ export function ForumCategoryList({
               )}
             </AnimatePresence>
           </GlassCard>
+          </motion.div>
         ))}
+      </motion.div>
 
       {categories.length === 0 && (
         <ForumCategoryEmptyState

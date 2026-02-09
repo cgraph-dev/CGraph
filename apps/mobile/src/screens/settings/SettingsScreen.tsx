@@ -161,6 +161,12 @@ export default function SettingsScreen({ navigation }: Props) {
           onPress: () => navigation.navigate('Privacy'),
           gradient: ['#10b981', '#34d399'] as [string, string],
         },
+        {
+          title: 'Sessions',
+          icon: 'phone-portrait' as const,
+          onPress: () => navigation.navigate('Sessions'),
+          gradient: ['#f97316', '#fb923c'] as [string, string],
+        },
       ],
     },
     {
@@ -214,13 +220,13 @@ export default function SettingsScreen({ navigation }: Props) {
         {
           title: 'Terms of Service',
           icon: 'document-text' as const,
-          onPress: () => {},
+          onPress: () => navigation.navigate('TermsOfService'),
           gradient: ['#8b5cf6', '#a855f7'] as [string, string],
         },
         {
           title: 'Privacy Policy',
           icon: 'shield-checkmark' as const,
-          onPress: () => {},
+          onPress: () => navigation.navigate('PrivacyPolicy'),
           gradient: ['#10b981', '#34d399'] as [string, string],
         },
       ],

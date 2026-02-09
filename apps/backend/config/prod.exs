@@ -11,14 +11,20 @@ config :logger,
     [level_lower_than: :info]
   ]
 
-# Configure logger format for production (JSON-style for log aggregation)
+# Configure logger format for production (JSON for log aggregation)
+# Structured JSON output compatible with Grafana Loki, Datadog, CloudWatch
 config :logger, :console,
-  format: "$time $metadata[$level] $message\n",
+  format: {CGraph.Telemetry.JsonFormatter, :format},
   metadata: [
     :request_id,
     :user_id,
     :trace_id,
-    :remote_ip
+    :span_id,
+    :remote_ip,
+    :method,
+    :path,
+    :status,
+    :duration_us
   ]
 
 # Disable Phoenix dev routes in production

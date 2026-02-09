@@ -72,29 +72,20 @@ defmodule CGraph.Messaging.Repositories.ConversationRepository do
   """
   @spec list_for_user(String.t(), keyword()) :: {list(Conversation.t()), map()}
   def list_for_user(user_id, opts \\ []) do
-    limit = Keyword.get(opts, :limit, 20)
-    offset = Keyword.get(opts, :offset, 0)
-
     query =
       from c in Conversation,
         join: p in ConversationParticipant,
         on: p.conversation_id == c.id,
         where: p.user_id == ^user_id and is_nil(p.left_at),
-        order_by: [desc: c.last_message_at, desc: c.inserted_at],
-        preload: [:participants, :last_message],
-        limit: ^limit,
-        offset: ^offset
+        preload: [:participants, :last_message]
 
-    conversations = Repo.all(query)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :last_message_at,
+      sort_direction: :desc
+    )
 
-    total =
-      from(p in ConversationParticipant,
-        where: p.user_id == ^user_id and is_nil(p.left_at),
-        select: count(p.id)
-      )
-      |> Repo.one()
-
-    {conversations, %{total: total, limit: limit, offset: offset}}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """

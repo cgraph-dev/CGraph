@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { UserIcon, StarIcon, ShieldCheckIcon } from '@heroicons/react/24/solid';
 
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
+import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
 import { getAvatarBorderId } from '@/lib/utils';
 import { ROLE_COLORS } from './constants';
 import type { MemberCardProps } from './types';
@@ -53,7 +54,7 @@ export function MemberCard({ member }: MemberCardProps) {
             </span>
           )}
         </div>
-        {member.title && <p className="text-sm text-primary-400">{member.title}</p>}
+        {member.title && <TitleBadge title={member.title} size="xs" animated />}
         <div className="mt-1 flex items-center gap-4 text-xs text-gray-400">
           <span>{member.postCount.toLocaleString()} posts</span>
           <span>

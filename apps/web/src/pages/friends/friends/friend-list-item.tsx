@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import UserProfileCard from '@/modules/social/components/UserProfileCard';
+import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
 import {
   ChatBubbleLeftRightIcon,
   EllipsisVerticalIcon,
@@ -79,9 +80,14 @@ export function FriendListItem({
 
       {/* Info */}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-white">
-          {friend.displayName || friend.username}
-        </p>
+        <div className="flex items-center gap-1.5">
+          <p className="truncate text-sm font-medium text-white">
+            {friend.displayName || friend.username}
+          </p>
+          {friend.equippedTitleId && (
+            <TitleBadge title={friend.equippedTitleId} size="xs" animated />
+          )}
+        </div>
         <p className="truncate text-xs text-gray-400">@{friend.username}</p>
       </div>
 

@@ -120,7 +120,7 @@ defmodule CGraphWeb.ConversationChannel do
         }) do
           {:ok, message} ->
             # Preload sender for serialization (including reply_to sender)
-            message = CGraph.Repo.preload(message, [:sender, :reactions, [reply_to: :sender]])
+            message = CGraph.Repo.preload(message, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])
             serialized = MessageJSON.message_data(message)
 
             broadcast!(socket, "new_message", %{message: serialized})
@@ -195,7 +195,7 @@ defmodule CGraphWeb.ConversationChannel do
 
     case Messaging.edit_message(message_id, user.id, content) do
       {:ok, message} ->
-        message = CGraph.Repo.preload(message, [:sender, :reactions, :reply_to])
+        message = CGraph.Repo.preload(message, [[sender: :customization], :reactions, :reply_to])
         serialized = MessageJSON.message_data(message)
         broadcast!(socket, "message_updated", %{message: serialized})
         {:reply, {:ok, %{message_id: message.id}}, socket}
@@ -234,7 +234,7 @@ defmodule CGraphWeb.ConversationChannel do
 
     case Messaging.pin_message(message_id, user.id) do
       {:ok, message} ->
-        message = CGraph.Repo.preload(message, [:sender, :reactions, :reply_to])
+        message = CGraph.Repo.preload(message, [[sender: :customization], :reactions, :reply_to])
         serialized = MessageJSON.message_data(message)
         broadcast!(socket, "message_pinned", %{message: serialized})
         {:reply, {:ok, %{message_id: message.id}}, socket}

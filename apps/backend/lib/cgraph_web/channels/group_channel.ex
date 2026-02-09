@@ -190,7 +190,7 @@ defmodule CGraphWeb.GroupChannel do
 
     case Messaging.create_message(message_attrs) do
       {:ok, message} ->
-        message = CGraph.Repo.preload(message, [:sender, :reactions, :reply_to])
+        message = CGraph.Repo.preload(message, [[sender: :customization], :reactions, :reply_to])
         serialized = message |> MessageJSON.message_data() |> Map.put(:senderNickname, member.nickname)
         broadcast!(socket, "new_message", %{message: serialized})
         {:reply, {:ok, %{message_id: message.id}}, socket}

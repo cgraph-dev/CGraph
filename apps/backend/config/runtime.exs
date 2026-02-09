@@ -67,6 +67,60 @@ if config_env() == :prod do
 
   config :cgraph, CGraph.Repo, repo_config
 
+  # ── Read Replica Configuration ──
+  # Offloads heavy read queries (leaderboards, analytics, search indexing)
+  # Set READ_REPLICA_DATABASE_URL to enable; otherwise falls back to primary
+  read_replica_url = System.get_env("READ_REPLICA_DATABASE_URL")
+
+  if read_replica_url do
+    read_config = [
+      url: read_replica_url,
+      pool_size: String.to_integer(System.get_env("READ_REPLICA_POOL_SIZE") || "20"),
+      queue_target: 200,
+      queue_interval: 3000,
+      socket_options: maybe_ipv6,
+      timeout: 30_000,
+      connect_timeout: 10_000,
+      # Read replicas don't need write capabilities
+      read_only: true
+    ]
+
+    read_config = if ssl_enabled do
+      Keyword.put(read_config, :ssl, Keyword.get(repo_config, :ssl))
+    else
+      read_config
+    end
+
+    config :cgraph, CGraph.ReadRepo, read_config
+    IO.puts("[DB] Read replica enabled: offloading leaderboard/analytics queries")
+  else
+    # No replica — ReadRepo uses primary database
+    config :cgraph, CGraph.ReadRepo, repo_config
+    IO.puts("[DB] No read replica configured — using primary for all reads")
+  end
+
+  # ── PgBouncer Configuration ──
+  # When PGBOUNCER_DATABASE_URL is set, the primary Repo connects via PgBouncer
+  # PgBouncer multiplexes connections, allowing 5-10x more effective connections
+  # Typical setup: app -> PgBouncer (localhost:6432) -> PostgreSQL
+  if pgbouncer_url = System.get_env("PGBOUNCER_DATABASE_URL") do
+    pgbouncer_config = Keyword.merge(repo_config, [
+      url: pgbouncer_url,
+      # PgBouncer doesn't support prepared statements in transaction mode
+      prepare: :unnamed,
+      # Smaller pool since PgBouncer handles multiplexing
+      pool_size: String.to_integer(System.get_env("PGBOUNCER_POOL_SIZE") || "20"),
+    ])
+    config :cgraph, CGraph.Repo, pgbouncer_config
+
+    # PgBouncer in transaction mode doesn't support LISTEN/NOTIFY
+    # Switch Oban to PG-based notifier (uses distributed Erlang instead)
+    config :cgraph, Oban, notifier: Oban.Notifiers.PG
+
+    IO.puts("[DB] PgBouncer enabled — using connection multiplexing")
+    IO.puts("[Oban] Using PG notifier (PgBouncer-compatible)")
+  end
+
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
       raise """
@@ -114,6 +168,28 @@ if config_env() == :prod do
       enable_source_code_context: true,
       root_source_code_paths: [File.cwd!()]
   end
+
+  # OpenTelemetry configuration
+  otel_endpoint = System.get_env("OTEL_EXPORTER_OTLP_ENDPOINT") || "http://localhost:4318"
+  otel_sample_rate = String.to_float(System.get_env("OTEL_SAMPLE_RATE") || "0.1")
+
+  config :opentelemetry,
+    span_processor: :batch,
+    traces_exporter: :otlp,
+    resource: [
+      service: [name: System.get_env("OTEL_SERVICE_NAME") || "cgraph"],
+      deployment: [environment: "production"]
+    ]
+
+  config :opentelemetry_exporter,
+    otlp_protocol: :http_protobuf,
+    otlp_endpoint: otel_endpoint
+
+  config :cgraph, CGraph.Telemetry.OpenTelemetry,
+    sample_rate: otel_sample_rate,
+    enabled: true
+
+  IO.puts("[OTel] Tracing enabled → #{otel_endpoint} (sample rate: #{otel_sample_rate})")
 
   # ExAWS for Cloudflare R2
   config :ex_aws,

@@ -1,10 +1,11 @@
 /**
  * Switch Component
- * 
- * Toggle switch for boolean settings.
+ *
+ * Toggle switch for boolean settings with spring physics.
  */
 
-
+import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 
 export interface SwitchProps {
   checked?: boolean;
@@ -14,21 +15,22 @@ export interface SwitchProps {
   id?: string;
 }
 
-export function Switch({ 
-  checked = false, 
-  onCheckedChange, 
+export function Switch({
+  checked = false,
+  onCheckedChange,
   disabled = false,
   className = '',
-  id
+  id,
 }: SwitchProps) {
   return (
-    <button
+    <motion.button
       type="button"
       role="switch"
       aria-checked={checked}
       id={id}
       disabled={disabled}
       onClick={() => onCheckedChange?.(!checked)}
+      whileTap={{ scale: 0.95 }}
       className={`
         relative inline-flex h-6 w-11 items-center rounded-full
         transition-colors duration-200 ease-in-out
@@ -39,14 +41,12 @@ export function Switch({
         ${className}
       `}
     >
-      <span
-        className={`
-          inline-block h-4 w-4 rounded-full bg-white shadow-sm
-          transform transition-transform duration-200 ease-in-out
-          ${checked ? 'translate-x-6' : 'translate-x-1'}
-        `}
+      <motion.span
+        className="inline-block h-4 w-4 rounded-full bg-white shadow-sm"
+        animate={{ x: checked ? 24 : 4 }}
+        transition={springs.snappy}
       />
-    </button>
+    </motion.button>
   );
 }
 

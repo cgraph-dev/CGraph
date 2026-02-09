@@ -30,7 +30,8 @@
       "@cgraph/utils": ["../../packages/utils/src"],
       "@cgraph/ui": ["../../packages/ui/src"],
       "@cgraph/config": ["../../packages/config/src"],
-      "@cgraph/core": ["../../packages/core/src"]
+      "@cgraph/core": ["../../packages/core/src"],
+      "@cgraph/animation-constants": ["../../packages/animation-constants/src"]
     }
   },
   "include": ["src"],

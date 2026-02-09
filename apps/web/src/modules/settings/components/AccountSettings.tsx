@@ -26,6 +26,8 @@ export function AccountSettings() {
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [username, setUsername] = useState(user?.username || '');
   const [email, setEmail] = useState(user?.email || '');
+  const [bio, setBio] = useState(user?.bio || '');
+  const [pronouns, setPronouns] = useState(user?.pronouns || '');
   const [isSaving, setIsSaving] = useState(false);
   const [isChangingUsername, setIsChangingUsername] = useState(false);
 
@@ -39,6 +41,8 @@ export function AccountSettings() {
     try {
       const response = await api.put('/api/v1/me', {
         display_name: displayName,
+        bio,
+        pronouns,
       });
       updateUser({
         displayName: response.data.data.display_name || response.data.data.displayName,
@@ -216,6 +220,64 @@ export function AccountSettings() {
           placeholder="How should we call you?"
           className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
         />
+      </GlassCard>
+
+      {/* Bio */}
+      <GlassCard variant="default" className="mb-6 p-6">
+        <label className="mb-2 block text-sm font-medium text-gray-300">About Me</label>
+        <textarea
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          placeholder="Tell others about yourself..."
+          maxLength={300}
+          rows={3}
+          className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
+        />
+        <p className="mt-1 text-right text-xs text-gray-500">{bio.length}/300</p>
+      </GlassCard>
+
+      {/* Pronouns */}
+      <GlassCard variant="default" className="mb-6 p-6">
+        <label className="mb-2 block text-sm font-medium text-gray-300">Pronouns</label>
+        <select
+          value={pronouns}
+          onChange={(e) => setPronouns(e.target.value)}
+          className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
+        >
+          <option value="">Prefer not to say</option>
+          <option value="he/him">he/him</option>
+          <option value="she/her">she/her</option>
+          <option value="they/them">they/them</option>
+          <option value="he/they">he/they</option>
+          <option value="she/they">she/they</option>
+          <option value="any">Any pronouns</option>
+          <option value="ask">Ask me</option>
+        </select>
+      </GlassCard>
+
+      {/* Banner */}
+      <GlassCard variant="crystal" glow className="mb-6 p-6">
+        <label className="mb-3 block text-sm font-medium text-gray-300">Profile Banner</label>
+        <div className="relative h-32 overflow-hidden rounded-lg bg-dark-700 ring-1 ring-dark-600">
+          {user?.bannerUrl ? (
+            <img src={user.bannerUrl} alt="Banner" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-dark-700 to-dark-800">
+              <span className="text-sm text-gray-500">No banner set</span>
+            </div>
+          )}
+          <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity hover:opacity-100">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => HapticFeedback.medium()}
+              className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white"
+            >
+              Upload Banner
+            </motion.button>
+          </div>
+        </div>
+        <p className="mt-2 text-xs text-gray-500">Recommended: 1920x480px. Max 5MB.</p>
       </GlassCard>
 
       {/* Email */}

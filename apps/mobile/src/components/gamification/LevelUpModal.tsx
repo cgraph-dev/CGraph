@@ -1,20 +1,36 @@
 /**
  * LevelUpModal - Epic Level Up Celebration
- * Full-screen celebration with particles, animations, and rewards
+ * Full-screen celebration with particles, animations, and rewards.
+ * Uses Reanimated v4 per ADR-018.
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Modal,
-  Animated,
   Dimensions,
   TouchableOpacity,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withSequence,
+  withRepeat,
+  withDelay,
+  interpolate,
+  Easing,
+  FadeIn,
+  FadeInDown,
+  ZoomIn,
+  runOnJS,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AnimationColors, HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { SPRING_PRESETS } from '@/lib/animations/AnimationLibrary';
 import GlassCard from '../ui/GlassCard';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -56,80 +72,64 @@ export default function LevelUpModal({
   rewards,
   previousLevel = level - 1,
 }: LevelUpModalProps) {
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const rotateAnim = useRef(new Animated.Value(0)).current;
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
+  // ---- Shared values (Reanimated v4) ----
+  const badgeScale = useSharedValue(0);
+  const badgeRotate = useSharedValue(0);
+  const contentOpacity = useSharedValue(0);
+  const glowOpacity = useSharedValue(0.3);
+
   const [particles, setParticles] = useState<Particle[]>([]);
   const [showRewards, setShowRewards] = useState(false);
 
+  const showRewardsCallback = useCallback(() => {
+    setShowRewards(true);
+    HapticFeedback.success();
+  }, []);
+
   useEffect(() => {
     if (visible) {
-      // Trigger celebration sequence
       celebrateSequence();
     } else {
-      // Reset animations
-      scaleAnim.setValue(0);
-      rotateAnim.setValue(0);
-      fadeAnim.setValue(0);
-      glowAnim.setValue(0);
+      badgeScale.value = 0;
+      badgeRotate.value = 0;
+      contentOpacity.value = 0;
+      glowOpacity.value = 0.3;
       setShowRewards(false);
       setParticles([]);
     }
   }, [visible]);
 
-  const celebrateSequence = async () => {
-    // Haptic celebration pattern
+  const celebrateSequence = () => {
     HapticFeedback.levelUp();
-
-    // Generate particles
     generateParticles();
 
-    // Animate level badge entrance
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        tension: 50,
-        friction: 7,
-        useNativeDriver: true,
-      }),
-      Animated.timing(rotateAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    // Badge entrance: spring scale + 360° rotation + fade
+    badgeScale.value = withSpring(1, SPRING_PRESETS.bouncy);
+    badgeRotate.value = withTiming(360, { duration: 800, easing: Easing.out(Easing.cubic) });
+    contentOpacity.value = withTiming(1, { duration: 500 });
 
-    // Pulse glow
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: false,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 0,
-          duration: 1000,
-          useNativeDriver: false,
-        }),
-      ])
-    ).start();
+    // Looping glow pulse
+    glowOpacity.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 1000 }),
+        withTiming(0.3, { duration: 1000 }),
+      ),
+      -1, // infinite
+      true,
+    );
 
-    // Show rewards after delay
-    setTimeout(() => {
-      setShowRewards(true);
-      HapticFeedback.success();
-    }, 1200);
+    // Show rewards after 1.2s
+    badgeScale.value = withDelay(
+      1200,
+      withTiming(badgeScale.value, { duration: 0 }, () => {
+        runOnJS(showRewardsCallback)();
+      }),
+    );
+    // Fallback: ensure rewards show even if animation callback is skipped
+    setTimeout(showRewardsCallback, 1300);
   };
 
   const generateParticles = () => {
-    const newParticles: Particle[] = [];
     const colors = [
       AnimationColors.primary,
       AnimationColors.purple,
@@ -138,63 +138,64 @@ export default function LevelUpModal({
       AnimationColors.neonCyan,
     ];
 
-    // Generate 50 particles
-    for (let i = 0; i < 50; i++) {
-      const angle = (Math.random() * Math.PI * 2);
+    const newParticles: Particle[] = Array.from({ length: 50 }, (_, i) => {
+      const angle = Math.random() * Math.PI * 2;
       const velocity = Math.random() * 5 + 3;
-      newParticles.push({
-        id: `particle-${i}`,
+      return {
+        id: `p-${i}`,
         x: SCREEN_WIDTH / 2,
         y: SCREEN_HEIGHT / 2,
         vx: Math.cos(angle) * velocity,
-        vy: Math.sin(angle) * velocity - 2, // Slight upward bias
+        vy: Math.sin(angle) * velocity - 2,
         color: colors[Math.floor(Math.random() * colors.length)],
         size: Math.random() * 8 + 4,
         rotation: Math.random() * 360,
         rotationSpeed: (Math.random() - 0.5) * 10,
-      });
-    }
+      };
+    });
 
     setParticles(newParticles);
-
-    // Animate particles
-    animateParticles(newParticles);
+    animateParticles();
   };
 
-  const animateParticles = (initialParticles: Particle[]) => {
+  const animateParticles = () => {
     let frame = 0;
     const maxFrames = 100;
     const gravity = 0.15;
 
-    const animate = () => {
+    const step = () => {
       if (frame >= maxFrames) return;
-
-      setParticles((currentParticles) =>
-        currentParticles.map((particle) => ({
-          ...particle,
-          x: particle.x + particle.vx,
-          y: particle.y + particle.vy,
-          vy: particle.vy + gravity,
-          rotation: particle.rotation + particle.rotationSpeed,
-        }))
+      setParticles((prev) =>
+        prev.map((p) => ({
+          ...p,
+          x: p.x + p.vx,
+          y: p.y + p.vy,
+          vy: p.vy + gravity,
+          rotation: p.rotation + p.rotationSpeed,
+        })),
       );
-
       frame++;
-      requestAnimationFrame(animate);
+      requestAnimationFrame(step);
     };
-
-    requestAnimationFrame(animate);
+    requestAnimationFrame(step);
   };
 
-  const rotation = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
+  // ---- Animated styles ----
+  const badgeAnimStyle = useAnimatedStyle(() => ({
+    opacity: contentOpacity.value,
+    transform: [
+      { scale: badgeScale.value },
+      { rotate: `${badgeRotate.value}deg` },
+    ],
+  }));
 
-  const glowOpacity = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.3, 1],
-  });
+  const glowAnimStyle = useAnimatedStyle(() => ({
+    opacity: glowOpacity.value,
+  }));
+
+  const textAnimStyle = useAnimatedStyle(() => ({
+    opacity: contentOpacity.value,
+  }));
 
   return (
     <Modal
@@ -204,9 +205,9 @@ export default function LevelUpModal({
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        {/* Particles */}
+        {/* Particles (JS-driven, not on UI thread — acceptable for confetti) */}
         {particles.map((particle) => (
-          <Animated.View
+          <View
             key={particle.id}
             style={[
               styles.particle,
@@ -223,27 +224,8 @@ export default function LevelUpModal({
         ))}
 
         {/* Level badge */}
-        <Animated.View
-          style={[
-            styles.badgeContainer,
-            {
-              opacity: fadeAnim,
-              transform: [
-                { scale: scaleAnim },
-                { rotate: rotation },
-              ],
-            },
-          ]}
-        >
-          <Animated.View
-            style={[
-              styles.glowRing,
-              {
-                opacity: glowOpacity,
-                shadowOpacity: glowOpacity,
-              },
-            ]}
-          />
+        <Animated.View style={[styles.badgeContainer, badgeAnimStyle]}>
+          <Animated.View style={[styles.glowRing, glowAnimStyle]} />
           <LinearGradient
             colors={[AnimationColors.amber, AnimationColors.amberLight, AnimationColors.amber]}
             style={styles.badge}
@@ -254,14 +236,7 @@ export default function LevelUpModal({
         </Animated.View>
 
         {/* Level up text */}
-        <Animated.View
-          style={[
-            styles.textContainer,
-            {
-              opacity: fadeAnim,
-            },
-          ]}
-        >
+        <Animated.View style={[styles.textContainer, textAnimStyle]}>
           <Text style={styles.congratsText}>LEVEL UP!</Text>
           <Text style={styles.levelText}>
             {previousLevel} → {level}
@@ -272,15 +247,11 @@ export default function LevelUpModal({
           </View>
         </Animated.View>
 
-        {/* Rewards section */}
+        {/* Rewards section — Reanimated entering animations */}
         {showRewards && (
           <Animated.View
-            style={[
-              styles.rewardsContainer,
-              {
-                opacity: fadeAnim,
-              },
-            ]}
+            entering={FadeInDown.springify().damping(18).stiffness(200)}
+            style={styles.rewardsContainer}
           >
             <GlassCard variant="frosted" intensity="strong">
               <View style={styles.rewardsContent}>
@@ -289,20 +260,11 @@ export default function LevelUpModal({
                   {rewards.map((reward, index) => (
                     <Animated.View
                       key={index}
-                      style={[
-                        styles.rewardItem,
-                        {
-                          opacity: fadeAnim,
-                          transform: [
-                            {
-                              translateY: fadeAnim.interpolate({
-                                inputRange: [0, 1],
-                                outputRange: [20, 0],
-                              }),
-                            },
-                          ],
-                        },
-                      ]}
+                      entering={FadeInDown.delay(index * 100)
+                        .springify()
+                        .damping(16)
+                        .stiffness(180)}
+                      style={styles.rewardItem}
                     >
                       <View style={styles.rewardIconContainer}>
                         <Text style={styles.rewardIcon}>{reward.icon}</Text>
@@ -335,20 +297,22 @@ export default function LevelUpModal({
 
         {/* Continue button */}
         {showRewards && (
-          <TouchableOpacity
-            onPress={() => {
-              HapticFeedback.medium();
-              onClose();
-            }}
-            style={styles.continueButton}
-          >
-            <LinearGradient
-              colors={[AnimationColors.primary, AnimationColors.primaryDark]}
-              style={styles.continueButtonGradient}
+          <Animated.View entering={ZoomIn.delay(rewards.length * 100 + 200).springify()}>
+            <TouchableOpacity
+              onPress={() => {
+                HapticFeedback.medium();
+                onClose();
+              }}
+              style={styles.continueButton}
             >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </LinearGradient>
-          </TouchableOpacity>
+              <LinearGradient
+                colors={[AnimationColors.primary, AnimationColors.primaryDark]}
+                style={styles.continueButtonGradient}
+              >
+                <Text style={styles.continueButtonText}>Continue</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </Animated.View>
         )}
       </View>
     </Modal>

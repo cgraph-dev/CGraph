@@ -5,6 +5,8 @@
  */
 
 import { memo } from 'react';
+import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import type { OptionToggleProps } from './types';
 
 // =============================================================================
@@ -26,21 +28,22 @@ export const OptionToggle = memo(function OptionToggle({
         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
         {description && <p className="text-xs text-gray-500 dark:text-gray-400">{description}</p>}
       </div>
-      <button
+      <motion.button
         type="button"
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
+        whileTap={{ scale: 0.95 }}
         className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
           checked ? 'bg-orange-600' : 'bg-gray-200 dark:bg-gray-700'
         }`}
       >
-        <span
-          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
-            checked ? 'translate-x-5' : 'translate-x-0'
-          }`}
+        <motion.span
+          className="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow ring-0"
+          animate={{ x: checked ? 20 : 0 }}
+          transition={springs.snappy}
         />
-      </button>
+      </motion.button>
     </label>
   );
 });

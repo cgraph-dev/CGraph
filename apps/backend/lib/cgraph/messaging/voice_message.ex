@@ -239,17 +239,19 @@ defmodule CGraph.Messaging.VoiceMessage do
   List voice messages for a user.
   """
   def list_for_user(user_id, opts \\ []) do
-    limit = Keyword.get(opts, :limit, 50)
-    offset = Keyword.get(opts, :offset, 0)
+    query =
+      from(v in __MODULE__,
+        where: v.user_id == ^user_id,
+        where: v.is_processed == true
+      )
 
-    from(v in __MODULE__,
-      where: v.user_id == ^user_id,
-      where: v.is_processed == true,
-      order_by: [desc: v.inserted_at],
-      limit: ^limit,
-      offset: ^offset
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc
     )
-    |> Repo.all()
+
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """

@@ -156,17 +156,27 @@ export default function AnimatedAvatar({
 
       {/* Status Indicator */}
       {showStatus && (
-        <motion.div
-          className={`absolute bottom-0 right-0 ${config.badge} rounded-full ${STATUS_COLORS[statusType].bg} z-10 border-2 border-dark-900`}
-          animate={
-            statusType === 'online'
-              ? {
-                  boxShadow: [`0 0 0 0 ${STATUS_COLORS[statusType].glow}`, `0 0 0 4px transparent`],
-                }
-              : {}
-          }
-          transition={{ duration: 2, repeat: Infinity }}
-        />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={statusType}
+            className={`absolute bottom-0 right-0 ${config.badge} rounded-full ${STATUS_COLORS[statusType].bg} z-10 border-2 border-dark-900`}
+            initial={{ scale: 0 }}
+            animate={{
+              scale: 1,
+              boxShadow:
+                statusType === 'online'
+                  ? [`0 0 0 0 ${STATUS_COLORS[statusType].glow}`, `0 0 6px 2px ${STATUS_COLORS[statusType].glow}`, `0 0 0 0 ${STATUS_COLORS[statusType].glow}`]
+                  : `0 0 0 0 transparent`,
+            }}
+            exit={{ scale: 0 }}
+            transition={{
+              scale: { type: 'spring', stiffness: 500, damping: 20 },
+              boxShadow: statusType === 'online'
+                ? { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
+                : { duration: 0.2 },
+            }}
+          />
+        </AnimatePresence>
       )}
 
       {/* Title Display */}

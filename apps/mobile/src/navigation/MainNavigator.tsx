@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { MainTabParamList } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
+import { AnimatedTabBar } from './components/AnimatedTabBar';
 import MessagesNavigator from './MessagesNavigator';
 import FriendsNavigator from './FriendsNavigator';
 import NotificationsNavigator from './NotificationsNavigator';
@@ -18,20 +19,11 @@ export default function MainNavigator() {
   
   return (
     <Tab.Navigator
+      tabBar={(props) => <AnimatedTabBar {...props} />}
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-          paddingBottom: 4,
-          height: 60,
-        },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '500',
-        },
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap;
           

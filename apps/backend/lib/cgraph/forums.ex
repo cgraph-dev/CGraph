@@ -100,13 +100,9 @@ defmodule CGraph.Forums do
   For authenticated users, show public forums + private forums they're members of.
   """
   def list_forums_for_user(user, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-
     # Base query - exclude deleted forums
     base_query = from f in Forum,
       where: is_nil(f.deleted_at),
-      order_by: [desc: f.member_count],
       preload: [:categories, :owner]
 
     # Apply visibility filter based on user
@@ -123,16 +119,17 @@ defmodule CGraph.Forums do
           distinct: true
     end
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :member_count,
+      sort_direction: :desc,
+      default_limit: 20
+    )
 
-    forums = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-      |> Enum.map(&add_membership_status(&1, user))
+    {forums, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
+    forums = Enum.map(forums, &add_membership_status(&1, user))
 
-    meta = %{page: page, per_page: per_page, total: total}
-    {forums, meta}
+    {forums, page_info}
   end
 
   @doc """
@@ -2153,23 +2150,18 @@ defmodule CGraph.Forums do
   List posts in a thread.
   """
   def list_thread_posts(thread_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-
     query = from p in ThreadPost,
       where: p.thread_id == ^thread_id and is_nil(p.deleted_at) and p.is_hidden == false,
-      order_by: [asc: p.position, asc: p.inserted_at],
       preload: [:author]
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :position,
+      sort_direction: :asc,
+      default_limit: 20
+    )
 
-    posts = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {posts, meta}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """
@@ -2312,30 +2304,26 @@ defmodule CGraph.Forums do
   List forum members.
   """
   def list_forum_members(forum_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 50)
     sort = Keyword.get(opts, :sort, "reputation")
 
     query = from m in ForumMember,
       where: m.forum_id == ^forum_id and m.is_banned == false,
       preload: [:user]
 
-    query = case sort do
-      "reputation" -> from m in query, order_by: [desc: m.reputation]
-      "posts" -> from m in query, order_by: [desc: m.post_count]
-      "joined" -> from m in query, order_by: [asc: m.joined_at]
-      _ -> from m in query, order_by: [desc: m.reputation]
+    {sort_field, sort_dir} = case sort do
+      "posts" -> {:post_count, :desc}
+      "joined" -> {:joined_at, :asc}
+      _ -> {:reputation, :desc}
     end
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: sort_field,
+      sort_direction: sort_dir,
+      default_limit: 50
+    )
 
-    members = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {members, meta}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """
@@ -3031,8 +3019,6 @@ defmodule CGraph.Forums do
     - :forum_id - Filter by specific forum (optional)
   """
   def list_user_posts(user_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
     sort = Keyword.get(opts, :sort, :newest)
     forum_id = Keyword.get(opts, :forum_id)
 
@@ -3048,27 +3034,20 @@ defmodule CGraph.Forums do
         query
       end
 
-    query = apply_user_posts_sort(query, sort)
+    {sort_field, sort_dir} = case sort do
+      :oldest -> {:inserted_at, :asc}
+      :popular -> {:score, :desc}
+      _ -> {:inserted_at, :desc}
+    end
 
-    total_count = Repo.aggregate(query, :count, :id)
-    total_pages = max(1, ceil(total_count / per_page))
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: sort_field,
+      sort_direction: sort_dir,
+      default_limit: 20
+    )
 
-    posts =
-      query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    pagination = %{
-      page: page,
-      per_page: per_page,
-      total_count: total_count,
-      total_pages: total_pages,
-      has_next: page < total_pages,
-      has_prev: page > 1
-    }
-
-    {posts, pagination}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   defp apply_user_posts_sort(query, :newest) do
@@ -3094,8 +3073,6 @@ defmodule CGraph.Forums do
     - :forum_id - Filter by specific forum (optional)
   """
   def list_user_threads(user_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
     sort = Keyword.get(opts, :sort, :newest)
     forum_id = Keyword.get(opts, :forum_id)
 
@@ -3118,39 +3095,20 @@ defmodule CGraph.Forums do
         query
       end
 
-    query = apply_user_threads_sort(query, sort)
+    {sort_field, sort_dir} = case sort do
+      :oldest -> {:inserted_at, :asc}
+      :popular -> {:score, :desc}
+      _ -> {:inserted_at, :desc}
+    end
 
-    # Count without the select_merge for accurate count
-    count_query =
-      from p in Post,
-        where: p.author_id == ^user_id and is_nil(p.deleted_at)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: sort_field,
+      sort_direction: sort_dir,
+      default_limit: 20
+    )
 
-    count_query =
-      if forum_id do
-        from p in count_query, where: p.forum_id == ^forum_id
-      else
-        count_query
-      end
-
-    total_count = Repo.aggregate(count_query, :count, :id)
-    total_pages = max(1, ceil(total_count / per_page))
-
-    threads =
-      query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    pagination = %{
-      page: page,
-      per_page: per_page,
-      total_count: total_count,
-      total_pages: total_pages,
-      has_next: page < total_pages,
-      has_prev: page > 1
-    }
-
-    {threads, pagination}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   defp apply_user_threads_sort(query, :newest) do
@@ -3220,24 +3178,19 @@ defmodule CGraph.Forums do
   Used for RSS feed generation.
   """
   def list_forum_threads_for_rss(forum_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-
     query = from t in Thread,
       join: b in Board, on: t.board_id == b.id,
       where: b.forum_id == ^forum_id and is_nil(t.deleted_at),
-      order_by: [desc: t.inserted_at],
       preload: [:author, board: :forum]
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
 
-    threads = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {threads, meta}
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc """

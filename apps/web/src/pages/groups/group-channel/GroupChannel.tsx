@@ -7,6 +7,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { useGroupStore } from '@/modules/groups/store';
 import { useAuthStore } from '@/modules/auth/store';
 import { socketManager } from '@/lib/socket';
@@ -16,6 +17,7 @@ import { ChannelHeader } from './ChannelHeader';
 import { MessagesArea } from './MessagesArea';
 import { MessageInput } from './MessageInput';
 import { MembersSidebar } from './MembersSidebar';
+import { PinnedMessagesPanel } from './PinnedMessagesPanel';
 import { formatDateHeader, groupMessagesByDate } from './utils';
 import type { ChannelMessage } from './types';
 
@@ -44,6 +46,7 @@ export default function GroupChannel() {
   const [isSending, setIsSending] = useState(false);
   const [replyTo, setReplyTo] = useState<ChannelMessage | null>(null);
   const [showMembers, setShowMembers] = useState(true);
+  const [showPinned, setShowPinned] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -159,6 +162,8 @@ export default function GroupChannel() {
           channelTopic={channel.topic ?? undefined}
           showMembers={showMembers}
           onToggleMembers={() => setShowMembers(!showMembers)}
+          showPinnedMessages={showPinned}
+          onTogglePinnedMessages={() => setShowPinned(!showPinned)}
         />
 
         <MessagesArea
@@ -189,6 +194,18 @@ export default function GroupChannel() {
       {showMembers && (
         <MembersSidebar onlineMembers={onlineMembers} offlineMembers={offlineMembers} />
       )}
+
+      {/* Pinned messages panel */}
+      <AnimatePresence>
+        {showPinned && groupId && channelId && (
+          <PinnedMessagesPanel
+            groupId={groupId}
+            channelId={channelId}
+            channelMessages={messages}
+            onClose={() => setShowPinned(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

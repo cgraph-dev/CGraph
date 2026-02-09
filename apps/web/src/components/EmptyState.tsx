@@ -1,4 +1,23 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { staggerConfigs } from '@/lib/animation-presets/presets';
+
+const containerVariants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: staggerConfigs.standard.staggerChildren },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+};
+
+const iconVariants = {
+  hidden: { opacity: 0, scale: 0.85 },
+  show: { opacity: 1, scale: 1, transition: { duration: 0.35 } },
+};
 
 interface EmptyStateProps {
   icon?: React.ReactNode;
@@ -23,29 +42,37 @@ export function EmptyState({
   className = '',
 }: EmptyStateProps) {
   return (
-    <div className={`text-center py-12 px-4 ${className}`}>
+    <motion.div
+      className={`text-center py-12 px-4 ${className}`}
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+    >
       {icon && (
-        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400">
+        <motion.div variants={iconVariants} className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400">
           {icon}
-        </div>
+        </motion.div>
       )}
-      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+      <motion.h3 variants={itemVariants} className="text-lg font-medium text-gray-900 dark:text-white mb-1">
         {title}
-      </h3>
+      </motion.h3>
       {description && (
-        <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-6">
+        <motion.p variants={itemVariants} className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto mb-6">
           {description}
-        </p>
+        </motion.p>
       )}
       {action && (
-        <button
+        <motion.button
+          variants={itemVariants}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.97 }}
           onClick={action.onClick}
           className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
         >
           {action.label}
-        </button>
+        </motion.button>
       )}
-    </div>
+    </motion.div>
   );
 }
 

@@ -46,7 +46,24 @@ kill_timeout = "30s"
     method = "GET"
     path = "/health"
 
+  # Readiness check — returns 503 during graceful shutdown drain
+  [[http_service.checks]]
+    interval = "5s"
+    timeout = "2s"
+    grace_period = "15s"
+    method = "GET"
+    path = "/ready"
+
 [[vm]]
   cpu_kind = "performance"    # Performance CPUs for 10K users
   cpus = 2                    # 2 CPUs for better WebSocket handling
   memory = "4gb"              # 4GB RAM required for performance CPUs
+
+# PgBouncer sidecar for connection pooling/multiplexing
+# Multiplexes app connections to PostgreSQL, allowing 5-10x more effective connections
+# Deploy: fly deploy --strategy rolling
+# The app connects to PgBouncer on localhost:6432, which proxies to the real DB
+# Set PGBOUNCER_DATABASE_URL=postgresql://user:pass@127.0.0.1:6432/dbname
+[processes]
+  app = ""
+  pgbouncer = "/usr/local/bin/start-pgbouncer.sh"

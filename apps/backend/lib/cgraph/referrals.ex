@@ -157,15 +157,11 @@ defmodule CGraph.Referrals do
   List referrals made by a user.
   """
   def list_referrals(user_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    offset = (page - 1) * per_page
     status = Keyword.get(opts, :status)
 
     base_query =
       from r in Referral,
         where: r.referrer_id == ^user_id,
-        order_by: [desc: r.inserted_at],
         preload: [:referred_user]
 
     base_query =
@@ -175,22 +171,14 @@ defmodule CGraph.Referrals do
         base_query
       end
 
-    total_count = Repo.aggregate(base_query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
 
-    referrals =
-      base_query
-      |> limit(^per_page)
-      |> offset(^offset)
-      |> Repo.all()
-
-    pagination = %{
-      page: page,
-      per_page: per_page,
-      total_count: total_count,
-      total_pages: ceil(total_count / per_page)
-    }
-
-    {referrals, pagination}
+    CGraph.Pagination.paginate(base_query, pagination_opts)
   end
 
   @doc """

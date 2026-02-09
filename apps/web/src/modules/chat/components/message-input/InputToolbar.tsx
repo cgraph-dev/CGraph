@@ -3,7 +3,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { PaperAirplaneIcon, FaceSmileIcon, MicrophoneIcon } from '@heroicons/react/24/outline';
+import { PaperAirplaneIcon, FaceSmileIcon, MicrophoneIcon, GifIcon } from '@heroicons/react/24/outline';
 import type { AttachmentMode } from './types';
 
 interface InputToolbarProps {
@@ -47,6 +47,16 @@ export function InputToolbar({
         className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-purple-400"
       >
         <span className="text-lg">🎨</span>
+      </motion.button>
+
+      {/* GIF Button */}
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => onToggleMode('gif')}
+        className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-green-400"
+      >
+        <GifIcon className="h-6 w-6" />
       </motion.button>
 
       {/* Voice Message Button */}

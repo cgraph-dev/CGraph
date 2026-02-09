@@ -1,4 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
+import { motion } from 'framer-motion';
 import { captureError, addBreadcrumb } from '@/lib/error-tracking';
 import { createLogger } from '@/lib/logger';
 
@@ -120,8 +121,21 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className="flex min-h-screen items-center justify-center bg-dark-900 p-8">
-          <div className="max-w-md text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-red-500/50 bg-red-900/30">
+          <motion.div
+            className="max-w-md text-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+          >
+            <motion.div
+              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-red-500/50 bg-red-900/30"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1, x: [0, -5, 5, -3, 3, 0] }}
+              transition={{
+                scale: { type: 'spring', stiffness: 400, damping: 20 },
+                x: { delay: 0.3, duration: 0.5 },
+              }}
+            >
               <svg
                 className="h-8 w-8 text-red-500"
                 fill="none"
@@ -135,37 +149,65 @@ export class ErrorBoundary extends Component<Props, State> {
                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                 />
               </svg>
-            </div>
-            <h2 className="mb-2 text-xl font-semibold text-white">Something went wrong</h2>
-            <p className="mb-4 text-gray-400">
+            </motion.div>
+            <motion.h2
+              className="mb-2 text-xl font-semibold text-white"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              Something went wrong
+            </motion.h2>
+            <motion.p
+              className="mb-4 text-gray-400"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+            >
               We encountered an unexpected error. Please try again or contact support if the problem
               persists.
-            </p>
+            </motion.p>
             {this.state.errorId && (
-              <p className="mb-4 inline-block rounded bg-dark-800 px-3 py-2 font-mono text-xs text-gray-500">
+              <motion.p
+                className="mb-4 inline-block rounded bg-dark-800 px-3 py-2 font-mono text-xs text-gray-500"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.35 }}
+              >
                 Error ID: {this.state.errorId}
-              </p>
+              </motion.p>
             )}
-            <div className="flex flex-wrap justify-center gap-3">
-              <button
+            <motion.div
+              className="flex flex-wrap justify-center gap-3"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <motion.button
                 onClick={this.handleRetry}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 className="rounded-lg bg-primary-600 px-4 py-2 text-white transition-colors hover:bg-primary-700"
               >
                 Try Again
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={this.handleReload}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 className="rounded-lg border border-dark-600 px-4 py-2 text-gray-300 transition-colors hover:bg-dark-800"
               >
                 Reload Page
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={this.handleReportIssue}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 className="px-4 py-2 text-sm text-gray-400 transition-colors hover:text-white"
               >
                 Report Issue
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
             {import.meta.env.DEV && this.state.error && (
               <details className="mt-6 text-left">
                 <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-300">
@@ -177,7 +219,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 </pre>
               </details>
             )}
-          </div>
+          </motion.div>
         </div>
       );
     }

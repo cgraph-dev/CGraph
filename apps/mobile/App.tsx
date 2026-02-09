@@ -14,6 +14,10 @@ import { E2EEProvider } from './src/lib/crypto/E2EEContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import { queryClient } from './src/lib/queryClient';
 import { usePushNotifications } from './src/hooks/usePushNotifications';
+import { initErrorTracking } from './src/lib/error-tracking';
+
+// Initialize error tracking on module load
+initErrorTracking();
 
 // Keep splash screen visible while loading
 SplashScreen.preventAutoHideAsync();

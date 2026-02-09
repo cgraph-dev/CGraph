@@ -14,8 +14,6 @@ defmodule CGraph.Accounts.Search do
   Search users by username, display name, email, or UID (random 10-digit like #4829173650).
   """
   def search_users(query, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
     search_term = "%#{query}%"
 
     # Check if query is a UID format (10-digit string or legacy numeric)
@@ -44,18 +42,16 @@ defmodule CGraph.Accounts.Search do
     end
 
     db_query = from u in User,
-      where: ^conditions,
-      order_by: [asc: u.username]
+      where: ^conditions
 
-    total = Repo.aggregate(db_query, :count, :id)
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :username,
+      sort_direction: :asc,
+      default_limit: 20
+    )
 
-    users = db_query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {users, meta}
+    CGraph.Pagination.paginate(db_query, pagination_opts)
   end
 
   @doc """

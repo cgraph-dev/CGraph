@@ -19,6 +19,9 @@ defmodule CGraphWeb.UserChannel do
   alias CGraph.Presence
 
   @max_contact_batch 200
+  # Buffer for missed messages during reconnection (5 minutes)
+  @resume_buffer_ttl_seconds 300
+  @resume_buffer_max_size 500
 
   @impl true
   def join("user:" <> requested_user_id, params, socket) do
@@ -32,8 +35,13 @@ defmodule CGraphWeb.UserChannel do
         {:error, %{reason: "unauthorized"}}
 
       true ->
+        # Initialize sequence counter for session resumption
+        session_id = :crypto.strong_rand_bytes(16) |> Base.url_encode64(padding: false)
+        socket = assign(socket, :session_id, session_id)
+        socket = assign(socket, :sequence, 0)
+
         send(self(), {:after_join, params})
-        {:ok, socket}
+        {:ok, %{session_id: session_id}, socket}
     end
   end
 
@@ -44,6 +52,15 @@ defmodule CGraphWeb.UserChannel do
     # Subscribe to user-specific pubsub topics
     Phoenix.PubSub.subscribe(CGraph.PubSub, "user:#{user.id}:notifications")
     Phoenix.PubSub.subscribe(CGraph.PubSub, "user:#{user.id}:presence_updates")
+
+    # Handle session resumption if client provides last sequence
+    case params do
+      %{"resume_session_id" => old_session_id, "last_sequence" => last_seq} ->
+        replay_missed_events(socket, user.id, old_session_id, last_seq)
+
+      _ ->
+        :ok
+    end
 
     # If client requested initial contact presence, send it
     if params["include_contact_presence"] do
@@ -179,6 +196,106 @@ defmodule CGraphWeb.UserChannel do
 
   def handle_in("mark_notifications_read", _params, socket) do
     {:reply, {:error, %{reason: "notification_ids_required"}}, socket}
+  end
+
+  @impl true
+  def handle_in("resume", %{"session_id" => old_session_id, "last_sequence" => last_seq}, socket) do
+    user = socket.assigns.current_user
+    replay_missed_events(socket, user.id, old_session_id, last_seq)
+    {:reply, :ok, socket}
+  end
+
+  # ---------------------------------------------------------------------------
+  # Session Resumption — Sequenced Push
+  # ---------------------------------------------------------------------------
+
+  # Override push to track sequence numbers and buffer for resumption
+  defp sequenced_push(socket, event, payload) do
+    seq = (socket.assigns[:sequence] || 0) + 1
+    socket = assign(socket, :sequence, seq)
+
+    enriched_payload = Map.merge(payload, %{
+      _seq: seq,
+      _session_id: socket.assigns[:session_id]
+    })
+
+    # Buffer in Redis for session resumption (fire-and-forget)
+    buffer_event(socket.assigns.current_user.id, socket.assigns[:session_id], seq, event, payload)
+
+    push(socket, event, enriched_payload)
+    socket
+  end
+
+  defp buffer_event(user_id, session_id, seq, event, payload) do
+    key = "ws:buffer:#{user_id}:#{session_id}"
+
+    entry = Jason.encode!(%{
+      seq: seq,
+      event: event,
+      payload: payload,
+      timestamp: DateTime.utc_now() |> DateTime.to_iso8601()
+    })
+
+    try do
+      # Add to sorted set with sequence as score
+      CGraph.Redis.command(["ZADD", key, to_string(seq), entry])
+      # Set TTL on the buffer
+      CGraph.Redis.command(["EXPIRE", key, to_string(@resume_buffer_ttl_seconds)])
+      # Trim to max size (remove oldest if over limit)
+      CGraph.Redis.command(["ZREMRANGEBYRANK", key, "0", to_string(-@resume_buffer_max_size - 1)])
+    rescue
+      _ -> :ok  # Failed to buffer; non-critical
+    end
+  end
+
+  defp replay_missed_events(socket, user_id, old_session_id, last_seq) do
+    key = "ws:buffer:#{user_id}:#{old_session_id}"
+
+    try do
+      # Get all events after last_seq
+      entries = CGraph.Redis.command(["ZRANGEBYSCORE", key, to_string(last_seq + 1), "+inf"])
+
+      case entries do
+        {:ok, events} when is_list(events) and length(events) > 0 ->
+          require Logger
+          Logger.info("Session resumption: replaying #{length(events)} missed events",
+            user_id: user_id,
+            old_session_id: old_session_id,
+            last_seq: last_seq
+          )
+
+          Enum.each(events, fn entry_json ->
+            case Jason.decode(entry_json) do
+              {:ok, %{"event" => event, "payload" => payload}} ->
+                push(socket, event, payload)
+              _ ->
+                :ok
+            end
+          end)
+
+          push(socket, "resume_complete", %{
+            replayed_count: length(events),
+            new_session_id: socket.assigns[:session_id]
+          })
+
+        _ ->
+          # No missed events or buffer expired → full state sync
+          push(socket, "resume_complete", %{
+            replayed_count: 0,
+            new_session_id: socket.assigns[:session_id],
+            full_sync_required: true
+          })
+      end
+    rescue
+      error ->
+        require Logger
+        Logger.warning("Session resumption failed: #{inspect(error)}")
+        push(socket, "resume_complete", %{
+          replayed_count: 0,
+          new_session_id: socket.assigns[:session_id],
+          full_sync_required: true
+        })
+    end
   end
 
   # Private helpers

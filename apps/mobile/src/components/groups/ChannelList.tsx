@@ -3,20 +3,19 @@
  *
  * Mobile-optimized channel listing for groups/servers.
  * Features:
- * - Category grouping with collapse
+ * - Category grouping with collapse (SectionList for virtualization)
  * - Channel type icons
  * - Active/unread states
- * - Drag-to-reorder support
+ * - getItemLayout for smooth scrolling
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Pressable,
-  ScrollView,
-  Animated,
+  SectionList,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -66,7 +65,7 @@ export const ChannelList: React.FC<ChannelListProps> = ({
 }) => {
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
 
-  const handleCategoryToggle = (categoryId: string) => {
+  const handleCategoryToggle = useCallback((categoryId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setCollapsedCategories((prev) => {
       const newSet = new Set(prev);
@@ -78,20 +77,47 @@ export const ChannelList: React.FC<ChannelListProps> = ({
       return newSet;
     });
     onCategoryToggle?.(categoryId);
-  };
+  }, [onCategoryToggle]);
 
-  const handleChannelPress = (channel: Channel) => {
+  const handleChannelPress = useCallback((channel: Channel) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onChannelPress?.(channel);
-  };
+  }, [onChannelPress]);
 
-  const renderChannel = (channel: Channel) => {
+  // Build SectionList data from categories + channels
+  const sections = useMemo(() => {
+    const uncategorized = channels.filter((c) => !c.categoryId);
+    const result: { key: string; title: string; categoryId: string | null; data: Channel[] }[] = [];
+
+    // Uncategorized channels first (no header)
+    if (uncategorized.length > 0) {
+      result.push({ key: '__uncategorized', title: '', categoryId: null, data: uncategorized });
+    }
+
+    // Categorized channels
+    for (const category of categories) {
+      const isCollapsed = collapsedCategories.has(category.id);
+      const categoryChannels = channels.filter((c) => c.categoryId === category.id);
+      result.push({
+        key: category.id,
+        title: category.name,
+        categoryId: category.id,
+        data: isCollapsed ? [] : categoryChannels,
+      });
+    }
+
+    return result;
+  }, [channels, categories, collapsedCategories]);
+
+  const CHANNEL_ITEM_HEIGHT = 40;
+  const SECTION_HEADER_HEIGHT = 36;
+
+  const renderChannel = useCallback(({ item: channel }: { item: Channel }) => {
     const isActive = channel.id === activeChannelId;
     const hasUnread = (channel.unreadCount || 0) > 0;
 
     return (
       <Pressable
-        key={channel.id}
         onPress={() => handleChannelPress(channel)}
         style={({ pressed }) => [
           styles.channelItem,
@@ -156,54 +182,50 @@ export const ChannelList: React.FC<ChannelListProps> = ({
         </View>
       </Pressable>
     );
-  };
+  }, [activeChannelId, handleChannelPress, showVoiceMembers]);
 
-  const renderCategory = (category: ChannelCategory) => {
-    const isCollapsed = collapsedCategories.has(category.id);
-    const categoryChannels = channels.filter((c) => c.categoryId === category.id);
+  const renderSectionHeader = useCallback(({ section }: { section: { title: string; categoryId: string | null } }) => {
+    if (!section.categoryId) return null;
 
+    const isCollapsed = collapsedCategories.has(section.categoryId);
     return (
-      <View key={category.id} style={styles.categoryContainer}>
-        <Pressable
-          onPress={() => handleCategoryToggle(category.id)}
-          style={styles.categoryHeader}
-        >
-          <MaterialCommunityIcons
-            name={isCollapsed ? 'chevron-right' : 'chevron-down'}
-            size={14}
-            color="rgba(255, 255, 255, 0.5)"
-          />
-          <Text style={styles.categoryName}>{category.name.toUpperCase()}</Text>
-        </Pressable>
-
-        {!isCollapsed && (
-          <View style={styles.channelList}>
-            {categoryChannels.map(renderChannel)}
-          </View>
-        )}
-      </View>
+      <Pressable
+        onPress={() => handleCategoryToggle(section.categoryId!)}
+        style={styles.categoryHeader}
+      >
+        <MaterialCommunityIcons
+          name={isCollapsed ? 'chevron-right' : 'chevron-down'}
+          size={14}
+          color="rgba(255, 255, 255, 0.5)"
+        />
+        <Text style={styles.categoryName}>{section.title.toUpperCase()}</Text>
+      </Pressable>
     );
-  };
+  }, [collapsedCategories, handleCategoryToggle]);
 
-  // Channels without category
-  const uncategorizedChannels = channels.filter((c) => !c.categoryId);
+  const getItemLayout = useCallback((_data: unknown, index: number) => ({
+    length: CHANNEL_ITEM_HEIGHT,
+    offset: CHANNEL_ITEM_HEIGHT * index,
+    index,
+  }), []);
+
+  const keyExtractor = useCallback((item: Channel) => item.id, []);
 
   return (
-    <ScrollView 
-      style={styles.container} 
-      showsVerticalScrollIndicator={false}
+    <SectionList
+      sections={sections}
+      renderItem={renderChannel}
+      renderSectionHeader={renderSectionHeader}
+      keyExtractor={keyExtractor}
+      getItemLayout={getItemLayout}
+      stickySectionHeadersEnabled={false}
+      style={styles.container}
       contentContainerStyle={styles.contentContainer}
-    >
-      {/* Uncategorized channels first */}
-      {uncategorizedChannels.length > 0 && (
-        <View style={styles.channelList}>
-          {uncategorizedChannels.map(renderChannel)}
-        </View>
-      )}
-
-      {/* Categorized channels */}
-      {categories.map(renderCategory)}
-    </ScrollView>
+      showsVerticalScrollIndicator={false}
+      windowSize={10}
+      maxToRenderPerBatch={15}
+      initialNumToRender={20}
+    />
   );
 };
 
@@ -213,9 +235,6 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingVertical: 8,
-  },
-  categoryContainer: {
-    marginBottom: 8,
   },
   categoryHeader: {
     flexDirection: 'row',
@@ -229,9 +248,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: 'rgba(255, 255, 255, 0.5)',
     letterSpacing: 0.5,
-  },
-  channelList: {
-    gap: 2,
   },
   channelItem: {
     marginHorizontal: 8,
