@@ -135,12 +135,7 @@ export const createLogger = (namespace: string): Logger => {
     },
 
     breadcrumb: (message: string, data?: Record<string, unknown>) => {
-      addBreadcrumb({
-        category: 'console',
-        message: `${namespace}: ${message}`,
-        level: 'info',
-        data,
-      });
+      addBreadcrumb('ui', `${namespace}: ${message}`, data);
       if (isDev) {
         console.debug(prefix, '[Breadcrumb]', message, data || '');
       }

@@ -42,14 +42,9 @@ export class RouteErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Add breadcrumb for context
-    addBreadcrumb({
-      category: 'navigation',
-      message: `Route error in ${this.props.routeName || 'unknown route'}`,
-      level: 'error',
-      data: {
-        routeName: this.props.routeName,
-        componentStack: errorInfo.componentStack?.substring(0, 300),
-      },
+    addBreadcrumb('navigation', `Route error in ${this.props.routeName || 'unknown route'}`, {
+      routeName: this.props.routeName,
+      componentStack: errorInfo.componentStack?.substring(0, 300),
     });
 
     // Capture error with route context

@@ -1,5 +1,4 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
-import { motion } from 'framer-motion';
 import { captureError, addBreadcrumb } from '@/lib/error-tracking';
 import { createLogger } from '@/lib/logger';
 
@@ -53,14 +52,9 @@ export class ErrorBoundary extends Component<Props, State> {
     this.setState({ errorInfo });
 
     // Add breadcrumb for context
-    addBreadcrumb({
-      category: 'error',
-      message: 'React Error Boundary triggered',
-      level: 'error',
-      data: {
-        componentName: this.props.componentName,
-        componentStack: errorInfo.componentStack?.substring(0, 500),
-      },
+    addBreadcrumb('ui', 'React Error Boundary triggered', {
+      componentName: this.props.componentName,
+      componentStack: errorInfo.componentStack?.substring(0, 500),
     });
 
     // Capture error with full context
@@ -87,20 +81,12 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   handleRetry = (): void => {
-    addBreadcrumb({
-      category: 'user',
-      message: 'User clicked retry after error',
-      level: 'info',
-    });
+    addBreadcrumb('user', 'User clicked retry after error');
     this.setState({ hasError: false, error: null, errorInfo: null, errorId: null });
   };
 
   handleReload = (): void => {
-    addBreadcrumb({
-      category: 'user',
-      message: 'User clicked reload after error',
-      level: 'info',
-    });
+    addBreadcrumb('user', 'User clicked reload after error');
     window.location.reload();
   };
 
@@ -120,24 +106,32 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="flex min-h-screen items-center justify-center bg-dark-900 p-8">
-          <motion.div
-            className="max-w-md text-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-          >
-            <motion.div
-              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-red-500/50 bg-red-900/30"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1, x: [0, -5, 5, -3, 3, 0] }}
-              transition={{
-                scale: { type: 'spring', stiffness: 400, damping: 20 },
-                x: { delay: 0.3, duration: 0.5 },
+        <div
+          style={{
+            minHeight: '100vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #030712 0%, #0f0a1f 50%, #030712 100%)',
+            padding: '2rem',
+          }}
+        >
+          <div style={{ maxWidth: '28rem', textAlign: 'center' }}>
+            <div
+              style={{
+                width: '4rem',
+                height: '4rem',
+                margin: '0 auto 1rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: '50%',
+                border: '1px solid rgba(239, 68, 68, 0.5)',
+                background: 'rgba(127, 29, 29, 0.3)',
               }}
             >
               <svg
-                className="h-8 w-8 text-red-500"
+                style={{ width: '2rem', height: '2rem', color: '#ef4444' }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -149,77 +143,111 @@ export class ErrorBoundary extends Component<Props, State> {
                   d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
                 />
               </svg>
-            </motion.div>
-            <motion.h2
-              className="mb-2 text-xl font-semibold text-white"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
+            </div>
+            <h2
+              style={{
+                marginBottom: '0.5rem',
+                fontSize: '1.25rem',
+                fontWeight: 600,
+                color: '#fff',
+              }}
             >
               Something went wrong
-            </motion.h2>
-            <motion.p
-              className="mb-4 text-gray-400"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 }}
-            >
+            </h2>
+            <p style={{ marginBottom: '1rem', color: '#9ca3af', fontSize: '0.875rem' }}>
               We encountered an unexpected error. Please try again or contact support if the problem
               persists.
-            </motion.p>
+            </p>
             {this.state.errorId && (
-              <motion.p
-                className="mb-4 inline-block rounded bg-dark-800 px-3 py-2 font-mono text-xs text-gray-500"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.35 }}
+              <p
+                style={{
+                  marginBottom: '1rem',
+                  display: 'inline-block',
+                  borderRadius: '0.375rem',
+                  background: '#1f2937',
+                  padding: '0.5rem 0.75rem',
+                  fontFamily: 'monospace',
+                  fontSize: '0.75rem',
+                  color: '#6b7280',
+                }}
               >
                 Error ID: {this.state.errorId}
-              </motion.p>
+              </p>
             )}
-            <motion.div
-              className="flex flex-wrap justify-center gap-3"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                gap: '0.75rem',
+              }}
             >
-              <motion.button
+              <button
                 onClick={this.handleRetry}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="rounded-lg bg-primary-600 px-4 py-2 text-white transition-colors hover:bg-primary-700"
+                style={{
+                  borderRadius: '0.5rem',
+                  background: '#7c3aed',
+                  padding: '0.5rem 1rem',
+                  color: '#fff',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontSize: '0.875rem',
+                }}
               >
                 Try Again
-              </motion.button>
-              <motion.button
+              </button>
+              <button
                 onClick={this.handleReload}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="rounded-lg border border-dark-600 px-4 py-2 text-gray-300 transition-colors hover:bg-dark-800"
+                style={{
+                  borderRadius: '0.5rem',
+                  border: '1px solid #4b5563',
+                  background: 'transparent',
+                  padding: '0.5rem 1rem',
+                  color: '#d1d5db',
+                  cursor: 'pointer',
+                  fontSize: '0.875rem',
+                }}
               >
                 Reload Page
-              </motion.button>
-              <motion.button
+              </button>
+              <button
                 onClick={this.handleReportIssue}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-4 py-2 text-sm text-gray-400 transition-colors hover:text-white"
+                style={{
+                  padding: '0.5rem 1rem',
+                  fontSize: '0.75rem',
+                  color: '#9ca3af',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
               >
                 Report Issue
-              </motion.button>
-            </motion.div>
+              </button>
+            </div>
             {import.meta.env.DEV && this.state.error && (
-              <details className="mt-6 text-left">
-                <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-300">
+              <details style={{ marginTop: '1.5rem', textAlign: 'left' }}>
+                <summary style={{ cursor: 'pointer', fontSize: '0.75rem', color: '#6b7280' }}>
                   Error Details (Development Only)
                 </summary>
-                <pre className="mt-2 max-h-48 overflow-auto rounded-lg border border-dark-700 bg-dark-800 p-4 text-xs text-red-400">
+                <pre
+                  style={{
+                    marginTop: '0.5rem',
+                    maxHeight: '12rem',
+                    overflow: 'auto',
+                    borderRadius: '0.5rem',
+                    border: '1px solid #374151',
+                    background: '#1f2937',
+                    padding: '1rem',
+                    fontSize: '0.75rem',
+                    color: '#f87171',
+                  }}
+                >
                   {this.state.error.toString()}
                   {this.state.errorInfo?.componentStack}
                 </pre>
               </details>
             )}
-          </motion.div>
+          </div>
         </div>
       );
     }

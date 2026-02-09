@@ -18,8 +18,6 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ThemeProviderEnhanced } from './contexts/ThemeContextEnhanced';
 import { NotificationProvider } from './providers/NotificationProvider';
-import AnimatedLogo from './components/AnimatedLogo';
-import { SpeedInsights } from '@vercel/speed-insights/react';
 import { logger } from './lib/logger';
 import './index.css';
 
@@ -101,27 +99,62 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Global loading fallback component with dark theme
+// Global loading fallback component - zero-dependency (no framer-motion/AnimatedLogo)
+// Uses inline styles to guarantee rendering even if CSS chunks fail to load
 function GlobalLoadingFallback() {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
-      {/* Background particles */}
-      {Array.from({ length: 20 }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute h-0.5 w-0.5 animate-pulse rounded-full bg-primary-400"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 2}s`,
-            animationDuration: `${2 + Math.random() * 3}s`,
-          }}
-        />
-      ))}
-
-      <div className="relative z-10">
-        <AnimatedLogo size="lg" showText variant="loading" />
-      </div>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #030712 0%, #0f0a1f 50%, #030712 100%)',
+        gap: '24px',
+      }}
+    >
+      <svg width="48" height="48" viewBox="0 0 50 50">
+        <defs>
+          <linearGradient id="loading-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#a78bfa" />
+            <stop offset="50%" stopColor="#8b5cf6" />
+            <stop offset="100%" stopColor="#10b981" />
+          </linearGradient>
+        </defs>
+        <circle
+          cx="25"
+          cy="25"
+          r="20"
+          fill="none"
+          stroke="url(#loading-grad)"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeDasharray="80 45"
+        >
+          <animateTransform
+            attributeName="transform"
+            type="rotate"
+            from="0 25 25"
+            to="360 25 25"
+            dur="1s"
+            repeatCount="indefinite"
+          />
+        </circle>
+      </svg>
+      <span
+        style={{
+          fontSize: '1.25rem',
+          fontWeight: 600,
+          fontFamily: 'system-ui, sans-serif',
+          background: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #10b981 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+        }}
+      >
+        CGraph
+      </span>
     </div>
   );
 }
@@ -171,7 +204,6 @@ try {
               </QueryClientProvider>
             </ThemeProviderEnhanced>
           </ThemeProvider>
-          <SpeedInsights />
         </Suspense>
       </ErrorBoundary>
     </React.StrictMode>
