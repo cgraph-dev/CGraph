@@ -89,10 +89,7 @@ export async function initErrorTracking(): Promise<void> {
 /**
  * Capture a custom error with context.
  */
-export function captureError(
-  error: Error | string,
-  context?: Record<string, unknown>
-): void {
+export function captureError(error: Error | string, context?: Record<string, unknown>): void {
   if (!isInitialized) {
     console.error('[ErrorTracking]', error, context);
     return;
@@ -109,6 +106,27 @@ export function captureError(
         extra: context,
       });
     }
+  });
+}
+
+/**
+ * Capture a custom message (non-error) with severity level.
+ */
+export function captureMessage(
+  message: string,
+  level: 'info' | 'warning' | 'error' = 'info',
+  extra?: Record<string, unknown>
+): void {
+  if (!isInitialized) {
+    console.log('[ErrorTracking]', `[${level}]`, message, extra);
+    return;
+  }
+
+  import('@sentry/react').then((Sentry) => {
+    Sentry.captureMessage(message, {
+      level,
+      extra,
+    });
   });
 }
 
@@ -135,11 +153,13 @@ export function addBreadcrumb(
 /**
  * Set user context for error tracking.
  */
-export function setUser(user: {
-  id: string;
-  username?: string;
-  email?: string;
-} | null): void {
+export function setUser(
+  user: {
+    id: string;
+    username?: string;
+    email?: string;
+  } | null
+): void {
   if (!isInitialized) return;
 
   import('@sentry/react').then((Sentry) => {
@@ -158,10 +178,7 @@ export function setUser(user: {
 /**
  * Create a performance transaction for tracking.
  */
-export function startTransaction(
-  name: string,
-  op: string
-): { finish: () => void } {
+export function startTransaction(name: string, op: string): { finish: () => void } {
   if (!isInitialized) {
     return { finish: () => {} };
   }
