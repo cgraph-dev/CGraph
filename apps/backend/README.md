@@ -210,6 +210,14 @@ lib/
 - **Cachex** for local caching
 - **Redix** for Redis (optional)
 
+### Supervision Tree
+
+Services are grouped to isolate failures:
+
+- **CacheSupervisor**: `cgraph_cache` (L2), `session_cache`, `token_cache`
+- **WorkerSupervisor**: Oban, Presence, WebRTC, DataExport
+- **SecuritySupervisor**: Token blacklist, Account lockout, Key rotation
+
 ---
 
 ## Troubleshooting

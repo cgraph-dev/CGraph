@@ -234,7 +234,7 @@ defmodule CGraph.Security.JWTKeyRotation do
         prev.expires_at && DateTime.compare(prev.expires_at, now) != :gt
       end)
 
-    if length(expired) > 0 do
+    unless expired == [] do
       Logger.info("[JWTKeyRotation] Cleaned up #{length(expired)} expired key(s)")
     end
 

@@ -446,6 +446,17 @@ Fault tolerance via `:fuse` library in `lib/cgraph/circuit_breaker.ex`:
 - Automatic service isolation on failures
 - Configurable thresholds and recovery
 
+### Supervision Architecture (Hierarchical)
+
+To prevent "blast radius" failures, the backend uses a hierarchical supervision tree:
+
+- **`CGraph.Supervisor`** (Root)
+  - **`CGraph.CacheSupervisor`**: Manages 3 Cachex instances (cgraph_cache, session_cache,
+    token_cache)
+  - **`CGraph.SecuritySupervisor`**: Manages KeyRotation, TokenBlacklist, AccountLockout
+  - **`CGraph.WorkerSupervisor`**: Manages Oban, Presence, WebRTC, DataExport
+  - `CGraph.Repo`, `CGraphWeb.Endpoint`, `Finch`, `PubSub` (Critical services)
+
 ### Database
 
 PostgreSQL with Ecto. Migrations in `apps/backend/priv/repo/migrations/`. Uses ULID for IDs,

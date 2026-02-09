@@ -1,2 +1,6 @@
 .vercel
-.env*.local
+
+# Production env
+.env
+.env.local
+.env.*.local

@@ -92,7 +92,8 @@ defmodule CGraphWeb.Plugs.Cors do
           "https://cgraph-web-v2.vercel.app",
           "https://cgraph-landing.vercel.app",
           # Vercel preview deployments (Discord-style: allow all vercel.app subdomains)
-          ~r/^https:\/\/(cgraph|c-graph)[a-z0-9-]*\.vercel\.app$/i
+          # Strict regex: only allow cgraph- and c-graph- prefixes followed by alphanumeric/dashes
+          ~r/^https:\/\/(cgraph|c-graph)-[a-z0-9-]+\.vercel\.app$/i
         ]
 
       {nil, false} ->
