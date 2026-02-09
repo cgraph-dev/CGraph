@@ -6,9 +6,7 @@ defmodule CGraph.Application do
   - Ecto repository
   - Phoenix endpoint
   - Redis connection pool
-  - Oban background job processor
-  - Presence tracking
-  - Token blacklist for JWT revocation
+  - Sub-supervisors for Caches, Workers, and Security
   """
   use Application
 
@@ -30,54 +28,28 @@ defmodule CGraph.Application do
       # Start telemetry reporters
       CGraphWeb.Telemetry,
 
-      # Start the Ecto repository
+      # Start the Ecto repository (CRITICAL)
       CGraph.Repo,
 
       # Start the PubSub system
       {Phoenix.PubSub, name: CGraph.PubSub},
 
-      # Start Cachex for local caching with memory bounds
-      # Default: 100MB limit with LRU eviction (configurable via CACHEX_LIMIT_MB)
-      Supervisor.child_spec({Cachex, cachex_config(:cgraph_cache)}, id: :cgraph_cache),
+      # === SUPERVISION HIERARCHY ===
 
-      # Separate cache for sessions with shorter TTL
-      Supervisor.child_spec({Cachex, cachex_config(:session_cache, limit: 50_000, ttl: :timer.hours(24))}, id: :session_cache),
+      # 1. Caching Layer
+      CGraph.CacheSupervisor,
 
-      # Token cache for JWT/rate limit lookups
-      Supervisor.child_spec({Cachex, cachex_config(:token_cache, limit: 100_000, ttl: :timer.minutes(15))}, id: :token_cache),
+      # 2. Security Layer
+      CGraph.SecuritySupervisor,
 
-      # JWT key rotation manager (supports dual-key verification during rotation)
-      CGraph.Security.JWTKeyRotation,
+      # 3. Worker Layer (Oban, Presence, WebRTC)
+      CGraph.WorkerSupervisor,
 
       # Start in-app metrics collector/exporter
       CGraph.Metrics,
 
-      # Start token blacklist for JWT revocation
-      CGraph.Security.TokenBlacklist,
-
-      # Start account lockout for brute force protection
-      CGraph.Security.AccountLockout,
-
       # Start Finch for HTTP requests (used by Swoosh, Tesla)
       {Finch, name: CGraph.Finch},
-
-      # Start Oban for background jobs
-      {Oban, oban_config()},
-
-      # Start Presence for online status tracking
-      CGraph.Presence,
-
-      # Start WebRTC call management
-      CGraph.WebRTC,
-
-      # Start sampled presence for large channels
-      CGraph.Presence.Sampled,
-
-      # Note: Search indexing is handled by Oban workers (SearchIndexWorker)
-      # No separate GenServer needed for CGraph.Search.Indexer
-
-      # Start the data export service (GDPR compliance)
-      CGraph.DataExport,
 
       # Start API versioning (required for version negotiation)
       CGraph.ApiVersioning,
@@ -217,40 +189,5 @@ defmodule CGraph.Application do
         end
     end
   end
-
-  defp oban_config do
-    Application.fetch_env!(:cgraph, Oban)
-  end
-
-  @doc false
-  defp cachex_config(name, opts \\ []) do
-    # Memory limit in entries (default 100k, ~100MB assuming 1KB avg entry)
-    default_limit = String.to_integer(System.get_env("CACHEX_LIMIT_ENTRIES") || "100000")
-    limit = Keyword.get(opts, :limit, default_limit)
-    default_ttl = Keyword.get(opts, :ttl, :timer.hours(1))
-
-    # Cachex 4.x uses hooks for limits and stats
-    # See: https://hexdocs.pm/cachex/Cachex.Limit.Scheduled.html
-    import Cachex.Spec
-
-    [
-      name: name,
-      # LRW eviction when limit reached (scheduled policy - lower memory overhead)
-      # Cachex 4.x format: {max_size, prune_options, hook_options}
-      hooks: [
-        hook(module: Cachex.Stats),
-        hook(module: Cachex.Limit.Scheduled, args: {
-          limit,           # max size
-          [reclaim: 0.1],  # options for Cachex.prune/3
-          []               # options for Cachex.Limit.Scheduled (e.g., frequency)
-        })
-      ],
-      # Default TTL for entries without explicit TTL
-      expiration: expiration(
-        default: default_ttl,
-        interval: :timer.seconds(30),
-        lazy: true
-      )
-    ]
-  end
 end
+

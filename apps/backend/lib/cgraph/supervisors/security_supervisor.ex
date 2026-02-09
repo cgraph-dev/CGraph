@@ -1,0 +1,23 @@
+defmodule CGraph.SecuritySupervisor do
+  use Supervisor
+
+  def start_link(init_arg) do
+    Supervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
+  end
+
+  @impl true
+  def init(_init_arg) do
+    children = [
+      # JWT key rotation manager
+      CGraph.Security.JWTKeyRotation,
+
+      # Token blacklist for JWT revocation
+      CGraph.Security.TokenBlacklist,
+
+      # Account lockout for brute force protection
+      CGraph.Security.AccountLockout
+    ]
+
+    Supervisor.init(children, strategy: :one_for_one)
+  end
+end
