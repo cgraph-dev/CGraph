@@ -136,9 +136,9 @@ describe('Breadcrumbs', () => {
     breadcrumbsModule.addBreadcrumb({ category: 'ui', message: 'clicked button' });
     const crumbs = breadcrumbsModule.getBreadcrumbs();
     expect(crumbs).toHaveLength(1);
-    expect(crumbs[0].category).toBe('ui');
-    expect(crumbs[0].message).toBe('clicked button');
-    expect(crumbs[0].timestamp).toBeTypeOf('number');
+    expect(crumbs[0]!.category).toBe('ui');
+    expect(crumbs[0]!.message).toBe('clicked button');
+    expect(crumbs[0]!.timestamp).toBeTypeOf('number');
   });
 
   it('should enforce max breadcrumbs limit', () => {
@@ -149,8 +149,8 @@ describe('Breadcrumbs', () => {
     const crumbs = breadcrumbsModule.getBreadcrumbs();
     expect(crumbs).toHaveLength(5);
     // Oldest crumbs should have been evicted
-    expect(crumbs[0].message).toBe('crumb 3');
-    expect(crumbs[4].message).toBe('crumb 7');
+    expect(crumbs[0]!.message).toBe('crumb 3');
+    expect(crumbs[4]!.message).toBe('crumb 7');
   });
 
   it('should clear all breadcrumbs', () => {

@@ -20,13 +20,8 @@ import {
 import {
   pageTransitions,
   listItemVariants,
-  listItemVariantsSlide,
-  listItemVariantsScale,
   cardVariants,
-  cardVariantsSubtle,
-  buttonVariants,
   modalVariants,
-  modalBackdropVariants,
   notificationVariants,
   loadingVariants,
   skeletonVariants,

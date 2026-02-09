@@ -56,7 +56,7 @@ import { useProfileActions } from '../useProfileActions';
 import { useProfileData } from '../useProfileData';
 import { useProfileEdit } from '../useProfileEdit';
 import { usePresence, useUserOnline } from '../usePresence';
-import type { UserProfileData, FriendshipStatus } from '@/types/profile.types';
+import type { UserProfileData } from '@/types/profile.types';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -232,7 +232,7 @@ describe('useProfileData', () => {
   });
 
   it('should not fetch if userId is undefined', () => {
-    const { result } = renderHook(() => useProfileData(undefined, false, ownStats));
+    const { result: _result } = renderHook(() => useProfileData(undefined, false, ownStats));
 
     // fetchProfile early-returns without calling the API
     expect(mockApi.get).not.toHaveBeenCalled();

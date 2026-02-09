@@ -29,7 +29,7 @@ vi.mock('@/lib/api', () => ({
 
 // Note: @/lib/logger is mocked globally in src/test/setup.ts
 
-const mockedApi = vi.mocked(api);
+const mockedApi = vi.mocked(api, { deep: true });
 
 // ── Helpers ────────────────────────────────────────────────────────────
 

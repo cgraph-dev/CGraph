@@ -108,13 +108,13 @@ describe('entranceVariants', () => {
   });
 
   it('should start hidden with opacity 0', () => {
-    expect(entranceVariants.fadeIn.hidden).toEqual({ opacity: 0 });
-    expect((entranceVariants.fadeUp.hidden as Record<string, unknown>).opacity).toBe(0);
+    expect(entranceVariants.fadeIn!.hidden).toEqual({ opacity: 0 });
+    expect((entranceVariants.fadeUp!.hidden as Record<string, unknown>).opacity).toBe(0);
   });
 
   it('should animate to full opacity in visible state', () => {
-    expect((entranceVariants.fadeIn.visible as Record<string, unknown>).opacity).toBe(1);
-    expect((entranceVariants.scaleUp.visible as Record<string, unknown>).opacity).toBe(1);
+    expect((entranceVariants.fadeIn!.visible as Record<string, unknown>).opacity).toBe(1);
+    expect((entranceVariants.scaleUp!.visible as Record<string, unknown>).opacity).toBe(1);
   });
 });
 
@@ -152,7 +152,7 @@ describe('chatBubbleAnimations', () => {
   });
 
   it('should return initial, animate, and transition properties', () => {
-    const result = chatBubbleAnimations['default'](false, 0);
+    const result = chatBubbleAnimations['default']!(false, 0);
     expect(result).toHaveProperty('initial');
     expect(result).toHaveProperty('animate');
     expect(result).toHaveProperty('transition');
@@ -160,19 +160,19 @@ describe('chatBubbleAnimations', () => {
 
   it('should pass delay into transition', () => {
     const delay = 0.5;
-    const result = chatBubbleAnimations['default'](false, delay);
+    const result = chatBubbleAnimations['default']!(false, delay);
     expect(result.transition).toHaveProperty('delay', delay);
   });
 
   it('should use directional offset for "sharp" based on isOwn', () => {
-    const own = chatBubbleAnimations['sharp'](true, 0);
-    const other = chatBubbleAnimations['sharp'](false, 0);
+    const own = chatBubbleAnimations['sharp']!(true, 0);
+    const other = chatBubbleAnimations['sharp']!(false, 0);
     expect((own.initial as Record<string, unknown>).x).toBeGreaterThan(0);
     expect((other.initial as Record<string, unknown>).x).toBeLessThan(0);
   });
 
   it('should apply spring transition for bouncy bubble styles', () => {
-    const result = chatBubbleAnimations['rounded'](false, 0);
+    const result = chatBubbleAnimations['rounded']!(false, 0);
     expect(result.transition).toHaveProperty('type', 'spring');
   });
 });

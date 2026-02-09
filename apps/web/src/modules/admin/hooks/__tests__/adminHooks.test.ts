@@ -118,7 +118,7 @@ describe('useAdminDashboard', () => {
   });
 
   it('returns dashboard state correctly', () => {
-    mockAdminStore.activeTab = 'events';
+    mockAdminStore.activeTab = 'events' as any;
     mockAdminStore.sidebarCollapsed = true;
     mockAdminStore.isLoading = true;
     mockAdminStore.error = 'Network error';
@@ -172,7 +172,7 @@ describe('useAdminEvents', () => {
   });
 
   it('filters events by status', () => {
-    mockAdminStore.eventFilters = { status: 'active' };
+    mockAdminStore.eventFilters = { status: 'active' as any };
     const { result } = renderHook(() => useAdminEvents());
     expect(result.current.events).toHaveLength(2);
     expect(result.current.events.every((e) => e.status === 'active')).toBe(true);
@@ -231,14 +231,14 @@ describe('useAdminUsers', () => {
   });
 
   it('filters users by status', () => {
-    mockAdminStore.userFilters = { status: 'active', role: 'all' };
+    mockAdminStore.userFilters = { status: 'active' as any, role: 'all' };
     const { result } = renderHook(() => useAdminUsers());
     expect(result.current.users).toHaveLength(2);
     expect(result.current.users.every((u) => u.status === 'active')).toBe(true);
   });
 
   it('filters users by role', () => {
-    mockAdminStore.userFilters = { status: 'all', role: 'user' };
+    mockAdminStore.userFilters = { status: 'all', role: 'user' as any };
     const { result } = renderHook(() => useAdminUsers());
     expect(result.current.users).toHaveLength(2);
   });
@@ -372,13 +372,13 @@ describe('useModerationQueue (admin)', () => {
   });
 
   it('filters by status', () => {
-    mockAdminStore.moderationFilters = { status: 'pending', riskLevel: 'all', type: 'all' };
+    mockAdminStore.moderationFilters = { status: 'pending' as any, riskLevel: 'all', type: 'all' };
     const { result } = renderHook(() => useModerationQueue());
     expect(result.current.queue).toHaveLength(2);
   });
 
   it('filters by risk level', () => {
-    mockAdminStore.moderationFilters = { status: 'all', riskLevel: 'critical', type: 'all' };
+    mockAdminStore.moderationFilters = { status: 'all', riskLevel: 'critical' as any, type: 'all' };
     const { result } = renderHook(() => useModerationQueue());
     expect(result.current.queue).toHaveLength(1);
   });

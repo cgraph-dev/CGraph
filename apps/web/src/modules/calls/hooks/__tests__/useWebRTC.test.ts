@@ -107,8 +107,8 @@ describe('useWebRTC', () => {
 
   it('starts a call and updates state', async () => {
     mockGetState.mockReturnValue({
-      roomId: 'room-123',
-      status: 'ringing',
+      roomId: 'room-123' as any,
+      status: 'ringing' as any,
       participants: [],
       localStream: null,
       remoteStreams: new Map(),
@@ -144,8 +144,8 @@ describe('useWebRTC', () => {
 
   it('answers an incoming call', async () => {
     mockGetState.mockReturnValue({
-      roomId: 'room-789',
-      status: 'connected',
+      roomId: 'room-789' as any,
+      status: 'connected' as any,
       participants: [],
       localStream: null,
       remoteStreams: new Map(),
@@ -206,8 +206,8 @@ describe('useWebRTC', () => {
 
   it('toggles mute state', () => {
     mockGetState.mockReturnValue({
-      roomId: 'room-1',
-      status: 'connected',
+      roomId: 'room-1' as any,
+      status: 'connected' as any,
       participants: [],
       localStream: null,
       remoteStreams: new Map(),
@@ -230,8 +230,8 @@ describe('useWebRTC', () => {
 
   it('toggles video state', () => {
     mockGetState.mockReturnValue({
-      roomId: 'room-1',
-      status: 'connected',
+      roomId: 'room-1' as any,
+      status: 'connected' as any,
       participants: [],
       localStream: null,
       remoteStreams: new Map(),
@@ -280,8 +280,8 @@ describe('useWebRTC', () => {
 
   it('isCallActive is true when status is "connected"', () => {
     mockGetState.mockReturnValue({
-      roomId: 'room-1',
-      status: 'connected',
+      roomId: 'room-1' as any,
+      status: 'connected' as any,
       participants: [],
       localStream: null,
       remoteStreams: new Map(),
@@ -303,8 +303,8 @@ describe('useWebRTC', () => {
 
   it('isConnecting is true when status is "ringing"', () => {
     mockGetState.mockReturnValue({
-      roomId: 'room-1',
-      status: 'ringing',
+      roomId: 'room-1' as any,
+      status: 'ringing' as any,
       participants: [],
       localStream: null,
       remoteStreams: new Map(),

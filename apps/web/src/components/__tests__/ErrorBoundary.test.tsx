@@ -77,14 +77,14 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
     expect(onError).toHaveBeenCalledTimes(1);
-    expect(onError.mock.calls[0][0]).toBeInstanceOf(Error);
-    expect(onError.mock.calls[0][0].message).toBe('Test error');
+    expect(onError.mock.calls[0]![0]).toBeInstanceOf(Error);
+    expect(onError.mock.calls[0]![0].message).toBe('Test error');
   });
 
   it('renders Try Again button that resets the error state', () => {
     // We can't dynamically toggle the throw, so just verify the button exists
     // and that clicking it attempts to re-render children
-    const { container } = render(
+    const { container: _container } = render(
       <ErrorBoundary>
         <ThrowingComponent />
       </ErrorBoundary>
@@ -131,7 +131,7 @@ describe('ErrorBoundary', () => {
     expect(captureError).toHaveBeenCalledTimes(1);
     expect(addBreadcrumb).toHaveBeenCalled();
     // Verify the captureError was called with the error and component context
-    const captureCall = vi.mocked(captureError).mock.calls[0];
+    const captureCall = vi.mocked(captureError).mock.calls[0]!;
     expect(captureCall[0]).toBeInstanceOf(Error);
     expect(captureCall[1]).toMatchObject({ component: 'TestComponent' });
   });
@@ -146,7 +146,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
 
-    const captureCall = vi.mocked(captureError).mock.calls[0];
+    const captureCall = vi.mocked(captureError).mock.calls[0]!;
     expect(captureCall[1]).toMatchObject({
       component: 'MyWidget',
       action: 'component_crash',

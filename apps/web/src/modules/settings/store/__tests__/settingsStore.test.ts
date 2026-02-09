@@ -426,7 +426,7 @@ describe('settingsStore (modules)', () => {
         notifications: { emailNotifications: false },
         appearance: { theme: 'dark' },
         locale: { language: 'es' },
-      });
+      } as any);
 
       const { settings } = useSettingsStore.getState();
       expect(settings.notifications.emailNotifications).toBe(false);
@@ -441,7 +441,7 @@ describe('settingsStore (modules)', () => {
 
       await useSettingsStore.getState().updateAllSettings({
         appearance: { theme: 'light' },
-      });
+      } as any);
 
       expect(mockedApi.put).toHaveBeenCalledWith(
         '/api/v1/settings',
@@ -456,7 +456,7 @@ describe('settingsStore (modules)', () => {
         useSettingsStore.getState().updateAllSettings({
           appearance: { theme: 'dark' },
           locale: { language: 'pt' },
-        })
+        } as any)
       ).rejects.toThrow();
 
       expect(useSettingsStore.getState().settings.appearance.theme).toBe('system');
@@ -469,7 +469,7 @@ describe('settingsStore (modules)', () => {
 
       await useSettingsStore.getState().updateAllSettings({
         appearance: { theme: 'dark' },
-      });
+      } as any);
 
       expect(useSettingsStore.getState().lastSyncedAt).toBeTypeOf('number');
     });
@@ -669,7 +669,7 @@ describe('settingsStore (modules)', () => {
       mockedApi.put.mockRejectedValue(axiosError);
 
       await expect(
-        useSettingsStore.getState().updateAllSettings({ appearance: { theme: 'dark' } })
+        useSettingsStore.getState().updateAllSettings({ appearance: { theme: 'dark' } } as any)
       ).rejects.toThrow();
 
       expect(useSettingsStore.getState().error).toBe('Validation failed');

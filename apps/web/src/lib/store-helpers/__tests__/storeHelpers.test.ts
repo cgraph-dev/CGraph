@@ -69,7 +69,7 @@ describe('Toggle Utilities', () => {
   it('should invoke set when calling a generated toggle', () => {
     const set = vi.fn();
     const toggles = createToggles(set, ['active']);
-    toggles.toggleActive();
+    toggles.toggleActive!();
     expect(set).toHaveBeenCalledOnce();
   });
 });

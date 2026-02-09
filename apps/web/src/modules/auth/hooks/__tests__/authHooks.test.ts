@@ -258,7 +258,7 @@ describe('Auth Hooks — Extended Coverage', () => {
       expect(mockApi.delete).toHaveBeenCalledWith('/api/v1/auth/sessions/s2');
       expect(revokeResult).toBe(true);
       expect(result.current.sessions).toHaveLength(1);
-      expect(result.current.sessions[0].id).toBe('s1');
+      expect(result.current.sessions[0]!.id).toBe('s1');
     });
   });
 
@@ -296,7 +296,7 @@ describe('Auth Hooks — Extended Coverage', () => {
       expect(mockApi.delete).toHaveBeenCalledWith('/api/v1/auth/sessions');
       expect(revokeResult).toBe(true);
       expect(result.current.sessions).toHaveLength(1);
-      expect(result.current.sessions[0].isCurrent).toBe(true);
+      expect(result.current.sessions[0]!.isCurrent).toBe(true);
     });
   });
 });

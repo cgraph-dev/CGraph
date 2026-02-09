@@ -8,7 +8,7 @@
 
 import { describe, it, expect, afterEach, vi, beforeEach } from 'vitest';
 import { usePremiumStore } from '@/modules/premium/store';
-import type { SubscriptionTier, PurchaseHistory } from '@/modules/premium/store';
+import type { PurchaseHistory } from '@/modules/premium/store';
 
 // ── Fixtures ───────────────────────────────────────────────────────────
 

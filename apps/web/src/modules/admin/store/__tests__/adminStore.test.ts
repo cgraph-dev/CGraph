@@ -362,7 +362,7 @@ describe('adminStore', () => {
 
       const state = useAdminStore.getState();
       expect(state.events).toHaveLength(1);
-      expect(state.events[0].name).toBe('Test Event');
+      expect(state.events[0]!.name).toBe('Test Event');
       expect(state.isLoading).toBe(false);
       expect(api.get).toHaveBeenCalledWith('/api/v1/admin/events');
     });
@@ -424,8 +424,8 @@ describe('adminStore', () => {
 
       const state = useAdminStore.getState();
       expect(state.events).toHaveLength(1);
-      expect(state.events[0].name).toBe('Local Event');
-      expect(state.events[0].id).toMatch(/^event_/);
+      expect(state.events[0]!.name).toBe('Local Event');
+      expect(state.events[0]!.id).toMatch(/^event_/);
       expect(state.isLoading).toBe(false);
     });
 
@@ -667,7 +667,7 @@ describe('adminStore', () => {
 
       const state = useAdminStore.getState();
       expect(state.systemSettings).toHaveLength(1);
-      expect(state.systemSettings[0].key).toBe('max_upload_size');
+      expect(state.systemSettings[0]!.key).toBe('max_upload_size');
       expect(state.isLoading).toBe(false);
       expect(api.get).toHaveBeenCalledWith('/api/v1/admin/settings');
     });

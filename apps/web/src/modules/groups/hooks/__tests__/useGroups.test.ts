@@ -182,7 +182,7 @@ describe('useGroups', () => {
     ];
     const { result } = renderHook(() => useGroups());
     expect(result.current.myGroups).toHaveLength(1);
-    expect(result.current.myGroups[0].id).toBe('g-1');
+    expect(result.current.myGroups[0]!.id).toBe('g-1');
   });
 
   it('returns filtered publicGroups', () => {
@@ -192,7 +192,7 @@ describe('useGroups', () => {
     ];
     const { result } = renderHook(() => useGroups());
     expect(result.current.publicGroups).toHaveLength(1);
-    expect(result.current.publicGroups[0].id).toBe('g-1');
+    expect(result.current.publicGroups[0]!.id).toBe('g-1');
   });
 
   it('delegates join to store', async () => {

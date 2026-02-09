@@ -79,7 +79,7 @@ describe('useForumSocket', () => {
   });
 
   it('connects to the socket and joins the forum channel when forumId is provided', async () => {
-    const { result } = renderHook(() => useForumSocket('forum-1'));
+    const { result: _result } = renderHook(() => useForumSocket('forum-1'));
 
     // Wait for the async connect to resolve
     await act(async () => {
