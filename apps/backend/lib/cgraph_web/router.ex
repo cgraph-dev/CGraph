@@ -360,6 +360,11 @@ defmodule CGraphWeb.Router do
     patch "/messages/:id/reschedule", MessageController, :reschedule
     delete "/messages/:id/cancel-schedule", MessageController, :cancel_schedule
 
+    # Saved Messages (bookmarks)
+    get "/saved-messages", SavedMessageController, :index
+    post "/saved-messages", SavedMessageController, :create
+    delete "/saved-messages/:id", SavedMessageController, :delete
+
     # Group Channels (Discord-style)
     resources "/groups", GroupController do
       resources "/channels", ChannelController do

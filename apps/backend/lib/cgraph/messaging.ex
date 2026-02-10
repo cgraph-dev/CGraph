@@ -1206,4 +1206,69 @@ defmodule CGraph.Messaging do
       {k, v} -> {k, v}
     end)
   end
+
+  # ============================================================================
+  # Saved Messages (Bookmarks)
+  # ============================================================================
+
+  alias CGraph.Messaging.SavedMessage
+
+  @doc """
+  List saved messages for a user, with optional text search.
+  Results include the original message content and sender info.
+  """
+  def list_saved_messages(user_id, opts \\ []) do
+    search = Keyword.get(opts, :search)
+
+    query =
+      from sm in SavedMessage,
+        where: sm.user_id == ^user_id,
+        join: m in Message, on: m.id == sm.message_id,
+        join: sender in assoc(m, :sender),
+        order_by: [desc: sm.saved_at],
+        preload: [message: {m, sender: sender}]
+
+    query =
+      if search && search != "" do
+        term = "%#{search}%"
+        from [sm, m, _s] in query, where: ilike(m.content, ^term)
+      else
+        query
+      end
+
+    Repo.all(query)
+  end
+
+  @doc """
+  Save (bookmark) a message for a user.
+  Returns `{:ok, saved_message}` or `{:error, changeset}`.
+  """
+  def save_message(user_id, message_id, opts \\ []) do
+    note = Keyword.get(opts, :note)
+
+    %SavedMessage{}
+    |> SavedMessage.changeset(%{user_id: user_id, message_id: message_id, note: note})
+    |> Repo.insert()
+  end
+
+  @doc """
+  Remove a saved message bookmark.
+  Returns `{:ok, saved_message}` or `{:error, :not_found}`.
+  """
+  def unsave_message(user_id, saved_message_id) do
+    case Repo.get_by(SavedMessage, id: saved_message_id, user_id: user_id) do
+      nil -> {:error, :not_found}
+      saved -> Repo.delete(saved)
+    end
+  end
+
+  @doc """
+  Check if a message is saved by a user.
+  """
+  def message_saved?(user_id, message_id) do
+    Repo.exists?(
+      from sm in SavedMessage,
+        where: sm.user_id == ^user_id and sm.message_id == ^message_id
+    )
+  end
 end
