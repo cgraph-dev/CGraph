@@ -9,6 +9,13 @@ import Config
 # application starts, so it is the perfect place to load secrets.
 
 if config_env() == :prod do
+  # ---------------------------------------------------------------------------
+  # Logger — runtime log level override via LOG_LEVEL env var
+  # ---------------------------------------------------------------------------
+  if log_level = System.get_env("LOG_LEVEL") do
+    config :logger, level: String.to_existing_atom(log_level)
+  end
+
   database_url =
     System.get_env("DATABASE_URL") ||
       raise """
