@@ -81,7 +81,7 @@ const INITIAL_STATE: AuthState = {
 // Socket helpers (lazy import to avoid circular deps)
 // ---------------------------------------------------------------------------
 
-let socketManagerModule: { default: { connect: () => Promise<void>; disconnect: () => void; setAppState: (state: string) => void } } | null = null;
+let socketManagerModule: { default: { connect: () => Promise<void>; disconnect: () => void; setAppState: (state: 'foreground' | 'background') => void } } | null = null;
 
 async function getSocketManager() {
   if (!socketManagerModule) {
@@ -91,7 +91,7 @@ async function getSocketManager() {
       socketManagerModule = { default: { connect: async () => {}, disconnect: () => {}, setAppState: () => {} } };
     }
   }
-  return socketManagerModule.default;
+  return socketManagerModule!.default;
 }
 
 // ---------------------------------------------------------------------------

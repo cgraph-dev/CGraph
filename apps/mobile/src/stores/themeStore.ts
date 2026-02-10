@@ -295,7 +295,7 @@ export const darkColors = {
   },
 } as const;
 
-export type ThemeColors = typeof lightColors;
+export type ThemeColors = typeof lightColors | typeof darkColors;
 
 // ---------------------------------------------------------------------------
 // Helpers
