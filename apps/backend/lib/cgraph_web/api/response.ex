@@ -221,25 +221,35 @@ defmodule CGraphWeb.API.Response do
   end
 
   defp build_pagination(info) when is_map(info) do
-    total = Map.get(info, :total, 0)
-    page = Map.get(info, :page, 1)
-    per_page = Map.get(info, :per_page, 20)
-    total_pages = if per_page > 0, do: ceil(total / per_page), else: 0
+    if Map.has_key?(info, :has_next_page) do
+      # Cursor-based pagination response
+      %{
+        per_page: Map.get(info, :per_page, 20),
+        has_next_page: Map.get(info, :has_next_page, false),
+        next_cursor: Map.get(info, :next_cursor)
+      }
+    else
+      # Legacy offset-based pagination response
+      total = Map.get(info, :total, 0)
+      page = Map.get(info, :page, 1)
+      per_page = Map.get(info, :per_page, 20)
+      total_pages = if per_page > 0, do: ceil(total / per_page), else: 0
 
-    base = %{
-      total: total,
-      page: page,
-      per_page: per_page,
-      total_pages: total_pages,
-      has_next: page < total_pages,
-      has_prev: page > 1
-    }
+      base = %{
+        total: total,
+        page: page,
+        per_page: per_page,
+        total_pages: total_pages,
+        has_next: page < total_pages,
+        has_prev: page > 1
+      }
 
-    # Add cursor fields if present
-    base
-    |> maybe_add(:next_cursor, Map.get(info, :next_cursor))
-    |> maybe_add(:prev_cursor, Map.get(info, :prev_cursor))
-    |> maybe_add(:end_cursor, Map.get(info, :end_cursor))
+      # Add cursor fields if present
+      base
+      |> maybe_add(:next_cursor, Map.get(info, :next_cursor))
+      |> maybe_add(:prev_cursor, Map.get(info, :prev_cursor))
+      |> maybe_add(:end_cursor, Map.get(info, :end_cursor))
+    end
   end
 
   defp maybe_add(map, _key, nil), do: map

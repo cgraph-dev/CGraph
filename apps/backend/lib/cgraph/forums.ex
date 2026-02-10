@@ -19,6 +19,7 @@ defmodule CGraph.Forums do
   alias CGraph.Forums.Poll, warn: false
   alias CGraph.Forums.ThreadAttachment, warn: false
   alias CGraph.Repo
+  alias CGraph.Pagination
 
   # ============================================================================
   # Submodule Delegations (Phase 6 Architecture Refactor)
@@ -572,11 +573,11 @@ defmodule CGraph.Forums do
   List posts in a forum.
   """
   def list_posts(forum, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 20)
     sort = Keyword.get(opts, :sort, "hot")
     category_id = Keyword.get(opts, :category_id)
     user_id = Keyword.get(opts, :user_id)
+    cursor = Keyword.get(opts, :cursor)
 
     query = from p in Post,
       where: p.forum_id == ^forum.id,
@@ -589,22 +590,31 @@ defmodule CGraph.Forums do
     end
 
     query = case sort do
-      "new" -> from p in query, order_by: [desc: p.inserted_at]
-      "top" -> from p in query, order_by: [desc: p.score]
-      "controversial" -> from p in query, order_by: [desc: fragment("? + ?", p.upvotes, p.downvotes)]
-      _ -> from p in query, order_by: [desc: fragment("? / POWER(EXTRACT(EPOCH FROM (NOW() - ?))/3600 + 2, 1.8)", p.score, p.inserted_at)]
+      "new" -> from p in query, order_by: [desc: p.inserted_at, desc: p.id]
+      "top" -> from p in query, order_by: [desc: p.score, desc: p.id]
+      "controversial" -> from p in query, order_by: [desc: fragment("? + ?", p.upvotes, p.downvotes), desc: p.id]
+      _ -> from p in query, order_by: [desc: fragment("? / POWER(EXTRACT(EPOCH FROM (NOW() - ?))/3600 + 2, 1.8)", p.score, p.inserted_at), desc: p.id]
     end
 
-    total = Repo.aggregate(from(p in Post, where: p.forum_id == ^forum.id), :count, :id)
+    if cursor do
+      query = apply_post_cursor(query, cursor, sort)
+      {posts_raw, has_next} = Pagination.fetch_page(query, per_page)
+      posts = maybe_add_user_votes(posts_raw, user_id)
+      meta = build_cursor_meta(posts_raw, has_next, per_page, sort, :post)
+      {posts, meta}
+    else
+      page = Keyword.get(opts, :page, 1)
+      total = Repo.aggregate(from(p in Post, where: p.forum_id == ^forum.id), :count, :id)
 
-    posts = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-      |> maybe_add_user_votes(user_id)
+      posts = query
+        |> limit(^per_page)
+        |> offset(^((page - 1) * per_page))
+        |> Repo.all()
+        |> maybe_add_user_votes(user_id)
 
-    meta = %{page: page, per_page: per_page, total: total}
-    {posts, meta}
+      meta = %{page: page, per_page: per_page, total: total}
+      {posts, meta}
+    end
   end
 
   @doc """
@@ -612,31 +622,41 @@ defmodule CGraph.Forums do
   Used for the main discovery page.
   """
   def list_public_feed(opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 25)
     sort = Keyword.get(opts, :sort, "hot")
     time_range = Keyword.get(opts, :time_range, "day")
     user_id = Keyword.get(opts, :user_id)
+    cursor = Keyword.get(opts, :cursor)
 
     query = base_public_feed_query()
       |> maybe_apply_time_filter(sort, time_range)
       |> apply_feed_sort(sort)
 
-    total_query =
-      from p in Post,
-        join: f in Forum, on: p.forum_id == f.id,
-        where: f.is_public == true
+    if cursor do
+      query = apply_post_cursor(query, cursor, sort)
+      {posts_raw, has_next} = Pagination.fetch_page(query, per_page)
+      posts = maybe_add_user_votes(posts_raw, user_id)
+      meta = build_cursor_meta(posts_raw, has_next, per_page, sort, :post)
+      {posts, meta}
+    else
+      page = Keyword.get(opts, :page, 1)
 
-    total = Repo.aggregate(total_query, :count, :id)
+      total_query =
+        from p in Post,
+          join: f in Forum, on: p.forum_id == f.id,
+          where: f.is_public == true
 
-    posts = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-      |> maybe_add_user_votes(user_id)
+      total = Repo.aggregate(total_query, :count, :id)
 
-    meta = %{page: page, per_page: per_page, total: total}
-    {posts, meta}
+      posts = query
+        |> limit(^per_page)
+        |> offset(^((page - 1) * per_page))
+        |> Repo.all()
+        |> maybe_add_user_votes(user_id)
+
+      meta = %{page: page, per_page: per_page, total: total}
+      {posts, meta}
+    end
   end
 
   @doc """
@@ -647,10 +667,10 @@ defmodule CGraph.Forums do
   """
   def list_home_feed(nil, _opts), do: {[], %{page: 1, per_page: 25, total: 0}}
   def list_home_feed(user, opts) do
-    page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 25)
     sort = Keyword.get(opts, :sort, "hot")
     time_range = Keyword.get(opts, :time_range, "day")
+    cursor = Keyword.get(opts, :cursor)
 
     # Get IDs of forums the user has joined
     joined_forum_ids = from(m in ForumMember,
@@ -659,7 +679,7 @@ defmodule CGraph.Forums do
     ) |> Repo.all()
 
     if Enum.empty?(joined_forum_ids) do
-      {[], %{page: page, per_page: per_page, total: 0}}
+      {[], %{per_page: per_page, total: 0, page: Keyword.get(opts, :page, 1)}}
     else
       query = from p in Post,
         join: f in Forum, on: p.forum_id == f.id,
@@ -671,19 +691,29 @@ defmodule CGraph.Forums do
         |> maybe_apply_time_filter(sort, time_range)
         |> apply_feed_sort(sort)
 
-      total_query = from p in Post,
-        where: p.forum_id in ^joined_forum_ids
+      if cursor do
+        query = apply_post_cursor(query, cursor, sort)
+        {posts_raw, has_next} = Pagination.fetch_page(query, per_page)
+        posts = maybe_add_user_votes(posts_raw, user.id)
+        meta = build_cursor_meta(posts_raw, has_next, per_page, sort, :post)
+        {posts, meta}
+      else
+        page = Keyword.get(opts, :page, 1)
 
-      total = Repo.aggregate(total_query, :count, :id)
+        total_query = from p in Post,
+          where: p.forum_id in ^joined_forum_ids
 
-      posts = query
-        |> limit(^per_page)
-        |> offset(^((page - 1) * per_page))
-        |> Repo.all()
-        |> maybe_add_user_votes(user.id)
+        total = Repo.aggregate(total_query, :count, :id)
 
-      meta = %{page: page, per_page: per_page, total: total}
-      {posts, meta}
+        posts = query
+          |> limit(^per_page)
+          |> offset(^((page - 1) * per_page))
+          |> Repo.all()
+          |> maybe_add_user_votes(user.id)
+
+        meta = %{page: page, per_page: per_page, total: total}
+        {posts, meta}
+      end
     end
   end
 
@@ -692,10 +722,10 @@ defmodule CGraph.Forums do
   Uses a combination of score and recency for ranking.
   """
   def list_popular_feed(opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 25)
     time_range = Keyword.get(opts, :time_range, "day")
     user_id = Keyword.get(opts, :user_id)
+    cursor = Keyword.get(opts, :cursor)
 
     # Get posts from last time_range sorted by hot score
     time_filter = time_range_to_filter(time_range) || time_range_to_filter("day")
@@ -706,25 +736,35 @@ defmodule CGraph.Forums do
       where: is_nil(f.deleted_at),
       where: p.inserted_at >= ^time_filter,
       # Hot ranking algorithm (Reddit-style)
-      order_by: [desc: fragment("? / POWER(EXTRACT(EPOCH FROM (NOW() - ?))/3600 + 2, 1.8)", p.score, p.inserted_at)],
+      order_by: [desc: fragment("? / POWER(EXTRACT(EPOCH FROM (NOW() - ?))/3600 + 2, 1.8)", p.score, p.inserted_at), desc: p.id],
       preload: [:author, :category, forum: []]
 
-    total_query = from p in Post,
-      join: f in Forum, on: p.forum_id == f.id,
-      where: f.is_public == true,
-      where: is_nil(f.deleted_at),
-      where: p.inserted_at >= ^time_filter
+    if cursor do
+      query = apply_post_cursor(query, cursor, "hot")
+      {posts_raw, has_next} = Pagination.fetch_page(query, per_page)
+      posts = maybe_add_user_votes(posts_raw, user_id)
+      meta = build_cursor_meta(posts_raw, has_next, per_page, "hot", :post)
+      {posts, meta}
+    else
+      page = Keyword.get(opts, :page, 1)
 
-    total = Repo.aggregate(total_query, :count, :id)
+      total_query = from p in Post,
+        join: f in Forum, on: p.forum_id == f.id,
+        where: f.is_public == true,
+        where: is_nil(f.deleted_at),
+        where: p.inserted_at >= ^time_filter
 
-    posts = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-      |> maybe_add_user_votes(user_id)
+      total = Repo.aggregate(total_query, :count, :id)
 
-    meta = %{page: page, per_page: per_page, total: total}
-    {posts, meta}
+      posts = query
+        |> limit(^per_page)
+        |> offset(^((page - 1) * per_page))
+        |> Repo.all()
+        |> maybe_add_user_votes(user_id)
+
+      meta = %{page: page, per_page: per_page, total: total}
+      {posts, meta}
+    end
   end
 
   defp base_public_feed_query do
@@ -750,10 +790,10 @@ defmodule CGraph.Forums do
   defp time_range_to_filter("year"), do: DateTime.add(DateTime.utc_now(), -365, :day)
   defp time_range_to_filter(_all), do: nil
 
-  defp apply_feed_sort(query, "new"), do: from(p in query, order_by: [desc: p.inserted_at])
-  defp apply_feed_sort(query, "top"), do: from(p in query, order_by: [desc: p.score])
-  defp apply_feed_sort(query, "controversial"), do: from(p in query, order_by: [desc: fragment("? + ?", p.upvotes, p.downvotes)])
-  defp apply_feed_sort(query, _hot), do: from(p in query, order_by: [desc: fragment("? / POWER(EXTRACT(EPOCH FROM (NOW() - ?))/3600 + 2, 1.8)", p.score, p.inserted_at)])
+  defp apply_feed_sort(query, "new"), do: from(p in query, order_by: [desc: p.inserted_at, desc: p.id])
+  defp apply_feed_sort(query, "top"), do: from(p in query, order_by: [desc: p.score, desc: p.id])
+  defp apply_feed_sort(query, "controversial"), do: from(p in query, order_by: [desc: fragment("? + ?", p.upvotes, p.downvotes), desc: p.id])
+  defp apply_feed_sort(query, _hot), do: from(p in query, order_by: [desc: fragment("? / POWER(EXTRACT(EPOCH FROM (NOW() - ?))/3600 + 2, 1.8)", p.score, p.inserted_at), desc: p.id])
 
   @doc """
   Get a post by ID.
@@ -1219,11 +1259,11 @@ defmodule CGraph.Forums do
   List comments on a post.
   """
   def list_comments(post, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 50)
     sort = Keyword.get(opts, :sort, "best")
     parent_id = Keyword.get(opts, :parent_id)
     user_id = Keyword.get(opts, :user_id)
+    cursor = Keyword.get(opts, :cursor)
 
     query = from c in Comment,
       where: c.post_id == ^post.id,
@@ -1236,23 +1276,32 @@ defmodule CGraph.Forums do
     end
 
     query = case sort do
-      "new" -> from c in query, order_by: [desc: c.inserted_at]
-      "old" -> from c in query, order_by: [asc: c.inserted_at]
-      "controversial" -> from c in query, order_by: [desc: fragment("? + ?", c.upvotes, c.downvotes)]
-      _ -> from c in query, order_by: [desc: c.score]
+      "new" -> from c in query, order_by: [desc: c.inserted_at, desc: c.id]
+      "old" -> from c in query, order_by: [asc: c.inserted_at, asc: c.id]
+      "controversial" -> from c in query, order_by: [desc: fragment("? + ?", c.upvotes, c.downvotes), desc: c.id]
+      _ -> from c in query, order_by: [desc: c.score, desc: c.id]
     end
 
-    total = Repo.aggregate(query, :count, :id)
+    if cursor do
+      query = apply_comment_cursor(query, cursor, sort)
+      {comments_raw, has_next} = Pagination.fetch_page(query, per_page)
+      comments = comments_raw |> load_replies(user_id) |> maybe_add_comment_votes(user_id)
+      meta = build_cursor_meta(comments_raw, has_next, per_page, sort, :comment)
+      {comments, meta}
+    else
+      page = Keyword.get(opts, :page, 1)
+      total = Repo.aggregate(query, :count, :id)
 
-    comments = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-      |> load_replies(user_id)
-      |> maybe_add_comment_votes(user_id)
+      comments = query
+        |> limit(^per_page)
+        |> offset(^((page - 1) * per_page))
+        |> Repo.all()
+        |> load_replies(user_id)
+        |> maybe_add_comment_votes(user_id)
 
-    meta = %{page: page, per_page: per_page, total: total}
-    {comments, meta}
+      meta = %{page: page, per_page: per_page, total: total}
+      {comments, meta}
+    end
   end
 
   defp load_replies(comments, user_id) do
@@ -1578,10 +1627,10 @@ defmodule CGraph.Forums do
   Supports filtering by forum and sorting by relevance, date, or score.
   """
   def search_posts(query, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 20)
     forum_id = Keyword.get(opts, :forum_id)
     sort = Keyword.get(opts, :sort, "relevance")
+    cursor = Keyword.get(opts, :cursor)
     search_term = "%#{query}%"
 
     db_query = from p in Post,
@@ -1595,20 +1644,29 @@ defmodule CGraph.Forums do
     end
 
     db_query = case sort do
-      "new" -> from p in db_query, order_by: [desc: p.inserted_at]
-      "top" -> from p in db_query, order_by: [desc: p.score]
-      _ -> db_query
+      "new" -> from p in db_query, order_by: [desc: p.inserted_at, desc: p.id]
+      "top" -> from p in db_query, order_by: [desc: p.score, desc: p.id]
+      _ -> from p in db_query, order_by: [desc: p.inserted_at, desc: p.id]
     end
 
-    total = Repo.aggregate(db_query, :count, :id)
+    if cursor do
+      sort_key = if sort in ["new", "relevance"], do: "new", else: sort
+      db_query = apply_post_cursor(db_query, cursor, sort_key)
+      {posts, has_next} = Pagination.fetch_page(db_query, per_page)
+      meta = build_cursor_meta(posts, has_next, per_page, sort_key, :post)
+      {posts, meta}
+    else
+      page = Keyword.get(opts, :page, 1)
+      total = Repo.aggregate(db_query, :count, :id)
 
-    posts = db_query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
+      posts = db_query
+        |> limit(^per_page)
+        |> offset(^((page - 1) * per_page))
+        |> Repo.all()
 
-    meta = %{page: page, per_page: per_page, total: total}
-    {posts, meta}
+      meta = %{page: page, per_page: per_page, total: total}
+      {posts, meta}
+    end
   end
 
   # ============================================================================
@@ -1785,10 +1843,10 @@ defmodule CGraph.Forums do
   - featured_only: only show featured forums
   """
   def list_forum_leaderboard(opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 25)
     sort = Keyword.get(opts, :sort, "hot")
     featured_only = Keyword.get(opts, :featured_only, false)
+    cursor = Keyword.get(opts, :cursor)
 
     query = from(f in Forum,
       where: is_nil(f.deleted_at) and f.is_public == true,
@@ -1797,15 +1855,24 @@ defmodule CGraph.Forums do
     |> maybe_filter_featured(featured_only)
     |> apply_forum_sort(sort)
 
-    total = Repo.aggregate(query, :count, :id)
+    if cursor do
+      query = apply_forum_cursor(query, cursor, sort)
+      {forums, has_next} = Pagination.fetch_page(query, per_page)
+      meta = build_cursor_meta(forums, has_next, per_page, sort, :forum)
+      meta = Map.put(meta, :sort, sort)
+      {forums, meta}
+    else
+      page = Keyword.get(opts, :page, 1)
+      total = Repo.aggregate(query, :count, :id)
 
-    forums = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
+      forums = query
+        |> limit(^per_page)
+        |> offset(^((page - 1) * per_page))
+        |> Repo.all()
 
-    meta = %{page: page, per_page: per_page, total: total, sort: sort}
-    {forums, meta}
+      meta = %{page: page, per_page: per_page, total: total, sort: sort}
+      {forums, meta}
+    end
   end
 
   defp maybe_filter_featured(query, false), do: query
@@ -1813,13 +1880,13 @@ defmodule CGraph.Forums do
     from f in query, where: f.featured == true
   end
 
-  defp apply_forum_sort(query, "hot"), do: from(f in query, order_by: [desc: f.hot_score])
-  defp apply_forum_sort(query, "top"), do: from(f in query, order_by: [desc: f.score])
-  defp apply_forum_sort(query, "new"), do: from(f in query, order_by: [desc: f.inserted_at])
-  defp apply_forum_sort(query, "rising"), do: from(f in query, order_by: [desc: f.weekly_score, desc: f.inserted_at])
-  defp apply_forum_sort(query, "weekly"), do: from(f in query, order_by: [desc: f.weekly_score])
-  defp apply_forum_sort(query, "members"), do: from(f in query, order_by: [desc: f.member_count])
-  defp apply_forum_sort(query, _unknown), do: from(f in query, order_by: [desc: f.hot_score])
+  defp apply_forum_sort(query, "hot"), do: from(f in query, order_by: [desc: f.hot_score, desc: f.id])
+  defp apply_forum_sort(query, "top"), do: from(f in query, order_by: [desc: f.score, desc: f.id])
+  defp apply_forum_sort(query, "new"), do: from(f in query, order_by: [desc: f.inserted_at, desc: f.id])
+  defp apply_forum_sort(query, "rising"), do: from(f in query, order_by: [desc: f.weekly_score, desc: f.id])
+  defp apply_forum_sort(query, "weekly"), do: from(f in query, order_by: [desc: f.weekly_score, desc: f.id])
+  defp apply_forum_sort(query, "members"), do: from(f in query, order_by: [desc: f.member_count, desc: f.id])
+  defp apply_forum_sort(query, _unknown), do: from(f in query, order_by: [desc: f.hot_score, desc: f.id])
 
   @doc """
   Get top N forums for a quick leaderboard display.
@@ -1952,37 +2019,45 @@ defmodule CGraph.Forums do
   List threads in a board.
   """
   def list_threads(board_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 20)
     sort = Keyword.get(opts, :sort, "latest")
+    cursor = Keyword.get(opts, :cursor)
 
     query = from t in Thread,
       where: t.board_id == ^board_id and is_nil(t.deleted_at) and t.is_hidden == false,
       preload: [:author, :last_poster]
 
-    # Pinned threads always first
+    # Pinned threads always first, then secondary sort with id tiebreaker
     query = case sort do
       "latest" ->
-        from t in query, order_by: [desc: t.is_pinned, desc: t.last_post_at]
+        from t in query, order_by: [desc: t.is_pinned, desc: t.last_post_at, desc: t.id]
       "hot" ->
-        from t in query, order_by: [desc: t.is_pinned, desc: t.hot_score]
+        from t in query, order_by: [desc: t.is_pinned, desc: t.hot_score, desc: t.id]
       "top" ->
-        from t in query, order_by: [desc: t.is_pinned, desc: t.score]
+        from t in query, order_by: [desc: t.is_pinned, desc: t.score, desc: t.id]
       "views" ->
-        from t in query, order_by: [desc: t.is_pinned, desc: t.view_count]
+        from t in query, order_by: [desc: t.is_pinned, desc: t.view_count, desc: t.id]
       _ ->
-        from t in query, order_by: [desc: t.is_pinned, desc: t.last_post_at]
+        from t in query, order_by: [desc: t.is_pinned, desc: t.last_post_at, desc: t.id]
     end
 
-    total = Repo.aggregate(query, :count, :id)
+    if cursor do
+      query = apply_thread_cursor_filter(query, cursor, sort)
+      {threads, has_next} = Pagination.fetch_page(query, per_page)
+      meta = build_cursor_meta(threads, has_next, per_page, sort, :thread)
+      {threads, meta}
+    else
+      page = Keyword.get(opts, :page, 1)
+      total = Repo.aggregate(query, :count, :id)
 
-    threads = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
+      threads = query
+        |> limit(^per_page)
+        |> offset(^((page - 1) * per_page))
+        |> Repo.all()
 
-    meta = %{page: page, per_page: per_page, total: total}
-    {threads, meta}
+      meta = %{page: page, per_page: per_page, total: total}
+      {threads, meta}
+    end
   end
 
   @doc """
@@ -3329,4 +3404,178 @@ defmodule CGraph.Forums do
   defp get_author_name(%{author: %{display_name: name}}) when not is_nil(name), do: name
   defp get_author_name(%{user: %{username: username}}) when not is_nil(username), do: username
   defp get_author_name(_), do: "Anonymous"
+
+  # ============================================================================
+  # Cursor Pagination Helpers
+  # ============================================================================
+
+  # --- Post cursors ---
+
+  defp apply_post_cursor(query, cursor, sort) do
+    case sort do
+      "new" -> apply_simple_cursor_desc(query, cursor, :inserted_at)
+      "top" -> apply_simple_cursor_desc(query, cursor, :score)
+      "controversial" -> apply_controversy_cursor(query, cursor)
+      _ -> apply_hot_formula_cursor(query, cursor)
+    end
+  end
+
+  # --- Comment cursors ---
+
+  defp apply_comment_cursor(query, cursor, sort) do
+    case sort do
+      "new" -> apply_simple_cursor_desc(query, cursor, :inserted_at)
+      "old" -> apply_simple_cursor_asc(query, cursor, :inserted_at)
+      "controversial" -> apply_controversy_cursor(query, cursor)
+      _ -> apply_simple_cursor_desc(query, cursor, :score)
+    end
+  end
+
+  # --- Forum (leaderboard) cursors ---
+
+  defp apply_forum_cursor(query, cursor, sort) do
+    field = case sort do
+      "hot" -> :hot_score
+      "top" -> :score
+      "new" -> :inserted_at
+      s when s in ["rising", "weekly"] -> :weekly_score
+      "members" -> :member_count
+      _ -> :hot_score
+    end
+    apply_simple_cursor_desc(query, cursor, field)
+  end
+
+  # --- Thread cursors (compound: is_pinned + sort field) ---
+
+  defp apply_thread_cursor_filter(query, cursor, sort) do
+    sort_field = case sort do
+      "latest" -> :last_post_at
+      "hot" -> :hot_score
+      "top" -> :score
+      "views" -> :view_count
+      _ -> :last_post_at
+    end
+
+    case Pagination.decode_cursor(cursor) do
+      %{p: pinned, v: v, id: id} ->
+        val = Pagination.deserialize_cursor_value(v)
+        from t in query,
+          where: fragment(
+            "(?, ?, ?) < (?::boolean, ?, ?::uuid)",
+            t.is_pinned, field(t, ^sort_field), t.id,
+            ^pinned, ^val, ^id
+          )
+      _ -> query
+    end
+  end
+
+  # --- Generic cursor filters ---
+
+  defp apply_simple_cursor_desc(query, cursor, field) do
+    case Pagination.decode_cursor(cursor) do
+      %{v: v, id: id} ->
+        val = Pagination.deserialize_cursor_value(v)
+        from q in query,
+          where: fragment("(?, ?) < (?, ?::uuid)", field(q, ^field), q.id, ^val, ^id)
+      _ -> query
+    end
+  end
+
+  defp apply_simple_cursor_asc(query, cursor, field) do
+    case Pagination.decode_cursor(cursor) do
+      %{v: v, id: id} ->
+        val = Pagination.deserialize_cursor_value(v)
+        from q in query,
+          where: fragment("(?, ?) > (?, ?::uuid)", field(q, ^field), q.id, ^val, ^id)
+      _ -> query
+    end
+  end
+
+  defp apply_controversy_cursor(query, cursor) do
+    case Pagination.decode_cursor(cursor) do
+      %{v: v, id: id} ->
+        from q in query,
+          where: fragment(
+            "(? + ?, ?) < (?::integer, ?::uuid)",
+            q.upvotes, q.downvotes, q.id, ^v, ^id
+          )
+      _ -> query
+    end
+  end
+
+  defp apply_hot_formula_cursor(query, cursor) do
+    case Pagination.decode_cursor(cursor) do
+      %{v: v, id: id} ->
+        from q in query,
+          where: fragment(
+            "(? / POWER(EXTRACT(EPOCH FROM (NOW() - ?))/3600 + 2, 1.8), ?) < (?::float8, ?::uuid)",
+            q.score, q.inserted_at, q.id, ^v, ^id
+          )
+      _ -> query
+    end
+  end
+
+  # --- Cursor metadata builders ---
+
+  defp build_cursor_meta([], _has_next, per_page, _sort, _type) do
+    %{per_page: per_page, has_next_page: false, next_cursor: nil}
+  end
+
+  defp build_cursor_meta(items, has_next, per_page, sort, type) do
+    next_cursor = if has_next do
+      last = List.last(items)
+      build_item_cursor(last, sort, type)
+    end
+
+    %{per_page: per_page, has_next_page: has_next, next_cursor: next_cursor}
+  end
+
+  defp build_item_cursor(item, sort, :post) do
+    val = case sort do
+      "new" -> item.inserted_at
+      "top" -> item.score
+      "controversial" -> (item.upvotes || 0) + (item.downvotes || 0)
+      _ -> compute_hot_value(item)
+    end
+    Pagination.encode_cursor_data(%{v: val, id: item.id})
+  end
+
+  defp build_item_cursor(item, sort, :comment) do
+    val = case sort do
+      "new" -> item.inserted_at
+      "old" -> item.inserted_at
+      "controversial" -> (item.upvotes || 0) + (item.downvotes || 0)
+      _ -> item.score
+    end
+    Pagination.encode_cursor_data(%{v: val, id: item.id})
+  end
+
+  defp build_item_cursor(item, sort, :forum) do
+    val = case sort do
+      "hot" -> item.hot_score
+      "top" -> item.score
+      "new" -> item.inserted_at
+      s when s in ["rising", "weekly"] -> item.weekly_score
+      "members" -> item.member_count
+      _ -> item.hot_score
+    end
+    Pagination.encode_cursor_data(%{v: val, id: item.id})
+  end
+
+  defp build_item_cursor(item, sort, :thread) do
+    val = case sort do
+      "latest" -> item.last_post_at
+      "hot" -> item.hot_score
+      "top" -> item.score
+      "views" -> item.view_count
+      _ -> item.last_post_at
+    end
+    Pagination.encode_cursor_data(%{p: item.is_pinned, v: val, id: item.id})
+  end
+
+  defp compute_hot_value(post) do
+    age_seconds = DateTime.diff(DateTime.utc_now(), post.inserted_at, :second)
+    age_hours = age_seconds / 3600.0
+    (post.score || 0) / :math.pow(age_hours + 2, 1.8)
+  end
 end

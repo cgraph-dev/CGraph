@@ -27,7 +27,9 @@ defmodule CGraphWeb.API.V1.CommentController do
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :view),
          {:ok, post} <- Forums.get_post(forum, post_id) do
+      cursor = Map.get(params, "cursor")
       {comments, meta} = Forums.list_comments(post,
+        cursor: cursor,
         page: page,
         per_page: per_page,
         sort: sort,

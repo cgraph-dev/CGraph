@@ -30,10 +30,13 @@ defmodule CGraphWeb.API.V1.PostController do
     sort = Map.get(params, "sort", "hot") # hot, new, top, controversial
     category_id = Map.get(params, "category_id")
 
+    cursor = Map.get(params, "cursor")
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :view) do
       user_id = if user, do: user.id, else: nil
       {posts, meta} = Forums.list_posts(forum,
+        cursor: cursor,
         page: page,
         per_page: per_page,
         sort: sort,
@@ -291,8 +294,10 @@ defmodule CGraphWeb.API.V1.PostController do
     sort = Map.get(params, "sort", "hot")
     time = Map.get(params, "time", "day")
 
+    cursor = Map.get(params, "cursor")
     user_id = if user, do: user.id, else: nil
     {posts, meta} = Forums.list_public_feed(
+      cursor: cursor,
       page: page,
       per_page: per_page,
       sort: sort,

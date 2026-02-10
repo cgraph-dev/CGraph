@@ -23,7 +23,8 @@ defmodule CGraphWeb.API.V1.ThreadController do
     per_page = Keyword.get(pagination, :per_page)
     sort = Map.get(params, "sort", "latest")
 
-    opts = [page: page, per_page: per_page, sort: sort]
+    cursor = Map.get(params, "cursor")
+    opts = [cursor: cursor, page: page, per_page: per_page, sort: sort]
     {threads, meta} = Forums.list_threads(board_id, opts)
 
     render(conn, :index, threads: threads, meta: meta)

@@ -326,6 +326,61 @@ defmodule CGraph.Pagination do
       _ -> default
     end
   end
+
+  # ---------------------------------------------------------------------------
+  # Low-level helpers for manual cursor pagination in context modules
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Fetch `limit + 1` items from a pre-built query.
+
+  Returns `{items, has_next_page}` where `items` has at most `limit` entries.
+  Useful when the caller builds the full query (with ordering and cursor WHERE)
+  and just needs the fetch + has_next logic.
+  """
+  @spec fetch_page(Ecto.Query.t(), pos_integer()) :: {list(), boolean()}
+  def fetch_page(query, limit) do
+    results =
+      query
+      |> limit(^(limit + 1))
+      |> Repo.all()
+
+    has_more = length(results) > limit
+    {Enum.take(results, limit), has_more}
+  end
+
+  @doc """
+  Encode arbitrary cursor data as an opaque Base64url string.
+
+  Unlike `cursor_for/2`, this accepts any map and doesn't impose a specific
+  key structure. Useful for compound cursors (e.g., `%{p: true, v: val, id: id}`).
+  """
+  @spec encode_cursor_data(map()) :: String.t()
+  def encode_cursor_data(data) when is_map(data) do
+    data
+    |> Jason.encode!()
+    |> Base.url_encode64(padding: false)
+  end
+
+  @doc """
+  Deserialize a cursor value that may be an ISO 8601 datetime string.
+  Public so context modules can use it when applying manual cursor filters.
+  """
+  @spec deserialize_cursor_value(term()) :: term()
+  def deserialize_cursor_value(v) when is_binary(v) do
+    case DateTime.from_iso8601(v) do
+      {:ok, dt, _} ->
+        dt
+
+      _ ->
+        case NaiveDateTime.from_iso8601(v) do
+          {:ok, ndt} -> ndt
+          _ -> v
+        end
+    end
+  end
+
+  def deserialize_cursor_value(v), do: v
 end
 
 defmodule CGraph.Pagination.JSON do

@@ -55,7 +55,10 @@ defmodule CGraphWeb.API.V1.ForumController do
     sort = Map.get(params, "sort", "hot")
     time_range = Map.get(params, "time_range", "day")
 
+    cursor = Map.get(params, "cursor")
+
     {posts, meta} = Forums.list_home_feed(user,
+      cursor: cursor,
       page: page,
       per_page: per_page,
       sort: sort,
@@ -82,7 +85,10 @@ defmodule CGraphWeb.API.V1.ForumController do
     per_page = parse_int(params["per_page"], 25, min: 1, max: @max_per_page)
     time_range = Map.get(params, "time_range", "day")
 
+    cursor = Map.get(params, "cursor")
+
     {posts, meta} = Forums.list_popular_feed(
+      cursor: cursor,
       page: page,
       per_page: per_page,
       time_range: time_range,
@@ -403,7 +409,10 @@ defmodule CGraphWeb.API.V1.ForumController do
     sort = Map.get(params, "sort", "hot")
     featured_only = Map.get(params, "featured", "false") == "true"
 
+    cursor = Map.get(params, "cursor")
+
     {forums, meta} = Forums.list_forum_leaderboard(
+      cursor: cursor,
       page: page,
       per_page: per_page,
       sort: sort,

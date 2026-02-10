@@ -112,8 +112,10 @@ defmodule CGraphWeb.API.V1.SearchController do
       |> put_status(:bad_request)
       |> json(%{error: "Query must be at least 2 characters"})
     else
+      cursor = Map.get(params, "cursor")
       {posts, meta} = Forums.search_posts(query,
         user: user,
+        cursor: cursor,
         forum_id: forum_id,
         category_id: category_id,
         page: page,
