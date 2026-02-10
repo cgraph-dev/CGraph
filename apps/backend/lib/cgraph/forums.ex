@@ -19,6 +19,7 @@ defmodule CGraph.Forums do
   alias CGraph.Forums.Poll, warn: false
   alias CGraph.Forums.ThreadAttachment, warn: false
   alias CGraph.Repo
+  alias CGraph.ReadRepo
   alias CGraph.Pagination
 
   # ============================================================================
@@ -1006,6 +1007,9 @@ defmodule CGraph.Forums do
           karma_change = vote_value
           from(u in CGraph.Accounts.User, where: u.id == ^post.author_id)
           |> Repo.update_all(inc: [karma: karma_change])
+
+          # Sync Redis leaderboard karma score
+          CGraph.Gamification.Leaderboard.increment_score(post.author_id, "karma", karma_change)
         end
 
         {:ok, vote}
@@ -1552,71 +1556,15 @@ defmodule CGraph.Forums do
   defp safe_vote_type_atom(_), do: nil
 
   # ============================================================================
-  # Categories
+  # Categories (delegated to CGraph.Forums.Categories)
   # ============================================================================
 
-  @doc """
-  List categories in a forum.
-  """
-  def list_categories(forum) do
-    from(c in Category,
-      where: c.forum_id == ^forum.id,
-      order_by: [asc: c.position]
-    )
-    |> Repo.all()
-  end
-
-  @doc """
-  Get a category.
-  """
-  def get_category(forum, category_id) do
-    query = from c in Category,
-      where: c.id == ^category_id,
-      where: c.forum_id == ^forum.id
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      category -> {:ok, category}
-    end
-  end
-
-  @doc """
-  Create a category.
-  """
-  def create_category(forum, attrs) do
-    %Category{}
-    |> Category.changeset(Map.put(attrs, "forum_id", forum.id))
-    |> Repo.insert()
-  end
-
-  @doc """
-  Update a category.
-  """
-  def update_category(category, attrs) do
-    category
-    |> Category.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Delete a category.
-  """
-  def delete_category(category) do
-    Repo.delete(category)
-  end
-
-  @doc """
-  Reorder categories.
-  """
-  def reorder_categories(forum, category_ids) do
-    Enum.with_index(category_ids)
-    |> Enum.each(fn {category_id, index} ->
-      from(c in Category, where: c.id == ^category_id and c.forum_id == ^forum.id)
-      |> Repo.update_all(set: [position: index])
-    end)
-
-    {:ok, list_categories(forum)}
-  end
+  defdelegate list_categories(forum), to: CGraph.Forums.Categories
+  defdelegate get_category(forum, category_id), to: CGraph.Forums.Categories
+  defdelegate create_category(forum, attrs), to: CGraph.Forums.Categories
+  defdelegate update_category(category, attrs), to: CGraph.Forums.Categories
+  defdelegate delete_category(category), to: CGraph.Forums.Categories
+  defdelegate reorder_categories(forum, category_ids), to: CGraph.Forums.Categories
 
   # ============================================================================
   # Search
@@ -1657,12 +1605,12 @@ defmodule CGraph.Forums do
       {posts, meta}
     else
       page = Keyword.get(opts, :page, 1)
-      total = Repo.aggregate(db_query, :count, :id)
+      total = ReadRepo.aggregate(db_query, :count, :id)
 
       posts = db_query
         |> limit(^per_page)
         |> offset(^((page - 1) * per_page))
-        |> Repo.all()
+        |> ReadRepo.all()
 
       meta = %{page: page, per_page: per_page, total: total}
       {posts, meta}
@@ -2559,403 +2507,38 @@ defmodule CGraph.Forums do
   end
 
   # ============================================================================
-  # Thread Polls
+  # Thread Polls (delegated to CGraph.Forums.Polls)
   # ============================================================================
 
-  @doc """
-  Create a poll for a thread.
-  """
-  def create_thread_poll(thread_id, attrs) do
-    %ThreadPoll{}
-    |> ThreadPoll.changeset(Map.put(attrs, :thread_id, thread_id))
-    |> Repo.insert()
-  end
-
-  @doc """
-  Get poll for a thread.
-  """
-  def get_thread_poll(thread_id) do
-    Repo.get_by(ThreadPoll, thread_id: thread_id)
-  end
-
-  @doc """
-  Vote on a poll.
-  """
-  def vote_poll(poll_id, user_id, option_ids) when is_list(option_ids) do
-    poll = Repo.get!(ThreadPoll, poll_id)
-
-    with :ok <- validate_poll_open(poll),
-         :ok <- validate_not_already_voted(poll_id, user_id),
-         :ok <- validate_option_count(poll, option_ids) do
-      insert_poll_vote(poll_id, user_id, option_ids)
-    end
-  end
-
-  defp validate_poll_open(poll) do
-    if poll.close_date && DateTime.compare(DateTime.utc_now(), poll.close_date) == :gt do
-      {:error, :poll_closed}
-    else
-      :ok
-    end
-  end
-
-  defp validate_not_already_voted(poll_id, user_id) do
-    case Repo.get_by(PollVote, poll_id: poll_id, user_id: user_id) do
-      nil -> :ok
-      _existing -> {:error, :already_voted}
-    end
-  end
-
-  defp validate_option_count(poll, option_ids) do
-    if !poll.multiple_choice && length(option_ids) > 1 do
-      {:error, :single_choice_only}
-    else
-      :ok
-    end
-  end
-
-  defp insert_poll_vote(poll_id, user_id, option_ids) do
-    result = %PollVote{}
-      |> PollVote.changeset(%{poll_id: poll_id, user_id: user_id, option_ids: option_ids})
-      |> Repo.insert()
-
-    case result do
-      {:ok, vote} ->
-        from(p in ThreadPoll, where: p.id == ^poll_id)
-        |> Repo.update_all(inc: [total_votes: 1])
-        {:ok, vote}
-      error ->
-        error
-    end
-  end
+  defdelegate create_thread_poll(thread_id, attrs), to: CGraph.Forums.Polls
+  defdelegate get_thread_poll(thread_id), to: CGraph.Forums.Polls
+  defdelegate vote_poll(poll_id, user_id, option_ids), to: CGraph.Forums.Polls
 
   # ============================================================================
-  # Forum User Groups
+  # Forum User Groups (delegated to CGraph.Forums.UserGroups)
   # ============================================================================
 
-  @doc """
-  List user groups for a forum.
-  """
-  def list_user_groups(forum_id) do
-    from(g in ForumUserGroup,
-      where: g.forum_id == ^forum_id,
-      order_by: [asc: g.position, asc: g.name])
-    |> Repo.all()
-  end
-
-  @doc """
-  Create a user group.
-  """
-  def create_user_group(attrs) do
-    %ForumUserGroup{}
-    |> ForumUserGroup.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Update a user group.
-  """
-  def update_user_group(%ForumUserGroup{} = group, attrs) do
-    group
-    |> ForumUserGroup.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Get default user groups for a new forum.
-  """
-  def create_default_user_groups(forum_id) do
-    groups = [
-      %{
-        name: "Administrators",
-        forum_id: forum_id,
-        is_staff: true,
-        is_admin: true,
-        color: "#FF0000",
-        position: 1,
-        can_moderate: true,
-        can_manage_users: true,
-        can_manage_settings: true
-      },
-      %{
-        name: "Moderators",
-        forum_id: forum_id,
-        is_staff: true,
-        color: "#00AA00",
-        position: 2,
-        can_moderate: true,
-        can_edit_posts: true,
-        can_delete_posts: true,
-        can_lock_threads: true,
-        can_pin_threads: true
-      },
-      %{
-        name: "Members",
-        forum_id: forum_id,
-        is_default: true,
-        position: 3
-      },
-      %{
-        name: "Guests",
-        forum_id: forum_id,
-        position: 4,
-        can_create_threads: false,
-        can_reply: false,
-        can_give_reputation: false
-      }
-    ]
-
-    Enum.map(groups, &create_user_group/1)
-  end
+  defdelegate list_user_groups(forum_id), to: CGraph.Forums.UserGroups
+  defdelegate create_user_group(attrs), to: CGraph.Forums.UserGroups
+  defdelegate update_user_group(group, attrs), to: CGraph.Forums.UserGroups
+  defdelegate create_default_user_groups(forum_id), to: CGraph.Forums.UserGroups
 
   # ============================================================================
-  # Plugins
+  # Plugins (delegated to CGraph.Forums.Plugins)
   # ============================================================================
 
-  @doc """
-  List all plugins for a forum.
-  """
-  def list_forum_plugins(forum_id) do
-    from(p in ForumPlugin,
-      where: p.forum_id == ^forum_id,
-      order_by: [asc: p.position, asc: p.name]
-    )
-    |> Repo.all()
-  end
-
-  @doc """
-  List active plugins for a forum.
-  """
-  def list_active_plugins(forum_id) do
-    from(p in ForumPlugin,
-      where: p.forum_id == ^forum_id and p.is_active == true,
-      order_by: [asc: p.position]
-    )
-    |> Repo.all()
-  end
-
-  @doc """
-  Get a plugin by ID.
-  """
-  def get_plugin(id) do
-    case Repo.get(ForumPlugin, id) do
-      nil -> {:error, :not_found}
-      plugin -> {:ok, plugin}
-    end
-  end
-
-  @doc """
-  Get a plugin by forum_id and plugin_id.
-  """
-  def get_plugin_by_plugin_id(forum_id, plugin_id) do
-    from(p in ForumPlugin,
-      where: p.forum_id == ^forum_id and p.plugin_id == ^plugin_id
-    )
-    |> Repo.one()
-    |> case do
-      nil -> {:error, :not_found}
-      plugin -> {:ok, plugin}
-    end
-  end
-
-  @doc """
-  Install a plugin from the marketplace.
-  """
-  def install_plugin(forum_id, user_id, plugin_attrs) do
-    attrs = plugin_attrs
-      |> Map.put("forum_id", forum_id)
-      |> Map.put("installed_by_id", user_id)
-      |> Map.put("installed_at", DateTime.utc_now())
-
-    %ForumPlugin{}
-    |> ForumPlugin.changeset(attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Uninstall a plugin.
-  """
-  def uninstall_plugin(%ForumPlugin{is_core: true}), do: {:error, :cannot_uninstall_core_plugin}
-  def uninstall_plugin(%ForumPlugin{} = plugin), do: Repo.delete(plugin)
-
-  @doc """
-  Toggle plugin active status.
-  """
-  def toggle_plugin(%ForumPlugin{} = plugin) do
-    plugin
-    |> ForumPlugin.toggle_changeset(%{is_active: !plugin.is_active})
-    |> Repo.update()
-  end
-
-  @doc """
-  Update plugin settings.
-  """
-  def update_plugin_settings(%ForumPlugin{} = plugin, settings) do
-    plugin
-    |> ForumPlugin.settings_changeset(%{settings: settings})
-    |> Repo.update()
-  end
-
-  @doc """
-  List available plugins from the marketplace.
-  These are the official and community plugins that can be installed.
-  """
-  def list_available_plugins do
-    [
-      %{
-        plugin_id: "syntax_highlighter",
-        name: "Syntax Highlighter",
-        description: "Add syntax highlighting to code blocks in posts. Supports 100+ languages.",
-        version: "2.1.0",
-        author: "CGraph Team",
-        author_url: "https://cgraph.io",
-        category: "content",
-        icon: "code",
-        download_count: 15_420,
-        rating: 4.8,
-        is_official: true
-      },
-      %{
-        plugin_id: "poll_enhanced",
-        name: "Enhanced Polls",
-        description: "Create advanced polls with multiple choice, ratings, and image options.",
-        version: "1.5.2",
-        author: "CGraph Team",
-        author_url: "https://cgraph.io",
-        category: "engagement",
-        icon: "chart-bar",
-        download_count: 12_350,
-        rating: 4.7,
-        is_official: true
-      },
-      %{
-        plugin_id: "spoiler_tags",
-        name: "Spoiler Tags",
-        description: "Allow users to hide spoiler content behind clickable tags.",
-        version: "1.2.0",
-        author: "CGraph Team",
-        author_url: "https://cgraph.io",
-        category: "content",
-        icon: "eye-slash",
-        download_count: 8920,
-        rating: 4.9,
-        is_official: true
-      },
-      %{
-        plugin_id: "reputation_badges",
-        name: "Reputation Badges",
-        description: "Award badges to users based on their reputation and achievements.",
-        version: "2.0.1",
-        author: "CGraph Team",
-        author_url: "https://cgraph.io",
-        category: "gamification",
-        icon: "trophy",
-        download_count: 10_230,
-        rating: 4.6,
-        is_official: true
-      },
-      %{
-        plugin_id: "auto_moderation",
-        name: "Auto Moderation",
-        description: "Automatically detect and handle spam, toxicity, and rule violations.",
-        version: "3.1.0",
-        author: "CGraph Team",
-        author_url: "https://cgraph.io",
-        category: "moderation",
-        icon: "shield-check",
-        download_count: 18_750,
-        rating: 4.5,
-        is_official: true
-      },
-      %{
-        plugin_id: "discord_integration",
-        name: "Discord Integration",
-        description: "Sync forum activity with Discord. Post notifications, role sync, and more.",
-        version: "1.8.0",
-        author: "CGraph Team",
-        author_url: "https://cgraph.io",
-        category: "integration",
-        icon: "chat-bubble",
-        download_count: 22_100,
-        rating: 4.7,
-        is_official: true
-      },
-      %{
-        plugin_id: "media_embedder",
-        name: "Media Embedder",
-        description: "Automatically embed YouTube, Twitter, Spotify, and 50+ other media sources.",
-        version: "2.3.1",
-        author: "CGraph Team",
-        author_url: "https://cgraph.io",
-        category: "content",
-        icon: "play",
-        download_count: 16_890,
-        rating: 4.8,
-        is_official: true
-      },
-      %{
-        plugin_id: "user_titles",
-        name: "Custom User Titles",
-        description: "Allow users to create custom titles based on post count or reputation.",
-        version: "1.4.0",
-        author: "Community",
-        author_url: nil,
-        category: "customization",
-        icon: "tag",
-        download_count: 5430,
-        rating: 4.4,
-        is_official: false
-      },
-      %{
-        plugin_id: "thread_prefixes",
-        name: "Thread Prefixes",
-        description: "Add colorful prefixes to threads like [Solved], [Help], [Discussion].",
-        version: "1.1.0",
-        author: "Community",
-        author_url: nil,
-        category: "organization",
-        icon: "bookmark",
-        download_count: 7820,
-        rating: 4.6,
-        is_official: false
-      },
-      %{
-        plugin_id: "mybb_importer",
-        name: "MyBB Importer",
-        description: "Import your existing MyBB forum data including users, threads, and posts.",
-        version: "1.0.0",
-        author: "CGraph Team",
-        author_url: "https://cgraph.io",
-        category: "migration",
-        icon: "download",
-        download_count: 3210,
-        rating: 4.3,
-        is_official: true
-      }
-    ]
-  end
-
-  @doc """
-  Get available plugin by plugin_id from marketplace.
-  """
-  def get_available_plugin(plugin_id) do
-    list_available_plugins()
-    |> Enum.find(&(&1.plugin_id == plugin_id))
-    |> case do
-      nil -> {:error, :not_found}
-      plugin -> {:ok, plugin}
-    end
-  end
-
-  @doc """
-  Get plugins for a specific hook.
-  """
-  def get_plugins_for_hook(forum_id, hook) do
-    from(p in ForumPlugin,
-      where: p.forum_id == ^forum_id and p.is_active == true and ^hook in p.hooks
-    )
-    |> Repo.all()
-  end
+  alias CGraph.Forums.Plugins, as: PluginsModule
+  defdelegate list_forum_plugins(forum_id), to: PluginsModule
+  defdelegate list_active_plugins(forum_id), to: PluginsModule
+  defdelegate get_plugin(id), to: PluginsModule
+  defdelegate get_plugin_by_plugin_id(forum_id, plugin_id), to: PluginsModule
+  defdelegate install_plugin(forum_id, user_id, plugin_attrs), to: PluginsModule
+  defdelegate uninstall_plugin(plugin), to: PluginsModule
+  defdelegate toggle_plugin(plugin), to: PluginsModule
+  defdelegate update_plugin_settings(plugin, settings), to: PluginsModule
+  defdelegate list_available_plugins(), to: PluginsModule
+  defdelegate get_available_plugin(plugin_id), to: PluginsModule
+  defdelegate get_plugins_for_hook(forum_id, hook), to: PluginsModule
 
   # ============================================================================
   # Forum-Specific User Leaderboard
@@ -2979,8 +2562,8 @@ defmodule CGraph.Forums do
 
     time_filter = build_time_filter(time_range)
 
-    post_scores = forum_id |> build_post_karma_query(time_filter) |> Repo.all()
-    comment_scores = forum_id |> build_comment_karma_query(time_filter) |> Repo.all()
+    post_scores = forum_id |> build_post_karma_query(time_filter) |> ReadRepo.all()
+    comment_scores = forum_id |> build_comment_karma_query(time_filter) |> ReadRepo.all()
 
     combined_scores = combine_karma_scores(post_scores, comment_scores)
     total = length(combined_scores)
@@ -3125,16 +2708,6 @@ defmodule CGraph.Forums do
     CGraph.Pagination.paginate(query, pagination_opts)
   end
 
-  defp apply_user_posts_sort(query, :newest) do
-    from p in query, order_by: [desc: p.inserted_at]
-  end
-  defp apply_user_posts_sort(query, :oldest) do
-    from p in query, order_by: [asc: p.inserted_at]
-  end
-  defp apply_user_posts_sort(query, :popular) do
-    from p in query, order_by: [desc: p.score, desc: p.inserted_at]
-  end
-  defp apply_user_posts_sort(query, _), do: apply_user_posts_sort(query, :newest)
 
   @doc """
   Lists threads started by a specific user with pagination.
@@ -3186,63 +2759,9 @@ defmodule CGraph.Forums do
     CGraph.Pagination.paginate(query, pagination_opts)
   end
 
-  defp apply_user_threads_sort(query, :newest) do
-    from p in query, order_by: [desc: p.inserted_at]
-  end
-  defp apply_user_threads_sort(query, :oldest) do
-    from p in query, order_by: [asc: p.inserted_at]
-  end
-  defp apply_user_threads_sort(query, :popular) do
-    from p in query, order_by: [desc: p.score, desc: p.inserted_at]
-  end
-  defp apply_user_threads_sort(query, :most_replies) do
-    from p in query, order_by: [desc: fragment("COALESCE((SELECT COUNT(*) FROM forum_comments WHERE post_id = ?), 0)", p.id), desc: p.inserted_at]
-  end
-  defp apply_user_threads_sort(query, _), do: apply_user_threads_sort(query, :newest)
 
-  @doc """
-  Gets post/thread count statistics for a user.
-  Used for profile stats display.
-  """
-  def get_user_post_stats(user_id) do
-    post_count =
-      from(p in Post,
-        where: p.author_id == ^user_id and is_nil(p.deleted_at),
-        select: count(p.id)
-      )
-      |> Repo.one()
+  defdelegate get_user_post_stats(user_id), to: CGraph.Forums.UserContent
 
-    comment_count =
-      from(c in Comment,
-        where: c.author_id == ^user_id and is_nil(c.deleted_at),
-        select: count(c.id)
-      )
-      |> Repo.one()
-
-    total_karma =
-      from(p in Post,
-        where: p.author_id == ^user_id and is_nil(p.deleted_at),
-        select: coalesce(sum(p.score), 0)
-      )
-      |> Repo.one()
-
-    comment_karma =
-      from(c in Comment,
-        where: c.author_id == ^user_id and is_nil(c.deleted_at),
-        select: coalesce(sum(c.score), 0)
-      )
-      |> Repo.one()
-
-    %{
-      post_count: post_count || 0,
-      comment_count: comment_count || 0,
-      thread_count: post_count || 0,  # In Reddit-style, posts = threads
-      total_posts: (post_count || 0) + (comment_count || 0),
-      post_karma: total_karma || 0,
-      comment_karma: comment_karma || 0,
-      total_karma: (total_karma || 0) + (comment_karma || 0)
-    }
-  end
 
   # ============================================================================
   # RSS Feed Support Functions

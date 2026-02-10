@@ -399,14 +399,14 @@ defmodule CGraph.Telemetry do
   defp increment_counter(name, tags) do
     # In production: :statsd.increment(name, 1, tags: tags)
     if Application.get_env(:cgraph, :telemetry_debug, false) do
-      Logger.debug("COUNTER: #{name}", tags: tags)
+      Logger.debug("telemetry_counter", name: name, tags: tags)
     end
   end
 
   defp record_histogram(name, value, tags) do
     # In production: :statsd.histogram(name, value, tags: tags)
     if Application.get_env(:cgraph, :telemetry_debug, false) do
-      Logger.debug("HISTOGRAM: #{name}=#{value}", tags: tags)
+      Logger.debug("telemetry_histogram", name: name, value: value, tags: tags)
     end
   end
 end

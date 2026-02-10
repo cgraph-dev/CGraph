@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';
 import { createLogger } from '@/lib/logger';
+import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
 import type { OnlineUser, OnlineStats, ActivityBreakdown } from './types';
 
 const logger = createLogger('WhosOnline');
@@ -80,12 +81,8 @@ export function useOnlineData(autoRefresh: boolean) {
     fetchOnlineData();
   }, [fetchOnlineData]);
 
-  // Auto-refresh every 30 seconds
-  useEffect(() => {
-    if (!autoRefresh) return;
-    const interval = setInterval(fetchOnlineData, 30000);
-    return () => clearInterval(interval);
-  }, [autoRefresh, fetchOnlineData]);
+  // Auto-refresh: 30s when active, 120s when tab hidden
+  useAdaptiveInterval(fetchOnlineData, 30000, { enabled: autoRefresh });
 
   return {
     onlineUsers,

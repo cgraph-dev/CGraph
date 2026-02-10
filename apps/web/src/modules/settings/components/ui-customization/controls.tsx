@@ -5,6 +5,7 @@
 
 import { motion } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { springs } from '@/lib/animation-presets/presets';
 
 // =============================================================================
 // COLOR PICKER
@@ -149,7 +150,7 @@ export function Toggle({ label, description, value, onChange }: ToggleProps) {
         <motion.div
           className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white"
           animate={{ x: value ? 24 : 0 }}
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+          transition={springs.snappy}
         />
       </motion.button>
     </div>

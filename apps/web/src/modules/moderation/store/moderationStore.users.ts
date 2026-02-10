@@ -107,9 +107,11 @@ export function createUserActions(set: Set) {
           isActive: true,
           isRevoked: false,
         };
-        set((state) => ({
-          currentUserWarnings: [newWarning, ...state.currentUserWarnings],
-        }));
+        const MAX_WARNINGS = 200;
+        set((state) => {
+          const updated = [newWarning, ...state.currentUserWarnings];
+          return { currentUserWarnings: updated.length > MAX_WARNINGS ? updated.slice(0, MAX_WARNINGS) : updated };
+        });
         return newWarning;
       } catch (error) {
         logger.error(' Failed to issue warning:', error);
@@ -205,9 +207,11 @@ export function createUserActions(set: Set) {
           isActive: true,
           isLifted: false,
         };
-        set((state) => ({
-          bans: [newBan, ...state.bans],
-        }));
+        const MAX_BANS = 200;
+        set((state) => {
+          const updated = [newBan, ...state.bans];
+          return { bans: updated.length > MAX_BANS ? updated.slice(0, MAX_BANS) : updated };
+        });
         return newBan;
       } catch (error) {
         logger.error(' Failed to ban user:', error);

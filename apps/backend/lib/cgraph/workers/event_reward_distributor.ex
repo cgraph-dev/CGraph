@@ -14,7 +14,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"event_id" => event_id}}) do
-    Logger.info("[EventRewardDistributor] Processing rewards for event #{event_id}")
+    Logger.info("event_reward_processing", event_id: event_id)
 
     # ✅ IMPLEMENTED: Full reward distribution pipeline
     with {:ok, event} <- get_event(event_id),
@@ -25,24 +25,24 @@ defmodule CGraph.Workers.EventRewardDistributor do
          :ok <- distribute_milestone_rewards(event, participants),
          :ok <- distribute_leaderboard_rewards(event, leaderboard),
          :ok <- send_reward_notifications(event, participants) do
-      Logger.info("[EventRewardDistributor] Successfully distributed rewards for event #{event_id}")
+      Logger.info("event_rewards_distributed", event_id: event_id)
       :ok
     else
       {:error, :event_not_found} ->
-        Logger.warning("[EventRewardDistributor] Event #{event_id} not found")
+        Logger.warning("event_not_found", event_id: event_id)
         {:error, :event_not_found}
 
       {:error, :event_not_ended} ->
-        Logger.warning("[EventRewardDistributor] Event #{event_id} has not ended yet")
+        Logger.warning("event_not_ended", event_id: event_id)
         {:error, :event_not_ended}
 
       {:error, reason} ->
-        Logger.error("[EventRewardDistributor] Failed to distribute rewards: #{inspect(reason)}")
+        Logger.error("event_reward_distribution_failed", event_id: event_id, reason: inspect(reason))
         {:error, reason}
     end
   rescue
     e ->
-      Logger.error("[EventRewardDistributor] Unexpected error: #{inspect(e)}")
+      Logger.error("event_reward_unexpected_error", event_id: event_id, error: inspect(e))
       {:error, e}
   end
 
@@ -90,13 +90,16 @@ defmodule CGraph.Workers.EventRewardDistributor do
     {:ok, participants}
   rescue
     e ->
-      Logger.error("[EventRewardDistributor] Failed to fetch participants: #{inspect(e)}")
+      Logger.error("event_fetch_participants_failed", event_id: event_id, error: inspect(e))
       {:error, :fetch_participants_failed}
   end
 
   defp calculate_final_standings(event_id) do
     # Get leaderboard with top 100 participants
-    CGraph.Gamification.Events.get_leaderboard(event_id, limit: 100)
+    case CGraph.Gamification.Events.get_leaderboard(event_id, limit: 100) do
+      {:ok, {entries, _meta}} -> {:ok, entries}
+      error -> error
+    end
   end
 
   defp distribute_participation_rewards(event, participants) do
@@ -104,11 +107,11 @@ defmodule CGraph.Workers.EventRewardDistributor do
     participation_rewards = event.participation_rewards || []
 
     if Enum.empty?(participation_rewards) do
-      Logger.info("[EventRewardDistributor] No participation rewards configured")
+      Logger.info("event_no_participation_rewards", event_id: event.id)
       :ok
     else
-      Logger.info(
-        "[EventRewardDistributor] Distributing participation rewards to #{length(participants)} users"
+      Logger.info("event_distributing_participation_rewards",
+        event_id: event.id, participant_count: length(participants)
       )
 
       Enum.each(participants, fn progress ->
@@ -119,7 +122,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
     end
   rescue
     e ->
-      Logger.error("[EventRewardDistributor] Failed to distribute participation rewards: #{inspect(e)}")
+      Logger.error("event_participation_rewards_failed", error: inspect(e))
       {:error, :participation_rewards_failed}
   end
 
@@ -128,10 +131,10 @@ defmodule CGraph.Workers.EventRewardDistributor do
     milestone_rewards = event.milestone_rewards || []
 
     if Enum.empty?(milestone_rewards) do
-      Logger.info("[EventRewardDistributor] No milestone rewards configured")
+      Logger.info("event_no_milestone_rewards", event_id: event.id)
       :ok
     else
-      Logger.info("[EventRewardDistributor] Distributing milestone rewards")
+      Logger.info("event_distributing_milestone_rewards", event_id: event.id)
 
       Enum.each(participants, fn progress ->
         # Check which milestones user has reached but not yet claimed
@@ -145,8 +148,8 @@ defmodule CGraph.Workers.EventRewardDistributor do
           end)
 
         if length(reached_milestones) > 0 do
-          Logger.info(
-            "[EventRewardDistributor] User #{progress.user_id} reached #{length(reached_milestones)} milestones"
+          Logger.info("event_user_milestones_reached",
+            user_id: progress.user_id, milestone_count: length(reached_milestones)
           )
 
           Enum.each(reached_milestones, fn reward ->
@@ -159,7 +162,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
     end
   rescue
     e ->
-      Logger.error("[EventRewardDistributor] Failed to distribute milestone rewards: #{inspect(e)}")
+      Logger.error("event_milestone_rewards_failed", error: inspect(e))
       {:error, :milestone_rewards_failed}
   end
 
@@ -168,10 +171,10 @@ defmodule CGraph.Workers.EventRewardDistributor do
     leaderboard_rewards = event.leaderboard_rewards || []
 
     if Enum.empty?(leaderboard_rewards) do
-      Logger.info("[EventRewardDistributor] No leaderboard rewards configured")
+      Logger.info("event_no_leaderboard_rewards", event_id: event.id)
       :ok
     else
-      Logger.info("[EventRewardDistributor] Distributing leaderboard rewards")
+      Logger.info("event_distributing_leaderboard_rewards", event_id: event.id)
 
       Enum.each(leaderboard, fn entry ->
         # Find rewards for this rank
@@ -183,8 +186,8 @@ defmodule CGraph.Workers.EventRewardDistributor do
           end)
 
         if length(rewards_for_rank) > 0 do
-          Logger.info(
-            "[EventRewardDistributor] User #{entry.user_id} (rank #{entry.rank}) earned #{length(rewards_for_rank)} rewards"
+          Logger.info("event_leaderboard_reward",
+            user_id: entry.user_id, rank: entry.rank, reward_count: length(rewards_for_rank)
           )
 
           user = CGraph.Accounts.get_user!(entry.user_id)
@@ -199,7 +202,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
     end
   rescue
     e ->
-      Logger.error("[EventRewardDistributor] Failed to distribute leaderboard rewards: #{inspect(e)}")
+      Logger.error("event_leaderboard_rewards_failed", error: inspect(e))
       {:error, :leaderboard_rewards_failed}
   end
 
@@ -224,23 +227,25 @@ defmodule CGraph.Workers.EventRewardDistributor do
 
         %{"type" => "cosmetic", "item_id" => item_id} ->
           # Grant cosmetic item (avatar border, badge, etc.)
-          Logger.info("[EventRewardDistributor] Granting cosmetic #{item_id} to user #{user.id}")
+          Logger.info("event_granting_cosmetic", item_id: item_id, user_id: user.id)
           # TODO: Implement cosmetic granting when customization system is ready
 
         _ ->
-          Logger.warning("[EventRewardDistributor] Unknown reward type: #{inspect(reward)}")
+          Logger.warning("event_unknown_reward_type", reward: inspect(reward))
       end
     end)
   rescue
     e ->
-      Logger.error(
-        "[EventRewardDistributor] Failed to distribute reward to user #{user.id}: #{inspect(e)}"
+      Logger.error("event_reward_distribution_to_user_failed",
+        user_id: user.id, error: inspect(e)
       )
   end
 
   defp send_reward_notifications(event, participants) do
     # Send notification to all participants about rewards
-    Logger.info("[EventRewardDistributor] Sending reward notifications to #{length(participants)} users")
+    Logger.info("event_sending_notifications",
+      event_id: event.id, participant_count: length(participants)
+    )
 
     Enum.each(participants, fn progress ->
       # Queue notification worker
@@ -260,7 +265,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
     :ok
   rescue
     e ->
-      Logger.error("[EventRewardDistributor] Failed to send notifications: #{inspect(e)}")
+      Logger.error("event_notification_send_failed", error: inspect(e))
       # Non-critical, don't fail the job
       :ok
   end

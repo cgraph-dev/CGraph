@@ -16,6 +16,7 @@ import type { LeaderboardSort } from './types';
 import { SORT_OPTIONS } from './constants';
 import { ForumLeaderboardCard } from './ForumLeaderboardCard';
 import { LeaderboardSidebar } from './LeaderboardSidebar';
+import { springs } from '@/lib/animation-presets/presets';
 
 export default function ForumLeaderboard() {
   const { isAuthenticated } = useAuthStore();
@@ -97,7 +98,7 @@ export default function ForumLeaderboard() {
               className="flex items-center gap-3"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              transition={springs.bouncy}
             >
               <motion.div
                 animate={{
@@ -151,7 +152,7 @@ export default function ForumLeaderboard() {
                       initial={{ opacity: 0, y: -10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      transition={springs.snappy}
                       className="absolute right-0 z-20 mt-2 w-48"
                     >
                       <GlassCard variant="frosted" className="overflow-hidden p-1">
@@ -206,12 +207,7 @@ export default function ForumLeaderboard() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
-                    transition={{
-                      type: 'spring',
-                      stiffness: 300,
-                      damping: 20,
-                      delay: index * 0.05,
-                    }}
+                    transition={springs.bouncy}
                   >
                     <ForumLeaderboardCard
                       forum={forum}

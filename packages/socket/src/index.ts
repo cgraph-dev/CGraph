@@ -7,6 +7,7 @@
 
 // Core client
 export { PhoenixClient, createChannelHandler, pushToChannel } from './phoenixClient';
+export { exponentialBackoffWithJitter } from './backoff';
 
 // Channel implementations
 export { UserChannel, type UserChannelEvents } from './channels/userChannel';

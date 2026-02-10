@@ -8,6 +8,7 @@ import type { Friend, FriendRequest } from '@/modules/social/store';
 
 import { FriendListItem } from './friend-list-item';
 import { FriendRequestCard } from './friend-request-card';
+import { springs } from '@/lib/animation-presets/presets';
 
 /* ------------------------------------------------------------------ */
 /*  Pending Tab                                                        */
@@ -52,7 +53,7 @@ export function PendingTab({
                 key={request.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20, delay: index * 0.05 }}
+                transition={springs.bouncy}
               >
                 <FriendRequestCard
                   request={request}
@@ -82,12 +83,7 @@ export function PendingTab({
                 key={request.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 300,
-                  damping: 20,
-                  delay: (pendingRequests.length + index) * 0.05,
-                }}
+                transition={springs.bouncy}
               >
                 <FriendRequestCard
                   request={request}
@@ -146,7 +142,7 @@ export function FriendsListTab({
           key={friend.id}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20, delay: index * 0.05 }}
+          transition={springs.bouncy}
         >
           <FriendListItem
             friend={friend}

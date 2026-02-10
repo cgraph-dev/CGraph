@@ -35,19 +35,19 @@ defmodule CGraphWeb.CoinsController do
 
   @doc """
   GET /api/v1/coins/history
-  Get coin transaction history.
+  Get coin transaction history using cursor-based pagination.
 
   ## Parameters
 
   - `limit` - Max results to return (1-100, default: 50)
-  - `offset` - Offset for pagination (default: 0)
+  - `cursor` - Opaque cursor for pagination
   """
   def history(conn, params) do
     user = conn.assigns.current_user
     limit = parse_int(params["limit"], 50, min: 1, max: @max_limit)
-    offset = parse_int(params["offset"], 0, min: 0)
+    cursor = params["cursor"]
 
-    transactions = Gamification.list_coin_transactions(user.id, limit: limit, offset: offset)
+    transactions = Gamification.list_coin_transactions(user.id, limit: limit, cursor: cursor)
 
     conn
     |> put_status(:ok)

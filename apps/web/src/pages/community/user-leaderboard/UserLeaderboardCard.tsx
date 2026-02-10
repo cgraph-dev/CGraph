@@ -13,6 +13,7 @@ import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { getRankBadge, formatKarma, getUserInitial } from './utils';
 import type { UserLeaderboardCardProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function UserLeaderboardCard({ user, index = 0 }: UserLeaderboardCardProps) {
   const isTopThree = user.rank <= 3;
@@ -21,12 +22,7 @@ export function UserLeaderboardCard({ user, index = 0 }: UserLeaderboardCardProp
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{
-        type: 'spring',
-        stiffness: 300,
-        damping: 20,
-        delay: index * 0.03,
-      }}
+      transition={springs.bouncy}
     >
       <motion.div whileHover={{ scale: 1.02, x: 4 }} whileTap={{ scale: 0.98 }}>
         <GlassCard
@@ -43,7 +39,7 @@ export function UserLeaderboardCard({ user, index = 0 }: UserLeaderboardCardProp
             {/* Rank Badge */}
             <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+              transition={springs.bouncy}
             >
               {getRankBadge(user.rank)}
             </motion.div>
@@ -56,7 +52,7 @@ export function UserLeaderboardCard({ user, index = 0 }: UserLeaderboardCardProp
             >
               <motion.div
                 whileHover={{ scale: 1.1 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                transition={springs.snappy}
               >
                 {user.avatarUrl ? (
                   <div
@@ -100,7 +96,7 @@ export function UserLeaderboardCard({ user, index = 0 }: UserLeaderboardCardProp
                 {user.isVerified && (
                   <motion.div
                     whileHover={{ scale: 1.2, rotate: 360 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                    transition={springs.bouncy}
                   >
                     <CheckBadgeIcon className="h-5 w-5 shrink-0 text-primary-400" />
                   </motion.div>

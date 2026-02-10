@@ -4,6 +4,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { BackgroundCategory, ChatBackground } from '@/data/chatBackgrounds';
 import type { BackgroundsTabProps, CategoryColors } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 // Category colors for backgrounds
 const CATEGORY_COLORS: CategoryColors = {
@@ -197,7 +198,7 @@ export function BackgroundsTab({
                       className="absolute right-2 top-2 rounded-full bg-primary-500 p-1"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ type: 'spring', stiffness: 300 }}
+                      transition={springs.bouncy}
                     >
                       <CheckIcon className="h-4 w-4 text-white" />
                     </motion.div>

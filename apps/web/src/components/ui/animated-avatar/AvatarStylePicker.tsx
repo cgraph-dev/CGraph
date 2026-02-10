@@ -10,6 +10,7 @@ import type { BorderCategory } from './types';
 import { BORDER_STYLES } from './constants';
 import { useAvatarStyle } from './store';
 import AnimatedAvatar from './AnimatedAvatar';
+import { springs } from '@/lib/animation-presets/presets';
 
 const CATEGORIES: { id: BorderCategory; name: string; description: string }[] = [
   { id: 'free', name: 'Free', description: 'Available to everyone' },
@@ -275,7 +276,7 @@ export function AvatarStylePicker() {
             <motion.div
               className="mt-1 h-4 w-4 rounded-full bg-white"
               animate={{ x: style.pulseOnHover ? 22 : 4 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              transition={springs.snappy}
             />
           </div>
         </label>
@@ -291,7 +292,7 @@ export function AvatarStylePicker() {
             <motion.div
               className="mt-1 h-4 w-4 rounded-full bg-white"
               animate={{ x: style.showLevel ? 22 : 4 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              transition={springs.snappy}
             />
           </div>
         </label>

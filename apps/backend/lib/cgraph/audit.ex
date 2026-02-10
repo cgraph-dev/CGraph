@@ -436,7 +436,9 @@ defmodule CGraph.Audit do
     # Log to console in development
     if Application.get_env(:cgraph, :env) == :dev do
       Enum.each(entries, fn entry ->
-        Logger.debug("Audit: #{entry.category}/#{entry.event_type}",
+        Logger.debug("audit_entry",
+          category: entry.category,
+          event_type: entry.event_type,
           actor_id: entry.actor_id,
           target_id: entry.target_id,
           metadata: inspect(entry.metadata)

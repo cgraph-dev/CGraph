@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { ForumHeaderProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function ForumHeader({ forum, userId, onSubscribe, onNavigateToAdmin }: ForumHeaderProps) {
   const isAdminOrMod = forum.ownerId === userId || forum.moderators?.some((m) => m.id === userId);
@@ -30,12 +31,12 @@ export function ForumHeader({ forum, userId, onSubscribe, onNavigateToAdmin }: F
             className="flex items-start gap-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            transition={springs.bouncy}
           >
             <motion.div
               className="relative -mt-10 h-20 w-20 overflow-hidden rounded-full border-4 border-dark-800 bg-gradient-to-br from-primary-500/20 to-purple-500/20"
               whileHover={{ scale: 1.05 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              transition={springs.snappy}
             >
               {/* Gradient border pulse */}
               <motion.div

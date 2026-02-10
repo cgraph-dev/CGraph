@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   ChatBubbleLeftRightIcon,
   DocumentTextIcon,
@@ -10,6 +10,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
+import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
 import type {
   ForumStats,
   ForumStatisticsProps,
@@ -47,28 +48,30 @@ export function ForumStatistics({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchStats() {
-      setIsLoading(true);
-      setError(null);
+  const fetchStats = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
 
-      try {
-        const endpoint = forumId ? `/api/v1/forums/${forumId}/statistics` : '/api/v1/statistics';
-        const response = await api.get(endpoint);
-        const data = response.data.statistics || response.data;
-        setStats(transformStatisticsData(data));
-      } catch (err) {
-        logger.error('[ForumStatistics] Failed to fetch:', err);
-        setError('Failed to load statistics');
-      } finally {
-        setIsLoading(false);
-      }
+    try {
+      const endpoint = forumId ? `/api/v1/forums/${forumId}/statistics` : '/api/v1/statistics';
+      const response = await api.get(endpoint);
+      const data = response.data.statistics || response.data;
+      setStats(transformStatisticsData(data));
+    } catch (err) {
+      logger.error('[ForumStatistics] Failed to fetch:', err);
+      setError('Failed to load statistics');
+    } finally {
+      setIsLoading(false);
     }
-
-    fetchStats();
-    const interval = setInterval(fetchStats, STATS_REFRESH_INTERVAL);
-    return () => clearInterval(interval);
   }, [forumId]);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  // Auto-refresh: STATS_REFRESH_INTERVAL when active, 4× when tab hidden
+  useAdaptiveInterval(fetchStats, STATS_REFRESH_INTERVAL);
 
   if (isLoading) {
     return (

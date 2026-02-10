@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ClockIcon, XMarkIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { Message } from '@/modules/chat/store';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   useScheduledMessages,
   type GroupedMessages,
@@ -61,7 +62,7 @@ export function ScheduledMessagesList({
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            transition={springs.stiff}
             className="fixed right-0 top-0 z-50 h-full w-full max-w-md overflow-hidden"
           >
             <GlassCard className="flex h-full flex-col p-0">

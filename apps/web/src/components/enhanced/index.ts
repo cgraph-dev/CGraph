@@ -176,14 +176,9 @@ export type {
 } from '@/modules/chat/components/AnimatedReactionBubble';
 
 // =============================================================================
-// 3D COMPONENTS
+// 3D COMPONENTS — lazy-loaded to avoid pulling Three.js (~600KB) into main bundle
+// Import directly from '@/components/three/Matrix3DEnvironment' with React.lazy()
 // =============================================================================
-
-export {
-  default as Matrix3DEnvironment,
-  Matrix3DLowProfile,
-  Matrix3DCyberBlue,
-} from '@/components/three/Matrix3DEnvironment';
 export type { Matrix3DEnvironmentProps } from '@/components/three/Matrix3DEnvironment';
 
 // =============================================================================

@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import { TrophyIcon, XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -70,12 +71,7 @@ function AchievementToast({
       initial={{ x: 400, opacity: 0, scale: 0.8 }}
       animate={{ x: 0, opacity: 1, scale: 1 }}
       exit={{ x: 400, opacity: 0, scale: 0.8 }}
-      transition={{
-        type: 'spring',
-        stiffness: 200,
-        damping: 20,
-        delay: index * 0.1,
-      }}
+      transition={springs.dramatic}
       whileHover={{ scale: 1.02, x: -5 }}
       onClick={() => onViewDetails?.(achievement)}
       className="cursor-pointer"
@@ -139,7 +135,7 @@ function AchievementToast({
                       <motion.div
                         initial={{ scale: 0, rotate: -180 }}
                         animate={{ scale: 1, rotate: 0 }}
-                        transition={{ delay: 0.2, type: 'spring' }}
+                        transition={{ delay: 0.2, ...springs.default }}
                       >
                         <SparklesIcon className="h-4 w-4 text-primary-400" />
                       </motion.div>

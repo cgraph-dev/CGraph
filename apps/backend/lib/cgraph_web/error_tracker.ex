@@ -479,7 +479,7 @@ defmodule CGraphWeb.ErrorTracker do
       :info -> Logger.info(message, metadata)
       :warning -> Logger.warning(message, metadata)
       :error -> Logger.error(message, metadata)
-      :critical -> Logger.error("[CRITICAL] #{message}", metadata)
+      :critical -> Logger.error("critical_error", [{:message, message} | metadata])
     end
   end
 

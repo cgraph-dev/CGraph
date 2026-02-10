@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { PARALLAX_DEFAULT_SENSITIVITY } from './constants';
 import type { ParallaxLayerProps, ParallaxSceneProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function ParallaxLayer({ children, depth, className = '' }: ParallaxLayerProps) {
   const mouseX = useMotionValue(0);
@@ -78,7 +79,7 @@ export function ParallaxScene({
           rotateX: -mousePos.y,
           rotateY: mousePos.x,
         }}
-        transition={{ type: 'spring', stiffness: 100, damping: 30 }}
+        transition={springs.default}
       >
         {children}
       </motion.div>

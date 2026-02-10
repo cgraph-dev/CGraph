@@ -5,6 +5,7 @@ import { SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { categories, type Category, type CategoryId } from '@/pages/customize/customizeCategories';
 import { Sidebar, LoadingSkeleton } from '@/pages/customize/CustomizeSidebar';
+import { springs } from '@/lib/animation-presets/presets';
 
 // Lazy load heavy customization components for better performance
 const IdentityCustomization = lazy(() => import('./IdentityCustomization'));
@@ -97,7 +98,7 @@ export default function Customize() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              transition={springs.stiff}
             >
               {/* IMPORTANT: hover3D disabled to prevent performance issues with particle animations */}
               <GlassCard variant="frosted" hover3D={false} className="p-8">

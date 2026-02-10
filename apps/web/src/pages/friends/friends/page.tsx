@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { FriendsHeader, AddFriendForm, FriendsTabBar, FriendsSearchBar } from './header-components';
 import { PendingTab, FriendsListTab, BlockedTab } from './friends-tab-panels';
 import { WelcomePanel } from './welcome-panel';
+import { FriendSuggestions } from './FriendSuggestions';
 import { useFriendsPage } from './useFriendsPage';
 
 export default function Friends() {
@@ -140,8 +141,11 @@ export default function Friends() {
         </div>
       </div>
 
-      {/* Welcome Panel - Right Side */}
-      <WelcomePanel friendsCount={friends.length} pendingRequestsCount={pendingRequests.length} />
+      {/* Right Side — Suggestions + Welcome */}
+      <div className="flex flex-col gap-4">
+        <FriendSuggestions />
+        <WelcomePanel friendsCount={friends.length} pendingRequestsCount={pendingRequests.length} />
+      </div>
     </div>
   );
 }

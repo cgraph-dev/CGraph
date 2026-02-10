@@ -11,6 +11,7 @@ import { memo, useState } from 'react';
 import { motion } from 'framer-motion';
 import AnimatedAvatar from '@/components/ui/AnimatedAvatar';
 import type { ShowcaseCardData } from './constants';
+import { springs } from '@/lib/animation-presets/presets';
 
 interface FeatureShowcaseCardProps {
   data: ShowcaseCardData;
@@ -211,7 +212,7 @@ export const FeatureShowcaseCard = memo(function FeatureShowcaseCard({
       onBlur={() => setIsHovered(false)}
       onKeyDown={handleKeyDown}
       whileHover={{ scale: 1.02, y: -8 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      transition={springs.bouncy}
       role="button"
       tabIndex={0}
       aria-pressed={isHovered}

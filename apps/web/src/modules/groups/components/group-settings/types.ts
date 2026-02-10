@@ -68,6 +68,7 @@ export type TabId =
   | 'members'
   | 'invites'
   | 'channels'
+  | 'emoji'
   | 'notifications'
   | 'audit-log'
   | 'danger';

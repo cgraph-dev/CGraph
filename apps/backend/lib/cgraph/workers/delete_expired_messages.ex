@@ -24,7 +24,7 @@ defmodule CGraph.Workers.DeleteExpiredMessages do
 
     if deleted_count > 0 do
       require Logger
-      Logger.info("Deleted #{deleted_count} expired messages")
+      Logger.info("deleted_expired_messages", deleted_count: deleted_count)
     end
 
     :ok

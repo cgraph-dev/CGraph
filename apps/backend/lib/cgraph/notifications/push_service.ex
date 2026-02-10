@@ -249,7 +249,7 @@ defmodule CGraph.Notifications.PushService do
     tokens = get_user_tokens(user_id, opts)
 
     if Enum.empty?(tokens) do
-      Logger.debug("No push tokens for user #{user_id}")
+      Logger.debug("no_push_tokens", user_id: user_id)
       {:ok, %{sent: 0, failed: 0}}
     else
       send_to_tokens(tokens, notification, opts)
@@ -333,7 +333,7 @@ defmodule CGraph.Notifications.PushService do
     {:ok, sent, failed, invalid}
   rescue
     e ->
-      Logger.error("APNs batch send failed: #{inspect(e)}")
+      Logger.error("apns_batch_send_failed", error: inspect(e))
       {:error, :apns_error, length(tokens)}
   end
 
@@ -356,12 +356,12 @@ defmodule CGraph.Notifications.PushService do
         {:ok, sent, failed, invalid}
 
       {:error, reason} ->
-        Logger.error("FCM batch send failed: #{inspect(reason)}")
+        Logger.error("fcm_batch_send_failed", reason: inspect(reason))
         {:error, :fcm_error, length(tokens)}
     end
   rescue
     e ->
-      Logger.error("FCM batch send failed: #{inspect(e)}")
+      Logger.error("fcm_batch_send_failed", error: inspect(e))
       {:error, :fcm_error, length(tokens)}
   end
 
@@ -383,12 +383,12 @@ defmodule CGraph.Notifications.PushService do
         {:ok, sent, failed, invalid}
 
       {:error, reason} ->
-        Logger.error("Expo batch send failed: #{inspect(reason)}")
+        Logger.error("expo_batch_send_failed", reason: inspect(reason))
         {:error, :expo_error, length(tokens)}
     end
   rescue
     e ->
-      Logger.error("Expo batch send failed: #{inspect(e)}")
+      Logger.error("expo_batch_send_failed", error: inspect(e))
       {:error, :expo_error, length(tokens)}
   end
 
@@ -416,7 +416,7 @@ defmodule CGraph.Notifications.PushService do
     {:ok, sent, failed, invalid}
   rescue
     e ->
-      Logger.error("Web push batch send failed: #{inspect(e)}")
+      Logger.error("web_push_batch_send_failed", error: inspect(e))
       {:error, :web_push_error, length(tokens)}
   end
 
@@ -616,7 +616,7 @@ defmodule CGraph.Notifications.PushService do
     from(pt in PushToken, where: pt.token in ^invalid_tokens)
     |> Repo.update_all(set: [is_active: false, updated_at: DateTime.utc_now()])
 
-    Logger.info("Cleaned up #{length(invalid_tokens)} invalid push tokens")
+    Logger.info("invalid_tokens_cleaned", count: length(invalid_tokens))
   end
 
   defp normalize_platform("ios"), do: "apns"

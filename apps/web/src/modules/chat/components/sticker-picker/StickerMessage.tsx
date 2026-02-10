@@ -8,6 +8,7 @@ import { STICKER_RARITY_COLORS } from '@/data/stickers';
 import { cn } from '@/lib/utils';
 import type { StickerMessageProps } from './types';
 import { ANIMATION_CONFIGS, STICKER_SIZE_CLASSES } from './constants';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function StickerMessage({ sticker, size = 'md' }: StickerMessageProps) {
   const [isAnimating, setIsAnimating] = useState(true);
@@ -25,7 +26,7 @@ export function StickerMessage({ sticker, size = 'md' }: StickerMessageProps) {
       )}
       initial={{ scale: 0, rotate: -10 }}
       animate={{ scale: 1, rotate: 0 }}
-      transition={{ type: 'spring', damping: 15, stiffness: 300 }}
+      transition={springs.bouncy}
       onHoverStart={() => setIsAnimating(true)}
       onClick={() => setIsAnimating(!isAnimating)}
     >

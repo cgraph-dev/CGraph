@@ -11,8 +11,10 @@ import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { formatTimeAgo } from '@/lib/utils';
 import Dropdown, { DropdownItem } from '@/components/Dropdown';
+import { NotificationActions } from '@/shared/components/NotificationActions';
 import { TYPE_ICONS, TYPE_COLORS, DEFAULT_ICON, DEFAULT_COLOR } from './constants';
 import type { NotificationItemProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function NotificationItem({
   notification,
@@ -51,7 +53,7 @@ export function NotificationItem({
           <motion.div
             className="flex-shrink-0"
             whileHover={{ scale: 1.1, rotate: 5 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            transition={springs.bouncy}
           >
             {notification.sender?.avatarUrl ? (
               <div className="relative">
@@ -98,6 +100,20 @@ export function NotificationItem({
             </p>
             <p className="mt-0.5 line-clamp-2 text-sm text-gray-400">{notification.body}</p>
             <p className="mt-1 text-xs text-gray-500">{formatTimeAgo(notification.createdAt)}</p>
+
+            {/* Inline action buttons for actionable notifications */}
+            {(['friend_request', 'message', 'group_invite', 'mention'] as const).includes(
+              notification.type as 'friend_request' | 'message' | 'group_invite' | 'mention'
+            ) && (
+              <div className="mt-2" onClick={(e) => e.stopPropagation()}>
+                <NotificationActions
+                  type={notification.type as 'friend_request' | 'message' | 'group_invite' | 'mention'}
+                  notificationId={notification.id}
+                  sourceId={(notification.data?.sourceId as string) ?? notification.sender?.id ?? ''}
+                  onAction={() => onMarkAsRead()}
+                />
+              </div>
+            )}
           </div>
 
           {/* Actions */}

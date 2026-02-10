@@ -99,10 +99,16 @@ defmodule CGraph.Forums.UserLeaderboard do
   end
 
   defp hydrate_users(paginated_scores) do
+    user_ids = Enum.map(paginated_scores, fn {%{user_id: uid}, _rank} -> uid end)
+
+    users_by_id =
+      from(u in CGraph.Accounts.User, where: u.id in ^user_ids)
+      |> Repo.all()
+      |> Map.new(&{&1.id, &1})
+
     paginated_scores
     |> Enum.map(fn {%{user_id: user_id, forum_karma: forum_karma}, rank} ->
-      user = Repo.get(CGraph.Accounts.User, user_id)
-      %{rank: rank, user: user, forum_karma: forum_karma}
+      %{rank: rank, user: Map.get(users_by_id, user_id), forum_karma: forum_karma}
     end)
     |> Enum.filter(& &1.user != nil)
   end

@@ -4,11 +4,12 @@
  */
 
 import type { ThemePreset } from '@/modules/settings/store/customization';
+import { springs } from '@/lib/animation-presets/presets';
 
 export const springs = {
-  snappy: { type: 'spring' as const, stiffness: 400, damping: 30 },
-  smooth: { type: 'spring' as const, stiffness: 200, damping: 25 },
-  bouncy: { type: 'spring' as const, stiffness: 300, damping: 20 },
+  snappy: springs.snappy,
+  smooth: springs.default,
+  bouncy: springs.bouncy,
 };
 
 export const allThemes: ThemePreset[] = [

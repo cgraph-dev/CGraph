@@ -274,7 +274,7 @@ defmodule CGraph.Security.AbuseDetection do
     # Increase abuse score based on reports
     increment_score(user_id, report_weight(type))
 
-    Logger.info("Abuse reported: user=#{user_id} type=#{type} by=#{reporter_id}")
+    Logger.info("abuse_reported_user_type_by", user_id: user_id, type: type, reporter_id: reporter_id)
 
     {:noreply, %{state | history: history}}
   end

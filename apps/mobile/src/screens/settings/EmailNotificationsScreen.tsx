@@ -5,13 +5,13 @@
  * Categories: Account, Social, Content, Marketing.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView,
+  SectionList,
   Switch,
   ActivityIndicator,
 } from 'react-native';
@@ -228,66 +228,72 @@ export default function EmailNotificationsScreen() {
           <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.content}>
-          {categories.map((category) => (
-            <View key={category.id} style={styles.categorySection}>
+        <SectionList
+          sections={categories.map((cat) => ({
+            ...cat,
+            data: cat.prefs,
+          }))}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.content}
+          renderSectionHeader={({ section }) => (
+            <View style={styles.categorySection}>
               <View style={styles.categoryHeader}>
-                <View style={[styles.categoryIcon, { backgroundColor: category.color + '20' }]}>
-                  <Ionicons name={category.icon} size={18} color={category.color} />
+                <View style={[styles.categoryIcon, { backgroundColor: section.color + '20' }]}>
+                  <Ionicons name={section.icon} size={18} color={section.color} />
                 </View>
-                <Text style={[styles.categoryTitle, { color: colors.text }]}>{category.title}</Text>
-              </View>
-
-              <View style={[styles.prefsCard, { backgroundColor: colors.surface }]}>
-                {category.prefs.map((pref, index) => (
-                  <View
-                    key={pref.id}
-                    style={[
-                      styles.prefRow,
-                      index < category.prefs.length - 1 && {
-                        borderBottomWidth: StyleSheet.hairlineWidth,
-                        borderBottomColor: colors.border,
-                      },
-                    ]}
-                  >
-                    <View style={styles.prefContent}>
-                      <Text style={[styles.prefLabel, { color: colors.text }]}>{pref.label}</Text>
-                      <Text style={[styles.prefDescription, { color: colors.textSecondary }]}>
-                        {pref.description}
-                      </Text>
-                    </View>
-                    <Switch
-                      value={pref.enabled}
-                      onValueChange={() => togglePref(category.id, pref.id)}
-                      trackColor={{ false: colors.border, true: category.color + '60' }}
-                      thumbColor={pref.enabled ? category.color : '#f4f3f4'}
-                    />
-                  </View>
-                ))}
+                <Text style={[styles.categoryTitle, { color: colors.text }]}>{section.title}</Text>
               </View>
             </View>
-          ))}
-
-          {/* Unsubscribe All */}
-          <TouchableOpacity
-            style={[styles.unsubscribeButton]}
-            onPress={() => {
-              setCategories((prev) =>
-                prev.map((cat) => ({
-                  ...cat,
-                  prefs: cat.prefs.map((p) => ({ ...p, enabled: false })),
-                }))
-              );
-              api
-                .patch('/api/v1/users/me/notification-preferences', {
-                  unsubscribe_all: true,
-                })
-                .catch(() => {});
-            }}
-          >
-            <Text style={styles.unsubscribeText}>Unsubscribe from all emails</Text>
-          </TouchableOpacity>
-        </ScrollView>
+          )}
+          renderItem={({ item: pref, index, section }) => (
+            <View
+              style={[
+                styles.prefRow,
+                index === 0 && { borderTopLeftRadius: 12, borderTopRightRadius: 12 },
+                index === section.prefs.length - 1 && { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 },
+                { backgroundColor: colors.surface },
+                index < section.prefs.length - 1 && {
+                  borderBottomWidth: StyleSheet.hairlineWidth,
+                  borderBottomColor: colors.border,
+                },
+              ]}
+            >
+              <View style={styles.prefContent}>
+                <Text style={[styles.prefLabel, { color: colors.text }]}>{pref.label}</Text>
+                <Text style={[styles.prefDescription, { color: colors.textSecondary }]}>
+                  {pref.description}
+                </Text>
+              </View>
+              <Switch
+                value={pref.enabled}
+                onValueChange={() => togglePref(section.id, pref.id)}
+                trackColor={{ false: colors.border, true: section.color + '60' }}
+                thumbColor={pref.enabled ? section.color : '#f4f3f4'}
+              />
+            </View>
+          )}
+          ListFooterComponent={
+            <TouchableOpacity
+              style={[styles.unsubscribeButton]}
+              onPress={() => {
+                setCategories((prev) =>
+                  prev.map((cat) => ({
+                    ...cat,
+                    prefs: cat.prefs.map((p) => ({ ...p, enabled: false })),
+                  }))
+                );
+                api
+                  .patch('/api/v1/users/me/notification-preferences', {
+                    unsubscribe_all: true,
+                  })
+                  .catch(() => {});
+              }}
+            >
+              <Text style={styles.unsubscribeText}>Unsubscribe from all emails</Text>
+            </TouchableOpacity>
+          }
+          stickySectionHeadersEnabled={false}
+        />
       )}
     </SafeAreaView>
   );

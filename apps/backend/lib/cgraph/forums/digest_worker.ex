@@ -74,7 +74,7 @@ defmodule CGraph.Forums.DigestWorker do
     from(s in Subscription, where: s.id in ^subscription_ids)
     |> Repo.update_all(set: [unread_count: 0, last_notified_at: DateTime.utc_now()])
 
-    Logger.info("Processed #{length(subscriptions)} daily digest subscriptions")
+    Logger.info("processed_daily_digest_subscriptions", subscriptions_count: inspect(length(subscriptions)))
   end
 
   @doc """
@@ -103,7 +103,7 @@ defmodule CGraph.Forums.DigestWorker do
     from(s in Subscription, where: s.id in ^subscription_ids)
     |> Repo.update_all(set: [unread_count: 0, last_notified_at: DateTime.utc_now()])
 
-    Logger.info("Processed #{length(subscriptions)} weekly digest subscriptions")
+    Logger.info("processed_weekly_digest_subscriptions", subscriptions_count: inspect(length(subscriptions)))
   end
 
   defp send_digest_email(user_id, subscriptions, frequency) do
@@ -141,9 +141,9 @@ defmodule CGraph.Forums.DigestWorker do
 
       case Mailer.send_email(email_data) do
         {:ok, _} ->
-          Logger.debug("Sent #{frequency} digest to user #{user_id}")
+          Logger.debug("sent_digest_to_user", frequency: frequency, user_id: user_id)
         {:error, reason} ->
-          Logger.error("Failed to send digest to user #{user_id}: #{inspect(reason)}")
+          Logger.error("failed_to_send_digest_to_user", user_id: user_id, reason: inspect(reason))
       end
     end
   end

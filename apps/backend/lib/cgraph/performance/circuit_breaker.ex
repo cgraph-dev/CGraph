@@ -207,7 +207,7 @@ defmodule CGraph.Performance.CircuitBreaker do
           opened_at: nil
         }
         :ets.insert(@table, {service, reset_circuit})
-        Logger.info("[CircuitBreaker] #{service} manually reset to closed")
+        Logger.info("[CircuitBreaker] manually reset to closed", service: service)
       [] ->
         :ok
     end
@@ -224,7 +224,7 @@ defmodule CGraph.Performance.CircuitBreaker do
           opened_at: DateTime.utc_now()
         }
         :ets.insert(@table, {service, opened_circuit})
-        Logger.warning("[CircuitBreaker] #{service} manually opened")
+        Logger.warning("[CircuitBreaker] manually opened", service: service)
       [] ->
         :ok
     end
@@ -253,7 +253,7 @@ defmodule CGraph.Performance.CircuitBreaker do
     if DateTime.diff(now, opened_at, :millisecond) >= recovery_time do
       half_open_circuit = %{circuit | state: :half_open, successes: 0}
       :ets.insert(@table, {service, half_open_circuit})
-      Logger.info("[CircuitBreaker] #{service} transitioned to half-open")
+      Logger.info("[CircuitBreaker] transitioned to half-open", service: service)
     end
   end
 
@@ -287,7 +287,7 @@ defmodule CGraph.Performance.CircuitBreaker do
         {:error, :circuit_open}
 
       fallback when is_function(fallback, 0) ->
-        Logger.debug("[CircuitBreaker] #{service} circuit open, using fallback")
+        Logger.debug("[CircuitBreaker] circuit open, using fallback", service: service)
         try do
           {:ok, fallback.()}
         rescue
@@ -346,7 +346,7 @@ defmodule CGraph.Performance.CircuitBreaker do
             opened_at: nil
           }
           :ets.insert(@table, {service, closed_circuit})
-          Logger.info("[CircuitBreaker] #{service} transitioned to closed after recovery")
+          Logger.info("[CircuitBreaker] transitioned to closed after recovery", service: service)
         else
           :ets.insert(@table, {service, %{circuit | successes: new_successes}})
         end
@@ -369,7 +369,7 @@ defmodule CGraph.Performance.CircuitBreaker do
         new_failures = circuit.failures + 1
         failure_threshold = Map.get(config, :failure_threshold, @default_failure_threshold)
 
-        Logger.warning("[CircuitBreaker] #{service} failure ##{new_failures}: #{inspect(reason)}")
+        Logger.warning("[CircuitBreaker] failure recorded", service: service, failure_number: new_failures, reason: inspect(reason))
 
         cond do
           state == :half_open ->
@@ -382,7 +382,7 @@ defmodule CGraph.Performance.CircuitBreaker do
               successes: 0
             }
             :ets.insert(@table, {service, opened_circuit})
-            Logger.warning("[CircuitBreaker] #{service} reopened after half-open failure")
+            Logger.warning("[CircuitBreaker] reopened after half-open failure", service: service)
 
           new_failures >= failure_threshold ->
             # Threshold reached, open circuit
@@ -393,7 +393,7 @@ defmodule CGraph.Performance.CircuitBreaker do
               opened_at: now
             }
             :ets.insert(@table, {service, opened_circuit})
-            Logger.error("[CircuitBreaker] #{service} opened after #{new_failures} failures")
+            Logger.error("[CircuitBreaker] opened after threshold failures", service: service, failures: new_failures)
 
           true ->
             # Record failure but stay closed

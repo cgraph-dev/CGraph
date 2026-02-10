@@ -8,7 +8,7 @@
 
 import { useState, memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { FaceSmileIcon } from '@heroicons/react/24/outline';
+import { FaceSmileIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
 import { getMessageBubbleClass, getMessageEffectClass } from '@/modules/settings/hooks/useCustomizationApplication';
@@ -26,12 +26,15 @@ import { aggregateReactions, handleRemoveReaction } from '@/lib/chat';
 import { cn } from '@/lib/utils';
 
 import type { MessageBubbleProps, ReadByEntry } from './types';
+import type { Message } from '@/modules/chat/store';
 import { formatMessageTime, handleAddReaction, mapVisualizerTheme } from './utils';
 import { ReplyIcon, FileIcon } from './icons';
 import { ReadReceipts } from './ReadReceipts';
 import { MessageStatusIndicator, type MessageDeliveryStatus } from './MessageStatusIndicator';
 import { MessageEditForm } from './MessageEditForm';
 import { MessageActionMenu } from './MessageActionMenu';
+import { useThreadStore } from '@/modules/chat/store/threadStore';
+import { springs } from '@/lib/animation-presets/presets';
 
 /**
  * MessageBubble - Memoized message display component
@@ -89,12 +92,12 @@ export const MessageBubble = memo(
       return style;
     }, [bubbleColor, bubbleRadius]);
 
-    // Message entrance animation variants
+    // Message entrance animation variants — directional slide (own→right, others→left)
     const bubbleVariants = useMemo(() => ({
-      initial: { opacity: 0, y: 12, scale: 0.97 },
-      animate: { opacity: 1, y: 0, scale: 1 },
+      initial: { opacity: 0, x: isOwn ? 16 : -16, y: 8, scale: 0.97 },
+      animate: { opacity: 1, x: 0, y: 0, scale: 1 },
       exit: { opacity: 0, scale: 0.95, transition: { duration: 0.15 } },
-    }), []);
+    }), [isOwn]);
 
     return (
       <motion.div
@@ -102,7 +105,7 @@ export const MessageBubble = memo(
         initial="initial"
         animate="animate"
         exit="exit"
-        transition={{ type: 'spring', stiffness: 380, damping: 30, mass: 0.8 }}
+        transition={{ ...springs.snappy, mass: 0.8 }}
         layout="position"
         className={cn(
           'group flex items-end gap-2',
@@ -274,6 +277,11 @@ export const MessageBubble = memo(
               >
                 <span>{formatMessageTime(message.createdAt)}</span>
                 {message.isEdited && <span>(edited)</span>}
+                {(message as Record<string, unknown>).expiresAt && (
+                  <span className="flex items-center gap-0.5 text-amber-400/70" title="Disappearing message">
+                    <ClockIcon className="h-3 w-3" />
+                  </span>
+                )}
                 {isOwn && (
                   <MessageStatusIndicator
                     status={
@@ -320,6 +328,9 @@ export const MessageBubble = memo(
             />
           </div>
 
+          {/* Thread replies indicator */}
+          <ThreadReplyBadge messageId={message.id} conversationId={message.conversationId} message={message} />
+
           {/* Read Receipts */}
           {isOwn && message.metadata?.readBy && Array.isArray(message.metadata.readBy) && (
             <ReadReceipts readBy={message.metadata.readBy as ReadByEntry[]} />
@@ -353,3 +364,34 @@ export const MessageBubble = memo(
 );
 
 export default MessageBubble;
+
+/** Inline thread reply count badge — opens ThreadPanel on click */
+function ThreadReplyBadge({
+  messageId,
+  conversationId,
+  message,
+}: {
+  messageId: string;
+  conversationId: string;
+  message: Message;
+}) {
+  const replyCount = useThreadStore((s) => s.replyCounts[messageId]);
+  const openThread = useThreadStore((s) => s.openThread);
+
+  if (!replyCount || replyCount <= 0) return null;
+
+  return (
+    <motion.button
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mt-1 flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs text-primary-400 hover:bg-dark-700/60 transition-colors"
+      onClick={() => openThread(conversationId, message)}
+      title="View thread"
+    >
+      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-6.75 3.75L3 21l3.75-3.75h10.5A2.25 2.25 0 0019.5 15V5.25A2.25 2.25 0 0017.25 3H6.75A2.25 2.25 0 004.5 5.25V15a2.25 2.25 0 002.25 2.25z" />
+      </svg>
+      <span className="font-medium">{replyCount} {replyCount === 1 ? 'reply' : 'replies'}</span>
+    </motion.button>
+  );
+}

@@ -4,6 +4,7 @@
  * @module hooks
  */
 import { useState, useEffect } from 'react';
+import { useAnimationSpeed } from '@/modules/settings/store/customization';
 
 /**
  * Hook that checks both system reduced-motion preference and
@@ -31,20 +32,26 @@ export function useReducedMotion(): boolean {
   return prefersReduced;
 }
 
+const SPEED_TO_INTENSITY: Record<string, number> = {
+  slow: 0.5,
+  normal: 1,
+  fast: 1,
+};
+
 /**
  * Returns the user's animation intensity preference.
- * 0 = disabled, 0.5 = subtle, 1 = full
+ * 0 = disabled (system reduced-motion), 0.5 = subtle (slow), 1 = full
  *
  * If system reduced motion is enabled, returns 0 regardless.
+ * Reads from the customization store's animationSpeed setting.
  */
 export function useAnimationIntensity(): number {
   const prefersReduced = useReducedMotion();
+  const animationSpeed = useAnimationSpeed();
 
   if (prefersReduced) return 0;
 
-  // Could read from a settings store in the future
-  // For now, return full intensity
-  return 1;
+  return SPEED_TO_INTENSITY[animationSpeed] ?? 1;
 }
 
 /**

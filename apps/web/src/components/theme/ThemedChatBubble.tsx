@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { useChatCustomization } from '@/modules/settings/store/customization';
 import { useChatBubbleStore } from '@/stores/theme';
@@ -84,7 +85,7 @@ export function ThemedChatBubble({
         return {
           initial: { x: isOwn ? 50 : -50, opacity: 0 },
           animate: { x: 0, opacity: 1 },
-          transition: { type: 'spring' as const, stiffness: 300, damping: 30 },
+          transition: springs.default,
         };
       case 'fade':
         return {
@@ -96,13 +97,13 @@ export function ThemedChatBubble({
         return {
           initial: { scale: 0.8, opacity: 0 },
           animate: { scale: 1, opacity: 1 },
-          transition: { type: 'spring' as const, stiffness: 400, damping: 25 },
+          transition: springs.snappy,
         };
       case 'bounce':
         return {
           initial: { y: -20, opacity: 0 },
           animate: { y: 0, opacity: 1 },
-          transition: { type: 'spring' as const, stiffness: 500, damping: 20 },
+          transition: springs.stiff,
         };
       case 'flip':
         return {
@@ -186,7 +187,7 @@ export function ThemedChatBubble({
           className="relative"
           {...animation}
           whileHover={theme.bubbleHoverEffect ? { y: -2, scale: 1.02 } : undefined}
-          transition={{ type: 'spring', stiffness: 400 }}
+          transition={springs.bouncy}
         >
           <div className="relative px-4 py-2 text-white" style={getBubbleStyle()}>
             {/* Message Text */}

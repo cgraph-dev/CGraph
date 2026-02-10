@@ -213,9 +213,9 @@ defmodule CGraph.Security.AccountLockout do
     }
 
     if redis_available do
-      Logger.info("AccountLockout started with max_attempts=#{config.max_attempts} (Redis-backed)")
+      Logger.info("accountlockout_started_with_max_attempts_redis_bac", config_max_attempts: config.max_attempts)
     else
-      Logger.info("AccountLockout started with max_attempts=#{config.max_attempts} (ETS fallback - no Redis)")
+      Logger.info("accountlockout_started_with_max_attempts_ets_fallb", config_max_attempts: config.max_attempts)
     end
 
     {:ok, state}
@@ -413,7 +413,7 @@ defmodule CGraph.Security.AccountLockout do
 
     emit_account_unlocked(identifier, admin_id)
 
-    Logger.info("Account #{identifier} unlocked by admin #{admin_id}")
+    Logger.info("account_unlocked_by_admin", identifier: identifier, admin_id: admin_id)
     :ok
   rescue
     _ -> :ok

@@ -532,7 +532,7 @@ defmodule CGraph.Idempotency do
     end)
 
     unless Enum.empty?(expired) do
-      Logger.debug("[Idempotency] Cleaned up #{length(expired)} expired records")
+      Logger.debug("idempotency_cleaned_up_expired_records", expired_count: inspect(length(expired)))
     end
   end
 

@@ -346,12 +346,17 @@ defmodule CGraphWeb.Router do
     resources "/conversations", ConversationController, only: [:index, :show, :create] do
       # Mark entire conversation as read
       post "/read", ConversationController, :mark_read
+      # Disappearing messages TTL
+      put "/ttl", ConversationController, :update_ttl
       resources "/messages", MessageController, only: [:index, :create, :update, :delete] do
         post "/pin", MessageController, :pin
         delete "/pin", MessageController, :unpin
       end
       post "/messages/:id/read", MessageController, :mark_read
       post "/typing", MessageController, :typing
+      # Thread replies
+      get "/messages/:message_id/replies", MessageController, :thread_replies
+      post "/thread-counts", MessageController, :thread_counts
       # Scheduled messages
       get "/scheduled-messages", MessageController, :list_scheduled
     end

@@ -50,17 +50,17 @@ defmodule CGraph.Workers.ScheduledMessageWorker do
     count = length(messages)
 
     if count > 0 do
-      Logger.info("Processing #{count} scheduled messages")
+      Logger.info("processing_scheduled_messages", count: count)
     end
 
     # Send each message
     Enum.each(messages, fn message ->
       case send_scheduled_message(message) do
         {:ok, _} ->
-          Logger.debug("Sent scheduled message #{message.id}")
+          Logger.debug("sent_scheduled_message", message_id: message.id)
 
         {:error, reason} ->
-          Logger.error("Failed to send scheduled message #{message.id}: #{inspect(reason)}")
+          Logger.error("failed_to_send_scheduled_message", message_id: message.id, reason: inspect(reason))
       end
     end)
 

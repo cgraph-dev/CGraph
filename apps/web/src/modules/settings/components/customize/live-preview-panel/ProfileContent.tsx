@@ -9,7 +9,7 @@ import type {
   ThemePreset,
   TitleDisplay,
 } from '@/modules/settings/store/customization';
-import { springs } from '@/lib/animationPresets';
+import { springs } from '@/lib/animation-presets';
 import { GlowText, FireText } from '@/shared/components/ui';
 import { MOCK_BADGES } from './constants';
 import type { ThemeColors } from './types';

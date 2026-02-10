@@ -15,7 +15,7 @@ defmodule CGraph.Workers.EventExporter do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"event_id" => event_id, "format" => format}} = _job) do
-    Logger.info("[EventExporter] Exporting event #{event_id} as #{format}")
+    Logger.info("eventexporter_exporting_event_as", event_id: event_id, format: format)
     
     # TODO: Implement export
     # 1. Gather all event data

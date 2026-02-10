@@ -65,7 +65,7 @@ defmodule CGraph.Cache.RedisPool do
       {Agent, fn -> 0 end}
     ]
 
-    Logger.info("[RedisPool] Starting #{pool_size} Redis connections")
+    Logger.info("redispool_starting_redis_connections", pool_size: pool_size)
     Supervisor.init(children, strategy: :one_for_one)
   end
 
@@ -97,7 +97,7 @@ defmodule CGraph.Cache.RedisPool do
       Redix.command(conn, args, timeout: timeout)
     rescue
       e ->
-        Logger.error("[RedisPool] Command failed: #{inspect(e)}")
+        Logger.error("redispool_command_failed", e: inspect(e))
         {:error, :redis_error}
     end
   end
@@ -140,7 +140,7 @@ defmodule CGraph.Cache.RedisPool do
       Redix.pipeline(conn, commands, timeout: timeout)
     rescue
       e ->
-        Logger.error("[RedisPool] Pipeline failed: #{inspect(e)}")
+        Logger.error("redispool_pipeline_failed", e: inspect(e))
         {:error, :redis_error}
     end
   end
@@ -177,7 +177,7 @@ defmodule CGraph.Cache.RedisPool do
       end
     rescue
       e ->
-        Logger.error("[RedisPool] Transaction failed: #{inspect(e)}")
+        Logger.error("redispool_transaction_failed", e: inspect(e))
         {:error, :redis_error}
     end
   end

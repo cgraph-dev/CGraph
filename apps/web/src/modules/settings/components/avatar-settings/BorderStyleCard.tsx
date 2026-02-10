@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { GlassCard, useAvatarStyle } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { BORDER_STYLES } from './constants';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function BorderStyleCard() {
   const { style, updateStyle } = useAvatarStyle();
@@ -35,7 +36,7 @@ export function BorderStyleCard() {
               <motion.div
                 layoutId="selectedBorderStyle"
                 className="absolute inset-0 rounded-lg bg-primary-500/10"
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                transition={springs.stiff}
               />
             )}
           </motion.button>

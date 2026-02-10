@@ -13,10 +13,13 @@ import {
   TrashIcon,
   PencilIcon,
   XMarkIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { api } from '@/lib/api';
 import { entranceVariants } from '@/lib/animation-presets/presets';
+import { ChannelPermissionsPanel } from './ChannelPermissionsPanel';
+import { ChannelCategoriesPanel } from './ChannelCategoriesPanel';
 import type { ChannelsTabProps } from './types';
 
 interface ChannelItem {
@@ -42,6 +45,7 @@ export function ChannelsTab({ groupId }: ChannelsTabProps) {
   const [showCreate, setShowCreate] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [permissionsChannelId, setPermissionsChannelId] = useState<string | null>(null);
 
   // Create form state
   const [newName, setNewName] = useState('');
@@ -221,6 +225,9 @@ export function ChannelsTab({ groupId }: ChannelsTabProps) {
         )}
       </AnimatePresence>
 
+      {/* Channel Categories */}
+      <ChannelCategoriesPanel groupId={groupId} />
+
       {/* Channels List */}
       <GlassCard variant="frosted" className="divide-y divide-gray-700/50">
         {loading ? (
@@ -297,6 +304,15 @@ export function ChannelsTab({ groupId }: ChannelsTabProps) {
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
+                            onClick={() => setPermissionsChannelId(channel.id)}
+                            className="rounded-lg p-1.5 text-gray-400 hover:bg-dark-700 hover:text-primary-400"
+                            title="Permissions"
+                          >
+                            <ShieldCheckIcon className="h-4 w-4" />
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
                             onClick={() => startEdit(channel)}
                             className="rounded-lg p-1.5 text-gray-400 hover:bg-dark-700 hover:text-white"
                           >
@@ -360,6 +376,19 @@ export function ChannelsTab({ groupId }: ChannelsTabProps) {
               </div>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+      {/* Permissions Panel Modal */}
+      <AnimatePresence>
+        {permissionsChannelId && (
+          <ChannelPermissionsPanel
+            groupId={groupId}
+            channelId={permissionsChannelId}
+            channelName={
+              channels.find((c) => c.id === permissionsChannelId)?.name ?? 'channel'
+            }
+            onClose={() => setPermissionsChannelId(null)}
+          />
         )}
       </AnimatePresence>
     </motion.div>

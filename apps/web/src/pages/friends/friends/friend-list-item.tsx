@@ -9,6 +9,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import UserProfileCard from '@/modules/social/components/UserProfileCard';
 import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
+import { LastSeenBadge } from '@/shared/components/LastSeenBadge';
 import {
   ChatBubbleLeftRightIcon,
   EllipsisVerticalIcon,
@@ -89,6 +90,11 @@ export function FriendListItem({
           )}
         </div>
         <p className="truncate text-xs text-gray-400">@{friend.username}</p>
+        <LastSeenBadge
+          lastSeenAt={(friend as Record<string, unknown>).lastSeenAt as string | null}
+          status={friend.status}
+          isOnline={friend.status === 'online'}
+        />
       </div>
 
       {/* Actions */}

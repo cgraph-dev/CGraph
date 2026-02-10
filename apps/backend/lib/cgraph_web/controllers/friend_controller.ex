@@ -107,9 +107,9 @@ defmodule CGraphWeb.FriendController do
   def index(conn, params) do
     user = Guardian.Plug.current_resource(conn)
     limit = safe_to_integer(Map.get(params, "limit"), 50) |> min(100)
-    offset = safe_to_integer(Map.get(params, "offset"), 0)
+    cursor = Map.get(params, "cursor")
 
-    friends = Friends.list_friends(user.id, limit: limit, offset: offset)
+    friends = Friends.list_friends(user.id, limit: limit, cursor: cursor)
 
     conn
     |> put_status(:ok)

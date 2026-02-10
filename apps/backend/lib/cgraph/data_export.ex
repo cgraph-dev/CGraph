@@ -255,22 +255,27 @@ defmodule CGraph.DataExport do
     format = Keyword.get(opts, :format, :ndjson)
     chunk_size = Keyword.get(opts, :chunk_size, get_config(:chunk_size))
 
+    # Use cursor-based streaming to avoid O(n) offset degradation on large datasets.
+    # Each iteration fetches the next chunk using the last record's ID as cursor.
     Stream.resource(
-      fn -> {query, 0} end,
+      fn -> {query, nil, true} end,
       fn
         :done -> {:halt, :done}
-        {q, offset} ->
-          chunk =
-            q
-            |> offset(^offset)
-            |> limit(^chunk_size)
-            |> Repo.all()
+        {q, last_id, is_first} ->
+          chunk_query = if last_id do
+            from r in q, where: r.id > ^last_id, order_by: [asc: r.id], limit: ^chunk_size
+          else
+            from r in q, order_by: [asc: r.id], limit: ^chunk_size
+          end
+
+          chunk = Repo.all(chunk_query)
 
           if chunk == [] do
             {:halt, :done}
           else
-            formatted = format_chunk(chunk, format, offset == 0)
-            {[formatted], {q, offset + chunk_size}}
+            new_last_id = List.last(chunk) |> Map.get(:id)
+            formatted = format_chunk(chunk, format, is_first)
+            {[formatted], {q, new_last_id, false}}
           end
       end,
       fn _ -> :ok end
@@ -558,7 +563,7 @@ defmodule CGraph.DataExport do
     finalize_export(export, file_path, file_size, delivery, opts)
   rescue
     e ->
-      Logger.error("[DataExport] Export #{export.id} failed: #{inspect(e)}")
+      Logger.error("data_export_failed", export_id: export.id, error: inspect(e))
       mark_export_failed(export, Exception.message(e))
   end
 
@@ -590,7 +595,7 @@ defmodule CGraph.DataExport do
     finalize_export(export, file_path, total_size, :download, opts)
   rescue
     e ->
-      Logger.error("[DataExport] Query export #{export.id} failed: #{inspect(e)}")
+      Logger.error("data_export_query_failed", export_id: export.id, error: inspect(e))
       mark_export_failed(export, Exception.message(e))
   end
 
@@ -894,7 +899,7 @@ defmodule CGraph.DataExport do
 
   defp send_export_notification(export, email) do
     # Integration with notification/email system
-    Logger.info("[DataExport] Sending notification to #{email} for export #{export.id}")
+    Logger.info("data_export_sending_notification", email: email, export_id: export.id)
     :ok
   end
 
@@ -915,13 +920,13 @@ defmodule CGraph.DataExport do
 
       case Finch.request(request, CGraph.Finch) do
         {:ok, %{status: status}} when status in 200..299 ->
-          Logger.info("[DataExport] Webhook delivered for export #{export.id}")
+          Logger.info("data_export_webhook_delivered", export_id: export.id)
 
         {:ok, %{status: status}} ->
-          Logger.warning("[DataExport] Webhook failed with status #{status} for export #{export.id}")
+          Logger.warning("data_export_webhook_failed", status: status, export_id: export.id)
 
         {:error, reason} ->
-          Logger.error("[DataExport] Webhook delivery failed: #{inspect(reason)}")
+          Logger.error("data_export_webhook_error", reason: inspect(reason))
       end
     end)
 
@@ -933,7 +938,7 @@ defmodule CGraph.DataExport do
   # ---------------------------------------------------------------------------
 
   defp log_export_started(export) do
-    Logger.info("[DataExport] Started export #{export.id} for user #{export.user_id}")
+    Logger.info("data_export_started", export_id: export.id, user_id: export.user_id)
 
     CGraph.Audit.log(:data_export, :export_started, %{
       export_id: export.id,
@@ -944,7 +949,7 @@ defmodule CGraph.DataExport do
   end
 
   defp log_export_completed(export) do
-    Logger.info("[DataExport] Completed export #{export.id}, size: #{export.file_size} bytes")
+    Logger.info("data_export_completed", export_id: export.id, file_size: export.file_size)
 
     CGraph.Audit.log(:data_export, :export_completed, %{
       export_id: export.id,
@@ -955,7 +960,7 @@ defmodule CGraph.DataExport do
   end
 
   defp log_export_failed(export) do
-    Logger.error("[DataExport] Export #{export.id} failed: #{export.error}")
+    Logger.error("data_export_error", export_id: export.id, error: export.error)
 
     CGraph.Audit.log(:data_export, :export_failed, %{
       export_id: export.id,
@@ -1005,7 +1010,7 @@ defmodule CGraph.DataExport do
     end)
 
     unless Enum.empty?(expired) do
-      Logger.info("[DataExport] Cleaned up #{length(expired)} expired exports")
+      Logger.info("data_export_cleanup", expired_count: length(expired))
     end
   end
 

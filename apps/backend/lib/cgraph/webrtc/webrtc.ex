@@ -150,7 +150,7 @@ defmodule CGraph.WebRTC do
 
     case GenServer.call(__MODULE__, {:create_room, room}) do
       :ok ->
-        Logger.info("WebRTC room created: #{room_id} by #{creator_id}")
+        Logger.info("webrtc_room_created_by", room_id: room_id, creator_id: creator_id)
         emit_telemetry(:room_created, room)
         {:ok, room}
 
@@ -475,7 +475,7 @@ defmodule CGraph.WebRTC do
       [{^room_id, %Room{state: :waiting} = room}] ->
         # Room never started, clean it up
         :ets.delete(@ets_table, room_id)
-        Logger.info("WebRTC room #{room_id} timed out (never started)")
+        Logger.info("webrtc_room_timed_out_never_started", room_id: room_id)
         emit_telemetry(:room_timeout, room)
 
       _ ->

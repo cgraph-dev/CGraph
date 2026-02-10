@@ -10,7 +10,7 @@ import {
   THEME_COLORS as themeColors,
   CHAT_THEME_TO_COLOR,
 } from '@/modules/settings/store/customization';
-import { chatBubbleAnimations, hoverAnimations } from '@/lib/animationPresets';
+import { chatBubbleAnimations, hoverAnimations } from '@/lib/animation-presets';
 import type { ChatBubbleProps } from './types';
 
 export const ChatBubble = memo(function ChatBubble({ message, isOwn, timestamp }: ChatBubbleProps) {

@@ -136,7 +136,7 @@ defmodule CGraph.Security.JWTKeyRotation do
     # Schedule periodic cleanup of expired previous keys
     Process.send_after(self(), :cleanup_expired_keys, @rotation_check_interval)
 
-    Logger.info("[JWTKeyRotation] Initialized with #{length(state.previous_keys)} previous key(s)")
+    Logger.info("jwtkeyrotation_initialized_with_previous_key_s", state_previous_keys_count: inspect(length(state.previous_keys)))
 
     {:ok, state}
   end
@@ -235,7 +235,7 @@ defmodule CGraph.Security.JWTKeyRotation do
       end)
 
     unless expired == [] do
-      Logger.info("[JWTKeyRotation] Cleaned up #{length(expired)} expired key(s)")
+      Logger.info("jwtkeyrotation_cleaned_up_expired_key_s", expired_count: inspect(length(expired)))
     end
 
     # Schedule next cleanup

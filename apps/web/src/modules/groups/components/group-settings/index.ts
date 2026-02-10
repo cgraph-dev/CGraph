@@ -11,6 +11,7 @@ export { OverviewTab } from './OverviewTab';
 export { MembersTab } from './MembersTab';
 export { InvitesTab } from './InvitesTab';
 export { ChannelsTab } from './ChannelsTab';
+export { EmojiTab } from './EmojiTab';
 export { NotificationsTab } from './NotificationsTab';
 export { AuditLogTab } from './AuditLogTab';
 export { DangerTab } from './DangerTab';

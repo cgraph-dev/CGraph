@@ -54,7 +54,8 @@ defmodule CGraphWeb.PresenceChannel do
     })
 
     # Push presence list filtered by friends to joining user
-    presence_list = build_presence_map(Presence.list("users:online"), friend_ids)
+    # Uses pipelined Redis lookups for friends only — O(F) not O(all users)
+    presence_list = build_friend_presence(friend_ids)
     push(socket, "presence_state", %{users: presence_list})
 
     # Notify friends that this user is now online
@@ -222,7 +223,8 @@ defmodule CGraphWeb.PresenceChannel do
     friend_ids = get_friend_ids(user.id)
 
     # Push updated presence list filtered by new friends
-    presence_list = build_presence_map(Presence.list("users:online"), friend_ids)
+    # Uses pipelined Redis lookups — O(F) not O(all users)
+    presence_list = build_friend_presence(friend_ids)
     push(socket, "presence_state", %{users: presence_list})
 
     {:reply, :ok, assign(socket, :friend_ids, friend_ids)}
@@ -292,6 +294,26 @@ defmodule CGraphWeb.PresenceChannel do
 
   # Private helpers
 
+  # Build presence map for friends only using pipelined Redis lookups — O(F)
+  # Instead of loading ALL online users and filtering, query only friends' statuses.
+  defp build_friend_presence(friend_ids) when is_list(friend_ids) and friend_ids != [] do
+    statuses = Presence.bulk_status(friend_ids)
+
+    friend_ids
+    |> Enum.filter(fn fid -> Map.get(statuses, fid) not in [nil, "offline"] end)
+    |> Enum.map(fn fid ->
+      presence = Presence.get_user_presence(fid) || %{}
+      {fid, %{
+        online: true,
+        status: Map.get(statuses, fid, "online"),
+        last_active: presence[:last_active]
+      }}
+    end)
+    |> Map.new()
+  end
+  defp build_friend_presence(_), do: %{}
+
+  # Legacy helper — kept for backward compatibility but no longer used in hot paths
   defp build_presence_map(presence_list, friend_ids) when is_map(presence_list) do
     friend_ids_set = MapSet.new(friend_ids)
 

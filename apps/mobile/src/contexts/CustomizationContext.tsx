@@ -1,30 +1,24 @@
 /**
- * CustomizationContext - React Context for UI customization
+ * CustomizationContext — BACKWARD-COMPATIBLE SHIM
  *
- * Provides theme configuration and customization methods to all components.
- * Integrates with Zustand store for state management.
+ * The CustomizationProvider has been removed from App.tsx.
+ * useCustomization() now reads directly from the Zustand customizationStore.
+ * This file preserves the same API surface so existing consumers work.
  *
- * @version 1.0.0
- * @since v0.10.0
+ * @deprecated Import from '@/stores/customizationStore' directly instead.
  */
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useColorScheme } from 'react-native';
+import React from 'react';
 import useCustomizationStore, { useTheme } from '@/stores/customizationStore';
 import type { ThemeConfig } from '@/lib/customization/CustomizationEngine';
 
 // ============================================================================
-// CONTEXT INTERFACE
+// CONTEXT INTERFACE (kept for type compat)
 // ============================================================================
 
 interface CustomizationContextValue {
-  // Current theme
   theme: ThemeConfig;
-
-  // System preferences
   systemColorScheme: 'light' | 'dark' | null;
-
-  // Quick accessors
   colors: ThemeConfig['colors'];
   typography: ThemeConfig['typography'];
   spacing: ThemeConfig['spacing'];
@@ -32,8 +26,6 @@ interface CustomizationContextValue {
   effects: ThemeConfig['effects'];
   animations: ThemeConfig['animations'];
   layout: ThemeConfig['layout'];
-
-  // Helper methods
   getColor: (path: string) => string;
   getSpacing: (size: keyof ThemeConfig['spacing']['scale']) => number;
   getBorderRadius: (size: keyof ThemeConfig['borderRadius']) => number;
@@ -41,74 +33,41 @@ interface CustomizationContextValue {
 }
 
 // ============================================================================
-// CONTEXT CREATION
+// HOOK — now provider-free, reads from Zustand directly
 // ============================================================================
 
-const CustomizationContext = createContext<CustomizationContextValue | undefined>(undefined);
-
-// ============================================================================
-// PROVIDER COMPONENT
-// ============================================================================
-
-interface CustomizationProviderProps {
-  children: ReactNode;
-}
-
-export function CustomizationProvider({ children }: CustomizationProviderProps) {
+export function useCustomization(): CustomizationContextValue {
   const theme = useTheme();
-  const systemColorScheme = useColorScheme();
-  const [isInitialized, setIsInitialized] = useState(false);
 
-  // Load theme on mount
-  useEffect(() => {
-    const loadTheme = async () => {
-      try {
-        await useCustomizationStore.getState().loadTheme();
-      } catch (error) {
-        console.error('Failed to load theme:', error);
-      } finally {
-        setIsInitialized(true);
-      }
-    };
-
-    loadTheme();
-  }, []);
-
-  // Helper: Get color by path (e.g., "primary.500" or "text.primary")
   const getColor = (path: string): string => {
     const parts = path.split('.');
     let current: Record<string, unknown> = theme.colors as Record<string, unknown>;
-
     for (const part of parts) {
       if (current[part] !== undefined) {
         current = current[part] as Record<string, unknown>;
       } else {
-        return theme.colors.primary[500]; // Default fallback
+        return theme.colors.primary[500];
       }
     }
-
     return typeof current === 'string' ? current : theme.colors.primary[500];
   };
 
-  // Helper: Get spacing value
   const getSpacing = (size: keyof ThemeConfig['spacing']['scale']): number => {
     return theme.spacing.scale[size];
   };
 
-  // Helper: Get border radius value
   const getBorderRadius = (size: keyof ThemeConfig['borderRadius']): number => {
     return theme.borderRadius[size];
   };
 
-  // Helper: Calculate typography size based on scale ratio
   const getTypographySize = (level: number): number => {
     const { baseSize, scaleRatio } = theme.typography;
     return Math.round(baseSize * Math.pow(scaleRatio, level));
   };
 
-  const contextValue: CustomizationContextValue = {
+  return {
     theme,
-    systemColorScheme: systemColorScheme as 'light' | 'dark' | null,
+    systemColorScheme: null, // No longer tracked here; use Appearance API if needed
     colors: theme.colors,
     typography: theme.typography,
     spacing: theme.spacing,
@@ -121,33 +80,17 @@ export function CustomizationProvider({ children }: CustomizationProviderProps) 
     getBorderRadius,
     getTypographySize,
   };
+}
 
-  // Don't render children until theme is loaded
-  if (!isInitialized) {
-    return null; // Or a splash screen component
-  }
-
-  return (
-    <CustomizationContext.Provider value={contextValue}>{children}</CustomizationContext.Provider>
-  );
+/**
+ * CustomizationProvider — no-op wrapper for backward compatibility.
+ */
+export function CustomizationProvider({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }
 
 // ============================================================================
-// HOOK
-// ============================================================================
-
-export function useCustomization(): CustomizationContextValue {
-  const context = useContext(CustomizationContext);
-
-  if (context === undefined) {
-    throw new Error('useCustomization must be used within a CustomizationProvider');
-  }
-
-  return context;
-}
-
-// ============================================================================
-// HOC (Higher-Order Component)
+// HOC (kept for backward compat)
 // ============================================================================
 
 export function withCustomization<P extends object>(
@@ -159,4 +102,3 @@ export function withCustomization<P extends object>(
   };
 }
 
-export default CustomizationContext;

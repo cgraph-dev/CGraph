@@ -133,8 +133,9 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                     {item.badge && item.badge > 0 && (
                       <motion.span
                         initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white"
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ scale: { duration: 2, repeat: Infinity, ease: 'easeInOut' } }}
+                        className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-[0_0_8px_rgba(239,68,68,0.5)]"
                       >
                         {item.badge > 99 ? '99+' : item.badge}
                       </motion.span>
@@ -178,9 +179,13 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                   <Icon className="mx-auto h-6 w-6" />
                 </div>
                 {item.badge && item.badge > 0 && (
-                  <span className="absolute right-1/4 top-1 flex h-3.5 min-w-[14px] items-center justify-center rounded-full bg-red-500 px-0.5 text-[9px] font-bold text-white">
+                  <motion.span
+                    animate={{ scale: [1, 1.15, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    className="absolute right-1/4 top-1 flex h-3.5 min-w-[14px] items-center justify-center rounded-full bg-red-500 px-0.5 text-[9px] font-bold text-white shadow-[0_0_6px_rgba(239,68,68,0.4)]"
+                  >
                     {item.badge > 99 ? '99' : item.badge}
-                  </span>
+                  </motion.span>
                 )}
               </NavLink>
             );
@@ -222,8 +227,9 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                   {item.badge && item.badge > 0 && (
                     <motion.span
                       initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="absolute -right-1.5 -top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ scale: { duration: 2, repeat: Infinity, ease: 'easeInOut' } }}
+                      className="absolute -right-1.5 -top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white shadow-[0_0_8px_rgba(239,68,68,0.5)]"
                     >
                       {item.badge > 99 ? '99+' : item.badge}
                     </motion.span>

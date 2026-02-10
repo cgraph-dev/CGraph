@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { ChatBubbleStyle, defaultStyle, presets, STORAGE_KEY } from '../types';
+import { invalidateBubbleCache } from '@/hooks/useBubbleCustomization';
 
 export function useChatBubbleStyle() {
   const [style, setStyle] = useState<ChatBubbleStyle>(defaultStyle);
@@ -25,6 +26,7 @@ export function useChatBubbleStyle() {
   const saveStyle = async (newStyle: ChatBubbleStyle) => {
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newStyle));
+      invalidateBubbleCache(); // Force MessageBubble to re-read on next render
     } catch (error) {
       console.error('Failed to save style:', error);
     }

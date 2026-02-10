@@ -9,6 +9,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { CustomizationItemCard } from '@/modules/settings/components/customize';
 import RangeSliderControl from '@/modules/settings/components/customize/RangeSliderControl';
 import AnimatedToggle from '@/modules/settings/components/customize/AnimatedToggle';
+import { springs } from '@/lib/animation-presets/presets';
 import type {
   BubbleStylesSectionProps,
   MessageEffectsSectionProps,
@@ -204,7 +205,7 @@ export function AdvancedControlsSection({
           <motion.div
             className="relative max-w-[200px]"
             whileHover={enableHoverEffects ? { scale: 1.02, y: -2 } : undefined}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            transition={springs.bouncy}
           >
             <div
               className={`px-4 py-2 text-sm text-white ${enableGlassEffect ? 'border border-white/20 bg-primary-600/70 backdrop-blur-md' : 'bg-primary-600'}`}
@@ -230,7 +231,7 @@ export function AdvancedControlsSection({
           <motion.div
             className="relative max-w-[200px]"
             whileHover={enableHoverEffects ? { scale: 1.02, y: -2 } : undefined}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            transition={springs.bouncy}
           >
             <div
               className={`px-4 py-2 text-sm text-white ${enableGlassEffect ? 'border border-white/10 bg-dark-600/70 backdrop-blur-md' : 'bg-dark-600'}`}

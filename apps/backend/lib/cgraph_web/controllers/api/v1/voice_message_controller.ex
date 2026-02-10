@@ -47,8 +47,8 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
 
     # Log upload struct for debugging
     require Logger
-    Logger.debug("Voice message upload received: #{inspect(upload)}")
-    Logger.debug("Upload params: #{inspect(params)}")
+    Logger.debug("voice_message_upload_received", upload: inspect(upload))
+    Logger.debug("upload_params", params: inspect(params))
 
     opts = [
       transcode: true,
@@ -75,7 +75,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
         {:error, :bad_request, "Invalid upload structure. Expected multipart file upload."}
 
       {:error, reason} ->
-        Logger.error("Voice message processing failed: #{inspect(reason)}")
+        Logger.error("voice_message_processing_failed", reason: inspect(reason))
         {:error, :internal_server_error, "Failed to process voice message: #{inspect(reason)}"}
     end
   end

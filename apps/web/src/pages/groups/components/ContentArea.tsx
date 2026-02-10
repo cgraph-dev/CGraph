@@ -8,6 +8,7 @@ import { Outlet } from 'react-router-dom';
 import { HashtagIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { ContentAreaProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function ContentArea({ activeGroup, groupId, channelId }: ContentAreaProps) {
   // Has channel selected
@@ -22,7 +23,7 @@ export function ContentArea({ activeGroup, groupId, channelId }: ContentAreaProp
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          transition={springs.bouncy}
         >
           <GlassCard
             variant="holographic"
@@ -61,7 +62,7 @@ export function ContentArea({ activeGroup, groupId, channelId }: ContentAreaProp
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        transition={springs.bouncy}
       >
         <GlassCard
           variant="holographic"

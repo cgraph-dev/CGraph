@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { AnimatedBadgeWithTooltip } from './AnimatedBadge';
 import { BadgePickerModal } from './BadgePickerModal';
 import type { Achievement } from '@/modules/gamification/store';
+import { springs } from '@/lib/animation-presets/presets';
 
 // Re-export extracted components for backwards compatibility
 export { CompactBadgeShowcase } from './CompactBadgeShowcase';
@@ -110,12 +111,7 @@ function BadgeSlot({ badge, size, isEditable, onUnequip, index }: BadgeSlotProps
       initial={{ opacity: 0, scale: 0, rotate: -180 }}
       animate={{ opacity: 1, scale: 1, rotate: 0 }}
       exit={{ opacity: 0, scale: 0, rotate: 180 }}
-      transition={{
-        type: 'spring',
-        stiffness: 260,
-        damping: 20,
-        delay: index * 0.1,
-      }}
+      transition={springs.dramatic}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

@@ -8,6 +8,7 @@
  */
 
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import type { ReactNode } from 'react';
 
 // ── Animation Variants ─────────────────────────────────────────────────
@@ -25,7 +26,7 @@ const fadeUpVariant = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { type: 'spring', stiffness: 300, damping: 24 },
+    transition: springs.default,
   },
 };
 
@@ -34,7 +35,7 @@ const illustrationVariant = {
   visible: {
     opacity: 1,
     scale: 1,
-    transition: { type: 'spring', stiffness: 200, damping: 20 },
+    transition: springs.smooth,
   },
 };
 

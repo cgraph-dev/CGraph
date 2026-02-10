@@ -16,6 +16,7 @@ import { MutualFriendsList } from './MutualFriendsList';
 import { SharedForumsList } from './SharedForumsList';
 import { QuickActions } from './QuickActions';
 import { BlockConfirmModal, ReportModal } from './ConfirmationModals';
+import { DisappearingMessagesToggle } from '../DisappearingMessagesToggle';
 import type { ChatInfoPanelProps } from './types';
 
 export default function ChatInfoPanel({
@@ -40,6 +41,7 @@ export default function ChatInfoPanel({
     setShowReportModal,
     reportReason,
     setReportReason,
+    messageTTL,
     handleMuteToggle,
     handleBlock,
     handleReport,
@@ -47,6 +49,7 @@ export default function ChatInfoPanel({
     handleCustomizeChat,
     handleNavigateToUser,
     handleNavigateToForum,
+    handleUpdateTTL,
   } = useChatInfoPanel({
     userId,
     conversationId,
@@ -109,6 +112,26 @@ export default function ChatInfoPanel({
 
         {/* Shared Forums */}
         <SharedForumsList forums={sharedForums} onForumClick={handleNavigateToForum} />
+
+        {/* Disappearing Messages */}
+        {conversationId && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <GlassCard variant="frosted" className="p-3">
+              <p className="mb-2 text-xs font-semibold uppercase text-white/30">
+                Disappearing Messages
+              </p>
+              <DisappearingMessagesToggle
+                conversationId={conversationId}
+                currentTTL={messageTTL}
+                onUpdate={handleUpdateTTL}
+              />
+            </GlassCard>
+          </motion.div>
+        )}
 
         {/* Quick Actions */}
         <QuickActions

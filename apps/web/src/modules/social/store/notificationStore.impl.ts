@@ -7,6 +7,9 @@ import { devtools } from 'zustand/middleware';
 import { api } from '@/lib/api';
 import { ensureArray, extractPagination } from '@/lib/apiUtils';
 
+/** Maximum notifications kept in memory to prevent unbounded growth. */
+const MAX_NOTIFICATIONS = 200;
+
 export interface Notification {
   id: string;
   type: 'message' | 'friend_request' | 'group_invite' | 'mention' | 'forum_reply' | 'system';
@@ -63,13 +66,16 @@ export const useNotificationStore = create<NotificationState>()(
             ?.unread_count;
           const calculatedUnreadCount = newNotifications.filter((n) => !n.isRead).length;
 
-          set((state) => ({
-            notifications:
-              page === 1 ? newNotifications : [...state.notifications, ...newNotifications],
+          set((state) => {
+            const merged =
+              page === 1 ? newNotifications : [...state.notifications, ...newNotifications];
+            return {
+            notifications: merged.slice(0, MAX_NOTIFICATIONS),
             unreadCount: metaUnreadCount ?? calculatedUnreadCount,
             hasMore,
             isLoading: false,
-          }));
+          };
+          });
         } catch (error: unknown) {
           set({ isLoading: false });
           throw error;
@@ -110,7 +116,7 @@ export const useNotificationStore = create<NotificationState>()(
 
       addNotification: (notification: Notification) => {
         set((state) => ({
-          notifications: [notification, ...state.notifications],
+          notifications: [notification, ...state.notifications].slice(0, MAX_NOTIFICATIONS),
           unreadCount: notification.isRead ? state.unreadCount : state.unreadCount + 1,
         }));
       },

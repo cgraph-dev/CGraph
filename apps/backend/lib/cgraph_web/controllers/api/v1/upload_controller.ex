@@ -223,7 +223,7 @@ defmodule CGraphWeb.API.V1.UploadController do
         identify_type_from_header(header)
 
       {:error, reason} ->
-        Logger.error("Failed to read file for MIME detection: #{inspect(reason)}")
+        Logger.error("failed_to_read_file_for_mime_detection", reason: inspect(reason))
         {:error, :file_read_error}
     end
   end

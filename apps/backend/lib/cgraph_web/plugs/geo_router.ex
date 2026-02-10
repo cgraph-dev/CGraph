@@ -70,7 +70,8 @@ defmodule CGraphWeb.Plugs.GeoRouter do
 
     if write_request?(conn) and not replay_exempt?(conn) do
       # Forward writes to primary region via Fly.io replay
-      Logger.debug("Replaying write request to primary region: #{primary}",
+      Logger.debug("replay_write_to_primary",
+        primary_region: primary,
         path: conn.request_path,
         method: conn.method,
         from_region: region,

@@ -91,14 +91,16 @@ defmodule CGraphWeb.PrestigeController do
   """
   def leaderboard(conn, params) do
     limit = min(String.to_integer(params["limit"] || "50"), 100)
-    offset = String.to_integer(params["offset"] || "0")
+    cursor = params["cursor"]
+    
+    cursor_data = decode_prestige_cursor(cursor)
+    rank_start = if cursor_data, do: cursor_data.rank, else: 1
     
     query = from p in UserPrestige,
       join: u in assoc(p, :user),
       where: p.prestige_level > 0,
-      order_by: [desc: p.prestige_level, desc: p.lifetime_xp],
-      limit: ^limit,
-      offset: ^offset,
+      order_by: [desc: p.prestige_level, asc: p.inserted_at],
+      limit: ^(limit + 1),
       select: %{
         user_id: u.id,
         username: u.username,
@@ -106,15 +108,33 @@ defmodule CGraphWeb.PrestigeController do
         avatar_url: u.avatar_url,
         prestige_level: p.prestige_level,
         lifetime_xp: p.lifetime_xp,
-        total_resets: p.total_resets
+        total_resets: p.total_resets,
+        inserted_at: p.inserted_at
       }
     
-    entries = Repo.all(query)
+    query = if cursor_data do
+      cursor_dt = parse_prestige_cursor_dt(cursor_data.inserted_at)
+      from [p, u] in query,
+        where: p.prestige_level < ^cursor_data.level or
+               (p.prestige_level == ^cursor_data.level and p.inserted_at > ^cursor_dt)
+    else
+      query
+    end
     
-    # Add rank
-    entries_with_rank = entries
-    |> Enum.with_index(offset + 1)
+    results = Repo.all(query)
+    has_more = length(results) > limit
+    items = Enum.take(results, limit)
+    
+    entries_with_rank = items
+    |> Enum.with_index(rank_start)
     |> Enum.map(fn {entry, rank} -> Map.put(entry, :rank, rank) end)
+    
+    next_cursor = if has_more && items != [] do
+      last = List.last(items)
+      encode_prestige_cursor(rank_start + length(items), last.prestige_level, last.inserted_at)
+    else
+      nil
+    end
     
     conn
     |> put_status(:ok)
@@ -122,8 +142,8 @@ defmodule CGraphWeb.PrestigeController do
       leaderboard: entries_with_rank,
       pagination: %{
         limit: limit,
-        offset: offset,
-        hasMore: length(entries) == limit
+        hasMore: has_more,
+        nextCursor: next_cursor
       }
     })
   end
@@ -251,5 +271,42 @@ defmodule CGraphWeb.PrestigeController do
       exclusiveBorders: prestige.exclusive_borders,
       exclusiveEffects: prestige.exclusive_effects
     }
+  end
+
+  # Cursor helpers for prestige leaderboard
+  defp encode_prestige_cursor(rank, level, %DateTime{} = dt) do
+    "#{rank}|#{level}|#{DateTime.to_iso8601(dt)}" |> Base.url_encode64(padding: false)
+  end
+
+  defp encode_prestige_cursor(rank, level, %NaiveDateTime{} = ndt) do
+    "#{rank}|#{level}|#{NaiveDateTime.to_iso8601(ndt)}" |> Base.url_encode64(padding: false)
+  end
+
+  defp encode_prestige_cursor(rank, level, ts) do
+    "#{rank}|#{level}|#{ts}" |> Base.url_encode64(padding: false)
+  end
+
+  defp decode_prestige_cursor(nil), do: nil
+
+  defp decode_prestige_cursor(cursor) do
+    with {:ok, decoded} <- Base.url_decode64(cursor, padding: false),
+         [rank_str, level_str, ts] <- String.split(decoded, "|", parts: 3),
+         {rank, _} <- Integer.parse(rank_str),
+         {level, _} <- Integer.parse(level_str) do
+      %{rank: rank, level: level, inserted_at: ts}
+    else
+      _ -> nil
+    end
+  end
+
+  defp parse_prestige_cursor_dt(ts_string) do
+    case DateTime.from_iso8601(ts_string) do
+      {:ok, dt, _} -> dt
+      _ ->
+        case NaiveDateTime.from_iso8601(ts_string) do
+          {:ok, ndt} -> ndt
+          _ -> ~N[2000-01-01 00:00:00]
+        end
+    end
   end
 end

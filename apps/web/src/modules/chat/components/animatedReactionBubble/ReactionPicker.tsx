@@ -5,6 +5,7 @@
 import { motion } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { QUICK_REACTIONS } from '@/modules/chat/components/animatedReactionBubble/constants';
+import { springs } from '@/lib/animation-presets/presets';
 
 export interface ReactionPickerProps {
   onSelect: (emoji: string) => void;
@@ -18,7 +19,7 @@ export function ReactionPicker({ onSelect, onClose }: ReactionPickerProps) {
       initial={{ scale: 0, opacity: 0, y: 20 }}
       animate={{ scale: 1, opacity: 1, y: 0 }}
       exit={{ scale: 0, opacity: 0, y: 20 }}
-      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+      transition={springs.snappy}
     >
       {QUICK_REACTIONS.map((emoji, index) => (
         <motion.button
@@ -31,12 +32,7 @@ export function ReactionPicker({ onSelect, onClose }: ReactionPickerProps) {
           }}
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{
-            type: 'spring',
-            stiffness: 500,
-            damping: 25,
-            delay: index * 0.03,
-          }}
+          transition={springs.snappy}
           whileHover={{ y: -4 }}
           whileTap={{ scale: 0.9 }}
         >

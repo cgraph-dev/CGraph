@@ -12,6 +12,7 @@ import { ReactNode, HTMLAttributes, useRef, useState, useCallback } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useThrottledCallback, usePrefersReducedMotion } from '@/hooks';
+import { springs } from '@/lib/animation-presets/presets';
 
 // =============================================================================
 // TYPES
@@ -176,7 +177,7 @@ export default function GlassCard({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
       whileHover={shouldAnimate3D ? { scale: 1.02, z: 50 } : {}}
-      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      transition={springs.stiff}
       {...props}
     >
       {/* Background with blur */}

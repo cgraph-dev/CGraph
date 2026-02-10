@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
 import { getReactionStyleClass } from '@/modules/settings/hooks/useCustomizationApplication';
 import { ReactionParticle } from '@/modules/chat/components/animatedReactionBubble/ReactionParticle';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   SPRING_SCALE,
   SPRING_ROTATE,
@@ -199,7 +200,7 @@ export function AnimatedReactionBubble({
           )}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+          transition={springs.snappy}
         >
           {reaction.count}
         </motion.span>

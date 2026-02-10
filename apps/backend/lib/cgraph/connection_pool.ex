@@ -583,7 +583,7 @@ defmodule CGraph.ConnectionPool do
     {:ok, status}
   rescue
     e ->
-      Logger.error("[ConnectionPool] Failed to get status: #{inspect(e)}")
+      Logger.error("connectionpool_failed_to_get_status", e: inspect(e))
       {:error, :status_unavailable}
   end
 
@@ -704,7 +704,7 @@ defmodule CGraph.ConnectionPool do
     new_size = min(status.pool_size + 2, max_size)
 
     if new_size > status.pool_size do
-      Logger.info("[ConnectionPool] Scaling up pool from #{status.pool_size} to #{new_size}")
+      Logger.info("connectionpool_scaling_up_pool_from_to", status_pool_size: status.pool_size, new_size: new_size)
       do_resize_pool(status.pool_name, new_size)
     end
   end
@@ -714,7 +714,7 @@ defmodule CGraph.ConnectionPool do
     new_size = max(status.pool_size - 1, min_size)
 
     if new_size < status.pool_size do
-      Logger.info("[ConnectionPool] Scaling down pool from #{status.pool_size} to #{new_size}")
+      Logger.info("connectionpool_scaling_down_pool_from_to", status_pool_size: status.pool_size, new_size: new_size)
       do_resize_pool(status.pool_name, new_size)
     end
   end

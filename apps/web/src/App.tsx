@@ -8,22 +8,42 @@
  * @module App
  */
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, Suspense, lazy } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { PageTransition } from '@/shared/components/PageTransition';
-import { IncomingCallHandler } from '@/modules/calls/components/IncomingCallHandler';
-import { BackgroundEffectRenderer } from '@/modules/settings/components/BackgroundEffectRenderer';
 import { AuthInitializer } from '@/routes/AuthInitializer';
 import { AppRoutes } from '@/routes/AppRoutes';
-import { QuickSwitcher } from '@/shared/components/QuickSwitcher';
-import { KeyboardShortcutsModal } from '@/shared/components/KeyboardShortcutsModal';
-import { GroupJoinCelebration } from '@/modules/groups/components/GroupJoinCelebration';
 import { useGroupStore } from '@/modules/groups/store';
 import { initErrorTracking, reportWebVitals } from '@/lib/error-tracking';
 import '@/themes/theme-globals.css';
 import '@/styles/customization-effects.css';
+
+// Lazy-load non-critical global components to reduce initial bundle
+const IncomingCallHandler = lazy(() =>
+  import('@/modules/calls/components/IncomingCallHandler').then((m) => ({
+    default: m.IncomingCallHandler,
+  }))
+);
+const BackgroundEffectRenderer = lazy(() =>
+  import('@/modules/settings/components/BackgroundEffectRenderer').then((m) => ({
+    default: m.BackgroundEffectRenderer,
+  }))
+);
+const QuickSwitcher = lazy(() =>
+  import('@/shared/components/QuickSwitcher').then((m) => ({ default: m.QuickSwitcher }))
+);
+const KeyboardShortcutsModal = lazy(() =>
+  import('@/shared/components/KeyboardShortcutsModal').then((m) => ({
+    default: m.KeyboardShortcutsModal,
+  }))
+);
+const GroupJoinCelebration = lazy(() =>
+  import('@/modules/groups/components/GroupJoinCelebration').then((m) => ({
+    default: m.GroupJoinCelebration,
+  }))
+);
 
 // Initialize error tracking on module load
 initErrorTracking();
@@ -59,15 +79,17 @@ export default function App() {
   return (
     <AuthInitializer>
       <ScrollToTop />
-      <IncomingCallHandler />
-      <BackgroundEffectRenderer />
-      <QuickSwitcher isOpen={quickSwitcherOpen} onClose={() => setQuickSwitcherOpen(false)} />
-      <KeyboardShortcutsModal />
-      <GroupJoinCelebration
-        groupName={justJoinedGroupName ?? ''}
-        show={!!justJoinedGroupName}
-        onComplete={clearJoinCelebration}
-      />
+      <Suspense fallback={null}>
+        <IncomingCallHandler />
+        <BackgroundEffectRenderer />
+        <QuickSwitcher isOpen={quickSwitcherOpen} onClose={() => setQuickSwitcherOpen(false)} />
+        <KeyboardShortcutsModal />
+        <GroupJoinCelebration
+          groupName={justJoinedGroupName ?? ''}
+          show={!!justJoinedGroupName}
+          onComplete={clearJoinCelebration}
+        />
+      </Suspense>
       <AnimatePresence mode="wait">
         <PageTransition>
           <Suspense fallback={<LoadingSpinner />}>

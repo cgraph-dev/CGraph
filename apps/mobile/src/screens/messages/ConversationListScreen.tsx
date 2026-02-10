@@ -454,6 +454,12 @@ export default function ConversationListScreen({ navigation }: Props) {
         ]}
         showsVerticalScrollIndicator={false}
         onScroll={scrollHandler}
+        // Performance tuning for large conversation lists
+        windowSize={11}
+        maxToRenderPerBatch={10}
+        initialNumToRender={15}
+        updateCellsBatchingPeriod={50}
+        removeClippedSubviews={true}
       />
     </View>
   );

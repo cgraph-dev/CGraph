@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   UserPlusIcon,
   StarIcon,
@@ -97,7 +98,7 @@ export function ProfileSidebar({ profile }: ProfileSidebarProps) {
           <motion.div
             className="rounded-lg bg-primary-500/20 p-2"
             whileHover={{ scale: 1.1, rotate: 5 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+            transition={springs.bouncy}
           >
             <ArrowTrendingUpIcon className="h-6 w-6 text-primary-400" />
           </motion.div>
@@ -107,7 +108,7 @@ export function ProfileSidebar({ profile }: ProfileSidebarProps) {
               className="bg-gradient-to-r from-white to-primary-200 bg-clip-text text-2xl font-bold text-transparent"
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+              transition={springs.bouncy}
             >
               {(profile.karma ?? 0).toLocaleString()}
             </motion.p>

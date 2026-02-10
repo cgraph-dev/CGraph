@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Lock, Sparkles } from 'lucide-react';
 import { RARITY_TEXT_COLORS } from './constants';
 import type { BadgeCardProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function BadgeCard({
   badge,
@@ -98,7 +99,7 @@ export function BadgeCard({
           className="absolute right-1 top-1"
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          transition={springs.bouncy}
         >
           <Sparkles className="h-5 w-5 fill-purple-500/20 text-purple-500" />
         </motion.div>

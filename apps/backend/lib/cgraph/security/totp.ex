@@ -492,14 +492,14 @@ defmodule CGraph.Security.TOTP do
 
   defp audit_2fa_enabled(user) do
     Audit.log(:security, :totp_enabled, %{user_id: user.id})
-    Logger.info("2FA enabled for user #{user.id}")
+    Logger.info("2fa_enabled_for_user", user_id: user.id)
   rescue
     _ -> :ok
   end
 
   defp audit_2fa_disabled(user) do
     Audit.log(:security, :totp_disabled, %{user_id: user.id})
-    Logger.info("2FA disabled for user #{user.id}")
+    Logger.info("2fa_disabled_for_user", user_id: user.id)
   rescue
     _ -> :ok
   end
@@ -509,14 +509,14 @@ defmodule CGraph.Security.TOTP do
       user_id: user.id,
       remaining_codes: remaining
     })
-    Logger.info("Backup code used for user #{user.id}, #{remaining} remaining")
+    Logger.info("backup_code_used_for_user_remaining", user_id: user.id, remaining: remaining)
   rescue
     _ -> :ok
   end
 
   defp audit_backup_codes_regenerated(user) do
     Audit.log(:security, :totp_backup_codes_regenerated, %{user_id: user.id})
-    Logger.info("Backup codes regenerated for user #{user.id}")
+    Logger.info("backup_codes_regenerated_for_user", user_id: user.id)
   rescue
     _ -> :ok
   end

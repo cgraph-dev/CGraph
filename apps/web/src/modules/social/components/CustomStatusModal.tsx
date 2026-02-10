@@ -10,6 +10,13 @@ import { GlassCard } from '@/shared/components/ui';
 import { entranceVariants } from '@/lib/animation-presets/presets';
 import { api } from '@/lib/api';
 
+const PRESENCE_MODES = [
+  { id: 'online', label: 'Online', color: 'bg-green-500', description: 'Visible to everyone' },
+  { id: 'away', label: 'Away', color: 'bg-yellow-500', description: 'Show as idle' },
+  { id: 'dnd', label: 'Do Not Disturb', color: 'bg-red-500', description: 'Suppress notifications' },
+  { id: 'invisible', label: 'Invisible', color: 'bg-gray-500', description: 'Appear offline to others' },
+] as const;
+
 interface CustomStatusModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -54,6 +61,7 @@ export function CustomStatusModal({
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [expiresIn, setExpiresIn] = useState('');
   const [saving, setSaving] = useState(false);
+  const [presenceMode, setPresenceMode] = useState<string>('online');
 
   useEffect(() => {
     if (isOpen) {
@@ -66,10 +74,15 @@ export function CustomStatusModal({
     setSaving(true);
     try {
       const customStatus = emoji ? `${emoji} ${statusText}` : statusText;
+      // Update custom status text
       await api.put('/api/v1/me', {
         custom_status: customStatus,
         status_message: statusText,
       });
+      // Update presence mode (online/away/dnd/invisible)
+      if (presenceMode !== 'online') {
+        await api.put('/api/v1/presence/status', { status: presenceMode });
+      }
       onStatusUpdated?.(statusText, emoji);
       onClose();
     } catch {
@@ -123,6 +136,30 @@ export function CustomStatusModal({
               <button onClick={onClose} className="rounded-lg p-1 text-gray-400 hover:bg-dark-700">
                 <XMarkIcon className="h-5 w-5" />
               </button>
+            </div>
+
+            {/* Presence Mode Selector */}
+            <div className="mb-4">
+              <p className="mb-2 text-xs font-medium uppercase text-gray-500">Presence</p>
+              <div className="grid grid-cols-2 gap-2">
+                {PRESENCE_MODES.map((mode) => (
+                  <button
+                    key={mode.id}
+                    onClick={() => setPresenceMode(mode.id)}
+                    className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all ${
+                      presenceMode === mode.id
+                        ? 'bg-dark-700 ring-1 ring-primary-500/40 text-white'
+                        : 'bg-dark-800 text-gray-400 hover:bg-dark-700 hover:text-gray-300'
+                    }`}
+                  >
+                    <span className={`h-2.5 w-2.5 rounded-full ${mode.color}`} />
+                    <div className="text-left">
+                      <div className="font-medium">{mode.label}</div>
+                      <div className="text-[10px] text-gray-500">{mode.description}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Status Input */}

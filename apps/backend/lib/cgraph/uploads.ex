@@ -508,7 +508,7 @@ defmodule CGraph.Uploads do
         result
 
       {:error, reason} ->
-        Logger.error("Failed to open file for validation: #{inspect(reason)}")
+        Logger.error("failed_to_open_file_for_validation", reason: inspect(reason))
         {:error, :invalid_file_type}
     end
   end

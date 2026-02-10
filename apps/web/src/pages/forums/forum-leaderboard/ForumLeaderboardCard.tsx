@@ -7,6 +7,7 @@
 import { Link } from 'react-router-dom';
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -57,7 +58,7 @@ export function ForumLeaderboardCard({
             whileHover={isAuthenticated ? { scale: 1.1 } : {}}
             whileTap={isAuthenticated ? { scale: 0.9 } : {}}
             animate={forum.userVote === 1 ? { scale: [1, 1.3, 1], rotate: [0, -15, 0] } : {}}
-            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+            transition={springs.bouncy}
             className={`rounded p-1 transition-colors ${
               forum.userVote === 1 ? 'text-orange-500' : 'text-gray-500 hover:text-orange-400'
             } ${!isAuthenticated ? 'cursor-not-allowed opacity-50' : ''}`}
@@ -95,7 +96,7 @@ export function ForumLeaderboardCard({
             whileHover={isAuthenticated ? { scale: 1.1 } : {}}
             whileTap={isAuthenticated ? { scale: 0.9 } : {}}
             animate={forum.userVote === -1 ? { scale: [1, 1.3, 1], rotate: [0, 15, 0] } : {}}
-            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+            transition={springs.bouncy}
             className={`rounded p-1 transition-colors ${
               forum.userVote === -1 ? 'text-blue-500' : 'text-gray-500 hover:text-blue-400'
             } ${!isAuthenticated ? 'cursor-not-allowed opacity-50' : ''}`}
@@ -136,7 +137,7 @@ export function ForumLeaderboardCard({
             className={`h-10 w-10 rounded-full ${badge.bg} flex items-center justify-center`}
             style={{ boxShadow: badge.glow }}
             whileHover={{ scale: 1.1, rotate: 5 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            transition={springs.snappy}
           >
             {badge.emoji ? (
               <span className="text-xl">{badge.emoji}</span>

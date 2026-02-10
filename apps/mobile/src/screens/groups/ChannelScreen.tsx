@@ -161,6 +161,12 @@ export default function ChannelScreen({ navigation, route }: Props) {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.messagesList}
         onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
+        // Performance tuning for large channel message lists
+        windowSize={11}
+        maxToRenderPerBatch={15}
+        initialNumToRender={20}
+        updateCellsBatchingPeriod={50}
+        removeClippedSubviews={true}
       />
 
       <View

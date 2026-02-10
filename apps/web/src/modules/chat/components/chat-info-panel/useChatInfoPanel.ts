@@ -2,7 +2,7 @@
  * useChatInfoPanel hook - state and handlers for chat info panel
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createLogger } from '@/lib/logger';
 import { useFriendStore } from '@/modules/social/store';
@@ -37,6 +37,37 @@ export function useChatInfoPanel({
   const [showBlockConfirm, setShowBlockConfirm] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportReason, setReportReason] = useState('');
+  const [messageTTL, setMessageTTL] = useState<number | null>(null);
+
+  // Fetch conversation TTL on mount
+  useEffect(() => {
+    if (!conversationId) return;
+    api.get(`/api/v1/conversations/${conversationId}`)
+      .then((res) => {
+        const data = (res as { data?: { data?: { message_ttl?: number | null } } })?.data?.data;
+        if (data?.message_ttl !== undefined) {
+          setMessageTTL(data.message_ttl);
+        }
+      })
+      .catch(() => {
+        // Silently fail — TTL will default to null (off)
+      });
+  }, [conversationId]);
+
+  // Handle disappearing messages TTL update
+  const handleUpdateTTL = useCallback(async (ttl: number | null) => {
+    if (!conversationId) return;
+    const previousTTL = messageTTL;
+    setMessageTTL(ttl);
+
+    try {
+      await api.put(`/api/v1/conversations/${conversationId}/ttl`, { ttl });
+      HapticFeedback.light();
+    } catch (error) {
+      setMessageTTL(previousTTL);
+      logger.error('Failed to update message TTL:', error);
+    }
+  }, [conversationId, messageTTL]);
 
   // Handle mute toggle with API call
   const handleMuteToggle = useCallback(async () => {
@@ -141,6 +172,7 @@ export function useChatInfoPanel({
     setShowReportModal,
     reportReason,
     setReportReason,
+    messageTTL,
     // Handlers
     handleMuteToggle,
     handleBlock,
@@ -149,5 +181,6 @@ export function useChatInfoPanel({
     handleCustomizeChat,
     handleNavigateToUser,
     handleNavigateToForum,
+    handleUpdateTTL,
   };
 }

@@ -81,7 +81,7 @@ defmodule CGraphWeb.API.V1.GifController do
         json(conn, response)
 
       {:error, reason} ->
-        Logger.error("Failed to fetch GIFs: #{inspect(reason)}")
+        Logger.error("failed_to_fetch_gifs", reason: inspect(reason))
         json(conn, %{gifs: generate_sample_gifs(query), next: nil})
     end
   end
@@ -115,7 +115,7 @@ defmodule CGraphWeb.API.V1.GifController do
         json(conn, response)
 
       {:error, reason} ->
-        Logger.error("Failed to fetch trending GIFs: #{inspect(reason)}")
+        Logger.error("failed_to_fetch_trending_gifs", reason: inspect(reason))
         json(conn, %{gifs: generate_sample_gifs("trending"), next: nil})
     end
   end
@@ -144,7 +144,7 @@ defmodule CGraphWeb.API.V1.GifController do
           {:error, :api_error}
 
         {:error, reason} ->
-          Logger.error("Failed to fetch from Tenor: #{inspect(reason)}")
+          Logger.error("failed_to_fetch_from_tenor", reason: inspect(reason))
           {:error, reason}
       end
     else

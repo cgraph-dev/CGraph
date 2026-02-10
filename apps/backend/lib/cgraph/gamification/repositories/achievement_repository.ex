@@ -19,22 +19,10 @@ defmodule CGraph.Gamification.Repositories.AchievementRepository do
   def list_all do
     cache_key = "achievements:all"
 
-    case Cache.get(cache_key) do
-      {:ok, nil} ->
-        achievements =
-          from(a in Achievement, order_by: [asc: a.category, asc: a.tier])
-          |> Repo.all()
-
-        Cache.put(cache_key, achievements, @cache_ttl)
-        achievements
-
-      {:ok, cached} ->
-        cached
-
-      {:error, _} ->
-        from(a in Achievement, order_by: [asc: a.category, asc: a.tier])
-        |> Repo.all()
-    end
+    Cache.fetch(cache_key, fn ->
+      from(a in Achievement, order_by: [asc: a.category, asc: a.tier])
+      |> Repo.all()
+    end, ttl: @cache_ttl)
   end
 
   @doc """

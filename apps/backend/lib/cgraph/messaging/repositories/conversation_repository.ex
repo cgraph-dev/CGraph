@@ -19,24 +19,10 @@ defmodule CGraph.Messaging.Repositories.ConversationRepository do
   def get(id, preloads \\ []) do
     cache_key = "conversation:#{id}"
 
-    case Cache.get(cache_key) do
-      {:ok, nil} ->
-        conversation =
-          Conversation
-          |> Repo.get(id)
-          |> maybe_preload(preloads)
-
-        if conversation, do: Cache.put(cache_key, conversation, @cache_ttl)
-        conversation
-
-      {:ok, cached} ->
-        cached
-
-      {:error, _} ->
-        Conversation
-        |> Repo.get(id)
-        |> maybe_preload(preloads)
-    end
+    Cache.fetch(cache_key, fn ->
+      Conversation |> Repo.get(id)
+    end, ttl: @cache_ttl)
+    |> maybe_preload(preloads)
   end
 
   @doc """

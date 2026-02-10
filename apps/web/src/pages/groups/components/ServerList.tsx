@@ -9,6 +9,7 @@ import { PlusIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { ServerListProps } from './types';
 import { ServerIcon } from './ServerIcon';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function ServerList({ groups, activeGroupId }: ServerListProps) {
   return (
@@ -20,7 +21,7 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
       <motion.div
         initial={{ scale: 0, rotate: -180 }}
         animate={{ scale: 1, rotate: 0 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        transition={springs.bouncy}
       >
         <NavLink to="/messages" onClick={() => HapticFeedback.medium()} className="group relative">
           <motion.div
@@ -46,12 +47,7 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
           key={group.id}
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
-          transition={{
-            type: 'spring',
-            stiffness: 300,
-            damping: 20,
-            delay: 0.1 + index * 0.05,
-          }}
+          transition={{ ...springs.bouncy, delay: 0.1 }}
         >
           <ServerIcon group={group} isActive={group.id === activeGroupId} />
         </motion.div>

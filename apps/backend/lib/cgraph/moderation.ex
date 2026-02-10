@@ -243,7 +243,7 @@ defmodule CGraph.Moderation do
     end
   rescue
     e ->
-      Logger.error("Failed to quarantine content: #{inspect(e)}")
+      Logger.error("failed_to_quarantine_content", e: inspect(e))
   end
 
   # Generate structured incident report following NCMEC CyberTipline format
@@ -291,7 +291,7 @@ defmodule CGraph.Moderation do
     CGraph.Workers.CriticalAlertDispatcher.enqueue(staff_notification)
   rescue
     e ->
-      Logger.error("Failed to alert on-call staff: #{inspect(e)}")
+      Logger.error("failed_to_alert_on_call_staff", e: inspect(e))
   end
 
   # Immutable audit log entry for legal compliance
@@ -306,7 +306,7 @@ defmodule CGraph.Moderation do
     }
 
     # Log to structured audit system
-    Logger.info("AUDIT_CRITICAL_INCIDENT: #{Jason.encode!(audit_entry)}")
+    Logger.info("audit_critical_incident", jason_encode_audit_entry: inspect(Jason.encode!(audit_entry)))
   end
 
   @doc """
@@ -508,7 +508,7 @@ defmodule CGraph.Moderation do
         end
         update_report_status(report, :resolved)
       {:error, reason} ->
-        Logger.error("Failed to remove content: #{inspect(reason)}")
+        Logger.error("failed_to_remove_content", reason: inspect(reason))
         {:error, :removal_failed}
     end
   end
@@ -790,7 +790,7 @@ defmodule CGraph.Moderation do
 
   defp record_user_warning(user, warning_data) do
     # Store warning in user's moderation history for audit and escalation
-    Logger.info("USER_WARNING_ISSUED: user_id=#{user.id} level=#{warning_data.warning_level} category=#{warning_data.category}")
+    Logger.info("user_warning_issued_user_id_level_category", user_id: user.id, warning_data_warning_level: warning_data.warning_level, warning_data_category: warning_data.category)
     :ok
   end
 

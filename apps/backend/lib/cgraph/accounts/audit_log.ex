@@ -101,7 +101,7 @@ defmodule CGraph.Accounts.AuditLog do
     }
 
     # Always log to Logger for real-time monitoring
-    Logger.info("[AuditLog] #{action} by #{actor_id || "system"}: #{inspect(sanitize_for_log(metadata))}")
+    Logger.info("audit_log_entry", action: action, actor_id: actor_id || "system", metadata: inspect(sanitize_for_log(metadata)))
 
     # Persist to database
     case Repo.insert(changeset(%__MODULE__{}, log_entry_attrs)) do
@@ -109,7 +109,7 @@ defmodule CGraph.Accounts.AuditLog do
         {:ok, log_entry}
 
       {:error, changeset} ->
-        Logger.error("[AuditLog] Failed to persist audit log: #{inspect(changeset.errors)}")
+        Logger.error("auditlog_failed_to_persist_audit_log", changeset_errors: inspect(changeset.errors))
         # Return error but don't crash - audit logging shouldn't break the main flow
         {:error, changeset}
     end

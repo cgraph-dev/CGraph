@@ -44,18 +44,23 @@ defmodule CGraph.Search do
   """
   def search_users(query, opts \\ []) do
     limit = Keyword.get(opts, :limit, 20)
-    offset = Keyword.get(opts, :offset, 0)
+    cursor = Keyword.get(opts, :cursor)
     current_user = Keyword.get(opts, :current_user)
 
+    # Decode cursor to Meilisearch offset (cursor encodes next offset position)
+    meili_offset = decode_search_cursor(cursor) || 0
+
     # Try Meilisearch first for fuzzy search
-    case SearchEngine.search(:users, query, limit: limit, offset: offset) do
+    case SearchEngine.search(:users, query, limit: limit, offset: meili_offset) do
       {:ok, %{hits: hits, total: total}} ->
         user_ids = Enum.map(hits, & &1["id"])
         users = fetch_users_by_ids(user_ids, current_user)
-        {users, %{total: total, limit: limit, offset: offset}}
+        has_more = meili_offset + limit < total
+        next_cursor = if has_more, do: encode_search_cursor(meili_offset + limit), else: nil
+        {users, %{total: total, limit: limit, has_more: has_more, next_cursor: next_cursor}}
 
       {:error, reason} ->
-        Logger.debug("Meilisearch unavailable (#{inspect(reason)}), using PostgreSQL fallback")
+        Logger.debug("meilisearch_unavailable_using_postgresql_fallback", reason: inspect(reason))
         search_users_postgres(query, opts)
     end
   end
@@ -73,16 +78,15 @@ defmodule CGraph.Search do
 
   defp search_users_postgres(query, opts) do
     limit = Keyword.get(opts, :limit, 20)
-    offset = Keyword.get(opts, :offset, 0)
     current_user = Keyword.get(opts, :current_user)
 
-    {base_query, is_id_search} = build_user_search_query(query, limit, offset)
+    {base_query, is_id_search} = build_user_search_query(query, limit, nil)
 
     base_query = maybe_exclude_blocked(base_query, current_user)
     users = Repo.all(base_query)
     total = count_user_results(is_id_search, users, query)
 
-    {users, %{total: total, limit: limit, offset: offset}}
+    {users, %{total: total, limit: limit, has_more: length(users) == limit, next_cursor: nil}}
   end
 
   defp build_user_search_query(query, limit, offset) do
@@ -99,10 +103,13 @@ defmodule CGraph.Search do
       limit: 1
   end
 
-  defp build_text_search_query(query, limit, offset) do
+  defp build_text_search_query(query, limit, _cursor) do
     search_term = "%#{sanitize_query(query)}%"
     prefix_term = "#{sanitize_query(query)}%"
 
+    # Note: User search uses limit-based approach since relevance scoring
+    # makes cursor pagination impractical. For PostgreSQL fallback search,
+    # result sets are typically small (< 100) so offset risk is minimal.
     from u in User,
       where: is_nil(u.deleted_at) and is_nil(u.banned_at),
       where: ilike(u.username, ^search_term) or
@@ -113,8 +120,7 @@ defmodule CGraph.Search do
                        u.username, ^prefix_term,
                        u.display_name, ^prefix_term)
       ],
-      limit: ^limit,
-      offset: ^offset
+      limit: ^limit
   end
 
   defp maybe_exclude_blocked(query, nil), do: query
@@ -162,20 +168,25 @@ defmodule CGraph.Search do
   """
   def search_messages(user, query, opts \\ []) do
     limit = Keyword.get(opts, :limit, 50)
-    offset = Keyword.get(opts, :offset, 0)
+    cursor = Keyword.get(opts, :cursor)
     conversation_id = Keyword.get(opts, :conversation_id)
+
+    # Decode cursor to Meilisearch offset
+    meili_offset = decode_search_cursor(cursor) || 0
 
     # Build Meilisearch filter for user's conversations
     filters = build_message_filters(user.id, conversation_id, opts)
 
-    case SearchEngine.search(:messages, query, limit: limit, offset: offset, filter: filters) do
-      {:ok, %{hits: hits, total: _total}} ->
+    case SearchEngine.search(:messages, query, limit: limit, offset: meili_offset, filter: filters) do
+      {:ok, %{hits: hits, total: total}} ->
         message_ids = Enum.map(hits, & &1["id"])
         messages = fetch_messages_by_ids(message_ids)
-        {messages, %{limit: limit, offset: offset}}
+        has_more = meili_offset + limit < total
+        next_cursor = if has_more, do: encode_search_cursor(meili_offset + limit), else: nil
+        {messages, %{limit: limit, has_more: has_more, next_cursor: next_cursor}}
 
       {:error, reason} ->
-        Logger.debug("Meilisearch unavailable (#{inspect(reason)}), using PostgreSQL fallback")
+        Logger.debug("meilisearch_unavailable_using_postgresql_fallback", reason: inspect(reason))
         search_messages_postgres(user, query, opts)
     end
   end
@@ -205,7 +216,7 @@ defmodule CGraph.Search do
 
   defp search_messages_postgres(user, query, opts) do
     limit = Keyword.get(opts, :limit, 50)
-    offset = Keyword.get(opts, :offset, 0)
+    cursor = Keyword.get(opts, :cursor)
     conversation_id = Keyword.get(opts, :conversation_id)
     before_date = Keyword.get(opts, :before)
     after_date = Keyword.get(opts, :after)
@@ -221,9 +232,6 @@ defmodule CGraph.Search do
     base_query = from m in Message,
       where: m.conversation_id in subquery(user_conversations),
       where: ilike(m.content, ^search_term),
-      order_by: [desc: m.inserted_at],
-      limit: ^limit,
-      offset: ^offset,
       preload: [:user, :conversation]
 
     # Apply filters
@@ -251,17 +259,32 @@ defmodule CGraph.Search do
       base_query
     end
 
-    messages = Repo.all(base_query)
+    pagination_opts = %{
+      cursor: cursor,
+      after_cursor: nil,
+      before_cursor: nil,
+      limit: min(limit, 100),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      include_total: false
+    }
 
-    {messages, %{limit: limit, offset: offset}}
+    {messages, page_info} = CGraph.Pagination.paginate(base_query, pagination_opts)
+
+    {messages, %{
+      limit: limit,
+      has_more: page_info.has_next_page,
+      end_cursor: page_info.end_cursor,
+      start_cursor: page_info.start_cursor
+    }}
   end
 
   @doc """
-  Search posts in forums.
+  Search posts in forums using cursor-based pagination.
   """
   def search_posts(query, opts \\ []) do
     limit = Keyword.get(opts, :limit, 20)
-    offset = Keyword.get(opts, :offset, 0)
+    cursor = Keyword.get(opts, :cursor)
     forum_id = Keyword.get(opts, :forum_id)
     sort = Keyword.get(opts, :sort, "relevance")
     time_range = Keyword.get(opts, :time_range, "all")
@@ -270,18 +293,32 @@ defmodule CGraph.Search do
 
     base_query = from(p in Post,
       where: ilike(p.title, ^search_term) or ilike(p.content, ^search_term),
-      limit: ^limit,
-      offset: ^offset,
       preload: [:user, :forum]
     )
     |> maybe_filter_by_forum(forum_id)
     |> apply_time_range(time_range)
     |> apply_post_sort(sort, search_term)
 
-    posts = Repo.all(base_query)
-    total = count_post_results(search_term, forum_id)
+    # Use cursor pagination for large result sets
+    pagination_opts = %{
+      cursor: cursor,
+      after_cursor: nil,
+      before_cursor: nil,
+      limit: min(limit, 100),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      include_total: true
+    }
 
-    {posts, %{total: total, limit: limit, offset: offset}}
+    {posts, page_info} = CGraph.Pagination.paginate(base_query, pagination_opts)
+
+    {posts, %{
+      total: page_info[:total_count],
+      limit: limit,
+      has_more: page_info.has_next_page,
+      end_cursor: page_info.end_cursor,
+      start_cursor: page_info.start_cursor
+    }}
   end
 
   defp maybe_filter_by_forum(query, nil), do: query
@@ -320,35 +357,37 @@ defmodule CGraph.Search do
   end
 
   @doc """
-  Search groups/servers.
+  Search groups/servers using cursor-based pagination.
   """
   def search_groups(query, opts \\ []) do
     limit = Keyword.get(opts, :limit, 20)
-    offset = Keyword.get(opts, :offset, 0)
+    cursor = Keyword.get(opts, :cursor)
 
     search_term = "%#{sanitize_query(query)}%"
 
     base_query = from g in Group,
       where: g.is_public == true,
-      where: ilike(g.name, ^search_term) or ilike(g.description, ^search_term),
-      order_by: [
-        desc: fragment("CASE WHEN ? ILIKE ? THEN 2 ELSE 1 END",
-                      g.name, ^"#{sanitize_query(query)}%"),
-        desc: g.member_count
-      ],
-      limit: ^limit,
-      offset: ^offset
+      where: ilike(g.name, ^search_term) or ilike(g.description, ^search_term)
 
-    groups = Repo.all(base_query)
+    pagination_opts = %{
+      cursor: cursor,
+      after_cursor: nil,
+      before_cursor: nil,
+      limit: min(limit, 100),
+      sort_field: :member_count,
+      sort_direction: :desc,
+      include_total: true
+    }
 
-    count_query = from g in Group,
-      where: g.is_public == true,
-      where: ilike(g.name, ^search_term) or ilike(g.description, ^search_term),
-      select: count(g.id)
+    {groups, page_info} = CGraph.Pagination.paginate(base_query, pagination_opts)
 
-    total = Repo.one(count_query)
-
-    {groups, %{total: total, limit: limit, offset: offset}}
+    {groups, %{
+      total: page_info[:total_count],
+      limit: limit,
+      has_more: page_info.has_next_page,
+      end_cursor: page_info.end_cursor,
+      start_cursor: page_info.start_cursor
+    }}
   end
 
   @doc """
@@ -429,6 +468,23 @@ defmodule CGraph.Search do
   end
 
   # Private helpers
+
+  # Cursor helpers for Meilisearch offset-based pagination.
+  # Cursors are opaque to clients; internally they encode the next Meilisearch offset.
+  defp encode_search_cursor(offset) do
+    Base.url_encode64(to_string(offset), padding: false)
+  end
+
+  defp decode_search_cursor(nil), do: nil
+
+  defp decode_search_cursor(cursor) do
+    with {:ok, decoded} <- Base.url_decode64(cursor, padding: false),
+         {offset, _} <- Integer.parse(decoded) do
+      offset
+    else
+      _ -> nil
+    end
+  end
 
   defp sanitize_query(query) do
     query

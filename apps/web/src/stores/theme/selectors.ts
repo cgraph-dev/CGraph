@@ -11,7 +11,7 @@
  */
 
 import { COLORS, PROFILE_CARD_CONFIGS, THEME_PRESETS } from './presets';
-import { useThemeStore } from './themeStore';
+import { useThemeStore } from './store';
 
 // =============================================================================
 // INDIVIDUAL SELECTORS

@@ -96,12 +96,39 @@ export const useChatStore = create<ChatState>()(
             const newIdSet = new Set(existingIds);
             newMessages.forEach((m) => newIdSet.add(m.id));
 
+            // Merge messages: prepend if loading older, replace if initial fetch
+            let mergedMessages = before
+              ? [...newMessages, ...(state.messages[conversationId] || [])]
+              : newMessages;
+
+            // Enforce MAX_MESSAGES_PER_CONVERSATION to prevent unbounded memory growth.
+            // When scrolling up through history, prune from the END (newest).
+            // When loading fresh, prune from the START (oldest) — same as addMessage.
+            const MAX_MESSAGES = 500;
+            if (mergedMessages.length > MAX_MESSAGES) {
+              if (before) {
+                // User is scrolling up — keep oldest, prune newest (they'll re-fetch on scroll down)
+                const pruneCount = mergedMessages.length - MAX_MESSAGES;
+                const pruned = mergedMessages.slice(mergedMessages.length - pruneCount);
+                mergedMessages = mergedMessages.slice(0, MAX_MESSAGES);
+                for (const p of pruned) {
+                  newIdSet.delete(p.id);
+                }
+              } else {
+                // Initial load — keep newest, prune oldest
+                const pruneCount = mergedMessages.length - MAX_MESSAGES;
+                const pruned = mergedMessages.slice(0, pruneCount);
+                mergedMessages = mergedMessages.slice(pruneCount);
+                for (const p of pruned) {
+                  newIdSet.delete(p.id);
+                }
+              }
+            }
+
             return {
               messages: {
                 ...state.messages,
-                [conversationId]: before
-                  ? [...newMessages, ...(state.messages[conversationId] || [])]
-                  : newMessages,
+                [conversationId]: mergedMessages,
               },
               messageIdSets: {
                 ...state.messageIdSets,

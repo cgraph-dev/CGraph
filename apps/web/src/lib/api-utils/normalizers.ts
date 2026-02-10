@@ -176,6 +176,8 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
     nonce: metadata?.nonce ?? raw.nonce ?? null,
     senderIdentityKey:
       metadata?.sender_identity_key ?? raw.senderIdentityKey ?? raw.sender_identity_key ?? null,
+    // Ephemeral / disappearing message support
+    expiresAt: raw.expiresAt ?? raw.expires_at ?? null,
   };
 }
 
@@ -239,6 +241,7 @@ export function normalizeConversation(raw: Record<string, unknown>): Record<stri
     pinned: raw.pinned ?? false,
     createdAt: raw.createdAt ?? raw.created_at ?? raw.insertedAt ?? raw.inserted_at,
     updatedAt: raw.updatedAt ?? raw.updated_at,
+    messageTTL: raw.messageTTL ?? raw.message_ttl ?? null,
   };
 }
 

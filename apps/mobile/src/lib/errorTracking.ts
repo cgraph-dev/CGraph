@@ -348,8 +348,19 @@ export async function initErrorTracking(baseUrl: string): Promise<void> {
   apiBaseUrl = baseUrl;
   await loadQueue();
 
-  // Start queue processor
-  setInterval(processQueue, CONFIG.retryInterval);
+  // Start queue processor — adaptive: 60s active, 4 min backgrounded
+  // Store interval ID for cleanup; AppState-aware to reduce background work
+  const { AppState } = require('react-native');
+  let queueInterval: ReturnType<typeof setInterval> | null = null;
+
+  const startQueueProcessor = () => {
+    if (queueInterval) clearInterval(queueInterval);
+    const delay = AppState.currentState === 'active' ? CONFIG.retryInterval : CONFIG.retryInterval * 4;
+    queueInterval = setInterval(processQueue, delay);
+  };
+
+  startQueueProcessor();
+  AppState.addEventListener('change', startQueueProcessor);
 
   isInitialized = true;
 

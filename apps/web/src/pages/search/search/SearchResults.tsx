@@ -12,6 +12,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import type { SearchCategory } from '@/modules/search/store';
 import type { SearchState } from './useSearch';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   ResultSection,
   UserResult,
@@ -23,12 +24,7 @@ import {
 
 /* ─── animation helpers ─── */
 
-const staggerTransition = (index: number) => ({
-  type: 'spring' as const,
-  stiffness: 300,
-  damping: 20,
-  delay: index * 0.05,
-});
+const staggerTransition = (index: number) => (springs.bouncy);
 
 /* ─── sub-renders ─── */
 

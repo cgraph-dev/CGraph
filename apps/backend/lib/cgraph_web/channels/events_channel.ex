@@ -184,13 +184,18 @@ defmodule CGraphWeb.EventsChannel do
   def handle_in("get_leaderboard", params, socket) do
     event_id = Map.get(params, "event_id", socket.assigns[:current_event_id])
     limit = min(Map.get(params, "limit", 100), 100)
-    offset = Map.get(params, "offset", 0)
+    cursor = Map.get(params, "cursor")
     
     if event_id do
-      entries = get_event_leaderboard(event_id, limit, offset)
+      {entries, page_info} = get_event_leaderboard(event_id, limit, cursor)
       user_rank = get_user_rank(socket.assigns.current_user.id, event_id)
       
-      {:reply, {:ok, %{entries: entries, your_rank: user_rank}}, socket}
+      {:reply, {:ok, %{
+        entries: entries,
+        your_rank: user_rank,
+        has_more: page_info.has_next_page,
+        end_cursor: page_info.end_cursor
+      }}, socket}
     else
       {:reply, {:error, %{reason: "no_event_specified"}}, socket}
     end
@@ -303,13 +308,14 @@ defmodule CGraphWeb.EventsChannel do
     _ -> %{joined: false, event_points: 0, battle_pass_tier: 0}
   end
 
-  defp get_event_leaderboard(event_id, limit, offset \\ 0) do
-    case Gamification.get_event_leaderboard(event_id, limit, offset) do
-      entries when is_list(entries) -> entries
-      _ -> []
+  defp get_event_leaderboard(event_id, limit, cursor \\ nil) do
+    case Gamification.get_event_leaderboard(event_id, limit, cursor) do
+      {entries, page_info} when is_list(entries) -> {entries, page_info}
+      entries when is_list(entries) -> {entries, %{has_next_page: false, end_cursor: nil}}
+      _ -> {[], %{has_next_page: false, end_cursor: nil}}
     end
   rescue
-    _ -> []
+    _ -> {[], %{has_next_page: false, end_cursor: nil}}
   end
 
   defp get_user_rank(user_id, event_id) do

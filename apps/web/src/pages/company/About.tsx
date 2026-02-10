@@ -7,6 +7,7 @@
  */
 
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import { MarketingLayout } from '@/components/marketing';
 
 const values = [
@@ -243,7 +244,7 @@ export default function About() {
                       initial={{ scale: 0 }}
                       whileInView={{ scale: 1 }}
                       viewport={{ once: true }}
-                      transition={{ delay: index * 0.15 + 0.3, type: 'spring', stiffness: 300 }}
+                      transition={{ delay: index * 0.15 + 0.3, ...springs.bouncy }}
                     >
                       {milestone.completed ? (
                         <motion.svg

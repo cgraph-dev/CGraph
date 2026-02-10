@@ -153,7 +153,7 @@ defmodule CGraph.Accounts.Registration do
     # This would be handled by a background job
     # For now, just log it
     require Logger
-    Logger.info("Sending verification email to #{user.email} with token #{token}")
+    Logger.info("sending_verification_email_to_with_token", user_email: user.email, token: token)
     :ok
   end
 end

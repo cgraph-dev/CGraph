@@ -46,10 +46,10 @@ defmodule CGraph.CircuitBreaker do
 
     case :fuse.install(name, fuse_opts) do
       :ok ->
-        Logger.info("Circuit breaker installed: #{name}")
+        Logger.info("Circuit breaker installed", name: name)
         :ok
       error ->
-        Logger.error("Failed to install circuit breaker #{name}: #{inspect(error)}")
+        Logger.error("Failed to install circuit breaker", name: name, error: inspect(error))
         error
     end
   end
@@ -67,21 +67,21 @@ defmodule CGraph.CircuitBreaker do
         rescue
           error ->
             :fuse.melt(name)
-            Logger.warning("Circuit breaker #{name} recorded failure: #{inspect(error)}")
+            Logger.warning("Circuit breaker recorded failure", name: name, error: inspect(error))
             {:error, error}
         catch
           :exit, reason ->
             :fuse.melt(name)
-            Logger.warning("Circuit breaker #{name} recorded exit: #{inspect(reason)}")
+            Logger.warning("Circuit breaker recorded exit", name: name, reason: inspect(reason))
             {:error, reason}
         end
 
       :blown ->
-        Logger.debug("Circuit breaker #{name} is open, request rejected")
+        Logger.debug("Circuit breaker open, request rejected", name: name)
         {:error, :circuit_open}
 
       {:error, :not_found} ->
-        Logger.warning("Circuit breaker #{name} not found, executing without protection")
+        Logger.warning("Circuit breaker not found, executing without protection", name: name)
         {:ok, fun.()}
     end
   end
@@ -113,10 +113,10 @@ defmodule CGraph.CircuitBreaker do
   def reset(name) do
     case :fuse.reset(name) do
       :ok ->
-        Logger.info("Circuit breaker reset: #{name}")
+        Logger.info("Circuit breaker reset", name: name)
         :ok
       error ->
-        Logger.error("Failed to reset circuit breaker #{name}: #{inspect(error)}")
+        Logger.error("Failed to reset circuit breaker", name: name, error: inspect(error))
         error
     end
   end

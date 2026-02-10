@@ -251,7 +251,7 @@ defmodule CGraph.Cache.Unified do
       try do
         entries = data_fn.()
         put_many(namespace, entries)
-        Logger.info("Cache warmed: namespace=#{namespace} entries=#{length(entries)}")
+        Logger.info("cache_warmed_namespace_entries", namespace: namespace, entries_count: inspect(length(entries)))
       rescue
         e ->
           Logger.warning("Cache warming failed: namespace=#{namespace} error=#{inspect(e)}")

@@ -87,7 +87,15 @@ export function initErrorTracking(): void {
     });
   }
 
-  queueProcessorInterval = setInterval(processQueue, CONFIG.retryInterval);
+  // Adaptive queue processing — 60s active, 240s when tab hidden
+  const startQueueProcessor = () => {
+    if (queueProcessorInterval) clearInterval(queueProcessorInterval);
+    const delay = document.hidden ? CONFIG.retryInterval * 4 : CONFIG.retryInterval;
+    queueProcessorInterval = setInterval(processQueue, delay);
+  };
+
+  startQueueProcessor();
+  document.addEventListener('visibilitychange', startQueueProcessor);
   if (CONFIG.debug) console.info('[ErrorTracking] Initialized');
 }
 

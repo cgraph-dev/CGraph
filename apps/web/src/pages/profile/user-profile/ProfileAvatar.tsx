@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 import { AnimatedAvatar } from '@/shared/components/ui';
 import type { UserProfileData } from '@/types/profile.types';
+import { springs } from '@/lib/animation-presets/presets';
 
 interface ProfileAvatarProps {
   profile: UserProfileData;
@@ -30,7 +31,7 @@ export function ProfileAvatar({
     <motion.div
       className="group relative"
       whileHover={{ scale: 1.05 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+      transition={springs.snappy}
     >
       <AnimatedAvatar
         src={profile.avatarUrl || undefined}

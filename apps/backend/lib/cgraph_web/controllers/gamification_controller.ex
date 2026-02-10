@@ -180,47 +180,55 @@ defmodule CGraphWeb.GamificationController do
   ## Parameters
 
   - `limit` - Max entries to return (1-100, default: 100)
-  - `offset` - Offset for pagination (default: 0)
+  - `cursor` - Cursor for pagination
   """
   def leaderboard(conn, %{"category" => category} = params) do
     limit = parse_int(params["limit"], 100, min: 1, max: @max_leaderboard_limit)
-    offset = parse_int(params["offset"], 0, min: 0)
+    cursor = params["cursor"]
     user = conn.assigns.current_user
 
-    entries = Gamification.get_leaderboard(category, limit: limit, offset: offset)
+    {entries, meta} = Gamification.get_leaderboard(category, limit: limit, cursor: cursor)
     user_rank = Gamification.get_user_rank(user.id, category)
 
     conn
     |> put_status(:ok)
-    |> render(:leaderboard, entries: entries, category: category, user_rank: user_rank)
+    |> render(:leaderboard, entries: entries, category: category, user_rank: user_rank, meta: meta)
   end
 
   @doc """
   GET /api/v1/gamification/xp/history
-  Get XP transaction history.
+  Get XP transaction history using cursor-based pagination.
 
   ## Parameters
 
   - `limit` - Max entries to return (1-100, default: 50)
-  - `offset` - Offset for pagination (default: 0)
+  - `cursor` - Opaque cursor for pagination
   """
   def xp_history(conn, params) do
     user = conn.assigns.current_user
     query_limit = parse_int(params["limit"], 50, min: 1, max: 100)
-    query_offset = parse_int(params["offset"], 0, min: 0)
+    cursor = params["cursor"]
 
-    transactions =
+    base_query =
       from(t in CGraph.Gamification.XpTransaction,
-        where: t.user_id == ^user.id,
-        order_by: [desc: t.inserted_at],
-        limit: ^query_limit,
-        offset: ^query_offset
+        where: t.user_id == ^user.id
       )
-      |> Repo.all()
+
+    pagination_opts = CGraph.Pagination.parse_params(
+      %{"cursor" => cursor, "limit" => query_limit},
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 50
+    )
+
+    {transactions, page_info} = CGraph.Pagination.paginate(base_query, pagination_opts)
 
     conn
     |> put_status(:ok)
-    |> render(:xp_history, transactions: transactions)
+    |> render(:xp_history,
+      transactions: transactions,
+      page_info: page_info
+    )
   end
 
   @doc """

@@ -4,6 +4,7 @@
 
 import { memo } from 'react';
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import type { CardProps } from './types';
 import { MOCK_BADGES, getBadgeGlow } from './constants';
 import { AnimatedAvatar } from '../AnimatedAvatar';
@@ -89,7 +90,7 @@ export const GamingProfileCard = memo(function GamingProfileCard({
                 className="group relative aspect-square"
                 initial={{ opacity: 0, rotate: -180, scale: 0 }}
                 animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                transition={{ delay: i * 0.1, type: 'spring', stiffness: 200 }}
+                transition={{ delay: i * 0.1, ...springs.dramatic }}
                 whileHover={{ scale: 1.15, rotate: 10 }}
               >
                 <motion.div

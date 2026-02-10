@@ -15,6 +15,7 @@ import { NotificationItem } from './NotificationItem';
 import { EmptyState } from './EmptyState';
 import { LoadMoreButton } from './LoadMoreButton';
 import type { NotificationFilter } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export default function Notifications() {
   const navigate = useNavigate();
@@ -97,12 +98,7 @@ export default function Notifications() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{
-                    type: 'spring',
-                    stiffness: 300,
-                    damping: 20,
-                    delay: index * 0.05,
-                  }}
+                  transition={springs.bouncy}
                 >
                   <NotificationItem
                     notification={notification}

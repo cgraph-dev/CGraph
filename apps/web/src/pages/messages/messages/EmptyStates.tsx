@@ -7,6 +7,7 @@
 import { motion } from 'framer-motion';
 import { UserIcon, SparklesIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import type { EmptyStateProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 /**
  * Empty conversation list state
@@ -75,7 +76,7 @@ export function NoConversationSelected() {
         className="relative z-10 text-center"
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+        transition={springs.dramatic}
       >
         <div className="relative mb-6 inline-block">
           <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl border border-primary-500/30 bg-gradient-to-br from-primary-500/20 via-purple-500/20 to-pink-500/20 shadow-2xl backdrop-blur-sm">

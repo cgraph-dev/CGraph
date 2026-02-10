@@ -130,7 +130,7 @@ defmodule CGraph.Encryption do
     end
   rescue
     e ->
-      Logger.error("Encryption error: #{Exception.message(e)}")
+      Logger.error("encryption_error", e: inspect(Exception.message(e)))
       {:error, :encryption_failed}
   end
 

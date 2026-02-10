@@ -509,10 +509,10 @@ defmodule CGraph.Redis do
     # Start connection pool
     case start_pool(config) do
       {:ok, connections} ->
-        Logger.info("Redis pool started with #{length(connections)} connections")
+        Logger.info("redis_pool_started_with_connections", connections_count: inspect(length(connections)))
         {:ok, %{state | connections: connections}}
       {:error, reason} ->
-        Logger.error("Failed to start Redis pool: #{inspect(reason)}")
+        Logger.error("failed_to_start_redis_pool", reason: inspect(reason))
         {:ok, state}
     end
   end

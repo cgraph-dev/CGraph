@@ -525,7 +525,7 @@ defmodule CGraph.ErrorReporter.Adapters.Webhook do
     }
 
     # Would use HTTPoison or Finch here
-    Logger.debug("Would POST to #{url}: #{inspect(payload)}")
+    Logger.debug("would_post_to", url: url, payload: inspect(payload))
   end
 
   defp get_message(%{type: :exception} = event) do

@@ -220,7 +220,7 @@ export function AnimatedMessageWrapper({
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                transition={springs.snappy}
               >
                 <svg
                   className="h-6 w-6 text-primary-400"

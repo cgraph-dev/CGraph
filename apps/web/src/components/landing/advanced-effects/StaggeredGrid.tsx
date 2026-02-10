@@ -6,6 +6,7 @@
 import { motion, type Variants } from 'framer-motion';
 import { GRID_DEFAULT_COLUMNS, GRID_DEFAULT_STAGGER_DELAY } from './constants';
 import type { StaggeredGridProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function StaggeredGrid({
   children,
@@ -29,11 +30,7 @@ export function StaggeredGrid({
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: {
-        type: 'spring' as const,
-        stiffness: 200,
-        damping: 20,
-      },
+      transition: springs.dramatic,
     },
   };
 

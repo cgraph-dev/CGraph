@@ -7,6 +7,7 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import type { FormatSelectorProps, FeedFormat } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 const FORMATS: FeedFormat[] = ['rss', 'atom'];
 
@@ -31,7 +32,7 @@ export const FormatSelector = memo(function FormatSelector({
               layoutId="format-selector"
               className="absolute inset-0 rounded-md bg-white shadow-sm dark:bg-gray-700"
               initial={false}
-              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+              transition={springs.snappy}
             />
           )}
           <span className="relative z-10">{format.toUpperCase()}</span>

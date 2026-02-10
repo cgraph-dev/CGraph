@@ -35,8 +35,26 @@ export type {
 
 import { SocketManager } from './SocketManager';
 
-export const socketManager = new SocketManager();
+let _instance: SocketManager | null = null;
+
+/** Lazy singleton — avoids constructing until first access */
+function getSocketManager(): SocketManager {
+  if (!_instance) {
+    _instance = new SocketManager();
+  }
+  return _instance;
+}
+
+/**
+ * Shared socket manager instance. Lazily created on first property access
+ * via Proxy to avoid unnecessary construction at import time.
+ */
+export const socketManager: SocketManager = new Proxy({} as SocketManager, {
+  get(_target, prop, receiver) {
+    return Reflect.get(getSocketManager(), prop, receiver);
+  },
+});
 
 export function useSocket() {
-  return socketManager;
+  return getSocketManager();
 }

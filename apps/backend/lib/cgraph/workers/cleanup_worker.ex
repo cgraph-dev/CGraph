@@ -23,7 +23,7 @@ defmodule CGraph.Workers.CleanupWorker do
       :ok
     else
       {:error, reason} ->
-        Logger.error("[CleanupWorker] Cleanup failed: #{inspect(reason)}")
+        Logger.error("cleanupworker_cleanup_failed", reason: inspect(reason))
         {:error, reason}
     end
   end
@@ -38,7 +38,7 @@ defmodule CGraph.Workers.CleanupWorker do
           where: t.expires_at < ^DateTime.utc_now()
       )
 
-    Logger.info("[CleanupWorker] Cleaned up #{elem(expired_count, 0)} expired tokens")
+    Logger.info("cleanupworker_cleaned_up_expired_tokens", elem_expired_count_0: inspect(elem(expired_count, 0)))
     :ok
   rescue
     e ->
@@ -79,7 +79,7 @@ defmodule CGraph.Workers.CleanupWorker do
         end
       end)
 
-    Logger.info("[CleanupWorker] Cleaned up #{deleted_count} orphaned attachments")
+    Logger.info("cleanupworker_cleaned_up_orphaned_attachments", deleted_count: deleted_count)
     :ok
   rescue
     e ->
@@ -163,7 +163,7 @@ defmodule CGraph.Workers.CleanupWorker do
           where: n.inserted_at < ^cutoff and n.read == true
       )
 
-    Logger.info("[CleanupWorker] Cleaned up #{elem(deleted_count, 0)} old read notifications")
+    Logger.info("cleanupworker_cleaned_up_old_read_notifications", elem_deleted_count_0: inspect(elem(deleted_count, 0)))
     :ok
   rescue
     e ->

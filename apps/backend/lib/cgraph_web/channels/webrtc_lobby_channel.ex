@@ -61,7 +61,7 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
   @impl true
   def join("webrtc:lobby", _params, socket) do
     user_id = socket.assigns.user_id
-    Logger.info("User #{user_id} joined WebRTC lobby")
+    Logger.info("webrtc_lobby_joined", user_id: user_id)
     {:ok, socket}
   end
 
@@ -99,15 +99,15 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
       # Create the room
       case WebRTC.create_room(user_id, call_type) do
         {:ok, room} ->
-          Logger.info("WebRTC room #{room.id} created by #{user_id} for #{inspect(target_ids)}")
+          Logger.info("webrtc_room_created", room_id: room.id, creator: user_id, targets: inspect(target_ids))
 
           # Ring the target users
           case WebRTC.ring(room.id, target_ids) do
             :ok ->
-              Logger.info("Ringing users: #{inspect(target_ids)}")
+              Logger.info("webrtc_ringing_users", targets: inspect(target_ids))
 
             {:error, reason} ->
-              Logger.warn("Failed to ring users: #{inspect(reason)}")
+              Logger.warn("webrtc_ring_failed", reason: inspect(reason))
           end
 
           # Return room info
@@ -122,7 +122,7 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
           {:reply, {:ok, response}, socket}
 
         {:error, reason} ->
-          Logger.error("Failed to create WebRTC room: #{inspect(reason)}")
+          Logger.error("webrtc_room_creation_failed", reason: inspect(reason))
           {:reply, {:error, %{reason: reason}}, socket}
       end
     end
@@ -131,7 +131,7 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
   # Catch-all for unknown events
   @impl true
   def handle_in(event, _params, socket) do
-    Logger.warning("WebRTCLobbyChannel received unknown event: #{event}")
+    Logger.warning("webrtc_lobby_unknown_event", event: event)
     {:reply, {:error, %{reason: "unknown_event"}}, socket}
   end
 end

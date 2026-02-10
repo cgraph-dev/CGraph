@@ -12,6 +12,7 @@ import { formatTimeAgo } from '@/lib/utils';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { getConversationName, getConversationAvatar, getConversationAvatarBorderId } from './utils';
 import type { ConversationItemProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function ConversationItem({
   conversation,
@@ -57,7 +58,7 @@ export function ConversationItem({
       <motion.div
         className="relative z-10 flex-shrink-0"
         whileHover={{ scale: 1.08 }}
-        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+        transition={springs.snappy}
       >
         <div
           className={`h-12 w-12 overflow-hidden rounded-full p-0.5 transition-all duration-200 ${
@@ -129,8 +130,19 @@ export function ConversationItem({
             {conversation.unreadCount > 0 && (
               <motion.span
                 initial={{ scale: 0, rotate: -180 }}
-                animate={{ scale: 1, rotate: 0 }}
+                animate={{
+                  scale: [1, 1.15, 1],
+                  rotate: 0,
+                }}
                 exit={{ scale: 0, rotate: 180 }}
+                transition={{
+                  scale: {
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  },
+                  rotate: springs.wobbly,
+                }}
                 className="flex h-5 min-w-[20px] flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-primary-600 to-purple-600 px-1.5 text-xs font-bold text-white shadow-lg"
                 style={{
                   boxShadow: '0 0 15px rgba(16, 185, 129, 0.5)',

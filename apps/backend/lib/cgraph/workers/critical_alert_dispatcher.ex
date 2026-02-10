@@ -50,7 +50,7 @@ defmodule CGraph.Workers.CriticalAlertDispatcher do
       :ok
     else
       {:error, reason} ->
-        Logger.error("Critical alert dispatch failed: #{inspect(reason)}")
+        Logger.error("critical_alert_dispatch_failed", reason: inspect(reason))
         {:error, reason}
     end
   end

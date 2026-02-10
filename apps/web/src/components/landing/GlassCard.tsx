@@ -14,6 +14,7 @@
 import { forwardRef, type ReactNode } from 'react';
 import { motion, type HTMLMotionProps } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { springs } from '@/lib/animation-presets/presets';
 
 // ============================================================================
 // TYPES
@@ -68,11 +69,7 @@ const cardVariants = {
     y: -8,
     rotateX: 2,
     rotateY: 2,
-    transition: {
-      type: 'spring' as const,
-      stiffness: 400,
-      damping: 17,
-    },
+    transition: springs.bouncy,
   },
 };
 

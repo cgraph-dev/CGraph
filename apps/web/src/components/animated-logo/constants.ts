@@ -5,6 +5,7 @@
 
 import type { Variants } from 'framer-motion';
 import type { ColorDefinition, SizeDimensions } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 /**
  * Size presets for different use cases
@@ -68,12 +69,7 @@ export const NODE_APPEAR_VARIANTS: Variants = {
   visible: (delay: number) => ({
     scale: 1,
     opacity: 1,
-    transition: {
-      type: 'spring',
-      stiffness: 400,
-      damping: 15,
-      delay,
-    },
+    transition: springs.bouncy,
   }),
 };
 

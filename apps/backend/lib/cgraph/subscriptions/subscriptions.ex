@@ -79,11 +79,11 @@ defmodule CGraph.Subscriptions do
 
     case Stripe.Checkout.Session.create(params) do
       {:ok, session} ->
-        Logger.info("Created checkout session #{session.id} for user #{user.id}")
+        Logger.info("created_checkout_session_for_user", session_id: session.id, user_id: user.id)
         {:ok, session.url}
 
       {:error, %Stripe.Error{message: message}} ->
-        Logger.error("Failed to create checkout session: #{message}")
+        Logger.error("failed_to_create_checkout_session", message: message)
         {:error, message}
     end
   end
@@ -101,11 +101,11 @@ defmodule CGraph.Subscriptions do
       return_url: return_url
     }) do
       {:ok, session} ->
-        Logger.info("Created portal session for user #{user.id}")
+        Logger.info("created_portal_session_for_user", user_id: user.id)
         {:ok, session.url}
 
       {:error, %Stripe.Error{message: message}} ->
-        Logger.error("Failed to create portal session: #{message}")
+        Logger.error("failed_to_create_portal_session", message: message)
         {:error, message}
     end
   end
@@ -198,7 +198,7 @@ defmodule CGraph.Subscriptions do
   Records a successful payment.
   """
   def record_payment(%User{} = user, params) do
-    Logger.info("Recording payment for user #{user.id}: #{params.amount} #{params.currency}")
+    Logger.info("recording_payment_for_user", user_id: user.id, params_amount: params.amount, params_currency: params.currency)
     
     # Could store in payment_history table if needed
     # For now, just update the subscription period

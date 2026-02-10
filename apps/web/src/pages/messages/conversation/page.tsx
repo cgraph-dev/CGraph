@@ -24,6 +24,8 @@ import {
   ReplyPreview,
   AmbientBackground,
 } from '@/modules/chat/components';
+import { ThreadPanel } from '@/modules/chat/components/ThreadPanel';
+import { useThreadStore } from '@/modules/chat/store/threadStore';
 
 import { themeEngine } from '@/lib/ai/ThemeEngine';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -42,6 +44,7 @@ export default function Conversation() {
 
   const ctx = useConversationPage();
   const chatEffect = useChatEffect();
+  const activeThread = useThreadStore((s) => s.activeThread);
 
   // ── Loading state ────────────────────────────────────────────────────
   if (!ctx.conversation) {
@@ -236,6 +239,25 @@ export default function Conversation() {
         onCloseVoice={() => ctx.callModals.closeVoiceCallModal()}
         onCloseVideo={() => ctx.callModals.closeVideoCallModal()}
       />
+
+      {/* Thread side panel */}
+      <AnimatePresence>
+        {activeThread && (
+          <ThreadPanel
+            isOpen={!!activeThread}
+            onClose={useThreadStore.getState().closeThread}
+            parentMessage={activeThread ? {
+              id: activeThread.id,
+              content: activeThread.content,
+              sender_id: activeThread.senderId,
+              sender_name: activeThread.sender?.displayName || activeThread.sender?.username || 'User',
+              sender_avatar: activeThread.sender?.avatarUrl || undefined,
+              inserted_at: activeThread.createdAt,
+            } : null}
+            conversationId={ctx.conversationId || ''}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

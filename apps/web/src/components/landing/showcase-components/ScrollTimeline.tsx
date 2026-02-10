@@ -6,6 +6,7 @@
 import { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import type { TimelineItemProps, ScrollTimelineProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 function TimelineItem({ title, description, icon, index }: TimelineItemProps) {
   const ref = useRef<HTMLDivElement>(null);
@@ -25,7 +26,7 @@ function TimelineItem({ title, description, icon, index }: TimelineItemProps) {
           className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/20 text-2xl ring-2 ring-emerald-500"
           initial={{ scale: 0 }}
           animate={isInView ? { scale: 1 } : {}}
-          transition={{ type: 'spring', stiffness: 300, delay: 0.3 }}
+          transition={{ ...springs.bouncy, delay: 0.3 }}
         >
           {icon}
         </motion.div>

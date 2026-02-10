@@ -4,6 +4,7 @@ import { HashtagIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { channelTypeIcons, channelTypeColors } from './constants';
 import type { ChannelItemProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function ChannelItem({ channel, isActive }: ChannelItemProps) {
   const { groupId } = useParams();
@@ -31,7 +32,7 @@ export function ChannelItem({ channel, isActive }: ChannelItemProps) {
             <motion.div
               layoutId="activeChannelIndicator"
               className="absolute inset-0 rounded-lg bg-primary-600/20"
-              transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+              transition={springs.snappy}
             />
           )}
 
@@ -74,7 +75,7 @@ export function ChannelItem({ channel, isActive }: ChannelItemProps) {
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 20 }}
+              transition={springs.superBouncy}
               className="relative flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5"
             >
               <motion.div

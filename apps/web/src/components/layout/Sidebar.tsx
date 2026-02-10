@@ -13,6 +13,7 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -29,6 +30,7 @@ import { getAvatarBorderId } from '@/lib/utils';
 import { useAuthStore } from '@/modules/auth/store';
 import { useGroupStore } from '@/modules/groups/store';
 import { usePremiumStore } from '@/modules/premium/store';
+import { CustomStatusModal } from '@/modules/social/components/CustomStatusModal';
 
 export interface SidebarProps {
   variant?: 'default' | 'compact' | 'floating';
@@ -63,6 +65,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
+  const [showStatusModal, setShowStatusModal] = useState(false);
 
   const toggleCollapsed = useCallback(() => {
     HapticFeedback.light();
@@ -105,7 +108,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       >
         <motion.div
           animate={{ width: isCollapsed ? 64 : 256 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 28, mass: 0.8 }}
+          transition={{ ...springs.stiff, mass: 0.8 }}
           className="h-full overflow-hidden"
         >
         <GlassCard
@@ -225,7 +228,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         </span>
                         {isSubscribed && <SparklesIcon className="h-4 w-4 text-amber-400" />}
                       </div>
-                      <span className="text-xs text-white/40">Online</span>
+                      <span
+                        className="cursor-pointer text-xs text-white/40 hover:text-white/60 transition-colors"
+                        onClick={(e) => { e.stopPropagation(); setShowStatusModal(true); }}
+                        title="Set custom status"
+                      >
+                        Online
+                      </span>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -240,6 +249,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </div>
           )}
+
+          <CustomStatusModal isOpen={showStatusModal} onClose={() => setShowStatusModal(false)} />
         </GlassCard>
         </motion.div>
       </motion.div>
@@ -250,7 +261,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <motion.aside
       animate={{ width: isCollapsed ? 64 : 256 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 28, mass: 0.8 }}
+      transition={{ ...springs.stiff, mass: 0.8 }}
       className={`relative flex flex-col border-r border-white/5 bg-dark-900 ${variant === 'compact' ? 'py-2' : 'py-4'} ${className} `}
     >
       {/* Toggle button */}
@@ -268,9 +279,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Groups list */}
       {showGroups && (
         <div className="flex-1 space-y-1 overflow-y-auto px-2">
-          {groups.map((group) => (
+          {groups.map((group, index) => (
             <motion.button
               key={group.id}
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={springs.snappy}
               whileHover={{ x: 2 }}
               onClick={() => handleGroupClick(group.id)}
               className={`flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-white/5`}

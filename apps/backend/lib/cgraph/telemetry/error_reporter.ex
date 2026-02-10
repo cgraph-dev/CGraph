@@ -395,7 +395,7 @@ defmodule CGraph.Telemetry.ErrorReporter do
         []
       ) do
         {:ok, _} -> :ok
-        {:error, reason} -> Logger.error("PagerDuty alert failed: #{inspect(reason)}")
+        {:error, reason} -> Logger.error("pagerduty_alert_failed", reason: inspect(reason))
       end
     end)
   end
@@ -409,7 +409,7 @@ defmodule CGraph.Telemetry.ErrorReporter do
         []
       ) do
         {:ok, _} -> :ok
-        {:error, reason} -> Logger.error("Webhook failed: #{inspect(reason)}")
+        {:error, reason} -> Logger.error("webhook_failed", reason: inspect(reason))
       end
     end)
   end
@@ -425,7 +425,7 @@ defmodule CGraph.Telemetry.ErrorReporter do
 
       for {fingerprint, data} <- errors do
         # Store in database (would use Ecto here)
-        Logger.debug("Flushing error aggregate: #{fingerprint}, count: #{data.count}")
+        Logger.debug("flushing_error_aggregate_count", fingerprint: fingerprint, data_count: data.count)
       end
 
       # Clear old entries (keep last hour)

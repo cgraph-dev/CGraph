@@ -7,10 +7,11 @@
  * @module pages/messages/conversation/useConversationPage
  */
 
-import { useState, useRef, useMemo, useCallback } from 'react';
+import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useChatStore, Message } from '@/modules/chat/store';
 import { useAuthStore } from '@/modules/auth/store';
+import { useThreadStore } from '@/modules/chat/store/threadStore';
 
 import {
   useConversationParticipant,
@@ -107,6 +108,14 @@ export function useConversationPage() {
     () => groupMessagesByDate(conversationMessages),
     [conversationMessages]
   );
+
+  // Fetch thread reply counts when messages change
+  const fetchReplyCounts = useThreadStore((s) => s.fetchReplyCounts);
+  useEffect(() => {
+    if (!conversationId || conversationMessages.length === 0) return;
+    const messageIds = conversationMessages.map((m) => m.id);
+    fetchReplyCounts(conversationId, messageIds);
+  }, [conversationId, conversationMessages.length, fetchReplyCounts]);
 
   // ── Handler factories ────────────────────────────────────────────────
   const handlerContext = {

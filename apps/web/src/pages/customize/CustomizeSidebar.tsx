@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { categories, type CategoryId } from '@/pages/customize/customizeCategories';
+import { springs } from '@/lib/animation-presets/presets';
 
 // =============================================================================
 // LOADING SKELETON
@@ -91,7 +92,7 @@ export const Sidebar = memo(function Sidebar({ activeCategory, onCategoryChange 
                     layoutId="activeCategory"
                     className="absolute inset-0 rounded-xl border-2 border-white/30"
                     initial={false}
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    transition={springs.stiff}
                   />
                 )}
               </motion.button>

@@ -11,6 +11,7 @@ import { XMarkIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 import type { ChannelMessage } from '@/modules/groups/store';
+import { springs } from '@/lib/animation-presets/presets';
 
 const logger = createLogger('PinnedMessagesPanel');
 
@@ -84,7 +85,7 @@ export function PinnedMessagesPanel({
       initial={{ width: 0, opacity: 0 }}
       animate={{ width: 320, opacity: 1 }}
       exit={{ width: 0, opacity: 0 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 28, mass: 0.8 }}
+      transition={{ ...springs.stiff, mass: 0.8 }}
       className="flex flex-col overflow-hidden border-l border-dark-700 bg-dark-800"
     >
       {/* Header */}
@@ -127,12 +128,7 @@ export function PinnedMessagesPanel({
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              transition={{
-                type: 'spring' as const,
-                stiffness: 300,
-                damping: 25,
-                delay: index * 0.04,
-              }}
+              transition={springs.stiff}
               className="group border-b border-dark-700 px-4 py-3 hover:bg-dark-750"
             >
               {pin.message ? (

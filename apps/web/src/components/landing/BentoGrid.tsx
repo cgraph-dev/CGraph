@@ -13,6 +13,7 @@
 
 import { forwardRef, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import { cn } from '@/lib/utils';
 
 // ============================================================================
@@ -63,11 +64,7 @@ const itemVariants = {
     opacity: 1,
     y: 0,
     scale: 1,
-    transition: {
-      type: 'spring' as const,
-      stiffness: 100,
-      damping: 12,
-    },
+    transition: springs.gentle,
   },
 };
 
@@ -118,7 +115,7 @@ export const BentoItem = forwardRef<HTMLDivElement, BentoItemProps>(function Ben
       variants={itemVariants}
       whileHover={{
         scale: 1.02,
-        transition: { type: 'spring' as const, stiffness: 400, damping: 17 },
+        transition: springs.snappy,
       }}
     >
       {children}

@@ -2,6 +2,7 @@ import { memo, useRef } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { prefersReducedMotion } from './constants';
 import type { TiltCardProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 /**
  * TiltCard Component
@@ -49,7 +50,7 @@ export const TiltCard = memo(function TiltCard({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       whileHover={{ scale: prefersReducedMotion() ? 1 : 1.02 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      transition={springs.bouncy}
     >
       {children}
     </motion.div>

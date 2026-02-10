@@ -109,13 +109,13 @@ defmodule CGraph.Gamification.Events do
   """
   def create_event(attrs, opts \\ []) do
     created_by = Keyword.get(opts, :created_by)
-    Logger.info("[Events] Creating event: #{inspect(attrs)}, by: #{inspect(created_by)}")
+    Logger.info("events_creating_event_by", attrs: inspect(attrs), created_by: inspect(created_by))
     
     changeset = %SeasonalEvent{} |> SeasonalEvent.changeset(attrs)
     
     case Repo.insert(changeset) do
       {:ok, event} ->
-        Logger.info("[Events] Created event #{event.id}: #{event.name}")
+        Logger.info("events_created_event", event_id: event.id, event_name: event.name)
         {:ok, event}
       {:error, changeset} ->
         Logger.warning("[Events] Failed to create event: #{inspect(changeset.errors)}")
@@ -131,7 +131,7 @@ defmodule CGraph.Gamification.Events do
     
     case Repo.update(changeset) do
       {:ok, updated} ->
-        Logger.info("[Events] Updated event #{updated.id}")
+        Logger.info("events_updated_event", updated_id: updated.id)
         {:ok, updated}
       {:error, changeset} ->
         {:error, changeset}
@@ -472,14 +472,16 @@ defmodule CGraph.Gamification.Events do
   """
   def get_leaderboard(event_id, opts \\ []) do
     limit = min(Keyword.get(opts, :limit, 50), 100)
-    offset = Keyword.get(opts, :offset, 0)
+    cursor = Keyword.get(opts, :cursor)
+    
+    cursor_data = decode_event_cursor(cursor)
+    rank_start = if cursor_data, do: cursor_data.rank, else: 1
     
     query = from p in UserEventProgress,
       join: u in User, on: u.id == p.user_id,
       where: p.seasonal_event_id == ^event_id,
-      order_by: [desc: p.leaderboard_points],
-      limit: ^limit,
-      offset: ^offset,
+      order_by: [desc: p.leaderboard_points, asc: p.inserted_at],
+      limit: ^(limit + 1),
       select: %{
         user_id: u.id,
         username: u.username,
@@ -488,16 +490,71 @@ defmodule CGraph.Gamification.Events do
         points: p.leaderboard_points,
         event_points: p.event_points,
         battle_pass_tier: p.battle_pass_tier,
-        has_battle_pass: p.has_battle_pass
+        has_battle_pass: p.has_battle_pass,
+        inserted_at: p.inserted_at
       }
     
-    entries = Repo.all(query)
+    query = if cursor_data do
+      cursor_dt = parse_event_cursor_datetime(cursor_data.inserted_at)
+      from [p, u] in query,
+        where: p.leaderboard_points < ^cursor_data.points or
+               (p.leaderboard_points == ^cursor_data.points and p.inserted_at > ^cursor_dt)
+    else
+      query
+    end
     
-    entries_with_rank = entries
-    |> Enum.with_index(offset + 1)
+    results = Repo.all(query)
+    has_more = length(results) > limit
+    items = Enum.take(results, limit)
+    
+    entries_with_rank = items
+    |> Enum.with_index(rank_start)
     |> Enum.map(fn {entry, rank} -> Map.put(entry, :rank, rank) end)
     
-    {:ok, entries_with_rank}
+    next_cursor = if has_more && items != [] do
+      last = List.last(items)
+      encode_event_cursor(rank_start + length(items), last.points, last.inserted_at)
+    else
+      nil
+    end
+    
+    {:ok, {entries_with_rank, %{has_more: has_more, next_cursor: next_cursor, limit: limit}}}
+  end
+
+  defp encode_event_cursor(rank, points, %DateTime{} = dt) do
+    "#{rank}|#{points}|#{DateTime.to_iso8601(dt)}" |> Base.url_encode64(padding: false)
+  end
+
+  defp encode_event_cursor(rank, points, %NaiveDateTime{} = ndt) do
+    "#{rank}|#{points}|#{NaiveDateTime.to_iso8601(ndt)}" |> Base.url_encode64(padding: false)
+  end
+
+  defp encode_event_cursor(rank, points, ts) do
+    "#{rank}|#{points}|#{ts}" |> Base.url_encode64(padding: false)
+  end
+
+  defp decode_event_cursor(nil), do: nil
+
+  defp decode_event_cursor(cursor) do
+    with {:ok, decoded} <- Base.url_decode64(cursor, padding: false),
+         [rank_str, points_str, ts] <- String.split(decoded, "|", parts: 3),
+         {rank, _} <- Integer.parse(rank_str),
+         {points, _} <- Integer.parse(points_str) do
+      %{rank: rank, points: points, inserted_at: ts}
+    else
+      _ -> nil
+    end
+  end
+
+  defp parse_event_cursor_datetime(ts_string) do
+    case DateTime.from_iso8601(ts_string) do
+      {:ok, dt, _} -> dt
+      _ ->
+        case NaiveDateTime.from_iso8601(ts_string) do
+          {:ok, ndt} -> ndt
+          _ -> ~N[2000-01-01 00:00:00]
+        end
+    end
   end
 
   @doc """

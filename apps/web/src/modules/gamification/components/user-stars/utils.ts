@@ -6,6 +6,7 @@
 
 import type { UserStarsTier } from './types';
 import { USER_TIERS } from './constants';
+import { springs } from '@/lib/animation-presets/presets';
 
 /**
  * Get the tier for a given post count
@@ -69,15 +70,13 @@ export const starVariants = {
     rotate: 0,
     transition: {
       delay: i * 0.1,
-      type: 'spring' as const,
-      stiffness: 300,
-      damping: 20,
+      ...springs.default,
     },
   }),
   hover: {
     scale: 1.2,
     rotate: 15,
-    transition: { type: 'spring' as const, stiffness: 400 },
+    transition: springs.snappy,
   },
 };
 

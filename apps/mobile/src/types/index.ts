@@ -349,6 +349,7 @@ export type MessagesStackParamList = {
   ConversationList: undefined;
   Conversation: { conversationId: string };
   NewConversation: undefined;
+  SavedMessages: undefined;
 };
 
 export type NotificationsStackParamList = {

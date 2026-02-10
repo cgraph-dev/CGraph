@@ -538,7 +538,7 @@ defmodule CGraph.RateLimiter do
   @impl true
   def handle_call({:whitelist, identifier}, _from, state) do
     :ets.insert(@ets_table, {{:whitelist, identifier}, true})
-    Logger.info("Whitelisted rate limit identifier: #{identifier}")
+    Logger.info("whitelisted_rate_limit_identifier", identifier: identifier)
     {:reply, :ok, state}
   end
 

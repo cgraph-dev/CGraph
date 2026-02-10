@@ -6,6 +6,7 @@
  */
 
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 
 interface AnimatedToggleProps {
   label: string;
@@ -83,7 +84,7 @@ export default function AnimatedToggle({
             scale: 1,
           }}
           whileTap={{ scale: 0.9 }}
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+          transition={springs.snappy}
         >
           {/* Checkmark or X indicator */}
           <motion.div
@@ -172,7 +173,7 @@ export function CompactToggle({
       <motion.div
         className="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow"
         animate={{ x: checked ? 18 : 2 }}
-        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+        transition={springs.snappy}
       />
     </button>
   );

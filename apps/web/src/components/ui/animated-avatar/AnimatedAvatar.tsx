@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { AnimatedAvatarProps } from './types';
 import { SIZE_CONFIG, STATUS_COLORS } from './constants';
 import { useAvatarStyle } from './store';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   getShapeStyles,
   getBorderGradient,
@@ -170,7 +171,7 @@ export default function AnimatedAvatar({
             }}
             exit={{ scale: 0 }}
             transition={{
-              scale: { type: 'spring', stiffness: 500, damping: 20 },
+              scale: springs.superBouncy,
               boxShadow: statusType === 'online'
                 ? { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
                 : { duration: 0.2 },

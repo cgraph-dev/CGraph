@@ -138,3 +138,76 @@ export function CommentSkeleton({ depth = 0 }: { depth?: number }) {
     </div>
   );
 }
+
+// Message bubble skeleton — mimics chat message layout
+export function MessageSkeleton({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className="flex gap-3 px-4 py-2 animate-pulse">
+      {!compact && <div className="h-10 w-10 shrink-0 bg-dark-700 rounded-full" />}
+      <div className="flex-1 space-y-1.5">
+        {!compact && (
+          <div className="flex items-center gap-2">
+            <div className="h-4 w-24 bg-dark-700 rounded" />
+            <div className="h-3 w-16 bg-dark-600 rounded" />
+          </div>
+        )}
+        <div className="space-y-1.5">
+          <div className="h-4 w-full max-w-[320px] bg-dark-700 rounded" />
+          <div className="h-4 w-3/4 max-w-[240px] bg-dark-700 rounded" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Multiple message skeletons for chat loading state
+export function MessageListSkeleton({ count = 6 }: { count?: number }) {
+  return (
+    <div className="flex flex-col gap-1">
+      {Array.from({ length: count }).map((_, i) => (
+        <MessageSkeleton key={i} compact={i > 0 && i % 3 !== 0} />
+      ))}
+    </div>
+  );
+}
+
+// User card skeleton — for friend lists, member lists, search results
+export function UserCardSkeleton() {
+  return (
+    <div className="flex items-center gap-3 rounded-lg px-3 py-2.5 animate-pulse">
+      <div className="h-10 w-10 shrink-0 bg-dark-700 rounded-full" />
+      <div className="flex-1 min-w-0">
+        <div className="h-4 w-28 bg-dark-700 rounded mb-1" />
+        <div className="h-3 w-20 bg-dark-600 rounded" />
+      </div>
+      <div className="h-2 w-2 bg-dark-700 rounded-full" />
+    </div>
+  );
+}
+
+// User card list skeleton
+export function UserCardListSkeleton({ count = 5 }: { count?: number }) {
+  return (
+    <div className="space-y-1">
+      {Array.from({ length: count }).map((_, i) => (
+        <UserCardSkeleton key={i} />
+      ))}
+    </div>
+  );
+}
+
+// Conversation list item skeleton
+export function ConversationItemSkeleton() {
+  return (
+    <div className="flex items-center gap-3 rounded-lg px-3 py-3 animate-pulse">
+      <div className="h-12 w-12 shrink-0 bg-dark-700 rounded-full" />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-1">
+          <div className="h-4 w-32 bg-dark-700 rounded" />
+          <div className="h-3 w-10 bg-dark-600 rounded" />
+        </div>
+        <div className="h-3.5 w-48 bg-dark-600 rounded" />
+      </div>
+    </div>
+  );
+}

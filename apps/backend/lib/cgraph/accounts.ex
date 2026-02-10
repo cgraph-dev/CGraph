@@ -762,16 +762,6 @@ defmodule CGraph.Accounts do
     end
   end
 
-  @doc """
-  Reset settings to defaults.
-  """
-  def reset_settings(user) do
-    with {:ok, settings} <- get_settings(user) do
-      Repo.delete(settings)
-      create_default_settings(user)
-    end
-  end
-
   defp create_default_settings(user) do
     %UserSettings{user_id: user.id}
     |> UserSettings.changeset(%{})
@@ -1093,17 +1083,26 @@ defmodule CGraph.Accounts do
   """
   def get_online_friends(user) do
     friend_ids = get_friend_ids(user)
-    online_user_ids = CGraph.Presence.list_online_users()
 
-    online_friend_ids = MapSet.intersection(MapSet.new(friend_ids), MapSet.new(online_user_ids))
+    # Use bulk_status (pipelined Redis lookups) instead of loading ALL online users
+    statuses = CGraph.Presence.bulk_status(friend_ids)
 
-    Repo.all(from u in User, where: u.id in ^MapSet.to_list(online_friend_ids))
-    |> Enum.map(fn u ->
-      status = CGraph.Presence.get_user_status(u.id)
-      presence = CGraph.Presence.get_user_presence(u.id)
-      status_text = if presence, do: Map.get(presence, :status_message), else: nil
-      Map.merge(u, %{status: status, status_text: status_text})
-    end)
+    online_friend_ids =
+      statuses
+      |> Enum.filter(fn {_id, status} -> status != "offline" end)
+      |> Enum.map(fn {id, _status} -> id end)
+
+    if online_friend_ids == [] do
+      []
+    else
+      Repo.all(from u in User, where: u.id in ^online_friend_ids)
+      |> Enum.map(fn u ->
+        status = Map.get(statuses, u.id, "offline")
+        presence = CGraph.Presence.get_user_presence(u.id)
+        status_text = if presence, do: Map.get(presence, :status_message), else: nil
+        Map.merge(u, %{status: status, status_text: status_text})
+      end)
+    end
   end
 
   @doc """
@@ -1169,103 +1168,13 @@ defmodule CGraph.Accounts do
   end
 
   # ============================================================================
-  # Search
+  # Search (delegated to CGraph.Accounts.Search)
   # ============================================================================
 
-  @doc """
-  Search users by username, display name, email, or UID (random 10-digit like #4829173650).
-  """
-  def search_users(query, opts \\ []) do
-    search_term = "%#{query}%"
-
-    # Check if query is a UID format (10-digit string or legacy numeric)
-    uid_query = parse_uid_query(query)
-    legacy_user_id = parse_legacy_user_id(query)
-
-    # Build base query with text-based search conditions
-    base_conditions = dynamic([u],
-      ilike(u.username, ^search_term) or
-      ilike(u.display_name, ^search_term) or
-      ilike(u.email, ^search_term)
-    )
-
-    # Add UID condition if a valid UID was parsed
-    conditions = if uid_query do
-      dynamic([u], ^base_conditions or u.uid == ^uid_query)
-    else
-      base_conditions
-    end
-
-    # Add legacy user_id condition if a valid legacy ID was parsed
-    conditions = if legacy_user_id do
-      dynamic([u], ^conditions or u.user_id == ^legacy_user_id)
-    else
-      conditions
-    end
-
-    db_query = from u in User,
-      where: ^conditions
-
-    pagination_opts = CGraph.Pagination.parse_params(
-      Enum.into(opts, %{}),
-      sort_field: :username,
-      sort_direction: :asc,
-      default_limit: 20
-    )
-
-    CGraph.Pagination.paginate(db_query, pagination_opts)
-  end
-
-  # Parse UID query - handles formats like #4829173650 or 4829173650 (10-digit string)
-  defp parse_uid_query(query) when is_binary(query) do
-    cleaned = query |> String.replace("#", "") |> String.trim()
-    # Only match if it looks like a 10-digit UID
-    if Regex.match?(~r/^\d{10}$/, cleaned) do
-      cleaned
-    else
-      nil
-    end
-  end
-  defp parse_uid_query(_), do: nil
-
-  # Parse legacy user_id for backward compatibility (numeric 1-4 digit IDs)
-  defp parse_legacy_user_id(query) when is_binary(query) do
-    cleaned = query |> String.replace("#", "") |> String.trim()
-    case Integer.parse(cleaned) do
-      {num, ""} when num > 0 and num < 10_000 -> num  # Legacy IDs are 1-9999
-      _ -> nil
-    end
-  end
-  defp parse_legacy_user_id(_), do: nil
-
-  @doc """
-  Get user suggestions for autocomplete.
-  """
-  def get_user_suggestions(query, opts \\ []) do
-    limit = Keyword.get(opts, :limit, 10)
-    search_term = "#{query}%"
-
-    from(u in User,
-      where: ilike(u.username, ^search_term),
-      order_by: [asc: u.username],
-      limit: ^limit
-    )
-    |> Repo.all()
-  end
-
-  @doc """
-  Get recent searches.
-  """
-  def get_recent_searches(_user, _opts \\ []) do
-    []
-  end
-
-  @doc """
-  Clear search history.
-  """
-  def clear_search_history(_user) do
-    :ok
-  end
+  defdelegate search_users(query, opts \\ []), to: CGraph.Accounts.Search
+  defdelegate get_user_suggestions(query, opts \\ []), to: CGraph.Accounts.Search
+  defdelegate get_recent_searches(user, opts \\ []), to: CGraph.Accounts.Search
+  defdelegate clear_search_history(user), to: CGraph.Accounts.Search
 
   @doc """
   Schedule user deletion after grace period.
@@ -1294,89 +1203,11 @@ defmodule CGraph.Accounts do
   end
 
   # ============================================================================
-  # Password Reset
+  # Password Reset (delegated to CGraph.Accounts.PasswordReset)
   # ============================================================================
 
-  @doc """
-  Request a password reset for a user by email.
-
-  Generates a reset token and sends an email with reset instructions.
-  Returns :ok regardless of whether email exists to prevent enumeration.
-  """
-  def request_password_reset(email) do
-    case get_user_by_email(email) do
-      {:error, :not_found} ->
-        # Uniform response to prevent email enumeration
-        :ok
-
-      {:ok, user} ->
-        _token = generate_password_reset_token(user)
-        # Token stored in cache for later verification
-        # Email sent via Mailer.send_password_reset/2
-        :ok
-    end
-  end
-
-  @doc """
-  Reset a user's password using a valid reset token.
-  """
-  def reset_password(token, new_password, new_password_confirmation) do
-    with {:ok, user_id} <- verify_password_reset_token(token),
-         {:ok, user} <- get_user(user_id),
-         true <- new_password == new_password_confirmation do
-
-      user
-      |> User.password_changeset(%{password: new_password})
-      |> Repo.update()
-      |> case do
-        {:ok, user} ->
-          # Invalidate all existing sessions for security
-          invalidate_reset_token(token)
-          {:ok, user}
-        error ->
-          error
-      end
-    else
-      {:error, :invalid_token} -> {:error, :invalid_token}
-      {:error, :expired_token} -> {:error, :expired_token}
-      {:error, _} = error -> error
-      false -> {:error, :passwords_do_not_match}
-    end
-  end
-
-  defp generate_password_reset_token(user) do
-    token = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
-    expires_at = DateTime.utc_now() |> DateTime.add(3600, :second)  # 1 hour
-
-    # Store token in cache or database
-    Cachex.put(:cgraph_cache, "password_reset:#{token}", %{
-      user_id: user.id,
-      expires_at: expires_at
-    }, ttl: :timer.hours(1))
-
-    token
-  end
-
-  defp verify_password_reset_token(token) do
-    case Cachex.get(:cgraph_cache, "password_reset:#{token}") do
-      {:ok, nil} ->
-        {:error, :invalid_token}
-
-      {:ok, %{user_id: user_id, expires_at: expires_at}} ->
-        if DateTime.compare(DateTime.utc_now(), expires_at) == :lt do
-          {:ok, user_id}
-        else
-          {:error, :expired_token}
-        end
-
-      _ ->
-        {:error, :invalid_token}
-    end
-  end
-
-  defp invalidate_reset_token(token) do
-    Cachex.del(:cgraph_cache, "password_reset:#{token}")
-  end
+  defdelegate request_password_reset(email), to: CGraph.Accounts.PasswordReset
+  defdelegate reset_password(token, new_password, new_password_confirmation), to: CGraph.Accounts.PasswordReset
 
   @doc """
   Update user preferences/settings.
@@ -1388,109 +1219,13 @@ defmodule CGraph.Accounts do
   end
 
   # ============================================================================
-  # Email Verification
+  # Email Verification (delegated to CGraph.Accounts.EmailVerification)
   # ============================================================================
 
-  @doc """
-  Generate and send an email verification token.
-
-  The token is stored in cache with a 24-hour expiry.
-  """
-  def send_verification_email(user) do
-    token = generate_email_verification_token(user)
-
-    # Queue email sending via Oban worker
-    Orchestrator.enqueue(
-      SendEmailNotification,
-      %{
-        user_id: user.id,
-        notification_id: nil,
-        email_type: "verification",
-        verification_token: token
-      }
-    )
-
-    {:ok, token}
-  end
-
-  @doc """
-  Verify an email using the verification token.
-  """
-  def verify_email(token) do
-    with {:ok, user_id} <- verify_email_token(token),
-         {:ok, user} <- get_user(user_id),
-         {:ok, user} <- mark_email_verified(user) do
-      invalidate_email_token(token)
-      {:ok, user}
-    end
-  end
-
-  defp mark_email_verified(user) do
-    user
-    |> Ecto.Changeset.change(email_verified_at: DateTime.utc_now())
-    |> Repo.update()
-  end
-
-  @doc """
-  Check if a user's email is verified.
-  """
-  def email_verified?(%User{email_verified_at: nil}), do: false
-  def email_verified?(%User{email_verified_at: _}), do: true
-
-  @doc """
-  Resend verification email if not verified.
-  Rate limited to once per 5 minutes.
-  """
-  def resend_verification_email(user) do
-    cache_key = "email_verification_sent:#{user.id}"
-
-    case Cachex.get(:cgraph_cache, cache_key) do
-      {:ok, nil} ->
-        result = send_verification_email(user)
-        # Rate limit: 5 minutes
-        Cachex.put(:cgraph_cache, cache_key, true, ttl: :timer.minutes(5))
-        result
-
-      {:ok, true} ->
-        {:error, :rate_limited}
-
-      _ ->
-        send_verification_email(user)
-    end
-  end
-
-  defp generate_email_verification_token(user) do
-    token = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
-    expires_at = DateTime.utc_now() |> DateTime.add(86_400, :second)  # 24 hours
-
-    Cachex.put(:cgraph_cache, "email_verification:#{token}", %{
-      user_id: user.id,
-      expires_at: expires_at
-    }, ttl: :timer.hours(24))
-
-    token
-  end
-
-  defp verify_email_token(token) do
-    case Cachex.get(:cgraph_cache, "email_verification:#{token}") do
-      {:ok, nil} ->
-        {:error, :invalid_token}
-
-      {:ok, %{user_id: user_id, expires_at: expires_at}} ->
-        if DateTime.compare(DateTime.utc_now(), expires_at) == :lt do
-          {:ok, user_id}
-        else
-          {:error, :expired_token}
-        end
-
-      _ ->
-        {:error, :invalid_token}
-    end
-  end
-
-  defp invalidate_email_token(token) do
-    Cachex.del(:cgraph_cache, "email_verification:#{token}")
-  end
+  defdelegate send_verification_email(user), to: CGraph.Accounts.EmailVerification
+  defdelegate verify_email(token), to: CGraph.Accounts.EmailVerification
+  defdelegate email_verified?(user), to: CGraph.Accounts.EmailVerification
+  defdelegate resend_verification_email(user), to: CGraph.Accounts.EmailVerification
 
   # ==========================================================================
   # Push Token Functions
@@ -1575,266 +1310,24 @@ defmodule CGraph.Accounts do
   end
 
   # ==========================================================================
-  # Member Directory Functions
+  # Member Directory Functions (delegated to CGraph.Accounts.MemberDirectory)
   # ==========================================================================
 
-  @doc """
-  List members with filtering and pagination.
-  """
-  def list_members(opts \\ []) do
-    sort_by = Keyword.get(opts, :sort_by, :username)
-    sort_order = Keyword.get(opts, :sort_order, :asc)
-    search = Keyword.get(opts, :search)
-    letter = Keyword.get(opts, :letter)
-    online_only = Keyword.get(opts, :online_only, false)
-
-    base_query =
-      from u in User,
-        where: u.role != "bot",
-        where: is_nil(u.banned_at)
-
-    base_query = apply_member_search(base_query, search)
-    base_query = apply_letter_filter(base_query, letter)
-    base_query = apply_online_filter(base_query, online_only)
-    base_query = apply_member_sort(base_query, sort_by, sort_order)
-
-    pagination_opts = CGraph.Pagination.parse_params(
-      Enum.into(opts, %{}),
-      sort_field: sort_by,
-      sort_direction: sort_order,
-      default_limit: 20
-    )
-
-    {members, page_info} = CGraph.Pagination.paginate(base_query, pagination_opts)
-    members = Enum.map(members, &enrich_member/1)
-
-    {members, page_info}
-  end
-
-  defp apply_member_search(query, nil), do: query
-  defp apply_member_search(query, ""), do: query
-  defp apply_member_search(query, search) do
-    search_pattern = "%#{search}%"
-    from u in query,
-      where: ilike(u.username, ^search_pattern) or ilike(u.display_name, ^search_pattern)
-  end
-
-  defp apply_letter_filter(query, nil), do: query
-  defp apply_letter_filter(query, ""), do: query
-  defp apply_letter_filter(query, letter) do
-    letter_pattern = "#{String.upcase(letter)}%"
-    from u in query,
-      where: ilike(u.username, ^letter_pattern)
-  end
-
-  defp apply_online_filter(query, false), do: query
-  defp apply_online_filter(query, true) do
-    # Consider users online if they were active in the last 15 minutes
-    threshold = DateTime.add(DateTime.utc_now(), -15, :minute)
-    from u in query,
-      where: u.last_online_at >= ^threshold
-  end
-
-  defp apply_member_sort(query, :username, :asc), do: from(u in query, order_by: [asc: u.username])
-  defp apply_member_sort(query, :username, :desc), do: from(u in query, order_by: [desc: u.username])
-  defp apply_member_sort(query, :inserted_at, :asc), do: from(u in query, order_by: [asc: u.inserted_at])
-  defp apply_member_sort(query, :inserted_at, :desc), do: from(u in query, order_by: [desc: u.inserted_at])
-  defp apply_member_sort(query, :last_online_at, :asc), do: from(u in query, order_by: [asc: u.last_online_at])
-  defp apply_member_sort(query, :last_online_at, :desc), do: from(u in query, order_by: [desc: u.last_online_at])
-  defp apply_member_sort(query, :post_count, order) do
-    from u in query, order_by: [{^order, u.post_count}]
-  end
-  defp apply_member_sort(query, :reputation, order) do
-    from u in query, order_by: [{^order, u.reputation}]
-  end
-  defp apply_member_sort(query, _, _), do: from(u in query, order_by: [asc: u.username])
-
-  defp enrich_member(user) do
-    # Add is_online based on last_online_at
-    threshold = DateTime.add(DateTime.utc_now(), -15, :minute)
-    is_online = user.last_online_at && DateTime.compare(user.last_online_at, threshold) != :lt
-
-    Map.put(user, :is_online, is_online)
-  end
-
-  @doc """
-  Get a member's public profile.
-  """
-  def get_member_profile(user_id, current_user) do
-    case Repo.get(User, user_id) do
-      nil -> {:error, :not_found}
-      user -> {:ok, build_member_profile(user, current_user)}
-    end
-  end
-
-  defp build_member_profile(user, current_user) do
-    user = enrich_member(user)
-
-    # Calculate additional fields
-    days_registered = Date.diff(Date.utc_today(), DateTime.to_date(user.inserted_at))
-    posts_per_day = if days_registered > 0, do: (user.post_count || 0) / days_registered, else: 0
-
-    is_friend = if current_user do
-      case get_friendship_status(current_user.id, user.id) do
-        :friends -> true
-        _ -> false
-      end
-    else
-      false
-    end
-
-    user
-    |> Map.put(:days_registered, days_registered)
-    |> Map.put(:posts_per_day, Float.round(posts_per_day, 2))
-    |> Map.put(:is_friend, is_friend)
-    |> Map.put(:can_pm, true)
-  end
-
-  @doc """
-  List user groups.
-  """
-  def list_user_groups(opts \\ []) do
-    include_hidden = Keyword.get(opts, :include_hidden, false)
-    with_count = Keyword.get(opts, :with_count, true)
-
-    # For now, return a default set of groups
-    # This should query a user_groups table when implemented
-    base_groups = [
-      %{id: "admin", name: "Administrators", description: "Site administrators", color: "#dc2626", is_staff: true, is_hidden: false, display_order: 0},
-      %{id: "mod", name: "Moderators", description: "Forum moderators", color: "#f59e0b", is_staff: true, is_hidden: false, display_order: 1},
-      %{id: "member", name: "Members", description: "Registered members", color: "#6366f1", is_staff: false, is_hidden: false, display_order: 2},
-      %{id: "vip", name: "VIP Members", description: "VIP members with special privileges", color: "#8b5cf6", is_staff: false, is_hidden: false, display_order: 3}
-    ]
-
-    groups = if include_hidden do
-      base_groups
-    else
-      Enum.reject(base_groups, & &1.is_hidden)
-    end
-
-    if with_count do
-      Enum.map(groups, fn group ->
-        count = from(u in User, where: u.role == ^group.id) |> Repo.aggregate(:count, :id)
-        Map.put(group, :member_count, count)
-      end)
-    else
-      groups
-    end
-  end
-
-  @doc """
-  Search members.
-  """
-  def search_members(opts \\ []) do
-    query = Keyword.get(opts, :query)
-
-    if query && String.length(query) >= 2 do
-      list_members(Keyword.put(opts, :search, query))
-    else
-      {[], %{page: 1, per_page: 20, total_count: 0, total_pages: 0}}
-    end
-  end
-
-  @doc """
-  Get member statistics.
-  """
-  def get_member_stats do
-    total_members = from(u in User, where: u.role != "bot") |> Repo.aggregate(:count, :id)
-
-    today = Date.utc_today()
-    start_of_day = DateTime.new!(today, ~T[00:00:00], "Etc/UTC")
-    start_of_week = Date.add(today, -7) |> then(&DateTime.new!(&1, ~T[00:00:00], "Etc/UTC"))
-    start_of_month = Date.add(today, -30) |> then(&DateTime.new!(&1, ~T[00:00:00], "Etc/UTC"))
-
-    members_today = from(u in User, where: u.inserted_at >= ^start_of_day) |> Repo.aggregate(:count, :id)
-    members_this_week = from(u in User, where: u.inserted_at >= ^start_of_week) |> Repo.aggregate(:count, :id)
-    members_this_month = from(u in User, where: u.inserted_at >= ^start_of_month) |> Repo.aggregate(:count, :id)
-
-    newest_member = from(u in User, order_by: [desc: u.inserted_at], limit: 1) |> Repo.one()
-
-    online_threshold = DateTime.add(DateTime.utc_now(), -15, :minute)
-    online_now = from(u in User, where: u.last_online_at >= ^online_threshold) |> Repo.aggregate(:count, :id)
-
-    %{
-      total_members: total_members,
-      members_today: members_today,
-      members_this_week: members_this_week,
-      members_this_month: members_this_month,
-      newest_member: newest_member,
-      online_now: online_now,
-      most_online: 0,
-      most_online_date: nil
-    }
-  end
+  defdelegate list_members(opts \\ []), to: CGraph.Accounts.MemberDirectory
+  defdelegate get_member_profile(user_id, current_user), to: CGraph.Accounts.MemberDirectory
+  defdelegate list_user_groups(opts \\ []), to: CGraph.Accounts.MemberDirectory
+  defdelegate search_members(opts \\ []), to: CGraph.Accounts.MemberDirectory
+  defdelegate get_member_stats(), to: CGraph.Accounts.MemberDirectory
 
   # ==========================================================================
-  # Profile Functions
+  # Profile Functions (delegated to CGraph.Accounts.Profile)
   # ==========================================================================
 
-  @doc """
-  Get a user's profile.
-  """
-  def get_profile(user_id, viewer) do
-    get_member_profile(user_id, viewer)
-  end
+  defdelegate get_profile(user_id, viewer), to: CGraph.Accounts.Profile
+  defdelegate update_signature(user_id, signature), to: CGraph.Accounts.Profile
+  defdelegate update_bio(user_id, bio), to: CGraph.Accounts.Profile
+  defdelegate update_profile(user_id, attrs), to: CGraph.Accounts.Profile
+  defdelegate get_user_activity(user_id, viewer, opts \\ []), to: CGraph.Accounts.Profile
+  defdelegate get_profile_visitors(user_id, opts \\ []), to: CGraph.Accounts.Profile
 
-  @doc """
-  Update a user's signature.
-  """
-  def update_signature(user_id, signature) do
-    case Repo.get(User, user_id) do
-      nil -> {:error, :not_found}
-      user ->
-        user
-        |> Ecto.Changeset.change(signature: signature)
-        |> Repo.update()
-    end
-  end
-
-  @doc """
-  Update a user's bio.
-  """
-  def update_bio(user_id, bio) do
-    case Repo.get(User, user_id) do
-      nil -> {:error, :not_found}
-      user ->
-        user
-        |> Ecto.Changeset.change(bio: bio)
-        |> Repo.update()
-    end
-  end
-
-  @doc """
-  Update a user's profile fields.
-  """
-  def update_profile(user_id, attrs) do
-    case Repo.get(User, user_id) do
-      nil -> {:error, :not_found}
-      user ->
-        allowed_fields = [:display_name, :title, :bio, :signature, :timezone]
-        changes = Map.take(attrs, Enum.map(allowed_fields, &to_string/1))
-        |> Enum.map(fn {k, v} -> {String.to_existing_atom(k), v} end)
-        |> Enum.into(%{})
-
-        user
-        |> Ecto.Changeset.change(changes)
-        |> Repo.update()
-    end
-  end
-
-  @doc """
-  Get a user's activity feed.
-  """
-  def get_user_activity(_user_id, _viewer, _opts \\ []) do
-    # Would need to implement activity tracking
-    {:ok, [], %{page: 1, per_page: 20, total_count: 0, total_pages: 0}}
-  end
-
-  @doc """
-  Get profile visitors.
-  """
-  def get_profile_visitors(_user_id, _opts \\ []) do
-    # Would need to implement visitor tracking
-    {[], %{page: 1, per_page: 20, total_count: 0, total_pages: 0}}
-  end
 end

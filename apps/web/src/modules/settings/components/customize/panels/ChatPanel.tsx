@@ -6,6 +6,7 @@
 
 import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   ColorPickerGrid,
   GradientSlider,
@@ -87,7 +88,7 @@ const ChatBubbleDemo = memo(function ChatBubbleDemo({ isOwn, message }: ChatBubb
       className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
       initial={variants.initial}
       animate={variants.animate}
-      transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+      transition={springs.stiff}
     >
       <div
         className={`relative max-w-[80%] px-4 py-2.5 ${isOwn ? 'text-white' : 'text-white/90'}`}

@@ -17,6 +17,7 @@ import { AnimatedMessageWrapper, AnimatedReactionBubble, InlineVideoThumbnail } 
 import { styles } from '../styles';
 import { getFileIcon, formatFileSize } from '../utils';
 import { MarkdownText } from '../../../../components/chat/MarkdownText';
+import { useBubbleCustomization, type BubbleStyle } from '../../../../hooks/useBubbleCustomization';
 
 interface MessageBubbleProps {
   item: Message;
@@ -63,6 +64,9 @@ export function MessageBubble({
   onFilePress,
   onReactionTap,
 }: MessageBubbleProps) {
+  // Read user's chat bubble customization (colors, radius, gradient, etc.)
+  const bubble = useBubbleCustomization();
+
   return (
     <AnimatedMessageWrapper isOwnMessage={isOwnMessage} index={0} isNew={isNewMessage}>
       <TouchableOpacity
@@ -79,7 +83,7 @@ export function MessageBubble({
               {senderAvatarUrl ? (
                 <Image source={{ uri: senderAvatarUrl }} style={styles.avatarImage} />
               ) : (
-                <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
+                <View style={[styles.avatarPlaceholder, { backgroundColor: bubble.ownMessageBg }]}>
                   <Text style={styles.avatarText}>{senderDisplayName.charAt(0).toUpperCase()}</Text>
                 </View>
               )}
@@ -89,19 +93,24 @@ export function MessageBubble({
           {/* Pin indicator */}
           {item.is_pinned && (
             <View style={styles.pinnedIndicator}>
-              <Ionicons name="pin" size={12} color={colors.primary} />
+              <Ionicons name="pin" size={12} color={bubble.ownMessageBg} />
             </View>
           )}
 
-          {/* Message bubble with gradient for own messages */}
+          {/* Message bubble — uses customized colors/gradient from settings */}
           {isOwnMessage ? (
             <LinearGradient
-              colors={[colors.primary, `${colors.primary}CC`]}
+              colors={
+                bubble.useGradient
+                  ? [bubble.ownMessageBg, `${bubble.ownMessageBg}AA`]
+                  : [bubble.ownMessageBg, bubble.ownMessageBg]
+              }
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={[
                 styles.messageBubble,
                 styles.ownMessageBubble,
+                { borderRadius: bubble.borderRadius },
                 item.is_pinned && styles.pinnedBubble,
               ]}
             >
@@ -122,7 +131,10 @@ export function MessageBubble({
               style={[
                 styles.messageBubble,
                 styles.otherMessageBubble,
-                { backgroundColor: colors.surface },
+                {
+                  backgroundColor: bubble.otherMessageBg,
+                  borderRadius: bubble.borderRadius,
+                },
                 item.is_pinned && styles.pinnedBubble,
               ]}
             >

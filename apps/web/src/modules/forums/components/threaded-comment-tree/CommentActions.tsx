@@ -8,6 +8,7 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpIcon, ArrowDownIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   ArrowUpIcon as ArrowUpIconSolid,
   ArrowDownIcon as ArrowDownIconSolid,
@@ -52,7 +53,7 @@ export function CommentActions({
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           animate={currentVote === 1 ? { scale: [1, 1.3, 1], rotate: [0, -15, 0] } : {}}
-          transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          transition={springs.bouncy}
           className={`rounded p-1 transition-colors ${
             currentVote === 1
               ? 'text-green-500'
@@ -70,7 +71,7 @@ export function CommentActions({
           key={score}
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+          transition={springs.snappy}
           className={`min-w-[2ch] text-center text-sm font-medium ${
             score > 0 ? 'text-green-500' : score < 0 ? 'text-red-500' : 'text-gray-400'
           }`}
@@ -83,7 +84,7 @@ export function CommentActions({
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           animate={currentVote === -1 ? { scale: [1, 1.3, 1], rotate: [0, 15, 0] } : {}}
-          transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          transition={springs.bouncy}
           className={`rounded p-1 transition-colors ${
             currentVote === -1
               ? 'text-red-500'

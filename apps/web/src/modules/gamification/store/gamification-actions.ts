@@ -153,12 +153,14 @@ export function createCompleteQuest(_set: StoreSet, get: StoreGet) {
       const response = await api.post(`/api/v1/quests/${questId}/claim`);
       const rewards = response.data?.rewards || response.data;
 
+      const MAX_COMPLETED_QUESTS = 500;
+      const updatedQuests = [
+        ...get().completedQuests,
+        { ...quest, completed: true, completedAt: new Date().toISOString() },
+      ];
       _set({
         activeQuests: activeQuests.filter((q) => q.id !== questId),
-        completedQuests: [
-          ...get().completedQuests,
-          { ...quest, completed: true, completedAt: new Date().toISOString() },
-        ],
+        completedQuests: updatedQuests.length > MAX_COMPLETED_QUESTS ? updatedQuests.slice(updatedQuests.length - MAX_COMPLETED_QUESTS) : updatedQuests,
       });
 
       logger.debug(`Quest completed: ${quest.title}, XP: ${rewards?.xp}, Coins: ${rewards?.coins}`);

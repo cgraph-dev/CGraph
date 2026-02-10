@@ -77,7 +77,7 @@ defmodule CGraph.Gamification.Marketplace do
 
   # Item Management
   def ban_item(item_id, _banned_by, reason) do
-    Logger.info("[Marketplace] Banning item #{item_id}: #{reason}")
+    Logger.info("marketplace_banning_item", item_id: item_id, reason: reason)
     {:ok, item_id}
   end
   def unban_item(item_id, _unbanned_by), do: {:ok, item_id}
@@ -95,7 +95,7 @@ defmodule CGraph.Gamification.Marketplace do
 
   # User Management
   def ban_user(user_id, banned_by) do
-    Logger.info("[Marketplace] Banning user #{user_id} by #{banned_by}")
+    Logger.info("marketplace_banning_user_by", user_id: user_id, banned_by: banned_by)
     {:ok, user_id}
   end
   def unban_user(user_id, _unbanned_by), do: {:ok, user_id}

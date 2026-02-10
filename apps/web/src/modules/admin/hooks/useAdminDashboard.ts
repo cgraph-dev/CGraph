@@ -8,6 +8,7 @@
 
 import { useCallback, useEffect } from 'react';
 import { useAdminStore } from '../store';
+import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
 import type { AdminTab } from '../store';
 
 /**
@@ -35,11 +36,8 @@ export function useAdminDashboard() {
     }
   }, [stats, fetchStats]);
 
-  // Auto-refresh stats every 5 minutes
-  useEffect(() => {
-    const interval = setInterval(refreshStats, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [refreshStats]);
+  // Auto-refresh stats: 5 min when active, 20 min when tab hidden
+  useAdaptiveInterval(refreshStats, 5 * 60 * 1000);
 
   const navigateToTab = useCallback(
     (tab: AdminTab) => {

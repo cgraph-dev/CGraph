@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { ShieldCheckIcon, CheckBadgeIcon } from '@heroicons/react/24/outline';
 import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
 import type { UserProfileData } from '@/types/profile.types';
+import { springs } from '@/lib/animation-presets/presets';
 
 interface ProfileNameSectionProps {
   profile: UserProfileData;
@@ -21,7 +22,7 @@ export function ProfileNameSection({ profile }: ProfileNameSectionProps) {
         {profile.isVerified && (
           <motion.div
             whileHover={{ scale: 1.2, rotate: 360 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+            transition={springs.bouncy}
           >
             <CheckBadgeIcon className="h-6 w-6 text-primary-500" />
           </motion.div>
@@ -29,7 +30,7 @@ export function ProfileNameSection({ profile }: ProfileNameSectionProps) {
         {profile.isPremium && (
           <motion.div
             whileHover={{ scale: 1.2, rotate: 360 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+            transition={springs.bouncy}
           >
             <ShieldCheckIcon className="h-5 w-5 text-yellow-500" />
           </motion.div>

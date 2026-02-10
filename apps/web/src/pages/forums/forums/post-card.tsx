@@ -5,6 +5,7 @@
 
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -32,7 +33,7 @@ export function PostCard({ post, onVote }: PostCardProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       whileHover={{ y: -2 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      transition={springs.bouncy}
     >
       <GlassCard variant="crystal" className="group relative overflow-hidden">
         {/* Hover gradient glow */}

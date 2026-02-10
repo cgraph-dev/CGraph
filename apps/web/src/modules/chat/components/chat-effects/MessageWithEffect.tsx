@@ -4,6 +4,7 @@
 
 import { memo, useMemo, useRef } from 'react';
 import { motion, type TargetAndTransition } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import type { MessageEffect, MessageEffectConfig } from '@/modules/chat/store';
 import type { MessageWithEffectProps } from './types';
 import { MessageBubble } from './MessageBubble';
@@ -59,7 +60,7 @@ const getAnimationVariants = (effect: MessageEffect, config: Partial<MessageEffe
     },
     bounce: {
       initial: { y: -100, opacity: 0 },
-      animate: { y: 0, opacity: 1, transition: { type: 'spring', bounce: 0.5 } },
+      animate: { y: 0, opacity: 1, transition: springs.bouncy },
       exit: { y: 100, opacity: 0 },
     },
     shake: {
@@ -164,7 +165,7 @@ const getAnimationVariants = (effect: MessageEffect, config: Partial<MessageEffe
     },
     'elastic-in': {
       initial: { scale: 0, opacity: 0 },
-      animate: { scale, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 10 } },
+      animate: { scale, opacity: 1, transition: springs.bouncy },
       exit: { scale: 0, opacity: 0 },
     },
     'spiral-in': {

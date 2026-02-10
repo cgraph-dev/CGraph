@@ -79,7 +79,7 @@ defmodule CGraph.RequestContext do
       # Context automatically propagates to spawned tasks
       CGraph.RequestContext.spawn_with_context(fn ->
         # Context available here
-        Logger.info("Request: \#{CGraph.RequestContext.get_request_id()}")
+        Logger.info("request", cgraph_requestcontext_get_request_id: inspect(CGraph.RequestContext.get_request_id()))
       end)
 
   ### HTTP Client Headers

@@ -99,21 +99,21 @@ defmodule CGraph.Mailer do
 
       case deliver(email) do
         {:ok, _metadata} = _result ->
-          Logger.info("Email sent: #{template} to #{to}")
+          Logger.info("email_sent", template: template, to: to)
           {:ok, email}
         {:error, reason} = err ->
-          Logger.error("Failed to send email #{template} to #{to}: #{inspect(reason)}")
+          Logger.error("email_send_failed", template: template, to: to, reason: inspect(reason))
           err
       end
     rescue
       e ->
-        Logger.error("Email send error: #{inspect(e)}")
+        Logger.error("email_send_error", error: inspect(e))
         {:error, {:send_failed, e}}
     end
   end
 
   def send_email(invalid_data) do
-    Logger.error("Invalid email data: #{inspect(invalid_data)}")
+    Logger.error("email_invalid_data", data: inspect(invalid_data))
     {:error, :invalid_email_data}
   end
 
@@ -157,20 +157,20 @@ defmodule CGraph.Mailer do
       {:ok, email}
     else
       {:error, :no_email} ->
-        Logger.warning("Cannot send #{email_type} email: user #{user.id} has no email address")
+        Logger.warning("email_no_address", email_type: email_type, user_id: user.id)
         {:error, :no_email}
 
       {:error, :email_not_verified} = err when email_type not in [:verification, :welcome] ->
-        Logger.debug("Skipping #{email_type} email: user #{user.id} email not verified")
+        Logger.debug("email_not_verified_skip", email_type: email_type, user_id: user.id)
         err
 
       {:error, :rate_limited} = err ->
-        Logger.warning("Rate limited: cannot send #{email_type} email to user #{user.id}")
+        Logger.warning("email_rate_limited", email_type: email_type, user_id: user.id)
         emit_telemetry(:rate_limited, email_type, user)
         err
 
       {:error, reason} = err ->
-        Logger.error("Failed to send #{email_type} email to user #{user.id}: #{inspect(reason)}")
+        Logger.error("email_delivery_failed", email_type: email_type, user_id: user.id, reason: inspect(reason))
         emit_telemetry(:failed, email_type, user, %{reason: reason})
         err
     end
@@ -300,7 +300,7 @@ defmodule CGraph.Mailer do
     {:ok, email}
   rescue
     e ->
-      Logger.error("Failed to build #{email_type} email: #{inspect(e)}")
+      Logger.error("email_template_build_failed", email_type: email_type, error: inspect(e))
       {:error, {:template_error, e}}
   end
 
@@ -369,11 +369,11 @@ defmodule CGraph.Mailer do
         {:ok, metadata}
 
       {:error, {_code, %{"errors" => errors}}} = _err ->
-        Logger.error("Email delivery failed: #{inspect(errors)}")
+        Logger.error("email_provider_error", errors: inspect(errors))
         {:error, {:provider_error, errors}}
 
       {:error, reason} = err ->
-        Logger.error("Email delivery failed: #{inspect(reason)}")
+        Logger.error("email_delivery_error", reason: inspect(reason))
         err
     end
   end
@@ -398,7 +398,7 @@ defmodule CGraph.Mailer do
           :ok
 
         {:deny, _limit} ->
-          Logger.warning("Email rate limit exceeded for user #{user.id}")
+          Logger.warning("email_rate_limit_exceeded", user_id: user.id)
           {:error, :rate_limited}
       end
     end

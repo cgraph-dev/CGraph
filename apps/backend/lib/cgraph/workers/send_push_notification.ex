@@ -120,7 +120,7 @@ defmodule CGraph.Workers.SendPushNotification do
         :ok  # Don't retry
 
       {:error, reason} ->
-        Logger.error("Push notification preparation failed: #{inspect(reason)}")
+        Logger.error("push_notification_preparation_failed", reason: inspect(reason))
         {:error, reason}
     end
   end

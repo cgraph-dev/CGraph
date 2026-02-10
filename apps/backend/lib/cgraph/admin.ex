@@ -39,6 +39,7 @@ defmodule CGraph.Admin do
 
   alias CGraph.Accounts.User
   alias CGraph.Repo
+  alias CGraph.ReadRepo
   # Schemas to be implemented:
   # alias CGraph.Admin.{AuditEntry, Report, SystemConfig}
 
@@ -77,17 +78,17 @@ defmodule CGraph.Admin do
   end
 
   defp user_metrics do
-    total = Repo.aggregate(User, :count)
+    total = ReadRepo.aggregate(User, :count)
     today = Date.utc_today()
     start_of_day = DateTime.new!(today, ~T[00:00:00], "Etc/UTC")
 
-    new_today = Repo.one(
+    new_today = ReadRepo.one(
       from u in User,
       where: u.inserted_at >= ^start_of_day,
       select: count()
     )
 
-    active_24h = Repo.one(
+    active_24h = ReadRepo.one(
       from u in User,
       where: u.last_seen_at >= ago(24, "hour"),
       select: count()
@@ -97,8 +98,8 @@ defmodule CGraph.Admin do
       total: total,
       new_today: new_today,
       active_24h: active_24h,
-      premium: Repo.one(from u in User, where: u.is_premium == true, select: count()),
-      verified: Repo.one(from u in User, where: u.is_verified == true, select: count())
+      premium: ReadRepo.one(from u in User, where: u.is_premium == true, select: count()),
+      verified: ReadRepo.one(from u in User, where: u.is_verified == true, select: count())
     }
   end
 

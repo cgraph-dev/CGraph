@@ -76,7 +76,7 @@ defmodule CGraph.Storage.R2 do
         }}
 
       {:error, reason} ->
-        Logger.error("R2 upload failed: #{inspect(reason)}")
+        Logger.error("r2_upload_failed", reason: inspect(reason))
         {:error, {:r2_upload_failed, reason}}
     end
   end

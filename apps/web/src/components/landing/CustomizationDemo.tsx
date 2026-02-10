@@ -16,6 +16,7 @@ import { fadeInUp, springs, staggerContainer } from './animations';
 
 // Import all types and components from submodule
 import type { DemoState, DemoPanel } from './CustomizationDemo/types';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   AvatarPreview,
   ChatPreview,
@@ -182,7 +183,7 @@ export function CustomizationDemo() {
                         <motion.div
                           layoutId="activeCustomPanel"
                           className="absolute inset-0 rounded-md bg-white/10"
-                          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                          transition={springs.stiff}
                         />
                       )}
                     </button>

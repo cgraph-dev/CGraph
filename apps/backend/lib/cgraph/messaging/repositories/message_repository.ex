@@ -75,19 +75,10 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
   def get_recent(conversation_id, limit \\ @recent_messages_limit) do
     cache_key = "conversation:#{conversation_id}:recent_messages"
 
-    case Cache.get(cache_key) do
-      {:ok, nil} ->
-        {messages, _} = list_for_conversation(conversation_id, limit: limit)
-        Cache.put(cache_key, messages, @cache_ttl)
-        messages
-
-      {:ok, cached} when is_list(cached) ->
-        cached
-
-      _ ->
-        {messages, _} = list_for_conversation(conversation_id, limit: limit)
-        messages
-    end
+    Cache.fetch(cache_key, fn ->
+      {messages, _} = list_for_conversation(conversation_id, limit: limit)
+      messages
+    end, ttl: @cache_ttl)
   end
 
   @doc """

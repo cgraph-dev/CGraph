@@ -19,24 +19,10 @@ defmodule CGraph.Groups.Repositories.GroupRepository do
   def get(id, preloads \\ []) do
     cache_key = "group:#{id}"
 
-    case Cache.get(cache_key) do
-      {:ok, nil} ->
-        group =
-          Group
-          |> Repo.get(id)
-          |> maybe_preload(preloads)
-
-        if group, do: Cache.put(cache_key, group, @cache_ttl)
-        group
-
-      {:ok, cached} ->
-        maybe_preload(cached, preloads)
-
-      {:error, _} ->
-        Group
-        |> Repo.get(id)
-        |> maybe_preload(preloads)
-    end
+    Cache.fetch(cache_key, fn ->
+      Group |> Repo.get(id)
+    end, ttl: @cache_ttl)
+    |> maybe_preload(preloads)
   end
 
   @doc """

@@ -7,6 +7,7 @@
 
 import { motion } from 'framer-motion';
 import { useCallback, useState } from 'react';
+import { springs } from '@/lib/animation-presets/presets';
 
 interface RangeSliderControlProps {
   label: string;
@@ -117,7 +118,7 @@ export default function RangeSliderControl({
           animate={{
             scale: isDragging ? 1.2 : 1,
           }}
-          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+          transition={springs.snappy}
         />
       </div>
 

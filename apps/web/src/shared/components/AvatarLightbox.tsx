@@ -9,6 +9,7 @@
 
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 
 interface AvatarLightboxProps {
   /** Avatar image URL */
@@ -101,7 +102,7 @@ export function AvatarLightbox({
               className="relative max-h-[80vh] max-w-[80vw] cursor-zoom-out overflow-hidden rounded-2xl shadow-2xl"
               layoutId="avatar-lightbox-image"
               onClick={close}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              transition={springs.stiff}
             >
               <img
                 src={src}

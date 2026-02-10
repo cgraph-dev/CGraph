@@ -1,6 +1,7 @@
 import { useParams, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   UserIcon,
   ShieldCheckIcon,
@@ -13,6 +14,8 @@ import {
   ChatBubbleLeftRightIcon,
   UserCircleIcon,
   AdjustmentsHorizontalIcon,
+  ArrowDownTrayIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline';
 
 // These components are available for extended settings functionality
@@ -21,6 +24,8 @@ import ChatBubbleSettings from '@/modules/settings/components/ChatBubbleSettings
 import UICustomizationSettings from '@/modules/settings/components/UICustomizationSettings';
 import AvatarSettings from '@/modules/settings/components/AvatarSettings';
 import { AccountSettings } from '@/modules/settings/components/AccountSettings';
+import { default as DeleteAccount } from '@/pages/settings/DeleteAccount';
+import { default as DataExport } from '@/pages/settings/DataExport';
 import {
   SecuritySettingsPanel,
   NotificationSettingsPanel,
@@ -71,6 +76,18 @@ const settingsSections = [
     label: 'Billing',
     icon: CreditCardIcon,
     description: 'Subscription, payment methods',
+  },
+  {
+    id: 'data-export',
+    label: 'Data Export',
+    icon: ArrowDownTrayIcon,
+    description: 'Download your data (GDPR)',
+  },
+  {
+    id: 'delete-account',
+    label: 'Delete Account',
+    icon: TrashIcon,
+    description: 'Permanently delete account',
   },
 ];
 
@@ -123,12 +140,7 @@ export default function Settings() {
                 key={item.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 300,
-                  damping: 20,
-                  delay: 0.05 + index * 0.03,
-                }}
+                transition={{ ...springs.bouncy, delay: 0.05 }}
               >
                 <NavLink
                   to={`/settings/${item.id}`}
@@ -148,7 +160,7 @@ export default function Settings() {
                         <motion.div
                           layoutId="activeSettingsTab"
                           className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent"
-                          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                          transition={springs.stiff}
                         />
                       ) : (
                         <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary-500/0 via-purple-500/0 to-transparent opacity-0 transition-all duration-300 group-hover:from-primary-500/10 group-hover:via-purple-500/10 group-hover:opacity-100" />
@@ -176,7 +188,7 @@ export default function Settings() {
                           className="absolute left-0 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary-400 to-purple-500"
                           layoutId="settingsActiveIndicator"
                           initial={false}
-                          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                          transition={springs.stiff}
                           style={{
                             boxShadow: '0 0 8px rgba(16, 185, 129, 0.8)',
                           }}
@@ -205,6 +217,8 @@ export default function Settings() {
             {section === 'notifications' && <NotificationSettingsPanel key="notifications" />}
             {section === 'privacy' && <PrivacySettingsPanel key="privacy" />}
             {section === 'billing' && <BillingSettingsPanel key="billing" />}
+            {section === 'data-export' && <DataExport key="data-export" />}
+            {section === 'delete-account' && <DeleteAccount key="delete-account" />}
 
             {/* Redirects for removed sections - now in /customize */}
             {section === 'appearance' && <RedirectToCustomize section="themes" />}

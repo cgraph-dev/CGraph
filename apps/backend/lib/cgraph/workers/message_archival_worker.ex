@@ -48,7 +48,7 @@ defmodule CGraph.Workers.MessageArchivalWorker do
 
     cutoff = DateTime.utc_now() |> DateTime.add(-threshold_days * 86_400)
 
-    Logger.info("[Archival] Starting archival for messages before #{cutoff}")
+    Logger.info("archival_starting", cutoff: cutoff)
 
     count = count_archivable(cutoff)
 
@@ -56,7 +56,7 @@ defmodule CGraph.Workers.MessageArchivalWorker do
       Logger.info("[Archival] No messages to archive")
       :ok
     else
-      Logger.info("[Archival] Found #{count} messages to archive")
+      Logger.info("archival_messages_found", count: count)
 
       if dry_run do
         Logger.info("[Archival] Dry run — skipping actual archival")
@@ -85,7 +85,7 @@ defmodule CGraph.Workers.MessageArchivalWorker do
       case archive_batch(cutoff, batch_size) do
         {:ok, count} ->
           new_total = archived_count + count
-          Logger.info("[Archival] Batch #{batch_num}/#{batches}: archived #{count} (#{new_total}/#{total})")
+          Logger.info("archival_batch_completed", batch: batch_num, total_batches: batches, batch_count: count, archived: new_total, total: total)
 
           if count < batch_size do
             {:halt, new_total}
@@ -94,7 +94,7 @@ defmodule CGraph.Workers.MessageArchivalWorker do
           end
 
         {:error, reason} ->
-          Logger.error("[Archival] Batch #{batch_num} failed: #{inspect(reason)}")
+          Logger.error("archival_batch_failed", batch: batch_num, reason: inspect(reason))
           {:halt, archived_count}
       end
     end)
@@ -166,11 +166,11 @@ defmodule CGraph.Workers.MessageArchivalWorker do
          )
          |> ExAws.request() do
       {:ok, _} ->
-        Logger.info("[Archival] Uploaded archive: #{key} (#{byte_size(compressed)} bytes)")
+        Logger.info("archival_uploaded", key: key, size_bytes: byte_size(compressed))
         :ok
 
       {:error, reason} ->
-        Logger.error("[Archival] Failed to upload archive: #{inspect(reason)}")
+        Logger.error("archival_upload_failed", reason: inspect(reason))
         {:error, reason}
     end
   end

@@ -18,28 +18,13 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
   def get(group_id, user_id) do
     cache_key = "member:#{group_id}:#{user_id}"
 
-    case Cache.get(cache_key) do
-      {:ok, nil} ->
-        member =
-          from(m in Member,
-            where: m.group_id == ^group_id and m.user_id == ^user_id,
-            where: is_nil(m.left_at)
-          )
-          |> Repo.one()
-
-        if member, do: Cache.put(cache_key, member, @cache_ttl)
-        member
-
-      {:ok, cached} ->
-        cached
-
-      {:error, _} ->
-        from(m in Member,
-          where: m.group_id == ^group_id and m.user_id == ^user_id,
-          where: is_nil(m.left_at)
-        )
-        |> Repo.one()
-    end
+    Cache.fetch(cache_key, fn ->
+      from(m in Member,
+        where: m.group_id == ^group_id and m.user_id == ^user_id,
+        where: is_nil(m.left_at)
+      )
+      |> Repo.one()
+    end, ttl: @cache_ttl)
   end
 
   @doc """

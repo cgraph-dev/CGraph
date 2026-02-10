@@ -26,39 +26,19 @@ export const easings = {
 
 export const springs = {
   // Gentle spring for smooth transitions
-  gentle: {
-    type: 'spring' as const,
-    stiffness: 200,
-    damping: 25,
-  },
+  gentle: springs.default,
 
   // Default spring for most UI elements
-  default: {
-    type: 'spring' as const,
-    stiffness: 300,
-    damping: 30,
-  },
+  default: springs.stiff,
 
   // Bouncy spring for playful interactions
-  bouncy: {
-    type: 'spring' as const,
-    stiffness: 400,
-    damping: 20,
-  },
+  bouncy: springs.snappy,
 
   // Snappy spring for quick feedback
-  snappy: {
-    type: 'spring' as const,
-    stiffness: 500,
-    damping: 35,
-  },
+  snappy: springs.snappy,
 
   // Smooth spring for cards and panels
-  smooth: {
-    type: 'spring' as const,
-    stiffness: 250,
-    damping: 28,
-  },
+  smooth: springs.stiff,
 } as const;
 
 // ==================== DURATION PRESETS ====================

@@ -3,6 +3,7 @@
  */
 
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 
 interface ToggleSwitchProps {
   enabled: boolean;
@@ -23,7 +24,7 @@ export function ToggleSwitch({ enabled, onToggle, disabled }: ToggleSwitchProps)
       <motion.div
         className="absolute top-1 h-6 w-6 rounded-full bg-white shadow-lg"
         animate={{ x: enabled ? 30 : 4 }}
-        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+        transition={springs.snappy}
       />
     </motion.button>
   );

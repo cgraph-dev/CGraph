@@ -258,7 +258,8 @@ defmodule CGraphWeb.UserChannel do
       case entries do
         {:ok, events} when is_list(events) and length(events) > 0 ->
           require Logger
-          Logger.info("Session resumption: replaying #{length(events)} missed events",
+          Logger.info("session_resumption_replay",
+            event_count: length(events),
             user_id: user_id,
             old_session_id: old_session_id,
             last_seq: last_seq

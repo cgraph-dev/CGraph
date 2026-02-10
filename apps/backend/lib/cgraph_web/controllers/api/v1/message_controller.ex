@@ -279,6 +279,50 @@ defmodule CGraphWeb.API.V1.MessageController do
     end
   end
 
+  @doc """
+  List thread replies for a parent message.
+
+  GET /api/v1/conversations/:conversation_id/messages/:message_id/replies
+  """
+  def thread_replies(conn, %{"conversation_id" => conversation_id, "message_id" => message_id} = params) do
+    user = conn.assigns.current_user
+
+    opts = [
+      limit: parse_int(params["limit"], 50, min: 1, max: @max_per_page),
+      cursor: Map.get(params, "cursor")
+    ]
+
+    with {:ok, _conversation} <- Messaging.get_user_conversation(user, conversation_id) do
+      {replies, meta} = Messaging.list_thread_replies(message_id, opts)
+
+      conn
+      |> put_status(:ok)
+      |> json(%{
+        data: Enum.map(replies, &MessageJSON.message_data/1),
+        meta: meta
+      })
+    end
+  end
+
+  @doc """
+  Get thread reply counts for multiple messages.
+
+  POST /api/v1/conversations/:conversation_id/thread-counts
+  Body: %{"message_ids" => [id1, id2, ...]}
+  """
+  def thread_counts(conn, %{"conversation_id" => conversation_id} = params) do
+    user = conn.assigns.current_user
+    message_ids = Map.get(params, "message_ids", []) |> Enum.take(200)
+
+    with {:ok, _conversation} <- Messaging.get_user_conversation(user, conversation_id) do
+      counts = Messaging.count_thread_replies(message_ids)
+
+      conn
+      |> put_status(:ok)
+      |> json(%{data: counts})
+    end
+  end
+
   # Private helper functions
 
   # Parse scheduled_at parameter and validate it's in the future

@@ -298,7 +298,7 @@ defmodule CGraph.Events do
       {:reply, {:ok, :already_subscribed}, state}
     else
       new_subs = Map.put(state.subscriptions, event_type, [handler | current])
-      Logger.debug("Subscribed to #{event_type}: #{inspect(handler)}")
+      Logger.debug("subscribed_to", event_type: event_type, handler: inspect(handler))
       {:reply, :ok, %{state | subscriptions: new_subs}}
     end
   end
@@ -493,6 +493,6 @@ defmodule CGraph.Events do
       }
     )
 
-    Logger.error("Event handler error: #{inspect(handler)} for #{event.type}: #{Exception.message(error)}")
+    Logger.error("event_handler_error_for", handler: inspect(handler), event_type: event.type, error: inspect(Exception.message(error)))
   end
 end

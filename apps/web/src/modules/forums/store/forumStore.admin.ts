@@ -206,7 +206,11 @@ export function createAdminActions(set: Set, _get: Get) {
       const response = await api.post('/api/v1/reports', { report: payload });
       const report = ensureObject<Report>(response.data, 'report');
       if (report) {
-        set((state) => ({ reports: [...state.reports, report] }));
+        const MAX_REPORTS = 200;
+        set((state) => {
+          const updated = [...state.reports, report];
+          return { reports: updated.length > MAX_REPORTS ? updated.slice(updated.length - MAX_REPORTS) : updated };
+        });
         return report;
       }
       throw new Error('Failed to submit report');

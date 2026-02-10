@@ -83,11 +83,15 @@ export function createCoreActions(set: Set, get: Get) {
         const response = await api.get(endpoint, { params });
         const newPosts = ensureArray<Post>(response.data, 'posts');
 
-        set((state) => ({
-          posts: page === 1 ? newPosts : [...state.posts, ...newPosts],
-          hasMorePosts: newPosts.length === 25,
-          isLoadingPosts: false,
-        }));
+        const MAX_POSTS = 500;
+        set((state) => {
+          const merged = page === 1 ? newPosts : [...state.posts, ...newPosts];
+          return {
+            posts: merged.length > MAX_POSTS ? merged.slice(merged.length - MAX_POSTS) : merged,
+            hasMorePosts: newPosts.length === 25,
+            isLoadingPosts: false,
+          };
+        });
       } catch (error: unknown) {
         set({ isLoadingPosts: false });
         throw error;
@@ -158,12 +162,14 @@ export function createCoreActions(set: Set, get: Get) {
       });
       const comment = ensureObject<Comment>(response.data, 'comment');
       if (comment) {
+        const MAX_COMMENTS_PER_POST = 500;
         set((state) => {
           const postComments = state.comments[postId] || [];
           if (parentId) {
             return { comments: { ...state.comments, [postId]: postComments } };
           }
-          return { comments: { ...state.comments, [postId]: [comment, ...postComments] } };
+          const updated = [comment, ...postComments];
+          return { comments: { ...state.comments, [postId]: updated.length > MAX_COMMENTS_PER_POST ? updated.slice(0, MAX_COMMENTS_PER_POST) : updated } };
         });
         return comment;
       }

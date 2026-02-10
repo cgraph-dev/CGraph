@@ -230,8 +230,8 @@ defmodule CGraph.Search.Engine do
     if get_backend() == :meilisearch do
       Enum.each(@indexes, fn {name, settings} ->
         case create_or_update_index(name, settings) do
-          :ok -> Logger.info("Search index '#{name}' configured")
-          {:error, reason} -> Logger.error("Failed to configure index '#{name}': #{inspect(reason)}")
+          :ok -> Logger.info("search_index_configured", name: name)
+          {:error, reason} -> Logger.error("failed_to_configure_index", name: name, reason: inspect(reason))
         end
       end)
     end
@@ -299,7 +299,7 @@ defmodule CGraph.Search.Engine do
         {:error, :meilisearch_unavailable}
 
       {:error, reason} ->
-        Logger.error("Meilisearch search error: #{inspect(reason)}")
+        Logger.error("meilisearch_search_error", reason: inspect(reason))
         {:error, :meilisearch_unavailable}
     end
   end
@@ -388,21 +388,21 @@ defmodule CGraph.Search.Engine do
   # ---------------------------------------------------------------------------
 
   defp search_postgres(index, query, opts) do
-    # Delegate to existing CGraph.Search functions
+    # Delegate to existing CGraph.Search functions using cursor-based pagination
     limit = Keyword.get(opts, :limit, 20)
-    offset = Keyword.get(opts, :offset, 0)
+    cursor = Keyword.get(opts, :cursor)
 
     result = case index do
       :users ->
-        {users, _meta} = CGraph.Search.search_users(query, limit: limit, offset: offset)
+        {users, _meta} = CGraph.Search.search_users(query, limit: limit, cursor: cursor)
         users
 
       :posts ->
-        {posts, _meta} = CGraph.Search.search_posts(query, limit: limit, offset: offset)
+        {posts, _meta} = CGraph.Search.search_posts(query, limit: limit, cursor: cursor)
         posts
 
       :groups ->
-        {groups, _meta} = CGraph.Search.search_groups(query, limit: limit, offset: offset)
+        {groups, _meta} = CGraph.Search.search_groups(query, limit: limit, cursor: cursor)
         groups
 
       :messages ->

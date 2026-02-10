@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeRegistry } from '@/themes/ThemeRegistry';
 import type { AppTheme } from '@/themes/theme-types';
 import { CheckCircle, Sparkles, Lock } from 'lucide-react';
+import { springs } from '@/lib/animation-presets/presets';
 
 interface ThemeSwitcherProps {
   currentThemeId: string;
@@ -217,7 +218,7 @@ function ThemeCard({ theme, isSelected, isLocked, isTransitioning, onSelect }: T
             initial={{ scale: 0, rotate: -180 }}
             animate={{ scale: 1, rotate: 0 }}
             exit={{ scale: 0, rotate: 180 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            transition={springs.bouncy}
           >
             <CheckCircle className="h-6 w-6 fill-emerald-500/20 text-emerald-500" />
           </motion.div>

@@ -8,6 +8,7 @@
 
 import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import type { DemoState } from './types';
 import { themeColors } from './constants';
 import { AnimatedAvatar } from './AnimatedAvatar';
@@ -61,7 +62,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       slide: {
         initial: { opacity: 0, x: isOwn ? 20 : -20 },
         animate: { opacity: 1, x: 0 },
-        transition: { delay, type: 'spring', stiffness: 300 },
+        transition: { delay, ...springs.bouncy },
       },
       fade: {
         initial: { opacity: 0 },
@@ -71,17 +72,17 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       scale: {
         initial: { opacity: 0, scale: 0.8 },
         animate: { opacity: 1, scale: 1 },
-        transition: { delay, type: 'spring', stiffness: 400 },
+        transition: { delay, ...springs.snappy },
       },
       bounce: {
         initial: { opacity: 0, y: 20 },
         animate: { opacity: 1, y: 0 },
-        transition: { delay, type: 'spring', stiffness: 500, damping: 15 },
+        transition: { delay, ...springs.snappy },
       },
       flip: {
         initial: { opacity: 0, rotateX: 90 },
         animate: { opacity: 1, rotateX: 0 },
-        transition: { delay, type: 'spring', stiffness: 300 },
+        transition: { delay, ...springs.bouncy },
       },
     };
 

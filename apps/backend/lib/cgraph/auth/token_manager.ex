@@ -479,7 +479,7 @@ defmodule CGraph.Auth.TokenManager do
         revoke_family(family_id)
 
         # Log security event
-        Logger.error("Token reuse detected for user #{user_id}, family #{family_id}")
+        Logger.error("token_reuse_detected_for_user_family", user_id: user_id, family_id: family_id)
 
         :telemetry.execute(
           [:cgraph, :auth, :security, :token_reuse],

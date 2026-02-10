@@ -350,7 +350,7 @@ defmodule CGraphWeb.API.Response do
   def internal_error(conn, reason \\ nil) do
     if reason do
       require Logger
-      Logger.error("Internal server error: #{inspect(reason)}")
+      Logger.error("internal_server_error", reason: inspect(reason))
     end
 
     error(conn, :internal_error, "An unexpected error occurred. Please try again later.")

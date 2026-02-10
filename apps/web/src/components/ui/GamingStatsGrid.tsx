@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, useMotionValue, animate } from 'framer-motion';
-import { springs } from '@/lib/animationPresets';
+import { springs } from '@/lib/animation-presets';
 
 interface StatItem {
   label: string;

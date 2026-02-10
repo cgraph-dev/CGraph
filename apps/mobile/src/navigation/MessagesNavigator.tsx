@@ -5,6 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import ConversationListScreen from '../screens/messages/ConversationListScreen';
 import ConversationScreen from '../screens/messages/ConversationScreen';
 import NewConversationScreen from '../screens/messages/NewConversationScreen';
+import SavedMessagesScreen from '../screens/messages/SavedMessagesScreen';
 
 const Stack = createNativeStackNavigator<MessagesStackParamList>();
 
@@ -38,6 +39,11 @@ export default function MessagesNavigator() {
         name="NewConversation"
         component={NewConversationScreen}
         options={{ title: 'New Message', presentation: 'modal' }}
+      />
+      <Stack.Screen
+        name="SavedMessages"
+        component={SavedMessagesScreen}
+        options={{ title: 'Saved Messages' }}
       />
     </Stack.Navigator>
   );

@@ -21,8 +21,8 @@ defmodule CGraph.Application do
     # Log database URL (masked)
     db_url = System.get_env("DATABASE_URL") || "NOT SET"
     masked_url = Regex.replace(~r/:[^:@]+@/, db_url, ":***@")
-    Logger.info("[Application] DATABASE_URL: #{masked_url}")
-    Logger.info("[Application] Redis enabled: #{redis_enabled?}")
+    Logger.info("application_database_url", masked_url: masked_url)
+    Logger.info("application_redis_status", enabled: redis_enabled?)
 
     base_children = [
       # Start telemetry reporters
@@ -92,13 +92,13 @@ defmodule CGraph.Application do
     # Insert Redis children after PubSub (position 3)
     children = Enum.take(base_children, 3) ++ redis_children ++ Enum.drop(base_children, 3)
 
-    Logger.info("[Application] Starting #{length(children)} child processes...")
+    Logger.info("application_starting", child_count: length(children))
 
     opts = [strategy: :one_for_one, name: CGraph.Supervisor]
 
     case Supervisor.start_link(children, opts) do
       {:ok, pid} ->
-        Logger.info("[Application] Supervisor started successfully with PID #{inspect(pid)}")
+        Logger.info("application_supervisor_started", pid: inspect(pid))
         
         # Initialize tier limits cache after Repo is started
         init_tier_limits_cache()
@@ -109,7 +109,7 @@ defmodule CGraph.Application do
         {:ok, pid}
 
       {:error, reason} ->
-        Logger.error("[Application] Supervisor failed to start: #{inspect(reason)}")
+        Logger.error("application_supervisor_failed", reason: inspect(reason))
         {:error, reason}
     end
   end
@@ -124,7 +124,7 @@ defmodule CGraph.Application do
         CGraph.Subscriptions.TierLimits.init_cache()
         Logger.info("[Application] Tier limits cache initialized")
       rescue
-        e -> Logger.warning("[Application] Failed to init tier cache: #{inspect(e)}")
+        e -> Logger.warning("application_tier_cache_init_failed", error: inspect(e))
       end
     end)
   end
@@ -144,9 +144,9 @@ defmodule CGraph.Application do
         warm_user_cache()
 
         duration = System.monotonic_time(:millisecond) - start
-        Logger.info("[Application] Cache warm-up completed in #{duration}ms")
+        Logger.info("application_cache_warmup_completed", duration_ms: duration)
       rescue
-        e -> Logger.warning("[Application] Cache warm-up failed: #{inspect(e)}")
+        e -> Logger.warning("application_cache_warmup_failed", error: inspect(e))
       end
     end)
   end
@@ -173,10 +173,10 @@ defmodule CGraph.Application do
 
       if length(items) > 0 do
         CGraph.Cache.warm_up(items, concurrency: 10)
-        Logger.info("[Application] Warmed #{length(items)} user cache entries")
+        Logger.info("application_user_cache_warmed", count: length(items))
       end
     rescue
-      e -> Logger.warning("[Application] User cache warm-up failed: #{inspect(e)}")
+      e -> Logger.warning("application_user_cache_warmup_failed", error: inspect(e))
     end
   end
 
@@ -216,7 +216,7 @@ defmodule CGraph.Application do
       Oban.drain_queue(queue: :notifications, with_safety: true)
       Oban.drain_queue(queue: :mailers, with_safety: true)
     rescue
-      e -> Logger.warning("[Application] Oban drain failed: #{inspect(e)}")
+      e -> Logger.warning("application_oban_drain_failed", error: inspect(e))
     end
 
     # 4. Wait for in-flight requests to complete (max 25s, leaving 5s buffer)

@@ -9,6 +9,7 @@ defmodule CGraph.Accounts.MemberDirectory do
 
   alias CGraph.Accounts.User
   alias CGraph.Repo
+  alias CGraph.ReadRepo
 
   @doc """
   List members with filtering and pagination.
@@ -33,13 +34,13 @@ defmodule CGraph.Accounts.MemberDirectory do
     base_query = apply_online_filter(base_query, online_only)
     base_query = apply_member_sort(base_query, sort_by, sort_order)
 
-    total_count = Repo.aggregate(base_query, :count, :id)
+    total_count = ReadRepo.aggregate(base_query, :count, :id)
 
     members =
       base_query
       |> limit(^per_page)
       |> offset(^offset)
-      |> Repo.all()
+      |> ReadRepo.all()
       |> Enum.map(&enrich_member/1)
 
     pagination = %{
@@ -99,7 +100,7 @@ defmodule CGraph.Accounts.MemberDirectory do
 
     if with_count do
       Enum.map(groups, fn group ->
-        count = from(u in User, where: u.role == ^group.id) |> Repo.aggregate(:count, :id)
+        count = from(u in User, where: u.role == ^group.id) |> ReadRepo.aggregate(:count, :id)
         Map.put(group, :member_count, count)
       end)
     else
@@ -111,21 +112,21 @@ defmodule CGraph.Accounts.MemberDirectory do
   Get member statistics.
   """
   def get_member_stats do
-    total_members = from(u in User, where: u.role != "bot") |> Repo.aggregate(:count, :id)
+    total_members = from(u in User, where: u.role != "bot") |> ReadRepo.aggregate(:count, :id)
 
     today = Date.utc_today()
     start_of_day = DateTime.new!(today, ~T[00:00:00], "Etc/UTC")
     start_of_week = Date.add(today, -7) |> then(&DateTime.new!(&1, ~T[00:00:00], "Etc/UTC"))
     start_of_month = Date.add(today, -30) |> then(&DateTime.new!(&1, ~T[00:00:00], "Etc/UTC"))
 
-    members_today = from(u in User, where: u.inserted_at >= ^start_of_day) |> Repo.aggregate(:count, :id)
-    members_this_week = from(u in User, where: u.inserted_at >= ^start_of_week) |> Repo.aggregate(:count, :id)
-    members_this_month = from(u in User, where: u.inserted_at >= ^start_of_month) |> Repo.aggregate(:count, :id)
+    members_today = from(u in User, where: u.inserted_at >= ^start_of_day) |> ReadRepo.aggregate(:count, :id)
+    members_this_week = from(u in User, where: u.inserted_at >= ^start_of_week) |> ReadRepo.aggregate(:count, :id)
+    members_this_month = from(u in User, where: u.inserted_at >= ^start_of_month) |> ReadRepo.aggregate(:count, :id)
 
-    newest_member = from(u in User, order_by: [desc: u.inserted_at], limit: 1) |> Repo.one()
+    newest_member = from(u in User, order_by: [desc: u.inserted_at], limit: 1) |> ReadRepo.one()
 
     online_threshold = DateTime.add(DateTime.utc_now(), -15, :minute)
-    online_now = from(u in User, where: u.last_online_at >= ^online_threshold) |> Repo.aggregate(:count, :id)
+    online_now = from(u in User, where: u.last_online_at >= ^online_threshold) |> ReadRepo.aggregate(:count, :id)
 
     %{
       total_members: total_members,

@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { springs } from '@/lib/animation-presets/presets';
 import type {
   ResultSectionProps,
   UserResultProps,
@@ -77,7 +78,7 @@ export function UserResult({ user, onClick }: UserResultProps) {
         <div className="relative z-10 flex items-center gap-3 p-3 text-left">
           <motion.div
             whileHover={{ scale: 1.1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            transition={springs.snappy}
           >
             {user.avatarUrl ? (
               <div className="rounded-full bg-gradient-to-br from-primary-500 to-purple-600 p-0.5">
@@ -129,7 +130,7 @@ export function GroupResult({ group, onClick }: GroupResultProps) {
         <div className="relative z-10 flex items-center gap-3 p-3 text-left">
           <motion.div
             whileHover={{ scale: 1.1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            transition={springs.snappy}
           >
             {group.iconUrl ? (
               <img
@@ -177,7 +178,7 @@ export function ForumResult({ forum, onClick }: ForumResultProps) {
         <div className="relative z-10 flex items-center gap-3 p-3 text-left">
           <motion.div
             whileHover={{ scale: 1.1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+            transition={springs.snappy}
           >
             {forum.iconUrl ? (
               <img

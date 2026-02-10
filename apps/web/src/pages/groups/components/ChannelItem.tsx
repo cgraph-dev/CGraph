@@ -5,6 +5,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   HashtagIcon,
   SpeakerWaveIcon,
@@ -54,7 +55,7 @@ export function ChannelItem({ channel, groupId, isActive }: ChannelItemProps) {
             layoutId={`activeChannel-${groupId}`}
             className="absolute -left-2 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary-400 to-purple-600"
             style={{ boxShadow: '0 0 8px rgba(16, 185, 129, 0.6)' }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            transition={springs.bouncy}
           />
         )}
         <Icon
@@ -68,7 +69,7 @@ export function ChannelItem({ channel, groupId, isActive }: ChannelItemProps) {
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               exit={{ scale: 0, rotate: 180 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              transition={springs.bouncy}
               className="ml-auto flex h-4 min-w-[16px] items-center justify-center rounded-full bg-gradient-to-r from-red-600 to-pink-600 px-1 text-xs font-bold text-white"
               style={{ boxShadow: '0 0 10px rgba(239, 68, 68, 0.5)' }}
             >

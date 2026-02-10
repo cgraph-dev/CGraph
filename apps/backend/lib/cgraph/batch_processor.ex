@@ -212,7 +212,7 @@ defmodule CGraph.BatchProcessor do
 
     opts = merge_options(opts)
 
-    Logger.info("[BatchProcessor] Starting batch #{batch_id} with #{total} items")
+    Logger.info("batchprocessor_starting_batch_with_items", batch_id: batch_id, total: total)
 
     start_time = System.monotonic_time(:millisecond)
 
@@ -227,7 +227,7 @@ defmodule CGraph.BatchProcessor do
 
     final_result = Map.put(result, :duration_ms, duration)
 
-    Logger.info("[BatchProcessor] Completed batch #{batch_id}: #{result.succeeded}/#{total} succeeded in #{duration}ms")
+    Logger.info("batchprocessor_completed_batch_succeeded_in_ms", batch_id: batch_id, result_succeeded: result.succeeded, total: total, duration: duration)
 
     cleanup_progress(batch_id)
 
@@ -248,7 +248,7 @@ defmodule CGraph.BatchProcessor do
     opts = merge_options(opts)
     total = length(items)
 
-    Logger.info("[BatchProcessor] Starting batched processing #{batch_id} with #{total} items")
+    Logger.info("batchprocessor_starting_batched_processing_with_it", batch_id: batch_id, total: total)
 
     start_time = System.monotonic_time(:millisecond)
     init_progress(batch_id, total)
@@ -288,7 +288,7 @@ defmodule CGraph.BatchProcessor do
 
     opts = merge_options(opts)
 
-    Logger.info("[BatchProcessor] Starting stream processing #{batch_id}")
+    Logger.info("batchprocessor_starting_stream_processing", batch_id: batch_id)
 
     start_time = System.monotonic_time(:millisecond)
 

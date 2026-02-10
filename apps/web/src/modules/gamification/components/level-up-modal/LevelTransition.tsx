@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import { ChevronRightIcon } from '@heroicons/react/24/outline';
 
 interface LevelTransitionProps {
@@ -15,7 +16,7 @@ export default function LevelTransition({ oldLevel, newLevel }: LevelTransitionP
       className="flex items-center justify-center gap-6"
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
-      transition={{ type: 'spring', delay: 0.5, stiffness: 200 }}
+      transition={{ ...springs.smooth, delay: 0.5 }}
     >
       {/* Old Level */}
       <motion.div
@@ -49,7 +50,7 @@ export default function LevelTransition({ oldLevel, newLevel }: LevelTransitionP
           scale: [0, 1.2, 1],
           rotate: [0, 360],
         }}
-        transition={{ delay: 0.8, duration: 1, type: 'spring' }}
+        transition={{ delay: 0.8, duration: 1, ...springs.default }}
       >
         <div className="h-32 w-32 rounded-full bg-gradient-to-br from-primary-500 via-purple-500 to-pink-500 p-1.5">
           <div className="flex h-full w-full flex-col items-center justify-center rounded-full bg-dark-900">

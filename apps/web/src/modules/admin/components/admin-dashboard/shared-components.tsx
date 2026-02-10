@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { ModerationItem } from './types';
 import { RISK_COLORS } from './constants';
+import { springs } from '@/lib/animation-presets/presets';
 
 /**
  * Stat card with optional trend indicator
@@ -129,7 +130,7 @@ export function ToggleSwitch({ defaultChecked = false }: { defaultChecked?: bool
       <motion.div
         className="h-5 w-5 rounded-full bg-white"
         animate={{ x: checked ? 26 : 2 }}
-        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+        transition={springs.snappy}
       />
     </button>
   );

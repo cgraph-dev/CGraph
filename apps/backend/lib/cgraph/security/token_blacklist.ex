@@ -393,7 +393,7 @@ defmodule CGraph.Security.TokenBlacklist do
 
       log_mass_revocation_audit(user_id, reason, opts)
 
-      Logger.info("Revoked all tokens for user #{user_id}: #{reason}")
+      Logger.info("revoked_all_tokens_for_user", user_id: user_id, reason: reason)
       :ok
     end
   end
@@ -599,7 +599,7 @@ defmodule CGraph.Security.TokenBlacklist do
       :ets.delete(@bloom_table, key)
     end)
 
-    Logger.debug("TokenBlacklist cleanup: removed #{length(expired)} expired entries")
+    Logger.debug("tokenblacklist_cleanup_removed_expired_entries", expired_count: inspect(length(expired)))
     :ok
   end
 

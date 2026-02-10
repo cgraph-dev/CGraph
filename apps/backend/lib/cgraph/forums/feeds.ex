@@ -8,6 +8,7 @@ defmodule CGraph.Forums.Feeds do
   import Ecto.Query, warn: false
   
   alias CGraph.Repo
+  alias CGraph.ReadRepo
   alias CGraph.Forums.{Post, Forum, Subscription}
   
   @doc """
@@ -24,12 +25,12 @@ defmodule CGraph.Forums.Feeds do
     |> maybe_apply_time_filter(sort, time_range)
     |> apply_sort(sort)
     
-    total = Repo.aggregate(query, :count, :id)
+    total = ReadRepo.aggregate(query, :count, :id)
     
     posts = query
     |> limit(^per_page)
     |> offset(^((page - 1) * per_page))
-    |> Repo.all()
+    |> ReadRepo.all()
     |> maybe_add_user_votes(user)
     
     meta = %{page: page, per_page: per_page, total: total}
@@ -50,7 +51,7 @@ defmodule CGraph.Forums.Feeds do
       where: s.user_id == ^user.id,
       select: s.forum_id
     )
-    |> Repo.all()
+    |> ReadRepo.all()
     
     if Enum.empty?(subscribed_forum_ids) do
       # No subscriptions - return public feed
@@ -63,12 +64,12 @@ defmodule CGraph.Forums.Feeds do
       )
       |> apply_sort(sort)
       
-      total = Repo.aggregate(query, :count, :id)
+      total = ReadRepo.aggregate(query, :count, :id)
       
       posts = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
-      |> Repo.all()
+      |> ReadRepo.all()
       |> maybe_add_user_votes(user)
       
       meta = %{page: page, per_page: per_page, total: total}
@@ -96,12 +97,12 @@ defmodule CGraph.Forums.Feeds do
       preload: [:author, :forum]
     )
     
-    total = Repo.aggregate(query, :count, :id)
+    total = ReadRepo.aggregate(query, :count, :id)
     
     posts = query
     |> limit(^per_page)
     |> offset(^((page - 1) * per_page))
-    |> Repo.all()
+    |> ReadRepo.all()
     |> maybe_add_user_votes(user)
     
     meta = %{page: page, per_page: per_page, total: total}

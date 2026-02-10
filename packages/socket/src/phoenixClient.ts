@@ -7,6 +7,9 @@
 
 import { Socket, Channel } from 'phoenix';
 import type { SocketOptions, ChannelOptions, ConnectionState, MessageHandler } from './types';
+import { exponentialBackoffWithJitter } from './backoff';
+
+const defaultBackoff = exponentialBackoffWithJitter();
 
 export class PhoenixClient {
   private socket: Socket | null = null;
@@ -34,7 +37,7 @@ export class PhoenixClient {
         token: this.options.token,
         ...this.options.params,
       }),
-      reconnectAfterMs: this.options.reconnectAfterMs,
+      reconnectAfterMs: this.options.reconnectAfterMs ?? defaultBackoff,
       heartbeatIntervalMs: this.options.heartbeatIntervalMs,
       timeout: this.options.timeout,
     });

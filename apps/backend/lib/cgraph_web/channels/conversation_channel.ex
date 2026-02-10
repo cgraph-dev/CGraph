@@ -271,16 +271,7 @@ defmodule CGraphWeb.ConversationChannel do
 
     with {:ok, message} <- Messaging.get_message(message_id),
          {:ok, _conversation} <- Messaging.get_conversation(conversation_id),
-         {:ok, _reaction, replaced_emoji} <- Messaging.add_reaction(user, message, emoji) do
-      # If we replaced an old reaction, broadcast its removal first
-      if replaced_emoji do
-        broadcast!(socket, "reaction_removed", %{
-          message_id: message_id,
-          user_id: user.id,
-          emoji: replaced_emoji
-        })
-      end
-
+         {:ok, _reaction, _replaced} <- Messaging.add_reaction(user, message, emoji) do
       broadcast!(socket, "reaction_added", %{
         message_id: message_id,
         user_id: user.id,

@@ -156,7 +156,7 @@ defmodule CGraph.Notifications.PushService.FcmClient do
     # Get initial access token
     state = refresh_access_token(state)
 
-    Logger.info("FCM client started (project: #{config[:project_id]})")
+    Logger.info("fcm_client_started", project_id: config[:project_id])
     {:ok, state}
   end
 
@@ -290,7 +290,7 @@ defmodule CGraph.Notifications.PushService.FcmClient do
   end
   defp handle_fcm_response({:ok, 400, _headers, body}) do
     error = parse_error(body)
-    Logger.warning("FCM bad request: #{inspect(error)}")
+    Logger.warning("fcm_bad_request", error: inspect(error))
     {:error, error}
   end
   defp handle_fcm_response({:ok, 401, _headers, _body}), do: {:error, :unauthorized}
@@ -298,11 +298,11 @@ defmodule CGraph.Notifications.PushService.FcmClient do
   defp handle_fcm_response({:ok, 404, _headers, _body}), do: {:error, :not_found}
   defp handle_fcm_response({:ok, 429, _headers, _body}), do: {:error, :quota_exceeded}
   defp handle_fcm_response({:ok, status, _headers, body}) when status >= 500 do
-    Logger.error("FCM server error #{status}: #{body}")
+    Logger.error("fcm_server_error", status: status, body: body)
     {:error, :unavailable}
   end
   defp handle_fcm_response({:error, reason}) do
-    Logger.error("FCM connection error: #{inspect(reason)}")
+    Logger.error("fcm_connection_error", reason: inspect(reason))
     {:error, :connection_failed}
   end
 
@@ -325,7 +325,7 @@ defmodule CGraph.Notifications.PushService.FcmClient do
     end
   rescue
     e ->
-      Logger.error("HTTP request failed: #{inspect(e)}")
+      Logger.error("fcm_http_request_failed", error: inspect(e))
       {:error, :request_failed}
   end
 
@@ -407,11 +407,11 @@ defmodule CGraph.Notifications.PushService.FcmClient do
     case get_access_token(state.config) do
       {:ok, token, expires_in} ->
         expires_at = System.monotonic_time(:second) + expires_in - @token_buffer_seconds
-        Logger.debug("FCM access token refreshed (expires in #{expires_in}s)")
+        Logger.debug("fcm_token_refreshed", expires_in: expires_in)
         %{state | access_token: token, token_expires_at: expires_at}
 
       {:error, reason} ->
-        Logger.error("Failed to get FCM access token: #{inspect(reason)}")
+        Logger.error("fcm_token_refresh_failed", reason: inspect(reason))
         state
     end
   end
@@ -450,7 +450,7 @@ defmodule CGraph.Notifications.PushService.FcmClient do
     exchange_jwt_for_token(token_uri, assertion)
   rescue
     e ->
-      Logger.error("Failed to get access token: #{inspect(e)}")
+      Logger.error("fcm_access_token_error", error: inspect(e))
       {:error, e}
   end
 
@@ -497,7 +497,7 @@ defmodule CGraph.Notifications.PushService.FcmClient do
         parse_token_response(response_body)
 
       {:ok, status, _headers, body} ->
-        Logger.error("OAuth token request failed (#{status}): #{body}")
+        Logger.error("fcm_oauth_token_failed", status: status, body: body)
         {:error, :token_request_failed}
 
       {:error, reason} ->
@@ -533,7 +533,7 @@ defmodule CGraph.Notifications.PushService.FcmClient do
       {:ok, %{"error" => %{"code" => code}}} ->
         error_code_to_atom(code)
       {:ok, %{"error" => %{"message" => message}}} ->
-        Logger.warning("FCM error: #{message}")
+        Logger.warning("fcm_error", message: message)
         :unknown_error
       _ ->
         :unknown_error

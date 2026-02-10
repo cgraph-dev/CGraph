@@ -356,7 +356,7 @@ defmodule CGraphWeb.Admin.EventsController do
     page = get_page(params)
     per_page = get_per_page(params)
 
-    with {:ok, leaderboard} <- Events.get_leaderboard(
+    with {:ok, {leaderboard, _meta}} <- Events.get_leaderboard(
       event_id,
       page: page,
       per_page: per_page

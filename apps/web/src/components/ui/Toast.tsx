@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { motion, AnimatePresence } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import { 
   CheckCircleIcon, 
   XCircleIcon, 
@@ -97,7 +98,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: () => void }) 
       initial={{ opacity: 0, x: 80, scale: 0.95 }}
       animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, x: 80, scale: 0.95 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+      transition={springs.snappy}
       role="alert"
       aria-live="assertive"
       className={`flex items-start gap-3 p-4 rounded-lg border ${config.bgColor} ${config.borderColor} shadow-lg`}

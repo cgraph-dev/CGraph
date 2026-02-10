@@ -9,6 +9,7 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import UserProfileCard from '@/modules/social/components/UserProfileCard';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import type { FriendRequestCardProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function FriendRequestCard({ request, type, onAccept, onDecline }: FriendRequestCardProps) {
   // Defensive null check for user data
@@ -22,7 +23,7 @@ export function FriendRequestCard({ request, type, onAccept, onDecline }: Friend
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      transition={springs.bouncy}
     >
       <GlassCard
         variant="crystal"
@@ -54,7 +55,7 @@ export function FriendRequestCard({ request, type, onAccept, onDecline }: Friend
             >
               <motion.div
                 whileHover={{ scale: 1.1, rotate: 5 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                transition={springs.bouncy}
               >
                 {avatarUrl ? (
                   <div className="rounded-full bg-gradient-to-br from-primary-500 to-purple-600 p-0.5">

@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useActiveBubbleStyle, useChatEffectSettings } from '@/modules/chat/store';
 import type { MessageBubbleProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export const MessageBubble = memo(function MessageBubble({
   children,
@@ -54,7 +55,7 @@ export const MessageBubble = memo(function MessageBubble({
       initial={animate ? 'initial' : undefined}
       animate={animate ? 'animate' : undefined}
       exit={animate ? 'exit' : undefined}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      transition={springs.bouncy}
     >
       {children}
     </motion.div>

@@ -154,4 +154,35 @@ defmodule CGraphWeb.API.V1.ConversationController do
       render(conn, :mark_read, conversation_id: conversation_id)
     end
   end
+
+  @doc """
+  Update disappearing message TTL for a conversation.
+
+  PUT /api/v1/conversations/:id/ttl
+
+  Body: { "ttl": 86400 }  (seconds, null = off)
+  Valid values: null, 86400 (24h), 604800 (7d), 2592000 (30d)
+  """
+  def update_ttl(conn, %{"conversation_id" => conversation_id} = params) do
+    user = conn.assigns.current_user
+    ttl = params["ttl"]
+
+    valid_ttls = [nil, 86400, 604_800, 2_592_000]
+
+    unless ttl in valid_ttls do
+      conn
+      |> put_status(:bad_request)
+      |> json(%{error: "Invalid TTL value. Use null, 86400, 604800, or 2592000"})
+    else
+      with {:ok, conversation} <- Messaging.get_user_conversation(user, conversation_id),
+           {:ok, updated} <- Messaging.update_conversation_ttl(conversation, ttl) do
+        json(conn, %{
+          data: %{
+            conversation_id: updated.id,
+            message_ttl: updated.message_ttl
+          }
+        })
+      end
+    end
+  end
 end

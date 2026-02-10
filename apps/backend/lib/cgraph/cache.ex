@@ -239,8 +239,9 @@ defmodule CGraph.Cache do
       {:ok, value} ->
         value
 
-      {:error, :not_found} ->
+      {:error, _reason} ->
         # Default to lock-based stampede protection (opt-OUT with lock: false)
+        # Handles both :not_found (cache miss) and Redis/Cachex errors gracefully
         use_lock = Keyword.get(opts, :lock, true)
 
         if use_lock do
@@ -501,12 +502,11 @@ defmodule CGraph.Cache do
   defp delete_redis_pattern(pattern) do
     redis_pattern = "cache:#{pattern}"
 
-    case CGraph.Redis.command(["KEYS", redis_pattern]) do
-      {:ok, keys} when is_list(keys) ->
-        Enum.each(keys, fn key ->
-          CGraph.Redis.command(["DEL", key])
-        end)
-      _ -> :ok
+    # Use SCAN + pipelined DEL instead of KEYS (KEYS blocks all Redis clients at scale)
+    # See: https://redis.io/commands/scan — O(1) per iteration vs O(N) for KEYS
+    case CGraph.Redis.scan_and_delete(redis_pattern) do
+      {:ok, _count} -> :ok
+      {:error, _} -> :ok
     end
   rescue
     _ -> :ok

@@ -9,6 +9,7 @@ defmodule CGraph.Accounts.Search do
 
   alias CGraph.Accounts.User
   alias CGraph.Repo
+  alias CGraph.ReadRepo
 
   @doc """
   Search users by username, display name, email, or UID (random 10-digit like #4829173650).
@@ -66,7 +67,7 @@ defmodule CGraph.Accounts.Search do
       order_by: [asc: u.username],
       limit: ^limit
     )
-    |> Repo.all()
+    |> ReadRepo.all()
   end
 
   @doc """

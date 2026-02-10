@@ -15,6 +15,7 @@ import { FullProfileCard } from './FullProfileCard';
 import { useProfileCardNavigation } from './hooks';
 import { HOVER_DELAY_MS, DEFAULT_PLACEHOLDER_USER } from './constants';
 import type { UserProfileCardProps, MutualFriend, CardPosition, ProfileCardUser } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export default function UserProfileCard({
   userId,
@@ -118,7 +119,7 @@ export default function UserProfileCard({
                 initial={{ opacity: 0, scale: 0.9, y: -10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: -10 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                transition={springs.stiff}
                 className={`fixed z-50 ${
                   cardVariant === 'mini'
                     ? 'pointer-events-auto'

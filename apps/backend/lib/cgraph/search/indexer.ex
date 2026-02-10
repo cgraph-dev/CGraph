@@ -121,7 +121,7 @@ defmodule CGraph.Search.Indexer do
   def reindex_all(index_name, opts \\ []) do
     batch_size = Keyword.get(opts, :batch_size, 1000)
 
-    Logger.info("Starting full reindex of #{index_name}")
+    Logger.info("starting_full_reindex_of", index_name: index_name)
 
     case index_name do
       :users -> reindex_users(batch_size)

@@ -12,6 +12,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
+import { springs } from '@/lib/animation-presets/presets';
 
 type PresenceStatus = 'online' | 'idle' | 'dnd' | 'invisible';
 
@@ -108,7 +109,7 @@ export function PresenceStatusSelector({
               initial={{ opacity: 0, y: -5, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -5, scale: 0.95 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 400 }}
+              transition={springs.snappy}
               className="absolute left-0 top-full z-50 mt-1 w-56 overflow-hidden rounded-xl border border-gray-700/50 bg-dark-800 shadow-xl"
             >
               <div className="px-3 py-2 text-xs font-semibold uppercase text-gray-500">

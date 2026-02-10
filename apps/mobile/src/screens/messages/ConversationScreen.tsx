@@ -32,6 +32,8 @@ import {
   ChatInputArea,
   MessageBubble,
 } from './ConversationScreen/components';
+import { GifPickerModal } from './ConversationScreen/components/GifPickerModal';
+import type { GifResult } from './ConversationScreen/components/GifPickerModal';
 import { styles } from './ConversationScreen/styles';
 import {
   useMediaViewer,
@@ -97,6 +99,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
 
   const [isSending, setIsSending] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
+  const [showGifPicker, setShowGifPicker] = useState(false);
 
   // Presence and typing hook - manages online/typing state
   const {
@@ -313,6 +316,31 @@ export default function ConversationScreen({ navigation, route }: Props) {
     setNewMessageIds,
     onScrollToBottom: scrollToBottom,
   });
+
+  // GIF selection handler — sends as a gif-type message
+  const handleGifSelect = useCallback(async (gif: GifResult) => {
+    if (isSending) return;
+    setIsSending(true);
+    try {
+      const response = await (await import('../../lib/api')).default.post(
+        `/api/v1/conversations/${conversationId}/messages`,
+        {
+          content: gif.url,
+          content_type: 'gif',
+          metadata: { gif_id: gif.id, title: gif.title, preview_url: gif.previewUrl, width: gif.width, height: gif.height },
+        }
+      );
+      if (response.data?.data) {
+        const newMsg = response.data.data;
+        setMessages((prev: Message[]) => [...prev, newMsg]);
+        scrollToBottom();
+      }
+    } catch (error) {
+      logger.error('Failed to send GIF:', error);
+    } finally {
+      setIsSending(false);
+    }
+  }, [conversationId, isSending, setMessages, scrollToBottom]);
 
   // Socket event handlers hook - centralizes all socket callbacks
   const {
@@ -673,6 +701,12 @@ export default function ConversationScreen({ navigation, route }: Props) {
         contentContainerStyle={[styles.messagesList, messages.length === 0 && styles.emptyList]}
         inverted={true}
         ListEmptyComponent={renderEmptyConversation}
+        // Performance tuning for large message lists (10M+ user scale)
+        windowSize={11}
+        maxToRenderPerBatch={15}
+        initialNumToRender={20}
+        updateCellsBatchingPeriod={50}
+        removeClippedSubviews={true}
         onScrollToIndexFailed={(info) => {
           // Handle scroll to index failure by scrolling to approximate offset
           flatListRef.current?.scrollToOffset({
@@ -707,6 +741,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
         onCancelVoice={() => setIsVoiceMode(false)}
         onVoiceComplete={handleVoiceComplete}
         onCancelReply={cancelReply}
+        onGifPress={() => setShowGifPicker(true)}
+      />
+
+      {/* GIF Picker Modal */}
+      <GifPickerModal
+        visible={showGifPicker}
+        onClose={() => setShowGifPicker(false)}
+        onSelect={handleGifSelect}
       />
     </KeyboardAvoidingView>
   );

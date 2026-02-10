@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
 import { AUTOSAVE_INTERVAL, MIN_POLL_OPTIONS } from './constants';
 import type { PostEditorData, PostEditorProps, PollOptionInput } from './types';
 
@@ -86,19 +87,17 @@ export function usePostEditor({
     isNsfw,
   ]);
 
-  // Autosave draft every 30 seconds
-  useEffect(() => {
-    if (!onSaveDraft) return;
+  // Autosave draft: AUTOSAVE_INTERVAL when active, skipped when tab hidden
+  const saveDraftCallback = useCallback(() => {
+    if ((title || content) && onSaveDraft) {
+      onSaveDraft(buildPostData());
+      setLastSaved(new Date());
+    }
+  }, [title, content, onSaveDraft, buildPostData]);
 
-    const interval = setInterval(() => {
-      if (title || content) {
-        onSaveDraft(buildPostData());
-        setLastSaved(new Date());
-      }
-    }, AUTOSAVE_INTERVAL);
-
-    return () => clearInterval(interval);
-  }, [title, content, categoryId, prefixId, isNsfw, onSaveDraft, buildPostData]);
+  useAdaptiveInterval(saveDraftCallback, AUTOSAVE_INTERVAL, {
+    enabled: !!onSaveDraft,
+  });
 
   const handleSubmit = useCallback(async () => {
     if (!title.trim() || !content.trim() || isSubmitting) return;

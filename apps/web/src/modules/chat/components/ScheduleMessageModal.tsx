@@ -3,6 +3,7 @@ import { ClockIcon, XMarkIcon, CalendarIcon, PaperAirplaneIcon } from '@heroicon
 import { GlassCard } from '@/shared/components/ui';
 import { useScheduleMessageModal } from '@/modules/chat/hooks/useScheduleMessageModal';
 import { ScheduledTimePreview } from '@/modules/chat/components/ScheduledTimePreview';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   QUICK_SCHEDULE_OPTIONS,
   resolveScheduleDate,
@@ -60,7 +61,7 @@ export function ScheduleMessageModal({
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              transition={springs.stiff}
               className="w-full max-w-lg"
             >
               <GlassCard className="relative p-6">

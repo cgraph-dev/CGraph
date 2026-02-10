@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
@@ -46,7 +47,7 @@ export default function NotFound() {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 20 }}
+            transition={{ delay: 0.2, ...springs.stiff }}
             className="mb-6"
           >
             <div className="relative inline-block">
@@ -65,7 +66,7 @@ export default function NotFound() {
           <motion.div
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3, type: 'spring', stiffness: 400, damping: 15 }}
+            transition={{ delay: 0.3, ...springs.snappy }}
             className="mb-6 flex justify-center"
           >
             <div className="rounded-full bg-gradient-to-br from-primary-500/20 to-purple-500/20 p-4">

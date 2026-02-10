@@ -30,7 +30,7 @@ defmodule CGraph.Workers.DatabaseBackup do
   def perform(%Oban.Job{args: args}) do
     backup_type = Map.get(args, "type", "daily")
 
-    Logger.info("Starting #{backup_type} database backup")
+    Logger.info("backup_starting", type: backup_type)
 
     with {:ok, backup_file} <- create_backup(backup_type),
          {:ok, _} <- verify_backup(backup_file),
@@ -38,7 +38,7 @@ defmodule CGraph.Workers.DatabaseBackup do
          :ok <- cleanup_local(backup_file),
          :ok <- cleanup_old_backups(backup_type) do
 
-      Logger.info("Database backup completed successfully: #{s3_path}")
+      Logger.info("backup_completed", s3_path: s3_path, type: backup_type)
 
       # Notify on success (optional)
       notify_backup_complete(s3_path, backup_type)
@@ -46,7 +46,7 @@ defmodule CGraph.Workers.DatabaseBackup do
       :ok
     else
       {:error, reason} ->
-        Logger.error("Database backup failed: #{inspect(reason)}")
+        Logger.error("backup_failed", reason: inspect(reason))
         notify_backup_failure(reason)
         {:error, reason}
     end
@@ -72,15 +72,15 @@ defmodule CGraph.Workers.DatabaseBackup do
       ], stderr_to_stdout: true) do
         {_, 0} ->
           file_size = File.stat!(backup_path).size
-          Logger.info("Backup created: #{filename} (#{format_bytes(file_size)})")
+          Logger.info("backup_file_created", filename: filename, size_bytes: file_size)
           {:ok, backup_path}
 
         {output, code} ->
-          Logger.error("pg_dump failed with code #{code}: #{output}")
+          Logger.error("pg_dump_failed", exit_code: code, output: output)
           {:error, {:pg_dump_failed, code, output}}
       end
     else
-      Logger.warning("DATABASE_URL not set, skipping backup")
+      Logger.warning("backup_skipped_no_database_url")
       {:error, :no_database_url}
     end
   end
@@ -89,11 +89,11 @@ defmodule CGraph.Workers.DatabaseBackup do
   defp verify_backup(backup_path) do
     case System.cmd("pg_restore", ["--list", backup_path], stderr_to_stdout: true) do
       {_, 0} ->
-        Logger.info("Backup verification passed")
+        Logger.info("backup_verification_passed")
         {:ok, :verified}
 
       {output, code} ->
-        Logger.error("Backup verification failed: #{output}")
+        Logger.error("backup_verification_failed", output: output, exit_code: code)
         {:error, {:verification_failed, code}}
     end
   end
@@ -113,11 +113,11 @@ defmodule CGraph.Workers.DatabaseBackup do
       ]}
     ]) |> ExAws.request() do
       {:ok, _} ->
-        Logger.info("Backup uploaded to S3: #{s3_key}")
+        Logger.info("backup_uploaded", s3_key: s3_key)
         {:ok, s3_key}
 
       {:error, reason} ->
-        Logger.error("S3 upload failed: #{inspect(reason)}")
+        Logger.error("backup_s3_upload_failed", reason: inspect(reason))
         {:error, {:s3_upload_failed, reason}}
     end
   end
@@ -155,11 +155,11 @@ defmodule CGraph.Workers.DatabaseBackup do
 
   defp delete_backup_object(obj) do
     ExAws.S3.delete_object(@backup_bucket, obj.key) |> ExAws.request()
-    Logger.info("Deleted old backup: #{obj.key}")
+    Logger.info("backup_old_deleted", key: obj.key)
   end
 
   defp log_list_failure(reason) do
-    Logger.warning("Failed to list old backups: #{inspect(reason)}")
+    Logger.warning("backup_list_old_failed", reason: inspect(reason))
     :ok
   end
 

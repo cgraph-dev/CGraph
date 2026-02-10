@@ -13,6 +13,7 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useAdaptiveInterval } from '../../hooks/useAdaptiveInterval';
 import { ParamListBase } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import api from '../../lib/api';
@@ -210,18 +211,10 @@ export default function WhosOnlineScreen() {
 
   useEffect(() => {
     fetchOnlineUsers();
-
-    // Auto-refresh every 30 seconds
-    refreshInterval.current = setInterval(() => {
-      fetchOnlineUsers();
-    }, 30000);
-
-    return () => {
-      if (refreshInterval.current) {
-        clearInterval(refreshInterval.current);
-      }
-    };
   }, [fetchOnlineUsers]);
+
+  // Auto-refresh: 30s when active, 120s when backgrounded
+  useAdaptiveInterval(fetchOnlineUsers, 30000);
 
   // Manual refresh
   const handleRefresh = async () => {

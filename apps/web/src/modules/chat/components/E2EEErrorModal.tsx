@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   ShieldExclamationIcon,
   XMarkIcon,
@@ -69,7 +70,7 @@ export function E2EEErrorModal({
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            transition={springs.stiff}
             onClick={(e) => e.stopPropagation()}
             className="w-full max-w-md"
           >
@@ -87,7 +88,7 @@ export function E2EEErrorModal({
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
+                  transition={{ delay: 0.1, ...springs.dramatic }}
                   className="mb-4 rounded-full bg-red-500/20 p-4"
                 >
                   <ShieldExclamationIcon className="h-12 w-12 text-red-400" />

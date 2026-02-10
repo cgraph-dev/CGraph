@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { VerificationState } from '@/pages/auth/verify-email/useVerifyEmail';
 import { containerVariants, itemVariants } from '@/pages/auth/verify-email/animations';
+import { springs } from '@/lib/animation-presets/presets';
 
 interface StatusDisplayProps {
   state: VerificationState;
@@ -40,7 +41,7 @@ function SuccessView({ onNavigate }: { onNavigate: (path: string) => void }) {
         variants={itemVariants}
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
+        transition={{ ...springs.wobbly, delay: 0.2 }}
         className="mb-6 inline-flex h-24 w-24 items-center justify-center rounded-full bg-green-500/20 text-green-400"
       >
         <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { CardProps } from './types';
 import { MOCK_BADGES, getBadgeGlow } from './constants';
 import { AnimatedAvatar } from '../AnimatedAvatar';
+import { springs } from '@/lib/animation-presets/presets';
 
 export const DetailedProfileCard = memo(function DetailedProfileCard({
   state,
@@ -31,7 +32,7 @@ export const DetailedProfileCard = memo(function DetailedProfileCard({
       <div className="mb-4 flex items-start gap-4">
         <motion.div
           whileHover={{ scale: 1.05, rotate: 5 }}
-          transition={{ type: 'spring', stiffness: 300 }}
+          transition={springs.bouncy}
         >
           <AnimatedAvatar
             borderType={state.avatarBorder}
@@ -154,7 +155,7 @@ export const DetailedProfileCard = memo(function DetailedProfileCard({
                 className="group relative"
                 initial={{ opacity: 0, scale: 0, rotate: -180 }}
                 animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                transition={{ delay: i * 0.1, type: 'spring', stiffness: 250 }}
+                transition={{ delay: i * 0.1, ...springs.bouncy }}
                 whileHover={{ scale: 1.15, rotate: 5, zIndex: 10 }}
               >
                 {/* Glow ring */}

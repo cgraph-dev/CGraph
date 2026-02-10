@@ -341,7 +341,7 @@ defmodule CGraph.Webhooks do
 
         new_endpoints = Map.put(state.endpoints, endpoint.id, endpoint)
 
-        Logger.info("Created webhook endpoint: #{endpoint.id} for #{endpoint.url}")
+        Logger.info("Webhook endpoint created", endpoint_id: endpoint.id, url: endpoint.url)
 
         {:reply, {:ok, sanitize_endpoint(endpoint)}, %{state | endpoints: new_endpoints}}
 
@@ -378,7 +378,7 @@ defmodule CGraph.Webhooks do
 
       _endpoint ->
         new_endpoints = Map.delete(state.endpoints, endpoint_id)
-        Logger.info("Deleted webhook endpoint: #{endpoint_id}")
+        Logger.info("Webhook endpoint deleted", endpoint_id: endpoint_id)
 
         {:reply, :ok, %{state | endpoints: new_endpoints}}
     end
@@ -414,7 +414,7 @@ defmodule CGraph.Webhooks do
         updated = %{endpoint | secret: new_secret, updated_at: DateTime.utc_now()}
         new_endpoints = Map.put(state.endpoints, endpoint_id, updated)
 
-        Logger.info("Rotated secret for webhook endpoint: #{endpoint_id}")
+        Logger.info("Webhook secret rotated", endpoint_id: endpoint_id)
 
         {:reply, {:ok, %{secret: new_secret}}, %{state | endpoints: new_endpoints}}
     end
@@ -950,7 +950,7 @@ defmodule CGraph.Webhooks do
       }
     )
 
-    Logger.debug("Webhook delivered: #{delivery.id} to #{endpoint.url} in #{latency}ms")
+    Logger.debug("Webhook delivered", delivery_id: delivery.id, url: endpoint.url, latency_ms: latency)
   end
 
   defp emit_delivery_failure_telemetry(endpoint, delivery, status, latency) do
@@ -965,6 +965,6 @@ defmodule CGraph.Webhooks do
       }
     )
 
-    Logger.warning("Webhook failed: #{delivery.id} to #{endpoint.url} (attempt #{delivery.attempts + 1})")
+    Logger.warning("Webhook delivery failed", delivery_id: delivery.id, url: endpoint.url, attempt: delivery.attempts + 1)
   end
 end

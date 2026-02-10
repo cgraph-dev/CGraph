@@ -568,7 +568,7 @@ defmodule CGraph.Services.Registry do
     if to == :unhealthy do
       Logger.warning("Service #{name} became unhealthy (was: #{from})")
     else if from == :unhealthy do
-      Logger.info("Service #{name} recovered (now: #{to})")
+      Logger.info("service_recovered_now", name: name, to: to)
     end
     end
   end

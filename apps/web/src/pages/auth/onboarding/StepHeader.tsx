@@ -4,6 +4,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { ONBOARDING_STEPS } from './constants';
+import { springs } from '@/lib/animation-presets/presets';
 
 interface StepHeaderProps {
   currentStep: number;
@@ -18,7 +19,7 @@ export function StepHeader({ currentStep }: StepHeaderProps) {
         key={`icon-${currentStep}`}
         initial={{ scale: 0, rotate: -180 }}
         animate={{ scale: 1, rotate: 0 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+        transition={springs.wobbly}
         className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-purple-600 text-white"
       >
         {step?.icon}

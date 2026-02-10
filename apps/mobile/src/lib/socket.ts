@@ -1,4 +1,5 @@
 import { Socket, Channel, Presence } from 'phoenix';
+import { exponentialBackoffWithJitter } from '@cgraph/socket';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 import { socketLogger as logger } from './logger';
@@ -81,6 +82,10 @@ class SocketManager {
   // Track our own friend IDs for filtering incoming broadcasts
   private myFriendIds: Set<string> = new Set();
 
+  // Session resumption — sequence tracking for zero-loss reconnects
+  private sessionId: string | null = null;
+  private lastSequence = 0;
+
   async connect(): Promise<void> {
     // Prevent concurrent connection attempts
     if (this.connectionPromise) {
@@ -144,7 +149,8 @@ class SocketManager {
     return new Promise<void>((resolve) => {
       this.socket = new Socket(WS_URL, {
         params: { token },
-        reconnectAfterMs: (tries: number) => Math.min(tries * 1000, 10000),
+        // Exponential backoff with equal jitter — prevents thundering herd at scale
+        reconnectAfterMs: exponentialBackoffWithJitter(),
         heartbeatIntervalMs: 30000,
       });
 
@@ -175,6 +181,11 @@ class SocketManager {
 
       this.socket.onClose(() => {
         logger.log('Socket closed');
+        // Preserve session info for resumption on reconnect
+        if (this.sessionId) {
+          SecureStore.setItemAsync('ws_session_id', this.sessionId).catch(() => {});
+          SecureStore.setItemAsync('ws_last_sequence', String(this.lastSequence)).catch(() => {});
+        }
         // Note: Channels become invalid when socket closes
         // Clear channel references so they get recreated on reconnect
         this.channels.clear();
@@ -210,6 +221,11 @@ class SocketManager {
     this.presenceChannelJoined = false;
     this.globalOnlineFriends.clear();
     this.myFriendIds.clear();
+    // Reset session tracking
+    this.sessionId = null;
+    this.lastSequence = 0;
+    SecureStore.deleteItemAsync('ws_session_id').catch(() => {});
+    SecureStore.deleteItemAsync('ws_last_sequence').catch(() => {});
     this.socket?.disconnect();
     this.socket = null;
   }
@@ -489,7 +505,7 @@ class SocketManager {
    * @param userId - Current user's ID
    * @returns Channel instance or null if unable to join
    */
-  joinUserChannel(userId: string): Channel | null {
+  async joinUserChannel(userId: string): Promise<Channel | null> {
     const topic = `user:${userId}`;
 
     if (this.userChannel) {
@@ -502,7 +518,22 @@ class SocketManager {
     }
 
     logger.log('Joining user channel:', topic);
-    this.userChannel = this.socket.channel(topic, { include_contact_presence: true });
+
+    // Build join params with session resumption data
+    const joinParams: Record<string, unknown> = { include_contact_presence: true };
+    try {
+      const savedSessionId = await SecureStore.getItemAsync('ws_session_id');
+      const savedSequence = await SecureStore.getItemAsync('ws_last_sequence');
+      if (savedSessionId && savedSequence) {
+        joinParams.resume_session_id = savedSessionId;
+        joinParams.last_sequence = parseInt(savedSequence, 10);
+        logger.log('Resuming session:', savedSessionId, 'from seq:', savedSequence);
+      }
+    } catch {
+      // SecureStore unavailable — proceed without resumption
+    }
+
+    this.userChannel = this.socket.channel(topic, joinParams);
 
     if (!this.userChannelSetUp) {
       this.userChannelSetUp = true;
@@ -560,9 +591,23 @@ class SocketManager {
       });
     }
 
+    // Track sequence numbers from incoming events for session resumption
+    this.userChannel.on('resume_complete', (payload: unknown) => {
+      const data = payload as Record<string, unknown>;
+      if (typeof data.new_session_id === 'string') {
+        this.sessionId = data.new_session_id;
+      }
+      logger.log('Session resumed, new session:', this.sessionId);
+    });
+
     this.userChannel
       .join()
       .receive('ok', (response: unknown) => {
+        const data = response as Record<string, unknown>;
+        // Capture session ID from join response
+        if (typeof data._session_id === 'string') {
+          this.sessionId = data._session_id;
+        }
         logger.log('Joined user channel:', response);
       })
       .receive('error', (response: unknown) => {
@@ -845,6 +890,11 @@ class SocketManager {
         'reaction_removed',
       ].forEach((event) => {
         channel.on(event, (payload: unknown) => {
+          // Track sequence number for session resumption
+          const data = payload as Record<string, unknown>;
+          if (typeof data._seq === 'number') {
+            this.lastSequence = data._seq;
+          }
           logger.log(`[${topic}] Received ${event}:`, payload);
           this.messageListeners.get(topic)?.forEach((cb) => cb(event, payload));
         });

@@ -4,17 +4,24 @@
  */
 import { useReducedMotion as useReanimatedReducedMotion } from 'react-native-reanimated';
 import { SPRING_PRESETS } from '@/lib/animations/AnimationLibrary';
+import { useSettingsStore } from '@/stores/settingsStore';
 
 /**
  * Returns true if animations should be simplified/disabled.
- * Reads from the OS accessibility setting.
+ * Checks both the OS accessibility setting AND the app-level reduceMotion toggle.
  */
 export function useReducedMotion(): boolean {
-  return useReanimatedReducedMotion();
+  const osReduced = useReanimatedReducedMotion();
+  const appReduced = useSettingsStore((s) => s.reduceMotion);
+  return osReduced || appReduced;
 }
 
 /**
  * Returns animation intensity: 0 = disabled, 0.5 = subtle, 1 = full
+ *
+ * Reads both OS reduced-motion preference and app-level setting.
+ * When reduced: 0. Otherwise: 1 (full).
+ * Future: 3-level support once animationSpeed is added to mobile settings.
  */
 export function useAnimationIntensity(): number {
   const reduced = useReducedMotion();

@@ -324,7 +324,7 @@ defmodule CGraph.Permissions do
       {:reply, {:ok, :already_granted}, state}
     else
       new_perms = Map.put(state.resource_permissions, key, [permission | current])
-      Logger.info("Granted #{permission} to #{user_id} on #{inspect(key)}")
+      Logger.info("granted_to_on", permission: permission, user_id: user_id, key: inspect(key))
       {:reply, :ok, %{state | resource_permissions: new_perms}}
     end
   end
@@ -354,7 +354,7 @@ defmodule CGraph.Permissions do
       {:reply, {:ok, :already_assigned}, state}
     else
       new_roles = Map.put(state.user_roles, user_id, [role | current])
-      Logger.info("Assigned role #{role} to #{user_id}")
+      Logger.info("assigned_role_to", role: role, user_id: user_id)
       {:reply, :ok, %{state | user_roles: new_roles}}
     end
   end

@@ -122,7 +122,7 @@ defmodule CGraph.Crypto do
       }}
     rescue
       e ->
-        Logger.error("Encryption failed: #{inspect(e)}")
+        Logger.error("encryption_failed", e: inspect(e))
         {:error, :encryption_failed}
     end
   end
@@ -165,7 +165,7 @@ defmodule CGraph.Crypto do
         end
       rescue
         e ->
-          Logger.error("Decryption failed: #{inspect(e)}")
+          Logger.error("decryption_failed", e: inspect(e))
           {:error, :decryption_failed}
       end
     else
@@ -296,7 +296,7 @@ defmodule CGraph.Crypto do
     {:ok, key}
   rescue
     e ->
-      Logger.error("Key derivation failed: #{inspect(e)}")
+      Logger.error("key_derivation_failed", e: inspect(e))
       {:error, :key_derivation_failed}
   end
 

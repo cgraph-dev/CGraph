@@ -181,11 +181,11 @@ defmodule CGraph.Notifications.PushService.ExpoClient do
         do_send_batch(messages, retry_count + 1)
 
       {:ok, status, _headers, body} ->
-        Logger.error("Expo request failed (#{status}): #{body}")
+        Logger.error("expo_request_failed", status: status, body: body)
         {:error, :request_failed}
 
       {:error, reason} ->
-        Logger.error("Expo connection error: #{inspect(reason)}")
+        Logger.error("expo_connection_error", reason: inspect(reason))
         Process.sleep(500 * (retry_count + 1))
         do_send_batch(messages, retry_count + 1)
     end
@@ -218,11 +218,11 @@ defmodule CGraph.Notifications.PushService.ExpoClient do
         do_get_receipts(ticket_ids, retry_count + 1)
 
       {:ok, status, _headers, body} ->
-        Logger.error("Expo receipts request failed (#{status}): #{body}")
+        Logger.error("expo_receipts_request_failed", status: status, body: body)
         {:error, :request_failed}
 
       {:error, reason} ->
-        Logger.error("Expo connection error: #{inspect(reason)}")
+        Logger.error("expo_connection_error", reason: inspect(reason))
         {:error, reason}
     end
   end
@@ -266,7 +266,7 @@ defmodule CGraph.Notifications.PushService.ExpoClient do
     end
   rescue
     e ->
-      Logger.error("HTTP request failed: #{inspect(e)}")
+      Logger.error("http_request_failed", e: inspect(e))
       {:error, :request_failed}
   end
 

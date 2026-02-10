@@ -20,7 +20,7 @@ defmodule CGraph.Messaging.Message do
   @derive {Jason.Encoder, only: [
     :id, :content, :content_type, :is_encrypted, :is_edited,
     :sender_id, :conversation_id, :channel_id, :reply_to_id,
-    :scheduled_at, :schedule_status,
+    :scheduled_at, :schedule_status, :expires_at,
     :inserted_at, :updated_at
   ]}
 
@@ -46,6 +46,9 @@ defmodule CGraph.Messaging.Message do
     # Scheduled message fields
     field :scheduled_at, :utc_datetime_usec
     field :schedule_status, :string, default: "immediate"
+
+    # Ephemeral / disappearing message support
+    field :expires_at, :utc_datetime_usec
 
     # For file attachments
     field :file_url, :string
@@ -81,7 +84,7 @@ defmodule CGraph.Messaging.Message do
       :conversation_id, :channel_id, :reply_to_id,
       :file_url, :file_name, :file_size, :file_mime_type,
       :thumbnail_url, :link_preview, :client_message_id,
-      :scheduled_at, :schedule_status
+      :scheduled_at, :schedule_status, :expires_at
     ])
     |> validate_required([:content, :sender_id])
     |> sanitize_content()

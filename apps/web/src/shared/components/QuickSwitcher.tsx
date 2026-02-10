@@ -9,6 +9,7 @@
 
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   MagnifyingGlassIcon,
   ChatBubbleLeftRightIcon,
@@ -150,7 +151,7 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
           initial={{ opacity: 0, scale: 0.95, y: -20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -20 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 400 }}
+          transition={springs.snappy}
           onClick={(e) => e.stopPropagation()}
           className="w-full max-w-lg overflow-hidden rounded-xl border border-gray-700/50 bg-dark-800 shadow-2xl"
         >
@@ -180,8 +181,11 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
                 const Icon = item.icon || ICON_MAP[item.type] || Cog6ToothIcon;
                 const isSelected = index === selectedIndex;
                 return (
-                  <button
+                  <motion.button
                     key={item.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.03, duration: 0.2 }}
                     onClick={() => handleSelect(item)}
                     onMouseEnter={() => setSelectedIndex(index)}
                     className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors ${
@@ -200,7 +204,7 @@ export function QuickSwitcher({ isOpen, onClose, items = [] }: QuickSwitcherProp
                     <span className="shrink-0 rounded bg-dark-700 px-1.5 py-0.5 text-[10px] uppercase text-gray-500">
                       {item.type}
                     </span>
-                  </button>
+                  </motion.button>
                 );
               })
             )}

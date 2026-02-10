@@ -183,14 +183,16 @@ defmodule CGraphWeb.EventsController do
   """
   def leaderboard(conn, %{"id" => event_id} = params) do
     limit = min(String.to_integer(params["limit"] || "50"), 100)
-    offset = String.to_integer(params["offset"] || "0")
+    cursor = params["cursor"]
+    
+    cursor_data = decode_lb_cursor(cursor)
+    rank_start = if cursor_data, do: cursor_data.rank, else: 1
     
     query = from p in UserEventProgress,
       join: u in assoc(p, :user),
       where: p.seasonal_event_id == ^event_id,
-      order_by: [desc: p.leaderboard_points],
-      limit: ^limit,
-      offset: ^offset,
+      order_by: [desc: p.leaderboard_points, asc: p.inserted_at],
+      limit: ^(limit + 1),
       select: %{
         user_id: u.id,
         username: u.username,
@@ -198,14 +200,33 @@ defmodule CGraphWeb.EventsController do
         avatar_url: u.avatar_url,
         points: p.leaderboard_points,
         event_points: p.event_points,
-        battle_pass_tier: p.battle_pass_tier
+        battle_pass_tier: p.battle_pass_tier,
+        inserted_at: p.inserted_at
       }
     
-    entries = Repo.all(query)
+    query = if cursor_data do
+      cursor_dt = parse_lb_cursor_dt(cursor_data.inserted_at)
+      from [p, u] in query,
+        where: p.leaderboard_points < ^cursor_data.points or
+               (p.leaderboard_points == ^cursor_data.points and p.inserted_at > ^cursor_dt)
+    else
+      query
+    end
     
-    entries_with_rank = entries
-    |> Enum.with_index(offset + 1)
+    results = Repo.all(query)
+    has_more = length(results) > limit
+    items = Enum.take(results, limit)
+    
+    entries_with_rank = items
+    |> Enum.with_index(rank_start)
     |> Enum.map(fn {entry, rank} -> Map.put(entry, :rank, rank) end)
+    
+    next_cursor = if has_more && items != [] do
+      last = List.last(items)
+      encode_lb_cursor(rank_start + length(items), last.points, last.inserted_at)
+    else
+      nil
+    end
     
     # Get current user's rank
     user = conn.assigns.current_user
@@ -218,8 +239,8 @@ defmodule CGraphWeb.EventsController do
       yourRank: user_rank,
       pagination: %{
         limit: limit,
-        offset: offset,
-        hasMore: length(entries) == limit
+        hasMore: has_more,
+        nextCursor: next_cursor
       }
     })
   end
@@ -429,5 +450,42 @@ defmodule CGraphWeb.EventsController do
       lastParticipatedAt: progress.last_participated_at,
       totalSessions: progress.total_sessions
     }
+  end
+
+  # Cursor helpers for leaderboard pagination
+  defp encode_lb_cursor(rank, points, %DateTime{} = dt) do
+    "#{rank}|#{points}|#{DateTime.to_iso8601(dt)}" |> Base.url_encode64(padding: false)
+  end
+
+  defp encode_lb_cursor(rank, points, %NaiveDateTime{} = ndt) do
+    "#{rank}|#{points}|#{NaiveDateTime.to_iso8601(ndt)}" |> Base.url_encode64(padding: false)
+  end
+
+  defp encode_lb_cursor(rank, points, ts) do
+    "#{rank}|#{points}|#{ts}" |> Base.url_encode64(padding: false)
+  end
+
+  defp decode_lb_cursor(nil), do: nil
+
+  defp decode_lb_cursor(cursor) do
+    with {:ok, decoded} <- Base.url_decode64(cursor, padding: false),
+         [rank_str, points_str, ts] <- String.split(decoded, "|", parts: 3),
+         {rank, _} <- Integer.parse(rank_str),
+         {points, _} <- Integer.parse(points_str) do
+      %{rank: rank, points: points, inserted_at: ts}
+    else
+      _ -> nil
+    end
+  end
+
+  defp parse_lb_cursor_dt(ts_string) do
+    case DateTime.from_iso8601(ts_string) do
+      {:ok, dt, _} -> dt
+      _ ->
+        case NaiveDateTime.from_iso8601(ts_string) do
+          {:ok, ndt} -> ndt
+          _ -> ~N[2000-01-01 00:00:00]
+        end
+    end
   end
 end

@@ -51,7 +51,7 @@ defmodule CGraph.Storage.Local do
         }}
 
       {:error, reason} ->
-        Logger.error("Failed to store file locally: #{inspect(reason)}")
+        Logger.error("failed_to_store_file_locally", reason: inspect(reason))
         {:error, {:storage_failed, reason}}
     end
   end

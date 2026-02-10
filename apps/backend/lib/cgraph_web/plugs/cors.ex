@@ -20,7 +20,7 @@ defmodule CGraphWeb.Plugs.Cors do
     
     # Debug logging for CORS issues (use debug level in production)
     require Logger
-    Logger.debug("CORS: method=#{conn.method} origin=#{inspect(origin)} allowed=#{origin && origin_allowed?(origin)}")
+    Logger.debug("cors_request", method: conn.method, origin: inspect(origin), allowed: origin && origin_allowed?(origin))
     
     if origin && origin_allowed?(origin) do
       conn
@@ -33,7 +33,7 @@ defmodule CGraphWeb.Plugs.Cors do
     else
       # Still handle OPTIONS for non-allowed origins to prevent 404
       if conn.method == "OPTIONS" do
-        Logger.warning("CORS: Rejecting preflight from origin=#{inspect(origin)}")
+        Logger.warning("cors_preflight_rejected", origin: inspect(origin))
         conn
         |> send_resp(403, "Origin not allowed")
         |> halt()
@@ -55,7 +55,7 @@ defmodule CGraphWeb.Plugs.Cors do
     require Logger
     allowed_origins = get_cors_origins()
     
-    Logger.debug("CORS: checking origin=#{inspect(origin)} against #{inspect(allowed_origins)}")
+    Logger.debug("cors_origin_check", origin: inspect(origin), allowed_origins: inspect(allowed_origins))
     
     case allowed_origins do
       "*" -> true
@@ -63,14 +63,14 @@ defmodule CGraphWeb.Plugs.Cors do
         result = Enum.any?(origins, fn
           %Regex{} = regex -> 
             match = Regex.match?(regex, origin)
-            Logger.debug("CORS: regex match=#{match}")
+            Logger.debug("cors_regex_match", match: match)
             match
           allowed when is_binary(allowed) -> 
             match = allowed == origin
-            if match, do: Logger.debug("CORS: exact match on #{allowed}")
+            if match, do: Logger.debug("cors_exact_match", allowed: allowed)
             match
         end)
-        Logger.debug("CORS: final result=#{result}")
+        Logger.debug("cors_result", result: result)
         result
       _ -> false
     end

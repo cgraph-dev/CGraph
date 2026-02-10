@@ -8,6 +8,7 @@ import { ChevronDownIcon, Cog6ToothIcon, UserGroupIcon } from '@heroicons/react/
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { ChannelListProps } from './types';
 import { ChannelItem } from './ChannelItem';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function ChannelList({
   activeGroup,
@@ -79,12 +80,7 @@ export function ChannelList({
             key={category.id}
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{
-              type: 'spring',
-              stiffness: 300,
-              damping: 20,
-              delay: catIndex * 0.05,
-            }}
+            transition={springs.bouncy}
           >
             {/* Category Header */}
             <motion.button
@@ -121,12 +117,7 @@ export function ChannelList({
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -10 }}
-                      transition={{
-                        type: 'spring',
-                        stiffness: 300,
-                        damping: 20,
-                        delay: chIndex * 0.03,
-                      }}
+                      transition={springs.bouncy}
                     >
                       <ChannelItem
                         channel={channel}
@@ -149,12 +140,7 @@ export function ChannelList({
               key={channel.id}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{
-                type: 'spring',
-                stiffness: 300,
-                damping: 20,
-                delay: (activeGroup.categories?.length || 0) * 0.05 + index * 0.03,
-              }}
+              transition={springs.bouncy}
             >
               <ChannelItem
                 channel={channel}

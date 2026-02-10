@@ -15,6 +15,7 @@ import { StickerSearchBar } from './StickerSearchBar';
 import { StickerGrid } from './StickerGrid';
 import { PackInfoBanner } from './PackInfoBanner';
 import { useStickerPicker } from './useStickerPicker';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function StickerPicker({
   onSelect,
@@ -59,7 +60,7 @@ export function StickerPicker({
         initial={{ opacity: 0, y: 20, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20, scale: 0.95 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+        transition={springs.stiff}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">

@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { UserPlusIcon, UsersIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import type { AddFriendFormProps, FriendsTabBarProps, FriendsSearchBarProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function FriendsHeader({
   showAddFriend,
@@ -123,12 +124,7 @@ export function FriendsTabBar({ tabs, activeTab, setActiveTab }: FriendsTabBarPr
           key={tab.id}
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{
-            type: 'spring',
-            stiffness: 300,
-            damping: 20,
-            delay: 0.15 + index * 0.05,
-          }}
+          transition={{ ...springs.bouncy, delay: 0.15 }}
         >
           <motion.button
             onClick={() => {
@@ -144,7 +140,7 @@ export function FriendsTabBar({ tabs, activeTab, setActiveTab }: FriendsTabBarPr
                 layoutId="friendsTabIndicator"
                 className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent"
                 style={{ boxShadow: '0 0 15px rgba(16, 185, 129, 0.3)' }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                transition={springs.bouncy}
               />
             )}
             <span

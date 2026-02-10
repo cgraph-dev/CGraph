@@ -11,6 +11,7 @@ import { GlassCard } from '@/shared/components/ui';
 
 import { NOTIFICATION_ICONS, NOTIFICATION_COLORS, DEFAULT_NOTIFICATION_COLOR } from './constants';
 import type { ToastItemProps, LevelUpNotification, QuestNotification } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function ToastItem({ notification, index, onDismiss }: ToastItemProps) {
   const [progress, setProgress] = useState(100);
@@ -46,7 +47,7 @@ export function ToastItem({ notification, index, onDismiss }: ToastItemProps) {
         initial={{ opacity: 0, x: -100, scale: 0.8 }}
         animate={{ opacity: 1, x: 0, scale: 1 }}
         exit={{ opacity: 0, x: -100, scale: 0.8 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 20, delay: index * 0.05 }}
+        transition={springs.dramatic}
         className="pointer-events-auto"
       >
         <GlassCard
@@ -118,7 +119,7 @@ export function ToastItem({ notification, index, onDismiss }: ToastItemProps) {
         initial={{ opacity: 0, x: -100, scale: 0.8 }}
         animate={{ opacity: 1, x: 0, scale: 1 }}
         exit={{ opacity: 0, x: -100, scale: 0.8 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 20, delay: index * 0.05 }}
+        transition={springs.dramatic}
         className="pointer-events-auto"
       >
         <GlassCard
@@ -175,7 +176,7 @@ export function ToastItem({ notification, index, onDismiss }: ToastItemProps) {
       initial={{ opacity: 0, x: -100, scale: 0.8 }}
       animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, x: -100, scale: 0.8 }}
-      transition={{ type: 'spring', stiffness: 200, damping: 20, delay: index * 0.05 }}
+      transition={springs.dramatic}
       className="pointer-events-auto"
       role="alert"
       aria-live="polite"

@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { NotificationFilterTabsProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function NotificationFilterTabs({
   filter,
@@ -31,7 +32,7 @@ export function NotificationFilterTabs({
               layoutId="notificationFilterTab"
               className="absolute inset-0 rounded-md bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent"
               style={{ boxShadow: '0 0 15px rgba(16, 185, 129, 0.3)' }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              transition={springs.bouncy}
             />
           )}
           <span className={`relative z-10 ${filter === 'all' ? 'text-white' : 'text-gray-400'}`}>
@@ -52,7 +53,7 @@ export function NotificationFilterTabs({
               layoutId="notificationFilterTab"
               className="absolute inset-0 rounded-md bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent"
               style={{ boxShadow: '0 0 15px rgba(16, 185, 129, 0.3)' }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              transition={springs.bouncy}
             />
           )}
           <span className={`relative z-10 ${filter === 'unread' ? 'text-white' : 'text-gray-400'}`}>

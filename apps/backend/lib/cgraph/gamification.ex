@@ -21,6 +21,7 @@ defmodule CGraph.Gamification do
     XpTransaction
   }
   alias CGraph.Repo
+  alias CGraph.ReadRepo
 
   # ==================== LEVEL SYSTEM ====================
 
@@ -114,6 +115,15 @@ defmodule CGraph.Gamification do
 
       {updated_user, level_up}
     end)
+    |> case do
+      {:ok, {updated_user, level_up}} ->
+        # Sync Redis leaderboard scores (fire-and-forget, non-blocking)
+        CGraph.Gamification.Leaderboard.sync_scores(updated_user, [:xp, :level])
+        {:ok, {updated_user, level_up}}
+
+      error ->
+        error
+    end
   end
 
   defp get_xp_multiplier(%User{subscription_tier: "premium"}), do: Decimal.new("1.5")
@@ -905,7 +915,7 @@ defmodule CGraph.Gamification do
   ## Options
 
   - `:limit` - Maximum number of entries to return (default: 100)
-  - `:offset` - Number of entries to skip for pagination (default: 0)
+  - `:cursor` - Opaque cursor for pagination (default: nil)
 
   ## Categories
 
@@ -917,30 +927,112 @@ defmodule CGraph.Gamification do
   - "posts" - Total forum posts
   - "friends" - Friend connections count
 
-  Returns a list of maps with `:id`, `:username`, `:value`, `:rank` and
-  additional fields based on category. Also includes enriched user data
-  like `:display_name`, `:avatar_url`, `:is_premium`, `:is_verified`.
+  Returns `{entries, meta}` where entries is a list of maps with `:id`,
+  `:username`, `:value`, `:rank` and additional fields based on category.
+  Meta contains `:has_more`, `:next_cursor`, and `:limit` for cursor-based
+  pagination.
   """
   def get_leaderboard(category, opts \\ []) do
     limit = Keyword.get(opts, :limit, 100)
-    offset = Keyword.get(opts, :offset, 0)
+    cursor = Keyword.get(opts, :cursor)
 
-    entries = case category do
+    cursor_data = decode_leaderboard_cursor(cursor)
+    rank_start = if cursor_data, do: cursor_data.rank, else: 1
+
+    # Try Redis sorted set first (O(log N + M)), fall back to DB
+    case category do
       "friends" ->
-        get_friends_leaderboard(limit, offset)
+        # Friends leaderboard uses subquery join, keep DB-only
+        results = get_friends_leaderboard(limit + 1, cursor_data)
+        finalize_leaderboard(results, limit, rank_start)
 
       _ ->
-        get_standard_leaderboard(category, limit, offset)
-    end
+        redis_offset = rank_start - 1
 
-    # Add rank numbers
-    entries
-    |> Enum.with_index(offset + 1)
-    |> Enum.map(fn {entry, rank} -> Map.put(entry, :rank, rank) end)
+        case CGraph.Gamification.Leaderboard.get_top(category, limit + 1, redis_offset) do
+          {:ok, entries} when entries != [] ->
+            finalize_leaderboard(entries, limit, rank_start)
+
+          _ ->
+            # Redis unavailable or empty — fall back to DB query with cursor
+            results = get_standard_leaderboard(category, limit + 1, cursor_data)
+            finalize_leaderboard(results, limit, rank_start)
+        end
+    end
   end
 
+  defp finalize_leaderboard(results, limit, rank_start) do
+    has_more = length(results) > limit
+    items = Enum.take(results, limit)
+
+    items_with_rank = items
+    |> Enum.with_index(rank_start)
+    |> Enum.map(fn {entry, rank} -> Map.put(entry, :rank, rank) end)
+
+    next_cursor = if has_more && items != [] do
+      last = List.last(items)
+      encode_leaderboard_cursor(
+        rank_start + length(items),
+        Map.get(last, :value, 0),
+        Map.get(last, :inserted_at, DateTime.utc_now())
+      )
+    else
+      nil
+    end
+
+    {items_with_rank, %{has_more: has_more, next_cursor: next_cursor, limit: limit}}
+  end
+
+  defp encode_leaderboard_cursor(rank, value, %DateTime{} = dt) do
+    "#{rank}|#{value}|#{DateTime.to_iso8601(dt)}" |> Base.url_encode64(padding: false)
+  end
+
+  defp encode_leaderboard_cursor(rank, value, %NaiveDateTime{} = ndt) do
+    "#{rank}|#{value}|#{NaiveDateTime.to_iso8601(ndt)}" |> Base.url_encode64(padding: false)
+  end
+
+  defp encode_leaderboard_cursor(rank, value, ts) do
+    "#{rank}|#{value}|#{ts}" |> Base.url_encode64(padding: false)
+  end
+
+  defp decode_leaderboard_cursor(nil), do: nil
+
+  defp decode_leaderboard_cursor(cursor) do
+    with {:ok, decoded} <- Base.url_decode64(cursor, padding: false),
+         [rank_str, value_str, ts] <- String.split(decoded, "|", parts: 3),
+         {rank, _} <- Integer.parse(rank_str),
+         {value, _} <- Integer.parse(value_str) do
+      %{rank: rank, value: value, inserted_at: ts}
+    else
+      _ -> nil
+    end
+  end
+
+  defp parse_cursor_datetime(ts_string) do
+    case DateTime.from_iso8601(ts_string) do
+      {:ok, dt, _} ->
+        dt
+
+      _ ->
+        case NaiveDateTime.from_iso8601(ts_string) do
+          {:ok, ndt} -> ndt
+          _ -> ~N[2000-01-01 00:00:00]
+        end
+    end
+  end
+
+  defp value_field_for_category("xp"), do: :xp
+  defp value_field_for_category("level"), do: :level
+  defp value_field_for_category("karma"), do: :karma
+  defp value_field_for_category("streak"), do: :streak_days
+  defp value_field_for_category("messages"), do: :total_messages_sent
+  defp value_field_for_category("posts"), do: :total_posts_created
+  defp value_field_for_category(_), do: :xp
+
   # Standard leaderboard queries for user-field-based categories
-  defp get_standard_leaderboard(category, limit, offset) do
+  defp get_standard_leaderboard(category, limit, cursor_data) do
+    vf = value_field_for_category(category)
+
     query = case category do
       "xp" ->
         from u in User,
@@ -953,6 +1045,7 @@ defmodule CGraph.Gamification do
             avatar_url: u.avatar_url,
             level: u.level,
             value: u.xp,
+            inserted_at: u.inserted_at,
             is_premium: u.subscription_tier in ["premium", "premium_plus"],
             is_verified: u.is_verified
           }
@@ -960,7 +1053,7 @@ defmodule CGraph.Gamification do
       "level" ->
         from u in User,
           where: u.is_active == true,
-          order_by: [desc: u.level, desc: u.xp, asc: u.inserted_at],
+          order_by: [desc: u.level, asc: u.inserted_at],
           select: %{
             id: u.id,
             username: u.username,
@@ -968,6 +1061,7 @@ defmodule CGraph.Gamification do
             avatar_url: u.avatar_url,
             level: u.level,
             value: u.level,
+            inserted_at: u.inserted_at,
             is_premium: u.subscription_tier in ["premium", "premium_plus"],
             is_verified: u.is_verified
           }
@@ -975,7 +1069,7 @@ defmodule CGraph.Gamification do
       "streak" ->
         from u in User,
           where: u.is_active == true,
-          order_by: [desc: u.streak_days, desc: u.streak_longest, asc: u.inserted_at],
+          order_by: [desc: u.streak_days, asc: u.inserted_at],
           select: %{
             id: u.id,
             username: u.username,
@@ -984,6 +1078,7 @@ defmodule CGraph.Gamification do
             level: u.level,
             value: u.streak_days,
             longest: u.streak_longest,
+            inserted_at: u.inserted_at,
             is_premium: u.subscription_tier in ["premium", "premium_plus"],
             is_verified: u.is_verified
           }
@@ -999,6 +1094,7 @@ defmodule CGraph.Gamification do
             avatar_url: u.avatar_url,
             level: u.level,
             value: u.karma,
+            inserted_at: u.inserted_at,
             is_premium: u.subscription_tier in ["premium", "premium_plus"],
             is_verified: u.is_verified
           }
@@ -1014,6 +1110,7 @@ defmodule CGraph.Gamification do
             avatar_url: u.avatar_url,
             level: u.level,
             value: u.total_messages_sent,
+            inserted_at: u.inserted_at,
             is_premium: u.subscription_tier in ["premium", "premium_plus"],
             is_verified: u.is_verified
           }
@@ -1029,6 +1126,7 @@ defmodule CGraph.Gamification do
             avatar_url: u.avatar_url,
             level: u.level,
             value: u.total_posts_created,
+            inserted_at: u.inserted_at,
             is_premium: u.subscription_tier in ["premium", "premium_plus"],
             is_verified: u.is_verified
           }
@@ -1045,19 +1143,29 @@ defmodule CGraph.Gamification do
             avatar_url: u.avatar_url,
             level: u.level,
             value: u.xp,
+            inserted_at: u.inserted_at,
             is_premium: u.subscription_tier in ["premium", "premium_plus"],
             is_verified: u.is_verified
           }
     end
 
-    query
-    |> limit(^limit)
-    |> offset(^offset)
-    |> Repo.all()
+    query = query |> limit(^limit)
+
+    query = if cursor_data do
+      cursor_dt = parse_cursor_datetime(cursor_data.inserted_at)
+
+      from u in query,
+        where: field(u, ^vf) < ^cursor_data.value or
+               (field(u, ^vf) == ^cursor_data.value and u.inserted_at > ^cursor_dt)
+    else
+      query
+    end
+
+    ReadRepo.all(query)
   end
 
   # Friends leaderboard - ranks users by friend count
-  defp get_friends_leaderboard(limit, offset) do
+  defp get_friends_leaderboard(limit, cursor_data) do
     alias CGraph.Accounts.Friendship
 
     # Subquery to count accepted friendships per user
@@ -1066,12 +1174,11 @@ defmodule CGraph.Gamification do
       group_by: f.user_id,
       select: %{user_id: f.user_id, count: count(f.id)}
 
-    from(u in User,
+    query = from(u in User,
       left_join: fc in subquery(friend_counts), on: fc.user_id == u.id,
       where: u.is_active == true,
       order_by: [desc: coalesce(fc.count, 0), asc: u.inserted_at],
       limit: ^limit,
-      offset: ^offset,
       select: %{
         id: u.id,
         username: u.username,
@@ -1079,11 +1186,23 @@ defmodule CGraph.Gamification do
         avatar_url: u.avatar_url,
         level: u.level,
         value: coalesce(fc.count, 0),
+        inserted_at: u.inserted_at,
         is_premium: u.subscription_tier in ["premium", "premium_plus"],
         is_verified: u.is_verified
       }
     )
-    |> Repo.all()
+
+    query = if cursor_data do
+      cursor_dt = parse_cursor_datetime(cursor_data.inserted_at)
+
+      from [u, fc] in query,
+        where: coalesce(fc.count, 0) < ^cursor_data.value or
+               (coalesce(fc.count, 0) == ^cursor_data.value and u.inserted_at > ^cursor_dt)
+    else
+      query
+    end
+
+    ReadRepo.all(query)
   end
 
   @doc """
@@ -1093,7 +1212,7 @@ defmodule CGraph.Gamification do
   """
   def get_leaderboard_count(_category) do
     from(u in User, where: u.is_active == true)
-    |> Repo.aggregate(:count)
+    |> ReadRepo.aggregate(:count)
   end
 
   @doc """
@@ -1633,18 +1752,19 @@ defmodule CGraph.Gamification do
   end
 
   @doc """
-  Get event leaderboard (3-arg version).
+  Get event leaderboard using cursor-based pagination.
+
+  For leaderboard display, accepts cursor for stable pagination.
+  Rank is computed from cursor position + result index.
   """
-  def get_event_leaderboard(event_id, limit, offset) when is_integer(limit) do
+  def get_event_leaderboard(event_id, limit, cursor_or_offset) when is_integer(limit) do
     alias CGraph.Gamification.UserEventProgress
-    
-    query = from p in UserEventProgress,
+
+    base_query = from p in UserEventProgress,
       join: u in assoc(p, :user),
       where: p.seasonal_event_id == ^event_id,
-      order_by: [desc: p.leaderboard_points],
-      limit: ^limit,
-      offset: ^offset,
       select: %{
+        id: p.id,
         user_id: u.id,
         username: u.username,
         display_name: u.display_name,
@@ -1652,13 +1772,23 @@ defmodule CGraph.Gamification do
         points: p.leaderboard_points,
         battle_pass_tier: p.battle_pass_tier
       }
-    
-    entries = Repo.all(query)
-    
+
+    pagination_opts = %{
+      cursor: if(is_binary(cursor_or_offset), do: cursor_or_offset, else: nil),
+      after_cursor: nil,
+      before_cursor: nil,
+      limit: min(limit, 100),
+      sort_field: :leaderboard_points,
+      sort_direction: :desc,
+      include_total: false
+    }
+
+    {entries, page_info} = CGraph.Pagination.paginate(base_query, pagination_opts)
+
     entries_with_rank = entries
-    |> Enum.with_index(offset + 1)
-    |> Enum.map(fn {entry, rank} -> Map.put(entry, :rank, rank) end)
-    
-    entries_with_rank
+    |> Enum.with_index(1)
+    |> Enum.map(fn {entry, idx} -> Map.put(entry, :rank, idx) end)
+
+    {entries_with_rank, page_info}
   end
 end

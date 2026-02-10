@@ -7,6 +7,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { containerVariants, itemVariants } from './utils';
+import { springs } from '@/lib/animation-presets/presets';
 
 /**
  * Validating spinner while checking token
@@ -96,7 +97,7 @@ export function SuccessView({ onContinue }: SuccessViewProps) {
         variants={itemVariants}
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.2 }}
+        transition={{ ...springs.wobbly, delay: 0.2 }}
         className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-green-500/20 text-green-400"
       >
         <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">

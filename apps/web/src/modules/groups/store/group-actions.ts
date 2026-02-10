@@ -115,15 +115,19 @@ export function createGroupActions(
     },
 
     addChannelMessage: (message: ChannelMessage) => {
+      const MAX_CHANNEL_MESSAGES = 500;
       set((state) => {
         const channelMessages = state.channelMessages[message.channelId] || [];
         if (channelMessages.some((m) => m.id === message.id)) {
           return state;
         }
+        const updated = [...channelMessages, message];
         return {
           channelMessages: {
             ...state.channelMessages,
-            [message.channelId]: [...channelMessages, message],
+            [message.channelId]: updated.length > MAX_CHANNEL_MESSAGES
+              ? updated.slice(updated.length - MAX_CHANNEL_MESSAGES)
+              : updated,
           },
         };
       });

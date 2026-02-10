@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 
 interface SwitchProps {
   checked: boolean;
@@ -61,7 +62,7 @@ export default function Switch({
         <motion.span
           className={`${currentSize.thumb} inline-block rounded-full bg-white shadow ring-0`}
           animate={{ x: checked ? offset.on : offset.off }}
-          transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+          transition={springs.snappy}
           style={{ marginTop: '0.5px' }}
         />
       </motion.button>

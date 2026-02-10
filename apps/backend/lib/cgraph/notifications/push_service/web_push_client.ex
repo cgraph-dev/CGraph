@@ -304,7 +304,7 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
     end
   rescue
     e ->
-      Logger.error("Payload encryption failed: #{inspect(e)}")
+      Logger.error("payload_encryption_failed", e: inspect(e))
       {:error, :encryption_failed}
   end
 
@@ -403,7 +403,7 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
       {:ok, "#{signing_input}.#{signature_b64}"}
     rescue
       e ->
-        Logger.error("VAPID JWT creation failed: #{inspect(e)}")
+        Logger.error("vapid_jwt_creation_failed", e: inspect(e))
         {:error, :jwt_creation_failed}
     end
   end

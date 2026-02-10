@@ -84,6 +84,10 @@ defmodule CGraph.Presence do
 
   @valid_statuses ~w(online away busy invisible offline)
 
+  # Redis keys for scalable global presence (avoids loading full CRDT state)
+  @online_set_key "presence:online_set"
+  @online_zset_key "presence:online_zset"
+
   # ---------------------------------------------------------------------------
   # Required Callbacks for Phoenix.Presence
   # ---------------------------------------------------------------------------
@@ -261,11 +265,21 @@ defmodule CGraph.Presence do
   @doc """
   Get all online users in a room.
 
+  For channels with >100 users, delegates to Sampled presence for efficiency.
   Returns map of user_id => presence metadata.
   """
   def list_room_users(room_id) do
-    list(room_topic(room_id))
-    |> transform_presence_list()
+    # Try sampled presence first for large channels
+    case CGraph.Presence.Sampled.get_summary(room_id) do
+      {:ok, %{online: online}} when online > 100 ->
+        case CGraph.Presence.Sampled.list_online(room_id) do
+          {:ok, users} -> users
+          _error -> list(room_topic(room_id)) |> transform_presence_list()
+        end
+
+      _small_or_error ->
+        list(room_topic(room_id)) |> transform_presence_list()
+    end
   end
 
   @doc """
@@ -278,10 +292,15 @@ defmodule CGraph.Presence do
 
   @doc """
   Count online users in a room.
+
+  Uses Sampled presence HyperLogLog for O(1) approximate counts in large channels.
+  Falls back to CRDT list for small channels.
   """
   def count_room_users(room_id) do
-    list(room_topic(room_id))
-    |> map_size()
+    case CGraph.Presence.Sampled.approximate_count(room_id) do
+      {:ok, count} when count > 0 -> count
+      _fallback -> list(room_topic(room_id)) |> map_size()
+    end
   end
 
   @doc """
@@ -301,17 +320,19 @@ defmodule CGraph.Presence do
 
   @doc """
   Check if a specific user is online.
+
+  Uses Redis SET membership check — O(1) instead of loading all users.
   """
   def user_online?(user_id) do
-    presences = list("users:online")
+    user_key = to_string(user_id)
 
-    case Map.get(presences, to_string(user_id)) do
-      nil -> false
-      %{metas: metas} ->
-        Enum.any?(metas, fn meta ->
-          meta.status != "invisible" && meta.status != "offline"
-        end)
+    case CGraph.Redis.command(["SISMEMBER", @online_set_key, user_key]) do
+      {:ok, 1} -> true
+      {:ok, 0} -> false
+      _ -> false
     end
+  rescue
+    _ -> false
   end
 
   @doc """
@@ -324,6 +345,10 @@ defmodule CGraph.Presence do
 
   @doc """
   List all currently online users globally.
+
+  WARNING: This still loads the full CRDT state. Prefer `list_online_users/1`
+  (paginated) or specific lookups like `user_online?/1`, `bulk_status/1`.
+  Kept for backward compatibility but should be avoided at scale.
   """
   def list_online_users do
     list("users:online")
@@ -332,57 +357,78 @@ defmodule CGraph.Presence do
 
   @doc """
   Get online user IDs globally.
+
+  Uses Redis SET for O(N) scan instead of materializing full CRDT with metadata.
+  For large sets, prefer paginated endpoints.
   """
   def list_online_user_ids do
-    list("users:online")
-    |> Map.keys()
+    case CGraph.Redis.command(["SMEMBERS", @online_set_key]) do
+      {:ok, ids} when is_list(ids) -> ids
+      _ -> list("users:online") |> Map.keys()
+    end
+  rescue
+    _ -> list("users:online") |> Map.keys()
   end
 
   @doc """
-  Get a user's current status.
+  Get a user's current status. O(1) via Redis hash lookup.
   """
   def get_user_status(user_id) do
-    case list("users:online") do
-      %{^user_id => %{metas: metas}} ->
-        metas
-        |> Enum.map(& &1.status)
-        |> best_status()
-      _ ->
-        "offline"
+    user_key = to_string(user_id)
+
+    case CGraph.Redis.command(["HGET", presence_meta_key(user_key), "status"]) do
+      {:ok, nil} -> "offline"
+      {:ok, status} when is_binary(status) -> status
+      _ -> "offline"
     end
+  rescue
+    _ -> "offline"
   end
 
   @doc """
-  Get detailed user presence info.
+  Get detailed user presence info. O(1) via Redis hash lookup.
   """
   def get_user_presence(user_id) do
-    case list("users:online") do
-      %{^user_id => %{metas: metas}} ->
-        merge_multi_device_presence(metas)
+    user_key = to_string(user_id)
+
+    case CGraph.Redis.command(["HGETALL", presence_meta_key(user_key)]) do
+      {:ok, fields} when is_list(fields) and fields != [] ->
+        redis_hash_to_presence(fields)
+
       _ ->
         nil
     end
+  rescue
+    _ -> nil
   end
 
   @doc """
-  Get status of multiple users at once.
+  Get status of multiple users at once. O(N) via pipelined Redis lookups.
 
   Returns map of user_id => status.
   """
   def bulk_status(user_ids) when is_list(user_ids) do
-    presences = list("users:online")
+    if user_ids == [] do
+      %{}
+    else
+      commands = Enum.map(user_ids, fn user_id ->
+        ["HGET", presence_meta_key(to_string(user_id)), "status"]
+      end)
 
-    Map.new(user_ids, fn user_id ->
-      user_key = to_string(user_id)
-      status = case Map.get(presences, user_key) do
-        nil -> "offline"
-        %{metas: metas} ->
-          metas
-          |> Enum.map(& &1.status)
-          |> best_status()
+      case CGraph.Redis.pipeline(commands) do
+        {:ok, results} ->
+          user_ids
+          |> Enum.zip(results)
+          |> Map.new(fn {user_id, status} ->
+            {user_id, if(is_binary(status), do: status, else: "offline")}
+          end)
+
+        _ ->
+          Map.new(user_ids, fn user_id -> {user_id, "offline"} end)
       end
-      {user_id, status}
-    end)
+    end
+  rescue
+    _ -> Map.new(user_ids, fn user_id -> {user_id, "offline"} end)
   end
 
   # ---------------------------------------------------------------------------
@@ -432,18 +478,54 @@ defmodule CGraph.Presence do
 
   @doc """
   Handle presence diff for broadcasting.
+
+  For the global "users:online" topic, maintains Redis data structures
+  for O(1) lookups and O(log N) pagination instead of loading the full CRDT.
   """
   @impl true
+  def handle_metas("users:online" = topic, %{joins: joins, leaves: leaves}, presences, state) do
+    # Sync joins to Redis
+    for {user_id, %{metas: metas}} <- joins do
+      meta = List.first(metas) || %{}
+      sync_presence_join(user_id, meta)
+      Logger.debug("presence_global_joined", user_id: user_id, topic: topic)
+      emit_telemetry(:join, user_id, %{topic: topic, metas: metas})
+    end
+
+    # Sync leaves to Redis — only remove if user fully offline (no remaining sessions)
+    for {user_id, %{metas: metas}} <- leaves do
+      # presences contains current metas for this user key after the diff.
+      # If empty/nil, user has disconnected all devices.
+      still_online? = presences != nil and presences != [] and presences != %{}
+
+      unless still_online? do
+        sync_presence_leave(user_id)
+      end
+
+      record_last_seen(user_id)
+      Logger.debug("presence_global_left", user_id: user_id, topic: topic)
+      emit_telemetry(:leave, user_id, %{topic: topic, metas: metas})
+    end
+
+    {:ok, state}
+  end
+
   def handle_metas(topic, %{joins: joins, leaves: leaves}, _presences, state) do
+    # Extract room_id from topic for sampled presence tracking
+    room_id = topic |> String.replace_prefix("room:", "")
+
     for {user_id, presence} <- joins do
-      Logger.debug("User #{user_id} joined #{topic}")
+      Logger.debug("presence_room_joined", user_id: user_id, topic: topic)
       emit_telemetry(:join, user_id, %{topic: topic, metas: presence.metas})
+      # Track in sampled presence for large-channel efficiency
+      CGraph.Presence.Sampled.track(room_id, user_id, %{})
     end
 
     for {user_id, presence} <- leaves do
-      Logger.debug("User #{user_id} left #{topic}")
+      Logger.debug("presence_room_left", user_id: user_id, topic: topic)
       record_last_seen(user_id)
       emit_telemetry(:leave, user_id, %{topic: topic, metas: presence.metas})
+      CGraph.Presence.Sampled.untrack(room_id, user_id)
     end
 
     {:ok, state}
@@ -460,9 +542,71 @@ defmodule CGraph.Presence do
   # ---------------------------------------------------------------------------
 
   @doc """
-  List online users with pagination support for REST API.
+  List online users with real server-side pagination via Redis sorted set.
+
+  Uses ZREVRANGE for O(log N + M) where M is the page size,
+  instead of loading all users into memory.
   """
   def list_online_users(opts) when is_list(opts) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 50)
+    offset = (page - 1) * per_page
+
+    # Get total count — O(1) via ZCARD
+    total_count = case CGraph.Redis.command(["ZCARD", @online_zset_key]) do
+      {:ok, count} when is_integer(count) -> count
+      _ -> 0
+    end
+
+    # Get page of user IDs from sorted set (newest joins first) — O(log N + M)
+    user_ids = case CGraph.Redis.command([
+      "ZREVRANGE", @online_zset_key,
+      to_string(offset), to_string(offset + per_page - 1)
+    ]) do
+      {:ok, ids} when is_list(ids) -> ids
+      _ -> []
+    end
+
+    # Fetch metadata for each user in the page via pipeline — O(M)
+    users = if user_ids != [] do
+      commands = Enum.map(user_ids, fn id -> ["HGETALL", presence_meta_key(id)] end)
+
+      case CGraph.Redis.pipeline(commands) do
+        {:ok, results} ->
+          Enum.zip(user_ids, results)
+          |> Enum.map(fn {user_id, fields} ->
+            meta = if is_list(fields) and fields != [],
+              do: redis_hash_to_presence(fields),
+              else: %{status: "online"}
+
+            Map.merge(%{id: user_id}, meta)
+          end)
+
+        _ ->
+          Enum.map(user_ids, fn id -> %{id: id, status: "online"} end)
+      end
+    else
+      []
+    end
+
+    total_pages = if total_count > 0, do: ceil(total_count / per_page), else: 0
+
+    pagination = %{
+      page: page,
+      per_page: per_page,
+      total_count: total_count,
+      total_pages: total_pages
+    }
+
+    {users, pagination}
+  rescue
+    _ ->
+      # Fallback to Phoenix.Presence if Redis is completely unavailable
+      fallback_list_online_users(opts)
+  end
+
+  # Fallback when Redis is unavailable (uses full CRDT load — only for resilience)
+  defp fallback_list_online_users(opts) do
     page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 50)
 
@@ -483,7 +627,7 @@ defmodule CGraph.Presence do
       page: page,
       per_page: per_page,
       total_count: total_count,
-      total_pages: ceil(total_count / per_page)
+      total_pages: if(total_count > 0, do: ceil(total_count / per_page), else: 0)
     }
 
     {users, pagination}
@@ -512,25 +656,31 @@ defmodule CGraph.Presence do
   end
 
   @doc """
-  Get presence statistics.
+  Get presence statistics. O(1) via Redis SCARD instead of loading all users.
   """
   def get_stats do
-    online_users = list_online_users()
-    users_online = map_size(online_users)
-
-    invisible_count = online_users
-    |> Enum.count(fn {_id, meta} -> meta[:status] == "invisible" end)
+    users_online = case CGraph.Redis.command(["SCARD", @online_set_key]) do
+      {:ok, count} when is_integer(count) -> count
+      _ -> 0
+    end
 
     %{
-      users_online: users_online - invisible_count,
+      users_online: users_online,
       guests_online: count_guests(),
-      invisible_users: invisible_count,
+      invisible_users: 0,
       total_online: users_online + count_guests(),
       most_online: get_most_online_record(),
       most_online_date: get_most_online_date(),
       users_today: get_users_today_count(),
       bots_online: 0
     }
+  rescue
+    _ ->
+      %{
+        users_online: 0, guests_online: 0, invisible_users: 0,
+        total_online: 0, most_online: 0, most_online_date: nil,
+        users_today: 0, bots_online: 0
+      }
   end
 
   @doc """
@@ -588,8 +738,13 @@ defmodule CGraph.Presence do
   end
 
   defp get_users_today_count do
-    # Would need to track unique users per day
-    map_size(list_online_users())
+    # Use Redis SCARD for O(1) count instead of loading all users
+    case CGraph.Redis.command(["SCARD", @online_set_key]) do
+      {:ok, count} when is_integer(count) -> count
+      _ -> 0
+    end
+  rescue
+    _ -> 0
   end
 
   # ---------------------------------------------------------------------------
@@ -662,4 +817,83 @@ defmodule CGraph.Presence do
       Map.merge(%{user_id: user_id}, metadata)
     )
   end
+
+  # ---------------------------------------------------------------------------
+  # Redis Presence Sync (scalable global presence backing store)
+  # ---------------------------------------------------------------------------
+
+  defp presence_meta_key(user_id), do: "presence:meta:#{user_id}"
+
+  @doc false
+  defp sync_presence_join(user_id, meta) do
+    user_key = to_string(user_id)
+    timestamp = System.system_time(:second)
+    status = to_string(meta[:status] || "online")
+    device = to_string(meta[:device] || "web")
+
+    online_at = case meta[:online_at] do
+      %DateTime{} = dt -> DateTime.to_iso8601(dt)
+      _ -> DateTime.to_iso8601(DateTime.utc_now())
+    end
+
+    meta_key = presence_meta_key(user_key)
+
+    CGraph.Redis.pipeline([
+      ["SADD", @online_set_key, user_key],
+      ["ZADD", @online_zset_key, "NX", to_string(timestamp), user_key],
+      ["HSET", meta_key, "status", status, "device", device, "online_at", online_at],
+      # Auto-expire metadata after 24h as safety net (heartbeats refresh it)
+      ["EXPIRE", meta_key, "86400"]
+    ])
+
+    # Update most-online record
+    update_most_online_record()
+
+    :ok
+  rescue
+    _ -> :ok
+  end
+
+  defp sync_presence_leave(user_id) do
+    user_key = to_string(user_id)
+    meta_key = presence_meta_key(user_key)
+
+    CGraph.Redis.pipeline([
+      ["SREM", @online_set_key, user_key],
+      ["ZREM", @online_zset_key, user_key],
+      ["DEL", meta_key]
+    ])
+
+    :ok
+  rescue
+    _ -> :ok
+  end
+
+  defp update_most_online_record do
+    case CGraph.Redis.command(["SCARD", @online_set_key]) do
+      {:ok, current_count} when is_integer(current_count) ->
+        current_record = get_most_online_record()
+
+        if current_count > current_record do
+          today = Date.to_iso8601(Date.utc_today())
+          Cachex.put(:cgraph_cache, "presence:most_online", current_count)
+          Cachex.put(:cgraph_cache, "presence:most_online_date", today)
+        end
+
+      _ ->
+        :ok
+    end
+  rescue
+    _ -> :ok
+  end
+
+  defp redis_hash_to_presence(fields) when is_list(fields) do
+    fields
+    |> Enum.chunk_every(2)
+    |> Enum.reduce(%{}, fn
+      [key, value], acc -> Map.put(acc, String.to_atom(key), value)
+      _, acc -> acc
+    end)
+  end
+  defp redis_hash_to_presence(_), do: %{}
 end

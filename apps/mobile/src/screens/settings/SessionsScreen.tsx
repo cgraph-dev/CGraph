@@ -10,7 +10,7 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
+  FlatList,
   Pressable,
   ActivityIndicator,
   Alert,
@@ -174,125 +174,133 @@ export default function SessionsScreen({ navigation }: Props) {
         <View style={styles.backButton} />
       </View>
 
-      <ScrollView
+      <FlatList
+        data={otherSessions}
+        keyExtractor={(item) => item.id}
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         refreshControl={
           <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} tintColor={colors.primary} />
         }
-      >
-        {/* Current Session */}
-        {currentSession && (
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-              Current Session
-            </Text>
-            <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
-              <View style={styles.sessionItem}>
-                <View style={[styles.iconCircle, { backgroundColor: colors.primary + '20' }]}>
-                  <Ionicons
-                    name={getDeviceIcon(currentSession.user_agent)}
-                    size={22}
-                    color={colors.primary}
-                  />
-                </View>
-                <View style={styles.sessionInfo}>
-                  <View style={styles.sessionRow}>
-                    <Text style={[styles.sessionDevice, { color: colors.text }]}>
-                      {parseBrowser(currentSession.user_agent)}
-                    </Text>
-                    <View style={[styles.currentBadge, { backgroundColor: '#10B981' }]}>
-                      <Text style={styles.currentBadgeText}>Current</Text>
-                    </View>
-                  </View>
-                  <Text style={[styles.sessionDetail, { color: colors.textSecondary }]}>
-                    {currentSession.location || 'Unknown location'} · {currentSession.ip}
-                  </Text>
-                  <Text style={[styles.sessionDetail, { color: colors.textSecondary }]}>
-                    Active now
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        )}
-
-        {/* Other Sessions */}
-        {otherSessions.length > 0 && (
-          <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-              Other Sessions ({otherSessions.length})
-            </Text>
-            <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
-              {otherSessions.map((session, idx) => (
-                <View key={session.id}>
+        ListHeaderComponent={
+          <>
+            {/* Current Session */}
+            {currentSession && (
+              <View style={styles.section}>
+                <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+                  Current Session
+                </Text>
+                <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
                   <View style={styles.sessionItem}>
-                    <View style={[styles.iconCircle, { backgroundColor: colors.surfaceHover || colors.border }]}>
+                    <View style={[styles.iconCircle, { backgroundColor: colors.primary + '20' }]}>
                       <Ionicons
-                        name={getDeviceIcon(session.user_agent)}
+                        name={getDeviceIcon(currentSession.user_agent)}
                         size={22}
-                        color={colors.textSecondary}
+                        color={colors.primary}
                       />
                     </View>
                     <View style={styles.sessionInfo}>
-                      <Text style={[styles.sessionDevice, { color: colors.text }]}>
-                        {parseBrowser(session.user_agent)}
+                      <View style={styles.sessionRow}>
+                        <Text style={[styles.sessionDevice, { color: colors.text }]}>
+                          {parseBrowser(currentSession.user_agent)}
+                        </Text>
+                        <View style={[styles.currentBadge, { backgroundColor: '#10B981' }]}>
+                          <Text style={styles.currentBadgeText}>Current</Text>
+                        </View>
+                      </View>
+                      <Text style={[styles.sessionDetail, { color: colors.textSecondary }]}>
+                        {currentSession.location || 'Unknown location'} · {currentSession.ip}
                       </Text>
                       <Text style={[styles.sessionDetail, { color: colors.textSecondary }]}>
-                        {session.location || 'Unknown location'} · {session.ip}
-                      </Text>
-                      <Text style={[styles.sessionDetail, { color: colors.textSecondary }]}>
-                        {formatLastActive(session.last_active_at || session.created_at)}
+                        Active now
                       </Text>
                     </View>
-                    <Pressable
-                      onPress={() => handleRevoke(session)}
-                      disabled={revokingId === session.id || revokingId === 'all'}
-                      style={[styles.revokeButton, { borderColor: '#EF4444' }]}
-                    >
-                      {revokingId === session.id ? (
-                        <ActivityIndicator size="small" color="#EF4444" />
-                      ) : (
-                        <Text style={styles.revokeButtonText}>Revoke</Text>
-                      )}
-                    </Pressable>
                   </View>
-                  {idx < otherSessions.length - 1 && (
-                    <View style={[styles.divider, { backgroundColor: colors.border }]} />
-                  )}
                 </View>
-              ))}
+              </View>
+            )}
+
+            {/* Section title for other sessions */}
+            {otherSessions.length > 0 && (
+              <View style={styles.section}>
+                <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+                  Other Sessions ({otherSessions.length})
+                </Text>
+              </View>
+            )}
+          </>
+        }
+        renderItem={({ item: session, index: idx }) => (
+          <View style={[styles.sectionContent, idx === 0 ? { backgroundColor: colors.surface, borderTopLeftRadius: 12, borderTopRightRadius: 12 } : { backgroundColor: colors.surface }, idx === otherSessions.length - 1 ? { borderBottomLeftRadius: 12, borderBottomRightRadius: 12 } : {}]}>
+            <View style={styles.sessionItem}>
+              <View style={[styles.iconCircle, { backgroundColor: colors.surfaceHover || colors.border }]}>
+                <Ionicons
+                  name={getDeviceIcon(session.user_agent)}
+                  size={22}
+                  color={colors.textSecondary}
+                />
+              </View>
+              <View style={styles.sessionInfo}>
+                <Text style={[styles.sessionDevice, { color: colors.text }]}>
+                  {parseBrowser(session.user_agent)}
+                </Text>
+                <Text style={[styles.sessionDetail, { color: colors.textSecondary }]}>
+                  {session.location || 'Unknown location'} · {session.ip}
+                </Text>
+                <Text style={[styles.sessionDetail, { color: colors.textSecondary }]}>
+                  {formatLastActive(session.last_active_at || session.created_at)}
+                </Text>
+              </View>
+              <Pressable
+                onPress={() => handleRevoke(session)}
+                disabled={revokingId === session.id || revokingId === 'all'}
+                style={[styles.revokeButton, { borderColor: '#EF4444' }]}
+              >
+                {revokingId === session.id ? (
+                  <ActivityIndicator size="small" color="#EF4444" />
+                ) : (
+                  <Text style={styles.revokeButtonText}>Revoke</Text>
+                )}
+              </Pressable>
             </View>
-
+            {idx < otherSessions.length - 1 && (
+              <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            )}
+          </View>
+        )}
+        ListFooterComponent={
+          <>
             {/* Revoke All Button */}
-            <Pressable
-              onPress={handleRevokeAll}
-              disabled={revokingId === 'all'}
-              style={[styles.revokeAllButton, { backgroundColor: '#EF4444' + '15' }]}
-            >
-              {revokingId === 'all' ? (
-                <ActivityIndicator size="small" color="#EF4444" />
-              ) : (
-                <>
-                  <Ionicons name="log-out-outline" size={18} color="#EF4444" />
-                  <Text style={styles.revokeAllText}>Revoke All Other Sessions</Text>
-                </>
-              )}
-            </Pressable>
-          </View>
-        )}
+            {otherSessions.length > 0 && (
+              <Pressable
+                onPress={handleRevokeAll}
+                disabled={revokingId === 'all'}
+                style={[styles.revokeAllButton, { backgroundColor: '#EF4444' + '15' }]}
+              >
+                {revokingId === 'all' ? (
+                  <ActivityIndicator size="small" color="#EF4444" />
+                ) : (
+                  <>
+                    <Ionicons name="log-out-outline" size={18} color="#EF4444" />
+                    <Text style={styles.revokeAllText}>Revoke All Other Sessions</Text>
+                  </>
+                )}
+              </Pressable>
+            )}
 
-        {/* Empty state */}
-        {otherSessions.length === 0 && currentSession && (
-          <View style={styles.emptyState}>
-            <Ionicons name="shield-checkmark-outline" size={48} color={colors.textSecondary} />
-            <Text style={[styles.emptyTitle, { color: colors.text }]}>All Clear</Text>
-            <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
-              No other active sessions. Only this device is signed in.
-            </Text>
-          </View>
-        )}
-      </ScrollView>
+            {/* Empty state */}
+            {otherSessions.length === 0 && currentSession && (
+              <View style={styles.emptyState}>
+                <Ionicons name="shield-checkmark-outline" size={48} color={colors.textSecondary} />
+                <Text style={[styles.emptyTitle, { color: colors.text }]}>All Clear</Text>
+                <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+                  No other active sessions. Only this device is signed in.
+                </Text>
+              </View>
+            )}
+          </>
+        }
+      />
     </View>
   );
 }

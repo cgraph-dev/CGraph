@@ -244,7 +244,9 @@ defmodule CGraphWeb.Telemetry do
 
     # Only log slow requests or errors in production
     if duration_ms > 100 or status >= 400 do
-      Logger.info("HTTP #{method} #{path}",
+      Logger.info("http_request",
+        method: method,
+        path: path,
         status: status,
         duration_ms: duration_ms,
         slow: duration_ms > 100

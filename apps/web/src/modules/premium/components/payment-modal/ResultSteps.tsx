@@ -8,6 +8,7 @@ import { CheckCircleIcon, ExclamationTriangleIcon, GiftIcon } from '@heroicons/r
 import { Button } from '@/components';
 import { calculateSavings } from './utils';
 import type { PaymentItem } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function ProcessingStep() {
   return (
@@ -51,7 +52,7 @@ export function SuccessStep({
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ type: 'spring', damping: 10, stiffness: 200 }}
+        transition={springs.wobbly}
         className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500/20"
       >
         <CheckCircleIcon className="h-12 w-12 text-green-500" />
@@ -109,7 +110,7 @@ export function ErrorStep({ errorMessage, onClose, onRetry }: ErrorStepProps) {
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ type: 'spring', damping: 10, stiffness: 200 }}
+        transition={springs.wobbly}
         className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-500/20"
       >
         <ExclamationTriangleIcon className="h-12 w-12 text-red-500" />

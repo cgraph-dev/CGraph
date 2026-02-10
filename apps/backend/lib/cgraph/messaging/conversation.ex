@@ -15,6 +15,7 @@ defmodule CGraph.Messaging.Conversation do
   schema "conversations" do
     field :last_message_at, :utc_datetime
     field :is_encrypted, :boolean, default: true
+    field :message_ttl, :integer  # seconds, nil = no auto-delete
 
     belongs_to :user_one, CGraph.Accounts.User
     belongs_to :user_two, CGraph.Accounts.User

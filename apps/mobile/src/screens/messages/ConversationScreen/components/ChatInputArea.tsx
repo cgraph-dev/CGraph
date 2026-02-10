@@ -38,6 +38,7 @@ interface ChatInputAreaProps {
   onCancelVoice: () => void;
   onVoiceComplete: (data: { uri: string; duration: number; waveform: number[] }) => void;
   onCancelReply: () => void;
+  onGifPress?: () => void;
 }
 
 /**
@@ -59,6 +60,7 @@ export function ChatInputArea({
   onCancelVoice,
   onVoiceComplete,
   onCancelReply,
+  onGifPress,
 }: ChatInputAreaProps) {
   const getReplyPreviewText = () => {
     if (replyingTo?.content) return replyingTo.content;
@@ -140,6 +142,13 @@ export function ChatInputArea({
               />
             </Animated.View>
           </TouchableOpacity>
+
+          {/* GIF button */}
+          {onGifPress && (
+            <TouchableOpacity style={styles.attachButton} onPress={onGifPress}>
+              <Text style={{ fontSize: 18, fontWeight: '700', color: colors.textSecondary }}>GIF</Text>
+            </TouchableOpacity>
+          )}
 
           <TextInput
             ref={inputRef}

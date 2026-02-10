@@ -11,13 +11,13 @@
 
 import { create } from 'zustand';
 import { Socket } from 'phoenix';
+import { exponentialBackoffWithJitter } from '@cgraph/socket';
 import { createLogger } from '@/lib/logger';
 import type { GamificationSocketStore, GamificationState } from './gamification-socket.types';
 
 const logger = createLogger('GamificationSocket');
 
 const SOCKET_URL = import.meta.env.VITE_WS_URL || 'wss://api.cgraph.io/socket';
-const RECONNECT_DELAYS = [1000, 2000, 4000, 8000, 16000, 32000];
 
 const CHANNEL_EVENTS = [
   'initial_state',
@@ -90,8 +90,8 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
 
     const socket = new Socket(SOCKET_URL, {
       params: { token },
-      reconnectAfterMs: (tries) =>
-        RECONNECT_DELAYS[Math.min(tries - 1, RECONNECT_DELAYS.length - 1)] ?? 10000,
+      // Exponential backoff with equal jitter — prevents thundering herd at scale
+      reconnectAfterMs: exponentialBackoffWithJitter(),
       heartbeatIntervalMs: 30000,
     });
 

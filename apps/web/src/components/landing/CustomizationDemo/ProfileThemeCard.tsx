@@ -9,6 +9,7 @@
 import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ProfileThemeConfig } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 interface ProfileThemeCardProps {
   theme: ProfileThemeConfig;
@@ -75,7 +76,7 @@ export const ProfileThemeCard = memo(function ProfileThemeCard({
       }}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay, type: 'spring', stiffness: 300 }}
+      transition={{ delay, ...springs.bouncy }}
       whileHover={{ scale: 1.05, zIndex: 10 }}
       whileTap={{ scale: 0.95 }}
       onClick={onSelect}
@@ -138,7 +139,7 @@ export const ProfileThemeCard = memo(function ProfileThemeCard({
           className="pointer-events-none absolute inset-0 rounded-lg border-2 border-emerald-400"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ type: 'spring' }}
+          transition={springs.default}
         />
       )}
 

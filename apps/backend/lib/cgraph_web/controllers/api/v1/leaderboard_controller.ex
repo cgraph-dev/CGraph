@@ -55,12 +55,12 @@ defmodule CGraphWeb.API.V1.LeaderboardController do
 
   - `category` - Ranking category (default: "xp")
   - `period` - Time period filter (default: "alltime")
-  - `page` - Page number, 1-indexed (default: 1)
-  - `page_size` - Results per page, max 100 (default: 25)
+  - `limit` - Results per page, max 100 (default: 25)
+  - `cursor` - Opaque cursor for pagination
 
   ## Response
 
-  Returns paginated leaderboard entries with user rank information.
+  Returns cursor-paginated leaderboard entries with user rank information.
   """
   def index(conn, params) do
     user = conn.assigns.current_user
@@ -68,20 +68,14 @@ defmodule CGraphWeb.API.V1.LeaderboardController do
     # Parse and validate parameters
     category = parse_category(params["category"])
     period = parse_period(params["period"])
-    page = parse_int(params["page"], 1, min: 1)
-    page_size = parse_int(params["page_size"], @default_page_size, min: 1, max: @max_page_size)
-
-    # Calculate offset from page
-    offset = (page - 1) * page_size
+    limit = parse_int(params["limit"], @default_page_size, min: 1, max: @max_page_size)
+    cursor = params["cursor"]
 
     # Fetch leaderboard data with enriched user info
-    entries = fetch_leaderboard_entries(category, period, page_size, offset)
+    {entries, meta} = fetch_leaderboard_entries(category, period, limit, cursor)
 
     # Get current user's rank in this category
     user_rank = get_user_rank_entry(user, category, period)
-
-    # Get total count for pagination
-    total_count = Gamification.get_leaderboard_count(category)
 
     conn
     |> put_status(:ok)
@@ -91,22 +85,21 @@ defmodule CGraphWeb.API.V1.LeaderboardController do
       period: period,
       user_rank: user_rank,
       meta: %{
-        page: page,
-        page_size: page_size,
-        total_count: total_count,
-        total_pages: ceil(total_count / page_size),
+        limit: limit,
+        has_more: meta.has_more,
+        next_cursor: meta.next_cursor,
         last_updated: DateTime.utc_now()
       }
     )
   end
 
   # Fetch leaderboard entries with enriched user data
-  defp fetch_leaderboard_entries(category, _period, limit, offset) do
+  defp fetch_leaderboard_entries(category, _period, limit, cursor) do
     # Get base leaderboard from gamification context
-    entries = Gamification.get_leaderboard(category, limit: limit, offset: offset)
+    {entries, meta} = Gamification.get_leaderboard(category, limit: limit, cursor: cursor)
 
     # Enrich with presence and additional user data
-    Enum.map(entries, fn entry ->
+    enriched = Enum.map(entries, fn entry ->
       is_online = Presence.user_online?(entry.id)
 
       Map.merge(entry, %{
@@ -114,6 +107,8 @@ defmodule CGraphWeb.API.V1.LeaderboardController do
         previous_rank: nil  # TODO: Store historical ranks for rank change tracking
       })
     end)
+
+    {enriched, meta}
   end
 
   # Get the current user's rank entry

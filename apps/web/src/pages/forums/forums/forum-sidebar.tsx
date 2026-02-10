@@ -11,6 +11,7 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { formatTimeAgo } from '@/lib/utils';
 import { LeaderboardSidebar } from '@/modules/forums/components/LeaderboardWidget';
 import type { ForumSidebarProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function ForumSidebar({ activeForum, forums, isLoadingForums }: ForumSidebarProps) {
   return (
@@ -125,7 +126,7 @@ export function ForumSidebar({ activeForum, forums, isLoadingForums }: ForumSide
                       <motion.div
                         className="relative h-8 w-8 overflow-hidden rounded-full bg-gradient-to-br from-primary-500/20 to-purple-500/20"
                         whileHover={{ scale: 1.1 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                        transition={springs.snappy}
                       >
                         {forum.iconUrl ? (
                           <img

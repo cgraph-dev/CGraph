@@ -11,6 +11,7 @@ import { PostCardSkeleton } from '@/components';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { PostCard } from './post-card';
 import type { PostsListProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function PostsList({
   posts,
@@ -61,12 +62,7 @@ export function PostsList({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              transition={{
-                type: 'spring',
-                stiffness: 300,
-                damping: 20,
-                delay: index * 0.05,
-              }}
+              transition={springs.bouncy}
             >
               <PostCard post={post} onVote={(value) => onVote(post.id, value, post.myVote)} />
             </motion.div>

@@ -24,6 +24,7 @@ import { useRecentEmojis, useClickOutside, useFilteredEmojis } from './useEmojiP
 import { EmojiSearch } from './EmojiSearch';
 import { CategoryTabs } from './CategoryTabs';
 import { EmojiGrid } from './EmojiGrid';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function EmojiPicker({ isOpen, onClose, onSelect, className = '' }: EmojiPickerProps) {
   const [activeCategory, setActiveCategory] = useState<EmojiCategory>('Frequently Used');
@@ -49,7 +50,7 @@ export function EmojiPicker({ isOpen, onClose, onSelect, className = '' }: Emoji
           initial={{ opacity: 0, scale: 0.9, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 10 }}
-          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          transition={springs.stiff}
           className={`absolute z-50 ${className}`}
         >
           <GlassCard className="w-80 p-0">

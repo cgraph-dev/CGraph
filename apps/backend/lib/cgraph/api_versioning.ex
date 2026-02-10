@@ -500,7 +500,7 @@ defmodule CGraph.ApiVersioning do
     }
 
     :ets.insert(@versions_table, {version, info})
-    Logger.info("[ApiVersioning] Registered version #{version}")
+    Logger.info("apiversioning_registered_version", version: version)
 
     {:reply, :ok, state}
   end
@@ -516,7 +516,7 @@ defmodule CGraph.ApiVersioning do
         }
 
         :ets.insert(@versions_table, {version, updated})
-        Logger.info("[ApiVersioning] Deprecated version #{version}, sunset: #{opts[:sunset_at]}")
+        Logger.info("apiversioning_deprecated_version_sunset", version: version, opts_sunset_at: inspect(opts[:sunset_at]))
 
         {:reply, :ok, state}
 
@@ -530,7 +530,7 @@ defmodule CGraph.ApiVersioning do
       [{^version, info}] ->
         updated = %{info | status: :sunset}
         :ets.insert(@versions_table, {version, updated})
-        Logger.info("[ApiVersioning] Version #{version} has been sunset")
+        Logger.info("apiversioning_version_has_been_sunset", version: version)
         {:reply, :ok, state}
 
       [] ->
@@ -541,7 +541,7 @@ defmodule CGraph.ApiVersioning do
   def handle_call({:register_transformer, resource_type, version, transformer}, _from, state) do
     key = {resource_type, version}
     :ets.insert(@transformers_table, {key, transformer})
-    Logger.debug("[ApiVersioning] Registered transformer for #{resource_type} v#{version}")
+    Logger.debug("apiversioning_registered_transformer_for_v", resource_type: resource_type, version: version)
     {:reply, :ok, state}
   end
 

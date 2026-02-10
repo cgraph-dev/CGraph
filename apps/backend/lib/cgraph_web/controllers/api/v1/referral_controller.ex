@@ -230,7 +230,7 @@ defmodule CGraphWeb.API.V1.ReferralController do
     user_agent = get_user_agent(conn)
 
     require Logger
-    Logger.info("REFERRAL_APPLIED: user_id=#{user.id} code=#{code} ip=#{ip_address} ua=#{user_agent}")
+    Logger.info("referral_applied_user_id_code_ip_ua", user_id: user.id, code: code, ip_address: ip_address, user_agent: user_agent)
   end
 
   defp get_client_ip(conn) do

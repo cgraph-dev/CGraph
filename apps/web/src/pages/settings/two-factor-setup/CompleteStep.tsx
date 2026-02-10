@@ -5,6 +5,7 @@
 
 import { motion } from 'framer-motion';
 import { containerVariants, itemVariants } from './constants';
+import { springs } from '@/lib/animation-presets/presets';
 
 interface CompleteStepProps {
   onDone: () => void;
@@ -22,7 +23,7 @@ export function CompleteStep({ onDone }: CompleteStepProps) {
         variants={itemVariants}
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+        transition={springs.wobbly}
         className="mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-green-500/20 text-green-400"
       >
         <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">

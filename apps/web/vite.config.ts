@@ -75,9 +75,9 @@ export default defineConfig({
     // SECURITY: Sourcemaps disabled in production to protect proprietary code
     // Set VITE_ENABLE_SOURCEMAPS=true for debugging if needed
     sourcemap: process.env.VITE_ENABLE_SOURCEMAPS === 'true' ? true : false,
-    // Suppress chunk size warnings - large chunks are expected for Web3/rich apps
-    // Index (~800KB) and demo pages are intentionally large
-    chunkSizeWarningLimit: 2000,
+    // Warn when chunks exceed 500 KB (default) to catch bundle size regressions
+    // Large chunks should be code-split via React.lazy() or dynamic import()
+    chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
         // Use function for more granular control over chunking
@@ -113,13 +113,6 @@ export default defineConfig({
           // State management
           if (id.includes('zustand')) {
             return 'state';
-          }
-          // Web3 - split into separate chunks for lazy loading
-          if (id.includes('wagmi') || id.includes('@wagmi')) {
-            return 'web3-wagmi';
-          }
-          if (id.includes('viem')) {
-            return 'web3-viem';
           }
           // Markdown rendering
           if (

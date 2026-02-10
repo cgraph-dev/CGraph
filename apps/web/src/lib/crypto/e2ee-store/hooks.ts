@@ -9,6 +9,7 @@
 import React from 'react';
 import { e2eeLogger as logger } from '../../logger';
 import { useE2EEStore } from './store';
+import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
 
 /**
  * Hook for one-time prekey replenishment.
@@ -19,25 +20,23 @@ import { useE2EEStore } from './store';
 export function usePreKeyReplenishment(threshold: number = 20) {
   const { isInitialized, getPrekeyCount, uploadMorePrekeys } = useE2EEStore();
 
-  React.useEffect(() => {
+  const checkAndReplenish = React.useCallback(async () => {
     if (!isInitialized) return;
-
-    const checkAndReplenish = async () => {
-      try {
-        const count = await getPrekeyCount();
-        if (count < threshold) {
-          const toUpload = 100 - count;
-          await uploadMorePrekeys(toUpload);
-          logger.log(`Replenished ${toUpload} one-time prekeys`);
-        }
-      } catch (err) {
-        logger.error('Error replenishing prekeys:', err);
+    try {
+      const count = await getPrekeyCount();
+      if (count < threshold) {
+        const toUpload = 100 - count;
+        await uploadMorePrekeys(toUpload);
+        logger.log(`Replenished ${toUpload} one-time prekeys`);
       }
-    };
-
-    checkAndReplenish();
-    const interval = setInterval(checkAndReplenish, 5 * 60 * 1000);
-
-    return () => clearInterval(interval);
+    } catch (err) {
+      logger.error('Error replenishing prekeys:', err);
+    }
   }, [isInitialized, threshold, getPrekeyCount, uploadMorePrekeys]);
+
+  // Check immediately on init, then every 5 min (20 min when tab hidden)
+  useAdaptiveInterval(checkAndReplenish, 5 * 60 * 1000, {
+    enabled: isInitialized,
+    immediate: true,
+  });
 }

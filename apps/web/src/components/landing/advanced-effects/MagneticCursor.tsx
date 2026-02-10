@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   MAGNETIC_SPRING_CONFIG,
   MAGNETIC_CURSOR_SIZE_DEFAULT,
@@ -49,7 +50,7 @@ export function MagneticCursor({ children, className = '' }: MagneticCursorProps
             width: isHovering ? MAGNETIC_CURSOR_SIZE_HOVER : MAGNETIC_CURSOR_SIZE_DEFAULT,
             height: isHovering ? MAGNETIC_CURSOR_SIZE_HOVER : MAGNETIC_CURSOR_SIZE_DEFAULT,
           }}
-          transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+          transition={springs.bouncy}
         />
       </motion.div>
 

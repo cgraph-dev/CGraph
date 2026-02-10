@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { NavLink } from 'react-router-dom';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { ServerIconProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function ServerIcon({ group, isActive }: ServerIconProps) {
   return (
@@ -27,7 +28,7 @@ export function ServerIcon({ group, isActive }: ServerIconProps) {
         style={{
           boxShadow: isActive ? '0 0 10px rgba(16, 185, 129, 0.6)' : 'none',
         }}
-        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        transition={springs.bouncy}
       />
 
       {/* Icon */}

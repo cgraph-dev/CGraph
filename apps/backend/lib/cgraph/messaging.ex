@@ -86,40 +86,74 @@ defmodule CGraph.Messaging do
   # ============================================================================
 
   @doc """
-  List messages in a conversation.
+  List messages in a conversation using cursor-based pagination.
+
+  ## Options
+
+    * `:cursor` - Opaque cursor string for pagination
+    * `:limit` - Number of messages to fetch (default: 50, max: 100)
+    * `:before` - Fetch messages before this message ID (legacy, prefer cursor)
+    * `:after` - Fetch messages after this message ID (legacy, prefer cursor)
+    * `:include_total` - Include total count (default: false, expensive at scale)
+
+  Returns `{messages, page_info}` where page_info contains cursor metadata.
   """
   def list_messages(conversation, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 50)
+    alias CGraph.Pagination
+
+    cursor = Keyword.get(opts, :cursor)
+    limit = Keyword.get(opts, :limit, Keyword.get(opts, :per_page, 50))
     before_id = Keyword.get(opts, :before)
     after_id = Keyword.get(opts, :after)
+    include_total = Keyword.get(opts, :include_total, false)
 
-    query = from m in Message,
+    base_query = from m in Message,
       where: m.conversation_id == ^conversation.id,
-      order_by: [desc: m.inserted_at],
       preload: [[sender: :customization], [reactions: :user], [reply_to: [sender: :customization]]]
 
-    query = if before_id do
-      from m in query, where: m.id < ^before_id
+    # Support legacy before_id/after_id params alongside cursor pagination
+    base_query = if before_id do
+      from m in base_query, where: m.id < ^before_id
     else
-      query
+      base_query
     end
 
-    query = if after_id do
-      from m in query, where: m.id > ^after_id
+    base_query = if after_id do
+      from m in base_query, where: m.id > ^after_id
     else
-      query
+      base_query
     end
 
-    total = Repo.aggregate(from(m in Message, where: m.conversation_id == ^conversation.id), :count, :id)
+    pagination_opts = %{
+      cursor: cursor,
+      after_cursor: nil,
+      before_cursor: nil,
+      limit: min(limit, 100),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      include_total: include_total
+    }
 
-    messages = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-      |> Enum.reverse()
+    {messages, page_info} = Pagination.paginate(base_query, pagination_opts)
 
-    meta = %{page: page, per_page: per_page, total: total, has_more: length(messages) == per_page}
+    # Return in chronological order (oldest first) for chat display
+    messages = Enum.reverse(messages)
+
+    # Build backward-compatible meta with cursor pagination info
+    meta = %{
+      has_more: page_info.has_next_page,
+      end_cursor: page_info.end_cursor,
+      start_cursor: page_info.start_cursor,
+      has_next_page: page_info.has_next_page,
+      has_previous_page: page_info.has_previous_page
+    }
+
+    meta = if include_total do
+      Map.put(meta, :total, page_info[:total_count])
+    else
+      meta
+    end
+
     {messages, meta}
   end
 
@@ -136,6 +170,67 @@ defmodule CGraph.Messaging do
       nil -> {:error, :not_found}
       message -> {:ok, message}
     end
+  end
+
+  @doc """
+  List all replies (thread) for a given parent message.
+
+  Returns replies in chronological order (oldest first) with cursor pagination.
+  Uses the DB index on `reply_to_id` for O(log N) lookups.
+
+  ## Options
+    * `:cursor` - Pagination cursor
+    * `:limit` - Max replies per page (default: 50, max: 100)
+  """
+  def list_thread_replies(parent_message_id, opts \\ []) do
+    alias CGraph.Pagination
+
+    limit = min(Keyword.get(opts, :limit, 50), 100)
+    cursor = Keyword.get(opts, :cursor)
+
+    base_query =
+      from m in Message,
+        where: m.reply_to_id == ^parent_message_id,
+        preload: [[sender: :customization], [reactions: :user], [reply_to: [sender: :customization]]]
+
+    pagination_opts = %{
+      cursor: cursor,
+      after_cursor: nil,
+      before_cursor: nil,
+      limit: limit,
+      sort_field: :inserted_at,
+      sort_direction: :asc,
+      include_total: false
+    }
+
+    {messages, page_info} = Pagination.paginate(base_query, pagination_opts)
+
+    meta = %{
+      has_more: page_info.has_next_page,
+      end_cursor: page_info.end_cursor,
+      start_cursor: page_info.start_cursor,
+      has_next_page: page_info.has_next_page,
+      has_previous_page: page_info.has_previous_page
+    }
+
+    {messages, meta}
+  end
+
+  @doc """
+  Count replies to a list of parent message IDs.
+
+  Returns a map of `%{message_id => reply_count}`.
+  Uses a single aggregate query — O(N) where N = number of parent IDs.
+  """
+  def count_thread_replies(parent_message_ids) when is_list(parent_message_ids) do
+    from(m in Message,
+      where: m.reply_to_id in ^parent_message_ids,
+      where: is_nil(m.deleted_at),
+      group_by: m.reply_to_id,
+      select: {m.reply_to_id, count(m.id)}
+    )
+    |> Repo.all()
+    |> Map.new()
   end
 
   @doc """
@@ -177,6 +272,9 @@ defmodule CGraph.Messaging do
   end
 
   defp do_create_message(conversation, message_attrs) do
+    # Auto-set expires_at based on conversation TTL
+    message_attrs = maybe_set_expires_at(conversation, message_attrs)
+
     result = %Message{}
       |> Message.changeset(message_attrs)
       |> Repo.insert()
@@ -347,24 +445,7 @@ defmodule CGraph.Messaging do
   # Reactions
   # ============================================================================
 
-  @doc """
-  List reactions on a message.
-  """
-  def list_reactions(message, opts \\ []) do
-    emoji_filter = Keyword.get(opts, :emoji)
-
-    query = from r in Reaction,
-      where: r.message_id == ^message.id,
-      preload: [:user]
-
-    query = if emoji_filter do
-      from r in query, where: r.emoji == ^emoji_filter
-    else
-      query
-    end
-
-    Repo.all(query)
-  end
+  defdelegate list_reactions(message, opts \\ []), to: CGraph.Messaging.Reactions
 
   @doc """
   Add a reaction to a message.
@@ -450,33 +531,29 @@ defmodule CGraph.Messaging do
     )
   end
 
-  @doc """
-  Get users who reacted with a specific emoji.
-  """
-  def get_reaction_users(message, emoji, opts \\ []) do
-    limit = Keyword.get(opts, :limit, 50)
-
-    from(r in Reaction,
-      where: r.message_id == ^message.id,
-      where: r.emoji == ^emoji,
-      join: u in assoc(r, :user),
-      select: u,
-      limit: ^limit
-    )
-    |> Repo.all()
-  end
+  defdelegate get_reaction_users(message, emoji, opts \\ []), to: CGraph.Messaging.Reactions
 
   # ============================================================================
   # Search
   # ============================================================================
 
   @doc """
-  Search messages accessible to user.
+  Search messages accessible to user using cursor-based pagination.
+
+  ## Options
+
+    * `:cursor` - Opaque cursor string for pagination
+    * `:limit` - Number of results to fetch (default: 20, max: 100)
+    * `:conversation_id` - Filter by specific conversation
+    * `:include_total` - Include total count (default: false)
   """
   def search_messages(user, query, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
+    alias CGraph.Pagination
+
+    cursor = Keyword.get(opts, :cursor)
+    limit = Keyword.get(opts, :limit, Keyword.get(opts, :per_page, 20))
     conversation_id = Keyword.get(opts, :conversation_id)
+    include_total = Keyword.get(opts, :include_total, false)
     search_term = "%#{query}%"
 
     # Get conversation IDs user is part of
@@ -486,26 +563,44 @@ defmodule CGraph.Messaging do
       select: cp.conversation_id
     ) |> Repo.all()
 
-    db_query = from m in Message,
+    base_query = from m in Message,
       where: m.conversation_id in ^user_conversation_ids,
       where: ilike(m.content, ^search_term),
-      order_by: [desc: m.inserted_at],
       preload: [:sender, :conversation]
 
-    db_query = if conversation_id do
-      from m in db_query, where: m.conversation_id == ^conversation_id
+    base_query = if conversation_id do
+      from m in base_query, where: m.conversation_id == ^conversation_id
     else
-      db_query
+      base_query
     end
 
-    total = Repo.aggregate(db_query, :count, :id)
+    pagination_opts = %{
+      cursor: cursor,
+      after_cursor: nil,
+      before_cursor: nil,
+      limit: min(limit, 100),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      include_total: include_total
+    }
 
-    messages = db_query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
+    {messages, page_info} = Pagination.paginate(base_query, pagination_opts)
 
-    meta = %{page: page, per_page: per_page, total: total}
+    meta = %{
+      has_more: page_info.has_next_page,
+      end_cursor: page_info.end_cursor,
+      start_cursor: page_info.start_cursor,
+      has_next_page: page_info.has_next_page,
+      has_previous_page: page_info.has_previous_page
+    }
+
+    meta = if include_total do
+      total = Repo.aggregate(base_query, :count, :id)
+      Map.put(meta, :total, total)
+    else
+      meta
+    end
+
     {messages, meta}
   end
 
@@ -888,20 +983,32 @@ defmodule CGraph.Messaging do
   end
 
   @doc """
-  List private messages in a folder.
+  List private messages in a folder using cursor-based pagination.
+
+  ## Options
+
+    * `:cursor` - Opaque cursor string for pagination
+    * `:limit` - Number of messages to fetch (default: 20, max: 100)
+    * `:folder_id` - Filter by folder ID
+    * `:unread_only` - Only return unread messages (default: false)
+    * `:search` - Search subject/content (minimum 2 characters)
+    * `:include_total` - Include total count (default: false)
+
+  Returns `{messages, page_info}` with cursor-based pagination metadata.
   """
   def list_private_messages(user_id, opts) when is_list(opts) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    offset = (page - 1) * per_page
+    alias CGraph.Pagination
+
+    cursor = Keyword.get(opts, :cursor)
+    limit = Keyword.get(opts, :limit, Keyword.get(opts, :per_page, 20))
     folder_id = Keyword.get(opts, :folder_id)
     unread_only = Keyword.get(opts, :unread_only, false)
     search = Keyword.get(opts, :search)
+    include_total = Keyword.get(opts, :include_total, false)
 
     base_query =
       from m in PrivateMessage,
         where: m.recipient_id == ^user_id,
-        order_by: [desc: m.inserted_at],
         preload: [:sender]
 
     base_query =
@@ -926,20 +1033,35 @@ defmodule CGraph.Messaging do
         base_query
       end
 
-    total_count = Repo.aggregate(base_query, :count, :id)
+    pagination_opts = %{
+      cursor: cursor,
+      after_cursor: nil,
+      before_cursor: nil,
+      limit: min(limit, 100),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      include_total: include_total
+    }
 
-    messages =
-      base_query
-      |> limit(^per_page)
-      |> offset(^offset)
-      |> Repo.all()
+    {messages, page_info} = Pagination.paginate(base_query, pagination_opts)
 
     pagination = %{
-      page: page,
-      per_page: per_page,
-      total_count: total_count,
-      total_pages: ceil(total_count / per_page)
+      has_more: page_info.has_next_page,
+      end_cursor: page_info.end_cursor,
+      start_cursor: page_info.start_cursor,
+      has_next_page: page_info.has_next_page,
+      has_previous_page: page_info.has_previous_page
     }
+
+    pagination = if include_total do
+      total_count = Repo.aggregate(base_query, :count, :id)
+      Map.merge(pagination, %{
+        total_count: total_count,
+        total_pages: ceil(total_count / limit)
+      })
+    else
+      pagination
+    end
 
     {messages, pagination}
   end
@@ -1048,33 +1170,55 @@ defmodule CGraph.Messaging do
   end
 
   @doc """
-  List PM drafts.
+  List PM drafts using cursor-based pagination.
+
+  ## Options
+
+    * `:cursor` - Opaque cursor string for pagination
+    * `:limit` - Number of drafts to fetch (default: 20, max: 100)
+    * `:include_total` - Include total count (default: false)
   """
   def list_pm_drafts(user_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    offset = (page - 1) * per_page
+    alias CGraph.Pagination
+
+    cursor = Keyword.get(opts, :cursor)
+    limit = Keyword.get(opts, :limit, Keyword.get(opts, :per_page, 20))
+    include_total = Keyword.get(opts, :include_total, false)
 
     base_query =
       from d in PMDraft,
         where: d.sender_id == ^user_id,
-        order_by: [desc: d.updated_at],
         preload: [:recipient]
 
-    total_count = Repo.aggregate(base_query, :count, :id)
+    pagination_opts = %{
+      cursor: cursor,
+      after_cursor: nil,
+      before_cursor: nil,
+      limit: min(limit, 100),
+      sort_field: :updated_at,
+      sort_direction: :desc,
+      include_total: include_total
+    }
 
-    drafts =
-      base_query
-      |> limit(^per_page)
-      |> offset(^offset)
-      |> Repo.all()
+    {drafts, page_info} = Pagination.paginate(base_query, pagination_opts)
 
     pagination = %{
-      page: page,
-      per_page: per_page,
-      total_count: total_count,
-      total_pages: ceil(total_count / per_page)
+      has_more: page_info.has_next_page,
+      end_cursor: page_info.end_cursor,
+      start_cursor: page_info.start_cursor,
+      has_next_page: page_info.has_next_page,
+      has_previous_page: page_info.has_previous_page
     }
+
+    pagination = if include_total do
+      total_count = Repo.aggregate(base_query, :count, :id)
+      Map.merge(pagination, %{
+        total_count: total_count,
+        total_pages: ceil(total_count / limit)
+      })
+    else
+      pagination
+    end
 
     {drafts, pagination}
   end
@@ -1271,4 +1415,37 @@ defmodule CGraph.Messaging do
         where: sm.user_id == ^user_id and sm.message_id == ^message_id
     )
   end
+
+  # ============================================================================
+  # Ephemeral / Disappearing Messages
+  # ============================================================================
+
+  @doc """
+  Update the message TTL for a conversation.
+  When set, new messages auto-expire after the specified duration.
+  Pass nil to disable disappearing messages.
+  """
+  def update_conversation_ttl(%Conversation{} = conversation, ttl) when is_nil(ttl) or is_integer(ttl) do
+    conversation
+    |> Ecto.Changeset.change(message_ttl: ttl)
+    |> Repo.update()
+  end
+
+  @doc """
+  Get the message TTL for a conversation.
+  """
+  def get_conversation_ttl(conversation_id) when is_binary(conversation_id) do
+    case Repo.get(Conversation, conversation_id) do
+      nil -> {:error, :not_found}
+      conv -> {:ok, conv.message_ttl}
+    end
+  end
+
+  # Auto-set expires_at on messages when conversation has a TTL
+  defp maybe_set_expires_at(%Conversation{message_ttl: nil}, attrs), do: attrs
+  defp maybe_set_expires_at(%Conversation{message_ttl: ttl}, attrs) when is_integer(ttl) and ttl > 0 do
+    expires_at = DateTime.utc_now() |> DateTime.add(ttl, :second)
+    Map.put(attrs, "expires_at", expires_at)
+  end
+  defp maybe_set_expires_at(_conversation, attrs), do: attrs
 end

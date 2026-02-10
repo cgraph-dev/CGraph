@@ -9,6 +9,7 @@ import { format } from 'date-fns';
 import { useChatStore } from '@/modules/chat/store';
 import { useAuthStore } from '@/modules/auth/store';
 import { AnimatedMessageWrapper } from '@/modules/chat/components/AnimatedMessageWrapper';
+import { springs } from '@/lib/animation-presets/presets';
 import {
   AnimatedReactionBubble,
   ReactionPicker,
@@ -91,7 +92,7 @@ export function EnhancedMessageBubble({
                 className="h-8 w-8 cursor-pointer overflow-hidden rounded-full bg-dark-600 ring-2 ring-primary-500/20 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                transition={springs.snappy}
                 title={`View ${message.sender?.displayName || message.sender?.username || 'user'}'s profile`}
               >
                 {message.sender?.avatarUrl ? (
@@ -124,7 +125,7 @@ export function EnhancedMessageBubble({
                   initial={{ opacity: 0, scale: 0.8, x: isOwn ? 10 : -10 }}
                   animate={{ opacity: 1, scale: 1, x: 0 }}
                   exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                  transition={springs.snappy}
                 >
                   <motion.button
                     onClick={onReply}

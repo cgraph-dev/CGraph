@@ -5,6 +5,7 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { SparklesIcon, LockClosedIcon, CheckIcon } from '@heroicons/react/24/outline';
 import type { ChatBackground, BackgroundCategory } from '@/data/chatBackgrounds';
 import { CATEGORY_COLORS, type BackgroundsTabProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 function getBackgroundPreviewStyle(bg: ChatBackground): React.CSSProperties {
   if (bg.type === 'solid') {
@@ -180,7 +181,7 @@ export function BackgroundsTab({
                       className="absolute right-2 top-2 rounded-full bg-primary-500 p-1"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ type: 'spring', stiffness: 300 }}
+                      transition={springs.bouncy}
                     >
                       <CheckIcon className="h-4 w-4 text-white" />
                     </motion.div>

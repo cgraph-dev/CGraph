@@ -16,6 +16,7 @@ import { AuthBackground } from '@/modules/auth/components/AuthBackgrounds';
 import { AuthCardHeader } from '@/modules/auth/components/AuthCardHeader';
 import type { LogoSize } from '@/modules/auth/components/AuthLogo';
 import type { BackgroundEffect } from '@/modules/auth/components/AuthBackgrounds';
+import { springs } from '@/lib/animation-presets/presets';
 
 export interface AuthCardProps {
   children: React.ReactNode;
@@ -188,7 +189,7 @@ const DefaultVariant: React.FC<
   <motion.div
     initial={{ opacity: 0, y: 20, scale: 0.95 }}
     animate={{ opacity: 1, y: 0, scale: 1 }}
-    transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+    transition={springs.ultraSmooth}
     className={`mx-auto w-full max-w-md ${className}`}
   >
     <GlassCard variant="crystal" className="relative overflow-hidden p-8">

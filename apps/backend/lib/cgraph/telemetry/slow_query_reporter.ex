@@ -104,7 +104,7 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
     # Schedule periodic report
     Process.send_after(self(), :generate_report, @report_interval)
 
-    Logger.info("[SlowQueryReporter] Started with threshold: #{Keyword.get(opts, :slow_threshold_ms, @default_slow_threshold_ms)}ms")
+    Logger.info("slowqueryreporter_started_with_threshold_ms", opts_slow_threshold_ms_default_slow_threshold_ms: inspect(Keyword.get(opts, :slow_threshold_ms, @default_slow_threshold_ms)))
 
     {:ok, %{
       report_count: 0,

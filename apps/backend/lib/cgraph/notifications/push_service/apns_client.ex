@@ -114,7 +114,7 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
     # Schedule token refresh
     Process.send_after(self(), :refresh_token, @token_refresh_interval_ms)
 
-    Logger.info("APNs client started (#{state.environment})")
+    Logger.info("apns_client_started", state_environment: state.environment)
     {:ok, state}
   end
 
@@ -225,13 +225,13 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
   end
   defp handle_apns_error(status, _headers, body, _device_token, _payload, _opts, state, _retry_count) do
     error = parse_error_response(body)
-    Logger.error("APNs unexpected status #{status}: #{inspect(error)}")
+    Logger.error("apns_unexpected_status", status: status, error: inspect(error))
     state = update_stats(state, :failed, error)
     {{:error, error}, state}
   end
 
   defp handle_apns_connection_error(reason, device_token, payload, opts, state, retry_count) do
-    Logger.error("APNs connection error: #{inspect(reason)}")
+    Logger.error("apns_connection_error", reason: inspect(reason))
     Process.sleep(500 * (retry_count + 1))
     do_send(device_token, payload, opts, state, retry_count + 1)
   end
@@ -250,7 +250,7 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
     end
   rescue
     e ->
-      Logger.error("HTTP/2 request failed: #{inspect(e)}")
+      Logger.error("http_2_request_failed", e: inspect(e))
       {:error, :connection_failed}
   end
 
@@ -269,7 +269,7 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
         %{state | jwt_token: token, jwt_generated_at: System.monotonic_time(:second)}
 
       {:error, reason} ->
-        Logger.error("Failed to generate APNs JWT: #{inspect(reason)}")
+        Logger.error("failed_to_generate_apns_jwt", reason: inspect(reason))
         state
     end
   end

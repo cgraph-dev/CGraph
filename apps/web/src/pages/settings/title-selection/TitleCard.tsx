@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { Lock, Sparkles } from 'lucide-react';
 import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
 import type { TitleCardProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function TitleCard({
   title,
@@ -91,7 +92,7 @@ export function TitleCard({
           className="absolute right-2 top-2"
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          transition={springs.bouncy}
         >
           <Sparkles className="h-6 w-6 fill-purple-500/20 text-purple-500" />
         </motion.div>

@@ -11,6 +11,7 @@ import { ThreadsTab } from './ThreadsTab';
 import { ModerationTab } from './ModerationTab';
 import { FeaturesSidebar } from './FeaturesSidebar';
 import type { ForumCategory, ForumBoard, ActiveTab } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function ForumShowcase() {
   const [categories, setCategories] = useState<ForumCategory[]>(initialCategories);
@@ -88,7 +89,7 @@ export function ForumShowcase() {
                   <motion.div
                     layoutId="activeForumTab"
                     className="absolute inset-0 rounded-lg bg-emerald-500/20"
-                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    transition={springs.stiff}
                   />
                 )}
               </button>

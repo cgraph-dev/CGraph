@@ -72,7 +72,7 @@ defmodule CGraph.Storage.S3 do
         }}
 
       {:error, reason} ->
-        Logger.error("S3 upload failed: #{inspect(reason)}")
+        Logger.error("s3_upload_failed", reason: inspect(reason))
         {:error, {:s3_upload_failed, reason}}
     end
   end

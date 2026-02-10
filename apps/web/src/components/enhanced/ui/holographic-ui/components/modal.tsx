@@ -10,6 +10,7 @@ import type { HoloModalProps } from '../types';
 import { getTheme } from '../presets';
 import { HoloContainer } from './container';
 import { HoloText } from './text';
+import { springs } from '@/lib/animation-presets/presets';
 
 export function HoloModal({
   isOpen,
@@ -60,7 +61,7 @@ export function HoloModal({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            transition={springs.stiff}
             className={cn('relative w-full', sizeStyles[size], className)}
           >
             <HoloContainer preset={preset} className="overflow-hidden">

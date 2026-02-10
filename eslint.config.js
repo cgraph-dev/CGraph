@@ -20,12 +20,12 @@ export default [
     },
     rules: reactHooks.configs.recommended.rules,
   },
-  // Architectural boundary rules for web app
+  // Architectural boundary rules for web app — ENFORCED (error not warn)
   {
-    files: ['apps/web/src/components/**/*.{ts,tsx}'],
+    files: ['apps/web/src/components/**/*.{ts,tsx}', 'apps/web/src/shared/components/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
-        'warn',
+        'error',
         {
           patterns: [
             {
@@ -42,17 +42,34 @@ export default [
       ],
     },
   },
-  // Pages can use hooks and components
+  // Pages can use hooks and components — ENFORCED
   {
     files: ['apps/web/src/pages/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
-        'warn',
+        'error',
         {
           patterns: [
             {
               group: ['@/services/*'],
               message: 'Pages should use hooks to access services, not import directly.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Mobile architectural boundaries — ENFORCED
+  {
+    files: ['apps/mobile/src/screens/**/*.{ts,tsx}', 'apps/mobile/src/shared/components/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/services/*'],
+              message: 'Screens/components should not import services directly. Use hooks or stores instead.',
             },
           ],
         },
@@ -107,7 +124,7 @@ export default [
     ignores: ['**/lib/logger.ts', '**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
     rules: {
       'no-console': [
-        'warn',
+        'error',
         {
           allow: ['warn', 'error'], // Allow console.warn/error as fallback
         },

@@ -8,6 +8,7 @@
  */
 
 import { Socket, Channel, Presence } from 'phoenix';
+import { exponentialBackoffWithJitter } from '@cgraph/socket';
 import { useAuthStore } from '@/modules/auth/store';
 import { socketLogger as logger } from '../logger';
 import type { ForumChannelCallbacks, ThreadChannelCallbacks } from './types';
@@ -83,7 +84,8 @@ export function connectSocket(state: SocketManagerState): Promise<void> {
 
     state.socket = new Socket(SOCKET_URL, {
       params: { token },
-      reconnectAfterMs: (tries: number) => Math.min(1000 * Math.pow(2, tries - 1), 30000),
+      // Exponential backoff with equal jitter — prevents thundering herd at scale
+      reconnectAfterMs: exponentialBackoffWithJitter(),
       heartbeatIntervalMs: 30000,
     });
 

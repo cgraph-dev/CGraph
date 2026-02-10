@@ -329,7 +329,7 @@ defmodule CGraph.RateLimiter.Distributed do
         {:error, :redis_unavailable}
 
       {:error, reason} ->
-        Logger.debug("Rate limiter Redis fallback: #{inspect(reason)}")
+        Logger.debug("rate_limiter_redis_fallback", reason: inspect(reason))
         result = ets_check(key, config)
         emit_telemetry(identifier, scope, config, result)
         result

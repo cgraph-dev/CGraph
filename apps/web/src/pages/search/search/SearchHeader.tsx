@@ -12,6 +12,7 @@ import type { SearchCategory } from '@/modules/search/store';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { categories } from './constants';
+import { springs } from '@/lib/animation-presets/presets';
 
 /** Props for SearchHeader */
 export interface SearchHeaderProps {
@@ -102,12 +103,7 @@ export function SearchHeader({
                 onClick={() => onCategoryChange(cat.id)}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 300,
-                  damping: 20,
-                  delay: 0.25 + index * 0.05,
-                }}
+                transition={{ ...springs.bouncy, delay: 0.25 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className={`relative flex items-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-all ${
@@ -119,7 +115,7 @@ export function SearchHeader({
                     layoutId="activeCategory"
                     className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent"
                     style={{ boxShadow: '0 0 20px rgba(16, 185, 129, 0.3)' }}
-                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    transition={springs.bouncy}
                   />
                 )}
                 <Icon className="relative z-10 h-4 w-4" />

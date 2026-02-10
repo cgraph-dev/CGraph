@@ -15,6 +15,7 @@ import { GamingLayout } from './GamingLayout';
 import { SocialLayout } from './SocialLayout';
 import { CreatorLayout } from './CreatorLayout';
 import type { ProfileCardProps } from './types';
+import { springs } from '@/lib/animation-presets/presets';
 
 /**
  * ProfileCard Component
@@ -73,7 +74,7 @@ export const ProfileCard = memo(function ProfileCard({
       whileHover={interactive ? 'hover' : undefined}
       whileTap={interactive ? 'tap' : undefined}
       onClick={onClick}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      transition={springs.bouncy}
     >
       {/* Layout-specific content */}
       {config.layout === 'minimal' && (

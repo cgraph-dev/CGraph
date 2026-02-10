@@ -18,24 +18,10 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
   def get(id, preloads \\ []) do
     cache_key = "thread:#{id}"
 
-    case Cache.get(cache_key) do
-      {:ok, nil} ->
-        thread =
-          Thread
-          |> Repo.get(id)
-          |> maybe_preload(preloads)
-
-        if thread, do: Cache.put(cache_key, thread, @cache_ttl)
-        thread
-
-      {:ok, cached} ->
-        maybe_preload(cached, preloads)
-
-      {:error, _} ->
-        Thread
-        |> Repo.get(id)
-        |> maybe_preload(preloads)
-    end
+    Cache.fetch(cache_key, fn ->
+      Thread |> Repo.get(id)
+    end, ttl: @cache_ttl)
+    |> maybe_preload(preloads)
   end
 
   @doc """
