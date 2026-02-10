@@ -5,7 +5,10 @@
  * Uses the unified theme store for state management.
  */
 
-import { useThemeStore } from '@/stores/theme';
+// Import directly from the store instance file to avoid circular dependency:
+// stores/theme/index.ts re-exports from this file, so importing from the barrel
+// would create: stores/theme/index → forumThemeStore → stores/theme/index → TDZ
+import { useThemeStore } from '@/stores/theme/store';
 
 // =============================================================================
 // TYPES
