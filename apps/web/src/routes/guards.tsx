@@ -14,10 +14,18 @@ import { routeLogger } from '@/lib/logger';
 
 /**
  * Requires authentication — redirects to /login if unauthenticated.
+ * Waits for auth store rehydration before deciding, to avoid
+ * a premature redirect that would flash the login page.
  */
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuthStore();
-  routeLogger.debug('ProtectedRoute isAuthenticated:', isAuthenticated);
+  const { isAuthenticated, isLoading } = useAuthStore();
+  const hasHydrated = useAuthStore.persist?.hasHydrated?.() ?? true;
+  routeLogger.debug('ProtectedRoute isAuthenticated:', isAuthenticated, 'hydrated:', hasHydrated);
+
+  // Wait for Zustand persist to rehydrate before making a redirect decision
+  if (!hasHydrated || isLoading) {
+    return <LoadingSpinner />;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -27,10 +35,16 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 /**
  * Public-only route — redirects authenticated users to /messages.
+ * Waits for auth rehydration to avoid redirect flicker.
  */
 export function PublicRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
-  routeLogger.debug('PublicRoute isAuthenticated:', isAuthenticated);
+  const hasHydrated = useAuthStore.persist?.hasHydrated?.() ?? true;
+  routeLogger.debug('PublicRoute isAuthenticated:', isAuthenticated, 'hydrated:', hasHydrated);
+
+  if (!hasHydrated) {
+    return <LoadingSpinner />;
+  }
 
   if (isAuthenticated) {
     return <Navigate to="/messages" replace />;
@@ -75,6 +89,7 @@ export function ProfileRedirectRoute() {
  */
 export function LandingRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
+  const hasHydrated = useAuthStore.persist?.hasHydrated?.() ?? true;
   routeLogger.debug('LandingRoute isAuthenticated:', isAuthenticated);
 
   if (isAuthenticated) {
