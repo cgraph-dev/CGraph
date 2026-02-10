@@ -30,14 +30,8 @@ export type {
 import type { SeasonalEventState } from './seasonal-types';
 import { createSeasonalActions } from './seasonal-actions';
 
-// Re-export selector hooks
-export {
-  useActiveEvents,
-  useFeaturedEvent,
-  useCurrentEventProgress,
-  useEventLeaderboard,
-  useHasActiveBattlePass,
-} from './seasonal-selectors';
+// NOTE: Selectors are NOT re-exported here to avoid circular dependency.
+// Import selectors from './seasonal-selectors' directly, or via the barrel './index'.
 
 // ==================== STORE IMPLEMENTATION ====================
 

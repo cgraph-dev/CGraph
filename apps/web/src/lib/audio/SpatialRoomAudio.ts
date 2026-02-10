@@ -15,7 +15,8 @@ import type {
   VoiceActivityState,
   SpatialAudioConfig,
 } from './spatialAudio.types';
-import { SpatialAudioEngine } from './SpatialAudioEngine';
+// Import directly from engine-core to avoid circular dep through barrel
+import { SpatialAudioEngine } from './spatial-audio/engine-core';
 
 /**
  * Spatial audio room for VR/AR chat environments

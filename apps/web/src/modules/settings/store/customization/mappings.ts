@@ -9,13 +9,14 @@
  * @since v0.9.8
  */
 
+// Import types directly from types file to avoid circular dep through barrel
 import type {
   AvatarBorderType,
   ThemePreset,
   ChatBubbleStyle,
   BubbleAnimation,
   // ProfileCardStyle - reserved for future use
-} from './index';
+} from './customizationStore.types';
 
 // =============================================================================
 // AVATAR BORDER MAPPINGS

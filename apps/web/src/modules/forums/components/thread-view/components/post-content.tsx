@@ -23,7 +23,12 @@ import { formatTimeAgo } from '@/lib/utils';
 import { UserStars } from '@/modules/gamification/components/UserStars';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import type { Post } from '@/modules/forums/store';
-import { PrefixBadge, RatingStars, ShareMenu, MoreMenu, CommentForm } from '.';
+// Import siblings directly to avoid circular dep through barrel
+import { PrefixBadge } from './prefix-badge';
+import { RatingStars } from './rating-stars';
+import { ShareMenu } from './share-menu';
+import { MoreMenu } from './more-menu';
+import { CommentForm } from './comment-form';
 
 interface PostContentProps {
   post: Post;

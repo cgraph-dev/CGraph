@@ -43,11 +43,9 @@ export {
   type LifetimeStats,
 } from './prestigeSlice';
 
-// Re-export seasonal events slice
+// Re-export seasonal events slice (store + types only)
 export {
   useSeasonalEventStore,
-  useFeaturedEvent,
-  useCurrentEventProgress,
   type SeasonalEvent,
   type EventProgress,
   type EventReward,
@@ -56,6 +54,15 @@ export {
   type EventType,
   type EventStatus,
 } from './seasonalEventSlice';
+
+// Seasonal selector hooks — imported directly to avoid circular dep
+export {
+  useActiveEvents,
+  useFeaturedEvent,
+  useCurrentEventProgress,
+  useEventLeaderboard,
+  useHasActiveBattlePass,
+} from './seasonal-selectors';
 
 // Re-export marketplace slice
 export {

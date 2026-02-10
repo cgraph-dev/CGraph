@@ -10,7 +10,11 @@ import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 import { ThreadedCommentTree } from '../../ThreadedCommentTree';
 import type { Comment } from '@/modules/forums/store';
 import type { CommentViewMode } from '../types';
-import { ViewModeToggle, CommentCard, EmptyCommentsState, ReplyIndicator } from '.';
+// Import siblings directly to avoid circular dep through barrel
+import { ViewModeToggle } from './view-mode-toggle';
+import { CommentCard } from './comment-card';
+import { EmptyCommentsState } from './empty-state';
+import { ReplyIndicator } from './reply-indicator';
 import type { Virtualizer } from '@tanstack/react-virtual';
 
 interface CommentsSectionProps {

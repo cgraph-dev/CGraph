@@ -7,7 +7,18 @@
 import React from 'react';
 import { StarIcon, BoltIcon, SparklesIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
 import type { SubscriptionTier } from '@/modules/premium/store/types';
-import type { FeatureCategory } from './FeatureComparison';
+
+// Types defined here (not in FeatureComparison.tsx) to avoid circular dependency
+export interface FeatureItem {
+  name: string;
+  description?: string;
+  values: Record<SubscriptionTier, boolean | string | number>;
+}
+
+export interface FeatureCategory {
+  name: string;
+  features: FeatureItem[];
+}
 
 export const TIER_ICONS: Record<SubscriptionTier, React.ReactNode> = {
   free: <StarIcon className="h-5 w-5" />,

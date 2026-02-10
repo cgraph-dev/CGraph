@@ -24,7 +24,7 @@ export type {
 // Constants
 export { THEME_COLORS, AVATAR_BORDERS, RARITY_COLORS } from './customizationStore';
 
-// Theme selectors
+// Theme selectors — imported directly from selectors to avoid circular dep
 export {
   useThemePreset,
   useEffectPreset,
@@ -33,10 +33,14 @@ export {
   useGlowEnabled,
   useBlurEnabled,
   useAnimatedBackground,
-} from './customizationStore';
+} from './customizationStore.selectors';
 
 // Avatar selectors
-export { useAvatarBorderType, useAvatarBorderColor, useAvatarSize } from './customizationStore';
+export {
+  useAvatarBorderType,
+  useAvatarBorderColor,
+  useAvatarSize,
+} from './customizationStore.selectors';
 
 // Chat bubble selectors
 export {
@@ -48,7 +52,7 @@ export {
   useGroupMessages,
   useShowTimestamps,
   useCompactMode,
-} from './customizationStore';
+} from './customizationStore.selectors';
 
 // Profile selectors
 export {
@@ -58,10 +62,15 @@ export {
   useShowStatus,
   useEquippedTitle,
   useEquippedBadges,
-} from './customizationStore';
+} from './customizationStore.selectors';
 
 // Loading state selectors
-export { useIsLoading, useIsSaving, useIsDirty, useSyncError } from './customizationStore';
+export {
+  useIsLoading,
+  useIsSaving,
+  useIsDirty,
+  useSyncError,
+} from './customizationStore.selectors';
 
 // Composite selectors
 export {
@@ -70,8 +79,10 @@ export {
   useAvatarSettings,
   useProfileSettings,
   useSyncState,
-  useCustomizationStoreV2,
-} from './customizationStore';
+} from './customizationStore.selectors';
+
+// V2 alias (lives in customizationStore.ts, not selectors)
+export { useCustomizationStoreV2 } from './customizationStore';
 
 // Mappings
 export * from './mappings';

@@ -21,18 +21,12 @@ import {
   TIER_COLORS,
   TIER_GRADIENTS,
   DEFAULT_CATEGORIES,
+  type FeatureCategory,
+  type FeatureItem,
 } from './featureComparisonConstants';
 
-export interface FeatureCategory {
-  name: string;
-  features: FeatureItem[];
-}
-
-export interface FeatureItem {
-  name: string;
-  description?: string;
-  values: Record<SubscriptionTier, boolean | string | number>;
-}
+// Re-export types for external consumers
+export type { FeatureCategory, FeatureItem };
 
 export interface FeatureComparisonProps {
   plans: SubscriptionPlan[];

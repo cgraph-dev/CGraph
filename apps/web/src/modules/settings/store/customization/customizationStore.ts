@@ -41,45 +41,8 @@ export {
   DEFAULT_STATE,
 } from './customizationStore.types';
 
-// Re-export selectors from the selectors module
-export {
-  useThemePreset,
-  useEffectPreset,
-  useAnimationSpeed,
-  useParticlesEnabled,
-  useGlowEnabled,
-  useBlurEnabled,
-  useAnimatedBackground,
-  useAvatarBorderType,
-  useAvatarBorderColor,
-  useAvatarSize,
-  useChatBubbleStyle,
-  useChatBubbleColor,
-  useBubbleBorderRadius,
-  useBubbleGlassEffect,
-  useBubbleShowTail,
-  useGroupMessages,
-  useShowTimestamps,
-  useCompactMode,
-  useProfileCardStyle,
-  useShowBadges,
-  useShowBio,
-  useShowStatus,
-  useEquippedTitle,
-  useEquippedBadges,
-  useIsLoading,
-  useIsSaving,
-  useIsDirty,
-  useSyncError,
-  getThemeColors,
-  useChatThemeColors,
-  useAvatarThemeColors,
-  useChatSettings,
-  useThemeSettings,
-  useAvatarSettings,
-  useProfileSettings,
-  useSyncState,
-} from './customizationStore.selectors';
+// NOTE: Selectors are NOT re-exported here to avoid circular dependency.
+// Import selectors from './customizationStore.selectors' directly, or via the barrel './index'.
 
 import type { CustomizationStore } from './customizationStore.types';
 import {
