@@ -14,6 +14,7 @@
 
 import { create } from 'zustand';
 import { devtools, persist, createJSONStorage } from 'zustand/middleware';
+import type { StateStorage } from 'zustand/middleware';
 import { authLogger } from '@/lib/logger';
 
 // Types
@@ -24,6 +25,26 @@ import type { AuthState } from './authStore.types';
 // Utilities (extracted to reduce file size)
 export { mapUserFromApi } from './authStore.utils';
 import { createSecureStorage } from './authStore.utils';
+
+// Create storage once at module scope with defensive fallback.
+// If sessionStorage is unavailable (private browsing, security policy, storage full)
+// we fall back to a no-op in-memory store so the app still boots.
+let safeStorage: StateStorage;
+try {
+  safeStorage = createSecureStorage();
+  // Smoke-test: verify sessionStorage is actually accessible
+  const testKey = '__cgraph_storage_test__';
+  sessionStorage.setItem(testKey, '1');
+  sessionStorage.removeItem(testKey);
+} catch (err) {
+  authLogger.warn('sessionStorage unavailable, using in-memory fallback:', err);
+  const memoryStore = new Map<string, string>();
+  safeStorage = {
+    getItem: (name: string) => memoryStore.get(name) ?? null,
+    setItem: (name: string, value: string) => { memoryStore.set(name, value); },
+    removeItem: (name: string) => { memoryStore.delete(name); },
+  };
+}
 
 // Actions (extracted to reduce file size)
 import {
@@ -63,7 +84,7 @@ export const useAuthStore = create<AuthState>()(
       }),
       {
         name: 'cgraph-auth',
-        storage: createJSONStorage(() => createSecureStorage()),
+        storage: createJSONStorage(() => safeStorage),
         partialize: (state) => ({
           token: state.token,
           refreshToken: state.refreshToken,

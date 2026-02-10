@@ -58,9 +58,32 @@ class ThemeEngineImpl {
   private listeners: Set<(theme: Theme) => void> = new Set();
 
   constructor() {
-    this.preferences = loadPreferences();
-    this.broadcastChannel = initBroadcastChannel((theme) => this.applyTheme(theme, false));
-    this.applyTheme(this.getActiveTheme());
+    // Defensive: constructor runs at module scope during import.
+    // If any DOM/storage API is unavailable (SSR, restricted env),
+    // fall back to defaults instead of crashing the import chain.
+    try {
+      this.preferences = loadPreferences();
+      this.broadcastChannel = initBroadcastChannel((theme) => this.applyTheme(theme, false));
+      this.applyTheme(this.getActiveTheme());
+    } catch (error) {
+      logger.error('ThemeEngine init failed, using defaults:', error);
+      this.preferences = {
+        activeThemeId: 'dark',
+        customThemes: [],
+        settings: {
+          syncAcrossDevices: false,
+          respectSystemPreference: false,
+          messageDisplay: 'cozy',
+          fontScale: 1,
+          messageSpacing: 1,
+          reduceMotion: false,
+          highContrast: false,
+          backgroundEffect: 'none',
+          shaderVariant: 'matrix',
+          backgroundIntensity: 0.6,
+        },
+      };
+    }
   }
 
   /**

@@ -174,6 +174,12 @@ window.addEventListener('unhandledrejection', (event) => {
   logger.error('Unhandled promise rejection:', event.reason);
 });
 
+// Helper: remove the static HTML loader so the 15s timeout never fires
+function removeInitialLoader() {
+  const loader = document.getElementById('initial-loader');
+  if (loader) loader.remove();
+}
+
 debugLog('Creating React root...');
 try {
   const root = ReactDOM.createRoot(rootElement);
@@ -208,8 +214,12 @@ try {
       </ErrorBoundary>
     </React.StrictMode>
   );
+  // React has mounted — remove the static HTML loader immediately
+  removeInitialLoader();
   debugLog('Application rendered successfully');
 } catch (err) {
+  // Even on error, remove the loader so ErrorBoundary or fallback UI is visible
+  removeInitialLoader();
   logger.error('Failed to render:', err);
 }
 
