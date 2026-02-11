@@ -92,7 +92,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   handleReportIssue = (): void => {
     // Open support with error context
-    const errorId = this.state.errorId;
+    const { errorId } = this.state;
     const supportUrl = errorId
       ? `mailto:support@cgraph.org?subject=Error Report ${errorId}&body=Error ID: ${errorId}%0A%0APlease describe what you were doing when this error occurred:%0A%0A`
       : 'mailto:support@cgraph.org?subject=Error Report&body=Please describe what you were doing when this error occurred:%0A%0A';

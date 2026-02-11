@@ -435,7 +435,7 @@ function SecurityIconCard({ feature }: { feature: (typeof securityFeatures)[0] }
     if (!cardRef.current) return 1;
     const section = cardRef.current.closest('.zoom-section');
     if (!section) return 1;
-    const transform = window.getComputedStyle(section).transform;
+    const { transform } = window.getComputedStyle(section);
     if (transform === 'none') return 1;
     const matrix = transform.match(/matrix\(([^)]+)\)/);
     if (matrix && matrix[1]) {
@@ -704,7 +704,7 @@ export default function LandingPage() {
 
   // Handle hash navigation on page load
   useEffect(() => {
-    const hash = window.location.hash;
+    const { hash } = window.location;
     if (hash) {
       const timeoutId = setTimeout(() => {
         const element = document.querySelector(hash);

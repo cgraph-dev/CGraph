@@ -23,7 +23,7 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
     if (!notification.duration || notification.duration === 0) return;
 
     const startTime = Date.now();
-    const duration = notification.duration;
+    const { duration } = notification;
 
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime;
