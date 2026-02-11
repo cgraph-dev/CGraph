@@ -8,38 +8,19 @@
  */
 
 import { Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/modules/auth/store';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { routeLogger } from '@/lib/logger';
 
 /**
  * Requires authentication — redirects to /login if unauthenticated.
- * Waits for auth store rehydration before deciding, to avoid
- * a premature redirect. Falls through after 2s safety timeout.
+ * Never blocks: if already authenticated, renders instantly.
+ * If not authenticated, redirects immediately (checkAuth will
+ * re-authenticate in the background if a valid token exists).
  */
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuthStore();
-  const hasHydrated = useAuthStore.persist?.hasHydrated?.() ?? true;
-  const [timedOut, setTimedOut] = useState(false);
-
-  // Safety timeout: never block rendering for more than 2 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!hasHydrated || isLoading) {
-        routeLogger.warn('ProtectedRoute: hydration timed out, redirecting to login');
-        setTimedOut(true);
-      }
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [hasHydrated, isLoading]);
-
-  routeLogger.debug('ProtectedRoute isAuthenticated:', isAuthenticated, 'hydrated:', hasHydrated);
-
-  // Wait for Zustand persist to rehydrate before making a redirect decision
-  if ((!hasHydrated || isLoading) && !timedOut) {
-    return <LoadingSpinner />;
-  }
+  const { isAuthenticated } = useAuthStore();
+  routeLogger.debug('ProtectedRoute isAuthenticated:', isAuthenticated);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
@@ -49,30 +30,12 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 /**
  * Public-only route — redirects authenticated users to /messages.
- * Falls through to children after hydration or a 2s safety timeout,
- * ensuring the login page always renders even if rehydration stalls.
+ * Never blocks: renders children immediately for unauthenticated users.
+ * If the user is authenticated (e.g. after hydration), redirects to /messages.
  */
 export function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuthStore();
-  const hasHydrated = useAuthStore.persist?.hasHydrated?.() ?? true;
-  const [timedOut, setTimedOut] = useState(false);
-
-  // Safety timeout: never block the login page for more than 2 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!hasHydrated || isLoading) {
-        routeLogger.warn('PublicRoute: hydration timed out, rendering anyway');
-        setTimedOut(true);
-      }
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, [hasHydrated, isLoading]);
-
-  routeLogger.debug('PublicRoute isAuthenticated:', isAuthenticated, 'hydrated:', hasHydrated);
-
-  if (!hasHydrated && !timedOut) {
-    return <LoadingSpinner />;
-  }
+  const { isAuthenticated } = useAuthStore();
+  routeLogger.debug('PublicRoute isAuthenticated:', isAuthenticated);
 
   if (isAuthenticated) {
     return <Navigate to="/messages" replace />;
