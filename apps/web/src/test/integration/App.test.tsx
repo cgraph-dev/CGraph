@@ -123,15 +123,13 @@ describe('App Component', () => {
   });
 
   describe('Routing', () => {
-    it('shows landing page for unauthenticated users at /', async () => {
+    it('redirects unauthenticated users at / to /login', async () => {
       const Wrapper = createTestWrapper('/');
       render(<App />, { wrapper: Wrapper });
 
-      // The app now shows a landing page for unauthenticated users at /
+      // The app now redirects unauthenticated users from / to /login
       await waitFor(() => {
-        expect(
-          document.querySelector('.demo-landing, .gl-nav') ?? document.body
-        ).toBeInTheDocument();
+        expect(screen.getByTestId('login-page')).toBeInTheDocument();
       });
     });
 

@@ -78,25 +78,8 @@ export const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'))
 
 // ── Static Pages ───────────────────────────────────────────────────────
 export const NotFound = lazy(() => import('@/pages/NotFound'));
-export const LandingPage = lazy(() => import('@/pages/landing-page'));
-
-// ── Legal Pages ────────────────────────────────────────────────────────
-export const PrivacyPolicy = lazy(() => import('@/pages/legal/PrivacyPolicy'));
-export const TermsOfService = lazy(() => import('@/pages/legal/TermsOfService'));
-export const CookiePolicy = lazy(() => import('@/pages/legal/CookiePolicy'));
-export const GDPR = lazy(() => import('@/pages/legal/GDPR'));
-
-// ── Company Pages ──────────────────────────────────────────────────────
-export const About = lazy(() => import('@/pages/company/About'));
-export const Contact = lazy(() => import('@/pages/company/Contact'));
-export const Careers = lazy(() => import('@/pages/company/Careers'));
-export const Press = lazy(() => import('@/pages/company/Press'));
-export const Status = lazy(() => import('@/pages/company/Status'));
-export const Blog = lazy(() => import('@/pages/company/Blog'));
-export const Documentation = lazy(() => import('@/pages/company/Documentation'));
 
 // ── Dev/Test Pages ─────────────────────────────────────────────────────
 export const MatrixTest = lazy(() => import('@/__dev__/test/MatrixTest'));
 export const EnhancedDemo = lazy(() => import('@/__dev__/test/EnhancedDemo'));
 export const ThemeApplicationTest = lazy(() => import('@/__dev__/test/ThemeApplicationTest'));
-export const LandingDemoWorkshop = lazy(() => import('@/__dev__/demo/LandingDemoWorkshop'));

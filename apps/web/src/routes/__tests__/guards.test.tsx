@@ -30,13 +30,7 @@ vi.mock('@/components/LoadingSpinner', () => ({
   LoadingSpinner: () => <div data-testid="loading-spinner" />,
 }));
 
-import {
-  ProtectedRoute,
-  PublicRoute,
-  AdminRoute,
-  ProfileRedirectRoute,
-  LandingRoute,
-} from '../guards';
+import { ProtectedRoute, PublicRoute, AdminRoute, ProfileRedirectRoute } from '../guards';
 
 // ── Tests ──────────────────────────────────────────────────────────────
 
@@ -140,27 +134,6 @@ describe('Route Guards', () => {
       authState.user = null;
       render(<ProfileRedirectRoute />);
       expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
-    });
-  });
-
-  describe('LandingRoute', () => {
-    it('renders children when unauthenticated', () => {
-      render(
-        <LandingRoute>
-          <div data-testid="landing">Landing</div>
-        </LandingRoute>
-      );
-      expect(screen.getByTestId('landing')).toBeInTheDocument();
-    });
-
-    it('redirects to /messages when authenticated', () => {
-      authState.isAuthenticated = true;
-      render(
-        <LandingRoute>
-          <div>Landing</div>
-        </LandingRoute>
-      );
-      expect(screen.getByTestId('navigate')).toHaveAttribute('data-to', '/messages');
     });
   });
 });

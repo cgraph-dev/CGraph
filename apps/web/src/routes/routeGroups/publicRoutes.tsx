@@ -1,63 +1,33 @@
 /**
- * Public route definitions (legal, company, landing)
+ * Public route definitions
+ *
+ * Root redirect: authenticated → /messages, unauthenticated → /login.
+ * Legal/company pages are served by the landing app at cgraph.org
+ * and redirected via Vercel config.
  *
  * @module routes/routeGroups/publicRoutes
  */
 
-import { Route } from 'react-router-dom';
-import { LandingRoute } from '../guards';
-import {
-  LandingPage,
-  PrivacyPolicy,
-  TermsOfService,
-  CookiePolicy,
-  GDPR,
-  About,
-  Contact,
-  Careers,
-  Press,
-  Status,
-  Blog,
-  Documentation,
-} from '../lazyPages';
+import { Route, Navigate } from 'react-router-dom';
+import { useAuthStore } from '@/modules/auth/store';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
-/** Landing page route */
-export function LandingRoutes() {
-  return (
-    <Route
-      path="/"
-      element={
-        <LandingRoute>
-          <LandingPage />
-        </LandingRoute>
-      }
-    />
-  );
+/**
+ * Root redirect — authenticated users go to /messages,
+ * unauthenticated users go to /login.
+ */
+function RootRedirect() {
+  const { isAuthenticated, isLoading } = useAuthStore();
+  const hasHydrated = useAuthStore.persist?.hasHydrated?.() ?? true;
+
+  if (!hasHydrated || isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  return <Navigate to={isAuthenticated ? '/messages' : '/login'} replace />;
 }
 
-/** Legal pages (privacy, terms, cookies, GDPR) */
-export function LegalRoutes() {
-  return (
-    <>
-      <Route path="/privacy" element={<PrivacyPolicy />} />
-      <Route path="/terms" element={<TermsOfService />} />
-      <Route path="/cookies" element={<CookiePolicy />} />
-      <Route path="/gdpr" element={<GDPR />} />
-    </>
-  );
-}
-
-/** Company pages (about, contact, careers, etc.) */
-export function CompanyRoutes() {
-  return (
-    <>
-      <Route path="/about" element={<About />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/careers" element={<Careers />} />
-      <Route path="/press" element={<Press />} />
-      <Route path="/status" element={<Status />} />
-      <Route path="/blog" element={<Blog />} />
-      <Route path="/docs" element={<Documentation />} />
-    </>
-  );
+/** Root route — redirects based on auth state */
+export function RootRedirectRoute() {
+  return <Route path="/" element={<RootRedirect />} />;
 }

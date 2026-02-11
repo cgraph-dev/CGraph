@@ -5,6 +5,23 @@
   "installCommand": "pnpm install --no-frozen-lockfile",
   "outputDirectory": "dist",
   "regions": ["fra1"],
+  "redirects": [
+    { "source": "/about", "destination": "https://cgraph.org/about", "statusCode": 308 },
+    { "source": "/contact", "destination": "https://cgraph.org/contact", "statusCode": 308 },
+    { "source": "/careers", "destination": "https://cgraph.org/careers", "statusCode": 308 },
+    { "source": "/press", "destination": "https://cgraph.org/press", "statusCode": 308 },
+    { "source": "/status", "destination": "https://cgraph.org/status", "statusCode": 308 },
+    { "source": "/blog", "destination": "https://cgraph.org/blog", "statusCode": 308 },
+    { "source": "/docs", "destination": "https://cgraph.org/docs", "statusCode": 308 },
+    { "source": "/privacy", "destination": "https://cgraph.org/privacy", "statusCode": 308 },
+    { "source": "/terms", "destination": "https://cgraph.org/terms", "statusCode": 308 },
+    { "source": "/cookies", "destination": "https://cgraph.org/cookies", "statusCode": 308 },
+    { "source": "/gdpr", "destination": "https://cgraph.org/gdpr", "statusCode": 308 },
+    { "source": "/download", "destination": "https://cgraph.org/download", "statusCode": 308 },
+    { "source": "/pricing", "destination": "https://cgraph.org/#pricing", "statusCode": 308 },
+    { "source": "/features", "destination": "https://cgraph.org/#features", "statusCode": 308 },
+    { "source": "/security", "destination": "https://cgraph.org/#security", "statusCode": 308 }
+  ],
   "rewrites": [
     {
       "source": "/api/:path*",

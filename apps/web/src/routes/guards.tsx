@@ -82,19 +82,3 @@ export function ProfileRedirectRoute() {
   }
   return <LoadingSpinner />;
 }
-
-/**
- * Discord-style landing — authenticated users go to /messages,
- * unauthenticated users see the landing page.
- */
-export function LandingRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuthStore();
-  // Ensure store is hydrated before routing decisions
-  useAuthStore.persist?.hasHydrated?.();
-  routeLogger.debug('LandingRoute isAuthenticated:', isAuthenticated);
-
-  if (isAuthenticated) {
-    return <Navigate to="/messages" replace />;
-  }
-  return <>{children}</>;
-}

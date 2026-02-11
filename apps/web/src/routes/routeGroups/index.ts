@@ -5,7 +5,7 @@
  */
 
 export { DevRoutes } from './devRoutes';
-export { LandingRoutes, LegalRoutes, CompanyRoutes } from './publicRoutes';
+export { RootRedirectRoute } from './publicRoutes';
 export { AuthRoutes } from './authRoutes';
 export { ForumRoutes } from './forumRoutes';
 export { SettingsRoutes } from './settingsRoutes';

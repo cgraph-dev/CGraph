@@ -13,9 +13,7 @@ import AppLayout from '@/layouts/AppLayout';
 import { ProtectedRoute, AdminRoute, ProfileRedirectRoute } from './guards';
 import {
   DevRoutes,
-  LandingRoutes,
-  LegalRoutes,
-  CompanyRoutes,
+  RootRedirectRoute,
   AuthRoutes,
   ForumRoutes,
   SettingsRoutes,
@@ -58,10 +56,8 @@ export function AppRoutes() {
       {/* ── Dev/Test ───────────────────────────────────────────────── */}
       {DevRoutes()}
 
-      {/* ── Public routes ─────────────────────────────────────────── */}
-      {LandingRoutes()}
-      {LegalRoutes()}
-      {CompanyRoutes()}
+      {/* ── Root redirect (auth → /messages, unauth → /login) ──── */}
+      {RootRedirectRoute()}
 
       {/* ── Auth routes ───────────────────────────────────────────── */}
       {AuthRoutes()}
