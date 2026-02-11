@@ -8,6 +8,7 @@
  */
 
 import { motion } from 'framer-motion';
+import type { Variants } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';
 import type { ReactNode } from 'react';
 
@@ -39,12 +40,12 @@ const illustrationVariant = {
   },
 };
 
-const shakeVariant = {
+const shakeVariant: Variants = {
   hidden: { opacity: 0, x: 0 },
   visible: {
     opacity: 1,
     x: [0, -8, 8, -6, 6, -3, 3, 0],
-    transition: { duration: 0.6, ease: 'easeOut' },
+    transition: { duration: 0.6, ease: 'easeOut' as const },
   },
 };
 

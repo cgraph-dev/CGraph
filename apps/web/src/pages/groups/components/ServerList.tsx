@@ -42,7 +42,7 @@ export function ServerList({ groups, activeGroupId }: ServerListProps) {
       <div className="mx-auto h-0.5 w-8 rounded-full bg-gradient-to-r from-transparent via-primary-500/30 to-transparent" />
 
       {/* Server list */}
-      {groups.map((group, index) => (
+      {groups.map((group) => (
         <motion.div
           key={group.id}
           initial={{ scale: 0, rotate: -180 }}

@@ -119,7 +119,7 @@ export function FriendsTabBar({ tabs, activeTab, setActiveTab }: FriendsTabBarPr
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.1 }}
     >
-      {tabs.map((tab, index) => (
+      {tabs.map((tab) => (
         <motion.div
           key={tab.id}
           initial={{ opacity: 0, x: -10 }}

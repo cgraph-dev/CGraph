@@ -186,6 +186,7 @@ export function AnimatedMessageWrapper({
       return () => clearTimeout(timer);
     }
     setShowEditFlash(false);
+    return undefined;
   }, [isEditing]);
 
   // Get gesture handlers separately to avoid type conflicts with framer-motion

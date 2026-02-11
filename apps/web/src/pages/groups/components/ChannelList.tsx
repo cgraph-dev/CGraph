@@ -75,7 +75,7 @@ export function ChannelList({
 
       {/* Channels */}
       <div className="relative z-10 flex-1 space-y-0.5 overflow-y-auto py-3">
-        {activeGroup.categories?.map((category, catIndex) => (
+        {activeGroup.categories?.map((category) => (
           <motion.div
             key={category.id}
             initial={{ opacity: 0, x: -10 }}
@@ -111,7 +111,7 @@ export function ChannelList({
                   transition={{ duration: 0.2 }}
                   className="mt-0.5 overflow-hidden"
                 >
-                  {category.channels?.map((channel, chIndex) => (
+                  {category.channels?.map((channel) => (
                     <motion.div
                       key={channel.id}
                       initial={{ opacity: 0, x: -10 }}
@@ -135,7 +135,7 @@ export function ChannelList({
         {/* Uncategorized channels */}
         {activeGroup.channels
           ?.filter((c) => !c.categoryId)
-          .map((channel, index) => (
+          .map((channel) => (
             <motion.div
               key={channel.id}
               initial={{ opacity: 0, x: -10 }}

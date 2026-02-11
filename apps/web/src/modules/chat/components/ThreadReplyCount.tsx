@@ -3,7 +3,6 @@
  * Clicking opens the ThreadPanel side panel
  */
 
-import React from 'react';
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 
 interface ThreadReplyCountProps {
@@ -20,7 +19,7 @@ export function ThreadReplyCount({ replyCount, lastReplyAt, onClick }: ThreadRep
   return (
     <button
       onClick={onClick}
-      className="mt-1 flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-primary-400 hover:bg-primary-500/10 hover:text-primary-300 transition-colors"
+      className="mt-1 flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-primary-400 transition-colors hover:bg-primary-500/10 hover:text-primary-300"
     >
       <ChatBubbleLeftRightIcon className="h-3.5 w-3.5" />
       <span className="font-medium">

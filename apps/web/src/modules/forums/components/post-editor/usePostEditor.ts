@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
 import { AUTOSAVE_INTERVAL, MIN_POLL_OPTIONS } from './constants';

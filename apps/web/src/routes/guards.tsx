@@ -89,7 +89,8 @@ export function ProfileRedirectRoute() {
  */
 export function LandingRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
-  const hasHydrated = useAuthStore.persist?.hasHydrated?.() ?? true;
+  // Ensure store is hydrated before routing decisions
+  useAuthStore.persist?.hasHydrated?.();
   routeLogger.debug('LandingRoute isAuthenticated:', isAuthenticated);
 
   if (isAuthenticated) {

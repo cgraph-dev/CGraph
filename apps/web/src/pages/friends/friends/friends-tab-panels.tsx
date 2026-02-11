@@ -48,7 +48,7 @@ export function PendingTab({
             Incoming — {pendingRequests.length}
           </motion.h3>
           <div className="space-y-2">
-            {pendingRequests.map((request, index) => (
+            {pendingRequests.map((request) => (
               <motion.div
                 key={request.id}
                 initial={{ opacity: 0, x: -20 }}
@@ -78,7 +78,7 @@ export function PendingTab({
             Sent — {sentRequests.length}
           </motion.h3>
           <div className="space-y-2">
-            {sentRequests.map((request, index) => (
+            {sentRequests.map((request) => (
               <motion.div
                 key={request.id}
                 initial={{ opacity: 0, x: -20 }}
@@ -137,7 +137,7 @@ export function FriendsListTab({
 
   return (
     <div>
-      {filteredFriends.map((friend, index) => (
+      {filteredFriends.map((friend) => (
         <motion.div
           key={friend.id}
           initial={{ opacity: 0, x: -20 }}

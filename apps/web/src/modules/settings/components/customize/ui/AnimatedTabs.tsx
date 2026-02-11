@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 
 import { THEME_COLORS as themeColors } from '@/modules/settings/store/customization';
 
-import { springs } from './constants';
+import { uiSprings as springs } from './constants';
 import type { AnimatedTabsProps } from './types';
 
 export const AnimatedTabs = memo(function AnimatedTabs({

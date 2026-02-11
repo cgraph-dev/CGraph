@@ -3,7 +3,7 @@
  * Quick reply, accept/decline, join/ignore
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   CheckIcon,
   XMarkIcon,
@@ -18,7 +18,12 @@ interface NotificationActionsProps {
   onAction?: (action: string) => void;
 }
 
-export function NotificationActions({ type, notificationId, sourceId, onAction }: NotificationActionsProps) {
+export function NotificationActions({
+  type,
+  notificationId,
+  sourceId,
+  onAction,
+}: NotificationActionsProps) {
   const [loading, setLoading] = useState<string | null>(null);
   const [replied, setReplied] = useState(false);
   const [replyText, setReplyText] = useState('');
@@ -101,12 +106,9 @@ export function NotificationActions({ type, notificationId, sourceId, onAction }
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && replyText.trim()) {
-                  handleAction(
-                    'reply',
-                    `/api/v1/conversations/${sourceId}/messages`,
-                    'POST',
-                    { content: replyText.trim() },
-                  );
+                  handleAction('reply', `/api/v1/conversations/${sourceId}/messages`, 'POST', {
+                    content: replyText.trim(),
+                  });
                   setReplied(true);
                   setShowReply(false);
                 }

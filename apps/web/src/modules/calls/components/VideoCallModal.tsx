@@ -4,6 +4,7 @@ import { useVideoCall } from '@/modules/calls/hooks/useVideoCall';
 import { VideoCallTopBar } from '@/modules/calls/components/VideoCallTopBar';
 import { VideoCallControls } from '@/modules/calls/components/VideoCallControls';
 import { VideoGrid } from '@/modules/calls/components/VideoGrid';
+import type { CallParticipant } from '@/modules/calls/types';
 
 interface VideoCallModalProps {
   isOpen: boolean;
@@ -83,7 +84,7 @@ export function VideoCallModal({
               <VideoGrid
                 localStream={localStream}
                 remoteStreams={callState.remoteStreams}
-                participants={callState.participants}
+                participants={callState.participants as unknown as CallParticipant[]}
                 isVideoEnabled={callState.isVideoEnabled}
                 isMuted={callState.isMuted}
               />

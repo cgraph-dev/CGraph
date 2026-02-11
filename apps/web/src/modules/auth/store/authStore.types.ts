@@ -35,6 +35,7 @@ export interface User {
 
   // Profile fields
   bio?: string;
+  pronouns?: string;
   location?: string;
   website?: string;
   occupation?: string;

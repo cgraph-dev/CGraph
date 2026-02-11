@@ -122,14 +122,14 @@ export function PinnedMessagesPanel({
         )}
 
         <AnimatePresence>
-          {pins.map((pin, index) => (
+          {pins.map((pin) => (
             <motion.div
               key={pin.id}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
               transition={springs.stiff}
-              className="group border-b border-dark-700 px-4 py-3 hover:bg-dark-750"
+              className="hover:bg-dark-750 group border-b border-dark-700 px-4 py-3"
             >
               {pin.message ? (
                 <>

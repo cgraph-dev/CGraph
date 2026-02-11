@@ -56,7 +56,7 @@ export function PostsList({
             </GlassCard>
           </motion.div>
         ) : (
-          posts.map((post, index) => (
+          posts.map((post) => (
             <motion.div
               key={post.id}
               initial={{ opacity: 0, x: -20 }}

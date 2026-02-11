@@ -15,7 +15,7 @@ import { getRankBadge, formatKarma, getUserInitial } from './utils';
 import type { UserLeaderboardCardProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
 
-export function UserLeaderboardCard({ user, index = 0 }: UserLeaderboardCardProps) {
+export function UserLeaderboardCard({ user, index: _index = 0 }: UserLeaderboardCardProps) {
   const isTopThree = user.rank <= 3;
 
   return (
@@ -37,10 +37,7 @@ export function UserLeaderboardCard({ user, index = 0 }: UserLeaderboardCardProp
           />
           <div className="relative z-10 flex items-center gap-4 p-4">
             {/* Rank Badge */}
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              transition={springs.bouncy}
-            >
+            <motion.div whileHover={{ scale: 1.1, rotate: 5 }} transition={springs.bouncy}>
               {getRankBadge(user.rank)}
             </motion.div>
 
@@ -50,10 +47,7 @@ export function UserLeaderboardCard({ user, index = 0 }: UserLeaderboardCardProp
               className="shrink-0"
               onClick={() => HapticFeedback.light()}
             >
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                transition={springs.snappy}
-              >
+              <motion.div whileHover={{ scale: 1.1 }} transition={springs.snappy}>
                 {user.avatarUrl ? (
                   <div
                     className={`rounded-full bg-gradient-to-br from-primary-500 to-purple-600 p-0.5 ${
@@ -94,10 +88,7 @@ export function UserLeaderboardCard({ user, index = 0 }: UserLeaderboardCardProp
                   {user.displayName || user.username || 'Unknown'}
                 </Link>
                 {user.isVerified && (
-                  <motion.div
-                    whileHover={{ scale: 1.2, rotate: 360 }}
-                    transition={springs.bouncy}
-                  >
+                  <motion.div whileHover={{ scale: 1.2, rotate: 360 }} transition={springs.bouncy}>
                     <CheckBadgeIcon className="h-5 w-5 shrink-0 text-primary-400" />
                   </motion.div>
                 )}

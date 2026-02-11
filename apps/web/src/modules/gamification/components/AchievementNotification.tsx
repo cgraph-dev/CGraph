@@ -50,7 +50,7 @@ export default function AchievementNotification({
 
 function AchievementToast({
   data,
-  index,
+  index: _index,
   onDismiss,
   onViewDetails,
 }: {

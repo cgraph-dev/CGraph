@@ -135,7 +135,7 @@ export default function Settings() {
             Settings
           </h2>
           <div className="space-y-1">
-            {settingsSections.map((item, index) => (
+            {settingsSections.map((item) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, x: -20 }}

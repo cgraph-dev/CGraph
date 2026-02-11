@@ -95,7 +95,7 @@ export function SearchHeader({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.2 }}
         >
-          {categories.map((cat, index) => {
+          {categories.map((cat) => {
             const Icon = cat.icon;
             return (
               <motion.button

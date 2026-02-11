@@ -102,7 +102,7 @@ interface BadgeSlotProps {
   index: number;
 }
 
-function BadgeSlot({ badge, size, isEditable, onUnequip, index }: BadgeSlotProps) {
+function BadgeSlot({ badge, size, isEditable, onUnequip, index: _index }: BadgeSlotProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (

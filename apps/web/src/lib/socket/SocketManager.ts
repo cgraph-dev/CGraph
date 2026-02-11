@@ -70,6 +70,8 @@ export class SocketManager {
     lastJoinAttempts: new Map(),
     forumCallbacks: new Map(),
     threadCallbacks: new Map(),
+    sessionId: null,
+    lastSequence: 0,
   };
   private statusListeners = new Set<(cId: string, uId: string, online: boolean) => void>();
   private readonly JOIN_DEBOUNCE_MS = 1000;

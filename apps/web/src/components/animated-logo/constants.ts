@@ -66,7 +66,7 @@ export const TRACE_DRAW_VARIANTS: Variants = {
  */
 export const NODE_APPEAR_VARIANTS: Variants = {
   hidden: { scale: 0, opacity: 0 },
-  visible: (delay: number) => ({
+  visible: (_delay: number) => ({
     scale: 1,
     opacity: 1,
     transition: springs.bouncy,

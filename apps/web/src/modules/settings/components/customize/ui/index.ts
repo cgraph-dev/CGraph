@@ -4,7 +4,7 @@
  */
 
 // Animation constants
-export { springs } from './constants';
+export { uiSprings as springs } from './constants';
 
 // Components
 export { AnimatedToggle } from './AnimatedToggle';

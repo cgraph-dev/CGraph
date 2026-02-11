@@ -58,17 +58,14 @@ export function CategorySection({
             transition={{ ...springs.snappy, mass: 0.8 }}
             className="overflow-hidden"
           >
-            {category.channels?.map((channel, index) => (
+            {category.channels?.map((channel) => (
               <motion.div
                 key={channel.id}
                 initial={{ opacity: 0, x: -8 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={springs.snappy}
               >
-                <ChannelItem
-                  channel={channel}
-                  isActive={channel.id === activeChannelId}
-                />
+                <ChannelItem channel={channel} isActive={channel.id === activeChannelId} />
               </motion.div>
             ))}
           </motion.div>

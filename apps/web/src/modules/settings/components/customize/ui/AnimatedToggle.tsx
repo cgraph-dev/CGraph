@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 
 import { THEME_COLORS as themeColors } from '@/modules/settings/store/customization';
 
-import { springs, toggleSizeConfig } from './constants';
+import { uiSprings as springs, toggleSizeConfig } from './constants';
 import type { AnimatedToggleProps } from './types';
 
 export const AnimatedToggle = memo(function AnimatedToggle({

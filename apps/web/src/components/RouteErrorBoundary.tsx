@@ -48,7 +48,7 @@ export class RouteErrorBoundary extends Component<Props, State> {
     });
 
     // Capture error with route context
-    const errorId = captureError(error, {
+    captureError(error, {
       component: this.props.routeName || 'RouteErrorBoundary',
       action: 'route_crash',
       level: 'error',
@@ -61,7 +61,7 @@ export class RouteErrorBoundary extends Component<Props, State> {
       },
     });
 
-    this.setState({ errorId });
+    this.setState({ errorId: error.message });
 
     // Log in development
     if (import.meta.env.DEV) {

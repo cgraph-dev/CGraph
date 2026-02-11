@@ -92,7 +92,7 @@ export default function Notifications() {
             {filteredNotifications.length === 0 ? (
               <EmptyState filter={filter} />
             ) : (
-              filteredNotifications.map((notification, index) => (
+              filteredNotifications.map((notification) => (
                 <motion.div
                   key={notification.id}
                   initial={{ opacity: 0, y: 20 }}

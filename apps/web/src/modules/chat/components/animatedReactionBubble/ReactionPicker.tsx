@@ -21,7 +21,7 @@ export function ReactionPicker({ onSelect, onClose }: ReactionPickerProps) {
       exit={{ scale: 0, opacity: 0, y: 20 }}
       transition={springs.snappy}
     >
-      {QUICK_REACTIONS.map((emoji, index) => (
+      {QUICK_REACTIONS.map((emoji) => (
         <motion.button
           key={emoji}
           className="p-2 text-2xl transition-transform hover:scale-125 active:scale-95"

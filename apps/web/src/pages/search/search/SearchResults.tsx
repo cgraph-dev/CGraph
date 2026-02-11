@@ -24,7 +24,7 @@ import {
 
 /* ─── animation helpers ─── */
 
-const staggerTransition = (index: number) => (springs.bouncy);
+const staggerTransition = (_index: number) => springs.bouncy;
 
 /* ─── sub-renders ─── */
 

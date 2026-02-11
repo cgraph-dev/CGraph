@@ -58,7 +58,7 @@ export class ErrorBoundary extends Component<Props, State> {
     });
 
     // Capture error with full context
-    const errorId = captureError(error, {
+    captureError(error, {
       component: this.props.componentName || 'ErrorBoundary',
       action: 'component_crash',
       level: 'fatal',
@@ -71,7 +71,7 @@ export class ErrorBoundary extends Component<Props, State> {
       },
     });
 
-    this.setState({ errorId });
+    this.setState({ errorId: error.message });
 
     // Call optional error callback
     this.props.onError?.(error, errorInfo);

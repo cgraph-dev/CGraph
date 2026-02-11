@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 
 import { THEME_COLORS as themeColors } from '@/modules/settings/store/customization';
 
-import { springs, rarityColorMap } from './constants';
+import { uiSprings as springs, rarityColorMap } from './constants';
 import type { OptionButtonProps } from './types';
 
 export const OptionButton = memo(function OptionButton({

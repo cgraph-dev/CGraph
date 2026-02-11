@@ -49,6 +49,7 @@ export interface ProfileCardUser {
   // Status
   isOnline: boolean;
   lastSeen?: string;
+  pronouns?: string;
 }
 
 // =============================================================================
