@@ -11,13 +11,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import AppLayout from '@/layouts/AppLayout';
 import { ProtectedRoute, AdminRoute, ProfileRedirectRoute } from './guards';
-import {
-  DevRoutes,
-  RootRedirectRoute,
-  AuthRoutes,
-  ForumRoutes,
-  SettingsRoutes,
-} from './routeGroups';
+import { DevRoutes, AuthRoutes, ForumRoutes, SettingsRoutes } from './routeGroups';
 import {
   // Core
   Messages,
@@ -55,9 +49,6 @@ export function AppRoutes() {
     <Routes>
       {/* ── Dev/Test ───────────────────────────────────────────────── */}
       {DevRoutes()}
-
-      {/* ── Root redirect (auth → /messages, unauth → /login) ──── */}
-      {RootRedirectRoute()}
 
       {/* ── Auth routes ───────────────────────────────────────────── */}
       {AuthRoutes()}
