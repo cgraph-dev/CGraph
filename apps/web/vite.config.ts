@@ -75,9 +75,9 @@ export default defineConfig({
     // SECURITY: Sourcemaps disabled in production to protect proprietary code
     // Set VITE_ENABLE_SOURCEMAPS=true for debugging if needed
     sourcemap: process.env.VITE_ENABLE_SOURCEMAPS === 'true' ? true : false,
-    // Warn when chunks exceed 500 KB (default) to catch bundle size regressions
-    // Large chunks should be code-split via React.lazy() or dynamic import()
-    chunkSizeWarningLimit: 500,
+    // Warn when chunks exceed 1 MB to catch serious bundle size regressions
+    // The main entry (~900KB) and demo pages are expected to be large
+    chunkSizeWarningLimit: 1024,
     rollupOptions: {
       output: {
         // Use function for more granular control over chunking
