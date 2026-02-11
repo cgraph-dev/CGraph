@@ -9,7 +9,6 @@
 
 import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/modules/auth/store';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { routeLogger } from '@/lib/logger';
 
 /**
@@ -71,5 +70,6 @@ export function ProfileRedirectRoute() {
   if (user?.id) {
     return <Navigate to={`/user/${user.id}`} replace />;
   }
-  return <LoadingSpinner />;
+  // Render nothing while waiting for user data — avoids visible spinner
+  return null;
 }

@@ -158,60 +158,14 @@
   </head>
   <body class="bg-dark-900 text-white antialiased">
     <div id="root">
-      <!-- Gradient spinner - matches React LoadingSpinner, replaced on hydration -->
+      <!-- Plain dark background - no spinner, removed on hydration -->
       <div
         id="initial-loader"
         style="
           min-height: 100vh;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
           background: linear-gradient(135deg, #030712 0%, #0f0a1f 50%, #030712 100%);
-          gap: 24px;
         "
-      >
-        <!-- Gradient spinning ring -->
-        <svg width="48" height="48" viewBox="0 0 50 50" style="animation: spin 1s linear infinite">
-          <defs>
-            <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#a78bfa" />
-              <stop offset="50%" stop-color="#8b5cf6" />
-              <stop offset="100%" stop-color="#10b981" />
-            </linearGradient>
-          </defs>
-          <circle
-            cx="25"
-            cy="25"
-            r="20"
-            fill="none"
-            stroke="url(#grad)"
-            stroke-width="3"
-            stroke-linecap="round"
-            stroke-dasharray="80 45"
-          />
-        </svg>
-        <!-- CGraph text with gradient -->
-        <span
-          style="
-            font-size: 1.25rem;
-            font-weight: 600;
-            font-family: system-ui, sans-serif;
-            background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #10b981 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-          "
-          >CGraph</span
-        >
-        <style>
-          @keyframes spin {
-            to {
-              transform: rotate(360deg);
-            }
-          }
-        </style>
-      </div>
+      ></div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
     <script>

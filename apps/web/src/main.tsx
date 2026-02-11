@@ -1,7 +1,8 @@
 // Startup debug logging (only in development)
 // Note: Using console directly here because logger isn't loaded yet
 const debugLog = import.meta.env.DEV
-  ? (msg: string, ...args: unknown[]) => console.debug('[CGraph]', msg, ...args)
+  ? // eslint-disable-next-line no-console
+    (msg: string, ...args: unknown[]) => console.debug('[CGraph]', msg, ...args)
   : () => {};
 
 debugLog('Module loading - start');
@@ -67,7 +68,7 @@ const localStoragePersister = createSyncStoragePersister({
       // Clear corrupted cache
       try {
         window.localStorage.removeItem('cgraph-query-cache');
-      } catch (e) {
+      } catch (_e) {
         // Ignore localStorage errors
       }
       return {};
@@ -99,63 +100,15 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// Global loading fallback component - zero-dependency (no framer-motion/AnimatedLogo)
-// Uses inline styles to guarantee rendering even if CSS chunks fail to load
+// Global loading fallback — plain dark background only (no spinner, instant feel)
 function GlobalLoadingFallback() {
   return (
     <div
       style={{
         minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
         background: 'linear-gradient(135deg, #030712 0%, #0f0a1f 50%, #030712 100%)',
-        gap: '24px',
       }}
-    >
-      <svg width="48" height="48" viewBox="0 0 50 50">
-        <defs>
-          <linearGradient id="loading-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#a78bfa" />
-            <stop offset="50%" stopColor="#8b5cf6" />
-            <stop offset="100%" stopColor="#10b981" />
-          </linearGradient>
-        </defs>
-        <circle
-          cx="25"
-          cy="25"
-          r="20"
-          fill="none"
-          stroke="url(#loading-grad)"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeDasharray="80 45"
-        >
-          <animateTransform
-            attributeName="transform"
-            type="rotate"
-            from="0 25 25"
-            to="360 25 25"
-            dur="1s"
-            repeatCount="indefinite"
-          />
-        </circle>
-      </svg>
-      <span
-        style={{
-          fontSize: '1.25rem',
-          fontWeight: 600,
-          fontFamily: 'system-ui, sans-serif',
-          background: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #10b981 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-        }}
-      >
-        CGraph
-      </span>
-    </div>
+    />
   );
 }
 

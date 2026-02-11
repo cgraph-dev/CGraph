@@ -11,7 +11,6 @@
 import { useEffect, useState, Suspense, lazy } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { PageTransition } from '@/shared/components/PageTransition';
 import { AuthInitializer } from '@/routes/AuthInitializer';
 import { AppRoutes } from '@/routes/AppRoutes';
@@ -92,7 +91,7 @@ export default function App() {
       </Suspense>
       <AnimatePresence mode="wait">
         <PageTransition>
-          <Suspense fallback={<LoadingSpinner />}>
+          <Suspense fallback={null}>
             <AppRoutes />
           </Suspense>
         </PageTransition>
