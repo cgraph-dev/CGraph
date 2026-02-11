@@ -5,6 +5,8 @@
  * used as building blocks for all animations.
  */
 
+import { springs as sharedSprings } from '@cgraph/animation-constants';
+
 // ==================== EASING FUNCTIONS ====================
 
 export const easings = {
@@ -26,19 +28,19 @@ export const easings = {
 
 export const springs = {
   // Gentle spring for smooth transitions
-  gentle: springs.default,
+  gentle: { type: 'spring' as const, ...sharedSprings.default },
 
   // Default spring for most UI elements
-  default: springs.stiff,
+  default: { type: 'spring' as const, ...sharedSprings.stiff },
 
   // Bouncy spring for playful interactions
-  bouncy: springs.snappy,
+  bouncy: { type: 'spring' as const, ...sharedSprings.snappy },
 
   // Snappy spring for quick feedback
-  snappy: springs.snappy,
+  snappy: { type: 'spring' as const, ...sharedSprings.snappy },
 
   // Smooth spring for cards and panels
-  smooth: springs.stiff,
+  smooth: { type: 'spring' as const, ...sharedSprings.stiff },
 } as const;
 
 // ==================== DURATION PRESETS ====================
