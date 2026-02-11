@@ -689,7 +689,6 @@ export default function LandingPage() {
   const aboutRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const aboutVisualRef = useRef<HTMLDivElement>(null);
-  const aboutGlowRef = useRef<HTMLDivElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
   // Handle hash navigation on page load
@@ -720,46 +719,6 @@ export default function LandingPage() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Cursor-following glow effect for about section
-  useEffect(() => {
-    const visual = aboutVisualRef.current;
-    const glow = aboutGlowRef.current;
-    if (!visual || !glow) return;
-
-    const handleMouseMove = throttle((e: MouseEvent) => {
-      const rect = visual.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-
-      gsap.to(glow, {
-        x: x - centerX,
-        y: y - centerY,
-        opacity: 0.8,
-        duration: 0.3,
-        ease: 'power2.out',
-        overwrite: 'auto',
-      });
-    }, 16);
-
-    const handleMouseLeave = () => {
-      gsap.to(glow, {
-        opacity: 0,
-        duration: 0.3,
-        ease: 'power2.out',
-      });
-    };
-
-    visual.addEventListener('mousemove', handleMouseMove, { passive: true });
-    visual.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      visual.removeEventListener('mousemove', handleMouseMove);
-      visual.removeEventListener('mouseleave', handleMouseLeave);
-    };
   }, []);
 
   // GSAP animations
@@ -950,7 +909,7 @@ export default function LandingPage() {
       {/* Navigation */}
       <nav className={`gl-nav ${navHidden ? 'hidden' : ''} ${navScrolled ? 'scrolled' : ''}`}>
         <Link to="/" className="gl-nav__logo">
-          <LogoIcon size={32} showGlow animated color="gradient" />
+          <LogoIcon size={32} showGlow={false} color="gradient" />
           <span className="gl-nav__logo-text">CGraph</span>
         </Link>
 
@@ -1011,7 +970,7 @@ export default function LandingPage() {
           <nav className="mobile-menu" onClick={(e) => e.stopPropagation()}>
             <div className="mobile-menu__header">
               <Link to="/" className="mobile-menu__logo" onClick={() => setMobileMenuOpen(false)}>
-                <LogoIcon size={28} showGlow animated color="gradient" />
+                <LogoIcon size={28} showGlow={false} color="gradient" />
                 <span>CGraph</span>
               </Link>
               <button
@@ -1187,10 +1146,6 @@ export default function LandingPage() {
 
           <div ref={aboutVisualRef} className="about__visual">
             <div className="about__orb" />
-            <div
-              ref={aboutGlowRef}
-              className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 blur-3xl"
-            />
             <div className="about__icon-grid">
               {securityFeatures.map((feature, i) => (
                 <SecurityIconCard key={i} feature={feature} />

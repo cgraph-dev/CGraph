@@ -5,7 +5,11 @@
  */
 
 import { motion } from 'framer-motion';
-import { prefersReducedMotion } from '@/modules/auth/components/AuthEffects';
+
+function prefersReducedMotion() {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
 
 interface PasswordToggleButtonProps {
   show: boolean;

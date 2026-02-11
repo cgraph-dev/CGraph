@@ -16,7 +16,7 @@ import type { LandingSecurityProps } from './types';
  * Features an interactive visual area with a cursor-following glow
  * and a grid of security feature icons.
  */
-export function LandingSecurity({ aboutRef, aboutVisualRef, aboutGlowRef }: LandingSecurityProps) {
+export function LandingSecurity({ aboutRef, aboutVisualRef }: LandingSecurityProps) {
   return (
     <section ref={aboutRef} id="security" className="about zoom-section">
       <div className="about__container">
@@ -37,10 +37,6 @@ export function LandingSecurity({ aboutRef, aboutVisualRef, aboutGlowRef }: Land
 
         <div ref={aboutVisualRef} className="about__visual">
           <div className="about__orb" />
-          <div
-            ref={aboutGlowRef}
-            className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 blur-3xl"
-          />
           <div className="about__icon-grid">
             {securityFeatures.map((feature, i) => (
               <SecurityIconCard key={i} feature={feature} />

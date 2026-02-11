@@ -1,17 +1,17 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { OAuthButtonGroup } from '@/modules/auth/components/OAuthButtons';
-import {
-  TextScramble,
-  GlitchText,
-  prefersReducedMotion,
-} from '@/modules/auth/components/AuthEffects';
 import { createLogger } from '@/lib/logger';
 import { useRegisterForm } from './register/useRegisterForm';
 import { AuthErrorAlert } from './register/AuthErrorAlert';
 import { RegisterFormFields } from './register/RegisterFormFields';
 
 const logger = createLogger('Register');
+
+function prefersReducedMotion() {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
 
 // Animation variants for staggered children
 const containerVariants = {
@@ -75,11 +75,9 @@ export default function Register() {
       {/* Header with cyberpunk text effect */}
       <motion.div variants={reduced ? {} : itemVariants} className="text-center lg:text-left">
         <h2 className="text-3xl font-bold text-white">
-          <GlitchText text="Create your account" className="matrix-glow" />
+          <span className="matrix-glow">Create your account</span>
         </h2>
-        <p className="mt-2 text-gray-400">
-          <TextScramble text="Join the community and start connecting" delay={500} />
-        </p>
+        <p className="mt-2 text-gray-400">Join the community and start connecting</p>
       </motion.div>
 
       <AuthErrorAlert error={form.displayError} />

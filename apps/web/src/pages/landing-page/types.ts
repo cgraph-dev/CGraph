@@ -22,8 +22,6 @@ export interface LandingRefs {
   ctaRef: RefObject<HTMLDivElement | null>;
   /** Reference to the about section visual container */
   aboutVisualRef: RefObject<HTMLDivElement | null>;
-  /** Reference to the cursor-following glow element */
-  aboutGlowRef: RefObject<HTMLDivElement | null>;
   /** Reference to the scroll indicator */
   scrollIndicatorRef: RefObject<HTMLDivElement | null>;
 }
@@ -52,8 +50,6 @@ export interface LandingSecurityProps {
   aboutRef: RefObject<HTMLDivElement | null>;
   /** Reference to the about visual container */
   aboutVisualRef: RefObject<HTMLDivElement | null>;
-  /** Reference to the cursor-following glow */
-  aboutGlowRef: RefObject<HTMLDivElement | null>;
 }
 
 /** Props for the LandingCTA component */

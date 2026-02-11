@@ -1,17 +1,17 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { OAuthButtonGroup } from '@/modules/auth/components/OAuthButtons';
-import {
-  TextScramble,
-  GlitchText,
-  prefersReducedMotion,
-} from '@/modules/auth/components/AuthEffects';
 import { AuthErrorAlert } from '@/pages/auth/register/AuthErrorAlert';
 import { useLoginForm } from '@/pages/auth/login/useLoginForm';
 import { LoginFormFields } from '@/pages/auth/login/LoginFormFields';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('Login');
+
+function prefersReducedMotion() {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
 
 // Animation variants for staggered children
 const containerVariants = {
@@ -84,11 +84,9 @@ export default function Login() {
       {/* Header with cyberpunk text effect */}
       <motion.div variants={reduced ? {} : itemVariants} className="text-center lg:text-left">
         <h2 className="text-3xl font-bold text-white">
-          <GlitchText text="Welcome back" className="matrix-glow" />
+          <span className="matrix-glow">Welcome back</span>
         </h2>
-        <p className="mt-2 text-gray-400">
-          <TextScramble text="Sign in to your account to continue" delay={500} />
-        </p>
+        <p className="mt-2 text-gray-400">Sign in to your account to continue</p>
       </motion.div>
 
       {/* Error Alert — reused from register */}

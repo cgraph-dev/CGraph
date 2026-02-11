@@ -16,7 +16,6 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/modules/auth/store';
-import { CursorTrail, useCursorTrailEnabled } from '@/components/landing/CursorTrail';
 import { ScrollProgress } from '@/components/landing/ScrollProgress';
 import { useAdaptiveMotion } from '@/hooks/useAdaptiveMotion';
 import '../landing-page.css';
@@ -37,7 +36,7 @@ import { LandingCTA } from './LandingCTA';
 import { LandingFooter } from './LandingFooter';
 
 // Hooks
-import { useLandingScroll, useAboutGlow } from './hooks';
+import { useLandingScroll } from './hooks';
 import { useLandingAnimations } from './useLandingAnimations';
 
 /**
@@ -50,7 +49,6 @@ import { useLandingAnimations } from './useLandingAnimations';
 export default function LandingPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
-  const cursorTrailEnabled = useCursorTrailEnabled();
   const { shouldAnimate, motionScale } = useAdaptiveMotion();
 
   // Section refs for GSAP animations
@@ -60,14 +58,10 @@ export default function LandingPage() {
   const aboutRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const aboutVisualRef = useRef<HTMLDivElement>(null);
-  const aboutGlowRef = useRef<HTMLDivElement>(null);
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
   // Scroll-based nav visibility
   const { navHidden, navScrolled } = useLandingScroll();
-
-  // Cursor-following glow for about section
-  useAboutGlow(aboutVisualRef, aboutGlowRef);
 
   // GSAP scroll-triggered + hero animations
   useLandingAnimations({
@@ -77,7 +71,6 @@ export default function LandingPage() {
     aboutRef,
     ctaRef,
     aboutVisualRef,
-    aboutGlowRef,
     scrollIndicatorRef,
   });
 
@@ -106,7 +99,6 @@ export default function LandingPage() {
   return (
     <div className="demo-landing">
       <ScrollProgress show={shouldAnimate} />
-      {cursorTrailEnabled && shouldAnimate && <CursorTrail />}
       <LandingNav navHidden={navHidden} navScrolled={navScrolled} />
       <LandingHero
         heroRef={heroRef}
@@ -118,11 +110,7 @@ export default function LandingPage() {
       <FeaturesGridSection featuresRef={featuresRef} />
       <CustomizationDemoSection />
       <ForumShowcaseSection />
-      <LandingSecurity
-        aboutRef={aboutRef}
-        aboutVisualRef={aboutVisualRef}
-        aboutGlowRef={aboutGlowRef}
-      />
+      <LandingSecurity aboutRef={aboutRef} aboutVisualRef={aboutVisualRef} />
       <LandingPricing />
       <LandingCTA ctaRef={ctaRef} />
       <LandingFooter />

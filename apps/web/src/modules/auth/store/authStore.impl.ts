@@ -41,8 +41,12 @@ try {
   const memoryStore = new Map<string, string>();
   safeStorage = {
     getItem: (name: string) => memoryStore.get(name) ?? null,
-    setItem: (name: string, value: string) => { memoryStore.set(name, value); },
-    removeItem: (name: string) => { memoryStore.delete(name); },
+    setItem: (name: string, value: string) => {
+      memoryStore.set(name, value);
+    },
+    removeItem: (name: string) => {
+      memoryStore.delete(name);
+    },
   };
 }
 
@@ -83,7 +87,7 @@ export const useAuthStore = create<AuthState>()(
         checkAuth: createCheckAuthAction(set, get),
       }),
       {
-        name: 'cgraph-auth',
+        name: 'cgraph-auth-v2',
         storage: createJSONStorage(() => safeStorage),
         partialize: (state) => ({
           token: state.token,

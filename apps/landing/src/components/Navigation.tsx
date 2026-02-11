@@ -69,7 +69,7 @@ export function Navigation({ transparent = false }: NavigationProps) {
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <Link to="/" className="group flex items-center gap-3">
-              <LogoIcon size={32} showGlow animated color="gradient" />
+              <LogoIcon size={32} showGlow={false} color="gradient" />
               <span className="text-xl font-bold tracking-tight text-white">CGraph</span>
             </Link>
 
@@ -153,7 +153,7 @@ export function Navigation({ transparent = false }: NavigationProps) {
               className="flex items-center gap-3"
               onClick={() => setMobileMenuOpen(false)}
             >
-              <LogoIcon size={28} showGlow animated color="gradient" />
+              <LogoIcon size={28} showGlow={false} color="gradient" />
               <span className="text-lg font-semibold text-white">CGraph</span>
             </Link>
             <button

@@ -5,8 +5,12 @@
  */
 
 import { motion } from 'framer-motion';
-import { prefersReducedMotion } from '@/modules/auth/components/AuthEffects';
 import { PasswordToggleButton } from './PasswordToggleButton';
+
+function prefersReducedMotion() {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },

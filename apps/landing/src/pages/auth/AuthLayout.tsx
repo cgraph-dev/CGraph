@@ -60,7 +60,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
         <div className="relative z-10 flex w-full flex-col justify-between p-12">
           {/* Logo */}
           <Link to="/" className="group flex items-center gap-3">
-            <LogoIcon size={40} showGlow animated color="gradient" />
+            <LogoIcon size={40} showGlow={false} color="gradient" />
             <span className="text-2xl font-bold tracking-tight text-white">CGraph</span>
           </Link>
 

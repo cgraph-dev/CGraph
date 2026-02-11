@@ -9,7 +9,6 @@
  */
 
 import { SwapButton } from '../landing';
-import { FloatingLogo } from '@/components/landing/FloatingLogo';
 import { KineticText } from '@/components/landing/KineticText';
 import { ParticleField } from '@/components/landing/ParticleField';
 import type { LandingHeroProps } from './types';
@@ -44,7 +43,6 @@ export function LandingHero({ heroRef, scrollIndicatorRef, motionScale = 1 }: La
       </div>
 
       <div className="hero__content">
-        <FloatingLogo size={120} mouseIntensity={0.2} floatAmplitude={8} className="mx-auto mb-6" />
         <span className="hero__eyebrow font-robert">The All-in-One Platform</span>
 
         <h1 className="hero__title">
