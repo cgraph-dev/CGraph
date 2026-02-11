@@ -13,7 +13,7 @@ import { FeaturesSidebar } from './FeaturesSidebar';
 import type { ForumCategory, ForumBoard, ActiveTab } from './types';
 import { springs } from './springs';
 
-const WEB_APP_URL = 'https://web.cgraph.org';
+const _WEB_APP_URL = 'https://web.cgraph.org';
 
 export function ForumShowcase() {
   const [categories, setCategories] = useState<ForumCategory[]>(initialCategories);
