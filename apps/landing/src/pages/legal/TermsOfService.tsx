@@ -1,245 +1,369 @@
 /**
  * Terms of Service Page
+ *
+ * Renders the Terms of Service legal document with consistent
+ * marketing page styling.
+ *
+ * @since v0.9.2
  */
 
-import { Link } from 'react-router-dom';
-import { LegalLayout } from './LegalLayout';
+import DOMPurify from 'dompurify';
+import { motion } from 'framer-motion';
+import { MarketingLayout } from '@/components/marketing';
 
-const tableOfContents = [
-  { id: 'acceptance', title: 'Acceptance of Terms' },
-  { id: 'eligibility', title: 'Eligibility' },
-  { id: 'account', title: 'Your Account' },
-  { id: 'acceptable-use', title: 'Acceptable Use' },
-  { id: 'content', title: 'User Content' },
-  { id: 'intellectual-property', title: 'Intellectual Property' },
-  { id: 'payments', title: 'Payments & Subscriptions' },
-  { id: 'termination', title: 'Termination' },
-  { id: 'disclaimers', title: 'Disclaimers' },
-  { id: 'liability', title: 'Limitation of Liability' },
-  { id: 'disputes', title: 'Dispute Resolution' },
-  { id: 'changes', title: 'Changes to Terms' },
+const sections = [
+  {
+    id: 'acceptance',
+    title: '1. Acceptance of Terms',
+    content: `
+      <p>By creating an account or using CGraph, you agree to:</p>
+      <ul>
+        <li>These Terms of Service</li>
+        <li>Our <a href="/privacy">Privacy Policy</a></li>
+        <li>Our Community Guidelines</li>
+      </ul>
+      <p>If you do not agree, do not use the Service.</p>
+    `,
+  },
+  {
+    id: 'eligibility',
+    title: '2. Eligibility',
+    content: `
+      <p>To use CGraph, you must:</p>
+      <ul>
+        <li>Be at least 13 years old (or the minimum age in your jurisdiction)</li>
+        <li>Be at least 16 years old in the European Union</li>
+        <li>Have the legal capacity to enter into a binding agreement</li>
+        <li>Not be prohibited from using the Service under applicable law</li>
+      </ul>
+      <p><strong>Parental Consent:</strong> If you are between 13-18 (or the age of majority in your jurisdiction), you must have parental or guardian consent.</p>
+    `,
+  },
+  {
+    id: 'account',
+    title: '3. Your Account',
+    content: `
+      <h4>3.1 Account Creation</h4>
+      <p>You may create an account using:</p>
+      <ul>
+        <li>Email and password</li>
+        <li>Web3 wallet (Ethereum/Polygon)</li>
+        <li>OAuth providers (Google, Apple, Facebook, TikTok)</li>
+      </ul>
+      
+      <h4>3.2 Account Security</h4>
+      <p>You are responsible for:</p>
+      <ul>
+        <li>Maintaining the confidentiality of your credentials</li>
+        <li>All activities under your account</li>
+        <li>Notifying us immediately of unauthorized access</li>
+        <li>Using a strong, unique password</li>
+      </ul>
+      
+      <h4>3.3 Account Termination</h4>
+      <p><strong>By You:</strong> You may delete your account at any time via Settings.</p>
+      <p><strong>By Us:</strong> We may suspend or terminate your account if you violate these Terms or Community Guidelines, engage in fraudulent or illegal activity, pose a security risk, or fail to pay applicable fees.</p>
+    `,
+  },
+  {
+    id: 'use',
+    title: '4. Use of the Service',
+    content: `
+      <h4>4.1 License Grant</h4>
+      <p>Subject to these Terms, we grant you a limited, non-exclusive, non-transferable, revocable license to:</p>
+      <ul>
+        <li>Access and use the Service for personal, non-commercial purposes</li>
+        <li>Download and install our mobile applications on devices you own</li>
+      </ul>
+      
+      <h4>4.2 Restrictions</h4>
+      <p>You agree NOT to:</p>
+      <ul>
+        <li>Reverse engineer, decompile, or modify the Service</li>
+        <li>Use the Service for illegal purposes</li>
+        <li>Attempt to gain unauthorized access to any systems</li>
+        <li>Interfere with the Service's security or integrity</li>
+        <li>Create multiple accounts to evade bans or restrictions</li>
+        <li>Use bots, scrapers, or automated tools without permission</li>
+        <li>Impersonate others or misrepresent your identity</li>
+        <li>Sell, resell, or commercially exploit the Service</li>
+      </ul>
+    `,
+  },
+  {
+    id: 'content',
+    title: '5. User Content',
+    content: `
+      <h4>5.1 Your Content</h4>
+      <p>You retain ownership of content you create ("User Content"). By posting, you grant CGraph a worldwide, non-exclusive, royalty-free license to:</p>
+      <ul>
+        <li>Host, store, and display your content</li>
+        <li>Distribute your content to intended recipients</li>
+        <li>Create backups for service continuity</li>
+      </ul>
+      <p>This license terminates when you delete the content (subject to backup retention periods).</p>
+      
+      <h4>5.2 Content Responsibility</h4>
+      <p>You are solely responsible for your User Content. You represent that:</p>
+      <ul>
+        <li>You own or have rights to post the content</li>
+        <li>Your content does not violate any laws or third-party rights</li>
+        <li>Your content complies with our Community Guidelines</li>
+      </ul>
+      
+      <h4>5.3 Content Removal</h4>
+      <p>We may remove content that violates these Terms or Community Guidelines, is subject to valid legal takedown requests, or poses risks to user safety or the Service.</p>
+    `,
+  },
+  {
+    id: 'encryption',
+    title: '6. End-to-End Encryption',
+    content: `
+      <p>CGraph provides end-to-end encryption for direct messages using the X3DH key agreement protocol. Important points:</p>
+      <ul>
+        <li><strong>We cannot access encrypted content</strong> - Only you and your conversation partners can read messages</li>
+        <li><strong>No backdoors</strong> - We will not implement encryption backdoors</li>
+        <li><strong>Key responsibility</strong> - You are responsible for backing up your encryption keys</li>
+        <li><strong>Device loss</strong> - If you lose access to all devices without backup, encrypted messages cannot be recovered</li>
+      </ul>
+    `,
+  },
+  {
+    id: 'guidelines',
+    title: '7. Community Guidelines',
+    content: `
+      <p>You agree not to post or share content that:</p>
+      <ul>
+        <li>❌ Is illegal, harmful, or promotes violence</li>
+        <li>❌ Harasses, bullies, or threatens others</li>
+        <li>❌ Contains hate speech or discrimination</li>
+        <li>❌ Is sexually explicit or exploitative</li>
+        <li>❌ Infringes intellectual property rights</li>
+        <li>❌ Contains malware or phishing attempts</li>
+        <li>❌ Spreads misinformation that could cause harm</li>
+        <li>❌ Violates others' privacy without consent</li>
+      </ul>
+      <p>Violations may result in content removal, account suspension, or permanent ban.</p>
+    `,
+  },
+  {
+    id: 'premium',
+    title: '8. Premium Features & Payments',
+    content: `
+      <h4>8.1 Subscription Tiers</h4>
+      <p>CGraph offers free and paid subscription tiers. Premium features may include:</p>
+      <ul>
+        <li>Increased storage limits</li>
+        <li>Group video calls with more participants</li>
+        <li>Custom badges and titles</li>
+        <li>Bonus XP and exclusive achievements</li>
+        <li>Priority quest access and seasonal rewards</li>
+        <li>Priority support</li>
+      </ul>
+      
+      <h4>8.2 Payment Terms</h4>
+      <ul>
+        <li>Subscriptions renew automatically unless cancelled</li>
+        <li>Prices may change with 30 days notice</li>
+        <li>Refunds are available within 14 days for unused features</li>
+        <li>Payments are processed securely via Stripe</li>
+      </ul>
+    `,
+  },
+  {
+    id: 'ip',
+    title: '9. Intellectual Property',
+    content: `
+      <p>The Service and its original content (excluding User Content) remain the exclusive property of CGraph. This includes:</p>
+      <ul>
+        <li>Software, code, and algorithms</li>
+        <li>Visual design and user interface</li>
+        <li>Trademarks, logos, and branding</li>
+        <li>Documentation and marketing materials</li>
+      </ul>
+      <p>You may not use our intellectual property without written permission.</p>
+    `,
+  },
+  {
+    id: 'disclaimer',
+    title: '10. Disclaimers',
+    content: `
+      <p>THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND. TO THE FULLEST EXTENT PERMITTED BY LAW, WE DISCLAIM:</p>
+      <ul>
+        <li>WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</li>
+        <li>WARRANTIES OF NON-INFRINGEMENT</li>
+        <li>WARRANTIES REGARDING SECURITY, RELIABILITY, OR AVAILABILITY</li>
+      </ul>
+      <p>We do not warrant that the Service will be uninterrupted, error-free, or secure.</p>
+    `,
+  },
+  {
+    id: 'liability',
+    title: '11. Limitation of Liability',
+    content: `
+      <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, CGRAPH SHALL NOT BE LIABLE FOR:</p>
+      <ul>
+        <li>Indirect, incidental, special, or consequential damages</li>
+        <li>Loss of profits, data, or goodwill</li>
+        <li>Service interruption or data breaches</li>
+        <li>Third-party actions or content</li>
+      </ul>
+      <p>Our total liability shall not exceed the amount you paid us in the 12 months preceding the claim, or $100 USD, whichever is greater.</p>
+    `,
+  },
+  {
+    id: 'governing',
+    title: '12. Governing Law & Disputes',
+    content: `
+      <p>These Terms shall be governed by the laws of Delaware, USA, without regard to conflict of law principles.</p>
+      <p>Any disputes shall be resolved through:</p>
+      <ol>
+        <li><strong>Informal Resolution</strong> - Contact us first at legal@cgraph.org</li>
+        <li><strong>Arbitration</strong> - Binding arbitration under AAA rules (individual claims only)</li>
+        <li><strong>Small Claims Court</strong> - Either party may bring claims in small claims court</li>
+      </ol>
+      <p><strong>Class Action Waiver:</strong> You agree to resolve disputes individually and waive the right to participate in class actions.</p>
+    `,
+  },
+  {
+    id: 'changes',
+    title: '13. Changes to Terms',
+    content: `
+      <p>We may update these Terms from time to time. When we do:</p>
+      <ul>
+        <li>We will update the "Last Updated" date</li>
+        <li>Material changes will be notified via email or in-app notice</li>
+        <li>Continued use after changes constitutes acceptance</li>
+      </ul>
+      <p>If you disagree with changes, you may close your account before they take effect.</p>
+    `,
+  },
+  {
+    id: 'contact',
+    title: '14. Contact Us',
+    content: `
+      <p>If you have questions about these Terms, please contact us:</p>
+      <ul>
+        <li><strong>Email:</strong> <a href="mailto:legal@cgraph.org">legal@cgraph.org</a></li>
+        <li><strong>Support:</strong> <a href="mailto:support@cgraph.org">support@cgraph.org</a></li>
+      </ul>
+    `,
+  },
 ];
 
 export default function TermsOfService() {
   return (
-    <LegalLayout
+    <MarketingLayout
       title="Terms of Service"
-      subtitle="Please read these terms carefully before using CGraph."
-      lastUpdated="January 29, 2026"
-      tableOfContents={tableOfContents}
+      subtitle="Last updated: January 21, 2026 • Version 1.1"
+      eyebrow="Service Agreement"
     >
-      <section id="acceptance" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">1. Acceptance of Terms</h2>
-        <p className="mb-4 text-gray-400">
-          By accessing or using CGraph ("Service"), you agree to be bound by these Terms of Service
-          ("Terms"). If you disagree with any part of the terms, you may not access the Service.
-        </p>
-        <p className="text-gray-400">
-          These Terms apply to all visitors, users, and others who access or use the Service. By
-          using the Service, you also agree to our{' '}
-          <Link to="/privacy" className="text-emerald-400 hover:text-emerald-300">
-            Privacy Policy
-          </Link>
-          .
-        </p>
-      </section>
+      <section className="marketing-section marketing-section--alt">
+        <div className="mx-auto max-w-4xl px-4">
+          {/* Introduction */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="marketing-card"
+            style={{ marginBottom: '3rem' }}
+          >
+            <p style={{ color: 'var(--color-gray)', fontSize: '1.125rem', lineHeight: 1.7 }}>
+              Welcome to CGraph! These Terms of Service ("Terms") govern your access to and use of
+              CGraph's mobile applications, websites, and services (collectively, the "Service"). By
+              accessing or using the Service, you agree to be bound by these Terms.
+            </p>
+          </motion.div>
 
-      <section id="eligibility" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">2. Eligibility</h2>
-        <p className="mb-4 text-gray-400">To use CGraph, you must:</p>
-        <ul className="list-inside list-disc space-y-2 text-gray-400">
-          <li>Be at least 13 years old (or 16 in the European Economic Area)</li>
-          <li>Have the legal capacity to enter into these Terms</li>
-          <li>Not be prohibited from using the Service under applicable laws</li>
-          <li>Not have been previously banned from using CGraph</li>
-        </ul>
-      </section>
+          {/* Table of Contents */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mb-12"
+          >
+            <h2 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Table of Contents
+            </h2>
+            <nav className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {sections.map((section) => (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  style={{ color: 'var(--color-gray)', transition: 'color 0.2s' }}
+                  className="hover:text-emerald-400"
+                >
+                  {section.title}
+                </a>
+              ))}
+            </nav>
+          </motion.div>
 
-      <section id="account" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">3. Your Account</h2>
-        <h3 className="mb-3 mt-6 text-lg font-semibold text-white">Account Security</h3>
-        <p className="mb-4 text-gray-400">You are responsible for:</p>
-        <ul className="list-inside list-disc space-y-2 text-gray-400">
-          <li>Maintaining the confidentiality of your account credentials</li>
-          <li>All activities that occur under your account</li>
-          <li>Notifying us immediately of any unauthorized access</li>
-        </ul>
+          {/* Sections */}
+          {sections.map((section) => (
+            <motion.section
+              key={section.id}
+              id={section.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="mb-12 scroll-mt-24"
+            >
+              <h2
+                className="mb-6 font-zentry text-2xl font-bold"
+                style={{ color: 'var(--color-light)' }}
+              >
+                {section.title}
+              </h2>
+              <div
+                className="legal-content"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(section.content, { USE_PROFILES: { html: true } }),
+                }}
+              />
+            </motion.section>
+          ))}
 
-        <h3 className="mb-3 mt-6 text-lg font-semibold text-white">Account Information</h3>
-        <p className="text-gray-400">
-          You agree to provide accurate, current, and complete information during registration and
-          to update such information to keep it accurate, current, and complete.
-        </p>
-      </section>
-
-      <section id="acceptable-use" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">4. Acceptable Use</h2>
-        <p className="mb-4 text-gray-400">You agree not to:</p>
-        <div className="grid gap-3">
-          <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-gray-400">
-            <strong className="text-red-400">❌</strong> Use the Service for any illegal purpose or
-            in violation of any laws
-          </div>
-          <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-gray-400">
-            <strong className="text-red-400">❌</strong> Harass, abuse, threaten, or incite violence
-            against any person
-          </div>
-          <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-gray-400">
-            <strong className="text-red-400">❌</strong> Share content that is illegal, harmful,
-            fraudulent, or objectionable
-          </div>
-          <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-gray-400">
-            <strong className="text-red-400">❌</strong> Attempt to gain unauthorized access to
-            other accounts or systems
-          </div>
-          <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-gray-400">
-            <strong className="text-red-400">❌</strong> Use automated means to access the Service
-            without permission
-          </div>
-          <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-gray-400">
-            <strong className="text-red-400">❌</strong> Interfere with or disrupt the Service or
-            servers/networks
-          </div>
-          <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-gray-400">
-            <strong className="text-red-400">❌</strong> Impersonate others or misrepresent your
-            affiliation
-          </div>
-          <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-gray-400">
-            <strong className="text-red-400">❌</strong> Share malware, spam, or engage in phishing
-            activities
-          </div>
+          {/* Related Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="marketing-card"
+          >
+            <h3 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Related Documents
+            </h3>
+            <div className="marketing-grid marketing-grid--3">
+              <a href="/privacy" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Privacy Policy
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  How we handle your data
+                </p>
+              </a>
+              <a href="/cookies" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Cookie Policy
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  How we use cookies
+                </p>
+              </a>
+              <a href="/gdpr" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  GDPR Compliance
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  Your data rights
+                </p>
+              </a>
+            </div>
+          </motion.div>
         </div>
       </section>
-
-      <section id="content" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">5. User Content</h2>
-        <h3 className="mb-3 mt-6 text-lg font-semibold text-white">Your Content</h3>
-        <p className="mb-4 text-gray-400">
-          You retain ownership of content you create. By posting content, you grant us a
-          non-exclusive, worldwide, royalty-free license to use, display, and distribute your
-          content solely for operating and improving the Service.
-        </p>
-
-        <h3 className="mb-3 mt-6 text-lg font-semibold text-white">Content Moderation</h3>
-        <p className="text-gray-400">
-          We may, but are not obligated to, review, monitor, or remove content that violates these
-          Terms. We are not responsible for content posted by users.
-        </p>
-
-        <div className="mt-6 rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-4">
-          <p className="text-sm text-emerald-400">
-            <strong>🔒 Encryption Note:</strong> Private messages are end-to-end encrypted. We
-            cannot access, moderate, or report on the content of encrypted messages.
-          </p>
-        </div>
-      </section>
-
-      <section id="intellectual-property" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">6. Intellectual Property</h2>
-        <p className="mb-4 text-gray-400">
-          The Service and its original content (excluding user content), features, and functionality
-          are and will remain the exclusive property of CGraph and its licensors.
-        </p>
-        <p className="text-gray-400">
-          Our trademarks and trade dress may not be used in connection with any product or service
-          without the prior written consent of CGraph.
-        </p>
-      </section>
-
-      <section id="payments" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">7. Payments & Subscriptions</h2>
-        <h3 className="mb-3 mt-6 text-lg font-semibold text-white">Premium Subscriptions</h3>
-        <ul className="list-inside list-disc space-y-2 text-gray-400">
-          <li>Subscriptions are billed in advance on a recurring basis</li>
-          <li>You can cancel your subscription at any time</li>
-          <li>Cancellations take effect at the end of the current billing period</li>
-          <li>Refunds are provided in accordance with applicable law</li>
-        </ul>
-
-        <h3 className="mb-3 mt-6 text-lg font-semibold text-white">In-App Purchases</h3>
-        <p className="text-gray-400">
-          Virtual items and currencies purchased within CGraph have no real-world value and cannot
-          be exchanged for real money. Purchases are final except where required by law.
-        </p>
-      </section>
-
-      <section id="termination" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">8. Termination</h2>
-        <p className="mb-4 text-gray-400">
-          We may terminate or suspend your account immediately, without prior notice or liability,
-          for any reason, including if you breach these Terms.
-        </p>
-        <p className="text-gray-400">
-          Upon termination, your right to use the Service will immediately cease. You may delete
-          your account at any time through Settings → Account → Delete Account.
-        </p>
-      </section>
-
-      <section id="disclaimers" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">9. Disclaimers</h2>
-        <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-4 text-gray-400">
-          <p className="mb-2 font-semibold text-yellow-400">IMPORTANT</p>
-          <p>
-            THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS. CGRAPH DISCLAIMS ALL
-            WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-            IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND
-            NON-INFRINGEMENT.
-          </p>
-        </div>
-      </section>
-
-      <section id="liability" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">10. Limitation of Liability</h2>
-        <p className="text-gray-400">
-          IN NO EVENT SHALL CGRAPH, ITS DIRECTORS, EMPLOYEES, PARTNERS, AGENTS, SUPPLIERS, OR
-          AFFILIATES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE
-          DAMAGES, INCLUDING WITHOUT LIMITATION, LOSS OF PROFITS, DATA, USE, GOODWILL, OR OTHER
-          INTANGIBLE LOSSES.
-        </p>
-      </section>
-
-      <section id="disputes" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">11. Dispute Resolution</h2>
-        <h3 className="mb-3 mt-6 text-lg font-semibold text-white">Informal Resolution</h3>
-        <p className="mb-4 text-gray-400">
-          Before filing a claim, you agree to try to resolve the dispute informally by contacting us
-          at{' '}
-          <a href="mailto:legal@cgraph.org" className="text-emerald-400 hover:text-emerald-300">
-            legal@cgraph.org
-          </a>
-          .
-        </p>
-
-        <h3 className="mb-3 mt-6 text-lg font-semibold text-white">Governing Law</h3>
-        <p className="text-gray-400">
-          These Terms shall be governed by and construed in accordance with the laws of the
-          jurisdiction in which CGraph is incorporated, without regard to its conflict of law
-          provisions.
-        </p>
-      </section>
-
-      <section id="changes" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">12. Changes to Terms</h2>
-        <p className="mb-4 text-gray-400">
-          We reserve the right to modify or replace these Terms at any time. We will provide notice
-          of any changes by posting the new Terms on this page.
-        </p>
-        <p className="text-gray-400">
-          Your continued use of the Service after any changes constitutes acceptance of the new
-          Terms. If you do not agree to the new terms, please stop using the Service.
-        </p>
-      </section>
-
-      <section className="mt-16 rounded-lg border border-white/10 bg-white/5 p-6">
-        <h3 className="mb-2 text-lg font-semibold text-white">Questions?</h3>
-        <p className="text-gray-400">
-          If you have any questions about these Terms, please contact us at{' '}
-          <a href="mailto:legal@cgraph.org" className="text-emerald-400 hover:text-emerald-300">
-            legal@cgraph.org
-          </a>
-          .
-        </p>
-      </section>
-    </LegalLayout>
+    </MarketingLayout>
   );
 }

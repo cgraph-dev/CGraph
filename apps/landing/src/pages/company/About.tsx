@@ -1,218 +1,177 @@
 /**
- * About Page - Company information and mission
+ * About Page
+ *
+ * Company information, mission, values, and team.
+ *
+ * @since v0.9.2
  */
 
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Navigation } from '../../components/Navigation';
-
-const stats = [
-  { value: '50K+', label: 'Active Users' },
-  { value: '99.9%', label: 'Uptime' },
-  { value: '40+', label: 'Countries' },
-  { value: '1M+', label: 'Messages/Day' },
-];
+const springs = { bouncy: { type: 'spring' as const, stiffness: 300, damping: 10 } };
+import { MarketingLayout } from '@/components/marketing';
 
 const values = [
   {
-    icon: '🔒',
-    title: 'Privacy First',
-    description: 'End-to-end encryption by default. Your conversations belong to you, not us.',
+    icon: '🎨',
+    title: 'Full Customization',
+    description:
+      'Every aspect of your community is customizable. Themes, layouts, features—make it truly yours.',
   },
   {
     icon: '🌐',
-    title: 'Open & Transparent',
-    description: 'Open-source core, public roadmap, and transparent business practices.',
+    title: 'Open Community',
+    description:
+      'Build thriving communities with forums, real-time messaging, and engaging gamification features.',
+  },
+  {
+    icon: '🤝',
+    title: 'User Freedom',
+    description:
+      'Your data belongs to you. Export it, customize it, or take it elsewhere. We empower users.',
   },
   {
     icon: '⚡',
     title: 'Performance',
     description:
-      'Built for speed. Lightning-fast messaging even in challenging network conditions.',
+      'Lightning-fast experience. We optimize relentlessly to deliver real-time messaging with sub-200ms latency.',
   },
   {
-    icon: '🎨',
-    title: 'User Experience',
-    description: 'Beautiful, intuitive design that gets out of your way and lets you communicate.',
-  },
-  {
-    icon: '🤝',
-    title: 'Community Driven',
-    description: 'Features shaped by our community. Your feedback directly impacts our roadmap.',
-  },
-  {
-    icon: '🌱',
-    title: 'Sustainable',
-    description: 'Carbon-neutral infrastructure and a commitment to digital sustainability.',
-  },
-];
-
-const timeline = [
-  {
-    year: '2024',
-    title: 'The Beginning',
+    icon: '🎮',
+    title: 'Gamification',
     description:
-      'CGraph was founded with a mission to create a privacy-first communication platform.',
+      'Earn rewards, unlock achievements, and climb leaderboards. Every interaction is meaningful.',
   },
   {
-    year: '2025',
-    title: 'Public Launch',
-    description: 'After extensive beta testing, CGraph launched publicly with E2E encryption.',
-  },
-  {
-    year: '2025',
-    title: 'Mobile Apps',
-    description: 'Native iOS and Android apps launched, bringing CGraph to mobile users.',
-  },
-  {
-    year: '2026',
-    title: 'Enterprise',
-    description: 'Launched CGraph Enterprise for businesses with advanced admin controls.',
+    icon: '🌍',
+    title: 'Accessibility',
+    description:
+      'Everyone deserves great communication tools. We follow WCAG guidelines and support all users.',
   },
 ];
 
 const team = [
   {
-    name: 'Leadership',
-    description: 'Our founding team brings experience from leading tech companies.',
-    count: '3',
+    name: 'Burca Lucas',
+    role: 'Founder & Developer',
+    bio: 'Full-stack developer passionate about privacy and secure communication. Building CGraph from Georgia.',
+    avatar: 'BL',
+  },
+];
+
+const milestones = [
+  {
+    year: 'Q1 2026',
+    event: 'CGraph founded with mission to build privacy-first messaging',
+    completed: true,
   },
   {
-    name: 'Engineering',
-    description: 'Talented engineers passionate about building secure, scalable systems.',
-    count: '8',
+    year: 'Q2 2026',
+    event: 'Core encryption, real-time messaging, and Web3 auth development',
+    completed: false,
   },
   {
-    name: 'Design',
-    description: 'Designers focused on creating delightful user experiences.',
-    count: '2',
-  },
-  {
-    name: 'Security',
-    description: 'Dedicated security researchers and cryptography experts.',
-    count: '2',
+    year: 'Q3 2026',
+    event: 'Forums, gamification, and community features launch',
+    completed: false,
   },
 ];
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
-      {/* Shared Navigation Component */}
-      <Navigation transparent />
-
-      {/* Hero Section */}
-      <section className="px-4 pb-20 pt-32 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl text-center">
-          <motion.span
+    <MarketingLayout
+      title="About CGraph"
+      subtitle="Real-time messaging meets community forums — with powerful customization"
+      eyebrow="Our Story"
+      showCTA
+    >
+      {/* Mission Section */}
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-400"
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mx-auto max-w-3xl text-center"
           >
-            About CGraph
-          </motion.span>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mb-6 text-4xl font-bold text-white md:text-6xl"
-          >
-            Communication Should Be
-            <span className="block bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
-              Private & Beautiful
-            </span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mx-auto max-w-3xl text-xl text-gray-400"
-          >
-            We're building the communication platform we always wanted—one that respects your
-            privacy, delights you with its design, and just works.
-          </motion.p>
+            <h2 className="marketing-section__title font-zentry">Our Mission</h2>
+            <p className="text-xl" style={{ color: 'var(--color-gray)' }}>
+              CGraph was founded on a simple belief:{' '}
+              <span className="marketing-hero__highlight">
+                communities deserve freedom to customize
+              </span>
+              . We're building the all-in-one platform that combines real-time messaging,
+              Reddit-style community forums, Web3 authentication, and gamification rewards—making
+              every interaction count.
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="border-y border-white/5 bg-white/[0.02] py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            {stats.map((stat, index) => (
+      {/* Values Section */}
+      <section className="marketing-section marketing-section--dark">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="marketing-section__title font-zentry">Our Values</h2>
+              <p className="marketing-section__desc">
+                The principles that guide everything we build
+              </p>
+            </motion.div>
+          </div>
+
+          <div className="marketing-grid marketing-grid--3">
+            {values.map((value, index) => (
               <motion.div
-                key={stat.label}
+                key={value.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="text-center"
+                transition={{ delay: index * 0.1 }}
+                className="marketing-card"
               >
-                <div className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
-                  {stat.value}
-                </div>
-                <div className="mt-1 text-sm text-gray-400">{stat.label}</div>
+                <span className="marketing-card__icon">{value.icon}</span>
+                <h3 className="marketing-card__title">{value.title}</h3>
+                <p className="marketing-card__desc">{value.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Mission Section */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid items-center gap-16 lg:grid-cols-2">
-            <div>
-              <h2 className="mb-6 text-3xl font-bold text-white md:text-4xl">Our Mission</h2>
-              <p className="mb-6 text-lg text-gray-400">
-                We believe that private communication is a fundamental right. In an era of
-                increasing surveillance and data exploitation, CGraph stands as a beacon for
-                privacy-respecting technology.
+      {/* Team Section */}
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="marketing-section__title font-zentry">Meet the Founder</h2>
+              <p className="marketing-section__desc">
+                Building CGraph from Georgia with a passion for privacy and secure communication
               </p>
-              <p className="mb-6 text-lg text-gray-400">
-                Our mission is to make secure communication accessible to everyone. Privacy
-                shouldn't be a luxury—it should be the default.
-              </p>
-              <p className="text-lg text-gray-400">
-                We're not just building a messaging app. We're building the infrastructure for
-                private digital communication in the 21st century.
-              </p>
-            </div>
-            <div className="relative">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 blur-3xl" />
-              <div className="relative rounded-2xl border border-white/10 bg-white/5 p-8">
-                <blockquote className="text-xl italic text-white">
-                  "Privacy is not about hiding something. It's about having a space to be yourself,
-                  to think freely, and to communicate without being watched."
-                </blockquote>
-                <div className="mt-4 text-gray-400">— CGraph Founding Team</div>
-              </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
-      </section>
 
-      {/* Values Section */}
-      <section className="bg-white/[0.02] px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-16 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">Our Values</h2>
-            <p className="mx-auto max-w-2xl text-lg text-gray-400">
-              These principles guide every decision we make, from product features to business
-              strategy.
-            </p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {values.map((value, index) => (
+          <div className="mx-auto max-w-md">
+            {team.map((member, index) => (
               <motion.div
-                key={value.title}
+                key={member.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors hover:bg-white/10"
+                transition={{ delay: index * 0.1 }}
+                className="marketing-card team-card"
               >
-                <div className="mb-4 text-4xl">{value.icon}</div>
-                <h3 className="mb-2 text-xl font-semibold text-white">{value.title}</h3>
-                <p className="text-gray-400">{value.description}</p>
+                <div className="team-card__avatar">{member.avatar}</div>
+                <h3 className="team-card__name">{member.name}</h3>
+                <p className="team-card__role">{member.role}</p>
+                <p className="team-card__bio">{member.bio}</p>
               </motion.div>
             ))}
           </div>
@@ -220,140 +179,157 @@ export default function About() {
       </section>
 
       {/* Timeline Section */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <div className="mb-16 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">Our Journey</h2>
-            <p className="text-lg text-gray-400">
-              Our journey to build a better messaging platform.
-            </p>
+      <section className="marketing-section marketing-section--dark">
+        <div className="mx-auto max-w-4xl px-4">
+          <div className="marketing-section__header">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="marketing-section__title font-zentry">Our Journey</h2>
+              <p className="marketing-section__desc">Key milestones in our mission</p>
+            </motion.div>
           </div>
-          <div className="relative">
-            <div className="absolute bottom-0 left-4 top-0 w-px bg-gradient-to-b from-emerald-500 via-cyan-500 to-purple-500 md:left-1/2" />
-            <div className="space-y-12">
-              {timeline.map((event, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  className={`relative flex items-center ${index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
-                >
-                  <div
-                    className={`hidden w-1/2 md:block ${index % 2 === 0 ? 'pr-12 text-right' : 'pl-12'}`}
-                  >
-                    <div className="mb-1 text-lg font-bold text-emerald-400">{event.year}</div>
-                    <h3 className="mb-2 text-xl font-semibold text-white">{event.title}</h3>
-                    <p className="text-gray-400">{event.description}</p>
-                  </div>
-                  <div className="absolute left-4 h-4 w-4 -translate-x-1/2 rounded-full bg-emerald-500 shadow-lg shadow-emerald-500/50 md:left-1/2" />
-                  <div className="ml-12 md:hidden">
-                    <div className="mb-1 text-lg font-bold text-emerald-400">{event.year}</div>
-                    <h3 className="mb-2 text-xl font-semibold text-white">{event.title}</h3>
-                    <p className="text-gray-400">{event.description}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Team Section */}
-      <section className="bg-white/[0.02] px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-16 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">Our Team</h2>
-            <p className="mx-auto max-w-2xl text-lg text-gray-400">
-              A diverse group of engineers, designers, and dreamers united by a shared vision.
-            </p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {team.map((dept, index) => (
+          <div className="grid gap-6 md:grid-cols-3">
+            {milestones.map((milestone, index) => (
               <motion.div
-                key={dept.name}
-                initial={{ opacity: 0, y: 20 }}
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02] p-6 text-center"
+                transition={{ delay: index * 0.15, duration: 0.5 }}
+                whileHover={{ scale: 1.03, y: -5 }}
+                className="marketing-card relative overflow-hidden"
+                style={{
+                  borderColor: milestone.completed
+                    ? 'rgba(16, 185, 129, 0.3)'
+                    : 'rgba(239, 68, 68, 0.3)',
+                }}
               >
-                <div className="mb-2 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-3xl font-bold text-transparent">
-                  {dept.count}
+                {/* Status glow effect */}
+                <div
+                  className="absolute inset-0 opacity-10"
+                  style={{
+                    background: milestone.completed
+                      ? 'radial-gradient(circle at top right, rgba(16, 185, 129, 0.4), transparent 70%)'
+                      : 'radial-gradient(circle at top right, rgba(239, 68, 68, 0.4), transparent 70%)',
+                  }}
+                />
+
+                {/* Header with year and status */}
+                <div className="relative mb-4 flex items-center justify-between">
+                  <motion.span
+                    className="font-mono text-lg font-bold"
+                    style={{ color: milestone.completed ? 'var(--color-primary)' : '#ef4444' }}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.15 + 0.2 }}
+                  >
+                    {milestone.year}
+                  </motion.span>
+
+                  {/* Status circle */}
+                  <div className="relative flex items-center justify-center">
+                    <motion.div
+                      className="relative flex h-8 w-8 items-center justify-center rounded-full"
+                      style={{
+                        background: milestone.completed ? 'var(--color-primary)' : '#ef4444',
+                        boxShadow: milestone.completed
+                          ? '0 0 12px rgba(16, 185, 129, 0.5)'
+                          : '0 0 12px rgba(239, 68, 68, 0.5)',
+                      }}
+                      initial={{ scale: 0 }}
+                      whileInView={{ scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.15 + 0.3, ...springs.bouncy }}
+                    >
+                      {milestone.completed ? (
+                        <motion.svg
+                          className="h-4 w-4 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <motion.path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={3}
+                            d="M5 13l4 4L19 7"
+                            initial={{ pathLength: 0 }}
+                            whileInView={{ pathLength: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: index * 0.15 + 0.4, duration: 0.4 }}
+                          />
+                        </motion.svg>
+                      ) : (
+                        <motion.div
+                          className="h-2.5 w-2.5 rounded-full bg-white"
+                          animate={{ scale: [1, 1.3, 1] }}
+                          transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+                        />
+                      )}
+                    </motion.div>
+                    {/* Pulse animation for pending items */}
+                    {!milestone.completed && (
+                      <motion.div
+                        className="absolute h-8 w-8 rounded-full"
+                        style={{ background: 'rgba(239, 68, 68, 0.4)' }}
+                        animate={{ scale: [1, 2], opacity: [0.5, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut' }}
+                      />
+                    )}
+                  </div>
                 </div>
-                <h3 className="mb-2 text-lg font-semibold text-white">{dept.name}</h3>
-                <p className="text-sm text-gray-400">{dept.description}</p>
+
+                {/* Status label */}
+                <div className="relative mb-3">
+                  <span
+                    className="inline-block rounded-full px-3 py-1 text-xs font-semibold"
+                    style={{
+                      background: milestone.completed
+                        ? 'rgba(16, 185, 129, 0.15)'
+                        : 'rgba(239, 68, 68, 0.15)',
+                      color: milestone.completed ? 'var(--color-primary)' : '#ef4444',
+                    }}
+                  >
+                    {milestone.completed ? '✓ Completed' : '○ In Progress'}
+                  </span>
+                </div>
+
+                {/* Event description */}
+                <p
+                  className="relative"
+                  style={{ color: 'var(--color-gray)', margin: 0, lineHeight: 1.6 }}
+                >
+                  {milestone.event}
+                </p>
               </motion.div>
             ))}
           </div>
-          <div className="mt-12 text-center">
-            <Link
-              to="/careers"
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-6 py-3 font-medium text-white transition-colors hover:bg-emerald-600"
-            >
-              Join Our Team →
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-6 text-3xl font-bold text-white md:text-4xl">
-            Ready to Experience CGraph?
-          </h2>
-          <p className="mb-8 text-xl text-gray-400">
-            Join our growing community of users who trust CGraph for their private communications.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="https://web.cgraph.org/register"
-              className="rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-8 py-4 font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/25"
-            >
-              Create Free Account
-            </a>
-            <Link
-              to="/contact"
-              className="rounded-xl bg-white/10 px-8 py-4 font-semibold text-white transition-colors hover:bg-white/20"
-            >
-              Contact Us
-            </Link>
-          </div>
+      {/* Vision Section */}
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <h2 className="marketing-section__title font-zentry">Our Vision</h2>
+            <p className="marketing-section__desc mx-auto max-w-2xl">
+              We're building CGraph to prove that privacy and great user experience can coexist.
+              Join us on this journey to create a communication platform that respects your privacy
+              while delivering the features you need.
+            </p>
+          </motion.div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/5 px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-400">
-                <span className="text-xl font-bold text-black">C</span>
-              </div>
-              <span className="font-semibold text-white">CGraph</span>
-            </div>
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
-              <Link to="/privacy" className="transition-colors hover:text-white">
-                Privacy
-              </Link>
-              <Link to="/terms" className="transition-colors hover:text-white">
-                Terms
-              </Link>
-              <Link to="/cookies" className="transition-colors hover:text-white">
-                Cookies
-              </Link>
-              <Link to="/press" className="transition-colors hover:text-white">
-                Press
-              </Link>
-              <Link to="/contact" className="transition-colors hover:text-white">
-                Contact
-              </Link>
-            </div>
-            <div className="text-sm text-gray-500">© 2026 CGraph. All rights reserved.</div>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </MarketingLayout>
   );
 }

@@ -1,326 +1,329 @@
 /**
  * Cookie Policy Page
+ *
+ * Renders the Cookie Policy legal document with consistent
+ * marketing page styling.
+ *
+ * @since v0.9.2
  */
 
-import { Link } from 'react-router-dom';
-import { LegalLayout } from './LegalLayout';
+import DOMPurify from 'dompurify';
+import { motion } from 'framer-motion';
+import { MarketingLayout } from '@/components/marketing';
 
-const tableOfContents = [
-  { id: 'what-are-cookies', title: 'What Are Cookies?' },
-  { id: 'how-we-use', title: 'How We Use Cookies' },
-  { id: 'types', title: 'Types of Cookies' },
-  { id: 'third-party', title: 'Third-Party Cookies' },
-  { id: 'managing', title: 'Managing Cookies' },
-  { id: 'specific-cookies', title: 'Specific Cookies We Use' },
-  { id: 'updates', title: 'Policy Updates' },
-  { id: 'contact', title: 'Contact Us' },
+const sections = [
+  {
+    id: 'what-are-cookies',
+    title: '1. What Are Cookies?',
+    content: `
+      <p>Cookies are small text files that are stored on your device (computer, tablet, or mobile) when you visit a website. They help the website remember your preferences, login status, and other information to improve your browsing experience.</p>
+      
+      <h4>1.1 Types of Cookies We Use</h4>
+      <table>
+        <thead><tr><th>Cookie Type</th><th>Purpose</th><th>Duration</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Essential Cookies</strong></td><td>Required for the Service to function (authentication, security)</td><td>Session / 14 days</td></tr>
+          <tr><td><strong>Functional Cookies</strong></td><td>Remember your preferences (theme, language)</td><td>1 year</td></tr>
+          <tr><td><strong>Analytics Cookies</strong></td><td>Help us understand how you use the Service</td><td>90 days</td></tr>
+        </tbody>
+      </table>
+    `,
+  },
+  {
+    id: 'essential',
+    title: '2. Essential Cookies',
+    content: `
+      <p>These cookies are strictly necessary for the Service to work. Without them, you cannot use basic features like logging in or accessing secure areas.</p>
+      
+      <table>
+        <thead><tr><th>Cookie Name</th><th>Purpose</th><th>Expiry</th></tr></thead>
+        <tbody>
+          <tr><td><code>_cgraph_session</code></td><td>Session authentication token</td><td>14 days</td></tr>
+          <tr><td><code>csrf_token</code></td><td>Cross-site request forgery protection</td><td>Session</td></tr>
+          <tr><td><code>device_id</code></td><td>Device identification for multi-device sync</td><td>1 year</td></tr>
+          <tr><td><code>cookie_consent</code></td><td>Stores your cookie preferences</td><td>1 year</td></tr>
+        </tbody>
+      </table>
+      
+      <p><strong>Legal Basis:</strong> Legitimate interest (necessary for service operation)</p>
+    `,
+  },
+  {
+    id: 'functional',
+    title: '3. Functional Cookies',
+    content: `
+      <p>These cookies remember choices you make to provide enhanced, personalized features.</p>
+      
+      <table>
+        <thead><tr><th>Cookie Name</th><th>Purpose</th><th>Expiry</th></tr></thead>
+        <tbody>
+          <tr><td><code>theme</code></td><td>Your preferred color theme (dark/light/matrix)</td><td>1 year</td></tr>
+          <tr><td><code>locale</code></td><td>Your preferred language</td><td>1 year</td></tr>
+          <tr><td><code>sidebar_collapsed</code></td><td>Sidebar state preference</td><td>1 year</td></tr>
+          <tr><td><code>notification_prefs</code></td><td>Notification display preferences</td><td>1 year</td></tr>
+        </tbody>
+      </table>
+      
+      <p><strong>Legal Basis:</strong> Consent (you can disable these in Settings)</p>
+    `,
+  },
+  {
+    id: 'analytics',
+    title: '4. Analytics Cookies',
+    content: `
+      <p>We use privacy-focused analytics to understand how the Service is used and to improve it. We do NOT use third-party tracking services like Google Analytics.</p>
+      
+      <table>
+        <thead><tr><th>Cookie Name</th><th>Purpose</th><th>Expiry</th></tr></thead>
+        <tbody>
+          <tr><td><code>_plausible</code></td><td>Anonymous pageview analytics</td><td>Session</td></tr>
+          <tr><td><code>usage_session</code></td><td>Session-based usage patterns</td><td>Session</td></tr>
+        </tbody>
+      </table>
+      
+      <h4>What We Track</h4>
+      <ul>
+        <li>Pages visited (anonymized)</li>
+        <li>Feature usage patterns</li>
+        <li>Error occurrences</li>
+        <li>Performance metrics</li>
+      </ul>
+      
+      <h4>What We Do NOT Track</h4>
+      <ul>
+        <li>❌ Personal identifiers</li>
+        <li>❌ Cross-site browsing</li>
+        <li>❌ Advertising profiles</li>
+        <li>❌ Third-party cookies</li>
+      </ul>
+    `,
+  },
+  {
+    id: 'third-party',
+    title: '5. Third-Party Cookies',
+    content: `
+      <p>We minimize third-party cookies. The following may be set by our service providers:</p>
+      
+      <table>
+        <thead><tr><th>Provider</th><th>Purpose</th><th>Cookie Type</th></tr></thead>
+        <tbody>
+          <tr><td>Cloudflare</td><td>DDoS protection, CDN</td><td>Security</td></tr>
+          <tr><td>Stripe</td><td>Payment processing (if applicable)</td><td>Essential</td></tr>
+        </tbody>
+      </table>
+      
+      <p>These providers have their own privacy policies governing their cookies.</p>
+    `,
+  },
+  {
+    id: 'managing',
+    title: '6. Managing Cookies',
+    content: `
+      <h4>6.1 In-App Settings</h4>
+      <p>You can manage cookie preferences directly in CGraph:</p>
+      <ol>
+        <li>Go to <strong>Settings</strong> → <strong>Privacy</strong></li>
+        <li>Toggle <strong>Analytics Cookies</strong> on/off</li>
+        <li>Toggle <strong>Functional Cookies</strong> on/off</li>
+      </ol>
+      
+      <h4>6.2 Browser Settings</h4>
+      <p>Most browsers allow you to:</p>
+      <ul>
+        <li>View cookies stored on your device</li>
+        <li>Delete individual or all cookies</li>
+        <li>Block cookies from specific or all websites</li>
+        <li>Set preferences for first-party vs third-party cookies</li>
+      </ul>
+      
+      <p><strong>Browser Cookie Settings:</strong></p>
+      <ul>
+        <li><a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer">Chrome</a></li>
+        <li><a href="https://support.mozilla.org/en-US/kb/cookies-information-websites-store-on-your-computer" target="_blank" rel="noopener noreferrer">Firefox</a></li>
+        <li><a href="https://support.apple.com/guide/safari/manage-cookies-and-website-data-sfri11471/mac" target="_blank" rel="noopener noreferrer">Safari</a></li>
+        <li><a href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener noreferrer">Edge</a></li>
+      </ul>
+      
+      <h4>6.3 Do Not Track</h4>
+      <p>We respect the "Do Not Track" browser setting. When enabled, we automatically disable non-essential cookies and analytics.</p>
+    `,
+  },
+  {
+    id: 'storage',
+    title: '7. Local Storage & Session Storage',
+    content: `
+      <p>In addition to cookies, we use browser storage technologies:</p>
+      
+      <table>
+        <thead><tr><th>Storage Type</th><th>Purpose</th><th>Data Stored</th></tr></thead>
+        <tbody>
+          <tr><td><strong>LocalStorage</strong></td><td>Persistent app state</td><td>Encrypted encryption keys, draft messages</td></tr>
+          <tr><td><strong>SessionStorage</strong></td><td>Temporary session data</td><td>Temporary UI state</td></tr>
+          <tr><td><strong>IndexedDB</strong></td><td>Offline message cache</td><td>Encrypted message database</td></tr>
+        </tbody>
+      </table>
+      
+      <p>This data never leaves your device and is encrypted at rest using your account keys.</p>
+    `,
+  },
+  {
+    id: 'mobile',
+    title: '8. Mobile Applications',
+    content: `
+      <p>Our mobile apps (iOS/Android) do not use traditional cookies. Instead, we use:</p>
+      <ul>
+        <li><strong>Secure Storage:</strong> For authentication tokens</li>
+        <li><strong>AsyncStorage:</strong> For preferences (encrypted)</li>
+        <li><strong>Device Identifiers:</strong> Anonymous device ID for multi-device sync</li>
+      </ul>
+      
+      <p>We do NOT use:</p>
+      <ul>
+        <li>❌ Advertising identifiers (IDFA/GAID)</li>
+        <li>❌ Device fingerprinting</li>
+        <li>❌ Third-party SDKs that track users</li>
+      </ul>
+    `,
+  },
+  {
+    id: 'changes',
+    title: '9. Changes to This Policy',
+    content: `
+      <p>We may update this Cookie Policy to reflect changes in technology or legal requirements. We will:</p>
+      <ul>
+        <li>Update the "Last Updated" date at the top</li>
+        <li>Notify you of material changes via email or in-app notification</li>
+        <li>Obtain new consent if required by law</li>
+      </ul>
+    `,
+  },
+  {
+    id: 'contact',
+    title: '10. Contact Us',
+    content: `
+      <p>If you have questions about our use of cookies, please contact us:</p>
+      <ul>
+        <li><strong>Email:</strong> <a href="mailto:privacy@cgraph.org">privacy@cgraph.org</a></li>
+        <li><strong>Privacy Portal:</strong> <a href="/privacy">cgraph.org/privacy</a></li>
+        <li><strong>Data Protection Officer:</strong> <a href="mailto:dpo@cgraph.org">dpo@cgraph.org</a></li>
+      </ul>
+    `,
+  },
 ];
 
 export default function CookiePolicy() {
   return (
-    <LegalLayout
+    <MarketingLayout
       title="Cookie Policy"
-      subtitle="Learn how CGraph uses cookies and similar technologies."
-      lastUpdated="January 29, 2026"
-      tableOfContents={tableOfContents}
+      subtitle="Last updated: January 21, 2026 • Version 1.1"
+      eyebrow="Transparency First"
     >
-      <section id="what-are-cookies" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">What Are Cookies?</h2>
-        <p className="mb-4 text-gray-400">
-          Cookies are small text files that are placed on your device when you visit a website. They
-          are widely used to make websites work more efficiently, provide a better user experience,
-          and give website owners information about how their site is being used.
-        </p>
-        <p className="text-gray-400">
-          Similar technologies include pixel tags, web beacons, and local storage, which serve
-          similar functions and are collectively referred to as "cookies" in this policy.
-        </p>
-      </section>
-
-      <section id="how-we-use" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">How We Use Cookies</h2>
-        <p className="mb-4 text-gray-400">CGraph uses cookies to:</p>
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-4">
-            <div className="mb-2 text-2xl text-emerald-400">🔐</div>
-            <h3 className="mb-1 font-semibold text-white">Authentication</h3>
-            <p className="text-sm text-gray-400">
-              Keep you logged in as you navigate between pages
+      <section className="marketing-section marketing-section--alt">
+        <div className="mx-auto max-w-4xl px-4">
+          {/* Introduction */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="marketing-card"
+            style={{ marginBottom: '3rem' }}
+          >
+            <p style={{ color: 'var(--color-gray)', fontSize: '1.125rem', lineHeight: 1.7 }}>
+              This Cookie Policy explains how CGraph ("we", "us", "our") uses cookies and similar
+              technologies when you visit our website at cgraph.org or use our web application
+              (collectively, the "Service").
             </p>
-          </div>
-          <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-4">
-            <div className="mb-2 text-2xl text-blue-400">⚙️</div>
-            <h3 className="mb-1 font-semibold text-white">Preferences</h3>
-            <p className="text-sm text-gray-400">Remember your settings and customizations</p>
-          </div>
-          <div className="rounded-lg border border-purple-500/20 bg-purple-500/10 p-4">
-            <div className="mb-2 text-2xl text-purple-400">📊</div>
-            <h3 className="mb-1 font-semibold text-white">Analytics</h3>
-            <p className="text-sm text-gray-400">Understand how our service is used</p>
-          </div>
-          <div className="rounded-lg border border-orange-500/20 bg-orange-500/10 p-4">
-            <div className="mb-2 text-2xl text-orange-400">🛡️</div>
-            <h3 className="mb-1 font-semibold text-white">Security</h3>
-            <p className="text-sm text-gray-400">Detect and prevent fraudulent activity</p>
-          </div>
-        </div>
-      </section>
+          </motion.div>
 
-      <section id="types" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">Types of Cookies</h2>
+          {/* Table of Contents */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mb-12"
+          >
+            <h2 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Table of Contents
+            </h2>
+            <nav className="grid gap-2 sm:grid-cols-2">
+              {sections.map((section) => (
+                <a
+                  key={section.id}
+                  href={`#${section.id}`}
+                  style={{ color: 'var(--color-gray)', transition: 'color 0.2s' }}
+                  className="hover:text-emerald-400"
+                >
+                  {section.title}
+                </a>
+              ))}
+            </nav>
+          </motion.div>
 
-        <div className="space-y-6">
-          <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-            <div className="mb-3 flex items-center gap-3">
-              <span className="rounded bg-green-500/20 px-2 py-1 text-xs font-medium text-green-400">
-                Required
-              </span>
-              <h3 className="font-semibold text-white">Essential Cookies</h3>
-            </div>
-            <p className="text-sm text-gray-400">
-              These cookies are necessary for the website to function properly. They enable core
-              functionality such as security, authentication, and accessibility. You cannot opt out
-              of these cookies.
-            </p>
-          </div>
-
-          <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-            <div className="mb-3 flex items-center gap-3">
-              <span className="rounded bg-blue-500/20 px-2 py-1 text-xs font-medium text-blue-400">
-                Optional
-              </span>
-              <h3 className="font-semibold text-white">Preference Cookies</h3>
-            </div>
-            <p className="text-sm text-gray-400">
-              These cookies allow the website to remember choices you make (such as your theme
-              preference, language, or region) and provide enhanced, personalized features.
-            </p>
-          </div>
-
-          <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-            <div className="mb-3 flex items-center gap-3">
-              <span className="rounded bg-purple-500/20 px-2 py-1 text-xs font-medium text-purple-400">
-                Optional
-              </span>
-              <h3 className="font-semibold text-white">Analytics Cookies</h3>
-            </div>
-            <p className="text-sm text-gray-400">
-              These cookies help us understand how visitors interact with our website by collecting
-              and reporting information anonymously. This helps us improve our service.
-            </p>
-          </div>
-
-          <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-            <div className="mb-3 flex items-center gap-3">
-              <span className="rounded bg-orange-500/20 px-2 py-1 text-xs font-medium text-orange-400">
-                Optional
-              </span>
-              <h3 className="font-semibold text-white">Marketing Cookies</h3>
-            </div>
-            <p className="text-sm text-gray-400">
-              These cookies are used to deliver advertisements more relevant to you and your
-              interests. They may also be used to limit the number of times you see an
-              advertisement.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section id="third-party" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">Third-Party Cookies</h2>
-        <p className="mb-4 text-gray-400">
-          Some cookies are placed by third-party services that appear on our pages. We use the
-          following third-party services:
-        </p>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-white/10">
-                <th className="px-4 py-3 text-left font-semibold text-white">Provider</th>
-                <th className="px-4 py-3 text-left font-semibold text-white">Purpose</th>
-                <th className="px-4 py-3 text-left font-semibold text-white">Duration</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-400">
-              <tr className="border-b border-white/5">
-                <td className="px-4 py-3">Cloudflare</td>
-                <td className="px-4 py-3">Security, performance</td>
-                <td className="px-4 py-3">Session to 1 year</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="px-4 py-3">PostHog</td>
-                <td className="px-4 py-3">Analytics (self-hosted)</td>
-                <td className="px-4 py-3">1 year</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="px-4 py-3">Stripe</td>
-                <td className="px-4 py-3">Payment processing</td>
-                <td className="px-4 py-3">Session to 2 years</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="px-4 py-3">Sentry</td>
-                <td className="px-4 py-3">Error tracking</td>
-                <td className="px-4 py-3">Session</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section id="managing" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">Managing Cookies</h2>
-
-        <h3 className="mb-3 mt-6 text-lg font-semibold text-white">In-App Cookie Settings</h3>
-        <p className="mb-4 text-gray-400">
-          You can manage your cookie preferences at any time through our cookie settings panel.
-          Click the "Cookie Settings" link in the footer to access these controls.
-        </p>
-
-        <h3 className="mb-3 mt-6 text-lg font-semibold text-white">Browser Settings</h3>
-        <p className="mb-4 text-gray-400">
-          You can also control cookies through your browser settings. Here's how to manage cookies
-          in popular browsers:
-        </p>
-        <ul className="list-inside list-disc space-y-2 text-gray-400">
-          <li>
-            <a
-              href="https://support.google.com/chrome/answer/95647"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-emerald-400 hover:text-emerald-300"
+          {/* Sections */}
+          {sections.map((section) => (
+            <motion.section
+              key={section.id}
+              id={section.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="mb-12 scroll-mt-24"
             >
-              Google Chrome
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://support.mozilla.org/en-US/kb/enable-and-disable-cookies-website-preferences"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-emerald-400 hover:text-emerald-300"
-            >
-              Mozilla Firefox
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://support.apple.com/guide/safari/manage-cookies-sfri11471/mac"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-emerald-400 hover:text-emerald-300"
-            >
-              Safari
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-emerald-400 hover:text-emerald-300"
-            >
-              Microsoft Edge
-            </a>
-          </li>
-        </ul>
+              <h2
+                className="mb-6 font-zentry text-2xl font-bold"
+                style={{ color: 'var(--color-light)' }}
+              >
+                {section.title}
+              </h2>
+              <div
+                className="legal-content"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(section.content, { USE_PROFILES: { html: true } }),
+                }}
+              />
+            </motion.section>
+          ))}
 
-        <div className="mt-6 rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-4">
-          <p className="text-sm text-yellow-400">
-            <strong>⚠️ Note:</strong> Disabling cookies may affect your experience on CGraph. Some
-            features may not work properly without essential cookies.
-          </p>
+          {/* Related Links */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="marketing-card"
+          >
+            <h3 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Related Documents
+            </h3>
+            <div className="marketing-grid marketing-grid--3">
+              <a href="/privacy" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Privacy Policy
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  How we handle your data
+                </p>
+              </a>
+              <a href="/terms" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Terms of Service
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  Rules for using CGraph
+                </p>
+              </a>
+              <a href="/gdpr" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  GDPR Compliance
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  Your data rights
+                </p>
+              </a>
+            </div>
+          </motion.div>
         </div>
       </section>
-
-      <section id="specific-cookies" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">Specific Cookies We Use</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-white/10">
-                <th className="px-4 py-3 text-left font-semibold text-white">Name</th>
-                <th className="px-4 py-3 text-left font-semibold text-white">Type</th>
-                <th className="px-4 py-3 text-left font-semibold text-white">Purpose</th>
-                <th className="px-4 py-3 text-left font-semibold text-white">Duration</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-400">
-              <tr className="border-b border-white/5">
-                <td className="px-4 py-3 font-mono text-xs">cg_session</td>
-                <td className="px-4 py-3">Essential</td>
-                <td className="px-4 py-3">Session management</td>
-                <td className="px-4 py-3">Session</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="px-4 py-3 font-mono text-xs">cg_auth_token</td>
-                <td className="px-4 py-3">Essential</td>
-                <td className="px-4 py-3">Authentication</td>
-                <td className="px-4 py-3">14 days</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="px-4 py-3 font-mono text-xs">cg_refresh_token</td>
-                <td className="px-4 py-3">Essential</td>
-                <td className="px-4 py-3">Token refresh</td>
-                <td className="px-4 py-3">30 days</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="px-4 py-3 font-mono text-xs">cg_theme</td>
-                <td className="px-4 py-3">Preference</td>
-                <td className="px-4 py-3">Theme preference</td>
-                <td className="px-4 py-3">1 year</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="px-4 py-3 font-mono text-xs">cg_locale</td>
-                <td className="px-4 py-3">Preference</td>
-                <td className="px-4 py-3">Language preference</td>
-                <td className="px-4 py-3">1 year</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="px-4 py-3 font-mono text-xs">cg_consent</td>
-                <td className="px-4 py-3">Essential</td>
-                <td className="px-4 py-3">Cookie consent</td>
-                <td className="px-4 py-3">1 year</td>
-              </tr>
-              <tr className="border-b border-white/5">
-                <td className="px-4 py-3 font-mono text-xs">cg_csrf</td>
-                <td className="px-4 py-3">Essential</td>
-                <td className="px-4 py-3">CSRF protection</td>
-                <td className="px-4 py-3">Session</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section id="updates" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">Policy Updates</h2>
-        <p className="text-gray-400">
-          We may update this Cookie Policy from time to time to reflect changes in our practices or
-          for other operational, legal, or regulatory reasons. We will notify you of any material
-          changes by posting the new policy on this page with an updated "Last Updated" date.
-        </p>
-      </section>
-
-      <section id="contact" className="mb-12">
-        <h2 className="mb-4 text-2xl font-bold text-white">Contact Us</h2>
-        <p className="mb-4 text-gray-400">
-          If you have any questions about our use of cookies or this policy, please contact us:
-        </p>
-        <ul className="space-y-2 text-gray-400">
-          <li>
-            <strong className="text-white">Email:</strong>{' '}
-            <a href="mailto:privacy@cgraph.org" className="text-emerald-400 hover:text-emerald-300">
-              privacy@cgraph.org
-            </a>
-          </li>
-          <li>
-            <strong className="text-white">Web:</strong>{' '}
-            <Link to="/contact" className="text-emerald-400 hover:text-emerald-300">
-              Contact Form
-            </Link>
-          </li>
-        </ul>
-      </section>
-    </LegalLayout>
+    </MarketingLayout>
   );
 }

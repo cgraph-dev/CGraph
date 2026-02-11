@@ -1,12 +1,14 @@
 /**
  * Documentation Page - Developer documentation hub
+ *
+ * @since v0.9.2
+ * @updated v0.9.6 - Migrated to MarketingLayout for consistent styling
  */
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Navigation } from '../../components/Navigation';
-import { LogoIcon } from '../../components/Logo';
+import { MarketingLayout } from '@/components/marketing';
 
 const docCategories = [
   {
@@ -84,72 +86,28 @@ export default function Documentation() {
   );
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
-      <Navigation transparent />
-
-      {/* Hero Section */}
-      <section className="relative overflow-hidden px-4 pb-16 pt-32 sm:px-6 lg:px-8">
-        {/* Animated background */}
-        <div className="absolute inset-0 overflow-hidden">
-          <motion.div
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.5, 0.3],
-            }}
-            transition={{ duration: 8, repeat: Infinity }}
-            className="absolute left-1/4 top-0 h-96 w-96 rounded-full bg-purple-500/20 blur-3xl"
-          />
-          <motion.div
-            animate={{
-              scale: [1.2, 1, 1.2],
-              opacity: [0.3, 0.5, 0.3],
-            }}
-            transition={{ duration: 8, repeat: Infinity, delay: 4 }}
-            className="absolute right-1/4 top-1/3 h-96 w-96 rounded-full bg-blue-500/20 blur-3xl"
-          />
-        </div>
-
-        <div className="relative mx-auto max-w-4xl text-center">
-          <motion.span
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-purple-500/20 bg-purple-500/10 px-4 py-2 text-sm font-medium text-purple-400"
-          >
-            📖 Documentation
-          </motion.span>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mb-6 text-4xl font-bold text-white md:text-6xl"
-          >
-            Learn How to Build with
-            <span className="block bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent">
-              CGraph
-            </span>
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mx-auto mb-8 max-w-2xl text-xl text-gray-400"
-          >
-            Comprehensive guides, API references, and examples to help you build secure, private
-            communication into your applications.
-          </motion.p>
-
-          {/* Search Bar */}
+    <MarketingLayout
+      title="Learn How to Build with CGraph"
+      subtitle="Comprehensive guides, API references, and examples to help you build secure, private communication into your applications."
+      eyebrow="📖 Documentation"
+      showCTA
+    >
+      {/* Search Bar */}
+      <section
+        className="marketing-section marketing-section--alt"
+        style={{ paddingTop: '2rem', paddingBottom: '2rem' }}
+      >
+        <div className="mx-auto max-w-xl px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="relative mx-auto max-w-xl"
+            className="relative"
           >
             <div className="absolute inset-y-0 left-4 flex items-center">
               <svg
-                className="h-5 w-5 text-gray-400"
+                className="h-5 w-5"
+                style={{ color: 'var(--color-gray)' }}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -167,18 +125,26 @@ export default function Documentation() {
               placeholder="Search documentation..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-xl border border-white/10 bg-white/5 py-4 pl-12 pr-4 text-white placeholder-gray-500 backdrop-blur-sm transition-all focus:border-purple-500/50 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+              className="contact-form__input w-full pl-12"
             />
             <div className="absolute inset-y-0 right-4 flex items-center">
-              <kbd className="rounded bg-white/10 px-2 py-1 text-xs text-gray-400">⌘K</kbd>
+              <kbd
+                className="rounded bg-white/10 px-2 py-1 text-xs"
+                style={{ color: 'var(--color-gray)' }}
+              >
+                ⌘K
+              </kbd>
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* Quick Links */}
-      <section className="border-y border-white/5 bg-white/[0.02] py-8">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section
+        className="marketing-section marketing-section--dark"
+        style={{ paddingTop: '2rem', paddingBottom: '2rem' }}
+      >
+        <div className="marketing-section__container">
           <div className="flex flex-wrap items-center justify-center gap-4">
             {['Quick Start', 'API Reference', 'SDKs', 'Examples', 'Community'].map(
               (link, index) => (
@@ -189,7 +155,8 @@ export default function Documentation() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 * index }}
                   whileHover={{ scale: 1.05 }}
-                  className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-gray-300 transition-all hover:border-purple-500/30 hover:bg-white/10 hover:text-white"
+                  className="marketing-btn marketing-btn--secondary"
+                  style={{ fontSize: '0.875rem' }}
                 >
                   {link}
                 </motion.a>
@@ -200,9 +167,9 @@ export default function Documentation() {
       </section>
 
       {/* Documentation Categories */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-8 md:grid-cols-2">
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
+          <div className="marketing-grid marketing-grid--2">
             {filteredCategories.map((category, index) => (
               <motion.div
                 key={category.id}
@@ -210,27 +177,40 @@ export default function Documentation() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="group rounded-2xl border border-white/10 bg-white/5 p-8 transition-all hover:border-purple-500/30 hover:bg-white/10"
+                className="marketing-card"
+                style={{ padding: '2rem' }}
               >
                 <div className="mb-4 flex items-center gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-2xl transition-transform group-hover:scale-110">
+                  <div
+                    className="flex h-14 w-14 items-center justify-center rounded-xl text-2xl"
+                    style={{
+                      background:
+                        'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(139, 92, 246, 0.2))',
+                    }}
+                  >
                     {category.icon}
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-white">{category.title}</h3>
-                    <p className="text-sm text-gray-400">{category.articles.length} articles</p>
+                    <p className="text-sm" style={{ color: 'var(--color-gray)' }}>
+                      {category.articles.length} articles
+                    </p>
                   </div>
                 </div>
-                <p className="mb-6 text-gray-400">{category.description}</p>
+                <p className="mb-6" style={{ color: 'var(--color-gray)' }}>
+                  {category.description}
+                </p>
                 <div className="space-y-3">
                   {category.articles.slice(0, 3).map((article) => (
                     <a
                       key={article.title}
                       href={article.href}
-                      className="flex items-center justify-between rounded-lg border border-white/5 bg-white/5 p-3 transition-all hover:border-purple-500/20 hover:bg-white/10"
+                      className="flex items-center justify-between rounded-lg border border-white/5 bg-white/5 p-3 transition-all hover:border-emerald-500/20 hover:bg-white/10"
                     >
                       <span className="text-sm text-white">{article.title}</span>
-                      <span className="text-xs text-gray-500">{article.time}</span>
+                      <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
+                        {article.time}
+                      </span>
                     </a>
                   ))}
                 </div>
@@ -238,7 +218,8 @@ export default function Documentation() {
                   onClick={() =>
                     setSelectedCategory(selectedCategory === category.id ? null : category.id)
                   }
-                  className="mt-4 text-sm font-medium text-purple-400 transition-colors hover:text-purple-300"
+                  className="mt-4 text-sm font-medium transition-colors hover:text-emerald-300"
+                  style={{ color: 'var(--color-primary)' }}
                 >
                   {selectedCategory === category.id ? 'Show less' : 'View all articles →'}
                 </button>
@@ -256,10 +237,12 @@ export default function Documentation() {
                           <a
                             key={article.title}
                             href={article.href}
-                            className="flex items-center justify-between rounded-lg border border-white/5 bg-white/5 p-3 transition-all hover:border-purple-500/20 hover:bg-white/10"
+                            className="flex items-center justify-between rounded-lg border border-white/5 bg-white/5 p-3 transition-all hover:border-emerald-500/20 hover:bg-white/10"
                           >
                             <span className="text-sm text-white">{article.title}</span>
-                            <span className="text-xs text-gray-500">{article.time}</span>
+                            <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
+                              {article.time}
+                            </span>
                           </a>
                         ))}
                       </div>
@@ -273,19 +256,20 @@ export default function Documentation() {
       </section>
 
       {/* SDKs & Libraries */}
-      <section className="bg-white/[0.02] px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12 text-center"
-          >
-            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">Official SDKs</h2>
-            <p className="mx-auto max-w-2xl text-lg text-gray-400">
-              Client libraries for popular programming languages to get you started quickly.
-            </p>
-          </motion.div>
+      <section className="marketing-section marketing-section--dark">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="marketing-section__title font-zentry">Official SDKs</h2>
+              <p className="marketing-section__desc">
+                Client libraries for popular programming languages to get you started quickly.
+              </p>
+            </motion.div>
+          </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {sdks.map((sdk, index) => (
@@ -297,12 +281,18 @@ export default function Documentation() {
                 transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
                 whileHover={{ y: -4 }}
-                className="group rounded-xl border border-white/10 bg-white/5 p-6 transition-all hover:border-purple-500/30"
+                className="marketing-card group"
+                style={{ textDecoration: 'none' }}
               >
                 <div className="mb-4 text-4xl">{sdk.icon}</div>
                 <h3 className="mb-1 font-semibold text-white">{sdk.name}</h3>
-                <p className="text-sm text-gray-400">v{sdk.version}</p>
-                <div className="mt-4 flex items-center text-sm text-purple-400 opacity-0 transition-opacity group-hover:opacity-100">
+                <p className="text-sm" style={{ color: 'var(--color-gray)' }}>
+                  v{sdk.version}
+                </p>
+                <div
+                  className="mt-4 flex items-center text-sm opacity-0 transition-opacity group-hover:opacity-100"
+                  style={{ color: 'var(--color-primary)' }}
+                >
                   View docs →
                 </div>
               </motion.a>
@@ -312,17 +302,18 @@ export default function Documentation() {
       </section>
 
       {/* Popular Articles */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12 text-center"
-          >
-            <h2 className="mb-4 text-3xl font-bold text-white">Popular Articles</h2>
-            <p className="text-lg text-gray-400">Most read articles from our documentation.</p>
-          </motion.div>
+      <section className="marketing-section marketing-section--alt">
+        <div className="mx-auto max-w-4xl px-4">
+          <div className="marketing-section__header">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="marketing-section__title font-zentry">Popular Articles</h2>
+              <p className="marketing-section__desc">Most read articles from our documentation.</p>
+            </motion.div>
+          </div>
 
           <div className="space-y-4">
             {popularArticles.map((article, index) => (
@@ -334,18 +325,30 @@ export default function Documentation() {
                 transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
                 whileHover={{ x: 8 }}
-                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-6 transition-all hover:border-purple-500/30 hover:bg-white/10"
+                className="marketing-card flex items-center justify-between"
+                style={{ textDecoration: 'none' }}
               >
                 <div className="flex items-center gap-4">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-purple-500/20 to-pink-500/20 text-lg font-bold text-white">
+                  <span
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
+                    style={{
+                      background:
+                        'linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(139, 92, 246, 0.3))',
+                    }}
+                  >
                     {index + 1}
                   </span>
                   <div>
                     <h3 className="font-medium text-white">{article.title}</h3>
-                    <p className="text-sm text-gray-400">{article.category}</p>
+                    <p className="text-sm" style={{ color: 'var(--color-gray)' }}>
+                      {article.category}
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-gray-400">
+                <div
+                  className="flex items-center gap-2 text-sm"
+                  style={{ color: 'var(--color-gray)' }}
+                >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
                       strokeLinecap="round"
@@ -368,65 +371,35 @@ export default function Documentation() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
+      {/* Need Help CTA */}
+      <section className="marketing-section marketing-section--dark">
+        <div className="mx-auto max-w-4xl px-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 p-12 text-center"
+            className="marketing-card text-center"
+            style={{
+              padding: '3rem',
+              background:
+                'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1))',
+            }}
           >
-            <div className="relative">
-              <h2 className="mb-4 text-3xl font-bold text-white">Need Help?</h2>
-              <p className="mx-auto mb-8 max-w-xl text-gray-300">
-                Can't find what you're looking for? Our community and support team are here to help.
-              </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <a
-                  href="#"
-                  className="rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 px-8 py-4 font-semibold text-white transition-all hover:shadow-lg hover:shadow-purple-500/25"
-                >
-                  Join Discord
-                </a>
-                <Link
-                  to="/contact"
-                  className="rounded-xl border border-white/20 bg-white/5 px-8 py-4 font-semibold text-white transition-all hover:bg-white/10"
-                >
-                  Contact Support
-                </Link>
-              </div>
+            <h2 className="mb-4 font-zentry text-3xl font-bold text-white">Need Help?</h2>
+            <p className="mx-auto mb-8 max-w-xl" style={{ color: 'var(--color-gray)' }}>
+              Can't find what you're looking for? Our community and support team are here to help.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a href="#" className="marketing-btn marketing-btn--primary">
+                Join Discord
+              </a>
+              <Link to="/contact" className="marketing-btn marketing-btn--secondary">
+                Contact Support
+              </Link>
             </div>
           </motion.div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/5 px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="flex items-center gap-2">
-              <LogoIcon size={24} color="white" />
-              <span className="font-semibold text-white">CGraph</span>
-            </div>
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
-              <Link to="/about" className="transition-colors hover:text-white">
-                About
-              </Link>
-              <Link to="/privacy" className="transition-colors hover:text-white">
-                Privacy
-              </Link>
-              <Link to="/terms" className="transition-colors hover:text-white">
-                Terms
-              </Link>
-              <Link to="/contact" className="transition-colors hover:text-white">
-                Contact
-              </Link>
-            </div>
-            <div className="text-sm text-gray-500">© 2026 CGraph. All rights reserved.</div>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </MarketingLayout>
   );
 }

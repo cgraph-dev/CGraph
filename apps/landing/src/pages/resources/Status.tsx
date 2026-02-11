@@ -1,12 +1,13 @@
 /**
  * Status Page - System status and uptime monitoring
+ *
+ * @since v0.9.2
+ * @updated v0.9.6 - Migrated to MarketingLayout for consistent styling
  */
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { Navigation } from '../../components/Navigation';
-import { LogoIcon } from '../../components/Logo';
+import { MarketingLayout } from '@/components/marketing';
 
 type ServiceStatus = 'operational' | 'degraded' | 'outage' | 'maintenance';
 
@@ -89,10 +90,10 @@ const statusColors: Record<ServiceStatus, { bg: string; text: string; dot: strin
   maintenance: { bg: 'bg-blue-500/10', text: 'text-blue-400', dot: 'bg-blue-500' },
 };
 
-const getOverallStatus = (services: Service[]): ServiceStatus => {
-  if (services.some((s) => s.status === 'outage')) return 'outage';
-  if (services.some((s) => s.status === 'degraded')) return 'degraded';
-  if (services.some((s) => s.status === 'maintenance')) return 'maintenance';
+const getOverallStatus = (svcs: Service[]): ServiceStatus => {
+  if (svcs.some((s) => s.status === 'outage')) return 'outage';
+  if (svcs.some((s) => s.status === 'degraded')) return 'degraded';
+  if (svcs.some((s) => s.status === 'maintenance')) return 'maintenance';
   return 'operational';
 };
 
@@ -115,25 +116,9 @@ export default function Status() {
   const overallStatus = getOverallStatus(services);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
-      <Navigation transparent />
-
-      {/* Hero Section */}
-      <section className="relative overflow-hidden px-4 pb-16 pt-32 sm:px-6 lg:px-8">
-        {/* Animated status pulse */}
-        <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-          <motion.div
-            animate={{
-              scale: [1, 1.5, 1],
-              opacity: [0.2, 0, 0.2],
-            }}
-            transition={{ duration: 3, repeat: Infinity }}
-            className={`h-96 w-96 rounded-full ${
-              overallStatus === 'operational' ? 'bg-emerald-500/20' : 'bg-yellow-500/20'
-            }`}
-          />
-        </div>
-
+    <MarketingLayout>
+      {/* Status Hero - Custom since it has dynamic status indicator */}
+      <section className="relative overflow-hidden px-4 pb-16 pt-8 sm:px-6 lg:px-8">
         <div className="relative mx-auto max-w-4xl text-center">
           {/* Status Indicator */}
           <motion.div
@@ -155,7 +140,7 @@ export default function Status() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="mb-4 text-4xl font-bold text-white md:text-5xl"
+            className="mb-4 font-zentry text-4xl font-bold text-white md:text-5xl"
           >
             CGraph System Status
           </motion.h1>
@@ -164,7 +149,8 @@ export default function Status() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mb-6 text-lg text-gray-400"
+            className="mb-6 text-lg"
+            style={{ color: 'var(--color-gray)' }}
           >
             Real-time status and uptime monitoring for all CGraph services.
           </motion.p>
@@ -173,7 +159,8 @@ export default function Status() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-sm text-gray-500"
+            className="text-sm"
+            style={{ color: 'var(--color-gray)' }}
           >
             Last updated:{' '}
             {currentTime.toLocaleTimeString('en-US', { hour12: true, timeZoneName: 'short' })}
@@ -182,11 +169,18 @@ export default function Status() {
       </section>
 
       {/* Uptime Chart */}
-      <section className="border-y border-white/5 bg-white/[0.02] px-4 py-8">
-        <div className="mx-auto max-w-4xl">
+      <section
+        className="marketing-section marketing-section--alt"
+        style={{ paddingTop: '2rem', paddingBottom: '2rem' }}
+      >
+        <div className="mx-auto max-w-4xl px-4">
           <div className="mb-4 flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-400">14-Day Uptime</span>
-            <span className="text-sm text-emerald-400">99.95% Average</span>
+            <span className="text-sm font-medium" style={{ color: 'var(--color-gray)' }}>
+              14-Day Uptime
+            </span>
+            <span className="text-sm" style={{ color: 'var(--color-primary)' }}>
+              99.95% Average
+            </span>
           </div>
           <div className="flex gap-1">
             {uptimeData.map((day, index) => (
@@ -217,9 +211,9 @@ export default function Status() {
       </section>
 
       {/* Services */}
-      <section className="px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="mb-8 text-2xl font-bold text-white">Services</h2>
+      <section className="marketing-section marketing-section--dark">
+        <div className="mx-auto max-w-4xl px-4">
+          <h2 className="mb-8 font-zentry text-2xl font-bold text-white">Services</h2>
           <div className="space-y-3">
             {services.map((service, index) => (
               <motion.div
@@ -227,7 +221,7 @@ export default function Status() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4"
+                className="marketing-card flex items-center justify-between"
               >
                 <div className="flex items-center gap-4">
                   <div className={`h-3 w-3 rounded-full ${statusColors[service.status].dot}`} />
@@ -235,12 +229,14 @@ export default function Status() {
                 </div>
                 <div className="flex items-center gap-6">
                   {service.latency && (
-                    <span className="text-sm text-gray-400">
-                      <span className="text-gray-500">Latency:</span> {service.latency}
+                    <span className="text-sm" style={{ color: 'var(--color-gray)' }}>
+                      <span style={{ color: 'var(--color-gray)', opacity: 0.7 }}>Latency:</span>{' '}
+                      {service.latency}
                     </span>
                   )}
-                  <span className="text-sm text-gray-400">
-                    <span className="text-gray-500">Uptime:</span> {service.uptime}
+                  <span className="text-sm" style={{ color: 'var(--color-gray)' }}>
+                    <span style={{ color: 'var(--color-gray)', opacity: 0.7 }}>Uptime:</span>{' '}
+                    {service.uptime}
                   </span>
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${statusColors[service.status].bg} ${statusColors[service.status].text}`}
@@ -255,9 +251,9 @@ export default function Status() {
       </section>
 
       {/* Metrics */}
-      <section className="bg-white/[0.02] px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="mb-8 text-2xl font-bold text-white">Performance Metrics</h2>
+      <section className="marketing-section marketing-section--alt">
+        <div className="mx-auto max-w-4xl px-4">
+          <h2 className="mb-8 font-zentry text-2xl font-bold text-white">Performance Metrics</h2>
           <div className="grid gap-6 md:grid-cols-4">
             {[
               { label: 'Average Response Time', value: '89ms', trend: '↓ 12%' },
@@ -271,11 +267,13 @@ export default function Status() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
-                className="rounded-xl border border-white/10 bg-white/5 p-6"
+                className="marketing-card"
               >
                 <div className="mb-2 text-2xl font-bold text-white">{metric.value}</div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-400">{metric.label}</span>
+                  <span className="text-sm" style={{ color: 'var(--color-gray)' }}>
+                    {metric.label}
+                  </span>
                   <span
                     className={`text-xs ${metric.trend.includes('↓') ? 'text-emerald-400' : 'text-blue-400'}`}
                   >
@@ -289,13 +287,13 @@ export default function Status() {
       </section>
 
       {/* Recent Incidents */}
-      <section className="px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <h2 className="mb-8 text-2xl font-bold text-white">Recent Incidents</h2>
+      <section className="marketing-section marketing-section--dark">
+        <div className="mx-auto max-w-4xl px-4">
+          <h2 className="mb-8 font-zentry text-2xl font-bold text-white">Recent Incidents</h2>
           {recentIncidents.length === 0 ? (
-            <div className="rounded-xl border border-white/10 bg-white/5 p-8 text-center">
+            <div className="marketing-card text-center">
               <div className="mb-4 text-4xl">🎉</div>
-              <p className="text-gray-400">No incidents in the past 90 days.</p>
+              <p style={{ color: 'var(--color-gray)' }}>No incidents in the past 90 days.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -305,7 +303,8 @@ export default function Status() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="overflow-hidden rounded-xl border border-white/10 bg-white/5"
+                  className="marketing-card overflow-hidden"
+                  style={{ padding: 0 }}
                 >
                   <button
                     onClick={() =>
@@ -325,12 +324,15 @@ export default function Status() {
                       </div>
                       <div>
                         <h3 className="font-medium text-white">{incident.title}</h3>
-                        <p className="text-sm text-gray-400">{incident.date}</p>
+                        <p className="text-sm" style={{ color: 'var(--color-gray)' }}>
+                          {incident.date}
+                        </p>
                       </div>
                     </div>
                     <motion.svg
                       animate={{ rotate: expandedIncident === incident.id ? 180 : 0 }}
-                      className="h-5 w-5 text-gray-400"
+                      className="h-5 w-5"
+                      style={{ color: 'var(--color-gray)' }}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -361,7 +363,9 @@ export default function Status() {
                               )}
                             </div>
                             <div className="pb-4">
-                              <span className="text-xs text-gray-500">{update.time}</span>
+                              <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
+                                {update.time}
+                              </span>
                               <p className="mt-1 text-sm text-gray-300">{update.message}</p>
                             </div>
                           </div>
@@ -377,62 +381,36 @@ export default function Status() {
       </section>
 
       {/* Subscribe */}
-      <section className="px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
+      <section className="marketing-section marketing-section--alt">
+        <div className="mx-auto max-w-4xl px-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 p-12 text-center"
+            className="marketing-card text-center"
+            style={{
+              padding: '3rem',
+              background:
+                'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1))',
+            }}
           >
-            <h2 className="mb-4 text-2xl font-bold text-white">Subscribe to Status Updates</h2>
-            <p className="mx-auto mb-6 max-w-xl text-gray-300">
+            <h2 className="mb-4 font-zentry text-2xl font-bold text-white">
+              Subscribe to Status Updates
+            </h2>
+            <p className="mx-auto mb-6 max-w-xl" style={{ color: 'var(--color-gray)' }}>
               Get notified via email or SMS when there are incidents or scheduled maintenance.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <a
-                href="#"
-                className="rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-6 py-3 font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/25"
-              >
+              <a href="#" className="marketing-btn marketing-btn--primary">
                 Subscribe via Email
               </a>
-              <a
-                href="#"
-                className="rounded-xl border border-white/20 bg-white/5 px-6 py-3 font-semibold text-white transition-all hover:bg-white/10"
-              >
+              <a href="#" className="marketing-btn marketing-btn--secondary">
                 RSS Feed
               </a>
             </div>
           </motion.div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/5 px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="flex items-center gap-2">
-              <LogoIcon size={24} color="white" />
-              <span className="font-semibold text-white">CGraph</span>
-            </div>
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
-              <Link to="/about" className="transition-colors hover:text-white">
-                About
-              </Link>
-              <Link to="/privacy" className="transition-colors hover:text-white">
-                Privacy
-              </Link>
-              <Link to="/terms" className="transition-colors hover:text-white">
-                Terms
-              </Link>
-              <Link to="/contact" className="transition-colors hover:text-white">
-                Contact
-              </Link>
-            </div>
-            <div className="text-sm text-gray-500">© 2026 CGraph. All rights reserved.</div>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </MarketingLayout>
   );
 }

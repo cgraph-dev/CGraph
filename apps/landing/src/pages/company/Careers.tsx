@@ -1,463 +1,275 @@
 /**
- * Careers Page - Job listings and company culture
+ * Careers Page
+ *
+ * Open positions and company culture.
+ *
+ * @since v0.9.2
  */
 
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
-import { Navigation } from '../../components/Navigation';
+import { MarketingLayout } from '@/components/marketing';
 
-const benefits = [
-  {
-    icon: '🌍',
-    title: 'Remote First',
-    description: 'Work from anywhere in the world. We have team members across 20+ countries.',
-  },
-  {
-    icon: '💰',
-    title: 'Competitive Salary',
-    description: 'Top-tier compensation with equity packages for all employees.',
-  },
-  {
-    icon: '🏖️',
-    title: 'Unlimited PTO',
-    description: 'Take the time you need. We trust you to manage your own schedule.',
-  },
-  {
-    icon: '🏥',
-    title: 'Health & Wellness',
-    description: 'Comprehensive health, dental, and vision coverage for you and your family.',
-  },
-  {
-    icon: '📚',
-    title: 'Learning Budget',
-    description: '$3,000 annual budget for courses, conferences, and professional development.',
-  },
-  {
-    icon: '🖥️',
-    title: 'Equipment Stipend',
-    description: '$5,000 to set up your home office with whatever equipment you need.',
-  },
-  {
-    icon: '👶',
-    title: 'Parental Leave',
-    description: '16 weeks paid leave for all new parents, regardless of gender.',
-  },
-  {
-    icon: '🎉',
-    title: 'Team Events',
-    description: 'Quarterly team retreats in amazing locations around the world.',
-  },
+const benefits: Array<{
+  icon: string;
+  title: string;
+  description: string;
+}> = [
+  // Benefits will be listed when we start hiring
 ];
 
-const departments = [
-  'All',
-  'Engineering',
-  'Design',
-  'Product',
-  'Security',
-  'Operations',
-  'Marketing',
+const positions: Array<{
+  id: string;
+  title: string;
+  department: string;
+  location: string;
+  type: string;
+  description: string;
+  requirements: string[];
+}> = [
+  // No open positions at this time
 ];
 
-const openings = [
+const values = [
   {
-    title: 'Senior Backend Engineer',
-    department: 'Engineering',
-    location: 'Remote (US/EU)',
-    type: 'Full-time',
-    description: 'Build scalable, secure systems that power real-time communication.',
+    title: 'Community First',
+    description: 'We build tools that empower communities to thrive and connect.',
   },
   {
-    title: 'Staff Frontend Engineer',
-    department: 'Engineering',
-    location: 'Remote (Worldwide)',
-    type: 'Full-time',
-    description: 'Lead frontend architecture for our web and desktop applications.',
+    title: 'User First',
+    description: "Every decision is made with our users' best interests in mind.",
   },
   {
-    title: 'Mobile Engineer (iOS)',
-    department: 'Engineering',
-    location: 'Remote (Worldwide)',
-    type: 'Full-time',
-    description: 'Build native iOS experiences that users love.',
+    title: 'Customization Freedom',
+    description: 'Users shape their experience. We build flexible tools that adapt.',
   },
   {
-    title: 'Mobile Engineer (Android)',
-    department: 'Engineering',
-    location: 'Remote (Worldwide)',
-    type: 'Full-time',
-    description: 'Create beautiful, performant Android applications.',
+    title: 'Continuous Learning',
+    description: 'Technology evolves fast. We invest in growth and improvement.',
   },
-  {
-    title: 'Security Engineer',
-    department: 'Security',
-    location: 'Remote (US/EU)',
-    type: 'Full-time',
-    description: 'Protect our users by finding and fixing vulnerabilities before bad actors do.',
-  },
-  {
-    title: 'Cryptography Engineer',
-    department: 'Security',
-    location: 'Remote (Worldwide)',
-    type: 'Full-time',
-    description: 'Design and implement cryptographic protocols for end-to-end encryption.',
-  },
-  {
-    title: 'Senior Product Designer',
-    department: 'Design',
-    location: 'Remote (US/EU)',
-    type: 'Full-time',
-    description: 'Shape the future of how people communicate through thoughtful design.',
-  },
-  {
-    title: 'Product Manager',
-    department: 'Product',
-    location: 'Remote (US/EU)',
-    type: 'Full-time',
-    description: 'Drive product strategy and work with cross-functional teams.',
-  },
-  {
-    title: 'DevOps Engineer',
-    department: 'Operations',
-    location: 'Remote (Worldwide)',
-    type: 'Full-time',
-    description: 'Build and maintain infrastructure that scales with our growing user base.',
-  },
-  {
-    title: 'Growth Marketing Manager',
-    department: 'Marketing',
-    location: 'Remote (US)',
-    type: 'Full-time',
-    description: 'Drive user acquisition and retention through data-driven marketing strategies.',
-  },
-];
-
-const culturePhotos = [
-  { title: 'Annual Team Retreat', location: 'Remote First' },
-  { title: 'Hackathon Event', location: 'Virtual' },
-  { title: 'Product Launch Day', location: 'Global' },
-  { title: 'Design Sprint', location: 'Collaborative' },
 ];
 
 export default function Careers() {
-  const [selectedDepartment, setSelectedDepartment] = useState('All');
-
-  const filteredOpenings =
-    selectedDepartment === 'All'
-      ? openings
-      : openings.filter((job) => job.department === selectedDepartment);
-
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
-      {/* Shared Navigation Component */}
-      <Navigation transparent />
-
-      {/* Hero Section */}
-      <section className="px-4 pb-20 pt-32 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl text-center">
-          <motion.span
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-purple-500/20 bg-purple-500/10 px-4 py-2 text-sm font-medium text-purple-400"
-          >
-            🚀 We're Hiring
-          </motion.span>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="mb-6 text-4xl font-bold text-white md:text-6xl"
-          >
-            Build the Future of
-            <span className="block bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              Private Communication
-            </span>
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="mx-auto mb-8 max-w-3xl text-xl text-gray-400"
-          >
-            Join a team of passionate engineers, designers, and security experts building technology
-            that empowers people to communicate freely and securely.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <a
-              href="#openings"
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-8 py-4 font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/25"
+    <MarketingLayout
+      title="Join Our Team"
+      subtitle="Help us build the future of customizable, community-driven communication"
+      eyebrow="Careers"
+    >
+      {/* Values Section */}
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
             >
-              View Open Positions →
-            </a>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Culture Photos */}
-      <section className="overflow-hidden px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {culturePhotos.map((photo, index) => (
-              <motion.div
-                key={photo.title}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="relative aspect-[4/3] overflow-hidden rounded-xl bg-gradient-to-br from-emerald-500/20 to-purple-500/20"
-              >
-                <div className="absolute inset-0 flex items-end p-4">
-                  <div>
-                    <div className="text-sm font-medium text-white">{photo.title}</div>
-                    <div className="text-xs text-gray-400">{photo.location}</div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+              <h2 className="marketing-section__title font-zentry">What We Believe</h2>
+              <p className="marketing-section__desc">Our values guide everything we do</p>
+            </motion.div>
           </div>
-        </div>
-      </section>
 
-      {/* Why Join Section */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-16 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">Why Join CGraph?</h2>
-            <p className="mx-auto max-w-2xl text-lg text-gray-400">
-              We offer more than just a job. We offer the opportunity to make a real impact on how
-              people communicate.
-            </p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {benefits.map((benefit, index) => (
+          <div
+            className="marketing-grid marketing-grid--2"
+            style={{ maxWidth: '48rem', margin: '0 auto' }}
+          >
+            {values.map((value, index) => (
               <motion.div
-                key={benefit.title}
+                key={value.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
                 viewport={{ once: true }}
-                className="rounded-2xl border border-white/10 bg-white/5 p-6 transition-colors hover:bg-white/10"
+                transition={{ delay: index * 0.1 }}
+                className="marketing-card"
               >
-                <div className="mb-4 text-3xl">{benefit.icon}</div>
-                <h3 className="mb-2 text-lg font-semibold text-white">{benefit.title}</h3>
-                <p className="text-sm text-gray-400">{benefit.description}</p>
+                <h3 className="marketing-card__title">{value.title}</h3>
+                <p className="marketing-card__desc">{value.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Values Section */}
-      <section className="bg-white/[0.02] px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid items-center gap-16 lg:grid-cols-2">
-            <div>
-              <h2 className="mb-6 text-3xl font-bold text-white md:text-4xl">What We Look For</h2>
-              <div className="space-y-6">
-                <div className="flex gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-500/20">
-                    <span className="text-emerald-400">1</span>
-                  </div>
-                  <div>
-                    <h3 className="mb-1 text-lg font-semibold text-white">Passion for Privacy</h3>
-                    <p className="text-gray-400">
-                      You believe in the fundamental right to private communication and want to
-                      build technology that protects it.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-cyan-500/20">
-                    <span className="text-cyan-400">2</span>
-                  </div>
-                  <div>
-                    <h3 className="mb-1 text-lg font-semibold text-white">Excellence</h3>
-                    <p className="text-gray-400">
-                      You have high standards for your work and are constantly looking to improve.
-                      You ship quality, not just features.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-purple-500/20">
-                    <span className="text-purple-400">3</span>
-                  </div>
-                  <div>
-                    <h3 className="mb-1 text-lg font-semibold text-white">Collaboration</h3>
-                    <p className="text-gray-400">
-                      You thrive in a team environment. You give and receive feedback gracefully and
-                      help others succeed.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-orange-500/20">
-                    <span className="text-orange-400">4</span>
-                  </div>
-                  <div>
-                    <h3 className="mb-1 text-lg font-semibold text-white">Ownership</h3>
-                    <p className="text-gray-400">
-                      You take initiative and see things through to completion. You don't wait to be
-                      told what to do.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="relative">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-emerald-500/20 to-purple-500/20 blur-3xl" />
-              <div className="relative rounded-2xl border border-white/10 bg-white/5 p-8">
-                <div className="mb-4 text-5xl">💬</div>
-                <blockquote className="mb-4 text-xl italic text-white">
-                  "At CGraph, every engineer has the opportunity to build something meaningful.
-                  We're creating tools that truly respect user privacy. It's challenging and
-                  rewarding."
-                </blockquote>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-400" />
-                  <div>
-                    <div className="font-medium text-white">Team Member</div>
-                    <div className="text-sm text-gray-400">Engineering</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Open Positions Section */}
-      <section id="openings" className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="mb-12 text-center">
-            <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">Open Positions</h2>
-            <p className="text-lg text-gray-400">
-              {openings.length} open positions across {departments.length - 1} departments
-            </p>
-          </div>
-
-          {/* Department Filter */}
-          <div className="mb-8 flex flex-wrap justify-center gap-2">
-            {departments.map((dept) => (
-              <button
-                key={dept}
-                onClick={() => setSelectedDepartment(dept)}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  selectedDepartment === dept
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                {dept}
-              </button>
-            ))}
-          </div>
-
-          {/* Job Listings */}
-          <div className="space-y-4">
-            {filteredOpenings.map((job, index) => (
+      {/* Benefits Section */}
+      {benefits.length > 0 && (
+        <section className="marketing-section marketing-section--dark">
+          <div className="marketing-section__container">
+            <div className="marketing-section__header">
               <motion.div
-                key={job.title}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="group cursor-pointer rounded-xl border border-white/10 bg-white/5 p-6 transition-all hover:border-emerald-500/30 hover:bg-white/10"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
               >
-                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-                  <div>
-                    <h3 className="text-lg font-semibold text-white transition-colors group-hover:text-emerald-400">
-                      {job.title}
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-400">{job.description}</p>
-                    <div className="mt-3 flex flex-wrap gap-3">
-                      <span className="inline-flex items-center gap-1 text-xs text-gray-500">
-                        <span>📍</span> {job.location}
-                      </span>
-                      <span className="inline-flex items-center gap-1 text-xs text-gray-500">
-                        <span>🏢</span> {job.department}
-                      </span>
-                      <span className="inline-flex items-center gap-1 text-xs text-gray-500">
-                        <span>⏰</span> {job.type}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex-shrink-0">
-                    <span className="inline-flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-400 transition-colors group-hover:bg-emerald-500 group-hover:text-white">
-                      Apply →
-                    </span>
-                  </div>
-                </div>
+                <h2 className="marketing-section__title font-zentry">Benefits & Perks</h2>
+                <p className="marketing-section__desc">
+                  We take care of our team so they can focus on great work
+                </p>
               </motion.div>
-            ))}
+            </div>
+
+            <div
+              className="marketing-grid marketing-grid--2"
+              style={{ maxWidth: '64rem', margin: '0 auto' }}
+            >
+              {benefits.map((benefit, index) => (
+                <motion.div
+                  key={benefit.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  className="marketing-card"
+                >
+                  <span className="marketing-card__icon">{benefit.icon}</span>
+                  <h3 className="marketing-card__title">{benefit.title}</h3>
+                  <p className="marketing-card__desc">{benefit.description}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Open Positions */}
+      <section className="marketing-section marketing-section--alt">
+        <div className="mx-auto max-w-4xl px-4">
+          <div className="marketing-section__header">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="marketing-section__title font-zentry">Open Positions</h2>
+              <p className="marketing-section__desc">Find your next opportunity</p>
+            </motion.div>
           </div>
 
-          {filteredOpenings.length === 0 && (
-            <div className="py-12 text-center">
-              <div className="mb-4 text-4xl">🔍</div>
-              <p className="text-gray-400">No positions in {selectedDepartment} right now.</p>
-              <p className="mt-2 text-sm text-gray-500">
-                Check back soon or send us your resume anyway!
+          {positions.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="marketing-card text-center"
+            >
+              <span className="marketing-card__icon">🚀</span>
+              <h3 className="marketing-card__title">We're Just Getting Started</h3>
+              <p className="marketing-card__desc">
+                CGraph is currently a solo project in active development. While we don't have open
+                positions right now, we'd love to hear from passionate people who share our vision
+                for privacy-first communication.
               </p>
+            </motion.div>
+          ) : (
+            <div className="space-y-4">
+              {positions.map((position, index) => (
+                <motion.div
+                  key={position.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  className="group rounded-xl border border-gray-800 bg-gray-900/50 p-6 transition-all hover:border-purple-500/50 hover:bg-gray-900"
+                >
+                  <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">{position.title}</h3>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        <span className="rounded-full bg-purple-500/10 px-3 py-1 text-xs text-purple-400">
+                          {position.department}
+                        </span>
+                        <span className="rounded-full bg-gray-700 px-3 py-1 text-xs text-gray-300">
+                          {position.location}
+                        </span>
+                        <span className="rounded-full bg-gray-700 px-3 py-1 text-xs text-gray-300">
+                          {position.type}
+                        </span>
+                      </div>
+                    </div>
+                    <a
+                      href={`mailto:careers@cgraph.org?subject=Application: ${position.title}`}
+                      className="rounded-lg bg-gradient-to-r from-purple-500 to-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-purple-500/25 transition-all hover:from-purple-600 hover:to-indigo-700 hover:shadow-purple-500/40"
+                    >
+                      Apply Now
+                    </a>
+                  </div>
+
+                  <p className="mb-4 text-gray-400">{position.description}</p>
+
+                  <div>
+                    <h4 className="mb-2 text-sm font-medium text-gray-300">Requirements:</h4>
+                    <ul className="list-inside list-disc space-y-1 text-sm text-gray-500">
+                      {position.requirements.map((req, i) => (
+                        <li key={i}>{req}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           )}
         </div>
       </section>
 
-      {/* No perfect match CTA */}
-      <section className="bg-gradient-to-br from-emerald-500/10 to-purple-500/10 px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-4 text-2xl font-bold text-white md:text-3xl">
-            Don't See the Perfect Role?
-          </h2>
-          <p className="mb-8 text-gray-400">
-            We're always looking for exceptional people. Send us your resume and tell us what you'd
-            like to work on. We'd love to hear from you.
-          </p>
-          <a
-            href="mailto:careers@cgraph.org"
-            className="inline-flex items-center gap-2 rounded-xl bg-white/10 px-8 py-4 font-semibold text-white transition-colors hover:bg-white/20"
+      {/* Don't See Your Role */}
+      <section className="marketing-section marketing-section--dark">
+        <div className="mx-auto max-w-3xl px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="marketing-card text-center"
           >
-            ✉️ Send Your Resume
-          </a>
+            <h2 className="marketing-card__title" style={{ fontSize: '1.5rem' }}>
+              Contribute to CGraph
+            </h2>
+            <p className="marketing-card__desc" style={{ marginBottom: '1.5rem' }}>
+              CGraph is built with community in mind. While we're currently a solo project, we
+              welcome contributions! Check out our GitHub, report bugs, suggest features, or help
+              with documentation. Every contribution matters.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <a
+                href="https://github.com/cgraph"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="marketing-btn marketing-btn--primary"
+              >
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    fillRule="evenodd"
+                    d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                View on GitHub
+              </a>
+              <a
+                href="mailto:careers@cgraph.org?subject=General Application"
+                className="marketing-btn marketing-btn--secondary"
+              >
+                Send Application
+              </a>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/5 px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-400">
-                <span className="text-xl font-bold text-black">C</span>
-              </div>
-              <span className="font-semibold text-white">CGraph</span>
-            </div>
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
-              <Link to="/about" className="transition-colors hover:text-white">
-                About
-              </Link>
-              <Link to="/privacy" className="transition-colors hover:text-white">
-                Privacy
-              </Link>
-              <Link to="/terms" className="transition-colors hover:text-white">
-                Terms
-              </Link>
-              <Link to="/press" className="transition-colors hover:text-white">
-                Press
-              </Link>
-              <Link to="/contact" className="transition-colors hover:text-white">
-                Contact
-              </Link>
-            </div>
-            <div className="text-sm text-gray-500">© 2026 CGraph. All rights reserved.</div>
-          </div>
+      {/* Company Links */}
+      <section
+        className="marketing-section marketing-section--alt"
+        style={{ padding: '3rem 2rem' }}
+      >
+        <div className="mx-auto max-w-7xl px-4 text-center">
+          <Link
+            to="/about"
+            className="hover:text-emerald-400"
+            style={{ color: 'var(--color-gray)' }}
+          >
+            Learn more about CGraph →
+          </Link>
         </div>
-      </footer>
-    </div>
+      </section>
+    </MarketingLayout>
   );
 }
