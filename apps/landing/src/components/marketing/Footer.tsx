@@ -23,10 +23,10 @@ export default function Footer() {
       { label: 'Download', to: '/download' },
     ],
     resources: [
-      { label: 'Documentation', href: 'https://docs.cgraph.org' },
-      { label: 'API Reference', href: 'https://docs.cgraph.org/api' },
+      { label: 'Documentation', to: '/docs' },
+      { label: 'API Reference', to: '/docs' },
       { label: 'Status', to: '/status' },
-      { label: 'Blog', href: 'https://blog.cgraph.org' },
+      { label: 'Blog', to: '/blog' },
     ],
     company: [
       { label: 'About', to: '/about' },

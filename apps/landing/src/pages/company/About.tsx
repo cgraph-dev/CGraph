@@ -66,7 +66,7 @@ const milestones = [
   },
   {
     year: 'Q2 2026',
-    event: 'Core encryption, real-time messaging, and Web3 auth development',
+    event: 'Core encryption, real-time messaging, and OAuth integration development',
     completed: false,
   },
   {
@@ -100,7 +100,7 @@ export default function About() {
                 communities deserve freedom to customize
               </span>
               . We're building the all-in-one platform that combines real-time messaging,
-              Reddit-style community forums, Web3 authentication, and gamification rewards—making
+              Reddit-style community forums, end-to-end encryption, and gamification rewards—making
               every interaction count.
             </p>
           </motion.div>

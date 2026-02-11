@@ -3,6 +3,7 @@
  *
  * @since v0.9.2
  * @updated v0.9.6 - Migrated to MarketingLayout for consistent styling
+ * @updated v0.9.14 - Removed fake SDKs, fake view counts; reflects actual project state
  */
 
 import { useState } from 'react';
@@ -15,64 +16,50 @@ const docCategories = [
     id: 'getting-started',
     icon: '🚀',
     title: 'Getting Started',
-    description: 'Quick start guides and tutorials to get you up and running.',
+    description: 'Learn the basics of CGraph and get up and running quickly.',
     articles: [
-      { title: 'Quick Start Guide', time: '5 min read', href: '#' },
-      { title: 'Creating Your First Chat', time: '3 min read', href: '#' },
+      { title: 'What is CGraph?', time: '3 min read', href: '#' },
+      { title: 'Creating Your Account', time: '2 min read', href: '#' },
+      { title: 'Your First Server & Channel', time: '5 min read', href: '#' },
       { title: 'Understanding End-to-End Encryption', time: '8 min read', href: '#' },
-      { title: 'Account Security Best Practices', time: '6 min read', href: '#' },
+    ],
+  },
+  {
+    id: 'features',
+    icon: '⚡',
+    title: 'Features Guide',
+    description: 'Explore everything CGraph has to offer.',
+    articles: [
+      { title: 'Real-Time Messaging', time: '5 min read', href: '#' },
+      { title: 'Community Forums', time: '7 min read', href: '#' },
+      { title: 'Voice & Video Calls', time: '6 min read', href: '#' },
+      { title: 'Gamification & Rewards', time: '8 min read', href: '#' },
+    ],
+  },
+  {
+    id: 'security',
+    icon: '🔐',
+    title: 'Security & Privacy',
+    description: 'How CGraph protects your data and conversations.',
+    articles: [
+      { title: 'E2EE Technical Overview (X3DH + Double Ratchet)', time: '15 min read', href: '#' },
+      { title: 'Key Management & Device Verification', time: '10 min read', href: '#' },
+      { title: 'Data Privacy & GDPR', time: '8 min read', href: '#' },
+      { title: 'Reporting Vulnerabilities', time: '3 min read', href: '#' },
     ],
   },
   {
     id: 'api-reference',
     icon: '📚',
     title: 'API Reference',
-    description: 'Complete API documentation for developers.',
+    description: 'API documentation for developers building on CGraph.',
     articles: [
-      { title: 'Authentication API', time: '10 min read', href: '#' },
+      { title: 'Authentication (OAuth)', time: '10 min read', href: '#' },
       { title: 'Messages API', time: '12 min read', href: '#' },
-      { title: 'Channels API', time: '8 min read', href: '#' },
+      { title: 'Channels & Servers API', time: '8 min read', href: '#' },
       { title: 'WebSocket Events', time: '15 min read', href: '#' },
     ],
   },
-  {
-    id: 'integration',
-    icon: '🔌',
-    title: 'Integration Guides',
-    description: 'Learn how to integrate CGraph with your applications.',
-    articles: [
-      { title: 'Bot Development Guide', time: '20 min read', href: '#' },
-      { title: 'Webhook Integration', time: '10 min read', href: '#' },
-      { title: 'OAuth2 Implementation', time: '12 min read', href: '#' },
-      { title: 'Custom Themes & Plugins', time: '15 min read', href: '#' },
-    ],
-  },
-  {
-    id: 'security',
-    icon: '🔐',
-    title: 'Security',
-    description: 'Deep dives into our security architecture.',
-    articles: [
-      { title: 'E2E Encryption Technical Overview', time: '25 min read', href: '#' },
-      { title: 'Key Management', time: '15 min read', href: '#' },
-      { title: 'Security Audit Reports', time: '10 min read', href: '#' },
-      { title: 'Reporting Vulnerabilities', time: '5 min read', href: '#' },
-    ],
-  },
-];
-
-const popularArticles = [
-  { title: 'Quick Start Guide', category: 'Getting Started', views: '12.5K' },
-  { title: 'E2E Encryption Technical Overview', category: 'Security', views: '8.2K' },
-  { title: 'Bot Development Guide', category: 'Integration', views: '6.8K' },
-  { title: 'WebSocket Events', category: 'API Reference', views: '5.4K' },
-];
-
-const sdks = [
-  { name: 'JavaScript/TypeScript', icon: '🟨', version: '2.0.1', href: '#' },
-  { name: 'Python', icon: '🐍', version: '1.8.0', href: '#' },
-  { name: 'Go', icon: '🔵', version: '1.5.2', href: '#' },
-  { name: 'Rust', icon: '🦀', version: '0.9.0', href: '#' },
 ];
 
 export default function Documentation() {
@@ -87,9 +74,9 @@ export default function Documentation() {
 
   return (
     <MarketingLayout
-      title="Learn How to Build with CGraph"
-      subtitle="Comprehensive guides, API references, and examples to help you build secure, private communication into your applications."
-      eyebrow="📖 Documentation"
+      title="Documentation"
+      subtitle="Guides, references, and examples to help you get the most out of CGraph."
+      eyebrow="📖 Docs"
       showCTA
     >
       {/* Search Bar */}
@@ -127,42 +114,25 @@ export default function Documentation() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="contact-form__input w-full pl-12"
             />
-            <div className="absolute inset-y-0 right-4 flex items-center">
-              <kbd
-                className="rounded bg-white/10 px-2 py-1 text-xs"
-                style={{ color: 'var(--color-gray)' }}
-              >
-                ⌘K
-              </kbd>
-            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Quick Links */}
+      {/* Notice */}
       <section
         className="marketing-section marketing-section--dark"
-        style={{ paddingTop: '2rem', paddingBottom: '2rem' }}
+        style={{ paddingTop: '1rem', paddingBottom: '1rem' }}
       >
-        <div className="marketing-section__container">
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            {['Quick Start', 'API Reference', 'SDKs', 'Examples', 'Community'].map(
-              (link, index) => (
-                <motion.a
-                  key={link}
-                  href="#"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index }}
-                  whileHover={{ scale: 1.05 }}
-                  className="marketing-btn marketing-btn--secondary"
-                  style={{ fontSize: '0.875rem' }}
-                >
-                  {link}
-                </motion.a>
-              )
-            )}
-          </div>
+        <div className="mx-auto max-w-3xl px-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="rounded-lg border border-yellow-500/20 bg-yellow-500/5 px-4 py-3 text-center text-sm"
+            style={{ color: '#eab308' }}
+          >
+            📝 Documentation is actively being written alongside the platform. Full docs will be
+            available with the v1.0 public beta launch.
+          </motion.div>
         </div>
       </section>
 
@@ -202,16 +172,15 @@ export default function Documentation() {
                 </p>
                 <div className="space-y-3">
                   {category.articles.slice(0, 3).map((article) => (
-                    <a
+                    <div
                       key={article.title}
-                      href={article.href}
-                      className="flex items-center justify-between rounded-lg border border-white/5 bg-white/5 p-3 transition-all hover:border-emerald-500/20 hover:bg-white/10"
+                      className="flex items-center justify-between rounded-lg border border-white/5 bg-white/5 p-3"
                     >
                       <span className="text-sm text-white">{article.title}</span>
                       <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
                         {article.time}
                       </span>
-                    </a>
+                    </div>
                   ))}
                 </div>
                 <button
@@ -234,16 +203,15 @@ export default function Documentation() {
                     >
                       <div className="mt-3 space-y-3">
                         {category.articles.slice(3).map((article) => (
-                          <a
+                          <div
                             key={article.title}
-                            href={article.href}
-                            className="flex items-center justify-between rounded-lg border border-white/5 bg-white/5 p-3 transition-all hover:border-emerald-500/20 hover:bg-white/10"
+                            className="flex items-center justify-between rounded-lg border border-white/5 bg-white/5 p-3"
                           >
                             <span className="text-sm text-white">{article.title}</span>
                             <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
                               {article.time}
                             </span>
-                          </a>
+                          </div>
                         ))}
                       </div>
                     </motion.div>
@@ -255,7 +223,7 @@ export default function Documentation() {
         </div>
       </section>
 
-      {/* SDKs & Libraries */}
+      {/* Tech Stack */}
       <section className="marketing-section marketing-section--dark">
         <div className="marketing-section__container">
           <div className="marketing-section__header">
@@ -264,115 +232,41 @@ export default function Documentation() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Official SDKs</h2>
-              <p className="marketing-section__desc">
-                Client libraries for popular programming languages to get you started quickly.
-              </p>
+              <h2 className="marketing-section__title font-zentry">Tech Stack</h2>
+              <p className="marketing-section__desc">The technologies powering CGraph.</p>
             </motion.div>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {sdks.map((sdk, index) => (
-              <motion.a
-                key={sdk.name}
-                href={sdk.href}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { name: 'Elixir / Phoenix', icon: '💜', desc: 'Backend API & WebSockets' },
+              { name: 'PostgreSQL', icon: '🐘', desc: 'Database (91 tables)' },
+              { name: 'React 19 / Vite', icon: '⚛️', desc: 'Web frontend' },
+              { name: 'React Native / Expo', icon: '📱', desc: 'Mobile app (iOS & Android)' },
+              { name: 'Signal Protocol', icon: '🔐', desc: 'E2EE (X3DH + Double Ratchet)' },
+              { name: 'Fly.io / Vercel', icon: '☁️', desc: 'Hosting & deployment' },
+            ].map((tech, index) => (
+              <motion.div
+                key={tech.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ y: -4 }}
-                className="marketing-card group"
-                style={{ textDecoration: 'none' }}
+                className="marketing-card"
               >
-                <div className="mb-4 text-4xl">{sdk.icon}</div>
-                <h3 className="mb-1 font-semibold text-white">{sdk.name}</h3>
+                <div className="mb-4 text-4xl">{tech.icon}</div>
+                <h3 className="mb-1 font-semibold text-white">{tech.name}</h3>
                 <p className="text-sm" style={{ color: 'var(--color-gray)' }}>
-                  v{sdk.version}
+                  {tech.desc}
                 </p>
-                <div
-                  className="mt-4 flex items-center text-sm opacity-0 transition-opacity group-hover:opacity-100"
-                  style={{ color: 'var(--color-primary)' }}
-                >
-                  View docs →
-                </div>
-              </motion.a>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Popular Articles */}
-      <section className="marketing-section marketing-section--alt">
-        <div className="mx-auto max-w-4xl px-4">
-          <div className="marketing-section__header">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="marketing-section__title font-zentry">Popular Articles</h2>
-              <p className="marketing-section__desc">Most read articles from our documentation.</p>
-            </motion.div>
-          </div>
-
-          <div className="space-y-4">
-            {popularArticles.map((article, index) => (
-              <motion.a
-                key={article.title}
-                href="#"
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ x: 8 }}
-                className="marketing-card flex items-center justify-between"
-                style={{ textDecoration: 'none' }}
-              >
-                <div className="flex items-center gap-4">
-                  <span
-                    className="flex h-10 w-10 items-center justify-center rounded-full text-lg font-bold text-white"
-                    style={{
-                      background:
-                        'linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(139, 92, 246, 0.3))',
-                    }}
-                  >
-                    {index + 1}
-                  </span>
-                  <div>
-                    <h3 className="font-medium text-white">{article.title}</h3>
-                    <p className="text-sm" style={{ color: 'var(--color-gray)' }}>
-                      {article.category}
-                    </p>
-                  </div>
-                </div>
-                <div
-                  className="flex items-center gap-2 text-sm"
-                  style={{ color: 'var(--color-gray)' }}
-                >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    />
-                  </svg>
-                  {article.views}
-                </div>
-              </motion.a>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
       {/* Need Help CTA */}
-      <section className="marketing-section marketing-section--dark">
+      <section className="marketing-section marketing-section--alt">
         <div className="mx-auto max-w-4xl px-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -387,11 +281,16 @@ export default function Documentation() {
           >
             <h2 className="mb-4 font-zentry text-3xl font-bold text-white">Need Help?</h2>
             <p className="mx-auto mb-8 max-w-xl" style={{ color: 'var(--color-gray)' }}>
-              Can't find what you're looking for? Our community and support team are here to help.
+              Can't find what you're looking for? We're here to help.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <a href="#" className="marketing-btn marketing-btn--primary">
-                Join Discord
+              <a
+                href="https://github.com/cgraph-dev/CGraph"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="marketing-btn marketing-btn--primary"
+              >
+                GitHub Repository
               </a>
               <Link to="/contact" className="marketing-btn marketing-btn--secondary">
                 Contact Support

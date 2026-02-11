@@ -3,149 +3,49 @@
  *
  * @since v0.9.2
  * @updated v0.9.6 - Migrated to MarketingLayout for consistent styling
+ * @updated v0.9.14 - Removed fake desktop apps and stats; reflects actual project state
  */
 
 import { motion } from 'framer-motion';
 import { MarketingLayout } from '@/components/marketing';
-
-const platforms = [
-  {
-    name: 'macOS',
-    icon: '🍎',
-    version: '1.2.0',
-    size: '98 MB',
-    requirements: 'macOS 12.0 or later',
-    downloadUrl: '#',
-    badge: 'Universal Binary',
-    features: ['Apple Silicon & Intel', 'Native performance', 'Touch Bar support'],
-  },
-  {
-    name: 'Windows',
-    icon: '🪟',
-    version: '1.2.0',
-    size: '85 MB',
-    requirements: 'Windows 10 or later',
-    downloadUrl: '#',
-    badge: 'x64 & ARM64',
-    features: ['Native Windows UI', 'System tray integration', 'Auto-start option'],
-  },
-  {
-    name: 'Linux',
-    icon: '🐧',
-    version: '1.2.0',
-    size: '78 MB',
-    requirements: 'Ubuntu 20.04+, Fedora 35+, or equivalent',
-    downloadUrl: '#',
-    badge: 'AppImage & .deb',
-    features: ['System theme integration', 'Wayland & X11 support', 'Tray notifications'],
-  },
-];
-
-const mobileApps = [
-  {
-    name: 'iOS',
-    icon: '📱',
-    store: 'App Store',
-    downloadUrl: '#',
-    badge: 'iOS 15+',
-    rating: '4.8',
-  },
-  {
-    name: 'Android',
-    icon: '🤖',
-    store: 'Google Play',
-    downloadUrl: '#',
-    badge: 'Android 10+',
-    rating: '4.7',
-  },
-];
 
 const features = [
   {
     icon: '🔒',
     title: 'End-to-End Encryption',
     description:
-      'Your messages are encrypted on your device and can only be read by you and your recipients.',
+      'Your messages are encrypted on your device using the Signal Protocol (X3DH + Double Ratchet).',
   },
   {
     icon: '⚡',
     title: 'Lightning Fast',
     description:
-      'Native apps built for performance. Messages sync instantly across all your devices.',
+      'Built with Elixir/Phoenix for real-time messaging with sub-200ms latency via WebSockets.',
   },
   {
     icon: '🔄',
-    title: 'Seamless Sync',
+    title: 'Cross-Platform Sync',
     description:
-      'Start a conversation on your phone and continue on your desktop without missing a beat.',
+      'Start a conversation on your phone and continue on the web — your messages sync seamlessly.',
   },
   {
     icon: '🌙',
     title: 'Dark Mode',
-    description: "Beautiful dark theme that's easy on your eyes and saves battery on OLED screens.",
+    description:
+      "Beautiful dark theme that's easy on your eyes, with full theme customization support.",
   },
-];
-
-const stats = [
-  { value: '50K+', label: 'Downloads' },
-  { value: '4.8', label: 'App Rating' },
-  { value: '99.9%', label: 'Uptime' },
-  { value: '40+', label: 'Countries' },
 ];
 
 export default function Download() {
   return (
     <MarketingLayout
-      title="Get CGraph for Every Platform"
-      subtitle="Download CGraph for your device and start messaging securely. Available on all major platforms with seamless sync."
-      eyebrow="⬇️ Download CGraph"
+      title="Get CGraph"
+      subtitle="Access CGraph on the web today, and on mobile soon. Desktop apps are on our roadmap."
+      eyebrow="⬇️ Get Started"
       showCTA
     >
-      {/* Stats */}
-      <section
-        className="marketing-section marketing-section--alt"
-        style={{ paddingTop: '2rem', paddingBottom: '2rem' }}
-      >
-        <div className="marketing-section__container">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="text-center"
-              >
-                <div className="marketing-hero__highlight text-3xl font-bold">{stat.value}</div>
-                <div className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Quick Links */}
-      <section
-        className="marketing-section marketing-section--dark"
-        style={{ paddingTop: '2rem', paddingBottom: '2rem' }}
-      >
-        <div className="marketing-section__container">
-          <div className="flex flex-wrap justify-center gap-4">
-            <a href="#desktop" className="marketing-btn marketing-btn--primary">
-              Desktop Apps
-            </a>
-            <a href="#mobile" className="marketing-btn marketing-btn--secondary">
-              Mobile Apps
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Desktop Apps */}
-      <section id="desktop" className="marketing-section marketing-section--alt">
+      {/* Web App — Available Now */}
+      <section className="marketing-section marketing-section--alt">
         <div className="marketing-section__container">
           <div className="marketing-section__header">
             <motion.div
@@ -153,89 +53,80 @@ export default function Download() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Desktop Apps</h2>
+              <h2 className="marketing-section__title font-zentry">Web App</h2>
               <p className="marketing-section__desc">
-                Native desktop apps for the best experience. All our apps are open source and
-                regularly audited for security.
+                Use CGraph directly in your browser. No download required.
               </p>
             </motion.div>
           </div>
 
-          <div className="marketing-grid marketing-grid--3">
-            {platforms.map((platform, index) => (
-              <motion.div
-                key={platform.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -8, transition: { duration: 0.2 } }}
-                className="marketing-card group"
-                style={{ padding: '2rem' }}
-              >
-                <div className="mb-4 flex items-center justify-between">
-                  <span className="text-5xl">{platform.icon}</span>
-                  <span
-                    className="rounded-full px-3 py-1 text-xs font-medium"
-                    style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)' }}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -8, transition: { duration: 0.2 } }}
+            className="marketing-card mx-auto max-w-2xl text-center"
+            style={{ padding: '3rem' }}
+          >
+            <div className="mb-4 text-6xl">🌐</div>
+            <h3 className="mb-2 text-2xl font-bold text-white">CGraph for Web</h3>
+            <p className="mb-2 text-sm" style={{ color: 'var(--color-gray)' }}>
+              Works in Chrome, Firefox, Safari, and Edge
+            </p>
+            <span
+              className="mb-6 inline-block rounded-full px-3 py-1 text-xs font-medium"
+              style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)' }}
+            >
+              Available Now
+            </span>
+
+            <div className="mb-6 space-y-2">
+              {[
+                'Full messaging & forums',
+                'Voice & video calls via WebRTC',
+                'End-to-end encryption',
+                'Theme customization',
+              ].map((feature, i) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-center gap-2 text-sm text-gray-300"
+                >
+                  <svg
+                    className="h-4 w-4"
+                    style={{ color: 'var(--color-primary)' }}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    {platform.badge}
-                  </span>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  {feature}
                 </div>
+              ))}
+            </div>
 
-                <h3 className="mb-2 text-2xl font-bold text-white">{platform.name}</h3>
-                <p className="mb-4 text-sm" style={{ color: 'var(--color-gray)' }}>
-                  {platform.requirements}
-                </p>
-
-                <div className="mb-6 space-y-2">
-                  {platform.features.map((feature, i) => (
-                    <div key={i} className="flex items-center gap-2 text-sm text-gray-300">
-                      <svg
-                        className="h-4 w-4"
-                        style={{ color: 'var(--color-primary)' }}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      {feature}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between border-t border-white/10 pt-4">
-                  <div className="text-sm" style={{ color: 'var(--color-gray)' }}>
-                    <span className="font-medium text-white">v{platform.version}</span> ·{' '}
-                    {platform.size}
-                  </div>
-                  <motion.a
-                    href={platform.downloadUrl}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="rounded-lg px-4 py-2 text-sm font-medium text-white"
-                    style={{
-                      background:
-                        'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                    }}
-                  >
-                    Download
-                  </motion.a>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+            <motion.a
+              href="https://web.cgraph.org"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-block rounded-lg px-8 py-3 text-lg font-medium text-white"
+              style={{
+                background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+              }}
+            >
+              Open Web App
+            </motion.a>
+          </motion.div>
         </div>
       </section>
 
-      {/* Mobile Apps */}
-      <section id="mobile" className="marketing-section marketing-section--dark">
+      {/* Mobile App — Beta */}
+      <section className="marketing-section marketing-section--dark">
         <div className="marketing-section__container">
           <div className="marketing-section__header">
             <motion.div
@@ -243,25 +134,31 @@ export default function Download() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Mobile Apps</h2>
+              <h2 className="marketing-section__title font-zentry">Mobile App</h2>
               <p className="marketing-section__desc">
-                Take CGraph with you. Our mobile apps are designed for privacy and performance.
+                CGraph for iOS and Android is currently in beta, built with React Native and Expo.
               </p>
             </motion.div>
           </div>
 
           <div className="mx-auto grid max-w-2xl gap-8 md:grid-cols-2">
-            {mobileApps.map((app, index) => (
-              <motion.a
+            {[
+              { name: 'iOS', icon: '📱', badge: 'Beta', note: 'Coming to App Store with v1.0' },
+              {
+                name: 'Android',
+                icon: '🤖',
+                badge: 'Beta',
+                note: 'Coming to Google Play with v1.0',
+              },
+            ].map((app, index) => (
+              <motion.div
                 key={app.name}
-                href={app.downloadUrl}
                 initial={{ opacity: 0, x: index === 0 ? -30 : 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.02 }}
-                className="marketing-card group flex items-center gap-6"
-                style={{ textDecoration: 'none', padding: '2rem' }}
+                className="marketing-card flex items-center gap-6"
+                style={{ padding: '2rem' }}
               >
                 <div
                   className="flex h-20 w-20 items-center justify-center rounded-2xl text-4xl"
@@ -275,65 +172,84 @@ export default function Download() {
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <h3 className="text-xl font-bold text-white">{app.name}</h3>
-                    <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-gray-300">
+                    <span
+                      className="rounded-full px-2 py-0.5 text-xs font-medium"
+                      style={{ background: 'rgba(234, 179, 8, 0.15)', color: '#eab308' }}
+                    >
                       {app.badge}
                     </span>
                   </div>
-                  <p className="mt-1" style={{ color: 'var(--color-gray)' }}>
-                    {app.store}
+                  <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                    {app.note}
                   </p>
-                  <div className="mt-2 flex items-center gap-1">
-                    <span className="text-yellow-400">★</span>
-                    <span className="font-medium text-white">{app.rating}</span>
-                    <span style={{ color: 'var(--color-gray)' }}>/ 5.0</span>
-                  </div>
                 </div>
-                <div
-                  style={{ color: 'var(--color-gray)' }}
-                  className="transition-transform group-hover:translate-x-1"
-                >
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </motion.a>
+              </motion.div>
             ))}
           </div>
 
-          {/* Web App Notice */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="marketing-card mx-auto mt-12 max-w-2xl text-center"
-            style={{
-              borderColor: 'rgba(139, 92, 246, 0.3)',
-              background: 'rgba(139, 92, 246, 0.05)',
-            }}
+            className="mt-8 text-center text-sm"
+            style={{ color: 'var(--color-gray)' }}
           >
-            <div className="mb-2 text-2xl">🌐</div>
-            <h3 className="mb-2 text-lg font-semibold text-white">Prefer the Web?</h3>
-            <p className="mb-4" style={{ color: 'var(--color-gray)' }}>
-              Use CGraph directly in your browser. No download required.
-            </p>
-            <a
-              href="https://web.cgraph.org"
-              className="inline-flex items-center gap-2 font-medium transition-colors hover:text-emerald-300"
-              style={{ color: 'var(--color-primary)' }}
+            Mobile beta targets public TestFlight & Play Store availability with the v1.0 launch in
+            Q2 2026.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Desktop Apps — Roadmap */}
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
             >
-              Open Web App →
-            </a>
-          </motion.div>
+              <h2 className="marketing-section__title font-zentry">Desktop Apps</h2>
+              <p className="marketing-section__desc">
+                Native desktop apps are on our roadmap for 2027.
+              </p>
+            </motion.div>
+          </div>
+
+          <div className="marketing-grid marketing-grid--3">
+            {[
+              { name: 'macOS', icon: '🍎' },
+              { name: 'Windows', icon: '🪟' },
+              { name: 'Linux', icon: '🐧' },
+            ].map((platform, index) => (
+              <motion.div
+                key={platform.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="marketing-card text-center"
+                style={{ padding: '2rem', opacity: 0.7 }}
+              >
+                <div className="mb-4 text-5xl">{platform.icon}</div>
+                <h3 className="mb-2 text-xl font-bold text-white">{platform.name}</h3>
+                <span
+                  className="inline-block rounded-full px-3 py-1 text-xs font-medium"
+                  style={{ background: 'rgba(99, 102, 241, 0.15)', color: '#818cf8' }}
+                >
+                  Planned · 2027
+                </span>
+                <p className="mt-3 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  In the meantime, use the web app for the full CGraph experience.
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Features */}
-      <section className="marketing-section marketing-section--alt">
+      <section className="marketing-section marketing-section--dark">
         <div className="marketing-section__container">
           <div className="marketing-section__header">
             <motion.div

@@ -26,11 +26,11 @@ const contactMethods = [
     link: 'mailto:security@cgraph.org',
   },
   {
-    icon: '🏢',
-    title: 'Enterprise Sales',
-    description: 'Custom solutions for organizations',
-    contact: 'sales@cgraph.org',
-    link: 'mailto:sales@cgraph.org',
+    icon: '💡',
+    title: 'Feedback',
+    description: 'Product feedback and suggestions',
+    contact: 'hello@cgraph.org',
+    link: 'mailto:hello@cgraph.org',
   },
   {
     icon: '📰',
@@ -59,7 +59,7 @@ const faqItems = [
   {
     question: 'How quickly can I expect a response?',
     answer:
-      'We typically respond within 24-48 hours for general inquiries. Security issues are prioritized and addressed within 24 hours. Enterprise customers receive priority support with faster response times.',
+      'We typically respond within 24-48 hours for general inquiries. Security issues are prioritized and addressed as quickly as possible.',
   },
   {
     question: 'Is there phone support available?',
@@ -69,7 +69,7 @@ const faqItems = [
   {
     question: 'How do I report a security vulnerability?',
     answer:
-      'Please email security@cgraph.org with details of the vulnerability. We follow responsible disclosure practices and offer a bug bounty program for valid security findings. Do not disclose vulnerabilities publicly before they are resolved.',
+      'Please email security@cgraph.org with details of the vulnerability. We follow responsible disclosure practices. Do not disclose vulnerabilities publicly before they are resolved.',
   },
   {
     question: 'Can I request my data or delete my account?',
@@ -236,9 +236,8 @@ export default function Contact() {
                   >
                     <option value="general">General Inquiry</option>
                     <option value="support">Technical Support</option>
-                    <option value="enterprise">Enterprise Sales</option>
-                    <option value="partnership">Partnership Opportunity</option>
                     <option value="feedback">Product Feedback</option>
+                    <option value="partnership">Partnership Opportunity</option>
                     <option value="other">Other</option>
                   </select>
                 </div>

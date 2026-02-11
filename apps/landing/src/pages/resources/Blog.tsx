@@ -3,117 +3,41 @@
  *
  * @since v0.9.2
  * @updated v0.9.6 - Migrated to MarketingLayout for consistent styling
+ * @updated v0.9.14 - Removed fake blog posts; reflects actual project state
  */
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MarketingLayout } from '@/components/marketing';
 
-const categories = ['All', 'Product', 'Engineering', 'Security', 'Company'];
-
 const blogPosts = [
   {
     id: 1,
-    title: 'Introducing CGraph Enterprise: Secure Communication for Teams',
+    title: 'Introducing CGraph: Privacy-First Communication for Communities',
     excerpt:
-      "Today we're launching CGraph Enterprise, bringing end-to-end encrypted messaging to businesses with advanced admin controls and compliance features.",
+      "We're building CGraph — a platform that combines real-time messaging, community forums, gamification, and end-to-end encryption. Here's our vision and what we're building.",
     category: 'Product',
-    author: 'CGraph Team',
-    date: 'January 28, 2026',
+    author: 'Burca Lucas',
+    date: 'January 2026',
     readTime: '5 min read',
     featured: true,
-    image: '🏢',
+    image: '🚀',
   },
   {
     id: 2,
-    title: 'How We Built Our Real-Time Messaging Infrastructure',
+    title: 'Building with Elixir, Phoenix, and the Signal Protocol',
     excerpt:
-      "A deep dive into the architecture behind CGraph's real-time messaging system, handling thousands of concurrent connections with sub-100ms latency.",
+      'A look at our tech stack choices: why we chose Elixir/Phoenix for the backend, React 19 for the web, and how we implemented E2EE using the X3DH + Double Ratchet protocol.',
     category: 'Engineering',
-    author: 'Engineering Team',
-    date: 'January 20, 2026',
-    readTime: '12 min read',
-    featured: true,
-    image: '⚡',
-  },
-  {
-    id: 3,
-    title: 'Security Audit Results: Q4 2025',
-    excerpt:
-      "We recently completed our quarterly security audit with an independent firm. Here's what they found and how we're continuously improving our security posture.",
-    category: 'Security',
-    author: 'Security Team',
-    date: 'January 15, 2026',
-    readTime: '8 min read',
-    featured: false,
-    image: '🔒',
-  },
-  {
-    id: 4,
-    title: 'The Journey to 50,000 Users',
-    excerpt:
-      "Reflecting on our growth from a small beta to 50,000 active users. The challenges, learnings, and what's next for CGraph.",
-    category: 'Company',
-    author: 'CGraph Team',
-    date: 'January 10, 2026',
-    readTime: '6 min read',
-    featured: false,
-    image: '🎉',
-  },
-  {
-    id: 5,
-    title: 'Introducing Message Reactions and Threads',
-    excerpt:
-      "Based on community feedback, we're rolling out message reactions and threaded conversations to help you organize your chats better.",
-    category: 'Product',
-    author: 'Product Team',
-    date: 'January 5, 2026',
-    readTime: '4 min read',
-    featured: false,
-    image: '💬',
-  },
-  {
-    id: 6,
-    title: 'Understanding Our End-to-End Encryption',
-    excerpt:
-      'A technical overview of how CGraph implements end-to-end encryption, from key exchange to message delivery.',
-    category: 'Security',
-    author: 'Security Team',
-    date: 'December 28, 2025',
-    readTime: '15 min read',
-    featured: false,
-    image: '🔐',
-  },
-  {
-    id: 7,
-    title: 'Mobile App Performance Improvements',
-    excerpt:
-      'How we reduced app startup time by 60% and improved battery life with our latest mobile updates.',
-    category: 'Engineering',
-    author: 'Mobile Team',
-    date: 'December 20, 2025',
+    author: 'Burca Lucas',
+    date: 'February 2026',
     readTime: '10 min read',
-    featured: false,
-    image: '📱',
-  },
-  {
-    id: 8,
-    title: 'Building an Inclusive Remote Culture',
-    excerpt:
-      "As a fully remote company, here's how we build connection and maintain a strong culture across time zones.",
-    category: 'Company',
-    author: 'People Team',
-    date: 'December 15, 2025',
-    readTime: '7 min read',
-    featured: false,
-    image: '🌍',
+    featured: true,
+    image: '⚙️',
   },
 ];
 
-const newsletter = {
-  subscribers: '5,000+',
-  frequency: 'Weekly',
-};
+const categories = ['All', 'Product', 'Engineering'];
 
 export default function Blog() {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -125,8 +49,6 @@ export default function Blog() {
       ? blogPosts
       : blogPosts.filter((post) => post.category === selectedCategory);
 
-  const featuredPosts = blogPosts.filter((post) => post.featured);
-
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     setSubscribed(true);
@@ -137,7 +59,7 @@ export default function Blog() {
   return (
     <MarketingLayout
       title="Stories, Updates & Behind the Scenes"
-      subtitle="Product updates, engineering insights, security deep dives, and the story of building CGraph."
+      subtitle="Product updates, engineering insights, and the story of building CGraph."
       eyebrow="📝 CGraph Blog"
       showCTA
     >
@@ -178,130 +100,63 @@ export default function Blog() {
         </div>
       </section>
 
-      {/* Featured Posts */}
-      {selectedCategory === 'All' && (
-        <section className="marketing-section marketing-section--dark">
-          <div className="marketing-section__container">
-            <motion.h2
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mb-8 text-sm font-semibold uppercase tracking-wider"
-              style={{ color: 'var(--color-gray)' }}
-            >
-              Featured
-            </motion.h2>
-            <div className="marketing-grid marketing-grid--2">
-              {featuredPosts.map((post, index) => (
-                <motion.a
-                  key={post.id}
-                  href="#"
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -8 }}
-                  className="marketing-card group"
-                  style={{ textDecoration: 'none', padding: '2rem' }}
-                >
-                  <div className="mb-6 text-6xl">{post.image}</div>
-                  <div className="mb-3 flex items-center gap-3">
-                    <span
-                      className="rounded-full px-3 py-1 text-xs font-medium"
-                      style={{
-                        background: 'rgba(16, 185, 129, 0.1)',
-                        color: 'var(--color-primary)',
-                      }}
-                    >
-                      {post.category}
-                    </span>
-                    <span className="text-sm" style={{ color: 'var(--color-gray)' }}>
-                      {post.date}
-                    </span>
-                  </div>
-                  <h3 className="mb-3 text-2xl font-bold text-white transition-colors group-hover:text-emerald-300">
-                    {post.title}
-                  </h3>
-                  <p style={{ color: 'var(--color-gray)' }}>{post.excerpt}</p>
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="text-sm" style={{ color: 'var(--color-gray)' }}>
-                      {post.author}
-                    </span>
-                    <span className="text-sm" style={{ color: 'var(--color-gray)' }}>
-                      {post.readTime}
-                    </span>
-                  </div>
-                </motion.a>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* All Posts */}
-      <section className="marketing-section marketing-section--alt">
+      {/* Posts */}
+      <section className="marketing-section marketing-section--dark">
         <div className="marketing-section__container">
-          <motion.h2
+          <div className="marketing-grid marketing-grid--2">
+            {filteredPosts.map((post, index) => (
+              <motion.div
+                key={post.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -8 }}
+                className="marketing-card group"
+                style={{ padding: '2rem' }}
+              >
+                <div className="mb-6 text-6xl">{post.image}</div>
+                <div className="mb-3 flex items-center gap-3">
+                  <span
+                    className="rounded-full px-3 py-1 text-xs font-medium"
+                    style={{
+                      background: 'rgba(16, 185, 129, 0.1)',
+                      color: 'var(--color-primary)',
+                    }}
+                  >
+                    {post.category}
+                  </span>
+                  <span className="text-sm" style={{ color: 'var(--color-gray)' }}>
+                    {post.date}
+                  </span>
+                </div>
+                <h3 className="mb-3 text-2xl font-bold text-white">{post.title}</h3>
+                <p style={{ color: 'var(--color-gray)' }}>{post.excerpt}</p>
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-sm" style={{ color: 'var(--color-gray)' }}>
+                    {post.author}
+                  </span>
+                  <span className="text-sm" style={{ color: 'var(--color-gray)' }}>
+                    {post.readTime}
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            className="mb-8 text-sm font-semibold uppercase tracking-wider"
+            className="mt-12 text-center text-sm"
             style={{ color: 'var(--color-gray)' }}
           >
-            {selectedCategory === 'All' ? 'All Posts' : selectedCategory}
-          </motion.h2>
-          <div className="marketing-grid marketing-grid--3">
-            {filteredPosts
-              .filter((p) => !p.featured || selectedCategory !== 'All')
-              .map((post, index) => (
-                <motion.a
-                  key={post.id}
-                  href="#"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  viewport={{ once: true }}
-                  whileHover={{ y: -4 }}
-                  className="marketing-card group"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <div className="mb-4 text-4xl">{post.image}</div>
-                  <div className="mb-2 flex items-center gap-2">
-                    <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-gray-300">
-                      {post.category}
-                    </span>
-                    <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
-                      {post.date}
-                    </span>
-                  </div>
-                  <h3 className="mb-2 font-semibold text-white transition-colors group-hover:text-emerald-300">
-                    {post.title}
-                  </h3>
-                  <p className="mb-4 line-clamp-2 text-sm" style={{ color: 'var(--color-gray)' }}>
-                    {post.excerpt}
-                  </p>
-                  <div
-                    className="flex items-center justify-between text-xs"
-                    style={{ color: 'var(--color-gray)' }}
-                  >
-                    <span>{post.author}</span>
-                    <span>{post.readTime}</span>
-                  </div>
-                </motion.a>
-              ))}
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="mt-12 text-center"
-          >
-            <button className="marketing-btn marketing-btn--secondary">Load More Posts</button>
-          </motion.div>
+            More posts coming as we build toward our v1.0 public beta launch.
+          </motion.p>
         </div>
       </section>
 
       {/* Newsletter */}
-      <section className="marketing-section marketing-section--dark">
+      <section className="marketing-section marketing-section--alt">
         <div className="marketing-section__container" style={{ maxWidth: '48rem' }}>
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -316,8 +171,7 @@ export default function Blog() {
           >
             <h2 className="mb-4 font-zentry text-3xl font-bold text-white">Stay in the Loop</h2>
             <p className="mx-auto mb-8 max-w-xl" style={{ color: 'var(--color-gray)' }}>
-              Get the latest updates, product news, and engineering insights delivered to your
-              inbox. Join {newsletter.subscribers} subscribers.
+              Get notified about product updates, engineering insights, and launch announcements.
             </p>
 
             {subscribed ? (
@@ -357,15 +211,15 @@ export default function Blog() {
             )}
 
             <p className="mt-4 text-xs" style={{ color: 'var(--color-gray)' }}>
-              {newsletter.frequency} digest. Unsubscribe anytime.
+              No spam. Unsubscribe anytime.
             </p>
           </motion.div>
         </div>
       </section>
 
-      {/* RSS & Social */}
+      {/* Social */}
       <section
-        className="marketing-section marketing-section--alt"
+        className="marketing-section marketing-section--dark"
         style={{ padding: '3rem 2rem' }}
       >
         <div className="mx-auto max-w-4xl">
@@ -373,25 +227,8 @@ export default function Blog() {
             className="flex flex-wrap items-center justify-center gap-6 text-sm"
             style={{ color: 'var(--color-gray)' }}
           >
-            <a href="#" className="flex items-center gap-2 transition-colors hover:text-white">
-              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M6.18 15.64a2.18 2.18 0 01-2.18 2.18 2.18 2.18 0 01-2.18-2.18 2.18 2.18 0 012.18-2.18 2.18 2.18 0 012.18 2.18zM4 10.41v2.28c2.51 0 4.55 2.04 4.55 4.55h2.28c0-3.77-3.06-6.83-6.83-6.83zm0-4.55v2.28c5.03 0 9.12 4.09 9.12 9.12h2.28c0-6.29-5.11-11.4-11.4-11.4z" />
-              </svg>
-              RSS Feed
-            </a>
             <a
-              href="https://twitter.com/cgraph"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 transition-colors hover:text-white"
-            >
-              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-              Follow on X
-            </a>
-            <a
-              href="https://github.com/cgraph"
+              href="https://github.com/cgraph-dev/CGraph"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 transition-colors hover:text-white"
