@@ -2,6 +2,7 @@
  * Terms of Service Page
  */
 
+import { Link } from 'react-router-dom';
 import { LegalLayout } from './LegalLayout';
 
 const tableOfContents = [
@@ -36,9 +37,9 @@ export default function TermsOfService() {
         <p className="text-gray-400">
           These Terms apply to all visitors, users, and others who access or use the Service. By
           using the Service, you also agree to our{' '}
-          <a href="/privacy" className="text-emerald-400 hover:text-emerald-300">
+          <Link to="/privacy" className="text-emerald-400 hover:text-emerald-300">
             Privacy Policy
-          </a>
+          </Link>
           .
         </p>
       </section>

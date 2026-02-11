@@ -194,6 +194,35 @@ const footerLinks = {
   ],
 };
 
+/** Renders a footer link — hash links scroll smoothly, others use React Router. */
+function FooterLink({ label, href }: { label: string; href: string }) {
+  if (href.startsWith('/#')) {
+    const sectionId = href.slice(2);
+    return (
+      <a
+        key={label}
+        href={href}
+        className="gl-footer__link"
+        onClick={(e) => {
+          e.preventDefault();
+          const el = document.getElementById(sectionId);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            window.history.replaceState(null, '', href);
+          }
+        }}
+      >
+        {label}
+      </a>
+    );
+  }
+  return (
+    <Link key={label} to={href} className="gl-footer__link">
+      {label}
+    </Link>
+  );
+}
+
 const securityFeatures = [
   { icon: '🔒', title: 'End-to-End Encrypted', description: 'Messages encrypted with AES-256-GCM' },
   { icon: '🛡️', title: 'Zero-Knowledge', description: 'We cannot read your messages' },
@@ -1303,45 +1332,25 @@ export default function LandingPage() {
           <div className="gl-footer__column">
             <h4 className="gl-footer__heading">Product</h4>
             {footerLinks.product.map((link) => (
-              <a key={link.label} href={link.href} className="gl-footer__link">
-                {link.label}
-              </a>
+              <FooterLink key={link.label} label={link.label} href={link.href} />
             ))}
           </div>
           <div className="gl-footer__column">
             <h4 className="gl-footer__heading">Resources</h4>
-            {footerLinks.resources.map((link) =>
-              'external' in link && link.external ? (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  className="gl-footer__link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {link.label}
-                </a>
-              ) : (
-                <a key={link.label} href={link.href} className="gl-footer__link">
-                  {link.label}
-                </a>
-              )
-            )}
+            {footerLinks.resources.map((link) => (
+              <FooterLink key={link.label} label={link.label} href={link.href} />
+            ))}
           </div>
           <div className="gl-footer__column">
             <h4 className="gl-footer__heading">Company</h4>
             {footerLinks.company.map((link) => (
-              <a key={link.label} href={link.href} className="gl-footer__link">
-                {link.label}
-              </a>
+              <FooterLink key={link.label} label={link.label} href={link.href} />
             ))}
           </div>
           <div className="gl-footer__column">
             <h4 className="gl-footer__heading">Legal</h4>
             {footerLinks.legal.map((link) => (
-              <a key={link.label} href={link.href} className="gl-footer__link">
-                {link.label}
-              </a>
+              <FooterLink key={link.label} label={link.label} href={link.href} />
             ))}
           </div>
         </div>

@@ -2,6 +2,7 @@
  * GDPR Rights Page
  */
 
+import { Link } from 'react-router-dom';
 import { LegalLayout } from './LegalLayout';
 
 const tableOfContents = [
@@ -262,9 +263,9 @@ export default function GDPR() {
             <h3 className="mb-2 font-semibold text-white">Option 3: Contact Form</h3>
             <p className="text-sm text-gray-400">
               Use our{' '}
-              <a href="/contact" className="text-emerald-400 hover:text-emerald-300">
+              <Link to="/contact" className="text-emerald-400 hover:text-emerald-300">
                 contact form
-              </a>{' '}
+              </Link>{' '}
               and select "Privacy / GDPR Request" as the topic.
             </p>
           </div>
@@ -328,12 +329,12 @@ export default function GDPR() {
           >
             ✉️ Email Privacy Team
           </a>
-          <a
-            href="/contact"
+          <Link
+            to="/contact"
             className="inline-flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-white transition-colors hover:bg-white/20"
           >
             💬 Contact Form
-          </a>
+          </Link>
         </div>
       </section>
     </LegalLayout>

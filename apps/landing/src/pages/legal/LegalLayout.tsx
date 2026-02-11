@@ -158,18 +158,18 @@ export function LegalLayout({
             <div>
               <h5 className="mb-4 text-sm font-semibold text-white">Resources</h5>
               <div className="space-y-3">
-                <a href="#" className="block text-sm text-gray-500 hover:text-gray-300">
+                <Link to="/docs" className="block text-sm text-gray-500 hover:text-gray-300">
                   Documentation
-                </a>
-                <a href="#" className="block text-sm text-gray-500 hover:text-gray-300">
+                </Link>
+                <Link to="/docs" className="block text-sm text-gray-500 hover:text-gray-300">
                   API Reference
-                </a>
-                <a href="#" className="block text-sm text-gray-500 hover:text-gray-300">
+                </Link>
+                <Link to="/status" className="block text-sm text-gray-500 hover:text-gray-300">
                   Status
-                </a>
-                <a href="#" className="block text-sm text-gray-500 hover:text-gray-300">
+                </Link>
+                <Link to="/blog" className="block text-sm text-gray-500 hover:text-gray-300">
                   Blog
-                </a>
+                </Link>
               </div>
             </div>
             <div>

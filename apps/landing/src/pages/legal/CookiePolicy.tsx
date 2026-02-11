@@ -2,6 +2,7 @@
  * Cookie Policy Page
  */
 
+import { Link } from 'react-router-dom';
 import { LegalLayout } from './LegalLayout';
 
 const tableOfContents = [
@@ -314,9 +315,9 @@ export default function CookiePolicy() {
           </li>
           <li>
             <strong className="text-white">Web:</strong>{' '}
-            <a href="/contact" className="text-emerald-400 hover:text-emerald-300">
+            <Link to="/contact" className="text-emerald-400 hover:text-emerald-300">
               Contact Form
-            </a>
+            </Link>
           </li>
         </ul>
       </section>
