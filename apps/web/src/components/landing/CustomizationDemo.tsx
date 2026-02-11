@@ -12,7 +12,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AnimatedBorder, TiltCard, GlowText } from './effects';
-import { fadeInUp, springs, staggerContainer } from './animations';
+import { fadeInUp, staggerContainer } from './animations';
 
 // Import all types and components from submodule
 import type { DemoState, DemoPanel } from './CustomizationDemo/types';

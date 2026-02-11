@@ -12,7 +12,7 @@
  * Version: 2.0.0 - Added resource pages (/docs, /blog, /status, /download)
  */
 
-import { useState, useEffect, useRef, useCallback, memo } from 'react';
+import { useState, useEffect, useRef, useCallback, memo, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
@@ -22,6 +22,17 @@ import { LogoIcon } from '../components/Logo';
 import './landing-page.css';
 
 gsap.registerPlugin(ScrollTrigger);
+
+// Lazy-load showcase sections to reduce initial bundle size
+const InteractiveDemo = lazy(() =>
+  import('../components/interactive-demo').then((m) => ({ default: m.InteractiveDemo }))
+);
+const CustomizationDemo = lazy(() =>
+  import('../components/customization-demo').then((m) => ({ default: m.CustomizationDemo }))
+);
+const ForumShowcase = lazy(() =>
+  import('../components/forum-showcase').then((m) => ({ default: m.ForumShowcase }))
+);
 
 // Web app URL for auth links (direct navigation, not SPA routing)
 const WEB_APP_URL = 'https://web.cgraph.org';
@@ -753,7 +764,7 @@ export default function LandingPage() {
           if (index === 0) {
             gsap.set(section, { scale: 1, opacity: 1, transformOrigin: 'center center' });
           } else {
-            gsap.set(section, { scale: 0.75, opacity: 0.2, transformOrigin: 'center center' });
+            gsap.set(section, { scale: 0.92, opacity: 0.4, transformOrigin: 'center center' });
           }
         });
 
@@ -770,15 +781,15 @@ export default function LandingPage() {
 
           tl.fromTo(
             section,
-            { scale: 0.75, opacity: 0.2, transformOrigin: 'center center' },
+            { scale: 0.92, opacity: 0.4, transformOrigin: 'center center' },
             { scale: 1, opacity: 1, duration: 0.33, ease: 'sine.out' }
           );
 
           tl.to(section, { scale: 1, opacity: 1, duration: 0.34, ease: 'none' });
 
           tl.to(section, {
-            scale: 0.75,
-            opacity: 0.2,
+            scale: 0.95,
+            opacity: 0.6,
             duration: 0.33,
             ease: 'sine.in',
           });
@@ -1105,6 +1116,29 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Interactive Demo */}
+      <section className="interactive-demo-section zoom-section">
+        <div className="section-header">
+          <span className="section-header__badge section-header__badge--cyan">🎮 Try It Now</span>
+          <h2 className="section-header__title font-zentry">
+            Experience CGraph <span className="section-header__gradient">Live</span>
+          </h2>
+          <p className="section-header__desc">
+            No signup required. Explore our features in this interactive demo.
+          </p>
+        </div>
+        <Suspense
+          fallback={
+            <div className="interactive-demo-skeleton">
+              <div className="interactive-demo-skeleton__header" />
+              <div className="interactive-demo-skeleton__content" />
+            </div>
+          }
+        >
+          <InteractiveDemo />
+        </Suspense>
+      </section>
+
       {/* Features */}
       <section ref={featuresRef} id="features" className="features zoom-section">
         <div className="section-header">
@@ -1124,6 +1158,32 @@ export default function LandingPage() {
             <TiltCard key={feature.title} {...feature} />
           ))}
         </div>
+      </section>
+
+      {/* Customization Demo */}
+      <section className="showcase-section zoom-section">
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center py-24">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+            </div>
+          }
+        >
+          <CustomizationDemo />
+        </Suspense>
+      </section>
+
+      {/* Forum Showcase */}
+      <section className="showcase-section zoom-section">
+        <Suspense
+          fallback={
+            <div className="flex items-center justify-center py-24">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
+            </div>
+          }
+        >
+          <ForumShowcase />
+        </Suspense>
       </section>
 
       {/* About/Security */}

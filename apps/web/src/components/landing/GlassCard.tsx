@@ -87,7 +87,7 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(function Gla
   return (
     <motion.div
       ref={ref}
-      className={cn(variantClass, glowClass, 'relative overflow-hidden', className)}
+      className={cn(variantClass, glowClass, 'relative', className)}
       variants={hoverable ? cardVariants : undefined}
       initial="rest"
       whileHover={hoverable ? 'hover' : undefined}

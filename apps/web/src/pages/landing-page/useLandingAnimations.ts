@@ -63,7 +63,7 @@ export function useLandingAnimations(refs: LandingRefs) {
           if (index === 0) {
             gsap.set(section, { scale: 1, opacity: 1, transformOrigin: 'center center' });
           } else {
-            gsap.set(section, { scale: 0.75, opacity: 0.2, transformOrigin: 'center center' });
+            gsap.set(section, { scale: 0.92, opacity: 0.4, transformOrigin: 'center center' });
           }
         });
 
@@ -82,7 +82,7 @@ export function useLandingAnimations(refs: LandingRefs) {
           // Phase 1: Scale up (0–33%)
           tl.fromTo(
             section,
-            { scale: 0.75, opacity: 0.2, transformOrigin: 'center center' },
+            { scale: 0.92, opacity: 0.4, transformOrigin: 'center center' },
             { scale: 1, opacity: 1, duration: 0.33, ease: 'sine.out' }
           );
 
@@ -91,8 +91,8 @@ export function useLandingAnimations(refs: LandingRefs) {
 
           // Phase 3: Scale down (66–100%)
           tl.to(section, {
-            scale: 0.75,
-            opacity: 0.2,
+            scale: 0.95,
+            opacity: 0.6,
             duration: 0.33,
             ease: 'sine.in',
           });
