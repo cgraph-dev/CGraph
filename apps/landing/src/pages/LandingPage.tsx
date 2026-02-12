@@ -687,17 +687,6 @@ export default function LandingPage() {
               ))}
             </div>
           </motion.div>
-
-          {/* CTA button */}
-          <motion.div
-            className="about__cta-centered"
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <SwapButton mainText="Security Details" altText="Learn More" href="#security" />
-          </motion.div>
         </div>
       </section>
 

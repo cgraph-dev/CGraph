@@ -47,6 +47,7 @@ export const LogoIcon = memo(function LogoIcon({
       height={size}
       className={className}
       draggable={false}
+      fetchPriority="high"
       style={{ objectFit: 'contain', display: 'block' }}
     />
   );
