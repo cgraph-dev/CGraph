@@ -18,7 +18,7 @@ export default function GDPR() {
   return (
     <MarketingLayout
       title="GDPR Compliance"
-      subtitle="Last updated: January 21, 2026 • Version 1.1"
+      subtitle="Last updated: February 10, 2026 • Version 1.2"
       eyebrow="EU Data Protection"
     >
       <section className="marketing-section marketing-section--alt">
@@ -34,7 +34,9 @@ export default function GDPR() {
             <p style={{ color: 'var(--color-gray)', fontSize: '1.125rem', lineHeight: 1.7 }}>
               This document outlines CGraph's compliance with the General Data Protection Regulation
               (GDPR) and explains the rights available to users in the European Economic Area (EEA),
-              United Kingdom, and other jurisdictions with similar data protection laws.
+              United Kingdom, and other jurisdictions with similar data protection laws. CGraph is a
+              company registered in Georgia, and we are committed to upholding the highest standards
+              of data protection for all of our users worldwide.
             </p>
           </motion.div>
 

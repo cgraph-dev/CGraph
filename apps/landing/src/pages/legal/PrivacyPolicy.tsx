@@ -150,7 +150,9 @@ const sections = [
     id: 'rights',
     title: '6. Your Rights',
     content: `
-      <p>You have the right to:</p>
+      <p>Depending on your location, you have various data protection rights:</p>
+      
+      <h4>6.1 Rights for All Users</h4>
       <ul>
         <li><strong>Access</strong> - Request a copy of your data</li>
         <li><strong>Rectification</strong> - Correct inaccurate data</li>
@@ -159,6 +161,42 @@ const sections = [
         <li><strong>Restriction</strong> - Limit how we process your data</li>
         <li><strong>Object</strong> - Object to certain processing activities</li>
       </ul>
+      
+      <h4>6.2 EU/EEA/UK Residents (GDPR)</h4>
+      <ul>
+        <li>All rights under Articles 15-22 of the GDPR</li>
+        <li>Right to lodge a complaint with your supervisory authority</li>
+        <li>Right to withdraw consent at any time</li>
+        <li>See our <a href="/gdpr">GDPR Compliance</a> page for full details</li>
+      </ul>
+      
+      <h4>6.3 California Residents (CCPA/CPRA)</h4>
+      <ul>
+        <li>Right to know what personal information is collected, used, and disclosed</li>
+        <li>Right to delete personal information</li>
+        <li>Right to opt-out of sale/sharing — <strong>we do NOT sell your data</strong></li>
+        <li>Right to non-discrimination for exercising your rights</li>
+        <li>Right to correct inaccurate personal information</li>
+        <li>Right to limit use of sensitive personal information</li>
+      </ul>
+      
+      <h4>6.4 Canadian Residents (PIPEDA)</h4>
+      <ul>
+        <li>Right to access your personal information</li>
+        <li>Right to challenge the accuracy and completeness of your data</li>
+        <li>Right to withdraw consent (subject to legal/contractual restrictions)</li>
+        <li>Right to complain to the Office of the Privacy Commissioner of Canada</li>
+      </ul>
+      
+      <h4>6.5 Brazilian Residents (LGPD)</h4>
+      <ul>
+        <li>Confirmation of data processing and access to data</li>
+        <li>Correction of incomplete, inaccurate, or outdated data</li>
+        <li>Anonymization, blocking, or deletion of unnecessary data</li>
+        <li>Data portability to another service provider</li>
+        <li>Information about public and private entities with which data is shared</li>
+      </ul>
+      
       <p>Exercise these rights in <strong>Settings → Privacy</strong> or by contacting <a href="mailto:privacy@cgraph.org">privacy@cgraph.org</a></p>
     `,
   },
@@ -182,10 +220,14 @@ const sections = [
     content: `
       <p>If you have questions about this Privacy Policy, please contact us:</p>
       <ul>
+        <li><strong>Company:</strong> CGraph, registered in Georgia</li>
+        <li><strong>Founded:</strong> 2026</li>
         <li><strong>Email:</strong> <a href="mailto:privacy@cgraph.org">privacy@cgraph.org</a></li>
         <li><strong>Data Protection Officer:</strong> <a href="mailto:dpo@cgraph.org">dpo@cgraph.org</a></li>
+        <li><strong>Website:</strong> <a href="https://cgraph.org">cgraph.org</a></li>
       </ul>
       <p>For GDPR-specific inquiries, see our <a href="/gdpr">GDPR Compliance</a> page.</p>
+      <p>For California residents, see Section 6 for your CCPA/CPRA rights. For Canadian residents, your PIPEDA rights are detailed in our GDPR page. For Brazilian residents, your LGPD rights are covered under our GDPR compliance framework.</p>
     `,
   },
 ];
@@ -194,7 +236,7 @@ export default function PrivacyPolicy() {
   return (
     <MarketingLayout
       title="Privacy Policy"
-      subtitle="Last updated: January 21, 2026 • Version 1.1"
+      subtitle="Last updated: February 10, 2026 • Version 1.2"
       eyebrow="Your Data, Your Rights"
     >
       <section className="marketing-section marketing-section--alt">
@@ -208,9 +250,14 @@ export default function PrivacyPolicy() {
             style={{ marginBottom: '3rem' }}
           >
             <p style={{ color: 'var(--color-gray)', fontSize: '1.125rem', lineHeight: 1.7 }}>
-              CGraph ("we", "us", "our") is committed to protecting your privacy. This Privacy
-              Policy explains how we collect, use, disclose, and safeguard your information when you
-              use our mobile application and web platform (collectively, the "Service").
+              CGraph ("we", "us", "our"), a company registered in Georgia, is committed to
+              protecting your privacy. This Privacy Policy explains how we collect, use, disclose,
+              and safeguard your information when you use our mobile application and web platform
+              (collectively, the "Service"). This policy applies to users worldwide and complies
+              with the EU General Data Protection Regulation (GDPR), California Consumer Privacy Act
+              (CCPA/CPRA), Canada's Personal Information Protection and Electronic Documents Act
+              (PIPEDA), Brazil's Lei Geral de Proteção de Dados (LGPD), and other applicable data
+              protection laws.
             </p>
           </motion.div>
 

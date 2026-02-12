@@ -209,20 +209,34 @@ const sections = [
         <li>Third-party actions or content</li>
       </ul>
       <p>Our total liability shall not exceed the amount you paid us in the 12 months preceding the claim, or $100 USD, whichever is greater.</p>
+      <p><strong>Note for EU/EEA consumers:</strong> This limitation does not apply where prohibited by mandatory consumer protection laws in your jurisdiction.</p>
     `,
   },
   {
     id: 'governing',
     title: '12. Governing Law & Disputes',
     content: `
-      <p>These Terms shall be governed by the laws of Delaware, USA, without regard to conflict of law principles.</p>
-      <p>Any disputes shall be resolved through:</p>
+      <p>These Terms shall be governed by and construed in accordance with the laws of <strong>Georgia</strong>, without regard to its conflict of law provisions.</p>
+      
+      <h4>12.1 Dispute Resolution</h4>
+      <p>Any disputes arising from these Terms shall be resolved through:</p>
       <ol>
-        <li><strong>Informal Resolution</strong> - Contact us first at legal@cgraph.org</li>
-        <li><strong>Arbitration</strong> - Binding arbitration under AAA rules (individual claims only)</li>
-        <li><strong>Small Claims Court</strong> - Either party may bring claims in small claims court</li>
+        <li><strong>Informal Resolution</strong> - Contact us first at <a href="mailto:legal@cgraph.org">legal@cgraph.org</a>. We will attempt to resolve any dispute within 30 days.</li>
+        <li><strong>Mediation</strong> - If informal resolution fails, disputes shall be submitted to mediation under the rules of an internationally recognized mediation body.</li>
+        <li><strong>Binding Arbitration</strong> - If mediation fails, disputes shall be resolved through binding arbitration (individual claims only).</li>
+        <li><strong>Small Claims Court</strong> - Either party may bring claims in small claims court in the jurisdiction where they reside.</li>
       </ol>
-      <p><strong>Class Action Waiver:</strong> You agree to resolve disputes individually and waive the right to participate in class actions.</p>
+      
+      <h4>12.2 Jurisdiction-Specific Provisions</h4>
+      <ul>
+        <li><strong>EU/EEA Users:</strong> Nothing in these Terms limits your rights under the GDPR or any mandatory consumer protection laws of your country of residence. You may bring claims in the courts of your country of residence.</li>
+        <li><strong>California Users:</strong> You retain all rights under the CCPA/CPRA. The arbitration clause does not apply to CCPA claims where prohibited by law.</li>
+        <li><strong>Canadian Users:</strong> These Terms are subject to PIPEDA and applicable provincial privacy legislation.</li>
+        <li><strong>Brazilian Users:</strong> Your rights under the LGPD and Brazilian Consumer Defense Code (CDC) are preserved.</li>
+        <li><strong>UK Users:</strong> These Terms do not affect your statutory rights under UK consumer law.</li>
+      </ul>
+      
+      <p><strong>Class Action Waiver:</strong> To the extent permitted by applicable law, you agree to resolve disputes individually and waive the right to participate in class actions.</p>
     `,
   },
   {
@@ -244,8 +258,11 @@ const sections = [
     content: `
       <p>If you have questions about these Terms, please contact us:</p>
       <ul>
+        <li><strong>Company:</strong> CGraph, registered in Georgia</li>
+        <li><strong>Founded:</strong> 2026</li>
         <li><strong>Email:</strong> <a href="mailto:legal@cgraph.org">legal@cgraph.org</a></li>
         <li><strong>Support:</strong> <a href="mailto:support@cgraph.org">support@cgraph.org</a></li>
+        <li><strong>Website:</strong> <a href="https://cgraph.org">cgraph.org</a></li>
       </ul>
     `,
   },
@@ -255,7 +272,7 @@ export default function TermsOfService() {
   return (
     <MarketingLayout
       title="Terms of Service"
-      subtitle="Last updated: January 21, 2026 • Version 1.1"
+      subtitle="Last updated: February 10, 2026 • Version 1.2"
       eyebrow="Service Agreement"
     >
       <section className="marketing-section marketing-section--alt">
@@ -269,9 +286,13 @@ export default function TermsOfService() {
             style={{ marginBottom: '3rem' }}
           >
             <p style={{ color: 'var(--color-gray)', fontSize: '1.125rem', lineHeight: 1.7 }}>
-              Welcome to CGraph! These Terms of Service ("Terms") govern your access to and use of
-              CGraph's mobile applications, websites, and services (collectively, the "Service"). By
-              accessing or using the Service, you agree to be bound by these Terms.
+              Welcome to CGraph! CGraph is a company registered in Georgia, founded in 2026. These
+              Terms of Service ("Terms") govern your access to and use of CGraph's mobile
+              applications, websites, and services (collectively, the "Service"). By accessing or
+              using the Service, you agree to be bound by these Terms. These Terms are designed to
+              comply with applicable laws worldwide, including but not limited to the laws of
+              Georgia, the European Union, the United States, Canada, Brazil, and other
+              jurisdictions where our users are located.
             </p>
           </motion.div>
 

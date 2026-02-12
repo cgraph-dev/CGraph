@@ -240,6 +240,15 @@ export default function Documentation() {
 
   const totalArticles = docCategories.reduce((sum, cat) => sum + cat.articles.length, 0);
 
+  // Generate slug from title matching DocArticle.tsx keys
+  const generateSlug = (title: string): string =>
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
   return (
     <MarketingLayout
       title="Documentation"
@@ -424,9 +433,10 @@ export default function Documentation() {
                     {category.articles
                       .slice(0, expandedCategory === category.id ? undefined : 3)
                       .map((article, i) => (
-                        <div
+                        <Link
                           key={article.title}
-                          className="flex items-center justify-between rounded-lg border border-white/5 bg-white/5 px-3 py-2.5 transition-colors hover:bg-white/10"
+                          to={`/docs/${generateSlug(article.title)}`}
+                          className="flex items-center justify-between rounded-lg border border-white/5 bg-white/5 px-3 py-2.5 no-underline transition-colors hover:bg-white/10"
                         >
                           <div className="flex items-center gap-2.5">
                             <span
@@ -443,7 +453,7 @@ export default function Documentation() {
                           <span className="shrink-0 text-xs" style={{ color: 'var(--color-gray)' }}>
                             {article.time}
                           </span>
-                        </div>
+                        </Link>
                       ))}
                   </div>
                   {category.articles.length > 3 && (

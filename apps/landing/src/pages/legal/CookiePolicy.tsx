@@ -203,9 +203,12 @@ const sections = [
     content: `
       <p>If you have questions about our use of cookies, please contact us:</p>
       <ul>
+        <li><strong>Company:</strong> CGraph, registered in Georgia</li>
+        <li><strong>Founded:</strong> 2026</li>
         <li><strong>Email:</strong> <a href="mailto:privacy@cgraph.org">privacy@cgraph.org</a></li>
         <li><strong>Privacy Portal:</strong> <a href="/privacy">cgraph.org/privacy</a></li>
         <li><strong>Data Protection Officer:</strong> <a href="mailto:dpo@cgraph.org">dpo@cgraph.org</a></li>
+        <li><strong>Website:</strong> <a href="https://cgraph.org">cgraph.org</a></li>
       </ul>
     `,
   },
@@ -215,7 +218,7 @@ export default function CookiePolicy() {
   return (
     <MarketingLayout
       title="Cookie Policy"
-      subtitle="Last updated: January 21, 2026 • Version 1.1"
+      subtitle="Last updated: February 10, 2026 • Version 1.2"
       eyebrow="Transparency First"
     >
       <section className="marketing-section marketing-section--alt">
@@ -229,9 +232,11 @@ export default function CookiePolicy() {
             style={{ marginBottom: '3rem' }}
           >
             <p style={{ color: 'var(--color-gray)', fontSize: '1.125rem', lineHeight: 1.7 }}>
-              This Cookie Policy explains how CGraph ("we", "us", "our") uses cookies and similar
-              technologies when you visit our website at cgraph.org or use our web application
-              (collectively, the "Service").
+              This Cookie Policy explains how CGraph, a company registered in Georgia ("we", "us",
+              "our"), uses cookies and similar technologies when you visit our website at cgraph.org
+              or use our web application (collectively, the "Service"). This policy is designed to
+              comply with cookie and tracking regulations worldwide, including the EU ePrivacy
+              Directive, GDPR, CCPA/CPRA, PIPEDA, and LGPD.
             </p>
           </motion.div>
 

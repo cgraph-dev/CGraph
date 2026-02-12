@@ -25,6 +25,8 @@ const Press = lazy(() => import('./pages/company/Press'));
 const Download = lazy(() => import('./pages/resources/Download'));
 const Documentation = lazy(() => import('./pages/resources/Documentation'));
 const Blog = lazy(() => import('./pages/resources/Blog'));
+const BlogArticle = lazy(() => import('./pages/resources/BlogArticle'));
+const DocArticle = lazy(() => import('./pages/resources/DocArticle'));
 const Status = lazy(() => import('./pages/resources/Status'));
 
 // Loading fallback
@@ -64,7 +66,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           {/* Resource Pages */}
           <Route path="/download" element={<Download />} />
           <Route path="/docs" element={<Documentation />} />
+          <Route path="/docs/:slug" element={<DocArticle />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/blog/:slug" element={<BlogArticle />} />
           <Route path="/status" element={<Status />} />
 
           {/* Static Pages - redirect to sections */}

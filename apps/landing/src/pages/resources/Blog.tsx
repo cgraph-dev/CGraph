@@ -11,10 +11,12 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { MarketingLayout } from '@/components/marketing';
 
 interface BlogPost {
   id: number;
+  slug: string;
   title: string;
   excerpt: string;
   category: string;
@@ -29,6 +31,7 @@ interface BlogPost {
 const blogPosts: BlogPost[] = [
   {
     id: 1,
+    slug: 'platform-parity',
     title: 'Platform Parity: 17/17 Features on Web & Mobile',
     excerpt:
       'v0.9.13\u201314 marks full feature parity between web and mobile. 1,342 passing tests, Reanimated v4 migration complete (222 \u2192 0 TypeScript errors), and 132 facade tests ensuring store reliability.',
@@ -42,6 +45,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     id: 2,
+    slug: 'architecture-transformation',
     title: 'Architecture Transformation: From 4.2 to 9.0',
     excerpt:
       'How we restructured the entire codebase into 12 feature modules with 7 facade hooks, consolidated 32 stores into 7 facades, and built 90+ shared UI components. Architecture score jumped from 4.2/10 to 9.0/10.',
@@ -55,6 +59,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     id: 3,
+    slug: 'e2ee-test-suite',
     title: 'E2EE Test Suite: 28 Tests for Signal Protocol',
     excerpt:
       'We built a dedicated test suite for our Signal Protocol implementation covering X3DH key exchange, Double Ratchet message encryption, forward secrecy verification, ciphertext randomization, and tampered-message rejection.',
@@ -68,6 +73,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     id: 4,
+    slug: 'store-consolidation',
     title: 'Store Consolidation: 32 Stores \u2192 7 Facades',
     excerpt:
       'Adopting Discord-style composition patterns, we consolidated 32 scattered Zustand stores into 7 clean facade hooks: Auth, Chat, Gamification, Settings, Community, Marketplace, and UI. 25 dedicated facade tests ensure reliability.',
@@ -81,6 +87,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     id: 5,
+    slug: 'code-simplification',
     title: 'Code Simplification Sprint: console.log 325 \u2192 2',
     excerpt:
       'A deep-dive into our simplification sprint: eliminated 96% of `as any` casts (27 \u2192 1), removed 99% of console.log calls (325 \u2192 2), reduced Settings.tsx from 1,172 to 221 lines, and split SocketManager from 960 to 616 lines across 5 modules.',
@@ -94,6 +101,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     id: 6,
+    slug: 'dual-app-architecture',
     title: 'Dual-App Architecture: Landing vs Web App',
     excerpt:
       'Why we separated cgraph.org (landing, ~200KB) from app.cgraph.org (full app, ~2MB). The enterprise-grade dual-app pattern with Discord-style module system, 62 lazy-loaded pages, and 168 optimized build chunks.',
@@ -107,6 +115,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     id: 7,
+    slug: 'critical-security-fixes',
     title: 'Critical Security Fixes: E2EE Plaintext Fallback',
     excerpt:
       'We discovered and fixed a critical vulnerability where messages could silently fall back to unencrypted delivery. Plus: presence privacy leak, Stripe webhook misconfiguration, IP spoofing, and MIME type spoofing fixes.',
@@ -120,6 +129,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     id: 8,
+    slug: 'why-elixir',
     title: 'Why Elixir, Phoenix, and the BEAM VM',
     excerpt:
       'Our tech stack deep-dive: Elixir 1.17+ with Phoenix 1.8 for the backend, PostgreSQL 16 with 91 tables, 3-tier caching (ETS \u2192 Cachex \u2192 Redis), and Phoenix Channels for WebSocket real-time. Why we chose the same stack Discord uses.',
@@ -133,6 +143,7 @@ const blogPosts: BlogPost[] = [
   },
   {
     id: 9,
+    slug: 'introducing-cgraph',
     title: 'Introducing CGraph: The Vision',
     excerpt:
       'The vision behind CGraph \u2014 combining Discord-style messaging, Reddit-style forums, Signal-level encryption, and RPG gamification into one platform. 5 subscription tiers from free to enterprise, built for communities of all sizes.',
@@ -330,106 +341,107 @@ export default function Blog() {
               {featuredPosts.map((post, index) => {
                 const catColor = categoryColors[post.category] || categoryColors.Engineering;
                 return (
-                  <motion.article
-                    key={post.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.15 }}
-                    whileHover={{ y: -8, transition: { duration: 0.2 } }}
-                    className="marketing-card group relative overflow-hidden"
-                    style={{ padding: 0 }}
-                  >
-                    {/* Gradient top border */}
-                    <div
-                      className="h-1 w-full"
-                      style={{
-                        background: `linear-gradient(90deg, ${catColor.text}, var(--color-secondary))`,
-                      }}
-                    />
-
-                    <div className="p-7">
-                      {/* Featured badge */}
+                  <Link key={post.id} to={`/blog/${post.slug}`} className="block no-underline">
+                    <motion.article
+                      initial={{ opacity: 0, y: 30 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.15 }}
+                      whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                      className="marketing-card group relative overflow-hidden"
+                      style={{ padding: 0 }}
+                    >
+                      {/* Gradient top border */}
                       <div
-                        className="absolute right-4 top-5 rounded-full px-2.5 py-1 text-xs font-semibold"
+                        className="h-1 w-full"
                         style={{
-                          background:
-                            'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                          color: 'white',
+                          background: `linear-gradient(90deg, ${catColor.text}, var(--color-secondary))`,
                         }}
-                      >
-                        Featured
-                      </div>
+                      />
 
-                      {/* Icon + Category */}
-                      <div className="mb-5 flex items-center gap-4">
+                      <div className="p-7">
+                        {/* Featured badge */}
                         <div
-                          className="flex h-14 w-14 items-center justify-center rounded-xl text-3xl"
+                          className="absolute right-4 top-5 rounded-full px-2.5 py-1 text-xs font-semibold"
                           style={{
                             background:
-                              'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(139, 92, 246, 0.15))',
-                            border: '1px solid rgba(255,255,255,0.08)',
+                              'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+                            color: 'white',
                           }}
                         >
-                          {post.image}
+                          Featured
                         </div>
-                        <div>
-                          <span
-                            className="rounded-full px-3 py-1 text-xs font-semibold"
-                            style={{ background: catColor.bg, color: catColor.text }}
-                          >
-                            {post.category}
-                          </span>
-                        </div>
-                      </div>
 
-                      <h3 className="mb-3 text-xl font-bold leading-tight text-white transition-colors group-hover:text-emerald-300">
-                        {post.title}
-                      </h3>
-                      <p
-                        className="mb-5 text-sm leading-relaxed"
-                        style={{ color: 'var(--color-gray)' }}
-                      >
-                        {post.excerpt}
-                      </p>
-
-                      {/* Tags */}
-                      <div className="mb-5 flex flex-wrap gap-2">
-                        {post.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="rounded-md border border-white/5 bg-white/5 px-2.5 py-1 text-xs"
-                            style={{ color: 'var(--color-gray)' }}
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      {/* Author + Meta */}
-                      <div className="flex items-center justify-between border-t border-white/5 pt-4">
-                        <div className="flex items-center gap-2.5">
+                        {/* Icon + Category */}
+                        <div className="mb-5 flex items-center gap-4">
                           <div
-                            className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold text-white"
+                            className="flex h-14 w-14 items-center justify-center rounded-xl text-3xl"
                             style={{
                               background:
-                                'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+                                'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(139, 92, 246, 0.15))',
+                              border: '1px solid rgba(255,255,255,0.08)',
                             }}
                           >
-                            BL
+                            {post.image}
                           </div>
-                          <span className="text-sm font-medium text-white">{post.author}</span>
+                          <div>
+                            <span
+                              className="rounded-full px-3 py-1 text-xs font-semibold"
+                              style={{ background: catColor.bg, color: catColor.text }}
+                            >
+                              {post.category}
+                            </span>
+                          </div>
                         </div>
-                        <div
-                          className="flex items-center gap-3 text-xs"
+
+                        <h3 className="mb-3 text-xl font-bold leading-tight text-white transition-colors group-hover:text-emerald-300">
+                          {post.title}
+                        </h3>
+                        <p
+                          className="mb-5 text-sm leading-relaxed"
                           style={{ color: 'var(--color-gray)' }}
                         >
-                          <span>{post.date}</span>
-                          <span className="opacity-40">·</span>
-                          <span>{post.readTime}</span>
+                          {post.excerpt}
+                        </p>
+
+                        {/* Tags */}
+                        <div className="mb-5 flex flex-wrap gap-2">
+                          {post.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded-md border border-white/5 bg-white/5 px-2.5 py-1 text-xs"
+                              style={{ color: 'var(--color-gray)' }}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+
+                        {/* Author + Meta */}
+                        <div className="flex items-center justify-between border-t border-white/5 pt-4">
+                          <div className="flex items-center gap-2.5">
+                            <div
+                              className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold text-white"
+                              style={{
+                                background:
+                                  'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+                              }}
+                            >
+                              BL
+                            </div>
+                            <span className="text-sm font-medium text-white">{post.author}</span>
+                          </div>
+                          <div
+                            className="flex items-center gap-3 text-xs"
+                            style={{ color: 'var(--color-gray)' }}
+                          >
+                            <span>{post.date}</span>
+                            <span className="opacity-40">·</span>
+                            <span>{post.readTime}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.article>
+                    </motion.article>
+                  </Link>
                 );
               })}
             </div>
@@ -459,90 +471,94 @@ export default function Blog() {
             {(featuredPosts.length > 0 ? regularPosts : filteredPosts).map((post, index) => {
               const catColor = categoryColors[post.category] || categoryColors.Engineering;
               return (
-                <motion.article
-                  key={post.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.06 }}
-                  whileHover={{ x: 4, transition: { duration: 0.15 } }}
-                  className="marketing-card group relative overflow-hidden"
-                  style={{ padding: 0 }}
-                >
-                  {/* Left accent bar */}
-                  <div
-                    className="absolute left-0 top-0 h-full w-1"
-                    style={{
-                      background: `linear-gradient(180deg, ${catColor.text}, transparent)`,
-                    }}
-                  />
-
-                  <div className="flex gap-5 p-5 pl-6">
+                <Link key={post.id} to={`/blog/${post.slug}`} className="block no-underline">
+                  <motion.article
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.06 }}
+                    whileHover={{ x: 4, transition: { duration: 0.15 } }}
+                    className="marketing-card group relative overflow-hidden"
+                    style={{ padding: 0 }}
+                  >
+                    {/* Left accent bar */}
                     <div
-                      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-2xl"
+                      className="absolute left-0 top-0 h-full w-1"
                       style={{
-                        background:
-                          'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1))',
-                        border: '1px solid rgba(255,255,255,0.06)',
+                        background: `linear-gradient(180deg, ${catColor.text}, transparent)`,
                       }}
-                    >
-                      {post.image}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="mb-2 flex flex-wrap items-center gap-2">
-                        <span
-                          className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
-                          style={{ background: catColor.bg, color: catColor.text }}
-                        >
-                          {post.category}
-                        </span>
-                        <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
-                          {post.date}
-                        </span>
-                        <span className="text-xs opacity-40" style={{ color: 'var(--color-gray)' }}>
-                          ·
-                        </span>
-                        <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
-                          {post.readTime}
-                        </span>
-                      </div>
-                      <h3 className="mb-2 text-base font-bold leading-snug text-white transition-colors group-hover:text-emerald-300">
-                        {post.title}
-                      </h3>
-                      <p
-                        className="mb-3 text-sm leading-relaxed"
-                        style={{ color: 'var(--color-gray)' }}
+                    />
+
+                    <div className="flex gap-5 p-5 pl-6">
+                      <div
+                        className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-2xl"
+                        style={{
+                          background:
+                            'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1))',
+                          border: '1px solid rgba(255,255,255,0.06)',
+                        }}
                       >
-                        {post.excerpt}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-wrap gap-1.5">
-                          {post.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="rounded-md border border-white/5 bg-white/5 px-2 py-0.5 text-xs"
-                              style={{ color: 'var(--color-gray)' }}
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                        <div className="ml-4 flex shrink-0 items-center gap-2">
-                          <div
-                            className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-white"
-                            style={{
-                              background:
-                                'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                            }}
+                        {post.image}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-2 flex flex-wrap items-center gap-2">
+                          <span
+                            className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                            style={{ background: catColor.bg, color: catColor.text }}
                           >
-                            BL
+                            {post.category}
+                          </span>
+                          <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
+                            {post.date}
+                          </span>
+                          <span
+                            className="text-xs opacity-40"
+                            style={{ color: 'var(--color-gray)' }}
+                          >
+                            ·
+                          </span>
+                          <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
+                            {post.readTime}
+                          </span>
+                        </div>
+                        <h3 className="mb-2 text-base font-bold leading-snug text-white transition-colors group-hover:text-emerald-300">
+                          {post.title}
+                        </h3>
+                        <p
+                          className="mb-3 text-sm leading-relaxed"
+                          style={{ color: 'var(--color-gray)' }}
+                        >
+                          {post.excerpt}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex flex-wrap gap-1.5">
+                            {post.tags.map((tag) => (
+                              <span
+                                key={tag}
+                                className="rounded-md border border-white/5 bg-white/5 px-2 py-0.5 text-xs"
+                                style={{ color: 'var(--color-gray)' }}
+                              >
+                                {tag}
+                              </span>
+                            ))}
                           </div>
-                          <span className="text-xs text-gray-500">{post.author}</span>
+                          <div className="ml-4 flex shrink-0 items-center gap-2">
+                            <div
+                              className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                              style={{
+                                background:
+                                  'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+                              }}
+                            >
+                              BL
+                            </div>
+                            <span className="text-xs text-gray-500">{post.author}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </motion.article>
+                  </motion.article>
+                </Link>
               );
             })}
           </div>

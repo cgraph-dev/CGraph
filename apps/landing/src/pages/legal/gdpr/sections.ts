@@ -21,9 +21,11 @@ export const sections: GDPRSection[] = [
       
       <p><strong>Contact Information:</strong></p>
       <ul>
-        <li><strong>Company:</strong> CGraph, Inc.</li>
+        <li><strong>Company:</strong> CGraph, registered in Georgia</li>
+        <li><strong>Founded:</strong> 2026</li>
         <li><strong>Email:</strong> <a href="mailto:privacy@cgraph.org">privacy@cgraph.org</a></li>
         <li><strong>Data Protection Officer:</strong> <a href="mailto:dpo@cgraph.org">dpo@cgraph.org</a></li>
+        <li><strong>Website:</strong> <a href="https://cgraph.org">cgraph.org</a></li>
       </ul>
     `,
   },
@@ -236,22 +238,66 @@ export const sections: GDPRSection[] = [
     title: '10. Additional Rights by Region',
     content: `
       <h4>10.1 California (CCPA/CPRA)</h4>
-      <p>California residents have additional rights under the CCPA:</p>
+      <p>California residents have additional rights under the CCPA/CPRA:</p>
       <ul>
-        <li>Right to know what personal information is collected</li>
-        <li>Right to delete personal information</li>
-        <li>Right to opt-out of sale (we do not sell data)</li>
-        <li>Right to non-discrimination</li>
+        <li>Right to know what personal information is collected, used, shared, or sold</li>
+        <li>Right to delete personal information held by businesses</li>
+        <li>Right to opt-out of sale or sharing of personal information (we do not sell data)</li>
+        <li>Right to non-discrimination for exercising privacy rights</li>
+        <li>Right to correct inaccurate personal information</li>
+        <li>Right to limit use/disclosure of sensitive personal information</li>
       </ul>
+      <p>To exercise CCPA/CPRA rights, email <a href="mailto:privacy@cgraph.org">privacy@cgraph.org</a> with the subject "CCPA Request".</p>
       
       <h4>10.2 Brazil (LGPD)</h4>
-      <p>Brazilian users have similar rights under the LGPD:</p>
+      <p>Brazilian users have rights under the Lei Geral de Proteção de Dados (LGPD):</p>
       <ul>
-        <li>Confirmation of data processing</li>
-        <li>Access to personal data</li>
-        <li>Correction and deletion</li>
-        <li>Portability</li>
+        <li>Confirmation of data processing activities</li>
+        <li>Access to all personal data we hold</li>
+        <li>Correction of incomplete, inaccurate, or outdated data</li>
+        <li>Anonymization, blocking, or deletion of unnecessary data</li>
+        <li>Data portability to another service provider</li>
+        <li>Deletion of personal data processed with consent</li>
+        <li>Information about public and private entities with which data is shared</li>
+        <li>Revocation of consent at any time</li>
       </ul>
+      <p>Contact the ANPD (Autoridade Nacional de Proteção de Dados) at <a href="https://www.gov.br/anpd" target="_blank" rel="noopener noreferrer">gov.br/anpd</a> for complaints.</p>
+      
+      <h4>10.3 Canada (PIPEDA)</h4>
+      <p>Canadian users have rights under the Personal Information Protection and Electronic Documents Act (PIPEDA):</p>
+      <ul>
+        <li>Right to know why personal information is being collected</li>
+        <li>Right to expect collection limited to stated purposes</li>
+        <li>Right to access personal information held about you</li>
+        <li>Right to challenge accuracy and request corrections</li>
+        <li>Right to withdraw consent (subject to legal or contractual restrictions)</li>
+        <li>Right to complain about handling of personal information</li>
+      </ul>
+      <p>File complaints with the Office of the Privacy Commissioner of Canada at <a href="https://www.priv.gc.ca" target="_blank" rel="noopener noreferrer">priv.gc.ca</a>.</p>
+      
+      <h4>10.4 South Africa (POPIA)</h4>
+      <p>South African users have rights under the Protection of Personal Information Act (POPIA):</p>
+      <ul>
+        <li>Right to be notified of data collection</li>
+        <li>Right to access personal information</li>
+        <li>Right to request correction or deletion</li>
+        <li>Right to object to processing</li>
+        <li>Right to submit a complaint to the Information Regulator</li>
+      </ul>
+      <p>Contact the Information Regulator at <a href="https://inforegulator.org.za" target="_blank" rel="noopener noreferrer">inforegulator.org.za</a>.</p>
+      
+      <h4>10.5 Australia (APPs)</h4>
+      <p>Australian users have rights under the Australian Privacy Principles (APPs):</p>
+      <ul>
+        <li>Right to know how personal information is managed</li>
+        <li>Right to access personal information</li>
+        <li>Right to request correction of personal information</li>
+        <li>Right to complain about privacy breaches</li>
+      </ul>
+      <p>File complaints with the OAIC at <a href="https://www.oaic.gov.au" target="_blank" rel="noopener noreferrer">oaic.gov.au</a>.</p>
+      
+      <h4>10.6 Other Jurisdictions</h4>
+      <p>CGraph is committed to respecting privacy rights worldwide. If your country has specific data protection legislation not listed above, please contact <a href="mailto:privacy@cgraph.org">privacy@cgraph.org</a> and we will work to honor your rights under applicable local law.</p>
     `,
   },
 ];
