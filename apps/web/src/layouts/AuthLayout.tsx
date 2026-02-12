@@ -185,7 +185,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
         >
           <TiltCard
-            className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#111827]/80 via-[#0a0f1a]/70 to-[#030712]/80 p-8 shadow-[0_0_50px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-xl transition-all duration-500 hover:border-violet-400/30 hover:shadow-[0_0_60px_rgba(139,92,246,0.2),inset_0_1px_0_rgba(255,255,255,0.15)]"
+            className="rounded-2xl border border-violet-500/20 bg-gradient-to-br from-[#111827]/90 via-[#0a0f1a]/80 to-[#030712]/90 p-8 shadow-[0_0_60px_rgba(139,92,246,0.15),0_0_100px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-xl transition-all duration-500 hover:border-violet-400/40 hover:shadow-[0_0_80px_rgba(139,92,246,0.25),inset_0_1px_0_rgba(255,255,255,0.15)]"
             maxTilt={5}
           >
             {children}

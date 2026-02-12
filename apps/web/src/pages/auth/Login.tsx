@@ -32,6 +32,15 @@ const itemVariants = {
   },
 };
 
+// Header variant: NO opacity animation so TextScramble/GlitchText are visible immediately
+const headerVariants = {
+  hidden: { y: 15 },
+  visible: {
+    y: 0,
+    transition: { duration: 0.4, ease: 'easeOut' as const },
+  },
+};
+
 export default function Login() {
   const navigate = useNavigate();
   const reduced = prefersReducedMotion();
@@ -70,12 +79,16 @@ export default function Login() {
       </motion.div>
 
       {/* Header with cyberpunk text effect */}
-      <motion.div variants={reduced ? {} : itemVariants} className="text-center lg:text-left">
+      <motion.div variants={reduced ? {} : headerVariants} className="text-center lg:text-left">
         <h2 className="text-3xl font-bold text-white">
           <GlitchText text="Welcome back" className="matrix-glow" />
         </h2>
         <p className="mt-2 text-gray-400">
-          <TextScramble text="Sign in to your account to continue" delay={500} />
+          <TextScramble
+            text="Sign in to your account to continue"
+            delay={1000}
+            scrambleSpeed={80}
+          />
         </p>
       </motion.div>
 
