@@ -83,29 +83,6 @@ const Hero = memo(function Hero(): React.JSX.Element {
         initial={prefersReduced ? 'visible' : 'hidden'}
         animate="visible"
       >
-        {/* Eyebrow badge */}
-        <motion.div variants={itemVariants} className="hero-pro__eyebrow-wrap">
-          <motion.span
-            className="hero-pro__eyebrow"
-            initial={{ opacity: 0, scale: 0.85, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{
-              type: 'spring' as const,
-              stiffness: 200,
-              damping: 15,
-              delay: 0.3,
-            }}
-          >
-            <motion.span
-              className="hero-pro__eyebrow-dot"
-              aria-hidden="true"
-              animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            />
-            Secure messaging for communities
-          </motion.span>
-        </motion.div>
-
         {/* Title */}
         <motion.h1 variants={itemVariants} className="hero-pro__title">
           <span className="hero-pro__title-line">Communication</span>

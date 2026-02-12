@@ -2263,6 +2263,37 @@ html.site-ready {
   border-radius: 9999px;
   cursor: default;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Flowing gradient glow overlay — matches landing nav border pattern */
+.section-header__badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  padding: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(16, 185, 129, 0.45) 25%,
+    rgba(139, 92, 246, 0.45) 50%,
+    rgba(16, 185, 129, 0.45) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: eyebrow-gradient-flow 4s linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes eyebrow-gradient-flow {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* Pulsing dot inside badge — matches Hero & MarketingLayout pattern */

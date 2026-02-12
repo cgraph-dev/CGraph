@@ -733,3 +733,9 @@
   transition: outline 0.2s ease;
 }
 
+/* Sidebar animated gradient border — matches landing nav pattern */
+@keyframes sidebar-border-flow {
+  0% { background-position: 0% 200%; }
+  100% { background-position: 0% -200%; }
+}
+

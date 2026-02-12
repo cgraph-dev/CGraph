@@ -38,6 +38,17 @@ export default function Sidebar({
       role="navigation"
       aria-label="Main navigation"
     >
+      {/* Animated gradient border — matches landing nav pattern */}
+      <div
+        className="pointer-events-none absolute inset-y-0 right-0 z-20 w-px"
+        style={{
+          background:
+            'linear-gradient(180deg, transparent 0%, rgba(16,185,129,0.5) 25%, rgba(139,92,246,0.5) 50%, rgba(16,185,129,0.5) 75%, transparent 100%)',
+          backgroundSize: '100% 200%',
+          animation: 'sidebar-border-flow 4s linear infinite',
+        }}
+      />
+
       {/* Ambient glow effect */}
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
 
