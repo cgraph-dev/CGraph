@@ -10,6 +10,7 @@ export interface DemoUserProfile {
   borderStyle: string;
   borderType: 'legendary' | 'electric' | 'fire';
   bubbleAccent: string;
+  bubbleBorder: string;
   nameColor: string;
   badges: { icon: string; label: string }[];
   xp: number;

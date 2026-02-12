@@ -1,113 +1,155 @@
-import { useState, useCallback, memo, useRef, useEffect } from 'react';
+import { useState, memo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ACHIEVEMENTS } from './constants';
+
+const ACTIVITY_FEED = [
+  { icon: '⚡', text: 'Earned 150 XP from daily login', color: '#f59e0b' },
+  { icon: '🔥', text: 'Streak extended to 43 days!', color: '#ef4444' },
+  { icon: '🏆', text: 'Unlocked "Social Butterfly" title', color: '#22c55e' },
+  { icon: '💎', text: 'Received 50 coins from achievement', color: '#8b5cf6' },
+  { icon: '🎯', text: 'Completed daily challenge +200 XP', color: '#3b82f6' },
+  { icon: '👑', text: 'Leveled up to Level 25!', color: '#f59e0b' },
+  { icon: '🛡️', text: 'Earned "Guardian" badge', color: '#06b6d4' },
+  { icon: '🌟', text: 'Ranked up to Gold tier', color: '#fbbf24' },
+];
+
+const STREAK_MILESTONES = [
+  { days: 7, icon: '🔥', label: '7d' },
+  { days: 14, icon: '💪', label: '14d' },
+  { days: 30, icon: '⭐', label: '30d' },
+  { days: 60, icon: '💎', label: '60d' },
+  { days: 100, icon: '👑', label: '100d' },
+];
 
 export const GamificationDemo = memo(function GamificationDemo() {
   const [xp, setXp] = useState(2450);
   const [level, setLevel] = useState(24);
-  const [unlockedAchievement, setUnlockedAchievement] = useState<string | null>(null);
-  const achievementTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+  const [streak, setStreak] = useState(42);
+  const [coins, setCoins] = useState(1280);
+  const [feedIndex, setFeedIndex] = useState(0);
+  const xpToNext = 3000;
+  const intervalsRef = useRef<ReturnType<typeof setInterval>[]>([]);
 
-  useEffect(
-    () => () => {
-      if (achievementTimerRef.current) clearTimeout(achievementTimerRef.current);
-    },
-    []
+  useEffect(() => {
+    // Auto-increment XP every 2s
+    const xpInterval = setInterval(() => {
+      const earned = Math.floor(Math.random() * 120) + 30;
+      setXp((prev) => {
+        const next = prev + earned;
+        if (next >= xpToNext) {
+          setLevel((l) => l + 1);
+          setCoins((c) => c + 50);
+          return next - xpToNext;
+        }
+        return next;
+      });
+    }, 2000);
+
+    // Cycle activity feed every 3s
+    const feedInterval = setInterval(() => {
+      setFeedIndex((i) => (i + 1) % ACTIVITY_FEED.length);
+    }, 3000);
+
+    // Bump streak every 8s
+    const streakInterval = setInterval(() => {
+      setStreak((s) => s + 1);
+    }, 8000);
+
+    intervalsRef.current = [xpInterval, feedInterval, streakInterval];
+    return () => intervalsRef.current.forEach(clearInterval);
+  }, []);
+
+  const progress = (xp / xpToNext) * 100;
+  const currentFeed = ACTIVITY_FEED.slice(feedIndex, feedIndex + 3).concat(
+    ACTIVITY_FEED.slice(0, Math.max(0, feedIndex + 3 - ACTIVITY_FEED.length))
   );
 
-  const xpToNextLevel = 3000;
-  const progress = (xp / xpToNextLevel) * 100;
-
-  const earnXp = useCallback(() => {
-    const earned = Math.floor(Math.random() * 200) + 50;
-    setXp((prev) => {
-      const newXp = prev + earned;
-      if (newXp >= xpToNextLevel) {
-        setLevel((l) => l + 1);
-        return newXp - xpToNextLevel;
-      }
-      return newXp;
-    });
-
-    if (Math.random() > 0.7 && !unlockedAchievement) {
-      const randomAchievement = ACHIEVEMENTS[Math.floor(Math.random() * ACHIEVEMENTS.length)];
-      if (randomAchievement) {
-        setUnlockedAchievement(randomAchievement.id);
-        achievementTimerRef.current = setTimeout(() => setUnlockedAchievement(null), 3000);
-      }
-    }
-  }, [unlockedAchievement]);
-
   return (
-    <div className="demo-gamification">
-      <div className="demo-level">
+    <div className="demo-gamify">
+      {/* Stats row */}
+      <div className="demo-gamify__stats">
         <motion.div
-          className="demo-level__badge"
-          animate={{ scale: [1, 1.1, 1] }}
+          className="demo-gamify__stat"
+          key={`lvl-${level}`}
+          animate={{ scale: [1, 1.08, 1] }}
           transition={{ duration: 0.3 }}
-          key={level}
         >
-          <span className="demo-level__number">{level}</span>
+          <span className="demo-gamify__stat-icon">🏅</span>
+          <span className="demo-gamify__stat-value">{level}</span>
+          <span className="demo-gamify__stat-label">Level</span>
         </motion.div>
-        <div className="demo-level__info">
-          <span className="demo-level__label">Level {level}</span>
-          <div className="demo-xp-bar">
-            <motion.div
-              className="demo-xp-bar__fill"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-            />
-          </div>
-          <span className="demo-xp-text">
-            {xp.toLocaleString()} / {xpToNextLevel.toLocaleString()} XP
+        <motion.div
+          className="demo-gamify__stat"
+          key={`str-${streak}`}
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 0.3 }}
+        >
+          <span className="demo-gamify__stat-icon">🔥</span>
+          <span className="demo-gamify__stat-value">{streak}</span>
+          <span className="demo-gamify__stat-label">Streak</span>
+        </motion.div>
+        <motion.div
+          className="demo-gamify__stat"
+          key={`coin-${coins}`}
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 0.3 }}
+        >
+          <span className="demo-gamify__stat-icon">💎</span>
+          <span className="demo-gamify__stat-value">{coins.toLocaleString()}</span>
+          <span className="demo-gamify__stat-label">Coins</span>
+        </motion.div>
+      </div>
+
+      {/* XP Bar */}
+      <div className="demo-gamify__xp-section">
+        <div className="demo-gamify__xp-header">
+          <span>Level {level}</span>
+          <span className="demo-gamify__xp-numbers">
+            {xp.toLocaleString()} / {xpToNext.toLocaleString()} XP
           </span>
         </div>
-      </div>
-
-      <motion.button
-        type="button"
-        className="demo-earn-xp"
-        onClick={earnXp}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <span>⚡</span> Earn XP
-      </motion.button>
-
-      <div className="demo-achievements">
-        <span className="demo-achievements__label">Recent Achievements</span>
-        <div className="demo-achievements__grid">
-          {ACHIEVEMENTS.slice(0, 4).map((achievement) => (
-            <motion.div
-              key={achievement.id}
-              className={`demo-achievement ${unlockedAchievement === achievement.id ? 'unlocking' : ''}`}
-              animate={
-                unlockedAchievement === achievement.id
-                  ? { scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }
-                  : {}
-              }
-            >
-              <span className="demo-achievement__icon">{achievement.icon}</span>
-              <span className="demo-achievement__name">{achievement.name}</span>
-            </motion.div>
-          ))}
+        <div className="demo-gamify__xp-track">
+          <motion.div
+            className="demo-gamify__xp-fill"
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          />
         </div>
       </div>
 
-      <AnimatePresence>
-        {unlockedAchievement && (
-          <motion.div
-            className="demo-unlock-notification"
-            initial={{ opacity: 0, y: 50, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -20 }}
+      {/* Streak milestones */}
+      <div className="demo-gamify__milestones">
+        {STREAK_MILESTONES.map((m) => (
+          <div
+            key={m.days}
+            className={`demo-gamify__milestone ${streak >= m.days ? 'demo-gamify__milestone--done' : ''}`}
           >
-            <span>🎉 Achievement Unlocked!</span>
-            <span>{ACHIEVEMENTS.find((a) => a.id === unlockedAchievement)?.name}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <span className="demo-gamify__milestone-icon">{m.icon}</span>
+            <span className="demo-gamify__milestone-label">{m.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Activity feed */}
+      <div className="demo-gamify__feed">
+        <span className="demo-gamify__feed-title">Live Activity</span>
+        <AnimatePresence mode="popLayout">
+          {currentFeed.map((item, i) => (
+            <motion.div
+              key={`${feedIndex}-${i}`}
+              className="demo-gamify__feed-item"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.3, delay: i * 0.08 }}
+            >
+              <span className="demo-gamify__feed-icon" style={{ color: item.color }}>
+                {item.icon}
+              </span>
+              <span className="demo-gamify__feed-text">{item.text}</span>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
     </div>
   );
 });

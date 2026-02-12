@@ -220,7 +220,15 @@ export const ChatDemo = memo(function ChatDemo() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 className={`demo-message ${isSelf ? 'demo-message--self' : ''}`}
-                style={msg.profile ? { background: msg.profile.bubbleAccent } : undefined}
+                style={
+                  msg.profile
+                    ? {
+                        background: msg.profile.bubbleAccent,
+                        border: `1px solid ${msg.profile.bubbleBorder}`,
+                        boxShadow: `0 0 15px ${msg.profile.bubbleBorder}`,
+                      }
+                    : undefined
+                }
               >
                 {!isSelf && (
                   <HoverableAvatar author={msg.author} avatar={msg.avatar} profile={msg.profile} />

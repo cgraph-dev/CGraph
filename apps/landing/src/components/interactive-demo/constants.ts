@@ -15,7 +15,8 @@ export const DEMO_USER_PROFILES: Record<string, DemoUserProfile> = {
     titleColor: 'linear-gradient(135deg, #ffd700, #ff8c00)',
     borderStyle: 'linear-gradient(135deg, #ffd700, #ff8c00, #ffd700)',
     borderType: 'legendary',
-    bubbleAccent: 'rgba(255, 215, 0, 0.08)',
+    bubbleAccent: 'linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,140,0,0.06))',
+    bubbleBorder: 'rgba(255, 215, 0, 0.2)',
     nameColor: '#f59e0b',
     badges: [
       { icon: '🔥', label: 'On Fire' },
@@ -32,7 +33,8 @@ export const DEMO_USER_PROFILES: Record<string, DemoUserProfile> = {
     titleColor: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
     borderStyle: 'linear-gradient(135deg, #8b5cf6, #06b6d4, #8b5cf6)',
     borderType: 'electric',
-    bubbleAccent: 'rgba(139, 92, 246, 0.08)',
+    bubbleAccent: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(99,102,241,0.06))',
+    bubbleBorder: 'rgba(139, 92, 246, 0.2)',
     nameColor: '#a78bfa',
     badges: [
       { icon: '💎', label: 'Premium' },
@@ -49,7 +51,8 @@ export const DEMO_USER_PROFILES: Record<string, DemoUserProfile> = {
     titleColor: 'linear-gradient(135deg, #10b981, #06b6d4)',
     borderStyle: 'linear-gradient(135deg, #10b981, #f97316, #10b981)',
     borderType: 'fire',
-    bubbleAccent: 'rgba(16, 185, 129, 0.08)',
+    bubbleAccent: 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(6,182,212,0.06))',
+    bubbleBorder: 'rgba(16, 185, 129, 0.2)',
     nameColor: '#34d399',
     badges: [
       { icon: '⚡', label: 'Elite' },
