@@ -459,6 +459,30 @@ defmodule CGraph.Search do
   end
 
   @doc """
+  Get recent search queries for a user.
+  Delegates to `CGraph.Accounts.Search`.
+  """
+  defdelegate get_recent_searches(user, opts \\ []), to: CGraph.Accounts.Search
+
+  @doc """
+  Clear a user's search history.
+  Delegates to `CGraph.Accounts.Search`.
+  """
+  defdelegate clear_search_history(user), to: CGraph.Accounts.Search
+
+  @doc """
+  Get user suggestions for autocomplete.
+  Delegates to `CGraph.Accounts.Search`.
+  """
+  defdelegate get_user_suggestions(query, opts \\ []), to: CGraph.Accounts.Search
+
+  @doc """
+  Get group suggestions for autocomplete.
+  Delegates to `CGraph.Groups`, :get_group_suggestions.
+  """
+  defdelegate get_group_suggestions(query, opts \\ []), to: CGraph.Groups
+
+  @doc """
   Record a search query for analytics.
   """
   def record_search(_user, _query, _result_count) do

@@ -2,13 +2,15 @@ defmodule CGraphWeb.API.V1.SearchController do
   @moduledoc """
   Handles search across the platform.
   Supports searching users, messages, posts, and groups.
+
+  All search operations route through the `CGraph.Search` context which
+  uses Meilisearch for sub-50ms fuzzy search with automatic PostgreSQL
+  ILIKE fallback when Meilisearch is unavailable.
   """
   use CGraphWeb, :controller
   import CGraphWeb.Helpers.ParamParser
 
-  alias CGraph.Accounts
-  alias CGraph.Groups
-  alias CGraph.Search, as: SearchContext
+  alias CGraph.Search
 
   action_fallback CGraphWeb.FallbackController
 
@@ -51,7 +53,7 @@ defmodule CGraphWeb.API.V1.SearchController do
       |> put_status(:bad_request)
       |> json(%{error: "Query must be at least 2 characters"})
     else
-      {users, meta} = SearchContext.search_users(query,
+      {users, meta} = Search.search_users(query,
         current_user: user,
         limit: per_page,
         page: page,
@@ -81,7 +83,7 @@ defmodule CGraphWeb.API.V1.SearchController do
       |> put_status(:bad_request)
       |> json(%{error: "Query must be at least 2 characters"})
     else
-      {messages, meta} = SearchContext.search_messages(user, query,
+      {messages, meta} = Search.search_messages(user, query,
         conversation_id: conversation_id,
         limit: per_page,
         page: page,
@@ -114,7 +116,7 @@ defmodule CGraphWeb.API.V1.SearchController do
       |> json(%{error: "Query must be at least 2 characters"})
     else
       cursor = Map.get(params, "cursor")
-      {posts, meta} = SearchContext.search_posts(query,
+      {posts, meta} = Search.search_posts(query,
         user: user,
         cursor: cursor,
         forum_id: forum_id,
@@ -143,7 +145,7 @@ defmodule CGraphWeb.API.V1.SearchController do
       |> put_status(:bad_request)
       |> json(%{error: "Query must be at least 2 characters"})
     else
-      {groups, meta} = SearchContext.search_groups(query,
+      {groups, meta} = Search.search_groups(query,
         user: user,
         limit: per_page,
         page: page,
@@ -178,7 +180,7 @@ defmodule CGraphWeb.API.V1.SearchController do
   def recent(conn, _params) do
     user = conn.assigns.current_user
 
-    recent_searches = Accounts.get_recent_searches(user, limit: 10)
+    recent_searches = Search.get_recent_searches(user, limit: 10)
     render(conn, :recent, searches: recent_searches)
   end
 
@@ -189,7 +191,7 @@ defmodule CGraphWeb.API.V1.SearchController do
   def clear_history(conn, _params) do
     user = conn.assigns.current_user
 
-    Accounts.clear_search_history(user)
+    Search.clear_search_history(user)
     send_resp(conn, :no_content, "")
   end
 
@@ -211,19 +213,19 @@ defmodule CGraphWeb.API.V1.SearchController do
     Enum.reduce(types, %{}, fn type, acc ->
       results = case type do
         :users ->
-          {users, _} = SearchContext.search_users(query, current_user: user, limit: limit_per_type)
+          {users, _} = Search.search_users(query, current_user: user, limit: limit_per_type)
           users
 
         :messages ->
-          {messages, _} = SearchContext.search_messages(user, query, limit: limit_per_type)
+          {messages, _} = Search.search_messages(user, query, limit: limit_per_type)
           messages
 
         :posts ->
-          {posts, _} = SearchContext.search_posts(query, user: user, limit: limit_per_type)
+          {posts, _} = Search.search_posts(query, user: user, limit: limit_per_type)
           posts
 
         :groups ->
-          {groups, _} = SearchContext.search_groups(query, user: user, limit: limit_per_type)
+          {groups, _} = Search.search_groups(query, user: user, limit: limit_per_type)
           groups
       end
 
@@ -235,11 +237,11 @@ defmodule CGraphWeb.API.V1.SearchController do
     Enum.flat_map(types, fn type ->
       case type do
         :users ->
-          Accounts.get_user_suggestions(query, current_user: user, limit: div(limit, 2))
+          Search.get_user_suggestions(query, current_user: user, limit: div(limit, 2))
           |> Enum.map(&%{type: :user, id: &1.id, name: &1.username, avatar: &1.avatar_url})
 
         :groups ->
-          Groups.get_group_suggestions(query, user: user, limit: div(limit, 2))
+          Search.get_group_suggestions(query, user: user, limit: div(limit, 2))
           |> Enum.map(&%{type: :group, id: &1.id, name: &1.name, icon: &1.icon})
 
         _ -> []
