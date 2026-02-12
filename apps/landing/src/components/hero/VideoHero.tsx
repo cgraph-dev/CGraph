@@ -107,10 +107,26 @@ const VideoHero = memo(function VideoHero(): React.JSX.Element {
       >
         {/* Eyebrow badge */}
         <motion.div variants={itemVariants} className="video-hero__eyebrow-wrap">
-          <span className="video-hero__eyebrow">
-            <span className="video-hero__eyebrow-dot" aria-hidden="true" />
+          <motion.span
+            className="video-hero__eyebrow"
+            initial={{ opacity: 0, scale: 0.85, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{
+              duration: 0.6,
+              delay: 0.3,
+              type: 'spring' as const,
+              stiffness: 200,
+              damping: 15,
+            }}
+          >
+            <motion.span
+              className="video-hero__eyebrow-dot"
+              aria-hidden="true"
+              animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            />
             Secure messaging for communities
-          </span>
+          </motion.span>
         </motion.div>
 
         {/* Title */}

@@ -2748,6 +2748,42 @@ html.site-ready {
   align-items: center;
 }
 
+/* Centered variant — single-column layout */
+.about__container--centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 3rem;
+}
+
+.about__content--centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 720px;
+}
+
+.about__content--centered .about__title {
+  text-align: center;
+}
+
+.about__content--centered .about__desc {
+  text-align: center;
+  max-width: 600px;
+}
+
+.about__visual--centered {
+  aspect-ratio: auto;
+  width: 100%;
+  max-width: 400px;
+}
+
+.about__cta-centered {
+  display: flex;
+  justify-content: center;
+}
+
 @media (max-width: 900px) {
   .about__container {
     grid-template-columns: 1fr;

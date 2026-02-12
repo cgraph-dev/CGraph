@@ -132,7 +132,7 @@
   border-radius: 50%;
   background: #10b981;
   box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
-  animation: hero-dot-pulse 2s ease-in-out infinite;
+  /* Pulse animation now handled by Framer Motion */
 }
 
 @keyframes hero-dot-pulse {

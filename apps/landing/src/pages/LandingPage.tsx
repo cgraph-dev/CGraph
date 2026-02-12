@@ -42,26 +42,6 @@ const fadeUp = {
   }),
 };
 
-/** Directional slide from left */
-const slideFromLeft = {
-  hidden: { opacity: 0, x: -40 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  },
-};
-
-/** Directional slide from right */
-const slideFromRight = {
-  hidden: { opacity: 0, x: 40 },
-  visible: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  },
-};
-
 /** Spring-based scale-in — used for icon/stat badges (About page pattern) */
 const springScaleIn = {
   hidden: { scale: 0.5, opacity: 0 },
@@ -765,19 +745,19 @@ export default function LandingPage() {
         <div className="showcase-header">
           <motion.span
             className="showcase-header__badge"
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            initial={{ opacity: 0, scale: 0.7, y: 20 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.5 }}
+            transition={{ type: 'spring' as const, stiffness: 260, damping: 14, delay: 0.1 }}
           >
             ✨ See the Difference
           </motion.span>
           <motion.h3
             className="showcase-header__title"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           >
             Hover to Discover Premium Features
           </motion.h3>
@@ -883,22 +863,22 @@ export default function LandingPage() {
       </section>
 
       {/* About/Security */}
-      <section ref={aboutRef} id="security" className="about zoom-section">
-        <div className="about__container">
-          {/* Left column — slides in from the left (Download page pattern) */}
+      <section ref={aboutRef} id="security" className="about about--centered zoom-section">
+        <div className="about__container about__container--centered">
+          {/* Centered header */}
           <motion.div
-            className="about__content"
-            variants={slideFromLeft}
-            initial="hidden"
-            whileInView="visible"
+            className="about__content about__content--centered"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           >
             <motion.span
               className="mb-4 inline-block animate-[badge-subtle-pulse_4s_ease-in-out_infinite] cursor-default rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1 text-sm text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.15),0_0_24px_rgba(168,85,247,0.08)] transition-all duration-300 hover:scale-[1.02] hover:animate-none hover:border-purple-500/60 hover:bg-purple-500/20 hover:shadow-[0_0_20px_rgba(168,85,247,0.3),0_0_40px_rgba(168,85,247,0.15)]"
-              initial={{ opacity: 0, y: 20, scale: 0.9 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              initial={{ opacity: 0, scale: 0.7, y: 20 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ type: 'spring' as const, stiffness: 260, damping: 14, delay: 0.15 }}
             >
               🔒 Privacy-First Design
             </motion.span>
@@ -908,7 +888,7 @@ export default function LandingPage() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              custom={0.3}
+              custom={0.2}
             >
               Your Privacy Is Our <span className="about__gradient">Priority</span>
             </motion.h2>
@@ -918,29 +898,21 @@ export default function LandingPage() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              custom={0.4}
+              custom={0.3}
             >
               Built from the ground up with security in mind. Your messages are end-to-end encrypted
               with AES-256, and we use Signal-inspired encryption protocols. Not even we can access
               your private conversations.
             </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-            >
-              <SwapButton mainText="Security Details" altText="Learn More" href="#security" />
-            </motion.div>
           </motion.div>
 
-          {/* Right column — slides in from the right */}
+          {/* Security icons — centered grid */}
           <motion.div
-            className="about__visual"
-            variants={slideFromRight}
-            initial="hidden"
-            whileInView="visible"
+            className="about__visual about__visual--centered"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           >
             <div className="about__orb" />
             <div className="about__icon-grid">
@@ -948,6 +920,17 @@ export default function LandingPage() {
                 <AnimatedSecurityIcon key={i} feature={feature} index={i} />
               ))}
             </div>
+          </motion.div>
+
+          {/* CTA button */}
+          <motion.div
+            className="about__cta-centered"
+            initial={{ opacity: 0, y: 15 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <SwapButton mainText="Security Details" altText="Learn More" href="#security" />
           </motion.div>
         </div>
       </section>
