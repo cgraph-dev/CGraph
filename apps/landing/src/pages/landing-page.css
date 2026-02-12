@@ -1,40 +1,10 @@
 /* CGraph Landing Demo - GAMELAND Style */
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+Thai:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+/* Only load fonts actually used: Orbitron (hero title) + Inter (body fallback) */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@400;500;600&display=swap');
 
 /* ==========================================================================
-   CUSTOM FONTS - Robert, Zentry & General for premium branding
+   CUSTOM FONTS - Loaded from index.css (single source of truth)
    ========================================================================== */
-@font-face {
-  font-family: 'Robert';
-  src: url('../assets/fonts/robert-regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Robert';
-  src: url('../assets/fonts/robert-medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Zentry';
-  src: url('../assets/fonts/zentry-regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'General';
-  src: url('../assets/fonts/general.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
 
 /* Site ready class applied after preloader */
 html.site-ready {
@@ -5376,5 +5346,205 @@ html.site-ready {
 
   .demo-achievements__grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+/* ==========================================================================
+   VALUE PROPOSITION SECTION — Replaces pricing
+   ========================================================================== */
+.value-section {
+  padding: 6rem 1.5rem;
+}
+
+.value-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 2.5rem auto 0;
+}
+
+.value-card {
+  position: relative;
+  padding: 2rem 1.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(8px);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.value-card:hover {
+  border-color: rgba(5, 150, 105, 0.25);
+  background: rgba(5, 150, 105, 0.04);
+  transform: translateY(-4px);
+}
+
+.value-card__icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.value-card__highlight {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  background: rgba(5, 150, 105, 0.12);
+  color: #34d399;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.value-card__title {
+  font-family: 'Robert', 'Inter', system-ui, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.value-card__desc {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Comparison table */
+.value-comparison {
+  max-width: 500px;
+  margin: 3rem auto 0;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+.value-comparison__header {
+  display: grid;
+  grid-template-columns: 1fr 80px 80px;
+  gap: 0;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.value-comparison__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+}
+
+.value-comparison__label--us {
+  color: #34d399;
+}
+
+.value-comparison__row {
+  display: grid;
+  grid-template-columns: 1fr 80px 80px;
+  gap: 0;
+  padding: 0.625rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.value-comparison__row:last-child {
+  border-bottom: none;
+}
+
+.value-comparison__feature {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.value-comparison__us {
+  text-align: center;
+  color: #10b981;
+  font-weight: 600;
+}
+
+.value-comparison__them {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.875rem;
+}
+
+/* Single CTA */
+.value-cta {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+.value-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(5, 150, 105, 0.3);
+  transition: all 0.25s ease;
+}
+
+.value-cta__btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(5, 150, 105, 0.4);
+  filter: brightness(1.1);
+}
+
+.value-cta__btn svg {
+  transition: transform 0.25s ease;
+}
+
+.value-cta__btn:hover svg {
+  transform: translateX(3px);
+}
+
+/* Value section responsive */
+@media (max-width: 900px) {
+  .value-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .value-grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+  }
+
+  .value-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .value-comparison {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+
+  .value-cta__btn {
+    font-size: 0.9375rem;
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+/* ==========================================================================
+   MOBILE-SPECIFIC FIXES
+   ========================================================================== */
+
+/* Security icon grid — better flow on small screens */
+@media (max-width: 480px) {
+  .about__icon-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }

@@ -1,6 +1,6 @@
 import { ReactNode, memo } from 'react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { LogoIcon } from '@/components/logo';
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -76,25 +76,13 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
         >
-          <Link to="/" className="group flex items-center gap-3">
+          <a href="https://www.cgraph.org" className="group flex items-center gap-3">
             <motion.div
               className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/20 bg-gradient-to-br from-violet-500/20 to-emerald-500/10 backdrop-blur-md transition-all duration-300 group-hover:border-violet-400/50 group-hover:bg-gradient-to-br group-hover:from-violet-500/30 group-hover:to-emerald-500/20 group-hover:shadow-[0_0_30px_rgba(139,92,246,0.5)]"
               whileHover={reduced ? {} : { scale: 1.1, rotate: 5 }}
               whileTap={reduced ? {} : { scale: 0.95 }}
             >
-              <svg
-                className="h-7 w-7 text-primary-400 transition-transform duration-300"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-              </svg>
+              <LogoIcon size={28} color="gradient" showGlow={false} />
             </motion.div>
             <motion.span
               className="text-3xl font-bold"
@@ -106,7 +94,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                 CGraph
               </span>
             </motion.span>
-          </Link>
+          </a>
         </motion.div>
 
         {/* Main content section */}

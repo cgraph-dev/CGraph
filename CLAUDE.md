@@ -189,22 +189,40 @@ Marketing and public-facing content:
 ```
 apps/landing/
 ├── src/
+│   ├── components/
+│   │   ├── hero/                  # VideoHero (cinematic video background)
+│   │   ├── marketing/             # Navigation, Footer, MarketingLayout
+│   │   ├── sections/              # ValueProposition (replaces pricing)
+│   │   ├── interactive-demo/      # Live chat demo
+│   │   ├── customization-demo/    # Theme customization showcase
+│   │   └── forum-showcase/        # Forum feature showcase
+│   ├── data/
+│   │   └── landing-data.ts        # Extracted data arrays & types
 │   ├── pages/
 │   │   ├── LandingPage.tsx        # Main marketing page (GSAP animations)
-│   │   ├── auth/                  # Login, Register, ForgotPassword
 │   │   ├── legal/                 # Privacy, Terms, Cookies, GDPR
-│   │   └── company/               # About, Careers, Contact, Press
+│   │   ├── company/               # About, Careers, Contact, Press
+│   │   └── resources/             # Blog, Documentation, Status, Download
 │   └── main.tsx                   # Router with all routes
 ├── package.json
 └── vite.config.ts
 ```
 
+**Architecture notes**:
+
+- Nav/Footer use unified `marketing/Navigation` and `marketing/Footer` components
+- Hero section uses `VideoHero` with Framer Motion animations (video bg on desktop)
+- Pricing replaced by `ValueProposition` comparison section
+- Google Fonts limited to Orbitron + Inter; custom fonts: Zentry, General, Robert
+- GSAP ScrollTrigger runs only on desktop (≥768px); skipped for `prefers-reduced-motion`
+- Auth pages handled by web.cgraph.org (Vercel redirects)
+
 **Routes**:
 
-- `/` - Marketing landing page with features, pricing, testimonials
-- `/login`, `/register`, `/forgot-password` - Authentication flows
+- `/` - Marketing landing page with features, value proposition, security
 - `/privacy`, `/terms`, `/cookies`, `/gdpr` - Legal pages
 - `/about`, `/careers`, `/contact`, `/press` - Company pages
+- `/blog`, `/docs`, `/status`, `/download` - Resource pages
 
 ### Web App (`apps/web`)
 

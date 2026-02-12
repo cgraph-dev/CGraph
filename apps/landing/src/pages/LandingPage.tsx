@@ -18,7 +18,12 @@ import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion } from 'framer-motion';
-import { LogoIcon } from '../components/Logo';
+import Navigation from '../components/marketing/Navigation';
+import Footer from '../components/marketing/Footer';
+import VideoHero from '../components/hero/VideoHero';
+import ValueProposition from '../components/sections/ValueProposition';
+import { features, showcaseCards, securityFeatures } from '../data/landing-data';
+import type { ShowcaseCardData } from '../data/landing-data';
 import './landing-page.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -36,204 +41,6 @@ const ForumShowcase = lazy(() =>
 
 // Web app URL for auth links (direct navigation, not SPA routing)
 const WEB_APP_URL = 'https://web.cgraph.org';
-
-// =============================================================================
-// PERFORMANCE UTILITIES
-// =============================================================================
-
-const throttle = <T extends (...args: Parameters<T>) => ReturnType<T>>(
-  fn: T,
-  delay: number
-): ((...args: Parameters<T>) => void) => {
-  let lastCall = 0;
-  return (...args: Parameters<T>) => {
-    const now = Date.now();
-    if (now - lastCall >= delay) {
-      lastCall = now;
-      fn(...args);
-    }
-  };
-};
-
-const debounce = <T extends (...args: Parameters<T>) => ReturnType<T>>(
-  fn: T,
-  delay: number
-): ((...args: Parameters<T>) => void) => {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn(...args), delay);
-  };
-};
-
-// =============================================================================
-// DATA
-// =============================================================================
-
-const features = [
-  {
-    icon: '🔐',
-    title: 'End-to-End Encryption',
-    description:
-      'Signal Protocol with X3DH key agreement and Double Ratchet algorithm. Your messages stay private.',
-  },
-  {
-    icon: '💬',
-    title: 'Real-Time Messaging',
-    description:
-      'Sub-200ms delivery with WebSocket channels. Feel the speed of instant communication.',
-  },
-  {
-    icon: '🏛️',
-    title: 'Forums & Communities',
-    description: 'Reddit-style communities with voting, threads, and powerful moderation tools.',
-  },
-  {
-    icon: '👥',
-    title: 'Groups & Channels',
-    description: 'Powerful servers with roles, permissions, and organized channel structures.',
-  },
-  {
-    icon: '📞',
-    title: 'Voice & Video Calls',
-    description: 'Crystal-clear WebRTC calling with screen sharing and recording capabilities.',
-  },
-  {
-    icon: '🎮',
-    title: 'Gamification',
-    description: 'Earn XP, unlock achievements, complete quests, and climb the leaderboards.',
-  },
-];
-
-interface ShowcaseCardData {
-  id: string;
-  label: string;
-  icon: string;
-}
-
-const showcaseCards: ShowcaseCardData[] = [
-  { id: 'avatar', label: 'Avatar Borders', icon: '👤' },
-  { id: 'chat', label: 'Chat Styles', icon: '💬' },
-  { id: 'profile', label: 'Profile Themes', icon: '✨' },
-  { id: 'title', label: 'Animated Titles', icon: '🏆' },
-];
-
-const pricingTiers = [
-  {
-    name: 'Free',
-    price: '$0',
-    period: 'forever',
-    description: 'Everything to get started',
-    features: [
-      'End-to-end encrypted messaging',
-      'Join unlimited forums',
-      'Create 1 forum',
-      '1-on-1 voice & video calls',
-      'Web3 wallet authentication',
-    ],
-    cta: 'Get Started',
-    highlighted: false,
-  },
-  {
-    name: 'Premium',
-    price: '$9',
-    period: '/month',
-    description: 'For power users',
-    features: [
-      'Everything in Free',
-      'Create up to 5 forums',
-      'Group calls up to 25 people',
-      'Priority customer support',
-      'Advanced profile customization',
-    ],
-    cta: 'Start Trial',
-    highlighted: true,
-  },
-  {
-    name: 'Enterprise',
-    price: 'Custom',
-    period: '',
-    description: 'For organizations',
-    features: [
-      'Everything in Premium',
-      'Custom domain & branding',
-      'SSO/SAML integration',
-      'Admin dashboard & controls',
-      'Dedicated account manager',
-      'Custom SLA & uptime guarantee',
-    ],
-    cta: 'Contact Sales',
-    highlighted: false,
-  },
-];
-
-const footerLinks = {
-  product: [
-    { label: 'Features', href: '/#features' },
-    { label: 'Security', href: '/#security' },
-    { label: 'Pricing', href: '/#pricing' },
-    { label: 'Download', href: '/download' },
-  ],
-  resources: [
-    { label: 'Documentation', href: '/docs' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Status', href: '/status' },
-    { label: 'API Reference', href: '/docs' },
-  ],
-  company: [
-    { label: 'About', href: '/about' },
-    { label: 'Careers', href: '/careers' },
-    { label: 'Contact', href: '/contact' },
-    { label: 'Press', href: '/press' },
-  ],
-  legal: [
-    { label: 'Privacy', href: '/privacy' },
-    { label: 'Terms', href: '/terms' },
-    { label: 'Cookie Policy', href: '/cookies' },
-    { label: 'GDPR', href: '/gdpr' },
-  ],
-};
-
-/** Renders a footer link — hash links scroll smoothly, others use React Router. */
-function FooterLink({ label, href }: { label: string; href: string }) {
-  if (href.startsWith('/#')) {
-    const sectionId = href.slice(2);
-    return (
-      <a
-        key={label}
-        href={href}
-        className="gl-footer__link"
-        onClick={(e) => {
-          e.preventDefault();
-          const el = document.getElementById(sectionId);
-          if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            window.history.replaceState(null, '', href);
-          }
-        }}
-      >
-        {label}
-      </a>
-    );
-  }
-  return (
-    <Link key={label} to={href} className="gl-footer__link">
-      {label}
-    </Link>
-  );
-}
-
-const securityFeatures = [
-  { icon: '🔒', title: 'End-to-End Encrypted', description: 'Messages encrypted with AES-256-GCM' },
-  { icon: '🛡️', title: 'Zero-Knowledge', description: 'We cannot read your messages' },
-  { icon: '🔑', title: 'Argon2 Passwords', description: 'OWASP-recommended password hashing' },
-  { icon: '📱', title: 'Multi-Device Sync', description: 'Secure sync across all devices' },
-  { icon: '🔐', title: '2FA Protection', description: 'TOTP-based two-factor authentication' },
-  { icon: '🌐', title: 'Web3 Authentication', description: 'Sign in with your crypto wallet' },
-  { icon: '⚡', title: 'Real-Time Secure', description: 'Encrypted WebSocket connections' },
-  { icon: '🔏', title: 'TLS Everywhere', description: 'All data encrypted in transit' },
-  { icon: '✅', title: 'GDPR Compliant', description: 'Full data export & deletion rights' },
-];
 
 // =============================================================================
 // COMPONENTS
@@ -647,34 +454,6 @@ function TiltCard({
   );
 }
 
-function SignInButton() {
-  return (
-    <a href={`${WEB_APP_URL}/login`} className="btn-signin group">
-      <span className="btn-signin__glow" />
-      <span className="btn-signin__border" />
-      <span className="btn-signin__content">
-        <svg
-          className="btn-signin__icon"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-          <polyline points="10 17 15 12 10 7" />
-          <line x1="15" y1="12" x2="3" y2="12" />
-        </svg>
-        <span className="btn-signin__text">Sign In</span>
-        <span className="btn-signin__text-hover">Welcome</span>
-      </span>
-    </a>
-  );
-}
-
 function SwapButton({
   primary = false,
   mainText,
@@ -719,17 +498,9 @@ function SwapButton({
 // =============================================================================
 
 export default function LandingPage() {
-  const [navHidden, setNavHidden] = useState(false);
-  const [navScrolled, setNavScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
-  const statsRef = useRef<HTMLDivElement>(null);
   const aboutRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
-  const aboutVisualRef = useRef<HTMLDivElement>(null);
-  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
   // Handle hash navigation on page load
   useEffect(() => {
@@ -746,44 +517,20 @@ export default function LandingPage() {
     return undefined;
   }, []);
 
-  // Scroll handler for nav visibility
+  // GSAP ScrollTrigger animations (desktop only)
   useEffect(() => {
-    let lastScroll = 0;
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const handleScroll = throttle(() => {
-      const currentScroll = window.scrollY;
-      setNavHidden(currentScroll > lastScroll && currentScroll > 100);
-      setNavScrolled(currentScroll > 50);
-      lastScroll = currentScroll;
-    }, 16);
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // GSAP animations
-  useEffect(() => {
     let gsapContextRef: gsap.Context | null = null;
-    let heroTl: gsap.core.Timeline | null = null;
-
-    // Hero entrance animations
-    gsap.set('.hero__eyebrow', { y: 60, opacity: 0, scale: 0.98 });
-    gsap.set('.hero__title', { y: 40, opacity: 0 });
-    gsap.set('.hero__subtitle', { y: 22, opacity: 0, skewY: 5 });
-    gsap.set('.hero__buttons', { y: 18, opacity: 0, scale: 0 });
-
-    heroTl = gsap.timeline({ delay: 0.1, defaults: { ease: 'power2.out' } });
-    heroTl
-      .to('.hero__eyebrow', { y: 0, opacity: 1, scale: 1, duration: 0.65 })
-      .to('.hero__title', { y: 0, opacity: 1, duration: 0.6 }, '>-0.3')
-      .to('.hero__subtitle', { y: 0, opacity: 1, skewY: 0, duration: 0.55 }, '>-0.25')
-      .to(
-        '.hero__buttons',
-        { y: 0, opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.7)' },
-        '>-0.13'
-      );
 
     document.documentElement.classList.add('site-ready');
+
+    if (prefersReduced || !isDesktop) {
+      // On mobile or reduced-motion, show all sections immediately
+      gsap.set('.zoom-section', { scale: 1, opacity: 1 });
+      return undefined;
+    }
 
     const timeoutId = setTimeout(() => {
       const ctx = gsap.context(() => {
@@ -861,62 +608,13 @@ export default function LandingPage() {
           stagger: 0.1,
           ease: 'power3.out',
         });
-
-        if (scrollIndicatorRef.current) {
-          const scrollDot = scrollIndicatorRef.current.querySelector('.hero__scroll-dot');
-          const scrollArrows = scrollIndicatorRef.current.querySelectorAll(
-            '.hero__scroll-arrows span'
-          );
-
-          if (scrollDot) {
-            gsap.to(scrollDot, {
-              scrollTrigger: {
-                trigger: heroRef.current,
-                start: 'top top',
-                end: 'bottom top',
-                scrub: 0.5,
-              },
-              y: 20,
-              opacity: 0.2,
-              ease: 'none',
-            });
-          }
-
-          scrollArrows.forEach((arrow, index) => {
-            gsap.to(arrow, {
-              scrollTrigger: {
-                trigger: heroRef.current,
-                start: 'top top',
-                end: 'bottom top',
-                scrub: 0.5,
-              },
-              y: 8 + index * 4,
-              opacity: 0,
-              ease: 'none',
-            });
-          });
-
-          gsap.to(scrollIndicatorRef.current, {
-            scrollTrigger: {
-              trigger: heroRef.current,
-              start: 'top top',
-              end: '30% top',
-              scrub: 0.3,
-            },
-            opacity: 0,
-            y: 20,
-            ease: 'none',
-          });
-        }
       });
 
       gsapContextRef = ctx;
 
-      const resizeObserver = new ResizeObserver(
-        debounce(() => {
-          ScrollTrigger.refresh();
-        }, 200)
-      );
+      const resizeObserver = new ResizeObserver(() => {
+        ScrollTrigger.refresh();
+      });
 
       const mainContainer = document.querySelector('.demo-landing');
       if (mainContainer) {
@@ -929,7 +627,6 @@ export default function LandingPage() {
 
     return () => {
       clearTimeout(timeoutId);
-      heroTl?.kill();
       const observer = (window as unknown as { _cgraphResizeObserver?: ResizeObserver })
         ._cgraphResizeObserver;
       if (observer) {
@@ -946,194 +643,14 @@ export default function LandingPage() {
 
   return (
     <div className="demo-landing">
-      {/* Navigation */}
-      <nav className={`gl-nav ${navHidden ? 'hidden' : ''} ${navScrolled ? 'scrolled' : ''}`}>
-        <Link to="/" className="gl-nav__logo">
-          <LogoIcon size={32} showGlow={false} color="gradient" />
-          <span className="gl-nav__logo-text">CGraph</span>
-        </Link>
+      {/* Unified Navigation */}
+      <Navigation showLandingLinks />
 
-        <div className="gl-nav__links">
-          <a
-            href="#features"
-            className="gl-nav__link"
-            onClick={(e) => {
-              e.preventDefault();
-              const el = document.getElementById('features');
-              if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
-            }}
-          >
-            Features
-          </a>
-          <a
-            href="#security"
-            className="gl-nav__link"
-            onClick={(e) => {
-              e.preventDefault();
-              const el = document.getElementById('security');
-              if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
-            }}
-          >
-            Security
-          </a>
-          <a
-            href="#pricing"
-            className="gl-nav__link"
-            onClick={(e) => {
-              e.preventDefault();
-              const el = document.getElementById('pricing');
-              if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
-            }}
-          >
-            Pricing
-          </a>
-        </div>
-
-        <SignInButton />
-
-        {/* Mobile Hamburger Button */}
-        <button
-          className={`mobile-menu-toggle ${mobileMenuOpen ? 'active' : ''}`}
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label="Toggle mobile menu"
-          aria-expanded={mobileMenuOpen}
-        >
-          <span className="hamburger-line" />
-          <span className="hamburger-line" />
-          <span className="hamburger-line" />
-        </button>
-      </nav>
-
-      {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div className="mobile-menu-overlay" onClick={() => setMobileMenuOpen(false)}>
-          <nav className="mobile-menu" onClick={(e) => e.stopPropagation()}>
-            <div className="mobile-menu__header">
-              <Link to="/" className="mobile-menu__logo" onClick={() => setMobileMenuOpen(false)}>
-                <LogoIcon size={28} showGlow={false} color="gradient" />
-                <span>CGraph</span>
-              </Link>
-              <button
-                className="mobile-menu__close"
-                onClick={() => setMobileMenuOpen(false)}
-                aria-label="Close menu"
-              >
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="mobile-menu__links">
-              <a
-                href="#features"
-                className="mobile-menu__link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setMobileMenuOpen(false);
-                  const el = document.getElementById('features');
-                  if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
-                }}
-              >
-                <span className="mobile-menu__link-icon">✨</span>
-                Features
-              </a>
-              <a
-                href="#security"
-                className="mobile-menu__link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setMobileMenuOpen(false);
-                  const el = document.getElementById('security');
-                  if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
-                }}
-              >
-                <span className="mobile-menu__link-icon">🔐</span>
-                Security
-              </a>
-              <a
-                href="#pricing"
-                className="mobile-menu__link"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setMobileMenuOpen(false);
-                  const el = document.getElementById('pricing');
-                  if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
-                }}
-              >
-                <span className="mobile-menu__link-icon">💎</span>
-                Pricing
-              </a>
-            </div>
-
-            <div className="mobile-menu__cta">
-              <a href={`${WEB_APP_URL}/login`} className="mobile-menu__signin">
-                Sign In
-              </a>
-              <a href={`${WEB_APP_URL}/register`} className="mobile-menu__signup">
-                Get Started Free
-              </a>
-            </div>
-          </nav>
-        </div>
-      )}
-
-      {/* Hero */}
-      <section ref={heroRef} className="hero">
-        <div className="hero__bg">
-          <div className="hero__gradient-bg" />
-          <div className="hero__bg-aurora" />
-          <div className="hero__bg-grid" />
-          <div className="hero__bg-particles" />
-          <div className="hero__bg-streaks" />
-          <div className="hero__bg-spotlight" />
-          <div className="hero__bg-interactive" />
-          <div className="hero__bg-noise" />
-          <div className="hero__bg-vignette" />
-          <div className="hero__bg-fade" />
-        </div>
-
-        <div className="hero__content">
-          <span className="hero__eyebrow font-robert">The All-in-One Platform</span>
-
-          <h1 className="hero__title">
-            <span className="hero__title-beyond">Beyond</span>
-            <span className="hero__title-gradient">Messaging</span>
-          </h1>
-
-          <p className="hero__subtitle font-robert">
-            Real-time messaging meets community forums — with end-to-end encryption, Web3
-            authentication, and rewards that make every interaction count.
-          </p>
-
-          <div className="hero__buttons">
-            <SwapButton primary mainText="Start Free" altText="No Credit Card" href="/register" />
-            <SwapButton mainText="Learn More" altText="Explore" href="#features" />
-          </div>
-        </div>
-
-        <div ref={scrollIndicatorRef} className="hero__scroll">
-          <span>Scroll</span>
-          <div className="hero__scroll-line">
-            <span className="hero__scroll-dot" />
-          </div>
-          <div className="hero__scroll-arrows">
-            <span />
-            <span />
-            <span />
-          </div>
-        </div>
-      </section>
+      {/* Hero — Cinematic video background */}
+      <VideoHero />
 
       {/* Feature Showcase */}
-      <section ref={statsRef} className="stats-section zoom-section">
+      <section className="stats-section zoom-section">
         <div className="showcase-header">
           <span className="showcase-header__badge">✨ See the Difference</span>
           <h3 className="showcase-header__title">Hover to Discover Premium Features</h3>
@@ -1233,7 +750,7 @@ export default function LandingPage() {
             <SwapButton mainText="Security Details" altText="Learn More" href="#security" />
           </div>
 
-          <div ref={aboutVisualRef} className="about__visual">
+          <div className="about__visual">
             <div className="about__orb" />
             <div className="about__icon-grid">
               {securityFeatures.map((feature, i) => (
@@ -1244,63 +761,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="pricing zoom-section">
-        <div className="section-header">
-          <span className="section-header__badge section-header__badge--cyan">💎 Pricing</span>
-          <h2 className="section-header__title font-zentry">
-            Simple, <span className="pricing__gradient-animated">Transparent</span> Pricing
-          </h2>
-          <p className="section-header__desc">
-            Choose the plan that fits your community. No hidden fees, cancel anytime.
-          </p>
-        </div>
-
-        <div className="pricing__grid">
-          {pricingTiers.map((tier) => (
-            <div
-              key={tier.name}
-              className={`pricing__card ${tier.highlighted ? 'pricing__card--highlighted' : ''}`}
-            >
-              {tier.highlighted && <span className="pricing__badge">Most Popular</span>}
-              <h3 className="pricing__name font-robert">{tier.name}</h3>
-              <div className="pricing__price">
-                <span className="pricing__amount">{tier.price}</span>
-                <span className="pricing__period">{tier.period}</span>
-              </div>
-              <p className="pricing__desc">{tier.description}</p>
-
-              <ul className="pricing__features">
-                {tier.features.map((feature) => (
-                  <li key={feature}>
-                    <svg
-                      className="pricing__check"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              <a
-                href={`${WEB_APP_URL}/register`}
-                className={`pricing__cta ${tier.highlighted ? 'pricing__cta--primary' : ''}`}
-              >
-                {tier.cta}
-              </a>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Value Proposition (replaces pricing) */}
+      <ValueProposition />
 
       {/* CTA */}
       <section ref={ctaRef} className="cta zoom-section">
@@ -1326,60 +788,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="gl-footer">
-        <div className="gl-footer__main">
-          <div className="gl-footer__column">
-            <h4 className="gl-footer__heading">Product</h4>
-            {footerLinks.product.map((link) => (
-              <FooterLink key={link.label} label={link.label} href={link.href} />
-            ))}
-          </div>
-          <div className="gl-footer__column">
-            <h4 className="gl-footer__heading">Resources</h4>
-            {footerLinks.resources.map((link) => (
-              <FooterLink key={link.label} label={link.label} href={link.href} />
-            ))}
-          </div>
-          <div className="gl-footer__column">
-            <h4 className="gl-footer__heading">Company</h4>
-            {footerLinks.company.map((link) => (
-              <FooterLink key={link.label} label={link.label} href={link.href} />
-            ))}
-          </div>
-          <div className="gl-footer__column">
-            <h4 className="gl-footer__heading">Legal</h4>
-            {footerLinks.legal.map((link) => (
-              <FooterLink key={link.label} label={link.label} href={link.href} />
-            ))}
-          </div>
-        </div>
-        <div className="gl-footer__bottom">
-          <div className="gl-footer__bottom-left">
-            <Link to="/" className="gl-footer__logo">
-              <LogoIcon size={24} color="white" />
-              <span>© 2026 CGraph</span>
-            </Link>
-          </div>
-          <div className="gl-footer__socials">
-            <a href="#" className="gl-footer__social" aria-label="Twitter / X">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
-            <a href="#" className="gl-footer__social" aria-label="GitHub">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-              </svg>
-            </a>
-            <a href="#" className="gl-footer__social" aria-label="Discord">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </footer>
+      {/* Unified Footer */}
+      <Footer />
     </div>
   );
 }
