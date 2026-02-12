@@ -1013,7 +1013,10 @@ export default function BlogArticle() {
     );
   }
 
-  const catColor = categoryColors[article.category] || categoryColors.Engineering;
+  const catColor = categoryColors[article.category] ?? {
+    bg: 'rgba(99, 102, 241, 0.12)',
+    text: '#818cf8',
+  };
 
   // Find previous/next articles
   const currentIndex = articleSlugs.indexOf(slug!);
@@ -1024,7 +1027,7 @@ export default function BlogArticle() {
 
   // Get related articles (same category, excluding current)
   const relatedArticles = articleSlugs
-    .filter((s) => s !== slug && blogArticles[s].category === article.category)
+    .filter((s) => s !== slug && blogArticles[s]?.category === article.category)
     .slice(0, 3);
 
   return (
@@ -1203,7 +1206,11 @@ export default function BlogArticle() {
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {relatedArticles.map((relSlug) => {
                   const rel = blogArticles[relSlug];
-                  const relCatColor = categoryColors[rel.category] || categoryColors.Engineering;
+                  if (!rel) return null;
+                  const relCatColor = categoryColors[rel.category] ?? {
+                    bg: 'rgba(99, 102, 241, 0.12)',
+                    text: '#818cf8',
+                  };
                   return (
                     <Link
                       key={relSlug}
