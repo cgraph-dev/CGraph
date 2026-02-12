@@ -211,51 +211,65 @@ export const ChatDemo = memo(function ChatDemo() {
     <div className="demo-chat">
       <div className="demo-chat__messages">
         <AnimatePresence>
-          {messages.map((msg) => (
-            <motion.div
-              key={msg.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="demo-message"
-              style={msg.profile ? { background: msg.profile.bubbleAccent } : undefined}
-            >
-              <HoverableAvatar author={msg.author} avatar={msg.avatar} profile={msg.profile} />
-              <div className="demo-message__content">
-                <div className="demo-message__header">
-                  <span
-                    className="demo-message__author"
-                    style={msg.profile ? { color: msg.profile.nameColor } : undefined}
-                  >
-                    {msg.author}
-                  </span>
-                  {msg.profile && (
+          {messages.map((msg) => {
+            const isSelf = msg.author === 'You';
+            return (
+              <motion.div
+                key={msg.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className={`demo-message ${isSelf ? 'demo-message--self' : ''}`}
+                style={msg.profile ? { background: msg.profile.bubbleAccent } : undefined}
+              >
+                {!isSelf && (
+                  <HoverableAvatar author={msg.author} avatar={msg.avatar} profile={msg.profile} />
+                )}
+                <div className="demo-message__content">
+                  <div className="demo-message__header">
                     <span
-                      className="demo-message__title-badge"
-                      style={{ backgroundImage: msg.profile.titleColor }}
+                      className="demo-message__author"
+                      style={
+                        isSelf
+                          ? { color: '#10b981' }
+                          : msg.profile
+                            ? { color: msg.profile.nameColor }
+                            : undefined
+                      }
                     >
-                      {msg.profile.title}
+                      {msg.author}
                     </span>
-                  )}
-                  {msg.profile?.badges.slice(0, 2).map((b) => (
-                    <span key={b.label} className="demo-message__inline-badge" title={b.label}>
-                      {b.icon}
-                    </span>
-                  ))}
-                </div>
-                <p className="demo-message__text">{msg.content}</p>
-                {msg.reactions && (
-                  <div className="demo-message__reactions">
-                    {msg.reactions.map((r, i) => (
-                      <span key={i} className="demo-reaction">
-                        {r.emoji} {r.count}
+                    {msg.profile && (
+                      <span
+                        className="demo-message__title-badge"
+                        style={{ backgroundImage: msg.profile.titleColor }}
+                      >
+                        {msg.profile.title}
+                      </span>
+                    )}
+                    {msg.profile?.badges.slice(0, 2).map((b) => (
+                      <span key={b.label} className="demo-message__inline-badge" title={b.label}>
+                        {b.icon}
                       </span>
                     ))}
                   </div>
+                  <p className="demo-message__text">{msg.content}</p>
+                  {msg.reactions && (
+                    <div className="demo-message__reactions">
+                      {msg.reactions.map((r, i) => (
+                        <span key={i} className="demo-reaction">
+                          {r.emoji} {r.count}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {isSelf && (
+                  <div className="demo-message__avatar demo-message__avatar--self">😎</div>
                 )}
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </AnimatePresence>
 
         {isTyping && (

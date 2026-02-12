@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { InteractiveDemoProps } from './types';
 import { DEMO_TABS } from './constants';
 import { ChatDemo } from './ChatDemo';
-import { CustomizeDemo } from './CustomizeDemo';
+import { TitlesDemo } from './TitlesDemo';
+import { AchievementsDemo } from './AchievementsDemo';
 import { GamificationDemo } from './GamificationDemo';
 
 export const InteractiveDemo = memo(function InteractiveDemo({
@@ -42,7 +43,8 @@ export const InteractiveDemo = memo(function InteractiveDemo({
             className="interactive-demo__panel"
           >
             {activeTab === 'chat' && <ChatDemo />}
-            {activeTab === 'customize' && <CustomizeDemo />}
+            {activeTab === 'titles' && <TitlesDemo />}
+            {activeTab === 'achievements' && <AchievementsDemo />}
             {activeTab === 'gamify' && <GamificationDemo />}
           </motion.div>
         </AnimatePresence>

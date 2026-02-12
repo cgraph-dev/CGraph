@@ -40,3 +40,24 @@ export interface DemoTab {
 export interface InteractiveDemoProps {
   className?: string;
 }
+
+/** Title showcase entry */
+export interface DemoTitle {
+  id: string;
+  name: string;
+  rarity: string;
+  color: string;
+  animation: string;
+  unlock: string;
+}
+
+/** Achievement showcase entry */
+export interface DemoAchievement {
+  id: string;
+  name: string;
+  icon: string;
+  desc: string;
+  rarity: string;
+  xp: number;
+  category: string;
+}
