@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.14** | Generated: February 8, 2026
+> **Version: 0.9.15** | Generated: February 13, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
@@ -17,8 +17,10 @@ Real-time overview of project health, architecture status, and operational state
 | **Tests**         | ✅     | 9/10  | 1,342 tests passing (+132 facade tests)     |
 | **Security**      | ⚠️     | 7/10  | No critical CVEs; E2EE audit pending        |
 | **Documentation** | ✅     | 9/10  | Updated with facade & platform parity docs  |
+| **Observability** | ✅     | 8/10  | Prometheus + SLO rules active, Sentry live  |
+| **Resilience**    | ✅     | 8/10  | Circuit breakers on Redis + HTTP, fallbacks |
 
-**Composite Score: 9.0/10** — Production-ready with strong architecture
+**Composite Score: 9.1/10** — Production-ready with operational maturity
 
 ---
 
@@ -98,7 +100,7 @@ Remaining:          18 (26%)
 | Private Messages | 83%      | ██████████████████░░░░ |
 | Announcements    | 83%      | ██████████████████░░░░ |
 | Core Forums      | 80%      | █████████████████░░░░░ |
-| Search           | 80%      | █████████████████░░░░░ |
+| Search           | 100%     | ██████████████████████ |
 | Formatting       | 80%      | █████████████████░░░░░ |
 | Reputation       | 75%      | ████████████████░░░░░░ |
 | User System      | 67%      | ██████████████░░░░░░░░ |
@@ -211,16 +213,19 @@ apps/mobile/src/screens/
 
 ## 📚 Quick Links
 
-| Resource              | Link                                                                       |
-| --------------------- | -------------------------------------------------------------------------- |
-| Architecture          | [ARCHITECTURE_TRANSFORMATION_PLAN.md](ARCHITECTURE_TRANSFORMATION_PLAN.md) |
-| Quality Gates         | [QUALITY_GATES.md](QUALITY_GATES.md)                                       |
-| Coding Standards      | [CODE_SIMPLIFICATION_GUIDELINES.md](CODE_SIMPLIFICATION_GUIDELINES.md)     |
-| Security Policy       | [SECURITY.md](../SECURITY.md)                                              |
-| Changelog             | [CHANGELOG.md](../CHANGELOG.md)                                            |
-| AI Instructions       | [CLAUDE.md](../CLAUDE.md)                                                  |
-| **Reanimated v4 ADR** | [018-reanimated-v4-migration.md](adr/018-reanimated-v4-migration.md)       |
+| Resource                 | Link                                                                       |
+| ------------------------ | -------------------------------------------------------------------------- |
+| Architecture             | [ARCHITECTURE_TRANSFORMATION_PLAN.md](ARCHITECTURE_TRANSFORMATION_PLAN.md) |
+| Quality Gates            | [QUALITY_GATES.md](QUALITY_GATES.md)                                       |
+| Coding Standards         | [CODE_SIMPLIFICATION_GUIDELINES.md](CODE_SIMPLIFICATION_GUIDELINES.md)     |
+| Security Policy          | [SECURITY.md](../SECURITY.md)                                              |
+| Changelog                | [CHANGELOG.md](../CHANGELOG.md)                                            |
+| AI Instructions          | [CLAUDE.md](../CLAUDE.md)                                                  |
+| **SLO Targets**          | [SLO_DOCUMENT.md](SLO_DOCUMENT.md)                                         |
+| **DB Sharding Plan**     | [DATABASE_SHARDING_ROADMAP.md](DATABASE_SHARDING_ROADMAP.md)               |
+| **Operational Runbooks** | [OPERATIONAL_RUNBOOKS.md](OPERATIONAL_RUNBOOKS.md)                         |
+| **Reanimated v4 ADR**    | [018-reanimated-v4-migration.md](adr/018-reanimated-v4-migration.md)       |
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.13 • Updated: February 8, 2026</sub>
+<sub>**CGraph Dashboard** • Version 0.9.15 • Updated: February 13, 2026</sub>

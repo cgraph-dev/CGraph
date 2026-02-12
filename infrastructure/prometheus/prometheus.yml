@@ -14,9 +14,9 @@ global:
 #         - targets:
 #           - alertmanager:9093
 
-# Rule files (optional)
-# rule_files:
-#   - "first_rules.yml"
+# SLO recording rules and alert definitions
+rule_files:
+  - 'rules/cgraph-slo-rules.yml'
 
 scrape_configs:
   # Prometheus self-monitoring
@@ -38,15 +38,25 @@ scrape_configs:
         target_label: instance
         replacement: 'cgraph-backend'
 
-  # Redis metrics (if redis_exporter is added)
-  # - job_name: 'redis'
-  #   static_configs:
-  #     - targets: ['redis-exporter:9121']
+  # Redis metrics via redis_exporter
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 15s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'cgraph-redis'
 
-  # PostgreSQL metrics (if postgres_exporter is added)
-  # - job_name: 'postgres'
-  #   static_configs:
-  #     - targets: ['postgres-exporter:9187']
+  # PostgreSQL metrics via postgres_exporter
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 15s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'cgraph-postgres'
 
   # Node exporter for system metrics (optional)
   # - job_name: 'node'

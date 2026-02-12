@@ -1,51 +1,15 @@
 defmodule CGraph.Performance.CircuitBreaker do
   @moduledoc """
-  Circuit breaker pattern for external service calls.
+  DEPRECATED: Use `CGraph.CircuitBreaker` (Fuse-backed) instead.
 
-  ## Overview
+  This ETS/GenServer-based circuit breaker has zero callers in the codebase.
+  The canonical circuit breaker is `CGraph.CircuitBreaker` which wraps `:fuse`.
+  For HTTP services, use `CGraph.HTTP.Middleware.CircuitBreaker` (Tesla middleware).
 
-  Prevents cascading failures by failing fast when external services are down.
-
-  States:
-  - `:closed` - Normal operation, requests pass through
-  - `:open` - Service is down, fail immediately
-  - `:half_open` - Testing if service recovered
-
-  ## Usage
-
-      # Wrap external calls
-      case CircuitBreaker.call(:payment_service, fn ->
-        PaymentAPI.charge(amount)
-      end) do
-        {:ok, result} -> handle_success(result)
-        {:error, :circuit_open} -> show_degraded_experience()
-        {:error, reason} -> handle_error(reason)
-      end
-
-      # Check status
-      CircuitBreaker.status(:payment_service)
-      # => %{state: :closed, failures: 0, last_failure: nil}
-
-      # Force reset (admin use)
-      CircuitBreaker.reset(:payment_service)
-
-  ## Configuration
-
-      # In config.exs
-      config :cgraph, CGraph.Performance.CircuitBreaker,
-        services: %{
-          payment_service: %{
-            failure_threshold: 5,
-            recovery_time: 30_000,
-            timeout: 10_000
-          },
-          email_service: %{
-            failure_threshold: 3,
-            recovery_time: 60_000,
-            timeout: 5_000
-          }
-        }
+  Scheduled for removal in v2.0.
   """
+
+  @deprecated "Use CGraph.CircuitBreaker instead"
 
   use GenServer
   require Logger

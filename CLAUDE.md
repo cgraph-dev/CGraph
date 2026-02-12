@@ -42,9 +42,9 @@ forums, and gamification. Features include Signal Protocol encryption (X3DH + Do
 AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a karma-based
 forum system.
 
-**Version**: 0.9.11  
-**Last Updated**: February 2, 2026  
-**Architecture Score**: 8.0/10  
+**Version**: 0.9.15  
+**Last Updated**: February 13, 2026  
+**Architecture Score**: 9.1/10  
 **License**: Proprietary (see LICENSE)
 
 ## Key Features
@@ -57,6 +57,32 @@ forum system.
 - **Push Notifications**: Expo (mobile), Web Push API (browser), email digests
 - **Subscription Tiers**: free (1 forum), premium (5 forums), enterprise (unlimited)
 - **Payments**: Stripe integration for subscription management
+
+## Operational Maturity
+
+| Capability           | Status          | Implementation                                        |
+| -------------------- | --------------- | ----------------------------------------------------- |
+| **Metrics Export**   | Active          | TelemetryMetricsPrometheus.Core → `/metrics` endpoint |
+| **SLO Monitoring**   | Active          | Prometheus recording rules + multi-burn-rate alerts   |
+| **Error Tracking**   | Active          | Sentry integration (severity-mapped levels + tags)    |
+| **Circuit Breakers** | Active          | Fuse on Redis, Tesla middleware on HTTP services      |
+| **Search Fallback**  | Active          | MeiliSearch → PostgreSQL ILIKE automatic failover     |
+| **Load Testing**     | Ready           | k6 scripts: smoke, load, stress, WebSocket, writes    |
+| **DB Partitioning**  | Migration ready | Messages table monthly range partitions               |
+
+### Key Operational Docs
+
+- **SLO targets**: `docs/SLO_DOCUMENT.md`
+- **Runbooks**: `docs/OPERATIONAL_RUNBOOKS.md`
+- **DB scaling plan**: `docs/DATABASE_SHARDING_ROADMAP.md`
+- **Prometheus rules**: `infrastructure/prometheus/rules/cgraph-slo-rules.yml`
+
+### Circuit Breakers (Use ONLY these)
+
+- `CGraph.CircuitBreaker` — Fuse wrapper, generic services
+- `CGraph.HTTP.Middleware.CircuitBreaker` — Tesla middleware, HTTP services
+- `CGraph.Redis` — Built-in Fuse protection (`:redis_circuit_breaker`)
+- **DEPRECATED**: `CGraph.Services.CircuitBreaker`, `CGraph.Performance.CircuitBreaker`
 
 ## Common Commands
 

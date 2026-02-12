@@ -85,6 +85,9 @@ defmodule CGraph.Redis do
   # Pool name for future NimblePool integration
   # @pool_name :redis_pool
   @default_timeout 5000
+  @fuse_name :redis_circuit_breaker
+  @fuse_threshold 5
+  @fuse_reset_timeout 30_000
 
   # ---------------------------------------------------------------------------
   # Public API
@@ -111,13 +114,38 @@ defmodule CGraph.Redis do
 
     start_time = System.monotonic_time(:microsecond)
 
-    result = try do
-      GenServer.call(__MODULE__, {:command, args}, timeout)
-    catch
-      :exit, {:timeout, _} ->
-        {:error, :timeout}
-      :exit, {:noproc, _} ->
-        {:error, :redis_not_running}
+    result = case :fuse.ask(@fuse_name, :sync) do
+      :ok ->
+        try do
+          case GenServer.call(__MODULE__, {:command, args}, timeout) do
+            {:ok, _} = success -> success
+            {:error, _} = error ->
+              :fuse.melt(@fuse_name)
+              error
+          end
+        catch
+          :exit, {:timeout, _} ->
+            :fuse.melt(@fuse_name)
+            {:error, :timeout}
+          :exit, {:noproc, _} ->
+            :fuse.melt(@fuse_name)
+            {:error, :redis_not_running}
+        end
+
+      :blown ->
+        Logger.warning("Redis circuit breaker open, rejecting command",
+          command: List.first(args)
+        )
+        {:error, :circuit_open}
+
+      {:error, :not_found} ->
+        # Fuse not installed yet, execute without protection
+        try do
+          GenServer.call(__MODULE__, {:command, args}, timeout)
+        catch
+          :exit, {:timeout, _} -> {:error, :timeout}
+          :exit, {:noproc, _} -> {:error, :redis_not_running}
+        end
     end
 
     emit_command_telemetry(args, result, start_time)
@@ -218,6 +246,25 @@ defmodule CGraph.Redis do
   """
   def pool_stats do
     GenServer.call(__MODULE__, :pool_stats)
+  end
+
+  @doc """
+  Get the current circuit breaker status.
+
+  Returns `:ok` (closed), `:blown` (open), or `{:error, :not_found}`.
+  """
+  def circuit_status do
+    :fuse.ask(@fuse_name, :sync)
+  end
+
+  @doc """
+  Reset the Redis circuit breaker.
+
+  Use this after a known recovery to immediately restore Redis access
+  without waiting for the automatic reset timeout.
+  """
+  def reset_circuit do
+    :fuse.reset(@fuse_name)
   end
 
   # ---------------------------------------------------------------------------
@@ -498,6 +545,16 @@ defmodule CGraph.Redis do
   @impl true
   def init(opts) do
     config = get_config(opts)
+
+    # Install Fuse circuit breaker for Redis
+    :fuse.install(@fuse_name, {
+      {:standard, @fuse_threshold, @fuse_reset_timeout},
+      {:reset, @fuse_reset_timeout}
+    })
+    Logger.info("Redis circuit breaker installed",
+      threshold: @fuse_threshold,
+      reset_timeout_ms: @fuse_reset_timeout
+    )
 
     state = %{
       config: config,

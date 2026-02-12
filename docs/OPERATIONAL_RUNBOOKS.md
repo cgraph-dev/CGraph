@@ -1,6 +1,6 @@
 # CGraph Operational Runbooks
 
-> **Version: 0.9.8** | Last Updated: January 2026
+> **Version: 1.0.0** | Last Updated: February 2026
 
 Step-by-step guides for common operational tasks and incident response.
 
@@ -14,6 +14,10 @@ Step-by-step guides for common operational tasks and incident response.
 4. [Monitoring & Alerts](#monitoring--alerts)
 5. [Rollback Procedures](#rollback-procedures)
 6. [On-Call Playbook](#on-call-playbook)
+7. [Redis Failure](#redis-failure)
+8. [MeiliSearch Failure](#meilisearch-failure)
+9. [Circuit Breaker Management](#circuit-breaker-management)
+10. [SLO & Error Budget](#slo--error-budget)
 
 ---
 
@@ -473,4 +477,134 @@ iex> CGraph.FeatureFlags.disable(:new_feature)
 
 ---
 
-<sub>**CGraph Operational Runbooks** • Version 0.9.8 • Last updated: January 2026</sub>
+<sub>**CGraph Operational Runbooks** • Version 1.0.0 • Last updated: February 2026</sub>
+
+---
+
+## Redis Failure
+
+### Symptoms
+
+- `CGraph.Redis.circuit_status()` returns `:blown`
+- Increased latency on cached endpoints
+- Rate limiting stops (graceful degradation to ETS)
+
+### Automatic Mitigation
+
+The Fuse circuit breaker opens after 5 consecutive failures (30s auto-reset):
+
+- Cache misses fall through to database (~2-5x latency increase)
+- Rate limiting falls back to per-node ETS counters
+- Leaderboards temporarily unavailable
+- Phoenix PubSub uses pg2, NOT Redis — real-time unaffected
+
+### Manual Resolution
+
+```bash
+# Check circuit breaker status
+fly ssh console -a cgraph-backend -C "bin/cgraph rpc 'CGraph.Redis.circuit_status()'"
+
+# After Redis recovers, force-reset the circuit breaker
+fly ssh console -a cgraph-backend -C "bin/cgraph rpc 'CGraph.Redis.reset_circuit()'"
+
+# Check Redis health
+fly ssh console -a cgraph-backend -C "bin/cgraph rpc 'CGraph.Redis.ping()'"
+
+# Check Redis memory usage
+fly ssh console -a cgraph-backend -C "bin/cgraph rpc 'CGraph.Redis.info(\"memory\")'"
+```
+
+---
+
+## MeiliSearch Failure
+
+### Symptoms
+
+- Search latency p99 > 500ms (Prometheus alert: `CGraphSearchLatencySLOBreach`)
+- MeiliSearch health check failing
+
+### Automatic Mitigation
+
+Search falls back to PostgreSQL ILIKE queries automatically. Users see slower results (~100-400ms)
+but search remains functional.
+
+### Manual Resolution
+
+```bash
+# Check MeiliSearch health
+curl -s http://localhost:7700/health
+
+# Restart MeiliSearch
+fly machine restart -a cgraph-meilisearch
+
+# Reindex after recovery
+fly ssh console -a cgraph-backend -C "bin/cgraph rpc 'Mix.Tasks.Search.Reindex.run([])'"
+```
+
+### Search Performance by Mode
+
+| Mode                | p50 Latency | p99 Latency | Fuzzy Search    |
+| ------------------- | ----------- | ----------- | --------------- |
+| MeiliSearch         | ~15ms       | ~50ms       | Yes             |
+| PostgreSQL fallback | ~80ms       | ~400ms      | No (ILIKE only) |
+
+---
+
+## Circuit Breaker Management
+
+### Active Circuit Breakers
+
+| Name                     | Type         | Protects                      | Auto-Reset   |
+| ------------------------ | ------------ | ----------------------------- | ------------ |
+| `:redis_circuit_breaker` | Fuse         | Redis commands                | 30 seconds   |
+| HTTP Middleware CB       | Tesla/Fuse   | External HTTP APIs            | 30 seconds   |
+| `CGraph.CircuitBreaker`  | Fuse wrapper | Generic (install per service) | Configurable |
+
+### Deprecated (scheduled for removal in v2.0)
+
+- `CGraph.Services.CircuitBreaker` — GenServer-based, zero callers
+- `CGraph.Performance.CircuitBreaker` — ETS-based, zero callers
+
+### Commands
+
+```elixir
+# Check Redis circuit
+CGraph.Redis.circuit_status()  # :ok | :blown | {:error, :not_found}
+
+# Reset Redis circuit
+CGraph.Redis.reset_circuit()
+
+# Generic circuit breaker
+CGraph.CircuitBreaker.status(:service_name)  # :ok | :blown
+CGraph.CircuitBreaker.reset(:service_name)
+```
+
+---
+
+## SLO & Error Budget
+
+### Quick Status Check
+
+1. Open Grafana SLO dashboard
+2. Check `cgraph:api_error_budget:remaining` metric
+3. Check burn rate: `cgraph:api_error_budget:burn_rate_1h`
+
+### Decision Matrix
+
+| Budget Remaining | Action                      |
+| ---------------- | --------------------------- |
+| > 50%            | Normal development          |
+| 25-50%           | Prioritize reliability      |
+| 10-25%           | Freeze non-critical deploys |
+| < 10%            | **FREEZE ALL DEPLOYS**      |
+
+### SLO Targets
+
+| Service              | Target  | Alert Threshold                                        |
+| -------------------- | ------- | ------------------------------------------------------ |
+| API Availability     | 99.9%   | Burn rate > 14.4x (critical), > 1x sustained (warning) |
+| Message Delivery p99 | < 1s    | > 1s for 5min                                          |
+| Forum Feed p99       | < 200ms | > 200ms for 5min                                       |
+| Search p99           | < 500ms | > 500ms for 5min                                       |
+
+See [SLO_DOCUMENT.md](SLO_DOCUMENT.md) for full details.

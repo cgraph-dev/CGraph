@@ -63,8 +63,9 @@ defmodule CGraphWeb.Telemetry do
     attach_handlers()
 
     children = [
-      # Add metric reporters here if using Prometheus/StatsD
-      # {TelemetryMetricsPrometheus, metrics: metrics()}
+      # Prometheus metrics exporter — serves metrics via TelemetryMetricsPrometheus.Core
+      # These supplement the custom CGraph.Metrics module with Telemetry.Metrics definitions
+      {TelemetryMetricsPrometheus.Core, metrics: metrics(), name: :cgraph_prometheus_metrics}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

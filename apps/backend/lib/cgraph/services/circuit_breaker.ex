@@ -1,74 +1,15 @@
 defmodule CGraph.Services.CircuitBreaker do
   @moduledoc """
-  Production-grade circuit breaker for external service resilience.
+  DEPRECATED: Use `CGraph.CircuitBreaker` (Fuse-backed) instead.
 
-  ## Overview
+  This GenServer-based circuit breaker has zero callers in the codebase.
+  The canonical circuit breaker is `CGraph.CircuitBreaker` which wraps `:fuse`.
+  For HTTP services, use `CGraph.HTTP.Middleware.CircuitBreaker` (Tesla middleware).
 
-  Implements the Circuit Breaker pattern to protect the system from cascading
-  failures when external services become unavailable or slow. This is critical
-  for maintaining system stability during partial outages.
-
-  ## States
-
-  The circuit breaker operates in three states:
-
-  ```
-  ┌─────────────────────────────────────────────────────────────────┐
-  │                     CIRCUIT BREAKER STATES                       │
-  ├─────────────────────────────────────────────────────────────────┤
-  │                                                                  │
-  │    ┌──────────┐     failure threshold     ┌──────────┐          │
-  │    │  CLOSED  │ ──────────────────────► │   OPEN   │          │
-  │    │ (normal) │                           │ (failing)│          │
-  │    └──────────┘                           └──────────┘          │
-  │         ▲                                       │               │
-  │         │ success                    timeout    │               │
-  │         │                                       ▼               │
-  │         │                              ┌──────────────┐         │
-  │         └───────────────────────────── │  HALF-OPEN   │         │
-  │                                        │  (testing)   │         │
-  │                                        └──────────────┘         │
-  │                                                                  │
-  └─────────────────────────────────────────────────────────────────┘
-  ```
-
-  - **Closed**: Normal operation, requests pass through
-  - **Open**: Circuit tripped, requests fail fast without calling service
-  - **Half-Open**: Testing if service has recovered
-
-  ## Configuration
-
-  Each service can have custom thresholds:
-
-  | Option | Default | Description |
-  |--------|---------|-------------|
-  | `:failure_threshold` | 5 | Failures before opening |
-  | `:success_threshold` | 2 | Successes to close from half-open |
-  | `:timeout_ms` | 30000 | Time before trying half-open |
-  | `:call_timeout_ms` | 5000 | Individual call timeout |
-
-  ## Usage
-
-      # Register a service
-      CircuitBreaker.register("email_service", failure_threshold: 3)
-
-      # Execute with protection
-      CircuitBreaker.call("email_service", fn ->
-        EmailProvider.send(email)
-      end)
-
-      # Check status
-      {:ok, :closed} = CircuitBreaker.status("email_service")
-
-  ## Telemetry
-
-  Emits the following telemetry events:
-
-  - `[:cgraph, :circuit_breaker, :call, :start]`
-  - `[:cgraph, :circuit_breaker, :call, :stop]`
-  - `[:cgraph, :circuit_breaker, :state_change]`
-  - `[:cgraph, :circuit_breaker, :rejected]`
+  Scheduled for removal in v2.0.
   """
+
+  @deprecated "Use CGraph.CircuitBreaker instead"
 
   use GenServer
   require Logger

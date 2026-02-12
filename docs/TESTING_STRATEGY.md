@@ -1,6 +1,6 @@
 # CGraph Testing Strategy
 
-> **Version: 0.9.8** | Last Updated: January 2026
+> **Version: 1.0.0** | Last Updated: February 2026
 
 Comprehensive testing approach across all CGraph applications.
 
@@ -40,6 +40,16 @@ Comprehensive testing approach across all CGraph applications.
 | **Web**     | ~30%    | 70%    | Critical flows, hooks   |
 | **Mobile**  | ~25%    | 60%    | Core features           |
 | **Landing** | ~10%    | 50%    | Components              |
+
+### Coverage Enforcement
+
+- **Backend**: `coveralls.json` configured with 60% minimum threshold
+  - ExCoveralls generates HTML + JSON reports in `cover/`
+  - CI enforces via `MIX_ENV=test mix coveralls`
+- **Web**: Vitest coverage with c8 provider
+  - Threshold: 19% lines (gradually increasing)
+- **Mobile**: Jest coverage
+  - Threshold: 60% lines
 
 ---
 

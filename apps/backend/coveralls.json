@@ -1,0 +1,11 @@
+{
+  "coverage_options": {
+    "treat_no_relevant_lines_as_covered": true,
+    "output_dir": "cover/",
+    "minimum_coverage": 60.0
+  },
+  "terminal_options": {
+    "file_column_width": 80
+  },
+  "skip_files": ["test/", "deps/", "priv/", "lib/cgraph_web/telemetry.ex", "lib/mix/"]
+}

@@ -511,9 +511,19 @@ defmodule CGraphWeb.ErrorTracker do
 
   defp maybe_send_to_external_service(enriched) do
     if Application.get_env(:cgraph, :sentry_dsn) do
-      # Would integrate with Sentry here
-      # Sentry.capture_message(enriched.error.message, extra: enriched)
-      :ok
+      Sentry.capture_message(enriched.error.message,
+        level: severity_to_sentry_level(enriched.severity),
+        extra: %{
+          category: enriched.category,
+          severity: enriched.severity,
+          error_type: enriched.error.type,
+          context: Map.get(enriched, :context, %{})
+        },
+        tags: %{
+          category: to_string(enriched.category),
+          severity: to_string(enriched.severity)
+        }
+      )
     end
 
     # Webhook notification for critical errors
@@ -526,4 +536,10 @@ defmodule CGraphWeb.ErrorTracker do
     # Would send to Slack, PagerDuty, etc.
     :ok
   end
+
+  defp severity_to_sentry_level(:critical), do: :fatal
+  defp severity_to_sentry_level(:high), do: :error
+  defp severity_to_sentry_level(:medium), do: :warning
+  defp severity_to_sentry_level(:low), do: :info
+  defp severity_to_sentry_level(_), do: :error
 end
