@@ -239,7 +239,7 @@ export const ChatDemo = memo(function ChatDemo() {
                       className="demo-message__author"
                       style={
                         isSelf
-                          ? { color: '#10b981' }
+                          ? { color: 'rgba(255,255,255,0.85)' }
                           : msg.profile
                             ? { color: msg.profile.nameColor }
                             : undefined

@@ -80,6 +80,25 @@ export const AchievementsDemo = memo(function AchievementsDemo() {
                 </span>
                 <span className="demo-ach-card__xp">+{ach.xp.toLocaleString()} XP</span>
               </div>
+              {(ach.coins || ach.titleReward || ach.itemReward) && (
+                <div className="demo-ach-card__rewards">
+                  {ach.coins && (
+                    <span className="demo-ach-card__reward demo-ach-card__reward--coins">
+                      💎 +{ach.coins}
+                    </span>
+                  )}
+                  {ach.titleReward && (
+                    <span className="demo-ach-card__reward demo-ach-card__reward--title">
+                      🏷️ {ach.titleReward}
+                    </span>
+                  )}
+                  {ach.itemReward && (
+                    <span className="demo-ach-card__reward demo-ach-card__reward--item">
+                      🎁 {ach.itemReward}
+                    </span>
+                  )}
+                </div>
+              )}
             </motion.div>
           );
         })}

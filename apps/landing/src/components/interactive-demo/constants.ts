@@ -134,6 +134,7 @@ export const ACHIEVEMENTS = [
     rarity: 'rare' as const,
     xp: 500,
     category: 'mastery',
+    coins: 100,
   },
   {
     id: 'forum-founder',
@@ -152,6 +153,7 @@ export const ACHIEVEMENTS = [
     rarity: 'rare' as const,
     xp: 750,
     category: 'exploration',
+    itemReward: 'Shield Border',
   },
   {
     id: 'master-discourse',
@@ -161,6 +163,8 @@ export const ACHIEVEMENTS = [
     rarity: 'epic' as const,
     xp: 1500,
     category: 'content',
+    coins: 200,
+    titleReward: 'Master of Discourse',
   },
   {
     id: 'code-contributor',
@@ -170,6 +174,8 @@ export const ACHIEVEMENTS = [
     rarity: 'legendary' as const,
     xp: 2500,
     category: 'special',
+    coins: 500,
+    itemReward: 'Golden Border',
   },
   {
     id: 'legend',
@@ -179,6 +185,9 @@ export const ACHIEVEMENTS = [
     rarity: 'mythic' as const,
     xp: 5000,
     category: 'legendary',
+    coins: 1000,
+    titleReward: 'Living Legend',
+    itemReward: 'Flame Border',
   },
 ];
 

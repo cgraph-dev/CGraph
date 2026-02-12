@@ -75,7 +75,7 @@ export const TitlesDemo = memo(function TitlesDemo() {
         <AnimatePresence mode="popLayout">
           {filteredTitles.map((title, i) => {
             const rc = RARITY_COLORS[title.rarity];
-            const isHighRarity = ['legendary', 'mythic', 'unique'].includes(title.rarity);
+            const isHighRarity = ['epic', 'legendary', 'mythic', 'unique'].includes(title.rarity);
             return (
               <motion.button
                 type="button"
