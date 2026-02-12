@@ -12,6 +12,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { LogoIcon } from '@/components/Logo';
 import './marketing-pages.css';
 
 interface NavigationProps {
@@ -76,18 +77,7 @@ export default function Navigation({
 
         {/* Logo */}
         <Link to="/" className="gl-nav-unified__logo">
-          <svg viewBox="0 0 32 32" className="gl-nav-unified__logo-icon">
-            <path
-              d="M16 2L4 9v14l12 7 12-7V9L16 2zm0 4l8 4.5v9L16 24l-8-4.5v-9L16 6z"
-              fill="url(#nav-logo-gradient)"
-            />
-            <defs>
-              <linearGradient id="nav-logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#10b981" />
-                <stop offset="100%" stopColor="#8b5cf6" />
-              </linearGradient>
-            </defs>
-          </svg>
+          <LogoIcon size={32} showGlow={false} color="gradient" />
           <span>CGraph</span>
         </Link>
 

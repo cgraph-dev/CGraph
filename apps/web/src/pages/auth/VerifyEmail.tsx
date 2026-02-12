@@ -8,10 +8,11 @@
  * @since v0.9.2
  */
 
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { GlassCard } from '@/shared/components/ui';
 import { useVerifyEmail } from '@/pages/auth/verify-email/useVerifyEmail';
 import StatusDisplay from '@/pages/auth/verify-email/StatusDisplay';
+import { LogoIcon } from '@/components/logo';
 
 // =============================================================================
 // COMPONENT
@@ -33,12 +34,10 @@ export default function VerifyEmail() {
         <div className="p-8">
           {/* Logo */}
           <div className="mb-6 text-center">
-            <Link to="/" className="inline-flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-purple-600">
-                <span className="text-xl font-bold text-white">C</span>
-              </div>
+            <a href="https://www.cgraph.org" className="inline-flex items-center gap-2">
+              <LogoIcon size={40} color="gradient" showGlow={false} />
               <span className="text-xl font-bold text-white">CGraph</span>
-            </Link>
+            </a>
           </div>
 
           <StatusDisplay

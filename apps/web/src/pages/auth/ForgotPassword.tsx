@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api, getErrorMessage } from '@/lib/api';
+import { LogoIcon } from '@/components/logo';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -11,7 +12,7 @@ export default function ForgotPassword() {
   // Auto-dismiss error after 1.5 seconds
   useEffect(() => {
     if (!error) return;
-    
+
     const timer = setTimeout(() => {
       setError(null);
     }, 1500);
@@ -37,30 +38,16 @@ export default function ForgotPassword() {
     return (
       <div className="space-y-8">
         {/* Mobile Logo */}
-        <div className="lg:hidden text-center">
-          <Link to="/" className="inline-flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-primary-600 flex items-center justify-center">
-              <svg
-                className="h-6 w-6 text-white"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                />
-              </svg>
-            </div>
+        <div className="text-center lg:hidden">
+          <a href="https://www.cgraph.org" className="inline-flex items-center gap-3">
+            <LogoIcon size={40} color="gradient" showGlow={false} />
             <span className="text-2xl font-bold text-white">CGraph</span>
-          </Link>
+          </a>
         </div>
 
         {/* Success Message */}
         <div className="text-center lg:text-left">
-          <div className="mx-auto lg:mx-0 w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mb-6">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/20 lg:mx-0">
             <svg
               className="h-8 w-8 text-green-400"
               fill="none"
@@ -82,11 +69,11 @@ export default function ForgotPassword() {
         </div>
 
         <div className="space-y-4">
-          <p className="text-gray-400 text-sm">
+          <p className="text-sm text-gray-400">
             Didn't receive the email? Check your spam folder, or{' '}
             <button
               onClick={() => setIsSuccess(false)}
-              className="text-primary-400 hover:text-primary-300 transition-colors"
+              className="text-primary-400 transition-colors hover:text-primary-300"
             >
               try another email address
             </button>
@@ -94,7 +81,7 @@ export default function ForgotPassword() {
 
           <Link
             to="/login"
-            className="block w-full py-3 px-4 bg-dark-800 hover:bg-dark-700 border border-dark-600 text-white font-medium rounded-lg transition-colors text-center"
+            className="block w-full rounded-lg border border-dark-600 bg-dark-800 px-4 py-3 text-center font-medium text-white transition-colors hover:bg-dark-700"
           >
             Back to login
           </Link>
@@ -106,38 +93,22 @@ export default function ForgotPassword() {
   return (
     <div className="space-y-8">
       {/* Mobile Logo */}
-      <div className="lg:hidden text-center">
-        <Link to="/" className="inline-flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-primary-600 flex items-center justify-center">
-            <svg
-              className="h-6 w-6 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              />
-            </svg>
-          </div>
+      <div className="text-center lg:hidden">
+        <a href="https://www.cgraph.org" className="inline-flex items-center gap-3">
+          <LogoIcon size={40} color="gradient" showGlow={false} />
           <span className="text-2xl font-bold text-white">CGraph</span>
-        </Link>
+        </a>
       </div>
 
       {/* Header */}
       <div className="text-center lg:text-left">
         <h2 className="text-3xl font-bold text-white">Forgot password?</h2>
-        <p className="mt-2 text-gray-400">
-          No worries, we'll send you reset instructions.
-        </p>
+        <p className="mt-2 text-gray-400">No worries, we'll send you reset instructions.</p>
       </div>
 
       {/* Error Alert */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400 text-sm">
+        <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
           {error}
         </div>
       )}
@@ -145,7 +116,7 @@ export default function ForgotPassword() {
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-300">
             Email address
           </label>
           <input
@@ -155,7 +126,7 @@ export default function ForgotPassword() {
             onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="email"
-            className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+            className="w-full rounded-lg border border-dark-600 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
             placeholder="you@example.com"
           />
         </div>
@@ -163,7 +134,7 @@ export default function ForgotPassword() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-3 px-4 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-3 font-medium text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isLoading ? (
             <>
@@ -179,15 +150,10 @@ export default function ForgotPassword() {
       {/* Back to Login */}
       <Link
         to="/login"
-        className="flex items-center justify-center gap-2 text-gray-400 hover:text-white transition-colors"
+        className="flex items-center justify-center gap-2 text-gray-400 transition-colors hover:text-white"
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 19l-7-7 7-7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
         Back to login
       </Link>

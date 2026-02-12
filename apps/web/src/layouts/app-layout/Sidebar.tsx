@@ -71,7 +71,7 @@ export default function Sidebar({
         animate={{ scale: 1, rotate: 0 }}
         transition={{ ...springs.bouncy, delay: 0.1 }}
       >
-        <Link to="/" title="Back to Home">
+        <a href="https://www.cgraph.org" title="Back to Home">
           <motion.div
             whileHover={{ scale: 1.1, rotate: 5 }}
             whileTap={{ scale: 0.95 }}
@@ -81,7 +81,7 @@ export default function Sidebar({
           >
             <AnimatedLogo size="sm" />
           </motion.div>
-        </Link>
+        </a>
       </motion.div>
 
       {/* Navigation */}

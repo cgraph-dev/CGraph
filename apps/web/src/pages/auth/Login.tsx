@@ -4,6 +4,7 @@ import { OAuthButtonGroup } from '@/modules/auth/components/OAuthButtons';
 import { AuthErrorAlert } from '@/pages/auth/register/AuthErrorAlert';
 import { useLoginForm } from '@/pages/auth/login/useLoginForm';
 import { LoginFormFields } from '@/pages/auth/login/LoginFormFields';
+import { LogoIcon } from '@/components/logo';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('Login');
@@ -57,28 +58,15 @@ export default function Login() {
     >
       {/* Mobile Logo with matrix glow */}
       <motion.div variants={reduced ? {} : itemVariants} className="text-center lg:hidden">
-        <Link to="/" className="group inline-flex items-center gap-3">
+        <a href="https://www.cgraph.org" className="group inline-flex items-center gap-3">
           <motion.div
-            className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600 transition-all duration-300 group-hover:bg-primary-500 group-hover:shadow-glow-md"
             whileHover={reduced ? {} : { scale: 1.1, rotate: 5 }}
             whileTap={reduced ? {} : { scale: 0.95 }}
           >
-            <svg
-              className="h-6 w-6 text-white transition-transform duration-300 group-hover:scale-110"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              />
-            </svg>
+            <LogoIcon size={40} color="gradient" showGlow={false} />
           </motion.div>
           <span className="matrix-glow text-2xl font-bold text-white">CGraph</span>
-        </Link>
+        </a>
       </motion.div>
 
       {/* Header with cyberpunk text effect */}

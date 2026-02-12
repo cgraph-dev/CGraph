@@ -10,6 +10,7 @@
 
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { LogoIcon } from '@/components/Logo';
 import './marketing-pages.css';
 
 export default function Footer() {
@@ -116,18 +117,7 @@ export default function Footer() {
           {/* Logo & Copyright */}
           <div className="gl-footer-unified__brand">
             <Link to="/" className="gl-footer-unified__logo">
-              <svg viewBox="0 0 32 32" className="gl-footer-unified__logo-icon">
-                <path
-                  d="M16 2L4 9v14l12 7 12-7V9L16 2zm0 4l8 4.5v9L16 24l-8-4.5v-9L16 6z"
-                  fill="url(#footer-logo-gradient)"
-                />
-                <defs>
-                  <linearGradient id="footer-logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#10b981" />
-                    <stop offset="100%" stopColor="#8b5cf6" />
-                  </linearGradient>
-                </defs>
-              </svg>
+              <LogoIcon size={24} color="white" showGlow={false} />
               <span>CGraph</span>
             </Link>
             <span className="gl-footer-unified__copy">
