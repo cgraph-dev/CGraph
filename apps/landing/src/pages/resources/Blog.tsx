@@ -6,6 +6,7 @@
  *
  * @since v0.9.2
  * @updated v0.9.14 - Professional rewrite with real development milestones
+ * @updated v0.9.15 - Enhanced visual design, release hero, professional card layout
  */
 
 import { useState } from 'react';
@@ -36,7 +37,7 @@ const blogPosts: BlogPost[] = [
     date: 'February 8, 2026',
     readTime: '6 min read',
     featured: true,
-    image: '🎯',
+    image: '\ud83c\udfaf',
     tags: ['React Native', 'Reanimated v4', 'Testing'],
   },
   {
@@ -49,7 +50,7 @@ const blogPosts: BlogPost[] = [
     date: 'February 2, 2026',
     readTime: '12 min read',
     featured: true,
-    image: '🏗️',
+    image: '\ud83c\udfd7\ufe0f',
     tags: ['Architecture', 'Zustand', 'Modules'],
   },
   {
@@ -62,7 +63,7 @@ const blogPosts: BlogPost[] = [
     date: 'February 1, 2026',
     readTime: '10 min read',
     featured: false,
-    image: '🔐',
+    image: '\ud83d\udd10',
     tags: ['E2EE', 'Signal Protocol', 'Testing'],
   },
   {
@@ -101,7 +102,7 @@ const blogPosts: BlogPost[] = [
     date: 'January 27, 2026',
     readTime: '9 min read',
     featured: false,
-    image: '🌐',
+    image: '\ud83c\udf10',
     tags: ['Architecture', 'Performance', 'Vite'],
   },
   {
@@ -114,7 +115,7 @@ const blogPosts: BlogPost[] = [
     date: 'January 27, 2026',
     readTime: '8 min read',
     featured: false,
-    image: '🛡\ufe0f',
+    image: '\ud83d\udee1\ufe0f',
     tags: ['Security', 'E2EE', 'Vulnerability'],
   },
   {
@@ -127,7 +128,7 @@ const blogPosts: BlogPost[] = [
     date: 'January 2026',
     readTime: '14 min read',
     featured: false,
-    image: '💜',
+    image: '\ud83d\udc9c',
     tags: ['Elixir', 'Phoenix', 'Backend'],
   },
   {
@@ -140,12 +141,19 @@ const blogPosts: BlogPost[] = [
     date: 'January 2026',
     readTime: '5 min read',
     featured: false,
-    image: '🚀',
+    image: '\ud83d\ude80',
     tags: ['Product', 'Vision', 'Launch'],
   },
 ];
 
 const categories = ['All', 'Engineering', 'Security', 'Architecture', 'Product'];
+
+const categoryColors: Record<string, { bg: string; text: string }> = {
+  Engineering: { bg: 'rgba(99, 102, 241, 0.12)', text: '#818cf8' },
+  Security: { bg: 'rgba(239, 68, 68, 0.12)', text: '#f87171' },
+  Architecture: { bg: 'rgba(16, 185, 129, 0.12)', text: '#34d399' },
+  Product: { bg: 'rgba(234, 179, 8, 0.12)', text: '#fbbf24' },
+};
 
 export default function Blog() {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -170,10 +178,75 @@ export default function Blog() {
   return (
     <MarketingLayout
       title="Engineering Blog"
-      subtitle="Development milestones, architecture decisions, and security updates \u2014 every post backed by real commits."
+      subtitle="Development milestones, architecture decisions, and security updates — every post backed by real commits."
       eyebrow="Dev Log"
       showCTA
     >
+      {/* Latest Release Banner */}
+      <section
+        className="marketing-section marketing-section--dark"
+        style={{ paddingTop: '2rem', paddingBottom: '2rem' }}
+      >
+        <div className="mx-auto max-w-4xl px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="relative overflow-hidden rounded-2xl border border-white/10"
+            style={{
+              background:
+                'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(139, 92, 246, 0.08) 50%, rgba(99, 102, 241, 0.08) 100%)',
+            }}
+          >
+            {/* Decorative gradient line at top */}
+            <div
+              className="h-1 w-full"
+              style={{
+                background:
+                  'linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-primary))',
+              }}
+            />
+            <div className="flex flex-col items-center gap-6 p-8 md:flex-row">
+              <div className="flex-1">
+                <div className="mb-3 flex items-center gap-3">
+                  <span
+                    className="rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider"
+                    style={{
+                      background:
+                        'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+                      color: 'white',
+                    }}
+                  >
+                    Latest Release
+                  </span>
+                  <span className="font-mono text-sm text-gray-400">v0.9.14</span>
+                </div>
+                <h3 className="mb-2 text-xl font-bold text-white md:text-2xl">
+                  Platform Parity Achieved
+                </h3>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--color-gray)' }}>
+                  17/17 features on web &amp; mobile, 1,342 passing tests, Reanimated v4 migration
+                  complete. Architecture score: 9.0/10.
+                </p>
+              </div>
+              <div className="flex shrink-0 flex-col items-center gap-2">
+                <div
+                  className="flex h-20 w-20 items-center justify-center rounded-2xl text-4xl"
+                  style={{
+                    background:
+                      'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(139, 92, 246, 0.2))',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                  }}
+                >
+                  🎯
+                </div>
+                <span className="text-xs text-gray-500">Feb 8, 2026</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Category Filter */}
       <section
         className="marketing-section marketing-section--alt"
@@ -186,33 +259,55 @@ export default function Blog() {
             transition={{ delay: 0.3 }}
             className="flex flex-wrap justify-center gap-2"
           >
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
-                  selectedCategory === category
-                    ? 'text-white'
-                    : 'border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10'
-                }`}
-                style={
-                  selectedCategory === category
-                    ? {
-                        background:
-                          'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                      }
-                    : undefined
-                }
-              >
-                {category}
-                {category !== 'All' && (
-                  <span className="ml-1.5 opacity-60">
-                    ({blogPosts.filter((p) => p.category === category).length})
-                  </span>
-                )}
-              </button>
-            ))}
+            {categories.map((category) => {
+              const isActive = selectedCategory === category;
+              const count = blogPosts.filter((p) => p.category === category).length;
+              return (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`rounded-full px-5 py-2.5 text-sm font-medium transition-all ${
+                    isActive
+                      ? 'text-white shadow-lg'
+                      : 'border border-white/10 bg-white/5 text-gray-300 hover:border-white/20 hover:bg-white/10'
+                  }`}
+                  style={
+                    isActive
+                      ? {
+                          background:
+                            'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+                          boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)',
+                        }
+                      : undefined
+                  }
+                >
+                  {category}
+                  {category !== 'All' && (
+                    <span
+                      className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full text-xs"
+                      style={{
+                        background: isActive ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.08)',
+                      }}
+                    >
+                      {count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </motion.div>
+
+          {/* Results count */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="mt-4 text-center text-sm"
+            style={{ color: 'var(--color-gray)' }}
+          >
+            {filteredPosts.length} {filteredPosts.length === 1 ? 'article' : 'articles'}
+            {selectedCategory !== 'All' && ` in ${selectedCategory}`}
+          </motion.p>
         </div>
       </section>
 
@@ -232,66 +327,111 @@ export default function Blog() {
             </div>
 
             <div className="marketing-grid marketing-grid--2">
-              {featuredPosts.map((post, index) => (
-                <motion.article
-                  key={post.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  whileHover={{ y: -8 }}
-                  className="marketing-card group relative overflow-hidden"
-                  style={{ padding: '2rem' }}
-                >
-                  {/* Featured badge */}
-                  <div
-                    className="absolute right-4 top-4 rounded-full px-2.5 py-1 text-xs font-semibold"
-                    style={{
-                      background:
-                        'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                      color: 'white',
-                    }}
+              {featuredPosts.map((post, index) => {
+                const catColor = categoryColors[post.category] || categoryColors.Engineering;
+                return (
+                  <motion.article
+                    key={post.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.15 }}
+                    whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                    className="marketing-card group relative overflow-hidden"
+                    style={{ padding: 0 }}
                   >
-                    Featured
-                  </div>
-
-                  <div className="mb-5 text-5xl">{post.image}</div>
-                  <div className="mb-3 flex flex-wrap items-center gap-2">
-                    <span
-                      className="rounded-full px-3 py-1 text-xs font-medium"
+                    {/* Gradient top border */}
+                    <div
+                      className="h-1 w-full"
                       style={{
-                        background: 'rgba(16, 185, 129, 0.1)',
-                        color: 'var(--color-primary)',
+                        background: `linear-gradient(90deg, ${catColor.text}, var(--color-secondary))`,
                       }}
-                    >
-                      {post.category}
-                    </span>
-                    <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
-                      {post.date}
-                    </span>
-                  </div>
-                  <h3 className="mb-3 text-xl font-bold leading-tight text-white">{post.title}</h3>
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--color-gray)' }}>
-                    {post.excerpt}
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {post.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded bg-white/5 px-2 py-0.5 text-xs"
+                    />
+
+                    <div className="p-7">
+                      {/* Featured badge */}
+                      <div
+                        className="absolute right-4 top-5 rounded-full px-2.5 py-1 text-xs font-semibold"
+                        style={{
+                          background:
+                            'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+                          color: 'white',
+                        }}
+                      >
+                        Featured
+                      </div>
+
+                      {/* Icon + Category */}
+                      <div className="mb-5 flex items-center gap-4">
+                        <div
+                          className="flex h-14 w-14 items-center justify-center rounded-xl text-3xl"
+                          style={{
+                            background:
+                              'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(139, 92, 246, 0.15))',
+                            border: '1px solid rgba(255,255,255,0.08)',
+                          }}
+                        >
+                          {post.image}
+                        </div>
+                        <div>
+                          <span
+                            className="rounded-full px-3 py-1 text-xs font-semibold"
+                            style={{ background: catColor.bg, color: catColor.text }}
+                          >
+                            {post.category}
+                          </span>
+                        </div>
+                      </div>
+
+                      <h3 className="mb-3 text-xl font-bold leading-tight text-white transition-colors group-hover:text-emerald-300">
+                        {post.title}
+                      </h3>
+                      <p
+                        className="mb-5 text-sm leading-relaxed"
                         style={{ color: 'var(--color-gray)' }}
                       >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="mt-4 flex items-center justify-between">
-                    <span className="text-xs font-medium text-white">{post.author}</span>
-                    <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
-                      {post.readTime}
-                    </span>
-                  </div>
-                </motion.article>
-              ))}
+                        {post.excerpt}
+                      </p>
+
+                      {/* Tags */}
+                      <div className="mb-5 flex flex-wrap gap-2">
+                        {post.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="rounded-md border border-white/5 bg-white/5 px-2.5 py-1 text-xs"
+                            style={{ color: 'var(--color-gray)' }}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Author + Meta */}
+                      <div className="flex items-center justify-between border-t border-white/5 pt-4">
+                        <div className="flex items-center gap-2.5">
+                          <div
+                            className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold text-white"
+                            style={{
+                              background:
+                                'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+                            }}
+                          >
+                            BL
+                          </div>
+                          <span className="text-sm font-medium text-white">{post.author}</span>
+                        </div>
+                        <div
+                          className="flex items-center gap-3 text-xs"
+                          style={{ color: 'var(--color-gray)' }}
+                        >
+                          <span>{post.date}</span>
+                          <span className="opacity-40">·</span>
+                          <span>{post.readTime}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.article>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -308,69 +448,103 @@ export default function Blog() {
                 viewport={{ once: true }}
               >
                 <h2 className="marketing-section__title font-zentry">All Posts</h2>
+                <p className="marketing-section__desc">
+                  The full development timeline — every milestone documented.
+                </p>
               </motion.div>
             </div>
           )}
 
-          <div className="mx-auto max-w-3xl space-y-4">
-            {(featuredPosts.length > 0 ? regularPosts : filteredPosts).map((post, index) => (
-              <motion.article
-                key={post.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.06 }}
-                whileHover={{ x: 4 }}
-                className="marketing-card flex gap-5"
-                style={{ padding: '1.5rem' }}
-              >
-                <div
-                  className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-2xl"
-                  style={{
-                    background:
-                      'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(139, 92, 246, 0.15))',
-                  }}
+          <div className="mx-auto max-w-4xl space-y-5">
+            {(featuredPosts.length > 0 ? regularPosts : filteredPosts).map((post, index) => {
+              const catColor = categoryColors[post.category] || categoryColors.Engineering;
+              return (
+                <motion.article
+                  key={post.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.06 }}
+                  whileHover={{ x: 4, transition: { duration: 0.15 } }}
+                  className="marketing-card group relative overflow-hidden"
+                  style={{ padding: 0 }}
                 >
-                  {post.image}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="mb-1.5 flex flex-wrap items-center gap-2">
-                    <span
-                      className="rounded-full px-2.5 py-0.5 text-xs font-medium"
+                  {/* Left accent bar */}
+                  <div
+                    className="absolute left-0 top-0 h-full w-1"
+                    style={{
+                      background: `linear-gradient(180deg, ${catColor.text}, transparent)`,
+                    }}
+                  />
+
+                  <div className="flex gap-5 p-5 pl-6">
+                    <div
+                      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-2xl"
                       style={{
-                        background: 'rgba(16, 185, 129, 0.1)',
-                        color: 'var(--color-primary)',
+                        background:
+                          'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1))',
+                        border: '1px solid rgba(255,255,255,0.06)',
                       }}
                     >
-                      {post.category}
-                    </span>
-                    <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
-                      {post.date}
-                    </span>
-                    <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
-                      \u00b7 {post.readTime}
-                    </span>
-                  </div>
-                  <h3 className="mb-1.5 text-base font-bold leading-snug text-white">
-                    {post.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed" style={{ color: 'var(--color-gray)' }}>
-                    {post.excerpt}
-                  </p>
-                  <div className="mt-2.5 flex flex-wrap gap-1.5">
-                    {post.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded bg-white/5 px-2 py-0.5 text-xs"
+                      {post.image}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-2 flex flex-wrap items-center gap-2">
+                        <span
+                          className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                          style={{ background: catColor.bg, color: catColor.text }}
+                        >
+                          {post.category}
+                        </span>
+                        <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
+                          {post.date}
+                        </span>
+                        <span className="text-xs opacity-40" style={{ color: 'var(--color-gray)' }}>
+                          ·
+                        </span>
+                        <span className="text-xs" style={{ color: 'var(--color-gray)' }}>
+                          {post.readTime}
+                        </span>
+                      </div>
+                      <h3 className="mb-2 text-base font-bold leading-snug text-white transition-colors group-hover:text-emerald-300">
+                        {post.title}
+                      </h3>
+                      <p
+                        className="mb-3 text-sm leading-relaxed"
                         style={{ color: 'var(--color-gray)' }}
                       >
-                        {tag}
-                      </span>
-                    ))}
+                        {post.excerpt}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap gap-1.5">
+                          {post.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded-md border border-white/5 bg-white/5 px-2 py-0.5 text-xs"
+                              style={{ color: 'var(--color-gray)' }}
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="ml-4 flex shrink-0 items-center gap-2">
+                          <div
+                            className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                            style={{
+                              background:
+                                'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
+                            }}
+                          >
+                            BL
+                          </div>
+                          <span className="text-xs text-gray-500">{post.author}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </motion.article>
-            ))}
+                </motion.article>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -386,17 +560,17 @@ export default function Blog() {
             >
               <h2 className="marketing-section__title font-zentry">By the Numbers</h2>
               <p className="marketing-section__desc">
-                Real metrics from the codebase \u2014 updated with each release.
+                Real metrics from the codebase — updated with each release.
               </p>
             </motion.div>
           </div>
 
-          <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mx-auto grid max-w-5xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { value: '1,342', label: 'Passing Tests' },
-              { value: '9.0/10', label: 'Architecture Score' },
-              { value: '0', label: 'TypeScript Errors' },
-              { value: '80%', label: 'Features Complete' },
+              { value: '1,342', label: 'Passing Tests', icon: '✓', color: '#34d399' },
+              { value: '9.0/10', label: 'Architecture Score', icon: '◆', color: '#818cf8' },
+              { value: '0', label: 'TypeScript Errors', icon: '⊘', color: '#fbbf24' },
+              { value: '80%', label: 'Features Complete', icon: '◉', color: '#f472b6' },
             ].map((stat, index) => (
               <motion.div
                 key={stat.label}
@@ -404,25 +578,75 @@ export default function Blog() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="marketing-card text-center"
+                className="marketing-card relative overflow-hidden text-center"
+                style={{ padding: '2rem 1.5rem' }}
               >
+                {/* Background glow */}
                 <div
-                  className="font-zentry text-3xl font-bold"
+                  className="absolute inset-0 opacity-5"
                   style={{
-                    background:
-                      'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
+                    background: `radial-gradient(circle at center, ${stat.color}, transparent 70%)`,
                   }}
-                >
-                  {stat.value}
-                </div>
-                <div className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
-                  {stat.label}
+                />
+                <div className="relative">
+                  <div
+                    className="mb-2 font-mono text-xs font-bold tracking-wider"
+                    style={{ color: stat.color }}
+                  >
+                    {stat.icon}
+                  </div>
+                  <div
+                    className="font-zentry text-3xl font-bold"
+                    style={{
+                      background: `linear-gradient(135deg, ${stat.color}, var(--color-secondary))`,
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}
+                  >
+                    {stat.value}
+                  </div>
+                  <div className="mt-2 text-sm" style={{ color: 'var(--color-gray)' }}>
+                    {stat.label}
+                  </div>
                 </div>
               </motion.div>
             ))}
           </div>
+
+          {/* Progress bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mx-auto mt-8 max-w-2xl"
+          >
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-sm font-medium text-white">Release Progress</span>
+              <span className="font-mono text-sm" style={{ color: 'var(--color-primary)' }}>
+                v0.9.14 → v1.0
+              </span>
+            </div>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
+              <motion.div
+                initial={{ width: 0 }}
+                whileInView={{ width: '80%' }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.5, ease: 'easeOut' }}
+                className="h-full rounded-full"
+                style={{
+                  background:
+                    'linear-gradient(90deg, var(--color-primary), var(--color-secondary))',
+                }}
+              />
+            </div>
+            <div
+              className="mt-1 flex justify-between text-xs"
+              style={{ color: 'var(--color-gray)' }}
+            >
+              <span>55/69 features shipped</span>
+              <span>Q2 2026 target</span>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -433,57 +657,74 @@ export default function Blog() {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="marketing-card text-center"
+            className="relative overflow-hidden rounded-2xl border border-white/10"
             style={{
               padding: '3rem',
               background:
-                'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1))',
+                'linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(139, 92, 246, 0.08))',
             }}
           >
-            <h2 className="mb-4 font-zentry text-3xl font-bold text-white">Stay Updated</h2>
-            <p className="mx-auto mb-8 max-w-xl" style={{ color: 'var(--color-gray)' }}>
-              Get notified about engineering updates, security advisories, and launch announcements.
-            </p>
+            {/* Decorative circles */}
+            <div
+              className="absolute -right-16 -top-16 h-48 w-48 rounded-full opacity-10"
+              style={{ background: 'var(--color-primary)' }}
+            />
+            <div
+              className="absolute -bottom-12 -left-12 h-32 w-32 rounded-full opacity-10"
+              style={{ background: 'var(--color-secondary)' }}
+            />
 
-            {subscribed ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="inline-flex items-center gap-2 rounded-xl px-6 py-4"
-                style={{ background: 'rgba(16, 185, 129, 0.2)', color: 'var(--color-primary)' }}
-              >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
+            <div className="relative text-center">
+              <h2 className="mb-2 font-zentry text-3xl font-bold text-white">Stay Updated</h2>
+              <p className="mx-auto mb-8 max-w-lg text-sm" style={{ color: 'var(--color-gray)' }}>
+                Get notified about engineering updates, security advisories, and launch
+                announcements. No spam — just real development progress.
+              </p>
+
+              {subscribed ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="inline-flex items-center gap-2 rounded-xl px-6 py-4"
+                  style={{
+                    background: 'rgba(16, 185, 129, 0.15)',
+                    color: 'var(--color-primary)',
+                    border: '1px solid rgba(16, 185, 129, 0.2)',
+                  }}
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  Thanks for subscribing!
+                </motion.div>
+              ) : (
+                <form
+                  onSubmit={handleSubscribe}
+                  className="mx-auto flex max-w-md flex-col gap-3 sm:flex-row"
+                >
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="contact-form__input flex-1"
                   />
-                </svg>
-                Thanks for subscribing!
-              </motion.div>
-            ) : (
-              <form
-                onSubmit={handleSubscribe}
-                className="mx-auto flex max-w-md flex-col gap-3 sm:flex-row"
-              >
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="contact-form__input flex-1"
-                />
-                <button type="submit" className="marketing-btn marketing-btn--primary">
-                  Subscribe
-                </button>
-              </form>
-            )}
+                  <button type="submit" className="marketing-btn marketing-btn--primary">
+                    Subscribe
+                  </button>
+                </form>
+              )}
 
-            <p className="mt-4 text-xs" style={{ color: 'var(--color-gray)' }}>
-              No spam. Unsubscribe anytime.
-            </p>
+              <p className="mt-4 text-xs" style={{ color: 'var(--color-gray)' }}>
+                No spam. Unsubscribe anytime. We respect your inbox.
+              </p>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -495,14 +736,14 @@ export default function Blog() {
       >
         <div className="mx-auto max-w-4xl">
           <div
-            className="flex flex-wrap items-center justify-center gap-6 text-sm"
+            className="flex flex-wrap items-center justify-center gap-4 text-sm"
             style={{ color: 'var(--color-gray)' }}
           >
             <a
               href="https://github.com/cgraph-dev/CGraph"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 transition-colors hover:text-white"
+              className="flex items-center gap-2 rounded-lg border border-white/5 bg-white/5 px-4 py-2.5 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
@@ -511,7 +752,7 @@ export default function Blog() {
             </a>
             <a
               href="mailto:hello@cgraph.org"
-              className="flex items-center gap-2 transition-colors hover:text-white"
+              className="flex items-center gap-2 rounded-lg border border-white/5 bg-white/5 px-4 py-2.5 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -525,7 +766,7 @@ export default function Blog() {
             </a>
             <a
               href="mailto:security@cgraph.org"
-              className="flex items-center gap-2 transition-colors hover:text-white"
+              className="flex items-center gap-2 rounded-lg border border-white/5 bg-white/5 px-4 py-2.5 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
