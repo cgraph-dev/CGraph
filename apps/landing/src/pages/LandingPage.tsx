@@ -101,6 +101,12 @@ const SectionHeader = memo(function SectionHeader({
           damping: 15,
         }}
       >
+        <motion.span
+          className={`section-header__badge-dot section-header__badge-dot--${badgeVariant}`}
+          aria-hidden="true"
+          animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        />
         {badge}
       </motion.span>
       <motion.h2
@@ -878,12 +884,18 @@ export default function LandingPage() {
             transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           >
             <motion.span
-              className="mb-4 inline-block animate-[badge-subtle-pulse_4s_ease-in-out_infinite] cursor-default rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1 text-sm text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.15),0_0_24px_rgba(168,85,247,0.08)] transition-all duration-300 hover:scale-[1.02] hover:animate-none hover:border-purple-500/60 hover:bg-purple-500/20 hover:shadow-[0_0_20px_rgba(168,85,247,0.3),0_0_40px_rgba(168,85,247,0.15)]"
-              initial={{ opacity: 0, scale: 0.7, y: 20 }}
+              className="section-header__badge section-header__badge--purple"
+              initial={{ opacity: 0, scale: 0.85, y: 10 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ type: 'spring' as const, stiffness: 260, damping: 14, delay: 0.15 }}
+              transition={{ type: 'spring' as const, stiffness: 200, damping: 15, delay: 0.15 }}
             >
+              <motion.span
+                className="section-header__badge-dot section-header__badge-dot--purple"
+                aria-hidden="true"
+                animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              />
               🔒 Privacy-First Design
             </motion.span>
             <motion.h2
@@ -953,8 +965,14 @@ export default function LandingPage() {
         >
           <motion.span
             variants={staggerItem}
-            className="mb-4 inline-block animate-[badge-emerald-pulse_4s_ease-in-out_infinite] cursor-default rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1 text-sm text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.15),0_0_24px_rgba(16,185,129,0.08)] transition-all duration-300 hover:scale-[1.02] hover:animate-none hover:border-emerald-500/60 hover:bg-emerald-500/20 hover:shadow-[0_0_20px_rgba(16,185,129,0.3),0_0_40px_rgba(16,185,129,0.15)]"
+            className="section-header__badge section-header__badge--emerald"
           >
+            <motion.span
+              className="section-header__badge-dot section-header__badge-dot--emerald"
+              aria-hidden="true"
+              animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            />
             🚀 Ready to Start?
           </motion.span>
           <motion.h2 variants={staggerItem} className="cta__title font-zentry">

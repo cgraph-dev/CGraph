@@ -2253,7 +2253,9 @@ html.site-ready {
 }
 
 .section-header__badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.5rem 1rem;
   margin-bottom: 1.5rem;
   font-size: 0.875rem;
@@ -2261,6 +2263,29 @@ html.site-ready {
   border-radius: 9999px;
   cursor: default;
   transition: all 0.3s ease;
+}
+
+/* Pulsing dot inside badge — matches Hero & MarketingLayout pattern */
+.section-header__badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.section-header__badge-dot--emerald {
+  background: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
+.section-header__badge-dot--purple {
+  background: #a855f7;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+}
+
+.section-header__badge-dot--cyan {
+  background: #22d3ee;
+  box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
 }
 
 /* Emerald (green) badge variant */
