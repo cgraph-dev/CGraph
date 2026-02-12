@@ -12,8 +12,8 @@
  * @since v2.2.0
  */
 
-import { memo } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { memo, useState, useEffect } from 'react';
+import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
 import './hero.css';
 
 const WEB_APP_URL = 'https://web.cgraph.org';
@@ -48,8 +48,27 @@ const itemVariants = {
   },
 };
 
+// Cycling subtitles — showcases different product features
+const subtitles = [
+  'End-to-end encrypted messaging with Signal-level security.',
+  'Real-time community forums with gamification & XP.',
+  'Voice & video calls powered by WebRTC — sub-200ms.',
+  'Custom themes, achievements, and subscription tiers.',
+  'Web3-ready authentication with wallet connect.',
+] as const;
+
 const Hero = memo(function Hero(): React.JSX.Element {
   const prefersReduced = useReducedMotion();
+  const [subtitleIndex, setSubtitleIndex] = useState(0);
+
+  // Cycle subtitles every 4s
+  useEffect(() => {
+    if (prefersReduced) return;
+    const interval = setInterval(() => {
+      setSubtitleIndex((prev) => (prev + 1) % subtitles.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [prefersReduced]);
 
   return (
     <section className="hero-pro" aria-label="CGraph — Beyond Messaging">
@@ -65,6 +84,12 @@ const Hero = memo(function Hero(): React.JSX.Element {
         <div className="hero-pro__orb hero-pro__orb--emerald" />
         <div className="hero-pro__orb hero-pro__orb--purple" />
         <div className="hero-pro__orb hero-pro__orb--cyan" />
+
+        {/* Floating particles */}
+        <div className="hero-pro__particles" />
+
+        {/* Subtle scan lines */}
+        <div className="hero-pro__scanlines" />
 
         {/* Dot grid */}
         <div className="hero-pro__grid" />
@@ -89,11 +114,21 @@ const Hero = memo(function Hero(): React.JSX.Element {
           <span className="hero-pro__title-accent">Reimagined</span>
         </motion.h1>
 
-        {/* Subtitle */}
-        <motion.p variants={itemVariants} className="hero-pro__subtitle">
-          End-to-end encrypted messaging, community forums, and real-time collaboration — all in one
-          platform built for privacy.
-        </motion.p>
+        {/* Cycling Subtitle */}
+        <motion.div variants={itemVariants} className="hero-pro__subtitle-wrap">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={subtitleIndex}
+              className="hero-pro__subtitle"
+              initial={prefersReduced ? {} : { opacity: 0, y: 12, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -12, filter: 'blur(4px)' }}
+              transition={{ duration: 0.5 }}
+            >
+              {subtitles[subtitleIndex]}
+            </motion.p>
+          </AnimatePresence>
+        </motion.div>
 
         {/* CTA Buttons */}
         <motion.div variants={itemVariants} className="hero-pro__actions">
@@ -121,11 +156,23 @@ const Hero = memo(function Hero(): React.JSX.Element {
 
         {/* Trust badges */}
         <motion.div variants={itemVariants} className="hero-pro__trust">
-          {trustBadges.map((badge) => (
-            <div key={badge.label} className="hero-pro__badge">
+          {trustBadges.map((badge, i) => (
+            <motion.div
+              key={badge.label}
+              className="hero-pro__badge"
+              initial={prefersReduced ? {} : { opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{
+                delay: 1.2 + i * 0.15,
+                type: 'spring',
+                stiffness: 200,
+                damping: 15,
+              }}
+              whileHover={{ scale: 1.1, y: -2 }}
+            >
               <span aria-hidden="true">{badge.icon}</span>
               <span>{badge.label}</span>
-            </div>
+            </motion.div>
           ))}
         </motion.div>
       </motion.div>

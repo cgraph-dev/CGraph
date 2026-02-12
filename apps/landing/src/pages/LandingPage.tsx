@@ -111,10 +111,10 @@ const SectionHeader = memo(function SectionHeader({
       </motion.span>
       <motion.h2
         className="section-header__title font-zentry"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 20, clipPath: 'inset(0 100% 0 0)' }}
+        whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0 0% 0 0)' }}
         viewport={{ once: true, margin: '-40px' }}
-        transition={{ duration: 0.5, delay: 0.1 }}
+        transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
         {title} <span className="section-header__gradient">{titleAccent}</span>
       </motion.h2>
