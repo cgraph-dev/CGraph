@@ -314,7 +314,7 @@ defmodule CGraphWeb.PresenceChannel do
   defp build_friend_presence(_), do: %{}
 
   # Legacy helper — kept for backward compatibility but no longer used in hot paths
-  defp build_presence_map(presence_list, friend_ids) when is_map(presence_list) do
+  defp _build_presence_map(presence_list, friend_ids) when is_map(presence_list) do
     friend_ids_set = MapSet.new(friend_ids)
 
     presence_list
@@ -331,5 +331,5 @@ defmodule CGraphWeb.PresenceChannel do
     |> Map.new()
   end
 
-  defp build_presence_map(_, _), do: %{}
+  defp _build_presence_map(_, _), do: %{}
 end

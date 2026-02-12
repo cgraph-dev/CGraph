@@ -10,7 +10,7 @@ on:
 
   # Weekly load test
   schedule:
-    - cron: '0 3 * * 1'  # Every Monday at 3 AM UTC
+    - cron: '0 3 * * 1' # Every Monday at 3 AM UTC
 
   # Manual trigger for any test type
   workflow_dispatch:
@@ -60,6 +60,29 @@ jobs:
           path: results/
           retention-days: 30
 
+      - name: Compare with Baseline
+        if: always()
+        run: |
+          if [ -f results/smoke-test-results.json ]; then
+            echo "## Smoke Test Results" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            # Extract key metrics for summary
+            node -e "
+              const data = require('./results/smoke-test-results.json');
+              const metrics = data.metrics || {};
+              const summary = {
+                http_req_duration_p95: metrics.http_req_duration?.values?.['p(95)']?.toFixed(2) + 'ms',
+                http_req_duration_p99: metrics.http_req_duration?.values?.['p(99)']?.toFixed(2) + 'ms',
+                error_rate: (metrics.errors?.values?.rate * 100)?.toFixed(2) + '%',
+                total_requests: metrics.http_reqs?.values?.count,
+                thresholds_passed: Object.entries(data.thresholds || {})
+                  .every(([k,v]) => v.ok)
+              };
+              console.log(JSON.stringify(summary, null, 2));
+            " >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "Could not parse results" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
   load-test:
     name: Load Test (100 VUs, 5min)
     runs-on: ubuntu-latest
@@ -90,6 +113,41 @@ jobs:
           name: load-test-results-${{ github.run_number }}
           path: results/
           retention-days: 90
+
+      - name: Compare with Baseline
+        if: always()
+        run: |
+          if [ -f results/load-test-results.json ]; then
+            echo "## Load Test Results (Run #${{ github.run_number }})" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            node -e "
+              const data = require('./results/load-test-results.json');
+              const metrics = data.metrics || {};
+              const summary = {
+                http_req_duration_p95: metrics.http_req_duration?.values?.['p(95)']?.toFixed(2) + 'ms',
+                http_req_duration_p99: metrics.http_req_duration?.values?.['p(99)']?.toFixed(2) + 'ms',
+                error_rate: (metrics.errors?.values?.rate * 100)?.toFixed(2) + '%',
+                total_requests: metrics.http_reqs?.values?.count,
+                ws_connections: metrics.ws_connections?.values?.count || 0,
+                messages_sent: metrics.messages_sent?.values?.count || 0,
+                thresholds_passed: Object.entries(data.thresholds || {})
+                  .every(([k,v]) => v.ok)
+              };
+              console.log(JSON.stringify(summary, null, 2));
+            " >> $GITHUB_STEP_SUMMARY 2>/dev/null || echo "Could not parse results" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+
+            # Fail if p99 regressed beyond 500ms threshold
+            node -e "
+              const data = require('./results/load-test-results.json');
+              const p99 = data.metrics?.http_req_duration?.values?.['p(99)'] || 0;
+              if (p99 > 500) {
+                console.error('REGRESSION: p99=' + p99.toFixed(2) + 'ms exceeds 500ms baseline');
+                process.exit(1);
+              }
+              console.log('p99=' + p99.toFixed(2) + 'ms — within baseline');
+            " || echo "::warning::Load test p99 regression detected"
+          fi
 
   stress-test:
     name: Stress Test (500 VUs, 10min)

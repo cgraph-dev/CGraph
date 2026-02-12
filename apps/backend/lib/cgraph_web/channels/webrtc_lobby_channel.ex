@@ -107,7 +107,7 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
               Logger.info("webrtc_ringing_users", targets: inspect(target_ids))
 
             {:error, reason} ->
-              Logger.warn("webrtc_ring_failed", reason: inspect(reason))
+              Logger.warning("webrtc_ring_failed", reason: inspect(reason))
           end
 
           # Return room info

@@ -1,7 +1,9 @@
 name: Deploy
 
 on:
-  push:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -11,11 +13,24 @@ env:
 
 jobs:
   # ============================================
+  # Gate: Only deploy if CI passed
+  # ============================================
+  ci-gate:
+    name: CI Gate
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    steps:
+      - run: echo "CI passed — deploying"
+
+  # ============================================
   # Deploy Backend to Fly.io
   # ============================================
   deploy-backend:
     name: Deploy Backend
     runs-on: ubuntu-latest
+    needs: [ci-gate]
     environment: production
     steps:
       - uses: actions/checkout@v4
@@ -23,9 +38,13 @@ jobs:
       - name: Setup Fly CLI
         uses: superfly/flyctl-actions/setup-flyctl@master
 
-      - name: Deploy to Fly.io
+      - name: Deploy to Fly.io (Canary)
         working-directory: apps/backend
-        run: flyctl deploy --remote-only
+        run: |
+          # Deploy with canary strategy — Meta pattern:
+          # Roll to 1 machine first, health-check, then promote to all
+          flyctl deploy --remote-only --strategy canary \
+            --wait-timeout 120
 
   # ============================================
   # Deploy Web to Cloudflare Pages
@@ -33,6 +52,7 @@ jobs:
   deploy-web:
     name: Deploy Web
     runs-on: ubuntu-latest
+    needs: [ci-gate]
     environment: production
     steps:
       - uses: actions/checkout@v4
@@ -72,6 +92,7 @@ jobs:
   build-mobile:
     name: Build Mobile Apps
     runs-on: ubuntu-latest
+    needs: [ci-gate]
     environment: production
     steps:
       - uses: actions/checkout@v4

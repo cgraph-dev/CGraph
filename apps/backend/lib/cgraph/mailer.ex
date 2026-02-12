@@ -37,6 +37,7 @@ defmodule CGraph.Mailer do
 
   alias CGraph.Accounts.User
   alias CGraph.Mailer.Templates
+  alias CGraph.Notifications.PushService.CircuitBreakers
 
   require Logger
 
@@ -48,6 +49,14 @@ defmodule CGraph.Mailer do
   # Sender configuration
   @default_sender {"CGraph", "noreply@cgraph.app"}
   @security_sender {"CGraph Security", "security@cgraph.app"}
+
+  @doc false
+  # Wraps Swoosh deliver/1 behind the :mailer circuit breaker.
+  # Returns {:error, :circuit_open} when the email provider is down,
+  # preventing thundering-herd retries from overwhelming the provider.
+  defp deliver_protected(email) do
+    CircuitBreakers.call(:mailer, fn -> deliver(email) end)
+  end
 
   # ============================================================================
   # Public API
@@ -97,7 +106,7 @@ defmodule CGraph.Mailer do
         |> html_body(render_template(template, assigns))
         |> text_body(render_text_template(template, assigns))
 
-      case deliver(email) do
+      case deliver_protected(email) do
         {:ok, _metadata} = _result ->
           Logger.info("email_sent", template: template, to: to)
           {:ok, email}
@@ -354,7 +363,7 @@ defmodule CGraph.Mailer do
   defp do_deliver(email, email_type, user) do
     start_time = System.monotonic_time()
 
-    case deliver(email) do
+    case deliver_protected(email) do
       {:ok, metadata} ->
         duration = System.monotonic_time() - start_time
 

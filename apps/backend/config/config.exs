@@ -68,6 +68,11 @@ config :logger, :console,
     :channel_id, :latency_ms,
     # Services
     :service, :failure_count, :threshold, :success_count,
+    # Circuit breaker / Redis
+    :command, :reset_timeout_ms, :connections_count,
+    :failure_number, :failures, :targets, :token_count, :failed_count,
+    # Workers / Partitioning
+    :partition, :date,
     # Errors
     :kind, :stacktrace, :error_type, :fingerprint, :context, :severity,
     :issues, :data, :body,

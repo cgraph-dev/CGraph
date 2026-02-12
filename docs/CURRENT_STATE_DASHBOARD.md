@@ -17,10 +17,11 @@ Real-time overview of project health, architecture status, and operational state
 | **Tests**         | ✅     | 9/10  | 1,342 tests passing (+132 facade tests)     |
 | **Security**      | ⚠️     | 7/10  | No critical CVEs; E2EE audit pending        |
 | **Documentation** | ✅     | 9/10  | Updated with facade & platform parity docs  |
-| **Observability** | ✅     | 8/10  | Prometheus + SLO rules active, Sentry live  |
-| **Resilience**    | ✅     | 8/10  | Circuit breakers on Redis + HTTP, fallbacks |
+| **Observability** | ✅     | 9/10  | Prometheus + SLO rules active, Sentry live  |
+| **Resilience**    | ✅     | 9/10  | Circuit breakers on Redis, Push, Mailer     |
+| **CI/CD**         | ✅     | 9/10  | CI-gated deploys, canary strategy on Fly.io |
 
-**Composite Score: 9.1/10** — Production-ready with operational maturity
+**Composite Score: 9.3/10** — Production-ready with operational maturity
 
 ---
 

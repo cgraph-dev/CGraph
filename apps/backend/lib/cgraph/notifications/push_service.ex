@@ -50,6 +50,7 @@ defmodule CGraph.Notifications.PushService do
 
   alias CGraph.Accounts.{PushToken, User}
   alias CGraph.Notifications.PushService.{ApnsClient, ExpoClient, FcmClient, WebPushClient}
+  alias CGraph.Notifications.PushService.CircuitBreakers
   alias CGraph.Repo
 
   @type notification :: %{
@@ -181,6 +182,9 @@ defmodule CGraph.Notifications.PushService do
 
   @impl true
   def init(_opts) do
+    # Install circuit breakers for all external push platforms
+    CircuitBreakers.install_all()
+
     state = %{
       stats: %{
         sent: 0,
@@ -311,26 +315,33 @@ defmodule CGraph.Notifications.PushService do
 
   defp send_to_apns([], _notification, _silent), do: {:ok, 0, 0, []}
   defp send_to_apns(tokens, notification, silent) do
-    start_time = System.monotonic_time()
+    case CircuitBreakers.call(:apns, fn ->
+      start_time = System.monotonic_time()
 
-    payload = build_apns_payload(notification, silent)
+      payload = build_apns_payload(notification, silent)
 
-    results = Enum.map(tokens, fn token ->
-      case ApnsClient.send(token.token, payload) do
-        {:ok, _} -> {:ok, token}
-        {:error, :invalid_token} -> {:invalid, token}
-        {:error, _reason} -> {:error, token}
-      end
-    end)
+      results = Enum.map(tokens, fn token ->
+        case ApnsClient.send(token.token, payload) do
+          {:ok, _} -> {:ok, token}
+          {:error, :invalid_token} -> {:invalid, token}
+          {:error, _reason} -> {:error, token}
+        end
+      end)
 
-    sent = Enum.count(results, &match?({:ok, _}, &1))
-    failed = Enum.count(results, &match?({:error, _}, &1))
-    invalid = results |> Enum.filter(&match?({:invalid, _}, &1)) |> Enum.map(fn {:invalid, t} -> t.token end)
+      sent = Enum.count(results, &match?({:ok, _}, &1))
+      failed = Enum.count(results, &match?({:error, _}, &1))
+      invalid = results |> Enum.filter(&match?({:invalid, _}, &1)) |> Enum.map(fn {:invalid, t} -> t.token end)
 
-    duration = System.monotonic_time() - start_time
-    emit_platform_telemetry(:apns, sent, failed, duration)
+      duration = System.monotonic_time() - start_time
+      emit_platform_telemetry(:apns, sent, failed, duration)
 
-    {:ok, sent, failed, invalid}
+      {:ok, sent, failed, invalid}
+    end) do
+      {:error, :circuit_open} ->
+        Logger.warning("apns_circuit_open_skipping", token_count: length(tokens))
+        {:error, :apns_error, length(tokens)}
+      result -> result
+    end
   rescue
     e ->
       Logger.error("apns_batch_send_failed", error: inspect(e))
@@ -339,25 +350,32 @@ defmodule CGraph.Notifications.PushService do
 
   defp send_to_fcm([], _notification, _silent), do: {:ok, 0, 0, []}
   defp send_to_fcm(tokens, notification, silent) do
-    start_time = System.monotonic_time()
+    case CircuitBreakers.call(:fcm, fn ->
+      start_time = System.monotonic_time()
 
-    payload = build_fcm_payload(notification, silent)
+      payload = build_fcm_payload(notification, silent)
 
-    # FCM supports batch sending (up to 500 per request)
-    token_strings = Enum.map(tokens, & &1.token)
+      # FCM supports batch sending (up to 500 per request)
+      token_strings = Enum.map(tokens, & &1.token)
 
-    case FcmClient.send_multicast(token_strings, payload) do
-      {:ok, response} ->
-        {sent, failed, invalid} = parse_fcm_response(response, tokens)
+      case FcmClient.send_multicast(token_strings, payload) do
+        {:ok, response} ->
+          {sent, failed, invalid} = parse_fcm_response(response, tokens)
 
-        duration = System.monotonic_time() - start_time
-        emit_platform_telemetry(:fcm, sent, failed, duration)
+          duration = System.monotonic_time() - start_time
+          emit_platform_telemetry(:fcm, sent, failed, duration)
 
-        {:ok, sent, failed, invalid}
+          {:ok, sent, failed, invalid}
 
-      {:error, reason} ->
-        Logger.error("fcm_batch_send_failed", reason: inspect(reason))
+        {:error, reason} ->
+          Logger.error("fcm_batch_send_failed", reason: inspect(reason))
+          {:error, :fcm_error, length(tokens)}
+      end
+    end) do
+      {:error, :circuit_open} ->
+        Logger.warning("fcm_circuit_open_skipping", token_count: length(tokens))
         {:error, :fcm_error, length(tokens)}
+      result -> result
     end
   rescue
     e ->
@@ -367,24 +385,31 @@ defmodule CGraph.Notifications.PushService do
 
   defp send_to_expo([], _notification, _silent), do: {:ok, 0, 0, []}
   defp send_to_expo(tokens, notification, silent) do
-    start_time = System.monotonic_time()
+    case CircuitBreakers.call(:apns, fn ->
+      start_time = System.monotonic_time()
 
-    messages = Enum.map(tokens, fn token ->
-      build_expo_message(token.token, notification, silent)
-    end)
+      messages = Enum.map(tokens, fn token ->
+        build_expo_message(token.token, notification, silent)
+      end)
 
-    case ExpoClient.send_batch(messages) do
-      {:ok, response} ->
-        {sent, failed, invalid} = parse_expo_response(response, tokens)
+      case ExpoClient.send_batch(messages) do
+        {:ok, response} ->
+          {sent, failed, invalid} = parse_expo_response(response, tokens)
 
-        duration = System.monotonic_time() - start_time
-        emit_platform_telemetry(:expo, sent, failed, duration)
+          duration = System.monotonic_time() - start_time
+          emit_platform_telemetry(:expo, sent, failed, duration)
 
-        {:ok, sent, failed, invalid}
+          {:ok, sent, failed, invalid}
 
-      {:error, reason} ->
-        Logger.error("expo_batch_send_failed", reason: inspect(reason))
+        {:error, reason} ->
+          Logger.error("expo_batch_send_failed", reason: inspect(reason))
+          {:error, :expo_error, length(tokens)}
+      end
+    end) do
+      {:error, :circuit_open} ->
+        Logger.warning("expo_circuit_open_skipping", token_count: length(tokens))
         {:error, :expo_error, length(tokens)}
+      result -> result
     end
   rescue
     e ->
@@ -394,26 +419,33 @@ defmodule CGraph.Notifications.PushService do
 
   defp send_to_web([], _notification), do: {:ok, 0, 0, []}
   defp send_to_web(tokens, notification) do
-    start_time = System.monotonic_time()
+    case CircuitBreakers.call(:web_push, fn ->
+      start_time = System.monotonic_time()
 
-    payload = build_web_push_payload(notification)
+      payload = build_web_push_payload(notification)
 
-    results = Enum.map(tokens, fn token ->
-      case WebPushClient.send(token.token, token.auth_keys, payload) do
-        {:ok, _} -> {:ok, token}
-        {:error, :gone} -> {:invalid, token}
-        {:error, _reason} -> {:error, token}
-      end
-    end)
+      results = Enum.map(tokens, fn token ->
+        case WebPushClient.send(token.token, token.auth_keys, payload) do
+          {:ok, _} -> {:ok, token}
+          {:error, :gone} -> {:invalid, token}
+          {:error, _reason} -> {:error, token}
+        end
+      end)
 
-    sent = Enum.count(results, &match?({:ok, _}, &1))
-    failed = Enum.count(results, &match?({:error, _}, &1))
-    invalid = results |> Enum.filter(&match?({:invalid, _}, &1)) |> Enum.map(fn {:invalid, t} -> t.token end)
+      sent = Enum.count(results, &match?({:ok, _}, &1))
+      failed = Enum.count(results, &match?({:error, _}, &1))
+      invalid = results |> Enum.filter(&match?({:invalid, _}, &1)) |> Enum.map(fn {:invalid, t} -> t.token end)
 
-    duration = System.monotonic_time() - start_time
-    emit_platform_telemetry(:web, sent, failed, duration)
+      duration = System.monotonic_time() - start_time
+      emit_platform_telemetry(:web, sent, failed, duration)
 
-    {:ok, sent, failed, invalid}
+      {:ok, sent, failed, invalid}
+    end) do
+      {:error, :circuit_open} ->
+        Logger.warning("web_push_circuit_open_skipping", token_count: length(tokens))
+        {:error, :web_push_error, length(tokens)}
+      result -> result
+    end
   rescue
     e ->
       Logger.error("web_push_batch_send_failed", error: inspect(e))
