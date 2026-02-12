@@ -21,11 +21,29 @@ const ValueCard = memo(function ValueCard({ data, index }: { data: ValuePropData
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
+      whileHover={{ y: -6, transition: { duration: 0.2 } }}
     >
-      <div className="value-card__icon" aria-hidden="true">
+      <motion.div
+        className="value-card__icon"
+        aria-hidden="true"
+        initial={{ scale: 0.5, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: index * 0.1 + 0.2, type: 'spring', stiffness: 300, damping: 12 }}
+      >
         {data.icon}
-      </div>
-      {data.highlight && <span className="value-card__highlight">{data.highlight}</span>}
+      </motion.div>
+      {data.highlight && (
+        <motion.span
+          className="value-card__highlight"
+          initial={{ opacity: 0, x: -10 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: index * 0.1 + 0.3 }}
+        >
+          {data.highlight}
+        </motion.span>
+      )}
       <h3 className="value-card__title">{data.title}</h3>
       <p className="value-card__desc">{data.description}</p>
     </motion.div>
@@ -36,14 +54,34 @@ export default function ValueProposition(): React.JSX.Element {
   return (
     <section id="pricing" className="value-section zoom-section">
       <div className="section-header">
-        <span className="section-header__badge section-header__badge--cyan">💎 Why CGraph?</span>
-        <h2 className="section-header__title font-zentry">
+        <motion.span
+          className="section-header__badge section-header__badge--cyan"
+          initial={{ opacity: 0, y: 20, scale: 0.9 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5 }}
+        >
+          💎 Why CGraph?
+        </motion.span>
+        <motion.h2
+          className="section-header__title font-zentry"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
           Built <span className="section-header__gradient">Different</span>
-        </h2>
-        <p className="section-header__desc">
+        </motion.h2>
+        <motion.p
+          className="section-header__desc"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
           Not just another chat app. CGraph combines the best of Discord, Signal, and Reddit into
           one privacy-first platform.
-        </p>
+        </motion.p>
       </div>
 
       <div className="value-grid">
@@ -60,26 +98,33 @@ export default function ValueProposition(): React.JSX.Element {
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        <div className="value-comparison__row">
-          <span className="value-comparison__feature">E2E Encryption</span>
-          <span className="value-comparison__us">✓</span>
-          <span className="value-comparison__them">Limited</span>
-        </div>
-        <div className="value-comparison__row">
-          <span className="value-comparison__feature">Built-in Forums</span>
-          <span className="value-comparison__us">✓</span>
-          <span className="value-comparison__them">✗</span>
-        </div>
-        <div className="value-comparison__row">
-          <span className="value-comparison__feature">Gamification</span>
-          <span className="value-comparison__us">✓</span>
-          <span className="value-comparison__them">✗</span>
-        </div>
-        <div className="value-comparison__row">
-          <span className="value-comparison__feature">Web3 Auth</span>
-          <span className="value-comparison__us">✓</span>
-          <span className="value-comparison__them">✗</span>
-        </div>
+        {[
+          { feature: 'E2E Encryption', us: '✓', them: 'Limited' },
+          { feature: 'Built-in Forums', us: '✓', them: '✗' },
+          { feature: 'Gamification', us: '✓', them: '✗' },
+          { feature: 'Web3 Auth', us: '✓', them: '✗' },
+        ].map((row, i) => (
+          <motion.div
+            key={row.feature}
+            className="value-comparison__row"
+            initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 + i * 0.08 }}
+          >
+            <span className="value-comparison__feature">{row.feature}</span>
+            <motion.span
+              className="value-comparison__us"
+              initial={{ scale: 0 }}
+              whileInView={{ scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 + i * 0.08, type: 'spring', stiffness: 300, damping: 12 }}
+            >
+              {row.us}
+            </motion.span>
+            <span className="value-comparison__them">{row.them}</span>
+          </motion.div>
+        ))}
         <div className="value-comparison__header">
           <span />
           <span className="value-comparison__label value-comparison__label--us">CGraph</span>
@@ -95,7 +140,13 @@ export default function ValueProposition(): React.JSX.Element {
         viewport={{ once: true }}
         transition={{ duration: 0.4, delay: 0.4 }}
       >
-        <a href={`${WEB_APP_URL}/register`} className="value-cta__btn">
+        <motion.a
+          href={`${WEB_APP_URL}/register`}
+          className="value-cta__btn"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+        >
           Start for Free — No Credit Card Required
           <svg
             width="16"
@@ -111,7 +162,7 @@ export default function ValueProposition(): React.JSX.Element {
             <path d="M5 12h14" />
             <path d="m12 5 7 7-7 7" />
           </svg>
-        </a>
+        </motion.a>
       </motion.div>
     </section>
   );
