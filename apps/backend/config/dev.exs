@@ -80,4 +80,3 @@ config :cgraph, CGraph.Search.Engine,
   fallback_to_postgres: true,
   cache_ttl: 60_000,
   request_timeout: 5_000
-

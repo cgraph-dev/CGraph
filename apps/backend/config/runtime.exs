@@ -33,7 +33,7 @@ if config_env() == :prod do
   # Recommended: Set POOL_SIZE=50-100 based on instance count
   # Formula: (max_db_connections / app_instances) - 5
   # Consider deploying PgBouncer for connection multiplexing at scale
-  # 
+  #
   # For 10K users on 2 instances: 50 connections each = 100 total
   # Supabase Pro: 500 connections, so 50/instance is safe
   repo_config = [
@@ -319,7 +319,7 @@ if config_env() == :prod do
   # - Smart search
   # See: docs/architecture/AI_INTEGRATION.md
   # ==========================================================================
-  
+
   config :cgraph, CGraph.AI,
     enabled: false,  # AI features not yet implemented
     model: "claude-4-opus",

@@ -1,27 +1,27 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.15** | Generated: February 13, 2026
+> **Version: 0.9.16** | Generated: February 14, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
 ---
 
-## 🚦 Overall Health
+## Overall Health
 
-| Dimension         | Status | Score | Notes                                       |
-| ----------------- | ------ | ----- | ------------------------------------------- |
-| **Build**         | ✅     | 10/10 | All apps building successfully              |
-| **TypeScript**    | ✅     | 10/10 | 0 errors across all packages                |
-| **Lint**          | ✅     | 10/10 | 0 errors, ESLint 9 flat config              |
-| **Architecture**  | ✅     | 9/10  | Facade hooks + module architecture complete |
-| **Tests**         | ✅     | 9/10  | 1,342 tests passing (+132 facade tests)     |
-| **Security**      | ⚠️     | 7/10  | No critical CVEs; E2EE audit pending        |
-| **Documentation** | ✅     | 9/10  | Updated with facade & platform parity docs  |
-| **Observability** | ✅     | 9/10  | Prometheus + SLO rules active, Sentry live  |
-| **Resilience**    | ✅     | 9/10  | Circuit breakers on Redis, Push, Mailer     |
-| **CI/CD**         | ✅     | 9/10  | CI-gated deploys, canary strategy on Fly.io |
+| Dimension         | Status | Score | Notes                                                 |
+| ----------------- | ------ | ----- | ----------------------------------------------------- |
+| **Build**         | OK     | 10/10 | All apps building successfully                        |
+| **TypeScript**    | OK     | 10/10 | 0 errors across all packages                          |
+| **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                        |
+| **Architecture**  | OK     | 9/10  | Facade hooks + module architecture complete           |
+| **Tests**         | OK     | 8/10  | 67 test files (+14 new), 40→53 controllers covered    |
+| **Security**      | WARN   | 7/10  | No critical CVEs; E2EE audit pending                  |
+| **Documentation** | OK     | 9/10  | Updated with facade & platform parity docs            |
+| **Observability** | OK     | 10/10 | Prometheus + SLO + Sentry + Request Tracing           |
+| **Resilience**    | OK     | 10/10 | Circuit breakers + DLQ + Backpressure + Snowflake IDs |
+| **CI/CD**         | OK     | 9/10  | CI-gated deploys, canary strategy on Fly.io           |
 
-**Composite Score: 9.3/10** — Production-ready with operational maturity
+**Composite Score: 9.2/10** — Production-ready with Discord/WhatsApp-grade operational maturity
 
 ---
 

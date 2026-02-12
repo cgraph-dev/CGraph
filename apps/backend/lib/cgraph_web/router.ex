@@ -30,6 +30,8 @@ defmodule CGraphWeb.Router do
     plug :accepts, ["json"]
     # Security headers for API responses
     plug CGraphWeb.Plugs.SecurityHeaders, mode: :api
+    # End-to-end request tracing (Meta/Discord standard)
+    plug CGraphWeb.Plugs.RequestTracing
     # Enhanced rate limiter with sliding window algorithm
     # See CGraphWeb.Plugs.RateLimiterV2 for tier documentation
     plug CGraphWeb.Plugs.RateLimiterV2, tier: :standard
@@ -42,6 +44,7 @@ defmodule CGraphWeb.Router do
   pipeline :api_auth_strict do
     plug :accepts, ["json"]
     plug CGraphWeb.Plugs.SecurityHeaders, mode: :api
+    plug CGraphWeb.Plugs.RequestTracing
     plug CGraphWeb.Plugs.RateLimiterV2, tier: :strict
     plug CGraphWeb.Plugs.ApiVersion
     plug CGraphWeb.Plugs.IdempotencyPlug
@@ -52,6 +55,7 @@ defmodule CGraphWeb.Router do
   pipeline :api_relaxed do
     plug :accepts, ["json"]
     plug CGraphWeb.Plugs.SecurityHeaders, mode: :api
+    plug CGraphWeb.Plugs.RequestTracing
     plug CGraphWeb.Plugs.RateLimiterV2, tier: :relaxed
     plug CGraphWeb.Plugs.ApiVersion
     plug CGraphWeb.Plugs.IdempotencyPlug
@@ -188,20 +192,20 @@ defmodule CGraphWeb.Router do
     # Supports both RSS 2.0 (default) and Atom 1.0 (via ?format=atom)
     # All feeds are cached for 5 minutes for CDN optimization
     # ==========================================================================
-    
+
     # Global activity feed
     get "/rss/global/activity", RssController, :global_activity
-    
+
     # Forum-level feeds
     get "/rss/forums/:forum_id/threads", RssController, :forum_threads
     get "/rss/forums/:forum_id/posts", RssController, :forum_posts
-    
+
     # Board-level feeds
     get "/rss/boards/:board_id/threads", RssController, :board_threads
-    
+
     # Thread-level feeds
     get "/rss/threads/:thread_id/posts", RssController, :thread_posts
-    
+
     # User activity feeds
     get "/rss/users/:user_id/activity", RssController, :user_activity
 
@@ -510,14 +514,14 @@ defmodule CGraphWeb.Router do
     # ==========================================================================
     # Secondary Groups & Auto-Assignment Rules
     # ==========================================================================
-    
+
     # Member groups
     get "/forums/:forum_id/members/:member_id/groups", SecondaryGroupsController, :member_groups
     get "/forums/:forum_id/my-groups", SecondaryGroupsController, :my_groups
     post "/forums/:forum_id/members/:member_id/secondary-groups", SecondaryGroupsController, :add_secondary_group
     delete "/forums/:forum_id/members/:member_id/secondary-groups/:group_id", SecondaryGroupsController, :remove_secondary_group
     put "/forums/:forum_id/members/:member_id/display-group", SecondaryGroupsController, :set_display_group
-    
+
     # Auto-assignment rules
     get "/forums/:forum_id/group-rules", SecondaryGroupsController, :list_rules
     post "/forums/:forum_id/groups/:group_id/rules", SecondaryGroupsController, :create_rule

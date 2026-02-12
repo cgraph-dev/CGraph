@@ -385,7 +385,7 @@ defmodule CGraph.Notifications.PushService do
 
   defp send_to_expo([], _notification, _silent), do: {:ok, 0, 0, []}
   defp send_to_expo(tokens, notification, silent) do
-    case CircuitBreakers.call(:apns, fn ->
+    case CircuitBreakers.call(:expo, fn ->
       start_time = System.monotonic_time()
 
       messages = Enum.map(tokens, fn token ->

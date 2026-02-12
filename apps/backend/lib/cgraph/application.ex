@@ -54,6 +54,9 @@ defmodule CGraph.Application do
       # Start in-app metrics collector/exporter
       CGraph.Metrics,
 
+      # Discord-style Snowflake ID generator for message ordering
+      CGraph.Snowflake,
+
       # 4. Database query analysis (N+1 detection, slow query logging)
       CGraph.Telemetry.SlowQueryReporter,
 
@@ -99,10 +102,10 @@ defmodule CGraph.Application do
     case Supervisor.start_link(children, opts) do
       {:ok, pid} ->
         Logger.info("application_supervisor_started", pid: inspect(pid))
-        
+
         # Initialize tier limits cache after Repo is started
         init_tier_limits_cache()
-        
+
         # Warm up critical caches on deploy
         warm_up_caches()
 
@@ -319,4 +322,3 @@ defmodule CGraph.Application do
     end
   end
 end
-

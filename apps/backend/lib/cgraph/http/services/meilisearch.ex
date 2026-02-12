@@ -19,7 +19,7 @@ defmodule CGraph.HTTP.Services.Meilisearch do
   plug Tesla.Middleware.BaseUrl, fn -> config()[:url] || "http://localhost:7700" end
   plug Tesla.Middleware.Headers, fn ->
     api_key = config()[:api_key]
-    
+
     if api_key do
       [{"authorization", "Bearer #{api_key}"}]
     else
