@@ -115,8 +115,8 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
               className="transition-all duration-300"
             >
               <LogoIcon
-                size={80}
-                className="drop-shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all duration-300 group-hover:drop-shadow-[0_0_50px_rgba(139,92,246,0.6)]"
+                size={160}
+                className="drop-shadow-[0_0_40px_rgba(139,92,246,0.4)] transition-all duration-300 group-hover:drop-shadow-[0_0_60px_rgba(139,92,246,0.6)]"
               />
             </motion.div>
           </a>
@@ -125,26 +125,26 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         {/* Main content section */}
         <div className="relative z-10 space-y-8">
           <motion.div
-            initial={reduced ? {} : { opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            initial={reduced ? {} : { y: 20 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
           >
             <h1 className="text-5xl font-bold leading-tight text-white">
               <span className="bg-gradient-to-r from-violet-400 via-purple-300 to-emerald-400 bg-clip-text text-transparent">
-                <TextScramble text="Connect, Share," delay={500} scrambleSpeed={65} />
+                <TextScramble text="Connect, Share," delay={800} scrambleSpeed={100} />
               </span>
               <br />
               <span className="text-white">
-                <TextScramble text="Build Community" delay={1200} scrambleSpeed={65} />
+                <TextScramble text="Build Community" delay={2400} scrambleSpeed={100} />
               </span>
             </h1>
           </motion.div>
 
           <motion.p
             className="max-w-md text-xl leading-relaxed text-white/80"
-            initial={reduced ? {} : { opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
+            initial={reduced ? {} : { y: 15 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
           >
             The all-in-one platform for{' '}
             <span className="font-medium text-violet-400">secure messaging</span>,{' '}

@@ -49,7 +49,7 @@ export const TextScramble = memo(function TextScramble({
           clearInterval(interval);
         }
 
-        iteration += 1 / 3;
+        iteration += 1 / 4;
       }, scrambleSpeed);
     }, delay);
 
