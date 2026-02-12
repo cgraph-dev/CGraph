@@ -1,7 +1,156 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { Message } from './types';
-import { DEMO_MESSAGES } from './constants';
+import type { Message, DemoUserProfile } from './types';
+import { DEMO_MESSAGES, DEMO_USER_PROFILES } from './constants';
+
+/** Mini profile popup — appears on avatar/name hover, matching web app MiniProfileCard */
+function DemoProfilePopup({
+  profile,
+  author,
+  avatar,
+}: {
+  profile: DemoUserProfile;
+  author: string;
+  avatar: string;
+}) {
+  const xpPercent = Math.round((profile.xp / profile.maxXp) * 100);
+
+  return (
+    <motion.div
+      className="demo-profile-popup"
+      initial={{ opacity: 0, scale: 0.9, y: 8 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.9, y: 8 }}
+      transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+    >
+      {/* Banner */}
+      <div className="demo-profile-popup__banner" style={{ background: profile.borderStyle }} />
+
+      {/* Avatar with border */}
+      <div className="demo-profile-popup__avatar-wrap">
+        <div
+          className={`demo-profile-popup__avatar-ring demo-profile-popup__avatar-ring--${profile.borderType}`}
+          style={{ background: profile.borderStyle }}
+        >
+          <div className="demo-profile-popup__avatar-inner">{avatar}</div>
+        </div>
+        <span className="demo-profile-popup__online" />
+      </div>
+
+      {/* Info */}
+      <div className="demo-profile-popup__info">
+        <span className="demo-profile-popup__name" style={{ color: profile.nameColor }}>
+          {author}
+        </span>
+        <span className="demo-profile-popup__title" style={{ backgroundImage: profile.titleColor }}>
+          {profile.title}
+        </span>
+      </div>
+
+      {/* Level + XP */}
+      <div className="demo-profile-popup__level-row">
+        <span className="demo-profile-popup__level">Level {profile.level}</span>
+        <span className="demo-profile-popup__xp-text">
+          {profile.xp.toLocaleString()} / {profile.maxXp.toLocaleString()} XP
+        </span>
+      </div>
+      <div className="demo-profile-popup__xp-bar">
+        <motion.div
+          className="demo-profile-popup__xp-fill"
+          initial={{ width: 0 }}
+          animate={{ width: `${xpPercent}%` }}
+          transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+          style={{ backgroundImage: profile.borderStyle }}
+        />
+      </div>
+
+      {/* Stats */}
+      <div className="demo-profile-popup__stats">
+        <div className="demo-profile-popup__stat">
+          <span className="demo-profile-popup__stat-value">{profile.karma.toLocaleString()}</span>
+          <span className="demo-profile-popup__stat-label">Karma</span>
+        </div>
+        <div className="demo-profile-popup__stat">
+          <span className="demo-profile-popup__stat-value">🔥 {profile.streak}</span>
+          <span className="demo-profile-popup__stat-label">Streak</span>
+        </div>
+      </div>
+
+      {/* Badges */}
+      <div className="demo-profile-popup__badges">
+        {profile.badges.map((b) => (
+          <span key={b.label} className="demo-profile-popup__badge">
+            {b.icon} {b.label}
+          </span>
+        ))}
+      </div>
+
+      {/* Actions */}
+      <div className="demo-profile-popup__actions">
+        <button type="button" className="demo-profile-popup__btn demo-profile-popup__btn--primary">
+          Message
+        </button>
+        <button
+          type="button"
+          className="demo-profile-popup__btn demo-profile-popup__btn--secondary"
+        >
+          View Profile
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+/** Avatar with hover-triggered profile card */
+function HoverableAvatar({
+  author,
+  avatar,
+  profile,
+}: {
+  author: string;
+  avatar: string;
+  profile?: DemoUserProfile;
+}) {
+  const [showPopup, setShowPopup] = useState(false);
+  const hoverTimeout = useRef<ReturnType<typeof setTimeout>>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseEnter = () => {
+    if (!profile) return;
+    hoverTimeout.current = setTimeout(() => setShowPopup(true), 300);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
+    setShowPopup(false);
+  };
+
+  return (
+    <div
+      ref={wrapRef}
+      className="demo-message__avatar-wrap"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      {profile ? (
+        <div
+          className={`demo-message__avatar-ring demo-message__avatar-ring--${profile.borderType}`}
+          style={{ background: profile.borderStyle }}
+        >
+          <div className="demo-message__avatar-inner">{avatar}</div>
+        </div>
+      ) : (
+        <div className="demo-message__avatar">{avatar}</div>
+      )}
+
+      <AnimatePresence>
+        {showPopup && profile && (
+          <DemoProfilePopup profile={profile} author={author} avatar={avatar} />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export const ChatDemo = memo(function ChatDemo() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -16,6 +165,7 @@ export const ChatDemo = memo(function ChatDemo() {
         setIsTyping(true);
         setTimeout(() => {
           setIsTyping(false);
+          const profile = DEMO_USER_PROFILES[msg.author];
           setMessages((prev) => [
             ...prev,
             {
@@ -25,6 +175,7 @@ export const ChatDemo = memo(function ChatDemo() {
               content: msg.content,
               timestamp: new Date(),
               reactions: msg.reactions,
+              profile,
             },
           ]);
           messageIndex++;
@@ -67,10 +218,31 @@ export const ChatDemo = memo(function ChatDemo() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               className="demo-message"
+              style={msg.profile ? { background: msg.profile.bubbleAccent } : undefined}
             >
-              <div className="demo-message__avatar">{msg.avatar}</div>
+              <HoverableAvatar author={msg.author} avatar={msg.avatar} profile={msg.profile} />
               <div className="demo-message__content">
-                <span className="demo-message__author">{msg.author}</span>
+                <div className="demo-message__header">
+                  <span
+                    className="demo-message__author"
+                    style={msg.profile ? { color: msg.profile.nameColor } : undefined}
+                  >
+                    {msg.author}
+                  </span>
+                  {msg.profile && (
+                    <span
+                      className="demo-message__title-badge"
+                      style={{ backgroundImage: msg.profile.titleColor }}
+                    >
+                      {msg.profile.title}
+                    </span>
+                  )}
+                  {msg.profile?.badges.slice(0, 2).map((b) => (
+                    <span key={b.label} className="demo-message__inline-badge" title={b.label}>
+                      {b.icon}
+                    </span>
+                  ))}
+                </div>
                 <p className="demo-message__text">{msg.content}</p>
                 {msg.reactions && (
                   <div className="demo-message__reactions">

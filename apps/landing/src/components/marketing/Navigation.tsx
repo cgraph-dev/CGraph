@@ -82,8 +82,7 @@ export default function Navigation({
 
         {/* Logo */}
         <Link to="/" className="gl-nav-unified__logo">
-          <LogoIcon size={32} showGlow={false} color="gradient" />
-          <span>CGraph</span>
+          <LogoIcon size={48} showGlow={false} color="gradient" />
         </Link>
 
         {/* Desktop Navigation Links */}

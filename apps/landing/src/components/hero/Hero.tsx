@@ -12,8 +12,8 @@
  * @since v2.2.0
  */
 
-import { memo, useState, useEffect } from 'react';
-import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
+import { memo, useState, useEffect, useRef } from 'react';
+import { motion, useReducedMotion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import './hero.css';
 
 const WEB_APP_URL = 'https://web.cgraph.org';
@@ -60,6 +60,17 @@ const subtitles = [
 const Hero = memo(function Hero(): React.JSX.Element {
   const prefersReduced = useReducedMotion();
   const [subtitleIndex, setSubtitleIndex] = useState(0);
+  const heroRef = useRef<HTMLElement>(null);
+
+  // Scroll-linked parallax — bg drifts slower, content fades out
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+  const contentOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const contentY = useTransform(scrollYProgress, [0, 0.5], [0, -80]);
 
   // Cycle subtitles every 4s
   useEffect(() => {
@@ -71,9 +82,13 @@ const Hero = memo(function Hero(): React.JSX.Element {
   }, [prefersReduced]);
 
   return (
-    <section className="hero-pro" aria-label="CGraph — Beyond Messaging">
-      {/* Background layers */}
-      <div className="hero-pro__bg" aria-hidden="true">
+    <section ref={heroRef} className="hero-pro" aria-label="CGraph — Beyond Messaging">
+      {/* Background layers — parallax drift on scroll */}
+      <motion.div
+        className="hero-pro__bg"
+        aria-hidden="true"
+        style={prefersReduced ? undefined : { y: bgY }}
+      >
         {/* Base gradient */}
         <div className="hero-pro__gradient-base" />
 
@@ -99,14 +114,15 @@ const Hero = memo(function Hero(): React.JSX.Element {
 
         {/* Bottom fade */}
         <div className="hero-pro__fade" />
-      </div>
+      </motion.div>
 
-      {/* Content */}
+      {/* Content — fades out on scroll */}
       <motion.div
         className="hero-pro__content"
         variants={prefersReduced ? undefined : containerVariants}
         initial={prefersReduced ? 'visible' : 'hidden'}
         animate="visible"
+        style={prefersReduced ? undefined : { opacity: contentOpacity, y: contentY }}
       >
         {/* Title */}
         <motion.h1 variants={itemVariants} className="hero-pro__title">

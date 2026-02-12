@@ -1027,23 +1027,21 @@
 
 /* Logo */
 .gl-nav-unified__logo {
-  font-size: 1.25rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #10b981, #8b5cf6);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0.5rem;
+  padding: 0.125rem;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .gl-nav-unified__logo:hover {
-  transform: scale(1.05);
-  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.5));
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.5)) drop-shadow(0 0 20px rgba(139, 92, 246, 0.3));
+}
+
+.gl-nav-unified__logo img {
+  border-radius: 10px;
 }
 
 .gl-nav-unified__logo-icon {
