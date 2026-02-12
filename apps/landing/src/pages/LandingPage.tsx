@@ -20,7 +20,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, useReducedMotion } from 'framer-motion';
 import Navigation from '../components/marketing/Navigation';
 import Footer from '../components/marketing/Footer';
-import VideoHero from '../components/hero/VideoHero';
+import Hero from '../components/hero/Hero';
 import ValueProposition from '../components/sections/ValueProposition';
 import { features, showcaseCards, securityFeatures } from '../data/landing-data';
 import type { ShowcaseCardData } from '../data/landing-data';
@@ -741,8 +741,8 @@ export default function LandingPage() {
       {/* Unified Navigation */}
       <Navigation showLandingLinks />
 
-      {/* Hero — Cinematic video background */}
-      <VideoHero />
+      {/* Hero — Professional SaaS hero */}
+      <Hero />
 
       {/* Feature Showcase */}
       <section className="stats-section zoom-section">

@@ -190,7 +190,7 @@ Marketing and public-facing content:
 apps/landing/
 ├── src/
 │   ├── components/
-│   │   ├── hero/                  # VideoHero (cinematic video background)
+│   │   ├── hero/                  # Hero (professional SaaS hero with gradient mesh)
 │   │   ├── marketing/             # Navigation, Footer, MarketingLayout
 │   │   ├── sections/              # ValueProposition (replaces pricing)
 │   │   ├── interactive-demo/      # Live chat demo
@@ -211,7 +211,7 @@ apps/landing/
 **Architecture notes**:
 
 - Nav/Footer use unified `marketing/Navigation` and `marketing/Footer` components
-- Hero section uses `VideoHero` with Framer Motion animations (video bg on desktop)
+- Hero section uses `Hero` with Framer Motion animations (gradient mesh bg, product preview mockup)
 - Pricing replaced by `ValueProposition` comparison section
 - Google Fonts limited to Orbitron + Inter; custom fonts: Zentry, General, Robert
 - GSAP ScrollTrigger runs only on desktop (≥768px); skipped for `prefers-reduced-motion`
