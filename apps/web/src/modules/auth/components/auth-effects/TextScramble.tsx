@@ -13,7 +13,16 @@ export const TextScramble = memo(function TextScramble({
   scrambleSpeed = 50,
   delay = 0,
 }: TextScrambleProps) {
-  const [displayText, setDisplayText] = useState('');
+  // Start with scrambled characters visible immediately (not empty)
+  const [displayText, setDisplayText] = useState(() => {
+    if (prefersReducedMotion()) return text;
+    return text
+      .split('')
+      .map((char) =>
+        char === ' ' ? ' ' : SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)]
+      )
+      .join('');
+  });
 
   useEffect(() => {
     if (prefersReducedMotion()) {

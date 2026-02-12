@@ -108,24 +108,17 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
         >
-          <a href="https://www.cgraph.org" className="group flex items-center gap-3">
+          <a href="https://www.cgraph.org" className="group inline-block">
             <motion.div
-              className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/20 bg-gradient-to-br from-violet-500/20 to-emerald-500/10 backdrop-blur-md transition-all duration-300 group-hover:border-violet-400/50 group-hover:bg-gradient-to-br group-hover:from-violet-500/30 group-hover:to-emerald-500/20 group-hover:shadow-[0_0_30px_rgba(139,92,246,0.5)]"
-              whileHover={reduced ? {} : { scale: 1.1, rotate: 5 }}
-              whileTap={reduced ? {} : { scale: 0.95 }}
+              whileHover={reduced ? {} : { scale: 1.05 }}
+              whileTap={reduced ? {} : { scale: 0.97 }}
+              className="transition-all duration-300"
             >
-              <LogoIcon size={28} color="gradient" showGlow={false} />
+              <LogoIcon
+                size={80}
+                className="drop-shadow-[0_0_30px_rgba(139,92,246,0.4)] transition-all duration-300 group-hover:drop-shadow-[0_0_50px_rgba(139,92,246,0.6)]"
+              />
             </motion.div>
-            <motion.span
-              className="text-3xl font-bold"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              <span className="bg-gradient-to-r from-violet-400 via-purple-300 to-emerald-400 bg-clip-text text-transparent">
-                CGraph
-              </span>
-            </motion.span>
           </a>
         </motion.div>
 
@@ -138,11 +131,11 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           >
             <h1 className="text-5xl font-bold leading-tight text-white">
               <span className="bg-gradient-to-r from-violet-400 via-purple-300 to-emerald-400 bg-clip-text text-transparent">
-                <TextScramble text="Connect, Share," delay={300} />
+                <TextScramble text="Connect, Share," delay={500} scrambleSpeed={65} />
               </span>
               <br />
               <span className="text-white">
-                <TextScramble text="Build Community" delay={800} />
+                <TextScramble text="Build Community" delay={1200} scrambleSpeed={65} />
               </span>
             </h1>
           </motion.div>
