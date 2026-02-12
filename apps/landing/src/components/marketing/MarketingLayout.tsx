@@ -64,11 +64,21 @@ export default function MarketingLayout({
           <div className="relative z-10 mx-auto max-w-4xl px-4">
             {eyebrow && (
               <motion.span
-                initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ duration: 0.6, ease: 'easeOut' }}
+                initial={{ opacity: 0, scale: 0.85, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 200,
+                  damping: 15,
+                  delay: 0.15,
+                }}
                 className="marketing-hero__eyebrow"
               >
+                <motion.span
+                  className="marketing-hero__eyebrow-dot"
+                  animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                />
                 {eyebrow}
               </motion.span>
             )}

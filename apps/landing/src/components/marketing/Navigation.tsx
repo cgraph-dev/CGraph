@@ -105,14 +105,6 @@ export default function Navigation({
               </Link>
             </>
           )}
-          <a
-            href="https://docs.cgraph.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="gl-nav-unified__link"
-          >
-            Docs
-          </a>
         </div>
 
         {/* CTA Button */}
@@ -181,14 +173,6 @@ export default function Navigation({
                   </Link>
                 </>
               )}
-              <a
-                href="https://docs.cgraph.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="gl-nav-unified__mobile-link"
-              >
-                Docs
-              </a>
               <div className="gl-nav-unified__mobile-divider" />
               <a href="https://web.cgraph.org/login" className="gl-nav-unified__mobile-link">
                 Sign In

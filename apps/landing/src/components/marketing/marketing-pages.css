@@ -258,7 +258,9 @@
 
 /* Animated Eyebrow - EXACT match to landing page .hero__eyebrow */
 .marketing-hero__eyebrow {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.5rem 1.5rem;
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%);
   border: 1px solid rgba(16, 185, 129, 0.4);
@@ -295,6 +297,17 @@
   box-shadow: 0 0 30px rgba(16, 185, 129, 0.4), 0 0 60px rgba(139, 92, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   transform: scale(1.02);
   animation: none;
+}
+
+/* Pulsing dot inside eyebrow badge */
+.marketing-hero__eyebrow-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-primary, #10b981);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+  flex-shrink: 0;
 }
 
 /* Shimmer sweep effect - only on hover (performance optimized) */

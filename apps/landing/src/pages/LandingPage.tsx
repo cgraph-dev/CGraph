@@ -92,10 +92,14 @@ const SectionHeader = memo(function SectionHeader({
     <div className="section-header">
       <motion.span
         className={`section-header__badge section-header__badge--${badgeVariant}`}
-        initial={{ opacity: 0, y: 20, scale: 0.9 }}
-        whileInView={{ opacity: 1, y: 0, scale: 1 }}
+        initial={{ opacity: 0, scale: 0.85, y: 10 }}
+        whileInView={{ opacity: 1, scale: 1, y: 0 }}
         viewport={{ once: true, margin: '-40px' }}
-        transition={{ duration: 0.5 }}
+        transition={{
+          type: 'spring',
+          stiffness: 200,
+          damping: 15,
+        }}
       >
         {badge}
       </motion.span>
