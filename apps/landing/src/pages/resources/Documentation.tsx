@@ -227,6 +227,8 @@ const methodColors: Record<string, { bg: string; text: string }> = {
   WS: { bg: 'rgba(167, 139, 250, 0.12)', text: '#a78bfa' },
 };
 
+const defaultMethodColor = methodColors.GET!;
+
 export default function Documentation() {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -551,7 +553,7 @@ export default function Documentation() {
                   </div>
                   <div className="space-y-1.5">
                     {group.endpoints.map((ep) => {
-                      const mc = methodColors[ep.method] || methodColors.GET;
+                      const mc = methodColors[ep.method] ?? defaultMethodColor;
                       return (
                         <div
                           key={`${ep.method}-${ep.path}`}

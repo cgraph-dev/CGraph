@@ -166,6 +166,8 @@ const categoryColors: Record<string, { bg: string; text: string }> = {
   Product: { bg: 'rgba(234, 179, 8, 0.12)', text: '#fbbf24' },
 };
 
+const defaultCategoryColor = categoryColors.Engineering!;
+
 export default function Blog() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [email, setEmail] = useState('');
@@ -339,7 +341,7 @@ export default function Blog() {
 
             <div className="marketing-grid marketing-grid--2">
               {featuredPosts.map((post, index) => {
-                const catColor = categoryColors[post.category] || categoryColors.Engineering;
+                const catColor = categoryColors[post.category] ?? defaultCategoryColor;
                 return (
                   <Link key={post.id} to={`/blog/${post.slug}`} className="block no-underline">
                     <motion.article
@@ -469,7 +471,7 @@ export default function Blog() {
 
           <div className="mx-auto max-w-4xl space-y-5">
             {(featuredPosts.length > 0 ? regularPosts : filteredPosts).map((post, index) => {
-              const catColor = categoryColors[post.category] || categoryColors.Engineering;
+              const catColor = categoryColors[post.category] ?? defaultCategoryColor;
               return (
                 <Link key={post.id} to={`/blog/${post.slug}`} className="block no-underline">
                   <motion.article

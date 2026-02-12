@@ -1668,16 +1668,6 @@ const docArticles: Record<string, DocArticleData> = {
   },
 };
 
-// Generate slug from article title
-function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-}
-
 // Get all article slugs in order
 const allSlugs = Object.keys(docArticles);
 
