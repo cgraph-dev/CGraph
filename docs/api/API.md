@@ -2,7 +2,8 @@
 
 > Your gateway to real-time communication, groups, forums, and more.
 
-This document provides a complete reference for the CGraph REST API and WebSocket events. Whether you're building an integration, mobile app, or just exploring—you'll find everything you need here.
+This document provides a complete reference for the CGraph REST API and WebSocket events. Whether
+you're building an integration, mobile app, or just exploring—you'll find everything you need here.
 
 ---
 
@@ -23,11 +24,11 @@ This document provides a complete reference for the CGraph REST API and WebSocke
 
 ### Base URL
 
-| Environment | URL |
-|-------------|-----|
-| Production | `https://api.cgraph.org/api/v1` |
-| Staging | `https://staging-api.cgraph.org/api/v1` |
-| Local | `http://localhost:4000/api/v1` |
+| Environment | URL                                     |
+| ----------- | --------------------------------------- |
+| Production  | `https://api.cgraph.org/api/v1`         |
+| Staging     | `https://staging-api.cgraph.org/api/v1` |
+| Local       | `http://localhost:4000/api/v1`          |
 
 ### Request Format
 
@@ -49,6 +50,7 @@ Authorization: Bearer <your-jwt-token>
 All responses follow this structure:
 
 **Success:**
+
 ```json
 {
   "data": { ... },
@@ -61,6 +63,7 @@ All responses follow this structure:
 ```
 
 **Error:**
+
 ```json
 {
   "error": {
@@ -81,32 +84,33 @@ CGraph supports multiple authentication methods:
 
 ### Authentication Methods
 
-| Method | Use Case | Security |
-|--------|----------|----------|
-| HTTP-only Cookies | Web browsers | XSS-immune (recommended for web) |
-| Bearer Token | Mobile apps, APIs | Use with secure storage |
-| Wallet Auth | Anonymous/privacy-focused | No email required |
+| Method            | Use Case                  | Security                         |
+| ----------------- | ------------------------- | -------------------------------- |
+| HTTP-only Cookies | Web browsers              | XSS-immune (recommended for web) |
+| Bearer Token      | Mobile apps, APIs         | Use with secure storage          |
+| Wallet Auth       | Anonymous/privacy-focused | No email required                |
 
 ### HTTP-only Cookie Authentication (v0.7.24+)
 
-For web clients, authentication tokens are automatically set as HTTP-only cookies. This provides protection against XSS attacks since JavaScript cannot access these cookies.
+For web clients, authentication tokens are automatically set as HTTP-only cookies. This provides
+protection against XSS attacks since JavaScript cannot access these cookies.
 
 **How it works:**
+
 1. Login/register endpoints set `cgraph_access_token` and `cgraph_refresh_token` cookies
 2. Subsequent requests automatically include cookies (with `credentials: 'include'`)
 3. No need to manually manage Authorization headers
 
-**Cookie Configuration:**
-| Cookie | Max Age | Flags |
-|--------|---------|-------|
-| `cgraph_access_token` | 15 min | HttpOnly, Secure, SameSite=Lax |
-| `cgraph_refresh_token` | 7 days | HttpOnly, Secure, SameSite=Lax |
+**Cookie Configuration:** | Cookie | Max Age | Flags | |--------|---------|-------| |
+`cgraph_access_token` | 15 min | HttpOnly, Secure, SameSite=Lax | | `cgraph_refresh_token` | 7 days
+| HttpOnly, Secure, SameSite=Lax |
 
 **JavaScript Example:**
+
 ```javascript
 // Using fetch
 const response = await fetch('/api/v1/me', {
-  credentials: 'include'  // Include cookies
+  credentials: 'include', // Include cookies
 });
 
 // Using axios
@@ -114,11 +118,13 @@ axios.defaults.withCredentials = true;
 const response = await axios.get('/api/v1/me');
 ```
 
-> **Note:** Mobile apps should continue using Bearer tokens stored in secure native storage (Keychain/Keystore).
+> **Note:** Mobile apps should continue using Bearer tokens stored in secure native storage
+> (Keychain/Keystore).
 
 ### 1. Email/Password Authentication
 
 **Register:**
+
 ```http
 POST /api/v1/auth/register
 Content-Type: application/json
@@ -131,6 +137,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -146,6 +153,7 @@ Content-Type: application/json
 ```
 
 **Login:**
+
 ```http
 POST /api/v1/auth/login
 Content-Type: application/json
@@ -157,6 +165,7 @@ Content-Type: application/json
 ```
 
 **Refresh Token:**
+
 ```http
 POST /api/v1/auth/refresh
 Content-Type: application/json
@@ -167,12 +176,14 @@ Content-Type: application/json
 ```
 
 **Logout (requires auth):**
+
 ```http
 POST /api/v1/auth/logout
 Authorization: Bearer <access-token>
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Logged out successfully"
@@ -180,6 +191,7 @@ Authorization: Bearer <access-token>
 ```
 
 **Verify Email:**
+
 ```http
 POST /api/v1/auth/verify-email
 Content-Type: application/json
@@ -190,12 +202,14 @@ Content-Type: application/json
 ```
 
 **Resend Verification Email (requires auth):**
+
 ```http
 POST /api/v1/auth/resend-verification
 Authorization: Bearer <access-token>
 ```
 
 **Response:**
+
 ```json
 {
   "message": "Verification email sent"
@@ -207,6 +221,7 @@ Authorization: Bearer <access-token>
 For privacy-focused users. No email required.
 
 **Generate Wallet:**
+
 ```http
 POST /api/v1/auth/wallet/generate
 Content-Type: application/json
@@ -215,6 +230,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -229,6 +245,7 @@ Content-Type: application/json
 > ⚠️ **Important:** The mnemonic and recovery code are shown only once. Store them securely!
 
 **Register with Wallet:**
+
 ```http
 POST /api/v1/auth/wallet/register
 Content-Type: application/json
@@ -242,6 +259,7 @@ Content-Type: application/json
 ```
 
 **Login with Wallet:**
+
 ```http
 POST /api/v1/auth/wallet/login
 Content-Type: application/json
@@ -259,11 +277,13 @@ CGraph supports OAuth authentication via Google, Apple, Facebook, and TikTok.
 #### Available Providers
 
 **Get Available Providers:**
+
 ```http
 GET /api/v1/auth/oauth/providers
 ```
 
 **Response:**
+
 ```json
 {
   "providers": [
@@ -278,11 +298,13 @@ GET /api/v1/auth/oauth/providers
 #### Web OAuth Flow
 
 **Step 1: Get Authorization URL:**
+
 ```http
 GET /api/v1/auth/oauth/:provider
 ```
 
 **Response:**
+
 ```json
 {
   "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth?...",
@@ -294,11 +316,13 @@ GET /api/v1/auth/oauth/:provider
 **Step 2: Handle Callback:**
 
 After user authorizes, the provider redirects back to:
+
 ```http
 GET /api/v1/auth/oauth/:provider/callback?code=AUTH_CODE&state=STATE
 ```
 
 **Response:**
+
 ```json
 {
   "user": {
@@ -323,6 +347,7 @@ GET /api/v1/auth/oauth/:provider/callback?code=AUTH_CODE&state=STATE
 Mobile apps use native SDKs and send tokens to backend for verification.
 
 **Verify Mobile OAuth Token:**
+
 ```http
 POST /api/v1/auth/oauth/:provider/mobile
 Content-Type: application/json
@@ -338,6 +363,7 @@ Content-Type: application/json
 #### Link/Unlink OAuth Account
 
 **Link OAuth Account (requires auth):**
+
 ```http
 POST /api/v1/auth/oauth/:provider/link
 Authorization: Bearer <access-token>
@@ -350,6 +376,7 @@ Content-Type: application/json
 ```
 
 **Unlink OAuth Account (requires auth):**
+
 ```http
 DELETE /api/v1/auth/oauth/:provider/link
 Authorization: Bearer <access-token>
@@ -357,22 +384,24 @@ Authorization: Bearer <access-token>
 
 ### Token Lifecycle
 
-| Token Type | Expiry | Use |
-|------------|--------|-----|
-| Access Token | 15 minutes | API requests |
-| Refresh Token | 7 days | Get new access token |
+| Token Type    | Expiry     | Use                  |
+| ------------- | ---------- | -------------------- |
+| Access Token  | 15 minutes | API requests         |
+| Refresh Token | 7 days     | Get new access token |
 
 ### Two-Factor Authentication (2FA)
 
 Add an extra layer of security with TOTP-based 2FA.
 
 **Check 2FA Status:**
+
 ```http
 GET /api/v1/auth/2fa/status
 Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "enabled": false,
@@ -382,12 +411,14 @@ Authorization: Bearer <token>
 ```
 
 **Setup 2FA:**
+
 ```http
 POST /api/v1/auth/2fa/setup
 Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "secret": "base64-encoded-secret",
@@ -397,6 +428,7 @@ Authorization: Bearer <token>
 ```
 
 **Enable 2FA (after scanning QR code):**
+
 ```http
 POST /api/v1/auth/2fa/enable
 Authorization: Bearer <token>
@@ -410,6 +442,7 @@ Content-Type: application/json
 ```
 
 **Verify 2FA Code:**
+
 ```http
 POST /api/v1/auth/2fa/verify
 Authorization: Bearer <token>
@@ -421,6 +454,7 @@ Content-Type: application/json
 ```
 
 **Disable 2FA:**
+
 ```http
 POST /api/v1/auth/2fa/disable
 Authorization: Bearer <token>
@@ -432,6 +466,7 @@ Content-Type: application/json
 ```
 
 **Regenerate Backup Codes:**
+
 ```http
 POST /api/v1/auth/2fa/backup-codes
 Authorization: Bearer <token>
@@ -443,6 +478,7 @@ Content-Type: application/json
 ```
 
 **Use Backup Code:**
+
 ```http
 POST /api/v1/auth/2fa/backup-codes/use
 Authorization: Bearer <token>
@@ -457,17 +493,18 @@ Content-Type: application/json
 
 ## Rate Limiting
 
-CGraph uses a distributed rate limiting system backed by Redis for cluster-wide consistency. When Redis is unavailable, the system gracefully degrades to per-node ETS-based limiting.
+CGraph uses a distributed rate limiting system backed by Redis for cluster-wide consistency. When
+Redis is unavailable, the system gracefully degrades to per-node ETS-based limiting.
 
 ### Rate Limit Tiers
 
-| Endpoint Type | Limit | Window | Scope |
-|---------------|-------|--------|-------|
-| Login/Register | 20 requests | 1 minute | IP address |
-| Authenticated API | 100 requests | 1 minute | User ID |
-| File Upload | 10 requests | 1 minute | User ID |
-| Search | 30 requests | 1 minute | User ID |
-| WebSocket Connect | 5 requests | 10 seconds | IP address |
+| Endpoint Type     | Limit        | Window     | Scope      |
+| ----------------- | ------------ | ---------- | ---------- |
+| Login/Register    | 20 requests  | 1 minute   | IP address |
+| Authenticated API | 100 requests | 1 minute   | User ID    |
+| File Upload       | 10 requests  | 1 minute   | User ID    |
+| Search            | 30 requests  | 1 minute   | User ID    |
+| WebSocket Connect | 5 requests   | 10 seconds | IP address |
 
 ### How It Works
 
@@ -503,7 +540,9 @@ Retry-After: 45
 
 ### Fallback Behavior
 
-If Redis becomes unavailable, the rate limiter falls back to local ETS tables. This means limits are enforced per-server rather than cluster-wide, but service continues without interruption. The system automatically switches back to Redis when connectivity is restored.
+If Redis becomes unavailable, the rate limiter falls back to local ETS tables. This means limits are
+enforced per-server rather than cluster-wide, but service continues without interruption. The system
+automatically switches back to Redis when connectivity is restored.
 
 ---
 
@@ -511,17 +550,17 @@ If Redis becomes unavailable, the rate limiter falls back to local ETS tables. T
 
 ### Error Codes
 
-| HTTP Status | Code | Description |
-|-------------|------|-------------|
-| 400 | `bad_request` | Malformed request |
-| 400 | `validation_error` | Invalid input data |
-| 401 | `unauthorized` | Missing or invalid token |
-| 403 | `forbidden` | Insufficient permissions |
-| 404 | `not_found` | Resource doesn't exist |
-| 409 | `conflict` | Resource already exists |
-| 422 | `unprocessable` | Semantic error |
-| 429 | `rate_limited` | Too many requests |
-| 500 | `internal_error` | Server error |
+| HTTP Status | Code               | Description              |
+| ----------- | ------------------ | ------------------------ |
+| 400         | `bad_request`      | Malformed request        |
+| 400         | `validation_error` | Invalid input data       |
+| 401         | `unauthorized`     | Missing or invalid token |
+| 403         | `forbidden`        | Insufficient permissions |
+| 404         | `not_found`        | Resource doesn't exist   |
+| 409         | `conflict`         | Resource already exists  |
+| 422         | `unprocessable`    | Semantic error           |
+| 429         | `rate_limited`     | Too many requests        |
+| 500         | `internal_error`   | Server error             |
 
 ### Validation Errors
 
@@ -549,6 +588,7 @@ If Redis becomes unavailable, the rate limiter falls back to local ETS tables. T
 Check if the API is running.
 
 **Response:**
+
 ```json
 {
   "status": "ok",
@@ -562,6 +602,7 @@ Check if the API is running.
 Check if the API is ready to serve traffic (database connected, etc.).
 
 **Response:**
+
 ```json
 {
   "status": "ready",
@@ -581,6 +622,7 @@ Check if the API is ready to serve traffic (database connected, etc.).
 Get the current authenticated user.
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -600,13 +642,15 @@ Get the current authenticated user.
 }
 ```
 
-Note: `username` can be `null` if user registered without one. `can_change_username` is `false` if changed within last 14 days.
+Note: `username` can be `null` if user registered without one. `can_change_username` is `false` if
+changed within last 14 days.
 
 #### `PUT /me`
 
 Update the current user's profile.
 
 **Request:**
+
 ```json
 {
   "display_name": "Alice J.",
@@ -619,6 +663,7 @@ Update the current user's profile.
 Change the current user's username. Subject to 14-day cooldown.
 
 **Request:**
+
 ```json
 {
   "username": "new_username"
@@ -626,6 +671,7 @@ Change the current user's username. Subject to 14-day cooldown.
 ```
 
 **Response (success):**
+
 ```json
 {
   "data": {
@@ -637,6 +683,7 @@ Change the current user's username. Subject to 14-day cooldown.
 ```
 
 **Response (cooldown active):**
+
 ```json
 {
   "error": "Username can only be changed once every 14 days",
@@ -653,6 +700,7 @@ Delete the current user's account. Initiates 30-day grace period.
 Upload a new avatar.
 
 **Request:**
+
 ```http
 Content-Type: multipart/form-data
 
@@ -664,6 +712,7 @@ file: (binary)
 List all active sessions for the current user.
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -685,9 +734,11 @@ Revoke a specific session (log out that device).
 
 #### `POST /me/export`
 
-Request a data export of all user data (GDPR compliance). The export is processed asynchronously and the user will be notified when it's ready.
+Request a data export of all user data (GDPR compliance). The export is processed asynchronously and
+the user will be notified when it's ready.
 
 **Response (202 Accepted):**
+
 ```json
 {
   "message": "Data export requested. You will be notified when it's ready.",
@@ -697,6 +748,7 @@ Request a data export of all user data (GDPR compliance). The export is processe
 ```
 
 **Response (429 Too Many Requests):**
+
 ```json
 {
   "error": "You can only request one data export per day. Please try again later."
@@ -704,6 +756,7 @@ Request a data export of all user data (GDPR compliance). The export is processe
 ```
 
 **Notes:**
+
 - Data exports include: profile, messages, posts, comments, groups, friends, and settings
 - Export format is JSON
 - Rate limited to 1 export request per day
@@ -718,6 +771,7 @@ Request a data export of all user data (GDPR compliance). The export is processe
 Get all user settings.
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -763,6 +817,7 @@ Update all settings at once.
 Update notification settings only.
 
 **Request:**
+
 ```json
 {
   "push_enabled": true,
@@ -796,13 +851,11 @@ Reset all settings to defaults.
 
 List all conversations for the current user.
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `page` | int | Page number (default: 1) |
-| `per_page` | int | Items per page (default: 20, max: 100) |
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| | `page`
+| int | Page number (default: 1) | | `per_page` | int | Items per page (default: 20, max: 100) |
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -835,6 +888,7 @@ List all conversations for the current user.
 Start a new conversation.
 
 **Request:**
+
 ```json
 {
   "recipient_id": "usr_xyz789",
@@ -850,19 +904,16 @@ Get a specific conversation.
 
 Get messages in a conversation.
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `page` | int | Page number |
-| `per_page` | int | Messages per page |
-| `before` | string | Get messages before this message ID |
-| `after` | string | Get messages after this message ID |
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| | `page`
+| int | Page number | | `per_page` | int | Messages per page | | `before` | string | Get messages
+before this message ID | | `after` | string | Get messages after this message ID |
 
 #### `POST /conversations/:id/messages`
 
 Send a message.
 
 **Request:**
+
 ```json
 {
   "content": "Hello!",
@@ -871,6 +922,7 @@ Send a message.
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -903,6 +955,7 @@ Send typing indicator. Call repeatedly while user is typing.
 List all friends.
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -934,6 +987,7 @@ List all friends.
 List pending friend requests (received).
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -962,6 +1016,7 @@ List sent friend requests (outgoing).
 Send a friend request. Accepts either `user_id` or `username`.
 
 **Request (by username):**
+
 ```json
 {
   "username": "alice"
@@ -969,6 +1024,7 @@ Send a friend request. Accepts either `user_id` or `username`.
 ```
 
 **Request (by user_id):**
+
 ```json
 {
   "user_id": "usr_xyz789"
@@ -976,6 +1032,7 @@ Send a friend request. Accepts either `user_id` or `username`.
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1027,6 +1084,7 @@ List all groups the user is a member of.
 Create a new group.
 
 **Request:**
+
 ```json
 {
   "name": "Cool Developers",
@@ -1041,6 +1099,7 @@ Create a new group.
 Get group details.
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1090,6 +1149,7 @@ List channels in a group.
 Create a new channel.
 
 **Request:**
+
 ```json
 {
   "name": "announcements",
@@ -1140,6 +1200,7 @@ List roles in a group.
 Create a new role.
 
 **Request:**
+
 ```json
 {
   "name": "Moderator",
@@ -1159,6 +1220,7 @@ List active invites.
 Create an invite link.
 
 **Request:**
+
 ```json
 {
   "max_uses": 10,
@@ -1167,6 +1229,7 @@ Create an invite link.
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1196,6 +1259,7 @@ List all forums.
 Create a new forum.
 
 **Request:**
+
 ```json
 {
   "name": "Tech Discussion",
@@ -1214,18 +1278,16 @@ Get forum details.
 
 List posts in a forum.
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `sort` | string | `hot`, `new`, `top` |
-| `time` | string | `day`, `week`, `month`, `year`, `all` (for `top`) |
-| `page` | int | Page number |
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| | `sort`
+| string | `hot`, `new`, `top` | | `time` | string | `day`, `week`, `month`, `year`, `all` (for
+`top`) | | `page` | int | Page number |
 
 #### `POST /forums/:id/posts`
 
 Create a new post.
 
 **Request:**
+
 ```json
 {
   "title": "Check out this cool project",
@@ -1240,6 +1302,7 @@ Create a new post.
 Vote on a post.
 
 **Request:**
+
 ```json
 {
   "direction": 1
@@ -1263,6 +1326,7 @@ Get comments on a post.
 Add a comment.
 
 **Request:**
+
 ```json
 {
   "content": "Great post!",
@@ -1278,13 +1342,11 @@ Add a comment.
 
 Get notifications for the current user.
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `unread_only` | bool | Only return unread notifications |
-| `page` | int | Page number |
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| |
+`unread_only` | bool | Only return unread notifications | | `page` | int | Page number |
 
 **Response:**
+
 ```json
 {
   "data": [
@@ -1320,6 +1382,7 @@ Mark all notifications as read.
 Upload a file.
 
 **Request:**
+
 ```http
 Content-Type: multipart/form-data
 
@@ -1330,6 +1393,7 @@ type: attachment
 `type`: `avatar`, `attachment`, `group_icon`, `forum_banner`
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1349,18 +1413,20 @@ type: attachment
 
 Images larger than 100KB are automatically optimized server-side:
 
-| Version | Size | Use Case |
-|---------|------|----------|
-| `thumbnail_url` | 150×150 | Gallery thumbnails, previews |
-| `url` | Original (optimized) | Full viewing, stripped metadata |
+| Version         | Size                 | Use Case                        |
+| --------------- | -------------------- | ------------------------------- |
+| `thumbnail_url` | 150×150              | Gallery thumbnails, previews    |
+| `url`           | Original (optimized) | Full viewing, stripped metadata |
 
 **Optimization includes:**
+
 - Automatic thumbnail generation (150×150)
 - Metadata stripping (EXIF, GPS data removed for privacy)
 - WebP conversion when supported (better compression)
 - Aspect ratio preservation
 
 **Excluded from optimization:**
+
 - GIF files (to preserve animations)
 - SVG files (vector format)
 - Files under 100KB (already small enough)
@@ -1378,6 +1444,7 @@ Get file metadata.
 Upload a voice message.
 
 **Request:**
+
 ```http
 Content-Type: multipart/form-data
 Authorization: Bearer <token>
@@ -1388,6 +1455,7 @@ waveform: [0.2, 0.5, 0.8, ...]
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1409,6 +1477,7 @@ Get voice message details.
 Get waveform data for visualization.
 
 **Response:**
+
 ```json
 {
   "waveform": [0.1, 0.3, 0.5, 0.7, 0.4, ...]
@@ -1430,6 +1499,7 @@ CGraph uses the Signal Protocol for end-to-end encrypted messaging.
 Register encryption keys (identity key, signed prekey, and one-time prekeys).
 
 **Request:**
+
 ```json
 {
   "identity_key": "base64-encoded-public-key",
@@ -1450,6 +1520,7 @@ Register encryption keys (identity key, signed prekey, and one-time prekeys).
 Get a user's prekey bundle to establish a session.
 
 **Response:**
+
 ```json
 {
   "identity_key": "base64-encoded",
@@ -1467,6 +1538,7 @@ Add more one-time prekeys when running low.
 Get the count of remaining one-time prekeys.
 
 **Response:**
+
 ```json
 {
   "count": 47
@@ -1478,6 +1550,7 @@ Get the count of remaining one-time prekeys.
 Get the safety number for verifying a user's identity.
 
 **Response:**
+
 ```json
 {
   "safety_number": "12345 67890 12345 67890 12345 67890",
@@ -1505,15 +1578,20 @@ Remove a device and its keys.
 
 ### Search
 
+#### `GET /search`
+
+Global search across all entity types (users, messages, posts, groups).
+
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| | `q` |
+string | Search query | | `limit` | int | Max results per type (default: 10) | | `types` | string |
+Comma-separated types to search (default: all) |
+
 #### `GET /search/users`
 
 Search for users.
 
-**Query Parameters:**
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `q` | string | Search query |
-| `limit` | int | Max results (default: 20) |
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| | `q` |
+string | Search query | | `limit` | int | Max results (default: 20) |
 
 #### `GET /search/messages`
 
@@ -1522,6 +1600,28 @@ Search messages in conversations.
 #### `GET /search/posts`
 
 Search forum posts.
+
+#### `GET /search/groups`
+
+Search groups/servers.
+
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| | `q` |
+string | Search query | | `limit` | int | Max results (default: 20) |
+
+#### `GET /search/suggestions`
+
+Get search suggestions/autocomplete based on partial query.
+
+**Query Parameters:** | Parameter | Type | Description | |-----------|------|-------------| | `q` |
+string | Partial search query | | `limit` | int | Max suggestions (default: 5) |
+
+#### `GET /search/recent`
+
+Get the current user's recent search queries.
+
+#### `DELETE /search/recent`
+
+Clear the current user's recent search history.
 
 ---
 
@@ -1535,7 +1635,7 @@ CGraph uses Phoenix Channels for real-time communication.
 import { Socket } from 'phoenix';
 
 const socket = new Socket('wss://api.cgraph.org/socket', {
-  params: { token: 'your-jwt-token' }
+  params: { token: 'your-jwt-token' },
 });
 
 socket.connect();
@@ -1543,22 +1643,23 @@ socket.connect();
 
 ### Channels
 
-| Channel | Description |
-|---------|-------------|
-| `user:{user_id}` | Personal notifications, presence |
-| `conversation:{conv_id}` | Direct message conversation |
-| `channel:{channel_id}` | Group channel |
-| `forum:{forum_id}` | Forum real-time updates |
-| `call:{room_id}` | Voice/video call signaling (WebRTC) |
+| Channel                  | Description                         |
+| ------------------------ | ----------------------------------- |
+| `user:{user_id}`         | Personal notifications, presence    |
+| `conversation:{conv_id}` | Direct message conversation         |
+| `channel:{channel_id}`   | Group channel                       |
+| `forum:{forum_id}`       | Forum real-time updates             |
+| `call:{room_id}`         | Voice/video call signaling (WebRTC) |
 
 ### Joining a Channel
 
 ```javascript
 const conversationChannel = socket.channel('conversation:conv_abc123', {});
 
-conversationChannel.join()
-  .receive('ok', resp => console.log('Joined!', resp))
-  .receive('error', resp => console.log('Unable to join', resp));
+conversationChannel
+  .join()
+  .receive('ok', (resp) => console.log('Joined!', resp))
+  .receive('error', (resp) => console.log('Unable to join', resp));
 ```
 
 ### Events
@@ -1566,6 +1667,7 @@ conversationChannel.join()
 #### Incoming Events (Server → Client)
 
 **`new_message`**
+
 ```javascript
 channel.on('new_message', payload => {
   console.log('New message:', payload.message);
@@ -1583,37 +1685,42 @@ channel.on('new_message', payload => {
 ```
 
 **`message_updated`**
+
 ```javascript
-channel.on('message_updated', payload => {
+channel.on('message_updated', (payload) => {
   console.log('Message edited:', payload.message);
 });
 ```
 
 **`message_deleted`**
+
 ```javascript
-channel.on('message_deleted', payload => {
+channel.on('message_deleted', (payload) => {
   console.log('Message deleted:', payload.message_id);
 });
 ```
 
 **`typing`**
+
 ```javascript
-channel.on('typing', payload => {
+channel.on('typing', (payload) => {
   console.log(`${payload.user.username} is typing...`);
 });
 ```
 
 **`presence_state`**
+
 ```javascript
-channel.on('presence_state', state => {
+channel.on('presence_state', (state) => {
   // Initial presence state when joining
   console.log('Online users:', Object.keys(state));
 });
 ```
 
 **`presence_diff`**
+
 ```javascript
-channel.on('presence_diff', diff => {
+channel.on('presence_diff', (diff) => {
   console.log('Users joined:', diff.joins);
   console.log('Users left:', diff.leaves);
 });
@@ -1622,22 +1729,26 @@ channel.on('presence_diff', diff => {
 #### Outgoing Events (Client → Server)
 
 **`new_message`**
+
 ```javascript
-channel.push('new_message', {
-  content: 'Hello!',
-  attachments: []
-})
-.receive('ok', resp => console.log('Sent!', resp))
-.receive('error', resp => console.log('Failed', resp));
+channel
+  .push('new_message', {
+    content: 'Hello!',
+    attachments: [],
+  })
+  .receive('ok', (resp) => console.log('Sent!', resp))
+  .receive('error', (resp) => console.log('Failed', resp));
 ```
 
 **`typing`**
+
 ```javascript
 channel.push('typing', {});
 // Call this every few seconds while user is typing
 ```
 
 **`read`**
+
 ```javascript
 channel.push('read', { message_id: 'msg_xyz789' });
 ```
@@ -1674,10 +1785,11 @@ Voice and video calls use the `call:{room_id}` channel for WebRTC signaling.
 ```javascript
 const callChannel = socket.channel(`call:${roomId}`, {
   device: 'web',
-  media: { audio: true, video: true }
+  media: { audio: true, video: true },
 });
 
-callChannel.join()
+callChannel
+  .join()
   .receive('ok', ({ room, ice_servers }) => {
     // Initialize WebRTC peer connections with ice_servers
     console.log('Joined call room:', room);
@@ -1690,61 +1802,70 @@ callChannel.join()
 #### Outgoing Events (Client → Server)
 
 **`signal:offer`** - Send SDP offer to peer
+
 ```javascript
 callChannel.push('signal:offer', {
   to: 'user_id_of_peer',
-  sdp: localDescription.sdp
+  sdp: localDescription.sdp,
 });
 ```
 
 **`signal:answer`** - Send SDP answer to peer
+
 ```javascript
 callChannel.push('signal:answer', {
   to: 'user_id_of_peer',
-  sdp: localDescription.sdp
+  sdp: localDescription.sdp,
 });
 ```
 
 **`signal:ice_candidate`** - Send ICE candidate
+
 ```javascript
 peerConnection.onicecandidate = (event) => {
   if (event.candidate) {
     callChannel.push('signal:ice_candidate', {
       candidate: event.candidate,
-      to: 'user_id_of_peer' // optional for 1:1 calls
+      to: 'user_id_of_peer', // optional for 1:1 calls
     });
   }
 };
 ```
 
 **`media:mute`** / **`media:unmute`** - Toggle microphone
+
 ```javascript
 callChannel.push('media:mute', {});
 callChannel.push('media:unmute', {});
 ```
 
 **`media:video_on`** / **`media:video_off`** - Toggle camera
+
 ```javascript
 callChannel.push('media:video_on', {});
 callChannel.push('media:video_off', {});
 ```
 
 **`media:screen_share`** - Toggle screen sharing
+
 ```javascript
 callChannel.push('media:screen_share', { enabled: true });
 ```
 
 **`call:ring`** - Ring specified users to join
+
 ```javascript
 callChannel.push('call:ring', { user_ids: ['usr_abc', 'usr_xyz'] });
 ```
 
 **`call:leave`** - Leave the call
+
 ```javascript
 callChannel.push('call:leave', {});
 ```
 
 **`call:end`** - End call for all participants (room owner only)
+
 ```javascript
 callChannel.push('call:end', {});
 ```
@@ -1752,6 +1873,7 @@ callChannel.push('call:end', {});
 #### Incoming Events (Server → Client)
 
 **`signal:offer`** - Received SDP offer from peer
+
 ```javascript
 callChannel.on('signal:offer', async ({ from, sdp }) => {
   const pc = getOrCreatePeerConnection(from);
@@ -1763,6 +1885,7 @@ callChannel.on('signal:offer', async ({ from, sdp }) => {
 ```
 
 **`signal:answer`** - Received SDP answer from peer
+
 ```javascript
 callChannel.on('signal:answer', async ({ from, sdp }) => {
   const pc = getPeerConnection(from);
@@ -1771,6 +1894,7 @@ callChannel.on('signal:answer', async ({ from, sdp }) => {
 ```
 
 **`signal:ice_candidate`** - Received ICE candidate from peer
+
 ```javascript
 callChannel.on('signal:ice_candidate', async ({ from, candidate }) => {
   const pc = getPeerConnection(from);
@@ -1779,6 +1903,7 @@ callChannel.on('signal:ice_candidate', async ({ from, candidate }) => {
 ```
 
 **`participant:joined`** - Peer joined the call
+
 ```javascript
 callChannel.on('participant:joined', ({ participant_id, device, media }) => {
   console.log('Participant joined:', participant_id, 'with', device);
@@ -1787,6 +1912,7 @@ callChannel.on('participant:joined', ({ participant_id, device, media }) => {
 ```
 
 **`participant:left`** - Peer left the call
+
 ```javascript
 callChannel.on('participant:left', ({ participant_id }) => {
   console.log('Participant left:', participant_id);
@@ -1795,6 +1921,7 @@ callChannel.on('participant:left', ({ participant_id }) => {
 ```
 
 **`participant:media_updated`** - Peer changed media state
+
 ```javascript
 callChannel.on('participant:media_updated', ({ participant_id, media }) => {
   console.log('Participant media update:', participant_id, media);
@@ -1803,6 +1930,7 @@ callChannel.on('participant:media_updated', ({ participant_id, media }) => {
 ```
 
 **`call:ended`** - Call has ended (host ended or all left)
+
 ```javascript
 callChannel.on('call:ended', () => {
   // Clean up all peer connections and leave
@@ -1811,6 +1939,7 @@ callChannel.on('call:ended', () => {
 ```
 
 **`call:error`** - Error occurred
+
 ```javascript
 callChannel.on('call:error', ({ reason }) => {
   console.error('Call error:', reason);
@@ -1822,6 +1951,7 @@ callChannel.on('call:error', ({ reason }) => {
 ## OpenAPI Specification
 
 Full OpenAPI 3.0 spec available at:
+
 - **Interactive Docs:** https://api.cgraph.org/docs
 - **OpenAPI JSON:** https://api.cgraph.org/openapi.json
 
@@ -2070,7 +2200,7 @@ import { CGraphClient } from '@cgraph/sdk';
 
 const client = new CGraphClient({
   baseUrl: 'https://api.cgraph.org/api/v1',
-  token: 'your-jwt-token'
+  token: 'your-jwt-token',
 });
 
 // Get current user
@@ -2078,7 +2208,7 @@ const me = await client.users.me();
 
 // Send a message
 const message = await client.conversations.sendMessage('conv_abc123', {
-  content: 'Hello!'
+  content: 'Hello!',
 });
 
 // Real-time messaging
@@ -2136,6 +2266,7 @@ curl -X POST https://api.cgraph.org/api/v1/conversations/conv_abc123/messages \
 ## Changelog
 
 ### v1.0.0 (2024-01-15)
+
 - Initial API release
 - Authentication (email/password + wallet)
 - Direct messaging
@@ -2146,4 +2277,4 @@ curl -X POST https://api.cgraph.org/api/v1/conversations/conv_abc123/messages \
 
 ---
 
-*Questions? Email api@cgraph.org or open an issue on GitHub.*
+_Questions? Email api@cgraph.org or open an issue on GitHub._

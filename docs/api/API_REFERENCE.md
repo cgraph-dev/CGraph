@@ -1,6 +1,7 @@
 # CGraph API Reference
 
-Complete API documentation for CGraph backend services. All endpoints return JSON unless otherwise specified.
+Complete API documentation for CGraph backend services. All endpoints return JSON unless otherwise
+specified.
 
 ---
 
@@ -45,6 +46,7 @@ Content-Type: application/json
 ### Response Format
 
 Successful responses:
+
 ```json
 {
   "data": { ... },
@@ -57,6 +59,7 @@ Successful responses:
 ```
 
 Error responses:
+
 ```json
 {
   "error": "Error message",
@@ -67,14 +70,15 @@ Error responses:
 
 ### Rate Limits
 
-| Endpoint Type | Limit | Window |
-|---------------|-------|--------|
-| Authentication | 5 requests | 1 minute |
+| Endpoint Type  | Limit        | Window   |
+| -------------- | ------------ | -------- |
+| Authentication | 5 requests   | 1 minute |
 | API (standard) | 100 requests | 1 minute |
-| Search | 30 requests | 1 minute |
-| File uploads | 10 requests | 1 minute |
+| Search         | 30 requests  | 1 minute |
+| File uploads   | 10 requests  | 1 minute |
 
 Rate limit headers are included in every response:
+
 ```http
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
@@ -94,6 +98,7 @@ POST /auth/register
 ```
 
 **Request Body:**
+
 ```json
 {
   "user": {
@@ -105,9 +110,11 @@ POST /auth/register
 }
 ```
 
-Note: `username` is optional. If omitted, user will be identified by their `user_id` (e.g., `#0042`).
+Note: `username` is optional. If omitted, user will be identified by their `user_id` (e.g.,
+`#0042`).
 
 **Response:** `201 Created`
+
 ```json
 {
   "data": {
@@ -138,6 +145,7 @@ POST /auth/login
 ```
 
 **Request Body:**
+
 ```json
 {
   "email": "user@example.com",
@@ -146,6 +154,7 @@ POST /auth/login
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": {
@@ -165,6 +174,7 @@ POST /auth/refresh
 ```
 
 **Request Body:**
+
 ```json
 {
   "refresh_token": "eyJhbGciOiJIUzI1NiIs..."
@@ -172,6 +182,7 @@ POST /auth/refresh
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": {
@@ -191,6 +202,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "message": "Logged out successfully"
@@ -208,6 +220,7 @@ POST /auth/verify-email
 ```
 
 **Request Body:**
+
 ```json
 {
   "token": "verification-token-from-email"
@@ -215,6 +228,7 @@ POST /auth/verify-email
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "message": "Email verified successfully"
@@ -222,6 +236,7 @@ POST /auth/verify-email
 ```
 
 **Error Responses:**
+
 - `400`: Invalid or expired token
 
 #### Resend Verification Email
@@ -234,6 +249,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "message": "Verification email sent"
@@ -241,6 +257,7 @@ Authorization: Bearer <token>
 ```
 
 **Error Responses:**
+
 - `401`: Not authenticated
 - `429`: Rate limited (wait before requesting again)
 
@@ -255,6 +272,7 @@ POST /wallet/challenge
 ```
 
 **Request Body:**
+
 ```json
 {
   "wallet_address": "0x742d35Cc6634C0532925a3b844Bc9e7595f..."
@@ -262,6 +280,7 @@ POST /wallet/challenge
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": {
@@ -278,6 +297,7 @@ POST /wallet/verify
 ```
 
 **Request Body:**
+
 ```json
 {
   "wallet_address": "0x742d35Cc6634C0532925a3b844Bc9e7595f...",
@@ -287,6 +307,7 @@ POST /wallet/verify
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": {
@@ -309,6 +330,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": {
@@ -333,6 +355,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "user": {
@@ -354,9 +377,11 @@ Content-Type: multipart/form-data
 ```
 
 **Form Data:**
+
 - `avatar`: Image file (JPEG, PNG, WebP, max 5MB)
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": {
@@ -373,6 +398,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": {
@@ -396,6 +422,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -432,6 +459,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": {
@@ -476,6 +504,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:** (partial update supported)
+
 ```json
 {
   "theme": "dark",
@@ -524,11 +553,13 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `status` - Filter by status: `accepted`, `pending`, `blocked` (default: `accepted`)
 - `limit` - Max results (default: 50)
 - `offset` - Pagination offset
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -558,6 +589,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": {
@@ -587,6 +619,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "user_id": "target-user-id"
@@ -594,6 +627,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:** `201 Created`
+
 ```json
 {
   "data": {
@@ -657,6 +691,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -678,6 +713,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -702,10 +738,12 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `limit` - Max results (default: 20)
 - `cursor` - Cursor for pagination
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -744,6 +782,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "participant_ids": ["user-id-1", "user-id-2"]
@@ -765,11 +804,13 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `limit` - Max results (default: 50)
 - `before` - Get messages before this message ID
 - `after` - Get messages after this message ID
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -806,6 +847,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "content": "Hello there!",
@@ -840,6 +882,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "emoji": "👍"
@@ -865,6 +908,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -889,6 +933,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "My New Server",
@@ -926,6 +971,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -949,6 +995,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "announcements",
@@ -980,6 +1027,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "reason": "Violation of community guidelines",
@@ -995,6 +1043,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "max_uses": 10,
@@ -1003,6 +1052,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:** `201 Created`
+
 ```json
 {
   "data": {
@@ -1039,6 +1089,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "name": "Technology",
@@ -1055,6 +1106,7 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `sort` - `hot`, `new`, `top` (default: `hot`)
 - `time` - For `top`: `day`, `week`, `month`, `year`, `all`
 - `limit` - Max results (default: 25)
@@ -1068,6 +1120,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "title": "My first post",
@@ -1085,6 +1138,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "direction": 1
@@ -1108,6 +1162,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "reason": "spam"
@@ -1115,6 +1170,7 @@ Authorization: Bearer <token>
 ```
 
 **Reason Values:**
+
 - `spam` - Spam or misleading content
 - `harassment` - Harassment or bullying
 - `hate_speech` - Hate speech
@@ -1125,6 +1181,7 @@ Authorization: Bearer <token>
 - `other` - Other (specify in details)
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1151,6 +1208,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "content": "Great post!",
@@ -1172,6 +1230,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "report": {
@@ -1184,6 +1243,7 @@ Authorization: Bearer <token>
 ```
 
 **Report Types:**
+
 - `post` - Forum post
 - `comment` - Post comment
 - `user` - User profile/behavior
@@ -1193,7 +1253,8 @@ Authorization: Bearer <token>
 
 ## Forum Hosting Platform (MyBB-style)
 
-The forum hosting platform allows users to create fully-featured forums with boards, threads, posts, and complete customization. Forums also participate in Reddit-style discovery and voting.
+The forum hosting platform allows users to create fully-featured forums with boards, threads, posts,
+and complete customization. Forums also participate in Reddit-style discovery and voting.
 
 ### Forum Voting (Competition)
 
@@ -1205,6 +1266,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "value": 1
@@ -1214,6 +1276,7 @@ Authorization: Bearer <token>
 Value: `1` for upvote, `-1` for downvote. Voting again with the same value removes the vote.
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": {
@@ -1232,11 +1295,13 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `sort` - `hot`, `top`, `weekly`, `monthly` (default: `hot`)
 - `page` - Page number (default: 1)
 - `per_page` - Results per page (default: 20)
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -1264,10 +1329,12 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `parent_id` - Filter by parent board (for sub-boards)
 - `include_hidden` - Include hidden boards (moderators only)
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -1292,6 +1359,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "board": {
@@ -1328,11 +1396,13 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `sort` - `latest`, `hot`, `top`, `views` (default: `latest`)
 - `page` - Page number (default: 1)
 - `per_page` - Results per page (default: 20)
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -1365,6 +1435,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "thread": {
@@ -1390,6 +1461,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "pinned": true
@@ -1404,6 +1476,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "locked": true
@@ -1418,6 +1491,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "value": 1
@@ -1434,10 +1508,12 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `page` - Page number (default: 1)
 - `per_page` - Posts per page (default: 20)
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -1468,6 +1544,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "post": {
@@ -1485,6 +1562,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "post": {
@@ -1502,6 +1580,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "value": 1
@@ -1522,6 +1601,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "token": "ExponentPushToken[xxxxxxxxxxxxx]",
@@ -1530,12 +1610,14 @@ Authorization: Bearer <token>
 ```
 
 **Platform Values:**
+
 - `ios` - Apple Push Notification Service (mapped to `apns` internally)
 - `android` - Firebase Cloud Messaging (mapped to `fcm` internally)
 - `web` - Web Push (stored as `web`)
 - `expo` - Expo Push Notifications (stored as `expo`)
 
 **Response:** `201 Created`
+
 ```json
 {
   "data": {
@@ -1549,6 +1631,7 @@ Authorization: Bearer <token>
 ```
 
 **Error Responses:**
+
 - `422 Unprocessable Entity` - Invalid platform or missing token
 
 ### Delete Push Token
@@ -1570,12 +1653,14 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `unread_only` - Boolean (default: false)
 - `types` - Comma-separated notification types
 - `limit` - Max results (default: 50)
 - `offset` - Pagination offset
 
 **Response:** `200 OK`
+
 ```json
 {
   "data": [
@@ -1620,7 +1705,8 @@ Authorization: Bearer <token>
 
 ## End-to-End Encryption
 
-E2EE endpoints enable secure messaging where only participants can read message content. The server only stores public keys and encrypted ciphertext.
+E2EE endpoints enable secure messaging where only participants can read message content. The server
+only stores public keys and encrypted ciphertext.
 
 ### Register Keys
 
@@ -1632,6 +1718,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "device_id": "unique-device-identifier",
@@ -1647,6 +1734,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1667,6 +1755,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1692,6 +1781,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1711,6 +1801,7 @@ Authorization: Bearer <token>
 ```
 
 **Request Body:**
+
 ```json
 {
   "prekeys": [
@@ -1721,6 +1812,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1740,6 +1832,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1759,7 +1852,9 @@ Authorization: Bearer <token>
 
 ### Revoke Key
 
-Revoke a compromised identity key. This should be called when a device is lost or compromised. All contacts are immediately notified via WebSocket so they stop encrypting messages for the revoked key.
+Revoke a compromised identity key. This should be called when a device is lost or compromised. All
+contacts are immediately notified via WebSocket so they stop encrypting messages for the revoked
+key.
 
 ```http
 POST /e2ee/keys/:key_id/revoke
@@ -1767,6 +1862,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1778,11 +1874,13 @@ Authorization: Bearer <token>
 ```
 
 **Side Effects:**
+
 - Broadcasts `e2ee:key_revoked` event to all contacts' `user:{id}` channels
 - Contacts' clients should immediately invalidate cached prekey bundles
 - New messages to this user will fetch fresh key bundles
 
 **WebSocket Event (sent to contacts):**
+
 ```json
 {
   "event": "e2ee:key_revoked",
@@ -1811,11 +1909,13 @@ Content-Type: multipart/form-data
 ```
 
 **Form Fields:**
+
 - `audio` - Audio file (webm, m4a, mp3, ogg, wav)
 - `conversation_id` - (optional) Conversation to attach to
 - `channel_id` - (optional) Channel to attach to
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1832,6 +1932,7 @@ Content-Type: multipart/form-data
 ```
 
 **Error Responses:**
+
 - `422` - Unsupported audio format
 - `413` - Voice message too long (max 5 minutes / 10 MB)
 
@@ -1845,6 +1946,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1881,6 +1983,7 @@ Authorization: Bearer <token>
 ```
 
 **Response:**
+
 ```json
 {
   "data": {
@@ -1902,10 +2005,12 @@ Content-Type: multipart/form-data
 ```
 
 **Form Data:**
+
 - `file`: The file to upload
 - `type`: `image`, `video`, `audio`, `document`
 
 **Response:** `201 Created`
+
 ```json
 {
   "data": {
@@ -1931,6 +2036,22 @@ Authorization: Bearer <token>
 
 ## Search
 
+### Global Search
+
+```http
+GET /search?q=hello&types=users,messages,posts
+Authorization: Bearer <token>
+```
+
+**Query Parameters:**
+
+- `q` - Search query (required)
+- `types` - Comma-separated entity types (optional)
+- `limit` - Max results per type (default: 10)
+
+**Note:** Search uses MeiliSearch when available for sub-50ms typo-tolerant results, falling back to
+PostgreSQL ILIKE automatically.
+
 ### Search Users
 
 ```http
@@ -1939,6 +2060,7 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `q` - Search query (required)
 - `limit` - Max results (default: 20)
 
@@ -1950,6 +2072,7 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `q` - Search query (required)
 - `in` - Conversation or channel ID (optional)
 - `from` - User ID (optional)
@@ -1963,16 +2086,60 @@ Authorization: Bearer <token>
 ```
 
 **Query Parameters:**
+
 - `q` - Search query (required)
 - `forum` - Forum ID (optional)
 - `sort` - `relevance`, `new`, `top` (default: `relevance`)
 - `limit` - Max results (default: 25)
+
+### Search Groups
+
+```http
+GET /search/groups?q=gaming
+Authorization: Bearer <token>
+```
+
+**Query Parameters:**
+
+- `q` - Search query (required)
+- `limit` - Max results (default: 20)
+
+### Search Suggestions
+
+```http
+GET /search/suggestions?q=joh
+Authorization: Bearer <token>
+```
+
+**Query Parameters:**
+
+- `q` - Partial search query (required)
+- `limit` - Max suggestions (default: 5)
+
+### Recent Searches
+
+```http
+GET /search/recent
+Authorization: Bearer <token>
+```
+
+Returns the authenticated user's recent search history.
+
+### Clear Search History
+
+```http
+DELETE /search/recent
+Authorization: Bearer <token>
+```
+
+Clears the authenticated user's search history.
 
 ---
 
 ## WebSocket Events
 
 Connect to the WebSocket at:
+
 ```
 wss://api.cgraph.org/socket/websocket?token=<jwt_token>
 ```
@@ -1983,16 +2150,16 @@ Join channels to receive real-time events:
 
 ```javascript
 // User's personal channel (notifications, presence)
-socket.channel("user:USER_ID")
+socket.channel('user:USER_ID');
 
 // Conversation channel
-socket.channel("conversation:CONVERSATION_ID")
+socket.channel('conversation:CONVERSATION_ID');
 
 // Group channel
-socket.channel("group:GROUP_ID")
+socket.channel('group:GROUP_ID');
 
 // Specific text channel in a group
-socket.channel("channel:CHANNEL_ID")
+socket.channel('channel:CHANNEL_ID');
 ```
 
 ### Events
@@ -2000,6 +2167,7 @@ socket.channel("channel:CHANNEL_ID")
 #### Incoming Events (Server → Client)
 
 **new_message**
+
 ```json
 {
   "id": "msg-id",
@@ -2010,6 +2178,7 @@ socket.channel("channel:CHANNEL_ID")
 ```
 
 **message_updated**
+
 ```json
 {
   "id": "msg-id",
@@ -2019,6 +2188,7 @@ socket.channel("channel:CHANNEL_ID")
 ```
 
 **message_deleted**
+
 ```json
 {
   "id": "msg-id"
@@ -2026,6 +2196,7 @@ socket.channel("channel:CHANNEL_ID")
 ```
 
 **typing**
+
 ```json
 {
   "user_id": "user-id",
@@ -2034,6 +2205,7 @@ socket.channel("channel:CHANNEL_ID")
 ```
 
 **presence_diff**
+
 ```json
 {
   "joins": {
@@ -2046,6 +2218,7 @@ socket.channel("channel:CHANNEL_ID")
 ```
 
 **notification**
+
 ```json
 {
   "id": "notif-id",
@@ -2058,7 +2231,8 @@ socket.channel("channel:CHANNEL_ID")
 
 **e2ee:key_revoked** (User Channel Only)
 
-Sent when a contact revokes a compromised E2EE key. Clients must invalidate cached prekey bundles for this user.
+Sent when a contact revokes a compromised E2EE key. Clients must invalidate cached prekey bundles
+for this user.
 
 ```json
 {
@@ -2071,6 +2245,7 @@ Sent when a contact revokes a compromised E2EE key. Clients must invalidate cach
 #### Outgoing Events (Client → Server)
 
 **typing**
+
 ```json
 {
   "typing": true
@@ -2078,6 +2253,7 @@ Sent when a contact revokes a compromised E2EE key. Clients must invalidate cach
 ```
 
 **mark_read**
+
 ```json
 {
   "message_id": "msg-id"
@@ -2088,18 +2264,19 @@ Sent when a contact revokes a compromised E2EE key. Clients must invalidate cach
 
 ## Error Codes
 
-| Code | HTTP Status | Description |
-|------|-------------|-------------|
-| `UNAUTHORIZED` | 401 | Missing or invalid token |
-| `FORBIDDEN` | 403 | Insufficient permissions |
-| `NOT_FOUND` | 404 | Resource not found |
-| `VALIDATION_ERROR` | 422 | Invalid request data |
-| `RATE_LIMITED` | 429 | Too many requests |
-| `INTERNAL_ERROR` | 500 | Server error |
+| Code               | HTTP Status | Description              |
+| ------------------ | ----------- | ------------------------ |
+| `UNAUTHORIZED`     | 401         | Missing or invalid token |
+| `FORBIDDEN`        | 403         | Insufficient permissions |
+| `NOT_FOUND`        | 404         | Resource not found       |
+| `VALIDATION_ERROR` | 422         | Invalid request data     |
+| `RATE_LIMITED`     | 429         | Too many requests        |
+| `INTERNAL_ERROR`   | 500         | Server error             |
 
 ### Common Error Responses
 
 **Validation Error:**
+
 ```json
 {
   "error": "Validation failed",
@@ -2112,6 +2289,7 @@ Sent when a contact revokes a compromised E2EE key. Clients must invalidate cach
 ```
 
 **Rate Limited:**
+
 ```json
 {
   "error": "Rate limit exceeded. Please slow down.",
@@ -2133,4 +2311,4 @@ Official client libraries:
 
 ---
 
-*API Version: 1.0.0 | Last Updated: January 2026*
+_API Version: 1.0.0 | Last Updated: January 2026_

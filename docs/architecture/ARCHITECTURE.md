@@ -1,27 +1,46 @@
 ## CGraph System Architecture
 
 > Last updated: January 2026 | Version 0.9.1  
-> Living documentation — HTTP-only cookie auth, Signal Double Ratchet E2EE, sampled presence at scale, WebRTC voice/video, gamification/premium services
+> Living documentation — HTTP-only cookie auth, Signal Double Ratchet E2EE, sampled presence at
+> scale, WebRTC voice/video, gamification/premium services
 
 ---
 
 ## Executive Summary
 
-CGraph is a production-ready communication platform that seamlessly integrates real-time messaging with persistent forum discussions. Built to address the limitations of platforms that either excel at ephemeral conversations or long-form discussions—but rarely both—CGraph provides a unified experience across web and mobile.
+CGraph is a production-ready communication platform that seamlessly integrates real-time messaging
+with persistent forum discussions. Built to address the limitations of platforms that either excel
+at ephemeral conversations or long-form discussions—but rarely both—CGraph provides a unified
+experience across web and mobile.
 
-The platform serves four primary use cases: (1) encrypted instant messaging with industry-standard end-to-end encryption between individuals and within group channels, (2) community-driven forum discussions with voting and moderation, (3) real-time voice and video calls via WebRTC with spatial audio, and (4) a comprehensive friends system with presence tracking that connects users across all features.
+The platform serves four primary use cases: (1) encrypted instant messaging with industry-standard
+end-to-end encryption between individuals and within group channels, (2) community-driven forum
+discussions with voting and moderation, (3) real-time voice and video calls via WebRTC with spatial
+audio, and (4) a comprehensive friends system with presence tracking that connects users across all
+features.
 
 **v0.9.1 highlights (platform-wide):**
+
 - **Auth** — HTTP-only cookie authentication with JWT rotation; OAuth (Google/Apple), Web3 wallets
-- **E2EE** — Signal X3DH + Double Ratchet with per-message AES-256-GCM; forward secrecy + break-in recovery
+- **E2EE** — Signal X3DH + Double Ratchet with per-message AES-256-GCM; forward secrecy + break-in
+  recovery
 - **Presence** — Phoenix Presence with sampled tiers for 100K+ member channels; HyperLogLog counts
-- **Real-time** — WebRTC voice/video with TURN/STUN, screen share, spatial audio; CRDT-backed presence
+- **Real-time** — WebRTC voice/video with TURN/STUN, screen share, spatial audio; CRDT-backed
+  presence
 - **Content** — Forums + DMs + groups unified, voice messages, reactions, attachments
 - **Economy** — Gamification (XP/levels/quests/achievements/titles) and Premium tiers/coin shop
 
-Authentication is flexible, supporting traditional email/password, OAuth social login (Google, Apple), and privacy-focused Web3 wallet authentication. Users choose their preferred identity model without compromise.
+Authentication is flexible, supporting traditional email/password, OAuth social login (Google,
+Apple), and privacy-focused Web3 wallet authentication. Users choose their preferred identity model
+without compromise.
 
-Our technology stack prioritizes real-time performance and developer productivity. Elixir/Phoenix powers the backend, leveraging OTP's actor model for managing hundreds of thousands of concurrent WebSocket connections with minimal resource overhead. React 19 drives both web (via Vite) and mobile (via React Native/Expo) clients, sharing TypeScript types and business logic through a carefully architected monorepo. PostgreSQL 16 handles persistent data with advanced JSON operations, while Meilisearch provides sub-50ms full-text search. Phoenix Presence (CRDT-based) tracks online status with tiered sampling for million-user channels.
+Our technology stack prioritizes real-time performance and developer productivity. Elixir/Phoenix
+powers the backend, leveraging OTP's actor model for managing hundreds of thousands of concurrent
+WebSocket connections with minimal resource overhead. React 19 drives both web (via Vite) and mobile
+(via React Native/Expo) clients, sharing TypeScript types and business logic through a carefully
+architected monorepo. PostgreSQL 16 handles persistent data with advanced JSON operations, while
+Meilisearch provides sub-50ms full-text search. Phoenix Presence (CRDT-based) tracks online status
+with tiered sampling for million-user channels.
 
 ---
 
@@ -210,51 +229,54 @@ Our technology stack prioritizes real-time performance and developer productivit
 
 ### Version Numbers (January 2026)
 
-| Component | Version | Rationale |
-|-----------|---------|-----------|
-| **Backend Runtime** |
-| Erlang/OTP | 28 | Latest stable with JIT compiler, 40% performance boost |
-| Elixir | 1.19.4 | Set-theoretic types, improved error messages |
-| Phoenix Framework | 1.8.3 | Stable release with LiveView 1.x support |
-| Phoenix LiveView | 1.1.3 | Real-time UI updates without JavaScript |
-| Bandit HTTP Server | 1.10.0 | Pure Elixir HTTP/2 server, replaces Cowboy |
-| **Database & Storage** |
-| PostgreSQL | 16 | Advanced JSONB operations, better indexing |
-| Ecto SQL | 3.13 | Latest ORM with streaming support |
-| Postgrex | 0.21 | Native PostgreSQL 16 compatibility |
-| **Background Processing** |
-| Oban | 2.22 | Reliable job queue with Cron scheduling |
-| Cachex | 4.1 | In-memory caching with TTL and eviction |
+| Component                     | Version | Rationale                                              |
+| ----------------------------- | ------- | ------------------------------------------------------ |
+| **Backend Runtime**           |
+| Erlang/OTP                    | 28      | Latest stable with JIT compiler, 40% performance boost |
+| Elixir                        | 1.19.4  | Set-theoretic types, improved error messages           |
+| Phoenix Framework             | 1.8.3   | Stable release with LiveView 1.x support               |
+| Phoenix LiveView              | 1.1.3   | Real-time UI updates without JavaScript                |
+| Bandit HTTP Server            | 1.10.0  | Pure Elixir HTTP/2 server, replaces Cowboy             |
+| **Database & Storage**        |
+| PostgreSQL                    | 16      | Advanced JSONB operations, better indexing             |
+| Ecto SQL                      | 3.13    | Latest ORM with streaming support                      |
+| Postgrex                      | 0.21    | Native PostgreSQL 16 compatibility                     |
+| **Background Processing**     |
+| Oban                          | 2.22    | Reliable job queue with Cron scheduling                |
+| Cachex                        | 4.1     | In-memory caching with TTL and eviction                |
 | **Authentication & Security** |
-| Guardian | 2.4 | JWT token management with refresh tokens |
-| Argon2 | 4.1 | Password hashing (OWASP recommended) |
-| Assent | 0.2 | OAuth 2.0/OIDC multi-provider support |
-| Double Ratchet | 1.0.0 | Signal Protocol E2EE (v0.7.35) |
-| **Frontend (Web)** |
-| Node.js | 22 LTS | Active LTS until April 2027 |
-| React | 19.1.0 | Latest with concurrent features |
-| Vite | 6.4.1 | Lightning-fast HMR and builds |
-| TailwindCSS | 3.5 | Utility-first styling |
-| TypeScript | 5.8.0 | Advanced type inference |
-| Three.js | 0.182.0 | 3D graphics engine for Enhanced UI |
-| @react-three/fiber | 9.5.0 | React renderer for Three.js |
-| GSAP | 3.14.2 | Professional-grade animations |
-| Framer Motion | 12.0.0 | Declarative React animations |
-| AI Engine | 1.0.0 | Message intelligence (v0.7.35) |
-| Spatial Audio | 1.0.0 | 3D positional audio (v0.7.35) |
-| **Frontend (Mobile)** |
-| React Native | 0.81.5 | Latest stable with Fabric renderer |
-| Expo SDK | 54 | Latest stable with improved performance |
-| TypeScript | 5.9.x | Matches React Native toolchain |
-| **Infrastructure** |
-| FFmpeg | 6.1.1 | Audio/video processing for voice messages |
-| Docker | 24+ | Container runtime for deployments |
+| Guardian                      | 2.4     | JWT token management with refresh tokens               |
+| Argon2                        | 4.1     | Password hashing (OWASP recommended)                   |
+| Assent                        | 0.2     | OAuth 2.0/OIDC multi-provider support                  |
+| Double Ratchet                | 1.0.0   | Signal Protocol E2EE (v0.7.35)                         |
+| **Frontend (Web)**            |
+| Node.js                       | 22 LTS  | Active LTS until April 2027                            |
+| React                         | 19.1.0  | Latest with concurrent features                        |
+| Vite                          | 6.4.1   | Lightning-fast HMR and builds                          |
+| TailwindCSS                   | 3.5     | Utility-first styling                                  |
+| TypeScript                    | 5.8.0   | Advanced type inference                                |
+| Three.js                      | 0.182.0 | 3D graphics engine for Enhanced UI                     |
+| @react-three/fiber            | 9.5.0   | React renderer for Three.js                            |
+| GSAP                          | 3.14.2  | Professional-grade animations                          |
+| Framer Motion                 | 12.0.0  | Declarative React animations                           |
+| AI Engine                     | 1.0.0   | Message intelligence (v0.7.35)                         |
+| Spatial Audio                 | 1.0.0   | 3D positional audio (v0.7.35)                          |
+| **Frontend (Mobile)**         |
+| React Native                  | 0.81.5  | Latest stable with Fabric renderer                     |
+| Expo SDK                      | 54      | Latest stable with improved performance                |
+| TypeScript                    | 5.9.x   | Matches React Native toolchain                         |
+| **Infrastructure**            |
+| FFmpeg                        | 6.1.1   | Audio/video processing for voice messages              |
+| Docker                        | 24+     | Container runtime for deployments                      |
 
 ---
 
 ## OTP Supervision Tree
 
-The backend runs under a single OTP application supervisor that manages all core services. When the application starts, these processes spin up in order and restart automatically if any crash. The supervision strategy is `:one_for_one`, meaning a failed process restarts independently without affecting siblings.
+The backend runs under a single OTP application supervisor that manages all core services. When the
+application starts, these processes spin up in order and restart automatically if any crash. The
+supervision strategy is `:one_for_one`, meaning a failed process restarts independently without
+affecting siblings.
 
 ```
 Cgraph.Application (Supervisor)
@@ -274,15 +296,23 @@ Cgraph.Application (Supervisor)
 
 A few notes on the design choices here:
 
-1. **Redis comes before RateLimiter.Distributed** — Rate limiting depends on Redis, so we start Redis first to avoid crashes during boot.
+1. **Redis comes before RateLimiter.Distributed** — Rate limiting depends on Redis, so we start
+   Redis first to avoid crashes during boot.
 
-2. **Presence.Sampled replaces Phoenix.Presence** — For channels with 10k+ members, standard presence floods the system. Sampled presence sends batched updates at intervals based on channel size.
+2. **Presence.Sampled replaces Phoenix.Presence** — For channels with 10k+ members, standard
+   presence floods the system. Sampled presence sends batched updates at intervals based on channel
+   size.
 
-3. **Cachex instances are named** — We run separate caches for sessions (`:session_cache`), tokens (`:token_cache`), and rate limit fallback (`:rate_limit_fallback`) to isolate eviction policies.
+3. **Cachex instances are named** — We run separate caches for sessions (`:session_cache`), tokens
+   (`:token_cache`), and rate limit fallback (`:rate_limit_fallback`) to isolate eviction policies.
 
-4. **Oban handles async work** — Search indexing, email delivery, and notification dispatch all run as Oban jobs so the main request path stays fast.
+4. **Oban handles async work** — Search indexing, email delivery, and notification dispatch all run
+   as Oban jobs so the main request path stays fast.
 
-5. **RedisPool provides 20 pooled connections** — For 10K+ concurrent users, a single Redis connection becomes a bottleneck. The `Cgraph.Cache.RedisPool` module uses round-robin distribution across connections and supports batch operations via `pipeline/2` and atomic transactions via `transaction/2`. Configure pool size via `REDIS_POOL_SIZE` environment variable.
+5. **RedisPool provides 20 pooled connections** — For 10K+ concurrent users, a single Redis
+   connection becomes a bottleneck. The `Cgraph.Cache.RedisPool` module uses round-robin
+   distribution across connections and supports batch operations via `pipeline/2` and atomic
+   transactions via `transaction/2`. Configure pool size via `REDIS_POOL_SIZE` environment variable.
 
 ---
 
@@ -330,12 +360,13 @@ A few notes on the design choices here:
 
 ## Data Flow: The Life of a Message
 
-Here's what happens when Alice sends "hey!" to Bob. This flow was carefully optimized for sub-200ms latency.
+Here's what happens when Alice sends "hey!" to Bob. This flow was carefully optimized for sub-200ms
+latency.
 
 ### Step 1: Client Sends Message
 
 ```
-Alice's Browser                    
+Alice's Browser
        │
        │ 1. User clicks "Send"
        │
@@ -397,16 +428,16 @@ Phoenix PubSub (backed by Redis for multi-node)
 
 ### Latency Breakdown (p99)
 
-| Step | Duration | Notes |
-|------|----------|-------|
-| Client → Cloudflare | 20ms | Geographic CDN helps |
-| Cloudflare → Phoenix | 30ms | Direct connection |
-| Message validation | 2ms | In-memory checks |
-| Redis rate limit check | 1ms | Local Redis replica |
-| PostgreSQL insert | 15ms | SSD-backed, indexed |
-| PubSub broadcast | 3ms | Redis pub/sub |
-| Phoenix → Client | 30ms | Back through CDN |
-| **Total** | **~100ms** | Under our 200ms SLA |
+| Step                   | Duration   | Notes                |
+| ---------------------- | ---------- | -------------------- |
+| Client → Cloudflare    | 20ms       | Geographic CDN helps |
+| Cloudflare → Phoenix   | 30ms       | Direct connection    |
+| Message validation     | 2ms        | In-memory checks     |
+| Redis rate limit check | 1ms        | Local Redis replica  |
+| PostgreSQL insert      | 15ms       | SSD-backed, indexed  |
+| PubSub broadcast       | 3ms        | Redis pub/sub        |
+| Phoenix → Client       | 30ms       | Back through CDN     |
+| **Total**              | **~100ms** | Under our 200ms SLA  |
 
 ---
 
@@ -495,13 +526,13 @@ Security is a first-class concern throughout the architecture.
 
 ### Encryption Layers
 
-| Layer | What's Protected | How |
-|-------|------------------|-----|
-| Transport | All traffic | TLS 1.3 (Cloudflare terminates) |
-| Application | Sensitive fields | AES-256-GCM |
-| Database | At rest | PostgreSQL native encryption |
-| Backups | Backup files | GPG encrypted before S3 |
-| E2EE Messages | Message content | X3DH + AES-256-GCM (industry-standard protocol) |
+| Layer         | What's Protected | How                                             |
+| ------------- | ---------------- | ----------------------------------------------- |
+| Transport     | All traffic      | TLS 1.3 (Cloudflare terminates)                 |
+| Application   | Sensitive fields | AES-256-GCM                                     |
+| Database      | At rest          | PostgreSQL native encryption                    |
+| Backups       | Backup files     | GPG encrypted before S3                         |
+| E2EE Messages | Message content  | X3DH + AES-256-GCM (industry-standard protocol) |
 
 ### E2EE Architecture
 
@@ -552,7 +583,8 @@ plug RateLimiterV2, tier: :relaxed  # 500 per minute
 plug RateLimiterV2, tier: :upload   # 10 per hour, token bucket
 ```
 
-**Multi-node consistency**: All rate limits are synchronized across the cluster via Redis Lua scripts. When Redis is unavailable, limits fall back to per-node ETS tables.
+**Multi-node consistency**: All rate limits are synchronized across the cluster via Redis Lua
+scripts. When Redis is unavailable, limits fall back to per-node ETS tables.
 
 ---
 
@@ -571,7 +603,7 @@ Enterprise-grade scalability built into the core, not bolted on later.
 │       │                                                              │
 │       ▼                                                              │
 │  ┌─────────────────────────────────────────────────────────────┐    │
-│  │  Cgraph.Search (Context)                                     │    │
+│  │  CGraph.Search (Context)                                     │    │
 │  │  - Routes to Meilisearch or PostgreSQL fallback              │    │
 │  │  - Unified API for all search types                          │    │
 │  └──────────────────────────────────────────────────────────────┘   │
@@ -669,6 +701,7 @@ Battle-tested growth strategy for CGraph, based on observed bottlenecks and indu
 ### Stage 1: Getting Started (100 - 1K users)
 
 **What we run:**
+
 - Single Phoenix node (1GB RAM)
 - PostgreSQL (shared, 1GB)
 - Redis (shared, 256MB)
@@ -676,11 +709,13 @@ Battle-tested growth strategy for CGraph, based on observed bottlenecks and indu
 **Monthly cost:** ~$25
 
 **Bottlenecks to watch:**
+
 - None yet, enjoy the calm before the storm
 
 ### Stage 2: Growing Pains (1K - 10K users)
 
 **What changes:**
+
 - Add second Phoenix node for redundancy
 - Upgrade to dedicated Postgres (4GB)
 - Add Redis persistence
@@ -689,12 +724,14 @@ Battle-tested growth strategy for CGraph, based on observed bottlenecks and indu
 **Monthly cost:** ~$100
 
 **Bottlenecks to watch:**
+
 - Database connections (implement PgBouncer)
 - WebSocket memory (tune hibernation)
 
 ### Stage 3: Real Scale (10K - 100K users)
 
 **What changes:**
+
 - 4+ Phoenix nodes behind load balancer
 - PostgreSQL read replicas
 - Redis cluster (3 nodes)
@@ -705,6 +742,7 @@ Battle-tested growth strategy for CGraph, based on observed bottlenecks and indu
 **Monthly cost:** ~$500
 
 **Bottlenecks to watch:**
+
 - Write throughput (partition hot tables)
 - Presence broadcasts (enable sampled presence)
 - Push notification queues
@@ -712,6 +750,7 @@ Battle-tested growth strategy for CGraph, based on observed bottlenecks and indu
 ### Stage 4: Serious Business (100K - 1M users)
 
 **What changes:**
+
 - Multi-region deployment
 - PostgreSQL with Citus for sharding
 - Meilisearch with geo-distributed replicas
@@ -722,6 +761,7 @@ Battle-tested growth strategy for CGraph, based on observed bottlenecks and indu
 **Monthly cost:** ~$5,000
 
 **What we'd need to rearchitect:**
+
 - Message storage (time-series partitioning)
 - Notification fanout (dedicated service)
 - Analytics pipeline (separate from production)
@@ -817,14 +857,14 @@ end
 
 ### What happens when things break
 
-| Component | What Breaks | Impact | Recovery |
-|-----------|-------------|--------|----------|
-| **Phoenix Node** | OOM, crash | Other nodes handle traffic | Fly auto-restarts in ~10s |
-| **PostgreSQL** | Connection limit | Some requests fail | PgBouncer queues, scale up |
-| **Redis** | Memory full | Rate limits fail-open | Clear cache, increase memory |
-| **WebSocket** | Disconnect | Real-time updates stop | Client auto-reconnects |
-| **Stripe** | API down | Payments fail | Show error, retry later |
-| **R2** | Unavailable | Images don't load | Cached in CDN, retry |
+| Component        | What Breaks      | Impact                     | Recovery                     |
+| ---------------- | ---------------- | -------------------------- | ---------------------------- |
+| **Phoenix Node** | OOM, crash       | Other nodes handle traffic | Fly auto-restarts in ~10s    |
+| **PostgreSQL**   | Connection limit | Some requests fail         | PgBouncer queues, scale up   |
+| **Redis**        | Memory full      | Rate limits fail-open      | Clear cache, increase memory |
+| **WebSocket**    | Disconnect       | Real-time updates stop     | Client auto-reconnects       |
+| **Stripe**       | API down         | Payments fail              | Show error, retry later      |
+| **R2**           | Unavailable      | Images don't load          | Cached in CDN, retry         |
 
 ### Circuit Breaker Pattern
 
@@ -839,7 +879,7 @@ def create_checkout_session(user) do
     :ok ->
       case Stripe.Session.create(params) do
         {:ok, session} -> {:ok, session}
-        {:error, _} -> 
+        {:error, _} ->
           Fuse.melt(:stripe_api)
           {:error, :payment_unavailable}
       end
@@ -855,29 +895,30 @@ end
 
 ### Current Production Costs (as of Dec 2024)
 
-| Service | Monthly Cost | Notes |
-|---------|-------------|-------|
-| Fly.io (Phoenix x4) | $48 | 4 x 1GB RAM machines |
-| Fly.io (Postgres) | $27 | 2GB RAM, 40GB SSD |
-| Fly.io (Redis) | $15 | 1GB RAM |
-| Cloudflare R2 | ~$20 | 100GB storage, 0 egress |
-| Cloudflare Pro | $20 | WAF, analytics |
-| Resend | $20 | 50K emails/month |
-| Expo Push | $0 | Free tier sufficient |
-| Domain | $15/year | Cloudflare registrar |
-| **Total** | **~$150/month** | For ~5K active users |
+| Service             | Monthly Cost    | Notes                   |
+| ------------------- | --------------- | ----------------------- |
+| Fly.io (Phoenix x4) | $48             | 4 x 1GB RAM machines    |
+| Fly.io (Postgres)   | $27             | 2GB RAM, 40GB SSD       |
+| Fly.io (Redis)      | $15             | 1GB RAM                 |
+| Cloudflare R2       | ~$20            | 100GB storage, 0 egress |
+| Cloudflare Pro      | $20             | WAF, analytics          |
+| Resend              | $20             | 50K emails/month        |
+| Expo Push           | $0              | Free tier sufficient    |
+| Domain              | $15/year        | Cloudflare registrar    |
+| **Total**           | **~$150/month** | For ~5K active users    |
 
 ### Cost Projections at Scale
 
 | Users | Monthly Cost | Cost/User |
-|-------|-------------|-----------|
-| 1K | $75 | $0.075 |
-| 10K | $200 | $0.020 |
-| 50K | $800 | $0.016 |
-| 100K | $2,500 | $0.025 |
-| 500K | $10,000 | $0.020 |
+| ----- | ------------ | --------- |
+| 1K    | $75          | $0.075    |
+| 10K   | $200         | $0.020    |
+| 50K   | $800         | $0.016    |
+| 100K  | $2,500       | $0.025    |
+| 500K  | $10,000      | $0.020    |
 
-Cost per user decreases with scale, stabilizing around $0.02/user/month — reasonable for a real-time platform.
+Cost per user decreases with scale, stabilizing around $0.02/user/month — reasonable for a real-time
+platform.
 
 ---
 
@@ -914,6 +955,6 @@ Planned for 2026:
 
 ---
 
-*Last updated: January 2026 | v0.7.40*
+_Last updated: January 2026 | v0.7.40_
 
 — Burca Lucas

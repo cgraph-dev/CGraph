@@ -106,6 +106,9 @@ defmodule CGraph.Application do
         # Warm up critical caches on deploy
         warm_up_caches()
 
+        # Set up Meilisearch indexes (async, non-blocking)
+        setup_search_indexes()
+
         {:ok, pid}
 
       {:error, reason} ->
@@ -147,6 +150,36 @@ defmodule CGraph.Application do
         Logger.info("application_cache_warmup_completed", duration_ms: duration)
       rescue
         e -> Logger.warning("application_cache_warmup_failed", error: inspect(e))
+      end
+    end)
+  end
+
+  defp setup_search_indexes do
+    require Logger
+    # Configure Meilisearch indexes on startup (async, non-blocking)
+    # Waits for Finch to be available, then creates/updates index settings
+    spawn(fn ->
+      Process.sleep(3000)  # Wait for Finch and other services to initialize
+
+      try do
+        backend = CGraph.Search.Engine.get_backend()
+        Logger.info("[Application] Search backend: #{backend}")
+
+        if backend == :meilisearch do
+          case CGraph.Search.Engine.healthy?() do
+            true ->
+              Logger.info("[Application] Meilisearch is healthy, setting up indexes...")
+              CGraph.Search.Engine.setup_indexes()
+              Logger.info("[Application] Meilisearch indexes configured successfully")
+
+            false ->
+              Logger.warning("[Application] Meilisearch is not reachable at #{Application.get_env(:cgraph, CGraph.Search.Engine, [])[:meilisearch_url] || "http://localhost:7700"} — search will use PostgreSQL fallback")
+          end
+        else
+          Logger.info("[Application] Search using PostgreSQL backend (MEILISEARCH_URL not set)")
+        end
+      rescue
+        e -> Logger.warning("application_search_setup_failed", error: inspect(e))
       end
     end)
   end

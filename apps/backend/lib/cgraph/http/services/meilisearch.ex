@@ -41,6 +41,10 @@ defmodule CGraph.HTTP.Services.Meilisearch do
   adapter {Tesla.Adapter.Finch, name: CGraph.Finch}
 
   defp config do
-    Application.get_env(:cgraph, CGraph.Search.SearchEngine, [])
+    app_config = Application.get_env(:cgraph, CGraph.Search.Engine, [])
+    [
+      url: Keyword.get(app_config, :meilisearch_url, "http://localhost:7700"),
+      api_key: Keyword.get(app_config, :meilisearch_key)
+    ]
   end
 end

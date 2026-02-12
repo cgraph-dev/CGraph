@@ -277,9 +277,11 @@ if config_env() == :prod do
   # --- New in v0.7.32: Search, WebRTC, Rate Limiter ---
 
   # Meilisearch (Search Engine)
-  config :cgraph, CGraph.Search.SearchEngine,
-    url: System.get_env("MEILISEARCH_URL") || "http://localhost:7700",
-    api_key: System.get_env("MEILISEARCH_API_KEY")
+  config :cgraph, CGraph.Search.Engine,
+    meilisearch_url: System.get_env("MEILISEARCH_URL") || "http://localhost:7700",
+    meilisearch_key: System.get_env("MEILISEARCH_API_KEY"),
+    backend: if(System.get_env("MEILISEARCH_URL"), do: :meilisearch, else: :postgres),
+    fallback_to_postgres: true
 
   # WebRTC Signaling & ICE
   config :cgraph, CGraph.WebRTC,

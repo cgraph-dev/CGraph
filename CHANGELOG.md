@@ -2337,17 +2337,17 @@ Created 5 new migrations adding 12 tables:
 
 New Elixir contexts created:
 
-- `Cgraph.Calendar` - Event CRUD, categories, RSVPs
-- `Cgraph.Referrals` - Codes, tracking, rewards, leaderboard
-- `Cgraph.Announcements` - Announcement queries, dismissals
-- `Cgraph.Reputation` - Rep giving, history, summaries
+- `CGraph.Calendar` - Event CRUD, categories, RSVPs
+- `CGraph.Referrals` - Codes, tracking, rewards, leaderboard
+- `CGraph.Announcements` - Announcement queries, dismissals
+- `CGraph.Reputation` - Rep giving, history, summaries
 
 Extended existing contexts:
 
-- `Cgraph.Messaging` - Added PM folder/message/draft functions
-- `Cgraph.Accounts` - Added member/profile functions
-- `Cgraph.Presence` - Added REST API functions
-- `Cgraph.Forums` - Added `list_user_posts`, `list_user_threads`, `get_user_post_stats`
+- `CGraph.Messaging` - Added PM folder/message/draft functions
+- `CGraph.Accounts` - Added member/profile functions
+- `CGraph.Presence` - Added REST API functions
+- `CGraph.Forums` - Added `list_user_posts`, `list_user_threads`, `get_user_post_stats`
 
 ### Schema Files Created
 
@@ -3956,24 +3956,24 @@ distributed rate limiting, and presence sampling for million-user scale.
 
 #### Meilisearch Integration (Search Engine)
 
-- **`Cgraph.Search.SearchEngine`** — Enterprise search with Meilisearch backend:
+- **`CGraph.Search.Engine`** — Enterprise search with Meilisearch backend:
   - Sub-50ms response times with typo-tolerant fuzzy search
   - PostgreSQL fallback when Meilisearch unavailable
   - Automatic index management for messages, users, channels
   - Configurable filtering and ranking rules
 
-- **`Cgraph.Search.Indexer`** — Background search indexing:
+- **`CGraph.Search.Indexer`** — Background search indexing:
   - Async indexing via Oban workers for non-blocking writes
   - Batch reindexing for migrations and rebuilds
   - Automatic index sync on content creation/update/delete
 
-- **`Cgraph.Search.Backend`** — Behaviour definition for pluggable search backends
+- **`CGraph.Search.Backend`** — Behaviour definition for pluggable search backends
 
-- **`Cgraph.Workers.SearchIndexWorker`** — Oban worker for async search operations
+- **`CGraph.Workers.SearchIndexWorker`** — Oban worker for async search operations
 
 #### WebRTC Voice/Video Calling
 
-- **`Cgraph.WebRTC`** — Complete WebRTC infrastructure:
+- **`CGraph.WebRTC`** — Complete WebRTC infrastructure:
   - Room management for 1:1 and group calls (up to 10 participants)
   - ICE candidate and SDP exchange via Phoenix Channels
   - STUN/TURN server configuration for NAT traversal
@@ -3981,12 +3981,12 @@ distributed rate limiting, and presence sampling for million-user scale.
   - Call lifecycle management (create, join, leave, end)
   - Multi-device support with media state tracking
 
-- **`Cgraph.WebRTC.Room`** — Call room state management:
+- **`CGraph.WebRTC.Room`** — Call room state management:
   - States: waiting, active, ended
   - Participant tracking with join/leave events
   - Duration tracking and automatic cleanup
 
-- **`Cgraph.WebRTC.Participant`** — Participant state:
+- **`CGraph.WebRTC.Participant`** — Participant state:
   - Media state (audio, video, screen share, muted)
   - Connection states (connecting, connected, reconnecting)
   - Device identification
@@ -3999,7 +3999,7 @@ distributed rate limiting, and presence sampling for million-user scale.
 
 #### Distributed Rate Limiting
 
-- **`Cgraph.RateLimiter.Distributed`** — Redis-backed rate limiting:
+- **`CGraph.RateLimiter.Distributed`** — Redis-backed rate limiting:
   - Lua scripts for atomic multi-key operations
   - Token bucket, sliding window, fixed window algorithms
   - ETS fallback when Redis unavailable
@@ -4008,7 +4008,7 @@ distributed rate limiting, and presence sampling for million-user scale.
 
 #### Presence Sampling (Enterprise-scale)
 
-- **`Cgraph.Presence.Sampled`** — Presence for million-user channels:
+- **`CGraph.Presence.Sampled`** — Presence for million-user channels:
   - HyperLogLog for O(1) approximate user counts (12KB for 1M users)
   - Tiered sampling: 100% for <100 users → 0.1% for >100K users
   - Batched broadcasts: immediate → 30s based on channel size
@@ -4040,23 +4040,25 @@ distributed rate limiting, and presence sampling for million-user scale.
 # config/runtime.exs additions
 
 # Meilisearch
-config :cgraph, Cgraph.Search.SearchEngine,
-  url: System.get_env("MEILISEARCH_URL", "http://localhost:7700"),
-  api_key: System.get_env("MEILISEARCH_API_KEY")
+config :cgraph, CGraph.Search.Engine,
+  meilisearch_url: System.get_env("MEILISEARCH_URL") || "http://localhost:7700",
+  meilisearch_key: System.get_env("MEILISEARCH_API_KEY"),
+  backend: if(System.get_env("MEILISEARCH_URL"), do: :meilisearch, else: :postgres),
+  fallback_to_postgres: true
 
 # WebRTC
-config :cgraph, Cgraph.WebRTC,
+config :cgraph, CGraph.WebRTC,
   stun_servers: ["stun:stun.l.google.com:19302"],
   turn_servers: [],
   max_participants: 10
 
 # Distributed Rate Limiting
-config :cgraph, Cgraph.RateLimiter.Distributed,
+config :cgraph, CGraph.RateLimiter.Distributed,
   enabled: true,
   redis_pool: :rate_limiter
 
 # Sampled Presence
-config :cgraph, Cgraph.Presence.Sampled,
+config :cgraph, CGraph.Presence.Sampled,
   tiers: [
     %{max_size: 100, sample_rate: 1.0, batch_interval: 0},
     %{max_size: 1_000, sample_rate: 0.5, batch_interval: 1_000},

@@ -62,7 +62,8 @@ defmodule CGraphWeb.HealthController do
     checks = %{
       database: check_database(),
       cache: check_cache(),
-      redis: check_redis()
+      redis: check_redis(),
+      search: check_search()
     }
 
     duration_ms = System.monotonic_time(:millisecond) - start_time
@@ -166,6 +167,17 @@ defmodule CGraphWeb.HealthController do
           {:ok, "PONG"} -> "ok"
           _ -> "error"
         end
+    end
+  rescue
+    _ -> "not_configured"
+  end
+
+  defp check_search do
+    case CGraph.Search.Engine.get_backend() do
+      :meilisearch ->
+        if CGraph.Search.Engine.healthy?(), do: "ok", else: "degraded"
+      :postgres ->
+        "postgres_fallback"
     end
   rescue
     _ -> "not_configured"

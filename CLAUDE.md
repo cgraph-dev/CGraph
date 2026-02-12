@@ -413,7 +413,7 @@ Core business logic organized by domain:
 - `presence.ex` - Online status, typing indicators
 - `crypto/` - E2EE key management (X3DH, prekeys, identity keys)
 - `moderation.ex` - Content moderation, reports
-- `search.ex` - Full-text search across entities
+- `search.ex` - Full-text search across entities (MeiliSearch primary, PostgreSQL fallback)
 - `gamification.ex` - XP, achievements, quests, leaderboards
 - `subscriptions/` - Stripe payment integration
 - `referrals.ex` - Referral codes, rewards, tracking

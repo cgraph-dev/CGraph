@@ -122,8 +122,8 @@ CGraph/
 - **Ecto 3.13** - Database wrapper and query DSL
 - **Guardian 2.4** - JWT-based authentication
 - **Oban 2.20** - Background job processing with Cron support
-- **Cgraph.Presence.Sampled** - Tiered presence for million-user channels
-- **Cgraph.RateLimiter.Distributed** - Redis-backed rate limiting with Lua scripts
+- **CGraph.Presence.Sampled** - Tiered presence for million-user channels
+- **CGraph.RateLimiter.Distributed** - Redis-backed rate limiting with Lua scripts
 - **Cachex 4.1** - High-performance in-memory caching
 - **Argon2** - Secure password hashing (OWASP recommended)
 - **Bandit 1.10** - Pure Elixir HTTP/2 server

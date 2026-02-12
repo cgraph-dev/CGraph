@@ -26,6 +26,11 @@ kill_timeout = "30s"
   ELIXIR_ERL_OPTIONS = "+S 2:2 +SDcpu 2:2 +sbwt short +swt low +stbt ts"
   ERL_CRASH_DUMP_SECONDS = "10"
 
+  # Meilisearch: Set these secrets via `fly secrets set`:
+  #   fly secrets set MEILISEARCH_URL=https://your-meilisearch.example.com
+  #   fly secrets set MEILISEARCH_API_KEY=your_production_master_key
+  # If not set, search gracefully falls back to PostgreSQL ILIKE queries.
+
 [http_service]
   internal_port = 4000
   force_https = true

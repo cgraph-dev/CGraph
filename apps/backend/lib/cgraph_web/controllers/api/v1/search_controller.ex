@@ -7,9 +7,8 @@ defmodule CGraphWeb.API.V1.SearchController do
   import CGraphWeb.Helpers.ParamParser
 
   alias CGraph.Accounts
-  alias CGraph.Forums
   alias CGraph.Groups
-  alias CGraph.Messaging
+  alias CGraph.Search, as: SearchContext
 
   action_fallback CGraphWeb.FallbackController
 
@@ -52,8 +51,9 @@ defmodule CGraphWeb.API.V1.SearchController do
       |> put_status(:bad_request)
       |> json(%{error: "Query must be at least 2 characters"})
     else
-      {users, meta} = Accounts.search_users(query,
+      {users, meta} = SearchContext.search_users(query,
         current_user: user,
+        limit: per_page,
         page: page,
         per_page: per_page
       )
@@ -81,8 +81,9 @@ defmodule CGraphWeb.API.V1.SearchController do
       |> put_status(:bad_request)
       |> json(%{error: "Query must be at least 2 characters"})
     else
-      {messages, meta} = Messaging.search_messages(user, query,
+      {messages, meta} = SearchContext.search_messages(user, query,
         conversation_id: conversation_id,
+        limit: per_page,
         page: page,
         per_page: per_page,
         before: before,
@@ -113,11 +114,12 @@ defmodule CGraphWeb.API.V1.SearchController do
       |> json(%{error: "Query must be at least 2 characters"})
     else
       cursor = Map.get(params, "cursor")
-      {posts, meta} = Forums.search_posts(query,
+      {posts, meta} = SearchContext.search_posts(query,
         user: user,
         cursor: cursor,
         forum_id: forum_id,
         category_id: category_id,
+        limit: per_page,
         page: page,
         per_page: per_page,
         sort: sort
@@ -141,8 +143,9 @@ defmodule CGraphWeb.API.V1.SearchController do
       |> put_status(:bad_request)
       |> json(%{error: "Query must be at least 2 characters"})
     else
-      {groups, meta} = Groups.search_groups(query,
+      {groups, meta} = SearchContext.search_groups(query,
         user: user,
+        limit: per_page,
         page: page,
         per_page: per_page
       )
@@ -208,19 +211,19 @@ defmodule CGraphWeb.API.V1.SearchController do
     Enum.reduce(types, %{}, fn type, acc ->
       results = case type do
         :users ->
-          {users, _} = Accounts.search_users(query, current_user: user, per_page: limit_per_type)
+          {users, _} = SearchContext.search_users(query, current_user: user, limit: limit_per_type)
           users
 
         :messages ->
-          {messages, _} = Messaging.search_messages(user, query, per_page: limit_per_type)
+          {messages, _} = SearchContext.search_messages(user, query, limit: limit_per_type)
           messages
 
         :posts ->
-          {posts, _} = Forums.search_posts(query, user: user, per_page: limit_per_type)
+          {posts, _} = SearchContext.search_posts(query, user: user, limit: limit_per_type)
           posts
 
         :groups ->
-          {groups, _} = Groups.search_groups(query, user: user, per_page: limit_per_type)
+          {groups, _} = SearchContext.search_groups(query, user: user, limit: limit_per_type)
           groups
       end
 

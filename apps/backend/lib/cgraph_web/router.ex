@@ -539,9 +539,14 @@ defmodule CGraphWeb.Router do
     post "/e2ee/keys/:key_id/revoke", E2EEController, :revoke_key
 
     # Search
+    get "/search", SearchController, :index
     get "/search/users", SearchController, :users
     get "/search/messages", SearchController, :messages
     get "/search/posts", SearchController, :posts
+    get "/search/groups", SearchController, :groups
+    get "/search/suggestions", SearchController, :suggestions
+    get "/search/recent", SearchController, :recent
+    delete "/search/recent", SearchController, :clear_history
 
     # Notifications
     get "/notifications", NotificationController, :index

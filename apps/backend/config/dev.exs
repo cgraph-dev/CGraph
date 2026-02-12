@@ -69,3 +69,15 @@ config :swoosh, :api_client, false
 # JWT settings for development
 config :cgraph, :jwt_access_token_ttl, 7200
 config :cgraph, :jwt_refresh_token_ttl, 2_592_000
+
+# Meilisearch configuration for development
+# Start MeiliSearch locally: docker compose -f docker-compose.dev.yml up meilisearch
+# If MEILISEARCH_URL is not set, search falls back to PostgreSQL ILIKE queries
+config :cgraph, CGraph.Search.Engine,
+  backend: if(System.get_env("MEILISEARCH_URL"), do: :meilisearch, else: :postgres),
+  meilisearch_url: System.get_env("MEILISEARCH_URL") || "http://localhost:7700",
+  meilisearch_key: System.get_env("MEILISEARCH_API_KEY") || "devMasterKey123",
+  fallback_to_postgres: true,
+  cache_ttl: 60_000,
+  request_timeout: 5_000
+

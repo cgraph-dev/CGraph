@@ -18,7 +18,7 @@ defmodule CGraph.Messaging do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Messaging.{ConversationParticipant, Message, Reaction, ReadReceipt}
+  alias CGraph.Messaging.{Conversation, ConversationParticipant, Message, Reaction, ReadReceipt}
   alias CGraph.Messaging.Conversations
   alias CGraph.Repo
 
