@@ -117,8 +117,7 @@ export default function Footer() {
           {/* Logo & Copyright */}
           <div className="gl-footer-unified__brand">
             <Link to="/" className="gl-footer-unified__logo">
-              <LogoIcon size={24} color="white" showGlow={false} />
-              <span>CGraph</span>
+              <LogoIcon size={96} color="white" showGlow={false} />
             </Link>
             <span className="gl-footer-unified__copy">
               © {currentYear} CGraph. All rights reserved.
