@@ -45,6 +45,11 @@ export default function Navigation({
         setHidden(false);
       }
 
+      // Close mobile menu on any scroll
+      if (mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+
       // Background opacity based on scroll position
       setScrolled(currentScrollY > 20);
       lastScrollY.current = currentScrollY;
@@ -52,7 +57,7 @@ export default function Navigation({
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [mobileMenuOpen]);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -140,35 +145,55 @@ export default function Navigation({
         </button>
       </motion.nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu — full-width dropdown below nav */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
             className="gl-nav-unified__mobile-menu"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
           >
             <div className="gl-nav-unified__mobile-links">
               {showLandingLinks ? (
                 <>
-                  <a href="#features" className="gl-nav-unified__mobile-link">
+                  <a
+                    href="#features"
+                    className="gl-nav-unified__mobile-link"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     Features
                   </a>
-                  <a href="#security" className="gl-nav-unified__mobile-link">
+                  <a
+                    href="#security"
+                    className="gl-nav-unified__mobile-link"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     Security
                   </a>
-                  <a href="#pricing" className="gl-nav-unified__mobile-link">
+                  <a
+                    href="#pricing"
+                    className="gl-nav-unified__mobile-link"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     Pricing
                   </a>
                 </>
               ) : (
                 <>
-                  <Link to="/" className="gl-nav-unified__mobile-link">
+                  <Link
+                    to="/"
+                    className="gl-nav-unified__mobile-link"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     Home
                   </Link>
-                  <Link to="/about" className="gl-nav-unified__mobile-link">
+                  <Link
+                    to="/about"
+                    className="gl-nav-unified__mobile-link"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     About
                   </Link>
                 </>

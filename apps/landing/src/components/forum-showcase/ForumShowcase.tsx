@@ -95,9 +95,9 @@ export function ForumShowcase() {
         </div>
 
         <div className="grid gap-8 lg:grid-cols-5">
-          <div className="lg:col-span-3">
+          <div className="min-w-0 lg:col-span-3">
             <motion.div
-              className="rounded-2xl border border-gray-800 bg-gray-900/50 p-6"
+              className="overflow-x-auto rounded-2xl border border-gray-800 bg-gray-900/50 p-4 sm:p-6"
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
