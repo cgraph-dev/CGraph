@@ -122,12 +122,20 @@ const sections = [
           <tr><td>Resend</td><td>Email delivery</td><td>Email addresses</td></tr>
           <tr><td>Expo</td><td>Push notifications</td><td>Push tokens</td></tr>
           <tr><td>Sentry</td><td>Error tracking</td><td>Crash logs (anonymized)</td></tr>
+          <tr><td>Stripe</td><td>Payment processing</td><td>Payment details (processed by Stripe, not stored by CGraph)</td></tr>
         </tbody>
       </table>
+      <p>All service providers are bound by data processing agreements and are prohibited from using your data for any purpose other than providing services to CGraph.</p>
       
       <h4>4.3 Legal Requirements</h4>
       <p>We may disclose data when required by law, such as valid court orders, government requests (with legal basis), or to protect rights, safety, or property.</p>
       <p><strong>Note:</strong> Due to end-to-end encryption, we cannot provide message content even if legally compelled.</p>
+      
+      <h4>4.4 Business Transfers</h4>
+      <p>In the event of a merger, acquisition, reorganization, bankruptcy, or sale of all or a portion of CGraph's assets, your personal data may be transferred as part of that transaction. We will notify you (via email or prominent notice on the Service) before your data is transferred and becomes subject to a different privacy policy.</p>
+      
+      <h4>4.5 Aggregated & De-Identified Data</h4>
+      <p>We may create aggregated, anonymized, or de-identified data from your personal data. Such data is not considered personal data and may be used for any purpose, including analytics, research, and improving the Service. We will not attempt to re-identify anonymized data.</p>
     `,
   },
   {
@@ -206,17 +214,55 @@ const sections = [
     content: `
       <p>We implement industry-standard security measures:</p>
       <ul>
-        <li><strong>Encryption in Transit</strong> - TLS 1.3 for all connections</li>
-        <li><strong>Encryption at Rest</strong> - AES-256 for stored data</li>
-        <li><strong>End-to-End Encryption</strong> - Signal Protocol for messages</li>
-        <li><strong>Regular Audits</strong> - Third-party security assessments</li>
-        <li><strong>Bug Bounty</strong> - Responsible disclosure program</li>
+        <li><strong>Encryption in Transit</strong> — TLS 1.3 for all connections</li>
+        <li><strong>Encryption at Rest</strong> — AES-256 for stored data</li>
+        <li><strong>End-to-End Encryption</strong> — Signal Protocol for direct messages</li>
+        <li><strong>Regular Audits</strong> — Third-party security assessments</li>
+        <li><strong>Bug Bounty</strong> — Responsible disclosure program at <a href="mailto:security@cgraph.org">security@cgraph.org</a></li>
+        <li><strong>Access Controls</strong> — Least-privilege access for all employees and systems</li>
+        <li><strong>Incident Response</strong> — Documented breach response procedures with 72-hour notification</li>
       </ul>
+      <p>Despite our best efforts, no electronic transmission or storage method is 100% secure. We cannot guarantee absolute security of your data.</p>
+    `,
+  },
+  {
+    id: 'children',
+    title: "8. Children's Privacy",
+    content: `
+      <p>CGraph is not directed toward children under 13 years of age (or the applicable minimum age in your jurisdiction). We do not knowingly collect personal information from children under 13.</p>
+      
+      <h4>8.1 COPPA Compliance (United States)</h4>
+      <p>In compliance with the Children's Online Privacy Protection Act (COPPA):</p>
+      <ul>
+        <li>We do not knowingly collect, use, or disclose personal information from children under 13</li>
+        <li>If we discover that a child under 13 has created an account, we will promptly delete the account and all associated data</li>
+        <li>Parents or guardians who believe their child has provided personal information may contact us at <a href="mailto:privacy@cgraph.org">privacy@cgraph.org</a></li>
+      </ul>
+      
+      <h4>8.2 EU/UK (Age of Digital Consent)</h4>
+      <p>In the EU and UK, the minimum age for digital consent varies by country (typically 13-16). Users below the applicable age in their jurisdiction must have verifiable parental consent.</p>
+      
+      <h4>8.3 Safety Measures</h4>
+      <p>For users between 13-18 (where permitted), we implement additional safety measures, including default privacy settings and content filtering options available to parents/guardians.</p>
+    `,
+  },
+  {
+    id: 'international',
+    title: '9. International Data Transfers',
+    content: `
+      <p>CGraph is operated from Georgia and uses infrastructure located in multiple countries. Your data may be transferred to and processed in countries other than your own. We protect international data transfers through:</p>
+      <ul>
+        <li><strong>Standard Contractual Clauses (SCCs)</strong> — EU-approved contractual safeguards with all service providers</li>
+        <li><strong>Adequacy Decisions</strong> — Where available, we transfer data to countries recognized by the EU as having adequate data protection</li>
+        <li><strong>End-to-End Encryption</strong> — Message content is protected regardless of where infrastructure is located</li>
+        <li><strong>Data Processing Agreements</strong> — All sub-processors are contractually bound to protect your data</li>
+      </ul>
+      <p>For an up-to-date list of sub-processors and their locations, see our <a href="/gdpr">GDPR Compliance</a> page.</p>
     `,
   },
   {
     id: 'contact',
-    title: '8. Contact Us',
+    title: '10. Contact Us',
     content: `
       <p>If you have questions about this Privacy Policy, please contact us:</p>
       <ul>
@@ -236,7 +282,7 @@ export default function PrivacyPolicy() {
   return (
     <MarketingLayout
       title="Privacy Policy"
-      subtitle="Last updated: February 10, 2026 • Version 1.2"
+      subtitle="Last updated: February 10, 2026 • Version 2.0"
       eyebrow="Your Data, Your Rights"
     >
       <section className="marketing-section marketing-section--alt">

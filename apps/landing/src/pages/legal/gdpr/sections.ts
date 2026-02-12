@@ -23,10 +23,13 @@ export const sections: GDPRSection[] = [
       <ul>
         <li><strong>Company:</strong> CGraph, registered in Georgia</li>
         <li><strong>Founded:</strong> 2026</li>
-        <li><strong>Email:</strong> <a href="mailto:privacy@cgraph.org">privacy@cgraph.org</a></li>
+        <li><strong>Privacy inquiries:</strong> <a href="mailto:privacy@cgraph.org">privacy@cgraph.org</a></li>
         <li><strong>Data Protection Officer:</strong> <a href="mailto:dpo@cgraph.org">dpo@cgraph.org</a></li>
+        <li><strong>Security reports:</strong> <a href="mailto:security@cgraph.org">security@cgraph.org</a></li>
         <li><strong>Website:</strong> <a href="https://cgraph.org">cgraph.org</a></li>
       </ul>
+      
+      <p><strong>Scope of Processing:</strong> This applies to all personal data processed through our web platform, mobile applications, APIs, and related services.</p>
     `,
   },
   {
@@ -115,9 +118,10 @@ export const sections: GDPRSection[] = [
       <table>
         <thead><tr><th>Mechanism</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td><strong>Standard Contractual Clauses</strong></td><td>EU-approved contract terms with processors</td></tr>
-          <tr><td><strong>Adequacy Decisions</strong></td><td>Transfers to countries with adequate protection</td></tr>
-          <tr><td><strong>Encryption</strong></td><td>End-to-end encryption protects message content</td></tr>
+          <tr><td><strong>Standard Contractual Clauses (SCCs)</strong></td><td>EU-approved contract terms with all data processors</td></tr>
+          <tr><td><strong>Adequacy Decisions</strong></td><td>Transfers to countries with adequate protection as determined by the European Commission</td></tr>
+          <tr><td><strong>Data Privacy Framework</strong></td><td>Where applicable, service providers certified under the EU-US Data Privacy Framework, the UK Extension, and/or the Swiss-US Data Privacy Framework</td></tr>
+          <tr><td><strong>End-to-End Encryption</strong></td><td>Message content is encrypted on your device and remains protected regardless of transfer location</td></tr>
         </tbody>
       </table>
       
@@ -125,12 +129,17 @@ export const sections: GDPRSection[] = [
       <table>
         <thead><tr><th>Processor</th><th>Location</th><th>Purpose</th><th>Safeguards</th></tr></thead>
         <tbody>
-          <tr><td>Cloudflare</td><td>USA</td><td>CDN, Security</td><td>SCCs, DPA</td></tr>
-          <tr><td>Fly.io</td><td>USA/EU</td><td>Hosting</td><td>SCCs, DPA</td></tr>
-          <tr><td>Resend</td><td>USA</td><td>Email delivery</td><td>SCCs, DPA</td></tr>
-          <tr><td>Sentry</td><td>USA</td><td>Error tracking</td><td>SCCs, DPA, anonymization</td></tr>
+          <tr><td>Cloudflare</td><td>USA/Global</td><td>CDN, DDoS Protection</td><td>SCCs, DPA, DPF Certified</td></tr>
+          <tr><td>Fly.io</td><td>USA/EU</td><td>Application Hosting</td><td>SCCs, DPA</td></tr>
+          <tr><td>Resend</td><td>USA</td><td>Email Delivery</td><td>SCCs, DPA</td></tr>
+          <tr><td>Sentry</td><td>USA</td><td>Error Tracking</td><td>SCCs, DPA, Data Anonymization</td></tr>
+          <tr><td>Stripe</td><td>USA/EU</td><td>Payment Processing</td><td>SCCs, DPA, DPF Certified, PCI DSS</td></tr>
+          <tr><td>Expo</td><td>USA</td><td>Push Notifications</td><td>SCCs, DPA</td></tr>
+          <tr><td>Vercel</td><td>USA/Global</td><td>Web Hosting</td><td>SCCs, DPA</td></tr>
         </tbody>
       </table>
+      
+      <p>We regularly review and update our sub-processor list. Material changes will be communicated via our Privacy Policy updates.</p>
     `,
   },
   {

@@ -218,7 +218,7 @@ export default function CookiePolicy() {
   return (
     <MarketingLayout
       title="Cookie Policy"
-      subtitle="Last updated: February 10, 2026 • Version 1.2"
+      subtitle="Last updated: February 10, 2026 • Version 2.0"
       eyebrow="Transparency First"
     >
       <section className="marketing-section marketing-section--alt">

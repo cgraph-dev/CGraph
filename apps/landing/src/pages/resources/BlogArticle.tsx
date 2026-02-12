@@ -606,7 +606,7 @@ if (result.success) {
 <p>Marketing pages need to be statically renderable and crawlable. The landing site uses Vite with server-side rendering hints and prerendered routes. The web app is a client-side SPA that requires authentication — it's invisible (and should be) to search engines.</p>
 
 <h4>3. Deployment Independence</h4>
-<p>The landing site deploys to Cloudflare Pages with global edge caching. The web app deploys to Vercel with serverless functions for API proxying. They have independent CI pipelines, independent release cycles, and can be updated without affecting each other.</p>
+<p>The landing site deploys to Vercel with global edge caching and automatic preview deployments. The web app also deploys to Vercel with serverless functions for API proxying. They have independent CI pipelines, independent release cycles, and can be updated without affecting each other.</p>
 
 <h3>The Monorepo Structure</h3>
 
@@ -948,15 +948,15 @@ end</code></pre>
 
 <h3>Subscription Tiers</h3>
 
-<p>CGraph offers five subscription tiers designed to scale from individual users to enterprise deployments:</p>
+<p>CGraph offers five subscription tiers designed to scale from individual users to enterprise deployments. Pricing will be finalized at public launch — here's what each tier includes:</p>
 
 <table>
 <thead><tr><th>Tier</th><th>Price</th><th>Key Features</th></tr></thead>
 <tbody>
-<tr><td>Free</td><td>$0</td><td>Full messaging, E2EE, forums, basic gamification, 5 servers</td></tr>
-<tr><td>Plus</td><td>$4.99/mo</td><td>HD video, custom emojis, extended file uploads (50MB), 15 servers</td></tr>
-<tr><td>Pro</td><td>$9.99/mo</td><td>4K video, priority support, advanced analytics, 50 servers, API access</td></tr>
-<tr><td>Teams</td><td>$14.99/mo per user</td><td>Team management, SSO, audit logs, compliance tools, unlimited servers</td></tr>
+<tr><td>Free</td><td>Free forever</td><td>Full messaging, E2EE, forums, basic gamification, 5 servers</td></tr>
+<tr><td>Plus</td><td>TBD</td><td>HD video, custom emojis, extended file uploads (50MB), 15 servers</td></tr>
+<tr><td>Pro</td><td>TBD</td><td>4K video, priority support, advanced analytics, 50 servers, API access</td></tr>
+<tr><td>Teams</td><td>TBD per user</td><td>Team management, SSO, audit logs, compliance tools, unlimited servers</td></tr>
 <tr><td>Enterprise</td><td>Custom</td><td>On-premise option, dedicated support, SLA, custom integrations</td></tr>
 </tbody>
 </table>
