@@ -1,6 +1,6 @@
 # CGraph Testing Strategy
 
-> **Version: 1.0.0** | Last Updated: February 2026
+> **Version: 2.0.0** | Last Updated: February 2026
 
 Comprehensive testing approach across all CGraph applications.
 
@@ -41,9 +41,11 @@ Comprehensive testing approach across all CGraph applications.
 | **Mobile**  | ~25%    | 60%    | Core features           |
 | **Landing** | ~10%    | 50%    | Components              |
 
-> **Backend**: 127 test files, 81/81 controllers covered (100%), chaos testing framework, 3
-> integration tests, 6 channel tests. See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file
-> inventory.
+> **Backend**: 163 test files, 83/83 controllers covered (100%), 70 context/module tests, chaos
+> testing framework, 3 integration tests, 6 channel tests. All controllers have HTTP-level tests (0
+> structural-only). See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file inventory.
+>
+> **Web**: 171 test files. **Mobile**: 15 test files. **Landing**: 3 test files.
 
 ### Coverage Enforcement
 
@@ -77,7 +79,7 @@ apps/backend/
 │   │   ├── data_case.ex         # Ecto test helpers
 │   │   └── factory.ex           # ExMachina factories
 │   │
-│   ├── cgraph/                   # Unit tests
+│   ├── cgraph/                   # Unit tests (70 files)
 │   │   ├── accounts/
 │   │   │   ├── user_test.exs
 │   │   │   └── auth_test.exs
@@ -87,6 +89,10 @@ apps/backend/
 │   │   ├── e2ee/
 │   │   │   ├── key_bundle_test.exs
 │   │   │   └── session_test.exs
+│   │   ├── forums/              # Forum context tests
+│   │   ├── gamification/        # Gamification context tests
+│   │   ├── billing/             # Billing context tests
+│   │   ├── admin/               # Admin context tests
 │   │   └── security/            # Security-specific tests
 │   │       ├── auth_test.exs
 │   │       ├── authorization_test.exs
