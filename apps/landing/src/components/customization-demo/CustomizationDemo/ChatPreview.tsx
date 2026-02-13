@@ -25,39 +25,35 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
 
   const getBubbleStyle = useMemo(() => {
     // Hardcoded optimal defaults matching real app logic
-    let baseRadius = 18; // Standard messenger radius
-    let shadowIntensity = 0.1; // Subtle shadow
+    // IGNORING state.bubbleBorderRadius and state.bubbleShadowIntensity to ensure visibility
+    let baseRadius = 18;
+    let shadowIntensity = 0.15;
 
     switch (state.chatBubbleStyle) {
       case 'modern':
         baseRadius = 22;
-        shadowIntensity = 0.15;
+        shadowIntensity = 0.25; // Stronger for modern
         break;
       case 'retro':
         baseRadius = 4;
-        shadowIntensity = 1.0; // Hard shadow for retro
+        shadowIntensity = 1.0; // Full intensity for retro hard shadow
         break;
       case 'cloud':
-        baseRadius = 20; // Varied later
-        shadowIntensity = 0.1;
+        baseRadius = 20;
+        shadowIntensity = 0.15;
         break;
       case 'rounded':
         baseRadius = 24;
-        shadowIntensity = 0.1;
+        shadowIntensity = 0.15;
         break;
       case 'sharp':
         baseRadius = 2;
-        shadowIntensity = 0.1;
+        shadowIntensity = 0.15;
         break;
       default:
         baseRadius = 18;
-        shadowIntensity = 0.1;
+        shadowIntensity = 0.15;
     }
-
-    // Override if state has explicit values
-    if (state.bubbleBorderRadius !== undefined) baseRadius = state.bubbleBorderRadius;
-    if (state.bubbleShadowIntensity !== undefined)
-      shadowIntensity = state.bubbleShadowIntensity / 100;
 
     return (isOwn: boolean) => {
       const isModern = state.chatBubbleStyle === 'modern';
@@ -68,8 +64,8 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       let borderRadius = `${baseRadius}px`;
       if (state.chatBubbleStyle === 'sharp') {
         borderRadius = isOwn
-          ? `${baseRadius}px ${baseRadius}px 0px ${baseRadius}px` // Tail bottom-right
-          : `${baseRadius}px ${baseRadius}px ${baseRadius}px 0px`; // Tail bottom-left
+          ? `${baseRadius}px ${baseRadius}px 0px ${baseRadius}px`
+          : `${baseRadius}px ${baseRadius}px ${baseRadius}px 0px`;
       } else if (state.chatBubbleStyle === 'cloud') {
         borderRadius = isOwn
           ? `${baseRadius + 6}px ${baseRadius + 2}px 4px ${baseRadius + 6}px`
@@ -77,7 +73,6 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       } else if (isRetro) {
         borderRadius = '4px';
       } else {
-        // Standard Messenger Style (e.g. iMessage/WhatsApp)
         borderRadius = isOwn
           ? `${baseRadius}px ${baseRadius}px 4px ${baseRadius}px`
           : `${baseRadius}px ${baseRadius}px ${baseRadius}px 4px`;
@@ -86,28 +81,30 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       // Background Color
       let background = isOwn
         ? `linear-gradient(145deg, ${bubbleColors.primary}, ${bubbleColors.secondary})`
-        : 'rgba(55, 65, 81, 0.95)'; // Dark gray for incoming, high opacity
+        : 'rgba(55, 65, 81, 0.95)';
 
       if (isModern) {
         background = isOwn
           ? `linear-gradient(135deg, ${bubbleColors.primary}E6, ${bubbleColors.secondary}E6)`
           : 'rgba(255, 255, 255, 0.08)';
       } else if (isRetro) {
-        background = isOwn ? bubbleColors.primary : '#374151';
+        background = isOwn ? bubbleColors.primary : '#1f2937'; // Slightly darker for retro incoming
       }
 
-      // Realistic Shadows (Depth, not glow)
+      // Realistic Shadows - BUFFED
       let boxShadow = isOwn
-        ? `0 1px 2px rgba(0,0,0,${0.2 + shadowIntensity})` // Subtle depth
-        : `0 1px 2px rgba(0,0,0,${0.1 + shadowIntensity})`;
+        ? `0 4px 6px rgba(0,0,0,${0.2 + shadowIntensity * 0.5})`
+        : `0 2px 4px rgba(0,0,0,${0.2 + shadowIntensity * 0.5})`;
 
       if (isModern) {
+        // Soft glowy shadow
         boxShadow = isOwn
-          ? `0 4px 15px ${bubbleColors.glow}40, inset 0 1px 1px rgba(255,255,255,0.3)`
-          : `0 2px 10px rgba(0,0,0,0.1)`;
+          ? `0 8px 20px ${bubbleColors.glow}50, inset 0 1px 1px rgba(255,255,255,0.3)`
+          : `0 4px 12px rgba(0,0,0,0.3)`;
       } else if (isRetro) {
-        const offset = 3 * shadowIntensity;
-        boxShadow = `${offset}px ${offset}px 0px rgba(0,0,0,0.5)`;
+        // Consistent Hard Shadow
+        const offset = 4; // Fixed 4px for retro
+        boxShadow = `${offset}px ${offset}px 0px rgba(0,0,0,0.6)`;
       }
 
       // Border
@@ -115,7 +112,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       if (isModern) {
         border = '1px solid rgba(255, 255, 255, 0.1)';
       } else if (isRetro) {
-        border = '2px solid rgba(0,0,0,0.8)';
+        border = '2px solid rgba(0,0,0,1)'; // Solid black border
       }
 
       return {
@@ -126,15 +123,16 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
         backdropFilter: isGlass ? 'blur(10px)' : 'none',
         fontFamily: isRetro ? '"Space Grotesk", monospace' : 'inherit',
         letterSpacing: isRetro ? '0.5px' : 'normal',
+        textShadow: '0 1px 3px rgba(0,0,0,0.7)', // Strong text shadow for visibility
       };
     };
   }, [state, bubbleColors]);
 
   const getBubbleAnimation = (isOwn: boolean, index: number) => {
-    const delay = index * 0.05; // Faster, snappier
+    const delay = index * 0.05;
     const anim = state.bubbleEntranceAnimation || 'slide';
 
-    // Standard Messaging Physics (Snappy, responsive)
+    // Standard Messaging Physics
     const snappySpring = { type: 'spring', stiffness: 400, damping: 25 };
     const gentleSpring = { type: 'spring', stiffness: 250, damping: 20 };
 
@@ -144,7 +142,6 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
         animate: { opacity: 1 },
       },
       slide: {
-        // Typical message slide-in (up and in)
         initial: { opacity: 0, y: 20, scale: 0.95 },
         animate: { opacity: 1, y: 0, scale: 1 },
         transition: { delay, ...snappySpring },
@@ -157,16 +154,14 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       scale: {
         initial: { opacity: 0, scale: 0 },
         animate: { opacity: 1, scale: 1 },
-        transition: { delay, type: 'spring', stiffness: 350, damping: 25 }, // Android-like pop
+        transition: { delay, type: 'spring', stiffness: 350, damping: 25 },
       },
       bounce: {
-        // Subtle bounce, not cartoonish
         initial: { opacity: 0, scale: 0.8, y: 10 },
         animate: { opacity: 1, scale: 1, y: 0 },
         transition: { delay, type: 'spring', stiffness: 400, damping: 15 },
       },
       flip: {
-        // Kept for variety but toned down
         initial: { opacity: 0, rotateX: 45, y: 10 },
         animate: { opacity: 1, rotateX: 0, y: 0 },
         transition: { delay, ...gentleSpring },
@@ -182,7 +177,6 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       style={{
         backdropFilter: state.blurEnabled ? 'blur(20px)' : 'none',
         boxShadow: state.glowEnabled ? `0 0 40px ${colors.glow}` : 'none',
-        // Removed perspective to flatten the look unless needed
       }}
       animate={
         state.glowEnabled
@@ -197,7 +191,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       }
       transition={{ duration: 3 * speedMultiplier, repeat: Infinity }}
     >
-      {/* Particles overlay (Keep subtle) */}
+      {/* Particles overlay */}
       {state.particlesEnabled && (
         <div className="pointer-events-none absolute inset-0">
           {Array.from({ length: 15 }).map((_, i) => (
@@ -253,7 +247,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
           </div>
         </div>
 
-        {/* Messages Container - Removed 3D transform style for cleaner look */}
+        {/* Messages Container */}
         <AnimatePresence mode="popLayout">
           <div className={`space-y-${state.compactMode ? '1.5' : '2'}`}>
             {/* Message 1 (Incoming) */}
