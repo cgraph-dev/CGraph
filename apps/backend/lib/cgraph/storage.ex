@@ -73,6 +73,14 @@ defmodule CGraph.Storage do
   end
 
   @doc """
+  Upload a file with path, context directory, filename, and content type.
+  Convenience wrapper around store/3 for controller usage.
+  """
+  def upload(source_path, context, filename, _content_type) when is_binary(source_path) do
+    store(source_path, filename, context: context)
+  end
+
+  @doc """
   Delete a file from storage.
   """
   @spec delete(String.t()) :: :ok | {:error, term()}

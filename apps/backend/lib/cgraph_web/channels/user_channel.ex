@@ -19,9 +19,6 @@ defmodule CGraphWeb.UserChannel do
   alias CGraph.Presence
 
   @max_contact_batch 200
-  # Buffer for missed messages during reconnection (5 minutes)
-  @resume_buffer_ttl_seconds 300
-  @resume_buffer_max_size 500
 
   @impl true
   def join("user:" <> requested_user_id, params, socket) do

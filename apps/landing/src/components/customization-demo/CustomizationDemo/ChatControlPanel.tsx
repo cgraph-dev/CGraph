@@ -70,49 +70,7 @@ export const ChatControlPanel = memo(function ChatControlPanel({
         </div>
       </div>
 
-      {/* Border Radius Slider */}
-      <div>
-        <label className="mb-2 flex items-center justify-between text-sm font-medium text-gray-400">
-          <span>Border Radius</span>
-          <span className="text-xs" style={{ color: colors.primary }}>
-            {state.bubbleBorderRadius || 16}px
-          </span>
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="50"
-          value={state.bubbleBorderRadius || 16}
-          onChange={(e) => onChange({ bubbleBorderRadius: parseInt(e.target.value) })}
-          className="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-700"
-          style={{
-            background: `linear-gradient(to right, ${colors.primary} 0%, ${colors.primary} ${
-              ((state.bubbleBorderRadius || 16) / 50) * 100
-            }%, #374151 ${((state.bubbleBorderRadius || 16) / 50) * 100}%, #374151 100%)`,
-          }}
-        />
-      </div>
-
-      {/* Shadow Intensity Slider */}
-      <div>
-        <label className="mb-2 flex items-center justify-between text-sm font-medium text-gray-400">
-          <span>Shadow Intensity</span>
-          <span className="text-xs" style={{ color: colors.primary }}>
-            {state.bubbleShadowIntensity || 20}%
-          </span>
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={state.bubbleShadowIntensity || 20}
-          onChange={(e) => onChange({ bubbleShadowIntensity: parseInt(e.target.value) })}
-          className="h-2 w-full cursor-pointer appearance-none rounded-lg"
-          style={{
-            background: `linear-gradient(to right, ${colors.primary} 0%, ${colors.primary} ${state.bubbleShadowIntensity || 20}%, #374151 ${state.bubbleShadowIntensity || 20}%, #374151 100%)`,
-          }}
-        />
-      </div>
+      {/* Sections for Border Radius and Shadow Intensity removed to streamline UX */}
 
       {/* Entrance Animation */}
       <div>

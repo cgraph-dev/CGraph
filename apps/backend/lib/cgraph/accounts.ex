@@ -119,14 +119,9 @@ defmodule CGraph.Accounts do
     end
   end
 
-  @doc "Verify a user's password."
+  @doc "Verify a user's password. Returns true/false."
   def verify_password(%User{} = user, password) when is_binary(password) do
-    case Argon2.verify_pass(password, user.password_hash) do
-      true -> :ok
-      false -> {:error, :invalid_password}
-    end
-  rescue
-    _ -> {:error, :invalid_password}
+    User.valid_password?(user, password)
   end
 
   # ============================================================================

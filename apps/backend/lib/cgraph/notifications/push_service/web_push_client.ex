@@ -202,7 +202,7 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
       |> add_vapid_headers(vapid_headers)
       |> add_topic_header(topic)
 
-    case CGraph.Http.post(endpoint, payload, headers, timeout: @default_timeout) do
+    case CGraph.HTTP.post(endpoint, payload, headers: headers, timeout: @default_timeout) do
       {:ok, response} -> {:ok, response}
       {:error, reason} -> {:error, {:request_failed, reason}}
     end

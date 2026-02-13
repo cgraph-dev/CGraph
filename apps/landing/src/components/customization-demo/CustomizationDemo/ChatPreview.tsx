@@ -25,8 +25,40 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
     state.animationSpeed === 'slow' ? 2 : state.animationSpeed === 'fast' ? 0.5 : 1;
 
   const getBubbleStyle = useMemo(() => {
-    const baseRadius = state.bubbleBorderRadius ?? 16;
-    const shadowIntensity = (state.bubbleShadowIntensity ?? 20) / 100;
+    // Hardcoded optimal defaults since sliders were removed
+    let baseRadius = 16;
+    let shadowIntensity = 0.2;
+
+    switch (state.chatBubbleStyle) {
+      case 'modern':
+        baseRadius = 24;
+        shadowIntensity = 0.3;
+        break;
+      case 'retro':
+        baseRadius = 4;
+        shadowIntensity = 1.0;
+        break;
+      case 'cloud':
+        baseRadius = 20;
+        shadowIntensity = 0.2;
+        break;
+      case 'rounded':
+        baseRadius = 24;
+        shadowIntensity = 0.2;
+        break;
+      case 'sharp':
+        baseRadius = 2; // sharper
+        shadowIntensity = 0.2;
+        break;
+      default:
+        baseRadius = 16;
+        shadowIntensity = 0.2;
+    }
+
+    // Override if state has explicit values (though UI controls are gone)
+    if (state.bubbleBorderRadius !== undefined) baseRadius = state.bubbleBorderRadius;
+    if (state.bubbleShadowIntensity !== undefined)
+      shadowIntensity = state.bubbleShadowIntensity / 100;
 
     return (isOwn: boolean) => {
       const isModern = state.chatBubbleStyle === 'modern';
@@ -71,7 +103,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
           ? `0 8px 32px ${bubbleColors.glow}, inset 0 0 20px rgba(255,255,255,0.1)`
           : `0 4px 16px rgba(0,0,0,0.2)`;
       } else if (isRetro) {
-        const offset = 4 * (state.bubbleShadowIntensity ? state.bubbleShadowIntensity / 50 : 0.5);
+        const offset = 4 * shadowIntensity;
         boxShadow = `${offset}px ${offset}px 0px rgba(0,0,0,0.5)`;
       }
 
@@ -229,7 +261,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
           >
             {/* Message 1 (Incoming) */}
             <motion.div
-              key="msg1"
+              key={`msg1-${state.bubbleEntranceAnimation}`}
               className="max-w-[85%] p-3"
               style={{
                 ...getBubbleStyle(false),
@@ -254,7 +286,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
 
             {/* Message 2 (Outgoing) */}
             <motion.div
-              key="msg2"
+              key={`msg2-${state.bubbleEntranceAnimation}`}
               className="max-w-[85%] p-3"
               style={{
                 ...getBubbleStyle(true),
@@ -278,7 +310,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
 
             {/* Message 3 (Incoming) */}
             <motion.div
-              key="msg3"
+              key={`msg3-${state.bubbleEntranceAnimation}`}
               className="max-w-[85%] p-3"
               style={{
                 ...getBubbleStyle(false),
