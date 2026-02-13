@@ -147,7 +147,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
               milestone_id not in (progress.milestones_claimed || [])
           end)
 
-        if length(reached_milestones) > 0 do
+        if reached_milestones != [] do
           Logger.info("event_user_milestones_reached",
             user_id: progress.user_id, milestone_count: length(reached_milestones)
           )
@@ -185,7 +185,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
             entry.rank >= min_rank and entry.rank <= max_rank
           end)
 
-        if length(rewards_for_rank) > 0 do
+        if rewards_for_rank != [] do
           Logger.info("event_leaderboard_reward",
             user_id: entry.user_id, rank: entry.rank, reward_count: length(rewards_for_rank)
           )

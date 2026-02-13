@@ -137,7 +137,7 @@ defmodule Mix.Tasks.Search.Reindex do
 
       index when index in @valid_indexes ->
         IO.puts("=== Reindexing #{index} ===\n")
-        reindex_index(String.to_atom(index), batch_size)
+        reindex_index(String.to_existing_atom(index), batch_size)
 
       other ->
         IO.puts("  Error: Unknown index '#{other}'. Valid: #{Enum.join(@valid_indexes, ", ")}\n")

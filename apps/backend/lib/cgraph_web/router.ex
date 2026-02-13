@@ -259,38 +259,6 @@ defmodule CGraphWeb.Router do
     get "/tiers/features/:feature", TierController, :check_feature
 
     # ==========================================================================
-    # Billing & Payments (Stripe Integration)
-    # Routes exist but controllers are at CGraphWeb.Api.PaymentController
-    # TODO: Wire to correct module or create V1 controllers
-    # ==========================================================================
-    # get "/billing/plans", API.PaymentController, :plans
-    # get "/billing/status", API.PaymentController, :billing_status
-    # post "/billing/checkout", API.PaymentController, :create_checkout
-    # post "/billing/portal", API.PaymentController, :create_portal
-
-    # ==========================================================================
-    # Forum Subscriptions (notification preferences per forum/thread)
-    # Routes exist but controller is at CGraphWeb.API.SubscriptionController
-    # TODO: Wire to correct module or create V1 controller
-    # ==========================================================================
-    # get "/forum/subscriptions", API.SubscriptionController, :index
-    # post "/forum/subscriptions", API.SubscriptionController, :create
-    # put "/forum/subscriptions/:id", API.SubscriptionController, :update
-    # delete "/forum/subscriptions/:id", API.SubscriptionController, :delete
-    # post "/forum/subscriptions/bulk-update", API.SubscriptionController, :bulk_update
-    # post "/forum/subscriptions/toggle-thread", API.SubscriptionController, :toggle_thread
-
-    # ==========================================================================
-    # Username Management (availability check, history, cooldown)
-    # Routes exist but controller is at CGraphWeb.API.UsernameController
-    # TODO: Wire to correct module or create V1 controller
-    # ==========================================================================
-    # get "/users/check-username", API.UsernameController, :check_availability
-    # post "/users/me/change-username", API.UsernameController, :change_username
-    # get "/users/me/username-history", API.UsernameController, :history
-    # get "/users/me/username-cooldown", API.UsernameController, :cooldown_status
-
-    # ==========================================================================
     # AI Endpoints - PLACEHOLDER FOR FUTURE CLAUDE INTEGRATION
     # ==========================================================================
     # AI features are not yet implemented. See: docs/architecture/AI_INTEGRATION.md
@@ -702,6 +670,31 @@ defmodule CGraphWeb.Router do
     get "/profiles/:username/threads", ProfileController, :threads
     get "/profiles/:username/reputation", ProfileController, :reputation
     post "/profiles/:username/reputation", ProfileController, :give_reputation
+  end
+
+  # Billing, Subscriptions & Username routes (controllers outside V1 namespace)
+  scope "/api/v1" do
+    pipe_through [:api, :api_auth]
+
+    # Billing & Payments (Stripe Integration)
+    get "/billing/plans", CGraphWeb.Api.PaymentController, :plans
+    get "/billing/status", CGraphWeb.Api.PaymentController, :billing_status
+    post "/billing/checkout", CGraphWeb.Api.PaymentController, :create_checkout
+    post "/billing/portal", CGraphWeb.Api.PaymentController, :create_portal
+
+    # Forum Subscriptions (notification preferences per forum/thread)
+    get "/forum/subscriptions", CGraphWeb.API.SubscriptionController, :index
+    post "/forum/subscriptions", CGraphWeb.API.SubscriptionController, :create
+    put "/forum/subscriptions/:id", CGraphWeb.API.SubscriptionController, :update
+    delete "/forum/subscriptions/:id", CGraphWeb.API.SubscriptionController, :delete
+    post "/forum/subscriptions/bulk-update", CGraphWeb.API.SubscriptionController, :bulk_update
+    post "/forum/subscriptions/toggle-thread", CGraphWeb.API.SubscriptionController, :toggle_thread
+
+    # Username Management (availability check, history, cooldown)
+    get "/users/check-username", CGraphWeb.API.UsernameController, :check_availability
+    post "/users/me/change-username", CGraphWeb.API.UsernameController, :change_username
+    get "/users/me/username-history", CGraphWeb.API.UsernameController, :history
+    get "/users/me/username-cooldown", CGraphWeb.API.UsernameController, :cooldown_status
   end
 
   # Gamification API routes (authenticated)

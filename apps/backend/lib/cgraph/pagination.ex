@@ -190,7 +190,7 @@ defmodule CGraph.Pagination do
   def decode_cursor(cursor) when is_binary(cursor) do
     case Base.url_decode64(cursor, padding: false) do
       {:ok, json} ->
-        case Jason.decode(json, keys: :atoms) do
+        case Jason.decode(json, keys: :atoms!) do
           {:ok, data} -> data
           _ -> nil
         end

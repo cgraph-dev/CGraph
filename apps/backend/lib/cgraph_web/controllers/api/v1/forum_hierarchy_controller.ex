@@ -310,12 +310,13 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
     reordered = before ++ [forum] ++ after_list
 
     # Update all positions
-    Enum.with_index(reordered, fn f, idx ->
-      if f.display_order != idx do
-        from(fo in Forum, where: fo.id == ^f.id)
-        |> Repo.update_all(set: [display_order: idx])
-      end
-    end)
+    _updates =
+      Enum.with_index(reordered, fn f, idx ->
+        if f.display_order != idx do
+          from(fo in Forum, where: fo.id == ^f.id)
+          |> Repo.update_all(set: [display_order: idx])
+        end
+      end)
 
     {:ok, %{forum | display_order: new_position}}
   end

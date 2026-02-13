@@ -490,7 +490,7 @@ defmodule CGraph.Permissions do
     |> Module.split()
     |> List.last()
     |> Macro.underscore()
-    |> String.to_atom()
+    |> String.to_existing_atom()
 
     :"#{action}_#{type}"
   end
@@ -518,7 +518,7 @@ defmodule CGraph.Permissions do
   end
 
   defp resource_key(user_id, %{__struct__: struct, id: id}) do
-    type = struct |> Module.split() |> List.last() |> Macro.underscore() |> String.to_atom()
+    type = struct |> Module.split() |> List.last() |> Macro.underscore() |> String.to_existing_atom()
     {user_id, type, id}
   end
 

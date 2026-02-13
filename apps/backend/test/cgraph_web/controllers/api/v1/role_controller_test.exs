@@ -18,7 +18,7 @@ defmodule CgraphWeb.API.V1.RoleControllerTest do
       assert %{"data" => roles} = json_response(conn, 200)
       assert is_list(roles)
       # Should have at least the default @everyone role
-      assert length(roles) >= 1
+      assert roles != []
     end
 
     test "requires authentication", %{group: group} do

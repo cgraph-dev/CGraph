@@ -442,7 +442,7 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
   defp urgency_to_string(:high), do: "high"
 
   defp get_key(keys, key) when is_map(keys) do
-    value = Map.get(keys, key) || Map.get(keys, String.to_atom(key))
+    value = Map.get(keys, key) || Map.get(keys, String.to_existing_atom(key))
     if value, do: {:ok, value}, else: {:error, {:missing_key, key}}
   end
 

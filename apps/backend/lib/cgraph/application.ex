@@ -213,7 +213,7 @@ defmodule CGraph.Application do
         end}
       end)
 
-      if length(items) > 0 do
+      if items != [] do
         CGraph.Cache.warm_up(items, concurrency: 10)
         Logger.info("application_user_cache_warmed", count: length(items))
       end

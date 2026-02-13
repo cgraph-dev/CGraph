@@ -750,7 +750,7 @@ defmodule CGraph.Crypto.E2EE do
 
   defp get_field(signed_prekey, keys, str_keys, fallback_atom) when is_map(signed_prekey) do
     Enum.find_value(str_keys, fn k -> Map.get(signed_prekey, k) end) ||
-    Map.get(signed_prekey, hd(str_keys) |> String.to_atom()) ||
+    Map.get(signed_prekey, hd(str_keys) |> String.to_existing_atom()) ||
     keys[fallback_atom]
   end
   defp get_field(_signed_prekey, keys, _str_keys, fallback_atom) do

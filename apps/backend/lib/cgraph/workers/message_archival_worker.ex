@@ -81,23 +81,24 @@ defmodule CGraph.Workers.MessageArchivalWorker do
   defp archive_in_batches(cutoff, batch_size, total) do
     batches = ceil(total / batch_size)
 
-    Enum.reduce_while(1..batches, 0, fn batch_num, archived_count ->
-      case archive_batch(cutoff, batch_size) do
-        {:ok, count} ->
-          new_total = archived_count + count
-          Logger.info("archival_batch_completed", batch: batch_num, total_batches: batches, batch_count: count, archived: new_total, total: total)
+    _archived =
+      Enum.reduce_while(1..batches, 0, fn batch_num, archived_count ->
+        case archive_batch(cutoff, batch_size) do
+          {:ok, count} ->
+            new_total = archived_count + count
+            Logger.info("archival_batch_completed", batch: batch_num, total_batches: batches, batch_count: count, archived: new_total, total: total)
 
-          if count < batch_size do
-            {:halt, new_total}
-          else
-            {:cont, new_total}
-          end
+            if count < batch_size do
+              {:halt, new_total}
+            else
+              {:cont, new_total}
+            end
 
-        {:error, reason} ->
-          Logger.error("archival_batch_failed", batch: batch_num, reason: inspect(reason))
-          {:halt, archived_count}
-      end
-    end)
+          {:error, reason} ->
+            Logger.error("archival_batch_failed", batch: batch_num, reason: inspect(reason))
+            {:halt, archived_count}
+        end
+      end)
 
     :ok
   end

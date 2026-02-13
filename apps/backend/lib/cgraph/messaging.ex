@@ -319,7 +319,7 @@ defmodule CGraph.Messaging do
         )
         |> Repo.all()
 
-      if length(recipient_ids) > 0 do
+      if recipient_ids != [] do
         CGraph.Messaging.DeliveryTracking.track_sent(message, recipient_ids)
       end
     rescue

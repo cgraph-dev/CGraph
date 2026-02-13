@@ -425,7 +425,7 @@ defmodule CGraphWeb.API.V1.UserController do
       "border_id", "animation", "color_primary", "color_secondary",
       "particle_effect", "glow_intensity", "config"
     ])
-    |> Map.new(fn {k, v} -> {String.to_atom(k), v} end)
+    |> Map.new(fn {k, v} -> {String.to_existing_atom(k), v} end)
     |> Map.put(:avatar_border_equipped_at, DateTime.utc_now())
 
     # Convert snake_case API params to schema field names

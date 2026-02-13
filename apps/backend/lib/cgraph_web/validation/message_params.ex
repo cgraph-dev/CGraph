@@ -155,7 +155,7 @@ defmodule CGraphWeb.Validation.MessageParams do
 
       invalid_keys = Map.keys(preview) -- allowed_keys
 
-      if length(invalid_keys) > 0 do
+      if invalid_keys != [] do
         add_error(changeset, :link_preview, "contains invalid keys: #{Enum.join(invalid_keys, ", ")}")
       else
         changeset

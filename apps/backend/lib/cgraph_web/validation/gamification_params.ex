@@ -117,7 +117,7 @@ defmodule CGraphWeb.Validation.GamificationParams do
           end
         end)
 
-        if length(invalid) > 0 do
+        if invalid != [] do
           add_error(changeset, :badge_ids, "contains invalid UUIDs")
         else
           # Store validated badge_ids in changeset for return

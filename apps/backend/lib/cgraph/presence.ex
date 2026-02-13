@@ -891,7 +891,7 @@ defmodule CGraph.Presence do
     fields
     |> Enum.chunk_every(2)
     |> Enum.reduce(%{}, fn
-      [key, value], acc -> Map.put(acc, String.to_atom(key), value)
+      [key, value], acc -> Map.put(acc, String.to_existing_atom(key), value)
       _, acc -> acc
     end)
   end

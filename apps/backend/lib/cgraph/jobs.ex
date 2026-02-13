@@ -1162,7 +1162,7 @@ defmodule CGraph.Jobs do
 
     # Handle workflow step completion
     if workflow_id = job.meta["workflow_id"] do
-      step_id = String.to_atom(job.meta["step_id"])
+      step_id = String.to_existing_atom(job.meta["step_id"])
       send(self(), {:workflow_step_completed, workflow_id, step_id, job.args})
     end
 
@@ -1178,7 +1178,7 @@ defmodule CGraph.Jobs do
 
     # Handle workflow step failure
     if workflow_id = job.meta["workflow_id"] do
-      step_id = String.to_atom(job.meta["step_id"])
+      step_id = String.to_existing_atom(job.meta["step_id"])
       send(self(), {:workflow_step_failed, workflow_id, step_id, error})
     end
 

@@ -173,7 +173,7 @@ defmodule CGraph.Forums.FeedsTest do
       {posts, _meta} = Feeds.list_popular_feed()
       
       # All posts should be from last 24 hours
-      if length(posts) > 0 do
+      if posts != [] do
         twenty_four_hours_ago = DateTime.add(DateTime.utc_now(), -24, :hour)
         assert Enum.all?(posts, fn post ->
           DateTime.compare(post.inserted_at, twenty_four_hours_ago) == :gt

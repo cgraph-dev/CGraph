@@ -171,7 +171,7 @@ defmodule CGraphWeb.Validation do
             end
           end)
 
-          if length(invalid) > 0 do
+          if invalid != [] do
             [{field, "contains invalid UUIDs"}]
           else
             []

@@ -214,7 +214,7 @@ defmodule CGraphWeb.UserChannel do
       entries = CGraph.Redis.command(["ZRANGEBYSCORE", key, to_string(last_seq + 1), "+inf"])
 
       case entries do
-        {:ok, events} when is_list(events) and length(events) > 0 ->
+        {:ok, events} when is_list(events) and events != [] ->
           require Logger
           Logger.info("session_resumption_replay",
             event_count: length(events),
