@@ -96,6 +96,7 @@ defmodule CGraph.Moderation do
   alias CGraph.Moderation.ReviewAction
   alias CGraph.Moderation.UserRestriction
   alias CGraph.Repo
+  alias CGraph.Workers.CriticalAlertDispatcher
 
   require Logger
 
@@ -288,7 +289,7 @@ defmodule CGraph.Moderation do
     )
 
     # Queue background job for additional notification channels (email, SMS, etc.)
-    CGraph.Workers.CriticalAlertDispatcher.enqueue(staff_notification)
+    CriticalAlertDispatcher.enqueue(staff_notification)
   rescue
     e ->
       Logger.error("failed_to_alert_on_call_staff", e: inspect(e))

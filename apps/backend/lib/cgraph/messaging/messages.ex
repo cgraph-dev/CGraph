@@ -10,7 +10,7 @@ defmodule CGraph.Messaging.Messages do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Messaging.{Conversation, Message}
+  alias CGraph.Messaging.{Conversation, Conversations, Message}
   alias CGraph.Repo
 
   @doc """
@@ -68,7 +68,7 @@ defmodule CGraph.Messaging.Messages do
   @spec get_user_message(map(), String.t()) :: {:ok, Message.t()} | {:error, atom()}
   def get_user_message(user, message_id) do
     with {:ok, message} <- get_message(message_id),
-         {:ok, _conversation} <- CGraph.Messaging.Conversations.get_user_conversation(user, message.conversation_id) do
+         {:ok, _conversation} <- Conversations.get_user_conversation(user, message.conversation_id) do
       {:ok, message}
     end
   end

@@ -20,6 +20,7 @@ defmodule CGraphWeb.HealthController do
 
   alias CGraph.Repo
   alias CGraph.Repo.Healthcheck
+  alias CGraph.Search.Engine
 
   @doc """
   Basic liveness check - returns OK if the service is running.
@@ -173,9 +174,9 @@ defmodule CGraphWeb.HealthController do
   end
 
   defp check_search do
-    case CGraph.Search.Engine.get_backend() do
+    case Engine.get_backend() do
       :meilisearch ->
-        if CGraph.Search.Engine.healthy?(), do: "ok", else: "degraded"
+        if Engine.healthy?(), do: "ok", else: "degraded"
       :postgres ->
         "postgres_fallback"
     end

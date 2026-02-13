@@ -7,6 +7,7 @@ defmodule CGraph.Accounts.Profile do
 
   import Ecto.Query, warn: false
 
+  alias CGraph.Accounts.MemberDirectory
   alias CGraph.Accounts.User
   alias CGraph.Repo
 
@@ -14,7 +15,7 @@ defmodule CGraph.Accounts.Profile do
   Get a user's profile.
   """
   def get_profile(user_id, viewer) do
-    CGraph.Accounts.MemberDirectory.get_member_profile(user_id, viewer)
+    MemberDirectory.get_member_profile(user_id, viewer)
   end
 
   @doc """

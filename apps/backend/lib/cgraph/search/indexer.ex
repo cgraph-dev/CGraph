@@ -37,6 +37,7 @@ defmodule CGraph.Search.Indexer do
   """
 
   alias CGraph.Search.Engine
+  alias CGraph.Workers.SearchIndexWorker
 
   require Logger
 
@@ -54,7 +55,7 @@ defmodule CGraph.Search.Indexer do
       "index" => to_string(index_name),
       "document" => prepare_document(index_name, document)
     }
-    |> CGraph.Workers.SearchIndexWorker.new()
+    |> SearchIndexWorker.new()
     |> Oban.insert()
   end
 
@@ -69,7 +70,7 @@ defmodule CGraph.Search.Indexer do
       "index" => to_string(index_name),
       "documents" => prepared
     }
-    |> CGraph.Workers.SearchIndexWorker.new()
+    |> SearchIndexWorker.new()
     |> Oban.insert()
   end
 
@@ -82,7 +83,7 @@ defmodule CGraph.Search.Indexer do
       "index" => to_string(index_name),
       "document_id" => to_string(document_id)
     }
-    |> CGraph.Workers.SearchIndexWorker.new()
+    |> SearchIndexWorker.new()
     |> Oban.insert()
   end
 

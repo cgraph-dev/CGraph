@@ -12,6 +12,8 @@ defmodule CGraph.Workers.NotificationWorker do
 
   require Logger
 
+  alias CGraph.Notifications.PushService
+
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) do
     user_id = args["user_id"]
@@ -41,7 +43,7 @@ defmodule CGraph.Workers.NotificationWorker do
   defp send_push_notification(user_id, title, body, data) do
     notification = %{title: title, body: body, data: data}
 
-    case CGraph.Notifications.PushService.send_notification_to_user(
+    case PushService.send_notification_to_user(
            user_id,
            notification
          ) do

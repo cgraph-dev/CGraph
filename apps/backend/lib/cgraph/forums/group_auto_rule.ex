@@ -23,6 +23,8 @@ defmodule CGraph.Forums.GroupAutoRule do
   import Ecto.Changeset
   import Ecto.Query
 
+  alias CGraph.Forums.MemberSecondaryGroup
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   @timestamps_opts [type: :utc_datetime_usec]
@@ -150,14 +152,19 @@ defmodule CGraph.Forums.GroupAutoRule do
     end
   end
 
-  defp check_subscription_criteria(criteria, _member) do
-    # This would need integration with subscription system
-    # Placeholder - always true for now
+  @tier_hierarchy %{"free" => 0, "basic" => 1, "premium" => 2, "premium_plus" => 3}
+
+  defp check_subscription_criteria(criteria, member) do
     case Map.get(criteria, "subscription_tier") do
       nil -> true
-      _tier -> true  # TODO: Check actual subscription
+      required_tier ->
+        # Check if member's subscription meets the required tier
+        user_tier = member.user.subscription_tier || "free"
+        tier_rank(user_tier) >= tier_rank(required_tier)
     end
   end
+
+  defp tier_rank(tier), do: Map.get(@tier_hierarchy, tier, 0)
 
   defp check_custom_criteria(_criteria, _member) do
     # Custom criteria would be evaluated by a callback
@@ -218,13 +225,13 @@ defmodule CGraph.Forums.GroupAutoRule do
       "secondary" ->
         # Add as secondary group (if not already assigned)
         existing =
-          CGraph.Forums.MemberSecondaryGroup.has_group_query(member.id, assignment.group_id)
+          MemberSecondaryGroup.has_group_query(member.id, assignment.group_id)
           |> repo.one()
 
         if existing do
           {:ok, :already_assigned}
         else
-          CGraph.Forums.MemberSecondaryGroup.add_group(member.id, assignment.group_id,
+          MemberSecondaryGroup.add_group(member.id, assignment.group_id,
             reason: "Auto-assigned by rule: #{assignment.rule.name}"
           )
           |> repo.insert()

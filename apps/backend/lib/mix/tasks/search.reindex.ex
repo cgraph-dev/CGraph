@@ -40,6 +40,8 @@ defmodule Mix.Tasks.Search.Reindex do
 
   use Mix.Task
 
+  alias CGraph.Search.{Engine, Indexer}
+
   @shortdoc "Reindex documents in Meilisearch"
 
   @valid_indexes ~w(users posts groups messages)
@@ -71,15 +73,15 @@ defmodule Mix.Tasks.Search.Reindex do
   defp health_check do
     IO.puts("\n=== Meilisearch Health Check ===\n")
 
-    backend = CGraph.Search.Engine.get_backend()
+    backend = Engine.get_backend()
     IO.puts("  Backend: #{backend}")
 
-    config = Application.get_env(:cgraph, CGraph.Search.Engine, [])
+    config = Application.get_env(:cgraph, Engine, [])
     url = Keyword.get(config, :meilisearch_url, "http://localhost:7700")
     IO.puts("  URL: #{url}")
 
     if backend == :meilisearch do
-      case CGraph.Search.Engine.healthy?() do
+      case Engine.healthy?() do
         true -> IO.puts("  Status: ✓ Healthy\n")
         false -> IO.puts("  Status: ✗ Unreachable\n")
       end
@@ -91,7 +93,7 @@ defmodule Mix.Tasks.Search.Reindex do
   defp show_stats do
     IO.puts("\n=== Meilisearch Statistics ===\n")
 
-    case CGraph.Search.Engine.stats() do
+    case Engine.stats() do
       {:ok, stats} ->
         IO.puts("  #{inspect(stats, pretty: true)}\n")
 
@@ -103,9 +105,9 @@ defmodule Mix.Tasks.Search.Reindex do
   defp setup_indexes do
     IO.puts("\n=== Setting Up Meilisearch Indexes ===\n")
 
-    case CGraph.Search.Engine.get_backend() do
+    case Engine.get_backend() do
       :meilisearch ->
-        CGraph.Search.Engine.setup_indexes()
+        Engine.setup_indexes()
         IO.puts("  ✓ Indexes configured successfully\n")
 
       :postgres ->
@@ -116,7 +118,7 @@ defmodule Mix.Tasks.Search.Reindex do
   defp reindex(opts) do
     batch_size = Keyword.get(opts, :batch_size, 1000)
 
-    backend = CGraph.Search.Engine.get_backend()
+    backend = Engine.get_backend()
     if backend != :meilisearch do
       IO.puts("\n  Warning: Backend is :#{backend} (set MEILISEARCH_URL to enable Meilisearch)")
       IO.puts("  Reindex will send documents but they won't reach a search engine.\n")
@@ -124,7 +126,7 @@ defmodule Mix.Tasks.Search.Reindex do
 
     # Set up indexes first
     IO.puts("\n=== Setting up indexes ===\n")
-    CGraph.Search.Engine.setup_indexes()
+    Engine.setup_indexes()
     IO.puts("  ✓ Index settings configured\n")
 
     case opts[:index] do
@@ -150,7 +152,7 @@ defmodule Mix.Tasks.Search.Reindex do
     IO.puts("  Reindexing :#{index} (batch_size: #{batch_size})...")
     start = System.monotonic_time(:millisecond)
 
-    case CGraph.Search.Indexer.reindex_all(index, batch_size: batch_size) do
+    case Indexer.reindex_all(index, batch_size: batch_size) do
       :ok ->
         duration = System.monotonic_time(:millisecond) - start
         IO.puts("  ✓ :#{index} reindexed in #{duration}ms\n")

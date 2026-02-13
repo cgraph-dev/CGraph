@@ -18,9 +18,11 @@ defmodule CGraph.Forums do
   alias CGraph.Forums.ForumTheme, warn: false
   alias CGraph.Forums.Poll, warn: false
   alias CGraph.Forums.ThreadAttachment, warn: false
+  alias CGraph.Gamification.Leaderboard
   alias CGraph.Pagination
   alias CGraph.ReadRepo
   alias CGraph.Repo
+  alias CGraph.Search.Indexer
 
   # ============================================================================
   # Submodule Delegations (Phase 6 Architecture Refactor)
@@ -840,7 +842,7 @@ defmodule CGraph.Forums do
 
         # Index post in MeiliSearch for full-text search
         try do
-          CGraph.Search.Indexer.index_async(:posts, post)
+          Indexer.index_async(:posts, post)
         rescue
           _ -> :ok  # Don't fail post creation if search indexing fails
         end
@@ -877,7 +879,7 @@ defmodule CGraph.Forums do
     case result do
       {:ok, deleted_post} ->
         try do
-          CGraph.Search.Indexer.delete_async(:posts, deleted_post.id)
+          Indexer.delete_async(:posts, deleted_post.id)
         rescue
           _ -> :ok
         end
@@ -928,7 +930,7 @@ defmodule CGraph.Forums do
         case result do
           {:ok, deleted_post} ->
             try do
-              CGraph.Search.Indexer.delete_async(:posts, deleted_post.id)
+              Indexer.delete_async(:posts, deleted_post.id)
             rescue
               _ -> :ok
             end
@@ -1041,7 +1043,7 @@ defmodule CGraph.Forums do
           |> Repo.update_all(inc: [karma: karma_change])
 
           # Sync Redis leaderboard karma score
-          CGraph.Gamification.Leaderboard.increment_score(post.author_id, "karma", karma_change)
+          Leaderboard.increment_score(post.author_id, "karma", karma_change)
         end
 
         {:ok, vote}
@@ -2136,7 +2138,7 @@ defmodule CGraph.Forums do
 
           # Index thread in MeiliSearch for full-text search
           try do
-            CGraph.Search.Indexer.index_async(:threads, thread)
+            Indexer.index_async(:threads, thread)
           rescue
             _ -> :ok  # Don't fail thread creation if search indexing fails
           end

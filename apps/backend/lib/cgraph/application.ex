@@ -10,6 +10,10 @@ defmodule CGraph.Application do
   """
   use Application
 
+  alias CGraph.Search.Engine
+  alias CGraph.Subscriptions.TierLimits
+  alias CGraph.Telemetry.OpenTelemetry
+
   @impl true
   def start(_type, _args) do
     require Logger
@@ -46,7 +50,7 @@ defmodule CGraph.Application do
       # === SUPERVISION HIERARCHY ===
 
       # 0. OpenTelemetry distributed tracing (before other services)
-      {Task, fn -> CGraph.Telemetry.OpenTelemetry.setup() end},
+      {Task, fn -> OpenTelemetry.setup() end},
 
       # 1. Caching Layer
       CGraph.CacheSupervisor,
@@ -133,7 +137,7 @@ defmodule CGraph.Application do
     spawn(fn ->
       Process.sleep(1000)  # Wait for Repo to fully initialize
       try do
-        CGraph.Subscriptions.TierLimits.init_cache()
+        TierLimits.init_cache()
         Logger.info("[Application] Tier limits cache initialized")
       rescue
         e -> Logger.warning("application_tier_cache_init_failed", error: inspect(e))
@@ -171,18 +175,18 @@ defmodule CGraph.Application do
       Process.sleep(3000)  # Wait for Finch and other services to initialize
 
       try do
-        backend = CGraph.Search.Engine.get_backend()
+        backend = Engine.get_backend()
         Logger.info("[Application] Search backend: #{backend}")
 
         if backend == :meilisearch do
-          case CGraph.Search.Engine.healthy?() do
+          case Engine.healthy?() do
             true ->
               Logger.info("[Application] Meilisearch is healthy, setting up indexes...")
-              CGraph.Search.Engine.setup_indexes()
+              Engine.setup_indexes()
               Logger.info("[Application] Meilisearch indexes configured successfully")
 
             false ->
-              Logger.warning("[Application] Meilisearch is not reachable at #{Application.get_env(:cgraph, CGraph.Search.Engine, [])[:meilisearch_url] || "http://localhost:7700"} — search will use PostgreSQL fallback")
+              Logger.warning("[Application] Meilisearch is not reachable at #{Application.get_env(:cgraph, Engine, [])[:meilisearch_url] || "http://localhost:7700"} — search will use PostgreSQL fallback")
           end
         else
           Logger.info("[Application] Search using PostgreSQL backend (MEILISEARCH_URL not set)")

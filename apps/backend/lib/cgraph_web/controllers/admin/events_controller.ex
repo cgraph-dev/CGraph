@@ -25,6 +25,8 @@ defmodule CGraphWeb.Admin.EventsController do
   alias CGraph.Gamification.Events
   # SeasonalEvent, EventReward, BattlePassTier, EventQuest used via Events module
   alias CGraph.Accounts.AuditLog
+  alias CGraph.Workers.EventExporter
+  alias CGraph.Workers.EventRewardDistributor
 
   plug :require_admin
   plug :rate_limit, max_requests: 100, window_ms: 60_000
@@ -216,7 +218,7 @@ defmodule CGraphWeb.Admin.EventsController do
          {:ok, ended_event} <- Events.end_event(event) do
 
       # Trigger reward distribution in background
-      CGraph.Workers.EventRewardDistributor.enqueue(%{event_id: event.id})
+      EventRewardDistributor.enqueue(%{event_id: event.id})
 
       CGraphWeb.Endpoint.broadcast!("events:global", "event_ended", %{
         event_id: event.id
@@ -381,7 +383,7 @@ defmodule CGraphWeb.Admin.EventsController do
     admin = conn.assigns.current_admin
 
     # Queue export job for large datasets
-    {:ok, job} = CGraph.Workers.EventExporter.enqueue(%{
+    {:ok, job} = EventExporter.enqueue(%{
       event_id: event_id,
       format: format,
       requested_by: admin.id

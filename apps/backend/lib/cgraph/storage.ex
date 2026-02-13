@@ -247,8 +247,13 @@ defmodule CGraph.Storage do
   Currently returns 0 as a placeholder.
   """
   @spec get_user_usage(String.t()) :: integer()
-  def get_user_usage(_user_id) do
-    # TODO: Track user file uploads in database and sum their sizes
-    0
+  def get_user_usage(user_id) do
+    # Sum file sizes from user's uploads
+    import Ecto.Query
+    query = from u in "uploads",
+      where: u.user_id == ^user_id,
+      select: coalesce(sum(u.file_size), 0)
+
+    CGraph.Repo.one(query) || 0
   end
 end

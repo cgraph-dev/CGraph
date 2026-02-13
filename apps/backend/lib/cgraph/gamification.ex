@@ -8,7 +8,21 @@ defmodule CGraph.Gamification do
 
   import Ecto.Query, warn: false
   alias CGraph.Accounts.User
-  alias CGraph.Gamification.{Achievement, CoinTransaction, Quest, ShopItem, Title, UserAchievement, UserPurchase, UserQuest, UserTitle, XpTransaction}
+
+  alias CGraph.Gamification.{
+    Achievement,
+    CoinTransaction,
+    Leaderboard,
+    Quest,
+    ShopItem,
+    Title,
+    UserAchievement,
+    UserPurchase,
+    UserQuest,
+    UserTitle,
+    XpTransaction
+  }
+
   alias CGraph.ReadRepo
   alias CGraph.Repo
 
@@ -107,7 +121,7 @@ defmodule CGraph.Gamification do
     |> case do
       {:ok, {updated_user, level_up}} ->
         # Sync Redis leaderboard scores (fire-and-forget, non-blocking)
-        CGraph.Gamification.Leaderboard.sync_scores(updated_user, [:xp, :level])
+        Leaderboard.sync_scores(updated_user, [:xp, :level])
         {:ok, {updated_user, level_up}}
 
       error ->
@@ -938,7 +952,7 @@ defmodule CGraph.Gamification do
       _ ->
         redis_offset = rank_start - 1
 
-        case CGraph.Gamification.Leaderboard.get_top(category, limit + 1, redis_offset) do
+        case Leaderboard.get_top(category, limit + 1, redis_offset) do
           {:ok, entries} when entries != [] ->
             finalize_leaderboard(entries, limit, rank_start)
 

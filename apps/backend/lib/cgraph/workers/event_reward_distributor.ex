@@ -12,6 +12,9 @@ defmodule CGraph.Workers.EventRewardDistributor do
 
   require Logger
 
+  alias CGraph.Gamification.Events
+  alias CGraph.Workers.NotificationWorker
+
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"event_id" => event_id}}) do
     Logger.info("event_reward_processing", event_id: event_id)
@@ -60,7 +63,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
   # ============================================================================
 
   defp get_event(event_id) do
-    CGraph.Gamification.Events.get_event(event_id)
+    Events.get_event(event_id)
   end
 
   defp validate_event_ended(event) do
@@ -96,7 +99,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
 
   defp calculate_final_standings(event_id) do
     # Get leaderboard with top 100 participants
-    case CGraph.Gamification.Events.get_leaderboard(event_id, limit: 100) do
+    case Events.get_leaderboard(event_id, limit: 100) do
       {:ok, {entries, _meta}} -> {:ok, entries}
       error -> error
     end
@@ -226,9 +229,16 @@ defmodule CGraph.Workers.EventRewardDistributor do
           CGraph.Gamification.unlock_achievement_by_slug(user.id, achievement_id)
 
         %{"type" => "cosmetic", "item_id" => item_id} ->
-          # Grant cosmetic item (avatar border, badge, etc.)
           Logger.info("event_granting_cosmetic", item_id: item_id, user_id: user.id)
-          # TODO: Implement cosmetic granting when customization system is ready
+          case CGraph.Gamification.purchase_shop_item(user, item_id, 1) do
+            {:ok, _updated_user} ->
+              Logger.info("event_cosmetic_granted", item_id: item_id, user_id: user.id)
+            {:error, :already_owned} ->
+              Logger.info("event_cosmetic_already_owned", item_id: item_id, user_id: user.id)
+            {:error, reason} ->
+              Logger.warning("event_cosmetic_grant_failed",
+                item_id: item_id, user_id: user.id, reason: inspect(reason))
+          end
 
         _ ->
           Logger.warning("event_unknown_reward_type", reward: inspect(reward))
@@ -249,7 +259,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
 
     Enum.each(participants, fn progress ->
       # Queue notification worker
-      CGraph.Workers.NotificationWorker.new(%{
+      NotificationWorker.new(%{
         user_id: progress.user_id,
         type: "event_ended",
         title: "Event Ended: #{event.name}",

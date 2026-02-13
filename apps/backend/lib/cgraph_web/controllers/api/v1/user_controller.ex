@@ -14,6 +14,7 @@ defmodule CGraphWeb.API.V1.UserController do
   import CGraphWeb.Helpers.ParamParser
 
   alias CGraph.Accounts
+  alias CGraph.Accounts.Friends
   alias CGraph.Accounts.User
   alias CGraph.Presence
 
@@ -167,7 +168,7 @@ defmodule CGraphWeb.API.V1.UserController do
     with {:ok, user} <- Accounts.get_user(id) do
       # Check if the profile should be private for this viewer
       is_own_profile = current_user && current_user.id == user.id
-      is_friend = current_user && CGraph.Accounts.Friends.are_friends?(current_user.id, user.id)
+      is_friend = current_user && Friends.are_friends?(current_user.id, user.id)
       show_full_profile = is_own_profile || is_friend || !user.is_profile_private
 
       # Get friendship status for the viewing user
@@ -208,7 +209,7 @@ defmodule CGraphWeb.API.V1.UserController do
     with {:ok, user} <- Accounts.get_user_by_username(username) do
       # Check if the profile should be private for this viewer
       is_own_profile = current_user && current_user.id == user.id
-      is_friend = current_user && CGraph.Accounts.Friends.are_friends?(current_user.id, user.id)
+      is_friend = current_user && Friends.are_friends?(current_user.id, user.id)
       show_full_profile = is_own_profile || is_friend || !user.is_profile_private
 
       if show_full_profile do

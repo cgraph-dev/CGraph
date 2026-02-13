@@ -10,6 +10,8 @@ defmodule CGraphWeb.Api.PaymentController do
   """
 
   use CGraphWeb, :controller
+
+  alias CGraph.Guardian
   alias CGraph.Subscriptions
 
   action_fallback CGraphWeb.FallbackController
@@ -25,7 +27,7 @@ defmodule CGraphWeb.Api.PaymentController do
     - `checkout_url`: URL to redirect user to Stripe Checkout
   """
   def create_checkout(conn, params) do
-    user = CGraph.Guardian.Plug.current_resource(conn)
+    user = Guardian.Plug.current_resource(conn)
     tier = Map.get(params, "tier", "premium")
     yearly = Map.get(params, "yearly", false)
 
@@ -48,7 +50,7 @@ defmodule CGraphWeb.Api.PaymentController do
     - `portal_url`: URL to redirect user to Stripe Customer Portal
   """
   def create_portal(conn, _params) do
-    user = CGraph.Guardian.Plug.current_resource(conn)
+    user = Guardian.Plug.current_resource(conn)
 
     case Subscriptions.create_portal_session(user) do
       {:ok, url} ->
@@ -76,7 +78,7 @@ defmodule CGraphWeb.Api.PaymentController do
     - `expiring_soon`: Whether subscription expires within 7 days
   """
   def billing_status(conn, _params) do
-    user = CGraph.Guardian.Plug.current_resource(conn)
+    user = Guardian.Plug.current_resource(conn)
 
     json(conn, %{
       tier: Subscriptions.get_tier(user),

@@ -15,6 +15,7 @@ defmodule CGraph.Referrals do
   alias CGraph.Accounts.User
   alias CGraph.Referrals.{Referral, ReferralCode, ReferralReward, RewardTier}
   alias CGraph.Repo
+  alias Ecto.Adapters.SQL
 
   # ========================================
   # REFERRAL CODE
@@ -257,7 +258,7 @@ defmodule CGraph.Referrals do
     ) ranked WHERE referrer_id = $1
     """
 
-    case Ecto.Adapters.SQL.query(Repo, query, [user_id]) do
+    case SQL.query(Repo, query, [user_id]) do
       {:ok, %{rows: [[rank]]}} -> rank
       _ -> nil
     end

@@ -161,10 +161,11 @@ defmodule CGraphWeb.API.V1.TierController do
         }
 
       "use_ai_moderation" ->
+        current_usage = get_ai_moderation_usage(user.id)
         %{
           allowed: TierLimits.ai_moderation_available?(user),
           limit: TierLimits.get_effective_limit(user, :ai_moderation_requests_per_day),
-          current: 0  # TODO: implement
+          current: current_usage
         }
 
       _ ->
@@ -215,6 +216,15 @@ defmodule CGraphWeb.API.V1.TierController do
         change: to_string(change)
       }
     end)
+  end
+
+  defp get_ai_moderation_usage(user_id) do
+    key = "ai_moderation:#{user_id}:#{Date.utc_today()}"
+    case CGraph.Redis.command(["GET", key]) do
+      {:ok, nil} -> 0
+      {:ok, count} -> String.to_integer(count)
+      {:error, _} -> 0
+    end
   end
 
   defp format_limit_value(_field, nil), do: "Unlimited"

@@ -12,6 +12,7 @@ defmodule CGraphWeb.API.V1.AccountDeletionController do
 
   alias CGraph.Accounts
   alias CGraph.Repo
+  alias CGraph.Workers.HardDeleteUser
 
   action_fallback CGraphWeb.FallbackController
 
@@ -90,7 +91,7 @@ defmodule CGraphWeb.API.V1.AccountDeletionController do
     scheduled_at = DateTime.add(DateTime.utc_now(), @grace_period_days * 86_400, :second)
 
     %{user_id: user_id}
-    |> CGraph.Workers.HardDeleteUser.new(scheduled_at: scheduled_at)
+    |> HardDeleteUser.new(scheduled_at: scheduled_at)
     |> Oban.insert()
   end
 end

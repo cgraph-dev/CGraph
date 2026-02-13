@@ -78,6 +78,8 @@ defmodule CGraph.Presence do
 
   require Logger
 
+  alias CGraph.Presence.Sampled
+
   @typing_timeout_ms 5_000
   @last_seen_ttl_ms 604_800_000
   # Idle timeout is 5 minutes (300_000ms) - used for auto-away detection
@@ -270,9 +272,9 @@ defmodule CGraph.Presence do
   """
   def list_room_users(room_id) do
     # Try sampled presence first for large channels
-    case CGraph.Presence.Sampled.get_summary(room_id) do
+    case Sampled.get_summary(room_id) do
       {:ok, %{online: online}} when online > 100 ->
-        case CGraph.Presence.Sampled.list_online(room_id) do
+        case Sampled.list_online(room_id) do
           {:ok, users} -> users
           _error -> list(room_topic(room_id)) |> transform_presence_list()
         end
@@ -297,7 +299,7 @@ defmodule CGraph.Presence do
   Falls back to CRDT list for small channels.
   """
   def count_room_users(room_id) do
-    case CGraph.Presence.Sampled.approximate_count(room_id) do
+    case Sampled.approximate_count(room_id) do
       {:ok, count} when count > 0 -> count
       _fallback -> list(room_topic(room_id)) |> map_size()
     end
@@ -518,14 +520,14 @@ defmodule CGraph.Presence do
       Logger.debug("presence_room_joined", user_id: user_id, topic: topic)
       emit_telemetry(:join, user_id, %{topic: topic, metas: presence.metas})
       # Track in sampled presence for large-channel efficiency
-      CGraph.Presence.Sampled.track(room_id, user_id, %{})
+      Sampled.track(room_id, user_id, %{})
     end
 
     for {user_id, presence} <- leaves do
       Logger.debug("presence_room_left", user_id: user_id, topic: topic)
       record_last_seen(user_id)
       emit_telemetry(:leave, user_id, %{topic: topic, metas: presence.metas})
-      CGraph.Presence.Sampled.untrack(room_id, user_id)
+      Sampled.untrack(room_id, user_id)
     end
 
     {:ok, state}

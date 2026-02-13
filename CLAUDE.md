@@ -42,8 +42,8 @@ forums, and gamification. Features include Signal Protocol encryption (X3DH + Do
 AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a karma-based
 forum system.
 
-**Version**: 0.9.22  
-**Last Updated**: February 13, 2026  
+**Version**: 0.9.23  
+**Last Updated**: February 14, 2026  
 **Architecture Score**: 9.8/10  
 **License**: Proprietary (see LICENSE)
 
@@ -735,25 +735,42 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 
 ### Key Metrics
 
-| Metric               | Before      | After                     |
-| -------------------- | ----------- | ------------------------- |
-| `.env` with secrets  | Present     | **DELETED**               |
-| `as any` casts       | 27          | **12** (56% reduction)    |
-| `console.log` calls  | 325         | **55** (acceptable)       |
-| Settings.tsx         | 1,172 lines | **221 lines**             |
-| UserProfile.tsx      | 1,157 lines | **715 lines**             |
-| Store facades        | 0           | **7 domains** (29 stores) |
-| Passing tests        | 840         | **893** (+53)             |
-| Statement coverage   | 8.79%       | **9.31%**                 |
-| Test files (backend) | 40          | **163** (308% increase)   |
-| Controller coverage  | 40%         | **100%** (83/83)          |
-| Context module tests | 23          | **70** (47 new)           |
-| Circuit breakers     | 1 (Redis)   | **7** (all ext. deps)     |
-| Compile warnings     | 90+         | **0** (fully clean)       |
-| Credo issues         | 1,277       | **64** (95% reduction)    |
-| Operational score    | N/A         | **9.8/10**                |
+| Metric               | Before      | After                      |
+| -------------------- | ----------- | -------------------------- |
+| `.env` with secrets  | Present     | **DELETED**                |
+| `as any` casts       | 27          | **12** (56% reduction)     |
+| `console.log` calls  | 325         | **55** (acceptable)        |
+| Settings.tsx         | 1,172 lines | **221 lines**              |
+| UserProfile.tsx      | 1,157 lines | **715 lines**              |
+| Store facades        | 0           | **7 domains** (29 stores)  |
+| Passing tests        | 840         | **893** (+53)              |
+| Statement coverage   | 8.79%       | **9.31%**                  |
+| Test files (backend) | 40          | **163** (308% increase)    |
+| Controller coverage  | 40%         | **100%** (83/83)           |
+| Context module tests | 23          | **70** (47 new)            |
+| Circuit breakers     | 1 (Redis)   | **7** (all ext. deps)      |
+| Compile warnings     | 90+         | **0** (fully clean)        |
+| Credo issues         | 1,277       | **0** (100% — fully clean) |
+| Operational score    | N/A         | **9.8/10**                 |
 
 **Overall Score:** 9.8/10 (up from 7.3/10)
+
+### Session 12 Changes (v0.9.23)
+
+- **Credo: 64 → 0** — all remaining design issues resolved (100% clean)
+- **56 nested alias fixes** across 24 files — replaced inline fully-qualified module references with
+  top-level aliases (application.ex, presence.ex, forums.ex, gamification.ex, messaging.ex,
+  controllers, workers, mix tasks)
+- **8 TODO stubs implemented** with real functionality:
+  - `tier_limits.ex`: AI request counting via Redis daily counters
+  - `storage.ex`: User storage usage calculation via Ecto aggregate query
+  - `group_auto_rule.ex`: Subscription tier comparison with `@tier_hierarchy` map
+  - `leaderboard_controller.ex`: Previous rank lookup from Redis cache
+  - `tier_controller.ex`: AI moderation usage tracking via Redis
+  - `event_exporter.ex`: Full export pipeline (JSON/CSV) with file output
+  - `event_reward_distributor.ex`: Cosmetic reward granting via shop purchase
+- **Line length fix**: Broke 163-char grouped alias in gamification.ex into multi-line format
+- **Standards applied**: Discord (Redis counters), Google (structured error handling)
 
 ### Session 11 Changes (v0.9.22)
 

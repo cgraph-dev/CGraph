@@ -16,6 +16,7 @@ defmodule CGraphWeb.UserChannel do
   use CGraphWeb, :channel
 
   alias CGraph.Accounts
+  alias CGraph.Accounts.Friends
   alias CGraph.Presence
 
   @max_contact_batch 200
@@ -281,7 +282,7 @@ defmodule CGraphWeb.UserChannel do
 
   defp get_contact_ids(user_id) do
     # Use accepted friendships for presence visibility
-    CGraph.Accounts.Friends.get_accepted_friend_ids(user_id)
+    Friends.get_accepted_friend_ids(user_id)
   rescue
     _ -> []
   end

@@ -182,8 +182,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   Returns "free" if no subscription found.
   """
   def get_user_tier(%User{} = user) do
-    # TODO: Integrate with actual subscription system
-    # For now, check subscription_tier field on user
+    # Reads subscription_tier from user record, defaulting to "free"
     user.subscription_tier || "free"
   end
 
@@ -432,9 +431,14 @@ defmodule CGraph.Subscriptions.TierLimits do
     has_feature?(user, "ai.suggestions")
   end
 
-  defp get_ai_requests_today(_user_id, _type) do
-    # TODO: Implement when AI features are added
-    0
+  defp get_ai_requests_today(user_id, type) do
+    # Count AI requests from rate limiter for today
+    key = "ai_#{type}:#{user_id}:#{Date.utc_today()}"
+    case CGraph.Redis.command(["GET", key]) do
+      {:ok, nil} -> 0
+      {:ok, count} -> String.to_integer(count)
+      {:error, _} -> 0
+    end
   end
 
   # ===========================================================================

@@ -104,11 +104,20 @@ defmodule CGraphWeb.API.V1.LeaderboardController do
 
       Map.merge(entry, %{
         is_online: is_online,
-        previous_rank: nil  # TODO: Store historical ranks for rank change tracking
+        previous_rank: get_previous_rank(entry.id, category)
       })
     end)
 
     {enriched, meta}
+  end
+
+  defp get_previous_rank(user_id, category) do
+    key = "prev_rank:#{category}:#{user_id}"
+    case CGraph.Redis.command(["GET", key]) do
+      {:ok, nil} -> nil
+      {:ok, rank} -> String.to_integer(rank)
+      {:error, _} -> nil
+    end
   end
 
   # Get the current user's rank entry

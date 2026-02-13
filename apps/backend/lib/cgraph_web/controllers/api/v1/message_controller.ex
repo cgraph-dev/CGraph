@@ -6,6 +6,7 @@ defmodule CGraphWeb.API.V1.MessageController do
 
   import CGraphWeb.Helpers.ParamParser
 
+  alias CGraph.Crypto.E2EE
   alias CGraph.Messaging
   alias CGraphWeb.API.V1.MessageJSON
 
@@ -110,7 +111,7 @@ defmodule CGraphWeb.API.V1.MessageController do
 
   # Get sender's identity key for E2EE messages
   defp get_sender_identity_key(user_id) do
-    case CGraph.Crypto.E2EE.get_user_identity_key(user_id) do
+    case E2EE.get_user_identity_key(user_id) do
       {:ok, key} -> key.public_key |> Base.encode64()
       _ -> nil
     end

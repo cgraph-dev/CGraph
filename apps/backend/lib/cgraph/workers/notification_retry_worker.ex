@@ -86,7 +86,7 @@ defmodule CGraph.Workers.NotificationRetryWorker do
     # Check if the circuit breaker for this platform is open
     breaker_name = platform_to_breaker(platform)
 
-    case CGraph.Notifications.PushService.CircuitBreakers.status(breaker_name) do
+    case PushService.CircuitBreakers.status(breaker_name) do
       :ok ->
         # Circuit is closed — attempt delivery
         attempt_delivery(platform, token, notification_data, user_id, message_id)

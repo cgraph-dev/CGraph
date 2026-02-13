@@ -39,6 +39,7 @@ defmodule CGraph.Workers.CriticalAlertDispatcher do
   require Logger
 
   alias CGraph.{Accounts, Notifications}
+  alias CGraph.Workers.SendEmailNotification
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) do
@@ -85,7 +86,7 @@ defmodule CGraph.Workers.CriticalAlertDispatcher do
           template: "critical_alert",
           priority: :high
         }
-        |> CGraph.Workers.SendEmailNotification.new(priority: 0)
+        |> SendEmailNotification.new(priority: 0)
         |> Oban.insert()
       end)
 

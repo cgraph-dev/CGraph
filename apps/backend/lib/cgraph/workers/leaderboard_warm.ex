@@ -21,6 +21,8 @@ defmodule CGraph.Workers.LeaderboardWarm do
 
   require Logger
 
+  alias CGraph.Gamification.Leaderboard
+
   @categories ~w(xp level streak karma messages posts)
 
   @impl Oban.Worker
@@ -31,7 +33,7 @@ defmodule CGraph.Workers.LeaderboardWarm do
 
     Enum.each(categories, fn cat ->
       Logger.info("Warming leaderboard", category: cat)
-      CGraph.Gamification.Leaderboard.warm_from_db(cat, 2000)
+      Leaderboard.warm_from_db(cat, 2000)
       Logger.info("Leaderboard warm complete", category: cat)
     end)
 

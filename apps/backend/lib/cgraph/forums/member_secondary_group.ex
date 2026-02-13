@@ -21,6 +21,8 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
   import Ecto.Changeset
   import Ecto.Query
 
+  alias CGraph.Forums.ForumUserGroup
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   @timestamps_opts [type: :utc_datetime_usec]
@@ -163,7 +165,7 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
   def has_permission?(member, permission, repo) do
     group_ids = all_group_ids(member, repo)
 
-    from(g in CGraph.Forums.ForumUserGroup,
+    from(g in ForumUserGroup,
       where: g.id in ^group_ids,
       select: field(g, ^permission)
     )
@@ -179,13 +181,13 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
     group_ids = all_group_ids(member, repo)
 
     groups =
-      from(g in CGraph.Forums.ForumUserGroup,
+      from(g in ForumUserGroup,
         where: g.id in ^group_ids,
         order_by: [desc: g.permission_priority]
       )
       |> repo.all()
 
-    CGraph.Forums.ForumUserGroup.permission_fields()
+    ForumUserGroup.permission_fields()
     |> Enum.map(fn field ->
       value = Enum.any?(groups, fn g -> Map.get(g, field) == true end)
       {field, value}

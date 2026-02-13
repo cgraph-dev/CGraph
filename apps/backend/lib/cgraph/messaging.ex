@@ -18,9 +18,10 @@ defmodule CGraph.Messaging do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Messaging.{Conversation, ConversationParticipant, Message, Reaction, ReadReceipt}
+  alias CGraph.Messaging.{Conversation, ConversationParticipant, DeliveryTracking, Message, Reaction, ReadReceipt}
   alias CGraph.Messaging.Conversations
   alias CGraph.Repo
+  alias CGraph.Search.Indexer
 
   # ============================================================================
   # Conversations - Delegated to Conversations sub-context
@@ -293,7 +294,7 @@ defmodule CGraph.Messaging do
 
         # Index message in MeiliSearch for full-text search
         try do
-          CGraph.Search.Indexer.index_async(:messages, message)
+          Indexer.index_async(:messages, message)
         rescue
           _ -> :ok  # Don't fail message creation if search indexing fails
         end
@@ -319,7 +320,7 @@ defmodule CGraph.Messaging do
       |> Repo.all()
 
     if recipient_ids != [] do
-      CGraph.Messaging.DeliveryTracking.track_sent(message, recipient_ids)
+      DeliveryTracking.track_sent(message, recipient_ids)
     end
   rescue
     _ -> :ok  # Don't fail message creation if delivery tracking fails
