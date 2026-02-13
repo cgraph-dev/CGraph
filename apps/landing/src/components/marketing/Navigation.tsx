@@ -95,9 +95,9 @@ export default function Navigation({
               <a href="#security" className="gl-nav-unified__link">
                 Security
               </a>
-              <a href="#pricing" className="gl-nav-unified__link">
-                Pricing
-              </a>
+              <Link to="/about" className="gl-nav-unified__link">
+                About
+              </Link>
             </>
           ) : (
             <>
