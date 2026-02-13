@@ -10,7 +10,7 @@
 
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import { valueProps, WEB_APP_URL } from '../../data/landing-data';
+import { valueProps } from '../../data/landing-data';
 import type { ValuePropData } from '../../data/landing-data';
 import { StarBorder } from '../effects';
 
@@ -136,39 +136,6 @@ export default function ValueProposition(): React.JSX.Element {
           <span className="value-comparison__label value-comparison__label--us">CGraph</span>
           <span className="value-comparison__label">Others</span>
         </div>
-      </motion.div>
-
-      {/* Single CTA */}
-      <motion.div
-        className="value-cta"
-        initial={{ opacity: 0, scale: 0.95 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4, delay: 0.4 }}
-      >
-        <motion.a
-          href={`${WEB_APP_URL}/register`}
-          className="value-cta__btn"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-        >
-          Start for Free — No Credit Card Required
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M5 12h14" />
-            <path d="m12 5 7 7-7 7" />
-          </svg>
-        </motion.a>
       </motion.div>
     </section>
   );

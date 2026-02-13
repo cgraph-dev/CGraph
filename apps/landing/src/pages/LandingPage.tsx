@@ -79,6 +79,7 @@ const BADGE_COLORS: Record<string, string> = {
   emerald: '#10b981',
   purple: '#a855f7',
   cyan: '#22d3ee',
+  orange: '#f97316',
 };
 
 const SectionHeader = memo(function SectionHeader({
@@ -90,7 +91,7 @@ const SectionHeader = memo(function SectionHeader({
   description,
 }: {
   badge: string;
-  badgeVariant?: 'emerald' | 'purple' | 'cyan';
+  badgeVariant?: 'emerald' | 'purple' | 'cyan' | 'orange';
   title: string;
   titleAccent: string;
   titleAccentClass?: string;
@@ -568,7 +569,7 @@ export default function LandingPage() {
       <section ref={featuresRef} id="features" className="features zoom-section">
         <SectionHeader
           badge="Powerful Features"
-          badgeVariant="emerald"
+          badgeVariant="orange"
           title="Everything You"
           titleAccent="Need"
           titleAccentClass="title-fx--fire"

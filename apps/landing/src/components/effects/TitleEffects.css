@@ -27,8 +27,9 @@
   );
   background-size: 200% 100%;
   animation: fx-electric-shimmer 2s ease-in-out infinite;
-  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.5))
-          drop-shadow(0 0 20px rgba(16, 185, 129, 0.3));
+  animation: fx-electric-shimmer 2s ease-in-out infinite;
+  /* filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.5))
+          drop-shadow(0 0 20px rgba(16, 185, 129, 0.3)); */
 }
 
 .title-fx--electric::after {
@@ -62,8 +63,9 @@
   );
   background-size: 300% 100%;
   animation: fx-fire-blaze 3s ease-in-out infinite;
-  filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.5))
-          drop-shadow(0 0 24px rgba(245, 158, 11, 0.3));
+  animation: fx-fire-blaze 3s ease-in-out infinite;
+  /* filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.5))
+          drop-shadow(0 0 24px rgba(245, 158, 11, 0.3)); */
 }
 
 .title-fx--fire::after {
@@ -109,7 +111,8 @@
   );
   background-size: 300% 100%;
   animation: fx-air-flow 4s ease-in-out infinite;
-  filter: drop-shadow(0 0 6px rgba(167, 243, 208, 0.3));
+  animation: fx-air-flow 4s ease-in-out infinite;
+  /* filter: drop-shadow(0 0 6px rgba(167, 243, 208, 0.3)); */
 }
 
 .title-fx--air::after {
@@ -147,8 +150,9 @@
   );
   background-size: 200% 200%;
   animation: fx-shadow-shift 4s ease-in-out infinite;
-  filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.5))
-          drop-shadow(0 4px 20px rgba(124, 58, 237, 0.4));
+  animation: fx-shadow-shift 4s ease-in-out infinite;
+  /* filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.5))
+          drop-shadow(0 4px 20px rgba(124, 58, 237, 0.4)); */
 }
 
 .title-fx--shadow::after {
@@ -191,8 +195,9 @@
   );
   background-size: 200% 100%;
   animation: fx-ice-sparkle 3s ease-in-out infinite;
-  filter: drop-shadow(0 0 8px rgba(103, 232, 249, 0.4))
-          drop-shadow(0 0 20px rgba(165, 243, 252, 0.2));
+  animation: fx-ice-sparkle 3s ease-in-out infinite;
+  /* filter: drop-shadow(0 0 8px rgba(103, 232, 249, 0.4))
+          drop-shadow(0 0 20px rgba(165, 243, 252, 0.2)); */
 }
 
 .title-fx--ice::after {

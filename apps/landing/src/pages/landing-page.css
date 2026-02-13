@@ -2357,6 +2357,35 @@ html.site-ready {
   box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), 0 0 40px rgba(168, 85, 247, 0.15);
 }
 
+
+/* Orange (fire) badge variant */
+.section-header__badge--orange {
+  color: #fb923c;
+  background: rgba(249, 115, 22, 0.1);
+  border: 1px solid rgba(249, 115, 22, 0.3);
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.15), 0 0 24px rgba(249, 115, 22, 0.08);
+  animation: badge-orange-pulse 4s ease-in-out infinite;
+}
+
+.section-header__badge--orange:hover {
+  animation: none;
+  transform: scale(1.02);
+  border-color: rgba(249, 115, 22, 0.6);
+  background: rgba(249, 115, 22, 0.2);
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.3), 0 0 40px rgba(249, 115, 22, 0.15);
+}
+
+@keyframes badge-orange-pulse {
+  0% { box-shadow: 0 0 12px rgba(249, 115, 22, 0.15), 0 0 24px rgba(249, 115, 22, 0.08); }
+  50% { box-shadow: 0 0 16px rgba(249, 115, 22, 0.25), 0 0 32px rgba(249, 115, 22, 0.15); border-color: rgba(249, 115, 22, 0.5); }
+  100% { box-shadow: 0 0 12px rgba(249, 115, 22, 0.15), 0 0 24px rgba(249, 115, 22, 0.08); }
+}
+
+.section-header__badge-dot--orange {
+  background: #f97316;
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.6);
+}
+
 /* Cyan badge variant */
 .section-header__badge--cyan {
   color: #22d3ee;
