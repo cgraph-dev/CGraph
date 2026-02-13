@@ -1,0 +1,104 @@
+# CGraph Observability Stack
+# Usage: docker compose -f infrastructure/docker-compose.observability.yml up -d
+#
+# Provides:
+#   - Prometheus (metrics collection + SLO rules)     → http://localhost:9090
+#   - Grafana    (dashboards + alerting)               → http://localhost:3001
+#   - Redis Exporter (Redis metrics)                   → :9121
+#   - Postgres Exporter (PostgreSQL metrics)            → :9187
+#
+# Prerequisites:
+#   - Backend running on host port 4000 (or update BACKEND_HOST)
+#   - Redis accessible (or update REDIS_ADDR)
+#   - PostgreSQL accessible (or update DATA_SOURCE_NAME)
+
+version: '3.8'
+
+x-common: &common
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: '10m'
+      max-file: '3'
+
+services:
+  # ─── Prometheus ───────────────────────────────────────────────
+  prometheus:
+    <<: *common
+    image: prom/prometheus:v2.53.0
+    container_name: cgraph-prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - ../infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../infrastructure/prometheus/rules:/etc/prometheus/rules:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    extra_hosts:
+      - 'backend-dev:host-gateway'
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:9090/-/healthy']
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ─── Grafana ──────────────────────────────────────────────────
+  grafana:
+    <<: *common
+    image: grafana/grafana:11.1.0
+    container_name: cgraph-grafana
+    ports:
+      - '3001:3000'
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=cgraph-dev
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/json/cgraph-backend.json
+    volumes:
+      - ../infrastructure/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ../infrastructure/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:3000/api/health']
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ─── Redis Exporter ───────────────────────────────────────────
+  redis-exporter:
+    <<: *common
+    image: oliver006/redis_exporter:v1.62.0
+    container_name: cgraph-redis-exporter
+    ports:
+      - '9121:9121'
+    environment:
+      - REDIS_ADDR=${REDIS_ADDR:-redis://host.docker.internal:6379}
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  # ─── Postgres Exporter ────────────────────────────────────────
+  postgres-exporter:
+    <<: *common
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: cgraph-postgres-exporter
+    ports:
+      - '9187:9187'
+    environment:
+      - DATA_SOURCE_NAME=${PG_DSN:-postgresql://postgres:postgres@host.docker.internal:5432/cgraph_dev?sslmode=disable}
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local

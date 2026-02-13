@@ -177,6 +177,10 @@ html.site-ready {
   font-family: 'General', system-ui, sans-serif;
 }
 
+.demo-landing .font-space {
+  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+}
+
 /* ==========================================================================
    PRELOADER - ENHANCED GAMELAND STYLE
    ========================================================================== */
@@ -2259,11 +2263,12 @@ html.site-ready {
   margin-bottom: 1.5rem;
   font-size: 0.875rem;
   font-weight: 500;
+  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  letter-spacing: 0.02em;
   border-radius: 9999px;
   cursor: default;
   transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
 }
 
 /* Flowing gradient glow overlay — matches landing nav border pattern */
@@ -2500,6 +2505,47 @@ html.site-ready {
 .tilt-card:hover {
   border-color: rgba(16, 185, 129, 0.5);
   box-shadow: 0 8px 32px rgba(16, 185, 129, 0.2), 0 0 60px rgba(139, 92, 246, 0.1);
+}
+
+/* Animated gradient border overlay */
+.tilt-card__animated-border {
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    var(--border-angle, 0deg),
+    transparent 0%,
+    rgba(16, 185, 129, 0.5) 25%,
+    rgba(139, 92, 246, 0.5) 50%,
+    rgba(16, 185, 129, 0.5) 75%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 1px;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  animation: tilt-card-border-rotate 4s linear infinite;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.tilt-card:hover .tilt-card__animated-border {
+  opacity: 1;
+}
+
+@keyframes tilt-card-border-rotate {
+  0% { --border-angle: 0deg; }
+  100% { --border-angle: 360deg; }
+}
+
+/* CSS Houdini: enable smooth angle interpolation */
+@property --border-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
 }
 
 .tilt-card__bg {

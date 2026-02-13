@@ -42,9 +42,9 @@ forums, and gamification. Features include Signal Protocol encryption (X3DH + Do
 AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a karma-based
 forum system.
 
-**Version**: 0.9.18  
+**Version**: 0.9.19  
 **Last Updated**: February 14, 2026  
-**Architecture Score**: 9.7/10  
+**Architecture Score**: 9.8/10  
 **License**: Proprietary (see LICENSE)
 
 ## Key Features
@@ -60,23 +60,23 @@ forum system.
 
 ## Operational Maturity
 
-| Capability            | Status          | Implementation                                          |
-| --------------------- | --------------- | ------------------------------------------------------- |
-| **Metrics Export**    | Active          | TelemetryMetricsPrometheus.Core → `/metrics` endpoint   |
-| **SLO Monitoring**    | Active          | Prometheus recording rules + multi-burn-rate alerts     |
-| **Error Tracking**    | Active          | Sentry integration (severity-mapped levels + tags)      |
-| **Circuit Breakers**  | Active          | 7 fuses: Redis, APNs, FCM, Expo, WebPush, Mailer, HTTP  |
-| **Search Fallback**   | Active          | MeiliSearch → PostgreSQL ILIKE automatic failover       |
-| **Search Indexing**   | Active          | Oban async: messages, posts, threads indexed on create  |
-| **Load Testing**      | Ready           | k6 scripts: smoke, load, stress, WebSocket, writes      |
-| **DB Partitioning**   | Migration ready | Messages table monthly range partitions + Snowflake IDs |
-| **Delivery Tracking** | Active          | WhatsApp-style ✓✓ receipts (sent/delivered/read)        |
-| **Backpressure**      | Active          | Channel write throttling with configurable limits       |
-| **Request Tracing**   | Active          | Plug in 3 router pipelines (api, api_auth, api_admin)   |
-| **Chaos Testing**     | Ready           | Fault injection, fuse stress testing, failure scenarios |
-| **Feature Flags**     | Active          | GenServer + ETS/Redis with percentage rollouts          |
-| **Test Coverage**     | Active          | 127 test files, 81/81 controllers covered (100%)        |
-| **CI/CD**             | Active          | 12 GH Actions workflows, CI-gated canary deploys        |
+| Capability            | Status          | Implementation                                                   |
+| --------------------- | --------------- | ---------------------------------------------------------------- |
+| **Metrics Export**    | Active          | TelemetryMetricsPrometheus.Core → `/metrics` endpoint            |
+| **SLO Monitoring**    | Active          | Prometheus recording rules + multi-burn-rate alerts              |
+| **Error Tracking**    | Active          | Sentry integration (severity-mapped levels + tags)               |
+| **Circuit Breakers**  | Active          | 7 fuses: Redis, APNs, FCM, Expo, WebPush, Mailer, HTTP           |
+| **Search Fallback**   | Active          | MeiliSearch → PostgreSQL ILIKE automatic failover                |
+| **Search Indexing**   | Active          | Oban async: messages, posts, threads indexed on create           |
+| **Load Testing**      | Ready           | k6 scripts: smoke, load, stress, WebSocket, writes               |
+| **DB Partitioning**   | Migration ready | Messages table monthly range partitions + Snowflake IDs          |
+| **Delivery Tracking** | Active          | WhatsApp-style ✓✓ receipts (sent/delivered/read)                 |
+| **Backpressure**      | Active          | Channel write throttling with configurable limits                |
+| **Request Tracing**   | Active          | Plug in 3 router pipelines (api, api_auth, api_admin)            |
+| **Chaos Testing**     | Ready           | Fault injection, fuse stress testing, failure scenarios          |
+| **Feature Flags**     | Active          | GenServer + ETS/Redis with percentage rollouts                   |
+| **Test Coverage**     | Active          | 168 test files, 81/81 controllers, 60/52 context modules covered |
+| **CI/CD**             | Active          | 12 GH Actions workflows, CI-gated canary deploys                 |
 
 ### Key Operational Docs
 
@@ -713,10 +713,10 @@ Required:
 
 Copy `.env.example` to `.env` in `apps/backend/` and configure database credentials and secrets.
 
-## Current Status (v0.9.18)
+## Current Status (v0.9.19)
 
 **Updated:** February 14, 2026  
-**Commit:** `6524fb32`
+**Commit:** (Session 8)
 
 ### Remediation Progress
 
@@ -743,12 +743,13 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Store facades        | 0           | **7 domains** (29 stores) |
 | Passing tests        | 840         | **893** (+53)             |
 | Statement coverage   | 8.79%       | **9.31%**                 |
-| Test files (backend) | 40          | **127** (218% increase)   |
+| Test files (backend) | 40          | **168** (320% increase)   |
 | Controller coverage  | 40%         | **100%** (81/81)          |
+| Context module tests | 23          | **60** (37 new)           |
 | Circuit breakers     | 1 (Redis)   | **7** (all ext. deps)     |
 | Operational score    | N/A         | **9.7/10**                |
 
-**Overall Score:** 9.7/10 (up from 7.3/10)
+**Overall Score:** 9.8/10 (up from 7.3/10)
 
 See `docs/PROJECT_STATUS.md` for full details.
 

@@ -12,6 +12,7 @@ import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { valueProps, WEB_APP_URL } from '../../data/landing-data';
 import type { ValuePropData } from '../../data/landing-data';
+import { StarBorder } from '../effects';
 
 const ValueCard = memo(function ValueCard({ data, index }: { data: ValuePropData; index: number }) {
   return (
@@ -54,15 +55,20 @@ export default function ValueProposition(): React.JSX.Element {
   return (
     <section id="pricing" className="value-section zoom-section">
       <div className="section-header">
-        <motion.span
-          className="section-header__badge section-header__badge--cyan"
+        <motion.div
           initial={{ opacity: 0, y: 20, scale: 0.9 }}
           whileInView={{ opacity: 1, y: 0, scale: 1 }}
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.5 }}
         >
-          💎 Why CGraph?
-        </motion.span>
+          <StarBorder
+            color="#22d3ee"
+            speed="5s"
+            className="section-header__badge section-header__badge--cyan"
+          >
+            Why CGraph?
+          </StarBorder>
+        </motion.div>
         <motion.h2
           className="section-header__title font-zentry"
           initial={{ opacity: 0, y: 20 }}
@@ -70,7 +76,7 @@ export default function ValueProposition(): React.JSX.Element {
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          Built <span className="section-header__gradient">Different</span>
+          Built <span className="title-fx--ice">Different</span>
         </motion.h2>
         <motion.p
           className="section-header__desc"

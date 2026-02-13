@@ -23,6 +23,7 @@ import Footer from '../components/marketing/Footer';
 import Hero from '../components/hero/Hero';
 import ValueProposition from '../components/sections/ValueProposition';
 import { features, securityFeatures } from '../data/landing-data';
+import { StarBorder } from '../components/effects';
 import './landing-page.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -74,40 +75,43 @@ const staggerItem = {
 // ANIMATED SECTION HEADER (matches MarketingLayout hero stagger pattern)
 // =============================================================================
 
+const BADGE_COLORS: Record<string, string> = {
+  emerald: '#10b981',
+  purple: '#a855f7',
+  cyan: '#22d3ee',
+};
+
 const SectionHeader = memo(function SectionHeader({
   badge,
   badgeVariant = 'emerald',
   title,
   titleAccent,
+  titleAccentClass = '',
   description,
 }: {
   badge: string;
   badgeVariant?: 'emerald' | 'purple' | 'cyan';
   title: string;
   titleAccent: string;
+  titleAccentClass?: string;
   description: string;
 }) {
   return (
     <div className="section-header">
-      <motion.span
-        className={`section-header__badge section-header__badge--${badgeVariant}`}
+      <motion.div
         initial={{ opacity: 0, scale: 0.85, y: 10 }}
         whileInView={{ opacity: 1, scale: 1, y: 0 }}
         viewport={{ once: true, margin: '-40px' }}
-        transition={{
-          type: 'spring',
-          stiffness: 200,
-          damping: 15,
-        }}
+        transition={{ type: 'spring', stiffness: 200, damping: 15 }}
       >
-        <motion.span
-          className={`section-header__badge-dot section-header__badge-dot--${badgeVariant}`}
-          aria-hidden="true"
-          animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-        />
-        {badge}
-      </motion.span>
+        <StarBorder
+          color={BADGE_COLORS[badgeVariant] || '#10b981'}
+          speed="5s"
+          className={`section-header__badge section-header__badge--${badgeVariant}`}
+        >
+          {badge}
+        </StarBorder>
+      </motion.div>
       <motion.h2
         className="section-header__title font-zentry"
         initial={{ opacity: 0, y: 20, clipPath: 'inset(0 100% 0 0)' }}
@@ -115,10 +119,11 @@ const SectionHeader = memo(function SectionHeader({
         viewport={{ once: true, margin: '-40px' }}
         transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
-        {title} <span className="section-header__gradient">{titleAccent}</span>
+        {title}{' '}
+        <span className={titleAccentClass || 'section-header__gradient'}>{titleAccent}</span>
       </motion.h2>
       <motion.p
-        className="section-header__desc"
+        className="section-header__desc font-space"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-40px' }}
@@ -351,12 +356,13 @@ function TiltCard({
 
   return (
     <div ref={cardRef} className="tilt-card">
+      <div className="tilt-card__animated-border" />
       <div className="tilt-card__bg" />
       <div className="tilt-card__glare" />
       <div className="tilt-card__content">
         <span className="tilt-card__icon">{icon}</span>
         <h3 className="tilt-card__title font-robert">{title}</h3>
-        <p className="tilt-card__desc">{description}</p>
+        <p className="tilt-card__desc font-space">{description}</p>
       </div>
       <div className="tilt-card__accent" />
     </div>
@@ -532,10 +538,11 @@ export default function LandingPage() {
       {/* Interactive Demo */}
       <section className="interactive-demo-section zoom-section">
         <SectionHeader
-          badge="🎮 Try It Now"
+          badge="Try It Now"
           badgeVariant="cyan"
           title="Experience CGraph"
           titleAccent="Live"
+          titleAccentClass="title-fx--electric"
           description="No signup required. Explore our features in this interactive demo."
         />
         <motion.div
@@ -560,10 +567,11 @@ export default function LandingPage() {
       {/* Features */}
       <section ref={featuresRef} id="features" className="features zoom-section">
         <SectionHeader
-          badge="✨ Powerful Features"
+          badge="Powerful Features"
           badgeVariant="emerald"
           title="Everything You"
           titleAccent="Need"
+          titleAccentClass="title-fx--fire"
           description="Build, customize, and grow your community with our comprehensive feature set."
         />
 
@@ -633,21 +641,20 @@ export default function LandingPage() {
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
           >
-            <motion.span
-              className="section-header__badge section-header__badge--purple"
+            <motion.div
               initial={{ opacity: 0, scale: 0.85, y: 10 }}
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ type: 'spring' as const, stiffness: 200, damping: 15, delay: 0.15 }}
             >
-              <motion.span
-                className="section-header__badge-dot section-header__badge-dot--purple"
-                aria-hidden="true"
-                animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              />
-              🔒 Privacy-First Design
-            </motion.span>
+              <StarBorder
+                color="#a855f7"
+                speed="5s"
+                className="section-header__badge section-header__badge--purple"
+              >
+                Privacy-First Design
+              </StarBorder>
+            </motion.div>
             <motion.h2
               className="about__title font-zentry"
               variants={fadeUp}
@@ -656,7 +663,7 @@ export default function LandingPage() {
               viewport={{ once: true }}
               custom={0.2}
             >
-              Your Privacy Is Our <span className="about__gradient">Priority</span>
+              Your Privacy Is Our <span className="title-fx--shadow">Priority</span>
             </motion.h2>
             <motion.p
               className="about__desc"
@@ -702,20 +709,17 @@ export default function LandingPage() {
           whileInView={prefersReduced ? undefined : 'visible'}
           viewport={{ once: true, margin: '-60px' }}
         >
-          <motion.span
-            variants={staggerItem}
-            className="section-header__badge section-header__badge--emerald"
-          >
-            <motion.span
-              className="section-header__badge-dot section-header__badge-dot--emerald"
-              aria-hidden="true"
-              animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            />
-            🚀 Ready to Start?
-          </motion.span>
+          <motion.div variants={staggerItem}>
+            <StarBorder
+              color="#10b981"
+              speed="5s"
+              className="section-header__badge section-header__badge--emerald"
+            >
+              Ready to Start?
+            </StarBorder>
+          </motion.div>
           <motion.h2 variants={staggerItem} className="cta__title font-zentry">
-            Build Your <span className="cta__gradient-animated">Community</span>
+            Build Your <span className="title-fx--air">Community</span>
           </motion.h2>
           <motion.p variants={staggerItem} className="cta__desc">
             Create forums, customize your space, and connect with like-minded people.

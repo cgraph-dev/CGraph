@@ -267,6 +267,24 @@ defmodule CGraphWeb.Router do
     post "/billing/portal", API.PaymentController, :create_portal
 
     # ==========================================================================
+    # Forum Subscriptions (notification preferences per forum/thread)
+    # ==========================================================================
+    get "/forum/subscriptions", API.SubscriptionController, :index
+    post "/forum/subscriptions", API.SubscriptionController, :create
+    put "/forum/subscriptions/:id", API.SubscriptionController, :update
+    delete "/forum/subscriptions/:id", API.SubscriptionController, :delete
+    post "/forum/subscriptions/bulk-update", API.SubscriptionController, :bulk_update
+    post "/forum/subscriptions/toggle-thread", API.SubscriptionController, :toggle_thread
+
+    # ==========================================================================
+    # Username Management (availability check, history, cooldown)
+    # ==========================================================================
+    get "/users/check-username", API.UsernameController, :check_availability
+    post "/users/me/change-username", API.UsernameController, :change_username
+    get "/users/me/username-history", API.UsernameController, :history
+    get "/users/me/username-cooldown", API.UsernameController, :cooldown_status
+
+    # ==========================================================================
     # AI Endpoints - PLACEHOLDER FOR FUTURE CLAUDE INTEGRATION
     # ==========================================================================
     # AI features are not yet implemented. See: docs/architecture/AI_INTEGRATION.md
@@ -853,6 +871,54 @@ defmodule CGraphWeb.Router do
 
     # Moderation stats
     get "/moderation/stats", ModerationController, :stats
+  end
+
+  # Admin Events & Marketplace management (requires admin role)
+  scope "/api/v1/admin", CGraphWeb.Admin do
+    pipe_through [:api, :api_admin]
+
+    # ========================================
+    # Event Management (Admin)
+    # ========================================
+    resources "/events", EventsController, except: [:new, :edit]
+    post "/events/:id/start", EventsController, :start
+    post "/events/:id/pause", EventsController, :pause
+    post "/events/:id/resume", EventsController, :resume
+    post "/events/:id/end", EventsController, :end_event
+    get "/events/:event_id/tiers", EventsController, :list_tiers
+    post "/events/:event_id/tiers", EventsController, :create_tier
+    post "/events/:event_id/tiers/bulk", EventsController, :bulk_create_tiers
+    put "/events/:event_id/tiers/:tier_id", EventsController, :update_tier
+    get "/events/:event_id/quests", EventsController, :list_quests
+    post "/events/:event_id/quests", EventsController, :create_quest
+    put "/events/:event_id/quests/:quest_id", EventsController, :update_quest
+    get "/events/:event_id/leaderboard", EventsController, :leaderboard
+    get "/events/:event_id/analytics", EventsController, :analytics
+    post "/events/:event_id/export", EventsController, :export
+
+    # ========================================
+    # Marketplace Moderation (Admin)
+    # ========================================
+    get "/marketplace/flagged", MarketplaceController, :flagged_listings
+    get "/marketplace/listings/:id", MarketplaceController, :show_listing
+    post "/marketplace/listings/:id/approve", MarketplaceController, :approve_listing
+    post "/marketplace/listings/:id/reject", MarketplaceController, :reject_listing
+    delete "/marketplace/listings/:id", MarketplaceController, :remove_listing
+    post "/marketplace/listings/bulk-approve", MarketplaceController, :bulk_approve
+    post "/marketplace/listings/bulk-reject", MarketplaceController, :bulk_reject
+    get "/marketplace/transactions/disputed", MarketplaceController, :disputed_transactions
+    get "/marketplace/transactions/:id", MarketplaceController, :show_transaction
+    post "/marketplace/transactions/:id/resolve", MarketplaceController, :resolve_transaction
+    get "/marketplace/users/:user_id", MarketplaceController, :user_profile
+    post "/marketplace/users/:user_id/ban", MarketplaceController, :ban_user
+    delete "/marketplace/users/:user_id/ban", MarketplaceController, :unban_user
+    get "/marketplace/analytics", MarketplaceController, :analytics
+    get "/marketplace/live-metrics", MarketplaceController, :live_metrics
+    get "/marketplace/price-trends", MarketplaceController, :price_trends
+    get "/marketplace/settings", MarketplaceController, :get_settings
+    put "/marketplace/settings", MarketplaceController, :update_settings
+    get "/marketplace/banned-items", MarketplaceController, :banned_items
+    post "/marketplace/banned-items", MarketplaceController, :ban_item
   end
 
   # LiveDashboard (dev/admin only)
