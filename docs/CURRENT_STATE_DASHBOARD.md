@@ -19,9 +19,12 @@ Real-time overview of project health, architecture status, and operational state
 | **Documentation** | OK     | 9/10  | Updated with facade & platform parity docs           |
 | **Observability** | OK     | 10/10 | Prometheus + SLO + Alerting Rules + Sentry + Tracing |
 | **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + Chaos Testing  |
-| **CI/CD**         | OK     | 9/10  | CI-gated deploys, canary strategy on Fly.io          |
+| **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags        |
 
 **Composite Score: 9.7/10** — Production-ready with Discord/WhatsApp-grade operational maturity
+
+> **Implementation Registry**: See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file-level
+> inventory of all operational systems, their locations, and remaining gaps.
 
 ---
 
@@ -186,15 +189,29 @@ apps/mobile/src/screens/
 | ---------------------------- | --------- | ------- |
 | External E2EE security audit | @security | Q1 2026 |
 | External penetration test    | @security | Q1 2026 |
-| Test coverage implementation | @dev-team | Q1 2026 |
+| Run coverage report (80%+)   | @dev-team | Q1 2026 |
+| Record load test baselines   | @dev-team | Q1 2026 |
+| Deploy Grafana dashboards    | @infra    | Q1 2026 |
 
 ### P2 — Medium Priority
 
 | Issue                        | Owner     | ETA     |
 | ---------------------------- | --------- | ------- |
+| Wire 4 dead controllers      | @dev-team | Q1 2026 |
 | Email notifications          | @dev-team | Q1 2026 |
 | Push notifications (browser) | @dev-team | Q1 2026 |
 | Forum hierarchy (subforums)  | @dev-team | Q2 2026 |
+
+### Note: 4 Unwired Controllers
+
+These controllers exist but have NO routes in `router.ex`:
+
+- `CGraphWeb.Admin.EventsController` (497 lines, 19 actions)
+- `CGraphWeb.Admin.MarketplaceController` (513 lines, 20 actions)
+- `CGraphWeb.API.SubscriptionController` (270 lines, 6 actions)
+- `CGraphWeb.API.UsernameController` (146 lines, 4 actions)
+
+They have structural tests only. Wire into router when features are ready.
 
 ---
 

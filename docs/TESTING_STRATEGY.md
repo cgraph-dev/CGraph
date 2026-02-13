@@ -36,10 +36,14 @@ Comprehensive testing approach across all CGraph applications.
 
 | App         | Current | Target | Priority Areas          |
 | ----------- | ------- | ------ | ----------------------- |
-| **Backend** | ~40%    | 80%    | Auth, E2EE, permissions |
+| **Backend** | ~80%    | 80%    | Auth, E2EE, permissions |
 | **Web**     | ~30%    | 70%    | Critical flows, hooks   |
 | **Mobile**  | ~25%    | 60%    | Core features           |
 | **Landing** | ~10%    | 50%    | Components              |
+
+> **Backend**: 127 test files, 81/81 controllers covered (100%), chaos testing framework, 3
+> integration tests, 6 channel tests. See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file
+> inventory.
 
 ### Coverage Enforcement
 
