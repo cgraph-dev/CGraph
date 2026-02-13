@@ -14,9 +14,9 @@ defmodule CgraphWeb.WalletAuthControllerTest do
   """
   use CgraphWeb.ConnCase, async: false
 
-  alias Cgraph.Accounts
-  alias Cgraph.Accounts.WalletAuth
-  alias Cgraph.Guardian
+  alias CGraph.Accounts
+  alias CGraph.Accounts.WalletAuth
+  alias CGraph.Guardian
 
   import CgraphWeb.UserFixtures
 

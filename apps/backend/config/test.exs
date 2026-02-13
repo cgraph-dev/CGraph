@@ -10,7 +10,17 @@ config :cgraph, CGraph.Repo,
   hostname: "localhost",
   database: "cgraph_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: System.schedulers_online() * 2
+  pool_size: min(System.schedulers_online() * 2, 10)
+
+# ReadRepo shares the primary database in test (no replica needed).
+# Discord pattern: read replicas are a prod optimization, not a test concern.
+config :cgraph, CGraph.ReadRepo,
+  username: "cgraph",
+  password: "cgraph_dev_password",
+  hostname: "localhost",
+  database: "cgraph_test#{System.get_env("MIX_TEST_PARTITION")}",
+  pool: Ecto.Adapters.SQL.Sandbox,
+  pool_size: min(System.schedulers_online() * 2, 10)
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
@@ -25,14 +35,21 @@ config :cgraph, CGraph.Mailer, adapter: Swoosh.Adapters.Test
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
 
-# Print only warnings and errors during test
-config :logger, level: :warning
+# Print only errors during test (suppress noisy warnings from Meilisearch/Redis)
+config :logger, level: :error
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
 
 # Disable rate limiting in tests to prevent false failures
 config :cgraph, CGraph.RateLimiter, enabled: false
+
+# Hammer rate limiter backend config (ETS for test, no external deps)
+config :hammer,
+  backend: {Hammer.Backend.ETS, [expiry_ms: 60_000 * 60, cleanup_interval_ms: 60_000 * 10]}
+
+# Skip message table partitioning in test (unpartitioned table preserves FK compat)
+config :cgraph, skip_partitioning: true
 
 # Oban testing mode
 config :cgraph, Oban, testing: :inline

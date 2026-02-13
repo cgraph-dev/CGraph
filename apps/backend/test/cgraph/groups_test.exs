@@ -1,9 +1,9 @@
-defmodule Cgraph.GroupsTest do
+defmodule CGraph.GroupsTest do
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Accounts
-  alias Cgraph.Groups
-  alias Cgraph.Groups.{Channel, Group, Member, Role}
+  alias CGraph.Accounts
+  alias CGraph.Groups
+  alias CGraph.Groups.{Channel, Group, Member, Role}
 
   setup do
     {:ok, owner} = Accounts.create_user(%{

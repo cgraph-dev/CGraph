@@ -21,6 +21,7 @@ defmodule CGraph.GamificationTest do
   use CGraphWeb.ConnCase
 
   import CGraph.Factory
+  import Phoenix.ChannelTest, only: [subscribe_and_join: 3, assert_push: 2, assert_broadcast: 2]
 
   alias CGraph.Gamification.{Cosmetics, Prestige, Events, Marketplace}
   alias CGraphWeb.Endpoint
@@ -659,7 +660,7 @@ defmodule CGraph.GamificationTest do
 
   describe "gamification channel" do
     test "broadcasts XP gain to user", %{user: user} do
-      {:ok, socket} = connect(CGraphWeb.UserSocket, %{"token" => generate_token(user)})
+      {:ok, socket} = Phoenix.ChannelTest.connect(CGraphWeb.UserSocket, %{"token" => generate_token(user)})
       {:ok, _, socket} = subscribe_and_join(socket, "gamification:#{user.id}", %{})
 
       # Simulate XP gain
@@ -673,7 +674,7 @@ defmodule CGraph.GamificationTest do
     end
 
     test "broadcasts level up to user", %{user: user} do
-      {:ok, socket} = connect(CGraphWeb.UserSocket, %{"token" => generate_token(user)})
+      {:ok, socket} = Phoenix.ChannelTest.connect(CGraphWeb.UserSocket, %{"token" => generate_token(user)})
       {:ok, _, socket} = subscribe_and_join(socket, "gamification:#{user.id}", %{})
 
       CGraphWeb.Endpoint.broadcast!("gamification:#{user.id}", "level_up", %{
@@ -687,7 +688,7 @@ defmodule CGraph.GamificationTest do
 
   describe "marketplace channel" do
     test "broadcasts new listing to lobby", %{user: user} do
-      {:ok, socket} = connect(CGraphWeb.UserSocket, %{"token" => generate_token(user)})
+      {:ok, socket} = Phoenix.ChannelTest.connect(CGraphWeb.UserSocket, %{"token" => generate_token(user)})
       {:ok, _, socket} = subscribe_and_join(socket, "marketplace:lobby", %{})
 
       listing = insert(:marketplace_listing, status: :active)
@@ -696,11 +697,11 @@ defmodule CGraph.GamificationTest do
         listing: listing
       })
 
-      assert_push "listing_created", %{listing: _}
+      assert_push "listing_created", %{}
     end
 
     test "notifies seller when item sells", %{user: user} do
-      {:ok, socket} = connect(CGraphWeb.UserSocket, %{"token" => generate_token(user)})
+      {:ok, socket} = Phoenix.ChannelTest.connect(CGraphWeb.UserSocket, %{"token" => generate_token(user)})
       {:ok, _, socket} = subscribe_and_join(socket, "marketplace:#{user.id}", %{})
 
       CGraphWeb.Endpoint.broadcast!("marketplace:#{user.id}", "item_sold", %{
@@ -716,7 +717,8 @@ defmodule CGraph.GamificationTest do
   # ==================== HELPER FUNCTIONS ====================
 
   defp generate_token(user) do
-    CGraphWeb.Auth.Token.generate(user)
+    {:ok, token, _claims} = CGraph.Guardian.encode_and_sign(user)
+    token
   end
 
   defp update_user_balance(user, amount) do

@@ -37,4 +37,9 @@ defmodule CgraphWeb.Channels.ForumChannelTest do
 
     assert_broadcast("vote_changed", %{score: 42})
   end
+
+  defp generate_token(user) do
+    {:ok, token, _claims} = CGraph.Guardian.encode_and_sign(user)
+    token
+  end
 end

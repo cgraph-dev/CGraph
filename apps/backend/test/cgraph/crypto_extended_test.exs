@@ -1,11 +1,11 @@
-defmodule Cgraph.CryptoExtendedTest do
+defmodule CGraph.CryptoExtendedTest do
   @moduledoc """
-  Extended test suite for Cgraph.Crypto context.
+  Extended test suite for CGraph.Crypto context.
   Tests encryption, hashing, and security utilities.
   """
   use ExUnit.Case, async: true
 
-  alias Cgraph.Crypto
+  alias CGraph.Crypto
 
   # ============================================================================
   # Key Generation

@@ -12,8 +12,8 @@ defmodule CgraphWeb.API.V1.TwoFactorControllerTest do
   """
   use CgraphWeb.ConnCase, async: false
 
-  alias Cgraph.Guardian
-  alias Cgraph.Security.TOTP
+  alias CGraph.Guardian
+  alias CGraph.Security.TOTP
 
   import CgraphWeb.UserFixtures
 

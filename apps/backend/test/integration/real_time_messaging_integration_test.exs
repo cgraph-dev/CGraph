@@ -10,10 +10,10 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
   """
   use CgraphWeb.ChannelCase, async: false
 
-  alias Cgraph.Accounts
-  alias Cgraph.Messaging
+  alias CGraph.Accounts
+  alias CGraph.Messaging
   alias CgraphWeb.ConversationChannel
-  alias CgraphWeb.UserSocket
+  alias CGraphWeb.UserSocket
 
   @moduletag :channel
 
@@ -34,7 +34,7 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
   end
 
   defp generate_token(user) do
-    {:ok, token, _claims} = Cgraph.Guardian.encode_and_sign(user)
+    {:ok, token, _claims} = CGraph.Guardian.encode_and_sign(user)
     token
   end
 
@@ -255,17 +255,17 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
       member = create_user(%{email: "member@example.com"})
 
       # create_group/2 takes a user struct and attrs
-      {:ok, group} = Cgraph.Groups.create_group(owner, %{
+      {:ok, group} = CGraph.Groups.create_group(owner, %{
         "name" => "Test Group",
         "description" => "A test group"
       })
 
       # Group already has general channel created by default
       # Get the channel
-      channels = Cgraph.Groups.list_channels(group)
+      channels = CGraph.Groups.list_channels(group)
       channel = List.first(channels)
 
-      {:ok, _} = Cgraph.Groups.add_member(group, member)
+      {:ok, _} = CGraph.Groups.add_member(group, member)
 
       {:ok, owner: owner, member: member, group: group, channel: channel}
     end

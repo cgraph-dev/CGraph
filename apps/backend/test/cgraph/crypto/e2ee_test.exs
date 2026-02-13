@@ -1,8 +1,8 @@
-defmodule Cgraph.Crypto.E2EETest do
+defmodule CGraph.Crypto.E2EETest do
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Accounts
-  alias Cgraph.Crypto.E2EE
+  alias CGraph.Accounts
+  alias CGraph.Crypto.E2EE
 
   describe "generate_key_bundle/1" do
     test "generates complete key bundle with identity, signed prekey, and one-time prekeys" do

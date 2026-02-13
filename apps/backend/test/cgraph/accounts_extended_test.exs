@@ -1,12 +1,12 @@
-defmodule Cgraph.AccountsExtendedTest do
+defmodule CGraph.AccountsExtendedTest do
   @moduledoc """
-  Extended test suite for Cgraph.Accounts context.
+  Extended test suite for CGraph.Accounts context.
   Tests additional functions beyond the base test suite.
   """
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Accounts
-  alias Cgraph.Accounts.{User, UserSettings}
+  alias CGraph.Accounts
+  alias CGraph.Accounts.{User, UserSettings}
 
   defp create_user(attrs \\ %{}) do
     unique_id = System.unique_integer([:positive])

@@ -53,6 +53,10 @@ defmodule CGraphWeb.Telemetry do
 
   require Logger
 
+  # Standard histogram buckets for Prometheus Distribution metrics (in ms).
+  # Matches Google SRE recommended latency buckets for web services.
+  @default_buckets [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10_000]
+
   def start_link(init_arg) do
     Supervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
@@ -149,7 +153,8 @@ defmodule CGraphWeb.Telemetry do
       ),
       Telemetry.Metrics.distribution("phoenix.endpoint.stop.duration",
         unit: {:native, :millisecond},
-        description: "HTTP request latency distribution"
+        description: "HTTP request latency distribution",
+        reporter_options: [buckets: @default_buckets]
       ),
       Telemetry.Metrics.summary("phoenix.router_dispatch.stop.duration",
         unit: {:native, :millisecond},
@@ -160,19 +165,23 @@ defmodule CGraphWeb.Telemetry do
       # Database Metrics
       Telemetry.Metrics.distribution("cgraph.repo.query.decode_time",
         unit: {:native, :millisecond},
-        description: "Time to decode query results"
+        description: "Time to decode query results",
+        reporter_options: [buckets: @default_buckets]
       ),
       Telemetry.Metrics.distribution("cgraph.repo.query.query_time",
         unit: {:native, :millisecond},
-        description: "Time to execute query"
+        description: "Time to execute query",
+        reporter_options: [buckets: @default_buckets]
       ),
       Telemetry.Metrics.distribution("cgraph.repo.query.queue_time",
         unit: {:native, :millisecond},
-        description: "Time waiting for database connection"
+        description: "Time waiting for database connection",
+        reporter_options: [buckets: @default_buckets]
       ),
       Telemetry.Metrics.distribution("cgraph.repo.query.total_time",
         unit: {:native, :millisecond},
-        description: "Total query time including queue and decode"
+        description: "Total query time including queue and decode",
+        reporter_options: [buckets: @default_buckets]
       ),
 
       # Oban Metrics
@@ -183,7 +192,8 @@ defmodule CGraphWeb.Telemetry do
       Telemetry.Metrics.distribution("oban.job.stop.duration",
         tags: [:worker],
         unit: {:native, :millisecond},
-        description: "Background job duration"
+        description: "Background job duration",
+        reporter_options: [buckets: @default_buckets]
       ),
       Telemetry.Metrics.counter("oban.job.exception.duration",
         tags: [:worker],

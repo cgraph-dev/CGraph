@@ -1,8 +1,8 @@
-defmodule Cgraph.NotificationsTest do
+defmodule CGraph.NotificationsTest do
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Notifications
-  alias Cgraph.Notifications.Notification
+  alias CGraph.Notifications
+  alias CGraph.Notifications.Notification
 
   import CgraphWeb.UserFixtures
 

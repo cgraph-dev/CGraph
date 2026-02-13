@@ -1,11 +1,11 @@
-defmodule Cgraph.MessagingIdempotencyTest do
+defmodule CGraph.MessagingIdempotencyTest do
   @moduledoc """
   Tests for message idempotency to prevent duplicate messages on network retry.
   """
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Accounts
-  alias Cgraph.Messaging
+  alias CGraph.Accounts
+  alias CGraph.Messaging
 
   describe "message idempotency" do
     setup do

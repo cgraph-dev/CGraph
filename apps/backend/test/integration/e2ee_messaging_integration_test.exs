@@ -7,11 +7,11 @@ defmodule Cgraph.Integration.E2EEMessagingIntegrationTest do
   """
   use Cgraph.DataCase, async: false
 
-  alias Cgraph.Accounts
-  alias Cgraph.Crypto.E2EE
-  alias Cgraph.Messaging
-  alias Cgraph.Messaging.VoiceMessage
-  alias Cgraph.Storage
+  alias CGraph.Accounts
+  alias CGraph.Crypto.E2EE
+  alias CGraph.Messaging
+  alias CGraph.Messaging.VoiceMessage
+  alias CGraph.Storage
 
   @moduletag :integration
 

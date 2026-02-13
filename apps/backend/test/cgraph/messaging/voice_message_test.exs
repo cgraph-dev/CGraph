@@ -1,8 +1,8 @@
-defmodule Cgraph.Messaging.VoiceMessageTest do
+defmodule CGraph.Messaging.VoiceMessageTest do
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Accounts
-  alias Cgraph.Messaging.VoiceMessage
+  alias CGraph.Accounts
+  alias CGraph.Messaging.VoiceMessage
 
   describe "changeset/2" do
     test "valid changeset with required fields" do

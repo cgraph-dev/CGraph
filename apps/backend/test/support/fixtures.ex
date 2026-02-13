@@ -120,6 +120,16 @@ defmodule CgraphWeb.GroupFixtures do
   end
 
   @doc """
+  Create a group with members already added.
+  Returns the group struct.
+  """
+  def group_with_members_fixture(owner, members) do
+    %{group: group} = group_fixture(owner)
+    Enum.each(members, fn user -> Groups.add_member(group, user) end)
+    group
+  end
+
+  @doc """
   Create a channel in a group.
   """
   def channel_fixture(group, attrs \\ %{}) do
@@ -157,6 +167,14 @@ defmodule CgraphWeb.GroupFixtures do
       |> then(&Groups.create_role(group, &1))
 
     role
+  end
+
+  @doc """
+  Create an invite for a group.
+  """
+  def invite_fixture(group, user, opts \\ []) do
+    {:ok, invite} = Groups.create_invite(group, user, opts)
+    invite
   end
 end
 
@@ -245,6 +263,44 @@ defmodule CgraphWeb.ForumFixtures do
       |> then(&Forums.create_comment(post, user, &1))
 
     %{comment: comment, user: user}
+  end
+
+  @doc """
+  Create a board within a forum.
+  """
+  def board_fixture(forum, attrs \\ %{}) do
+    id = abs(System.unique_integer([:positive]))
+
+    {:ok, board} =
+      attrs
+      |> Enum.into(%{
+        name: "Board #{id}",
+        slug: "board-#{id}",
+        description: "A test board",
+        forum_id: forum.id
+      })
+      |> Forums.create_board()
+
+    board
+  end
+
+  @doc """
+  Create a thread within a board.
+  """
+  def thread_fixture(board, user \\ nil, attrs \\ %{}) do
+    user = user || UserFixtures.user_fixture()
+
+    {:ok, thread} =
+      attrs
+      |> Enum.into(%{
+        title: "Thread #{System.unique_integer()}",
+        content: "Test thread content",
+        board_id: board.id,
+        author_id: user.id
+      })
+      |> Forums.create_thread()
+
+    thread
   end
 end
 

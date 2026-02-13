@@ -1,7 +1,7 @@
-defmodule Cgraph.StorageTest do
+defmodule CGraph.StorageTest do
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Storage
+  alias CGraph.Storage
 
   describe "store/4" do
     setup do
@@ -125,15 +125,15 @@ defmodule Cgraph.StorageTest do
     test "defaults to local storage" do
       backend = Storage.current_backend()
 
-      assert backend == Cgraph.Storage.Local
+      assert backend == CGraph.Storage.Local
     end
 
     test "supports S3 backend configuration" do
-      assert Code.ensure_loaded?(Cgraph.Storage.S3)
+      assert Code.ensure_loaded?(CGraph.Storage.S3)
     end
 
     test "supports R2 backend configuration" do
-      assert Code.ensure_loaded?(Cgraph.Storage.R2)
+      assert Code.ensure_loaded?(CGraph.Storage.R2)
     end
   end
 

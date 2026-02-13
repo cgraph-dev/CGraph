@@ -12,9 +12,9 @@ defmodule Cgraph.OAuthTest do
   """
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Accounts
-  alias Cgraph.Accounts.User
-  alias Cgraph.OAuth
+  alias CGraph.Accounts
+  alias CGraph.Accounts.User
+  alias CGraph.OAuth
 
   @valid_providers [:google, :apple, :facebook, :tiktok]
 

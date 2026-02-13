@@ -22,8 +22,8 @@ defmodule CgraphWeb.API.V1.E2EEControllerTest do
 
   use CgraphWeb.ConnCase, async: true
 
-  alias Cgraph.Accounts
-  alias Cgraph.Crypto.E2EE
+  alias CGraph.Accounts
+  alias CGraph.Crypto.E2EE
 
   @valid_user_attrs %{
     email: "e2ee_test@example.com",
@@ -37,7 +37,7 @@ defmodule CgraphWeb.API.V1.E2EEControllerTest do
 
   setup %{conn: conn} do
     {:ok, user} = Accounts.create_user(@valid_user_attrs)
-    {:ok, token, _claims} = Cgraph.Guardian.encode_and_sign(user)
+    {:ok, token, _claims} = CGraph.Guardian.encode_and_sign(user)
 
     conn =
       conn
@@ -447,7 +447,7 @@ defmodule CgraphWeb.API.V1.E2EEControllerTest do
           username: "other_user"
         })
 
-      {:ok, other_token, _} = Cgraph.Guardian.encode_and_sign(other_user)
+      {:ok, other_token, _} = CGraph.Guardian.encode_and_sign(other_user)
 
       other_conn =
         build_conn()
@@ -476,7 +476,7 @@ defmodule CgraphWeb.API.V1.E2EEControllerTest do
           username: "other_user2"
         })
 
-      {:ok, other_token, _} = Cgraph.Guardian.encode_and_sign(other_user)
+      {:ok, other_token, _} = CGraph.Guardian.encode_and_sign(other_user)
 
       other_conn =
         build_conn()
@@ -629,7 +629,7 @@ defmodule CgraphWeb.API.V1.E2EEControllerTest do
           username: "attacker"
         })
 
-      {:ok, attacker_token, _} = Cgraph.Guardian.encode_and_sign(other_user)
+      {:ok, attacker_token, _} = CGraph.Guardian.encode_and_sign(other_user)
 
       attacker_conn =
         build_conn()

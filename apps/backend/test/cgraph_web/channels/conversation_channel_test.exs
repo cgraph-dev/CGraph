@@ -48,4 +48,9 @@ defmodule CgraphWeb.Channels.ConversationChannelTest do
     # Should either error or be ignored
     assert_reply(ref, :error, _) || refute_broadcast("invalid_event", _)
   end
+
+  defp generate_token(user) do
+    {:ok, token, _claims} = CGraph.Guardian.encode_and_sign(user)
+    token
+  end
 end

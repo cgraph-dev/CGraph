@@ -22,7 +22,7 @@ defmodule CgraphWeb.ChannelCase do
       import Cgraph.DataCase, only: [errors_on: 1]
 
       # The default endpoint for testing
-      @endpoint CgraphWeb.Endpoint
+      @endpoint CGraphWeb.Endpoint
     end
   end
 

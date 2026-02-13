@@ -5,7 +5,7 @@ defmodule CgraphWeb.ChatChannelTest do
 
   setup do
     user = user_fixture()
-    {:ok, token, _claims} = Cgraph.Guardian.encode_and_sign(user)
+    {:ok, token, _claims} = CGraph.Guardian.encode_and_sign(user)
     %{user: user, token: token}
   end
 
@@ -13,7 +13,7 @@ defmodule CgraphWeb.ChatChannelTest do
     @tag :skip
     test "joins conversation channel the user belongs to", %{user: _user, token: _token} do
       # TODO: Create conversation fixture
-      # {:ok, _, socket} = socket(CgraphWeb.UserSocket, "user:#{user.id}", %{current_user: user})
+      # {:ok, _, socket} = socket(CGraphWeb.UserSocket, "user:#{user.id}", %{current_user: user})
       # |> subscribe_and_join(CgraphWeb.ChatChannel, "chat:#{conversation.id}")
       #
       # assert_push "presence_state", _
@@ -21,7 +21,7 @@ defmodule CgraphWeb.ChatChannelTest do
 
     @tag :skip
     test "rejects join for conversation user doesn't belong to", %{user: _user} do
-      # {:ok, _, socket} = socket(CgraphWeb.UserSocket, "user:#{user.id}", %{current_user: user})
+      # {:ok, _, socket} = socket(CGraphWeb.UserSocket, "user:#{user.id}", %{current_user: user})
       # assert {:error, %{reason: "unauthorized"}} =
       #   subscribe_and_join(socket, CgraphWeb.ChatChannel, "chat:nonexistent")
     end

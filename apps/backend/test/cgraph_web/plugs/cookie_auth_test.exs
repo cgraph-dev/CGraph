@@ -1,7 +1,7 @@
-defmodule CgraphWeb.Plugs.CookieAuthTest do
+defmodule CGraphWeb.Plugs.CookieAuthTest do
   use CgraphWeb.ConnCase, async: true
 
-  alias CgraphWeb.Plugs.CookieAuth
+  alias CGraphWeb.Plugs.CookieAuth
 
   describe "set_auth_cookies/3" do
     test "sets both access and refresh cookies", %{conn: conn} do

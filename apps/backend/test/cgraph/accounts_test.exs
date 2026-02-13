@@ -1,8 +1,8 @@
-defmodule Cgraph.AccountsTest do
+defmodule CGraph.AccountsTest do
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Accounts
-  alias Cgraph.Accounts.User
+  alias CGraph.Accounts
+  alias CGraph.Accounts.User
 
   describe "users" do
     @valid_attrs %{

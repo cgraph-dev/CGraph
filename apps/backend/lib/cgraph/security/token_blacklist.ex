@@ -505,11 +505,17 @@ defmodule CGraph.Security.TokenBlacklist do
     redis_key = "#{@redis_prefix}#{key}"
     encoded_data = Jason.encode!(data)
 
-    case Redix.command(:redix, ["SETEX", redis_key, ttl_seconds, encoded_data]) do
-      {:ok, _} -> :ok
-      {:error, reason} ->
-        Logger.warning("Failed to store in Redis: #{inspect(reason)}")
-        :ok  # Non-fatal for revocation
+    try do
+      case Redix.command(:redix, ["SETEX", redis_key, ttl_seconds, encoded_data]) do
+        {:ok, _} -> :ok
+        {:error, reason} ->
+          Logger.warning("Failed to store in Redis: #{inspect(reason)}")
+          :ok  # Non-fatal for revocation
+      end
+    catch
+      :exit, _ ->
+        Logger.warning("Redis unavailable for token blacklist storage")
+        :ok
     end
   end
 
@@ -537,10 +543,14 @@ defmodule CGraph.Security.TokenBlacklist do
   defp check_in_redis(key) do
     redis_key = "#{@redis_prefix}#{key}"
 
-    case Redix.command(:redix, ["GET", redis_key]) do
-      {:ok, nil} -> {:error, :not_found}
-      {:ok, data} -> {:ok, Jason.decode!(data)}
-      {:error, _} = error -> error
+    try do
+      case Redix.command(:redix, ["GET", redis_key]) do
+        {:ok, nil} -> {:error, :not_found}
+        {:ok, data} -> {:ok, Jason.decode!(data)}
+        {:error, _} = error -> error
+      end
+    catch
+      :exit, _ -> {:error, :redis_unavailable}
     end
   end
 

@@ -10,10 +10,10 @@ defmodule CgraphWeb.API.V1.FriendControllerTest do
       friend2 = user_fixture(%{username: "friend2"})
 
       # Create friendships
-      {:ok, _} = Cgraph.Accounts.send_friend_request(user, friend1)
-      {:ok, _} = Cgraph.Accounts.accept_friend_request(friend1, user)
-      {:ok, _} = Cgraph.Accounts.send_friend_request(user, friend2)
-      {:ok, _} = Cgraph.Accounts.accept_friend_request(friend2, user)
+      {:ok, _} = CGraph.Accounts.send_friend_request(user, friend1)
+      {:ok, _} = CGraph.Accounts.accept_friend_request(friend1, user)
+      {:ok, _} = CGraph.Accounts.send_friend_request(user, friend2)
+      {:ok, _} = CGraph.Accounts.accept_friend_request(friend2, user)
 
       conn = log_in_user(conn, user)
 
@@ -61,8 +61,8 @@ defmodule CgraphWeb.API.V1.FriendControllerTest do
       requester2 = user_fixture()
 
       # Others send requests to this user
-      {:ok, _} = Cgraph.Accounts.send_friend_request(requester1, user)
-      {:ok, _} = Cgraph.Accounts.send_friend_request(requester2, user)
+      {:ok, _} = CGraph.Accounts.send_friend_request(requester1, user)
+      {:ok, _} = CGraph.Accounts.send_friend_request(requester2, user)
 
       conn = log_in_user(conn, user)
 
@@ -83,7 +83,7 @@ defmodule CgraphWeb.API.V1.FriendControllerTest do
       user = user_fixture()
       requester = user_fixture()
 
-      {:ok, request} = Cgraph.Accounts.send_friend_request(requester, user)
+      {:ok, request} = CGraph.Accounts.send_friend_request(requester, user)
       conn = log_in_user(conn, user)
 
       %{conn: conn, user: user, requester: requester, request: request}
@@ -105,7 +105,7 @@ defmodule CgraphWeb.API.V1.FriendControllerTest do
       user = user_fixture()
       requester = user_fixture()
 
-      {:ok, request} = Cgraph.Accounts.send_friend_request(requester, user)
+      {:ok, request} = CGraph.Accounts.send_friend_request(requester, user)
       conn = log_in_user(conn, user)
 
       %{conn: conn, request: request}
@@ -122,8 +122,8 @@ defmodule CgraphWeb.API.V1.FriendControllerTest do
       user = user_fixture()
       friend = user_fixture()
 
-      {:ok, _} = Cgraph.Accounts.send_friend_request(user, friend)
-      {:ok, friendship} = Cgraph.Accounts.accept_friend_request(friend, user)
+      {:ok, _} = CGraph.Accounts.send_friend_request(user, friend)
+      {:ok, friendship} = CGraph.Accounts.accept_friend_request(friend, user)
 
       conn = log_in_user(conn, user)
 
@@ -163,7 +163,7 @@ defmodule CgraphWeb.API.V1.FriendControllerTest do
       user = user_fixture()
       blocked_user = user_fixture()
 
-      {:ok, _} = Cgraph.Accounts.block_user(user, blocked_user)
+      {:ok, _} = CGraph.Accounts.block_user(user, blocked_user)
       conn = log_in_user(conn, user)
 
       %{conn: conn, blocked_user: blocked_user}
@@ -182,10 +182,10 @@ defmodule CgraphWeb.API.V1.FriendControllerTest do
       mutual_friend = user_fixture()
 
       # Create mutual friendship
-      {:ok, _} = Cgraph.Accounts.send_friend_request(user, mutual_friend)
-      {:ok, _} = Cgraph.Accounts.accept_friend_request(mutual_friend, user)
-      {:ok, _} = Cgraph.Accounts.send_friend_request(other_user, mutual_friend)
-      {:ok, _} = Cgraph.Accounts.accept_friend_request(mutual_friend, other_user)
+      {:ok, _} = CGraph.Accounts.send_friend_request(user, mutual_friend)
+      {:ok, _} = CGraph.Accounts.accept_friend_request(mutual_friend, user)
+      {:ok, _} = CGraph.Accounts.send_friend_request(other_user, mutual_friend)
+      {:ok, _} = CGraph.Accounts.accept_friend_request(mutual_friend, other_user)
 
       conn = log_in_user(conn, user)
 

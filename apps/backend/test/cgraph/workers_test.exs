@@ -1,7 +1,7 @@
-defmodule Cgraph.Workers.DatabaseBackupTest do
+defmodule CGraph.Workers.DatabaseBackupTest do
   use Cgraph.DataCase, async: false
 
-  alias Cgraph.Workers.DatabaseBackup
+  alias CGraph.Workers.DatabaseBackup
 
   describe "schedule_now/1" do
     test "schedules a backup job" do
@@ -28,10 +28,10 @@ defmodule Cgraph.Workers.DatabaseBackupTest do
   end
 end
 
-defmodule Cgraph.Workers.SendEmailNotificationTest do
+defmodule CGraph.Workers.SendEmailNotificationTest do
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Workers.SendEmailNotification
+  alias CGraph.Workers.SendEmailNotification
 
   import CgraphWeb.UserFixtures
 
@@ -79,10 +79,10 @@ defmodule Cgraph.Workers.SendEmailNotificationTest do
   end
 end
 
-defmodule Cgraph.Workers.SendPushNotificationTest do
+defmodule CGraph.Workers.SendPushNotificationTest do
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Workers.SendPushNotification
+  alias CGraph.Workers.SendPushNotification
 
   import CgraphWeb.UserFixtures
 
@@ -125,7 +125,7 @@ defmodule Cgraph.Workers.SendPushNotificationTest do
 
     test "succeeds when user has no push tokens" do
       user = user_fixture()
-      {:ok, notification} = Cgraph.Notifications.notify(user, :new_message, "Test")
+      {:ok, notification} = CGraph.Notifications.notify(user, :new_message, "Test")
 
       job = %Oban.Job{
         args: %{
@@ -140,15 +140,15 @@ defmodule Cgraph.Workers.SendPushNotificationTest do
   end
 end
 
-defmodule Cgraph.Workers.OrchestratorTest do
+defmodule CGraph.Workers.OrchestratorTest do
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Workers.Orchestrator
+  alias CGraph.Workers.Orchestrator
 
   describe "enqueue/3" do
     test "enqueues a job" do
       # Use a simple worker that exists
-      result = Orchestrator.enqueue(Cgraph.Workers.SendEmailNotification, %{
+      result = Orchestrator.enqueue(CGraph.Workers.SendEmailNotification, %{
         user_id: Ecto.UUID.generate(),
         notification_id: Ecto.UUID.generate()
       })
@@ -159,7 +159,7 @@ defmodule Cgraph.Workers.OrchestratorTest do
     test "enqueues with scheduling" do
       future_time = DateTime.add(DateTime.utc_now(), 3600, :second)
 
-      result = Orchestrator.enqueue(Cgraph.Workers.SendEmailNotification, %{
+      result = Orchestrator.enqueue(CGraph.Workers.SendEmailNotification, %{
         user_id: Ecto.UUID.generate(),
         notification_id: Ecto.UUID.generate()
       }, scheduled_at: future_time)
@@ -175,8 +175,8 @@ defmodule Cgraph.Workers.OrchestratorTest do
       notification_id = Ecto.UUID.generate()
 
       pipeline = [
-        {Cgraph.Workers.SendEmailNotification, %{user_id: user_id, notification_id: notification_id}},
-        {Cgraph.Workers.SendPushNotification, %{user_id: user_id, notification_id: notification_id}}
+        {CGraph.Workers.SendEmailNotification, %{user_id: user_id, notification_id: notification_id}},
+        {CGraph.Workers.SendPushNotification, %{user_id: user_id, notification_id: notification_id}}
       ]
 
       result = Orchestrator.pipeline(pipeline)

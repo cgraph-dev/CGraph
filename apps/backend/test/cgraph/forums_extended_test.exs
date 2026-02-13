@@ -1,14 +1,14 @@
-defmodule Cgraph.ForumsExtendedTest do
+defmodule CGraph.ForumsExtendedTest do
   @moduledoc """
-  Extended test suite for Cgraph.Forums context.
+  Extended test suite for CGraph.Forums context.
 
   Tests additional functions not covered in the base test suite.
   """
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Accounts
-  alias Cgraph.Forums
-  alias Cgraph.Forums.{Board, Category, Comment, Forum, Post, Thread}
+  alias CGraph.Accounts
+  alias CGraph.Forums
+  alias CGraph.Forums.{Board, Category, Comment, Forum, Post, Thread}
 
   # ============================================================================
   # Test Helpers

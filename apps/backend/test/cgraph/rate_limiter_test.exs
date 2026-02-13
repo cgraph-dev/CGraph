@@ -1,4 +1,4 @@
-defmodule Cgraph.RateLimiterTest do
+defmodule CGraph.RateLimiterTest do
   @moduledoc """
   Comprehensive test suite for the rate limiting system.
 
@@ -23,7 +23,7 @@ defmodule Cgraph.RateLimiterTest do
 
   use ExUnit.Case, async: false  # async: false because we share ETS table
 
-  alias Cgraph.RateLimiter
+  alias CGraph.RateLimiter
 
   # ===========================================================================
   # Setup
@@ -31,7 +31,7 @@ defmodule Cgraph.RateLimiterTest do
 
   setup do
     # Enable rate limiting for these tests
-    Application.put_env(:cgraph, Cgraph.RateLimiter, enabled: true)
+    Application.put_env(:cgraph, CGraph.RateLimiter, enabled: true)
 
     # Ensure the RateLimiter is started
     case GenServer.whereis(RateLimiter) do
@@ -47,7 +47,7 @@ defmodule Cgraph.RateLimiterTest do
 
     on_exit(fn ->
       # Restore disabled state after test
-      Application.put_env(:cgraph, Cgraph.RateLimiter, enabled: false)
+      Application.put_env(:cgraph, CGraph.RateLimiter, enabled: false)
     end)
 
     {:ok, test_id: test_id}

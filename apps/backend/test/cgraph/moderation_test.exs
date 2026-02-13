@@ -1,4 +1,4 @@
-defmodule Cgraph.ModerationTest do
+defmodule CGraph.ModerationTest do
   @moduledoc """
   Comprehensive tests for the moderation system.
 
@@ -11,11 +11,11 @@ defmodule Cgraph.ModerationTest do
   """
   use Cgraph.DataCase, async: false
 
-  alias Cgraph.Moderation
-  alias Cgraph.Moderation.Appeal
-  alias Cgraph.Moderation.Report
-  alias Cgraph.Moderation.ReviewAction
-  alias Cgraph.Moderation.UserRestriction
+  alias CGraph.Moderation
+  alias CGraph.Moderation.Appeal
+  alias CGraph.Moderation.Report
+  alias CGraph.Moderation.ReviewAction
+  alias CGraph.Moderation.UserRestriction
   import CgraphWeb.UserFixtures
   import CgraphWeb.ModerationFixtures
 

@@ -1,11 +1,11 @@
-defmodule Cgraph.ForumsTest do
+defmodule CGraph.ForumsTest do
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Accounts
-  alias Cgraph.Forums
-  alias Cgraph.Forums.Comment
-  alias Cgraph.Forums.Forum
-  alias Cgraph.Forums.Post
+  alias CGraph.Accounts
+  alias CGraph.Forums
+  alias CGraph.Forums.Comment
+  alias CGraph.Forums.Forum
+  alias CGraph.Forums.Post
 
   setup do
     {:ok, user} = Accounts.create_user(%{
@@ -348,7 +348,7 @@ defmodule Cgraph.ForumsTest do
       })
 
       # Manually update the user to have karma and an older account
-      {:ok, established_voter} = Cgraph.Repo.update(
+      {:ok, established_voter} = CGraph.Repo.update(
         Ecto.Changeset.change(established_voter, %{
           karma: 100,
           inserted_at: DateTime.add(DateTime.utc_now(), -7 * 24 * 60 * 60, :second)
@@ -393,7 +393,7 @@ defmodule Cgraph.ForumsTest do
       })
 
       # Make account old enough (2 days)
-      {:ok, low_karma_user} = Cgraph.Repo.update(
+      {:ok, low_karma_user} = CGraph.Repo.update(
         Ecto.Changeset.change(low_karma_user, %{
           karma: 5,  # Less than 10 required
           inserted_at: DateTime.add(DateTime.utc_now(), -2 * 24 * 60 * 60, :second)
@@ -406,7 +406,7 @@ defmodule Cgraph.ForumsTest do
 
     test "vote_forum/3 prevents forum owners from voting on their own forums", %{user: owner, forum: forum} do
       # Make owner's account old enough
-      {:ok, owner} = Cgraph.Repo.update(
+      {:ok, owner} = CGraph.Repo.update(
         Ecto.Changeset.change(owner, %{
           karma: 100,
           inserted_at: DateTime.add(DateTime.utc_now(), -7 * 24 * 60 * 60, :second)
@@ -427,7 +427,7 @@ defmodule Cgraph.ForumsTest do
       })
 
       # Make account eligible for voting
-      {:ok, mod} = Cgraph.Repo.update(
+      {:ok, mod} = CGraph.Repo.update(
         Ecto.Changeset.change(mod, %{
           karma: 100,
           inserted_at: DateTime.add(DateTime.utc_now(), -7 * 24 * 60 * 60, :second)
@@ -460,7 +460,7 @@ defmodule Cgraph.ForumsTest do
         password_confirmation: "ValidPassword123!"
       })
 
-      {:ok, voter} = Cgraph.Repo.update(
+      {:ok, voter} = CGraph.Repo.update(
         Ecto.Changeset.change(voter, %{
           karma: 100,
           inserted_at: DateTime.add(DateTime.utc_now(), -7 * 24 * 60 * 60, :second)
@@ -473,7 +473,7 @@ defmodule Cgraph.ForumsTest do
       # Manually update the vote timestamp to simulate cooldown expiry
       forum_vote = Forums.get_user_forum_vote(voter.id, forum.id)
       old_time = DateTime.add(DateTime.utc_now(), -120, :second)  # 2 minutes ago
-      Cgraph.Repo.update(Ecto.Changeset.change(forum_vote, %{updated_at: old_time}))
+      CGraph.Repo.update(Ecto.Changeset.change(forum_vote, %{updated_at: old_time}))
 
       # Vote change should now work
       result = Forums.vote_forum(voter, forum.id, -1)
@@ -487,7 +487,7 @@ defmodule Cgraph.ForumsTest do
       # Update vote time to bypass cooldown
       forum_vote = Forums.get_user_forum_vote(voter.id, forum.id)
       old_time = DateTime.add(DateTime.utc_now(), -120, :second)
-      Cgraph.Repo.update(Ecto.Changeset.change(forum_vote, %{updated_at: old_time}))
+      CGraph.Repo.update(Ecto.Changeset.change(forum_vote, %{updated_at: old_time}))
 
       # Second upvote should remove the vote
       {:ok, :removed} = Forums.vote_forum(voter, forum.id, 1)

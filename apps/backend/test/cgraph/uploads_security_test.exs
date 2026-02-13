@@ -4,7 +4,7 @@ defmodule Cgraph.UploadsSecurityTest do
   """
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Uploads
+  alias CGraph.Uploads
 
   describe "validate_mime_type/3" do
     test "accepts valid JPEG file" do

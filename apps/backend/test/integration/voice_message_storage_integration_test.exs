@@ -10,10 +10,10 @@ defmodule Cgraph.Integration.VoiceMessageStorageIntegrationTest do
   """
   use Cgraph.DataCase, async: false
 
-  alias Cgraph.Accounts
-  alias Cgraph.Messaging
-  alias Cgraph.Messaging.VoiceMessage
-  alias Cgraph.Storage
+  alias CGraph.Accounts
+  alias CGraph.Messaging
+  alias CGraph.Messaging.VoiceMessage
+  alias CGraph.Storage
 
   @moduletag :integration
 

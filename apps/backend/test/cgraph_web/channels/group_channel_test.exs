@@ -40,4 +40,9 @@ defmodule CgraphWeb.Channels.GroupChannelTest do
     result = subscribe_and_join(socket, "group:#{group.id}", %{})
     assert {:error, _} = result
   end
+
+  defp generate_token(user) do
+    {:ok, token, _claims} = CGraph.Guardian.encode_and_sign(user)
+    token
+  end
 end

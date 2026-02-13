@@ -4,6 +4,11 @@ defmodule CgraphWeb.Channels.PresenceChannelTest do
 
   import CgraphWeb.UserFixtures
 
+  defp generate_token(user) do
+    {:ok, token, _claims} = CGraph.Guardian.encode_and_sign(user)
+    token
+  end
+
   setup do
     user = user_fixture()
     {:ok, socket} = connect(CGraphWeb.UserSocket, %{"token" => generate_token(user)})

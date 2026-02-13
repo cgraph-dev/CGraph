@@ -13,10 +13,10 @@ defmodule Cgraph.SecurityTest do
 
   import Bitwise
 
-  alias Cgraph.Accounts
-  alias Cgraph.Guardian
-  alias Cgraph.Security.{AccountLockout, PasswordBreachCheck, TokenBlacklist, TOTP}
-  alias CgraphWeb.Plugs.SecurityHeaders
+  alias CGraph.Accounts
+  alias CGraph.Guardian
+  alias CGraph.Security.{AccountLockout, PasswordBreachCheck, TokenBlacklist, TOTP}
+  alias CGraphWeb.Plugs.SecurityHeaders
 
   # ============================================================================
   # Token Blacklist Tests

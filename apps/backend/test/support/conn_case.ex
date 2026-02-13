@@ -12,9 +12,9 @@ defmodule CgraphWeb.ConnCase do
   using do
     quote do
       # The default endpoint for testing
-      @endpoint CgraphWeb.Endpoint
+      @endpoint CGraphWeb.Endpoint
 
-      use CgraphWeb, :verified_routes
+      use CGraphWeb, :verified_routes
 
       # Import conveniences for testing with connections
       import Plug.Conn
@@ -40,7 +40,7 @@ defmodule CgraphWeb.ConnCase do
   Logs the given `user` into the `conn`.
   """
   def log_in_user(conn, user) do
-    {:ok, token, _claims} = Cgraph.Guardian.encode_and_sign(user)
+    {:ok, token, _claims} = CGraph.Guardian.encode_and_sign(user)
 
     conn
     |> Plug.Conn.put_req_header("authorization", "Bearer #{token}")

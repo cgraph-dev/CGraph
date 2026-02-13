@@ -1,12 +1,12 @@
-defmodule Cgraph.AdminExtendedTest do
+defmodule CGraph.AdminExtendedTest do
   @moduledoc """
-  Extended test suite for Cgraph.Admin context.
+  Extended test suite for CGraph.Admin context.
   Tests admin functions for user management and moderation.
   """
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Accounts
-  alias Cgraph.Admin
+  alias CGraph.Accounts
+  alias CGraph.Admin
 
   defp create_user(attrs \\ %{}) do
     unique_id = System.unique_integer([:positive])

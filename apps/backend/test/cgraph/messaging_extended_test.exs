@@ -1,13 +1,13 @@
-defmodule Cgraph.MessagingExtendedTest do
+defmodule CGraph.MessagingExtendedTest do
   @moduledoc """
-  Extended test suite for Cgraph.Messaging context.
+  Extended test suite for CGraph.Messaging context.
   Tests additional functions beyond the base test suite.
   """
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Accounts
-  alias Cgraph.Messaging
-  alias Cgraph.Messaging.Conversation
+  alias CGraph.Accounts
+  alias CGraph.Messaging
+  alias CGraph.Messaging.Conversation
 
   defp create_user(attrs \\ %{}) do
     unique_id = System.unique_integer([:positive])

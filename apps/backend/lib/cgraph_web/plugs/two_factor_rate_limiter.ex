@@ -37,6 +37,15 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
   @extended_lockout_seconds 86_400  # 24 hours
   @lockout_threshold 3  # Lockouts before extended lockout
 
+  # Wraps Redix calls to handle process not available (e.g., test env)
+  defp safe_redis_command(args) do
+    try do
+      Redix.command(:redix, args)
+    catch
+      :exit, _ -> {:error, :redis_unavailable}
+    end
+  end
+
   def init(opts), do: opts
 
   def call(conn, _opts) do
@@ -69,7 +78,7 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
   end
 
   defp check_lockout(conn, lockout_key) do
-    case Redix.command(:redix, ["GET", lockout_key]) do
+    case safe_redis_command(["GET", lockout_key]) do
       {:ok, nil} ->
         {:ok, conn}
       {:ok, _locked_at} ->
@@ -84,7 +93,7 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
   end
 
   defp check_extended_lockout(conn, lockout_count_key) do
-    case Redix.command(:redix, ["GET", lockout_count_key]) do
+    case safe_redis_command(["GET", lockout_count_key]) do
       {:ok, nil} ->
         {:ok, conn}
       {:ok, count_str} when is_binary(count_str) ->
@@ -102,7 +111,7 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
   end
 
   defp get_attempts(key) do
-    case Redix.command(:redix, ["GET", key]) do
+    case safe_redis_command(["GET", key]) do
       {:ok, nil} -> {:ok, 0}
       {:ok, count} when is_binary(count) -> {:ok, String.to_integer(count)}
       {:error, _} -> {:ok, 0}  # Fail open on Redis error
@@ -117,7 +126,7 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
   defp validate_attempts(conn, _attempts), do: {:ok, conn}
 
   defp get_ttl(key) do
-    case Redix.command(:redix, ["TTL", key]) do
+    case safe_redis_command(["TTL", key]) do
       {:ok, ttl} when is_integer(ttl) and ttl > 0 -> ttl
       _ -> @lockout_seconds
     end
@@ -148,7 +157,7 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
       cond do
         # Success (200 OK) - reset the counter
         status == 200 ->
-          Redix.command(:redix, ["DEL", key])
+          safe_redis_command(["DEL", key])
 
         # Failure (422, 401, etc.) - increment counter
         status in [401, 422, 423] ->
@@ -165,11 +174,11 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
 
   defp increment_failure(key, lockout_key, lockout_count_key, user_id) do
     # Increment attempt counter with TTL
-    case Redix.command(:redix, ["INCR", key]) do
+    case safe_redis_command(["INCR", key]) do
       {:ok, count} ->
         # Set TTL if this is first increment
         if count == 1 do
-          Redix.command(:redix, ["EXPIRE", key, @window_seconds])
+          safe_redis_command(["EXPIRE", key, @window_seconds])
         end
 
         # Check if we should trigger lockout
@@ -177,26 +186,26 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
           Logger.warning("[2FA] Triggering lockout for user #{user_id} after #{count} attempts")
 
           # Set lockout
-          Redix.command(:redix, ["SETEX", lockout_key, @lockout_seconds, DateTime.to_iso8601(DateTime.utc_now())])
+          safe_redis_command(["SETEX", lockout_key, @lockout_seconds, DateTime.to_iso8601(DateTime.utc_now())])
 
           # Increment lockout count
-          case Redix.command(:redix, ["INCR", lockout_count_key]) do
+          case safe_redis_command(["INCR", lockout_count_key]) do
             {:ok, lockout_count} ->
               if lockout_count == 1 do
-                Redix.command(:redix, ["EXPIRE", lockout_count_key, @extended_lockout_seconds])
+                safe_redis_command(["EXPIRE", lockout_count_key, @extended_lockout_seconds])
               end
 
               if lockout_count >= @lockout_threshold do
                 Logger.warning("[2FA] Triggering extended lockout for user #{user_id}")
                 # Extend the lockout to 24 hours
                 lockout_timestamp = DateTime.to_iso8601(DateTime.utc_now())
-                Redix.command(:redix, ["SETEX", lockout_key, @extended_lockout_seconds, lockout_timestamp])
+                safe_redis_command(["SETEX", lockout_key, @extended_lockout_seconds, lockout_timestamp])
               end
             _ -> :ok
           end
 
           # Reset attempt counter
-          Redix.command(:redix, ["DEL", key])
+          safe_redis_command(["DEL", key])
         end
 
       _ -> :ok

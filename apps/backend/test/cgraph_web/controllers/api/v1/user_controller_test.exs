@@ -83,7 +83,7 @@ defmodule CgraphWeb.API.V1.UserControllerTest do
       assert message =~ "scheduled for deletion"
 
       # Verify user has deletion scheduled
-      updated_user = Cgraph.Accounts.get_user!(user.id)
+      updated_user = CGraph.Accounts.get_user!(user.id)
       assert updated_user.deleted_at != nil
     end
   end
@@ -156,7 +156,7 @@ defmodule CgraphWeb.API.V1.UserControllerTest do
       user = user_fixture()
       # Create user then update with bio (registration doesn't include bio field)
       other_user = user_fixture(%{display_name: "Test Display"})
-      {:ok, other_user} = Cgraph.Accounts.update_user(other_user, %{bio: "Test bio"})
+      {:ok, other_user} = CGraph.Accounts.update_user(other_user, %{bio: "Test bio"})
 
       conn = log_in_user(conn, user)
       %{conn: conn, user: user, other_user: other_user}
@@ -208,7 +208,7 @@ defmodule CgraphWeb.API.V1.UserControllerTest do
 
     test "rejects username change within cooldown period", %{conn: conn, user: user} do
       # First, set the user's username_changed_at to now (truncate to seconds for :utc_datetime)
-      {:ok, _} = Cgraph.Repo.update(
+      {:ok, _} = CGraph.Repo.update(
         Ecto.Changeset.change(user, %{username_changed_at: DateTime.truncate(DateTime.utc_now(), :second)})
       )
 

@@ -2,6 +2,8 @@ defmodule CGraph.SnowflakeTest do
   @moduledoc "Snowflake ID generator tests — Discord-style ordering"
   use ExUnit.Case, async: true
 
+  import Bitwise
+
   describe "generate/0" do
     test "generates unique IDs" do
       id1 = CGraph.Snowflake.generate()
@@ -18,7 +20,7 @@ defmodule CGraph.SnowflakeTest do
       id = CGraph.Snowflake.generate()
       assert is_integer(id)
       assert id > 0
-      assert id < 1 <<< 63  # Fits in signed 64-bit
+      assert id < bsl(1, 63)  # Fits in signed 64-bit
     end
   end
 

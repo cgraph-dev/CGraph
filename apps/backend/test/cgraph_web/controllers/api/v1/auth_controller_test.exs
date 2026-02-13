@@ -1,7 +1,7 @@
 defmodule CgraphWeb.API.V1.AuthControllerTest do
   use CgraphWeb.ConnCase, async: true
 
-  alias Cgraph.Security.AccountLockout
+  alias CGraph.Security.AccountLockout
 
   # Clear any lockout state that might persist between test runs
   setup do

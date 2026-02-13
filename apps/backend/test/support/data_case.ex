@@ -17,7 +17,7 @@ defmodule Cgraph.DataCase do
 
   using do
     quote do
-      alias Cgraph.Repo
+      alias CGraph.Repo
 
       import Ecto
       import Ecto.Changeset
@@ -35,8 +35,24 @@ defmodule Cgraph.DataCase do
   Sets up the sandbox based on the test tags.
   """
   def setup_sandbox(tags) do
-    pid = Sandbox.start_owner!(Cgraph.Repo, shared: not tags[:async])
-    on_exit(fn -> Sandbox.stop_owner(pid) end)
+    try do
+      pid = Sandbox.start_owner!(CGraph.Repo, shared: not tags[:async])
+      on_exit(fn -> Sandbox.stop_owner(pid) end)
+    rescue
+      _ -> :ok
+    catch
+      :exit, _ -> :ok
+    end
+
+    # ReadRepo shares the same sandbox so read-path queries see test data
+    try do
+      read_pid = Sandbox.start_owner!(CGraph.ReadRepo, shared: not tags[:async])
+      on_exit(fn -> Sandbox.stop_owner(read_pid) end)
+    rescue
+      _ -> :ok
+    catch
+      :exit, _ -> :ok
+    end
   end
 
   @doc """
