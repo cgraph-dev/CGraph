@@ -227,7 +227,6 @@ defmodule CGraph.Workers.EmailDigestWorker do
     }
 
     case Mailer.send_email(email_data) do
-      :ok -> :ok
       {:ok, _} -> :ok
       error -> error
     end

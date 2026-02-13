@@ -337,12 +337,8 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
       # Evaluate rules for each member
       results =
         Enum.map(members, fn member ->
-          case GroupAutoRule.apply_auto_assignments(member, Repo) do
-            {:ok, assignments} ->
-              %{member_id: member.id, assignments: length(assignments)}
-            {:error, _} ->
-              %{member_id: member.id, assignments: 0, error: true}
-          end
+          {:ok, assignments} = GroupAutoRule.apply_auto_assignments(member, Repo)
+          %{member_id: member.id, assignments: length(assignments)}
         end)
 
       total_assignments = Enum.sum(Enum.map(results, & &1.assignments))

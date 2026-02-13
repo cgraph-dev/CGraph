@@ -77,29 +77,30 @@ defmodule CGraphWeb.Plugs.Cors do
   end
 
   defp get_cors_origins do
-    case {System.get_env("CORS_ORIGINS"), @is_prod} do
-      {nil, true} ->
-        [
-          # Production domains
-          "https://cgraph.org",
-          "https://www.cgraph.org",
-          "https://web.cgraph.org",
-          # Vercel deployment domains (specific deployments)
-          "https://cgraph.vercel.app",
-          "https://cgraph-web.vercel.app",
-          "https://c-graph.vercel.app",
-          "https://c-graph-web.vercel.app",
-          "https://cgraph-web-v2.vercel.app",
-          "https://cgraph-landing.vercel.app",
-          # Vercel preview deployments (Discord-style: allow all vercel.app subdomains)
-          # Strict regex: only allow cgraph- and c-graph- prefixes followed by alphanumeric/dashes
-          ~r/^https:\/\/(cgraph|c-graph)-[a-z0-9-]+\.vercel\.app$/i
-        ]
+    case System.get_env("CORS_ORIGINS") do
+      nil ->
+        if @is_prod do
+          [
+            # Production domains
+            "https://cgraph.org",
+            "https://www.cgraph.org",
+            "https://web.cgraph.org",
+            # Vercel deployment domains (specific deployments)
+            "https://cgraph.vercel.app",
+            "https://cgraph-web.vercel.app",
+            "https://c-graph.vercel.app",
+            "https://c-graph-web.vercel.app",
+            "https://cgraph-web-v2.vercel.app",
+            "https://cgraph-landing.vercel.app",
+            # Vercel preview deployments (Discord-style: allow all vercel.app subdomains)
+            # Strict regex: only allow cgraph- and c-graph- prefixes followed by alphanumeric/dashes
+            ~r/^https:\/\/(cgraph|c-graph)-[a-z0-9-]+\.vercel\.app$/i
+          ]
+        else
+          "*"
+        end
 
-      {nil, false} ->
-        "*"
-
-      {origins, _} ->
+      origins ->
         String.split(origins, ",", trim: true)
     end
   end

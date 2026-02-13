@@ -24,37 +24,37 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
     state.animationSpeed === 'slow' ? 2 : state.animationSpeed === 'fast' ? 0.5 : 1;
 
   const getBubbleStyle = useMemo(() => {
-    // Hardcoded optimal defaults since sliders were removed
-    let baseRadius = 16;
-    let shadowIntensity = 0.2;
+    // Hardcoded optimal defaults matching real app logic
+    let baseRadius = 18; // Standard messenger radius
+    let shadowIntensity = 0.1; // Subtle shadow
 
     switch (state.chatBubbleStyle) {
       case 'modern':
-        baseRadius = 24;
-        shadowIntensity = 0.3;
+        baseRadius = 22;
+        shadowIntensity = 0.15;
         break;
       case 'retro':
         baseRadius = 4;
-        shadowIntensity = 1.0;
+        shadowIntensity = 1.0; // Hard shadow for retro
         break;
       case 'cloud':
-        baseRadius = 20;
-        shadowIntensity = 0.2;
+        baseRadius = 20; // Varied later
+        shadowIntensity = 0.1;
         break;
       case 'rounded':
         baseRadius = 24;
-        shadowIntensity = 0.2;
+        shadowIntensity = 0.1;
         break;
       case 'sharp':
-        baseRadius = 2; // sharper
-        shadowIntensity = 0.2;
+        baseRadius = 2;
+        shadowIntensity = 0.1;
         break;
       default:
-        baseRadius = 16;
-        shadowIntensity = 0.2;
+        baseRadius = 18;
+        shadowIntensity = 0.1;
     }
 
-    // Override if state has explicit values (though UI controls are gone)
+    // Override if state has explicit values
     if (state.bubbleBorderRadius !== undefined) baseRadius = state.bubbleBorderRadius;
     if (state.bubbleShadowIntensity !== undefined)
       shadowIntensity = state.bubbleShadowIntensity / 100;
@@ -64,54 +64,58 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       const isRetro = state.chatBubbleStyle === 'retro';
       const isGlass = state.bubbleGlassEffect || isModern;
 
-      // Dynamic Border Radius
+      // Realistic Border Radius Logic
       let borderRadius = `${baseRadius}px`;
       if (state.chatBubbleStyle === 'sharp') {
         borderRadius = isOwn
+          ? `${baseRadius}px ${baseRadius}px 0px ${baseRadius}px` // Tail bottom-right
+          : `${baseRadius}px ${baseRadius}px ${baseRadius}px 0px`; // Tail bottom-left
+      } else if (state.chatBubbleStyle === 'cloud') {
+        borderRadius = isOwn
+          ? `${baseRadius + 6}px ${baseRadius + 2}px 4px ${baseRadius + 6}px`
+          : `${baseRadius + 2}px ${baseRadius + 6}px ${baseRadius + 6}px 4px`;
+      } else if (isRetro) {
+        borderRadius = '4px';
+      } else {
+        // Standard Messenger Style (e.g. iMessage/WhatsApp)
+        borderRadius = isOwn
           ? `${baseRadius}px ${baseRadius}px 4px ${baseRadius}px`
           : `${baseRadius}px ${baseRadius}px ${baseRadius}px 4px`;
-      } else if (state.chatBubbleStyle === 'cloud') {
-        // Cloud/Puffy style logic
-        borderRadius = isOwn
-          ? `${baseRadius + 10}px ${baseRadius + 5}px 4px ${baseRadius + 10}px`
-          : `${baseRadius + 5}px ${baseRadius + 10}px ${baseRadius + 10}px 4px`;
-      } else if (isRetro) {
-        borderRadius = '4px'; // Boxy
       }
 
       // Background Color
       let background = isOwn
-        ? `linear-gradient(135deg, ${bubbleColors.primary}, ${bubbleColors.secondary})`
-        : 'rgba(55, 65, 81, 0.8)';
+        ? `linear-gradient(145deg, ${bubbleColors.primary}, ${bubbleColors.secondary})`
+        : 'rgba(55, 65, 81, 0.95)'; // Dark gray for incoming, high opacity
 
       if (isModern) {
         background = isOwn
-          ? `linear-gradient(135deg, ${bubbleColors.primary}CC, ${bubbleColors.secondary}CC)`
-          : 'rgba(255, 255, 255, 0.05)';
+          ? `linear-gradient(135deg, ${bubbleColors.primary}E6, ${bubbleColors.secondary}E6)`
+          : 'rgba(255, 255, 255, 0.08)';
       } else if (isRetro) {
         background = isOwn ? bubbleColors.primary : '#374151';
       }
 
-      // Shadows
+      // Realistic Shadows (Depth, not glow)
       let boxShadow = isOwn
-        ? `0 4px ${12 * shadowIntensity}px ${bubbleColors.glow}`
-        : `0 2px ${8 * shadowIntensity}px rgba(0, 0, 0, 0.3)`;
+        ? `0 1px 2px rgba(0,0,0,${0.2 + shadowIntensity})` // Subtle depth
+        : `0 1px 2px rgba(0,0,0,${0.1 + shadowIntensity})`;
 
       if (isModern) {
         boxShadow = isOwn
-          ? `0 8px 32px ${bubbleColors.glow}, inset 0 0 20px rgba(255,255,255,0.1)`
-          : `0 4px 16px rgba(0,0,0,0.2)`;
+          ? `0 4px 15px ${bubbleColors.glow}40, inset 0 1px 1px rgba(255,255,255,0.3)`
+          : `0 2px 10px rgba(0,0,0,0.1)`;
       } else if (isRetro) {
-        const offset = 4 * shadowIntensity;
+        const offset = 3 * shadowIntensity;
         boxShadow = `${offset}px ${offset}px 0px rgba(0,0,0,0.5)`;
       }
 
       // Border
       let border = 'none';
       if (isModern) {
-        border = '1px solid rgba(255, 255, 255, 0.15)';
+        border = '1px solid rgba(255, 255, 255, 0.1)';
       } else if (isRetro) {
-        border = `2px solid ${isOwn ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.8)'}`;
+        border = '2px solid rgba(0,0,0,0.8)';
       }
 
       return {
@@ -119,7 +123,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
         borderRadius,
         boxShadow,
         border,
-        backdropFilter: isGlass ? 'blur(12px)' : 'none',
+        backdropFilter: isGlass ? 'blur(10px)' : 'none',
         fontFamily: isRetro ? '"Space Grotesk", monospace' : 'inherit',
         letterSpacing: isRetro ? '0.5px' : 'normal',
       };
@@ -127,13 +131,12 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
   }, [state, bubbleColors]);
 
   const getBubbleAnimation = (isOwn: boolean, index: number) => {
-    const delay = index * 0.1;
+    const delay = index * 0.05; // Faster, snappier
     const anim = state.bubbleEntranceAnimation || 'slide';
 
-    // Premium Physics
-    const elasticSpring = { type: 'spring', stiffness: 450, damping: 12, mass: 1 };
-    const bounceSpring = { type: 'spring', stiffness: 500, damping: 10, mass: 0.8 };
-    const snapSpring = { type: 'spring', stiffness: 350, damping: 20 };
+    // Standard Messaging Physics (Snappy, responsive)
+    const snappySpring = { type: 'spring', stiffness: 400, damping: 25 };
+    const gentleSpring = { type: 'spring', stiffness: 250, damping: 20 };
 
     const animations: Record<string, object> = {
       none: {
@@ -141,29 +144,32 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
         animate: { opacity: 1 },
       },
       slide: {
-        initial: { opacity: 0, x: isOwn ? 60 : -60, skewX: isOwn ? -15 : 15, scale: 0.9 },
-        animate: { opacity: 1, x: 0, skewX: 0, scale: 1 },
-        transition: { delay, ...elasticSpring },
+        // Typical message slide-in (up and in)
+        initial: { opacity: 0, y: 20, scale: 0.95 },
+        animate: { opacity: 1, y: 0, scale: 1 },
+        transition: { delay, ...snappySpring },
       },
       fade: {
-        initial: { opacity: 0, scale: 0.8, filter: 'blur(12px)', y: 10 },
-        animate: { opacity: 1, scale: 1, filter: 'blur(0px)', y: 0 },
-        transition: { delay, duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        transition: { delay, duration: 0.2 },
       },
       scale: {
-        initial: { opacity: 0, scale: 0, rotate: isOwn ? 10 : -10, y: 30 },
-        animate: { opacity: 1, scale: 1, rotate: 0, y: 0 },
-        transition: { delay, ...snapSpring },
+        initial: { opacity: 0, scale: 0 },
+        animate: { opacity: 1, scale: 1 },
+        transition: { delay, type: 'spring', stiffness: 350, damping: 25 }, // Android-like pop
       },
       bounce: {
-        initial: { opacity: 0, scaleY: 0.3, scaleX: 1.2, y: 60 },
-        animate: { opacity: 1, scaleY: 1, scaleX: 1, y: 0 },
-        transition: { delay, ...bounceSpring },
+        // Subtle bounce, not cartoonish
+        initial: { opacity: 0, scale: 0.8, y: 10 },
+        animate: { opacity: 1, scale: 1, y: 0 },
+        transition: { delay, type: 'spring', stiffness: 400, damping: 15 },
       },
       flip: {
-        initial: { opacity: 0, rotateX: 90, z: -150, scale: 0.8, y: -20 },
-        animate: { opacity: 1, rotateX: 0, z: 0, scale: 1, y: 0 },
-        transition: { delay, type: 'spring', stiffness: 220, damping: 18 },
+        // Kept for variety but toned down
+        initial: { opacity: 0, rotateX: 45, y: 10 },
+        animate: { opacity: 1, rotateX: 0, y: 0 },
+        transition: { delay, ...gentleSpring },
       },
     };
 
@@ -176,14 +182,14 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       style={{
         backdropFilter: state.blurEnabled ? 'blur(20px)' : 'none',
         boxShadow: state.glowEnabled ? `0 0 40px ${colors.glow}` : 'none',
-        perspective: '1200px', // Enhanced 3D perspective
+        // Removed perspective to flatten the look unless needed
       }}
       animate={
         state.glowEnabled
           ? {
               boxShadow: [
                 `0 0 30px ${colors.glow}`,
-                `0 0 60px ${colors.glow}`,
+                `0 0 50px ${colors.glow}`,
                 `0 0 30px ${colors.glow}`,
               ],
             }
@@ -191,7 +197,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       }
       transition={{ duration: 3 * speedMultiplier, repeat: Infinity }}
     >
-      {/* Particles overlay */}
+      {/* Particles overlay (Keep subtle) */}
       {state.particlesEnabled && (
         <div className="pointer-events-none absolute inset-0">
           {Array.from({ length: 15 }).map((_, i) => (
@@ -205,8 +211,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
               }}
               animate={{
                 y: [0, -20, 0],
-                opacity: [0.2, 0.6, 0.2],
-                scale: [1, 1.5, 1],
+                opacity: [0.2, 0.5, 0.2],
               }}
               transition={{
                 duration: (3 + Math.random() * 2) * speedMultiplier,
@@ -241,124 +246,71 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
             </div>
             {state.showStatus && (
               <div className="flex items-center gap-1 text-xs text-gray-400">
-                <motion.div
-                  className="h-2 w-2 rounded-full"
-                  style={{ background: '#22c55e' }}
-                  animate={{ opacity: [0.5, 1, 0.5] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                />
+                <div className="h-2 w-2 rounded-full bg-green-500" />
                 Online
               </div>
             )}
           </div>
         </div>
 
-        {/* Messages Container with 3D Perspective */}
+        {/* Messages Container - Removed 3D transform style for cleaner look */}
         <AnimatePresence mode="popLayout">
-          <div
-            className={`space-y-${state.compactMode ? '2' : '3'}`}
-            style={{ transformStyle: 'preserve-3d' }}
-          >
+          <div className={`space-y-${state.compactMode ? '1.5' : '2'}`}>
             {/* Message 1 (Incoming) */}
             <motion.div
-              key={`msg1-${state.bubbleEntranceAnimation}-${state.chatBubbleStyle}`} // Force re-render on style change too
-              className="max-w-[85%] p-3"
+              key={`msg1-${state.bubbleEntranceAnimation}-${state.chatBubbleStyle}`}
+              className="group relative max-w-[85%] p-3"
               style={{
                 ...getBubbleStyle(false),
                 alignSelf: 'flex-start',
                 marginRight: 'auto',
-                transformOrigin: 'left center',
+                transformOrigin: 'left bottom',
               }}
               {...getBubbleAnimation(false, 0)}
-              whileHover={
-                state.bubbleHoverEffect
-                  ? {
-                      scale: 1.05,
-                      boxShadow: `0 8px 24px ${colors.primary}40`,
-                      z: 20,
-                      rotateX: 2,
-                      rotateY: -2,
-                    }
-                  : {}
-              }
             >
-              <p
-                className={`${state.compactMode ? 'text-xs' : 'text-sm'} font-medium text-white drop-shadow-md`}
-              >
-                Welcome! Your profile looks amazing with that border! 🔥
+              <p className={`${state.compactMode ? 'text-xs' : 'text-sm'} font-normal text-white`}>
+                Welcome! Your profile looks amazing.
               </p>
               {state.showTimestamps && (
-                <span className="mt-1 block text-[10px] text-white/70 drop-shadow-sm">
-                  10:42 AM
-                </span>
+                <span className="mt-1 block text-right text-[10px] text-white/50">10:42 AM</span>
               )}
             </motion.div>
 
             {/* Message 2 (Outgoing) */}
             <motion.div
               key={`msg2-${state.bubbleEntranceAnimation}-${state.chatBubbleStyle}`}
-              className="max-w-[85%] p-3"
+              className="relative max-w-[85%] p-3"
               style={{
                 ...getBubbleStyle(true),
                 marginLeft: 'auto',
-                transformOrigin: 'right center',
+                transformOrigin: 'right bottom',
               }}
               {...getBubbleAnimation(true, 1)}
-              whileHover={
-                state.bubbleHoverEffect
-                  ? {
-                      scale: 1.05,
-                      boxShadow: `0 10px 30px ${bubbleColors.primary}60`,
-                      z: 20,
-                      rotateX: 2,
-                      rotateY: 2,
-                    }
-                  : {}
-              }
             >
-              <p
-                className={`${state.compactMode ? 'text-xs' : 'text-sm'} font-medium text-white drop-shadow-md`}
-              >
+              <p className={`${state.compactMode ? 'text-xs' : 'text-sm'} font-medium text-white`}>
                 Thanks! Just unlocked the Legendary tier 🎉
               </p>
               {state.showTimestamps && (
-                <span className="mt-1 block text-[10px] text-white/70 drop-shadow-sm">
-                  10:43 AM
-                </span>
+                <span className="mt-1 block text-right text-[10px] text-white/70">10:43 AM</span>
               )}
             </motion.div>
 
             {/* Message 3 (Incoming) */}
             <motion.div
               key={`msg3-${state.bubbleEntranceAnimation}-${state.chatBubbleStyle}`}
-              className="max-w-[85%] p-3"
+              className="relative max-w-[85%] p-3"
               style={{
                 ...getBubbleStyle(false),
                 marginRight: 'auto',
-                transformOrigin: 'left center',
+                transformOrigin: 'left bottom',
               }}
               {...getBubbleAnimation(false, 2)}
-              whileHover={
-                state.bubbleHoverEffect
-                  ? {
-                      scale: 1.05,
-                      boxShadow: `0 8px 24px ${colors.primary}40`,
-                      z: 20,
-                      rotateX: 2,
-                      rotateY: -2,
-                    }
-                  : {}
-              }
             >
-              <p
-                className={`${state.compactMode ? 'text-xs' : 'text-sm'} font-medium text-white drop-shadow-md`}
-              >
-                The customization options are incredible! 🎨
+              <p className={`${state.compactMode ? 'text-xs' : 'text-sm'} font-normal text-white`}>
+                The customization options are clean!
               </p>
               {state.showTimestamps && (
-                <span className="mt-1 block text-[10px] text-white/70 drop-shadow-sm">
-                  10:44 AM
-                </span>
+                <span className="mt-1 block text-right text-[10px] text-white/50">10:44 AM</span>
               )}
             </motion.div>
           </div>

@@ -59,6 +59,7 @@ defmodule CGraphWeb.UserSocket do
   def id(socket), do: "user_socket:#{socket.assigns.current_user.id}"
 
   # Periodic token validation to disconnect expired sessions
+  @impl true
   def handle_info(:check_token, socket) do
     case verify_token(socket.assigns.token) do
       {:ok, _user_id} ->

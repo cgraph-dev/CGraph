@@ -159,12 +159,8 @@ defmodule CGraphWeb.MarketplaceChannel do
       per_page: min(Map.get(params, "per_page", 20), 50)
     }
     
-    case Marketplace.browse_listings(filters) do
-      {:ok, result} -> 
-        {:reply, {:ok, result}, socket}
-      {:error, reason} -> 
-        {:reply, {:error, %{reason: reason}}, socket}
-    end
+    {:ok, result} = Marketplace.browse_listings(filters)
+    {:reply, {:ok, result}, socket}
   end
 
   # Client requests - get listing details
@@ -216,16 +212,9 @@ defmodule CGraphWeb.MarketplaceChannel do
   def handle_in("create_listing", params, socket) do
     user = socket.assigns.current_user
     
-    case Marketplace.create_listing(user.id, params) do
-      {:ok, listing} ->
-        # Broadcast to global channel
-        broadcast_new_listing(listing)
-        {:reply, {:ok, %{listing: listing}}, socket}
-      
-      {:error, changeset} ->
-        errors = format_changeset_errors(changeset)
-        {:reply, {:error, %{errors: errors}}, socket}
-    end
+    {:error, changeset} = Marketplace.create_listing(user.id, params)
+    errors = format_changeset_errors(changeset)
+    {:reply, {:error, %{errors: errors}}, socket}
   end
 
   # Client action - purchase listing
@@ -250,15 +239,8 @@ defmodule CGraphWeb.MarketplaceChannel do
     amount = Map.get(params, "amount")
     message = Map.get(params, "message")
     
-    case Marketplace.create_offer(user.id, listing_id, amount, message) do
-      {:ok, offer} ->
-        # Notify listing owner
-        notify_offer_received(offer)
-        {:reply, {:ok, %{offer: offer}}, socket}
-      
-      {:error, reason} ->
-        {:reply, {:error, %{reason: reason}}, socket}
-    end
+    {:error, reason} = Marketplace.create_offer(user.id, listing_id, amount, message)
+    {:reply, {:error, %{reason: reason}}, socket}
   end
 
   # Client action - respond to offer
@@ -266,15 +248,8 @@ defmodule CGraphWeb.MarketplaceChannel do
     user = socket.assigns.current_user
     message = Map.get(params, "message")
     
-    case Marketplace.respond_to_offer(user.id, offer_id, accept, message) do
-      {:ok, result} ->
-        # Notify offerer
-        notify_offer_response(result, accept)
-        {:reply, {:ok, result}, socket}
-      
-      {:error, reason} ->
-        {:reply, {:error, %{reason: reason}}, socket}
-    end
+    {:error, reason} = Marketplace.respond_to_offer(user.id, offer_id, accept, message)
+    {:reply, {:error, %{reason: reason}}, socket}
   end
 
   # Heartbeat
@@ -341,32 +316,11 @@ defmodule CGraphWeb.MarketplaceChannel do
     assign(socket, :last_broadcast, Map.put(last_broadcast, event_type, now))
   end
 
-  defp broadcast_new_listing(listing) do
-    Phoenix.PubSub.broadcast(CGraph.PubSub, "marketplace:global", {:new_listing, listing})
-  end
-
   defp notify_seller(transaction) do
     Phoenix.PubSub.broadcast(
       CGraph.PubSub, 
       "marketplace:user:#{transaction.seller_id}", 
       {:your_listing_sold, transaction}
-    )
-  end
-
-  defp notify_offer_received(offer) do
-    Phoenix.PubSub.broadcast(
-      CGraph.PubSub, 
-      "marketplace:user:#{offer.listing_seller_id}", 
-      {:offer_received, offer}
-    )
-  end
-
-  defp notify_offer_response(result, accepted) do
-    _event = if accepted, do: :offer_accepted, else: :offer_rejected
-    Phoenix.PubSub.broadcast(
-      CGraph.PubSub, 
-      "marketplace:user:#{result.offerer_id}", 
-      {:offer_response, %{accepted: accepted, result: result}}
     )
   end
 

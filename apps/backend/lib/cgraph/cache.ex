@@ -504,10 +504,8 @@ defmodule CGraph.Cache do
 
     # Use SCAN + pipelined DEL instead of KEYS (KEYS blocks all Redis clients at scale)
     # See: https://redis.io/commands/scan — O(1) per iteration vs O(N) for KEYS
-    case CGraph.Redis.scan_and_delete(redis_pattern) do
-      {:ok, _count} -> :ok
-      {:error, _} -> :ok
-    end
+    {:ok, _count} = CGraph.Redis.scan_and_delete(redis_pattern)
+    :ok
   rescue
     _ -> :ok
   end

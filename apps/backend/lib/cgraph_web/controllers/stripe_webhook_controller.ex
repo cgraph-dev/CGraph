@@ -189,15 +189,15 @@ defmodule CGraphWeb.StripeWebhookController do
 
   defp find_user_by_stripe_customer(customer_id) do
     case Accounts.get_user_by_stripe_customer(customer_id) do
-      nil -> {:error, :user_not_found}
-      user -> {:ok, user}
+      {:ok, user} -> {:ok, user}
+      {:error, _} -> {:error, :user_not_found}
     end
   end
 
   defp find_user_by_stripe_subscription(subscription_id) do
     case Accounts.get_user_by_stripe_subscription(subscription_id) do
-      nil -> {:error, :user_not_found}
-      user -> {:ok, user}
+      {:ok, user} -> {:ok, user}
+      {:error, _} -> {:error, :user_not_found}
     end
   end
 
