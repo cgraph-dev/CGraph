@@ -18,7 +18,7 @@ defmodule CGraph.Messaging.Message do
   @timestamps_opts [type: :utc_datetime_usec]
 
   @derive {Jason.Encoder, only: [
-    :id, :content, :content_type, :is_encrypted, :is_edited,
+    :id, :snowflake_id, :content, :content_type, :is_encrypted, :is_edited,
     :sender_id, :conversation_id, :channel_id, :reply_to_id,
     :scheduled_at, :schedule_status, :expires_at,
     :inserted_at, :updated_at
@@ -27,6 +27,11 @@ defmodule CGraph.Messaging.Message do
   @content_types ["text", "image", "video", "audio", "file", "voice", "sticker", "gif", "system"]
 
   schema "messages" do
+    # Discord-style Snowflake ID for guaranteed chronological ordering.
+    # Used as the primary cursor for pagination (WHERE snowflake_id > ?)
+    # while preserving UUID primary key for foreign key compatibility.
+    field :snowflake_id, :integer
+
     field :content, :string
     field :content_type, :string, default: "text"
     field :is_encrypted, :boolean, default: false
@@ -87,6 +92,7 @@ defmodule CGraph.Messaging.Message do
       :scheduled_at, :schedule_status, :expires_at
     ])
     |> validate_required([:content, :sender_id])
+    |> maybe_assign_snowflake_id()
     |> sanitize_content()
     |> validate_message_target()
     |> validate_inclusion(:content_type, @content_types)
@@ -121,6 +127,18 @@ defmodule CGraph.Messaging.Message do
     message
     |> change(deleted_at: DateTime.utc_now())
     |> change(deleted_for_everyone: for_everyone)
+  end
+
+  # Assign a Snowflake ID if the generator is running (production/test)
+  defp maybe_assign_snowflake_id(changeset) do
+    if get_field(changeset, :snowflake_id) do
+      changeset
+    else
+      case Process.whereis(CGraph.Snowflake) do
+        nil -> changeset  # Snowflake not started (e.g., migration context)
+        _pid -> put_change(changeset, :snowflake_id, CGraph.Snowflake.generate())
+      end
+    end
   end
 
   # Either conversation_id OR channel_id must be present, not both

@@ -12,8 +12,10 @@ defmodule CGraphWeb.ConversationChannel do
   use CGraphWeb, :channel
 
   alias CGraph.Messaging
+  alias CGraph.Messaging.DeliveryTracking
   alias CGraph.Presence
   alias CGraphWeb.API.V1.MessageJSON
+  alias CGraphWeb.Channels.Backpressure
 
   @typing_timeout 5_000
 
@@ -134,7 +136,11 @@ defmodule CGraphWeb.ConversationChannel do
 
   @impl true
   def handle_in("typing", params, socket) do
-    user = socket.assigns.current_user
+    # Drop typing events for degraded connections (Discord backpressure pattern)
+    if Backpressure.should_drop?("typing", socket) do
+      {:noreply, socket}
+    else
+      user = socket.assigns.current_user
 
     # Support both payload formats: {"typing": bool} (old) and {"is_typing": bool} (web/mobile)
     is_typing = case params do
@@ -169,6 +175,34 @@ defmodule CGraphWeb.ConversationChannel do
     end
 
     {:noreply, socket}
+    end
+  end
+
+  # WhatsApp-style message delivery acknowledgment
+  # Client sends this when a message has been displayed on their device
+  @impl true
+  def handle_in("msg_ack", %{"message_id" => message_id}, socket) do
+    user = socket.assigns.current_user
+    platform = socket.assigns[:platform] || "web"
+    device_id = socket.assigns[:device_id]
+
+    # Mark message as delivered (single-check → double-check)
+    DeliveryTracking.mark_delivered(message_id, user.id, %{
+      platform: platform,
+      device_id: device_id
+    })
+
+    # Notify sender that their message was delivered
+    broadcast_from!(socket, "msg_delivered", %{
+      message_id: message_id,
+      user_id: user.id,
+      delivered_at: DateTime.utc_now() |> DateTime.to_iso8601()
+    })
+
+    # Reset backpressure counter on client ACK
+    socket = Backpressure.reset(socket)
+
+    {:reply, :ok, socket}
   end
 
   @impl true

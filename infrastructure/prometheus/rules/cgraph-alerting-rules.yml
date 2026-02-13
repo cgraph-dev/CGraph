@@ -1,0 +1,223 @@
+groups:
+  # ==========================================================================
+  # CGraph Alerting Rules — Discord/Meta/Google SRE Standard
+  # ==========================================================================
+  # These alerts fire when SLOs are at risk of breaching.
+  # Uses multi-window, multi-burn-rate approach from Google SRE.
+  #
+  # Notification channels: Slack #incidents, PagerDuty (P1/P2)
+  # ==========================================================================
+
+  - name: cgraph_slo_alerts
+    rules:
+      # ── P1: API Availability Burning 14.4x Error Budget (2% of 30d budget in 1h) ──
+      - alert: APIAvailabilityBurnRateHigh
+        expr: >
+          (1 - cgraph:api_availability:ratio_1h) > (14.4 * 0.001)
+          and
+          (1 - cgraph:api_availability:ratio_5m) > (14.4 * 0.001)
+        for: 2m
+        labels:
+          severity: critical
+          team: backend
+          slo: availability
+        annotations:
+          summary: 'API availability SLO burning error budget 14.4x'
+          description: |
+            API error rate is {{ $value | humanizePercentage }} over the last hour.
+            At this rate, the monthly error budget will be exhausted in ~2 hours.
+            SLO target: 99.9% availability (43.8min/month downtime budget).
+          runbook: 'https://cgraph.org/docs/runbooks/api-availability'
+          dashboard: 'https://grafana.cgraph.org/d/cgraph-slo'
+
+      # ── P2: API Availability Burning 6x Error Budget (5% of 30d budget in 6h) ──
+      - alert: APIAvailabilityBurnRateMedium
+        expr: >
+          (1 - cgraph:api_availability:ratio_6h) > (6 * 0.001)
+          and
+          (1 - cgraph:api_availability:ratio_1h) > (6 * 0.001)
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+          slo: availability
+        annotations:
+          summary: 'API availability SLO burning error budget 6x'
+          description: |
+            API availability has been degraded for >1 hour.
+            Error rate: {{ $value | humanizePercentage }}.
+            Investigate before SLO breach.
+
+      # ── P1: Message Delivery Latency (p99 > 1s for 5 min) ──
+      - alert: MessageDeliveryLatencyHigh
+        expr: >
+          histogram_quantile(0.99,
+            sum(rate(phoenix_channel_handled_in_duration_milliseconds_bucket{event="new_message"}[5m])) by (le)
+          ) > 1000
+        for: 5m
+        labels:
+          severity: critical
+          team: backend
+          slo: latency
+        annotations:
+          summary: 'Message delivery p99 latency exceeds 1 second'
+          description: |
+            p99 message delivery latency is {{ $value }}ms (SLO target: <1000ms).
+            Check database connection pool, Redis circuit breaker, or PubSub backlog.
+          runbook: 'https://cgraph.org/docs/runbooks/message-latency'
+
+      # ── P2: Forum Feed Latency (p99 > 200ms for 10 min) ──
+      - alert: ForumFeedLatencyHigh
+        expr: >
+          histogram_quantile(0.99,
+            sum(rate(http_request_duration_milliseconds_bucket{route=~"/api/v1/forums.*"}[5m])) by (le)
+          ) > 200
+        for: 10m
+        labels:
+          severity: warning
+          team: backend
+          slo: latency
+        annotations:
+          summary: 'Forum feed p99 latency exceeds 200ms'
+          description: |
+            p99 forum API latency is {{ $value }}ms.
+            Check read replica lag, cache hit rate, or N+1 queries.
+
+      # ── P1: Database Connection Pool Exhaustion ──
+      - alert: DatabasePoolExhausted
+        expr: >
+          cgraph_repo_pool_idle_count == 0
+          and
+          cgraph_repo_pool_busy_count > 0
+        for: 1m
+        labels:
+          severity: critical
+          team: backend
+          component: database
+        annotations:
+          summary: 'Database connection pool is exhausted'
+          description: |
+            All {{ $value }} database connections are busy with 0 idle.
+            New requests will queue and eventually timeout.
+            Consider scaling pool_size or investigating slow queries.
+          runbook: 'https://cgraph.org/docs/runbooks/database-pool'
+
+      # ── P1: Redis Circuit Breaker Open ──
+      - alert: RedisCircuitBreakerOpen
+        expr: cgraph_circuit_breaker_status{name="redis"} == 0
+        for: 30s
+        labels:
+          severity: critical
+          team: backend
+          component: redis
+        annotations:
+          summary: 'Redis circuit breaker is OPEN'
+          description: |
+            Redis circuit breaker tripped — rate limiting has fallen back to ETS-only mode.
+            Distributed rate limiting, caching, and presence may be degraded.
+            Check Redis connectivity and Upstash health.
+
+      # ── P2: Push Notification Circuit Breakers ──
+      - alert: PushNotificationCircuitBreakerOpen
+        expr: cgraph_circuit_breaker_status{name=~"apns|fcm|expo|web_push"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          team: backend
+          component: push
+        annotations:
+          summary: 'Push notification circuit breaker OPEN for {{ $labels.name }}'
+          description: |
+            The {{ $labels.name }} push notification circuit breaker has tripped.
+            Notifications will be queued in the DLQ for retry (up to 72h).
+            Check the platform's status page.
+
+      # ── P1: Error Rate Spike (>5% 5xx in 5 min) ──
+      - alert: ErrorRateSpike
+        expr: >
+          sum(rate(http_requests_total{status=~"5.."}[5m]))
+          /
+          sum(rate(http_requests_total[5m]))
+          > 0.05
+        for: 3m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: 'Error rate spike: {{ $value | humanizePercentage }} 5xx responses'
+          description: |
+            More than 5% of requests are returning 5xx errors.
+            Check Sentry for error details and recent deployments.
+
+      # ── P2: Oban Job Queue Backlog ──
+      - alert: ObanQueueBacklog
+        expr: cgraph_oban_queue_length{queue="notifications"} > 1000
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+          component: oban
+        annotations:
+          summary: 'Oban notification queue backlog: {{ $value }} jobs'
+          description: |
+            The notification queue has >1000 pending jobs.
+            May indicate push service failures or insufficient worker concurrency.
+
+      # ── P2: WebSocket Connection Count High ──
+      - alert: WebSocketConnectionsHigh
+        expr: phoenix_socket_connected_total > 50000
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+          component: websocket
+        annotations:
+          summary: 'WebSocket connections at {{ $value }} (approaching capacity)'
+          description: |
+            High WebSocket connection count. Monitor memory usage per connection.
+            Consider horizontal scaling or PubSub sharding.
+
+      # ── P2: DLQ Notification Retry Exhausted ──
+      - alert: NotificationRetryExhausted
+        expr: >
+          increase(cgraph_notification_dlq_exhausted_total[1h]) > 100
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+          component: push
+        annotations:
+          summary: '{{ $value }} notifications permanently failed after all retries'
+          description: |
+            Notifications that exhausted all 6 retry attempts (72h window).
+            Users may be missing critical messages. Investigate push token validity.
+
+      # ── P3: Slow Query Detection ──
+      - alert: SlowQueriesDetected
+        expr: >
+          increase(cgraph_repo_query_duration_milliseconds_count{duration_bucket=">1000"}[15m]) > 50
+        for: 5m
+        labels:
+          severity: info
+          team: backend
+          component: database
+        annotations:
+          summary: '{{ $value }} queries exceeded 1 second in the last 15 minutes'
+          description: |
+            Multiple slow queries detected. Check the slow query reporter logs
+            and consider adding indexes or optimizing queries.
+
+      # ── P1: Deployment Canary Failure ──
+      - alert: CanaryDeploymentFailed
+        expr: >
+          cgraph_deployment_canary_healthy == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+          component: deployment
+        annotations:
+          summary: 'Canary deployment health check failing'
+          description: |
+            The canary instance is unhealthy after deployment.
+            Rollback may be needed. Check /health and /ready endpoints.

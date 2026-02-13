@@ -35,7 +35,13 @@ defmodule CGraph.Application do
       CGraph.ReadRepo,
 
       # Start the PubSub system
-      {Phoenix.PubSub, name: CGraph.PubSub},
+      # Pool size = number of partitions for parallel message dispatch.
+      # Default pool_size=1 is a bottleneck at >5K concurrent connections.
+      # Rule of thumb: pool_size = System.schedulers_online() (usually 4-8).
+      # PG2 adapter auto-clusters via Erlang distribution (no Redis needed for PubSub).
+      {Phoenix.PubSub,
+        name: CGraph.PubSub,
+        pool_size: pubsub_pool_size()},
 
       # === SUPERVISION HIERARCHY ===
 
@@ -261,6 +267,16 @@ defmodule CGraph.Application do
 
     Logger.info("[Application] Graceful shutdown complete")
     :ok
+  end
+
+  # PubSub pool size: partitions for parallel message dispatch.
+  # Configurable via PUBSUB_POOL_SIZE env var.
+  # Defaults to System.schedulers_online() (number of CPU cores).
+  defp pubsub_pool_size do
+    case System.get_env("PUBSUB_POOL_SIZE") do
+      nil -> System.schedulers_online()
+      size -> String.to_integer(size)
+    end
   end
 
   defp redis_config do

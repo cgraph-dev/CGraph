@@ -288,6 +288,9 @@ defmodule CGraph.Messaging do
         |> Ecto.Changeset.change(last_message_at: now)
         |> Repo.update()
 
+        # Track delivery receipts for all participants (WhatsApp-style ✓✓ marks)
+        track_delivery_for_participants(message, conversation)
+
         # Note: Message broadcasting is handled by the channel layer (conversation_channel.ex)
         # to ensure proper serialization and consistent camelCase format for WebSocket clients.
         # Do not broadcast here to avoid duplicate messages.
@@ -295,6 +298,25 @@ defmodule CGraph.Messaging do
         {:ok, Repo.preload(message, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])}
 
       error -> error
+    end
+  end
+
+  # Track delivery receipts for all conversation participants except the sender
+  defp track_delivery_for_participants(message, conversation) do
+    try do
+      recipient_ids =
+        from(cp in CGraph.Messaging.ConversationParticipant,
+          where: cp.conversation_id == ^conversation.id,
+          where: cp.user_id != ^message.sender_id,
+          select: cp.user_id
+        )
+        |> Repo.all()
+
+      if length(recipient_ids) > 0 do
+        CGraph.Messaging.DeliveryTracking.track_sent(message, recipient_ids)
+      end
+    rescue
+      _ -> :ok  # Don't fail message creation if delivery tracking fails
     end
   end
 

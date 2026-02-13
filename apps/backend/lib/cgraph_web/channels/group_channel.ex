@@ -13,8 +13,10 @@ defmodule CGraphWeb.GroupChannel do
 
   alias CGraph.Groups
   alias CGraph.Messaging
+  alias CGraph.Messaging.DeliveryTracking
   alias CGraph.Presence
   alias CGraphWeb.API.V1.MessageJSON
+  alias CGraphWeb.Channels.Backpressure
 
   # Rate limiting: max 10 messages per 10 seconds per user
   @rate_limit_window_ms 10_000
@@ -85,6 +87,10 @@ defmodule CGraphWeb.GroupChannel do
 
   @impl true
   def handle_in("typing", params, socket) do
+    # Drop typing events for degraded connections (Discord backpressure pattern)
+    if Backpressure.should_drop?("typing", socket) do
+      {:noreply, socket}
+    else
     user = socket.assigns.current_user
     member = socket.assigns.member
 
@@ -115,6 +121,24 @@ defmodule CGraphWeb.GroupChannel do
     })
 
     {:noreply, socket}
+    end
+  end
+
+  # WhatsApp-style message delivery acknowledgment for group messages
+  @impl true
+  def handle_in("msg_ack", %{"message_id" => message_id}, socket) do
+    user = socket.assigns.current_user
+    platform = socket.assigns[:platform] || "web"
+    device_id = socket.assigns[:device_id]
+
+    DeliveryTracking.mark_delivered(message_id, user.id, %{
+      platform: platform,
+      device_id: device_id
+    })
+
+    # Reset backpressure counter on client ACK
+    socket = Backpressure.reset(socket)
+    {:reply, :ok, socket}
   end
 
   @impl true
