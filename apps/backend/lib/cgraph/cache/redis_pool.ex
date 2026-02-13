@@ -300,8 +300,14 @@ defmodule CGraph.Cache.RedisPool do
     connection_name(index)
   end
 
+  # Pre-registered connection name atoms (bounded by pool_size — safe).
+  # Avoids runtime atom creation per Google/Discord safety guidelines.
+  @connection_names (for i <- 0..(@pool_size - 1), into: %{} do
+    {i, :"cgraph_redis_#{i}"}
+  end)
+
   defp connection_name(index) do
-    :"cgraph_redis_#{index}"
+    Map.fetch!(@connection_names, index)
   end
 
   defp get_pool_size do

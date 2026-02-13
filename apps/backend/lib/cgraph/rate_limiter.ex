@@ -223,8 +223,17 @@ defmodule CGraph.RateLimiter do
   Reset all rate limits for an identifier.
   """
   def reset_all(identifier) do
-    pattern = {:"#{identifier}:$1", :_, :_}
-    :ets.match_delete(@ets_table, pattern)
+    # Match string keys containing the identifier suffix — no atom creation.
+    suffix = ":#{identifier}"
+
+    @ets_table
+    |> :ets.tab2list()
+    |> Enum.each(fn {key, _, _} ->
+      if is_binary(key) and String.ends_with?(key, suffix) do
+        :ets.delete(@ets_table, key)
+      end
+    end)
+
     :ok
   end
 

@@ -213,52 +213,38 @@ defmodule CGraphWeb.API.V1.UploadController do
     end
   end
 
+  # Magic byte detection via pattern matching (Google/Discord-style dispatch)
+  # Each clause matches a specific file signature — no cond needed
+  defp identify_type_from_header(<<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, _::binary>>),
+    do: {:ok, "image/png"}
+
+  defp identify_type_from_header(<<0xFF, 0xD8, 0xFF, _::binary>>),
+    do: {:ok, "image/jpeg"}
+
+  defp identify_type_from_header(<<0x47, 0x49, 0x46, 0x38, version, 0x61, _::binary>>)
+       when version in [0x37, 0x39],
+       do: {:ok, "image/gif"}
+
+  defp identify_type_from_header(<<0x52, 0x49, 0x46, 0x46, _size::binary-size(4), "WEBP", _::binary>>),
+    do: {:ok, "image/webp"}
+
+  defp identify_type_from_header(<<0x1A, 0x45, 0xDF, 0xA3, _::binary>>),
+    do: {:ok, "video/webm"}
+
+  defp identify_type_from_header(<<_size::binary-size(4), "ftyp", _::binary>> = header),
+    do: identify_mp4_variant(header)
+
+  defp identify_type_from_header(<<0x25, 0x50, 0x44, 0x46, _::binary>>),
+    do: {:ok, "application/pdf"}
+
+  defp identify_type_from_header(<<0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1, _::binary>>),
+    do: {:ok, "application/msword"}
+
+  defp identify_type_from_header(<<0x50, 0x4B, 0x03, 0x04, _::binary>>),
+    do: {:ok, "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
+
   defp identify_type_from_header(header) when is_binary(header) and byte_size(header) >= 3 do
-    # Check magic bytes in order of specificity
-    cond do
-      # PNG (8 bytes)
-      binary_part(header, 0, min(8, byte_size(header))) == <<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A>> ->
-        {:ok, "image/png"}
-
-      # JPEG (3 bytes)
-      binary_part(header, 0, 3) == <<0xFF, 0xD8, 0xFF>> ->
-        {:ok, "image/jpeg"}
-
-      # GIF87a/GIF89a (6 bytes)
-      byte_size(header) >= 6 and binary_part(header, 0, 6) in [<<0x47, 0x49, 0x46, 0x38, 0x37, 0x61>>, <<0x47, 0x49, 0x46, 0x38, 0x39, 0x61>>] ->
-        {:ok, "image/gif"}
-
-      # WebP (RIFF....WEBP)
-      byte_size(header) >= 12 and binary_part(header, 0, 4) == <<0x52, 0x49, 0x46, 0x46>> and binary_part(header, 8, 4) == "WEBP" ->
-        {:ok, "image/webp"}
-
-      # WebM/MKV
-      binary_part(header, 0, 4) == <<0x1A, 0x45, 0xDF, 0xA3>> ->
-        {:ok, "video/webm"}
-
-      # MP4/MOV/M4V family (ftyp box)
-      byte_size(header) >= 8 and binary_part(header, 4, 4) == "ftyp" ->
-        identify_mp4_variant(header)
-
-      # PDF
-      binary_part(header, 0, 4) == <<0x25, 0x50, 0x44, 0x46>> ->
-        {:ok, "application/pdf"}
-
-      # MS Office OLE (old .doc, .xls)
-      byte_size(header) >= 8 and binary_part(header, 0, 8) == <<0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1>> ->
-        {:ok, "application/msword"}  # Could be .xls too, but safer default
-
-      # ZIP-based (OOXML: .docx, .xlsx, etc.)
-      binary_part(header, 0, 4) == <<0x50, 0x4B, 0x03, 0x04>> ->
-        {:ok, "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
-
-      # Plain text detection (printable ASCII/UTF-8 heuristic)
-      likely_text?(header) ->
-        {:ok, "text/plain"}
-
-      true ->
-        {:error, :unknown_file_type}
-    end
+    if likely_text?(header), do: {:ok, "text/plain"}, else: {:error, :unknown_file_type}
   end
 
   defp identify_type_from_header(_), do: {:error, :file_too_small}

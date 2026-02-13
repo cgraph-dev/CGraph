@@ -46,13 +46,13 @@ defmodule CGraphWeb.API.V1.PresenceJSON do
   defp location_data(nil), do: nil
   defp location_data(location) when is_map(location) do
     %{
-      page: location[:page] || location["page"],
-      forum_id: location[:forum_id] || location["forum_id"],
-      forum_name: location[:forum_name] || location["forum_name"],
-      thread_id: location[:thread_id] || location["thread_id"],
-      thread_title: location[:thread_title] || location["thread_title"],
-      action: location[:action] || location["action"],
-      description: location[:description] || location["description"]
+      page: get_val(location, :page),
+      forum_id: get_val(location, :forum_id),
+      forum_name: get_val(location, :forum_name),
+      thread_id: get_val(location, :thread_id),
+      thread_title: get_val(location, :thread_title),
+      action: get_val(location, :action),
+      description: get_val(location, :description)
     }
   end
 
@@ -63,15 +63,15 @@ defmodule CGraphWeb.API.V1.PresenceJSON do
   def stats(%{stats: stats}) do
     %{
       data: %{
-        users_online: stats[:users_online] || stats["users_online"] || 0,
-        guests_online: stats[:guests_online] || stats["guests_online"] || 0,
-        invisible_users: stats[:invisible_users] || stats["invisible_users"] || 0,
-        total_online: stats[:total_online] || stats["total_online"] || 0,
-        most_online: stats[:most_online] || stats["most_online"] || 0,
-        most_online_date: stats[:most_online_date] || stats["most_online_date"],
-        users_today: stats[:users_today] || stats["users_today"] || 0,
-        bots_online: stats[:bots_online] || stats["bots_online"] || 0,
-        breakdown: breakdown_data(stats[:breakdown] || stats["breakdown"])
+        users_online: get_val(stats, :users_online, 0),
+        guests_online: get_val(stats, :guests_online, 0),
+        invisible_users: get_val(stats, :invisible_users, 0),
+        total_online: get_val(stats, :total_online, 0),
+        most_online: get_val(stats, :most_online, 0),
+        most_online_date: get_val(stats, :most_online_date),
+        users_today: get_val(stats, :users_today, 0),
+        bots_online: get_val(stats, :bots_online, 0),
+        breakdown: breakdown_data(get_val(stats, :breakdown))
       }
     }
   end
@@ -79,10 +79,10 @@ defmodule CGraphWeb.API.V1.PresenceJSON do
   defp breakdown_data(nil), do: nil
   defp breakdown_data(breakdown) when is_map(breakdown) do
     %{
-      forums: breakdown[:forums] || breakdown["forums"] || 0,
-      threads: breakdown[:threads] || breakdown["threads"] || 0,
-      members: breakdown[:members] || breakdown["members"] || 0,
-      other: breakdown[:other] || breakdown["other"] || 0
+      forums: get_val(breakdown, :forums, 0),
+      threads: get_val(breakdown, :threads, 0),
+      members: get_val(breakdown, :members, 0),
+      other: get_val(breakdown, :other, 0)
     }
   end
 
@@ -118,12 +118,12 @@ defmodule CGraphWeb.API.V1.PresenceJSON do
   def user_status(%{status: status}) do
     %{
       data: %{
-        user_id: status[:user_id] || status["user_id"],
-        is_online: status[:is_online] || status["is_online"] || false,
-        is_invisible: status[:is_invisible] || status["is_invisible"] || false,
-        last_online_at: status[:last_online_at] || status["last_online_at"],
-        current_location: location_data(status[:current_location] || status["current_location"]),
-        status_text: status[:status_text] || status["status_text"]
+        user_id: get_val(status, :user_id),
+        is_online: get_val(status, :is_online, false),
+        is_invisible: get_val(status, :is_invisible, false),
+        last_online_at: get_val(status, :last_online_at),
+        current_location: location_data(get_val(status, :current_location)),
+        status_text: get_val(status, :status_text)
       }
     }
   end
@@ -135,10 +135,16 @@ defmodule CGraphWeb.API.V1.PresenceJSON do
   defp pagination_data(nil), do: nil
   defp pagination_data(pagination) do
     %{
-      page: pagination[:page] || pagination["page"],
-      per_page: pagination[:per_page] || pagination["per_page"],
-      total_count: pagination[:total_count] || pagination["total_count"],
-      total_pages: pagination[:total_pages] || pagination["total_pages"]
+      page: get_val(pagination, :page),
+      per_page: get_val(pagination, :per_page),
+      total_count: get_val(pagination, :total_count),
+      total_pages: get_val(pagination, :total_pages)
     }
+  end
+
+  # Flexible key access: tries atom key, then string key, with optional default.
+  # Handles maps from both Elixir contexts (atom keys) and JSON (string keys).
+  defp get_val(map, key, default \\ nil) do
+    map[key] || map[to_string(key)] || default
   end
 end

@@ -13,6 +13,12 @@ defmodule CGraph.Notifications do
   alias CGraph.Repo
   alias CGraph.Workers.{SendEmailNotification, SendPushNotification}
 
+  # Notification parameters bundled as a context object (Google-style)
+  defmodule Params do
+    @moduledoc false
+    defstruct [:type, :title, :body, :actor, :group_key, data: %{}]
+  end
+
   @doc """
   Creates and delivers a notification to a user.
 
@@ -25,16 +31,20 @@ defmodule CGraph.Notifications do
 
   """
   def notify(%User{} = user, type, title, opts \\ []) do
-    actor = Keyword.get(opts, :actor)
-    body = Keyword.get(opts, :body)
-    data = Keyword.get(opts, :data, %{})
-    group_key = Keyword.get(opts, :group_key)
+    params = %Params{
+      type: type,
+      title: title,
+      body: Keyword.get(opts, :body),
+      data: Keyword.get(opts, :data, %{}),
+      actor: Keyword.get(opts, :actor),
+      group_key: Keyword.get(opts, :group_key)
+    }
 
     # Check if we should group with existing notification
-    notification = if group_key do
-      maybe_group_notification(user, type, group_key, title, body, data, actor)
+    notification = if params.group_key do
+      maybe_group_notification(user, params)
     else
-      create_notification(user, type, title, body, data, actor)
+      do_create_notification(user, params)
     end
 
     case notification do
@@ -48,32 +58,32 @@ defmodule CGraph.Notifications do
     end
   end
 
-  defp create_notification(user, type, title, body, data, actor) do
+  defp do_create_notification(user, %Params{} = p) do
     %Notification{}
     |> Notification.changeset(%{
       user_id: user.id,
-      actor_id: actor && actor.id,
-      type: type,
-      title: title,
-      body: body,
-      data: data
+      actor_id: p.actor && p.actor.id,
+      type: p.type,
+      title: p.title,
+      body: p.body,
+      data: p.data
     })
     |> Repo.insert()
   end
 
-  defp maybe_group_notification(user, type, group_key, title, body, data, actor) do
+  defp maybe_group_notification(user, %Params{} = p) do
     # Look for existing unread notification with same group key
-    case get_unread_by_group_key(user, group_key) do
+    case get_unread_by_group_key(user, p.group_key) do
       nil ->
         %Notification{}
         |> Notification.changeset(%{
           user_id: user.id,
-          actor_id: actor && actor.id,
-          type: type,
-          title: title,
-          body: body,
-          data: data,
-          group_key: group_key,
+          actor_id: p.actor && p.actor.id,
+          type: p.type,
+          title: p.title,
+          body: p.body,
+          data: p.data,
+          group_key: p.group_key,
           count: 1
         })
         |> Repo.insert()
@@ -83,7 +93,7 @@ defmodule CGraph.Notifications do
         existing
         |> Notification.changeset(%{
           count: existing.count + 1,
-          title: update_grouped_title(title, existing.count + 1),
+          title: update_grouped_title(p.title, existing.count + 1),
           updated_at: DateTime.utc_now()
         })
         |> Repo.update()
@@ -663,7 +673,8 @@ defmodule CGraph.Notifications do
   Creates a notification directly (simple form).
   """
   def create_notification(%User{} = user, type) when is_atom(type) do
-    create_notification(user, type, to_string(type), nil, %{}, nil)
+    params = %Params{type: type, title: to_string(type), data: %{}}
+    do_create_notification(user, params)
   end
 
   # Serialization

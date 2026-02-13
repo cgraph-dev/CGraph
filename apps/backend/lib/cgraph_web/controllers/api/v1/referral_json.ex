@@ -16,9 +16,9 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   end
   defp code_data(code) when is_map(code) do
     %{
-      code: code[:code] || code["code"],
-      created_at: code[:created_at] || code["created_at"],
-      uses: code[:uses] || code["uses"] || 0
+      code: get_val(code, :code),
+      created_at: get_val(code, :created_at),
+      uses: get_val(code, :uses, 0)
     }
   end
 
@@ -101,15 +101,15 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   def stats(%{stats: stats}) do
     %{
       data: %{
-        total_referrals: stats[:total_referrals] || stats["total_referrals"] || 0,
-        pending_referrals: stats[:pending_referrals] || stats["pending_referrals"] || 0,
-        confirmed_referrals: stats[:confirmed_referrals] || stats["confirmed_referrals"] || 0,
-        total_rewards_earned: stats[:total_rewards_earned] || stats["total_rewards_earned"] || 0,
-        current_tier: stats[:current_tier] || stats["current_tier"],
-        next_tier_progress: stats[:next_tier_progress] || stats["next_tier_progress"] || 0,
-        referrals_this_month: stats[:referrals_this_month] || stats["referrals_this_month"] || 0,
-        referrals_this_week: stats[:referrals_this_week] || stats["referrals_this_week"] || 0,
-        rank: stats[:rank] || stats["rank"]
+        total_referrals: get_val(stats, :total_referrals, 0),
+        pending_referrals: get_val(stats, :pending_referrals, 0),
+        confirmed_referrals: get_val(stats, :confirmed_referrals, 0),
+        total_rewards_earned: get_val(stats, :total_rewards_earned, 0),
+        current_tier: get_val(stats, :current_tier),
+        next_tier_progress: get_val(stats, :next_tier_progress, 0),
+        referrals_this_month: get_val(stats, :referrals_this_month, 0),
+        referrals_this_week: get_val(stats, :referrals_this_week, 0),
+        rank: get_val(stats, :rank)
       }
     }
   end
@@ -128,13 +128,13 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
     %{
       rank: rank,
       user: %{
-        id: entry[:user_id] || entry["user_id"],
-        username: entry[:username] || entry["username"],
-        display_name: entry[:display_name] || entry["display_name"],
-        avatar: entry[:avatar] || entry["avatar"]
+        id: get_val(entry, :user_id),
+        username: get_val(entry, :username),
+        display_name: get_val(entry, :display_name),
+        avatar: get_val(entry, :avatar)
       },
-      referral_count: entry[:referral_count] || entry["referral_count"],
-      points: entry[:points] || entry["points"] || 0
+      referral_count: get_val(entry, :referral_count),
+      points: get_val(entry, :points, 0)
     }
   end
 
@@ -152,16 +152,16 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
 
   defp tier_data(tier) do
     %{
-      id: tier[:id] || tier["id"],
-      name: tier[:name] || tier["name"],
-      description: tier[:description] || tier["description"],
-      required_referrals: tier[:required_referrals] || tier["required_referrals"],
-      reward_type: tier[:reward_type] || tier["reward_type"],
-      reward_value: tier[:reward_value] || tier["reward_value"],
-      icon: tier[:icon] || tier["icon"],
-      unlocked: tier[:unlocked] || tier["unlocked"] || false,
-      claimed: tier[:claimed] || tier["claimed"] || false,
-      progress: tier[:progress] || tier["progress"] || 0
+      id: get_val(tier, :id),
+      name: get_val(tier, :name),
+      description: get_val(tier, :description),
+      required_referrals: get_val(tier, :required_referrals),
+      reward_type: get_val(tier, :reward_type),
+      reward_value: get_val(tier, :reward_value),
+      icon: get_val(tier, :icon),
+      unlocked: get_val(tier, :unlocked, false),
+      claimed: get_val(tier, :claimed, false),
+      progress: get_val(tier, :progress, 0)
     }
   end
 
@@ -182,10 +182,15 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   defp pagination_data(nil), do: nil
   defp pagination_data(pagination) do
     %{
-      page: pagination[:page] || pagination["page"],
-      per_page: pagination[:per_page] || pagination["per_page"],
-      total_count: pagination[:total_count] || pagination["total_count"],
-      total_pages: pagination[:total_pages] || pagination["total_pages"]
+      page: get_val(pagination, :page),
+      per_page: get_val(pagination, :per_page),
+      total_count: get_val(pagination, :total_count),
+      total_pages: get_val(pagination, :total_pages)
     }
+  end
+
+  # Flexible key access: tries atom key, then string key, with optional default.
+  defp get_val(map, key, default \\ nil) do
+    map[key] || map[to_string(key)] || default
   end
 end

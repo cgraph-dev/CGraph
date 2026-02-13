@@ -920,7 +920,7 @@ defmodule CGraph.Jobs do
     |> Enum.with_index(1)
     |> Enum.map(fn {step, index} ->
       %{
-        id: step[:id] || String.to_atom("step_#{index}"),
+        id: step[:id] || "step_#{index}",
         worker: step[:worker],
         args: step[:args] || %{},
         depends_on: step[:depends_on] || [],
@@ -935,7 +935,7 @@ defmodule CGraph.Jobs do
 
   defp generate_step_id(step) do
     worker_name = step[:worker] |> inspect() |> String.split(".") |> List.last()
-    String.to_atom("#{worker_name}_#{:erlang.unique_integer([:positive])}")
+    "#{worker_name}_#{:erlang.unique_integer([:positive])}"
   end
 
   defp start_ready_steps(workflow_state) do

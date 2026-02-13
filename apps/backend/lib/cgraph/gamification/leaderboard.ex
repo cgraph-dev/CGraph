@@ -193,17 +193,20 @@ defmodule CGraph.Gamification.Leaderboard do
   defp key(category), do: "#{@key_prefix}:#{category}"
   defp user_key(user_id), do: "#{@user_data_prefix}:#{user_id}"
 
+  # Category → user field dispatch map (Google-style constant map)
+  @category_fields %{
+    "xp" => :xp,
+    "level" => :level,
+    "streak" => :streak_days,
+    "karma" => :karma,
+    "messages" => :total_messages_sent,
+    "posts" => :total_posts_created,
+    "friends" => :friend_count
+  }
+
   defp get_score_for_category(user, category) do
-    case to_string(category) do
-      "xp" -> Map.get(user, :xp, 0) || 0
-      "level" -> Map.get(user, :level, 0) || 0
-      "streak" -> Map.get(user, :streak_days, 0) || 0
-      "karma" -> Map.get(user, :karma, 0) || 0
-      "messages" -> Map.get(user, :total_messages_sent, 0) || 0
-      "posts" -> Map.get(user, :total_posts_created, 0) || 0
-      "friends" -> Map.get(user, :friend_count, 0) || 0
-      _ -> 0
-    end
+    field = Map.get(@category_fields, to_string(category))
+    if field, do: Map.get(user, field, 0) || 0, else: 0
   end
 
   defp encode_user_data(user) do

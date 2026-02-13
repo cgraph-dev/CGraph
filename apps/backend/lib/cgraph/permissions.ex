@@ -480,27 +480,37 @@ defmodule CGraph.Permissions do
   end
 
   defp action_to_permission(action, resource) when is_atom(resource) do
-    # Simple resource type
-    :"#{action}_#{resource}"
+    # Build permission from known atoms — safe since both inputs are atoms
+    safe_to_permission_atom(action, resource)
   end
 
   defp action_to_permission(action, %{__struct__: struct}) do
-    # Struct - extract type from module name
+    # Struct — extract type from module name
     type = struct
     |> Module.split()
     |> List.last()
     |> Macro.underscore()
     |> String.to_existing_atom()
 
-    :"#{action}_#{type}"
+    safe_to_permission_atom(action, type)
   end
 
   defp action_to_permission(action, {type, _id}) do
-    :"#{action}_#{type}"
+    safe_to_permission_atom(action, type)
   end
 
   defp action_to_permission(action, _) do
     action
+  end
+
+  # Safely construct permission atoms using existing atom registration.
+  # Both action and type are already atoms from internal code, so the
+  # combined atom is predictable and bounded (Google-style allowlist safety).
+  defp safe_to_permission_atom(action, type) do
+    "#{action}_#{type}"
+    |> String.to_existing_atom()
+  rescue
+    ArgumentError -> :unknown_permission
   end
 
   defp wildcard_match?(permissions, permission) do

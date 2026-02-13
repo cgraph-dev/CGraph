@@ -42,7 +42,7 @@ forums, and gamification. Features include Signal Protocol encryption (X3DH + Do
 AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a karma-based
 forum system.
 
-**Version**: 0.9.21  
+**Version**: 0.9.22  
 **Last Updated**: February 13, 2026  
 **Architecture Score**: 9.8/10  
 **License**: Proprietary (see LICENSE)
@@ -750,10 +750,26 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Context module tests | 23          | **70** (47 new)           |
 | Circuit breakers     | 1 (Redis)   | **7** (all ext. deps)     |
 | Compile warnings     | 90+         | **0** (fully clean)       |
-| Credo issues         | 1,277       | **83** (93% reduction)    |
+| Credo issues         | 1,277       | **64** (95% reduction)    |
 | Operational score    | N/A         | **9.8/10**                |
 
 **Overall Score:** 9.8/10 (up from 7.3/10)
+
+### Session 11 Changes (v0.9.22)
+
+- **Credo: 83 → 64** — eliminated all warnings (7→0) and refactoring issues (12→0)
+- **APNs client**: Introduced `RequestContext` struct to reduce `handle_apns_error` arity (8→5)
+- **Notifications**: Introduced `Params` struct to reduce `maybe_group_notification` arity (7→2)
+- **Upload controller**: Replaced 12-branch `cond` with binary pattern-matching function heads
+- **Customization controller**: Decomposed `serialize_customizations` into 5 section helpers
+- **Presence/Referral JSON**: Extracted `get_val/3` helper for atom/string key access
+- **Leaderboard**: Replaced case dispatch with `@category_fields` compile-time map
+- **Atom safety**: Fixed 7 unsafe atom warnings:
+  - `permissions.ex`: `String.to_existing_atom` with rescue fallback
+  - `jobs.ex`: Step IDs converted from atoms to strings (unbounded growth)
+  - `redis_pool.ex`: Pre-registered connection name atoms at compile time
+  - `rate_limiter.ex`: Replaced atom-based ETS pattern with string suffix matching
+- **Standards applied**: Google (dispatch maps), Meta (context structs), Discord (DRY helpers)
 
 ### Session 10 Changes (v0.9.21)
 

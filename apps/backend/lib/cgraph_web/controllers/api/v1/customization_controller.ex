@@ -160,54 +160,75 @@ defmodule CGraphWeb.API.V1.CustomizationController do
     end
   end
 
-  # Private helper: Serialize customizations for API response
-  defp serialize_customizations(customizations) do
+  # Serialize customizations for API response.
+  # Decomposed into cohesive sections per Discord/Google API style.
+  defp serialize_customizations(c) do
+    Map.merge(serialize_identity(c), serialize_themes(c))
+    |> Map.merge(serialize_chat_styling(c))
+    |> Map.merge(serialize_effects(c))
+    |> Map.merge(serialize_metadata(c))
+  end
+
+  defp serialize_identity(c) do
     %{
-      # Identity
-      avatar_border_id: customizations.avatar_border_id,
-      title_id: customizations.title_id,
-      equipped_badges: customizations.equipped_badges || [],
-      profile_layout: customizations.profile_layout,
-      # Themes
-      profile_theme: customizations.profile_theme,
-      chat_theme: customizations.chat_theme,
-      forum_theme: customizations.forum_theme,
-      app_theme: customizations.app_theme,
-      # Chat Styling - Core
-      bubble_style: customizations.bubble_style,
-      message_effect: customizations.message_effect,
-      reaction_style: customizations.reaction_style,
-      # Chat Styling - Bubble Appearance
-      bubble_color: customizations.bubble_color,
-      bubble_opacity: customizations.bubble_opacity || 100,
-      bubble_radius: customizations.bubble_radius || 16,
-      bubble_shadow: customizations.bubble_shadow || "medium",
-      # Chat Styling - Typography
-      text_color: customizations.text_color,
-      text_size: customizations.text_size || 14,
-      text_weight: customizations.text_weight || "400",
-      font_family: customizations.font_family || "Inter",
-      # Chat Styling - Animations
-      entrance_animation: customizations.entrance_animation || "fade",
-      hover_effect: customizations.hover_effect || "lift",
-      animation_intensity: customizations.animation_intensity || "medium",
-      # Chat Styling - Advanced Effects
-      glass_effect: customizations.glass_effect || "default",
-      border_style: customizations.border_style || "none",
-      particle_effect: customizations.particle_effect,
-      sound_effect: customizations.sound_effect,
-      voice_visualizer_theme: customizations.voice_visualizer_theme || "cyber_blue",
-      # Accessibility
-      haptic_feedback: customizations.haptic_feedback,
-      # Global Effects
-      background_effect: customizations.background_effect || "solid",
-      animation_speed: customizations.animation_speed || "normal",
-      # Extensibility
-      custom_config: customizations.custom_config || %{},
-      preset_name: customizations.preset_name,
-      # Metadata
-      last_updated_at: customizations.last_updated_at,
-      updated_at: customizations.updated_at
+      avatar_border_id: c.avatar_border_id,
+      title_id: c.title_id,
+      equipped_badges: c.equipped_badges || [],
+      profile_layout: c.profile_layout
+    }
+  end
+
+  defp serialize_themes(c) do
+    %{
+      profile_theme: c.profile_theme,
+      chat_theme: c.chat_theme,
+      forum_theme: c.forum_theme,
+      app_theme: c.app_theme
+    }
+  end
+
+  defp serialize_chat_styling(c) do
+    %{
+      # Core
+      bubble_style: c.bubble_style,
+      message_effect: c.message_effect,
+      reaction_style: c.reaction_style,
+      # Bubble Appearance
+      bubble_color: c.bubble_color,
+      bubble_opacity: c.bubble_opacity || 100,
+      bubble_radius: c.bubble_radius || 16,
+      bubble_shadow: c.bubble_shadow || "medium",
+      # Typography
+      text_color: c.text_color,
+      text_size: c.text_size || 14,
+      text_weight: c.text_weight || "400",
+      font_family: c.font_family || "Inter",
+      # Animations
+      entrance_animation: c.entrance_animation || "fade",
+      hover_effect: c.hover_effect || "lift",
+      animation_intensity: c.animation_intensity || "medium"
+    }
+  end
+
+  defp serialize_effects(c) do
+    %{
+      glass_effect: c.glass_effect || "default",
+      border_style: c.border_style || "none",
+      particle_effect: c.particle_effect,
+      sound_effect: c.sound_effect,
+      voice_visualizer_theme: c.voice_visualizer_theme || "cyber_blue",
+      haptic_feedback: c.haptic_feedback,
+      background_effect: c.background_effect || "solid",
+      animation_speed: c.animation_speed || "normal",
+      custom_config: c.custom_config || %{},
+      preset_name: c.preset_name
+    }
+  end
+
+  defp serialize_metadata(c) do
+    %{
+      last_updated_at: c.last_updated_at,
+      updated_at: c.updated_at
     }
   end
 end

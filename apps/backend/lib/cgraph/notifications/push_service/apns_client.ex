@@ -37,6 +37,12 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
   @default_timeout 30_000
   @max_retries 3
 
+  # Request context passed through error handling pipeline (Google-style context object)
+  defmodule RequestContext do
+    @moduledoc false
+    defstruct [:device_token, :payload, :opts, :retry_count]
+  end
+
   # ============================================================================
   # Client API
   # ============================================================================
@@ -149,6 +155,7 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
   # ============================================================================
 
   defp do_send(device_token, payload, opts, state, retry_count) when retry_count < @max_retries do
+    ctx = %RequestContext{device_token: device_token, payload: payload, opts: opts, retry_count: retry_count}
     {host, path, headers, body} = build_apns_request(device_token, payload, opts, state)
 
     case http2_request(:post, host, path, headers, body) do
@@ -156,10 +163,10 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
         handle_apns_success(response_headers, state)
 
       {:ok, status, resp_headers, resp_body} ->
-        handle_apns_error(status, resp_headers, resp_body, device_token, payload, opts, state, retry_count)
+        handle_apns_error(status, resp_headers, resp_body, ctx, state)
 
       {:error, reason} ->
-        handle_apns_connection_error(reason, device_token, payload, opts, state, retry_count)
+        handle_apns_connection_error(reason, ctx, state)
     end
   end
   defp do_send(_device_token, _payload, _opts, state, _retry_count) do
@@ -199,41 +206,41 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
     {{:ok, apns_id}, state}
   end
 
-  defp handle_apns_error(400, _headers, body, _device_token, _payload, _opts, state, _retry_count) do
+  defp handle_apns_error(400, _headers, body, _ctx, state) do
     error = parse_error_response(body)
     Logger.warning("APNs bad request: #{inspect(error)}")
     state = update_stats(state, :failed, error)
     {{:error, error}, state}
   end
-  defp handle_apns_error(403, _headers, _body, device_token, payload, opts, state, retry_count) do
+  defp handle_apns_error(403, _headers, _body, ctx, state) do
     Logger.error("APNs authentication failed - refreshing token")
     state = refresh_jwt_token(state)
-    do_send(device_token, payload, opts, state, retry_count + 1)
+    do_send(ctx.device_token, ctx.payload, ctx.opts, state, ctx.retry_count + 1)
   end
-  defp handle_apns_error(404, _headers, _body, _device_token, _payload, _opts, state, _retry_count) do
+  defp handle_apns_error(404, _headers, _body, _ctx, state) do
     state = update_stats(state, :failed, :not_found)
     {{:error, :invalid_token}, state}
   end
-  defp handle_apns_error(410, _headers, _body, _device_token, _payload, _opts, state, _retry_count) do
+  defp handle_apns_error(410, _headers, _body, _ctx, state) do
     state = update_stats(state, :failed, :unregistered)
     {{:error, :invalid_token}, state}
   end
-  defp handle_apns_error(429, _headers, _body, device_token, payload, opts, state, retry_count) do
+  defp handle_apns_error(429, _headers, _body, ctx, state) do
     Logger.warning("APNs rate limited - backing off")
-    Process.sleep(1000 * (retry_count + 1))
-    do_send(device_token, payload, opts, state, retry_count + 1)
+    Process.sleep(1000 * (ctx.retry_count + 1))
+    do_send(ctx.device_token, ctx.payload, ctx.opts, state, ctx.retry_count + 1)
   end
-  defp handle_apns_error(status, _headers, body, _device_token, _payload, _opts, state, _retry_count) do
+  defp handle_apns_error(status, _headers, body, _ctx, state) do
     error = parse_error_response(body)
     Logger.error("apns_unexpected_status", status: status, error: inspect(error))
     state = update_stats(state, :failed, error)
     {{:error, error}, state}
   end
 
-  defp handle_apns_connection_error(reason, device_token, payload, opts, state, retry_count) do
+  defp handle_apns_connection_error(reason, ctx, state) do
     Logger.error("apns_connection_error", reason: inspect(reason))
-    Process.sleep(500 * (retry_count + 1))
-    do_send(device_token, payload, opts, state, retry_count + 1)
+    Process.sleep(500 * (ctx.retry_count + 1))
+    do_send(ctx.device_token, ctx.payload, ctx.opts, state, ctx.retry_count + 1)
   end
 
   defp http2_request(method, host, path, headers, body) do
