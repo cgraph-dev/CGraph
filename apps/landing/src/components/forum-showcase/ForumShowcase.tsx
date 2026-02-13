@@ -12,6 +12,7 @@ import { ModerationTab } from './ModerationTab';
 import { FeaturesSidebar } from './FeaturesSidebar';
 import type { ForumCategory, ForumBoard, ActiveTab } from './types';
 import { springs } from './springs';
+import { StarBorder } from '../effects';
 
 export function ForumShowcase() {
   const [categories, setCategories] = useState<ForumCategory[]>(initialCategories);
@@ -55,9 +56,13 @@ export function ForumShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <span className="mb-4 inline-block animate-[badge-subtle-pulse_4s_ease-in-out_infinite] cursor-default rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1 text-sm text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.15),0_0_24px_rgba(168,85,247,0.08)] transition-all duration-300 hover:scale-[1.02] hover:animate-none hover:border-purple-500/60 hover:bg-purple-500/20 hover:shadow-[0_0_20px_rgba(168,85,247,0.3),0_0_40px_rgba(168,85,247,0.15)]">
-            🏛️ Revolutionary Forums
-          </span>
+          <StarBorder
+            color="#a855f7"
+            speed="6s"
+            className="mb-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-purple-400"
+          >
+            Revolutionary Forums
+          </StarBorder>
           <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
             Build Your Community,{' '}
             <span className="bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">

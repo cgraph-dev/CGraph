@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AnimatedBorder, TiltCard, GlowText } from './effects';
 import { fadeInUp, staggerContainer } from './animations';
+import { StarBorder } from '../effects';
 
 // Import all types and components from submodule
 import type { DemoState, DemoPanel } from './CustomizationDemo/types';
@@ -89,9 +90,13 @@ export function CustomizationDemo() {
           variants={fadeInUp}
           transition={springs.gentle}
         >
-          <span className="mb-4 inline-block animate-[badge-subtle-pulse_4s_ease-in-out_infinite] cursor-default rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1 text-sm font-medium text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.15),0_0_24px_rgba(16,185,129,0.08)] transition-all duration-300 hover:scale-[1.02] hover:animate-none hover:border-emerald-500/60 hover:bg-emerald-500/20 hover:shadow-[0_0_20px_rgba(16,185,129,0.3),0_0_40px_rgba(16,185,129,0.15)]">
+          <StarBorder
+            color="#10b981"
+            speed="6s"
+            className="mb-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-emerald-400"
+          >
             100+ Customization Options
-          </span>
+          </StarBorder>
           <h2 className="mb-4 text-4xl font-bold text-white sm:text-5xl">
             Make It <GlowText>Yours</GlowText>
           </h2>
