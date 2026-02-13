@@ -25,7 +25,7 @@ defmodule CGraph.Workers.EmailDigestWorker do
     priority: 2
 
   import Ecto.Query
-  alias CGraph.{Repo, Accounts, Messaging, Forums, Gamification, Mailer}
+  alias CGraph.{Repo, Accounts, Mailer}
   alias CGraph.Accounts.User
 
   @impl Oban.Worker
@@ -146,7 +146,7 @@ defmodule CGraph.Workers.EmailDigestWorker do
     |> Kernel.||(0)
   end
 
-  defp calculate_xp_earned(user_id, since) do
+  defp calculate_xp_earned(user_id, _since) do
     # This would query gamification events/history
     # For now, return a placeholder
     from(u in User,
@@ -160,7 +160,7 @@ defmodule CGraph.Workers.EmailDigestWorker do
     end
   end
 
-  defp count_new_achievements(user_id, since) do
+  defp count_new_achievements(_user_id, _since) do
     # Query user_achievements table for achievements unlocked since period_start
     # Placeholder for now
     0

@@ -10,9 +10,9 @@ defmodule CGraph.Forums do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Forums.{Board, Category, Comment, Forum, ForumMember, ForumPlugin}
-  alias CGraph.Forums.{ForumUserGroup, ForumVote, Moderator, PollVote, Post, PostVote}
-  alias CGraph.Forums.{Subscription, Thread, ThreadPoll, ThreadPost, ThreadVote, Vote}
+  alias CGraph.Forums.{Board, Comment, Forum, ForumMember, Moderator, Post, PostVote}
+  alias CGraph.Forums.{ForumVote, Subscription, Thread, ThreadPost, ThreadVote, Vote}
+  alias CGraph.Forums.SubscriptionService
   # Reserved for future features
   alias CGraph.Forums.ForumAnnouncement, warn: false
   alias CGraph.Forums.ForumTheme, warn: false

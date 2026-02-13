@@ -430,7 +430,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
     end
   end
 
-  defp validate_display_group(member, nil), do: :ok
+  defp validate_display_group(_member, nil), do: :ok
   defp validate_display_group(member, display_group_id) do
     # Display group must be the primary group or one of the secondary groups
     all_group_ids = MemberSecondaryGroup.all_group_ids(member, Repo)

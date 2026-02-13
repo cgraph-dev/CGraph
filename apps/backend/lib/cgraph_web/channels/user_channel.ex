@@ -206,47 +206,8 @@ defmodule CGraphWeb.UserChannel do
   end
 
   # ---------------------------------------------------------------------------
-  # Session Resumption — Sequenced Push
+  # Session Resumption — Replay
   # ---------------------------------------------------------------------------
-
-  # Override push to track sequence numbers and buffer for resumption
-  defp sequenced_push(socket, event, payload) do
-    seq = (socket.assigns[:sequence] || 0) + 1
-    socket = assign(socket, :sequence, seq)
-
-    enriched_payload = Map.merge(payload, %{
-      _seq: seq,
-      _session_id: socket.assigns[:session_id]
-    })
-
-    # Buffer in Redis for session resumption (fire-and-forget)
-    buffer_event(socket.assigns.current_user.id, socket.assigns[:session_id], seq, event, payload)
-
-    push(socket, event, enriched_payload)
-    socket
-  end
-
-  defp buffer_event(user_id, session_id, seq, event, payload) do
-    key = "ws:buffer:#{user_id}:#{session_id}"
-
-    entry = Jason.encode!(%{
-      seq: seq,
-      event: event,
-      payload: payload,
-      timestamp: DateTime.utc_now() |> DateTime.to_iso8601()
-    })
-
-    try do
-      # Add to sorted set with sequence as score
-      CGraph.Redis.command(["ZADD", key, to_string(seq), entry])
-      # Set TTL on the buffer
-      CGraph.Redis.command(["EXPIRE", key, to_string(@resume_buffer_ttl_seconds)])
-      # Trim to max size (remove oldest if over limit)
-      CGraph.Redis.command(["ZREMRANGEBYRANK", key, "0", to_string(-@resume_buffer_max_size - 1)])
-    rescue
-      _ -> :ok  # Failed to buffer; non-critical
-    end
-  end
 
   defp replay_missed_events(socket, user_id, old_session_id, last_seq) do
     key = "ws:buffer:#{user_id}:#{old_session_id}"

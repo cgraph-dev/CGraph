@@ -260,29 +260,35 @@ defmodule CGraphWeb.Router do
 
     # ==========================================================================
     # Billing & Payments (Stripe Integration)
+    # Routes exist but controllers are at CGraphWeb.Api.PaymentController
+    # TODO: Wire to correct module or create V1 controllers
     # ==========================================================================
-    get "/billing/plans", API.PaymentController, :plans
-    get "/billing/status", API.PaymentController, :billing_status
-    post "/billing/checkout", API.PaymentController, :create_checkout
-    post "/billing/portal", API.PaymentController, :create_portal
+    # get "/billing/plans", API.PaymentController, :plans
+    # get "/billing/status", API.PaymentController, :billing_status
+    # post "/billing/checkout", API.PaymentController, :create_checkout
+    # post "/billing/portal", API.PaymentController, :create_portal
 
     # ==========================================================================
     # Forum Subscriptions (notification preferences per forum/thread)
+    # Routes exist but controller is at CGraphWeb.API.SubscriptionController
+    # TODO: Wire to correct module or create V1 controller
     # ==========================================================================
-    get "/forum/subscriptions", API.SubscriptionController, :index
-    post "/forum/subscriptions", API.SubscriptionController, :create
-    put "/forum/subscriptions/:id", API.SubscriptionController, :update
-    delete "/forum/subscriptions/:id", API.SubscriptionController, :delete
-    post "/forum/subscriptions/bulk-update", API.SubscriptionController, :bulk_update
-    post "/forum/subscriptions/toggle-thread", API.SubscriptionController, :toggle_thread
+    # get "/forum/subscriptions", API.SubscriptionController, :index
+    # post "/forum/subscriptions", API.SubscriptionController, :create
+    # put "/forum/subscriptions/:id", API.SubscriptionController, :update
+    # delete "/forum/subscriptions/:id", API.SubscriptionController, :delete
+    # post "/forum/subscriptions/bulk-update", API.SubscriptionController, :bulk_update
+    # post "/forum/subscriptions/toggle-thread", API.SubscriptionController, :toggle_thread
 
     # ==========================================================================
     # Username Management (availability check, history, cooldown)
+    # Routes exist but controller is at CGraphWeb.API.UsernameController
+    # TODO: Wire to correct module or create V1 controller
     # ==========================================================================
-    get "/users/check-username", API.UsernameController, :check_availability
-    post "/users/me/change-username", API.UsernameController, :change_username
-    get "/users/me/username-history", API.UsernameController, :history
-    get "/users/me/username-cooldown", API.UsernameController, :cooldown_status
+    # get "/users/check-username", API.UsernameController, :check_availability
+    # post "/users/me/change-username", API.UsernameController, :change_username
+    # get "/users/me/username-history", API.UsernameController, :history
+    # get "/users/me/username-cooldown", API.UsernameController, :cooldown_status
 
     # ==========================================================================
     # AI Endpoints - PLACEHOLDER FOR FUTURE CLAUDE INTEGRATION

@@ -32,12 +32,12 @@ defmodule CGraph.Accounts do
 
   # Registration submodule delegations
   alias CGraph.Accounts.Registration, as: RegModule
-  defdelegate register_user_v2(attrs, opts \\ []), to: RegModule, as: :register_user
+  defdelegate register_user_v2(attrs), to: RegModule, as: :register
 
   # Sessions submodule delegations
   alias CGraph.Accounts.Sessions, as: SessionsModule
-  defdelegate list_user_sessions_v2(user_id), to: SessionsModule, as: :list_user_sessions
-  defdelegate revoke_all_sessions_v2(user_id, except \\ nil), to: SessionsModule, as: :revoke_all
+  defdelegate list_user_sessions_v2(user), to: SessionsModule, as: :list_sessions
+  defdelegate revoke_all_sessions_v2(user), to: SessionsModule, as: :revoke_all_sessions
 
   # Friends submodule delegations
   alias CGraph.Accounts.Friends, as: FriendsModule
@@ -48,18 +48,19 @@ defmodule CGraph.Accounts do
   defdelegate block_user_v2(blocker_id, blocked_id), to: FriendsModule, as: :block_user
   defdelegate unblock_user_v2(blocker_id, blocked_id), to: FriendsModule, as: :unblock_user
   defdelegate list_friends_v2(user_id, opts \\ []), to: FriendsModule, as: :list_friends
-  defdelegate list_pending_requests_v2(user_id), to: FriendsModule, as: :list_pending_requests
+  defdelegate list_pending_requests_v2(user_id), to: FriendsModule, as: :list_incoming_requests
   defdelegate are_friends_v2?(user_id, friend_id), to: FriendsModule, as: :are_friends?
 
   # Settings submodule delegations
   alias CGraph.Accounts.Settings, as: SettingsModule
   defdelegate get_user_settings_v2(user_id), to: SettingsModule, as: :get_user_settings
-  defdelegate update_user_settings_v2(user_id, attrs), to: SettingsModule, as: :update_user_settings
+  defdelegate update_user_settings_v2(user_id, attrs), to: SettingsModule, as: :update_settings
 
-  # Wallet auth submodule delegations
-  alias CGraph.Accounts.WalletAuth, as: WalletModule
-  defdelegate get_or_create_wallet_challenge_v2(address), to: WalletModule, as: :get_or_create_challenge
-  defdelegate verify_wallet_signature_v2(address, signature), to: WalletModule, as: :verify_signature
+  # Wallet auth submodule delegations — stubs until wallet features are implemented
+  @doc false
+  def get_or_create_wallet_challenge_v2(_address), do: {:error, :not_implemented}
+  @doc false
+  def verify_wallet_signature_v2(_address, _signature), do: {:error, :not_implemented}
 
   # Search submodule delegations
   alias CGraph.Accounts.Search, as: SearchModule
@@ -92,6 +93,41 @@ defmodule CGraph.Accounts do
   defdelegate update_signature_v2(user_id, signature), to: ProfileModule, as: :update_signature
   defdelegate update_bio_v2(user_id, bio), to: ProfileModule, as: :update_bio
   defdelegate update_profile_v2(user_id, attrs), to: ProfileModule, as: :update_profile
+
+  # ============================================================================
+  # Stub Functions (planned features, not yet implemented)
+  # ============================================================================
+
+  @doc "Dismiss a friend suggestion. Planned feature."
+  def dismiss_friend_suggestion(_user_id, _suggested_user_id), do: {:ok, :dismissed}
+
+  @doc "Look up a user by Stripe customer ID. Requires Stripe integration."
+  def get_user_by_stripe_customer(stripe_customer_id) do
+    Repo.get_by(User, stripe_customer_id: stripe_customer_id)
+    |> case do
+      nil -> {:error, :not_found}
+      user -> {:ok, user}
+    end
+  end
+
+  @doc "Look up a user by Stripe subscription ID. Requires Stripe integration."
+  def get_user_by_stripe_subscription(stripe_subscription_id) do
+    Repo.get_by(User, stripe_subscription_id: stripe_subscription_id)
+    |> case do
+      nil -> {:error, :not_found}
+      user -> {:ok, user}
+    end
+  end
+
+  @doc "Verify a user's password."
+  def verify_password(%User{} = user, password) when is_binary(password) do
+    case Argon2.verify_pass(password, user.password_hash) do
+      true -> :ok
+      false -> {:error, :invalid_password}
+    end
+  rescue
+    _ -> {:error, :invalid_password}
+  end
 
   # ============================================================================
   # Registration & Authentication

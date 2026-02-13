@@ -312,24 +312,4 @@ defmodule CGraphWeb.PresenceChannel do
     |> Map.new()
   end
   defp build_friend_presence(_), do: %{}
-
-  # Legacy helper — kept for backward compatibility but no longer used in hot paths
-  defp _build_presence_map(presence_list, friend_ids) when is_map(presence_list) do
-    friend_ids_set = MapSet.new(friend_ids)
-
-    presence_list
-    |> Enum.filter(fn {user_id, _} -> MapSet.member?(friend_ids_set, user_id) end)
-    |> Enum.map(fn {user_id, %{metas: metas}} ->
-      merged = Presence.merge_multi_device_presence(metas)
-      {user_id, %{
-        online: true,
-        status: merged[:status] || "online",
-        device_count: length(metas),
-        last_active: merged[:last_active]
-      }}
-    end)
-    |> Map.new()
-  end
-
-  defp _build_presence_map(_, _), do: %{}
 end

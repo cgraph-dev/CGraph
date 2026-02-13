@@ -43,7 +43,7 @@ defmodule CGraphWeb.ForumChannel do
   @impl true
   def handle_info(:after_join, socket) do
     user = socket.assigns.current_user
-    forum_id = socket.assigns.forum_id
+    _forum_id = socket.assigns.forum_id
 
     # Track presence in forum
     {:ok, _} = Presence.track(socket, user.id, %{

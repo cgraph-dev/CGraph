@@ -7,8 +7,8 @@
  */
 
 import { memo, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { springs } from '../animations';
+import { motion, AnimatePresence } from 'framer-motion';
+// springs import removed
 import type { DemoState } from './types';
 import { themeColors } from './constants';
 import { AnimatedAvatar } from './AnimatedAvatar';
@@ -25,30 +25,72 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
     state.animationSpeed === 'slow' ? 2 : state.animationSpeed === 'fast' ? 0.5 : 1;
 
   const getBubbleStyle = useMemo(() => {
-    const baseRadius = state.bubbleBorderRadius || 16;
-    const shadowIntensity = (state.bubbleShadowIntensity || 20) / 100;
+    const baseRadius = state.bubbleBorderRadius ?? 16;
+    const shadowIntensity = (state.bubbleShadowIntensity ?? 20) / 100;
 
     return (isOwn: boolean) => {
-      const bgColor = isOwn
-        ? `linear-gradient(135deg, ${bubbleColors.primary}, ${bubbleColors.secondary})`
-        : 'rgba(55, 65, 81, 0.8)';
+      const isModern = state.chatBubbleStyle === 'modern';
+      const isRetro = state.chatBubbleStyle === 'retro';
+      const isGlass = state.bubbleGlassEffect || isModern;
 
+      // Dynamic Border Radius
       let borderRadius = `${baseRadius}px`;
       if (state.chatBubbleStyle === 'sharp') {
         borderRadius = isOwn
           ? `${baseRadius}px ${baseRadius}px 4px ${baseRadius}px`
           : `${baseRadius}px ${baseRadius}px ${baseRadius}px 4px`;
       } else if (state.chatBubbleStyle === 'cloud') {
-        borderRadius = `${baseRadius + 8}px`;
+        // Cloud/Puffy style logic
+        borderRadius = isOwn
+          ? `${baseRadius + 10}px ${baseRadius + 5}px 4px ${baseRadius + 10}px`
+          : `${baseRadius + 5}px ${baseRadius + 10}px ${baseRadius + 10}px 4px`;
+      } else if (isRetro) {
+        borderRadius = '4px'; // Boxy
+      }
+
+      // Background Color
+      let background = isOwn
+        ? `linear-gradient(135deg, ${bubbleColors.primary}, ${bubbleColors.secondary})`
+        : 'rgba(55, 65, 81, 0.8)';
+
+      if (isModern) {
+        background = isOwn
+          ? `linear-gradient(135deg, ${bubbleColors.primary}DD, ${bubbleColors.secondary}DD)` // Higher opacity
+          : 'rgba(255, 255, 255, 0.05)';
+      } else if (isRetro) {
+        background = isOwn ? bubbleColors.primary : '#374151';
+      }
+
+      // Shadows
+      let boxShadow = isOwn
+        ? `0 4px ${12 * shadowIntensity}px ${bubbleColors.glow}`
+        : `0 2px ${8 * shadowIntensity}px rgba(0, 0, 0, 0.3)`;
+
+      if (isModern) {
+        boxShadow = isOwn
+          ? `0 8px 32px ${bubbleColors.glow}, inset 0 0 20px rgba(255,255,255,0.1)`
+          : `0 4px 16px rgba(0,0,0,0.2)`;
+      } else if (isRetro) {
+        const offset = 4 * (state.bubbleShadowIntensity ? state.bubbleShadowIntensity / 50 : 0.5);
+        boxShadow = `${offset}px ${offset}px 0px rgba(0,0,0,0.5)`;
+      }
+
+      // Border
+      let border = 'none';
+      if (isModern) {
+        border = '1px solid rgba(255, 255, 255, 0.15)';
+      } else if (isRetro) {
+        border = `2px solid ${isOwn ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0.8)'}`;
       }
 
       return {
-        background: bgColor,
+        background,
         borderRadius,
-        boxShadow: isOwn
-          ? `0 4px ${12 * shadowIntensity}px ${bubbleColors.glow}`
-          : `0 2px ${8 * shadowIntensity}px rgba(0, 0, 0, 0.3)`,
-        backdropFilter: state.bubbleGlassEffect ? 'blur(10px)' : 'none',
+        boxShadow,
+        border,
+        backdropFilter: isGlass ? 'blur(12px)' : 'none',
+        fontFamily: isRetro ? '"Space Grotesk", monospace' : 'inherit',
+        letterSpacing: isRetro ? '0.5px' : 'normal',
       };
     };
   }, [state, bubbleColors]);
@@ -57,32 +99,40 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
     const delay = index * 0.15;
     const anim = state.bubbleEntranceAnimation || 'slide';
 
+    // Advanced Spring Physics
+    const elasticSpring = { type: 'spring', stiffness: 400, damping: 15, mass: 1 };
+    const bounceSpring = { type: 'spring', stiffness: 500, damping: 12, mass: 0.8 };
+    const snapSpring = { type: 'spring', stiffness: 300, damping: 20 };
+
     const animations: Record<string, object> = {
-      none: {},
+      none: {
+        initial: { opacity: 1 },
+        animate: { opacity: 1 },
+      },
       slide: {
-        initial: { opacity: 0, x: isOwn ? 20 : -20 },
-        animate: { opacity: 1, x: 0 },
-        transition: { delay, ...springs.bouncy },
+        initial: { opacity: 0, x: isOwn ? 50 : -50, skewX: isOwn ? -10 : 10 },
+        animate: { opacity: 1, x: 0, skewX: 0 },
+        transition: { delay, ...elasticSpring },
       },
       fade: {
-        initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        transition: { delay, duration: 0.3 },
+        initial: { opacity: 0, scale: 0.9, filter: 'blur(10px)' },
+        animate: { opacity: 1, scale: 1, filter: 'blur(0px)' },
+        transition: { delay, duration: 0.5, ease: 'circOut' },
       },
       scale: {
-        initial: { opacity: 0, scale: 0.8 },
-        animate: { opacity: 1, scale: 1 },
-        transition: { delay, ...springs.snappy },
+        initial: { opacity: 0, scale: 0, rotate: isOwn ? 5 : -5, y: 20 },
+        animate: { opacity: 1, scale: 1, rotate: 0, y: 0 },
+        transition: { delay, ...snapSpring },
       },
       bounce: {
-        initial: { opacity: 0, y: 20 },
-        animate: { opacity: 1, y: 0 },
-        transition: { delay, ...springs.snappy },
+        initial: { opacity: 0, scale: 0.3, y: 50 },
+        animate: { opacity: 1, scale: 1, y: 0 },
+        transition: { delay, ...bounceSpring },
       },
       flip: {
-        initial: { opacity: 0, rotateX: 90 },
-        animate: { opacity: 1, rotateX: 0 },
-        transition: { delay, ...springs.bouncy },
+        initial: { opacity: 0, rotateX: 90, z: -100, scale: 0.8 },
+        animate: { opacity: 1, rotateX: 0, z: 0, scale: 1 },
+        transition: { delay, type: 'spring', stiffness: 200, damping: 18 },
       },
     };
 
@@ -95,6 +145,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       style={{
         backdropFilter: state.blurEnabled ? 'blur(20px)' : 'none',
         boxShadow: state.glowEnabled ? `0 0 40px ${colors.glow}` : 'none',
+        perspective: '1000px', // Crucial for 3D transforms
       }}
       animate={
         state.glowEnabled
@@ -142,7 +193,6 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
           <AnimatedAvatar
             borderType={state.avatarBorder}
             borderColor={state.avatarBorderColor}
-            size={state.avatarSize}
             speedMultiplier={speedMultiplier}
           />
           <div className="flex-1">
@@ -171,62 +221,86 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
           </div>
         </div>
 
-        {/* Messages */}
-        <div className={`space-y-${state.compactMode ? '2' : '3'}`}>
-          <motion.div
-            className="p-3"
-            style={getBubbleStyle(false)}
-            {...getBubbleAnimation(false, 0)}
-            whileHover={
-              state.bubbleHoverEffect
-                ? { scale: 1.02, boxShadow: `0 4px 16px ${colors.primary}30` }
-                : {}
-            }
+        {/* Messages Container with 3D Perspective */}
+        <AnimatePresence mode="popLayout">
+          <div
+            className={`space-y-${state.compactMode ? '2' : '3'}`}
+            style={{ transformStyle: 'preserve-3d' }}
           >
-            <p className={`${state.compactMode ? 'text-xs' : 'text-sm'} text-gray-200`}>
-              Welcome! Your profile looks amazing with that border! 🔥
-            </p>
-            {state.showTimestamps && (
-              <span className="mt-1 block text-[10px] text-gray-500">10:42 AM</span>
-            )}
-          </motion.div>
+            {/* Message 1 (Incoming) */}
+            <motion.div
+              key="msg1"
+              className="max-w-[85%] p-3"
+              style={{
+                ...getBubbleStyle(false),
+                alignSelf: 'flex-start',
+                marginRight: 'auto',
+                transformOrigin: 'left center', // Enhance animations
+              }}
+              {...getBubbleAnimation(false, 0)}
+              whileHover={
+                state.bubbleHoverEffect
+                  ? { scale: 1.02, boxShadow: `0 4px 16px ${colors.primary}30`, z: 10 }
+                  : {}
+              }
+            >
+              <p className={`${state.compactMode ? 'text-xs' : 'text-sm'} text-gray-200`}>
+                Welcome! Your profile looks amazing with that border! 🔥
+              </p>
+              {state.showTimestamps && (
+                <span className="mt-1 block text-[10px] text-gray-400 opacity-70">10:42 AM</span>
+              )}
+            </motion.div>
 
-          <motion.div
-            className="ml-auto max-w-[75%] p-3"
-            style={getBubbleStyle(true)}
-            {...getBubbleAnimation(true, 1)}
-            whileHover={
-              state.bubbleHoverEffect
-                ? { scale: 1.02, boxShadow: `0 6px 20px ${bubbleColors.primary}50` }
-                : {}
-            }
-          >
-            <p className={`${state.compactMode ? 'text-xs' : 'text-sm'} text-white`}>
-              Thanks! Just unlocked the Legendary tier 🎉
-            </p>
-            {state.showTimestamps && (
-              <span className="mt-1 block text-[10px] text-white/60">10:43 AM</span>
-            )}
-          </motion.div>
+            {/* Message 2 (Outgoing) */}
+            <motion.div
+              key="msg2"
+              className="max-w-[85%] p-3"
+              style={{
+                ...getBubbleStyle(true),
+                marginLeft: 'auto', // CSS align
+                transformOrigin: 'right center', // Enhance animations
+              }}
+              {...getBubbleAnimation(true, 1)}
+              whileHover={
+                state.bubbleHoverEffect
+                  ? { scale: 1.02, boxShadow: `0 6px 20px ${bubbleColors.primary}50`, z: 10 }
+                  : {}
+              }
+            >
+              <p className={`${state.compactMode ? 'text-xs' : 'text-sm'} text-white`}>
+                Thanks! Just unlocked the Legendary tier 🎉
+              </p>
+              {state.showTimestamps && (
+                <span className="mt-1 block text-[10px] text-white/70">10:43 AM</span>
+              )}
+            </motion.div>
 
-          <motion.div
-            className="p-3"
-            style={getBubbleStyle(false)}
-            {...getBubbleAnimation(false, 2)}
-            whileHover={
-              state.bubbleHoverEffect
-                ? { scale: 1.02, boxShadow: `0 4px 16px ${colors.primary}30` }
-                : {}
-            }
-          >
-            <p className={`${state.compactMode ? 'text-xs' : 'text-sm'} text-gray-200`}>
-              The customization options are incredible! 🎨
-            </p>
-            {state.showTimestamps && (
-              <span className="mt-1 block text-[10px] text-gray-500">10:44 AM</span>
-            )}
-          </motion.div>
-        </div>
+            {/* Message 3 (Incoming) */}
+            <motion.div
+              key="msg3"
+              className="max-w-[85%] p-3"
+              style={{
+                ...getBubbleStyle(false),
+                marginRight: 'auto',
+                transformOrigin: 'left center',
+              }}
+              {...getBubbleAnimation(false, 2)}
+              whileHover={
+                state.bubbleHoverEffect
+                  ? { scale: 1.02, boxShadow: `0 4px 16px ${colors.primary}30`, z: 10 }
+                  : {}
+              }
+            >
+              <p className={`${state.compactMode ? 'text-xs' : 'text-sm'} text-gray-200`}>
+                The customization options are incredible! 🎨
+              </p>
+              {state.showTimestamps && (
+                <span className="mt-1 block text-[10px] text-gray-400 opacity-70">10:44 AM</span>
+              )}
+            </motion.div>
+          </div>
+        </AnimatePresence>
 
         {/* Status bar */}
         <div className="mt-4 flex items-center gap-4 text-xs text-gray-500">

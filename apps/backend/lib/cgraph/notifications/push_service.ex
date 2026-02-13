@@ -107,6 +107,14 @@ defmodule CGraph.Notifications.PushService do
   end
 
   @doc """
+  Sends a push notification to a single device token on a specific platform.
+  Used by the retry worker to re-attempt individual delivery.
+  """
+  def send_single(platform, token, notification) when is_atom(platform) and is_binary(token) do
+    GenServer.call(__MODULE__, {:send_single, platform, token, notification}, :infinity)
+  end
+
+  @doc """
   Sends a push notification to a specific user by user ID.
   """
   @spec send_notification_to_user(String.t(), notification(), keyword()) :: send_result()

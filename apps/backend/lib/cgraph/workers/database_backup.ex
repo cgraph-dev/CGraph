@@ -181,11 +181,6 @@ defmodule CGraph.Workers.DatabaseBackup do
     # Could also send alert via email/Slack here
   end
 
-  # Format bytes to human readable
-  defp format_bytes(bytes) when bytes < 1024, do: "#{bytes} B"
-  defp format_bytes(bytes) when bytes < 1024 * 1024, do: "#{Float.round(bytes / 1024, 1)} KB"
-  defp format_bytes(bytes), do: "#{Float.round(bytes / (1024 * 1024), 1)} MB"
-
   # Schedule helpers for manual triggering
   def schedule_now(type \\ "manual") do
     %{type: type}

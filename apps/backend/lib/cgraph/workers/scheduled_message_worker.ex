@@ -21,7 +21,7 @@ defmodule CGraph.Workers.ScheduledMessageWorker do
 
   require Logger
 
-  alias CGraph.{Repo, Messaging}
+  alias CGraph.Repo
   alias CGraph.Messaging.Message
   alias CGraphWeb.Endpoint
 
@@ -67,9 +67,7 @@ defmodule CGraph.Workers.ScheduledMessageWorker do
     {:ok, count}
   end
 
-  @doc """
-  Send a scheduled message by broadcasting it via Phoenix channels.
-  """
+  # Send a scheduled message by broadcasting it via Phoenix channels.
   defp send_scheduled_message(message) do
     # Update message status to 'sent'
     case Repo.update(
@@ -85,9 +83,7 @@ defmodule CGraph.Workers.ScheduledMessageWorker do
     end
   end
 
-  @doc """
-  Broadcast a scheduled message to the conversation channel.
-  """
+  # Broadcast a scheduled message to the conversation channel.
   defp broadcast_message(message) do
     # Prepare message payload
     payload = %{

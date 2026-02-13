@@ -1,5 +1,5 @@
 defmodule CGraphWeb.Plugs.RateLimiterV2 do
-  use Bitwise
+  import Bitwise
 
   @moduledoc """
   Production-grade rate limiter with distributed Redis backend.

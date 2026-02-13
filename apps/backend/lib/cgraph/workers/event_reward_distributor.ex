@@ -223,7 +223,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
           CGraph.Gamification.unlock_title(user.id, title_id)
 
         %{"type" => "achievement", "achievement_id" => achievement_id} ->
-          CGraph.Gamification.unlock_achievement(user.id, achievement_id)
+          CGraph.Gamification.unlock_achievement_by_slug(user.id, achievement_id)
 
         %{"type" => "cosmetic", "item_id" => item_id} ->
           # Grant cosmetic item (avatar border, badge, etc.)

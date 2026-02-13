@@ -13,7 +13,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   import Ecto.Query
 
-  alias CGraph.Forums.{CustomEmoji, EmojiCategory, EmojiPack}
+  alias CGraph.Forums.{CustomEmoji, EmojiCategory}
   alias CGraph.Repo
   alias CGraph.Storage
 

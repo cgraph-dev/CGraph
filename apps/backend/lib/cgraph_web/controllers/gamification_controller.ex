@@ -14,7 +14,6 @@ defmodule CGraphWeb.GamificationController do
   import CGraphWeb.Helpers.ParamParser
 
   alias CGraph.Gamification
-  alias CGraph.Repo
 
   action_fallback CGraphWeb.FallbackController
 

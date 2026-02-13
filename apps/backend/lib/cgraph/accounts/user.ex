@@ -419,6 +419,30 @@ defmodule CGraph.Accounts.User do
 
   # Private functions
 
+  @doc """
+  Verify a user's password against the stored hash.
+  """
+  def valid_password?(%__MODULE__{password_hash: hash}, password)
+      when is_binary(hash) and is_binary(password) do
+    Argon2.verify_pass(password, hash)
+  end
+  def valid_password?(_, _), do: false
+
+  @doc """
+  Changeset for subscription-related fields.
+  Used by Subscriptions context for tier updates and Stripe linking.
+  """
+  def subscription_changeset(user, attrs) do
+    user
+    |> cast(attrs, [
+      :subscription_tier,
+      :subscription_expires_at,
+      :stripe_customer_id,
+      :is_premium
+    ])
+    |> validate_inclusion(:subscription_tier, ~w(free basic premium enterprise))
+  end
+
   defp validate_username(changeset) do
     changeset
     |> validate_length(:username, min: 3, max: 30)

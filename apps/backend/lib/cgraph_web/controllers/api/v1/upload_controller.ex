@@ -13,23 +13,8 @@ defmodule CGraphWeb.API.V1.UploadController do
 
   action_fallback CGraphWeb.FallbackController
 
-  # Magic bytes for file type detection (first bytes of file)
+  # Magic bytes map moved to Uploads module for centralized file type detection
   # Reference: https://en.wikipedia.org/wiki/List_of_file_signatures
-  @magic_bytes %{
-    # Images
-    <<0xFF, 0xD8, 0xFF>> => "image/jpeg",
-    <<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A>> => "image/png",
-    <<0x47, 0x49, 0x46, 0x38, 0x37, 0x61>> => "image/gif",  # GIF87a
-    <<0x47, 0x49, 0x46, 0x38, 0x39, 0x61>> => "image/gif",  # GIF89a
-    <<0x52, 0x49, 0x46, 0x46>> => :webp_check,  # RIFF (WebP container)
-    # Videos
-    <<0x00, 0x00, 0x00>> => :mp4_check,  # ftyp box (needs further check)
-    <<0x1A, 0x45, 0xDF, 0xA3>> => "video/webm",  # WebM/MKV
-    # Documents
-    <<0x25, 0x50, 0x44, 0x46>> => "application/pdf",  # %PDF
-    <<0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1>> => :ole_check,  # MS Office OLE
-    <<0x50, 0x4B, 0x03, 0x04>> => :zip_check  # ZIP-based (OOXML, etc.)
-  }
 
   # Max file sizes in bytes
   @max_image_size 10 * 1024 * 1024  # 10 MB
