@@ -92,8 +92,8 @@ export function CustomizationDemo() {
         >
           <StarBorder
             color="#10b981"
-            speed="6s"
-            className="mb-4 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-emerald-400"
+            speed="5s"
+            className="section-header__badge section-header__badge--emerald"
           >
             100+ Customization Options
           </StarBorder>
