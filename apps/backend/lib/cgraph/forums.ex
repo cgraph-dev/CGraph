@@ -837,6 +837,14 @@ defmodule CGraph.Forums do
       {:ok, post} ->
         # Auto-upvote by author - this sets score=1, upvotes=1
         vote_on_post(user, post, :up)
+
+        # Index post in MeiliSearch for full-text search
+        try do
+          CGraph.Search.Indexer.index_async(:posts, post)
+        rescue
+          _ -> :ok  # Don't fail post creation if search indexing fails
+        end
+
         # Reload to get updated score after auto-upvote
         {:ok, Repo.preload(Repo.get!(Post, post.id), [:author, :category])}
       error -> error
@@ -861,9 +869,21 @@ defmodule CGraph.Forums do
   Sets deleted_at timestamp rather than removing the record.
   """
   def delete_post(post) do
-    post
-    |> Ecto.Changeset.change(deleted_at: DateTime.utc_now() |> DateTime.truncate(:second))
-    |> Repo.update()
+    result =
+      post
+      |> Ecto.Changeset.change(deleted_at: DateTime.utc_now() |> DateTime.truncate(:second))
+      |> Repo.update()
+
+    case result do
+      {:ok, deleted_post} ->
+        try do
+          CGraph.Search.Indexer.delete_async(:posts, deleted_post.id)
+        rescue
+          _ -> :ok
+        end
+        {:ok, deleted_post}
+      error -> error
+    end
   end
 
   @doc """
@@ -896,13 +916,25 @@ defmodule CGraph.Forums do
     case Repo.get(Post, post_id) do
       nil -> {:error, :not_found}
       post ->
-        post
-        |> Ecto.Changeset.change(%{
-          deleted_at: now,
-          deletion_reason: reason,
-          deleted_by_report_id: report_id
-        })
-        |> Repo.update()
+        result =
+          post
+          |> Ecto.Changeset.change(%{
+            deleted_at: now,
+            deletion_reason: reason,
+            deleted_by_report_id: report_id
+          })
+          |> Repo.update()
+
+        case result do
+          {:ok, deleted_post} ->
+            try do
+              CGraph.Search.Indexer.delete_async(:posts, deleted_post.id)
+            rescue
+              _ -> :ok
+            end
+            {:ok, deleted_post}
+          error -> error
+        end
     end
   end
 
@@ -2100,6 +2132,13 @@ defmodule CGraph.Forums do
               {:ok, _subscription} -> :ok
               {:error, _reason} -> :ok  # Don't fail thread creation if subscription fails
             end
+          end
+
+          # Index thread in MeiliSearch for full-text search
+          try do
+            CGraph.Search.Indexer.index_async(:threads, thread)
+          rescue
+            _ -> :ok  # Don't fail thread creation if search indexing fails
           end
 
           Repo.preload(thread, [:author, :board])

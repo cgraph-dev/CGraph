@@ -291,6 +291,13 @@ defmodule CGraph.Messaging do
         # Track delivery receipts for all participants (WhatsApp-style ✓✓ marks)
         track_delivery_for_participants(message, conversation)
 
+        # Index message in MeiliSearch for full-text search
+        try do
+          CGraph.Search.Indexer.index_async(:messages, message)
+        rescue
+          _ -> :ok  # Don't fail message creation if search indexing fails
+        end
+
         # Note: Message broadcasting is handled by the channel layer (conversation_channel.ex)
         # to ensure proper serialization and consistent camelCase format for WebSocket clients.
         # Do not broadcast here to avoid duplicate messages.
