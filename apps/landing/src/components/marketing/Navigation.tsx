@@ -171,13 +171,13 @@ export default function Navigation({
                   >
                     Security
                   </a>
-                  <a
-                    href="#pricing"
+                  <Link
+                    to="/about"
                     className="gl-nav-unified__mobile-link"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Pricing
-                  </a>
+                    About
+                  </Link>
                 </>
               ) : (
                 <>
