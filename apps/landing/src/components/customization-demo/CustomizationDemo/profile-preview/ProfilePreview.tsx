@@ -3,6 +3,7 @@
  *
  * Displays a preview of the user profile with various card styles.
  * Delegates to card variant components based on profileCardStyle.
+ * Uses getEffectStyles() for distinct visual treatments per Effect Style.
  */
 
 import { memo } from 'react';
@@ -10,6 +11,7 @@ import { motion } from 'framer-motion';
 import type { DemoState } from '../types';
 import { themeColors } from '../constants';
 import { getProfileThemeConfig } from '../profileThemes';
+import { getEffectStyles } from '../effectStyles';
 
 import { MinimalProfileCard } from './MinimalProfileCard';
 import { DetailedProfileCard } from './DetailedProfileCard';
@@ -33,30 +35,27 @@ export const ProfilePreview = memo(function ProfilePreview({
   // Get selected profile theme configuration
   const selectedTheme = getProfileThemeConfig(state.selectedProfileThemeId);
 
-  // Use selected theme's background and glow, otherwise fall back to state
-  const backgroundStyle = selectedTheme
-    ? `linear-gradient(135deg, ${selectedTheme.background.colors.join(', ')})`
-    : state.effect === 'glassmorphism'
-      ? 'rgba(17, 24, 39, 0.7)'
-      : state.effect === 'neon'
-        ? 'rgba(0, 0, 0, 0.9)'
-        : state.effect === 'holographic'
-          ? 'linear-gradient(135deg, rgba(17, 24, 39, 0.8), rgba(30, 41, 59, 0.8))'
-          : 'rgba(17, 24, 39, 0.95)';
+  // Get effect-specific styles and animations
+  const effectStyles = getEffectStyles(state.effect, colors, speedMultiplier);
+
+  // Use selected theme's background and glow when a theme is chosen, otherwise use effect styles
+  const containerStyle = selectedTheme
+    ? {
+        background: `linear-gradient(135deg, ${selectedTheme.background.colors.join(', ')})`,
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        boxShadow: `0 0 40px ${selectedTheme.effects.glow || colors.glow}`,
+      }
+    : effectStyles.container;
 
   const glowColor = selectedTheme?.effects.glow || colors.glow;
   const particleCount = selectedTheme?.effects.particles?.count || 15;
 
   return (
     <motion.div
-      className="relative overflow-hidden rounded-2xl border border-white/10"
-      style={{
-        background: backgroundStyle,
-        backdropFilter: state.blurEnabled ? 'blur(20px)' : 'none',
-        boxShadow: state.glowEnabled || selectedTheme ? `0 0 40px ${glowColor}` : 'none',
-      }}
+      className="relative overflow-hidden rounded-2xl"
+      style={containerStyle}
       animate={
-        state.glowEnabled || selectedTheme
+        selectedTheme
           ? {
               boxShadow: [
                 `0 0 30px ${glowColor}`,
@@ -64,10 +63,23 @@ export const ProfilePreview = memo(function ProfilePreview({
                 `0 0 30px ${glowColor}`,
               ],
             }
-          : {}
+          : effectStyles.containerAnimate
       }
-      transition={{ duration: 2 * speedMultiplier, repeat: Infinity }}
+      transition={
+        selectedTheme
+          ? { duration: 2 * speedMultiplier, repeat: Infinity }
+          : effectStyles.containerTransition
+      }
     >
+      {/* Effect-specific overlay animation */}
+      {!selectedTheme && effectStyles.hasOverlay && (
+        <motion.div
+          style={effectStyles.overlayStyle}
+          animate={effectStyles.overlayAnimate}
+          transition={effectStyles.overlayTransition}
+        />
+      )}
+
       {/* Particles overlay */}
       {(state.particlesEnabled || selectedTheme) && (
         <div className="pointer-events-none absolute inset-0">

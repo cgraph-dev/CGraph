@@ -56,9 +56,12 @@ defmodule CGraph.MixProject do
 
       # Authentication & Security (latest stable)
       {:argon2_elixir, "~> 4.1"},
+      {:bcrypt_elixir, "~> 3.2"},
       {:guardian, "~> 2.4"},
       {:guardian_phoenix, "~> 2.0"},
       {:corsica, "~> 2.1"},
+      {:nimble_totp, "~> 1.0"},
+      {:hammer, "~> 6.2"},
 
       # Web3 / Ethereum wallet auth
       {:ex_keccak, "~> 0.7"},
@@ -120,6 +123,7 @@ defmodule CGraph.MixProject do
       {:ecto_ulid, "~> 0.3"},
       {:timex, "~> 3.7"},
       {:slugify, "~> 1.3"},
+      {:html_sanitize_ex, "~> 1.4"},
 
       # Development & testing (latest stable)
       {:phoenix_live_reload, "~> 1.6", only: :dev},

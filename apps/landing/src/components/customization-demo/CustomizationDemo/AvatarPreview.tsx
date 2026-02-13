@@ -2,6 +2,7 @@
  * AvatarPreview Component
  *
  * Preview panel showing the avatar with current customization settings.
+ * Uses getEffectStyles() for distinct visual treatments per Effect Style.
  *
  * @module components/landing/CustomizationDemo/AvatarPreview
  */
@@ -11,6 +12,7 @@ import { motion } from 'framer-motion';
 import type { DemoState, AvatarBorderType } from './types';
 import { themeColors } from './constants';
 import { AnimatedAvatar } from './AnimatedAvatar';
+import { getEffectStyles } from './effectStyles';
 // Avatar border lookup - stub for standalone landing usage
 const getBorderById = (_id: string): { type: string } | undefined => undefined;
 
@@ -49,26 +51,25 @@ export const AvatarPreview = memo(function AvatarPreview({ state }: AvatarPrevie
     ? (rawBorderType as AvatarBorderType)
     : 'legendary';
 
+  // Get effect-specific styles and animations
+  const effectStyles = getEffectStyles(state.effect, colors, speedMultiplier);
+
   return (
     <motion.div
-      className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-8"
-      style={{
-        backdropFilter: state.blurEnabled ? 'blur(20px)' : 'none',
-        boxShadow: state.glowEnabled ? `0 0 40px ${colors.glow}` : 'none',
-      }}
-      animate={
-        state.glowEnabled
-          ? {
-              boxShadow: [
-                `0 0 30px ${colors.glow}`,
-                `0 0 50px ${colors.glow}`,
-                `0 0 30px ${colors.glow}`,
-              ],
-            }
-          : {}
-      }
-      transition={{ duration: 2 * speedMultiplier, repeat: Infinity }}
+      className="relative overflow-hidden rounded-2xl p-8"
+      style={effectStyles.container}
+      animate={effectStyles.containerAnimate}
+      transition={effectStyles.containerTransition}
     >
+      {/* Effect-specific overlay animation */}
+      {effectStyles.hasOverlay && (
+        <motion.div
+          style={effectStyles.overlayStyle}
+          animate={effectStyles.overlayAnimate}
+          transition={effectStyles.overlayTransition}
+        />
+      )}
+
       {/* Particles overlay */}
       {state.particlesEnabled && (
         <div className="pointer-events-none absolute inset-0">

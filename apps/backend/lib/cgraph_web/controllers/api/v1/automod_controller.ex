@@ -85,10 +85,10 @@ defmodule CGraphWeb.API.V1.AutomodController do
     user = conn.assigns.current_user
 
     case Groups.get_group(group_id) do
-      nil ->
+      {:error, :not_found} ->
         {:error, :not_found}
 
-      group ->
+      {:ok, group} ->
         if group.owner_id == user.id do
           :ok
         else

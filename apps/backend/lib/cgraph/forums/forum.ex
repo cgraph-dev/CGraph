@@ -394,7 +394,7 @@ defmodule CGraph.Forums.Forum do
     ORDER BY depth ASC
     """
 
-    case repo.query(query, [Ecto.UUID.dump!(parent_id) |> elem(1)]) do
+    case repo.query(query, [Ecto.UUID.dump!(parent_id)]) do
       {:ok, %{rows: rows}} ->
         Enum.map(rows, fn [id, name, slug, depth] ->
           %{
