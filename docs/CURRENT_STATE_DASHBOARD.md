@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.19** | Generated: February 14, 2026
+> **Version: 0.9.20** | Generated: February 15, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
@@ -38,7 +38,7 @@ Real-time overview of project health, architecture status, and operational state
 | Node.js            | 20.x    | 22.x LTS         | ⚠️     |
 | pnpm               | 10.26.2 | 10.x             | ✅     |
 | Phoenix            | 1.8.x   | 1.8.x            | ✅     |
-| Elixir             | 1.17+   | 1.18.x           | ✅     |
+| Elixir             | 1.19.4  | 1.19.x           | ✅     |
 | Expo SDK           | 54      | 54               | ✅     |
 | React Native       | 0.81    | 0.81             | ✅     |
 | RN Reanimated      | 4.1.1   | 4.1.x            | ✅     |
@@ -207,6 +207,7 @@ apps/mobile/src/screens/
 
 | Version | Date       | Highlights                                                                        |
 | ------- | ---------- | --------------------------------------------------------------------------------- |
+| 0.9.20  | 2026-02-15 | **Compile cleanup**: 90→11 warnings, Elixir 1.19 bitwise fix, 30+ files cleaned   |
 | 0.9.19  | 2026-02-14 | **163 backend tests**, 70 context tests, 4 controllers wired, observability stack |
 | 0.9.18  | 2026-02-14 | **100% controller coverage**, MeiliSearch pipeline, chaos testing                 |
 | 0.9.12  | 2026-02-03 | **Reanimated v4 migration** (222→0 TS errors)                                     |
@@ -236,4 +237,4 @@ apps/mobile/src/screens/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.19 • Updated: February 15, 2026</sub>
+<sub>**CGraph Dashboard** • Version 0.9.20 • Updated: February 15, 2026</sub>
