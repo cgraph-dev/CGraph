@@ -20,7 +20,6 @@ export default function Footer() {
     product: [
       { label: 'Features', to: '/#features' },
       { label: 'Security', to: '/#security' },
-      { label: 'Pricing', to: '/#pricing' },
       { label: 'Download', to: '/download' },
     ],
     resources: [
