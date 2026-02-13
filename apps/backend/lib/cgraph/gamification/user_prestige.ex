@@ -1,7 +1,7 @@
 defmodule CGraph.Gamification.UserPrestige do
   @moduledoc """
   Schema for tracking user prestige levels and bonuses.
-  
+
   Prestige System:
   - Prestige levels 1-∞
   - Permanent percentage bonuses
@@ -17,30 +17,30 @@ defmodule CGraph.Gamification.UserPrestige do
   schema "user_prestiges" do
     field :prestige_level, :integer, default: 0
     field :prestige_xp, :integer, default: 0
-    field :xp_to_next_prestige, :integer, default: 100000
-    
+    field :xp_to_next_prestige, :integer, default: 100_000
+
     # Bonuses (percentages as decimals, e.g., 0.05 = 5%)
     field :xp_bonus, :float, default: 0.0
     field :coin_bonus, :float, default: 0.0
     field :karma_bonus, :float, default: 0.0
     field :drop_rate_bonus, :float, default: 0.0
-    
+
     # Prestige history
     field :prestige_history, {:array, :map}, default: []
     field :total_resets, :integer, default: 0
     field :last_prestige_at, :utc_datetime
-    
+
     # Exclusive unlocks
     field :exclusive_titles, {:array, :binary_id}, default: []
     field :exclusive_borders, {:array, :binary_id}, default: []
     field :exclusive_effects, {:array, :binary_id}, default: []
-    
+
     # Stats preserved across prestiges
     field :lifetime_xp, :integer, default: 0
     field :lifetime_karma, :integer, default: 0
     field :lifetime_coins_earned, :integer, default: 0
     field :lifetime_messages, :integer, default: 0
-    
+
     belongs_to :user, CGraph.Accounts.User
 
     timestamps(type: :utc_datetime)

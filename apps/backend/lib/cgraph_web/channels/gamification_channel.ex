@@ -1,7 +1,7 @@
 defmodule CGraphWeb.GamificationChannel do
   @moduledoc """
   Real-time gamification updates channel for cosmetics, prestige, and events.
-  
+
   Provides live updates for:
   - Cosmetic unlocks and purchases
   - Prestige level changes
@@ -9,7 +9,7 @@ defmodule CGraphWeb.GamificationChannel do
   - Marketplace activity
   - Achievement unlocks
   - XP/level gains
-  
+
   Designed for scale:
   - Efficient message batching
   - Rate limiting per event type
@@ -38,7 +38,7 @@ defmodule CGraphWeb.GamificationChannel do
     # Only allow users to join their own gamification channel
     if socket.assigns.current_user.id == user_id do
       send(self(), :after_join)
-      
+
       {:ok, %{
         status: "connected",
         server_time: DateTime.utc_now() |> DateTime.to_iso8601()
@@ -51,7 +51,7 @@ defmodule CGraphWeb.GamificationChannel do
   @impl true
   def handle_info(:after_join, socket) do
     user = socket.assigns.current_user
-    
+
     # Track presence for this user in gamification context
     {:ok, _} = Presence.track(socket, user.id, %{
       online_at: System.system_time(:second),
@@ -199,24 +199,24 @@ defmodule CGraphWeb.GamificationChannel do
     # Store price alert subscription
     alerts = Map.get(socket.assigns, :price_alerts, [])
     new_alert = %{item_id: item_id, target_price: price}
-    
-    {:reply, {:ok, %{subscribed: true}}, 
+
+    {:reply, {:ok, %{subscribed: true}},
      assign(socket, :price_alerts, [new_alert | alerts] |> Enum.take(10))}
   end
 
   # Client requests leaderboard
   def handle_in("get_leaderboard", %{"type" => type} = params, socket) do
     limit = Map.get(params, "limit", 10)
-    
+
     leaderboard = case type do
       "xp" -> Gamification.get_xp_leaderboard(limit)
       "prestige" -> Gamification.get_prestige_leaderboard(limit)
-      "event" -> 
+      "event" ->
         event_id = Map.get(params, "event_id")
         Gamification.get_event_leaderboard(event_id, limit)
       _ -> []
     end
-    
+
     {:reply, {:ok, %{leaderboard: leaderboard}}, socket}
   end
 
@@ -266,9 +266,9 @@ defmodule CGraphWeb.GamificationChannel do
     limits = socket.assigns[:rate_limits] || init_rate_limits()
     limit_config = @rate_limits[event_type] || 60
     state = limits[event_type] || %{count: 0, window_start: System.system_time(:second)}
-    
+
     now = System.system_time(:second)
-    
+
     # Reset window if more than 60 seconds passed
     if now - state.window_start > 60 do
       true
@@ -280,15 +280,15 @@ defmodule CGraphWeb.GamificationChannel do
   defp update_rate_limit(socket, event_type) do
     limits = socket.assigns[:rate_limits] || init_rate_limits()
     state = limits[event_type] || %{count: 0, window_start: System.system_time(:second)}
-    
+
     now = System.system_time(:second)
-    
+
     new_state = if now - state.window_start > 60 do
       %{count: 1, window_start: now}
     else
       %{state | count: state.count + 1}
     end
-    
+
     assign(socket, :rate_limits, Map.put(limits, event_type, new_state))
   end
 end

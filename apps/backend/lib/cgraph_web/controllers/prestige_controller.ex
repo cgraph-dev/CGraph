@@ -3,7 +3,7 @@ defmodule CGraphWeb.PrestigeController do
   Controller for prestige system endpoints.
 
   ## Endpoints
-  
+
   - GET /api/v1/prestige - Get user's prestige status
   - POST /api/v1/prestige/reset - Perform prestige reset
   - GET /api/v1/prestige/rewards - Get available prestige rewards
@@ -13,8 +13,8 @@ defmodule CGraphWeb.PrestigeController do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Repo
   alias CGraph.Gamification.UserPrestige
+  alias CGraph.Repo
 
   action_fallback CGraphWeb.FallbackController
 
@@ -24,9 +24,9 @@ defmodule CGraphWeb.PrestigeController do
   """
   def show(conn, _params) do
     user = conn.assigns.current_user
-    
+
     prestige = get_or_create_prestige(user.id)
-    
+
     conn
     |> put_status(:ok)
     |> json(%{
@@ -43,13 +43,13 @@ defmodule CGraphWeb.PrestigeController do
   def reset(conn, _params) do
     user = conn.assigns.current_user
     prestige = get_or_create_prestige(user.id)
-    
+
     if can_prestige?(prestige) do
       {:ok, updated} = perform_prestige_reset(prestige)
-      
+
       # Award exclusive rewards for this prestige level
       exclusive_rewards = get_exclusive_rewards(updated.prestige_level)
-      
+
       conn
       |> put_status(:ok)
       |> json(%{
@@ -79,7 +79,7 @@ defmodule CGraphWeb.PrestigeController do
   """
   def rewards(conn, _params) do
     rewards = get_all_prestige_rewards()
-    
+
     conn
     |> put_status(:ok)
     |> json(%{rewards: rewards})
@@ -92,10 +92,10 @@ defmodule CGraphWeb.PrestigeController do
   def leaderboard(conn, params) do
     limit = min(String.to_integer(params["limit"] || "50"), 100)
     cursor = params["cursor"]
-    
+
     cursor_data = decode_prestige_cursor(cursor)
     rank_start = if cursor_data, do: cursor_data.rank, else: 1
-    
+
     query = from p in UserPrestige,
       join: u in assoc(p, :user),
       where: p.prestige_level > 0,
@@ -111,7 +111,7 @@ defmodule CGraphWeb.PrestigeController do
         total_resets: p.total_resets,
         inserted_at: p.inserted_at
       }
-    
+
     query = if cursor_data do
       cursor_dt = parse_prestige_cursor_dt(cursor_data.inserted_at)
       from [p, u] in query,
@@ -120,22 +120,22 @@ defmodule CGraphWeb.PrestigeController do
     else
       query
     end
-    
+
     results = Repo.all(query)
     has_more = length(results) > limit
     items = Enum.take(results, limit)
-    
+
     entries_with_rank = items
     |> Enum.with_index(rank_start)
     |> Enum.map(fn {entry, rank} -> Map.put(entry, :rank, rank) end)
-    
+
     next_cursor = if has_more && items != [] do
       last = List.last(items)
       encode_prestige_cursor(rank_start + length(items), last.prestige_level, last.inserted_at)
     else
       nil
     end
-    
+
     conn
     |> put_status(:ok)
     |> json(%{
@@ -168,13 +168,13 @@ defmodule CGraphWeb.PrestigeController do
 
   defp perform_prestige_reset(prestige) do
     new_level = prestige.prestige_level + 1
-    
+
     # Calculate new bonuses
     new_xp_bonus = UserPrestige.bonus_for_prestige_level(new_level, :xp)
     new_coin_bonus = UserPrestige.bonus_for_prestige_level(new_level, :coin)
     new_karma_bonus = UserPrestige.bonus_for_prestige_level(new_level, :karma)
     new_drop_rate_bonus = UserPrestige.bonus_for_prestige_level(new_level, :drop_rate)
-    
+
     # Record history entry
     history_entry = %{
       "level" => new_level,
@@ -182,9 +182,9 @@ defmodule CGraphWeb.PrestigeController do
       "xp_at_prestige" => prestige.prestige_xp,
       "lifetime_xp_at_prestige" => prestige.lifetime_xp
     }
-    
+
     new_history = [history_entry | prestige.prestige_history || []]
-    
+
     prestige
     |> UserPrestige.prestige_changeset(%{
       prestige_level: new_level,
@@ -203,7 +203,7 @@ defmodule CGraphWeb.PrestigeController do
 
   defp calculate_next_prestige_requirements(prestige) do
     required_xp = UserPrestige.xp_required_for_prestige(prestige.prestige_level)
-    
+
     %{
       requiredXp: required_xp,
       currentXp: prestige.prestige_xp,
@@ -218,7 +218,7 @@ defmodule CGraphWeb.PrestigeController do
       %{type: "title", name: "Prestige #{prestige_level}"},
       %{type: "xp_bonus", amount: 0.05}
     ]
-    
+
     # Add special rewards at milestone levels
     milestone_rewards = cond do
       prestige_level >= 10 -> [%{type: "border", name: "Prestige Master Border"}]
@@ -226,7 +226,7 @@ defmodule CGraphWeb.PrestigeController do
       prestige_level >= 3 -> [%{type: "badge", name: "Dedicated Player Badge"}]
       true -> []
     end
-    
+
     base_rewards ++ milestone_rewards
   end
 

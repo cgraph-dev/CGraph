@@ -21,8 +21,8 @@ defmodule CGraph.Subscriptions do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Accounts.User
+  alias CGraph.Repo
   require Logger
 
   @premium_price_id Application.compile_env(:cgraph, :stripe_premium_price_id, "price_premium_monthly")
@@ -199,7 +199,7 @@ defmodule CGraph.Subscriptions do
   """
   def record_payment(%User{} = user, params) do
     Logger.info("recording_payment_for_user", user_id: user.id, params_amount: params.amount, params_currency: params.currency)
-    
+
     # Could store in payment_history table if needed
     # For now, just update the subscription period
     if params[:current_period_end] do
@@ -229,7 +229,7 @@ defmodule CGraph.Subscriptions do
   Checks if a user has an active subscription (non-free tier).
   """
   def active?(%User{subscription_tier: tier, subscription_expires_at: expires_at}) do
-    tier != "free" && tier != nil && 
+    tier != "free" && tier != nil &&
       (expires_at == nil || DateTime.compare(expires_at, DateTime.utc_now()) == :gt)
   end
 

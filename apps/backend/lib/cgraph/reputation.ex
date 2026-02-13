@@ -7,9 +7,9 @@ defmodule CGraph.Reputation do
   """
 
   import Ecto.Query, warn: false
+  alias CGraph.Accounts.User
   alias CGraph.Repo
   alias CGraph.Reputation.ReputationEntry
-  alias CGraph.Accounts.User
 
   # ========================================
   # QUERIES

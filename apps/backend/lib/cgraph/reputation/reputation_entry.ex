@@ -8,8 +8,8 @@ defmodule CGraph.Reputation.ReputationEntry do
   import Ecto.Changeset
 
   alias CGraph.Accounts.User
-  alias CGraph.Forums.Post
   alias CGraph.Forums.Forum
+  alias CGraph.Forums.Post
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id

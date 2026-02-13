@@ -1,34 +1,34 @@
 defmodule CGraphWeb.API.V1.TierController do
   @moduledoc """
   Handles tier and subscription limit operations.
-  
+
   Provides endpoints for:
   - Listing available subscription tiers
   - Getting tier details
   - Getting user's current limits
   - Comparing tiers for upgrade/downgrade
-  
+
   ## Security
-  
+
   - Public endpoints: list tiers, get tier details
   - Authenticated endpoints: get my limits, get my tier
   """
   use CGraphWeb, :controller
-  
-  alias CGraph.Subscriptions.TierLimits
+
   alias CGraph.Subscriptions.TierLimit
+  alias CGraph.Subscriptions.TierLimits
 
   @doc """
   Lists all active subscription tiers.
-  
+
   GET /api/v1/tiers
-  
+
   Response:
     - 200: List of tiers with basic info
   """
   def index(conn, _params) do
     tiers = TierLimits.list_active_tiers()
-    
+
     json(conn, %{
       data: Enum.map(tiers, &TierLimits.serialize_tier/1),
       meta: %{
@@ -39,9 +39,9 @@ defmodule CGraphWeb.API.V1.TierController do
 
   @doc """
   Gets details for a specific tier.
-  
+
   GET /api/v1/tiers/:tier
-  
+
   Response:
     - 200: Tier details with limits
     - 404: Tier not found
@@ -52,7 +52,7 @@ defmodule CGraphWeb.API.V1.TierController do
         json(conn, %{
           data: TierLimits.serialize_tier(tier, include_limits: true)
         })
-      
+
       {:error, :tier_not_found} ->
         conn
         |> put_status(:not_found)
@@ -62,18 +62,18 @@ defmodule CGraphWeb.API.V1.TierController do
 
   @doc """
   Gets the current user's tier and effective limits.
-  
+
   GET /api/v1/tiers/me
-  
+
   Requires authentication.
-  
+
   Response:
     - 200: User's tier, limits, and any overrides
     - 401: Unauthorized
   """
   def my_tier(conn, _params) do
     user = conn.assigns.current_user
-    
+
     json(conn, %{
       data: TierLimits.serialize_user_limits(user)
     })
@@ -81,9 +81,9 @@ defmodule CGraphWeb.API.V1.TierController do
 
   @doc """
   Compares two tiers for upgrade/downgrade UI.
-  
+
   GET /api/v1/tiers/compare?from=free&to=pro
-  
+
   Response:
     - 200: Comparison of limits between tiers
     - 400: Invalid tier names
@@ -99,7 +99,7 @@ defmodule CGraphWeb.API.V1.TierController do
             differences: format_differences(comparison.differences)
           }
         })
-      
+
       {:error, :tier_not_found} ->
         conn
         |> put_status(:bad_request)
@@ -115,22 +115,22 @@ defmodule CGraphWeb.API.V1.TierController do
 
   @doc """
   Checks if user can perform a specific action.
-  
+
   GET /api/v1/tiers/check/:action
-  
+
   Supported actions:
     - create_forum
     - join_forum
     - create_thread
     - create_post
     - use_ai_moderation
-  
+
   Response:
     - 200: { allowed: true/false, limit: X, current: Y }
   """
   def check_action(conn, %{"action" => action}) do
     user = conn.assigns.current_user
-    
+
     result = case action do
       "create_forum" ->
         %{
@@ -138,35 +138,35 @@ defmodule CGraphWeb.API.V1.TierController do
           limit: TierLimits.get_effective_limit(user, :max_forums_owned),
           current: CGraph.Forums.count_user_forums(user.id)
         }
-      
+
       "join_forum" ->
         %{
           allowed: TierLimits.can_join_forum?(user),
           limit: TierLimits.get_effective_limit(user, :max_forums_joined),
           current: CGraph.Forums.count_user_joined_forums(user.id)
         }
-      
+
       "create_thread" ->
         %{
           allowed: TierLimits.can_create_thread?(user),
           limit: TierLimits.get_effective_limit(user, :max_threads_per_day),
           current: CGraph.Forums.count_user_threads_today(user.id)
         }
-      
+
       "create_post" ->
         %{
           allowed: TierLimits.can_create_post?(user),
           limit: TierLimits.get_effective_limit(user, :max_posts_per_day),
           current: CGraph.Forums.count_user_posts_today(user.id)
         }
-      
+
       "use_ai_moderation" ->
         %{
           allowed: TierLimits.ai_moderation_available?(user),
           limit: TierLimits.get_effective_limit(user, :ai_moderation_requests_per_day),
           current: 0  # TODO: implement
         }
-      
+
       _ ->
         nil
     end
@@ -182,20 +182,20 @@ defmodule CGraphWeb.API.V1.TierController do
 
   @doc """
   Checks if user has a specific feature.
-  
+
   GET /api/v1/tiers/features/:feature
-  
+
   Examples:
     - /api/v1/tiers/features/ai.moderation
     - /api/v1/tiers/features/forums.custom_css
-  
+
   Response:
     - 200: { enabled: true/false }
   """
   def check_feature(conn, %{"feature" => feature_key}) do
     user = conn.assigns.current_user
     enabled = TierLimits.has_feature?(user, feature_key)
-    
+
     json(conn, %{
       data: %{
         feature: feature_key,

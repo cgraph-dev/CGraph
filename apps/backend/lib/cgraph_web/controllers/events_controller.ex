@@ -3,7 +3,7 @@ defmodule CGraphWeb.EventsController do
   Controller for seasonal events endpoints.
 
   ## Endpoints
-  
+
   - GET /api/v1/events - List all active/upcoming events
   - GET /api/v1/events/:id - Get event details
   - GET /api/v1/events/:id/progress - Get user's event progress
@@ -16,9 +16,9 @@ defmodule CGraphWeb.EventsController do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Repo
   alias CGraph.Gamification
   alias CGraph.Gamification.{SeasonalEvent, UserEventProgress}
+  alias CGraph.Repo
 
   action_fallback CGraphWeb.FallbackController
 
@@ -28,24 +28,24 @@ defmodule CGraphWeb.EventsController do
   """
   def index(conn, params) do
     include_ended = params["include_ended"] == "true"
-    
+
     now = DateTime.utc_now()
-    
+
     query = from e in SeasonalEvent,
       where: e.is_active == true,
       order_by: [asc: e.starts_at]
-    
+
     query = if include_ended do
       query
     else
       from e in query, where: e.ends_at > ^now or e.grace_period_ends_at > ^now
     end
-    
+
     events = Repo.all(query)
-    
+
     # Categorize events
     {active, upcoming, ended} = categorize_events(events, now)
-    
+
     conn
     |> put_status(:ok)
     |> json(%{
@@ -62,7 +62,7 @@ defmodule CGraphWeb.EventsController do
   """
   def show(conn, %{"id" => event_id}) do
     event = Repo.get!(SeasonalEvent, event_id)
-    
+
     conn
     |> put_status(:ok)
     |> json(%{event: serialize_event_detailed(event)})
@@ -74,10 +74,10 @@ defmodule CGraphWeb.EventsController do
   """
   def progress(conn, %{"id" => event_id}) do
     user = conn.assigns.current_user
-    
+
     progress = Repo.get_by(UserEventProgress, user_id: user.id, seasonal_event_id: event_id)
     event = Repo.get!(SeasonalEvent, event_id)
-    
+
     if progress do
       conn
       |> put_status(:ok)
@@ -105,13 +105,9 @@ defmodule CGraphWeb.EventsController do
   def join(conn, %{"id" => event_id}) do
     user = conn.assigns.current_user
     event = Repo.get!(SeasonalEvent, event_id)
-    
+
     # Check if event is active
-    unless SeasonalEvent.is_active?(event) do
-      conn
-      |> put_status(:bad_request)
-      |> json(%{error: "Event is not currently active"})
-    else
+    if SeasonalEvent.active?(event) do
       # Check if already joined
       case Repo.get_by(UserEventProgress, user_id: user.id, seasonal_event_id: event_id) do
         nil ->
@@ -124,7 +120,7 @@ defmodule CGraphWeb.EventsController do
             total_sessions: 1
           })
           |> Repo.insert()
-          
+
           conn
           |> put_status(:created)
           |> json(%{
@@ -132,7 +128,7 @@ defmodule CGraphWeb.EventsController do
             progress: serialize_progress(progress),
             welcomeRewards: event.participation_rewards
           })
-        
+
         progress ->
           conn
           |> put_status(:ok)
@@ -142,6 +138,10 @@ defmodule CGraphWeb.EventsController do
             progress: serialize_progress(progress)
           })
       end
+    else
+      conn
+      |> put_status(:bad_request)
+      |> json(%{error: "Event is not currently active"})
     end
   end
 
@@ -151,17 +151,17 @@ defmodule CGraphWeb.EventsController do
   """
   def claim_reward(conn, %{"id" => event_id, "reward_id" => reward_id}) do
     user = conn.assigns.current_user
-    
+
     progress = Repo.get_by!(UserEventProgress, user_id: user.id, seasonal_event_id: event_id)
     event = Repo.get!(SeasonalEvent, event_id)
-    
+
     # Check if reward is claimable
     with {:ok, reward} <- find_claimable_reward(progress, event, reward_id),
          {:ok, updated_progress} <- mark_reward_claimed(progress, reward_id, reward) do
-      
+
       # Grant the actual reward
       grant_reward(user.id, reward)
-      
+
       conn
       |> put_status(:ok)
       |> json(%{
@@ -184,10 +184,10 @@ defmodule CGraphWeb.EventsController do
   def leaderboard(conn, %{"id" => event_id} = params) do
     limit = min(String.to_integer(params["limit"] || "50"), 100)
     cursor = params["cursor"]
-    
+
     cursor_data = decode_lb_cursor(cursor)
     rank_start = if cursor_data, do: cursor_data.rank, else: 1
-    
+
     query = from p in UserEventProgress,
       join: u in assoc(p, :user),
       where: p.seasonal_event_id == ^event_id,
@@ -203,7 +203,7 @@ defmodule CGraphWeb.EventsController do
         battle_pass_tier: p.battle_pass_tier,
         inserted_at: p.inserted_at
       }
-    
+
     query = if cursor_data do
       cursor_dt = parse_lb_cursor_dt(cursor_data.inserted_at)
       from [p, u] in query,
@@ -212,26 +212,26 @@ defmodule CGraphWeb.EventsController do
     else
       query
     end
-    
+
     results = Repo.all(query)
     has_more = length(results) > limit
     items = Enum.take(results, limit)
-    
+
     entries_with_rank = items
     |> Enum.with_index(rank_start)
     |> Enum.map(fn {entry, rank} -> Map.put(entry, :rank, rank) end)
-    
+
     next_cursor = if has_more && items != [] do
       last = List.last(items)
       encode_lb_cursor(rank_start + length(items), last.points, last.inserted_at)
     else
       nil
     end
-    
+
     # Get current user's rank
     user = conn.assigns.current_user
     user_rank = get_user_rank(user.id, event_id)
-    
+
     conn
     |> put_status(:ok)
     |> json(%{
@@ -252,14 +252,10 @@ defmodule CGraphWeb.EventsController do
   def purchase_battle_pass(conn, %{"id" => event_id}) do
     user = conn.assigns.current_user
     event = Repo.get!(SeasonalEvent, event_id)
-    
-    unless event.has_battle_pass do
-      conn
-      |> put_status(:bad_request)
-      |> json(%{error: "This event does not have a battle pass"})
-    else
+
+    if event.has_battle_pass do
       progress = Repo.get_by!(UserEventProgress, user_id: user.id, seasonal_event_id: event_id)
-      
+
       if progress.has_battle_pass do
         conn
         |> put_status(:bad_request)
@@ -271,10 +267,10 @@ defmodule CGraphWeb.EventsController do
             {:ok, updated} = progress
             |> UserEventProgress.purchase_battle_pass_changeset()
             |> Repo.update()
-            
+
             # Grant any retroactive premium rewards
             retroactive_rewards = get_retroactive_rewards(updated, event)
-            
+
             conn
             |> put_status(:ok)
             |> json(%{
@@ -282,13 +278,17 @@ defmodule CGraphWeb.EventsController do
               progress: serialize_progress(updated),
               retroactiveRewards: retroactive_rewards
             })
-          
+
           {:error, _} ->
             conn
             |> put_status(:bad_request)
             |> json(%{error: "Insufficient gems"})
         end
       end
+    else
+      conn
+      |> put_status(:bad_request)
+      |> json(%{error: "This event does not have a battle pass"})
     end
   end
 
@@ -298,7 +298,7 @@ defmodule CGraphWeb.EventsController do
     events
     |> Enum.reduce({[], [], []}, fn event, {active, upcoming, ended} ->
       cond do
-        SeasonalEvent.is_active?(event) -> {[event | active], upcoming, ended}
+        SeasonalEvent.active?(event) -> {[event | active], upcoming, ended}
         DateTime.compare(event.starts_at, now) == :gt -> {active, [event | upcoming], ended}
         true -> {active, upcoming, [event | ended]}
       end
@@ -309,17 +309,17 @@ defmodule CGraphWeb.EventsController do
   defp find_claimable_reward(progress, event, reward_id) do
     # Check milestones
     milestone = Enum.find(event.milestone_rewards, & &1["id"] == reward_id)
-    
+
     cond do
       milestone && reward_id in (progress.milestones_claimed || []) ->
         {:error, "Already claimed"}
-      
+
       milestone && progress.event_points >= milestone["points_required"] ->
         {:ok, milestone}
-      
+
       milestone ->
         {:error, "Not enough points for this milestone"}
-      
+
       true ->
         {:error, "Reward not found"}
     end
@@ -331,7 +331,7 @@ defmodule CGraphWeb.EventsController do
       %{"id" => reward_id, "claimed_at" => DateTime.utc_now() |> DateTime.to_iso8601(), "reward" => reward}
       | progress.rewards_claimed || []
     ]
-    
+
     progress
     |> Ecto.Changeset.change(%{
       milestones_claimed: claimed,
@@ -386,7 +386,7 @@ defmodule CGraphWeb.EventsController do
     ) ranked
     WHERE user_id = $2
     """
-    
+
     case Repo.query(query, [event_id, user_id]) do
       {:ok, %{rows: [[rank]]}} -> rank
       _ -> nil
@@ -413,7 +413,7 @@ defmodule CGraphWeb.EventsController do
       battlePassCost: event.battle_pass_cost,
       hasLeaderboard: event.has_leaderboard,
       featured: event.featured,
-      isActive: SeasonalEvent.is_active?(event),
+      isActive: SeasonalEvent.active?(event),
       inGracePeriod: SeasonalEvent.in_grace_period?(event)
     }
   end

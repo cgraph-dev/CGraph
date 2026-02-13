@@ -24,7 +24,7 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
   ## Generating VAPID Keys
 
   Generate VAPID key pair using:
-      
+
       # In iex:
       CGraph.Notifications.PushService.WebPushClient.generate_vapid_keys()
 
@@ -247,7 +247,7 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
   # Payload encryption using RFC 8291 (aes128gcm)
   defp encrypt_payload(message, keys) do
     payload = Jason.encode!(message)
-    
+
     with {:ok, p256dh} <- get_key(keys, "p256dh"),
          {:ok, auth} <- get_key(keys, "auth") do
       # Decode client keys from base64url
@@ -266,7 +266,7 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
       # Encrypt payload with AES-GCM
       # Add padding as per RFC 8291
       padded_payload = <<0::16, payload::binary>>
-      
+
       {ciphertext, tag} = :crypto.crypto_one_time_aead(
         :aes_128_gcm,
         content_encryption_key,
@@ -280,7 +280,7 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
       # Record size (4 bytes) + key id length (1 byte) + key id (server public key)
       record_size = byte_size(ciphertext) + 16 + 1  # +16 for tag, +1 for padding delimiter
       key_id_length = byte_size(server_public_key)
-      
+
       encrypted_message = <<
         # Salt for HKDF (16 bytes, random)
         :crypto.strong_rand_bytes(16)::binary,
@@ -309,13 +309,13 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
 
     # Key info for content encryption key
     key_info = build_info("aesgcm", client_public_key, server_public_key)
-    
+
     # Nonce info
     nonce_info = build_info("nonce", client_public_key, server_public_key)
 
     # Derive CEK (16 bytes for AES-128)
     cek = hkdf_expand(prk, key_info, 16)
-    
+
     # Derive nonce (12 bytes)
     nonce = hkdf_expand(prk, nonce_info, 12)
 
@@ -376,41 +376,39 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
   end
 
   defp create_vapid_jwt(claims, private_key_b64) do
-    try do
-      # Decode private key
-      private_key = Base.url_decode64!(private_key_b64, padding: false)
+    # Decode private key
+    private_key = Base.url_decode64!(private_key_b64, padding: false)
 
-      # Create JWT header and payload
-      header = %{"alg" => "ES256", "typ" => "JWT"}
-      header_b64 = Base.url_encode64(Jason.encode!(header), padding: false)
-      payload_b64 = Base.url_encode64(Jason.encode!(claims), padding: false)
+    # Create JWT header and payload
+    header = %{"alg" => "ES256", "typ" => "JWT"}
+    header_b64 = Base.url_encode64(Jason.encode!(header), padding: false)
+    payload_b64 = Base.url_encode64(Jason.encode!(claims), padding: false)
 
-      # Create signing input
-      signing_input = "#{header_b64}.#{payload_b64}"
+    # Create signing input
+    signing_input = "#{header_b64}.#{payload_b64}"
 
-      # Sign with ECDSA P-256
-      signature = :crypto.sign(:ecdsa, :sha256, signing_input, [private_key, :prime256v1])
-      
-      # Convert DER signature to raw R||S format
-      signature_raw = der_to_raw_signature(signature)
-      signature_b64 = Base.url_encode64(signature_raw, padding: false)
+    # Sign with ECDSA P-256
+    signature = :crypto.sign(:ecdsa, :sha256, signing_input, [private_key, :prime256v1])
 
-      {:ok, "#{signing_input}.#{signature_b64}"}
-    rescue
-      e ->
-        Logger.error("vapid_jwt_creation_failed", e: inspect(e))
-        {:error, :jwt_creation_failed}
-    end
+    # Convert DER signature to raw R||S format
+    signature_raw = der_to_raw_signature(signature)
+    signature_b64 = Base.url_encode64(signature_raw, padding: false)
+
+    {:ok, "#{signing_input}.#{signature_b64}"}
+  rescue
+    e ->
+      Logger.error("vapid_jwt_creation_failed", e: inspect(e))
+      {:error, :jwt_creation_failed}
   end
 
   # Convert DER-encoded ECDSA signature to raw R||S format
   defp der_to_raw_signature(<<0x30, _len, 0x02, r_len::8, rest::binary>>) do
     <<r::binary-size(r_len), 0x02, s_len::8, s::binary-size(s_len), _::binary>> = rest
-    
+
     # Pad or trim R and S to 32 bytes each
     r_padded = pad_or_trim(r, 32)
     s_padded = pad_or_trim(s, 32)
-    
+
     <<r_padded::binary, s_padded::binary>>
   end
 

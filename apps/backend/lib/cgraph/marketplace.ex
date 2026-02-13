@@ -18,7 +18,7 @@ defmodule CGraph.Marketplace do
   defdelegate get_analytics(opts \\ []), to: GMarketplace
 
   # Additional functions for channels
-  
+
   @doc """
   Browse listings with filters.
   """

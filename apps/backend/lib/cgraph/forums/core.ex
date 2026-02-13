@@ -1,13 +1,13 @@
 defmodule CGraph.Forums.Core do
   @moduledoc """
   Core forum operations - CRUD for forums.
-  
+
   Extracted from the main Forums module to reduce complexity.
   """
-  
+
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Forums.{Forum, ForumMember, Subscription}
+  alias CGraph.Repo
 
   @doc """
   Lists all forums with optional filters.
@@ -18,7 +18,7 @@ defmodule CGraph.Forums.Core do
         where: f.is_public == true,
         preload: [:owner]
       )
-    
+
     query = query |> maybe_filter_by_category(opts[:category_id])
 
     pagination_opts = CGraph.Pagination.parse_params(
@@ -30,7 +30,7 @@ defmodule CGraph.Forums.Core do
 
     CGraph.Pagination.paginate(query, pagination_opts)
   end
-  
+
   @doc """
   Gets a single forum by ID.
   """
@@ -40,7 +40,7 @@ defmodule CGraph.Forums.Core do
       forum -> {:ok, Repo.preload(forum, [:owner, :categories])}
     end
   end
-  
+
   @doc """
   Gets a forum by its slug.
   """
@@ -50,7 +50,7 @@ defmodule CGraph.Forums.Core do
       forum -> {:ok, Repo.preload(forum, [:owner, :categories])}
     end
   end
-  
+
   @doc """
   Creates a new forum.
   """
@@ -68,7 +68,7 @@ defmodule CGraph.Forums.Core do
         error
     end
   end
-  
+
   @doc """
   Updates a forum.
   """
@@ -77,14 +77,14 @@ defmodule CGraph.Forums.Core do
     |> Forum.changeset(attrs)
     |> Repo.update()
   end
-  
+
   @doc """
   Deletes a forum.
   """
   def delete_forum(forum) do
     Repo.delete(forum)
   end
-  
+
   @doc """
   Adds a member to a forum.
   """
@@ -97,7 +97,7 @@ defmodule CGraph.Forums.Core do
     })
     |> Repo.insert(on_conflict: :nothing)
   end
-  
+
   @doc """
   Checks if a user is a member of a forum.
   """
@@ -108,7 +108,7 @@ defmodule CGraph.Forums.Core do
       )
     )
   end
-  
+
   @doc """
   Subscribes a user to a forum.
   """
@@ -120,7 +120,7 @@ defmodule CGraph.Forums.Core do
     })
     |> Repo.insert(on_conflict: :nothing)
   end
-  
+
   @doc """
   Unsubscribes a user from a forum.
   """
@@ -132,9 +132,9 @@ defmodule CGraph.Forums.Core do
     )
     :ok
   end
-  
+
   # Private helpers
-  
+
   defp maybe_filter_by_category(query, nil), do: query
   defp maybe_filter_by_category(query, category_id) do
     from(f in query, where: f.category_id == ^category_id)

@@ -1,7 +1,7 @@
 defmodule CGraph.Accounts.Token do
   @moduledoc """
   Schema and functions for managing authentication tokens.
-  
+
   Handles:
   - Session tokens
   - Password reset tokens
@@ -15,7 +15,7 @@ defmodule CGraph.Accounts.Token do
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  
+
   schema "tokens" do
     field :token, :string
     field :type, :string  # session, reset_password, email_verification, api
@@ -23,7 +23,7 @@ defmodule CGraph.Accounts.Token do
     field :used_at, :utc_datetime
     field :revoked_at, :utc_datetime
     field :metadata, :map, default: %{}
-    
+
     belongs_to :user, CGraph.Accounts.User
 
     timestamps(type: :utc_datetime)
@@ -44,7 +44,7 @@ defmodule CGraph.Accounts.Token do
   def create(user_id, type, opts \\ []) do
     expires_in = Keyword.get(opts, :expires_in, default_expiry(type))
     metadata = Keyword.get(opts, :metadata, %{})
-    
+
     %__MODULE__{
       token: generate_token(),
       type: to_string(type),

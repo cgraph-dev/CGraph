@@ -44,7 +44,7 @@ defmodule CGraph.HTTP.Middleware.CircuitBreaker do
   @impl Tesla.Middleware
   def call(env, next, opts) do
     fuse_name = Keyword.get(opts, :name, :default_http_fuse)
-    
+
     # Initialize fuse if not exists
     ensure_fuse_installed(fuse_name)
 
@@ -107,7 +107,7 @@ defmodule CGraph.HTTP.Middleware.CircuitBreaker do
 
   defp config(key) do
     config = Application.get_env(:cgraph, CGraph.HTTP, [])
-    
+
     case key do
       :circuit_breaker_threshold -> Keyword.get(config, :circuit_breaker_threshold, @default_threshold)
       :circuit_breaker_reset -> Keyword.get(config, :circuit_breaker_reset, @default_reset)

@@ -7,8 +7,8 @@ defmodule CGraph.Forums.EmojiPack do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias CGraph.Forums.{Forum, CustomEmoji}
   alias CGraph.Accounts.User
+  alias CGraph.Forums.{CustomEmoji, Forum}
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id

@@ -10,8 +10,8 @@ defmodule CGraph.Chaos.Scenarios do
   - Full cascade failure (multiple services)
   """
 
-  alias CGraph.Chaos.FaultInjector
   alias CGraph.Chaos.CircuitBreakerValidator
+  alias CGraph.Chaos.FaultInjector
 
   require Logger
 

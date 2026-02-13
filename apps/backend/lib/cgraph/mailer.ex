@@ -522,17 +522,15 @@ defmodule CGraph.Mailer do
   defp format_assigns_as_html(assigns) do
     assigns
     |> Map.drop([:user_name])
-    |> Enum.map(fn {key, value} ->
+    |> Enum.map_join("\n", fn {key, value} ->
       "<p><strong>#{key}:</strong> #{format_value(value)}</p>"
     end)
-    |> Enum.join("\n")
   end
 
   defp format_assigns_as_text(assigns) do
     assigns
     |> Map.drop([:user_name])
-    |> Enum.map(fn {key, value} -> "#{key}: #{format_value(value)}" end)
-    |> Enum.join("\n")
+    |> Enum.map_join("\n", fn {key, value} -> "#{key}: #{format_value(value)}" end)
   end
 
   defp format_value(value) when is_list(value), do: "#{length(value)} items"

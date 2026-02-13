@@ -131,7 +131,7 @@ defmodule CGraphWeb.ThreadChannel do
           {:ok, _} ->
             # Get updated thread to broadcast
             {:ok, updated_thread} = Forums.get_thread(thread.id)
-            
+
             # Broadcast vote update to all viewers
             broadcast!(socket, "vote_changed", %{
               thread_id: thread.id,
@@ -203,7 +203,7 @@ defmodule CGraphWeb.ThreadChannel do
           {:ok, _} ->
             # Get updated post to broadcast
             {:ok, updated_post} = Forums.get_thread_post(comment_id)
-            
+
             # Broadcast comment vote update
             broadcast!(socket, "comment_vote_changed", %{
               comment_id: comment_id,
@@ -238,12 +238,12 @@ defmodule CGraphWeb.ThreadChannel do
 
       poll ->
         option_ids = if is_list(option_id), do: option_id, else: [option_id]
-        
+
         case Forums.vote_poll(poll.id, user.id, option_ids) do
           {:ok, _vote} ->
             # Get updated poll to broadcast
             updated_poll = Forums.get_thread_poll(thread.id)
-            
+
             # Broadcast poll update to all viewers
             broadcast!(socket, "poll_updated", %{
               thread_id: thread.id,

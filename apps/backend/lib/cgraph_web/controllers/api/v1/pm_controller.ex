@@ -15,7 +15,7 @@ defmodule CGraphWeb.API.V1.PMController do
   import CGraphWeb.Helpers.ParamParser
 
   alias CGraph.Messaging
-  alias CGraph.Messaging.{PrivateMessage, PMFolder}
+  alias CGraph.Messaging.{PMFolder, PrivateMessage}
 
   action_fallback CGraphWeb.FallbackController
 

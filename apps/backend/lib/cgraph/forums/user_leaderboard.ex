@@ -1,18 +1,18 @@
 defmodule CGraph.Forums.UserLeaderboard do
   @moduledoc """
   Forum-specific user leaderboard functionality.
-  
+
   Calculates and displays top contributors for a specific forum
   based on their post and comment scores within that forum.
   """
 
   import Ecto.Query, warn: false
+  alias CGraph.Forums.{Comment, Post}
   alias CGraph.Repo
-  alias CGraph.Forums.{Post, Comment}
 
   @doc """
   Get top contributors for a specific forum based on their post/comment scores.
-  
+
   ## Options
   - `:page` - Page number (default: 1)
   - `:per_page` - Items per page (default: 10, max: 50)

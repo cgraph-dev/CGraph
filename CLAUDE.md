@@ -42,8 +42,8 @@ forums, and gamification. Features include Signal Protocol encryption (X3DH + Do
 AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a karma-based
 forum system.
 
-**Version**: 0.9.20  
-**Last Updated**: February 15, 2026  
+**Version**: 0.9.21  
+**Last Updated**: February 13, 2026  
 **Architecture Score**: 9.8/10  
 **License**: Proprietary (see LICENSE)
 
@@ -731,6 +731,7 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Phase 6: Test Coverage         | 80% coverage                | ✅ COMPLETE | 100%       |
 | Phase 7: Operational Maturity  | SRE-grade ops               | ✅ COMPLETE | 100%       |
 | Phase 8: Code Quality Cleanup  | Fix compile warnings        | ✅ COMPLETE | 100%       |
+| Phase 9: Credo Cleanup         | Fix static analysis issues  | ✅ COMPLETE | 100%       |
 
 ### Key Metrics
 
@@ -748,10 +749,23 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Controller coverage  | 40%         | **100%** (83/83)          |
 | Context module tests | 23          | **70** (47 new)           |
 | Circuit breakers     | 1 (Redis)   | **7** (all ext. deps)     |
-| Compile warnings     | 90+         | **11** (dependency-level) |
+| Compile warnings     | 90+         | **0** (fully clean)       |
+| Credo issues         | 1,277       | **83** (93% reduction)    |
 | Operational score    | N/A         | **9.8/10**                |
 
 **Overall Score:** 9.8/10 (up from 7.3/10)
+
+### Session 10 Changes (v0.9.21)
+
+- **14 commented-out routes wired** — billing, subscriptions, username endpoints fully routed
+- **Credo: 1,277 → 83 issues** (93% reduction)
+  - 704 trailing whitespace fixes, 87 alias ordering, 10 `length/1` → empty list checks
+  - 10 unsafe `String.to_atom` → `String.to_existing_atom`, 8 `Enum.map_join` refactors
+  - 7 predicate function renames (`is_foo?` → `foo?`), 12 implicit try conversions
+  - 4 `unless/else` → `if/else`, 3 `@moduledoc` additions, large number formatting
+- **Added `.credo.exs`** with tuned config (disabled noisy logger metadata check)
+- **Remaining 83**: 56 nested alias suggestions, 12 high arity/complexity, 8 TODOs, 7 intentional
+  atoms
 
 ### Session 9 Changes (v0.9.20)
 

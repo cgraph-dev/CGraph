@@ -1,14 +1,14 @@
 defmodule CGraph.Forums.Plugins do
   @moduledoc """
   Plugin management for forums.
-  
+
   Handles installation, configuration, and lifecycle
   of forum plugins from the marketplace.
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Forums.ForumPlugin
+  alias CGraph.Repo
 
   @doc """
   List all plugins for a forum.

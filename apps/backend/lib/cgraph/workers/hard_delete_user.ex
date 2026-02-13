@@ -10,8 +10,8 @@ defmodule CGraph.Workers.HardDeleteUser do
     queue: :default,
     max_attempts: 3
 
-  alias CGraph.Repo
   alias CGraph.Accounts.User
+  alias CGraph.Repo
   import Ecto.Query
 
   @impl Oban.Worker

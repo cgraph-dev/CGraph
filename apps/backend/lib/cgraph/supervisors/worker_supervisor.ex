@@ -1,4 +1,5 @@
 defmodule CGraph.WorkerSupervisor do
+  @moduledoc "Supervisor for background workers including Oban jobs, presence tracking, and WebRTC management."
   use Supervisor
 
   def start_link(init_arg) do

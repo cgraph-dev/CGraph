@@ -242,7 +242,7 @@ defmodule CGraph.Storage do
 
   @doc """
   Gets total storage usage for a user in bytes.
-  
+
   TODO: Implement proper file tracking per user.
   Currently returns 0 as a placeholder.
   """

@@ -51,33 +51,29 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
   Get the current slow query statistics.
   """
   def get_stats do
-    try do
-      queries = :ets.tab2list(@table)
-      n_plus_ones = :ets.tab2list(@n_plus_one_table)
+    queries = :ets.tab2list(@table)
+    n_plus_ones = :ets.tab2list(@n_plus_one_table)
 
-      %{
-        slow_queries_total: length(queries),
-        n_plus_one_detections: length(n_plus_ones),
-        top_slow_queries: queries
-          |> Enum.sort_by(fn {_key, data} -> data.duration_ms end, :desc)
-          |> Enum.take(20)
-          |> Enum.map(fn {_key, data} -> data end)
-      }
-    rescue
-      _ -> %{slow_queries_total: 0, n_plus_one_detections: 0, top_slow_queries: []}
-    end
+    %{
+      slow_queries_total: length(queries),
+      n_plus_one_detections: length(n_plus_ones),
+      top_slow_queries: queries
+        |> Enum.sort_by(fn {_key, data} -> data.duration_ms end, :desc)
+        |> Enum.take(20)
+        |> Enum.map(fn {_key, data} -> data end)
+    }
+  rescue
+    _ -> %{slow_queries_total: 0, n_plus_one_detections: 0, top_slow_queries: []}
   end
 
   @doc """
   Reset statistics (called after periodic report).
   """
   def reset_stats do
-    try do
-      :ets.delete_all_objects(@table)
-      :ets.delete_all_objects(@n_plus_one_table)
-    rescue
-      _ -> :ok
-    end
+    :ets.delete_all_objects(@table)
+    :ets.delete_all_objects(@n_plus_one_table)
+  rescue
+    _ -> :ok
   end
 
   # ===========================================================================
@@ -201,8 +197,7 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
       n_plus_one_detections: stats.n_plus_one_detections,
       top_5_slowest: stats.top_slow_queries
         |> Enum.take(5)
-        |> Enum.map(fn q -> "#{q.source}: #{q.duration_ms}ms" end)
-        |> Enum.join(", ")
+        |> Enum.map_join(", ", fn q -> "#{q.source}: #{q.duration_ms}ms" end)
     )
 
     # Reset after report

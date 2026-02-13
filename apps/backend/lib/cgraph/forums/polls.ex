@@ -1,14 +1,14 @@
 defmodule CGraph.Forums.Polls do
   @moduledoc """
   Poll management for forum threads.
-  
+
   Supports single and multiple choice polls with
   vote tracking and expiration.
   """
 
   import Ecto.Query, warn: false
+  alias CGraph.Forums.{PollVote, ThreadPoll}
   alias CGraph.Repo
-  alias CGraph.Forums.{ThreadPoll, PollVote}
 
   @doc """
   Create a poll for a thread.
@@ -28,7 +28,7 @@ defmodule CGraph.Forums.Polls do
 
   @doc """
   Vote on a poll.
-  
+
   ## Parameters
   - `poll_id` - The poll to vote on
   - `user_id` - The voting user
@@ -59,19 +59,19 @@ defmodule CGraph.Forums.Polls do
   """
   def get_poll_results(poll_id) do
     poll = Repo.get!(ThreadPoll, poll_id)
-    
+
     # Get all votes for this poll
     votes = from(v in PollVote,
       where: v.poll_id == ^poll_id,
       select: v.option_ids
     )
     |> Repo.all()
-    
+
     # Count votes per option
     option_counts = votes
       |> Enum.flat_map(& &1)
       |> Enum.frequencies()
-    
+
     %{
       poll: poll,
       total_votes: poll.total_votes,

@@ -295,4 +295,3 @@ defmodule CGraph.Notifications.PushService.ExpoClient do
   defp parse_error_details(%{"error" => "MismatchSenderId"}), do: :mismatch_sender_id
   defp parse_error_details(_), do: :unknown_error
 end
-

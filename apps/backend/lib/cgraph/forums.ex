@@ -18,9 +18,9 @@ defmodule CGraph.Forums do
   alias CGraph.Forums.ForumTheme, warn: false
   alias CGraph.Forums.Poll, warn: false
   alias CGraph.Forums.ThreadAttachment, warn: false
-  alias CGraph.Repo
-  alias CGraph.ReadRepo
   alias CGraph.Pagination
+  alias CGraph.ReadRepo
+  alias CGraph.Repo
 
   # ============================================================================
   # Submodule Delegations (Phase 6 Architecture Refactor)
@@ -368,7 +368,7 @@ defmodule CGraph.Forums do
   """
   def count_user_threads_today(user_id) do
     today_start = Date.utc_today() |> DateTime.new!(~T[00:00:00], "Etc/UTC")
-    
+
     Repo.aggregate(
       from(t in Thread,
         where: t.user_id == ^user_id and t.inserted_at >= ^today_start
@@ -384,7 +384,7 @@ defmodule CGraph.Forums do
   """
   def count_user_posts_today(user_id) do
     today_start = Date.utc_today() |> DateTime.new!(~T[00:00:00], "Etc/UTC")
-    
+
     Repo.aggregate(
       from(p in ThreadPost,
         where: p.user_id == ^user_id and p.inserted_at >= ^today_start
@@ -662,7 +662,7 @@ defmodule CGraph.Forums do
 
   @doc """
   List home feed - posts from forums the user has joined.
-  
+
   This is a personalized feed showing content from subscribed/joined forums.
   For unauthenticated users, returns an empty list.
   """
@@ -2099,13 +2099,13 @@ defmodule CGraph.Forums do
 
   @doc """
   Create a thread.
-  
-  Automatically subscribes the author to the thread if they have 
+
+  Automatically subscribes the author to the thread if they have
   auto_subscribe_threads enabled in their preferences (default: true).
   """
   def create_thread(attrs \\ %{}) do
     alias CGraph.Forums.SubscriptionService
-    
+
     Repo.transaction(fn ->
       result = %Thread{}
         |> Thread.changeset(attrs)
@@ -2126,7 +2126,7 @@ defmodule CGraph.Forums do
           # Check user preference (default to true if not set)
           author_id = thread.author_id
           auto_subscribe = get_user_auto_subscribe_preference(author_id)
-          
+
           if auto_subscribe do
             case SubscriptionService.subscribe_to_thread(author_id, thread.id) do
               {:ok, _subscription} -> :ok
@@ -2148,7 +2148,7 @@ defmodule CGraph.Forums do
       end
     end)
   end
-  
+
   @doc """
   Get user's auto-subscribe preference. Defaults to true if not set.
   """
@@ -2156,7 +2156,7 @@ defmodule CGraph.Forums do
     # Check customizations for auto_subscribe setting
     case CGraph.Customizations.get_user_customizations(user_id) do
       nil -> true  # Default to auto-subscribe
-      customizations -> 
+      customizations ->
         # Look for auto_subscribe in settings, default to true
         Map.get(customizations, :auto_subscribe_threads, true)
     end
@@ -2284,20 +2284,7 @@ defmodule CGraph.Forums do
           |> Repo.update_all(inc: [post_count: 1], set: [last_post_at: now])
 
           # Auto-subscribe author to the thread they replied to
-          author_id = post.author_id
-          auto_subscribe = get_user_auto_subscribe_preference(author_id)
-          
-          if auto_subscribe do
-            # Only subscribe if not already subscribed
-            case SubscriptionService.is_subscribed_to_thread?(author_id, thread_id) do
-              false ->
-                case SubscriptionService.subscribe_to_thread(author_id, thread_id) do
-                  {:ok, _subscription} -> :ok
-                  {:error, _reason} -> :ok  # Don't fail if subscription fails
-                end
-              true -> :ok  # Already subscribed
-            end
-          end
+          maybe_auto_subscribe(post.author_id, thread_id)
 
           Repo.preload(post, [:author])
 
@@ -2305,6 +2292,21 @@ defmodule CGraph.Forums do
           Repo.rollback(changeset)
       end
     end)
+  end
+
+  defp maybe_auto_subscribe(author_id, thread_id) do
+    if get_user_auto_subscribe_preference(author_id) do
+      case SubscriptionService.subscribed_to_thread?(author_id, thread_id) do
+        false ->
+          case SubscriptionService.subscribe_to_thread(author_id, thread_id) do
+            {:ok, _subscription} -> :ok
+            {:error, _reason} -> :ok
+          end
+
+        true ->
+          :ok
+      end
+    end
   end
 
   @doc """
@@ -2747,7 +2749,6 @@ defmodule CGraph.Forums do
     CGraph.Pagination.paginate(query, pagination_opts)
   end
 
-
   @doc """
   Lists threads started by a specific user with pagination.
   For classic forum integration where threads are distinct from posts.
@@ -2798,9 +2799,7 @@ defmodule CGraph.Forums do
     CGraph.Pagination.paginate(query, pagination_opts)
   end
 
-
   defdelegate get_user_post_stats(user_id), to: CGraph.Forums.UserContent
-
 
   # ============================================================================
   # RSS Feed Support Functions

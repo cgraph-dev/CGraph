@@ -21,8 +21,8 @@ defmodule CGraph.Workers.ScheduledMessageWorker do
 
   require Logger
 
-  alias CGraph.Repo
   alias CGraph.Messaging.Message
+  alias CGraph.Repo
   alias CGraphWeb.Endpoint
 
   import Ecto.Query

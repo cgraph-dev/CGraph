@@ -5,8 +5,8 @@ defmodule CGraph.Gamification.Marketplace do
   """
   require Logger
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Gamification.MarketplaceItem
+  alias CGraph.Repo
 
   # Listings
   def list_listings(opts \\ []) do

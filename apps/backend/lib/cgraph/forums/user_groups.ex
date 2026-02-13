@@ -1,14 +1,14 @@
 defmodule CGraph.Forums.UserGroups do
   @moduledoc """
   User group management for forums.
-  
+
   Handles permission groups like Administrators, Moderators,
   Members, and custom groups.
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Forums.ForumUserGroup
+  alias CGraph.Repo
 
   @doc """
   List user groups for a forum.

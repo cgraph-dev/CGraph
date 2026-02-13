@@ -1,20 +1,20 @@
 defmodule CGraph.Forums.Search do
   @moduledoc """
   Search functionality for forums.
-  
+
   Supports searching posts by title and content with
   filtering by forum and sorting options.
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Forums.Post
+  alias CGraph.Repo
 
   @doc """
   Search posts by title or content.
-  
+
   Supports filtering by forum and sorting by relevance, date, or score.
-  
+
   ## Options
   - `:page` - Page number (default: 1)
   - `:per_page` - Results per page (default: 20)

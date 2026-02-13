@@ -38,10 +38,10 @@ defmodule CGraphWeb.API.V1.ForumController do
   @doc """
   Get home feed - posts from forums the user has joined.
   GET /api/v1/forums/feed/home
-  
+
   Requires authentication. Returns posts from forums the user has joined,
   sorted by the specified algorithm.
-  
+
   Query params:
   - page: Page number (default: 1)
   - per_page: Items per page (default: 25, max: 50)
@@ -71,9 +71,9 @@ defmodule CGraphWeb.API.V1.ForumController do
   @doc """
   Get popular feed - trending posts from all public forums.
   GET /api/v1/forums/feed/popular
-  
+
   Public endpoint. Returns trending posts from all public forums.
-  
+
   Query params:
   - page: Page number (default: 1)
   - per_page: Items per page (default: 25, max: 50)

@@ -1,17 +1,17 @@
 defmodule CGraph.Forums.Boards do
   @moduledoc """
   Board management for MyBB-style forum sections.
-  
+
   Boards are hierarchical containers for threads within a forum.
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Forums.Board
+  alias CGraph.Repo
 
   @doc """
   List boards for a forum.
-  
+
   ## Options
   - `:include_hidden` - include hidden boards (default: false)
   - `:parent_id` - filter by parent board (nil for top-level)

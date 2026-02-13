@@ -113,8 +113,8 @@ defmodule CGraphWeb.API.V1.ThemeController do
   def presets(conn, _params) do
     json(conn, %{
       colorPresets: [
-        "emerald", "purple", "cyan", "orange", "pink", 
-        "gold", "crimson", "arctic", "sunset", "midnight", 
+        "emerald", "purple", "cyan", "orange", "pink",
+        "gold", "crimson", "arctic", "sunset", "midnight",
         "forest", "ocean"
       ],
       avatarBorders: [
@@ -130,7 +130,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
         %{id: "mythic", label: "Mythic", premium: true}
       ],
       chatBubbleStyles: [
-        "default", "rounded", "sharp", "cloud", 
+        "default", "rounded", "sharp", "cloud",
         "modern", "retro", "bubble", "glassmorphism"
       ],
       visualEffects: [

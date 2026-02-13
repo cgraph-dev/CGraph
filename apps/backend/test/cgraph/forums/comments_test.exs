@@ -1,7 +1,7 @@
 defmodule CGraph.Forums.CommentsTest do
   @moduledoc """
   Tests for the Forums.Comments submodule.
-  
+
   Tests comment CRUD, voting, and moderation.
   """
   use CGraph.DataCase, async: true
@@ -52,7 +52,7 @@ defmodule CGraph.Forums.CommentsTest do
 
     test "creates nested comments (replies)", %{user: user, other_user: other_user, post: post} do
       {:ok, parent} = Comments.create_comment(post, user, %{"content" => "Parent comment"})
-      
+
       assert {:ok, reply} = Comments.create_comment(post, other_user, %{
         "content" => "Reply to parent",
         "parent_id" => parent.id
@@ -65,7 +65,7 @@ defmodule CGraph.Forums.CommentsTest do
   describe "get_comment/1" do
     test "returns comment by id", %{user: user, post: post} do
       {:ok, comment} = Comments.create_comment(post, user, %{"content" => "Test"})
-      
+
       assert {:ok, found} = Comments.get_comment(comment.id)
       assert found.id == comment.id
     end
@@ -81,7 +81,7 @@ defmodule CGraph.Forums.CommentsTest do
       {:ok, _} = Comments.create_comment(post, user, %{"content" => "Comment 2"})
 
       {comments, meta} = Comments.list_comments(post)
-      
+
       assert length(comments) >= 2
       assert Map.has_key?(meta, :total)
     end
@@ -92,7 +92,7 @@ defmodule CGraph.Forums.CommentsTest do
       end
 
       {comments, meta} = Comments.list_comments(post, page: 1, per_page: 2)
-      
+
       assert length(comments) <= 2
       assert meta.per_page == 2
     end
@@ -103,7 +103,7 @@ defmodule CGraph.Forums.CommentsTest do
       {:ok, _} = Comments.create_comment(post, user, %{"content" => "Second"})
 
       {comments, _meta} = Comments.list_comments(post, sort: "new")
-      
+
       if length(comments) >= 2 do
         assert List.first(comments).content == "Second"
       end
@@ -115,7 +115,7 @@ defmodule CGraph.Forums.CommentsTest do
       {:ok, _} = Comments.create_comment(post, user, %{"content" => "Second"})
 
       {comments, _meta} = Comments.list_comments(post, sort: "old")
-      
+
       if length(comments) >= 2 do
         assert List.first(comments).content == "First"
       end
@@ -130,7 +130,7 @@ defmodule CGraph.Forums.CommentsTest do
 
       # Get only top-level comments (no parent)
       {top_level, _meta} = Comments.list_comments(post, parent_id: nil)
-      
+
       # Should only include parent, not reply
       assert Enum.all?(top_level, fn c -> is_nil(c.parent_id) end)
     end
@@ -139,7 +139,7 @@ defmodule CGraph.Forums.CommentsTest do
   describe "update_comment/2" do
     test "updates comment content", %{user: user, post: post} do
       {:ok, comment} = Comments.create_comment(post, user, %{"content" => "Original"})
-      
+
       assert {:ok, updated} = Comments.update_comment(comment, %{"content" => "Updated"})
       assert updated.content == "Updated"
     end
@@ -148,9 +148,9 @@ defmodule CGraph.Forums.CommentsTest do
   describe "delete_comment/1" do
     test "soft deletes a comment", %{user: user, post: post} do
       {:ok, comment} = Comments.create_comment(post, user, %{"content" => "To delete"})
-      
+
       assert {:ok, :deleted} = Comments.delete_comment(comment)
-      
+
       # Comment should still exist but be marked deleted
       {:ok, deleted} = Comments.get_comment(comment.id)
       assert deleted.deleted_at != nil
@@ -160,44 +160,44 @@ defmodule CGraph.Forums.CommentsTest do
   describe "voting" do
     test "vote/3 upvotes a comment", %{user: user, other_user: other_user, post: post} do
       {:ok, comment} = Comments.create_comment(post, user, %{"content" => "Vote me"})
-      
+
       assert {:ok, :ok} = Comments.vote(other_user, comment, :up)
     end
 
     test "vote/3 downvotes a comment", %{user: user, other_user: other_user, post: post} do
       {:ok, comment} = Comments.create_comment(post, user, %{"content" => "Vote me"})
-      
+
       assert {:ok, :ok} = Comments.vote(other_user, comment, :down)
     end
 
     test "vote/3 toggles vote when same vote type", %{user: user, other_user: other_user, post: post} do
       {:ok, comment} = Comments.create_comment(post, user, %{"content" => "Vote me"})
-      
+
       {:ok, :ok} = Comments.vote(other_user, comment, :up)
       {:ok, :ok} = Comments.vote(other_user, comment, :up)
-      
+
       # Second same vote removes the vote
     end
 
     test "vote/3 flips vote when different vote type", %{user: user, other_user: other_user, post: post} do
       {:ok, comment} = Comments.create_comment(post, user, %{"content" => "Vote me"})
-      
+
       {:ok, :ok} = Comments.vote(other_user, comment, :up)
       {:ok, :ok} = Comments.vote(other_user, comment, :down)
-      
+
       # Vote should now be downvote
     end
 
     test "remove_vote/2 removes user's vote", %{user: user, other_user: other_user, post: post} do
       {:ok, comment} = Comments.create_comment(post, user, %{"content" => "Vote me"})
-      
+
       {:ok, :ok} = Comments.vote(other_user, comment, :up)
       assert :ok = Comments.remove_vote(other_user, comment)
     end
 
     test "remove_vote/2 returns error if no vote exists", %{user: user, other_user: other_user, post: post} do
       {:ok, comment} = Comments.create_comment(post, user, %{"content" => "No votes"})
-      
+
       assert {:error, :not_found} = Comments.remove_vote(other_user, comment)
     end
   end
@@ -205,13 +205,13 @@ defmodule CGraph.Forums.CommentsTest do
   describe "moderation" do
     test "hide_comment/2 hides a comment", %{user: user, post: post} do
       {:ok, comment} = Comments.create_comment(post, user, %{"content" => "To hide"})
-      
+
       assert :ok = Comments.hide_comment(comment.id, "Spam")
     end
 
     test "soft_delete_comment/2 soft deletes a comment", %{user: user, post: post} do
       {:ok, comment} = Comments.create_comment(post, user, %{"content" => "To soft delete"})
-      
+
       assert :ok = Comments.soft_delete_comment(comment.id, reason: "Rule violation")
     end
   end

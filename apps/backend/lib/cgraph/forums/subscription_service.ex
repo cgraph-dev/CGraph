@@ -4,8 +4,8 @@ defmodule CGraph.Forums.SubscriptionService do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Forums.Subscription
+  alias CGraph.Repo
 
   @doc """
   Subscribe to a forum.
@@ -179,7 +179,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Check if user is subscribed to a thread.
   """
-  def is_subscribed_to_thread?(user_id, thread_id) do
+  def subscribed_to_thread?(user_id, thread_id) do
     from(s in Subscription,
       where: s.user_id == ^user_id,
       where: s.thread_id == ^thread_id

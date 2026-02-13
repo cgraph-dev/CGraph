@@ -17,7 +17,7 @@ defmodule CGraph.Gamification.UserAvatarBorder do
     field :expires_at, :utc_datetime
     field :custom_colors, {:array, :string}
     field :custom_animation_speed, :float
-    
+
     belongs_to :user, CGraph.Accounts.User
     belongs_to :avatar_border, CGraph.Gamification.AvatarBorder
 

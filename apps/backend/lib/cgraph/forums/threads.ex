@@ -1,14 +1,14 @@
 defmodule CGraph.Forums.Threads do
   @moduledoc """
   Thread operations for forums (MyBB-style boards).
-  
+
   Handles thread creation, updates, pinning, locking, etc.
   """
-  
+
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Forums.{Thread, ThreadPost}
-  
+  alias CGraph.Repo
+
   @doc """
   Lists threads for a forum or board.
   """
@@ -21,7 +21,7 @@ defmodule CGraph.Forums.Threads do
       _ ->
         from(t in Thread)
     end
-    
+
     base_query = base_query
     |> order_by([t], [desc: t.is_pinned])
     |> preload([:author, :last_poster])
@@ -35,7 +35,7 @@ defmodule CGraph.Forums.Threads do
 
     CGraph.Pagination.paginate(base_query, pagination_opts)
   end
-  
+
   @doc """
   Gets a single thread.
   """
@@ -45,7 +45,7 @@ defmodule CGraph.Forums.Threads do
       thread -> {:ok, Repo.preload(thread, [:author, :forum, :board])}
     end
   end
-  
+
   @doc """
   Creates a new thread with initial post.
   """
@@ -61,7 +61,7 @@ defmodule CGraph.Forums.Threads do
           board_id: attrs["board_id"] || attrs[:board_id]
         })
         |> Repo.insert()
-      
+
       case thread_result do
         {:ok, thread} ->
           # Create first post
@@ -71,20 +71,20 @@ defmodule CGraph.Forums.Threads do
             content: attrs["content"] || attrs[:content],
             is_first_post: true
           }
-          
+
           case create_post(thread, user, post_attrs) do
             {:ok, _post} ->
               Repo.preload(thread, [:author, :posts])
             {:error, reason} ->
               Repo.rollback(reason)
           end
-          
+
         {:error, changeset} ->
           Repo.rollback(changeset)
       end
     end)
   end
-  
+
   @doc """
   Updates a thread.
   """
@@ -93,35 +93,35 @@ defmodule CGraph.Forums.Threads do
     |> Thread.changeset(attrs)
     |> Repo.update()
   end
-  
+
   @doc """
   Pins a thread.
   """
   def pin_thread(thread) do
     update_thread(thread, %{is_pinned: true})
   end
-  
+
   @doc """
   Unpins a thread.
   """
   def unpin_thread(thread) do
     update_thread(thread, %{is_pinned: false})
   end
-  
+
   @doc """
   Locks a thread.
   """
   def lock_thread(thread) do
     update_thread(thread, %{is_locked: true})
   end
-  
+
   @doc """
   Unlocks a thread.
   """
   def unlock_thread(thread) do
     update_thread(thread, %{is_locked: false})
   end
-  
+
   @doc """
   Increments view count.
   """
@@ -130,9 +130,9 @@ defmodule CGraph.Forums.Threads do
     |> Repo.update_all(inc: [view_count: 1])
     :ok
   end
-  
+
   # Thread posts
-  
+
   @doc """
   Lists posts in a thread.
   """
@@ -151,7 +151,7 @@ defmodule CGraph.Forums.Threads do
 
     CGraph.Pagination.paginate(query, pagination_opts)
   end
-  
+
   @doc """
   Creates a post in a thread.
   """
@@ -172,7 +172,7 @@ defmodule CGraph.Forums.Threads do
         error
     end
   end
-  
+
   defp update_thread_stats(thread) do
     from(t in Thread, where: t.id == ^thread.id)
     |> Repo.update_all(

@@ -412,14 +412,14 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Check if forum is an ancestor of another forum.
   """
-  def is_ancestor?(potential_ancestor, forum) do
+  def ancestor?(potential_ancestor, forum) do
     String.starts_with?(forum.path || "", potential_ancestor.path || "")
   end
 
   @doc """
   Check if forum is a descendant of another forum.
   """
-  def is_descendant?(potential_descendant, forum) do
+  def descendant?(potential_descendant, forum) do
     String.starts_with?(potential_descendant.path || "", forum.path || "")
   end
 end

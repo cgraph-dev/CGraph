@@ -15,12 +15,7 @@ defmodule CGraphWeb.API.UsernameController do
   """
   def check_availability(conn, %{"username" => username}) do
     # Validate format first
-    unless valid_username_format?(username) do
-      json(conn, %{
-        available: false,
-        reason: "Invalid format. Use 3-32 characters: letters, numbers, _ and - only"
-      })
-    else
+    if valid_username_format?(username) do
       # Check if taken
       if UsernameService.username_taken?(username) do
         json(conn, %{available: false, reason: "Username is already taken"})
@@ -31,6 +26,11 @@ defmodule CGraphWeb.API.UsernameController do
         json(conn, %{available: true})
       end
       end
+    else
+      json(conn, %{
+        available: false,
+        reason: "Invalid format. Use 3-32 characters: letters, numbers, _ and - only"
+      })
     end
   end
 

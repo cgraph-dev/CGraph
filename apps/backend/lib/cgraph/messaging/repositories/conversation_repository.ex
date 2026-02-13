@@ -5,10 +5,10 @@ defmodule CGraph.Messaging.Repositories.ConversationRepository do
 
   import Ecto.Query, warn: false, except: [update: 2]
 
-  alias CGraph.Repo
+  alias CGraph.Cache
   alias CGraph.Messaging.Conversation
   alias CGraph.Messaging.ConversationParticipant
-  alias CGraph.Cache
+  alias CGraph.Repo
 
   @cache_ttl :timer.minutes(5)
 

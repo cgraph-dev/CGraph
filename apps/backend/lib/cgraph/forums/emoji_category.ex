@@ -9,7 +9,7 @@ defmodule CGraph.Forums.EmojiCategory do
   import Ecto.Changeset
   import Ecto.Query
 
-  alias CGraph.Forums.{Forum, CustomEmoji}
+  alias CGraph.Forums.{CustomEmoji, Forum}
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -37,9 +37,9 @@ defmodule CGraph.Forums.EmojiCategory do
     |> validate_required([:name])
     |> validate_length(:name, min: 1, max: 50)
     |> validate_length(:description, max: 200)
-    |> unique_constraint([:name, :forum_id], 
+    |> unique_constraint([:name, :forum_id],
         name: :emoji_categories_name_forum_unique)
-    |> unique_constraint([:name], 
+    |> unique_constraint([:name],
         name: :emoji_categories_name_global_unique)
   end
 

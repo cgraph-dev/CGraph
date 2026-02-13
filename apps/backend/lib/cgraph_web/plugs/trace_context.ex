@@ -1,6 +1,6 @@
 defmodule CGraphWeb.Plugs.TraceContext do
   @moduledoc """
-  Plug for propagating W3C Trace Context headers and adding X-Trace-Id 
+  Plug for propagating W3C Trace Context headers and adding X-Trace-Id
   response headers for frontend correlation.
 
   ## Overview

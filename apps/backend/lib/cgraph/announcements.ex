@@ -5,9 +5,9 @@ defmodule CGraph.Announcements do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
-  alias CGraph.Forums.ForumAnnouncement
   alias CGraph.Announcements.AnnouncementDismissal
+  alias CGraph.Forums.ForumAnnouncement
+  alias CGraph.Repo
 
   # ========================================
   # QUERIES

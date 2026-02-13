@@ -12,9 +12,9 @@ defmodule CGraph.Referrals do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
-  alias CGraph.Referrals.{Referral, ReferralCode, ReferralReward, RewardTier}
   alias CGraph.Accounts.User
+  alias CGraph.Referrals.{Referral, ReferralCode, ReferralReward, RewardTier}
+  alias CGraph.Repo
 
   # ========================================
   # REFERRAL CODE

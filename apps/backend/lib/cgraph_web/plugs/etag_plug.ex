@@ -190,8 +190,7 @@ defmodule CGraphWeb.Plugs.ETagPlug do
   # Generate from list of resources (collection ETag)
   def generate_etag(resources) when is_list(resources) do
     resources
-    |> Enum.map(&extract_etag_component/1)
-    |> Enum.join(":")
+    |> Enum.map_join(":", &extract_etag_component/1)
     |> hash_etag()
   end
 

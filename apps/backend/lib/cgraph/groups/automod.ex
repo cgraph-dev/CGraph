@@ -7,8 +7,8 @@ defmodule CGraph.Groups.Automod do
   """
 
   import Ecto.Query
-  alias CGraph.Repo
   alias CGraph.Groups.AutomodRule
+  alias CGraph.Repo
 
   @doc "List all automod rules for a group."
   def list_rules(group_id) do

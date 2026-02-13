@@ -310,21 +310,19 @@ defmodule CGraph.Messaging do
 
   # Track delivery receipts for all conversation participants except the sender
   defp track_delivery_for_participants(message, conversation) do
-    try do
-      recipient_ids =
-        from(cp in CGraph.Messaging.ConversationParticipant,
-          where: cp.conversation_id == ^conversation.id,
-          where: cp.user_id != ^message.sender_id,
-          select: cp.user_id
-        )
-        |> Repo.all()
+    recipient_ids =
+      from(cp in CGraph.Messaging.ConversationParticipant,
+        where: cp.conversation_id == ^conversation.id,
+        where: cp.user_id != ^message.sender_id,
+        select: cp.user_id
+      )
+      |> Repo.all()
 
-      if recipient_ids != [] do
-        CGraph.Messaging.DeliveryTracking.track_sent(message, recipient_ids)
-      end
-    rescue
-      _ -> :ok  # Don't fail message creation if delivery tracking fails
+    if recipient_ids != [] do
+      CGraph.Messaging.DeliveryTracking.track_sent(message, recipient_ids)
     end
+  rescue
+    _ -> :ok  # Don't fail message creation if delivery tracking fails
   end
 
   @doc """
@@ -905,7 +903,7 @@ defmodule CGraph.Messaging do
   # Private Messages (MyBB-style PM System)
   # ============================================================================
 
-  alias CGraph.Messaging.{PrivateMessage, PMFolder, PMDraft}
+  alias CGraph.Messaging.{PMDraft, PMFolder, PrivateMessage}
 
   @default_pm_folders ["Inbox", "Sent", "Drafts", "Trash"]
 

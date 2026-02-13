@@ -1,7 +1,7 @@
 defmodule CGraph.Gamification.AvatarBorder do
   @moduledoc """
   Schema for avatar borders that users can unlock and equip.
-  
+
   Features 150+ border styles across 20+ themes including:
   - Animated gradients, particles, glows
   - Theme-specific effects (cyberpunk, fantasy, retro, etc.)
@@ -24,7 +24,7 @@ defmodule CGraph.Gamification.AvatarBorder do
     field :description, :string
     field :theme, :string
     field :rarity, :string
-    
+
     # Visual configuration
     field :border_style, :map, default: %{}
     field :animation_type, :string, default: "none"
@@ -33,25 +33,25 @@ defmodule CGraph.Gamification.AvatarBorder do
     field :colors, {:array, :string}, default: []
     field :particle_config, :map, default: %{}
     field :glow_config, :map, default: %{}
-    
+
     # Unlock configuration
     field :unlock_type, :string
     field :unlock_requirement, :string
     field :is_purchasable, :boolean, default: false
     field :coin_cost, :integer, default: 0
     field :gem_cost, :integer, default: 0
-    
+
     # Seasonal/event
     field :season_id, :binary_id
     field :event_id, :binary_id
     field :available_from, :utc_datetime
     field :available_until, :utc_datetime
-    
+
     # Meta
     field :sort_order, :integer, default: 0
     field :is_active, :boolean, default: true
     field :preview_url, :string
-    
+
     has_many :user_avatar_borders, CGraph.Gamification.UserAvatarBorder
 
     timestamps(type: :utc_datetime)

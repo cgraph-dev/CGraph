@@ -33,7 +33,7 @@ defmodule CGraphWeb.API.V1.AccountDeletionController do
       |> json(%{
         message: "Account scheduled for deletion",
         grace_period_days: @grace_period_days,
-        hard_delete_at: DateTime.add(DateTime.utc_now(), @grace_period_days * 86400, :second)
+        hard_delete_at: DateTime.add(DateTime.utc_now(), @grace_period_days * 86_400, :second)
       })
     end
   end
@@ -87,7 +87,7 @@ defmodule CGraphWeb.API.V1.AccountDeletionController do
   end
 
   defp schedule_hard_delete(user_id) do
-    scheduled_at = DateTime.add(DateTime.utc_now(), @grace_period_days * 86400, :second)
+    scheduled_at = DateTime.add(DateTime.utc_now(), @grace_period_days * 86_400, :second)
 
     %{user_id: user_id}
     |> CGraph.Workers.HardDeleteUser.new(scheduled_at: scheduled_at)

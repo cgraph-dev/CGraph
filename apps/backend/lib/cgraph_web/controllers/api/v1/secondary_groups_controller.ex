@@ -10,11 +10,8 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   """
   use CGraphWeb, :controller
 
+  alias CGraph.Forums.{Forum, ForumMember, ForumUserGroup, GroupAutoRule, MemberSecondaryGroup}
   alias CGraph.Repo
-  alias CGraph.Forums.{
-    Forum, ForumMember, ForumUserGroup,
-    MemberSecondaryGroup, GroupAutoRule
-  }
 
   import Ecto.Query
 

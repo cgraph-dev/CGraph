@@ -1,7 +1,7 @@
 defmodule CGraph.Workers.EventExporter do
   @moduledoc """
   Oban worker for exporting event data.
-  
+
   Exports:
   - Participant data
   - Leaderboard standings
@@ -16,13 +16,13 @@ defmodule CGraph.Workers.EventExporter do
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"event_id" => event_id, "format" => format}} = _job) do
     Logger.info("eventexporter_exporting_event_as", event_id: event_id, format: format)
-    
+
     # TODO: Implement export
     # 1. Gather all event data
     # 2. Format according to requested format (csv, json, xlsx)
     # 3. Upload to storage
     # 4. Return download URL
-    
+
     {:ok, %{download_url: nil, status: "not_implemented"}}
   end
 

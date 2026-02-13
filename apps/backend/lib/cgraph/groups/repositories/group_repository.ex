@@ -5,10 +5,10 @@ defmodule CGraph.Groups.Repositories.GroupRepository do
 
   import Ecto.Query, warn: false, except: [update: 2]
 
-  alias CGraph.Repo
+  alias CGraph.Cache
   alias CGraph.Groups.Group
   alias CGraph.Groups.Member
-  alias CGraph.Cache
+  alias CGraph.Repo
 
   @cache_ttl :timer.minutes(10)
 

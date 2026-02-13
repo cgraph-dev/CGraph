@@ -43,7 +43,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
     limit = params |> Map.get("limit", "100") |> String.to_integer() |> min(500)
 
     query = build_emoji_query(forum_id, category_id, search)
-    
+
     emojis = query
     |> limit(^limit)
     |> Repo.all()
@@ -71,7 +71,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
   def categories(conn, params) do
     forum_id = Map.get(params, "forum_id")
 
-    categories = 
+    categories =
       if forum_id do
         EmojiCategory.available_for_forum_query(forum_id)
       else
@@ -91,7 +91,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
   def search(conn, %{"q" => query}) when byte_size(query) >= 2 do
     forum_id = Map.get(conn.params, "forum_id")
 
-    emojis = 
+    emojis =
       CustomEmoji.search_query(query)
       |> maybe_filter_by_forum(forum_id)
       |> Repo.all()
@@ -113,7 +113,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
     limit = params |> Map.get("limit", "20") |> String.to_integer() |> min(50)
     forum_id = Map.get(params, "forum_id")
 
-    emojis = 
+    emojis =
       CustomEmoji.popular_query(limit)
       |> maybe_filter_by_forum(forum_id)
       |> Repo.all()

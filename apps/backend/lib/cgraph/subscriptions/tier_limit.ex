@@ -1,23 +1,23 @@
 defmodule CGraph.Subscriptions.TierLimit do
   @moduledoc """
   Schema for subscription tier limits.
-  
+
   Each tier defines limits and features available to users subscribed to that tier.
   This includes forum limits, storage quotas, messaging caps, AI features, and more.
-  
+
   ## Tiers
-  
+
   - `free` - Basic access with limited features
   - `starter` - Growing communities with more capacity
   - `pro` - Power users with advanced features and AI
   - `business` - Organizations with priority support
   - `enterprise` - Custom limits and dedicated support
-  
+
   ## Usage
-  
+
       # Get a tier's limits
       tier = TierLimits.get_tier("pro")
-      
+
       # Check if user can perform action
       TierLimits.can_create_forum?(user)
       TierLimits.has_feature?(user, "ai.moderation")

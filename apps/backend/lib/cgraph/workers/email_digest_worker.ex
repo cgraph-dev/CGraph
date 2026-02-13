@@ -25,7 +25,7 @@ defmodule CGraph.Workers.EmailDigestWorker do
     priority: 2
 
   import Ecto.Query
-  alias CGraph.{Repo, Accounts, Mailer}
+  alias CGraph.{Accounts, Mailer, Repo}
   alias CGraph.Accounts.User
 
   @impl Oban.Worker

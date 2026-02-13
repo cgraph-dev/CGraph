@@ -521,13 +521,11 @@ defmodule CGraph.Cache.Distributed do
   end
 
   defp compute_with_held_lock(lock_key, key, fallback, opts) do
-    try do
-      value = fallback.()
-      set(key, value, opts)
-      value
-    after
-      release_lock(lock_key)
-    end
+    value = fallback.()
+    set(key, value, opts)
+    value
+  after
+    release_lock(lock_key)
   end
 
   defp compute_after_lock_wait(key, fallback, opts) do

@@ -253,7 +253,7 @@ defmodule CGraphWeb.API.V1.UploadController do
         {:ok, "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
 
       # Plain text detection (printable ASCII/UTF-8 heuristic)
-      is_likely_text?(header) ->
+      likely_text?(header) ->
         {:ok, "text/plain"}
 
       true ->
@@ -284,24 +284,22 @@ defmodule CGraphWeb.API.V1.UploadController do
 
   defp identify_mp4_variant(_), do: {:error, :invalid_mp4}
 
-  defp is_likely_text?(data) do
+  defp likely_text?(data) do
     # Check if content appears to be text (printable ASCII, UTF-8 BOM, common text patterns)
-    cond do
+    if binary_part(data, 0, min(3, byte_size(data))) == <<0xEF, 0xBB, 0xBF>> do
       # UTF-8 BOM
-      binary_part(data, 0, min(3, byte_size(data))) == <<0xEF, 0xBB, 0xBF>> ->
-        true
-
+      true
+    else
       # Check if mostly printable ASCII
-      true ->
-        printable_ratio =
-          data
-          |> :binary.bin_to_list()
-          |> Enum.count(fn byte ->
-            # Printable ASCII, tab, newline, carriage return
-            (byte >= 32 and byte <= 126) or byte in [9, 10, 13]
-          end)
+      printable_ratio =
+        data
+        |> :binary.bin_to_list()
+        |> Enum.count(fn byte ->
+          # Printable ASCII, tab, newline, carriage return
+          (byte >= 32 and byte <= 126) or byte in [9, 10, 13]
+        end)
 
-        printable_ratio / byte_size(data) > 0.9
+      printable_ratio / byte_size(data) > 0.9
     end
   end
 

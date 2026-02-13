@@ -147,8 +147,8 @@ defmodule CGraphWeb.API.V1.LeaderboardController do
   # Get friend count for a user
   defp get_friend_count(user_id) do
     import Ecto.Query
-    alias CGraph.Repo
     alias CGraph.Accounts.Friendship
+    alias CGraph.Repo
 
     Repo.aggregate(
       from(f in Friendship,

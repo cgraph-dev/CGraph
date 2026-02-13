@@ -38,8 +38,8 @@ defmodule CGraph.Admin do
   import Ecto.Query
 
   alias CGraph.Accounts.User
-  alias CGraph.Repo
   alias CGraph.ReadRepo
+  alias CGraph.Repo
   # Schemas to be implemented:
   # alias CGraph.Admin.{AuditEntry, Report, SystemConfig}
 

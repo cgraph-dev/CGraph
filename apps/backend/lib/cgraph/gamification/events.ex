@@ -1,24 +1,24 @@
 defmodule CGraph.Gamification.Events do
   @moduledoc """
   Context module for managing seasonal events and battle passes.
-  
+
   Handles:
   - Creating and managing seasonal events
   - Battle pass tiers and rewards
   - Event quests and challenges
   - Leaderboards and analytics
-  
+
   ## Architecture
-  
+
   Events are time-limited campaigns with:
   - Configurable start/end dates with grace periods
   - Battle pass progression (free + premium tiers)
   - Event-specific currency and rewards
   - Leaderboards with ranking
   - Community milestones
-  
+
   ## Security
-  
+
   - All admin operations require proper authorization
   - Event creation validates date ranges and configurations
   - Reward claims are atomic with proper locking
@@ -27,9 +27,9 @@ defmodule CGraph.Gamification.Events do
   import Ecto.Query, warn: false
   require Logger
 
-  alias CGraph.Repo
-  alias CGraph.Gamification.{SeasonalEvent, UserEventProgress}
   alias CGraph.Accounts.User
+  alias CGraph.Gamification.{SeasonalEvent, UserEventProgress}
+  alias CGraph.Repo
 
   # ============================================================================
   # Event CRUD Operations
@@ -40,7 +40,7 @@ defmodule CGraph.Gamification.Events do
   """
   def list_events_paginated(filters \\ %{}, opts \\ []) do
     base_query = from(e in SeasonalEvent)
-    
+
     query = base_query
     |> filter_by_status(filters[:status])
     |> filter_by_type(filters[:event_type])
@@ -55,17 +55,17 @@ defmodule CGraph.Gamification.Events do
 
     CGraph.Pagination.paginate(query, pagination_opts)
   end
-  
+
   defp filter_by_status(query, nil), do: query
   defp filter_by_status(query, status) when is_binary(status) do
     from(e in query, where: e.status == ^status)
   end
-  
+
   defp filter_by_type(query, nil), do: query
   defp filter_by_type(query, type) when is_binary(type) do
     from(e in query, where: e.event_type == ^type)
   end
-  
+
   defp filter_by_active(query, true), do: query
   defp filter_by_active(query, false) do
     from(e in query, where: e.is_active == true)
@@ -80,7 +80,7 @@ defmodule CGraph.Gamification.Events do
       event -> {:ok, event}
     end
   end
-  
+
   @doc """
   Get event by slug.
   """
@@ -96,7 +96,7 @@ defmodule CGraph.Gamification.Events do
   """
   def get_event_with_analytics(id) do
     case Repo.get(SeasonalEvent, id) do
-      nil -> 
+      nil ->
         {:error, :not_found}
       event ->
         analytics = calculate_event_analytics(id)
@@ -110,9 +110,9 @@ defmodule CGraph.Gamification.Events do
   def create_event(attrs, opts \\ []) do
     created_by = Keyword.get(opts, :created_by)
     Logger.info("events_creating_event_by", attrs: inspect(attrs), created_by: inspect(created_by))
-    
+
     changeset = %SeasonalEvent{} |> SeasonalEvent.changeset(attrs)
-    
+
     case Repo.insert(changeset) do
       {:ok, event} ->
         Logger.info("events_created_event", event_id: event.id, event_name: event.name)
@@ -128,7 +128,7 @@ defmodule CGraph.Gamification.Events do
   """
   def update_event(%SeasonalEvent{} = event, attrs) do
     changeset = SeasonalEvent.changeset(event, attrs)
-    
+
     case Repo.update(changeset) do
       {:ok, updated} ->
         Logger.info("events_updated_event", updated_id: updated.id)
@@ -137,7 +137,7 @@ defmodule CGraph.Gamification.Events do
         {:error, changeset}
     end
   end
-  
+
   def update_event(event_id, attrs) when is_binary(event_id) do
     case get_event(event_id) do
       {:ok, event} -> update_event(event, attrs)
@@ -151,7 +151,7 @@ defmodule CGraph.Gamification.Events do
   def delete_event(%SeasonalEvent{} = event) do
     update_event(event, %{is_active: false})
   end
-  
+
   def delete_event(event_id) when is_binary(event_id) do
     case get_event(event_id) do
       {:ok, event} -> delete_event(event)
@@ -171,14 +171,14 @@ defmodule CGraph.Gamification.Events do
     attrs = %{status: "active", starts_at: min_datetime(event.starts_at, now)}
     update_event(event, attrs)
   end
-  
+
   def start_event(event_id) when is_binary(event_id) do
     case get_event(event_id) do
       {:ok, event} -> start_event(event)
       error -> error
     end
   end
-  
+
   defp min_datetime(a, b) do
     if DateTime.compare(a, b) == :lt, do: a, else: b
   end
@@ -189,7 +189,7 @@ defmodule CGraph.Gamification.Events do
   def pause_event(%SeasonalEvent{} = event) do
     update_event(event, %{status: "upcoming"})
   end
-  
+
   def pause_event(event_id) when is_binary(event_id) do
     case get_event(event_id) do
       {:ok, event} -> pause_event(event)
@@ -203,7 +203,7 @@ defmodule CGraph.Gamification.Events do
   def resume_event(%SeasonalEvent{} = event) do
     update_event(event, %{status: "active"})
   end
-  
+
   def resume_event(event_id) when is_binary(event_id) do
     case get_event(event_id) do
       {:ok, event} -> resume_event(event)
@@ -219,7 +219,7 @@ defmodule CGraph.Gamification.Events do
     attrs = %{status: "ended", ends_at: min_datetime(event.ends_at, now)}
     update_event(event, attrs)
   end
-  
+
   def end_event(event_id) when is_binary(event_id) do
     case get_event(event_id) do
       {:ok, event} -> end_event(event)
@@ -269,7 +269,7 @@ defmodule CGraph.Gamification.Events do
       error -> error
     end
   end
-  
+
   def create_battle_pass_tier(%SeasonalEvent{} = event, tier_attrs) do
     existing_tiers = event.battle_pass_tiers || []
     new_tiers = existing_tiers ++ [tier_attrs]
@@ -285,11 +285,11 @@ defmodule CGraph.Gamification.Events do
       error -> error
     end
   end
-  
+
   def update_battle_pass_tier(%SeasonalEvent{} = event, tier_number, tier_attrs) do
     existing_tiers = event.battle_pass_tiers || []
     idx = tier_number - 1
-    
+
     if idx >= 0 and idx < length(existing_tiers) do
       updated_tier = Map.merge(Enum.at(existing_tiers, idx), tier_attrs)
       new_tiers = List.replace_at(existing_tiers, idx, updated_tier)
@@ -308,7 +308,7 @@ defmodule CGraph.Gamification.Events do
       error -> error
     end
   end
-  
+
   def bulk_create_tiers(%SeasonalEvent{} = event, tiers_attrs) when is_list(tiers_attrs) do
     case update_event(event, %{battle_pass_tiers: tiers_attrs, has_battle_pass: true}) do
       {:ok, updated} -> {:ok, updated.battle_pass_tiers}
@@ -355,13 +355,13 @@ defmodule CGraph.Gamification.Events do
       error -> error
     end
   end
-  
+
   def create_quest(%SeasonalEvent{} = event, quest_attrs) do
     existing_quests = event.daily_challenges || []
     quest_id = quest_attrs["id"] || Ecto.UUID.generate()
     quest_with_id = Map.put(quest_attrs, "id", quest_id)
     new_quests = existing_quests ++ [quest_with_id]
-    
+
     case update_event(event, %{daily_challenges: new_quests}) do
       {:ok, _} -> {:ok, quest_with_id}
       error -> error
@@ -377,10 +377,10 @@ defmodule CGraph.Gamification.Events do
       error -> error
     end
   end
-  
+
   def update_quest(%SeasonalEvent{} = event, quest_id, quest_attrs) do
     existing_quests = event.daily_challenges || []
-    
+
     case Enum.find_index(existing_quests, & &1["id"] == quest_id) do
       nil -> {:error, :quest_not_found}
       idx ->
@@ -403,7 +403,7 @@ defmodule CGraph.Gamification.Events do
   def join_event(user_id, event_id) do
     case get_event(event_id) do
       {:ok, event} ->
-        if SeasonalEvent.is_active?(event) do
+        if SeasonalEvent.active?(event) do
           attrs = %{
             user_id: user_id,
             seasonal_event_id: event_id,
@@ -411,7 +411,7 @@ defmodule CGraph.Gamification.Events do
             last_participated_at: DateTime.utc_now(),
             total_sessions: 1
           }
-          
+
           case Repo.insert(%UserEventProgress{} |> UserEventProgress.changeset(attrs)) do
             {:ok, progress} -> {:ok, progress}
             {:error, %{errors: [user_id: {"has already been taken", _}]}} ->
@@ -424,7 +424,7 @@ defmodule CGraph.Gamification.Events do
       error -> error
     end
   end
-  
+
   defp increment_session(user_id, event_id) do
     case Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id) do
       nil -> {:error, :not_found}
@@ -473,10 +473,10 @@ defmodule CGraph.Gamification.Events do
   def get_leaderboard(event_id, opts \\ []) do
     limit = min(Keyword.get(opts, :limit, 50), 100)
     cursor = Keyword.get(opts, :cursor)
-    
+
     cursor_data = decode_event_cursor(cursor)
     rank_start = if cursor_data, do: cursor_data.rank, else: 1
-    
+
     query = from p in UserEventProgress,
       join: u in User, on: u.id == p.user_id,
       where: p.seasonal_event_id == ^event_id,
@@ -493,7 +493,7 @@ defmodule CGraph.Gamification.Events do
         has_battle_pass: p.has_battle_pass,
         inserted_at: p.inserted_at
       }
-    
+
     query = if cursor_data do
       cursor_dt = parse_event_cursor_datetime(cursor_data.inserted_at)
       from [p, u] in query,
@@ -502,22 +502,22 @@ defmodule CGraph.Gamification.Events do
     else
       query
     end
-    
+
     results = Repo.all(query)
     has_more = length(results) > limit
     items = Enum.take(results, limit)
-    
+
     entries_with_rank = items
     |> Enum.with_index(rank_start)
     |> Enum.map(fn {entry, rank} -> Map.put(entry, :rank, rank) end)
-    
+
     next_cursor = if has_more && items != [] do
       last = List.last(items)
       encode_event_cursor(rank_start + length(items), last.points, last.inserted_at)
     else
       nil
     end
-    
+
     {:ok, {entries_with_rank, %{has_more: has_more, next_cursor: next_cursor, limit: limit}}}
   end
 
@@ -564,21 +564,21 @@ defmodule CGraph.Gamification.Events do
     analytics = calculate_event_analytics(event_id)
     {:ok, analytics}
   end
-  
+
   defp calculate_event_analytics(event_id) do
     base_query = from(p in UserEventProgress, where: p.seasonal_event_id == ^event_id)
-    
+
     total_participants = Repo.aggregate(base_query, :count, :id) || 0
-    
+
     yesterday = DateTime.add(DateTime.utc_now(), -24 * 60 * 60, :second)
     active_query = from(p in base_query, where: p.last_participated_at >= ^yesterday)
     active_participants = Repo.aggregate(active_query, :count, :id) || 0
-    
+
     bp_query = from(p in base_query, where: p.has_battle_pass == true)
     battle_pass_holders = Repo.aggregate(bp_query, :count, :id) || 0
-    
+
     avg_tier = Repo.aggregate(base_query, :avg, :battle_pass_tier) || 0
-    
+
     %{
       total_participants: total_participants,
       active_participants: active_participants,

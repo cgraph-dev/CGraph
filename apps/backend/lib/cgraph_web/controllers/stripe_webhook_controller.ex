@@ -19,8 +19,8 @@ defmodule CGraphWeb.StripeWebhookController do
   use CGraphWeb, :controller
   require Logger
 
-  alias CGraph.Subscriptions
   alias CGraph.Accounts
+  alias CGraph.Subscriptions
 
   @doc """
   Main webhook endpoint. Verifies signature and dispatches to handlers.
@@ -80,7 +80,7 @@ defmodule CGraphWeb.StripeWebhookController do
 
     with {:ok, user} <- find_user_by_stripe_subscription(subscription.id),
          {:ok, tier} <- determine_tier_from_subscription(subscription) do
-      
+
       case subscription.status do
         "active" ->
           Subscriptions.update_subscription(user, %{
@@ -152,7 +152,7 @@ defmodule CGraphWeb.StripeWebhookController do
 
     with {:ok, user} <- find_user_by_metadata(session.metadata),
          subscription_id when not is_nil(subscription_id) <- session.subscription do
-      
+
       # Link the subscription to the user
       Subscriptions.link_stripe_customer(user, %{
         stripe_customer_id: session.customer,

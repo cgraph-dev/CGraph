@@ -20,8 +20,8 @@ defmodule CGraphWeb.API.V1.ReferralController do
 
   import CGraphWeb.Helpers.ParamParser
 
-  alias CGraph.Referrals
   alias CGraph.RateLimiter
+  alias CGraph.Referrals
 
   action_fallback CGraphWeb.FallbackController
 

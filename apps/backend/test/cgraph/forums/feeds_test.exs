@@ -1,7 +1,7 @@
 defmodule CGraph.Forums.FeedsTest do
   @moduledoc """
   Tests for the Forums.Feeds submodule.
-  
+
   Tests public feed, home feed, and popular feed functionality.
   """
   use CGraph.DataCase, async: true
@@ -51,7 +51,7 @@ defmodule CGraph.Forums.FeedsTest do
       })
 
       {posts, meta} = Feeds.list_public_feed()
-      
+
       assert is_list(posts)
       assert Map.has_key?(meta, :page)
       assert Map.has_key?(meta, :total)
@@ -67,7 +67,7 @@ defmodule CGraph.Forums.FeedsTest do
       end
 
       {posts, meta} = Feeds.list_public_feed(page: 1, per_page: 2)
-      
+
       assert length(posts) <= 2
       assert meta.per_page == 2
     end
@@ -78,7 +78,7 @@ defmodule CGraph.Forums.FeedsTest do
       {:ok, _} = Forums.create_post(public_forum, user1, %{title: "Post 2", content: "C2"})
 
       {posts, _meta} = Feeds.list_public_feed(sort: "new")
-      
+
       # Newest should be first
       if length(posts) >= 2 do
         first_post = List.first(posts)
@@ -100,14 +100,14 @@ defmodule CGraph.Forums.FeedsTest do
   describe "list_home_feed/2" do
     test "returns empty feed for nil user" do
       {posts, meta} = Feeds.list_home_feed(nil, [])
-      
+
       assert posts == []
       assert meta.total == 0
     end
 
     test "returns public feed for user with no subscriptions", %{user2: user2} do
       {posts, meta} = Feeds.list_home_feed(user2, [])
-      
+
       assert is_list(posts)
       assert Map.has_key?(meta, :total)
     end
@@ -115,7 +115,7 @@ defmodule CGraph.Forums.FeedsTest do
     test "returns posts from subscribed forums", %{user1: user1, user2: user2, public_forum: public_forum} do
       # User2 subscribes to public forum
       {:ok, _} = Members.subscribe(user2, public_forum)
-      
+
       # User1 creates a post
       {:ok, _post} = Forums.create_post(public_forum, user1, %{
         title: "Subscribed Post",
@@ -123,14 +123,14 @@ defmodule CGraph.Forums.FeedsTest do
       })
 
       {posts, _meta} = Feeds.list_home_feed(user2, [])
-      
+
       # Should include posts from subscribed forum
       assert is_list(posts)
     end
 
     test "supports pagination", %{user1: user1, user2: user2, public_forum: public_forum} do
       {:ok, _} = Members.subscribe(user2, public_forum)
-      
+
       for i <- 1..5 do
         Forums.create_post(public_forum, user1, %{
           title: "Post #{i}",
@@ -139,7 +139,7 @@ defmodule CGraph.Forums.FeedsTest do
       end
 
       {_posts, meta} = Feeds.list_home_feed(user2, page: 1, per_page: 3)
-      
+
       assert meta.per_page == 3
     end
   end
@@ -152,14 +152,14 @@ defmodule CGraph.Forums.FeedsTest do
       })
 
       {posts, meta} = Feeds.list_popular_feed()
-      
+
       assert is_list(posts)
       assert Map.has_key?(meta, :total)
     end
 
     test "supports pagination", %{user1: _user1, public_forum: _public_forum} do
       {_posts, meta} = Feeds.list_popular_feed(page: 2, per_page: 5)
-      
+
       assert meta.page == 2
       assert meta.per_page == 5
     end
@@ -171,7 +171,7 @@ defmodule CGraph.Forums.FeedsTest do
       })
 
       {posts, _meta} = Feeds.list_popular_feed()
-      
+
       # All posts should be from last 24 hours
       if posts != [] do
         twenty_four_hours_ago = DateTime.add(DateTime.utc_now(), -24, :hour)

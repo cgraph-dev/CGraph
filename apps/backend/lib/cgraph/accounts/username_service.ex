@@ -4,8 +4,8 @@ defmodule CGraph.Accounts.UsernameService do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Accounts.{User, UsernameChange}
+  alias CGraph.Repo
 
   # Default cooldown: 30 days
   @default_cooldown_days 30

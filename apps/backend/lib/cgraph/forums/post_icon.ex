@@ -1,20 +1,20 @@
 defmodule CGraph.Forums.PostIcon do
   @moduledoc """
   Post Icons schema for forums.
-  
-  Post Icons are a classic forum feature allowing users to select an icon 
+
+  Post Icons are a classic forum feature allowing users to select an icon
   when creating threads or posts to visually categorize their content.
-  
+
   Icons can be:
   - Global (available to all forums when forum_id is nil)
   - Forum-specific (only available in that forum)
   - Board-restricted (only available in specific boards within a forum)
-  
+
   ## Examples
-  
+
       # Get all active icons for a forum
       PostIcon.available_for_forum(forum_id)
-      
+
       # Get icons for a specific board
       PostIcon.available_for_board(forum_id, board_id)
   """

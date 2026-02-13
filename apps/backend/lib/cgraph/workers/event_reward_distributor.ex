@@ -1,7 +1,7 @@
 defmodule CGraph.Workers.EventRewardDistributor do
   @moduledoc """
   Oban worker for distributing event rewards to participants.
-  
+
   Runs when an event ends to:
   - Calculate final standings
   - Distribute rewards based on battle pass progress

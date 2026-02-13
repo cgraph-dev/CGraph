@@ -12,8 +12,8 @@ defmodule CGraph.Calendar do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Calendar.{Event, EventCategory, EventRSVP}
+  alias CGraph.Repo
 
   # ========================================
   # EVENTS

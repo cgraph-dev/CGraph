@@ -1,17 +1,17 @@
 defmodule CGraph.Forums.Leaderboard do
   @moduledoc """
   Forum leaderboard and ranking functionality.
-  
+
   Provides sorted lists of forums for competition and discovery.
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Forums.Forum
+  alias CGraph.Repo
 
   @doc """
   Get forum leaderboard sorted by various criteria.
-  
+
   ## Options
   - `:sort` - "hot" (default), "top", "new", "rising", "weekly", "members"
   - `:page`, `:per_page` - pagination

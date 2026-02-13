@@ -1,14 +1,14 @@
 defmodule CGraph.Forums.RSS do
   @moduledoc """
   RSS feed generation support for forums.
-  
+
   Provides queries optimized for generating RSS/Atom feeds
   for threads, posts, and activity across forums.
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Forums.{Board, Forum, Thread, ThreadPost}
+  alias CGraph.Repo
 
   @doc """
   List recent threads across an entire forum (all boards) with pagination.

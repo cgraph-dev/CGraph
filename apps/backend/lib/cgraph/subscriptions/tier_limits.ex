@@ -1,35 +1,35 @@
 defmodule CGraph.Subscriptions.TierLimits do
   @moduledoc """
   Context module for managing tier limits and checking user permissions.
-  
+
   This module provides functions to:
   - Query tier configurations from the database
   - Check if users can perform specific actions
   - Get effective limits for users (with overrides)
   - Cache tier data for performance
-  
+
   ## Caching
-  
+
   Tier limits are cached in-memory using ETS for fast lookups.
   The cache is refreshed every 5 minutes or when tiers are updated.
-  
+
   ## Usage
-  
+
       # Get a tier
       {:ok, tier} = TierLimits.get_tier("pro")
-      
+
       # Check limits
       TierLimits.can_create_forum?(user)
       TierLimits.has_storage_space?(user, 1_000_000)
-      
+
       # Get effective limit (with overrides)
       TierLimits.get_effective_limit(user, :max_forums_owned)
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
-  alias CGraph.Subscriptions.{TierLimit, TierFeature, UserTierOverride}
   alias CGraph.Accounts.User
+  alias CGraph.Repo
+  alias CGraph.Subscriptions.{TierFeature, TierLimit, UserTierOverride}
 
   @cache_table :tier_limits_cache
   @cache_ttl_ms 300_000  # 5 minutes
@@ -54,11 +54,11 @@ defmodule CGraph.Subscriptions.TierLimits do
   """
   def refresh_cache do
     tiers = list_active_tiers()
-    
+
     Enum.each(tiers, fn tier ->
       :ets.insert(@cache_table, {{:tier, tier.tier}, tier, System.system_time(:millisecond)})
     end)
-    
+
     :ok
   end
 
@@ -248,7 +248,7 @@ defmodule CGraph.Subscriptions.TierLimits do
         %UserTierOverride{}
         |> UserTierOverride.changeset(attrs)
         |> Repo.insert()
-      
+
       existing ->
         existing
         |> UserTierOverride.changeset(attrs)
@@ -271,18 +271,18 @@ defmodule CGraph.Subscriptions.TierLimits do
 
   @doc """
   Gets the effective limit for a user, considering tier and overrides.
-  
+
   ## Examples
-  
+
       get_effective_limit(user, :max_forums_owned)
       # => 10
-      
+
       get_effective_limit(user, :max_storage_bytes)
       # => 5368709120
   """
   def get_effective_limit(%User{} = user, limit_key) do
     limit_key_str = to_string(limit_key)
-    
+
     # Check for override first
     case get_user_override(user.id, limit_key_str) do
       %UserTierOverride{} = override ->
@@ -290,7 +290,7 @@ defmodule CGraph.Subscriptions.TierLimits do
           {:ok, value} -> value
           _ -> get_tier_limit(user, limit_key)
         end
-      
+
       nil ->
         get_tier_limit(user, limit_key)
     end
@@ -350,14 +350,14 @@ defmodule CGraph.Subscriptions.TierLimits do
     max_storage = get_effective_limit(user, :max_storage_bytes)
     max_file_size = get_effective_limit(user, :max_file_size_bytes)
     current_usage = CGraph.Storage.get_user_usage(user.id)
-    
+
     cond do
       max_file_size != nil and file_size_bytes > max_file_size ->
         {:error, :file_too_large}
-      
+
       max_storage != nil and (current_usage + file_size_bytes) > max_storage ->
         {:error, :storage_limit_exceeded}
-      
+
       true ->
         :ok
     end
@@ -374,7 +374,7 @@ defmodule CGraph.Subscriptions.TierLimits do
           %TierFeature{enabled: enabled} -> enabled
           nil -> check_tier_boolean_field(tier, feature_key)
         end
-      
+
       _ -> false
     end
   end
@@ -453,13 +453,13 @@ defmodule CGraph.Subscriptions.TierLimits do
         :ai_moderation_enabled, :custom_css_enabled, :custom_themes_enabled,
         :video_calls_enabled, :api_access_enabled
       ]
-      
+
       differences = Enum.map(fields, fn field ->
         v1 = Map.get(tier1, field)
         v2 = Map.get(tier2, field)
         {field, v1, v2, compare_values(v1, v2)}
       end)
-      
+
       {:ok, %{
         from: tier1,
         to: tier2,
@@ -540,7 +540,7 @@ defmodule CGraph.Subscriptions.TierLimits do
     case get_user_tier_limits(user) do
       {:ok, tier} ->
         overrides = get_user_overrides(user.id)
-        
+
         %{
           tier: serialize_tier(tier, include_limits: true),
           overrides: Enum.map(overrides, fn o ->
@@ -557,7 +557,7 @@ defmodule CGraph.Subscriptions.TierLimits do
             max_threads_per_day: get_effective_limit(user, :max_threads_per_day)
           }
         }
-      
+
       {:error, _} ->
         %{tier: nil, overrides: [], effective_limits: %{}}
     end

@@ -8,20 +8,9 @@ defmodule CGraph.Gamification do
 
   import Ecto.Query, warn: false
   alias CGraph.Accounts.User
-  alias CGraph.Gamification.{
-    Achievement,
-    CoinTransaction,
-    Quest,
-    ShopItem,
-    Title,
-    UserAchievement,
-    UserPurchase,
-    UserQuest,
-    UserTitle,
-    XpTransaction
-  }
-  alias CGraph.Repo
+  alias CGraph.Gamification.{Achievement, CoinTransaction, Quest, ShopItem, Title, UserAchievement, UserPurchase, UserQuest, UserTitle, XpTransaction}
   alias CGraph.ReadRepo
+  alias CGraph.Repo
 
   # ==================== LEVEL SYSTEM ====================
 
@@ -1398,15 +1387,15 @@ defmodule CGraph.Gamification do
   """
   def list_active_events do
     alias CGraph.Gamification.SeasonalEvent
-    
+
     now = DateTime.utc_now()
-    
+
     query = from e in SeasonalEvent,
       where: e.is_active == true,
       where: e.starts_at <= ^now,
       where: e.ends_at > ^now,
       order_by: [asc: e.sort_order, desc: e.featured]
-    
+
     Repo.all(query)
   end
 
@@ -1415,16 +1404,16 @@ defmodule CGraph.Gamification do
   """
   def list_upcoming_events(days \\ 7) do
     alias CGraph.Gamification.SeasonalEvent
-    
+
     now = DateTime.utc_now()
     future = DateTime.add(now, days * 24 * 60 * 60, :second)
-    
+
     query = from e in SeasonalEvent,
       where: e.is_active == true,
       where: e.starts_at > ^now,
       where: e.starts_at <= ^future,
       order_by: [asc: e.starts_at]
-    
+
     Repo.all(query)
   end
 
@@ -1441,9 +1430,9 @@ defmodule CGraph.Gamification do
   """
   def get_user_event_progress(user_id, event_id) do
     alias CGraph.Gamification.UserEventProgress
-    
+
     case Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id) do
-      nil -> 
+      nil ->
         {:error, :not_found}
       progress ->
         {:ok, %{
@@ -1463,7 +1452,7 @@ defmodule CGraph.Gamification do
   """
   def get_user_event_rank(user_id, event_id) do
     alias CGraph.Gamification.UserEventProgress
-    
+
     query = """
     SELECT rank FROM (
       SELECT user_id, RANK() OVER (ORDER BY leaderboard_points DESC) as rank
@@ -1472,7 +1461,7 @@ defmodule CGraph.Gamification do
     ) ranked
     WHERE user_id = $2
     """
-    
+
     case Repo.query(query, [Ecto.UUID.dump!(event_id), Ecto.UUID.dump!(user_id)]) do
       {:ok, %{rows: [[rank]]}} -> {:ok, rank}
       _ -> {:ok, nil}
@@ -1491,9 +1480,9 @@ defmodule CGraph.Gamification do
   """
   def get_battle_pass_info(event_id, user_id) do
     alias CGraph.Gamification.{SeasonalEvent, UserEventProgress}
-    
+
     case {Repo.get(SeasonalEvent, event_id), Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id)} do
-      {nil, _} -> 
+      {nil, _} ->
         {:error, :event_not_found}
       {event, nil} ->
         {:ok, %{
@@ -1517,20 +1506,20 @@ defmodule CGraph.Gamification do
         }}
     end
   end
-  
+
   defp calculate_xp_to_next_tier(current_xp) do
     xp_per_tier = 1000
     tier = div(current_xp, xp_per_tier)
     next_tier_xp = (tier + 1) * xp_per_tier
     next_tier_xp - current_xp
   end
-  
+
   defp get_available_tier_rewards(progress, event) do
     tiers = event.battle_pass_tiers || []
     current_tier = progress.battle_pass_tier || 0
     claimed_free = progress.claimed_free_rewards || []
     claimed_premium = progress.claimed_premium_rewards || []
-    
+
     0..current_tier
     |> Enum.flat_map(fn tier_idx ->
       tier_data = Enum.at(tiers, tier_idx) || %{}
@@ -1549,9 +1538,9 @@ defmodule CGraph.Gamification do
   """
   def claim_event_reward(user_id, event_id, tier, reward_type) do
     alias CGraph.Gamification.UserEventProgress
-    
+
     case Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id) do
-      nil -> 
+      nil ->
         {:error, :not_joined}
       progress when progress.battle_pass_tier < tier ->
         {:error, :tier_not_reached}
@@ -1599,7 +1588,7 @@ defmodule CGraph.Gamification do
   """
   def get_user_prestige(user_id) do
     alias CGraph.Gamification.UserPrestige
-    
+
     case Repo.get_by(UserPrestige, user_id: user_id) do
       nil ->
         {:ok, %{
@@ -1645,26 +1634,26 @@ defmodule CGraph.Gamification do
   """
   def get_community_milestones(event_id) when is_binary(event_id) do
     alias CGraph.Gamification.{SeasonalEvent, UserEventProgress}
-    
+
     # Get event to retrieve milestone config
     case Repo.get(SeasonalEvent, event_id) do
-      nil -> 
+      nil ->
         {:ok, %{current_total: 0, milestones: [], next_milestone: nil}}
       event ->
         # Calculate total points from all participants
         total_query = from p in UserEventProgress,
           where: p.seasonal_event_id == ^event_id,
           select: sum(p.event_points)
-        
+
         total_points = Repo.one(total_query) || 0
-        
+
         milestones = event.milestone_rewards || []
-        
+
         # Find the next uncompleted milestone
-        next_milestone = Enum.find(milestones, fn m -> 
-          m["points_required"] > total_points 
+        next_milestone = Enum.find(milestones, fn m ->
+          m["points_required"] > total_points
         end)
-        
+
         {:ok, %{
           current_total: total_points,
           milestones: milestones,
@@ -1672,7 +1661,7 @@ defmodule CGraph.Gamification do
         }}
     end
   end
-  
+
   def get_community_milestones(_opts) do
     {:ok, %{
       current_total: 0,
@@ -1695,17 +1684,17 @@ defmodule CGraph.Gamification do
   """
   def purchase_battle_pass(user_id, event_id) do
     alias CGraph.Gamification.{SeasonalEvent, UserEventProgress}
-    
+
     with event when not is_nil(event) <- Repo.get(SeasonalEvent, event_id),
          true <- event.has_battle_pass,
          progress when not is_nil(progress) <- Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id),
          false <- progress.has_battle_pass,
          {:ok, _} <- deduct_currency(user_id, "gems", event.battle_pass_cost) do
-      
+
       {:ok, updated} = progress
       |> UserEventProgress.purchase_battle_pass_changeset()
       |> Repo.update()
-      
+
       {:ok, %{
         success: true,
         has_battle_pass: true,
@@ -1724,9 +1713,9 @@ defmodule CGraph.Gamification do
   """
   def update_quest_progress(user_id, event_id, quest_id, progress_increment) do
     alias CGraph.Gamification.UserEventProgress
-    
+
     case Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id) do
-      nil -> 
+      nil ->
         {:error, :not_joined}
       progress ->
         # Check if quest is already completed
@@ -1737,7 +1726,7 @@ defmodule CGraph.Gamification do
           # In a full implementation, you'd track incremental progress
           new_completed = [quest_id | progress.quests_completed || []]
           new_points = (progress.event_points || 0) + progress_increment
-          
+
           {:ok, _} = progress
           |> Ecto.Changeset.change(%{
             quests_completed: new_completed,
@@ -1745,7 +1734,7 @@ defmodule CGraph.Gamification do
             leaderboard_points: (progress.leaderboard_points || 0) + progress_increment
           })
           |> Repo.update()
-          
+
           {:ok, %{quest_id: quest_id, status: :completed, points_earned: progress_increment}}
         end
     end

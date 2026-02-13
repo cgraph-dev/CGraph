@@ -7,9 +7,9 @@ defmodule CGraph.Forums.DigestWorker do
   use GenServer
   require Logger
 
-  alias CGraph.Repo
   alias CGraph.Forums.Subscription
   alias CGraph.Mailer
+  alias CGraph.Repo
   import Ecto.Query
 
   @daily_hour 8   # 8 AM UTC

@@ -24,7 +24,7 @@ defmodule CGraph.HTTP.Services.Expo do
   plug Tesla.Middleware.Headers, fn ->
     token = config()[:access_token]
     headers = [{"accept", "application/json"}, {"accept-encoding", "gzip, deflate"}]
-    
+
     if token do
       [{"authorization", "Bearer #{token}"} | headers]
     else

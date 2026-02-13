@@ -491,21 +491,19 @@ defmodule CGraph.Security.AccountLockout do
   end
 
   defp ets_increment_attempts(key, window) do
-    try do
-      case :ets.lookup(:account_lockout_cache, key) do
-        [{^key, count, _expiry}] ->
-          new_count = count + 1
-          expiry = DateTime.add(DateTime.utc_now(), window, :second)
-          :ets.insert(:account_lockout_cache, {key, new_count, expiry})
-          new_count
-        [] ->
-          expiry = DateTime.add(DateTime.utc_now(), window, :second)
-          :ets.insert(:account_lockout_cache, {key, 1, expiry})
-          1
-      end
-    rescue
-      ArgumentError -> 1
+    case :ets.lookup(:account_lockout_cache, key) do
+      [{^key, count, _expiry}] ->
+        new_count = count + 1
+        expiry = DateTime.add(DateTime.utc_now(), window, :second)
+        :ets.insert(:account_lockout_cache, {key, new_count, expiry})
+        new_count
+      [] ->
+        expiry = DateTime.add(DateTime.utc_now(), window, :second)
+        :ets.insert(:account_lockout_cache, {key, 1, expiry})
+        1
     end
+  rescue
+    ArgumentError -> 1
   end
 
   defp get_lock_count(identifier) do
@@ -537,21 +535,19 @@ defmodule CGraph.Security.AccountLockout do
   end
 
   defp ets_increment_lock_count(key) do
-    try do
-      case :ets.lookup(:account_lockout_cache, key) do
-        [{^key, count, _expiry}] ->
-          new_count = count + 1
-          expiry = DateTime.add(DateTime.utc_now(), 86_400, :second)
-          :ets.insert(:account_lockout_cache, {key, new_count, expiry})
-          new_count
-        [] ->
-          expiry = DateTime.add(DateTime.utc_now(), 86_400, :second)
-          :ets.insert(:account_lockout_cache, {key, 1, expiry})
-          1
-      end
-    rescue
-      ArgumentError -> 1
+    case :ets.lookup(:account_lockout_cache, key) do
+      [{^key, count, _expiry}] ->
+        new_count = count + 1
+        expiry = DateTime.add(DateTime.utc_now(), 86_400, :second)
+        :ets.insert(:account_lockout_cache, {key, new_count, expiry})
+        new_count
+      [] ->
+        expiry = DateTime.add(DateTime.utc_now(), 86_400, :second)
+        :ets.insert(:account_lockout_cache, {key, 1, expiry})
+        1
     end
+  rescue
+    ArgumentError -> 1
   end
 
   defp calculate_lockout_duration(lock_count, config) do

@@ -31,9 +31,9 @@ defmodule CGraph.ThemesTest do
     end
   end
 
-  describe "is_premium_feature?/2" do
+  describe "premium_feature?/2" do
     test "function exists" do
-      assert function_exported?(Themes, :is_premium_feature?, 2)
+      assert function_exported?(Themes, :premium_feature?, 2)
     end
   end
 end

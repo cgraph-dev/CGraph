@@ -5,9 +5,9 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
 
   import Ecto.Query, warn: false, except: [update: 2]
 
-  alias CGraph.Repo
-  alias CGraph.Groups.Member
   alias CGraph.Cache
+  alias CGraph.Groups.Member
+  alias CGraph.Repo
 
   @cache_ttl :timer.minutes(5)
 
@@ -30,8 +30,8 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
   @doc """
   Check if a user is a member of a group.
   """
-  @spec is_member?(String.t(), String.t()) :: boolean()
-  def is_member?(group_id, user_id) do
+  @spec member?(String.t(), String.t()) :: boolean()
+  def member?(group_id, user_id) do
     get(group_id, user_id) != nil
   end
 

@@ -1,9 +1,9 @@
 defmodule CGraph.Forums.ForumVoting do
   @moduledoc """
   Forum competition voting with anti-abuse protection.
-  
+
   Handles voting on forums (not posts) for the competition/leaderboard system.
-  
+
   Security measures:
   - Account must be at least 1 day old
   - Downvoting requires 10+ karma
@@ -12,8 +12,8 @@ defmodule CGraph.Forums.ForumVoting do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Forums.{Forum, ForumVote}
+  alias CGraph.Repo
 
   # Minimum account age (in days) required to vote
   @vote_min_account_age_days 1
@@ -24,7 +24,7 @@ defmodule CGraph.Forums.ForumVoting do
 
   @doc """
   Vote on a forum with anti-abuse protection.
-  
+
   Returns {:ok, :upvoted | :downvoted | :removed} or {:error, reason}
   """
   def vote_forum(user, forum_id, value) when value in [1, -1] do

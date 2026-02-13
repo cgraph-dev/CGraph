@@ -1,17 +1,17 @@
 defmodule CGraph.Accounts.Registration do
   @moduledoc """
   User registration operations.
-  
+
   Handles signup, email verification, and onboarding.
   """
-  
+
   import Ecto.Query
-  alias CGraph.Repo
-  alias CGraph.Accounts.{User, Token}
+  alias CGraph.Accounts.{Token, User}
   alias CGraph.Accounts.Users
-  
+  alias CGraph.Repo
+
   @verification_token_hours 24
-  
+
   @doc """
   Registers a new user.
   """
@@ -28,20 +28,20 @@ defmodule CGraph.Accounts.Registration do
             {:error, reason} ->
               Repo.rollback(reason)
           end
-          
+
         {:error, changeset} ->
           Repo.rollback(changeset)
       end
     end)
   end
-  
+
   @doc """
   Generates an email verification token.
   """
   def generate_verification_token(user) do
     token = :crypto.strong_rand_bytes(32) |> Base.url_encode64()
     expires_at = DateTime.add(DateTime.utc_now(), @verification_token_hours, :hour)
-    
+
     %Token{}
     |> Token.changeset(%{
       user_id: user.id,
@@ -51,13 +51,13 @@ defmodule CGraph.Accounts.Registration do
     })
     |> Repo.insert()
   end
-  
+
   @doc """
   Verifies an email using a token.
   """
   def verify_email(token) do
     now = DateTime.utc_now()
-    
+
     case Repo.one(
       from(t in Token,
         where: t.token == ^token,
@@ -69,14 +69,14 @@ defmodule CGraph.Accounts.Registration do
     ) do
       nil ->
         {:error, :invalid_token}
-        
+
       token_record ->
         Repo.transaction(fn ->
           # Mark token as used
           token_record
           |> Token.changeset(%{used_at: now})
           |> Repo.update!()
-          
+
           # Mark email as verified
           token_record.user
           |> User.changeset(%{email_verified_at: now})
@@ -84,7 +84,7 @@ defmodule CGraph.Accounts.Registration do
         end)
     end
   end
-  
+
   @doc """
   Resends verification email.
   """
@@ -92,7 +92,7 @@ defmodule CGraph.Accounts.Registration do
     if is_nil(user.email_verified_at) do
       # Invalidate existing tokens
       invalidate_verification_tokens(user)
-      
+
       # Generate new token
       case generate_verification_token(user) do
         {:ok, token} ->
@@ -105,7 +105,7 @@ defmodule CGraph.Accounts.Registration do
       {:error, :already_verified}
     end
   end
-  
+
   @doc """
   Checks if a username is available.
   """
@@ -114,7 +114,7 @@ defmodule CGraph.Accounts.Registration do
       from(u in User, where: fragment("lower(?)", u.username) == ^String.downcase(username))
     )
   end
-  
+
   @doc """
   Checks if an email is available.
   """
@@ -123,22 +123,22 @@ defmodule CGraph.Accounts.Registration do
       from(u in User, where: fragment("lower(?)", u.email) == ^String.downcase(email))
     )
   end
-  
+
   @doc """
   Validates registration data without creating user.
   """
   def validate_registration(attrs) do
     changeset = User.registration_changeset(%User{}, attrs)
-    
+
     if changeset.valid? do
       :ok
     else
       {:error, changeset}
     end
   end
-  
+
   # Private helpers
-  
+
   defp invalidate_verification_tokens(user) do
     from(t in Token,
       where: t.user_id == ^user.id,
@@ -147,7 +147,7 @@ defmodule CGraph.Accounts.Registration do
     )
     |> Repo.update_all(set: [used_at: DateTime.utc_now()])
   end
-  
+
   defp send_verification_email(user, token) do
     # This would be handled by a background job
     # For now, just log it

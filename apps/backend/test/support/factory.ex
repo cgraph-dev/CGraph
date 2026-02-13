@@ -710,16 +710,16 @@ defmodule CGraph.Factory do
   """
   def user_with_gamification(opts \\ []) do
     user = insert(:user, opts)
-    
+
     # Add prestige
     insert(:user_prestige, user_id: user.id)
-    
+
     # Add some owned cosmetics
     borders = insert_list(Keyword.get(opts, :border_count, 3), :avatar_border)
     Enum.each(borders, fn border ->
       insert(:user_avatar_border, user_id: user.id, avatar_border_id: border.id)
     end)
-    
+
     user
   end
 
@@ -736,7 +736,7 @@ defmodule CGraph.Factory do
         "premium_reward" => %{"type" => "cosmetic", "rarity" => if(rem(tier_num, 10) == 0, do: "legendary", else: "rare")}
       }
     end)
-    
+
     insert(:active_event,
       has_battle_pass: true,
       battle_pass_cost: 950,
@@ -749,12 +749,12 @@ defmodule CGraph.Factory do
   """
   def marketplace_with_listings(listing_count \\ 10) do
     sellers = insert_list(3, :user)
-    
+
     listings = Enum.map(1..listing_count, fn _ ->
       seller = Enum.random(sellers)
       insert(:marketplace_listing, seller_id: seller.id)
     end)
-    
+
     %{sellers: sellers, listings: listings}
   end
 end

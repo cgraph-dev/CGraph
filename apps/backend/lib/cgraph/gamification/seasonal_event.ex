@@ -1,7 +1,7 @@
 defmodule CGraph.Gamification.SeasonalEvent do
   @moduledoc """
   Schema for seasonal and special events with exclusive rewards.
-  
+
   Features:
   - Time-limited events
   - Exclusive cosmetics and titles
@@ -24,23 +24,23 @@ defmodule CGraph.Gamification.SeasonalEvent do
     field :description, :string
     field :event_type, :string
     field :status, :string, default: "upcoming"
-    
+
     # Timing
     field :starts_at, :utc_datetime
     field :ends_at, :utc_datetime
     field :grace_period_ends_at, :utc_datetime  # Extra time to claim rewards
-    
+
     # Theme & branding
     field :theme, :map, default: %{}
     field :banner_url, :string
     field :icon_url, :string
     field :colors, :map, default: %{}
-    
+
     # Rewards configuration
     field :rewards, {:array, :map}, default: []
     field :milestone_rewards, {:array, :map}, default: []
     field :participation_rewards, {:array, :map}, default: []
-    
+
     # Event mechanics
     field :event_currency, :string  # Special event-only currency
     field :event_currency_icon, :string
@@ -49,20 +49,20 @@ defmodule CGraph.Gamification.SeasonalEvent do
       "coins" => 1.0,
       "karma" => 1.0
     }
-    
+
     # Quest/challenge configuration
     field :quests, {:array, :binary_id}, default: []
     field :daily_challenges, {:array, :map}, default: []
-    
+
     # Battle pass (if applicable)
     field :has_battle_pass, :boolean, default: false
     field :battle_pass_cost, :integer, default: 0
     field :battle_pass_tiers, {:array, :map}, default: []
-    
+
     # Leaderboard
     field :has_leaderboard, :boolean, default: true
     field :leaderboard_rewards, {:array, :map}, default: []
-    
+
     # Meta
     field :is_active, :boolean, default: true
     field :featured, :boolean, default: false
@@ -118,7 +118,7 @@ defmodule CGraph.Gamification.SeasonalEvent do
   defp validate_grace_period(changeset, nil, _), do: changeset
   defp validate_grace_period(changeset, _, nil), do: changeset
   defp validate_grace_period(changeset, ends_at, grace_period_ends_at) do
-    if DateTime.compare(ends_at, grace_period_ends_at) == :lt or 
+    if DateTime.compare(ends_at, grace_period_ends_at) == :lt or
        DateTime.compare(ends_at, grace_period_ends_at) == :eq do
       changeset
     else
@@ -132,7 +132,7 @@ defmodule CGraph.Gamification.SeasonalEvent do
   @doc """
   Check if event is currently active.
   """
-  def is_active?(%__MODULE__{starts_at: starts_at, ends_at: ends_at}) do
+  def active?(%__MODULE__{starts_at: starts_at, ends_at: ends_at}) do
     now = DateTime.utc_now()
     DateTime.compare(now, starts_at) in [:gt, :eq] and
     DateTime.compare(now, ends_at) == :lt

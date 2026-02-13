@@ -26,8 +26,8 @@ defmodule CGraph.Guardian do
   use Guardian, otp_app: :cgraph
 
   alias CGraph.Accounts
-  alias CGraph.Security.TokenBlacklist
   alias CGraph.Security.JWTKeyRotation
+  alias CGraph.Security.TokenBlacklist
 
   require Logger
 

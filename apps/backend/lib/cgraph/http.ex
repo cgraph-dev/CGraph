@@ -224,7 +224,7 @@ defmodule CGraph.HTTP do
     result =
       try do
         client = build_request_client(opts)
-        
+
         case method do
           :get -> Tesla.get(client, url)
           :post -> Tesla.post(client, url, body)
@@ -347,7 +347,7 @@ defmodule CGraph.HTTP do
 
   defp config(key) do
     config = Application.get_env(:cgraph, __MODULE__, [])
-    
+
     case key do
       :timeout -> Keyword.get(config, :timeout, @default_timeout)
       :retry_attempts -> Keyword.get(config, :retry_attempts, @default_retry_attempts)

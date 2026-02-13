@@ -75,20 +75,18 @@ defmodule CGraphWeb.API.V1.AuthController do
 
   # Safe wrapper for AccountLockout.check_locked that handles GenServer being unavailable
   defp safe_check_locked(lockout_key) do
-    try do
-      AccountLockout.check_locked(lockout_key)
-    catch
-      :exit, {:noproc, _} ->
-        # AccountLockout GenServer not running, proceed without lockout checking
-        require Logger
-        Logger.warning("AccountLockout GenServer not running, skipping lockout check")
-        :ok
-      :exit, {:timeout, _} ->
-        # Timeout, proceed without lockout checking
-        require Logger
-        Logger.warning("AccountLockout timeout, skipping lockout check")
-        :ok
-    end
+    AccountLockout.check_locked(lockout_key)
+  catch
+    :exit, {:noproc, _} ->
+      # AccountLockout GenServer not running, proceed without lockout checking
+      require Logger
+      Logger.warning("AccountLockout GenServer not running, skipping lockout check")
+      :ok
+    :exit, {:timeout, _} ->
+      # Timeout, proceed without lockout checking
+      require Logger
+      Logger.warning("AccountLockout timeout, skipping lockout check")
+      :ok
   end
 
   defp respond_locked(conn, remaining) do
@@ -124,11 +122,9 @@ defmodule CGraphWeb.API.V1.AuthController do
 
   # Safe wrapper for AccountLockout.clear_attempts
   defp safe_clear_attempts(lockout_key) do
-    try do
-      AccountLockout.clear_attempts(lockout_key)
-    catch
-      :exit, _ -> :ok
-    end
+    AccountLockout.clear_attempts(lockout_key)
+  catch
+    :exit, _ -> :ok
   end
 
   defp respond_no_password(conn) do
@@ -149,11 +145,9 @@ defmodule CGraphWeb.API.V1.AuthController do
 
   # Safe wrapper for AccountLockout.record_failed_attempt
   defp safe_record_failed_attempt(lockout_key, ip_address) do
-    try do
-      AccountLockout.record_failed_attempt(lockout_key, ip_address: ip_address)
-    catch
-      :exit, _ -> :ok
-    end
+    AccountLockout.record_failed_attempt(lockout_key, ip_address: ip_address)
+  catch
+    :exit, _ -> :ok
   end
 
   defp respond_account_locked(conn, duration) do

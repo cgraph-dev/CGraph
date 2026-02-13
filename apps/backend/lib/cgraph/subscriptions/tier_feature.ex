@@ -1,21 +1,21 @@
 defmodule CGraph.Subscriptions.TierFeature do
   @moduledoc """
   Schema for granular feature flags per tier.
-  
+
   This allows for fine-grained feature control beyond the boolean fields
   in TierLimit. Each feature can have its own configuration.
-  
+
   ## Feature Keys
-  
+
   Feature keys follow a dot-notation namespace:
-  
+
   - `forums.*` - Forum-related features
-  - `ai.*` - AI-related features  
+  - `ai.*` - AI-related features
   - `messaging.*` - Messaging features
   - `gamification.*` - Game-related features
-  
+
   ## Example
-  
+
       %TierFeature{
         feature_key: "ai.moderation.toxicity",
         enabled: true,

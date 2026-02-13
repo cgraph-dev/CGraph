@@ -8,8 +8,8 @@ defmodule CGraph.Accounts.MemberDirectory do
   import Ecto.Query, warn: false
 
   alias CGraph.Accounts.User
-  alias CGraph.Repo
   alias CGraph.ReadRepo
+  alias CGraph.Repo
 
   @doc """
   List members with filtering and pagination.

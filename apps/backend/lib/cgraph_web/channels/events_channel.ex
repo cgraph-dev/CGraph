@@ -1,7 +1,7 @@
 defmodule CGraphWeb.EventsChannel do
   @moduledoc """
   Real-time channel for seasonal events and live event updates.
-  
+
   Provides:
   - Event start/end notifications
   - Live leaderboard updates
@@ -9,7 +9,7 @@ defmodule CGraphWeb.EventsChannel do
   - Battle pass tier unlocks
   - Community milestone announcements
   - Event countdown timers
-  
+
   Topics:
   - events:global - Global event announcements
   - events:{event_id} - Specific event updates
@@ -38,7 +38,7 @@ defmodule CGraphWeb.EventsChannel do
       {:ok, event} ->
         send(self(), {:after_join_event, event})
         {:ok, %{event: sanitize_event(event)}, socket |> assign(:current_event_id, event_id)}
-      
+
       {:error, :not_found} ->
         {:error, %{reason: "event_not_found"}}
     end
@@ -47,7 +47,7 @@ defmodule CGraphWeb.EventsChannel do
   @impl true
   def handle_info(:after_join_global, socket) do
     user = socket.assigns.current_user
-    
+
     # Track presence
     {:ok, _} = Presence.track(socket, user.id, %{
       online_at: System.system_time(:second),
@@ -56,10 +56,10 @@ defmodule CGraphWeb.EventsChannel do
 
     # Subscribe to global event broadcasts
     Phoenix.PubSub.subscribe(CGraph.PubSub, "events:global")
-    
+
     # Send active events
     push(socket, "active_events", %{events: get_active_events()})
-    
+
     # Send upcoming events
     push(socket, "upcoming_events", %{events: get_upcoming_events()})
 
@@ -69,7 +69,7 @@ defmodule CGraphWeb.EventsChannel do
   def handle_info({:after_join_event, event}, socket) do
     user = socket.assigns.current_user
     event_id = event.id
-    
+
     # Track presence in this event
     {:ok, _} = Presence.track(socket, "#{event_id}:#{user.id}", %{
       online_at: System.system_time(:second),
@@ -79,19 +79,19 @@ defmodule CGraphWeb.EventsChannel do
 
     # Subscribe to event-specific updates
     Phoenix.PubSub.subscribe(CGraph.PubSub, "events:#{event_id}")
-    
+
     # Get user's progress in this event
     progress = get_user_event_progress(user.id, event_id)
     push(socket, "your_progress", progress)
-    
+
     # Get current leaderboard top 10
     leaderboard = get_event_leaderboard(event_id, 10)
     push(socket, "leaderboard", %{entries: leaderboard})
-    
+
     # Get community milestones
     milestones = get_community_milestones(event_id)
     push(socket, "community_milestones", milestones)
-    
+
     # Schedule periodic leaderboard updates
     Process.send_after(self(), :update_leaderboard, @leaderboard_update_interval)
 
@@ -185,11 +185,11 @@ defmodule CGraphWeb.EventsChannel do
     event_id = Map.get(params, "event_id", socket.assigns[:current_event_id])
     limit = min(Map.get(params, "limit", 100), 100)
     cursor = Map.get(params, "cursor")
-    
+
     if event_id do
       {entries, page_info} = get_event_leaderboard(event_id, limit, cursor)
       user_rank = get_user_rank(socket.assigns.current_user.id, event_id)
-      
+
       {:reply, {:ok, %{
         entries: entries,
         your_rank: user_rank,
@@ -211,7 +211,7 @@ defmodule CGraphWeb.EventsChannel do
   # Client requests - get battle pass
   def handle_in("get_battle_pass", %{"event_id" => event_id}, socket) do
     user_id = socket.assigns.current_user.id
-    
+
     case Gamification.get_battle_pass_info(event_id, user_id) do
       {:ok, info} -> {:reply, {:ok, info}, socket}
       {:error, reason} -> {:reply, {:error, %{reason: reason}}, socket}
@@ -221,7 +221,7 @@ defmodule CGraphWeb.EventsChannel do
   # Client action - claim reward
   def handle_in("claim_reward", %{"event_id" => event_id, "reward_type" => type, "tier" => tier}, socket) do
     user_id = socket.assigns.current_user.id
-    
+
     case Gamification.claim_event_reward(user_id, event_id, type, tier) do
       {:ok, reward} ->
         {:reply, {:ok, %{reward: reward}}, socket}
@@ -233,7 +233,7 @@ defmodule CGraphWeb.EventsChannel do
   # Client action - purchase battle pass
   def handle_in("purchase_battle_pass", %{"event_id" => event_id}, socket) do
     user_id = socket.assigns.current_user.id
-    
+
     case Gamification.purchase_battle_pass(user_id, event_id) do
       {:ok, result} ->
         {:reply, {:ok, result}, socket}
@@ -245,7 +245,7 @@ defmodule CGraphWeb.EventsChannel do
   # Client action - complete quest objective
   def handle_in("update_quest_progress", %{"event_id" => event_id, "quest_id" => quest_id, "progress" => progress}, socket) do
     user_id = socket.assigns.current_user.id
-    
+
     case Gamification.update_quest_progress(user_id, event_id, quest_id, progress) do
       {:ok, result} ->
         # Check if quest completed

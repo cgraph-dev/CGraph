@@ -1,7 +1,7 @@
 defmodule CGraph.Release do
   @moduledoc """
   Production release tasks for database operations.
-  
+
   Usage:
     fly ssh console -C "/app/bin/cgraph eval 'CGraph.Release.migrate()'"
     fly ssh console -C "/app/bin/cgraph eval 'CGraph.Release.rollback(CGraph.Repo, 1)'"

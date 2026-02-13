@@ -13,33 +13,33 @@ defmodule CGraph.Gamification.UserEventProgress do
     field :event_points, :integer, default: 0
     field :event_currency_earned, :integer, default: 0
     field :event_currency_spent, :integer, default: 0
-    
+
     # Quest progress
     field :quests_completed, {:array, :binary_id}, default: []
     field :daily_challenges_completed, {:array, :map}, default: []
-    
+
     # Milestones
     field :milestones_claimed, {:array, :string}, default: []
-    
+
     # Battle pass
     field :has_battle_pass, :boolean, default: false
     field :battle_pass_tier, :integer, default: 0
     field :battle_pass_xp, :integer, default: 0
     field :claimed_free_rewards, {:array, :integer}, default: []
     field :claimed_premium_rewards, {:array, :integer}, default: []
-    
+
     # Leaderboard
     field :leaderboard_points, :integer, default: 0
     field :best_rank, :integer
-    
+
     # Participation tracking
     field :first_participated_at, :utc_datetime
     field :last_participated_at, :utc_datetime
     field :total_sessions, :integer, default: 0
-    
+
     # Rewards claimed
     field :rewards_claimed, {:array, :map}, default: []
-    
+
     belongs_to :user, CGraph.Accounts.User
     belongs_to :seasonal_event, CGraph.Gamification.SeasonalEvent
 
@@ -73,7 +73,7 @@ defmodule CGraph.Gamification.UserEventProgress do
   def add_points_changeset(progress, points) do
     new_points = (progress.event_points || 0) + points
     new_leaderboard = (progress.leaderboard_points || 0) + points
-    
+
     progress
     |> cast(%{
       event_points: new_points,
@@ -84,14 +84,14 @@ defmodule CGraph.Gamification.UserEventProgress do
 
   def add_currency_changeset(progress, amount) do
     new_earned = (progress.event_currency_earned || 0) + amount
-    
+
     progress
     |> cast(%{event_currency_earned: new_earned}, [:event_currency_earned])
   end
 
   def spend_currency_changeset(progress, amount) do
     new_spent = (progress.event_currency_spent || 0) + amount
-    
+
     progress
     |> cast(%{event_currency_spent: new_spent}, [:event_currency_spent])
     |> validate_has_currency(progress, amount)
@@ -116,7 +116,7 @@ defmodule CGraph.Gamification.UserEventProgress do
     # Assuming 1000 XP per tier
     xp_per_tier = 1000
     new_tier = div(new_xp, xp_per_tier)
-    
+
     progress
     |> cast(%{battle_pass_xp: new_xp, battle_pass_tier: new_tier}, [:battle_pass_xp, :battle_pass_tier])
   end

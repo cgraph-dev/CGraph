@@ -1,7 +1,7 @@
 defmodule CGraph.Forums.PostsTest do
   @moduledoc """
   Tests for the Forums.Posts submodule.
-  
+
   Tests post CRUD, voting, pinning, locking, and moderation.
   """
   use CGraph.DataCase, async: true
@@ -96,7 +96,7 @@ defmodule CGraph.Forums.PostsTest do
       })
 
       {:ok, found} = Posts.get_post_with_vote(forum, post.id, user)
-      
+
       assert found.id == post.id
       # my_vote should be present (nil if not voted)
     end
@@ -108,7 +108,7 @@ defmodule CGraph.Forums.PostsTest do
       })
 
       {:ok, found} = Posts.get_post_with_vote(forum, post.id, nil)
-      
+
       assert found.id == post.id
     end
   end
@@ -119,7 +119,7 @@ defmodule CGraph.Forums.PostsTest do
       {:ok, _} = Posts.create_post(forum, user, %{"title" => "Post 2", "content" => "C2"})
 
       {posts, meta} = Posts.list_posts(forum)
-      
+
       assert length(posts) >= 2
       assert Map.has_key?(meta, :total)
     end
@@ -130,7 +130,7 @@ defmodule CGraph.Forums.PostsTest do
       end
 
       {posts, meta} = Posts.list_posts(forum, page: 1, per_page: 2)
-      
+
       assert length(posts) <= 2
       assert meta.per_page == 2
     end
@@ -141,7 +141,7 @@ defmodule CGraph.Forums.PostsTest do
       {:ok, _} = Posts.create_post(forum, user, %{"title" => "Second", "content" => "C2"})
 
       {posts, _meta} = Posts.list_posts(forum, sort: "new")
-      
+
       if length(posts) >= 2 do
         assert List.first(posts).title == "Second"
       end
@@ -267,11 +267,11 @@ defmodule CGraph.Forums.PostsTest do
         "title" => "View Me",
         "content" => "Content"
       })
-      
+
       initial_views = post.views || 0
-      
+
       :ok = Posts.increment_views(post)
-      
+
       {:ok, updated} = Posts.get_post(post.id)
       assert updated.views == initial_views + 1
     end

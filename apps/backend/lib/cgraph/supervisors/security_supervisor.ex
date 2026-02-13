@@ -1,4 +1,5 @@
 defmodule CGraph.SecuritySupervisor do
+  @moduledoc "Supervisor for security-related processes including JWT key rotation, token blacklisting, and account lockout."
   use Supervisor
 
   def start_link(init_arg) do

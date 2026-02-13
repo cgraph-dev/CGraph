@@ -1,8 +1,8 @@
 defmodule CGraphWeb.API.V1.CustomizationController do
   use CGraphWeb, :controller
 
-  alias CGraph.Customizations
   alias CGraph.Accounts
+  alias CGraph.Customizations
 
   action_fallback CGraphWeb.FallbackController
 

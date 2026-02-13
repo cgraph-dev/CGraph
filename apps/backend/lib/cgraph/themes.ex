@@ -9,8 +9,8 @@ defmodule CGraph.Themes do
   - Theme caching
   """
 
-  alias CGraph.Repo
   alias CGraph.Accounts.User
+  alias CGraph.Repo
   require Logger
 
   # Default theme configuration
@@ -95,7 +95,7 @@ defmodule CGraph.Themes do
   @spec create_theme_snapshot(String.t()) :: map()
   def create_theme_snapshot(user_id) when is_binary(user_id) do
     theme = get_theme(user_id)
-    
+
     # Only include display-relevant fields in snapshot
     %{
       "colorPreset" => theme["colorPreset"],
@@ -116,8 +116,8 @@ defmodule CGraph.Themes do
   @doc """
   Check if a theme feature is premium-only.
   """
-  @spec is_premium_feature?(String.t(), String.t()) :: boolean()
-  def is_premium_feature?(type, value) do
+  @spec premium_feature?(String.t(), String.t()) :: boolean()
+  def premium_feature?(type, value) do
     case type do
       "avatarBorder" -> value in @premium_borders
       "visualEffect" -> value in @premium_effects
@@ -138,7 +138,7 @@ defmodule CGraph.Themes do
 
   defp validate_theme(theme_params, user) do
     is_premium = user.is_premium || user.subscription_tier in ["premium", "enterprise"]
-    
+
     validated = theme_params
     |> Map.take(Map.keys(@default_theme))
     |> validate_premium_features(is_premium)
@@ -192,7 +192,7 @@ defmodule CGraph.Themes do
   defp fetch_and_cache_theme(user_id) do
     theme = case Repo.get(User, user_id) do
       nil -> @default_theme
-      user -> 
+      user ->
         case user.theme_preferences do
           nil -> @default_theme
           prefs when map_size(prefs) == 0 -> @default_theme

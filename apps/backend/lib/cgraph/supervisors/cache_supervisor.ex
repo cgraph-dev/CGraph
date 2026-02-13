@@ -1,4 +1,5 @@
 defmodule CGraph.CacheSupervisor do
+  @moduledoc "Supervisor for Cachex cache instances including general, session, and token caches."
   use Supervisor
 
   def start_link(init_arg) do

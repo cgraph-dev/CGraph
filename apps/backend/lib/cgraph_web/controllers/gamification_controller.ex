@@ -131,10 +131,10 @@ defmodule CGraphWeb.GamificationController do
   def streak_info(conn, _params) do
     user = conn.assigns.current_user
     today = Date.utc_today()
-    
+
     already_claimed = user.daily_bonus_claimed_at == today
     can_claim = !already_claimed
-    
+
     conn
     |> put_status(:ok)
     |> json(%{

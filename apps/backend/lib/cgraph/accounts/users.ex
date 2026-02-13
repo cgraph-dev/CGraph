@@ -1,14 +1,14 @@
 defmodule CGraph.Accounts.Users do
   @moduledoc """
   User CRUD operations.
-  
+
   Handles user creation, updates, and queries.
   """
-  
+
   import Ecto.Query
-  alias CGraph.Repo
   alias CGraph.Accounts.User
-  
+  alias CGraph.Repo
+
   @doc """
   Gets a user by ID.
   """
@@ -18,34 +18,34 @@ defmodule CGraph.Accounts.Users do
       user -> {:ok, user}
     end
   end
-  
+
   @doc """
   Gets a user by email.
   """
   def get_user_by_email(email) do
     Repo.get_by(User, email: String.downcase(email))
   end
-  
+
   @doc """
   Gets a user by username.
   """
   def get_user_by_username(username) do
     Repo.get_by(User, username: String.downcase(username))
   end
-  
+
   @doc """
   Gets a user by email or username.
   """
   def get_user_by_email_or_username(identifier) do
     identifier = String.downcase(identifier)
-    
+
     Repo.one(
       from(u in User,
         where: u.email == ^identifier or u.username == ^identifier
       )
     )
   end
-  
+
   @doc """
   Creates a new user.
   """
@@ -54,7 +54,7 @@ defmodule CGraph.Accounts.Users do
     |> User.registration_changeset(attrs)
     |> Repo.insert()
   end
-  
+
   @doc """
   Updates a user.
   """
@@ -63,7 +63,7 @@ defmodule CGraph.Accounts.Users do
     |> User.changeset(attrs)
     |> Repo.update()
   end
-  
+
   @doc """
   Updates a user's profile.
   """
@@ -72,7 +72,7 @@ defmodule CGraph.Accounts.Users do
     |> User.profile_changeset(attrs)
     |> Repo.update()
   end
-  
+
   @doc """
   Changes a user's password.
   """
@@ -85,7 +85,7 @@ defmodule CGraph.Accounts.Users do
       {:error, :invalid_current_password}
     end
   end
-  
+
   @doc """
   Deletes a user (soft delete).
   """
@@ -94,15 +94,15 @@ defmodule CGraph.Accounts.Users do
     |> User.changeset(%{deleted_at: DateTime.utc_now()})
     |> Repo.update()
   end
-  
+
   @doc """
   Lists users with optional filters.
   """
   def list_users(opts \\ []) do
     search = Keyword.get(opts, :search)
-    
+
     query = from(u in User, where: is_nil(u.deleted_at))
-    
+
     query = query |> maybe_search(search)
 
     pagination_opts = CGraph.Pagination.parse_params(
@@ -114,7 +114,7 @@ defmodule CGraph.Accounts.Users do
 
     CGraph.Pagination.paginate(query, pagination_opts)
   end
-  
+
   @doc """
   Counts total users.
   """
@@ -124,9 +124,9 @@ defmodule CGraph.Accounts.Users do
       :count
     )
   end
-  
+
   # Private helpers
-  
+
   defp maybe_search(query, nil), do: query
   defp maybe_search(query, search) do
     search_term = "%#{search}%"

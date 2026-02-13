@@ -1,28 +1,28 @@
 defmodule CGraphWeb.API.V1.RssController do
   @moduledoc """
   RSS/Atom Feed Controller for Forums.
-  
+
   Provides syndication feeds for:
   - Forum-wide recent activity (threads and posts)
   - Board-specific threads
   - Thread-specific replies
   - User activity feeds
   - Search result feeds
-  
+
   ## Feed Formats
-  
+
   - RSS 2.0 (default): `/api/v1/rss/:type`
   - Atom 1.0: `/api/v1/rss/:type?format=atom`
-  
+
   ## Security
-  
+
   - Public feeds for public forums only
   - Private forum feeds require authentication via token parameter
   - Rate limited to prevent abuse
   - Cache headers for CDN optimization
-  
+
   ## Examples
-  
+
       GET /api/v1/rss/forums/:forum_id/threads
       GET /api/v1/rss/boards/:board_id/threads?limit=50
       GET /api/v1/rss/threads/:thread_id/posts
@@ -30,7 +30,7 @@ defmodule CGraphWeb.API.V1.RssController do
   """
   use CGraphWeb, :controller
 
-  alias CGraph.{Forums, Accounts}
+  alias CGraph.{Accounts, Forums}
   import CGraphWeb.Helpers.ParamParser
 
   action_fallback CGraphWeb.FallbackController
@@ -53,9 +53,9 @@ defmodule CGraphWeb.API.V1.RssController do
 
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- check_forum_visibility(forum) do
-      
+
       {threads, _meta} = Forums.list_forum_threads(forum_id, page: 1, per_page: limit)
-      
+
       feed_data = %{
         title: "#{forum.name} - Recent Threads",
         description: forum.description || "Latest threads from #{forum.name}",
@@ -78,9 +78,9 @@ defmodule CGraphWeb.API.V1.RssController do
 
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- check_forum_visibility(forum) do
-      
+
       posts = Forums.list_recent_forum_posts(forum_id, limit: limit)
-      
+
       feed_data = %{
         title: "#{forum.name} - Recent Posts",
         description: "Latest posts from #{forum.name}",
@@ -108,9 +108,9 @@ defmodule CGraphWeb.API.V1.RssController do
     with {:ok, board} <- Forums.get_board(board_id),
          {:ok, forum} <- Forums.get_forum(board.forum_id),
          :ok <- check_forum_visibility(forum) do
-      
+
       {threads, _meta} = Forums.list_threads(board_id, page: 1, per_page: limit)
-      
+
       feed_data = %{
         title: "#{forum.name} - #{board.name}",
         description: board.description || "Threads from #{board.name}",
@@ -139,9 +139,9 @@ defmodule CGraphWeb.API.V1.RssController do
          {:ok, board} <- Forums.get_board(thread.board_id),
          {:ok, forum} <- Forums.get_forum(board.forum_id),
          :ok <- check_forum_visibility(forum) do
-      
+
       {posts, _meta} = Forums.list_thread_posts(thread_id, page: 1, per_page: limit)
-      
+
       feed_data = %{
         title: "#{thread.title} - Discussion",
         description: "Posts in thread: #{thread.title}",
@@ -168,10 +168,10 @@ defmodule CGraphWeb.API.V1.RssController do
 
     with {:ok, user} <- Accounts.get_user(user_id),
          :ok <- check_user_visibility(user) do
-      
+
       # Get user's public threads and posts
       activity = get_user_public_activity(user_id, limit)
-      
+
       feed_data = %{
         title: "#{user.username}'s Activity",
         description: "Public forum activity from #{user.username}",
@@ -197,7 +197,7 @@ defmodule CGraphWeb.API.V1.RssController do
     format = Map.get(params, "format", "rss")
 
     activity = Forums.list_global_public_activity(limit: limit)
-    
+
     feed_data = %{
       title: "CGraph Forums - Global Activity",
       description: "Latest activity across all public forums",
@@ -251,7 +251,7 @@ defmodule CGraphWeb.API.V1.RssController do
 
   defp post_to_feed_item(conn, post) do
     thread_title = get_in(post, [Access.key(:thread), Access.key(:title)]) || "Post"
-    
+
     %{
       title: "Re: #{thread_title}",
       link: build_post_url(conn, post),
@@ -289,10 +289,10 @@ defmodule CGraphWeb.API.V1.RssController do
     posts = Forums.list_user_public_posts(user_id, limit: limit)
 
     # Combine and sort by date
-    thread_items = Enum.map(threads, fn t -> 
+    thread_items = Enum.map(threads, fn t ->
       %{type: :thread, item: t, date: t.inserted_at}
     end)
-    
+
     post_items = Enum.map(posts, fn p ->
       %{type: :post, item: p, date: p.created_at || p.inserted_at}
     end)
@@ -334,7 +334,7 @@ defmodule CGraphWeb.API.V1.RssController do
 
   defp render_feed(conn, feed_data, "atom") do
     xml = generate_atom_feed(feed_data)
-    
+
     conn
     |> put_resp_content_type("application/atom+xml")
     |> put_cache_headers()
@@ -343,7 +343,7 @@ defmodule CGraphWeb.API.V1.RssController do
 
   defp render_feed(conn, feed_data, _format) do
     xml = generate_rss_feed(feed_data)
-    
+
     conn
     |> put_resp_content_type("application/rss+xml")
     |> put_cache_headers()
@@ -358,8 +358,7 @@ defmodule CGraphWeb.API.V1.RssController do
 
   defp generate_rss_feed(feed_data) do
     items_xml = feed_data.items
-    |> Enum.map(&generate_rss_item/1)
-    |> Enum.join("\n")
+    |> Enum.map_join("\n", &generate_rss_item/1)
 
     """
     <?xml version="1.0" encoding="UTF-8"?>
@@ -380,8 +379,7 @@ defmodule CGraphWeb.API.V1.RssController do
 
   defp generate_rss_item(item) do
     categories_xml = item.categories
-    |> Enum.map(fn cat -> "      <category>#{escape_xml(cat)}</category>" end)
-    |> Enum.join("\n")
+    |> Enum.map_join("\n", fn cat -> "      <category>#{escape_xml(cat)}</category>" end)
 
     """
         <item>
@@ -398,8 +396,7 @@ defmodule CGraphWeb.API.V1.RssController do
 
   defp generate_atom_feed(feed_data) do
     entries_xml = feed_data.items
-    |> Enum.map(&generate_atom_entry/1)
-    |> Enum.join("\n")
+    |> Enum.map_join("\n", &generate_atom_entry/1)
 
     """
     <?xml version="1.0" encoding="UTF-8"?>
@@ -418,8 +415,7 @@ defmodule CGraphWeb.API.V1.RssController do
 
   defp generate_atom_entry(item) do
     categories_xml = item.categories
-    |> Enum.map(fn cat -> "    <category term=\"#{escape_xml(cat)}\"/>" end)
-    |> Enum.join("\n")
+    |> Enum.map_join("\n", fn cat -> "    <category term=\"#{escape_xml(cat)}\"/>" end)
 
     """
       <entry>

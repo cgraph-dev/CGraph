@@ -1,7 +1,7 @@
 defmodule CGraphWeb.Plugs.Cors do
   @moduledoc """
   Custom CORS plug with runtime origin configuration.
-  
+
   Reads CORS_ORIGINS from environment at runtime (not compile time),
   allowing dynamic configuration via Fly.io secrets.
   """
@@ -17,11 +17,11 @@ defmodule CGraphWeb.Plugs.Cors do
   @impl true
   def call(conn, _opts) do
     origin = get_req_header(conn, "origin") |> List.first()
-    
+
     # Debug logging for CORS issues (use debug level in production)
     require Logger
     Logger.debug("cors_request", method: conn.method, origin: inspect(origin), allowed: origin && origin_allowed?(origin))
-    
+
     if origin && origin_allowed?(origin) do
       conn
       |> put_resp_header("access-control-allow-origin", origin)
@@ -54,18 +54,18 @@ defmodule CGraphWeb.Plugs.Cors do
   defp origin_allowed?(origin) do
     require Logger
     allowed_origins = get_cors_origins()
-    
+
     Logger.debug("cors_origin_check", origin: inspect(origin), allowed_origins: inspect(allowed_origins))
-    
+
     case allowed_origins do
       "*" -> true
       origins when is_list(origins) ->
         result = Enum.any?(origins, fn
-          %Regex{} = regex -> 
+          %Regex{} = regex ->
             match = Regex.match?(regex, origin)
             Logger.debug("cors_regex_match", match: match)
             match
-          allowed when is_binary(allowed) -> 
+          allowed when is_binary(allowed) ->
             match = allowed == origin
             if match, do: Logger.debug("cors_exact_match", allowed: allowed)
             match

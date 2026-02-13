@@ -1,18 +1,18 @@
 defmodule CGraph.Forums.UserContent do
   @moduledoc """
   User content queries for profile integration.
-  
+
   Provides paginated access to a user's posts, threads,
   and statistics across forums.
   """
 
   import Ecto.Query, warn: false
+  alias CGraph.Forums.{Comment, Post}
   alias CGraph.Repo
-  alias CGraph.Forums.{Post, Comment}
 
   @doc """
   Lists posts by a specific user with pagination.
-  
+
   ## Options
   - `:page` - Page number (default: 1)
   - `:per_page` - Posts per page (default: 20)
@@ -62,7 +62,7 @@ defmodule CGraph.Forums.UserContent do
 
   @doc """
   Lists threads started by a specific user with pagination.
-  
+
   ## Options
   - `:page` - Page number (default: 1)
   - `:per_page` - Threads per page (default: 20)

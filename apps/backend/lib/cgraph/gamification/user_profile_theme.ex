@@ -15,13 +15,13 @@ defmodule CGraph.Gamification.UserProfileTheme do
     field :unlock_source, :string
     field :unlock_data, :map, default: %{}
     field :expires_at, :utc_datetime
-    
+
     # Custom overrides
     field :custom_colors, :map
     field :custom_background, :map
     field :custom_layout, :map
     field :custom_effects, :map
-    
+
     belongs_to :user, CGraph.Accounts.User
     belongs_to :profile_theme, CGraph.Gamification.ProfileTheme
 

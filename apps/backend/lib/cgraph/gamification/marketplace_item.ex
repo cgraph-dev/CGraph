@@ -1,7 +1,7 @@
 defmodule CGraph.Gamification.MarketplaceItem do
   @moduledoc """
   Schema for marketplace items that users can buy, sell, or trade.
-  
+
   Features:
   - User-listed cosmetics
   - Dynamic pricing
@@ -22,33 +22,33 @@ defmodule CGraph.Gamification.MarketplaceItem do
     field :item_type, :string
     field :item_id, :binary_id  # References the actual cosmetic
     field :listing_status, :string, default: "active"
-    
+
     # Pricing
     field :price, :integer
     field :currency_type, :string, default: "coins"
     field :original_price, :integer  # For tracking price changes
     field :min_price, :integer
     field :max_price, :integer
-    
+
     # Fees
     field :listing_fee, :integer, default: 0
     field :transaction_fee_percent, :float, default: 0.05  # 5% fee
-    
+
     # Listing metadata
     field :listed_at, :utc_datetime
     field :expires_at, :utc_datetime
     field :sold_at, :utc_datetime
-    
+
     # Item details (cached for display)
     field :item_name, :string
     field :item_rarity, :string
     field :item_preview_url, :string
     field :item_metadata, :map, default: %{}
-    
+
     # Trade support
     field :accepts_trades, :boolean, default: false
     field :trade_preferences, {:array, :string}, default: []
-    
+
     belongs_to :seller, CGraph.Accounts.User
     belongs_to :buyer, CGraph.Accounts.User
 
@@ -143,11 +143,11 @@ defmodule CGraph.Gamification.MarketplaceItem do
       "common" -> %{min: 100, max: 500, suggested: 250}
       "uncommon" -> %{min: 300, max: 1500, suggested: 750}
       "rare" -> %{min: 1000, max: 5000, suggested: 2500}
-      "epic" -> %{min: 3000, max: 15000, suggested: 7500}
-      "legendary" -> %{min: 10000, max: 50000, suggested: 25000}
-      "mythic" -> %{min: 25000, max: 150000, suggested: 75000}
-      "unique" -> %{min: 50000, max: 500000, suggested: 150000}
-      _ -> %{min: 100, max: 10000, suggested: 1000}
+      "epic" -> %{min: 3000, max: 15_000, suggested: 7500}
+      "legendary" -> %{min: 10_000, max: 50_000, suggested: 25_000}
+      "mythic" -> %{min: 25_000, max: 150_000, suggested: 75_000}
+      "unique" -> %{min: 50_000, max: 500_000, suggested: 150_000}
+      _ -> %{min: 100, max: 10_000, suggested: 1000}
     end
   end
 end

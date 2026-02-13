@@ -245,8 +245,8 @@ defmodule CGraphWeb.API.SubscriptionController do
   end
 
   defp verify_ownership(subscription_id, user_id) do
-    alias CGraph.Repo
     alias CGraph.Forums.Subscription
+    alias CGraph.Repo
 
     case Repo.get(Subscription, subscription_id) do
       nil -> {:error, :not_found}

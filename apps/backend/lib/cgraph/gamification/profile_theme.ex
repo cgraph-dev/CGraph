@@ -1,7 +1,7 @@
 defmodule CGraph.Gamification.ProfileTheme do
   @moduledoc """
   Schema for profile themes that users can customize.
-  
+
   Supports 22+ preset themes with:
   - Custom color schemes
   - Background effects (gradients, images, particles, video)
@@ -27,7 +27,7 @@ defmodule CGraph.Gamification.ProfileTheme do
     field :description, :string
     field :preset, :string
     field :rarity, :string
-    
+
     # Color configuration
     field :colors, :map, default: %{
       "primary" => "#22c55e",
@@ -37,37 +37,37 @@ defmodule CGraph.Gamification.ProfileTheme do
       "surface" => "#1a1a2e",
       "text" => "#ffffff"
     }
-    
+
     # Background configuration
     field :background_type, :string, default: "solid"
     field :background_config, :map, default: %{}
-    
+
     # Card layout
     field :layout_type, :string, default: "detailed"
     field :layout_config, :map, default: %{}
-    
+
     # Effects
     field :hover_effect, :string, default: "scale"
     field :glassmorphism, :boolean, default: false
     field :border_radius, :string, default: "md"
     field :effects_config, :map, default: %{}
-    
+
     # Typography
     field :font_family, :string, default: "Inter"
     field :typography_config, :map, default: %{}
-    
+
     # Unlock configuration
     field :unlock_type, :string
     field :unlock_requirement, :string
     field :is_purchasable, :boolean, default: false
     field :coin_cost, :integer, default: 0
     field :gem_cost, :integer, default: 0
-    
+
     # Meta
     field :sort_order, :integer, default: 0
     field :is_active, :boolean, default: true
     field :preview_url, :string
-    
+
     has_many :user_profile_themes, CGraph.Gamification.UserProfileTheme
 
     timestamps(type: :utc_datetime)

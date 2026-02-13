@@ -10,8 +10,8 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   """
   use CGraphWeb, :controller
 
+  alias CGraph.Forums.{Board, BoardPermission, Forum, ForumPermission, ForumUserGroup, PermissionTemplate}
   alias CGraph.Repo
-  alias CGraph.Forums.{Forum, Board, ForumUserGroup, ForumPermission, BoardPermission, PermissionTemplate}
 
   import Ecto.Query
 

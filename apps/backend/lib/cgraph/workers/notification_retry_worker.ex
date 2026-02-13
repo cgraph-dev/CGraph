@@ -55,8 +55,8 @@ defmodule CGraph.Workers.NotificationRetryWorker do
     # Custom backoff: exponential with jitter
     priority: 2
 
-  alias CGraph.Notifications.PushService
   alias CGraph.Messaging.DeliveryTracking
+  alias CGraph.Notifications.PushService
 
   require Logger
 

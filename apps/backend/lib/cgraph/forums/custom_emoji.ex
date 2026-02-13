@@ -18,8 +18,8 @@ defmodule CGraph.Forums.CustomEmoji do
   import Ecto.Changeset
   import Ecto.Query
 
-  alias CGraph.Forums.{Forum, EmojiCategory, EmojiPack}
   alias CGraph.Accounts.User
+  alias CGraph.Forums.{EmojiCategory, EmojiPack, Forum}
   alias CGraph.Repo
 
   @primary_key {:id, :binary_id, autogenerate: true}
@@ -87,9 +87,9 @@ defmodule CGraph.Forums.CustomEmoji do
     |> validate_shortcode()
     |> validate_image()
     |> validate_aliases()
-    |> unique_constraint([:shortcode, :forum_id], 
+    |> unique_constraint([:shortcode, :forum_id],
         name: :custom_emojis_shortcode_forum_unique)
-    |> unique_constraint([:shortcode], 
+    |> unique_constraint([:shortcode],
         name: :custom_emojis_shortcode_global_unique)
   end
 
@@ -151,7 +151,7 @@ defmodule CGraph.Forums.CustomEmoji do
   defp validate_shortcode(changeset) do
     changeset
     |> validate_length(:shortcode, min: 2, max: 32)
-    |> validate_format(:shortcode, ~r/^[a-z0-9_]+$/, 
+    |> validate_format(:shortcode, ~r/^[a-z0-9_]+$/,
         message: "must be lowercase alphanumeric with underscores")
     |> update_change(:shortcode, &String.downcase/1)
   end
@@ -180,7 +180,7 @@ defmodule CGraph.Forums.CustomEmoji do
   end
 
   defp valid_shortcode?(shortcode) do
-    String.length(shortcode) >= 2 && 
+    String.length(shortcode) >= 2 &&
     String.length(shortcode) <= 32 &&
     Regex.match?(~r/^[a-z0-9_]+$/, shortcode)
   end
@@ -219,10 +219,10 @@ defmodule CGraph.Forums.CustomEmoji do
   """
   def search_query(search_term) do
     search_pattern = "%#{search_term}%"
-    
+
     from e in __MODULE__,
-      where: e.is_active == true and 
-             (ilike(e.shortcode, ^search_pattern) or 
+      where: e.is_active == true and
+             (ilike(e.shortcode, ^search_pattern) or
               ilike(e.name, ^search_pattern) or
               ^search_term in e.aliases),
       order_by: [desc: e.usage_count, asc: e.name],

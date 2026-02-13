@@ -1,20 +1,20 @@
 defmodule CGraph.Forums.Moderation do
   @moduledoc """
   Moderation operations for forums.
-  
+
   Handles post/thread hiding, bans, warnings, mod queue, etc.
   """
-  
+
   import Ecto.Query, warn: false
+  alias CGraph.Forums.{Ban, Moderator, Post}
   alias CGraph.Repo
-  alias CGraph.Forums.{Post, Ban, Moderator}
-  
+
   @doc """
   Gets the moderation queue for a forum.
   """
   def get_mod_queue(forum, opts \\ []) do
     status = Keyword.get(opts, :status, "pending")
-    
+
     query = from(p in Post,
       where: p.forum_id == ^forum.id and p.is_flagged == true,
       where: p.moderation_status == ^status,
@@ -30,7 +30,7 @@ defmodule CGraph.Forums.Moderation do
 
     CGraph.Pagination.paginate(query, pagination_opts)
   end
-  
+
   @doc """
   Hides a post.
   """
@@ -43,13 +43,13 @@ defmodule CGraph.Forums.Moderation do
     ])
     :ok
   end
-  
+
   @doc """
   Soft deletes a post (marks as deleted but keeps record).
   """
   def soft_delete_post(post_id, opts \\ []) do
     reason = Keyword.get(opts, :reason, "Removed by moderator")
-    
+
     from(p in Post, where: p.id == ^post_id)
     |> Repo.update_all(set: [
       is_deleted: true,
@@ -58,7 +58,7 @@ defmodule CGraph.Forums.Moderation do
     ])
     :ok
   end
-  
+
   @doc """
   Hides a comment.
   """
@@ -66,7 +66,7 @@ defmodule CGraph.Forums.Moderation do
     # Similar implementation for comments
     {:ok, %{hidden: true, reason: reason, id: comment_id}}
   end
-  
+
   @doc """
   Soft deletes a comment.
   """
@@ -74,13 +74,13 @@ defmodule CGraph.Forums.Moderation do
     reason = Keyword.get(opts, :reason, "Removed by moderator")
     {:ok, %{deleted: true, reason: reason, id: comment_id}}
   end
-  
+
   @doc """
   Adds a moderator to a forum.
   """
   def add_moderator(forum, user, opts \\ []) do
     permissions = Keyword.get(opts, :permissions, default_mod_permissions())
-    
+
     %Moderator{}
     |> Moderator.changeset(%{
       forum_id: forum.id,
@@ -89,7 +89,7 @@ defmodule CGraph.Forums.Moderation do
     })
     |> Repo.insert(on_conflict: :nothing)
   end
-  
+
   @doc """
   Removes a moderator from a forum.
   """
@@ -101,7 +101,7 @@ defmodule CGraph.Forums.Moderation do
     )
     :ok
   end
-  
+
   @doc """
   Checks if a user is a moderator.
   """
@@ -112,14 +112,14 @@ defmodule CGraph.Forums.Moderation do
       )
     )
   end
-  
+
   @doc """
   Bans a user from a forum.
   """
   def ban_user(forum, user, opts \\ []) do
     reason = Keyword.get(opts, :reason, "Banned by moderator")
     expires_at = Keyword.get(opts, :expires_at)
-    
+
     %Ban{}
     |> Ban.changeset(%{
       forum_id: forum.id,
@@ -129,7 +129,7 @@ defmodule CGraph.Forums.Moderation do
     })
     |> Repo.insert()
   end
-  
+
   @doc """
   Unbans a user from a forum.
   """
@@ -141,7 +141,7 @@ defmodule CGraph.Forums.Moderation do
     )
     :ok
   end
-  
+
   @doc """
   Checks if a user is banned.
   """
@@ -153,7 +153,7 @@ defmodule CGraph.Forums.Moderation do
       )
     )
   end
-  
+
   @doc """
   Flags a post for review.
   """
@@ -167,7 +167,7 @@ defmodule CGraph.Forums.Moderation do
     ])
     :ok
   end
-  
+
   @doc """
   Resolves a flagged post.
   """
@@ -178,14 +178,14 @@ defmodule CGraph.Forums.Moderation do
       :remove ->
         [is_flagged: false, is_hidden: true, moderation_status: "removed"]
     end
-    
+
     from(p in Post, where: p.id == ^post.id)
     |> Repo.update_all(set: updates)
     :ok
   end
-  
+
   # Private helpers
-  
+
   defp default_mod_permissions do
     %{
       can_pin: true,

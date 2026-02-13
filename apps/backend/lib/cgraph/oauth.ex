@@ -705,11 +705,9 @@ defmodule CGraph.OAuth do
   end
 
   defp get_cached_jwks(cache_key) do
-    try do
-      Cachex.get(:oauth_cache, cache_key)
-    catch
-      :exit, _ -> {:ok, nil}
-    end
+    Cachex.get(:oauth_cache, cache_key)
+  catch
+    :exit, _ -> {:ok, nil}
   end
 
   defp fetch_and_cache_jwks(cache_key) do

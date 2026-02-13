@@ -137,7 +137,7 @@ defmodule Cgraph.GroupsTest do
       assert member.group_id == group.id
     end
 
-    test "is_member?/2 returns membership status", %{group: group, user: user} do
+    test "member?/2 returns membership status", %{group: group, user: user} do
       assert Groups.member?(user, group) == false
 
       {:ok, _} = Groups.add_member(group, user)

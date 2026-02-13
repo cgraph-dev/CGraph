@@ -15,10 +15,10 @@ defmodule CGraph.Gamification.UserChatEffect do
     field :unlock_source, :string
     field :unlock_data, :map, default: %{}
     field :expires_at, :utc_datetime
-    
+
     # Custom configuration overrides
     field :custom_config, :map
-    
+
     belongs_to :user, CGraph.Accounts.User
     belongs_to :chat_effect, CGraph.Gamification.ChatEffect
 

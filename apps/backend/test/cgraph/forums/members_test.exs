@@ -1,7 +1,7 @@
 defmodule CGraph.Forums.MembersTest do
   @moduledoc """
   Tests for the Forums.Members submodule.
-  
+
   Tests membership, subscriptions, moderators, and bans.
   """
   use CGraph.DataCase, async: true
@@ -100,14 +100,14 @@ defmodule CGraph.Forums.MembersTest do
   describe "roles" do
     test "update_role/3 changes member role", %{user: user, forum: forum} do
       {:ok, _} = Members.get_or_create_member(forum.id, user.id)
-      
+
       assert {:ok, member} = Members.update_role(forum.id, user.id, "moderator")
       assert member.role == "moderator"
     end
 
     test "update_role/3 validates role values", %{user: user, forum: forum} do
       {:ok, _} = Members.get_or_create_member(forum.id, user.id)
-      
+
       # Valid roles
       assert {:ok, _} = Members.update_role(forum.id, user.id, "member")
       assert {:ok, _} = Members.update_role(forum.id, user.id, "moderator")

@@ -1,17 +1,17 @@
 defmodule CGraph.Subscriptions.UserTierOverride do
   @moduledoc """
   Schema for per-user limit overrides.
-  
+
   Allows granting specific users increased or decreased limits beyond
   their subscription tier. Useful for:
-  
+
   - Promotional bonuses
   - Beta testers
   - Staff members
   - Temporary limit increases
-  
+
   ## Example
-  
+
       # Grant a user 100 forums instead of their tier's default
       %UserTierOverride{
         user_id: user.id,

@@ -4,8 +4,8 @@ defmodule CGraph.Customizations do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Customizations.UserCustomization
+  alias CGraph.Repo
 
   @doc """
   Gets or creates user customizations for a given user.

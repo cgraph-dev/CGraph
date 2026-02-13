@@ -1,13 +1,13 @@
 defmodule CGraph.Forums.Categories do
   @moduledoc """
   Category management for forums.
-  
+
   Categories help organize posts within a forum.
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Repo
   alias CGraph.Forums.Category
+  alias CGraph.Repo
 
   @doc """
   List categories in a forum.

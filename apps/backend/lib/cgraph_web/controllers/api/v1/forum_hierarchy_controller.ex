@@ -11,8 +11,8 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
   """
   use CGraphWeb, :controller
 
-  alias CGraph.Repo
   alias CGraph.Forums.Forum
+  alias CGraph.Repo
 
   import Ecto.Query
 
@@ -267,7 +267,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
             {:error, :parent_not_found}
 
           new_parent ->
-            if Forum.is_descendant?(new_parent, forum) do
+            if Forum.descendant?(new_parent, forum) do
               {:error, :cannot_move_to_descendant}
             else
               :ok

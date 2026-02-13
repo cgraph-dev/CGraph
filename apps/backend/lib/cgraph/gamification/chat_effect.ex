@@ -1,7 +1,7 @@
 defmodule CGraph.Gamification.ChatEffect do
   @moduledoc """
   Schema for chat effects including message animations, bubble styles, and typing indicators.
-  
+
   Features:
   - 30+ message entrance effects
   - 15 bubble style presets
@@ -29,18 +29,18 @@ defmodule CGraph.Gamification.ChatEffect do
     field :effect_type, :string
     field :effect_id, :string  # The specific effect within the type
     field :rarity, :string
-    
+
     # Effect configuration
     field :config, :map, default: %{}
     field :preview_config, :map, default: %{}
-    
+
     # Unlock configuration
     field :unlock_type, :string
     field :unlock_requirement, :string
     field :is_purchasable, :boolean, default: false
     field :coin_cost, :integer, default: 0
     field :gem_cost, :integer, default: 0
-    
+
     # Meta
     field :sort_order, :integer, default: 0
     field :is_active, :boolean, default: true
@@ -73,7 +73,7 @@ defmodule CGraph.Gamification.ChatEffect do
   defp validate_effect_id(changeset) do
     effect_type = get_field(changeset, :effect_type)
     effect_id = get_field(changeset, :effect_id)
-    
+
     valid_ids = case effect_type do
       "message-effect" -> @message_effects
       "bubble-style" -> @bubble_styles

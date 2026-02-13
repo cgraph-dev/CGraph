@@ -5,10 +5,10 @@ defmodule CGraph.Gamification.Repositories.AchievementRepository do
 
   import Ecto.Query, warn: false, except: [update: 2]
 
-  alias CGraph.Repo
+  alias CGraph.Cache
   alias CGraph.Gamification.Achievement
   alias CGraph.Gamification.UserAchievement
-  alias CGraph.Cache
+  alias CGraph.Repo
 
   @cache_ttl :timer.hours(1)
 

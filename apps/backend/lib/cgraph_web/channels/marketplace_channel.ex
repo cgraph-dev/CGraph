@@ -1,14 +1,14 @@
 defmodule CGraphWeb.MarketplaceChannel do
   @moduledoc """
   Real-time marketplace updates channel for live trading and notifications.
-  
+
   Provides:
   - Live listing updates (new, sold, price changes)
   - Real-time auction bidding
   - Price alerts and notifications
   - Featured listings rotation
   - Market statistics updates
-  
+
   Topics:
   - marketplace:lobby - Global marketplace updates
   - marketplace:{user_id} - User-specific notifications
@@ -27,11 +27,11 @@ defmodule CGraphWeb.MarketplaceChannel do
   @impl true
   def join("marketplace:lobby", _params, socket) do
     send(self(), :after_join)
-    
+
     {:ok, %{
       status: "connected",
       server_time: DateTime.utc_now() |> DateTime.to_iso8601()
-    }, socket 
+    }, socket
     |> assign(:subscribed_items, MapSet.new())
     |> assign(:last_broadcast, %{})}
   end
@@ -49,7 +49,7 @@ defmodule CGraphWeb.MarketplaceChannel do
   @impl true
   def handle_info(:after_join, socket) do
     user = socket.assigns.current_user
-    
+
     # Track presence in marketplace
     {:ok, _} = Presence.track(socket, user.id, %{
       online_at: System.system_time(:second),
@@ -59,10 +59,10 @@ defmodule CGraphWeb.MarketplaceChannel do
 
     # Subscribe to global marketplace updates
     Phoenix.PubSub.subscribe(CGraph.PubSub, "marketplace:global")
-    
+
     # Send current marketplace stats
     push(socket, "marketplace_stats", get_marketplace_stats())
-    
+
     # Send featured listings
     push(socket, "featured_listings", get_featured_listings())
 
@@ -71,13 +71,13 @@ defmodule CGraphWeb.MarketplaceChannel do
 
   def handle_info(:after_join_user, socket) do
     user = socket.assigns.current_user
-    
+
     # Subscribe to user-specific updates
     Phoenix.PubSub.subscribe(CGraph.PubSub, "marketplace:user:#{user.id}")
-    
+
     # Send user's active listings
     push(socket, "my_listings", get_user_listings(user.id))
-    
+
     # Send pending notifications
     push(socket, "notifications", get_pending_notifications(user.id))
 
@@ -158,7 +158,7 @@ defmodule CGraphWeb.MarketplaceChannel do
       page: Map.get(params, "page", 1),
       per_page: min(Map.get(params, "per_page", 20), 50)
     }
-    
+
     {:ok, result} = Marketplace.browse_listings(filters)
     {:reply, {:ok, result}, socket}
   end
@@ -166,9 +166,9 @@ defmodule CGraphWeb.MarketplaceChannel do
   # Client requests - get listing details
   def handle_in("get_listing", %{"listing_id" => listing_id}, socket) do
     case Marketplace.get_listing(listing_id) do
-      {:ok, listing} -> 
+      {:ok, listing} ->
         {:reply, {:ok, listing}, socket}
-      {:error, reason} -> 
+      {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
     end
   end
@@ -184,13 +184,13 @@ defmodule CGraphWeb.MarketplaceChannel do
   def handle_in("subscribe_item", %{"item_type" => type, "item_id" => id}, socket) do
     subscribed = socket.assigns.subscribed_items
     item_key = {type, id}
-    
+
     if MapSet.size(subscribed) < @max_subscribed_items do
       new_subscribed = MapSet.put(subscribed, item_key)
-      
+
       # Subscribe to item-specific pubsub
       Phoenix.PubSub.subscribe(CGraph.PubSub, "marketplace:item:#{type}:#{id}")
-      
+
       {:reply, {:ok, %{subscribed: true}}, assign(socket, :subscribed_items, new_subscribed)}
     else
       {:reply, {:error, %{reason: "max_subscriptions_reached"}}, socket}
@@ -202,16 +202,16 @@ defmodule CGraphWeb.MarketplaceChannel do
     subscribed = socket.assigns.subscribed_items
     item_key = {type, id}
     new_subscribed = MapSet.delete(subscribed, item_key)
-    
+
     Phoenix.PubSub.unsubscribe(CGraph.PubSub, "marketplace:item:#{type}:#{id}")
-    
+
     {:reply, {:ok, %{unsubscribed: true}}, assign(socket, :subscribed_items, new_subscribed)}
   end
 
   # Client action - create listing (via channel for real-time feedback)
   def handle_in("create_listing", params, socket) do
     user = socket.assigns.current_user
-    
+
     {:error, changeset} = Marketplace.create_listing(user.id, params)
     errors = format_changeset_errors(changeset)
     {:reply, {:error, %{errors: errors}}, socket}
@@ -220,13 +220,13 @@ defmodule CGraphWeb.MarketplaceChannel do
   # Client action - purchase listing
   def handle_in("purchase", %{"listing_id" => listing_id}, socket) do
     user = socket.assigns.current_user
-    
+
     case Marketplace.purchase_listing(user.id, listing_id) do
       {:ok, transaction} ->
         # Notify seller
         notify_seller(transaction)
         {:reply, {:ok, %{transaction: transaction}}, socket}
-      
+
       {:error, reason} ->
         {:reply, {:error, %{reason: reason}}, socket}
     end
@@ -238,7 +238,7 @@ defmodule CGraphWeb.MarketplaceChannel do
     listing_id = Map.get(params, "listing_id")
     amount = Map.get(params, "amount")
     message = Map.get(params, "message")
-    
+
     {:error, reason} = Marketplace.create_offer(user.id, listing_id, amount, message)
     {:reply, {:error, %{reason: reason}}, socket}
   end
@@ -247,7 +247,7 @@ defmodule CGraphWeb.MarketplaceChannel do
   def handle_in("respond_offer", %{"offer_id" => offer_id, "accept" => accept} = params, socket) do
     user = socket.assigns.current_user
     message = Map.get(params, "message")
-    
+
     {:error, reason} = Marketplace.respond_to_offer(user.id, offer_id, accept, message)
     {:reply, {:error, %{reason: reason}}, socket}
   end
@@ -318,8 +318,8 @@ defmodule CGraphWeb.MarketplaceChannel do
 
   defp notify_seller(transaction) do
     Phoenix.PubSub.broadcast(
-      CGraph.PubSub, 
-      "marketplace:user:#{transaction.seller_id}", 
+      CGraph.PubSub,
+      "marketplace:user:#{transaction.seller_id}",
       {:your_listing_sold, transaction}
     )
   end

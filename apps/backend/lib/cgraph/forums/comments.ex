@@ -1,15 +1,15 @@
 defmodule CGraph.Forums.Comments do
   @moduledoc """
   Comment operations for forum posts.
-  
+
   Handles comment CRUD, voting, hiding, and threading.
   """
-  
+
   import Ecto.Query, warn: false
-  
+
+  alias CGraph.Forums.{Comment, Post, Vote}
   alias CGraph.Repo
-  alias CGraph.Forums.{Comment, Vote, Post}
-  
+
   @doc """
   Lists comments for a post.
   """
@@ -19,29 +19,29 @@ defmodule CGraph.Forums.Comments do
     sort = Keyword.get(opts, :sort, "top")
     user = Keyword.get(opts, :user)
     parent_id = Keyword.get(opts, :parent_id)
-    
+
     base_query = from(c in Comment,
       where: c.post_id == ^post.id,
       where: is_nil(c.deleted_at),
       preload: [:author]
     )
-    
+
     query = base_query
     |> filter_by_parent(parent_id)
     |> apply_sort(sort)
-    
+
     total = Repo.aggregate(query, :count, :id)
-    
+
     comments = query
     |> limit(^per_page)
     |> offset(^((page - 1) * per_page))
     |> Repo.all()
     |> maybe_add_user_votes(user)
-    
+
     meta = %{page: page, per_page: per_page, total: total}
     {comments, meta}
   end
-  
+
   @doc """
   Gets a comment by ID.
   """
@@ -51,7 +51,7 @@ defmodule CGraph.Forums.Comments do
       comment -> {:ok, Repo.preload(comment, [:author, :post])}
     end
   end
-  
+
   @doc """
   Creates a comment on a post.
   """
@@ -60,7 +60,7 @@ defmodule CGraph.Forums.Comments do
       "post_id" => post.id,
       "author_id" => user.id
     })
-    
+
     %Comment{}
     |> Comment.changeset(attrs)
     |> Repo.insert()
@@ -72,7 +72,7 @@ defmodule CGraph.Forums.Comments do
       error -> error
     end
   end
-  
+
   @doc """
   Updates a comment.
   """
@@ -81,7 +81,7 @@ defmodule CGraph.Forums.Comments do
     |> Comment.changeset(attrs)
     |> Repo.update()
   end
-  
+
   @doc """
   Deletes a comment (soft delete).
   """
@@ -96,7 +96,7 @@ defmodule CGraph.Forums.Comments do
       error -> error
     end
   end
-  
+
   @doc """
   Hides a comment (moderation action).
   """
@@ -109,13 +109,13 @@ defmodule CGraph.Forums.Comments do
     ])
     :ok
   end
-  
+
   @doc """
   Soft deletes a comment.
   """
   def soft_delete_comment(comment_id, opts \\ []) do
     reason = Keyword.get(opts, :reason, "Removed by moderator")
-    
+
     from(c in Comment, where: c.id == ^comment_id)
     |> Repo.update_all(set: [
       is_deleted: true,
@@ -124,16 +124,16 @@ defmodule CGraph.Forums.Comments do
     ])
     :ok
   end
-  
+
   @doc """
   Votes on a comment.
   """
   def vote(user, comment, vote_type) when vote_type in [:up, :down, "up", "down"] do
     vote_value = if vote_type in [:up, "up"], do: 1, else: -1
-    
+
     Repo.transaction(fn ->
       existing = Repo.get_by(Vote, user_id: user.id, comment_id: comment.id)
-      
+
       case existing do
         nil ->
           # New vote
@@ -144,27 +144,27 @@ defmodule CGraph.Forums.Comments do
             value: vote_value
           })
           |> Repo.insert!()
-          
+
           update_comment_score(comment.id, vote_value)
-          
+
         vote when vote.value == vote_value ->
           # Same vote - remove it
           Repo.delete!(vote)
           update_comment_score(comment.id, -vote_value)
-          
+
         vote ->
           # Different vote - flip it
           vote
           |> Vote.changeset(%{value: vote_value})
           |> Repo.update!()
-          
+
           update_comment_score(comment.id, vote_value * 2)
       end
-      
+
       :ok
     end)
   end
-  
+
   @doc """
   Removes a vote from a comment.
   """
@@ -177,42 +177,42 @@ defmodule CGraph.Forums.Comments do
         :ok
     end
   end
-  
+
   # Private helpers
-  
+
   defp filter_by_parent(query, nil) do
     from(c in query, where: is_nil(c.parent_id))
   end
   defp filter_by_parent(query, parent_id) do
     from(c in query, where: c.parent_id == ^parent_id)
   end
-  
+
   defp apply_sort(query, "new"), do: from(c in query, order_by: [desc: c.inserted_at])
   defp apply_sort(query, "old"), do: from(c in query, order_by: [asc: c.inserted_at])
   defp apply_sort(query, _top), do: from(c in query, order_by: [desc: c.score, desc: c.inserted_at])
-  
+
   defp maybe_add_user_votes(comments, nil), do: comments
   defp maybe_add_user_votes(comments, user) do
     comment_ids = Enum.map(comments, & &1.id)
-    
+
     votes = from(v in Vote,
       where: v.comment_id in ^comment_ids and v.user_id == ^user.id,
       select: {v.comment_id, v.value}
     )
     |> Repo.all()
     |> Map.new()
-    
+
     Enum.map(comments, fn comment ->
       vote = Map.get(votes, comment.id)
       Map.put(comment, :my_vote, vote)
     end)
   end
-  
+
   defp update_comment_score(comment_id, delta) do
     from(c in Comment, where: c.id == ^comment_id)
     |> Repo.update_all(inc: [score: delta])
   end
-  
+
   defp update_post_comment_count(post_id, delta) do
     from(p in Post, where: p.id == ^post_id)
     |> Repo.update_all(inc: [comment_count: delta])

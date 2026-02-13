@@ -33,8 +33,8 @@ defmodule CGraph.Workers.MessageArchivalWorker do
   import Ecto.Query
   require Logger
 
-  alias CGraph.Repo
   alias CGraph.Messaging.Message
+  alias CGraph.Repo
 
   # Archive messages older than 6 months
   @archive_threshold_days 180

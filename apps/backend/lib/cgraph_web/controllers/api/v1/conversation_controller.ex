@@ -167,13 +167,9 @@ defmodule CGraphWeb.API.V1.ConversationController do
     user = conn.assigns.current_user
     ttl = params["ttl"]
 
-    valid_ttls = [nil, 86400, 604_800, 2_592_000]
+    valid_ttls = [nil, 86_400, 604_800, 2_592_000]
 
-    unless ttl in valid_ttls do
-      conn
-      |> put_status(:bad_request)
-      |> json(%{error: "Invalid TTL value. Use null, 86400, 604800, or 2592000"})
-    else
+    if ttl in valid_ttls do
       with {:ok, conversation} <- Messaging.get_user_conversation(user, conversation_id),
            {:ok, updated} <- Messaging.update_conversation_ttl(conversation, ttl) do
         json(conn, %{
@@ -183,6 +179,10 @@ defmodule CGraphWeb.API.V1.ConversationController do
           }
         })
       end
+    else
+      conn
+      |> put_status(:bad_request)
+      |> json(%{error: "Invalid TTL value. Use null, 86400, 604800, or 2592000"})
     end
   end
 end
