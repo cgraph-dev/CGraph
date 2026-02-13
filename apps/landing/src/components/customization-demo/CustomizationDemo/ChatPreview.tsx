@@ -8,7 +8,6 @@
 
 import { memo, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// springs import removed
 import type { DemoState } from './types';
 import { themeColors } from './constants';
 import { AnimatedAvatar } from './AnimatedAvatar';
@@ -87,7 +86,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
 
       if (isModern) {
         background = isOwn
-          ? `linear-gradient(135deg, ${bubbleColors.primary}DD, ${bubbleColors.secondary}DD)` // Higher opacity
+          ? `linear-gradient(135deg, ${bubbleColors.primary}CC, ${bubbleColors.secondary}CC)`
           : 'rgba(255, 255, 255, 0.05)';
       } else if (isRetro) {
         background = isOwn ? bubbleColors.primary : '#374151';
@@ -128,13 +127,13 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
   }, [state, bubbleColors]);
 
   const getBubbleAnimation = (isOwn: boolean, index: number) => {
-    const delay = index * 0.15;
+    const delay = index * 0.1;
     const anim = state.bubbleEntranceAnimation || 'slide';
 
-    // Advanced Spring Physics
-    const elasticSpring = { type: 'spring', stiffness: 400, damping: 15, mass: 1 };
-    const bounceSpring = { type: 'spring', stiffness: 500, damping: 12, mass: 0.8 };
-    const snapSpring = { type: 'spring', stiffness: 300, damping: 20 };
+    // Premium Physics
+    const elasticSpring = { type: 'spring', stiffness: 450, damping: 12, mass: 1 };
+    const bounceSpring = { type: 'spring', stiffness: 500, damping: 10, mass: 0.8 };
+    const snapSpring = { type: 'spring', stiffness: 350, damping: 20 };
 
     const animations: Record<string, object> = {
       none: {
@@ -142,29 +141,29 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
         animate: { opacity: 1 },
       },
       slide: {
-        initial: { opacity: 0, x: isOwn ? 50 : -50, skewX: isOwn ? -10 : 10 },
-        animate: { opacity: 1, x: 0, skewX: 0 },
+        initial: { opacity: 0, x: isOwn ? 60 : -60, skewX: isOwn ? -15 : 15, scale: 0.9 },
+        animate: { opacity: 1, x: 0, skewX: 0, scale: 1 },
         transition: { delay, ...elasticSpring },
       },
       fade: {
-        initial: { opacity: 0, scale: 0.9, filter: 'blur(10px)' },
-        animate: { opacity: 1, scale: 1, filter: 'blur(0px)' },
-        transition: { delay, duration: 0.5, ease: 'circOut' },
+        initial: { opacity: 0, scale: 0.8, filter: 'blur(12px)', y: 10 },
+        animate: { opacity: 1, scale: 1, filter: 'blur(0px)', y: 0 },
+        transition: { delay, duration: 0.6, ease: [0.22, 1, 0.36, 1] },
       },
       scale: {
-        initial: { opacity: 0, scale: 0, rotate: isOwn ? 5 : -5, y: 20 },
+        initial: { opacity: 0, scale: 0, rotate: isOwn ? 10 : -10, y: 30 },
         animate: { opacity: 1, scale: 1, rotate: 0, y: 0 },
         transition: { delay, ...snapSpring },
       },
       bounce: {
-        initial: { opacity: 0, scale: 0.3, y: 50 },
-        animate: { opacity: 1, scale: 1, y: 0 },
+        initial: { opacity: 0, scaleY: 0.3, scaleX: 1.2, y: 60 },
+        animate: { opacity: 1, scaleY: 1, scaleX: 1, y: 0 },
         transition: { delay, ...bounceSpring },
       },
       flip: {
-        initial: { opacity: 0, rotateX: 90, z: -100, scale: 0.8 },
-        animate: { opacity: 1, rotateX: 0, z: 0, scale: 1 },
-        transition: { delay, type: 'spring', stiffness: 200, damping: 18 },
+        initial: { opacity: 0, rotateX: 90, z: -150, scale: 0.8, y: -20 },
+        animate: { opacity: 1, rotateX: 0, z: 0, scale: 1, y: 0 },
+        transition: { delay, type: 'spring', stiffness: 220, damping: 18 },
       },
     };
 
@@ -177,20 +176,20 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
       style={{
         backdropFilter: state.blurEnabled ? 'blur(20px)' : 'none',
         boxShadow: state.glowEnabled ? `0 0 40px ${colors.glow}` : 'none',
-        perspective: '1000px', // Crucial for 3D transforms
+        perspective: '1200px', // Enhanced 3D perspective
       }}
       animate={
         state.glowEnabled
           ? {
               boxShadow: [
                 `0 0 30px ${colors.glow}`,
-                `0 0 50px ${colors.glow}`,
+                `0 0 60px ${colors.glow}`,
                 `0 0 30px ${colors.glow}`,
               ],
             }
           : {}
       }
-      transition={{ duration: 2 * speedMultiplier, repeat: Infinity }}
+      transition={{ duration: 3 * speedMultiplier, repeat: Infinity }}
     >
       {/* Particles overlay */}
       {state.particlesEnabled && (
@@ -205,11 +204,12 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
                 top: `${Math.random() * 100}%`,
               }}
               animate={{
-                y: [0, -15, 0],
-                opacity: [0.3, 0.8, 0.3],
+                y: [0, -20, 0],
+                opacity: [0.2, 0.6, 0.2],
+                scale: [1, 1.5, 1],
               }}
               transition={{
-                duration: (2 + Math.random()) * speedMultiplier,
+                duration: (3 + Math.random() * 2) * speedMultiplier,
                 repeat: Infinity,
                 delay: Math.random() * 2,
               }}
@@ -261,56 +261,76 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
           >
             {/* Message 1 (Incoming) */}
             <motion.div
-              key={`msg1-${state.bubbleEntranceAnimation}`}
+              key={`msg1-${state.bubbleEntranceAnimation}-${state.chatBubbleStyle}`} // Force re-render on style change too
               className="max-w-[85%] p-3"
               style={{
                 ...getBubbleStyle(false),
                 alignSelf: 'flex-start',
                 marginRight: 'auto',
-                transformOrigin: 'left center', // Enhance animations
+                transformOrigin: 'left center',
               }}
               {...getBubbleAnimation(false, 0)}
               whileHover={
                 state.bubbleHoverEffect
-                  ? { scale: 1.02, boxShadow: `0 4px 16px ${colors.primary}30`, z: 10 }
+                  ? {
+                      scale: 1.05,
+                      boxShadow: `0 8px 24px ${colors.primary}40`,
+                      z: 20,
+                      rotateX: 2,
+                      rotateY: -2,
+                    }
                   : {}
               }
             >
-              <p className={`${state.compactMode ? 'text-xs' : 'text-sm'} text-gray-200`}>
+              <p
+                className={`${state.compactMode ? 'text-xs' : 'text-sm'} font-medium text-white drop-shadow-md`}
+              >
                 Welcome! Your profile looks amazing with that border! 🔥
               </p>
               {state.showTimestamps && (
-                <span className="mt-1 block text-[10px] text-gray-400 opacity-70">10:42 AM</span>
+                <span className="mt-1 block text-[10px] text-white/70 drop-shadow-sm">
+                  10:42 AM
+                </span>
               )}
             </motion.div>
 
             {/* Message 2 (Outgoing) */}
             <motion.div
-              key={`msg2-${state.bubbleEntranceAnimation}`}
+              key={`msg2-${state.bubbleEntranceAnimation}-${state.chatBubbleStyle}`}
               className="max-w-[85%] p-3"
               style={{
                 ...getBubbleStyle(true),
-                marginLeft: 'auto', // CSS align
-                transformOrigin: 'right center', // Enhance animations
+                marginLeft: 'auto',
+                transformOrigin: 'right center',
               }}
               {...getBubbleAnimation(true, 1)}
               whileHover={
                 state.bubbleHoverEffect
-                  ? { scale: 1.02, boxShadow: `0 6px 20px ${bubbleColors.primary}50`, z: 10 }
+                  ? {
+                      scale: 1.05,
+                      boxShadow: `0 10px 30px ${bubbleColors.primary}60`,
+                      z: 20,
+                      rotateX: 2,
+                      rotateY: 2,
+                    }
                   : {}
               }
             >
-              <p className={`${state.compactMode ? 'text-xs' : 'text-sm'} text-white`}>
+              <p
+                className={`${state.compactMode ? 'text-xs' : 'text-sm'} font-medium text-white drop-shadow-md`}
+              >
                 Thanks! Just unlocked the Legendary tier 🎉
               </p>
               {state.showTimestamps && (
-                <span className="mt-1 block text-[10px] text-white/70">10:43 AM</span>
+                <span className="mt-1 block text-[10px] text-white/70 drop-shadow-sm">
+                  10:43 AM
+                </span>
               )}
             </motion.div>
 
             {/* Message 3 (Incoming) */}
             <motion.div
-              key={`msg3-${state.bubbleEntranceAnimation}`}
+              key={`msg3-${state.bubbleEntranceAnimation}-${state.chatBubbleStyle}`}
               className="max-w-[85%] p-3"
               style={{
                 ...getBubbleStyle(false),
@@ -320,15 +340,25 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
               {...getBubbleAnimation(false, 2)}
               whileHover={
                 state.bubbleHoverEffect
-                  ? { scale: 1.02, boxShadow: `0 4px 16px ${colors.primary}30`, z: 10 }
+                  ? {
+                      scale: 1.05,
+                      boxShadow: `0 8px 24px ${colors.primary}40`,
+                      z: 20,
+                      rotateX: 2,
+                      rotateY: -2,
+                    }
                   : {}
               }
             >
-              <p className={`${state.compactMode ? 'text-xs' : 'text-sm'} text-gray-200`}>
+              <p
+                className={`${state.compactMode ? 'text-xs' : 'text-sm'} font-medium text-white drop-shadow-md`}
+              >
                 The customization options are incredible! 🎨
               </p>
               {state.showTimestamps && (
-                <span className="mt-1 block text-[10px] text-gray-400 opacity-70">10:44 AM</span>
+                <span className="mt-1 block text-[10px] text-white/70 drop-shadow-sm">
+                  10:44 AM
+                </span>
               )}
             </motion.div>
           </div>
