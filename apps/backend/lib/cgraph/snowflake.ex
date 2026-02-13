@@ -38,6 +38,7 @@ defmodule CGraph.Snowflake do
   """
 
   use GenServer
+  import Bitwise
   require Logger
 
   # CGraph epoch: 2026-01-01T00:00:00Z (milliseconds)

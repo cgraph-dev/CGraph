@@ -42,7 +42,6 @@ export function CustomizationDemo() {
     blurEnabled: true,
     avatarBorder: 'legendary',
     avatarBorderColor: 'emerald',
-    avatarSize: 'medium',
     selectedBorderTheme: undefined, // User can select to explore themed borders
     chatBubbleStyle: 'default',
     chatBubbleColor: 'emerald',

@@ -347,15 +347,6 @@ defmodule CGraph.Search do
     from p in query, order_by: [desc: p.inserted_at]
   end
 
-  defp count_post_results(search_term, forum_id) do
-    from(p in Post,
-      where: ilike(p.title, ^search_term) or ilike(p.content, ^search_term),
-      select: count(p.id)
-    )
-    |> maybe_filter_by_forum(forum_id)
-    |> Repo.one()
-  end
-
   @doc """
   Search groups/servers using cursor-based pagination.
   """

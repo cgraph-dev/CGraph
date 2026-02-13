@@ -31,7 +31,6 @@ export const AvatarControlPanel = memo(function AvatarControlPanel({
         <AnimatedAvatar
           borderType={state.avatarBorder}
           borderColor={state.avatarBorderColor}
-          size="large"
           speedMultiplier={speedMultiplier}
         />
       </div>
@@ -95,28 +94,6 @@ export const AvatarControlPanel = memo(function AvatarControlPanel({
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             />
-          ))}
-        </div>
-      </div>
-
-      {/* Avatar Size */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-gray-400">Avatar Size</label>
-        <div className="flex gap-2">
-          {(['small', 'medium', 'large'] as const).map((size) => (
-            <motion.button
-              key={size}
-              className={`flex-1 rounded-lg border px-3 py-2 text-xs capitalize transition-all ${
-                state.avatarSize === size
-                  ? 'border-white/50 bg-white/10 text-white'
-                  : 'border-white/10 text-gray-400 hover:border-white/30'
-              }`}
-              onClick={() => onChange({ avatarSize: size })}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {size}
-            </motion.button>
           ))}
         </div>
       </div>

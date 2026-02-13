@@ -7,7 +7,7 @@ defmodule CGraph.Forums.Threads do
   
   import Ecto.Query, warn: false
   alias CGraph.Repo
-  alias CGraph.Forums.{Thread, ThreadPost, Board}
+  alias CGraph.Forums.{Thread, ThreadPost}
   
   @doc """
   Lists threads for a forum or board.

@@ -7,7 +7,7 @@ defmodule CGraph.Forums.Core do
   
   import Ecto.Query, warn: false
   alias CGraph.Repo
-  alias CGraph.Forums.{Forum, ForumMember, Subscription, Category}
+  alias CGraph.Forums.{Forum, ForumMember, Subscription}
 
   @doc """
   Lists all forums with optional filters.

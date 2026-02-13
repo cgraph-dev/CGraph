@@ -38,14 +38,9 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
 
   require Logger
 
-  alias CGraph.Crypto
-
   @default_timeout 30_000
   @max_retries 3
   @default_ttl 86_400  # 24 hours
-
-  # Urgency levels for push priority
-  @urgency_levels [:very_low, :low, :normal, :high]
 
   # ============================================================================
   # Public API

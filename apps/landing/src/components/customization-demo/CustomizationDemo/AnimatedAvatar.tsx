@@ -14,13 +14,11 @@ import { themeColors } from './constants';
 export const AnimatedAvatar = memo(function AnimatedAvatar({
   borderType,
   borderColor,
-  size,
   speedMultiplier,
 }: AnimatedAvatarProps) {
   const colors = themeColors[borderColor];
-  const sizeMap = { small: 48, medium: 64, large: 80 };
-  const avatarSize = sizeMap[size];
-  const borderWidth = size === 'small' ? 2 : size === 'medium' ? 3 : 4;
+  const avatarSize = 64; // Fixed medium size
+  const borderWidth = 3;
 
   const renderBorderEffect = () => {
     switch (borderType) {
@@ -82,134 +80,241 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
           </>
         );
 
-      case 'rotate':
-        return (
-          <motion.div
-            className="absolute inset-[-4px] rounded-full"
-            style={{
-              background: `conic-gradient(from 0deg, ${colors.primary}, ${colors.secondary}, transparent, ${colors.primary})`,
-              padding: borderWidth,
-            }}
-            animate={{ rotate: 360 }}
-            transition={{ duration: 3 * speedMultiplier, repeat: Infinity, ease: 'linear' }}
-          >
-            <div className="h-full w-full rounded-full bg-gray-900" />
-          </motion.div>
-        );
-
-      case 'fire':
-        return (
-          <>
-            <div
-              className="absolute inset-0 rounded-full"
-              style={{ border: `${borderWidth}px solid ${colors.primary}` }}
-            />
-            {Array.from({ length: 12 }).map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute"
-                style={{
-                  width: 6,
-                  height: 12,
-                  background: `linear-gradient(to top, ${colors.primary}, ${colors.secondary}, transparent)`,
-                  borderRadius: '50%',
-                  left: '50%',
-                  top: '50%',
-                  transformOrigin: `0 ${avatarSize / 2 + 4}px`,
-                  rotate: `${i * 30}deg`,
-                }}
-                animate={{
-                  scaleY: [0.5, 1.2, 0.5],
-                  opacity: [0.7, 1, 0.7],
-                }}
-                transition={{
-                  duration: 0.4 * speedMultiplier,
-                  repeat: Infinity,
-                  delay: i * 0.05,
-                }}
-              />
-            ))}
-          </>
-        );
-
-      case 'ice':
+      case 'rotate': // Orbit
         return (
           <>
             <motion.div
-              className="absolute inset-0 rounded-full"
+              className="absolute inset-[-4px] rounded-full"
               style={{
-                border: `${borderWidth}px solid ${colors.primary}`,
-                boxShadow: `0 0 20px ${colors.glow}`,
+                background: `conic-gradient(from 0deg, ${colors.primary}, ${colors.secondary}, transparent, ${colors.primary})`,
+                padding: borderWidth,
               }}
-            />
-            {Array.from({ length: 8 }).map((_, i) => (
+              animate={{ rotate: 360 }}
+              transition={{ duration: 3 * speedMultiplier, repeat: Infinity, ease: 'linear' }}
+            >
+              <div className="h-full w-full rounded-full bg-gray-900" />
+            </motion.div>
+            {/* Orbiting dots */}
+            {[0, 1].map((i) => (
               <motion.div
                 key={i}
-                className="absolute h-2 w-2"
+                className="absolute h-1.5 w-1.5 rounded-full shadow-[0_0_8px_currentColor]"
                 style={{
-                  background: colors.secondary,
-                  borderRadius: '2px',
+                  background: i === 0 ? colors.primary : '#fff',
+                  color: colors.glow,
                   left: '50%',
                   top: '50%',
                 }}
                 animate={{
-                  x: [0, Math.cos((i / 8) * Math.PI * 2) * (avatarSize / 2 + 10)],
-                  y: [0, Math.sin((i / 8) * Math.PI * 2) * (avatarSize / 2 + 10)],
-                  scale: [0, 1, 0],
-                  opacity: [0, 1, 0],
-                  rotate: [0, 180],
+                  rotate: 360,
                 }}
                 transition={{
-                  duration: 2 * speedMultiplier,
+                  duration: 3 * speedMultiplier,
                   repeat: Infinity,
-                  delay: i * 0.2,
+                  ease: 'linear',
+                  delay: i * 0.5,
                 }}
-              />
+              >
+                <div
+                  className="absolute h-full w-full rounded-full"
+                  style={{ transform: `translate(${avatarSize / 2 + 4}px, 0)` }}
+                />
+              </motion.div>
             ))}
           </>
         );
 
-      case 'electric':
+      case 'fire': // Inferno
         return (
           <>
+            {/* Base ring */}
             <motion.div
               className="absolute inset-0 rounded-full"
               style={{ border: `${borderWidth}px solid ${colors.primary}` }}
               animate={{
                 boxShadow: [
                   `0 0 10px ${colors.glow}`,
-                  `0 0 30px ${colors.glow}, 0 0 60px ${colors.glow}`,
+                  `0 0 20px ${colors.glow}`,
                   `0 0 10px ${colors.glow}`,
                 ],
               }}
-              transition={{ duration: 0.15 * speedMultiplier, repeat: Infinity, repeatDelay: 0.5 }}
+              transition={{ duration: 1.5 * speedMultiplier, repeat: Infinity }}
             />
+            {/* Rising flames (particles) */}
+            {Array.from({ length: 16 }).map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute bottom-0 w-2 rounded-full blur-[2px]"
+                style={{
+                  background:
+                    i % 3 === 0 ? colors.primary : i % 3 === 1 ? colors.secondary : '#fbbf24', // yellow-400
+                  height: Math.random() * 10 + 10,
+                  left: `${(i / 16) * 100}%`,
+                  transformOrigin: 'bottom center',
+                }}
+                animate={{
+                  y: [0, -20 - Math.random() * 15],
+                  scaleY: [1, 1.5, 0.5],
+                  scaleX: [1, 0.5, 0],
+                  opacity: [0.8, 1, 0],
+                }}
+                transition={{
+                  duration: (0.8 + Math.random() * 0.5) * speedMultiplier,
+                  repeat: Infinity,
+                  delay: Math.random() * 1,
+                  ease: 'easeOut',
+                }}
+              />
+            ))}
+            {/* Inner heat */}
+            <motion.div
+              className="absolute inset-0 rounded-full opacity-30 blur-md"
+              style={{ background: `radial-gradient(circle, ${colors.primary}, transparent 70%)` }}
+              animate={{ scale: [0.9, 1.1, 0.9], opacity: [0.2, 0.4, 0.2] }}
+              transition={{ duration: 2 * speedMultiplier, repeat: Infinity }}
+            />
+          </>
+        );
+
+      case 'ice': // Frost
+        return (
+          <>
+            {/* Icy Glow */}
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              style={{
+                border: `${borderWidth}px solid ${colors.primary}`,
+                boxShadow: `0 0 20px ${colors.glow}`,
+              }}
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 2 * speedMultiplier, repeat: Infinity }}
+            />
+            {/* Rotating Crystal Shards */}
             {Array.from({ length: 6 }).map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute border border-white/40 bg-white/10 backdrop-blur-[1px]"
+                style={{
+                  width: 12, // Shard size
+                  height: 12,
+                  left: '50%',
+                  top: '50%',
+                  clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)', // Diamond shape
+                }}
+                animate={{
+                  rotate: [0, 360],
+                  scale: [0.8, 1.2, 0.8],
+                  x: [
+                    Math.cos((i / 6) * Math.PI * 2) * (avatarSize / 2 + 8),
+                    Math.cos((i / 6) * Math.PI * 2 + Math.PI / 6) * (avatarSize / 2 + 12),
+                    Math.cos((i / 6) * Math.PI * 2) * (avatarSize / 2 + 8),
+                  ],
+                  y: [
+                    Math.sin((i / 6) * Math.PI * 2) * (avatarSize / 2 + 8),
+                    Math.sin((i / 6) * Math.PI * 2 + Math.PI / 6) * (avatarSize / 2 + 12),
+                    Math.sin((i / 6) * Math.PI * 2) * (avatarSize / 2 + 8),
+                  ],
+                }}
+                transition={{
+                  duration: (3 + Math.random()) * speedMultiplier,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  // delay: i * 0.2
+                }}
+              />
+            ))}
+            {/* Sparkles */}
+            {Array.from({ length: 4 }).map((_, i) => (
+              <motion.div
+                key={`sparkle-${i}`}
+                className="absolute rounded-full bg-white blur-[1px]"
+                style={{ width: 3, height: 3, left: '50%', top: '50%' }}
+                animate={{
+                  opacity: [0, 1, 0],
+                  scale: [0, 1.5, 0],
+                  x: Math.cos((i / 4) * Math.PI * 2) * (avatarSize / 2 + 5),
+                  y: Math.sin((i / 4) * Math.PI * 2) * (avatarSize / 2 + 5),
+                }}
+                transition={{
+                  duration: 1.5 * speedMultiplier,
+                  repeat: Infinity,
+                  delay: i * 0.3,
+                }}
+              />
+            ))}
+          </>
+        );
+
+      case 'electric': // Storm
+        return (
+          <>
+            {/* Base pulsating ring */}
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              style={{ border: `${borderWidth}px solid ${colors.primary}` }}
+              animate={{
+                boxShadow: [
+                  `0 0 5px ${colors.glow}`,
+                  `0 0 20px ${colors.glow}, 0 0 40px ${colors.glow}`,
+                  `0 0 5px ${colors.glow}`,
+                ],
+                borderColor: [colors.primary, '#fff', colors.primary],
+              }}
+              transition={{
+                duration: 0.2 * speedMultiplier,
+                repeat: Infinity,
+                repeatDelay: 1 + Math.random(),
+              }}
+            />
+            {/* Lightning Arcs (SVG) */}
+            {Array.from({ length: 4 }).map((_, i) => (
               <motion.svg
                 key={i}
-                className="absolute"
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
+                className="pointer-events-none absolute"
+                width={avatarSize + 40}
+                height={avatarSize + 40}
+                viewBox="0 0 100 100" // Abstract
                 style={{
                   left: '50%',
                   top: '50%',
-                  transform: `rotate(${i * 60}deg) translateY(-${avatarSize / 2 + 8}px)`,
-                }}
-                animate={{
-                  opacity: [0, 1, 0],
-                  scale: [0.5, 1, 0.5],
-                }}
-                transition={{
-                  duration: 0.3 * speedMultiplier,
-                  repeat: Infinity,
-                  repeatDelay: 1 + Math.random(),
-                  delay: i * 0.2,
+                  transform: `translate(-50%, -50%) rotate(${i * 90}deg)`,
                 }}
               >
-                <path
-                  d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z"
-                  fill={colors.primary}
+                <motion.path
+                  d={`M50,10 Q${60 + Math.random() * 20},30 50,50`} // Simple arc towards center
+                  fill="none"
+                  stroke={colors.secondary}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{
+                    pathLength: [0, 1, 1, 1],
+                    opacity: [0, 1, 0.5, 0],
+                    strokeWidth: [2, 4, 1],
+                  }}
+                  transition={{
+                    duration: 0.3 * speedMultiplier,
+                    repeat: Infinity,
+                    repeatDelay: 0.5 + Math.random() * 2,
+                    delay: Math.random(),
+                  }}
+                />
+                <motion.path
+                  d={`M50,10 L${45 + Math.random() * 10},30 L50,50`} // Zigzag bolt
+                  fill="none"
+                  stroke="#fff"
+                  strokeWidth="1"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{
+                    pathLength: [0, 1],
+                    opacity: [0, 1, 0],
+                  }}
+                  transition={{
+                    duration: 0.1 * speedMultiplier,
+                    repeat: Infinity,
+                    repeatDelay: 2 + Math.random() * 3,
+                    delay: Math.random() + 1,
+                  }}
                 />
               </motion.svg>
             ))}
@@ -219,50 +324,57 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
       case 'legendary':
         return (
           <>
-            {/* Inner glow */}
+            {/* Rotating multi-color gradient ring */}
             <motion.div
-              className="absolute inset-0 rounded-full"
+              className="absolute inset-[-6px] rounded-full opacity-70 blur-[2px]"
               style={{
-                background: `radial-gradient(circle, transparent 60%, ${colors.glow} 100%)`,
-              }}
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 2 * speedMultiplier, repeat: Infinity }}
-            />
-            {/* Rotating outer ring */}
-            <motion.div
-              className="absolute inset-[-6px] rounded-full"
-              style={{
-                background: `conic-gradient(from 0deg, ${colors.primary}, ${colors.secondary}, #fff, ${colors.primary})`,
-                padding: borderWidth + 2,
+                background: `conic-gradient(from 0deg, ${colors.primary}, ${colors.secondary}, #fbbf24, ${colors.primary})`,
               }}
               animate={{ rotate: 360 }}
               transition={{ duration: 4 * speedMultiplier, repeat: Infinity, ease: 'linear' }}
-            >
-              <div className="h-full w-full rounded-full bg-gray-900" />
-            </motion.div>
-            {/* Particle ring */}
-            {Array.from({ length: 8 }).map((_, i) => (
+            />
+            <motion.div
+              className="absolute inset-[-4px] rounded-full bg-gray-900" // Mask center
+            />
+
+            {/* Pulsing Aura */}
+            <motion.div
+              className="absolute inset-[-2px] rounded-full border border-white/20"
+              style={{
+                boxShadow: `0 0 20px ${colors.glow}, inset 0 0 10px ${colors.glow}`,
+              }}
+              animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.05, 1] }}
+              transition={{ duration: 2 * speedMultiplier, repeat: Infinity }}
+            />
+
+            {/* Orbiting Runes/Particles */}
+            {Array.from({ length: 3 }).map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute h-1.5 w-1.5 rounded-full"
-                style={{
-                  background: i % 2 === 0 ? colors.primary : colors.secondary,
-                  left: '50%',
-                  top: '50%',
-                  boxShadow: `0 0 6px ${colors.glow}`,
-                }}
-                animate={{
-                  x: Math.cos((i / 8) * Math.PI * 2) * (avatarSize / 2 + 12),
-                  y: Math.sin((i / 8) * Math.PI * 2) * (avatarSize / 2 + 12),
-                  scale: [1, 1.5, 1],
-                  opacity: [0.6, 1, 0.6],
-                }}
+                className="absolute h-full w-full"
+                style={{ top: 0, left: 0 }}
+                animate={{ rotate: 360 }}
                 transition={{
-                  duration: 1 * speedMultiplier,
+                  duration: (6 + i * 2) * speedMultiplier,
                   repeat: Infinity,
-                  delay: i * 0.1,
+                  ease: 'linear',
+                  delay: i,
                 }}
-              />
+              >
+                <motion.div
+                  className="absolute rounded-full bg-white shadow-[0_0_10px_currentColor]"
+                  style={{
+                    width: 4,
+                    height: 4,
+                    top: 0,
+                    left: '50%',
+                    color: colors.secondary,
+                    transform: 'translate(-50%, -10px)', // Orbit radius
+                  }}
+                  animate={{ scale: [1, 1.5, 1] }}
+                  transition={{ duration: 1, repeat: Infinity }}
+                />
+              </motion.div>
             ))}
           </>
         );
@@ -270,73 +382,58 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
       case 'mythic':
         return (
           <>
-            {/* Void background */}
+            {/* Reality distortion (Void) */}
             <motion.div
-              className="absolute inset-[-8px] rounded-full"
+              className="absolute inset-[-10px] rounded-full opacity-50 blur-md"
               style={{
-                background: `radial-gradient(circle, ${colors.glow}, transparent 70%)`,
+                background: `radial-gradient(circle, ${colors.glow}, transparent 60%)`,
               }}
               animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.6, 0.3],
+                scale: [1, 1.3, 0.9, 1.1, 1],
+                opacity: [0.3, 0.6, 0.2, 0.5, 0.3],
               }}
-              transition={{ duration: 3 * speedMultiplier, repeat: Infinity }}
+              transition={{
+                duration: 4 * speedMultiplier,
+                repeat: Infinity,
+                times: [0, 0.2, 0.5, 0.8, 1],
+              }}
             />
-            {/* Multi-layer rotating rings */}
-            <motion.div
-              className="absolute inset-[-6px] rounded-full opacity-60"
-              style={{
-                background: `conic-gradient(from 0deg, ${colors.primary}, transparent, ${colors.secondary}, transparent, ${colors.primary})`,
-                padding: borderWidth,
-              }}
-              animate={{ rotate: 360 }}
-              transition={{ duration: 6 * speedMultiplier, repeat: Infinity, ease: 'linear' }}
-            >
-              <div className="h-full w-full rounded-full bg-gray-900" />
-            </motion.div>
-            <motion.div
-              className="absolute inset-[-4px] rounded-full"
-              style={{
-                background: `conic-gradient(from 180deg, ${colors.secondary}, transparent, ${colors.primary}, transparent, ${colors.secondary})`,
-                padding: borderWidth,
-              }}
-              animate={{ rotate: -360 }}
-              transition={{ duration: 4 * speedMultiplier, repeat: Infinity, ease: 'linear' }}
-            >
-              <div className="h-full w-full rounded-full bg-gray-900" />
-            </motion.div>
-            {/* Orbiting particles */}
-            {Array.from({ length: 12 }).map((_, i) => (
+
+            {/* Glitch Rings */}
+            {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
-                className="absolute h-1 w-1 rounded-full"
+                className="absolute inset-[-4px] rounded-full border border-white/30"
                 style={{
-                  background:
-                    i % 3 === 0 ? '#fff' : i % 3 === 1 ? colors.primary : colors.secondary,
-                  left: '50%',
-                  top: '50%',
-                  boxShadow: `0 0 8px ${colors.glow}`,
+                  borderColor: i === 0 ? colors.primary : i === 1 ? colors.secondary : '#fff',
                 }}
                 animate={{
-                  x: [
-                    Math.cos((i / 12) * Math.PI * 2) * (avatarSize / 2 + 15),
-                    Math.cos(((i + 6) / 12) * Math.PI * 2) * (avatarSize / 2 + 15),
-                    Math.cos((i / 12) * Math.PI * 2) * (avatarSize / 2 + 15),
-                  ],
-                  y: [
-                    Math.sin((i / 12) * Math.PI * 2) * (avatarSize / 2 + 15),
-                    Math.sin(((i + 6) / 12) * Math.PI * 2) * (avatarSize / 2 + 15),
-                    Math.sin((i / 12) * Math.PI * 2) * (avatarSize / 2 + 15),
-                  ],
-                  scale: [0.8, 1.2, 0.8],
+                  rotate: [0, i % 2 === 0 ? 360 : -360],
+                  scale: [1, 1.05 + i * 0.02, 1],
+                  x: [0, (Math.random() - 0.5) * 4, 0], // Jitter
+                  y: [0, (Math.random() - 0.5) * 4, 0],
                 }}
                 transition={{
-                  duration: 4 * speedMultiplier,
-                  repeat: Infinity,
-                  delay: i * 0.1,
+                  rotate: { duration: (5 + i) * speedMultiplier, repeat: Infinity, ease: 'linear' },
+                  scale: { duration: 2 * speedMultiplier, repeat: Infinity },
+                  x: {
+                    duration: 0.2,
+                    repeat: Infinity,
+                    repeatType: 'mirror',
+                    repeatDelay: Math.random() * 2,
+                  },
+                  y: {
+                    duration: 0.2,
+                    repeat: Infinity,
+                    repeatType: 'mirror',
+                    repeatDelay: Math.random() * 2,
+                  },
                 }}
               />
             ))}
+
+            {/* Dark Core Shadow */}
+            <div className="absolute inset-0 rounded-full shadow-[inset_0_0_20px_#000]" />
           </>
         );
 
@@ -352,7 +449,7 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
     >
       {/* Border effects layer */}
       <div
-        className="absolute"
+        className="pointer-events-none absolute"
         style={{
           width: avatarSize,
           height: avatarSize,
@@ -366,10 +463,11 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
 
       {/* Avatar image */}
       <div
-        className="relative z-10 flex items-center justify-center rounded-full bg-gradient-to-br from-gray-700 to-gray-800"
-        style={{ width: avatarSize - 4, height: avatarSize - 4 }}
+        className="relative z-10 flex items-center justify-center rounded-full border border-white/5 bg-gradient-to-br from-gray-700 to-gray-800"
+        style={{ width: avatarSize - 4, height: avatarSize - 4, overflow: 'hidden' }}
       >
-        <span className="text-xl font-bold text-white">CG</span>
+        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50" />
+        <span className="relative z-10 text-xl font-bold text-white">CG</span>
       </div>
     </div>
   );

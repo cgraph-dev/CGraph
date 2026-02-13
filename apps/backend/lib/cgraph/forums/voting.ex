@@ -7,7 +7,7 @@ defmodule CGraph.Forums.Voting do
   
   import Ecto.Query, warn: false
   alias CGraph.Repo
-  alias CGraph.Forums.{Post, PostVote, Comment, Vote, Thread, ThreadVote, Forum, ForumVote}
+  alias CGraph.Forums.{Post, PostVote, Vote, ForumVote}
   
   @doc """
   Votes on a post (upvote or downvote).

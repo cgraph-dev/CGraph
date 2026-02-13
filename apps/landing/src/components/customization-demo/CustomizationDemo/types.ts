@@ -54,7 +54,6 @@ export interface DemoState {
   // Avatar customization
   avatarBorder: AvatarBorderType;
   avatarBorderColor: ThemePreset;
-  avatarSize: 'small' | 'medium' | 'large';
   selectedBorderTheme?: 'free' | 'starter' | 'pro' | 'legendary' | 'mythic';
   selectedBorderId?: string;
   selectedProfileThemeId?: string;
@@ -94,7 +93,6 @@ export interface AvatarBorderConfig {
 export interface AnimatedAvatarProps {
   borderType: AvatarBorderType;
   borderColor: ThemePreset;
-  size: 'small' | 'medium' | 'large';
   speedMultiplier: number;
 }
 

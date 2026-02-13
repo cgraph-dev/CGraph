@@ -7,7 +7,7 @@ defmodule CGraph.Forums.Moderation do
   
   import Ecto.Query, warn: false
   alias CGraph.Repo
-  alias CGraph.Forums.{Post, Thread, Ban, ForumMember, Moderator, Comment}
+  alias CGraph.Forums.{Post, Ban, Moderator}
   
   @doc """
   Gets the moderation queue for a forum.

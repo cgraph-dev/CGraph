@@ -101,7 +101,6 @@ export const AvatarPreview = memo(function AvatarPreview({ state }: AvatarPrevie
         <AnimatedAvatar
           borderType={avatarBorderType}
           borderColor={state.avatarBorderColor}
-          size={state.avatarSize}
           speedMultiplier={speedMultiplier}
         />
 

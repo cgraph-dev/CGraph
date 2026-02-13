@@ -8,8 +8,7 @@ defmodule CGraph.Forums.Posts do
   import Ecto.Query, warn: false
   
   alias CGraph.Repo
-  alias CGraph.Forums.{Post, PostVote, Comment}
-  alias CGraph.Accounts
+  alias CGraph.Forums.{Post, PostVote}
   
   @doc """
   Lists posts for a forum with pagination and sorting.

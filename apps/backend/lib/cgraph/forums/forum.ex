@@ -224,9 +224,7 @@ defmodule CGraph.Forums.Forum do
     |> foreign_key_constraint(:parent_forum_id)
   end
 
-  @doc """
-  Validate that forum is not set as its own parent.
-  """
+  # Validate that forum is not set as its own parent.
   defp validate_not_self_parent(changeset) do
     case {get_field(changeset, :id), get_change(changeset, :parent_forum_id)} do
       {id, parent_id} when id == parent_id and not is_nil(id) ->
@@ -236,9 +234,7 @@ defmodule CGraph.Forums.Forum do
     end
   end
 
-  @doc """
-  Validate redirect URL is present for link-type forums.
-  """
+  # Validate redirect URL is present for link-type forums.
   defp validate_redirect_url(changeset) do
     case get_field(changeset, :forum_type) do
       "link" ->

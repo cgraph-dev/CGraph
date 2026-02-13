@@ -150,7 +150,7 @@ defmodule CGraph.Forums.GroupAutoRule do
     end
   end
 
-  defp check_subscription_criteria(criteria, member) do
+  defp check_subscription_criteria(criteria, _member) do
     # This would need integration with subscription system
     # Placeholder - always true for now
     case Map.get(criteria, "subscription_tier") do

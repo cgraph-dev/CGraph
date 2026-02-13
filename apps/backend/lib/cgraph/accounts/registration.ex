@@ -9,7 +9,6 @@ defmodule CGraph.Accounts.Registration do
   alias CGraph.Repo
   alias CGraph.Accounts.{User, Token}
   alias CGraph.Accounts.Users
-  alias CGraph.Accounts.Authentication
   
   @verification_token_hours 24
   

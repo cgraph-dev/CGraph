@@ -7,7 +7,6 @@ defmodule CGraph.Gamification.Marketplace do
   import Ecto.Query, warn: false
   alias CGraph.Repo
   alias CGraph.Gamification.MarketplaceItem
-  alias CGraph.Accounts.User
 
   # Listings
   def list_listings(opts \\ []) do
@@ -128,7 +127,7 @@ defmodule CGraph.Gamification.Marketplace do
   def get_user_marketplace_profile(user_id) do
     {:ok, %{listings_count: 1, sales_count: 1, purchases_count: 1, total_volume: 0, rating: 5.0, is_banned: false, user_id: user_id}}
   end
-  def cancel_user_listings(user_id, _opts), do: {:ok, 1}
+  def cancel_user_listings(_user_id, _opts), do: {:ok, 1}
   def cancel_item_listings(_type, _id, _opts), do: {:ok, 1}
   def get_live_metrics, do: %{active_listings: 10, pending_listings: 0, daily_volume: 0, active_users: 5}
   def get_price_trends(_item_type, _opts), do: [0]

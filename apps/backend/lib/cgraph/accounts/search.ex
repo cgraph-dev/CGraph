@@ -8,7 +8,6 @@ defmodule CGraph.Accounts.Search do
   import Ecto.Query, warn: false
 
   alias CGraph.Accounts.User
-  alias CGraph.Repo
   alias CGraph.ReadRepo
 
   @doc """

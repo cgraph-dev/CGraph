@@ -10,7 +10,6 @@ defmodule CGraph.Accounts do
   alias CGraph.Accounts.{Friendship, Session, User, UserSettings, WalletChallenge}
   alias CGraph.Repo
   alias CGraph.Security.PasswordBreachCheck
-  alias CGraph.Workers.{Orchestrator, SendEmailNotification}
 
   # ============================================================================
   # Submodule Delegations (Phase 6 Architecture Refactor)
