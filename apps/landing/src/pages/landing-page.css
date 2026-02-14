@@ -2963,7 +2963,6 @@ html.site-ready {
 
 .about__visual {
   position: relative;
-  aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4971,7 +4970,7 @@ html.site-ready {
   
   .about__visual {
     width: 100%;
-    max-width: 300px;
+    max-width: 100%;
     margin: 0 auto;
   }
   
@@ -6462,9 +6461,8 @@ html.site-ready {
   flex-direction: column-reverse;
   gap: 0;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(255, 255, 255, 0.02);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .value-comparison__header {
@@ -6474,6 +6472,7 @@ html.site-ready {
   padding: 0.75rem 1.25rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   background: rgba(255, 255, 255, 0.02);
+  border-radius: 0 0 12px 12px; /* bottom corners — column-reverse puts header last visually */
 }
 
 .value-comparison__label {
