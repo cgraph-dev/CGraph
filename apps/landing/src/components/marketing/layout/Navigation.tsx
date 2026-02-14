@@ -89,6 +89,7 @@ export default function Navigation({
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cta, setCta] = useState({ x: 0, y: 0 });
   const location = useLocation();
   const lastScrollY = useRef(0);
 
@@ -160,7 +161,27 @@ export default function Navigation({
         </div>
 
         {/* CTA Button */}
-        <a href="https://web.cgraph.org/register" className="gl-nav-unified__cta">
+        <motion.a
+          href="https://web.cgraph.org/register"
+          className="gl-nav-unified__cta group"
+          onMouseMove={(e: React.MouseEvent) => {
+            const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+            setCta({
+              x: (e.clientX - (left + width / 2)) * 0.15,
+              y: (e.clientY - (top + height / 2)) * 0.15,
+            });
+          }}
+          onMouseLeave={() => setCta({ x: 0, y: 0 })}
+          animate={{ x: cta.x, y: cta.y }}
+          transition={SPRING_CONFIG}
+        >
+          {/* Animated gradient border ring */}
+          <span className="gl-nav-unified__cta-ring" />
+          {/* Diagonal light sweep */}
+          <span className="gl-nav-unified__cta-sweep" />
+          {/* Inner glow on hover */}
+          <span className="gl-nav-unified__cta-glow" />
+          {/* Content */}
           <span className="gl-nav-unified__cta-text">Get Started</span>
           <svg
             className="gl-nav-unified__cta-arrow"
@@ -175,7 +196,9 @@ export default function Navigation({
               d="M13 7l5 5m0 0l-5 5m5-5H6"
             />
           </svg>
-        </a>
+          {/* Bottom shimmer line */}
+          <span className="gl-nav-unified__cta-shimmer" />
+        </motion.a>
 
         {/* Mobile menu button */}
         <button
