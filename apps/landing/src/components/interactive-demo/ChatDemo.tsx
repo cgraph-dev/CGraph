@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatedAvatar } from '../customization-demo/CustomizationDemo/AnimatedAvatar';
 import type { Message, DemoUserProfile } from './types';
 import { DEMO_MESSAGES, DEMO_USER_PROFILES } from './constants';
 
@@ -28,11 +29,17 @@ function DemoProfilePopup({
 
       {/* Avatar with border */}
       <div className="demo-profile-popup__avatar-wrap">
-        <div
-          className={`demo-profile-popup__avatar-ring demo-profile-popup__avatar-ring--${profile.borderType}`}
-          style={{ background: profile.borderStyle }}
-        >
-          <div className="demo-profile-popup__avatar-inner">{avatar}</div>
+        <div className="relative flex h-12 w-12 items-center justify-center">
+          <div className="absolute inset-0 flex scale-75 transform items-center justify-center">
+            <AnimatedAvatar
+              borderType={profile.borderType}
+              borderColor={profile.borderColor || 'emerald'}
+              speedMultiplier={1}
+            />
+          </div>
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="demo-profile-popup__avatar-inner">{avatar}</div>
+          </div>
         </div>
         <span className="demo-profile-popup__online" />
       </div>
@@ -42,7 +49,10 @@ function DemoProfilePopup({
         <span className="demo-profile-popup__name" style={{ color: profile.nameColor }}>
           {author}
         </span>
-        <span className="demo-profile-popup__title" style={{ backgroundImage: profile.titleColor }}>
+        <span
+          className={`demo-profile-popup__title ${profile.titleAnimation ? `demo-message__title-badge--${profile.titleAnimation}` : ''}`}
+          style={{ backgroundImage: profile.titleColor }}
+        >
           {profile.title}
         </span>
       </div>
@@ -133,11 +143,17 @@ function HoverableAvatar({
       onMouseLeave={handleMouseLeave}
     >
       {profile ? (
-        <div
-          className={`demo-message__avatar-ring demo-message__avatar-ring--${profile.borderType}`}
-          style={{ background: profile.borderStyle }}
-        >
-          <div className="demo-message__avatar-inner">{avatar}</div>
+        <div className="relative flex h-[48px] w-[48px] items-center justify-center">
+          <div className="absolute inset-0 flex scale-75 transform items-center justify-center">
+            <AnimatedAvatar
+              borderType={profile.borderType}
+              borderColor={profile.borderColor || 'emerald'}
+              speedMultiplier={1}
+            />
+          </div>
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="demo-message__avatar-inner scale-90 transform">{avatar}</div>
+          </div>
         </div>
       ) : (
         <div className="demo-message__avatar">{avatar}</div>
@@ -249,7 +265,7 @@ export const ChatDemo = memo(function ChatDemo() {
                     </span>
                     {msg.profile && (
                       <span
-                        className="demo-message__title-badge"
+                        className={`demo-message__title-badge ${msg.profile.titleAnimation ? `demo-message__title-badge--${msg.profile.titleAnimation}` : ''}`}
                         style={{ backgroundImage: msg.profile.titleColor }}
                       >
                         {msg.profile.title}

@@ -129,7 +129,7 @@ export const ChatPreview = memo(function ChatPreview({ state }: ChatPreviewProps
     };
   }, [state, bubbleColors]);
 
-  const getBubbleAnimation = (isOwn: boolean, index: number) => {
+  const getBubbleAnimation = (_isOwn: boolean, index: number) => {
     const delay = index * 0.05;
     const anim = state.bubbleEntranceAnimation || 'slide';
 

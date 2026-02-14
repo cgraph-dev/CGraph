@@ -8,7 +8,18 @@ export interface DemoUserProfile {
   title: string;
   titleColor: string;
   borderStyle: string;
-  borderType: 'legendary' | 'electric' | 'fire';
+  borderType: 'legendary' | 'electric' | 'fire' | 'ice' | 'none' | 'static';
+  borderColor?: 'emerald' | 'purple' | 'cyan' | 'orange' | 'pink' | 'gold' | 'crimson' | 'arctic';
+  titleAnimation?:
+    | 'shimmer'
+    | 'pulse'
+    | 'glow'
+    | 'fire'
+    | 'electric'
+    | 'rainbow'
+    | 'sparkle'
+    | 'wave'
+    | 'none';
   bubbleAccent: string;
   bubbleBorder: string;
   nameColor: string;

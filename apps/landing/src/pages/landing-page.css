@@ -5746,6 +5746,16 @@ html.site-ready {
   80% { text-shadow: 0 -2px 8px currentColor; filter: brightness(1.1); }
 }
 
+/* Reusing animations for chat message badges */
+.demo-message__title-badge--shimmer { animation: title-shimmer 2.5s ease-in-out infinite; }
+.demo-message__title-badge--pulse { animation: title-pulse 2s ease-in-out infinite; }
+.demo-message__title-badge--glow { animation: title-glow 2.5s ease-in-out infinite; }
+.demo-message__title-badge--fire { animation: title-fire 1.5s ease-in-out infinite; }
+.demo-message__title-badge--electric { animation: title-electric 1.8s ease-in-out infinite; }
+.demo-message__title-badge--rainbow { animation: title-rainbow 3s linear infinite; }
+.demo-message__title-badge--sparkle { animation: title-sparkle 2s ease-in-out infinite; }
+.demo-message__title-badge--wave { animation: title-pulse 2.5s ease-in-out infinite; }
+
 /* Rarity filter pills */
 .demo-titles__filters {
   display: flex;

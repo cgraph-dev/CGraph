@@ -94,6 +94,7 @@ export interface AnimatedAvatarProps {
   borderType: AvatarBorderType;
   borderColor: ThemePreset;
   speedMultiplier: number;
+  size?: string;
 }
 
 export interface ProfileThemeShowcaseProps {
