@@ -5,6 +5,7 @@
 
 import { motion } from 'framer-motion';
 import { features } from './constants';
+import { LandingButton } from '../marketing/ui/LandingButton';
 
 const WEB_APP_URL = 'https://web.cgraph.org';
 
@@ -46,20 +47,22 @@ export function FeaturesSidebar() {
       >
         <h4 className="mb-2 font-semibold text-white">Ready to build your community?</h4>
         <p className="mb-4 text-sm text-gray-400">Create your first forum in minutes</p>
-        <a
+        <LandingButton
+          variant="primary"
           href={`${WEB_APP_URL}/register`}
-          className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-6 py-2.5 font-medium text-white transition-colors hover:bg-emerald-600"
+          icon={
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
+            </svg>
+          }
         >
           Get Started Free
-          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M17 8l4 4m0 0l-4 4m4-4H3"
-            />
-          </svg>
-        </a>
+        </LandingButton>
       </motion.div>
     </motion.div>
   );

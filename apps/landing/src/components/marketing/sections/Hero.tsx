@@ -15,6 +15,7 @@
 import { memo, useState, useEffect, useRef } from 'react';
 import { motion, useReducedMotion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { GradientText } from '../ui/GradientText';
+import { LandingButton } from '../ui/LandingButton';
 import { NeuralBackground } from '../effects/NeuralBackground';
 import './Hero.css';
 
@@ -146,26 +147,31 @@ const Hero = memo(function Hero(): React.JSX.Element {
 
         {/* CTA Buttons */}
         <motion.div variants={itemVariants} className="hero-pro__actions">
-          <a href={`${WEB_APP_URL}/register`} className="hero-pro__btn hero-pro__btn--primary">
+          <LandingButton
+            variant="primary"
+            href={`${WEB_APP_URL}/register`}
+            icon={
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            }
+          >
             Get Started Free
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M5 12h14" />
-              <path d="m12 5 7 7-7 7" />
-            </svg>
-          </a>
-          <a href="#features" className="hero-pro__btn hero-pro__btn--secondary">
+          </LandingButton>
+          <LandingButton variant="secondary" href="#features">
             Explore Features
-          </a>
+          </LandingButton>
         </motion.div>
 
         {/* Trust badges */}
