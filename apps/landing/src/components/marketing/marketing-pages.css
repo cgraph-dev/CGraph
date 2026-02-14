@@ -1075,8 +1075,24 @@
   letter-spacing: 0.08em;
   padding: 0.5rem 1rem;
   border-radius: 50px;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease, box-shadow 0.3s ease;
   position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Inner wrapper for Link-based nav items (removes default link styling) */
+.gl-nav-unified__link-inner {
+  color: inherit;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+/* Text sits above shimmer/border layers */
+.gl-nav-unified__link-text {
+  position: relative;
+  z-index: 2;
 }
 
 .gl-nav-unified__link::before {
@@ -1089,11 +1105,60 @@
   transition: opacity 0.3s ease;
 }
 
+/* Bottom-edge shimmer — scales in from center on hover */
+.gl-nav-unified__link-shimmer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, #10b981, transparent);
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Animated gradient border ring — hidden at rest, fades in on hover */
+.gl-nav-unified__link-border {
+  position: absolute;
+  inset: 0;
+  border-radius: 50px;
+  padding: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(16, 185, 129, 0.5) 25%,
+    rgba(139, 92, 246, 0.5) 50%,
+    rgba(16, 185, 129, 0.5) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  animation: nav-border-flow 4s linear infinite;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .gl-nav-unified__link:hover {
   color: #ffffff;
+  box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.35);
 }
 
 .gl-nav-unified__link:hover::before {
+  opacity: 1;
+}
+
+.gl-nav-unified__link:hover .gl-nav-unified__link-shimmer {
+  transform: scaleX(1);
+}
+
+.gl-nav-unified__link:hover .gl-nav-unified__link-border {
   opacity: 1;
 }
 

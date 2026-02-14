@@ -9,11 +9,69 @@
  * @updated v0.9.5 - Unified with landing page style
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogoIcon } from '@/components/Logo';
 import '../marketing-pages.css';
+
+/* ── Magnetic nav link ─────────────────────────────────────────────── */
+const MAGNETIC_STRENGTH = 0.18;
+const SPRING_CONFIG = { type: 'spring' as const, stiffness: 180, damping: 18, mass: 0.1 };
+
+function NavLink({
+  href,
+  to,
+  children,
+}: {
+  href?: string;
+  to?: string;
+  children: React.ReactNode;
+}) {
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+
+  const onMove = useCallback((e: React.MouseEvent) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    setPos({
+      x: (e.clientX - (left + width / 2)) * MAGNETIC_STRENGTH,
+      y: (e.clientY - (top + height / 2)) * MAGNETIC_STRENGTH,
+    });
+  }, []);
+
+  const onLeave = useCallback(() => setPos({ x: 0, y: 0 }), []);
+
+  const shared = {
+    className: 'gl-nav-unified__link group',
+    onMouseMove: onMove,
+    onMouseLeave: onLeave,
+    animate: { x: pos.x, y: pos.y },
+    transition: SPRING_CONFIG,
+  };
+
+  const inner = (
+    <>
+      <span className="gl-nav-unified__link-text">{children}</span>
+      <span className="gl-nav-unified__link-shimmer" />
+      <span className="gl-nav-unified__link-border" />
+    </>
+  );
+
+  if (to) {
+    return (
+      <motion.span {...shared} style={{ display: 'inline-flex' }}>
+        <Link to={to} className="gl-nav-unified__link-inner">
+          {inner}
+        </Link>
+      </motion.span>
+    );
+  }
+
+  return (
+    <motion.a href={href} {...shared}>
+      {inner}
+    </motion.a>
+  );
+}
 
 interface NavigationProps {
   /** Whether to show landing page anchor links (Features, Security, Pricing) */
@@ -89,24 +147,14 @@ export default function Navigation({
         <div className="gl-nav-unified__links">
           {showLandingLinks ? (
             <>
-              <a href="#features" className="gl-nav-unified__link">
-                Features
-              </a>
-              <a href="#security" className="gl-nav-unified__link">
-                Security
-              </a>
-              <Link to="/about" className="gl-nav-unified__link">
-                About
-              </Link>
+              <NavLink href="#features">Features</NavLink>
+              <NavLink href="#security">Security</NavLink>
+              <NavLink to="/about">About</NavLink>
             </>
           ) : (
             <>
-              <Link to="/" className="gl-nav-unified__link">
-                Home
-              </Link>
-              <Link to="/about" className="gl-nav-unified__link">
-                About
-              </Link>
+              <NavLink to="/">Home</NavLink>
+              <NavLink to="/about">About</NavLink>
             </>
           )}
         </div>
