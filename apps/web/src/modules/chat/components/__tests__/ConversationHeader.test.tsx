@@ -46,20 +46,38 @@ vi.mock('@/lib/utils', () => ({
 const defaultProps = {
   conversationName: 'Test Chat',
   otherParticipant: {
-    id: 'user-1',
-    username: 'testuser',
-    avatar_url: null,
-    status: 'online',
+    id: 'participant-1',
+    userId: 'user-1',
+    user: {
+      id: 'user-1',
+      username: 'testuser',
+      displayName: 'Test User',
+      avatarUrl: null,
+      status: 'online',
+    },
+    nickname: null,
+    isMuted: false,
+    mutedUntil: null,
+    joinedAt: new Date().toISOString(),
   },
-  isGroup: false,
-  participantCount: 2,
-  onBack: vi.fn(),
-  onShowInfo: vi.fn(),
-  onCall: vi.fn(),
-  onVideoCall: vi.fn(),
-  isE2EE: false,
-  e2eeVerified: false,
-  onShowSearch: vi.fn(),
+  isOtherUserOnline: true,
+  typing: [] as string[],
+  uiPreferences: {
+    glassEffect: 'default' as const,
+    enableGlow: false,
+    enableHaptic: false,
+  },
+  onStartVoiceCall: vi.fn(),
+  onStartVideoCall: vi.fn(),
+  onToggleSearch: vi.fn(),
+  onToggleScheduledList: vi.fn(),
+  onToggleInfoPanel: vi.fn(),
+  onToggleSettings: vi.fn(),
+  onToggleE2EETester: vi.fn(),
+  showScheduledList: false,
+  showInfoPanel: false,
+  showSettings: false,
+  formatLastSeen: (_lastSeenAt: string | null | undefined) => 'recently',
 };
 
 describe('ConversationHeader', () => {
@@ -72,21 +90,13 @@ describe('ConversationHeader', () => {
     expect(screen.getByText('Test Chat')).toBeTruthy();
   });
 
-  it('shows E2EE indicator when encrypted', () => {
-    render(<ConversationHeader {...defaultProps} isE2EE={true} />);
-    // Should show lock or shield icon
+  it('renders with all required props', () => {
+    render(<ConversationHeader {...defaultProps} />);
     expect(document.body).toBeTruthy();
   });
 
-  it('renders group header with participant count', () => {
-    render(
-      <ConversationHeader
-        {...defaultProps}
-        isGroup={true}
-        participantCount={5}
-        conversationName="Group Chat"
-      />
-    );
+  it('renders with different conversation name', () => {
+    render(<ConversationHeader {...defaultProps} conversationName="Group Chat" />);
     expect(screen.getByText('Group Chat')).toBeTruthy();
   });
 });

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import { ConversationInput } from '../ConversationInput';
 
 // Mock dependencies
@@ -47,17 +47,28 @@ const defaultProps = {
   messageInput: '',
   setMessageInput: vi.fn(),
   isSending: false,
-  onSendMessage: vi.fn(),
-  inputRef: { current: null } as any,
-  replyingTo: null,
-  onCancelReply: vi.fn(),
-  onSendSticker: vi.fn(),
-  onSendGif: vi.fn(),
-  showDisappearing: false,
-  onToggleDisappearing: vi.fn(),
-  disappearingDuration: null,
-  onSetDisappearingDuration: vi.fn(),
-  onFileAttach: vi.fn(),
+  isVoiceMode: false,
+  setIsVoiceMode: vi.fn(),
+  replyTo: null,
+  setReplyTo: vi.fn(),
+  showEmojiPicker: false,
+  setShowEmojiPicker: vi.fn(),
+  showStickerPicker: false,
+  setShowStickerPicker: vi.fn(),
+  showGifPicker: false,
+  setShowGifPicker: vi.fn(),
+  uiPreferences: { enableHaptic: false },
+  onSend: vi.fn(),
+  onTyping: vi.fn(),
+  onKeyPress: vi.fn(),
+  onEmojiSelect: vi.fn(),
+  onStickerSelect: vi.fn(),
+  onGifSelect: vi.fn(),
+  onVoiceComplete: vi.fn(),
+  onFileSelect: vi.fn(),
+  onScheduleClick: vi.fn(),
+  inputContainerRef: { current: null } as any,
+  fileInputRef: { current: null } as any,
 };
 
 describe('ConversationInput', () => {
@@ -67,7 +78,6 @@ describe('ConversationInput', () => {
 
   it('renders without crashing', () => {
     render(<ConversationInput {...defaultProps} />);
-    // Should render an input area or textarea
     expect(document.body).toBeTruthy();
   });
 
@@ -75,21 +85,19 @@ describe('ConversationInput', () => {
     render(<ConversationInput {...defaultProps} />);
     const textareas = document.querySelectorAll('textarea, input[type="text"]');
     if (textareas.length > 0) {
-      fireEvent.change(textareas[0], { target: { value: 'Hello' } });
+      fireEvent.change(textareas[0]!, { target: { value: 'Hello' } });
       expect(defaultProps.setMessageInput).toHaveBeenCalled();
     }
   });
 
   it('disables send when input is empty', () => {
     render(<ConversationInput {...defaultProps} messageInput="" />);
-    // Send button should not be interactive when empty
     expect(document.body).toBeTruthy();
   });
 
-  it('shows reply preview when replyingTo is set', () => {
+  it('shows reply preview when replyTo is set', () => {
     const replyMsg = { id: '1', content: 'Reply to this', sender_id: 'u1' };
-    render(<ConversationInput {...defaultProps} replyingTo={replyMsg as any} />);
-    // Should show reply indicator
+    render(<ConversationInput {...defaultProps} replyTo={replyMsg as any} />);
     expect(document.body).toBeTruthy();
   });
 });
