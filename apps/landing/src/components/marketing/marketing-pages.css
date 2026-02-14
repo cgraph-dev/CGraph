@@ -1406,20 +1406,106 @@
 }
 
 .gl-nav-unified__mobile-cta {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   padding: 0.875rem 1rem;
-  background: linear-gradient(90deg, #10b981, #8b5cf6);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(16, 185, 129, 0.25);
   border-radius: 12px;
   color: #ffffff;
   font-weight: 600;
   text-align: center;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 18px -4px rgba(16, 185, 129, 0.25);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
 
-.gl-nav-unified__mobile-cta:hover {
-  transform: scale(1.02);
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+.gl-nav-unified__mobile-cta:active {
+  transform: scale(0.97);
+}
+
+/* Mobile CTA — animated gradient border ring */
+.gl-nav-unified__mobile-cta-ring {
+  position: absolute;
+  inset: -1px;
+  border-radius: 12px;
+  padding: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(16, 185, 129, 0.6) 25%,
+    rgba(139, 92, 246, 0.6) 50%,
+    rgba(16, 185, 129, 0.6) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.55;
+  animation: nav-border-flow 4s linear infinite;
+  pointer-events: none;
+}
+
+/* Mobile CTA — diagonal light sweep */
+.gl-nav-unified__mobile-cta-sweep {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.06) 40%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.06) 60%,
+    transparent 80%
+  );
+  background-size: 250% 100%;
+  animation: cta-sweep 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Mobile CTA — inner glow (visible at rest for tap affordance) */
+.gl-nav-unified__mobile-cta-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+  opacity: 1;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Mobile CTA — bottom shimmer (visible at rest) */
+.gl-nav-unified__mobile-cta-shimmer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #10b981 40%, #8b5cf6 60%, transparent);
+  transform: scaleX(0.6);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.gl-nav-unified__mobile-cta-text {
+  position: relative;
+  z-index: 2;
+}
+
+.gl-nav-unified__mobile-cta-arrow {
+  width: 16px;
+  height: 16px;
+  position: relative;
+  z-index: 2;
 }
 
 /* ==========================================================================

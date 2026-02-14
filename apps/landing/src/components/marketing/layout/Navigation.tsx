@@ -273,7 +273,24 @@ export default function Navigation({
                 Sign In
               </a>
               <a href="https://web.cgraph.org/register" className="gl-nav-unified__mobile-cta">
-                Get Started
+                <span className="gl-nav-unified__mobile-cta-ring" />
+                <span className="gl-nav-unified__mobile-cta-sweep" />
+                <span className="gl-nav-unified__mobile-cta-glow" />
+                <span className="gl-nav-unified__mobile-cta-text">Get Started</span>
+                <svg
+                  className="gl-nav-unified__mobile-cta-arrow"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
+                <span className="gl-nav-unified__mobile-cta-shimmer" />
               </a>
             </div>
           </motion.div>
