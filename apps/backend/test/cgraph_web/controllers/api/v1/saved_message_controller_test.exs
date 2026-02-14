@@ -1,6 +1,6 @@
 defmodule CGraphWeb.API.V1.SavedMessageControllerTest do
   @moduledoc """
-  Tests for saved/bookmarked messages (Telegram-style bookmarks).
+  Tests for saved/bookmarked messages (Bookmarks).
   """
   use CGraphWeb.ConnCase, async: true
 

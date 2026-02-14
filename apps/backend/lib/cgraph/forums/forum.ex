@@ -1,6 +1,6 @@
 defmodule CGraph.Forums.Forum do
   @moduledoc """
-  Forum schema - combines Reddit-style discovery with MyBB-style full forum hosting.
+  Forum schema - combines  discovery with MyBB-style full forum hosting.
 
   Each forum is a complete hosted forum with:
   - Custom theming with CSS, themes, and plugins
@@ -9,7 +9,7 @@ defmodule CGraph.Forums.Forum do
   - User groups and permissions
   - Polls, warnings, reputation
 
-  Forums also participate in Reddit-style competition:
+  Forums also participate in  competition:
   - Users can upvote/downvote forums
   - Leaderboards show most popular forums
   """
@@ -70,7 +70,7 @@ defmodule CGraph.Forums.Forum do
     field :thread_count, :integer, default: 0
     field :active_users_today, :integer, default: 0
 
-    # Forum voting (competition/Reddit-style discovery)
+    # Forum voting (competition/ discovery)
     field :score, :integer, default: 0
     field :upvotes, :integer, default: 0
     field :downvotes, :integer, default: 0
@@ -114,7 +114,7 @@ defmodule CGraph.Forums.Forum do
     # Hierarchy relationships
     has_many :sub_forums, __MODULE__, foreign_key: :parent_forum_id
 
-    # Reddit-style posts (if used for simple reddit-like mode)
+    #  posts (if used for simple reddit-like mode)
     has_many :posts, CGraph.Forums.Post
     has_many :categories, CGraph.Forums.Category
     has_many :moderators, CGraph.Forums.Moderator

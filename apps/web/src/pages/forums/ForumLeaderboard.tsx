@@ -1,7 +1,7 @@
 /**
  * Forum Leaderboard Component
  *
- * Reddit-style competitive ranking of forums by upvotes.
+ * Competitive ranking of forums by upvotes.
  *
  * Modularized into forum-leaderboard/ directory:
  * - types.ts: LeaderboardSort, SortOption, CardProps interfaces

@@ -209,7 +209,7 @@ You asked me to enhance the CGraph web application with:
 | Enhancement       | Status      | Details                                    |
 | ----------------- | ----------- | ------------------------------------------ |
 | Light Theme       | ✅ Complete | 80+ color tokens, professional design      |
-| Dark Theme        | ✅ Enhanced | Matrix green, Discord-inspired             |
+| Dark Theme        | ✅ Enhanced | Matrix green,                              |
 | System Preference | ✅ Complete | Auto-follows device, `isDark` helper       |
 | Type Exports      | ✅ Complete | `ThemeColors`, `lightColors`, `darkColors` |
 

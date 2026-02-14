@@ -27,7 +27,7 @@ defmodule CGraph.Messaging.Message do
   @content_types ["text", "image", "video", "audio", "file", "voice", "sticker", "gif", "system"]
 
   schema "messages" do
-    # Discord-style Snowflake ID for guaranteed chronological ordering.
+    # Snowflake ID for guaranteed chronological ordering.
     # Used as the primary cursor for pagination (WHERE snowflake_id > ?)
     # while preserving UUID primary key for foreign key compatibility.
     field :snowflake_id, :integer

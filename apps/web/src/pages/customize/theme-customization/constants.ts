@@ -117,9 +117,9 @@ export const MOCK_THEMES: Theme[] = [
     unlocked: true,
   },
   {
-    id: 'chat-discord',
-    name: 'Discord Style',
-    description: 'Discord-inspired dark theme',
+    id: 'chat-indigo',
+    name: 'Indigo Dark',
+    description: 'Deep indigo dark theme',
     category: 'chat',
     colors: {
       primary: '#5865F2',
@@ -132,9 +132,9 @@ export const MOCK_THEMES: Theme[] = [
     unlocked: true,
   },
   {
-    id: 'chat-telegram',
-    name: 'Telegram Blue',
-    description: 'Telegram-inspired theme',
+    id: 'chat-sky',
+    name: 'Sky Blue',
+    description: 'Light sky blue theme',
     category: 'chat',
     colors: {
       primary: '#0088CC',
@@ -196,9 +196,9 @@ export const MOCK_THEMES: Theme[] = [
     unlocked: true,
   },
   {
-    id: 'forum-reddit',
-    name: 'Reddit Style',
-    description: 'Reddit-inspired layout',
+    id: 'forum-classic',
+    name: 'Classic Style',
+    description: 'Classic forum layout',
     category: 'forum',
     colors: {
       primary: '#FF4500',

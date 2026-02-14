@@ -1,7 +1,7 @@
 /**
  * Forum Leaderboard - Main Component
  *
- * Reddit-style competitive ranking of forums by upvotes.
+ * Competitive ranking of forums by upvotes.
  */
 
 import { useEffect, useState } from 'react';

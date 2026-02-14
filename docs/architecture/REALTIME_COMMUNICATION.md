@@ -57,25 +57,25 @@ Complete documentation for CGraph's real-time communication stack, including mes
 
 ## Feature Matrix
 
-| Feature               | Status | Module                    | Notes                          |
-| --------------------- | ------ | ------------------------- | ------------------------------ |
+| Feature               | Status | Module                    | Notes                   |
+| --------------------- | ------ | ------------------------- | ----------------------- |
 | **Messaging**         |
-| Real-time messages    | ✅     | `ConversationChannel`     | Phoenix Channels               |
-| Typing indicators     | ✅     | `ConversationChannel`     | Auto-timeout 5s                |
-| Read receipts         | ✅     | `MessageController`       | Opt-in per conversation        |
-| E2EE (1:1 DMs)        | ✅     | `Cgraph.Crypto.E2EE`      | X3DH + AES-256-GCM             |
-| Voice messages        | ✅     | `Storage`                 | AAC, 5min max                  |
+| Real-time messages    | ✅     | `ConversationChannel`     | Phoenix Channels        |
+| Typing indicators     | ✅     | `ConversationChannel`     | Auto-timeout 5s         |
+| Read receipts         | ✅     | `MessageController`       | Opt-in per conversation |
+| E2EE (1:1 DMs)        | ✅     | `Cgraph.Crypto.E2EE`      | X3DH + AES-256-GCM      |
+| Voice messages        | ✅     | `Storage`                 | AAC, 5min max           |
 | **Presence**          |
-| Online status         | ✅     | `Cgraph.Presence`         | Phoenix Presence (CRDT)        |
-| Sampled presence      | ✅     | `Cgraph.Presence.Sampled` | For channels >100 users        |
-| Multi-device          | ✅     | `Cgraph.Presence`         | Aggregated status              |
-| Custom status         | ✅     | `Cgraph.Presence`         | Text + emoji                   |
+| Online status         | ✅     | `Cgraph.Presence`         | Phoenix Presence (CRDT) |
+| Sampled presence      | ✅     | `Cgraph.Presence.Sampled` | For channels >100 users |
+| Multi-device          | ✅     | `Cgraph.Presence`         | Aggregated status       |
+| Custom status         | ✅     | `Cgraph.Presence`         | Text + emoji            |
 | **Voice/Video Calls** |
-| 1:1 voice calls       | ✅     | `Cgraph.WebRTC`           | WebRTC peer-to-peer            |
-| 1:1 video calls       | ✅     | `Cgraph.WebRTC`           | WebRTC peer-to-peer            |
-| Group calls           | ✅     | `Cgraph.WebRTC`           | Up to 10 participants          |
-| Screen sharing        | ✅     | `CallChannel`             | Via media tracks               |
-| Voice channels        | 🔄     | Planned                   | Discord-style persistent rooms |
+| 1:1 voice calls       | ✅     | `Cgraph.WebRTC`           | WebRTC peer-to-peer     |
+| 1:1 video calls       | ✅     | `Cgraph.WebRTC`           | WebRTC peer-to-peer     |
+| Group calls           | ✅     | `Cgraph.WebRTC`           | Up to 10 participants   |
+| Screen sharing        | ✅     | `CallChannel`             | Via media tracks        |
+| Voice channels        | 🔄     | Planned                   | persistent rooms        |
 
 ---
 

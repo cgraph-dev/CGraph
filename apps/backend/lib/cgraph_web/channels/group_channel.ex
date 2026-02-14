@@ -1,6 +1,6 @@
 defmodule CGraphWeb.GroupChannel do
   @moduledoc """
-  Channel for group/channel messaging (Discord-style).
+  Channel for group/channel messaging.
 
   Handles:
   - Channel messages
@@ -87,7 +87,7 @@ defmodule CGraphWeb.GroupChannel do
 
   @impl true
   def handle_in("typing", params, socket) do
-    # Drop typing events for degraded connections (Discord backpressure pattern)
+    # Drop typing events for degraded connections (backpressure pattern)
     if Backpressure.should_drop?("typing", socket) do
       {:noreply, socket}
     else
@@ -124,7 +124,7 @@ defmodule CGraphWeb.GroupChannel do
     end
   end
 
-  # WhatsApp-style message delivery acknowledgment for group messages
+  # Message delivery acknowledgment for group messages
   @impl true
   def handle_in("msg_ack", %{"message_id" => message_id}, socket) do
     user = socket.assigns.current_user

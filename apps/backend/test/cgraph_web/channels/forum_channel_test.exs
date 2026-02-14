@@ -1,5 +1,5 @@
 defmodule CgraphWeb.Channels.ForumChannelTest do
-  @moduledoc "Forum channel tests — Reddit-style real-time forum updates"
+  @moduledoc "Forum channel tests — Real-time forum updates"
   use CgraphWeb.ChannelCase
 
   import CgraphWeb.UserFixtures

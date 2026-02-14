@@ -1,5 +1,5 @@
 defmodule CgraphWeb.API.V1.ReportControllerTest do
-  @moduledoc "Report/moderation controller tests — Reddit/Discord-style"
+  @moduledoc "Report/moderation controller tests — "
   use CgraphWeb.ConnCase, async: true
 
   import CgraphWeb.UserFixtures

@@ -17,10 +17,10 @@ export type ChatBubbleStyleId =
   | 'bubble-default'
   | 'bubble-pill'
   | 'bubble-sharp'
-  | 'bubble-telegram'
-  | 'bubble-imessage'
-  | 'bubble-discord'
-  | 'bubble-whatsapp'
+  | 'bubble-asymmetric'
+  | 'bubble-aero'
+  | 'bubble-flat'
+  | 'bubble-compact'
   | 'bubble-retro'
   | 'bubble-neon'
   | 'bubble-minimal'
@@ -92,22 +92,22 @@ export const chatBubbleAnimations: Record<
     animate: { opacity: 1, x: 0 },
     transition: { delay, ...springs.snappy },
   }),
-  'bubble-telegram': (isOwn: boolean, delay: number) => ({
+  'bubble-asymmetric': (isOwn: boolean, delay: number) => ({
     initial: { opacity: 0, x: isOwn ? 20 : -20, scale: 0.9 },
     animate: { opacity: 1, x: 0, scale: 1 },
     transition: { delay, ...springs.snappy },
   }),
-  'bubble-imessage': (_isOwn: boolean, delay: number) => ({
+  'bubble-aero': (_isOwn: boolean, delay: number) => ({
     initial: { opacity: 0, scale: 0.7, y: 10 },
     animate: { opacity: 1, scale: 1, y: 0 },
     transition: { delay, ...springs.gentle },
   }),
-  'bubble-discord': (_isOwn: boolean, delay: number) => ({
+  'bubble-flat': (_isOwn: boolean, delay: number) => ({
     initial: { opacity: 0, y: 10 },
     animate: { opacity: 1, y: 0 },
     transition: { delay, duration: 0.2 },
   }),
-  'bubble-whatsapp': (_isOwn: boolean, delay: number) => ({
+  'bubble-compact': (_isOwn: boolean, delay: number) => ({
     initial: { opacity: 0, scale: 0.9, y: 5 },
     animate: { opacity: 1, scale: 1, y: 0 },
     transition: { delay, ...springs.gentle },

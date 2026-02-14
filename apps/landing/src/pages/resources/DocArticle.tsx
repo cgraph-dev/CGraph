@@ -29,13 +29,13 @@ const docArticles: Record<string, DocArticleData> = {
     categoryColor: '#34d399',
     readTime: '3 min read',
     content: `
-<p>CGraph is a <strong>next-generation community platform</strong> that combines the best features of Discord, Reddit, and Signal into a single, unified experience — with RPG-style gamification built in from day one.</p>
+<p>CGraph is a <strong>next-generation community platform</strong> that combines real-time messaging, forum discussions, and end-to-end encryption into a single, unified experience — with RPG-style gamification built in from day one.</p>
 
 <h3>Core Feature Pillars</h3>
 <ul>
-  <li><strong>Discord-style Messaging</strong> — Real-time text, voice, and video chat with servers, channels, and direct messages. WebSocket-powered with typing indicators, read receipts, and presence.</li>
-  <li><strong>Reddit-style Forums</strong> — Threaded discussions with voting, karma, nested comments, polls, and rich text editing using a custom BBCode parser.</li>
-  <li><strong>Signal-level Encryption</strong> — End-to-end encryption using the Signal Protocol (X3DH key agreement + Double Ratchet) for all private messages.</li>
+  <li><strong>Real-Time Messaging</strong> — Text, voice, and video chat with servers, channels, and direct messages. WebSocket-powered with typing indicators, read receipts, and presence.</li>
+  <li><strong>Community Forums</strong> — Threaded discussions with voting, karma, nested comments, polls, and rich text editing using a custom BBCode parser.</li>
+  <li><strong>Military-Grade Encryption</strong> — End-to-end encryption using the Signal Protocol (X3DH key agreement + Double Ratchet) for all private messages.</li>
   <li><strong>RPG Gamification</strong> — 30+ achievements across 6 categories, XP/level progression, daily and weekly quests, streak multipliers, and a virtual marketplace.</li>
 </ul>
 
@@ -102,7 +102,7 @@ const docArticles: Record<string, DocArticleData> = {
     categoryColor: '#34d399',
     readTime: '5 min read',
     content: `
-<p>Servers are the core organizational unit in CGraph — similar to Discord servers but with built-in forums and gamification.</p>
+<p>Servers are the core organizational unit in CGraph — with built-in forums and gamification.</p>
 
 <h3>Creating a Server</h3>
 <ol>
@@ -165,7 +165,7 @@ const docArticles: Record<string, DocArticleData> = {
 </ul>
 
 <h3>Forum Channels</h3>
-<p>Reddit-style threaded discussions within your server:</p>
+<p>Threaded discussions within your server:</p>
 <ul>
   <li>Create posts with rich text (BBCode parser)</li>
   <li>Nested comment threads (unlimited depth)</li>
@@ -424,7 +424,7 @@ const docArticles: Record<string, DocArticleData> = {
     categoryColor: '#f87171',
     readTime: '15 min read',
     content: `
-<p>CGraph implements the <strong>Signal Protocol</strong> for end-to-end encryption of direct messages. This is the same protocol used by Signal, WhatsApp, and Facebook Messenger's secret conversations.</p>
+<p>CGraph implements the <strong>Signal Protocol</strong> for end-to-end encryption of direct messages. This is the same proven cryptographic protocol trusted by billions of users worldwide.</p>
 
 <h3>Protocol Components</h3>
 <table>
@@ -1161,7 +1161,7 @@ const docArticles: Record<string, DocArticleData> = {
     categoryColor: '#818cf8',
     readTime: '12 min read',
     content: `
-<p>CGraph's frontend follows a modular architecture inspired by Discord's internal structure.</p>
+<p>CGraph's frontend follows a modular architecture with clean separation of concerns.</p>
 
 <h3>12 Feature Modules</h3>
 <table>
@@ -1467,7 +1467,7 @@ const docArticles: Record<string, DocArticleData> = {
     categoryColor: '#a78bfa',
     readTime: '6 min read',
     content: `
-<p>CGraph's forum system provides Reddit-style threaded discussions within your server communities.</p>
+<p>CGraph's forum system provides threaded discussions within your server communities.</p>
 
 <h3>Creating a Post</h3>
 <ul>

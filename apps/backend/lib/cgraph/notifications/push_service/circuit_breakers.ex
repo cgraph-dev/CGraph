@@ -8,7 +8,7 @@ defmodule CGraph.Notifications.PushService.CircuitBreakers do
   - Web Push (VAPID-based browser push)
   - Mailer (Swoosh email delivery)
 
-  Follows Discord/Meta patterns: every external dependency gets a circuit breaker
+  Every external dependency gets a circuit breaker
   so one vendor outage cannot cascade and degrade the entire notification pipeline.
 
   ## Fuse Configuration

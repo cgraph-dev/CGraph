@@ -289,7 +289,7 @@ defmodule CGraph.Messaging do
         |> Ecto.Changeset.change(last_message_at: now)
         |> Repo.update()
 
-        # Track delivery receipts for all participants (WhatsApp-style ✓✓ marks)
+        # Track delivery receipts for all participants (double-check ✓✓ marks)
         track_delivery_for_participants(message, conversation)
 
         # Index message in MeiliSearch for full-text search
@@ -477,7 +477,7 @@ defmodule CGraph.Messaging do
 
   @doc """
   Add a reaction to a message.
-  Allows multiple different emoji reactions per user per message (Discord/Telegram pattern).
+  Allows multiple different emoji reactions per user per message (multi-reaction pattern).
   Returns {:ok, reaction} on success, {:error, :already_exists} if same emoji already used.
   """
   def add_reaction(user, message, emoji) do

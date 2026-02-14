@@ -17,7 +17,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useE2EE } from '../../lib/crypto/E2EEContext';
 import { MessagesStackParamList, Message, ConversationParticipant } from '../../types';
-import { TelegramAttachmentPicker } from '../../components';
+import { AttachmentPicker } from '../../components';
 import { createLogger } from '../../lib/logger';
 
 // Import modular components
@@ -318,29 +318,37 @@ export default function ConversationScreen({ navigation, route }: Props) {
   });
 
   // GIF selection handler — sends as a gif-type message
-  const handleGifSelect = useCallback(async (gif: GifResult) => {
-    if (isSending) return;
-    setIsSending(true);
-    try {
-      const response = await (await import('../../lib/api')).default.post(
-        `/api/v1/conversations/${conversationId}/messages`,
-        {
+  const handleGifSelect = useCallback(
+    async (gif: GifResult) => {
+      if (isSending) return;
+      setIsSending(true);
+      try {
+        const response = await (
+          await import('../../lib/api')
+        ).default.post(`/api/v1/conversations/${conversationId}/messages`, {
           content: gif.url,
           content_type: 'gif',
-          metadata: { gif_id: gif.id, title: gif.title, preview_url: gif.previewUrl, width: gif.width, height: gif.height },
+          metadata: {
+            gif_id: gif.id,
+            title: gif.title,
+            preview_url: gif.previewUrl,
+            width: gif.width,
+            height: gif.height,
+          },
+        });
+        if (response.data?.data) {
+          const newMsg = response.data.data;
+          setMessages((prev: Message[]) => [...prev, newMsg]);
+          scrollToBottom();
         }
-      );
-      if (response.data?.data) {
-        const newMsg = response.data.data;
-        setMessages((prev: Message[]) => [...prev, newMsg]);
-        scrollToBottom();
+      } catch (error) {
+        logger.error('Failed to send GIF:', error);
+      } finally {
+        setIsSending(false);
       }
-    } catch (error) {
-      logger.error('Failed to send GIF:', error);
-    } finally {
-      setIsSending(false);
-    }
-  }, [conversationId, isSending, setMessages, scrollToBottom]);
+    },
+    [conversationId, isSending, setMessages, scrollToBottom]
+  );
 
   // Socket event handlers hook - centralizes all socket callbacks
   const {
@@ -496,7 +504,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
     []
   );
 
-  // Handle assets selected from TelegramAttachmentPicker
+  // Handle assets selected from AttachmentPicker
   // IMPORTANT: This must be defined BEFORE any early returns to comply with Rules of Hooks
   const handleAttachmentPickerSelect = useCallback(
     (
@@ -634,8 +642,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
-      {/* Telegram-style Attachment Picker */}
-      <TelegramAttachmentPicker
+      {/* Attachment Picker */}
+      <AttachmentPicker
         visible={showAttachMenu}
         onClose={closeAttachMenu}
         onSelectAssets={handleAttachmentPickerSelect}

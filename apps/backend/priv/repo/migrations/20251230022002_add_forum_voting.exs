@@ -1,6 +1,6 @@
 defmodule Cgraph.Repo.Migrations.AddForumVoting do
   @moduledoc """
-  Add forum-level voting for Reddit-style competition.
+  Add forum-level voting for Competition.
   
   Forums can now be upvoted/downvoted to compete for popularity.
   Adds score, upvotes, downvotes, and hot_score fields.

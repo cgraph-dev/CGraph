@@ -80,8 +80,8 @@ export const THEME_ID_TO_PRESET: Record<string, ThemePreset> = {
   'profile-cherry': 'pink',
   // Chat themes
   'chat-default': 'purple',
-  'chat-discord': 'purple',
-  'chat-telegram': 'cyan',
+  'chat-indigo': 'purple',
+  'chat-sky': 'cyan',
   'chat-neon': 'pink',
   'chat-minimal': 'emerald',
   // App themes
@@ -95,8 +95,8 @@ export const THEME_ID_TO_PRESET: Record<string, ThemePreset> = {
  */
 export const CHAT_THEME_TO_COLOR: Record<string, ThemePreset> = {
   'chat-default': 'purple',
-  'chat-discord': 'purple',
-  'chat-telegram': 'cyan',
+  'chat-indigo': 'purple',
+  'chat-sky': 'cyan',
   'chat-neon': 'pink',
   'chat-minimal': 'emerald',
   default: 'emerald',
@@ -114,9 +114,9 @@ export const BUBBLE_ID_TO_STYLE: Record<string, ChatBubbleStyle> = {
   'bubble-default': 'rounded',
   'bubble-pill': 'rounded',
   'bubble-sharp': 'sharp',
-  'bubble-telegram': 'modern',
-  'bubble-discord': 'modern',
-  'bubble-imessage': 'cloud',
+  'bubble-asymmetric': 'modern',
+  'bubble-flat': 'modern',
+  'bubble-aero': 'cloud',
   'bubble-minimal': 'default',
   'bubble-neon': 'modern',
   'bubble-gradient': 'modern',

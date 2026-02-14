@@ -1,6 +1,6 @@
 defmodule CGraph.Snowflake do
   @moduledoc """
-  Discord-style Snowflake ID generator for guaranteed message ordering.
+  Snowflake ID generator for guaranteed message ordering.
 
   ## Architecture
 
@@ -22,7 +22,7 @@ defmodule CGraph.Snowflake do
 
   ## Why This Matters (vs UUID/auto-increment)
 
-  Discord uses Snowflake IDs for all messages. Benefits:
+  CGraph uses Snowflake IDs for all messages. Benefits:
   - Cursor-based pagination is trivial (WHERE id > last_id ORDER BY id)
   - No need for composite (timestamp, id) indexes
   - Multi-node insert without sequence contention

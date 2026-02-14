@@ -63,7 +63,7 @@ const blogArticles: Record<string, BlogArticleData> = {
 <tbody>
 <tr><td>Real-time Messaging</td><td>✅</td><td>✅</td><td>WebSocket via Phoenix Channels</td></tr>
 <tr><td>End-to-End Encryption</td><td>✅</td><td>✅</td><td>Signal Protocol (X3DH + Double Ratchet)</td></tr>
-<tr><td>Forums / Threads</td><td>✅</td><td>✅</td><td>Reddit-style nested discussions</td></tr>
+<tr><td>Forums / Threads</td><td>✅</td><td>✅</td><td>Nested discussions</td></tr>
 <tr><td>Voice Calls</td><td>✅</td><td>✅</td><td>WebRTC with TURN fallback</td></tr>
 <tr><td>Video Calls</td><td>✅</td><td>✅</td><td>WebRTC with adaptive bitrate</td></tr>
 <tr><td>Screen Sharing</td><td>✅</td><td>✅</td><td>Desktop + mobile screen capture</td></tr>
@@ -143,7 +143,7 @@ const blogArticles: Record<string, BlogArticleData> = {
 
 <h3>The Solution: 12 Feature Modules + 7 Facades</h3>
 
-<p>We adopted a <strong>Discord-style module system</strong>, where each domain owns its state, hooks, components, and types. The restructuring created 12 feature modules:</p>
+<p>We adopted a <strong>Modular system</strong>, where each domain owns its state, hooks, components, and types. The restructuring created 12 feature modules:</p>
 
 <pre><code>src/
 ├── modules/
@@ -238,7 +238,7 @@ const { messages, channels, typingUsers, sendMessage } = useChat();</code></pre>
     image: '🔐',
     tags: ['E2EE', 'Signal Protocol', 'Testing'],
     content: `
-<p>End-to-end encryption is the most security-critical component in CGraph. Our implementation uses the <strong>Signal Protocol</strong> — the same protocol that secures WhatsApp, Signal, and Google Messages. But implementation correctness requires rigorous testing. We built a dedicated test suite of <strong>28 tests</strong> that validate every layer of the cryptographic stack.</p>
+<p>End-to-end encryption is the most security-critical component in CGraph. Our implementation uses the <strong>Signal Protocol</strong> — the same cryptographic protocol trusted by billions of users worldwide. But implementation correctness requires rigorous testing. We built a dedicated test suite of <strong>28 tests</strong> that validate every layer of the cryptographic stack.</p>
 
 <h3>The Cryptographic Stack</h3>
 
@@ -353,7 +353,7 @@ it('should produce different ciphertext for identical plaintext', async () =&gt;
     image: '⚙️',
     tags: ['Zustand', 'State Management', 'Facades'],
     content: `
-<p>State management can make or break a complex application. CGraph had grown to <strong>32 individual Zustand stores</strong> — each one solving a real problem, but collectively creating an unmaintainable web of dependencies. We consolidated them into <strong>7 facade hooks</strong> using Discord-style composition patterns. Here's how.</p>
+<p>State management can make or break a complex application. CGraph had grown to <strong>32 individual Zustand stores</strong> — each one solving a real problem, but collectively creating an unmaintainable web of dependencies. We consolidated them into <strong>7 facade hooks</strong> using Composition patterns. Here's how.</p>
 
 <h3>The State Management Problem</h3>
 
@@ -667,7 +667,7 @@ const SettingsPage = lazy(() =&gt; import('./modules/settings/pages/SettingsLayo
 <li><strong>@cgraph/config</strong> — Shared environment configuration and feature flags</li>
 </ul>
 
-<p>This architecture pattern — common in enterprise applications like Discord, Slack, and Notion — gives us the best of both worlds: a blazing-fast marketing presence and a feature-rich application, each optimized for its specific use case.</p>
+<p>This architecture pattern — common in enterprise-grade applications — gives us the best of both worlds: a blazing-fast marketing presence and a feature-rich application, each optimized for its specific use case.</p>
 `,
   },
 
@@ -767,7 +767,7 @@ try {
     image: '💜',
     tags: ['Elixir', 'Phoenix', 'Backend'],
     content: `
-<p>When choosing a backend technology for a real-time communication platform, the stakes are high. The server needs to handle millions of concurrent connections, route messages with sub-100ms latency, and never go down for deployments. After evaluating Node.js, Go, Rust, and Elixir, we chose <strong>Elixir 1.17+ with Phoenix 1.8</strong> — the same stack that powers Discord's 19 million concurrent users.</p>
+<p>When choosing a backend technology for a real-time communication platform, the stakes are high. The server needs to handle millions of concurrent connections, route messages with sub-100ms latency, and never go down for deployments. After evaluating Node.js, Go, Rust, and Elixir, we chose <strong>Elixir 1.17+ with Phoenix 1.8</strong> — a stack proven to handle millions of concurrent users.</p>
 
 <h3>The BEAM VM: Built for Concurrency</h3>
 
@@ -896,21 +896,21 @@ end</code></pre>
     image: '🚀',
     tags: ['Product', 'Vision', 'Launch'],
     content: `
-<p>Communities today are fragmented. Your team uses Discord for chat, Reddit for discussions, Signal for private messages, and maybe a gamification plugin bolted onto the side. What if one platform did all of it — with <strong>real end-to-end encryption</strong> and an engagement system that makes participation genuinely fun? That's the vision behind <strong>CGraph</strong>.</p>
+<p>Communities today are fragmented. Your team uses one app for chat, another for discussions, a third for private messages, and maybe a gamification plugin bolted onto the side. What if one platform did all of it — with <strong>real end-to-end encryption</strong> and an engagement system that makes participation genuinely fun? That's the vision behind <strong>CGraph</strong>.</p>
 
 <h3>Four Pillars</h3>
 
-<h4>1. Discord-Style Real-Time Messaging</h4>
+<h4>1. Real-Time Messaging</h4>
 <p>CGraph's messaging is built for speed and reliability. Text channels, direct messages, group DMs, threads, reactions, file sharing, and rich embeds — all delivered over WebSocket with sub-100ms latency. Voice and video calls use WebRTC with adaptive bitrate for quality on any connection. Screen sharing works on both desktop and mobile.</p>
 
-<p>The architecture behind this is Phoenix Channels on Elixir — the same technology stack Discord uses for their 19 million concurrent users. Messages are routed through BEAM processes, each connection isolated, each failure contained.</p>
+<p>The architecture behind this is Phoenix Channels on Elixir — a technology stack proven to handle millions of concurrent connections. Messages are routed through BEAM processes, each connection isolated, each failure contained.</p>
 
-<h4>2. Reddit-Style Forums</h4>
+<h4>2. Community Forums</h4>
 <p>Not everything belongs in real-time chat. Long-form discussions, knowledge bases, announcements, and Q&amp;A threads deserve a forum format. CGraph's forums support nested threading, upvotes/downvotes, rich text formatting with Markdown, and pinned posts. Each community server can have both chat channels and forum channels, switching between real-time and asynchronous discussion as needed.</p>
 
 <p>Forums are fully searchable with PostgreSQL full-text search across titles, body content, and tags. Users can subscribe to threads for notifications without participating, and moderators have granular controls over thread visibility and permissions.</p>
 
-<h4>3. Signal-Level End-to-End Encryption</h4>
+<h4>3. Military-Grade End-to-End Encryption</h4>
 <p>Privacy isn't a feature — it's a foundation. CGraph implements the <strong>Signal Protocol</strong> for end-to-end encryption:</p>
 
 <ul>

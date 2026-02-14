@@ -1,7 +1,7 @@
 /**
  * ChannelCategoriesPanel - Manage channel categories (folders)
  *
- * Discord-style category management: create, rename, reorder, delete.
+ * Category management: create, rename, reorder, delete.
  * Categories group channels in the sidebar for organization.
  * Uses /api/v1/groups/:group_id/categories
  *
@@ -164,9 +164,7 @@ export function ChannelCategoriesPanel({ groupId }: ChannelCategoriesPanelProps)
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-white">Categories</h3>
-          <p className="text-sm text-gray-400">
-            Group channels into collapsible categories
-          </p>
+          <p className="text-sm text-gray-400">Group channels into collapsible categories</p>
         </div>
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -232,12 +230,7 @@ export function ChannelCategoriesPanel({ groupId }: ChannelCategoriesPanelProps)
           No categories. Channels will appear ungrouped.
         </div>
       ) : (
-        <Reorder.Group
-          axis="y"
-          values={categories}
-          onReorder={handleReorder}
-          className="space-y-2"
-        >
+        <Reorder.Group axis="y" values={categories} onReorder={handleReorder} className="space-y-2">
           {categories.map((category, index) => (
             <Reorder.Item key={category.id} value={category}>
               <GlassCard variant="frosted" className="px-4 py-3">
@@ -335,8 +328,7 @@ export function ChannelCategoriesPanel({ groupId }: ChannelCategoriesPanelProps)
             >
               <h3 className="text-lg font-semibold text-white">Delete Category</h3>
               <p className="text-sm text-gray-400">
-                Channels in this category will become uncategorized. This action cannot be
-                undone.
+                Channels in this category will become uncategorized. This action cannot be undone.
               </p>
               <div className="flex justify-end gap-3">
                 <button

@@ -1,6 +1,6 @@
 defmodule CGraphWeb.API.V1.CommentControllerTest do
   @moduledoc """
-  Tests for forum post comments (Reddit-style nested/threaded comments).
+  Tests for forum post comments (Nested/threaded comments).
   """
   use CGraphWeb.ConnCase, async: true
 

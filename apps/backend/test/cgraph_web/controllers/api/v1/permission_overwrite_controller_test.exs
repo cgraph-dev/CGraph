@@ -1,6 +1,6 @@
 defmodule CGraphWeb.API.V1.PermissionOverwriteControllerTest do
   @moduledoc """
-  Tests for channel-level permission overwrites (Discord-style).
+  Tests for channel-level permission overwrites ().
   """
   use CGraphWeb.ConnCase, async: true
 

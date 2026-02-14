@@ -665,7 +665,7 @@ Enterprise-grade scalability built into the core, not bolted on later.
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### Presence Sampling (Telegram-scale)
+### Presence Sampling (Large-scale)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐

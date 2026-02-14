@@ -80,7 +80,7 @@ export function useMessageActions(): UseMessageActionsReturn {
           useNativeDriver: true,
           easing: Easing.out(Easing.cubic),
         }),
-        // Menu scale — bouncier spring for Telegram-like feel
+        // Menu scale — bouncier spring for snappy feel
         Animated.spring(menuScaleAnim, {
           toValue: 1,
           tension: 180,

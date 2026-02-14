@@ -3,7 +3,7 @@ defmodule CGraph.Forums.RankingEngine do
   Advanced ranking engine for forum leaderboard competition.
 
   Implements multiple ranking algorithms:
-  - Hot: Reddit-style time-decayed score (good for recent activity)
+  - Hot:  time-decayed score (good for recent activity)
   - Top: Pure score ranking (all-time best)
   - Rising: Score velocity (fast-growing forums)
   - Weekly: Reset weekly for fresh competition
@@ -52,7 +52,7 @@ defmodule CGraph.Forums.RankingEngine do
   end
 
   @doc """
-  Calculate hot score using Reddit's algorithm.
+  Calculate hot score.
 
   Formula: sign(score) * log10(max(|score|, 1)) + age_in_seconds / 45000
 
@@ -152,7 +152,7 @@ defmodule CGraph.Forums.RankingEngine do
   Calculate Wilson score confidence interval lower bound.
   Better for small sample sizes than simple percentage.
 
-  Used by Reddit for comment ranking.
+  Used for comment ranking.
   """
   def calculate_wilson_score(upvotes, downvotes) do
     n = upvotes + downvotes

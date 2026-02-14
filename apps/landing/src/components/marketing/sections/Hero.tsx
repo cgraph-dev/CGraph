@@ -53,7 +53,7 @@ const itemVariants = {
 
 // Cycling subtitles — showcases different product features
 const subtitles = [
-  'End-to-end encrypted messaging with Signal-level security.',
+  'End-to-end encrypted messaging with military-grade security.',
   'Real-time community forums with gamification & XP.',
   'Voice & video calls powered by WebRTC — sub-200ms.',
   'Custom themes, achievements, and subscription tiers.',

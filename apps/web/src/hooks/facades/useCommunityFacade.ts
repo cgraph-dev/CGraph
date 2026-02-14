@@ -1,7 +1,7 @@
 /**
  * Community Facade Hook
  *
- * Discord-style composition hook that aggregates forums, groups,
+ * Composition hook that aggregates forums, groups,
  * and announcements into a single community interface.
  *
  * @example

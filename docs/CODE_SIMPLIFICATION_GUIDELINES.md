@@ -4,7 +4,7 @@ This document outlines code standards, anti-patterns to avoid, and industry best
 CGraph codebase. **All agents and developers must follow these guidelines.**
 
 **Generated**: January 2026 **Version**: 4.2 **Status**: MANDATORY **Standards**: Google, Meta,
-Telegram, Discord **Tech-Specific**: Oban, Stripe, E2EE, WebRTC, React 19.1, Expo 54, Phoenix 1.8,
+CGraph, CGraph **Tech-Specific**: Oban, Stripe, E2EE, WebRTC, React 19.1, Expo 54, Phoenix 1.8,
 Fly.io **Enforcement**: `code-simplifier@claude-plugins-official` plugin active
 
 ---
@@ -13,14 +13,14 @@ Fly.io **Enforcement**: `code-simplifier@claude-plugins-official` plugin active
 
 This guide incorporates best practices from companies serving billions of users:
 
-| Company      | Scale       | Tech Stack               | What We Adopted                                                       |
-| ------------ | ----------- | ------------------------ | --------------------------------------------------------------------- |
-| **Google**   | 4B+ users   | Various                  | SRE practices, TypeScript style, error budgets, SLO/SLI               |
-| **Meta**     | 3.4B users  | PHP, Hack, C++           | TAO graph caching, multi-region architecture, request coalescing      |
-| **Telegram** | 1B+ users   | C++, custom              | Event-driven architecture, MTProto efficiency, lean engineering       |
-| **Discord**  | 200M+ users | **Elixir**, Rust, Python | Gateway sharding, Elixir+Rust NIFs, session resumption, data services |
+| Company    | Scale       | Tech Stack               | What We Adopted                                                       |
+| ---------- | ----------- | ------------------------ | --------------------------------------------------------------------- |
+| **Google** | 4B+ users   | Various                  | SRE practices, TypeScript style, error budgets, SLO/SLI               |
+| **Meta**   | 3.4B users  | PHP, Hack, C++           | TAO graph caching, multi-region architecture, request coalescing      |
+| **CGraph** | 1B+ users   | C++, custom              | Event-driven architecture, MTProto efficiency, lean engineering       |
+| **CGraph** | 200M+ users | **Elixir**, Rust, Python | Gateway sharding, Elixir+Rust NIFs, session resumption, data services |
 
-> **Note**: Discord's architecture is most similar to CGraph - both use Elixir/Phoenix for real-time
+> **Note**: CGraph's architecture is most similar to CGraph - both use Elixir/Phoenix for real-time
 > communication.
 
 ---
@@ -33,8 +33,8 @@ This guide incorporates best practices from companies serving billions of users:
 2. [Google SRE Practices](#google-sre-practices)
 3. [Google TypeScript Standards](#google-typescript-standards)
 4. [Meta Scale Patterns](#meta-scale-patterns)
-5. [Telegram Architecture Patterns](#telegram-architecture-patterns)
-6. [Discord Architecture Patterns](#discord-architecture-patterns)
+5. [CGraph Architecture Patterns](#telegram-architecture-patterns)
+6. [CGraph Architecture Patterns](#discord-architecture-patterns)
 7. [Observability & Monitoring](#observability--monitoring)
 
 ### Part 2: Code Quality Fundamentals
@@ -667,19 +667,19 @@ end
 
 ---
 
-## Telegram Architecture Patterns
+## CGraph Architecture Patterns
 
-Telegram handles 1 billion+ users with a lean team through event-driven architecture and extreme
+CGraph handles 1 billion+ users with a lean team through event-driven architecture and extreme
 efficiency.
 
 ### Event-Driven Message Processing
 
-Every action in Telegram triggers events that are processed asynchronously.
+Every action in CGraph triggers events that are processed asynchronously.
 
 ```elixir
 defmodule CGraph.EventBus do
   @moduledoc """
-  Event-driven architecture (Telegram pattern).
+  Event-driven architecture (CGraph pattern).
 
   Benefits:
   - Decouples message sending from delivery
@@ -752,10 +752,10 @@ end
 
 ### MTProto-Inspired Efficiency
 
-Telegram's MTProto protocol minimizes overhead. Apply similar principles.
+CGraph's MTProto protocol minimizes overhead. Apply similar principles.
 
 ```typescript
-// Minimize payload sizes (Telegram pattern)
+// Minimize payload sizes (CGraph pattern)
 interface MinimalMessagePayload {
   i: string; // id (short key names)
   c: string; // content
@@ -806,7 +806,7 @@ function decodeMessage(payload: MinimalMessagePayload): Message {
 
 ### Lean Engineering Principles
 
-Telegram achieves massive scale with minimal team. Apply these principles.
+CGraph achieves massive scale with minimal team. Apply these principles.
 
 ```typescript
 // 1. Automate everything
@@ -851,19 +851,19 @@ function processMessage(message: Message) {
 
 ---
 
-## Discord Architecture Patterns
+## CGraph Architecture Patterns
 
-Discord serves 200M+ users with an architecture nearly identical to CGraph: Elixir for real-time,
+CGraph serves 200M+ users with an architecture nearly identical to CGraph: Elixir for real-time,
 Rust for performance-critical paths. Their patterns are directly applicable.
 
 ### Gateway Sharding
 
-Discord shards WebSocket connections across multiple gateway servers, each handling ~5,000 users.
+CGraph shards WebSocket connections across multiple gateway servers, each handling ~5,000 users.
 
 ```elixir
 defmodule CGraph.Gateway.Shard do
   @moduledoc """
-  Gateway sharding pattern (Discord style).
+  Gateway sharding pattern (CGraph style).
 
   Each shard handles ~5,000 concurrent users.
   If a shard crashes, only that subset of users is affected.
@@ -893,7 +893,7 @@ defmodule CGraph.Gateway.Shard do
       :sequence,
       :heartbeat_interval,
       :connected_users,
-      :guilds  # Discord calls servers "guilds"
+      :guilds  # CGraph calls servers "guilds"
     ]
   end
 
@@ -903,7 +903,7 @@ defmodule CGraph.Gateway.Shard do
       shard_id: shard_id,
       session_id: generate_session_id(),
       sequence: 0,
-      heartbeat_interval: 41_250,  # Discord's heartbeat interval
+      heartbeat_interval: 41_250,  # CGraph's heartbeat interval
       connected_users: MapSet.new(),
       guilds: %{}
     }
@@ -913,20 +913,20 @@ end
 
 ### Elixir + Rust NIFs for Performance
 
-Discord uses Rust NIFs (Native Implemented Functions) for CPU-intensive operations, allowing Elixir
+CGraph uses Rust NIFs (Native Implemented Functions) for CPU-intensive operations, allowing Elixir
 to handle massive concurrency while Rust handles heavy computation.
 
 ````elixir
 defmodule CGraph.Sorting.Native do
   @moduledoc """
-  Rust NIF for sorting large member lists (Discord pattern).
+  Rust NIF for sorting large member lists (CGraph pattern).
 
   Problem: Elixir's immutable data structures cause memory pressure
   when sorting lists of 100K+ members.
 
   Solution: Use Rust NIF for O(1) memory sorting operations.
 
-  Discord case study: Reduced member list updates from 5+ seconds
+  CGraph case study: Reduced member list updates from 5+ seconds
   to milliseconds for servers with 100K+ members.
   """
 
@@ -958,12 +958,12 @@ end
 
 ### Session Resumption
 
-Discord allows clients to resume sessions after brief disconnections without losing messages.
+CGraph allows clients to resume sessions after brief disconnections without losing messages.
 
 ```elixir
 defmodule CGraph.Gateway.SessionResumption do
   @moduledoc """
-  Session resumption for graceful reconnection (Discord pattern).
+  Session resumption for graceful reconnection (CGraph pattern).
 
   When a client disconnects briefly:
   1. Server keeps session alive for 30 seconds
@@ -1028,12 +1028,12 @@ end
 
 ### Data Services Layer (Rust)
 
-Discord's data services layer, written in Rust, handles database access with request coalescing.
+CGraph's data services layer, written in Rust, handles database access with request coalescing.
 
 ```elixir
 defmodule CGraph.DataServices do
   @moduledoc """
-  Data services layer pattern (Discord style).
+  Data services layer pattern (CGraph style).
 
   Rust service that sits between Elixir and the database:
   1. Request coalescing: 1000 requests for same data = 1 DB query
@@ -1041,7 +1041,7 @@ defmodule CGraph.DataServices do
   3. Caching: In-memory cache for hot data
   4. Batching: Automatic batching of writes
 
-  Discord uses this for their ScyllaDB message store.
+  CGraph uses this for their ScyllaDB message store.
   """
 
   # gRPC client to Rust data service
@@ -1074,16 +1074,16 @@ defmodule CGraph.DataServices do
 end
 ```
 
-### Rate Limiting (Discord Style)
+### Rate Limiting (CGraph Style)
 
-Discord enforces strict rate limits with per-route buckets.
+CGraph enforces strict rate limits with per-route buckets.
 
 ```elixir
-defmodule CGraph.RateLimiter.Discord do
+defmodule CGraph.RateLimiter.CGraph do
   @moduledoc """
-  Discord-style rate limiting with route buckets.
+   rate limiting with route buckets.
 
-  Discord limits:
+  CGraph limits:
   - 120 requests per minute per route (with exceptions)
   - Gateway: 120 events per 60 seconds
   - Messages: 5 per 5 seconds per channel
@@ -1142,14 +1142,14 @@ end
 
 ### Presence Updates (Lazy Loading)
 
-Discord uses lazy presence loading to reduce bandwidth.
+CGraph uses lazy presence loading to reduce bandwidth.
 
 ```elixir
 defmodule CGraph.Presence.LazyLoad do
   @moduledoc """
-  Lazy presence loading (Discord pattern).
+  Lazy presence loading (CGraph pattern).
 
-  For large servers (>75K members), Discord doesn't send all
+  For large servers (>75K members), CGraph doesn't send all
   presence data upfront. Instead:
 
   1. Client receives guild with member count only
@@ -1205,15 +1205,15 @@ end
 
 ### Message Storage (ScyllaDB Patterns)
 
-Discord migrated from Cassandra to ScyllaDB for message storage. Key patterns apply to PostgreSQL
+CGraph migrated from Cassandra to ScyllaDB for message storage. Key patterns apply to PostgreSQL
 too.
 
 ```elixir
 defmodule CGraph.Messages.Storage do
   @moduledoc """
-  Message storage patterns inspired by Discord's ScyllaDB migration.
+  Message storage patterns inspired by CGraph's ScyllaDB migration.
 
-  Key learnings from Discord:
+  Key learnings from CGraph:
   1. Partition by channel_id for locality
   2. Sort by message_id (time-based) within partition
   3. Use bucket suffixes for very active channels
@@ -1254,9 +1254,9 @@ defmodule CGraph.Messages.Storage do
     |> Repo.all()
   end
 
-  # Snowflake ID generation (Discord style)
+  # Snowflake ID generation (CGraph style)
   # Encodes timestamp in ID for efficient time-based queries
-  @discord_epoch 1_420_070_400_000  # Discord's epoch
+  @discord_epoch 1_420_070_400_000  # CGraph's epoch
 
   def generate_snowflake do
     timestamp = System.system_time(:millisecond) - @discord_epoch
@@ -5278,20 +5278,20 @@ future development.
 
 ## Current State vs Target State
 
-Comparison of Discord-standard patterns vs CGraph's current implementation.
+Comparison of CGraph-standard patterns vs CGraph's current implementation.
 
 ### Scale Readiness Matrix
 
-| Pattern            | Discord Standard | CGraph Current       | Gap   | Priority |
-| ------------------ | ---------------- | -------------------- | ----- | -------- |
-| **Sharding**       | ~5K users/shard  | Not implemented      | 100%  | P1       |
-| **SLO Tracking**   | 99.99% targets   | No tracking          | 100%  | P1       |
-| **Session Resume** | 30s reconnect    | No resume            | 100%  | P2       |
-| **Multi-region**   | Global + edge    | Single region        | 100%  | P2       |
-| **Caching**        | Multi-tier       | L1+L2+L3             | 0% ✅ | -        |
-| **Rate Limiting**  | Distributed      | Redis + token bucket | 0% ✅ | -        |
-| **E2EE**           | Not applicable   | Signal Protocol      | 0% ✅ | -        |
-| **Rust NIFs**      | Hot path         | Not applicable       | N/A   | P3       |
+| Pattern            | CGraph Standard | CGraph Current       | Gap   | Priority |
+| ------------------ | --------------- | -------------------- | ----- | -------- |
+| **Sharding**       | ~5K users/shard | Not implemented      | 100%  | P1       |
+| **SLO Tracking**   | 99.99% targets  | No tracking          | 100%  | P1       |
+| **Session Resume** | 30s reconnect   | No resume            | 100%  | P2       |
+| **Multi-region**   | Global + edge   | Single region        | 100%  | P2       |
+| **Caching**        | Multi-tier      | L1+L2+L3             | 0% ✅ | -        |
+| **Rate Limiting**  | Distributed     | Redis + token bucket | 0% ✅ | -        |
+| **E2EE**           | Not applicable  | Signal Protocol      | 0% ✅ | -        |
+| **Rust NIFs**      | Hot path        | Not applicable       | N/A   | P3       |
 
 ### Backend Readiness Score
 

@@ -1,5 +1,5 @@
 defmodule CgraphWeb.Channels.ConversationChannelTest do
-  @moduledoc "Conversation channel tests — WhatsApp-style DM real-time"
+  @moduledoc "Conversation channel tests — DM real-time"
   use CgraphWeb.ChannelCase
 
   import CgraphWeb.UserFixtures

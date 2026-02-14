@@ -1,6 +1,6 @@
 defmodule CGraph.Presence.Sampled do
   @moduledoc """
-  Presence sampling for Telegram-scale channels with millions of users.
+  Presence sampling for large channels with millions of users.
 
   ## Overview
 

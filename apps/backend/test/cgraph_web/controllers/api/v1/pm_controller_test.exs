@@ -1,5 +1,5 @@
 defmodule CgraphWeb.API.V1.PmControllerTest do
-  @moduledoc "Private message controller tests — WhatsApp/Telegram DM-style"
+  @moduledoc "Private message controller tests — DM-style"
   use CgraphWeb.ConnCase, async: true
 
   import CgraphWeb.UserFixtures

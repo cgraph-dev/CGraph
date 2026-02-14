@@ -161,7 +161,7 @@ defmodule CGraphWeb.API.V1.CustomizationController do
   end
 
   # Serialize customizations for API response.
-  # Decomposed into cohesive sections per Discord/Google API style.
+  # Decomposed into cohesive sections.
   defp serialize_customizations(c) do
     Map.merge(serialize_identity(c), serialize_themes(c))
     |> Map.merge(serialize_chat_styling(c))

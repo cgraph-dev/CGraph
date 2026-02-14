@@ -3,7 +3,7 @@
  *
  * Reusable overlapping avatar stack with stagger entrance animation.
  * Used for member lists, group previews, and online indicators.
- * Discord/Slack-style stacked avatars with spring physics.
+ * Stacked avatars with spring physics.
  */
 
 import { motion } from 'framer-motion';
@@ -84,7 +84,9 @@ export function AvatarStack({
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <div className={`flex h-full w-full items-center justify-center font-bold text-white ${config.text}`}>
+                <div
+                  className={`flex h-full w-full items-center justify-center font-bold text-white ${config.text}`}
+                >
                   {initial}
                 </div>
               )}
@@ -124,9 +126,7 @@ export function AvatarStack({
         </motion.span>
       )}
 
-      {label && (
-        <span className="text-xs text-gray-500">{label}</span>
-      )}
+      {label && <span className="text-xs text-gray-500">{label}</span>}
     </div>
   );
 }

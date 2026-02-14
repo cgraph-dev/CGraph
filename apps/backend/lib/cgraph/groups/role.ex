@@ -18,7 +18,7 @@ defmodule CGraph.Groups.Role do
     :permissions, :group_id
   ]}
 
-  # Permission bits (Discord-style)
+  # Permission bits
   @permissions %{
     view_channels: 1 <<< 0,
     send_messages: 1 <<< 1,

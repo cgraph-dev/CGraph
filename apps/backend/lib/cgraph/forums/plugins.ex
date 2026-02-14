@@ -176,8 +176,8 @@ defmodule CGraph.Forums.Plugins do
       },
       %{
         plugin_id: "discord_integration",
-        name: "Discord Integration",
-        description: "Sync forum activity with Discord. Post notifications, role sync, and more.",
+        name: "Webhook Integration",
+        description: "Sync forum activity with external services. Post notifications, role sync, and more.",
         version: "1.8.0",
         author: "CGraph Team",
         author_url: "https://cgraph.io",

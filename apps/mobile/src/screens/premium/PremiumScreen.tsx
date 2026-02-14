@@ -63,7 +63,7 @@ const PREMIUM_TIERS: PremiumTier[] = [
       { text: 'Basic encryption', included: true },
       { text: '5 MB file uploads', included: true },
       { text: 'Standard avatar frames', included: true },
-      { text: 'Discord Nitro features', included: false },
+      { text: 'Premium features', included: false },
       { text: 'Custom themes', included: false },
       { text: 'Priority support', included: false },
       { text: 'Advanced analytics', included: false },

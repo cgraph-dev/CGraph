@@ -11,7 +11,7 @@
 CGraph is an all-in-one open-source communication platform featuring:
 
 - **Real-Time Messaging** - Phoenix Channels, sub-50ms latency
-- **Community Forums** - MyBB-style with Reddit-style discovery
+- **Community Forums** - MyBB-style with discovery
 - **End-to-End Encryption** - Signal Protocol (Double Ratchet)
 - **Gamification** - XP, levels, achievements, quests
 - **Cross-Platform** - Web, iOS, Android

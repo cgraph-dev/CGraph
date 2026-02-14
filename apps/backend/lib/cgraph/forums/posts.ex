@@ -1,6 +1,6 @@
 defmodule CGraph.Forums.Posts do
   @moduledoc """
-  Post operations for forums (Reddit-style posts within forums).
+  Post operations for forums.
 
   Handles post CRUD, voting, hiding, pinning, locking.
   """

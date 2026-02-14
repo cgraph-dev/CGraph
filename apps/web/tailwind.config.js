@@ -35,7 +35,7 @@ export default {
           dim: '#003b00',
           bright: '#39ff14',
         },
-        // Discord-like dark theme
+        // Dark theme
         dark: {
           50: '#f9fafb',
           100: '#f3f4f6',
@@ -86,14 +86,14 @@ export default {
         'slide-in': 'slideIn 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s ease-out',
         'bounce-in': 'bounceIn 0.5s ease-out',
-        'shimmer': 'shimmer 2s linear infinite',
-        'glow': 'glowGreen 2s ease-in-out infinite alternate',
+        shimmer: 'shimmer 2s linear infinite',
+        glow: 'glowGreen 2s ease-in-out infinite alternate',
         'glow-pulse': 'glowPulse 3s ease-in-out infinite',
         'matrix-flicker': 'matrixFlicker 0.15s ease-in-out infinite',
         'border-glow': 'borderGlow 2s ease-in-out infinite alternate',
-        'float': 'float 6s ease-in-out infinite',
+        float: 'float 6s ease-in-out infinite',
         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'typing': 'typing 2s steps(20, end) forwards',
+        typing: 'typing 2s steps(20, end) forwards',
         pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
@@ -137,11 +137,17 @@ export default {
         },
         glowGreen: {
           '0%': { boxShadow: '0 0 5px rgba(16, 185, 129, 0.4)' },
-          '100%': { boxShadow: '0 0 20px rgba(16, 185, 129, 0.7), 0 0 40px rgba(16, 185, 129, 0.4)' },
+          '100%': {
+            boxShadow: '0 0 20px rgba(16, 185, 129, 0.7), 0 0 40px rgba(16, 185, 129, 0.4)',
+          },
         },
         glowPulse: {
-          '0%, 100%': { boxShadow: '0 0 5px rgba(16, 185, 129, 0.3), inset 0 0 5px rgba(16, 185, 129, 0.1)' },
-          '50%': { boxShadow: '0 0 20px rgba(16, 185, 129, 0.5), inset 0 0 10px rgba(16, 185, 129, 0.2)' },
+          '0%, 100%': {
+            boxShadow: '0 0 5px rgba(16, 185, 129, 0.3), inset 0 0 5px rgba(16, 185, 129, 0.1)',
+          },
+          '50%': {
+            boxShadow: '0 0 20px rgba(16, 185, 129, 0.5), inset 0 0 10px rgba(16, 185, 129, 0.2)',
+          },
         },
         matrixFlicker: {
           '0%, 100%': { opacity: '1' },
@@ -165,9 +171,9 @@ export default {
         'glow-md': '0 0 20px rgba(16, 185, 129, 0.4)',
         'glow-lg': '0 0 30px rgba(16, 185, 129, 0.5)',
         'glow-xl': '0 0 40px rgba(16, 185, 129, 0.6), 0 0 60px rgba(16, 185, 129, 0.3)',
-        'matrix': '0 0 15px rgba(0, 255, 65, 0.3), inset 0 0 10px rgba(0, 255, 65, 0.1)',
+        matrix: '0 0 15px rgba(0, 255, 65, 0.3), inset 0 0 10px rgba(0, 255, 65, 0.1)',
         'matrix-intense': '0 0 30px rgba(0, 255, 65, 0.5), 0 0 60px rgba(0, 255, 65, 0.2)',
-        'card': '0 2px 8px rgba(0, 0, 0, 0.3)',
+        card: '0 2px 8px rgba(0, 0, 0, 0.3)',
         'card-hover': '0 8px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(16, 185, 129, 0.2)',
       },
     },

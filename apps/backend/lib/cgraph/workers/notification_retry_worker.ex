@@ -2,10 +2,10 @@ defmodule CGraph.Workers.NotificationRetryWorker do
   @moduledoc """
   Dead-letter queue worker for failed push notifications.
 
-  ## Why This Exists (WhatsApp Standard)
+  ## Why This Exists
 
-  WhatsApp retries failed message deliveries for up to 72 hours.
-  Discord retries push notifications with exponential backoff.
+  CGraph retries failed message deliveries for up to 72 hours.
+  CGraph retries push notifications with exponential backoff.
   Without a DLQ, notifications lost to circuit breaker trips or
   transient failures are gone forever.
 

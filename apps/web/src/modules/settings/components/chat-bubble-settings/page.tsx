@@ -69,7 +69,7 @@ export default function ChatBubbleSettings() {
     },
   ];
 
-  // Discord-style: silently sync relevant fields to backend (debounced)
+  // Silently sync relevant fields to backend (debounced)
   useEffect(() => {
     if (syncTimeoutRef.current) {
       clearTimeout(syncTimeoutRef.current);

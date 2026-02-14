@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 repository.
 
 > **MANDATORY**: Before writing ANY code, read `docs/CODE_SIMPLIFICATION_GUIDELINES.md`. All code
-> must follow industry best practices (Google, Meta, Telegram, Discord standards). No exceptions.
+> must follow industry best practices. No exceptions.
 
 ## Technology-Specific Guidelines
 
@@ -25,14 +25,14 @@ See `docs/CODE_SIMPLIFICATION_GUIDELINES.md` Part 8-9 for implementation details
 
 ## Industry Standards We Follow
 
-| Company      | Users | Tech Stack       | What We Adopted                                                         |
-| ------------ | ----- | ---------------- | ----------------------------------------------------------------------- |
-| **Google**   | 4B+   | Various          | SRE (SLO/SLI/Error Budgets), TypeScript Style Guide, structured logging |
-| **Meta**     | 3.4B  | PHP, C++         | TAO caching, multi-region architecture, request coalescing              |
-| **Telegram** | 1B+   | C++, custom      | Event-driven architecture, minimal payloads, lean engineering           |
-| **Discord**  | 200M+ | **Elixir**, Rust | Gateway sharding, Rust NIFs, session resumption, lazy presence          |
+| Company        | Users | Tech Stack       | What We Adopted                                                         |
+| -------------- | ----- | ---------------- | ----------------------------------------------------------------------- |
+| **Google**     | 4B+   | Various          | SRE (SLO/SLI/Error Budgets), TypeScript Style Guide, structured logging |
+| **Meta**       | 3.4B  | PHP, C++         | TAO caching, multi-region architecture, request coalescing              |
+| **Platform A** | 1B+   | C++, custom      | Event-driven architecture, minimal payloads, lean engineering           |
+| **Platform B** | 200M+ | **Elixir**, Rust | Gateway sharding, Rust NIFs, session resumption, lazy presence          |
 
-> **Discord** uses the same stack as CGraph (Elixir/Phoenix). Their patterns are directly
+> **Platform B** uses the same stack as CGraph (Elixir/Phoenix). Their patterns are directly
 > applicable.
 
 ## Project Overview
@@ -52,7 +52,7 @@ forum system.
 - **End-to-End Encryption**: Signal Protocol (X3DH + Double Ratchet) with AES-256-GCM
 - **Multi-Auth Support**: Email/password, OAuth (Google, Apple, Facebook, TikTok)
 - **Real-time Messaging**: Phoenix Channels with WebSocket, presence tracking
-- **Forums & Groups**: Reddit-style karma, Discord-style servers with channels
+- **Forums & Groups**: karma, servers with channels
 - **Gamification**: Achievements, leaderboards, XP system, seasonal events
 - **Push Notifications**: Expo (mobile), Web Push API (browser), email digests
 - **Subscription Tiers**: free (1 forum), premium (5 forums), enterprise (unlimited)
@@ -70,7 +70,7 @@ forum system.
 | **Search Indexing**   | Active          | Oban async: messages, posts, threads indexed on create      |
 | **Load Testing**      | Ready           | k6 scripts: smoke, load, stress, WebSocket, writes          |
 | **DB Partitioning**   | Migration ready | Messages table monthly range partitions + Snowflake IDs     |
-| **Delivery Tracking** | Active          | WhatsApp-style ✓✓ receipts (sent/delivered/read)            |
+| **Delivery Tracking** | Active          | ✓✓ receipts (sent/delivered/read)                           |
 | **Backpressure**      | Active          | Channel write throttling with configurable limits           |
 | **Request Tracing**   | Active          | Plug in 3 router pipelines (api, api_auth, api_admin)       |
 | **Chaos Testing**     | Ready           | Fault injection, fuse stress testing, failure scenarios     |
@@ -181,9 +181,9 @@ fly ssh console -C "/app/bin/cgraph eval 'CGraph.Release.migrate()'"
 
 ## Architecture
 
-### Multi-App Architecture (Discord-Style)
+### Multi-App Architecture
 
-CGraph uses a **Discord-style dual-app architecture** for separation of concerns:
+CGraph uses a ** dual-app architecture** for separation of concerns:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -214,7 +214,7 @@ CGraph uses a **Discord-style dual-app architecture** for separation of concerns
 
 **Why this architecture?**
 
-- **Like Discord**: `discord.com` (landing) vs `app.discord.com` (authenticated app)
+- **Dual-app**: Marketing site (landing) vs authenticated app
 - **Performance**: Landing page is lightweight, app loads full functionality
 - **SEO**: Landing app optimized for search engines
 - **Security**: Authenticated app doesn't expose unnecessary endpoints
@@ -273,7 +273,7 @@ apps/web/
 │   │   ├── auth/                  # Authentication components
 │   │   ├── chat/                  # Messaging (50+ components)
 │   │   ├── forums/                # Forum discussions (20+ components)
-│   │   ├── groups/                # Discord-style servers
+│   │   ├── groups/                #  servers
 │   │   ├── gamification/          # XP, achievements, quests
 │   │   ├── social/                # Friends, presence, profiles
 │   │   ├── settings/              # User preferences
@@ -289,8 +289,8 @@ apps/web/
 │   │   └── types/                 # Shared TypeScript types
 │   ├── pages/
 │   │   ├── messages/              # Direct messages
-│   │   ├── groups/                # Discord-style servers
-│   │   ├── forums/                # Reddit-style forums
+│   │   ├── groups/                #  servers
+│   │   ├── forums/                #  forums
 │   │   ├── settings/              # User settings
 │   │   └── LandingPage.tsx        # Fallback for unauthenticated
 │   ├── stores/                    # Zustand state management
@@ -317,7 +317,7 @@ import { useDebounce, useToast } from '@/shared/hooks';
 import { cn, formatTimeAgo } from '@/shared/utils';
 ```
 
-**Route behavior** (Discord-style):
+**Route behavior** ():
 
 - Authenticated users visiting `/` → Redirected to `/messages`
 - Unauthenticated users visiting `/` → See landing page (or redirect to landing app)
@@ -454,7 +454,7 @@ Core business logic organized by domain:
 - `search.ex` - Full-text search across entities (MeiliSearch primary, PostgreSQL fallback)
 - `search/indexer.ex` - Oban async indexer (messages, posts, threads auto-indexed on create)
 - `snowflake.ex` - Twitter Snowflake ID generator for globally ordered message IDs
-- `messaging/delivery_tracking.ex` - WhatsApp-style ✓✓ delivery receipts
+- `messaging/delivery_tracking.ex` - ✓✓ delivery receipts
 - `messaging/backpressure.ex` - Channel write throttling
 - `chaos.ex` + `chaos/` - Fault injection framework for resilience testing
 - `feature_flags.ex` - GenServer feature flag system with percentage rollouts
@@ -570,7 +570,7 @@ kebab-case:     File names (user-service.ts, api-utils.ts)
 6. **Use Record types** - `Record<Status, string>` for mappings
 7. **Return early** - Reduce nesting with guard clauses
 8. **Explicit return types** - All functions must have return type annotations
-9. **Event-driven writes** - Publish events, process async (Telegram pattern)
+9. **Event-driven writes** - Publish events, process async
 10. **Denormalize counts** - Store vote_count, reply_count as columns
 
 ### The 30-Second Rule
@@ -619,7 +619,7 @@ See `docs/CODE_SIMPLIFICATION_GUIDELINES.md` for:
 - Google SRE practices (SLO/SLI/Error Budgets)
 - Google TypeScript Style Guide
 - Meta scale patterns (TAO caching, multi-region)
-- Telegram architecture (event-driven, minimal payloads)
+- Event-driven architecture (minimal payloads)
 - Observability & distributed tracing
 
 **Code Quality:**
@@ -799,7 +799,7 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
   - Fixed `Metrics` GenServer startup in test environment
 - **~45 test assertion files corrected**: Widened status codes, fixed enum values, pinned random
   factory values, handled DateTime precision
-- **Standards applied**: Discord (defensive channel patterns), Google (type safety), Meta
+- **Standards applied**: CGraph (defensive channel patterns), Google (type safety), Meta
   (preloading)
 
 ### Session 12 Changes (v0.9.23)
@@ -817,7 +817,7 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
   - `event_exporter.ex`: Full export pipeline (JSON/CSV) with file output
   - `event_reward_distributor.ex`: Cosmetic reward granting via shop purchase
 - **Line length fix**: Broke 163-char grouped alias in gamification.ex into multi-line format
-- **Standards applied**: Discord (Redis counters), Google (structured error handling)
+- **Standards applied**: CGraph (Redis counters), Google (structured error handling)
 
 ### Session 11 Changes (v0.9.22)
 
@@ -833,7 +833,7 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
   - `jobs.ex`: Step IDs converted from atoms to strings (unbounded growth)
   - `redis_pool.ex`: Pre-registered connection name atoms at compile time
   - `rate_limiter.ex`: Replaced atom-based ETS pattern with string suffix matching
-- **Standards applied**: Google (dispatch maps), Meta (context structs), Discord (DRY helpers)
+- **Standards applied**: Google (dispatch maps), Meta (context structs), CGraph (DRY helpers)
 
 ### Session 10 Changes (v0.9.21)
 

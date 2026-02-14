@@ -2,7 +2,7 @@
  * CGraph Enterprise Landing Page
  *
  * Production-ready landing page for cgraph.org
- * Designed for scale (millions of users) following Discord's architecture:
+ * Designed for scale (millions of users):
  * - Static generation for CDN caching
  * - Minimal JavaScript for fast FCP/LCP
  * - GSAP for premium scroll animations

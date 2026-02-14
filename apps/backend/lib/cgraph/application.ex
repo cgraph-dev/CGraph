@@ -64,7 +64,7 @@ defmodule CGraph.Application do
       # Start in-app metrics collector/exporter
       CGraph.Metrics,
 
-      # Discord-style Snowflake ID generator for message ordering
+      # Snowflake ID generator for message ordering
       CGraph.Snowflake,
 
       # 4. Database query analysis (N+1 detection, slow query logging)

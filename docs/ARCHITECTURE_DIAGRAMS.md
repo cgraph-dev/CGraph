@@ -63,7 +63,7 @@ flowchart TB
 
 ---
 
-## 2. Dual-App Architecture (Discord-style)
+## 2. Dual-App Architecture ()
 
 ```mermaid
 flowchart LR
@@ -340,7 +340,7 @@ flowchart TB
 
 ---
 
-## 10. Facade Hook Architecture (Discord-style)
+## 10. Facade Hook Architecture ()
 
 ```mermaid
 flowchart TB

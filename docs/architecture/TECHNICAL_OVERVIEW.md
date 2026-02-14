@@ -137,8 +137,8 @@ CGraph/
 lib/cgraph/
   ├── accounts/           # User management
   ├── messaging/          # DMs and conversations
-  ├── groups/             # Discord-style groups
-  ├── forums/             # Reddit-style forums
+  ├── groups/             #  groups
+  ├── forums/             #  forums
   ├── friends/            # Friend relationships
   └── notifications/      # Push & email notifications
 
@@ -250,9 +250,9 @@ users                    -- User accounts (email, wallet, oauth)
 conversations            -- 1:1 DM containers
 conversation_participants -- Many-to-many join table
 messages                 -- All messages (DMs + channels)
-groups                   -- Discord-style servers
+groups                   --  servers
 channels                 -- Text/voice channels in groups
-forums                   -- Reddit-style communities
+forums                   --  communities
 posts                    -- Forum posts with voting
 comments                 -- Nested forum comments
 friendships              -- Friend relationships

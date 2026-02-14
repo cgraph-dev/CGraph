@@ -1,5 +1,5 @@
 defmodule CgraphWeb.Channels.GroupChannelTest do
-  @moduledoc "Group channel tests — Discord-style guild real-time"
+  @moduledoc "Group channel tests — Group real-time"
   use CgraphWeb.ChannelCase
 
   import CgraphWeb.UserFixtures

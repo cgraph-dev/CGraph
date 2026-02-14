@@ -2,7 +2,7 @@
  * k6 Write-Heavy Load Test — CGraph API
  *
  * Tests write operations: message creation, post creation, user updates,
- * group operations. Models peak write patterns similar to Discord during
+ * group operations. Models peak write patterns during
  * large events. Validates database write throughput and connection pool.
  *
  * Run: k6 run --env BASE_URL=https://staging.cgraph.org writes.js

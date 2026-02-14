@@ -295,7 +295,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
   2. Request fresh key bundles before sending new messages
   3. Update their local key stores
 
-  This implements Forward Secrecy - a fundamental property that WhatsApp/Signal
+  This implements Forward Secrecy - a fundamental property used in modern
   guarantee. Without this notification, contacts would continue encrypting
   messages for an attacker's stolen device.
   """

@@ -91,7 +91,7 @@ defmodule CGraph.Groups.Channel do
     |> format_channel_name()
   end
 
-  # Discord-style channel names: lowercase, hyphens instead of spaces
+  # Channel names: lowercase, hyphens instead of spaces
   defp format_channel_name(changeset) do
     case get_change(changeset, :name) do
       nil -> changeset

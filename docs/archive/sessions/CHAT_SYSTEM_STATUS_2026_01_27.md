@@ -70,7 +70,7 @@ have been implemented, optimized, and verified to work correctly.
   - Echo cancellation & noise suppression
   - Opus codec with WebM fallback
   - Click-to-seek playback
-- [x] **Rich Media Embeds** - Images, videos, YouTube, Twitter/X
+- [x] **Rich Media Embeds** - Images, videos, YouTube, Social/X
 
 ### ✅ Message Scheduling (100% Complete - Phase 3)
 
@@ -223,17 +223,17 @@ have been implemented, optimized, and verified to work correctly.
 
 ## Competitor Comparison
 
-| Feature            | CGraph            | WhatsApp | Discord | Telegram | Slack      |
-| ------------------ | ----------------- | -------- | ------- | -------- | ---------- |
-| E2EE               | ✅ Double Ratchet | ✅       | ❌      | Partial  | Enterprise |
-| Message Scheduling | ✅                | ❌       | ❌      | ✅       | ✅         |
-| Emoji Picker       | ✅                | ✅       | ✅      | ✅       | ✅         |
-| Stickers           | ✅ (Paid)         | ✅       | ✅      | ✅       | ❌         |
-| Voice Messages     | ✅                | ✅       | ✅      | ✅       | ❌         |
-| Reactions          | ✅                | ✅       | ✅      | ✅       | ✅         |
-| Message Editing    | ✅                | ❌       | ✅      | ✅       | ✅         |
-| Message Pinning    | ✅                | ✅       | ✅      | ✅       | ✅         |
-| Gamification       | ✅                | ❌       | Partial | ❌       | ❌         |
+| Feature            | CGraph            | CGraph | CGraph  | CGraph  | Slack      |
+| ------------------ | ----------------- | ------ | ------- | ------- | ---------- |
+| E2EE               | ✅ Double Ratchet | ✅     | ❌      | Partial | Enterprise |
+| Message Scheduling | ✅                | ❌     | ❌      | ✅      | ✅         |
+| Emoji Picker       | ✅                | ✅     | ✅      | ✅      | ✅         |
+| Stickers           | ✅ (Paid)         | ✅     | ✅      | ✅      | ❌         |
+| Voice Messages     | ✅                | ✅     | ✅      | ✅      | ❌         |
+| Reactions          | ✅                | ✅     | ✅      | ✅      | ✅         |
+| Message Editing    | ✅                | ❌     | ✅      | ✅      | ✅         |
+| Message Pinning    | ✅                | ✅     | ✅      | ✅      | ✅         |
+| Gamification       | ✅                | ❌     | Partial | ❌      | ❌         |
 
 **Verdict:** CGraph matches or exceeds competitors in all core messaging features.
 

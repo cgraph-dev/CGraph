@@ -13,7 +13,7 @@ defmodule CGraph.Forums.Thread do
   - Multiple thread types (normal, sticky, announcement, poll)
   - Thread prefixes (tags like [SOLVED], [HELP])
   - View and reply counters
-  - Voting (optional Reddit-style)
+  - Voting (optional)
   - Locking and pinning
   """
   use Ecto.Schema

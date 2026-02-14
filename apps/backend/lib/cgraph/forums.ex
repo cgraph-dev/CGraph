@@ -3,7 +3,7 @@ defmodule CGraph.Forums do
   The Forums context.
 
   Handles forums, posts, comments, categories, and voting.
-  Reddit-style discussion functionality with forum competition.
+   discussion functionality with forum competition.
 
   Also handles MyBB-style forum hosting with boards, threads, and posts.
   """
@@ -738,7 +738,7 @@ defmodule CGraph.Forums do
       where: f.is_public == true,
       where: is_nil(f.deleted_at),
       where: p.inserted_at >= ^time_filter,
-      # Hot ranking algorithm (Reddit-style)
+      # Hot ranking algorithm ()
       order_by: [desc: fragment("? / POWER(EXTRACT(EPOCH FROM (NOW() - ?))/3600 + 2, 1.8)", p.score, p.inserted_at), desc: p.id],
       preload: [:author, :category, forum: []]
 
@@ -1792,13 +1792,13 @@ defmodule CGraph.Forums do
   end
 
   @doc """
-  Calculate hot score using Reddit's algorithm.
+  Calculate hot score.
   Combines score with time decay.
   """
   def update_forum_hot_score(forum_id) do
     forum = Repo.get!(Forum, forum_id)
 
-    # Reddit-style hot ranking
+    #  hot ranking
     # score = sign(score) * log10(max(abs(score), 1)) + (created_at / 45000)
     score = forum.score
     sign = if score >= 0, do: 1, else: -1
@@ -2768,13 +2768,13 @@ defmodule CGraph.Forums do
     sort = Keyword.get(opts, :sort, :newest)
     forum_id = Keyword.get(opts, :forum_id)
 
-    # In Reddit-style forums, threads are top-level posts (no parent)
+    # In Forums, threads are top-level posts (no parent)
     # For MyBB-style, these would be thread starters
     query =
       from p in Post,
         where: p.author_id == ^user_id and is_nil(p.deleted_at),
         # Only top-level posts (threads) - check for parent_id if exists
-        # Since we use Reddit-style, Posts are effectively threads
+        # Since we use , Posts are effectively threads
         preload: [:author, :forum],
         select_merge: %{
           reply_count: fragment("COALESCE((SELECT COUNT(*) FROM forum_comments WHERE post_id = ?), 0)", p.id)

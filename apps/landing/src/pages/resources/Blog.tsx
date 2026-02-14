@@ -76,7 +76,7 @@ const blogPosts: BlogPost[] = [
     slug: 'store-consolidation',
     title: 'Store Consolidation: 32 Stores \u2192 7 Facades',
     excerpt:
-      'Adopting Discord-style composition patterns, we consolidated 32 scattered Zustand stores into 7 clean facade hooks: Auth, Chat, Gamification, Settings, Community, Marketplace, and UI. 25 dedicated facade tests ensure reliability.',
+      'Adopting composition patterns, we consolidated 32 scattered Zustand stores into 7 clean facade hooks: Auth, Chat, Gamification, Settings, Community, Marketplace, and UI. 25 dedicated facade tests ensure reliability.',
     category: 'Engineering',
     author: 'Burca Lucas',
     date: 'February 1, 2026',
@@ -104,7 +104,7 @@ const blogPosts: BlogPost[] = [
     slug: 'dual-app-architecture',
     title: 'Dual-App Architecture: Landing vs Web App',
     excerpt:
-      'Why we separated cgraph.org (landing, ~200KB) from app.cgraph.org (full app, ~2MB). The enterprise-grade dual-app pattern with Discord-style module system, 62 lazy-loaded pages, and 168 optimized build chunks.',
+      'Why we separated cgraph.org (landing, ~200KB) from app.cgraph.org (full app, ~2MB). The enterprise-grade dual-app pattern with modular architecture, 62 lazy-loaded pages, and 168 optimized build chunks.',
     category: 'Architecture',
     author: 'Burca Lucas',
     date: 'January 27, 2026',
@@ -132,7 +132,7 @@ const blogPosts: BlogPost[] = [
     slug: 'why-elixir',
     title: 'Why Elixir, Phoenix, and the BEAM VM',
     excerpt:
-      'Our tech stack deep-dive: Elixir 1.17+ with Phoenix 1.8 for the backend, PostgreSQL 16 with 91 tables, 3-tier caching (ETS \u2192 Cachex \u2192 Redis), and Phoenix Channels for WebSocket real-time. Why we chose the same stack Discord uses.',
+      'Our tech stack deep-dive: Elixir 1.17+ with Phoenix 1.8 for the backend, PostgreSQL 16 with 91 tables, 3-tier caching (ETS \u2192 Cachex \u2192 Redis), and Phoenix Channels for WebSocket real-time. Why we chose the BEAM VM for massive concurrency.',
     category: 'Engineering',
     author: 'Burca Lucas',
     date: 'January 2026',
@@ -146,7 +146,7 @@ const blogPosts: BlogPost[] = [
     slug: 'introducing-cgraph',
     title: 'Introducing CGraph: The Vision',
     excerpt:
-      'The vision behind CGraph \u2014 combining Discord-style messaging, Reddit-style forums, Signal-level encryption, and RPG gamification into one platform. 5 subscription tiers from free to enterprise, built for communities of all sizes.',
+      'The vision behind CGraph \u2014 combining real-time messaging, community forums, military-grade encryption, and RPG gamification into one platform. 5 subscription tiers from free to enterprise, built for communities of all sizes.',
     category: 'Product',
     author: 'Burca Lucas',
     date: 'January 2026',

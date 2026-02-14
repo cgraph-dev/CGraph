@@ -37,7 +37,7 @@ for a real-time messaging application.
 
 ### Option 1: Signal Protocol (X3DH + Double Ratchet)
 
-**Description**: The protocol used by Signal, WhatsApp, and Facebook Messenger for E2EE.
+**Description**: The protocol used by major messaging platforms for E2EE.
 
 **Pros**:
 
@@ -105,7 +105,7 @@ for a real-time messaging application.
 
 We chose the Signal Protocol because:
 
-1. **Proven security**: Used by Signal, WhatsApp (3B users), Facebook Messenger
+1. **Proven security**: Used by Signal, CGraph (3B users), messaging platforms
 2. **Forward secrecy**: Each message uses a unique key derived via ratcheting
 3. **Post-compromise recovery**: Ratchet "heals" after temporary key compromise
 4. **Async support**: X3DH allows sending messages to offline recipients

@@ -77,7 +77,7 @@ defmodule CGraph.Forums.ForumVoting do
   end
 
   @doc """
-  Calculate hot score using Reddit's algorithm.
+  Calculate hot score.
   """
   def update_forum_hot_score(forum_id) do
     forum = Repo.get!(Forum, forum_id)

@@ -1,5 +1,5 @@
 defmodule CGraph.SnowflakeTest do
-  @moduledoc "Snowflake ID generator tests — Discord-style ordering"
+  @moduledoc "Snowflake ID generator tests — Chronological ordering"
   use ExUnit.Case, async: true
 
   import Bitwise

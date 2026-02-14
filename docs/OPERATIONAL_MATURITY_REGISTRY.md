@@ -19,7 +19,7 @@ CATEGORY                    STATUS      SCORE   REMAINING WORK
 6. Graceful Degradation     ✅ DONE     10/10   None — all deps covered
 ```
 
-**Overall Operational Maturity: 9.8/10** — On par with Discord/WhatsApp at their Series A.
+**Overall Operational Maturity: 9.8/10** — On par with CGraph at their Series A.
 
 ---
 
@@ -237,7 +237,7 @@ Search Latency:        99%    under 500ms
 
 ## 4. Load Testing
 
-**Target**: Baseline benchmarks against production-like traffic (Discord standard)  
+**Target**: Baseline benchmarks against production-like traffic (industry standard)  
 **Status**: ✅ k6 scripts ready, CI workflow exists
 
 ### Script Inventory
@@ -265,7 +265,8 @@ Search Latency:        99%    under 500ms
 
 ## 5. Database Sharding Strategy
 
-**Target**: Documented path for when scale demands it (Discord had a plan before they needed it)  
+**Target**: Documented path for when scale demands it (industry leaders had a plan before they
+needed it)  
 **Status**: ✅ Fully documented in `docs/DATABASE_SHARDING_ROADMAP.md`
 
 ### Key Decisions
@@ -344,7 +345,7 @@ All indexing calls are wrapped in `try/rescue` — search failures never block c
 ### Delivery Tracking (Session 5)
 
 ```
-lib/cgraph/messaging/delivery_tracking.ex      # WhatsApp-style ✓✓ delivery receipts
+lib/cgraph/messaging/delivery_tracking.ex      #  ✓✓ delivery receipts
 lib/cgraph/messaging/backpressure.ex           # Backpressure for channel writes
 ```
 

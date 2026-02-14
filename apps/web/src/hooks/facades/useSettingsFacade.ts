@@ -1,7 +1,7 @@
 /**
  * Settings Facade Hook
  *
- * Discord-style composition hook that aggregates user settings,
+ * Composition hook that aggregates user settings,
  * customization, theme, and plugin state into a single preferences interface.
  *
  * @example

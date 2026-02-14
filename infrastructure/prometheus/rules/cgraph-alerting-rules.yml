@@ -1,6 +1,6 @@
 groups:
   # ==========================================================================
-  # CGraph Alerting Rules — Discord/Meta/Google SRE Standard
+  # CGraph Alerting Rules — SRE Standard
   # ==========================================================================
   # These alerts fire when SLOs are at risk of breaching.
   # Uses multi-window, multi-burn-rate approach from Google SRE.

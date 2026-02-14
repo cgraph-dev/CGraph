@@ -1254,7 +1254,7 @@ Authorization: Bearer <token>
 ## Forum Hosting Platform (MyBB-style)
 
 The forum hosting platform allows users to create fully-featured forums with boards, threads, posts,
-and complete customization. Forums also participate in Reddit-style discovery and voting.
+and complete customization. Forums also participate in discovery and voting.
 
 ### Forum Voting (Competition)
 

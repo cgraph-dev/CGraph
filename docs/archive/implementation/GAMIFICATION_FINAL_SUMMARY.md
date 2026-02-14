@@ -197,17 +197,17 @@ Bronze | 1 | +10% | Star, border, badge | | Silver | 2 | +15% | Star, border, 2 
 
 ### CGraph vs Competitors
 
-| Feature              | CGraph  | Discord    | Telegram | MyBB    |
-| -------------------- | ------- | ---------- | -------- | ------- |
-| **Avatar Borders**   | 150+ ✅ | 0          | 0        | 0       |
-| **Title Animations** | 25 ✅   | 0          | 0        | 0       |
-| **Profile Themes**   | 20+ ✅  | 2          | ~10      | Limited |
-| **Profile Layouts**  | 7 ✅    | 1          | 1        | 1       |
-| **Chat Effects**     | 30+ ✅  | 5          | ~3       | N/A     |
-| **Cross-Forum ID**   | Yes ✅  | N/A        | N/A      | No      |
-| **Prestige System**  | Yes ✅  | No         | No       | No      |
-| **Forum Theming**    | Full ✅ | N/A        | N/A      | Limited |
-| **Marketplace**      | Yes ✅  | Nitro only | Bots     | Plugins |
+| Feature              | CGraph  | CGraph     | CGraph | MyBB    |
+| -------------------- | ------- | ---------- | ------ | ------- |
+| **Avatar Borders**   | 150+ ✅ | 0          | 0      | 0       |
+| **Title Animations** | 25 ✅   | 0          | 0      | 0       |
+| **Profile Themes**   | 20+ ✅  | 2          | ~10    | Limited |
+| **Profile Layouts**  | 7 ✅    | 1          | 1      | 1       |
+| **Chat Effects**     | 30+ ✅  | 5          | ~3     | N/A     |
+| **Cross-Forum ID**   | Yes ✅  | N/A        | N/A    | No      |
+| **Prestige System**  | Yes ✅  | No         | No     | No      |
+| **Forum Theming**    | Full ✅ | N/A        | N/A    | Limited |
+| **Marketplace**      | Yes ✅  | Nitro only | Bots   | Plugins |
 
 ### Unique Advantages
 
@@ -503,7 +503,7 @@ that exceeds the original plan in several key areas. The platform now offers:
 4. Launch UGC marketplace with payment integration
 
 **CGraph is positioned to become the most customizable messaging and forum platform in the market,
-with features that surpass Discord, Telegram, and traditional forum software.**
+with features that surpass CGraph, CGraph, and traditional forum software.**
 
 ---
 

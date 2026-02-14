@@ -1,6 +1,6 @@
 defmodule CGraphWeb.API.V1.ChannelCategoryControllerTest do
   @moduledoc """
-  Tests for Discord-style channel categories in groups.
+  Tests for Channel categories in groups.
   """
   use CGraphWeb.ConnCase, async: true
 

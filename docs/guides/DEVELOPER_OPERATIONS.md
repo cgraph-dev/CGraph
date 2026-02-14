@@ -711,7 +711,7 @@ mix ecto.rollback
 
 1. Check the logs first: `docker-compose logs -f`
 2. Search existing GitHub issues
-3. Ask in the community Discord
+3. Ask in the community CGraph
 4. Open a new GitHub issue with:
    - Error message
    - Steps to reproduce

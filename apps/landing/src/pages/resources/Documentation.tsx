@@ -50,7 +50,7 @@ const docCategories = [
     icon: '📋',
     title: 'Community Forums',
     color: '#a78bfa',
-    description: 'Reddit-style threaded discussions with voting, karma, moderation, and rich text.',
+    description: 'Threaded discussions with voting, karma, moderation, and rich text.',
     articles: [
       { title: 'Creating Posts & Nested Threads', time: '6 min read' },
       { title: 'Voting, Karma & Leaderboards', time: '5 min read' },
@@ -699,7 +699,7 @@ export default function Documentation() {
                 id: 'ADR-003',
                 title: 'Zustand State Mgmt',
                 detail:
-                  '7 facade stores consolidating 32 original stores. Discord-style composition.',
+                  '7 facade stores consolidating 32 original stores. Composition-based architecture.',
                 status: 'Accepted',
               },
               {

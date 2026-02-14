@@ -1,5 +1,5 @@
 defmodule CgraphWeb.API.V1.ProfileControllerTest do
-  @moduledoc "Profile controller tests — Discord/WhatsApp user profile management"
+  @moduledoc "Profile controller tests — User profile management"
   use CgraphWeb.ConnCase, async: true
 
   import CgraphWeb.UserFixtures

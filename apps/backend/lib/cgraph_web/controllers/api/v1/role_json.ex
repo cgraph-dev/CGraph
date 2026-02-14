@@ -35,7 +35,7 @@ defmodule CGraphWeb.API.V1.RoleJSON do
   end
 
   defp render_permissions(role) do
-    # Discord-style permissions bitfield or structured permissions
+    # Permissions bitfield or structured permissions
     %{
       manage_channels: Map.get(role, :can_manage_channels, false),
       manage_roles: Map.get(role, :can_manage_roles, false),

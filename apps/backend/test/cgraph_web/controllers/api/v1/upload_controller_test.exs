@@ -1,5 +1,5 @@
 defmodule CgraphWeb.API.V1.UploadControllerTest do
-  @moduledoc "Upload controller tests — media handling (Discord/Telegram-style)"
+  @moduledoc "Upload controller tests — media handling ()"
   use CgraphWeb.ConnCase, async: true
 
   import CgraphWeb.UserFixtures

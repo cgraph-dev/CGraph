@@ -1,7 +1,7 @@
 /**
  * User Profile Card Component
  *
- * Discord-style profile popup with hover and click triggers:
+ * Profile popup with hover and click triggers:
  * - Mini variant: Compact card shown on hover (300px)
  * - Full variant: Detailed modal shown on click (600px)
  */

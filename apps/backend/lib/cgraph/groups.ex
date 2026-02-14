@@ -3,7 +3,7 @@ defmodule CGraph.Groups do
   The Groups context.
 
   Handles group (server) management, channels, members, roles, and invites.
-  Discord-style server functionality.
+  Server/community functionality.
   """
 
   import Ecto.Query, warn: false

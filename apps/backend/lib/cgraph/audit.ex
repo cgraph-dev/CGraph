@@ -536,7 +536,7 @@ defmodule CGraph.Audit do
     )
 
     # In production, would send to:
-    # - Slack/Discord webhook
+    # - Webhook
     # - PagerDuty
     # - Email to security team
 

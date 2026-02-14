@@ -3,7 +3,7 @@ defmodule CGraph.Repo.Migrations.AddSnowflakeIdToMessages do
 
   def change do
     alter table(:messages) do
-      # Discord-style Snowflake ID for chronological ordering.
+      # Snowflake ID for chronological ordering.
       # Nullable to preserve existing messages — backfill via batch job.
       # New messages automatically get a Snowflake ID from the generator.
       add :snowflake_id, :bigint

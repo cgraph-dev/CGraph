@@ -31,7 +31,7 @@
 ### What We're Doing
 
 Converting CGraph from an **MIT-licensed open-source project** to a **closed-source proprietary SaaS
-platform** similar to Discord.
+platform** similar to a SaaS platform.
 
 ### What This Means
 
@@ -58,13 +58,13 @@ platform** similar to Discord.
 
 ## 2. Why This Transition
 
-### The Discord Model
+### The Closed-Source Model
 
-Discord is a **closed-source, cloud-only** communication platform:
+CGraph is a **closed-source, cloud-only** communication platform:
 
-- Users cannot see how Discord works internally
-- Users cannot run their own Discord server
-- Discord controls all infrastructure
+- Users cannot see how the platform works internally
+- Users cannot run their own server
+- The company controls all infrastructure
 - Revenue comes from Nitro subscriptions and server boosts
 
 ### Benefits of Closed Source
@@ -646,8 +646,8 @@ export default defineConfig({
 pnpm add -D javascript-obfuscator
 ```
 
-**Reality check:** Discord's client gets reverse-engineered (BetterDiscord, Vencord). Obfuscation
-slows attackers but doesn't stop them. Don't over-invest here.
+**Reality check:** Clients get reverse-engineered. Obfuscation slows attackers but doesn't stop
+them. Don't over-invest here.
 
 **STATUS:** ✅ IMPLEMENTED (January 27, 2026) - Sourcemaps disabled by default
 
@@ -814,7 +814,8 @@ dependencies (viral copyleft).
 
 ### Q: What about the API? Can people build apps?
 
-**A:** You can offer a public API like Discord does. Document it separately from your source code.
+**A:** You can offer a public API like other platforms do. Document it separately from your source
+code.
 
 ### Q: Do I need a lawyer?
 

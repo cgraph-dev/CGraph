@@ -13,7 +13,7 @@ Phase 4: Enhanced Chat Window with User Info Panel
 - Created collapsible right sidebar panel (320px)
 - Displays user profile, level, XP, stats, badges, mutual friends
 - Quick actions: view profile, customize, mute, block, report
-- Discord-style UX without leaving conversation context
+-  UX without leaving conversation context
 - Smooth slide-in animation with spring physics
 
 Phase 6: Enhanced Profile with Edit Mode
@@ -43,8 +43,8 @@ Total Project Impact:
 
 Key Achievements:
 1. Industry-leading customization (95+ options)
-2. Discord-level profile interactions
-3. Telegram-level efficiency
+2. CGraph-level profile interactions
+3. CGraph-level efficiency
 4. Enhanced chat UX with info panels
 5. Inline profile editing
 6. Comprehensive animation system

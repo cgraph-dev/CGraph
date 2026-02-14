@@ -1,6 +1,6 @@
 defmodule CGraphWeb.PresenceChannel do
   @moduledoc """
-  Global presence channel for WhatsApp-style real-time user status tracking.
+  Global presence channel for real-time user status tracking.
 
   Handles:
   - User online/offline state broadcasting (friends only)
@@ -10,7 +10,7 @@ defmodule CGraphWeb.PresenceChannel do
   - Bulk presence queries for contact lists
   - Friend-filtered presence (non-friends won't see each other's status)
 
-  Architecture follows WhatsApp patterns:
+  Architecture follows industry-standard patterns:
   - Immediate online status on app foreground
   - Grace period before marking offline (handles brief disconnects)
   - Last seen persisted to cache with 7-day TTL

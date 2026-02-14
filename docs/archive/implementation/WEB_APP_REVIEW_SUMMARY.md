@@ -134,7 +134,7 @@ Complete technical audit covering:
    - 30+ missing API integrations documented
 
 6. **Forums** - Complete analysis
-   - Architecture confusion identified (Reddit vs MyBB)
+   - Architecture confusion identified (Forum vs MyBB)
    - Voting system (working)
    - Post editor (missing features)
    - Moderation queue (no UI)
@@ -197,9 +197,9 @@ Complete technical audit covering:
 
 #### 4. Forum Architecture Confusion
 
-- **Problem**: Two competing systems (Reddit-style + MyBB-style)
+- **Problem**: Two competing systems ( + MyBB-style)
 - **Impact**: Wasted effort, confusing UX
-- **Files**: `forumStore.ts` (Reddit) + `forumHostingStore.ts` (MyBB)
+- **Files**: `forumStore.ts` (Forum) + `forumHostingStore.ts` (MyBB)
 - **Solution**: Choose one architecture and remove the other
 - **Priority**: P1 - Architectural
 
@@ -315,7 +315,7 @@ Implement forum search
 
 ### Phase 2: High Priority (2-3 weeks)
 
-**Architecture** 11. ✅ Decide forum architecture (Reddit OR MyBB) 12. ✅ Integrate board system
+**Architecture** 11. ✅ Decide forum architecture (Forum OR MyBB) 12. ✅ Integrate board system
 properly OR remove it 13. ✅ Add permission enforcement 14. ✅ Cache invalidation strategy 15. ✅
 Request deduplication
 
@@ -340,12 +340,12 @@ posts/messages 29. Activity feeds 30. E2E testing suite
 
 **Current State**: Two competing implementations
 
-- **Reddit-style**: `forumStore.ts` - forums → posts → comments (70% functional)
+- \*\*\*\*: `forumStore.ts` - forums → posts → comments (70% functional)
 - **MyBB-style**: `forumHostingStore.ts` - forums → boards → threads → posts (40% functional)
 
 **Problem**: Both systems exist with incomplete integration, causing confusion
 
-**Recommendation**: **Choose Reddit-style**
+**Recommendation**: **Choose **
 
 - ✅ Simpler architecture
 - ✅ More complete implementation
@@ -445,7 +445,7 @@ GET /api/v1/users/:id (include avatar_border_config)
 ### Immediate Actions (This Week)
 
 1. **Choose Forum Architecture**
-   - Decision: Reddit-style OR MyBB-style
+   - Decision: OR MyBB-style
    - Remove the unused system
    - Clean up UI and documentation
 
@@ -520,7 +520,7 @@ GET /api/v1/users/:id (include avatar_border_config)
 - Chat: `/apps/web/src/stores/chatStore.ts`
 - Profile: `/apps/web/src/stores/profileStore.ts`
 - Groups: `/apps/web/src/stores/groupStore.ts`
-- Forums (Reddit): `/apps/web/src/stores/forumStore.ts`
+- Forums (Forum): `/apps/web/src/stores/forumStore.ts`
 - Forums (MyBB): `/apps/web/src/stores/forumHostingStore.ts`
 - Gamification: `/apps/web/src/stores/gamificationStore.ts`
 
@@ -558,7 +558,7 @@ just needs to be connected to the backend to become fully functional. Prioritize
 5. Markdown editor addition
 
 With these fixes, CGraph can achieve **95%+ functionality** and deliver an exceptional user
-experience that rivals Discord, Telegram, and Reddit combined.
+experience that rivals CGraph, CGraph, and CGraph combined.
 
 ---
 

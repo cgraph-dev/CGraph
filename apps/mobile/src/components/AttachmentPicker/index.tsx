@@ -1,5 +1,5 @@
 /**
- * TelegramAttachmentPicker - Telegram-style media attachment picker
+ * AttachmentPicker - Media attachment picker
  *
  * Features:
  * - Gallery browsing with album selection
@@ -29,7 +29,7 @@ import * as Contacts from 'expo-contacts';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../contexts/ThemeContext';
 
-import { Asset, SelectedAsset, TabType, TelegramAttachmentPickerProps } from './types';
+import { Asset, SelectedAsset, TabType, AttachmentPickerProps } from './types';
 import { styles } from './styles';
 import {
   MediaTile,
@@ -43,8 +43,8 @@ import {
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const TelegramAttachmentPicker = memo(
-  ({ visible, onClose, onSelectAssets, maxSelection = 10 }: TelegramAttachmentPickerProps) => {
+const AttachmentPicker = memo(
+  ({ visible, onClose, onSelectAssets, maxSelection = 10 }: AttachmentPickerProps) => {
     const { colors, colorScheme } = useTheme();
     const isDark = colorScheme === 'dark';
 
@@ -550,6 +550,6 @@ const TelegramAttachmentPicker = memo(
   }
 );
 
-export default TelegramAttachmentPicker;
-export { TelegramAttachmentPicker };
-export type { TelegramAttachmentPickerProps, SelectedAsset, Asset } from './types';
+export default AttachmentPicker;
+export { AttachmentPicker };
+export type { AttachmentPickerProps, SelectedAsset, Asset } from './types';

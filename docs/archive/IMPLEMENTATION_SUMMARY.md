@@ -177,7 +177,7 @@ gamification, interactive chat features, advanced forums, and extensive UI impro
 - [x] Video embeds (native + YouTube)
 - [x] Audio player with waveform
 - [x] Link previews with Open Graph metadata
-- [x] Platform-specific embeds (YouTube, Twitter)
+- [x] Platform-specific embeds (YouTube, Social)
 - [x] Security hardening (iframe sandbox)
 
 **Typing Indicators:**

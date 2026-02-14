@@ -1,5 +1,5 @@
 defmodule CgraphWeb.Channels.PresenceChannelTest do
-  @moduledoc "Presence channel tests — WhatsApp-style online/offline tracking"
+  @moduledoc "Presence channel tests — Online/offline tracking"
   use CgraphWeb.ChannelCase
 
   import CgraphWeb.UserFixtures

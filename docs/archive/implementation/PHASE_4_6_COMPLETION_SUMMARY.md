@@ -8,7 +8,7 @@
 ## 🎯 Overview
 
 The final 10% of the UI/UX reorganization has been completed, bringing the project to **100%
-completion**. These two optional enhancement phases add Discord-level polish to chat conversations
+completion**. These two optional enhancement phases add CGraph-level polish to chat conversations
 and profile editing.
 
 ### What Was Implemented
@@ -131,8 +131,7 @@ const [showInfoPanel, setShowInfoPanel] = useState(false);
 </div>
 ```
 
-**Impact**: Chat conversations now have Discord-style user info access without leaving the
-conversation context.
+**Impact**: Chat conversations now have user info access without leaving the conversation context.
 
 ---
 
@@ -705,8 +704,8 @@ The CGraph UI/UX Reorganization project is now **fully complete** with all phase
 CGraph now offers:
 
 1. **Industry-leading customization** (95+ options)
-2. **Discord-level profile interactions** (hover/click cards)
-3. **Telegram-level efficiency** (unified social hub)
+2. **CGraph-level profile interactions** (hover/click cards)
+3. **CGraph-level efficiency** (unified social hub)
 4. **Cleanest settings organization** (5 essential sections)
 5. **Comprehensive animation system** (60 FPS, accessible)
 6. **Enhanced chat UX** (collapsible user info panel)

@@ -218,7 +218,7 @@ defmodule CGraphWeb.API.V1.UploadController do
     end
   end
 
-  # Magic byte detection via pattern matching (Google/Discord-style dispatch)
+  # Magic byte detection via pattern matching
   # Each clause matches a specific file signature — no cond needed
   defp identify_type_from_header(<<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, _::binary>>),
     do: {:ok, "image/png"}

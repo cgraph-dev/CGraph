@@ -1,6 +1,6 @@
 defmodule CGraphWeb.Plugs.RequestTracing do
   @moduledoc """
-  End-to-end request tracing plug (Meta/Discord standard).
+  End-to-end request tracing plug.
 
   Assigns a correlation ID to every request that propagates through:
   - HTTP request → response header

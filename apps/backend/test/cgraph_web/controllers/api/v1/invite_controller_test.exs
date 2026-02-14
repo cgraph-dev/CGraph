@@ -1,5 +1,5 @@
 defmodule CgraphWeb.API.V1.InviteControllerTest do
-  @moduledoc "Invite controller tests — Discord-style invite links"
+  @moduledoc "Invite controller tests — Invite links"
   use CgraphWeb.ConnCase, async: true
 
   import CgraphWeb.UserFixtures

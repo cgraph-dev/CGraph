@@ -2,7 +2,7 @@
  * k6 WebSocket Load Test — CGraph Real-Time Messaging
  *
  * Tests WebSocket connection stability, message throughput, and presence
- * under sustained load. Models Discord-like usage patterns.
+ * under sustained load. Models real-world usage patterns.
  *
  * Run: k6 run --env BASE_URL=https://staging.cgraph.org websocket.js
  */

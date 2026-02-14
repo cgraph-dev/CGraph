@@ -5,8 +5,8 @@ what # Multi-App Architecture Implementation Summary
 
 ## Overview
 
-CGraph now implements a **Discord-style dual-app architecture** separating the marketing/landing
-experience from the authenticated application.
+CGraph now implements a ** dual-app architecture** separating the marketing/landing experience from
+the authenticated application.
 
 ## Architecture
 
@@ -64,13 +64,13 @@ cgraph.org (Landing App)           app.cgraph.org (Web App)
 
 ### Web App (`apps/web`)
 
-**Discord-Style Route Behavior** (`App.tsx`):
+**CGraph-Style Route Behavior** (`App.tsx`):
 
 ```tsx
 function LandingRoute({ children }) {
   const { isAuthenticated } = useAuthStore();
 
-  // Authenticated users → /messages (like Discord)
+  // Authenticated users → /messages (like CGraph)
   if (isAuthenticated) {
     return <Navigate to="/messages" replace />;
   }
@@ -199,5 +199,5 @@ cd apps/backend && mix phx.server
 
 ---
 
-**Implementation Quality**: Enterprise-grade, "better than Discord" as requested  
+**Implementation Quality**: Enterprise-grade, "better than CGraph" as requested  
 **Design System**: Consistent glassmorphism, emerald/cyan gradients, motion animations

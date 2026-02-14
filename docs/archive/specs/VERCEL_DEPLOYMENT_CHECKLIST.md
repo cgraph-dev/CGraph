@@ -86,7 +86,7 @@ This means:
 - [x] **Asset Caching** - 1 year cache for static assets (js, css, assets/)
 - [x] **No-Cache HTML** - index.html has no-cache for instant updates
 - [x] **SPA Fallback** - Rewrites configured for client-side routing
-- [x] **API Rewrites** - /api/\* proxied to backend (Discord-style)
+- [x] **API Rewrites** - /api/\* proxied to backend ()
 - [x] **Code Splitting** - Manual chunks for React, GSAP, Framer Motion, etc.
 - [x] **Error Boundary** - Global error boundary wraps entire app
 - [x] **Source Maps** - Enabled for debugging production issues

@@ -136,7 +136,7 @@ defmodule CGraphWeb.ConversationChannel do
 
   @impl true
   def handle_in("typing", params, socket) do
-    # Drop typing events for degraded connections (Discord backpressure pattern)
+    # Drop typing events for degraded connections (backpressure pattern)
     if Backpressure.should_drop?("typing", socket) do
       {:noreply, socket}
     else
@@ -178,7 +178,7 @@ defmodule CGraphWeb.ConversationChannel do
     end
   end
 
-  # WhatsApp-style message delivery acknowledgment
+  # Message delivery acknowledgment
   # Client sends this when a message has been displayed on their device
   @impl true
   def handle_in("msg_ack", %{"message_id" => message_id}, socket) do

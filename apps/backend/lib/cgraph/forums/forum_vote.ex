@@ -3,7 +3,7 @@ defmodule CGraph.Forums.ForumVote do
   Vote schema for forum-level voting.
 
   Each user can upvote or downvote a forum once.
-  Used for Reddit-style forum popularity competition.
+  Used for forum popularity competition.
   """
   use Ecto.Schema
   import Ecto.Changeset

@@ -301,7 +301,7 @@ defmodule CGraph.Cache.RedisPool do
   end
 
   # Pre-registered connection name atoms (bounded by pool_size — safe).
-  # Avoids runtime atom creation per Google/Discord safety guidelines.
+  # Avoids runtime atom creation per safety guidelines.
   @connection_names (for i <- 0..(@pool_size - 1), into: %{} do
     {i, :"cgraph_redis_#{i}"}
   end)

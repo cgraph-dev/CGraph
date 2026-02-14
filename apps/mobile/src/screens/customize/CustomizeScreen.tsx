@@ -1,7 +1,7 @@
 /**
  * Customize Hub Screen
  *
- * Discord-style customization hub with tabs for Identity, Effects, and Progression.
+ * Customization hub with tabs for Identity, Effects, and Progression.
  * Acts as a navigation hub to more specific customization screens.
  */
 

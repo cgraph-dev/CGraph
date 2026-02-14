@@ -1,7 +1,7 @@
 /**
  * Chat Store — Thread Slice
  *
- * Manages Slack-style threaded reply state: active thread, thread messages,
+ * Manages threaded reply state: active thread, thread messages,
  * reply counts, and thread-specific send.
  *
  * Uses a separate Zustand store to avoid cluttering the main chat store.
@@ -111,9 +111,10 @@ export const useThreadStore = create<ThreadState>()(
           set((state) => {
             const merged = [...state.threadMessages, ...newReplies] as Message[];
             return {
-              threadMessages: merged.length > MAX_THREAD_MESSAGES
-                ? merged.slice(merged.length - MAX_THREAD_MESSAGES)
-                : merged,
+              threadMessages:
+                merged.length > MAX_THREAD_MESSAGES
+                  ? merged.slice(merged.length - MAX_THREAD_MESSAGES)
+                  : merged,
               isLoading: false,
               hasMore: res.data?.meta?.has_more || false,
               endCursor: res.data?.meta?.end_cursor || null,
@@ -129,13 +130,10 @@ export const useThreadStore = create<ThreadState>()(
         if (!activeConversationId || !activeThread) return;
 
         try {
-          const res = await api.post(
-            `/api/v1/conversations/${activeConversationId}/messages`,
-            {
-              content,
-              reply_to_id: activeThread.id,
-            }
-          );
+          const res = await api.post(`/api/v1/conversations/${activeConversationId}/messages`, {
+            content,
+            reply_to_id: activeThread.id,
+          });
 
           const message = normalizeMessage(res.data?.data) as unknown as Message;
           if (message?.id) {
@@ -143,14 +141,15 @@ export const useThreadStore = create<ThreadState>()(
             set((state) => {
               const updated = [...state.threadMessages, message] as Message[];
               return {
-              threadMessages: updated.length > MAX_THREAD_MESSAGES
-                ? updated.slice(updated.length - MAX_THREAD_MESSAGES)
-                : updated,
-              replyCounts: {
-                ...state.replyCounts,
-                [activeThread.id]: (state.replyCounts[activeThread.id] || 0) + 1,
-              },
-            };
+                threadMessages:
+                  updated.length > MAX_THREAD_MESSAGES
+                    ? updated.slice(updated.length - MAX_THREAD_MESSAGES)
+                    : updated,
+                replyCounts: {
+                  ...state.replyCounts,
+                  [activeThread.id]: (state.replyCounts[activeThread.id] || 0) + 1,
+                },
+              };
             });
           }
         } catch (err) {
@@ -179,10 +178,9 @@ export const useThreadStore = create<ThreadState>()(
         if (messageIds.length === 0) return;
 
         try {
-          const res = await api.post(
-            `/api/v1/conversations/${conversationId}/thread-counts`,
-            { message_ids: messageIds }
-          );
+          const res = await api.post(`/api/v1/conversations/${conversationId}/thread-counts`, {
+            message_ids: messageIds,
+          });
 
           const counts = res.data?.data || {};
           set((state) => ({

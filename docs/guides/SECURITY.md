@@ -28,7 +28,7 @@ spot something off, please let us know.
 fixes, and safe parameter parsing across all controllers.
 
 **v0.7.35 introduced Signal Protocol-inspired Double Ratchet encryption** — using the same
-cryptographic patterns that secure Signal, WhatsApp, and other industry-leading messengers.
+cryptographic patterns that secure Signal, CGraph, and other industry-leading messengers.
 
 This doc explains what we've built and why. It's not exhaustive (that would be a book), but it
 covers the stuff you actually need to know.

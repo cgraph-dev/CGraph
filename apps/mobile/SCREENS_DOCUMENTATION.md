@@ -2,7 +2,8 @@
 
 ## Overview
 
-This document catalogs all the next-generation mobile UI components and screens that have been built with premium animations, glassmorphism effects, and competitor-surpassing features.
+This document catalogs all the next-generation mobile UI components and screens that have been built
+with premium animations, glassmorphism effects, and competitor-surpassing features.
 
 **Version**: 0.9.2 - Revolutionary Edition  
 **Last Updated**: January 15, 2026
@@ -30,6 +31,7 @@ This document catalogs all the next-generation mobile UI components and screens 
 The centralized design system provides consistent styling across all screens.
 
 #### Features:
+
 - **Color Palettes**: Matrix, Neon, Holographic themes
 - **Typography Scale**: 8 sizes from xs to 4xl
 - **Spacing System**: 8px base unit (4, 8, 12, 16, 20, 24, 32, 40, 48, 64)
@@ -37,6 +39,7 @@ The centralized design system provides consistent styling across all screens.
 - **Rarity System**: 7 tiers (common → divine) with colors and glow effects
 
 #### Rarity Tiers:
+
 ```typescript
 type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic' | 'divine';
 
@@ -51,15 +54,18 @@ type Rarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic' |
 ## Core UI Components
 
 ### 1. GlassCard (`src/components/ui/GlassCard.tsx`)
+
 Glassmorphism card component with multiple variants.
 
 **Variants:**
+
 - `frosted` - Standard frosted glass
 - `crystal` - Clear crystal effect
 - `neon` - Glowing neon borders
 - `holographic` - Rainbow shimmer effect
 
 **Props:**
+
 ```typescript
 interface GlassCardProps {
   variant?: 'frosted' | 'crystal' | 'neon' | 'holographic';
@@ -71,9 +77,11 @@ interface GlassCardProps {
 ```
 
 ### 2. AnimatedAvatar (`src/components/ui/AnimatedAvatar.tsx`)
+
 Premium avatar component with animated borders and effects.
 
 **Features:**
+
 - Border animations: `none`, `glow`, `gradient`, `rainbow`, `holographic`
 - Particle effects: `none`, `sparkles`, `hearts`, `stars`
 - Shape options: `circle`, `rounded`, `hexagon`
@@ -82,6 +90,7 @@ Premium avatar component with animated borders and effects.
 - Online status dot
 
 **Props:**
+
 ```typescript
 interface AnimatedAvatarProps {
   source: ImageSourcePropType;
@@ -96,9 +105,11 @@ interface AnimatedAvatarProps {
 ```
 
 ### 3. ParticleBackground (`src/components/ui/ParticleBackground.tsx`)
+
 Animated floating particles background.
 
 **Particle Types:**
+
 - `orbs` - Floating circular orbs
 - `stars` - Twinkling stars
 - `snow` - Falling snowflakes
@@ -108,9 +119,11 @@ Animated floating particles background.
 - `fireflies` - Glowing fireflies
 
 ### 4. TypingIndicator (`src/components/chat/TypingIndicator.tsx`)
+
 6 different animation styles for typing indicators.
 
 **Styles:**
+
 - `dots` - Classic bouncing dots
 - `wave` - Wave motion dots
 - `pulse` - Pulsing dots
@@ -119,6 +132,7 @@ Animated floating particles background.
 - `fade` - Fading in/out dots
 
 **Props:**
+
 ```typescript
 interface TypingIndicatorProps {
   style?: TypingIndicatorStyle;
@@ -131,9 +145,11 @@ interface TypingIndicatorProps {
 ```
 
 ### 5. EmojiPicker (`src/components/chat/EmojiPicker.tsx`)
+
 Full-featured emoji picker with categories.
 
 **Features:**
+
 - 8 emoji categories (Smileys, People, Animals, Food, Activities, Travel, Objects, Symbols)
 - Search functionality
 - Skin tone selector (6 tones)
@@ -142,9 +158,11 @@ Full-featured emoji picker with categories.
 - Haptic feedback
 
 ### 6. StickerPicker (`src/components/chat/StickerPicker.tsx`)
+
 Advanced sticker system with animations and rarity.
 
 **Features:**
+
 - 15+ animation types per sticker
 - Rarity-based glow effects
 - Pack organization
@@ -152,28 +170,32 @@ Advanced sticker system with animations and rarity.
 - Favorites system
 
 ### 7. ErrorBoundary (`src/components/error/ErrorBoundary.tsx`)
+
 Comprehensive error boundary system with variants and HOC support.
 
 **Exports:**
+
 - `ErrorBoundary` - Main class component
 - `ScreenErrorBoundary` - Wrapper for full screens
 - `ComponentErrorBoundary` - Compact wrapper for individual components
 - `withErrorBoundary` - HOC for wrapping components
 
 **Props:**
+
 ```typescript
 interface ErrorBoundaryProps {
   children: React.ReactNode;
-  fallback?: React.ReactNode;         // Custom fallback UI
-  boundaryName?: string;              // Name for logging/tracking
-  showDetails?: boolean;              // Show error details (default: __DEV__)
+  fallback?: React.ReactNode; // Custom fallback UI
+  boundaryName?: string; // Name for logging/tracking
+  showDetails?: boolean; // Show error details (default: __DEV__)
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
-  showRetry?: boolean;                // Show retry button (default: true)
-  onRetry?: () => void;               // Custom retry handler
+  showRetry?: boolean; // Show retry button (default: true)
+  onRetry?: () => void; // Custom retry handler
 }
 ```
 
 **Features:**
+
 - Gradient background UI on error
 - Stack trace display in development mode
 - Retry functionality with state reset
@@ -190,16 +212,17 @@ interface ErrorBoundaryProps {
 Complete end-to-end encryption management hook using Signal Protocol.
 
 **Return Interface:**
+
 ```typescript
 interface UseE2EEReturn {
   // State (7 properties)
-  isSetUp: boolean;           // Whether E2EE is configured
-  isInitializing: boolean;    // Initial check in progress
-  isLoading: boolean;         // Any operation in progress
+  isSetUp: boolean; // Whether E2EE is configured
+  isInitializing: boolean; // Initial check in progress
+  isLoading: boolean; // Any operation in progress
   identityKey: string | null; // User's identity key
-  deviceId: string | null;    // Device identifier
+  deviceId: string | null; // Device identifier
   fingerprint: string | null; // Key fingerprint
-  error: Error | null;        // Last error
+  error: Error | null; // Last error
 
   // Setup actions (3 methods)
   setupE2EE(): Promise<boolean>;
@@ -228,6 +251,7 @@ interface UseE2EEReturn {
 ```
 
 **Features:**
+
 - Signal Protocol key management
 - Server key registration (`POST /api/v1/e2ee/keys`)
 - Prekey refresh (`POST /api/v1/e2ee/keys/refresh`)
@@ -237,6 +261,7 @@ interface UseE2EEReturn {
 - Haptic feedback on success/error
 
 **API Integration:**
+
 - `POST /api/v1/e2ee/keys` - Register keys with server
 - `POST /api/v1/e2ee/keys/refresh` - Refresh one-time prekeys
 - `GET /api/v1/e2ee/bundle/:recipientId` - Fetch recipient's prekey bundle
@@ -249,6 +274,7 @@ interface UseE2EEReturn {
 Referral program management hook with caching and computed values.
 
 **Return Interface:**
+
 ```typescript
 interface UseReferralsReturn {
   // Data (5 properties)
@@ -285,6 +311,7 @@ interface UseReferralsReturn {
 ```
 
 **Features:**
+
 - 1-minute cache duration for all data
 - Platform-aware share (iOS Share Sheet vs Android intent)
 - Clipboard integration for code copying
@@ -293,6 +320,7 @@ interface UseReferralsReturn {
 - Progress calculation to next tier
 
 **API Integration:**
+
 - `GET /api/v1/referrals/stats` - Get user's referral statistics
 - `GET /api/v1/referrals` - List user's referrals with pagination
 - `GET /api/v1/referrals/tiers` - Get reward tier definitions
@@ -307,6 +335,7 @@ interface UseReferralsReturn {
 React wrapper for the offline queue system with event subscriptions.
 
 **Return Interface:**
+
 ```typescript
 interface UseOfflineQueueReturn {
   // State
@@ -336,6 +365,7 @@ interface UseOfflineQueueReturn {
 ```
 
 **Features:**
+
 - Automatic sync on network restore
 - Event subscriptions for queue changes
 - Priority-based processing
@@ -351,13 +381,28 @@ interface UseOfflineQueueReturn {
 Complete offline-first queue system with network monitoring and retry logic.
 
 **Exports:**
+
 ```typescript
 // Types
-type OfflineItemType = 'message' | 'reaction' | 'typing' | 'read_receipt' | 
-  'forum_post' | 'forum_reply' | 'vote' | 'profile_update' | 'settings_update' | 
-  'attachment_upload' | 'other';
+type OfflineItemType =
+  | 'message'
+  | 'reaction'
+  | 'typing'
+  | 'read_receipt'
+  | 'forum_post'
+  | 'forum_reply'
+  | 'vote'
+  | 'profile_update'
+  | 'settings_update'
+  | 'attachment_upload'
+  | 'other';
 
-enum Priority { CRITICAL = 1, HIGH = 2, NORMAL = 3, LOW = 4 }
+enum Priority {
+  CRITICAL = 1,
+  HIGH = 2,
+  NORMAL = 3,
+  LOW = 4,
+}
 
 interface QueueItem<T = unknown> {
   id: string;
@@ -372,7 +417,9 @@ interface QueueItem<T = unknown> {
 }
 
 // Functions
-function addToQueue<T>(item: Omit<QueueItem<T>, 'id' | 'createdAt' | 'retryCount'>): Promise<string>;
+function addToQueue<T>(
+  item: Omit<QueueItem<T>, 'id' | 'createdAt' | 'retryCount'>
+): Promise<string>;
 function removeFromQueue(id: string): Promise<boolean>;
 function getPendingItems(): Promise<QueueItem[]>;
 function getFailedItems(): Promise<QueueItem[]>;
@@ -388,6 +435,7 @@ function getDebugState(): DebugState;
 ```
 
 **Features:**
+
 - AsyncStorage persistence (`@cgraph_offline_queue`, `@cgraph_offline_failed`)
 - Network state monitoring via NetInfo
 - Priority-based processing (CRITICAL → LOW)
@@ -398,9 +446,14 @@ function getDebugState(): DebugState;
 - Debug state getter for troubleshooting
 
 **Queue Events:**
+
 ```typescript
-type QueueEventType = 'item_added' | 'item_removed' | 'item_processing' | 
-  'item_completed' | 'item_failed';
+type QueueEventType =
+  | 'item_added'
+  | 'item_removed'
+  | 'item_processing'
+  | 'item_completed'
+  | 'item_failed';
 
 interface QueueEvent {
   type: QueueEventType;
@@ -418,6 +471,7 @@ interface QueueEvent {
 Comprehensive theme system with light/dark modes and system preference support.
 
 **Exports:**
+
 ```typescript
 // Provider
 export function ThemeProvider({ children }: { children: React.ReactNode }): JSX.Element;
@@ -436,11 +490,12 @@ export const darkColors: ThemeColors;
 ```
 
 **Context Value:**
+
 ```typescript
 interface ThemeContextValue {
-  colors: ThemeColors;           // Current theme colors
-  colorScheme: ColorSchemeType;  // 'light' or 'dark'
-  isDark: boolean;               // Convenience boolean
+  colors: ThemeColors; // Current theme colors
+  colorScheme: ColorSchemeType; // 'light' or 'dark'
+  isDark: boolean; // Convenience boolean
   themePreference: ThemePreferenceType;
   setThemePreference: (pref: ThemePreferenceType) => void;
   toggleTheme: () => void;
@@ -449,31 +504,33 @@ interface ThemeContextValue {
 
 **Color Token Categories (80+ tokens per theme):**
 
-| Category | Tokens |
-|----------|--------|
-| **Backgrounds** | `background`, `surface`, `surfaceElevated`, `card`, `modal` |
-| **Primary** | `primary`, `primaryDark`, `primaryLight`, `primaryMuted`, `primaryBg`, `accent` |
-| **Text** | `text`, `textSecondary`, `textMuted`, `textInverse`, `textLink` |
-| **Borders** | `border`, `borderLight`, `borderFocus`, `divider` |
-| **Semantic** | `error`, `errorLight`, `success`, `successLight`, `warning`, `warningLight`, `info`, `infoLight` |
-| **UI Elements** | `cardHover`, `inputBorder`, `inputFocus`, `inputPlaceholder`, `disabled`, `disabledText` |
-| **Interactive** | `highlight`, `selection`, `overlayLight`, `shadow` |
-| **Matrix Theme** | `matrixGreen`, `matrixGlow`, `matrixDark` |
-| **Chat** | `chat.bubbleSent`, `chat.bubbleReceived`, `chat.bubbleSentText`, `chat.bubbleReceivedText`, `chat.timestamp` |
-| **Sidebar** | `sidebar.bg`, `sidebar.hover`, `sidebar.active`, `sidebar.text`, `sidebar.textActive` |
-| **Tab Bar** | `tabBar.bg`, `tabBar.active`, `tabBar.inactive`, `tabBar.border` |
-| **Status** | `status.online`, `status.away`, `status.dnd`, `status.offline`, `status.invisible` |
-| **Rarity** | `rarity.common`, `rarity.uncommon`, `rarity.rare`, `rarity.epic`, `rarity.legendary`, `rarity.mythic`, `rarity.divine` |
-| **Premium** | `premium.gold`, `premium.silver`, `premium.bronze` |
+| Category         | Tokens                                                                                                                 |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Backgrounds**  | `background`, `surface`, `surfaceElevated`, `card`, `modal`                                                            |
+| **Primary**      | `primary`, `primaryDark`, `primaryLight`, `primaryMuted`, `primaryBg`, `accent`                                        |
+| **Text**         | `text`, `textSecondary`, `textMuted`, `textInverse`, `textLink`                                                        |
+| **Borders**      | `border`, `borderLight`, `borderFocus`, `divider`                                                                      |
+| **Semantic**     | `error`, `errorLight`, `success`, `successLight`, `warning`, `warningLight`, `info`, `infoLight`                       |
+| **UI Elements**  | `cardHover`, `inputBorder`, `inputFocus`, `inputPlaceholder`, `disabled`, `disabledText`                               |
+| **Interactive**  | `highlight`, `selection`, `overlayLight`, `shadow`                                                                     |
+| **Matrix Theme** | `matrixGreen`, `matrixGlow`, `matrixDark`                                                                              |
+| **Chat**         | `chat.bubbleSent`, `chat.bubbleReceived`, `chat.bubbleSentText`, `chat.bubbleReceivedText`, `chat.timestamp`           |
+| **Sidebar**      | `sidebar.bg`, `sidebar.hover`, `sidebar.active`, `sidebar.text`, `sidebar.textActive`                                  |
+| **Tab Bar**      | `tabBar.bg`, `tabBar.active`, `tabBar.inactive`, `tabBar.border`                                                       |
+| **Status**       | `status.online`, `status.away`, `status.dnd`, `status.offline`, `status.invisible`                                     |
+| **Rarity**       | `rarity.common`, `rarity.uncommon`, `rarity.rare`, `rarity.epic`, `rarity.legendary`, `rarity.mythic`, `rarity.divine` |
+| **Premium**      | `premium.gold`, `premium.silver`, `premium.bronze`                                                                     |
 
 **Light Theme Design:**
+
 - Professional, clean aesthetic with Matrix green accents
 - White/gray backgrounds with subtle shadows
 - High contrast text for readability
 - Soft semantic colors for alerts
 
 **Dark Theme Design:**
-- Discord-inspired with Matrix glow effects
+
+- Dark theme with Matrix glow effects
 - Deep dark backgrounds (#0d0d0d, #1a1a1a)
 - Matrix green (#00ff41) primary color
 - Neon glow effects for premium feel
@@ -486,20 +543,20 @@ interface ThemeContextValue {
 
 **Location:** `src/test/`
 
-| File | Purpose |
-|------|---------|
-| `setup.ts` (426 lines) | Jest setup with comprehensive mocks |
+| File                    | Purpose                              |
+| ----------------------- | ------------------------------------ |
+| `setup.ts` (426 lines)  | Jest setup with comprehensive mocks  |
 | `utils.tsx` (441 lines) | Test utilities and provider wrappers |
 
 ### Test Files
 
-| Test File | Tests | Coverage |
-|-----------|-------|----------|
-| `src/hooks/__tests__/useE2EE.test.ts` | 16 | Full hook lifecycle, encryption, sessions |
-| `src/hooks/__tests__/useReferrals.test.ts` | 10 | Data loading, caching, reward claiming |
-| `src/hooks/__tests__/useOfflineQueue.test.ts` | 14 | Queue operations, events, computed values |
-| `src/components/error/__tests__/ErrorBoundary.test.tsx` | 17 | Boundary behavior, retry, HOC |
-| **Total** | **57** | Comprehensive coverage |
+| Test File                                               | Tests  | Coverage                                  |
+| ------------------------------------------------------- | ------ | ----------------------------------------- |
+| `src/hooks/__tests__/useE2EE.test.ts`                   | 16     | Full hook lifecycle, encryption, sessions |
+| `src/hooks/__tests__/useReferrals.test.ts`              | 10     | Data loading, caching, reward claiming    |
+| `src/hooks/__tests__/useOfflineQueue.test.ts`           | 14     | Queue operations, events, computed values |
+| `src/components/error/__tests__/ErrorBoundary.test.tsx` | 17     | Boundary behavior, retry, HOC             |
+| **Total**                                               | **57** | Comprehensive coverage                    |
 
 **Test Categories:**
 
@@ -543,6 +600,7 @@ interface ThemeContextValue {
 **Version:** 3.0.0 - Revolutionary Edition
 
 **Features:**
+
 - Animated search bar with pulsing glow effect
 - Voice search button with waveform animation
 - Recent searches (AsyncStorage persisted, swipe-to-delete)
@@ -555,12 +613,14 @@ interface ThemeContextValue {
 - Pro tip card
 
 **Filter Options:**
+
 - Verified only toggle
 - Premium users only toggle
 - Has profile picture toggle
 - Sort by: relevance, recent, popular
 
 **Key Animations:**
+
 ```typescript
 // Header entry animation
 Animated.parallel([
@@ -584,6 +644,7 @@ Animated.loop(
 ```
 
 **API Integration:**
+
 - `GET /api/v1/search/users` - User search
 - `GET /api/v1/groups` - Group search
 - `GET /api/v1/forums` - Forum search
@@ -598,6 +659,7 @@ Animated.loop(
 **Version:** 2.0.0 - Revolutionary Edition
 
 **Features:**
+
 - Animated 3D coin with rotation and glow
 - Floating gold particles background
 - Animated balance counter (counts up smoothly)
@@ -608,41 +670,39 @@ Animated.loop(
 - Category tabs (Bundles, Themes, Badges, Effects, Boosts)
 
 **Components:**
+
 ```typescript
 // Animated 3D Coin
-function Animated3DCoin({ size = 70, delay = 0 })
+function Animated3DCoin({ size = 70, delay = 0 });
 // - Y-axis rotation animation
 // - Scale breathing animation
 // - Glow pulse animation
 
 // Animated Counter
-function AnimatedCounter({ value, style })
+function AnimatedCounter({ value, style });
 // - Smooth count-up using Animated.Value listener
 
 // Floating Particles
-function FloatingParticles({ count = 12 })
+function FloatingParticles({ count = 12 });
 // - Gold-colored particles rising upward
 
 // Countdown Timer
-function CountdownTimer({ endsInHours })
+function CountdownTimer({ endsInHours });
 // - Real-time HH:MM:SS countdown
 ```
 
-**Coin Bundles:**
-| ID | Coins | Bonus | Price | Rarity |
-|----|-------|-------|-------|--------|
-| small | 100 | 0 | $0.99 | common |
-| medium | 500 | 50 | $4.99 | popular |
-| large | 1,200 | 200 | $9.99 | - |
-| mega | 2,500 | 500 | $19.99 | best value |
-| ultra | 6,000 | 1,500 | $49.99 | - |
+**Coin Bundles:** | ID | Coins | Bonus | Price | Rarity | |----|-------|-------|-------|--------| |
+small | 100 | 0 | $0.99 | common | | medium | 500 | 50 | $4.99 | popular | | large | 1,200 | 200 |
+$9.99 | - | | mega | 2,500 | 500 | $19.99 | best value | | ultra | 6,000 | 1,500 | $49.99 | - |
 
 **Special Offers:**
+
 - Starter Pack: 1,000 coins, 50% off, 24h countdown
 - Weekend Special: 3,000 coins, 50% off, 48h countdown
 - Mega Bundle: 10,000 coins, 60% off, 12h countdown
 
 **API Integration:**
+
 - `GET /api/v1/coins` - User balance
 - `GET /api/v1/coins/daily-status` - Daily claim status
 - `POST /api/v1/coins/daily-claim` - Claim daily bonus
@@ -656,6 +716,7 @@ function CountdownTimer({ endsInHours })
 **Version:** Revolutionary Edition
 
 **Features:**
+
 - Animated 3D-style podium for top 3
 - Staggered podium entry animations
 - Category filters (Karma, XP, Streak, Messages, Posts)
@@ -666,6 +727,7 @@ function CountdownTimer({ endsInHours })
 - Pull-to-refresh with haptics
 
 **Podium Animation:**
+
 ```typescript
 // Staggered podium entry (2nd, 1st, 3rd order)
 Animated.stagger(200, [
@@ -682,6 +744,7 @@ const scale = podiumAnims[index].interpolate({
 ```
 
 **Categories:**
+
 ```typescript
 const CATEGORIES = [
   { key: 'karma', label: 'Karma', icon: 'heart', color: '#ec4899' },
@@ -693,6 +756,7 @@ const CATEGORIES = [
 ```
 
 **API Integration:**
+
 - `GET /api/v1/users/leaderboard?page=X&limit=25&category=X&period=X`
 
 ---
@@ -700,6 +764,7 @@ const CATEGORIES = [
 ### 4. VoiceCallScreen (`src/screens/calls/VoiceCallScreen.tsx`)
 
 **Features:**
+
 - Audio waveform visualization (5 animated bars)
 - Connection quality indicator (excellent/good/fair/poor)
 - Call state management (connecting, ringing, connected, ended)
@@ -710,6 +775,7 @@ const CATEGORIES = [
 - Haptic feedback on actions
 
 **Call States:**
+
 ```typescript
 type CallState = 'connecting' | 'ringing' | 'connected' | 'ended';
 type ConnectionQuality = 'excellent' | 'good' | 'fair' | 'poor';
@@ -720,6 +786,7 @@ type ConnectionQuality = 'excellent' | 'good' | 'fair' | 'poor';
 ### 5. VideoCallScreen (`src/screens/calls/VideoCallScreen.tsx`)
 
 **Features:**
+
 - Picture-in-Picture (PiP) with drag-to-reposition
 - Auto-hide controls (3s timeout)
 - Camera flip animation (180° rotation)
@@ -729,6 +796,7 @@ type ConnectionQuality = 'excellent' | 'good' | 'fair' | 'poor';
 - PanResponder for PiP dragging with corner snapping
 
 **PiP Implementation:**
+
 ```typescript
 // Draggable PiP with corner snapping
 const panResponder = PanResponder.create({
@@ -752,6 +820,7 @@ const panResponder = PanResponder.create({
 ### 6. CallHistoryScreen (`src/screens/calls/CallHistoryScreen.tsx`)
 
 **Features:**
+
 - Grouped by date (Today, Yesterday, Previous)
 - Animated list items with staggered entry
 - Swipe-to-delete with spring animation
@@ -765,6 +834,7 @@ const panResponder = PanResponder.create({
 ### 7. UserWallScreen (`src/screens/profile/UserWallScreen.tsx`)
 
 **Features:**
+
 - Social timeline with post cards
 - Post composer with media buttons (Photo, Video, Poll, Feeling)
 - Like, comment, share interactions
@@ -774,6 +844,7 @@ const panResponder = PanResponder.create({
 - Haptic feedback on interactions
 
 **Post Actions:**
+
 ```typescript
 const handleLike = (postId: string) => {
   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -791,6 +862,7 @@ const handleComment = (postId: string) => {
 ### 8. ChatBubbleSettingsScreen (`src/screens/settings/ChatBubbleSettingsScreen.tsx`)
 
 **Features:**
+
 - 6 customization tabs
 - Bubble style presets (Modern, Classic, Minimal, Gradient, Neon, Glassmorphism)
 - Color picker with gradient support
@@ -804,6 +876,7 @@ const handleComment = (postId: string) => {
 ## Animation Patterns
 
 ### Entry Animations
+
 ```typescript
 // Parallel fade + slide
 Animated.parallel([
@@ -813,17 +886,22 @@ Animated.parallel([
 ```
 
 ### Staggered List Items
+
 ```typescript
 // Staggered entry for list items
-Animated.stagger(60, items.map((_, i) =>
-  Animated.parallel([
-    Animated.timing(itemOpacity[i], { toValue: 1, duration: 300 }),
-    Animated.spring(itemTranslateX[i], { toValue: 0, friction: 8 }),
-  ])
-)).start();
+Animated.stagger(
+  60,
+  items.map((_, i) =>
+    Animated.parallel([
+      Animated.timing(itemOpacity[i], { toValue: 1, duration: 300 }),
+      Animated.spring(itemTranslateX[i], { toValue: 0, friction: 8 }),
+    ])
+  )
+).start();
 ```
 
 ### Pulse/Glow Effects
+
 ```typescript
 // Continuous pulse
 Animated.loop(
@@ -835,6 +913,7 @@ Animated.loop(
 ```
 
 ### Modal Entry
+
 ```typescript
 // Bottom sheet spring
 Animated.spring(translateY, {
@@ -850,14 +929,18 @@ Animated.spring(translateY, {
 ## Integration Points
 
 ### Theme Context
+
 All screens use `useTheme()` from `../../contexts/ThemeContext`:
+
 ```typescript
 const { colors, colorScheme } = useTheme();
 const isDark = colorScheme === 'dark';
 ```
 
 ### Haptic Feedback
+
 Consistent haptic patterns:
+
 ```typescript
 // Light - taps, toggles
 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -876,6 +959,7 @@ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 ```
 
 ### AsyncStorage Keys
+
 ```typescript
 const RECENT_SEARCHES_KEY = '@cgraph_recent_searches';
 const RECENT_EMOJIS_KEY = '@cgraph_recent_emojis';
@@ -883,7 +967,9 @@ const CHAT_BUBBLE_SETTINGS_KEY = '@cgraph_chat_bubble_settings';
 ```
 
 ### API Service
+
 All API calls use `import api from '../../lib/api'`:
+
 ```typescript
 const response = await api.get('/api/v1/endpoint');
 const response = await api.post('/api/v1/endpoint', data);
@@ -894,6 +980,7 @@ const response = await api.post('/api/v1/endpoint', data);
 ## Dependencies
 
 ### Required Packages
+
 ```json
 {
   "expo-linear-gradient": "^13.x",
@@ -907,6 +994,7 @@ const response = await api.post('/api/v1/endpoint', data);
 ```
 
 ### Import Pattern
+
 ```typescript
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -963,149 +1051,169 @@ apps/mobile/src/
 > **Updated**: January 2026 - Connection status verified by checking actual `api` imports
 
 ### Authentication Screens (4 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **LoginScreen** | `auth/LoginScreen.tsx` | ✅ Yes | `POST /api/v1/auth/login` |
-| **RegisterScreen** | `auth/RegisterScreen.tsx` | ✅ Yes | `POST /api/v1/auth/register` |
-| **ForgotPasswordScreen** | `auth/ForgotPasswordScreen.tsx` | ✅ Yes | `POST /api/v1/auth/forgot-password` |
-| **WelcomeScreen** | `auth/WelcomeScreen.tsx` | N/A | N/A (navigation only) |
+
+| Screen                   | File                            | Backend Connected | API Endpoints                       |
+| ------------------------ | ------------------------------- | ----------------- | ----------------------------------- |
+| **LoginScreen**          | `auth/LoginScreen.tsx`          | ✅ Yes            | `POST /api/v1/auth/login`           |
+| **RegisterScreen**       | `auth/RegisterScreen.tsx`       | ✅ Yes            | `POST /api/v1/auth/register`        |
+| **ForgotPasswordScreen** | `auth/ForgotPasswordScreen.tsx` | ✅ Yes            | `POST /api/v1/auth/forgot-password` |
+| **WelcomeScreen**        | `auth/WelcomeScreen.tsx`        | N/A               | N/A (navigation only)               |
 
 ### Messages/Chat Screens (4 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **ConversationListScreen** | `messages/ConversationListScreen.tsx` | ✅ Yes | `GET /api/v1/conversations`, WebSocket |
-| **ConversationScreen** | `messages/ConversationScreen.tsx` | ✅ Yes | `GET/POST /api/v1/conversations/:id/messages`, WebSocket |
-| **NewConversationScreen** | `messages/NewConversationScreen.tsx` | ✅ Yes | `POST /api/v1/conversations`, search APIs |
-| **MessageSearchScreen** | `messages/MessageSearchScreen.tsx` | ⚠️ Partial | Uses search service, needs: `GET /api/v1/search/messages` |
+
+| Screen                     | File                                  | Backend Connected | API Endpoints                                             |
+| -------------------------- | ------------------------------------- | ----------------- | --------------------------------------------------------- |
+| **ConversationListScreen** | `messages/ConversationListScreen.tsx` | ✅ Yes            | `GET /api/v1/conversations`, WebSocket                    |
+| **ConversationScreen**     | `messages/ConversationScreen.tsx`     | ✅ Yes            | `GET/POST /api/v1/conversations/:id/messages`, WebSocket  |
+| **NewConversationScreen**  | `messages/NewConversationScreen.tsx`  | ✅ Yes            | `POST /api/v1/conversations`, search APIs                 |
+| **MessageSearchScreen**    | `messages/MessageSearchScreen.tsx`    | ⚠️ Partial        | Uses search service, needs: `GET /api/v1/search/messages` |
 
 ### Friends Screens (4 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **FriendListScreen** | `friends/FriendListScreen.tsx` | ✅ Yes | `GET /api/v1/friends`, WebSocket |
-| **AddFriendScreen** | `friends/AddFriendScreen.tsx` | ✅ Yes | `POST /api/v1/friends`, `GET /api/v1/search/users` |
-| **FriendRequestsScreen** | `friends/FriendRequestsScreen.tsx` | ✅ Yes | `GET /api/v1/friends/requests`, `POST /api/v1/friends/:id/accept` |
-| **UserProfileScreen** | `friends/UserProfileScreen.tsx` | ✅ Yes | `GET /api/v1/profiles/:username` |
+
+| Screen                   | File                               | Backend Connected | API Endpoints                                                     |
+| ------------------------ | ---------------------------------- | ----------------- | ----------------------------------------------------------------- |
+| **FriendListScreen**     | `friends/FriendListScreen.tsx`     | ✅ Yes            | `GET /api/v1/friends`, WebSocket                                  |
+| **AddFriendScreen**      | `friends/AddFriendScreen.tsx`      | ✅ Yes            | `POST /api/v1/friends`, `GET /api/v1/search/users`                |
+| **FriendRequestsScreen** | `friends/FriendRequestsScreen.tsx` | ✅ Yes            | `GET /api/v1/friends/requests`, `POST /api/v1/friends/:id/accept` |
+| **UserProfileScreen**    | `friends/UserProfileScreen.tsx`    | ✅ Yes            | `GET /api/v1/profiles/:username`                                  |
 
 ### Forums Screens (10 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **ForumListScreen** | `forums/ForumListScreen.tsx` | ✅ Yes | `GET /api/v1/forums` |
-| **ForumScreen** | `forums/ForumScreen.tsx` | ✅ Yes | `GET /api/v1/forums/:id`, `GET /api/v1/forums/:id/posts` |
-| **ForumBoardScreen** | `forums/ForumBoardScreen.tsx` | ✅ Yes | `GET /api/v1/forums/:id/board` |
-| **PostScreen** | `forums/PostScreen.tsx` | ✅ Yes | `GET /api/v1/forums/:forum_id/posts/:id` |
-| **CreatePostScreen** | `forums/CreatePostScreen.tsx` | ✅ Yes | `POST /api/v1/forums/:forum_id/posts` |
-| **CreateForumScreen** | `forums/CreateForumScreen.tsx` | ✅ Yes | `POST /api/v1/forums` |
-| **ForumSettingsScreen** | `forums/ForumSettingsScreen.tsx` | ✅ Yes | `PUT /api/v1/forums/:id` |
-| **ForumAdminScreen** | `forums/ForumAdminScreen.tsx` | ✅ Yes | Admin forum operations |
-| **ForumLeaderboardScreen** | `forums/ForumLeaderboardScreen.tsx` | ✅ Yes | `GET /api/v1/forums/:id/leaderboard` |
-| **PluginMarketplaceScreen** | `forums/PluginMarketplaceScreen.tsx` | ✅ Yes | Plugin marketplace APIs |
+
+| Screen                      | File                                 | Backend Connected | API Endpoints                                            |
+| --------------------------- | ------------------------------------ | ----------------- | -------------------------------------------------------- |
+| **ForumListScreen**         | `forums/ForumListScreen.tsx`         | ✅ Yes            | `GET /api/v1/forums`                                     |
+| **ForumScreen**             | `forums/ForumScreen.tsx`             | ✅ Yes            | `GET /api/v1/forums/:id`, `GET /api/v1/forums/:id/posts` |
+| **ForumBoardScreen**        | `forums/ForumBoardScreen.tsx`        | ✅ Yes            | `GET /api/v1/forums/:id/board`                           |
+| **PostScreen**              | `forums/PostScreen.tsx`              | ✅ Yes            | `GET /api/v1/forums/:forum_id/posts/:id`                 |
+| **CreatePostScreen**        | `forums/CreatePostScreen.tsx`        | ✅ Yes            | `POST /api/v1/forums/:forum_id/posts`                    |
+| **CreateForumScreen**       | `forums/CreateForumScreen.tsx`       | ✅ Yes            | `POST /api/v1/forums`                                    |
+| **ForumSettingsScreen**     | `forums/ForumSettingsScreen.tsx`     | ✅ Yes            | `PUT /api/v1/forums/:id`                                 |
+| **ForumAdminScreen**        | `forums/ForumAdminScreen.tsx`        | ✅ Yes            | Admin forum operations                                   |
+| **ForumLeaderboardScreen**  | `forums/ForumLeaderboardScreen.tsx`  | ✅ Yes            | `GET /api/v1/forums/:id/leaderboard`                     |
+| **PluginMarketplaceScreen** | `forums/PluginMarketplaceScreen.tsx` | ✅ Yes            | Plugin marketplace APIs                                  |
 
 ### Groups Screens (4 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **GroupListScreen** | `groups/GroupListScreen.tsx` | ✅ Yes | `GET /api/v1/groups` |
-| **GroupScreen** | `groups/GroupScreen.tsx` | ✅ Yes | `GET /api/v1/groups/:id`, channels/messages |
-| **ChannelScreen** | `groups/ChannelScreen.tsx` | ✅ Yes | `GET /api/v1/groups/:id/channels/:id` |
-| **MemberListScreen** | `community/MemberListScreen.tsx` | ✅ Yes | `GET /api/v1/members` |
+
+| Screen               | File                             | Backend Connected | API Endpoints                               |
+| -------------------- | -------------------------------- | ----------------- | ------------------------------------------- |
+| **GroupListScreen**  | `groups/GroupListScreen.tsx`     | ✅ Yes            | `GET /api/v1/groups`                        |
+| **GroupScreen**      | `groups/GroupScreen.tsx`         | ✅ Yes            | `GET /api/v1/groups/:id`, channels/messages |
+| **ChannelScreen**    | `groups/ChannelScreen.tsx`       | ✅ Yes            | `GET /api/v1/groups/:id/channels/:id`       |
+| **MemberListScreen** | `community/MemberListScreen.tsx` | ✅ Yes            | `GET /api/v1/members`                       |
 
 ### Call Screens (3 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **VoiceCallScreen** | `calls/VoiceCallScreen.tsx` | ⚠️ Partial | Needs: WebRTC signaling integration |
-| **VideoCallScreen** | `calls/VideoCallScreen.tsx` | ⚠️ Partial | Needs: WebRTC signaling integration |
-| **CallHistoryScreen** | `calls/CallHistoryScreen.tsx` | ⚠️ Partial | Needs: call history endpoint |
+
+| Screen                | File                          | Backend Connected | API Endpoints                       |
+| --------------------- | ----------------------------- | ----------------- | ----------------------------------- |
+| **VoiceCallScreen**   | `calls/VoiceCallScreen.tsx`   | ⚠️ Partial        | Needs: WebRTC signaling integration |
+| **VideoCallScreen**   | `calls/VideoCallScreen.tsx`   | ⚠️ Partial        | Needs: WebRTC signaling integration |
+| **CallHistoryScreen** | `calls/CallHistoryScreen.tsx` | ⚠️ Partial        | Needs: call history endpoint        |
 
 ### Gamification Screens (5 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **GamificationHubScreen** | `gamification/GamificationHubScreen.tsx` | ✅ Yes | Uses `useGamification` hook → gamification service |
-| **AchievementsScreen** | `gamification/AchievementsScreen.tsx` | ✅ Yes | Uses gamification service |
-| **QuestsScreen** | `gamification/QuestsScreen.tsx` | ✅ Yes | Uses gamification service |
-| **TitlesScreen** | `gamification/TitlesScreen.tsx` | ✅ Yes | Uses gamification service |
-| **LeaderboardScreen** | `leaderboard/LeaderboardScreen.tsx` | ✅ Yes | `GET /api/v1/users/leaderboard` |
+
+| Screen                    | File                                     | Backend Connected | API Endpoints                                      |
+| ------------------------- | ---------------------------------------- | ----------------- | -------------------------------------------------- |
+| **GamificationHubScreen** | `gamification/GamificationHubScreen.tsx` | ✅ Yes            | Uses `useGamification` hook → gamification service |
+| **AchievementsScreen**    | `gamification/AchievementsScreen.tsx`    | ✅ Yes            | Uses gamification service                          |
+| **QuestsScreen**          | `gamification/QuestsScreen.tsx`          | ✅ Yes            | Uses gamification service                          |
+| **TitlesScreen**          | `gamification/TitlesScreen.tsx`          | ✅ Yes            | Uses gamification service                          |
+| **LeaderboardScreen**     | `leaderboard/LeaderboardScreen.tsx`      | ✅ Yes            | `GET /api/v1/users/leaderboard`                    |
 
 ### Premium/Shop Screens (3 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **PremiumScreen** | `premium/PremiumScreen.tsx` | ✅ Yes | Uses `usePremium` hook → premium service |
-| **CoinShopScreen** | `premium/CoinShopScreen.tsx` | ✅ Yes | `GET /api/v1/coins`, shop APIs |
-| **ReferralScreen** | `referrals/ReferralScreen.tsx` | ✅ Yes | Uses `useReferrals` hook → referral service |
+
+| Screen             | File                           | Backend Connected | API Endpoints                               |
+| ------------------ | ------------------------------ | ----------------- | ------------------------------------------- |
+| **PremiumScreen**  | `premium/PremiumScreen.tsx`    | ✅ Yes            | Uses `usePremium` hook → premium service    |
+| **CoinShopScreen** | `premium/CoinShopScreen.tsx`   | ✅ Yes            | `GET /api/v1/coins`, shop APIs              |
+| **ReferralScreen** | `referrals/ReferralScreen.tsx` | ✅ Yes            | Uses `useReferrals` hook → referral service |
 
 ### Settings Screens (10 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **SettingsScreen** | `settings/SettingsScreen.tsx` | ✅ Yes | Uses settings service |
-| **ProfileScreen** | `settings/ProfileScreen.tsx` | ✅ Yes | `GET /api/v1/me`, `PUT /api/v1/me` |
-| **AccountScreen** | `settings/AccountScreen.tsx` | ✅ Yes | Account management APIs |
-| **AppearanceScreen** | `settings/AppearanceScreen.tsx` | ⚠️ Local | Local storage only |
-| **NotificationsScreen** | `settings/NotificationsScreen.tsx` | ✅ Yes | Uses notifications service |
-| **PrivacyScreen** | `settings/PrivacyScreen.tsx` | ✅ Yes | Uses settings service |
-| **ChatBubbleSettingsScreen** | `settings/ChatBubbleSettingsScreen.tsx` | ⚠️ Local | Local storage only |
-| **AvatarSettingsScreen** | `settings/AvatarSettingsScreen.tsx` | ⚠️ Partial | Needs: `POST /api/v1/me/avatar` |
-| **UICustomizationScreen** | `settings/UICustomizationScreen.tsx` | ⚠️ Local | Local storage only |
-| **CustomEmojiScreen** | `settings/CustomEmojiScreen.tsx` | ✅ Yes | Custom emoji APIs |
-| **ProfileVisibilityScreen** | `settings/ProfileVisibilityScreen.tsx` | ✅ Yes | `PUT /api/v1/settings/privacy` |
+
+| Screen                       | File                                    | Backend Connected | API Endpoints                      |
+| ---------------------------- | --------------------------------------- | ----------------- | ---------------------------------- |
+| **SettingsScreen**           | `settings/SettingsScreen.tsx`           | ✅ Yes            | Uses settings service              |
+| **ProfileScreen**            | `settings/ProfileScreen.tsx`            | ✅ Yes            | `GET /api/v1/me`, `PUT /api/v1/me` |
+| **AccountScreen**            | `settings/AccountScreen.tsx`            | ✅ Yes            | Account management APIs            |
+| **AppearanceScreen**         | `settings/AppearanceScreen.tsx`         | ⚠️ Local          | Local storage only                 |
+| **NotificationsScreen**      | `settings/NotificationsScreen.tsx`      | ✅ Yes            | Uses notifications service         |
+| **PrivacyScreen**            | `settings/PrivacyScreen.tsx`            | ✅ Yes            | Uses settings service              |
+| **ChatBubbleSettingsScreen** | `settings/ChatBubbleSettingsScreen.tsx` | ⚠️ Local          | Local storage only                 |
+| **AvatarSettingsScreen**     | `settings/AvatarSettingsScreen.tsx`     | ⚠️ Partial        | Needs: `POST /api/v1/me/avatar`    |
+| **UICustomizationScreen**    | `settings/UICustomizationScreen.tsx`    | ⚠️ Local          | Local storage only                 |
+| **CustomEmojiScreen**        | `settings/CustomEmojiScreen.tsx`        | ✅ Yes            | Custom emoji APIs                  |
+| **ProfileVisibilityScreen**  | `settings/ProfileVisibilityScreen.tsx`  | ✅ Yes            | `PUT /api/v1/settings/privacy`     |
 
 ### Account Screens (2 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **UsernameChangeScreen** | `account/UsernameChangeScreen.tsx` | ✅ Yes | `PUT /api/v1/me/username` |
-| **ExportContentScreen** | `content/ExportContentScreen.tsx` | ✅ Yes | `POST /api/v1/me/export` |
+
+| Screen                   | File                               | Backend Connected | API Endpoints             |
+| ------------------------ | ---------------------------------- | ----------------- | ------------------------- |
+| **UsernameChangeScreen** | `account/UsernameChangeScreen.tsx` | ✅ Yes            | `PUT /api/v1/me/username` |
+| **ExportContentScreen**  | `content/ExportContentScreen.tsx`  | ✅ Yes            | `POST /api/v1/me/export`  |
 
 ### Security Screens (2 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **E2EEVerificationScreen** | `security/E2EEVerificationScreen.tsx` | ✅ Yes | Uses `useE2EE` hook, `GET /api/v1/e2ee/*` |
-| **KeyVerificationScreen** | `settings/KeyVerificationScreen.tsx` | ✅ Yes | `GET /api/v1/e2ee/safety-number/:user_id` |
+
+| Screen                     | File                                  | Backend Connected | API Endpoints                             |
+| -------------------------- | ------------------------------------- | ----------------- | ----------------------------------------- |
+| **E2EEVerificationScreen** | `security/E2EEVerificationScreen.tsx` | ✅ Yes            | Uses `useE2EE` hook, `GET /api/v1/e2ee/*` |
+| **KeyVerificationScreen**  | `settings/KeyVerificationScreen.tsx`  | ✅ Yes            | `GET /api/v1/e2ee/safety-number/:user_id` |
 
 ### Notifications Screens (1 screen)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **NotificationsInboxScreen** | `notifications/NotificationsInboxScreen.tsx` | ✅ Yes | Uses `useNotifications` hook → notifications service |
+
+| Screen                       | File                                         | Backend Connected | API Endpoints                                        |
+| ---------------------------- | -------------------------------------------- | ----------------- | ---------------------------------------------------- |
+| **NotificationsInboxScreen** | `notifications/NotificationsInboxScreen.tsx` | ✅ Yes            | Uses `useNotifications` hook → notifications service |
 
 ### Search Screen (1 screen)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **SearchScreen** | `search/SearchScreen.tsx` | ✅ Yes | Uses `useSearch` hook → search service |
+
+| Screen           | File                      | Backend Connected | API Endpoints                          |
+| ---------------- | ------------------------- | ----------------- | -------------------------------------- |
+| **SearchScreen** | `search/SearchScreen.tsx` | ✅ Yes            | Uses `useSearch` hook → search service |
 
 ### Profile Screens (1 screen)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **UserWallScreen** | `profile/UserWallScreen.tsx` | ⚠️ Partial | Needs: `GET /api/v1/profiles/:username/posts` |
+
+| Screen             | File                         | Backend Connected | API Endpoints                                 |
+| ------------------ | ---------------------------- | ----------------- | --------------------------------------------- |
+| **UserWallScreen** | `profile/UserWallScreen.tsx` | ⚠️ Partial        | Needs: `GET /api/v1/profiles/:username/posts` |
 
 ### Calendar Screen (1 screen)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **CalendarScreen** | `calendar/CalendarScreen.tsx` | ✅ Yes | Uses `useCalendar` hook → calendar service |
+
+| Screen             | File                          | Backend Connected | API Endpoints                              |
+| ------------------ | ----------------------------- | ----------------- | ------------------------------------------ |
+| **CalendarScreen** | `calendar/CalendarScreen.tsx` | ✅ Yes            | Uses `useCalendar` hook → calendar service |
 
 ### Admin Screens (2 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **AdminDashboardScreen** | `admin/AdminDashboardScreen.tsx` | ✅ Yes | `GET /api/v1/admin/*` |
-| **ForumReorderScreen** | `admin/ForumReorderScreen.tsx` | ✅ Yes | `PUT /api/v1/admin/config` |
+
+| Screen                   | File                             | Backend Connected | API Endpoints              |
+| ------------------------ | -------------------------------- | ----------------- | -------------------------- |
+| **AdminDashboardScreen** | `admin/AdminDashboardScreen.tsx` | ✅ Yes            | `GET /api/v1/admin/*`      |
+| **ForumReorderScreen**   | `admin/ForumReorderScreen.tsx`   | ✅ Yes            | `PUT /api/v1/admin/config` |
 
 ### Community Screens (2 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **LeaderboardScreen** | `community/LeaderboardScreen.tsx` | ✅ Yes | `GET /api/v1/users/leaderboard` |
-| **WhosOnlineScreen** | `community/WhosOnlineScreen.tsx` | ✅ Yes | `GET /api/v1/presence/online`, WebSocket |
+
+| Screen                | File                              | Backend Connected | API Endpoints                            |
+| --------------------- | --------------------------------- | ----------------- | ---------------------------------------- |
+| **LeaderboardScreen** | `community/LeaderboardScreen.tsx` | ✅ Yes            | `GET /api/v1/users/leaderboard`          |
+| **WhosOnlineScreen**  | `community/WhosOnlineScreen.tsx`  | ✅ Yes            | `GET /api/v1/presence/online`, WebSocket |
 
 ### Moderation Screens (1 screen)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **ReportScreen** | `moderation/ReportScreen.tsx` | ✅ Yes | `POST /api/v1/reports` |
+
+| Screen           | File                          | Backend Connected | API Endpoints          |
+| ---------------- | ----------------------------- | ----------------- | ---------------------- |
+| **ReportScreen** | `moderation/ReportScreen.tsx` | ✅ Yes            | `POST /api/v1/reports` |
 
 ### Utility Screens (2 screens)
-| Screen | File | Backend Connected | API Endpoints |
-|--------|------|-------------------|---------------|
-| **LoadingScreen** | `LoadingScreen.tsx` | N/A | N/A |
-| **HolographicDemoScreen** | `demo/HolographicDemoScreen.tsx` | N/A | N/A |
+
+| Screen                    | File                             | Backend Connected | API Endpoints |
+| ------------------------- | -------------------------------- | ----------------- | ------------- |
+| **LoadingScreen**         | `LoadingScreen.tsx`              | N/A               | N/A           |
+| **HolographicDemoScreen** | `demo/HolographicDemoScreen.tsx` | N/A               | N/A           |
 
 ---
 
 ## Backend Connection Summary
 
 **Total Screens**: 58
+
 - ✅ **Fully Connected**: 47 screens (81%)
 - ⚠️ **Partially Connected / Local Only**: 8 screens (14%)
 - N/A **No Backend Needed**: 3 screens (5%)
@@ -1114,25 +1222,26 @@ apps/mobile/src/
 
 The mobile app uses a clean service layer architecture:
 
-| Service | Hook | Screens Using |
-|---------|------|---------------|
-| `settingsService` | `useSettings` | Settings, Privacy, Notifications screens |
-| `premiumService` | `usePremium` | PremiumScreen, subscription flows |
-| `friendsService` | `useFriendPresence` | Friend screens, presence indicators |
-| `searchService` | `useSearch` | SearchScreen, AddFriendScreen |
-| `calendarService` | `useCalendar` | CalendarScreen |
-| `notificationsService` | `useNotifications` | NotificationsInboxScreen |
-| `groupsService` | `useGroups` | Group screens |
-| `referralService` | `useReferrals` | ReferralScreen |
-| `gamificationService` | `useGamification` | Gamification screens |
-| `e2ee` (module) | `useE2EE` | E2EE verification screens |
-| `socket` (module) | `useSocket`, `useRealtimeChannel` | All real-time features |
+| Service                | Hook                              | Screens Using                            |
+| ---------------------- | --------------------------------- | ---------------------------------------- |
+| `settingsService`      | `useSettings`                     | Settings, Privacy, Notifications screens |
+| `premiumService`       | `usePremium`                      | PremiumScreen, subscription flows        |
+| `friendsService`       | `useFriendPresence`               | Friend screens, presence indicators      |
+| `searchService`        | `useSearch`                       | SearchScreen, AddFriendScreen            |
+| `calendarService`      | `useCalendar`                     | CalendarScreen                           |
+| `notificationsService` | `useNotifications`                | NotificationsInboxScreen                 |
+| `groupsService`        | `useGroups`                       | Group screens                            |
+| `referralService`      | `useReferrals`                    | ReferralScreen                           |
+| `gamificationService`  | `useGamification`                 | Gamification screens                     |
+| `e2ee` (module)        | `useE2EE`                         | E2EE verification screens                |
+| `socket` (module)      | `useSocket`, `useRealtimeChannel` | All real-time features                   |
 
 ---
 
 ## Backend API Endpoints Reference
 
 ### Authentication (`/api/v1/auth/*`)
+
 ```
 POST /api/v1/auth/register         - Create account
 POST /api/v1/auth/login            - Login
@@ -1145,6 +1254,7 @@ POST /api/v1/auth/2fa/*            - Two-factor authentication
 ```
 
 ### User (`/api/v1/me`, `/api/v1/users/*`)
+
 ```
 GET    /api/v1/me                  - Get current user
 PUT    /api/v1/me                  - Update current user
@@ -1158,6 +1268,7 @@ GET    /api/v1/users/:id           - Get user by ID
 ```
 
 ### Settings (`/api/v1/settings`)
+
 ```
 GET /api/v1/settings               - Get all settings
 PUT /api/v1/settings               - Update all settings
@@ -1167,6 +1278,7 @@ PUT /api/v1/settings/appearance    - Update appearance settings
 ```
 
 ### Friends (`/api/v1/friends/*`)
+
 ```
 GET    /api/v1/friends             - List friends
 GET    /api/v1/friends/requests    - Get friend requests
@@ -1180,6 +1292,7 @@ DELETE /api/v1/friends/:id         - Remove friend
 ```
 
 ### Conversations/Messages (`/api/v1/conversations/*`)
+
 ```
 GET  /api/v1/conversations                     - List conversations
 GET  /api/v1/conversations/:id                 - Get conversation
@@ -1191,6 +1304,7 @@ POST /api/v1/conversations/:id/typing          - Send typing indicator
 ```
 
 ### Groups (`/api/v1/groups/*`)
+
 ```
 GET    /api/v1/groups              - List groups
 POST   /api/v1/groups              - Create group
@@ -1203,6 +1317,7 @@ POST   /api/v1/invites/:code/join  - Join via invite
 ```
 
 ### Forums (`/api/v1/forums/*`)
+
 ```
 GET    /api/v1/forums                       - List forums (public)
 GET    /api/v1/forums/:id                   - Get forum (public)
@@ -1216,6 +1331,7 @@ POST   /api/v1/forums/:forum_id/posts/:id/vote - Vote on post
 ```
 
 ### Search (`/api/v1/search/*`)
+
 ```
 GET /api/v1/search/users    - Search users
 GET /api/v1/search/messages - Search messages
@@ -1223,6 +1339,7 @@ GET /api/v1/search/posts    - Search posts
 ```
 
 ### Notifications (`/api/v1/notifications`)
+
 ```
 GET  /api/v1/notifications          - List notifications
 POST /api/v1/notifications/read     - Mark all read
@@ -1230,6 +1347,7 @@ POST /api/v1/notifications/:id/read - Mark one read
 ```
 
 ### Gamification (`/api/v1/gamification/*`, `/api/v1/quests/*`, `/api/v1/titles/*`)
+
 ```
 GET  /api/v1/gamification/stats        - Get user stats
 GET  /api/v1/gamification/achievements - List achievements
@@ -1247,6 +1365,7 @@ POST /api/v1/titles/:id/equip          - Equip title
 ```
 
 ### Shop/Coins (`/api/v1/shop/*`, `/api/v1/coins/*`)
+
 ```
 GET  /api/v1/shop              - List shop items
 GET  /api/v1/shop/categories   - Shop categories
@@ -1258,6 +1377,7 @@ GET  /api/v1/coins/packages    - Available packages
 ```
 
 ### Premium (`/api/v1/premium/*`)
+
 ```
 GET  /api/v1/premium/status   - Get premium status
 GET  /api/v1/premium/tiers    - Available tiers
@@ -1267,6 +1387,7 @@ POST /api/v1/premium/cancel    - Cancel subscription
 ```
 
 ### Referrals (`/api/v1/referrals/*`)
+
 ```
 GET  /api/v1/referrals/code           - Get referral code
 POST /api/v1/referrals/code/regenerate - Regenerate code
@@ -1277,6 +1398,7 @@ POST /api/v1/referrals/apply           - Apply referral code
 ```
 
 ### Calendar (`/api/v1/calendar/*`)
+
 ```
 GET    /api/v1/calendar/events     - List events
 GET    /api/v1/calendar/events/:id - Get event
@@ -1287,6 +1409,7 @@ POST   /api/v1/calendar/events/:id/rsvp - RSVP to event
 ```
 
 ### Presence (`/api/v1/presence/*`)
+
 ```
 GET  /api/v1/presence/online    - Online users
 POST /api/v1/presence/heartbeat - Update presence
@@ -1294,6 +1417,7 @@ GET  /api/v1/presence/stats     - Presence stats
 ```
 
 ### E2EE (`/api/v1/e2ee/*`)
+
 ```
 POST   /api/v1/e2ee/keys              - Register keys
 GET    /api/v1/e2ee/keys/:user_id     - Get prekey bundle
@@ -1303,6 +1427,7 @@ GET    /api/v1/e2ee/safety-number/:id - Safety number
 ```
 
 ### Profiles (`/api/v1/profiles/*`)
+
 ```
 GET  /api/v1/profiles/:username            - Get profile
 PUT  /api/v1/profiles/signature            - Update signature

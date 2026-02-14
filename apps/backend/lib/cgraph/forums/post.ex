@@ -187,7 +187,7 @@ defmodule CGraph.Forums.Post do
     put_change(changeset, :hot_score, 0.0)
   end
 
-  # Reddit-style hot ranking algorithm
+  # Hot ranking algorithm
   defp calculate_hot_score_value(score, created_at) do
     epoch = ~U[2024-01-01 00:00:00Z]
     seconds = DateTime.diff(created_at, epoch)

@@ -80,7 +80,7 @@ significantly improved security posture and code quality.
 
 - **Comprehensive coding standards** in
   [CODE_SIMPLIFICATION_GUIDELINES.md](CODE_SIMPLIFICATION_GUIDELINES.md) (8,400+ lines) covering
-  Google/Meta/Telegram/Discord patterns
+  Google/Meta/CGraph/CGraph patterns
 - **Minimal enforceable subset** in [CGRAPH_ESSENTIALS.md](CGRAPH_ESSENTIALS.md) (20 rules)
 - **Active refactoring** evidenced in [CHANGELOG.md](../CHANGELOG.md) — recent releases show
   deliberate anti-pattern elimination
@@ -130,7 +130,7 @@ Source: apps/web/src/lib/
 #### Strengths ✅
 
 - **Clean monorepo structure** — Separate apps (web, mobile, landing, backend), shared packages
-- **Discord-style dual-app** — Marketing (cgraph.org) vs app (app.cgraph.org) separation
+- ** dual-app** — Marketing (cgraph.org) vs app (app.cgraph.org) separation
 - **Modern stack** — React 19, Phoenix 1.8, Expo 54, PostgreSQL 16
 - **Proper separation of concerns** — Stores, components, hooks, services clearly organized
 - **Architecture Decision Records** — 5 ADRs documenting major choices
@@ -206,7 +206,7 @@ Source: apps/backend/lib/cgraph_web/controllers/api/v1/oauth_controller.ex
 
 #### Strengths ✅
 
-- **Explicit industry alignment** — Google SRE, Meta scale patterns, Telegram efficiency
+- **Explicit industry alignment** — Google SRE, Meta scale patterns, CGraph efficiency
 - **Conventional commits enforced** via commitlint
 - **Consistent code style** via Prettier + ESLint
 - **TypeScript strict mode** across all packages

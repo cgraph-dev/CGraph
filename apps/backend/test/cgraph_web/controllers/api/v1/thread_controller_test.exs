@@ -1,5 +1,5 @@
 defmodule CgraphWeb.API.V1.ThreadControllerTest do
-  @moduledoc "Thread controller tests — Reddit-style threaded discussions"
+  @moduledoc "Thread controller tests — Threaded discussions"
   use CgraphWeb.ConnCase, async: true
 
   import CgraphWeb.UserFixtures

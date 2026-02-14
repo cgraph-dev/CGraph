@@ -1,5 +1,5 @@
 defmodule CgraphWeb.API.V1.MemberControllerTest do
-  @moduledoc "Member controller tests — Discord-style guild member management"
+  @moduledoc "Member controller tests — Group member management"
   use CgraphWeb.ConnCase, async: true
 
   import CgraphWeb.UserFixtures

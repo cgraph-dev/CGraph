@@ -1,7 +1,7 @@
 /**
  * Auth Facade Hook
  *
- * Discord-style composition hook that aggregates auth, user profile,
+ * Composition hook that aggregates auth, user profile,
  * and session state into a single domain interface.
  *
  * Replaces direct multi-store access patterns with a stable, memoized API.
@@ -47,7 +47,7 @@ export interface AuthFacade {
  * All selectors use individual primitives to avoid re-render storms.
  */
 export function useAuthFacade(): AuthFacade {
-  // Primitive selectors — each subscribes independently (Discord pattern)
+  // Primitive selectors — each subscribes independently (selector pattern)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const user = useAuthStore((s) => s.user);
   const isLoading = useAuthStore((s) => s.isLoading);

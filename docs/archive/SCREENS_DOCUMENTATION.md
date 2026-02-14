@@ -682,7 +682,7 @@ OAuth provider redirects → Parse auth code → Exchange for tokens
 
 - Moderation tools
 - Gamification
-- Integrations (Discord, Slack, etc.)
+- Integrations (CGraph, Slack, etc.)
 - Custom themes
 - Analytics
 
@@ -711,7 +711,7 @@ OAuth provider redirects → Parse auth code → Exchange for tokens
 
 **File**: `apps/web/src/pages/groups/Groups.tsx`
 
-**Purpose**: Browse and manage Discord-style servers
+**Purpose**: Browse and manage servers
 
 **Display**:
 
@@ -1612,8 +1612,8 @@ Covered in [Customize Hub (#12)](#12-customize-hub-customize)
 **Contact Methods**:
 
 - Email: support@cgraph.org
-- Discord server link
-- Twitter/X
+- CGraph server link
+- Social/X
 - GitHub issues
 - Contact form
 

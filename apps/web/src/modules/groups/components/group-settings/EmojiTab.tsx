@@ -2,7 +2,7 @@
  * EmojiTab - Group emoji management
  *
  * Admin UI for uploading, renaming, and deleting custom emoji for a group.
- * Discord-style emoji management with upload, preview grid, and tier limits.
+ * Emoji management with upload, preview grid, and tier limits.
  * Uses /api/v1/groups/:group_id/emojis
  *
  * @module modules/groups/components/group-settings
@@ -94,7 +94,10 @@ export function EmojiTab({ groupId }: EmojiTabProps) {
     }
 
     // Extract name from filename (remove extension)
-    const name = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
+    const name = file.name
+      .replace(/\.[^.]+$/, '')
+      .replace(/[^a-zA-Z0-9_]/g, '_')
+      .toLowerCase();
 
     try {
       setUploading(true);
@@ -119,7 +122,10 @@ export function EmojiTab({ groupId }: EmojiTabProps) {
 
   const handleRename = async (emojiId: string) => {
     if (!editName.trim()) return;
-    const cleanName = editName.trim().replace(/[^a-zA-Z0-9_]/g, '_').toLowerCase();
+    const cleanName = editName
+      .trim()
+      .replace(/[^a-zA-Z0-9_]/g, '_')
+      .toLowerCase();
     try {
       await api.put(`/api/v1/groups/${groupId}/emojis/${emojiId}`, {
         name: cleanName,
@@ -265,9 +271,7 @@ export function EmojiTab({ groupId }: EmojiTabProps) {
                     </button>
                   </div>
                 ) : (
-                  <p className="truncate text-center text-xs text-gray-400">
-                    :{emoji.name}:
-                  </p>
+                  <p className="truncate text-center text-xs text-gray-400">:{emoji.name}:</p>
                 )}
 
                 {/* Animated badge */}
@@ -339,8 +343,7 @@ export function EmojiTab({ groupId }: EmojiTabProps) {
             >
               <h3 className="text-lg font-semibold text-white">Delete Emoji</h3>
               <p className="text-sm text-gray-400">
-                This emoji will be permanently removed and can no longer be used in
-                messages.
+                This emoji will be permanently removed and can no longer be used in messages.
               </p>
               <div className="flex justify-end gap-3">
                 <button

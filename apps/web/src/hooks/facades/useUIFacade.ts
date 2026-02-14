@@ -1,7 +1,7 @@
 /**
  * UI Facade Hook
  *
- * Discord-style composition hook that aggregates notifications,
+ * Composition hook that aggregates notifications,
  * search, calendar, and plugin state into a single UI utilities interface.
  *
  * @example

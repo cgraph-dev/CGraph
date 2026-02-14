@@ -209,9 +209,9 @@ describe('chatBubbleAnimations (extended)', () => {
     }
   });
 
-  it('bubble-telegram uses directional offset based on isOwn', () => {
-    const own = chatBubbleAnimations['bubble-telegram']!(true, 0);
-    const other = chatBubbleAnimations['bubble-telegram']!(false, 0);
+  it('bubble-asymmetric uses directional offset based on isOwn', () => {
+    const own = chatBubbleAnimations['bubble-asymmetric']!(true, 0);
+    const other = chatBubbleAnimations['bubble-asymmetric']!(false, 0);
     const ownX = (own.initial as Record<string, unknown>).x as number;
     const otherX = (other.initial as Record<string, unknown>).x as number;
     expect(ownX).toBeGreaterThan(0);

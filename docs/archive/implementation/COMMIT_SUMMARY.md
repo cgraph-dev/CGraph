@@ -18,7 +18,7 @@ Key Changes:
 - Navigation: 9 tabs → 6 tabs (33% reduction)
 - Customization Hub: 95+ options across 5 categories (industry-first)
 - Social Hub: Unified friends, notifications, search interface
-- Profile Popups: Discord-style hover/click cards everywhere
+- Profile Popups:  hover/click cards everywhere
 - Settings: 11 sections → 5 essential sections (55% reduction)
 - Animation System: Comprehensive library with 60 FPS target
 

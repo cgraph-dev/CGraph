@@ -193,7 +193,7 @@ Created 12 feature-based modules under `apps/web/src/modules/`:
 | `auth`         | Authentication & session    | 7          |
 | `chat`         | Messaging & conversations   | 50+        |
 | `forums`       | Forum discussions           | 20+        |
-| `groups`       | Discord-style servers       | 6          |
+| `groups`       | servers                     | 6          |
 | `gamification` | XP, achievements, quests    | 15+        |
 | `social`       | Friends, presence, profiles | 5          |
 | `settings`     | User preferences            | 8+         |
@@ -395,8 +395,8 @@ production-safe logging.
 
 **🧹 CODE SIMPLIFICATION & COMPONENT EXTRACTION**
 
-Major code quality improvements following Google, Meta, and Telegram industry standards. Component
-extraction for better maintainability and reusability.
+Major code quality improvements following industry standards. Component extraction for better
+maintainability and reusability.
 
 ### 🏗️ Code Architecture Improvements
 
@@ -452,7 +452,7 @@ extraction for better maintainability and reusability.
   - Google SRE practices (SLIs, SLOs, Error Budgets)
   - Google TypeScript standards
   - Meta scale patterns (TAO caching, multi-region)
-  - Telegram architecture patterns (event-driven, efficiency)
+  - Event-driven architecture patterns
   - SOLID principles with examples
   - Performance budgets and benchmarks
   - Code review checklists
@@ -469,8 +469,8 @@ extraction for better maintainability and reusability.
 
 **🚀 ENTERPRISE LANDING PAGE + DISCORD-STYLE ARCHITECTURE**
 
-This release transforms the landing page into an enterprise-grade marketing site following Discord's
-architecture pattern.
+This release transforms the landing page into an enterprise-grade marketing site following industry
+best practices for architecture pattern.
 
 ### 🏗️ Architecture Changes
 
@@ -2931,7 +2931,7 @@ and an enhanced README for better project visibility.
 
 #### 📖 README Overhaul
 
-- Added competitor comparison table (vs Discord, Slack, Telegram, Signal)
+- Added feature comparison table
 - New "Built for Scale" section with performance claims
 - Feature highlights with visual tables
 - Architecture diagram (ASCII art)
@@ -4512,7 +4512,7 @@ We were being vague about voice and video features. Now there's a clear doc expl
   - When a user revokes a compromised key (lost device, security breach), all friends are now
     immediately notified via WebSocket
   - Contacts' clients invalidate cached prekey bundles, preventing encryption to compromised keys
-  - Implements proper Forward Secrecy guarantees matching Signal/WhatsApp standards
+  - Implements proper Forward Secrecy guarantees matching industry standards
   - New `notify_key_revocation/3` function broadcasts to all `user:{friend_id}` channels
   - Added `get_accepted_friend_ids/1` public API in Friends module
 
@@ -4743,7 +4743,7 @@ const response = await api.post('/messages', {
 
 - **Chat Scroll to Last Message** - Fixed scroll always going to first messages instead of latest
   - Root cause: Non-inverted FlatList requires manual scroll management that was failing
-  - Solution: Standard inverted FlatList pattern used by WhatsApp, iMessage, Telegram
+  - Solution: Standard inverted FlatList pattern used by modern messaging apps
 - **Photo/Camera/File Pickers** - Fixed concurrent picker error crashing the app
   - Root cause: Multiple pickers opening simultaneously
   - Solution: Mutex-style lock with isPickerActiveRef and finally blocks

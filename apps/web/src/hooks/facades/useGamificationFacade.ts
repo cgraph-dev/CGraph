@@ -1,7 +1,7 @@
 /**
  * Gamification Facade Hook
  *
- * Discord-style composition hook that aggregates XP, achievements,
+ * Composition hook that aggregates XP, achievements,
  * prestige, seasonal events, and referrals into a single progression interface.
  *
  * @example

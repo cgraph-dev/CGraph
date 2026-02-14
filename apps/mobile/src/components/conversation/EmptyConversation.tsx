@@ -1,9 +1,9 @@
 /**
  * EmptyConversation Component
- * 
+ *
  * Beautiful animated empty state for new conversations.
  * Encourages users to start chatting with wave buttons and quick starters.
- * 
+ *
  * @module components/conversation/EmptyConversation
  * @since v0.7.29
  */
@@ -37,16 +37,16 @@ const QUICK_STARTERS = ['Hello! 👋', "What's up? 🤔", 'Nice to meet you! ✨
 
 /**
  * Empty state component displayed when a conversation has no messages.
- * 
+ *
  * Features:
  * - User avatar with online indicator
  * - Animated waving hand emoji
  * - "Wave" button to send greeting
  * - "Say Hi" button with preset message
  * - Quick starter chips for common greetings
- * 
- * Design inspired by Discord and Telegram's friendly empty states.
- * 
+ *
+ * Design inspired by modern messaging empty states.
+ *
  * @example
  * ```tsx
  * <EmptyConversation
@@ -128,7 +128,10 @@ export const EmptyConversation = memo(function EmptyConversation({
           {QUICK_STARTERS.map((starter, index) => (
             <TouchableOpacity
               key={index}
-              style={[styles.starterChip, { backgroundColor: colors.surface, borderColor: colors.border }]}
+              style={[
+                styles.starterChip,
+                { backgroundColor: colors.surface, borderColor: colors.border },
+              ]}
               onPress={() => onSetInputText(starter)}
               activeOpacity={0.7}
             >

@@ -1,4 +1,4 @@
-# ADR-004: Dual-App Architecture (Discord Pattern)
+# ADR-004: Dual-App Architecture
 
 ## Status
 
@@ -36,7 +36,7 @@ Initially, both were served from the same React application. This created issues
 
 ## Considered Options
 
-### Option 1: Dual-App Architecture (Discord Pattern)
+### Option 1: Dual-App Architecture
 
 **Description**: Separate apps for marketing (cgraph.org) and application (app.cgraph.org).
 
@@ -88,9 +88,9 @@ Initially, both were served from the same React application. This created issues
 
 ## Decision
 
-**Chosen option: Dual-App Architecture (Discord Pattern)**
+**Chosen option: Dual-App Architecture**
 
-Discord uses this pattern:
+CGraph uses this pattern:
 
 - `discord.com` → Marketing, legal, company pages
 - `discord.com/app` or `app.discord.com` → Authenticated application
@@ -180,5 +180,5 @@ apps/
 
 ## References
 
-- [Discord's Architecture Blog](https://discord.com/blog/how-discord-stores-trillions-of-messages)
+- [CGraph's Architecture Blog](https://discord.com/blog/how-discord-stores-trillions-of-messages)
 - [MULTI_APP_ARCHITECTURE_SUMMARY.md](../../../MULTI_APP_ARCHITECTURE_SUMMARY.md)

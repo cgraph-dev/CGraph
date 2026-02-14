@@ -1451,13 +1451,13 @@ The conversation screen delivers a polished messaging experience with thoughtful
 - Voice and video call buttons for WebRTC 1:1 and group calls
 - Visual encryption indicator showing E2EE protection status
 
-**Attachment Menu (TelegramAttachmentPicker):**  
+**Attachment Menu (CGraphAttachmentPicker):**  
 Tap the + button to reveal a beautiful slide-up menu with options to:
 
 - Share photos and videos from your library (with proper Android URI resolution)
 - Capture photos or videos with camera (photo/video mode toggle)
 - Send documents and files
-- Share contacts (Telegram-style contact picker with animations)
+- Share contacts ( contact picker with animations)
 - Share your location (planned)
 
 > **v0.7.39 Note:** Gallery loading now includes fallback UI for Expo Go environments where
@@ -1465,7 +1465,7 @@ Tap the + button to reveal a beautiful slide-up menu with options to:
 > "Take Photo/Video" buttons that use ImagePicker directly. Camera now supports both photo and video
 > recording with a mode toggle.
 
-**Contact Sharing (v0.7.39):** The contact picker provides a Telegram-style experience:
+**Contact Sharing (v0.7.39):** The contact picker provides a experience:
 
 - Full-screen animated contact list with smooth entrance
 - Search bar to filter by name or phone number

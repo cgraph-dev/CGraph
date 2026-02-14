@@ -71,7 +71,7 @@ rich forums, end-to-end encryption, and gamification—all in one seamless exper
 
 ### 📰 Community Forums
 
-- Reddit-style posts with upvote/downvote
+- Forum posts with upvote/downvote
 - Karma tracking and user rankings
 - Nested comment threads with infinite depth
 - Thread prefixes and categories
@@ -191,7 +191,7 @@ Visit [cgraph.org/pricing](https://cgraph.org/pricing) for full details.
 
 ## Architecture
 
-CGraph uses a **Discord-style dual-app architecture**:
+CGraph uses a **dual-app architecture**:
 
 ```
 ┌──────────────────────┐              ┌──────────────────────┐
@@ -224,7 +224,7 @@ CGraph uses a **Discord-style dual-app architecture**:
 
 ### Why Two Apps?
 
-Like Discord (`discord.com` vs `app.discord.com`):
+Like many modern platforms (marketing site vs app):
 
 - **Performance**: Landing page is lightweight (~200KB), app is feature-rich (~2MB)
 - **SEO**: Landing app optimized for search engines and social sharing

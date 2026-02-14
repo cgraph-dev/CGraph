@@ -2,7 +2,7 @@
  * ValueProposition Section
  *
  * Replaces the pricing section with a "Why CGraph?" comparison.
- * Follows Discord's approach: show the value, not premature pricing.
+ * Shows the value proposition, not premature pricing.
  * Features 4 key differentiators with highlighted stats.
  *
  * @since v2.1.0
@@ -61,7 +61,7 @@ export default function ValueProposition(): React.JSX.Element {
         title="Built"
         titleAccent="Different"
         titleAccentClass="title-fx--ice"
-        description="Not just another chat app. CGraph combines the best of Discord, Signal, and Reddit into one privacy-first platform."
+        description="Not just another chat app. CGraph unifies real-time messaging, community forums, and military-grade encryption into one privacy-first platform."
       />
 
       <div className="value-grid">

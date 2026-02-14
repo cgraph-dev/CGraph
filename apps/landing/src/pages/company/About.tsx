@@ -37,13 +37,13 @@ const capabilities = [
     icon: '🏛️',
     title: 'Servers & Channels',
     description:
-      'Discord-style organized servers with text, voice, forum, and announcement channels. Custom roles with 20+ granular permissions.',
+      'Organized servers with text, voice, forum, and announcement channels. Custom roles with 20+ granular permissions.',
   },
   {
     icon: '📋',
     title: 'Community Forums',
     description:
-      'Reddit-style posts with voting, karma, nested threads, rich text editor, BBCode parser, poll system, and moderator tools.',
+      'Posts with voting, karma, nested threads, rich text editor, BBCode parser, poll system, and moderator tools.',
   },
   {
     icon: '🎮',
@@ -74,7 +74,7 @@ const techStack = [
     items: [
       { name: 'React 19 / TypeScript 5.8', role: 'Web application' },
       { name: 'React Native 0.81 / Expo 54', role: 'iOS & Android' },
-      { name: 'Zustand 5', role: '7 facade stores, Discord-style composition' },
+      { name: 'Zustand 5', role: '7 facade stores, Composition' },
       { name: 'Vite 6.3', role: '168 optimized chunks, 62 lazy-loaded pages' },
     ],
   },
@@ -95,7 +95,7 @@ const milestones = [
     date: 'Jan 27, 2026',
     title: 'Dual-App Architecture',
     description:
-      'Separated landing site from web app. Enterprise-grade architecture with Discord-style module system.',
+      'Separated landing site from web app. Enterprise-grade architecture with Modular architecture.',
     completed: true,
   },
   {
@@ -202,9 +202,9 @@ export default function About() {
               <span className="marketing-hero__highlight">
                 communities deserve a platform that is private, powerful, and fun
               </span>
-              . We combine the best of Discord's real-time communication, Reddit's community forums,
-              Signal's end-to-end encryption, and RPG-style gamification \u2014 into a single,
-              unified platform where every interaction matters.
+              . We combine real-time communication, community forums, end-to-end encryption, and
+              RPG-style gamification \u2014 into a single, unified platform where every interaction
+              matters.
             </p>
           </motion.div>
         </div>

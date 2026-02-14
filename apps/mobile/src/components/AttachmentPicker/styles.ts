@@ -1,5 +1,5 @@
 /**
- * TelegramAttachmentPicker Styles
+ * AttachmentPicker Styles
  */
 
 import { StyleSheet, Dimensions, Platform } from 'react-native';

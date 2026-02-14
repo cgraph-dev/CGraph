@@ -11,7 +11,7 @@ defmodule Cgraph.Repo.Migrations.CreateForumHostingPlatform do
   - Forum themes and plugins
   - Subscriptions (paid tiers)
   
-  This transforms the simple Reddit-style forum into a full
+  This transforms the simple forum into a full
   MyBB-style forum hosting platform with discovery.
   """
   use Ecto.Migration
@@ -194,7 +194,7 @@ defmodule Cgraph.Repo.Migrations.CreateForumHostingPlatform do
       add :last_post_at, :utc_datetime
       add :last_post_id, :binary_id
       
-      # Voting (optional Reddit-style)
+      # Voting (optional)
       add :score, :integer, default: 0
       add :upvotes, :integer, default: 0
       add :downvotes, :integer, default: 0

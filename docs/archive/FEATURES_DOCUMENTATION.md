@@ -84,7 +84,7 @@ Automatically detects and renders rich previews for URLs shared in messages.
 #### Special Platform Support:
 
 - **YouTube:** Embedded player with thumbnail
-- **Twitter:** Tweet preview cards
+- **Social:** Tweet preview cards
 - **Generic Links:** Favicon + metadata display
 
 #### Security Features:

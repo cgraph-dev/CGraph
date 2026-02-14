@@ -13,7 +13,7 @@ config :cgraph, CGraph.Repo,
   pool_size: 50
 
 # ReadRepo shares the primary database in test (no replica needed).
-# Discord pattern: read replicas are a prod optimization, not a test concern.
+# Read replicas are a prod optimization, not a test concern.
 config :cgraph, CGraph.ReadRepo,
   username: "cgraph",
   password: "cgraph_dev_password",

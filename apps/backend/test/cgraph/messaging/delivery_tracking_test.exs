@@ -1,5 +1,5 @@
 defmodule CGraph.Messaging.DeliveryTrackingTest do
-  @moduledoc "Delivery tracking tests — WhatsApp triple-check marks"
+  @moduledoc "Delivery tracking tests — Triple-check marks"
   use CGraph.DataCase, async: true
 
   alias CGraph.Messaging.DeliveryTracking

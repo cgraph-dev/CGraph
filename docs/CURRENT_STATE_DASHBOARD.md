@@ -21,7 +21,7 @@ Real-time overview of project health, architecture status, and operational state
 | **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + Chaos Testing                    |
 | **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags                          |
 
-**Composite Score: 9.8/10** — Production-ready with Discord/WhatsApp-grade operational maturity
+**Composite Score: 9.8/10** — Production-ready with CGraph-grade operational maturity
 
 > **Implementation Registry**: See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file-level
 > inventory of all operational systems, their locations, and remaining gaps.
@@ -134,7 +134,7 @@ apps/web/src/
 │   ├── groups/        ├── gamification/  ├── social/
 │   ├── settings/      ├── calls/         ├── moderation/
 │   ├── premium/       ├── search/        └── admin/
-├── hooks/facades/     # 7 Discord-style composition hooks
+├── hooks/facades/     # 7  composition hooks
 │   ├── useAuthFacade.ts          # authStore
 │   ├── useChatFacade.ts          # chatStore + effects + bubble
 │   ├── useGamificationFacade.ts  # gamification + prestige + events + referrals

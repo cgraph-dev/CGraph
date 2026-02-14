@@ -1,6 +1,6 @@
 # CGraph Architecture Transformation Plan
 
-## Mission: Outperform Meta, Google, and Discord
+## Mission: Outperform Meta, Google, and CGraph
 
 **Current Score: 4.8/10** | **Target Score: 10/10** | **Philosophy: BUILD, DON'T DELETE**
 
@@ -46,7 +46,7 @@ These files MUST be split. Meta would reject these in code review.
 | `ForumLeaderboardScreen.tsx`      | 1,490     | 300 | Split into 5+ components  |
 | `HolographicUI.tsx` (mobile)      | 1,458     | 300 | Split into 5+ components  |
 | `CustomEmojiPicker.tsx`           | 1,424     | 300 | Split into 5+ components  |
-| `TelegramAttachmentPicker.tsx`    | 1,424     | 300 | Split into 5+ components  |
+| `CGraphAttachmentPicker.tsx`      | 1,424     | 300 | Split into 5+ components  |
 | `GamificationHubScreen.tsx`       | 1,403     | 300 | Split into 5+ components  |
 | `CoinShopScreen.tsx`              | 1,399     | 300 | Split into 5+ components  |
 | `EffectsCustomization.tsx`        | 1,369     | 300 | Split into 5+ components  |
@@ -296,7 +296,7 @@ grep -rn "@ts-ignore\|@ts-expect-error\|eslint-disable" apps/web/src apps/mobile
 | P3       | Add web component tests          | 200+ tests      | 5 days  |
 | P3       | Add mobile screen tests          | 100+ tests      | 3 days  |
 
-### Meta/Discord Code Review Readiness
+### Meta/CGraph Code Review Readiness
 
 Would this pass a Meta code review? **NO** - Current state would be rejected.
 
@@ -378,7 +378,7 @@ const ForumPage = () => (
 );
 ```
 
-### Rule 4: State Management (Discord Pattern)
+### Rule 4: State Management (CGraph Pattern)
 
 ```typescript
 // ❌ FORBIDDEN - Direct store access everywhere
@@ -416,7 +416,7 @@ try {
 }
 ```
 
-### Rule 6: Platform Parity (WhatsApp Standard)
+### Rule 6: Platform Parity (CGraph Standard)
 
 ```typescript
 // ❌ FORBIDDEN - Platform-specific logic in shared code
@@ -467,11 +467,11 @@ const premiumForumsWithActiveMembers = user.forums.filter(
 );
 ```
 
-### Rule 9: Discord/Meta Code Patterns (MANDATORY)
+### Rule 9: Industry Code Patterns (MANDATORY)
 
-These patterns are used by Discord (200M+ users) and Meta (3.4B+ users). We adopt them exactly.
+These patterns are used by CGraph (200M+ users) and Meta (3.4B+ users). We adopt them exactly.
 
-#### Pattern 1: Event-Driven Architecture (Telegram/Discord)
+#### Pattern 1: Event-Driven Architecture (CGraph/CGraph)
 
 ```typescript
 // ❌ FORBIDDEN - Direct mutations
@@ -498,7 +498,7 @@ const sendMessage = async (content: string) => {
 };
 ```
 
-#### Pattern 2: Minimal Payload Broadcasting (Telegram)
+#### Pattern 2: Minimal Payload Broadcasting (CGraph)
 
 ```typescript
 // ❌ FORBIDDEN - Broadcasting full objects
@@ -542,7 +542,7 @@ const MessageList = ({ messages }) => {
 };
 ```
 
-#### Pattern 4: Cursor Pagination (Discord/All Scale Apps)
+#### Pattern 4: Cursor Pagination (CGraph/All Scale Apps)
 
 ```typescript
 // ❌ FORBIDDEN - Offset pagination (O(n) at scale)
@@ -554,7 +554,7 @@ const getMessages = (cursor?: string) => api.get(`/messages?cursor=${cursor}&lim
 // Cursor is typically: base64(lastMessageId + timestamp)
 ```
 
-#### Pattern 5: Denormalized Counts (Reddit/Discord)
+#### Pattern 5: Denormalized Counts (CGraph)
 
 ```elixir
 # ❌ FORBIDDEN - Computing counts on read
@@ -579,7 +579,7 @@ def add_member(forum, user) do
 end
 ```
 
-#### Pattern 6: Presence & Typing (Discord)
+#### Pattern 6: Presence & Typing (CGraph)
 
 ```typescript
 // ✅ REQUIRED - Throttled presence updates
@@ -603,7 +603,7 @@ const useTypingIndicator = (conversationId: string) => {
 };
 ```
 
-### Rule 10: Mobile-First Performance (WhatsApp)
+### Rule 10: Mobile-First Performance (CGraph)
 
 ```typescript
 // ❌ FORBIDDEN - Desktop-first thinking
@@ -958,8 +958,8 @@ end
 
 ### Overview
 
-CGraph allows users to create and manage their own forums, similar to Discord servers but with
-Reddit-style discussions.
+CGraph allows users to create and manage their own forums, similar to CGraph servers but with
+discussions.
 
 ### Tier Limits (from packages/shared-types/src/tiers.ts)
 
@@ -1492,7 +1492,7 @@ apps/mobile/src/components/chat/MessageBubble.tsx  # Render sender's bubble styl
 apps/mobile/src/components/profile/ProfileCard.tsx  # Render user's theme
 ```
 
-### Visibility Rules (Discord/Meta Standard)
+### Visibility Rules (Industry Standard)
 
 ```typescript
 // When rendering ANY user's content, fetch their customizations
@@ -1678,13 +1678,13 @@ describe('ChatBubbleCustomization', () => {
 
 ---
 
-## 📱 PLATFORM PARITY: WEB ↔ MOBILE (Discord/Telegram Standard)
+## 📱 PLATFORM PARITY: WEB ↔ MOBILE (CGraph Standard)
 
 ### Philosophy: One Product, Two Platforms
 
 **Every feature on web MUST exist on mobile. Every feature on mobile MUST exist on web.**
 
-This is how Discord and Telegram work. Users expect identical functionality regardless of device.
+This is how CGraph and CGraph work. Users expect identical functionality regardless of device.
 
 ### Complete Page/Screen Parity Matrix
 
@@ -2302,7 +2302,7 @@ Created submodules:
 
 ### Current Advantages (What CGraph Does Better)
 
-| Feature             | CGraph                               | Discord   | Telegram       | WhatsApp  |
+| Feature             | CGraph                               | CGraph    | CGraph         | CGraph    |
 | ------------------- | ------------------------------------ | --------- | -------------- | --------- |
 | E2EE Protocol       | Signal ✅                            | None ❌   | MTProto ⚠️     | Signal ✅ |
 | User-owned forums   | ✅ Yes                               | ❌ No     | ⚠️ Groups only | ❌ No     |
@@ -2313,12 +2313,12 @@ Created submodules:
 
 ### Areas to Improve (In Progress)
 
-| Metric           | Discord | CGraph Now     | CGraph Target | Action           |
-| ---------------- | ------- | -------------- | ------------- | ---------------- |
-| Component size   | 300     | 5,840          | 300           | Refactor         |
-| Platform parity  | 40%     | <1%            | 70%           | Connect packages |
-| Test coverage    | 80%     | 8.5%           | 80%           | Add tests        |
-| Module isolation | Clean   | 30+ violations | Clean         | Use shared       |
+| Metric           | CGraph | CGraph Now     | CGraph Target | Action           |
+| ---------------- | ------ | -------------- | ------------- | ---------------- |
+| Component size   | 300    | 5,840          | 300           | Refactor         |
+| Platform parity  | 40%    | <1%            | 70%           | Connect packages |
+| Test coverage    | 80%    | 8.5%           | 80%           | Add tests        |
+| Module isolation | Clean  | 30+ violations | Clean         | Use shared       |
 
 ---
 
@@ -2348,7 +2348,7 @@ Created 12 feature modules with proper structure:
 - `modules/auth/` - Authentication & user session
 - `modules/chat/` - Messaging & conversations
 - `modules/forums/` - Forum discussions
-- `modules/groups/` - Discord-style servers
+- `modules/groups/` - servers
 - `modules/gamification/` - XP, achievements, quests
 - `modules/social/` - Friends, presence, notifications
 - `modules/settings/` - User preferences & customization
@@ -3075,7 +3075,7 @@ module.exports = {
 
 ### 1.2 Create Module Architecture
 
-**Target structure (Discord-inspired):**
+**Target structure ():**
 
 ```
 apps/web/src/
@@ -3128,7 +3128,7 @@ apps/web/src/
 │   │   ├── api/
 │   │   └── index.ts
 │   │
-│   ├── groups/                 # Discord-style servers
+│   ├── groups/                 #  servers
 │   ├── gamification/           # XP, achievements, quests
 │   ├── social/                 # Friends, presence, notifications
 │   ├── settings/               # User settings + customization
@@ -3217,7 +3217,7 @@ facades/
 └── uiFacade.ts           # Notifications, search, calendar, plugins
 ```
 
-**These facades already implement Discord's pattern of domain-based aggregation!**
+**These facades already implement CGraph's pattern of domain-based aggregation!**
 
 The migration strategy should:
 
@@ -3876,7 +3876,7 @@ describe('MessageBubble', () => {
 
 ### 7.1 Bundle Analysis
 
-**Target bundle sizes (Discord-comparable):**
+**Target bundle sizes (CGraph-comparable):**
 
 | Chunk          | Max Size | Current | Target |
 | -------------- | -------- | ------- | ------ |
@@ -4032,7 +4032,7 @@ CGraph/
 
 ## Final Score Projection (Outperform Industry Giants)
 
-| Aspect               | Start      | Current    | After Plan | Meta/Google | Discord    |
+| Aspect               | Start      | Current    | After Plan | Meta/Google | CGraph     |
 | -------------------- | ---------- | ---------- | ---------- | ----------- | ---------- |
 | Folder Organization  | 4/10       | 6/10       | 10/10      | 9/10        | 9/10       |
 | Component Structure  | 5/10       | 4/10       | 10/10      | 9/10        | 9/10       |
@@ -4049,9 +4049,9 @@ CGraph/
 
 ## What's Already Built (Solid Foundation)
 
-✅ **12 proper modules** - Structure matches Discord ✅ **117 components migrated** - Real
+✅ **12 proper modules** - Structure matches CGraph ✅ **117 components migrated** - Real
 implementation ✅ **Signal Protocol E2EE** - Industry-leading encryption ✅ **7 working facades** -
-Clean abstraction pattern ✅ **Phoenix/Elixir backend** - Same stack as Discord ✅ **TypeScript
+Clean abstraction pattern ✅ **Phoenix/Elixir backend** - Same stack as CGraph ✅ **TypeScript
 strict mode** - Professional quality ✅ **9 shared packages** - Platform parity infrastructure ✅
 **Stripe integration** - Subscription tiers ready
 
@@ -4148,21 +4148,21 @@ pnpm test -- --filter="invite"
 
 ## Why CGraph Will Outperform Industry Giants
 
-### vs Discord
+### vs CGraph
 
-- **Better E2EE**: Signal Protocol (Discord has none)
+- **Better E2EE**: Signal Protocol (CGraph has none)
 - **User-owned forums**: Users create their own communities
 - **Better mobile**: React Native with native performance
 - **Open pricing**: Transparent tier system
 
-### vs Meta (WhatsApp/Messenger)
+### vs Meta (CGraph/Messenger)
 
 - **Better privacy**: E2EE by default, no data mining
 - **Forum communities**: Not just 1:1 messaging
 - **Better gamification**: XP, achievements, karma
 - **Cross-platform**: True feature parity
 
-### vs Telegram
+### vs CGraph
 
 - **Better encryption**: Signal Protocol > MTProto
 - **Better moderation**: Built-in tools for community management
@@ -4188,7 +4188,7 @@ pnpm test -- --filter="invite"
 1. **The most secure** - Signal Protocol E2EE everywhere
 2. **The most feature-rich** - Forums + Chat + Calls + Gamification
 3. **The most accessible** - Web + iOS + Android with parity
-4. **The most scalable** - Built on Discord's proven Elixir stack
+4. **The most scalable** - Built on CGraph's proven Elixir stack
 5. **The most professional** - Code that outperforms Meta/Google standards
 
 **Build. Ship. Outperform.**

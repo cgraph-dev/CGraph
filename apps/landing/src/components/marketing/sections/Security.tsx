@@ -84,7 +84,7 @@ export function Security() {
             title="Your Privacy Is Our"
             titleAccent="Priority"
             titleAccentClass="title-fx--shadow"
-            description="Built from the ground up with security in mind. Your messages are end-to-end encrypted with AES-256, and we use Signal-inspired encryption protocols. Not even we can access your private conversations."
+            description="Built from the ground up with security in mind. Your messages are end-to-end encrypted with AES-256 using industry-leading encryption protocols. Not even we can access your private conversations."
           />
         </motion.div>
 

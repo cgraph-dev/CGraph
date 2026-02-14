@@ -1,6 +1,6 @@
 defmodule CGraph.Messaging.DeliveryReceipt do
   @moduledoc """
-  WhatsApp-style delivery receipts for messages.
+  Delivery receipts for messages.
 
   Tracks the full message lifecycle:
   - **sent**: Server accepted the message (single check ✓)

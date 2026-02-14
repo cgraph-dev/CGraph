@@ -25,15 +25,15 @@
 
 ### Vision
 
-CGraph Forums is a **Reddit-style social forum network** where users discover, create, and
-participate in community forums. Every CGraph user has **one identity** that works seamlessly across
-the entire platform - the same username, profile, avatar, and reputation they use for messaging also
-works in forums.
+CGraph Forums is a ** social forum network** where users discover, create, and participate in
+community forums. Every CGraph user has **one identity** that works seamlessly across the entire
+platform - the same username, profile, avatar, and reputation they use for messaging also works in
+forums.
 
 **Key Differentiators:**
 
 - **Unified Identity**: Single username/profile across all of CGraph (messaging, forums, logistics)
-- **Reddit-like Discovery**: Browse, join, and participate in any public forum instantly
+- **Forum-like Discovery**: Browse, join, and participate in any public forum instantly
 - **User-Created Communities**: Users can create their own forums and build communities
 - **Real-Time Everything**: WebSocket-powered live updates, typing indicators, instant posts
 - **AI-Powered Moderation**: Intelligent content moderation with human oversight
@@ -63,7 +63,7 @@ works in forums.
 
 ## 2. Core Principles
 
-### 2.1 Unified Identity (Like Reddit)
+### 2.1 Unified Identity (Like Forum)
 
 Every CGraph user has **one account** that works everywhere:
 
@@ -100,7 +100,7 @@ Every CGraph user has **one account** that works everywhere:
 - Profile data (username, avatar, bio) pulled from `users` table
 - Forum-specific data (post count, reputation per forum) in `forum_members`
 
-### 2.2 Reddit-Style Forum Participation
+### 2.2 Forum-Style Forum Participation
 
 **Anyone can join any public forum instantly:**
 
@@ -143,7 +143,7 @@ Every CGraph user has **one account** that works everywhere:
 
 ### 2.3 Forum Discovery Feed
 
-Like Reddit's front page, users see a personalized feed:
+Like CGraph's front page, users see a personalized feed:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -241,7 +241,7 @@ Like Reddit's front page, users see a personalized feed:
 | User Integration     | ✅     | Forums use main users table         |
 | Board Management     | ✅     | Nested boards/categories            |
 | Threads & Posts      | ✅     | Full CRUD with voting               |
-| Voting System        | ✅     | Reddit-style upvote/downvote        |
+| Voting System        | ✅     | upvote/downvote                     |
 | Permission System    | ✅     | 30+ granular permissions            |
 | Subscriptions        | ✅     | Forum-level subscriptions           |
 | Moderation Tools     | ✅     | Warnings, bans, mod logs            |
@@ -515,7 +515,7 @@ def count_user_forums(user_id) do
 end
 ```
 
-### Joining Forums (Reddit-style)
+### Joining Forums ()
 
 ```elixir
 # Anyone can join public forums instantly
@@ -845,7 +845,7 @@ export function useThreadSocket(threadId: string | undefined) {
 
 ## 9. User Flows
 
-### Flow 1: Join and Post (Reddit-style)
+### Flow 1: Join and Post ()
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -1184,13 +1184,13 @@ interface AIModQueueItem {
 
 ### Priority: CRITICAL (Week 1)
 
-| Task             | Description                         | Estimate |
-| ---------------- | ----------------------------------- | -------- |
-| Phoenix Channels | Create forum/thread channels        | 2 days   |
-| Socket Manager   | Add forum methods to frontend       | 1 day    |
-| User Integration | Ensure forums use main users table  | 0.5 days |
-| Join Flow        | Implement Reddit-style instant join | 0.5 days |
-| Tier Enforcement | Enforce 1/5/unlimited limits        | 0.5 days |
+| Task             | Description                        | Estimate |
+| ---------------- | ---------------------------------- | -------- |
+| Phoenix Channels | Create forum/thread channels       | 2 days   |
+| Socket Manager   | Add forum methods to frontend      | 1 day    |
+| User Integration | Ensure forums use main users table | 0.5 days |
+| Join Flow        | Implement instant join             | 0.5 days |
+| Tier Enforcement | Enforce 1/5/unlimited limits       | 0.5 days |
 
 ### Priority: HIGH (Week 2)
 
@@ -1391,7 +1391,7 @@ communities** that perfectly serve their niche.
 │  • 🖼️ Gallery Board - Image/media focused (Pinterest-style)   │
 │  • ❓ Q&A Board - Stack Overflow-style with best answers      │
 │  • 📰 Blog Board - Long-form articles with comments           │
-│  • 🔗 Link Board - Curated links with upvotes (Reddit-style)  │
+│  • 🔗 Link Board - Curated links with upvotes ()  │
 │  • 📅 Events Board - Calendar-integrated events               │
 │  • 📁 Archive Board - Read-only historical content            │
 │  • 🔒 Private Board - Members-only access                     │
@@ -1439,7 +1439,7 @@ communities** that perfectly serve their niche.
 │  │ • 🎥 Live Stream Embed - Twitch/YouTube integration       │ │
 │  │ • 🎵 Music Player - Background/featured music             │ │
 │  │ • 📸 Photo Gallery - Featured images carousel             │ │
-│  │ • 🐦 Social Feed - Twitter/Discord/Instagram embed        │ │
+│  │ • 🐦 Social Feed - Social/CGraph/Instagram embed        │ │
 │  │ • 📹 Video Showcase - Featured video player               │ │
 │  │ • 🎙️ Podcast Player - Audio content widget               │ │
 │  └────────────────────────────────────────────────────────────┘ │
@@ -1449,7 +1449,7 @@ communities** that perfectly serve their niche.
 │  │ • 🔍 Search Box - Quick forum search                      │ │
 │  │ • 📜 Rules Summary - Community guidelines                 │ │
 │  │ • 🔗 Quick Links - Important resources                    │ │
-│  │ • 🌐 Discord Server - Join widget                         │ │
+│  │ • 🌐 CGraph Server - Join widget                         │ │
 │  │ • 💰 Donation Goal - Progress bar (Ko-fi, Patreon)        │ │
 │  │ • 📧 Newsletter Signup - Email capture                    │ │
 │  │ • 🛒 Merch Store Preview - Product showcase               │ │
@@ -2520,7 +2520,7 @@ CREATE TABLE forum_analytics_daily (
 'CalendarWidget.tsx'; // Upcoming events
 'ShoutboxWidget.tsx'; // Real-time chat widget
 'StreamEmbedWidget.tsx'; // Twitch/YouTube embed
-'SocialFeedWidget.tsx'; // Twitter/Discord embed
+'SocialFeedWidget.tsx'; // Social/CGraph embed
 'WelcomeBoxWidget.tsx'; // New visitor greeting
 'QuickPollWidget.tsx'; // Sidebar polls
 'AnnouncementWidget.tsx'; // Important messages
@@ -2734,7 +2734,7 @@ CREATE TABLE forum_analytics_daily (
 | Mod action logs            | 7 days           | 30 days        | Unlimited                 |
 | IP banning                 | -                | ✓              | ✓                         |
 | **Integrations**           |                  |                |                           |
-| Discord integration        | -                | ✓              | ✓                         |
+| CGraph integration         | -                | ✓              | ✓                         |
 | Twitch/YouTube embed       | -                | ✓              | ✓                         |
 | Social media widgets       | -                | ✓              | ✓                         |
 | API access                 | -                | -              | ✓                         |
@@ -2785,8 +2785,8 @@ Enable forum owners to **monetize their communities** while keeping the platform
 
 ## Summary
 
-CGraph Forums is the **ultimate platform for community leaders** - a Reddit-style social forum
-network where **anyone can create and customize their own community**:
+CGraph Forums is the **ultimate platform for community leaders** - a social forum network where
+**anyone can create and customize their own community**:
 
 ### Core Features
 

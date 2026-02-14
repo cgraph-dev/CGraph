@@ -36,7 +36,7 @@ This document consolidates the project status, feature tracking, and development
 | SocketManager.ts      | 960     | **616**     | ✅ 36% reduction         |
 | ChatBubbleSettings    | 933     | **305**     | ✅ 67% reduction         |
 | Store facades         | 0       | **7**       | ✅ Consolidation done    |
-| Facade hooks (new)    | 0       | **7**       | ✅ Discord-style         |
+| Facade hooks (new)    | 0       | **7**       | ✅                       |
 | Lazy-loaded pages     | 50      | **62**      | ✅ +12 new pages         |
 | Mobile screens (new)  | 0       | **7**       | ✅ Platform parity       |
 | Passing tests         | 840     | **1,633**   | ✅ +793 tests            |

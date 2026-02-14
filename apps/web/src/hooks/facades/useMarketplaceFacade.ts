@@ -1,7 +1,7 @@
 /**
  * Marketplace Facade Hook
  *
- * Discord-style composition hook that aggregates marketplace listings,
+ * Composition hook that aggregates marketplace listings,
  * avatar borders, and economy state into a single commerce interface.
  *
  * @example

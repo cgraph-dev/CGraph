@@ -27,30 +27,44 @@ CGraph follows a consistent design language across web and mobile:
 
 ### Design Tokens
 
-| Token | Web (TailwindCSS) | Mobile (React Native) |
-|-------|-------------------|----------------------|
-| Primary Color | `bg-primary-600` | `#059669` (Matrix Green) |
-| Secondary | `bg-gray-600` | `#4B5563` |
-| Success | `bg-green-600` | `#059669` |
-| Warning | `bg-yellow-500` | `#EAB308` |
-| Error | `bg-red-600` | `#DC2626` |
-| Background (Light) | `bg-white` | `#FFFFFF` |
-| Background (Dark) | `bg-gray-900` | `#111827` |
-| Text (Light mode) | `text-gray-900` | `#111827` |
-| Text (Dark mode) | `text-gray-100` | `#F3F4F6` |
-| Matrix Glow | `shadow-glow-md` | `#00ff41` |
+| Token              | Web (TailwindCSS) | Mobile (React Native)    |
+| ------------------ | ----------------- | ------------------------ |
+| Primary Color      | `bg-primary-600`  | `#059669` (Matrix Green) |
+| Secondary          | `bg-gray-600`     | `#4B5563`                |
+| Success            | `bg-green-600`    | `#059669`                |
+| Warning            | `bg-yellow-500`   | `#EAB308`                |
+| Error              | `bg-red-600`      | `#DC2626`                |
+| Background (Light) | `bg-white`        | `#FFFFFF`                |
+| Background (Dark)  | `bg-gray-900`     | `#111827`                |
+| Text (Light mode)  | `text-gray-900`   | `#111827`                |
+| Text (Dark mode)   | `text-gray-100`   | `#F3F4F6`                |
+| Matrix Glow        | `shadow-glow-md`  | `#00ff41`                |
 
 ### Typography Scale
 
 ```css
 /* Heading sizes */
-.text-xs    { font-size: 0.75rem; }   /* 12px */
-.text-sm    { font-size: 0.875rem; }  /* 14px */
-.text-base  { font-size: 1rem; }      /* 16px */
-.text-lg    { font-size: 1.125rem; }  /* 18px */
-.text-xl    { font-size: 1.25rem; }   /* 20px */
-.text-2xl   { font-size: 1.5rem; }    /* 24px */
-.text-3xl   { font-size: 1.875rem; }  /* 30px */
+.text-xs {
+  font-size: 0.75rem;
+} /* 12px */
+.text-sm {
+  font-size: 0.875rem;
+} /* 14px */
+.text-base {
+  font-size: 1rem;
+} /* 16px */
+.text-lg {
+  font-size: 1.125rem;
+} /* 18px */
+.text-xl {
+  font-size: 1.25rem;
+} /* 20px */
+.text-2xl {
+  font-size: 1.5rem;
+} /* 24px */
+.text-3xl {
+  font-size: 1.875rem;
+} /* 30px */
 ```
 
 ### Spacing System
@@ -58,12 +72,24 @@ CGraph follows a consistent design language across web and mobile:
 We use a 4px base unit:
 
 ```css
-.p-1  { padding: 0.25rem; }  /* 4px */
-.p-2  { padding: 0.5rem; }   /* 8px */
-.p-3  { padding: 0.75rem; }  /* 12px */
-.p-4  { padding: 1rem; }     /* 16px */
-.p-6  { padding: 1.5rem; }   /* 24px */
-.p-8  { padding: 2rem; }     /* 32px */
+.p-1 {
+  padding: 0.25rem;
+} /* 4px */
+.p-2 {
+  padding: 0.5rem;
+} /* 8px */
+.p-3 {
+  padding: 0.75rem;
+} /* 12px */
+.p-4 {
+  padding: 1rem;
+} /* 16px */
+.p-6 {
+  padding: 1.5rem;
+} /* 24px */
+.p-8 {
+  padding: 2rem;
+} /* 32px */
 ```
 
 ---
@@ -76,13 +102,10 @@ The main theme configuration is in `apps/web/tailwind.config.js`:
 
 ```javascript
 // apps/web/tailwind.config.js
-const colors = require('tailwindcss/colors')
+const colors = require('tailwindcss/colors');
 
 module.exports = {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class', // Enable dark mode via class
   theme: {
     extend: {
@@ -95,7 +118,7 @@ module.exports = {
           300: '#A5B4FC',
           400: '#818CF8',
           500: '#6366F1',
-          600: '#4F46E5',  // Primary
+          600: '#4F46E5', // Primary
           700: '#4338CA',
           800: '#3730A3',
           900: '#312E81',
@@ -116,12 +139,12 @@ module.exports = {
         mono: ['JetBrains Mono', 'monospace'],
       },
       borderRadius: {
-        'xl': '1rem',
+        xl: '1rem',
         '2xl': '1.5rem',
       },
       boxShadow: {
-        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
-        'glow': '0 0 20px rgba(99, 102, 241, 0.3)',
+        soft: '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+        glow: '0 0 20px rgba(99, 102, 241, 0.3)',
       },
       animation: {
         'fade-in': 'fadeIn 0.3s ease-out',
@@ -144,11 +167,8 @@ module.exports = {
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/typography'),
-  ],
-}
+  plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
+};
 ```
 
 ### Changing the Primary Color
@@ -191,7 +211,8 @@ Then update component usage from `indigo-*` to `brand-*`:
 
 ## Matrix Theme System
 
-CGraph uses a Matrix-inspired green theme for authentication pages that integrates with the cipher rain background effect.
+CGraph uses a Matrix-inspired green theme for authentication pages that integrates with the cipher
+rain background effect.
 
 ### Color Palette
 
@@ -220,15 +241,15 @@ colors: {
 
 ### Matrix CSS Classes
 
-| Class | Purpose | Usage |
-|-------|---------|-------|
-| `.matrix-input` | Form inputs with gradient background and glow focus | Text inputs, password fields |
-| `.matrix-button` | Primary CTA with shine animation | Submit buttons |
-| `.matrix-card` | Card with green-tinted border and inner glow | Auth containers |
-| `.matrix-glow` | Text shadow for headings | Titles, branding |
-| `.matrix-link` | Links with hover glow effect | Navigation, inline links |
-| `.form-field-animate` | Staggered entrance animation | Form fields |
-| `.oauth-button-matrix` | OAuth buttons with hover glow | Social login |
+| Class                  | Purpose                                             | Usage                        |
+| ---------------------- | --------------------------------------------------- | ---------------------------- |
+| `.matrix-input`        | Form inputs with gradient background and glow focus | Text inputs, password fields |
+| `.matrix-button`       | Primary CTA with shine animation                    | Submit buttons               |
+| `.matrix-card`         | Card with green-tinted border and inner glow        | Auth containers              |
+| `.matrix-glow`         | Text shadow for headings                            | Titles, branding             |
+| `.matrix-link`         | Links with hover glow effect                        | Navigation, inline links     |
+| `.form-field-animate`  | Staggered entrance animation                        | Form fields                  |
+| `.oauth-button-matrix` | OAuth buttons with hover glow                       | Social login                 |
 
 ### Form Animation Example
 
@@ -243,9 +264,7 @@ colors: {
     <label>Password</label>
     <input className="matrix-input" type="password" />
   </div>
-  <button className="matrix-button form-field-animate">
-    Sign In
-  </button>
+  <button className="matrix-button form-field-animate">Sign In</button>
 </form>
 ```
 
@@ -277,19 +296,20 @@ boxShadow: {
 
 ## Advanced Theme Engine (v0.7.36+)
 
-CGraph features a comprehensive theme engine inspired by Discord, Element/Matrix, and Signal. This system provides runtime theme switching, custom theme creation, and full user preference controls.
+CGraph features a comprehensive theme engine inspired by CGraph, Element/Matrix, and Signal. This
+system provides runtime theme switching, custom theme creation, and full user preference controls.
 
 ### Available Themes
 
-| Theme ID | Category | Description |
-|----------|----------|-------------|
-| `dark` | Dark | Default elegant dark theme with cyan accents |
-| `light` | Light | Clean light theme for daytime use |
-| `matrix` | Special | Iconic green-on-black hacker aesthetic |
-| `holo-cyan` | Special | Futuristic cyan holographic glow |
-| `holo-purple` | Special | Cyberpunk purple neon vibes |
-| `holo-gold` | Special | Premium golden holographic shine |
-| `midnight` | Dark | Deep space dark blue theme |
+| Theme ID      | Category | Description                                  |
+| ------------- | -------- | -------------------------------------------- |
+| `dark`        | Dark     | Default elegant dark theme with cyan accents |
+| `light`       | Light    | Clean light theme for daytime use            |
+| `matrix`      | Special  | Iconic green-on-black hacker aesthetic       |
+| `holo-cyan`   | Special  | Futuristic cyan holographic glow             |
+| `holo-purple` | Special  | Cyberpunk purple neon vibes                  |
+| `holo-gold`   | Special  | Premium golden holographic shine             |
+| `midnight`    | Dark     | Deep space dark blue theme                   |
 
 ### Using the Theme Engine
 
@@ -299,7 +319,7 @@ import { useThemeEnhanced, useThemeColors } from '@/contexts/ThemeContextEnhance
 function MyComponent() {
   const { currentTheme, setTheme, preferences } = useThemeEnhanced();
   const colors = useThemeColors();
-  
+
   return (
     <div style={{ backgroundColor: colors.background, color: colors.text }}>
       <p>Current theme: {currentTheme.name}</p>
@@ -319,44 +339,44 @@ interface ThemeColors {
   primary: string;
   primaryLight: string;
   primaryDark: string;
-  
+
   // Secondary colors
   secondary: string;
   secondaryLight: string;
   secondaryDark: string;
-  
+
   // Accent colors
   accent: string;
   accentLight: string;
   accentDark: string;
-  
+
   // Background colors
   background: string;
   backgroundElevated: string;
   backgroundDark: string;
-  
+
   // Surface colors
   surface: string;
   surfaceElevated: string;
   surfaceBorder: string;
-  
+
   // Text colors
   text: string;
   textSecondary: string;
   textMuted: string;
   textInverse: string;
-  
+
   // Semantic colors
   success: string;
   warning: string;
   error: string;
   info: string;
-  
+
   // Interactive colors
   interactive: string;
   interactiveHover: string;
   interactiveActive: string;
-  
+
   // Status colors
   online: string;
   offline: string;
@@ -371,14 +391,14 @@ The theme engine manages user preferences:
 
 ```typescript
 interface ThemePreferences {
-  themeId: string;           // Active theme ID
-  customThemes: Theme[];     // User-created themes
-  fontScale: number;         // 0.75 - 1.5 (75% - 150%)
+  themeId: string; // Active theme ID
+  customThemes: Theme[]; // User-created themes
+  fontScale: number; // 0.75 - 1.5 (75% - 150%)
   messageDisplay: 'compact' | 'comfortable' | 'spacious';
-  messageSpacing: number;    // Custom message spacing
-  reduceMotion: boolean;     // Accessibility option
-  highContrast: boolean;     // WCAG compliance
-  useSystemPreference: boolean;  // Auto dark/light
+  messageSpacing: number; // Custom message spacing
+  reduceMotion: boolean; // Accessibility option
+  highContrast: boolean; // WCAG compliance
+  useSystemPreference: boolean; // Auto dark/light
 }
 ```
 
@@ -389,7 +409,7 @@ import { useThemeEnhanced } from '@/contexts/ThemeContextEnhanced';
 
 function ThemeCreator() {
   const { createCustomTheme, setTheme } = useThemeEnhanced();
-  
+
   const createMyTheme = () => {
     const theme = createCustomTheme({
       name: 'My Custom Theme',
@@ -404,16 +424,19 @@ function ThemeCreator() {
     });
     setTheme(theme.id);
   };
-  
+
   return <button onClick={createMyTheme}>Create Theme</button>;
 }
 ```
 
 ### Theme Security Note (v0.7.37+)
 
-> ⚠️ **Security Update**: Theme import/export functionality has been removed as of v0.7.37 to prevent potential XSS and code injection attacks. Custom themes can only be created programmatically within the application.
+> ⚠️ **Security Update**: Theme import/export functionality has been removed as of v0.7.37 to
+> prevent potential XSS and code injection attacks. Custom themes can only be created
+> programmatically within the application.
 
-If you need to backup or restore themes, use the browser's localStorage directly (advanced users only):
+If you need to backup or restore themes, use the browser's localStorage directly (advanced users
+only):
 
 ```javascript
 // Export themes (developer console only)
@@ -451,10 +474,10 @@ The theme engine injects CSS variables for use in stylesheets:
 The new Holographic UI components integrate seamlessly with the theme engine:
 
 ```tsx
-import { 
-  HoloProvider, 
-  HoloContainer, 
-  HoloText, 
+import {
+  HoloProvider,
+  HoloContainer,
+  HoloText,
   HoloButton,
   HoloCard,
   HoloModal,
@@ -525,17 +548,18 @@ updateSettings({
 
 **Available Shader Effects:**
 
-| Variant | Description |
-|---------|-------------|
-| `matrix` | Classic Matrix code rain effect |
-| `fluid` | Smooth fluid dynamics simulation |
-| `particles` | Floating particle system |
-| `waves` | Animated wave patterns |
-| `neural` | Neural network-style connections |
+| Variant     | Description                      |
+| ----------- | -------------------------------- |
+| `matrix`    | Classic Matrix code rain effect  |
+| `fluid`     | Smooth fluid dynamics simulation |
+| `particles` | Floating particle system         |
+| `waves`     | Animated wave patterns           |
+| `neural`    | Neural network-style connections |
 
 **Usage in Components:**
 
-The background effect is applied automatically in `AppLayout.tsx`. Colors are derived from the active theme for seamless integration.
+The background effect is applied automatically in `AppLayout.tsx`. Colors are derived from the
+active theme for seamless integration.
 
 ---
 
@@ -545,30 +569,30 @@ The background effect is applied automatically in `AppLayout.tsx`. Colors are de
 
 CGraph includes a comprehensive set of reusable UI components in `apps/web/src/components/`:
 
-| Component | Purpose | Import |
-|-----------|---------|--------|
-| `Button` | Primary button with variants | `import { Button } from '@/components'` |
-| `IconButton` | Icon-only buttons | `import { IconButton } from '@/components'` |
-| `Input` | Text input with labels | `import { Input } from '@/components'` |
-| `Textarea` | Multi-line text input | `import { Textarea } from '@/components'` |
-| `TextArea` | Auto-growing text area | `import { TextArea } from '@/components'` |
-| `Select` | Searchable dropdown select | `import { Select } from '@/components'` |
-| `Dropdown` | Portal-based dropdown menu | `import { Dropdown } from '@/components'` |
-| `Modal` | Accessible modal dialog | `import { Modal } from '@/components'` |
-| `ConfirmDialog` | Confirmation prompts | `import { ConfirmDialog } from '@/components'` |
-| `Avatar` | User avatars with status | `import { Avatar } from '@/components'` |
-| `AvatarGroup` | Stacked avatar list | `import { AvatarGroup } from '@/components'` |
-| `Loading` | Loading spinners | `import { Loading } from '@/components'` |
-| `LoadingOverlay` | Full-screen loading | `import { LoadingOverlay } from '@/components'` |
-| `ErrorBoundary` | Error handling wrapper | `import ErrorBoundary from '@/components/ErrorBoundary'` |
-| `EmptyState` | Empty content states | `import { EmptyState } from '@/components'` |
-| `ToastProvider` | Toast notifications | `import { ToastProvider, useToast } from '@/components'` |
-| `Tooltip` | Multi-position tooltip | `import { Tooltip } from '@/components'` |
-| `FileUpload` | Drag-and-drop file upload | `import { FileUpload } from '@/components'` |
-| `Tabs` | Tab navigation (pill/underline) | `import { Tabs } from '@/components'` |
-| `TagInput` | Tag input with autocomplete | `import { TagInput } from '@/components'` |
-| `ProgressBar` | Progress indicator | `import { ProgressBar } from '@/components'` |
-| `Switch` | Toggle switch | `import { Switch } from '@/components'` |
+| Component        | Purpose                         | Import                                                   |
+| ---------------- | ------------------------------- | -------------------------------------------------------- |
+| `Button`         | Primary button with variants    | `import { Button } from '@/components'`                  |
+| `IconButton`     | Icon-only buttons               | `import { IconButton } from '@/components'`              |
+| `Input`          | Text input with labels          | `import { Input } from '@/components'`                   |
+| `Textarea`       | Multi-line text input           | `import { Textarea } from '@/components'`                |
+| `TextArea`       | Auto-growing text area          | `import { TextArea } from '@/components'`                |
+| `Select`         | Searchable dropdown select      | `import { Select } from '@/components'`                  |
+| `Dropdown`       | Portal-based dropdown menu      | `import { Dropdown } from '@/components'`                |
+| `Modal`          | Accessible modal dialog         | `import { Modal } from '@/components'`                   |
+| `ConfirmDialog`  | Confirmation prompts            | `import { ConfirmDialog } from '@/components'`           |
+| `Avatar`         | User avatars with status        | `import { Avatar } from '@/components'`                  |
+| `AvatarGroup`    | Stacked avatar list             | `import { AvatarGroup } from '@/components'`             |
+| `Loading`        | Loading spinners                | `import { Loading } from '@/components'`                 |
+| `LoadingOverlay` | Full-screen loading             | `import { LoadingOverlay } from '@/components'`          |
+| `ErrorBoundary`  | Error handling wrapper          | `import ErrorBoundary from '@/components/ErrorBoundary'` |
+| `EmptyState`     | Empty content states            | `import { EmptyState } from '@/components'`              |
+| `ToastProvider`  | Toast notifications             | `import { ToastProvider, useToast } from '@/components'` |
+| `Tooltip`        | Multi-position tooltip          | `import { Tooltip } from '@/components'`                 |
+| `FileUpload`     | Drag-and-drop file upload       | `import { FileUpload } from '@/components'`              |
+| `Tabs`           | Tab navigation (pill/underline) | `import { Tabs } from '@/components'`                    |
+| `TagInput`       | Tag input with autocomplete     | `import { TagInput } from '@/components'`                |
+| `ProgressBar`    | Progress indicator              | `import { ProgressBar } from '@/components'`             |
+| `Switch`         | Toggle switch                   | `import { Switch } from '@/components'`                  |
 
 #### Quick Start
 
@@ -636,7 +660,8 @@ import { cn } from '@/lib/cn';
 // 1. Define variants
 const variants = {
   primary: 'bg-brand-600 text-white hover:bg-brand-700 focus:ring-brand-500',
-  secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-100',
+  secondary:
+    'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500 dark:bg-gray-700 dark:text-gray-100',
   danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
   ghost: 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800',
 };
@@ -662,10 +687,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(
           // Base styles
-          'inline-flex items-center justify-center font-medium rounded-lg',
-          'focus:outline-none focus:ring-2 focus:ring-offset-2',
+          'inline-flex items-center justify-center rounded-lg font-medium',
+          'focus:ring-2 focus:ring-offset-2 focus:outline-none',
           'transition-colors duration-200',
-          'disabled:opacity-50 disabled:cursor-not-allowed',
+          'disabled:cursor-not-allowed disabled:opacity-50',
           // Variant & size
           variants[variant],
           sizes[size],
@@ -676,9 +701,20 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {loading && (
-          <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          <svg className="mr-2 -ml-1 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+            />
           </svg>
         )}
         {children}
@@ -705,6 +741,7 @@ export function cn(...inputs: ClassValue[]) {
 ```
 
 This allows:
+
 - Conditional classes: `cn('base', isActive && 'active')`
 - Merging without conflicts: `cn('px-4', className)` where className might be `px-8`
 
@@ -717,17 +754,19 @@ This allows:
 Let's say you want messages to have rounded corners on one side only (chat app style):
 
 **Before:**
+
 ```tsx
 // components/messages/MessageBubble.tsx
 <div className="bg-gray-100 dark:bg-gray-800 rounded-lg px-4 py-2">
 ```
 
 **After:**
+
 ```tsx
 // components/messages/MessageBubble.tsx
 interface MessageBubbleProps {
   content: string;
-  isOwn: boolean;  // Is this our message?
+  isOwn: boolean; // Is this our message?
   timestamp: Date;
 }
 
@@ -736,22 +775,21 @@ export function MessageBubble({ content, isOwn, timestamp }: MessageBubbleProps)
     <div
       className={cn(
         'max-w-[70%] px-4 py-2',
-        isOwn ? [
-          'bg-brand-600 text-white',
-          'rounded-l-2xl rounded-tr-2xl rounded-br-sm',  // Tail on right
-          'ml-auto',  // Align right
-        ] : [
-          'bg-gray-100 dark:bg-gray-800',
-          'rounded-r-2xl rounded-tl-2xl rounded-bl-sm',  // Tail on left
-          'mr-auto',  // Align left
-        ]
+        isOwn
+          ? [
+              'bg-brand-600 text-white',
+              'rounded-l-2xl rounded-tr-2xl rounded-br-sm', // Tail on right
+              'ml-auto', // Align right
+            ]
+          : [
+              'bg-gray-100 dark:bg-gray-800',
+              'rounded-tl-2xl rounded-r-2xl rounded-bl-sm', // Tail on left
+              'mr-auto', // Align left
+            ]
       )}
     >
       <p className="break-words">{content}</p>
-      <span className={cn(
-        'text-xs mt-1 block',
-        isOwn ? 'text-brand-200' : 'text-gray-500'
-      )}>
+      <span className={cn('mt-1 block text-xs', isOwn ? 'text-brand-200' : 'text-gray-500')}>
         {formatTime(timestamp)}
       </span>
     </div>
@@ -770,11 +808,13 @@ const variants = {
   danger: '...',
   ghost: '...',
   // Add new variant
-  outline: 'border-2 border-brand-600 text-brand-600 bg-transparent hover:bg-brand-50 dark:hover:bg-brand-900/20',
+  outline:
+    'border-2 border-brand-600 text-brand-600 bg-transparent hover:bg-brand-50 dark:hover:bg-brand-900/20',
 };
 ```
 
 Now use it:
+
 ```jsx
 <Button variant="outline">Click me</Button>
 ```
@@ -849,26 +889,16 @@ export function StatusIndicator({
     <div className={cn('flex items-center gap-2', className)}>
       <span className="relative flex">
         <span
-          className={cn(
-            'rounded-full',
-            sizes[size],
-            config.color,
-            config.pulse && 'animate-pulse'
-          )}
+          className={cn('rounded-full', sizes[size], config.color, config.pulse && 'animate-pulse')}
         />
         {config.pulse && (
           <span
-            className={cn(
-              'absolute inset-0 rounded-full opacity-75 animate-ping',
-              config.color
-            )}
+            className={cn('absolute inset-0 animate-ping rounded-full opacity-75', config.color)}
           />
         )}
       </span>
       {showLabel && (
-        <span className="text-sm text-gray-600 dark:text-gray-400">
-          {config.label}
-        </span>
+        <span className="text-sm text-gray-600 dark:text-gray-400">{config.label}</span>
       )}
     </div>
   );
@@ -881,7 +911,7 @@ export function StatusIndicator({
 // components/common/index.ts
 export * from './Button';
 export * from './Input';
-export * from './StatusIndicator';  // Add this
+export * from './StatusIndicator'; // Add this
 ```
 
 **Step 4: Use it**
@@ -971,9 +1001,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemColorScheme = useColorScheme();
   const [theme, setThemeState] = useState<Theme>('system');
 
-  const isDark = theme === 'system' 
-    ? systemColorScheme === 'dark'
-    : theme === 'dark';
+  const isDark = theme === 'system' ? systemColorScheme === 'dark' : theme === 'dark';
 
   const colors = isDark ? darkColors : lightColors;
 
@@ -1017,29 +1045,29 @@ interface ButtonProps {
   disabled?: boolean;
 }
 
-export function Button({
-  title,
-  onPress,
-  variant = 'primary',
-  loading,
-  disabled,
-}: ButtonProps) {
+export function Button({ title, onPress, variant = 'primary', loading, disabled }: ButtonProps) {
   const { colors } = useTheme();
 
   const getBackgroundColor = () => {
     if (disabled) return colors.border;
     switch (variant) {
-      case 'primary': return colors.primary;
-      case 'secondary': return colors.surface;
-      case 'ghost': return 'transparent';
+      case 'primary':
+        return colors.primary;
+      case 'secondary':
+        return colors.surface;
+      case 'ghost':
+        return 'transparent';
     }
   };
 
   const getTextColor = () => {
     switch (variant) {
-      case 'primary': return '#FFFFFF';
-      case 'secondary': return colors.text;
-      case 'ghost': return colors.primary;
+      case 'primary':
+        return '#FFFFFF';
+      case 'secondary':
+        return colors.text;
+      case 'ghost':
+        return colors.primary;
     }
   };
 
@@ -1057,9 +1085,7 @@ export function Button({
       {loading ? (
         <ActivityIndicator color={getTextColor()} />
       ) : (
-        <Text style={[styles.text, { color: getTextColor() }]}>
-          {title}
-        </Text>
+        <Text style={[styles.text, { color: getTextColor() }]}>{title}</Text>
       )}
     </TouchableOpacity>
   );
@@ -1110,9 +1136,10 @@ const ThemeContext = createContext<{
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('system');
 
-  const isDark = theme === 'system'
-    ? window.matchMedia('(prefers-color-scheme: dark)').matches
-    : theme === 'dark';
+  const isDark =
+    theme === 'system'
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+      : theme === 'dark';
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -1131,9 +1158,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, isDark }}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={{ theme, setTheme, isDark }}>{children}</ThemeContext.Provider>
   );
 }
 
@@ -1157,15 +1182,15 @@ export function ThemeSwitcher() {
   ] as const;
 
   return (
-    <div className="flex gap-2 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+    <div className="flex gap-2 rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
       {options.map(({ value, icon: Icon, label }) => (
         <button
           key={value}
           onClick={() => setTheme(value)}
           className={cn(
-            'flex items-center gap-2 px-3 py-2 rounded-md transition-colors',
+            'flex items-center gap-2 rounded-md px-3 py-2 transition-colors',
             theme === value
-              ? 'bg-white dark:bg-gray-700 shadow-sm'
+              ? 'bg-white shadow-sm dark:bg-gray-700'
               : 'hover:bg-gray-200 dark:hover:bg-gray-700'
           )}
         >
@@ -1201,23 +1226,12 @@ Always start with mobile styles, add complexity for larger screens:
 
 ```tsx
 // Layout example
-<div className="
-  flex flex-col           // Mobile: Stack vertically
-  md:flex-row             // Tablet+: Side by side
-  gap-4                   // Spacing
-">
-  <aside className="
-    w-full                // Mobile: Full width
-    md:w-64               // Tablet+: Fixed sidebar
-    md:flex-shrink-0      // Don't shrink
-  ">
+<div className="// Mobile: Stack vertically // Tablet+: Side by side // Spacing flex flex-col gap-4 md:flex-row">
+  <aside className="// Mobile: Full width // Tablet+: Fixed sidebar // Don't w-full shrink md:w-64 md:flex-shrink-0">
     <Sidebar />
   </aside>
-  
-  <main className="
-    flex-1                // Take remaining space
-    min-w-0               // Allow content to shrink
-  ">
+
+  <main className="// Take remaining space // Allow content to min-w-0 flex-1 shrink">
     <Content />
   </main>
 </div>
@@ -1234,36 +1248,32 @@ export function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white dark:bg-gray-900 border-b dark:border-gray-800">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+    <nav className="border-b bg-white dark:border-gray-800 dark:bg-gray-900">
+      <div className="mx-auto max-w-7xl px-4">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Logo />
 
           {/* Desktop navigation */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden items-center gap-6 md:flex">
             <NavLinks />
             <UserMenu />
           </div>
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="rounded-lg p-2 hover:bg-gray-100 md:hidden dark:hover:bg-gray-800"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? (
-              <XMarkIcon className="h-6 w-6" />
-            ) : (
-              <Bars3Icon className="h-6 w-6" />
-            )}
+            {mobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
           </button>
         </div>
       </div>
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t dark:border-gray-800">
-          <div className="px-4 py-4 space-y-2">
+        <div className="border-t md:hidden dark:border-gray-800">
+          <div className="space-y-2 px-4 py-4">
             <NavLinks mobile />
           </div>
         </div>
@@ -1283,9 +1293,9 @@ Simple hover effects:
 
 ```tsx
 <button className="
-  bg-brand-600 
-  hover:bg-brand-700 
-  transition-colors 
+  bg-brand-600
+  hover:bg-brand-700
+  transition-colors
   duration-200
 ">
 ```
@@ -1428,6 +1438,7 @@ function PageWrapper({ children }) {
 ### Color Contrast
 
 Ensure text meets WCAG 2.1 AA standards:
+
 - Regular text: 4.5:1 contrast ratio
 - Large text (18px+): 3:1 contrast ratio
 
@@ -1462,17 +1473,17 @@ theme: {
 
 ## Quick Reference: Common UI Changes
 
-| Task | File to Edit | What to Change |
-|------|--------------|----------------|
-| Change primary color | `tailwind.config.js` | `theme.extend.colors.brand` |
-| Update fonts | `tailwind.config.js` + `index.html` | `fontFamily` + Google Fonts link |
-| Modify button styles | `components/common/Button.tsx` | `variants` object |
-| Change border radius | `tailwind.config.js` | `theme.extend.borderRadius` |
-| Add new animation | `tailwind.config.js` | `theme.extend.animation` + `keyframes` |
-| Update breakpoints | `tailwind.config.js` | `theme.screens` |
-| Change dark mode colors | `tailwind.config.js` | Add `dark:` variants |
-| Mobile nav behavior | `components/layout/Navigation.tsx` | Responsive classes + state |
+| Task                    | File to Edit                        | What to Change                         |
+| ----------------------- | ----------------------------------- | -------------------------------------- |
+| Change primary color    | `tailwind.config.js`                | `theme.extend.colors.brand`            |
+| Update fonts            | `tailwind.config.js` + `index.html` | `fontFamily` + Google Fonts link       |
+| Modify button styles    | `components/common/Button.tsx`      | `variants` object                      |
+| Change border radius    | `tailwind.config.js`                | `theme.extend.borderRadius`            |
+| Add new animation       | `tailwind.config.js`                | `theme.extend.animation` + `keyframes` |
+| Update breakpoints      | `tailwind.config.js`                | `theme.screens`                        |
+| Change dark mode colors | `tailwind.config.js`                | Add `dark:` variants                   |
+| Mobile nav behavior     | `components/layout/Navigation.tsx`  | Responsive classes + state             |
 
 ---
 
-*Last updated: December 2025*
+_Last updated: December 2025_

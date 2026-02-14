@@ -1,6 +1,6 @@
 defmodule CGraph.Groups.Group do
   @moduledoc """
-  Group schema for Discord-style server/community.
+  Group schema for server/community.
 
   Groups contain channels, members with roles, and moderation features.
   """

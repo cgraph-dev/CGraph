@@ -1,11 +1,11 @@
 defmodule CGraphWeb.Channels.Backpressure do
   @moduledoc """
-  Discord-style channel backpressure to protect slow WebSocket clients.
+  Channel backpressure to protect slow WebSocket clients.
 
   ## Problem
 
   When a channel has 10K+ subscribers and messages arrive faster than some
-  clients can consume, memory grows unboundedly per connection. Discord handles
+  clients can consume, memory grows unboundedly per connection. CGraph handles
   this by dropping messages for slow readers and sending a "too_slow" event.
 
   ## Strategy

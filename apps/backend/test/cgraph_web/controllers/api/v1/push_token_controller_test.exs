@@ -1,5 +1,5 @@
 defmodule CgraphWeb.API.V1.PushTokenControllerTest do
-  @moduledoc "Push token controller tests — WhatsApp/Telegram push registration"
+  @moduledoc "Push token controller tests — Push registration"
   use CgraphWeb.ConnCase, async: true
 
   import CgraphWeb.UserFixtures

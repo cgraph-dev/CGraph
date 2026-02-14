@@ -3,10 +3,14 @@
 ## Overview
 
 CGraph combines the best of two worlds:
-1. **MyBB-style Forum Hosting**: Users can create fully-featured forums with boards, threads, posts, themes, plugins, and complete customization
-2. **Reddit-style Discovery**: A discovery feed where users browse, vote on, and discover new forums created by other users
 
-This creates a unique platform where forums compete for attention, and the best communities rise to the top.
+1. **MyBB-style Forum Hosting**: Users can create fully-featured forums with boards, threads, posts,
+   themes, plugins, and complete customization
+2. ** Discovery**: A discovery feed where users browse, vote on, and discover new forums created by
+   other users
+
+This creates a unique platform where forums compete for attention, and the best communities rise to
+the top.
 
 ---
 
@@ -20,7 +24,7 @@ This creates a unique platform where forums compete for attention, and the best 
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │                    DISCOVERY LAYER (Reddit-style)                     │   │
+│  │                    DISCOVERY LAYER ()                     │   │
 │  │                                                                        │   │
 │  │  • Browse all forums by Hot/Top/New/Rising                            │   │
 │  │  • Upvote/Downvote forums                                             │   │
@@ -67,13 +71,13 @@ schema "forums" do
   field :title, :string                   # "Gamers Unite - Your Gaming Community"
   field :description, :string
   field :tagline, :string                 # Short description for cards
-  
+
   # Branding
   field :icon_url, :string                # Forum icon (like subreddit icon)
   field :banner_url, :string              # Header banner
   field :favicon_url, :string             # Custom favicon
   field :logo_url, :string                # Full logo
-  
+
   # Theming (MyBB-style)
   field :theme_id, :binary_id             # Selected theme
   field :custom_css, :string              # User-provided CSS
@@ -82,15 +86,15 @@ schema "forums" do
   field :primary_color, :string           # Theme primary color
   field :secondary_color, :string         # Theme secondary color
   field :font_family, :string             # Custom font
-  
+
   # Settings
   field :is_public, :boolean              # Can anyone view?
   field :is_nsfw, :boolean                # Adult content
   field :require_approval, :boolean       # New members need approval
   field :registration_open, :boolean      # Can new users register?
   field :posting_requires_account, :boolean
-  
-  # Forum voting (Reddit-style discovery)
+
+  # Forum voting ( discovery)
   field :score, :integer                  # upvotes - downvotes
   field :upvotes, :integer
   field :downvotes, :integer
@@ -99,20 +103,20 @@ schema "forums" do
   field :monthly_score, :integer          # Monthly competition
   field :featured, :boolean               # Admin-featured
   field :verified, :boolean               # Verified community
-  
+
   # Stats
   field :member_count, :integer
   field :thread_count, :integer
   field :post_count, :integer
   field :active_users_today, :integer
-  
+
   # Discovery categorization
   field :category, :string                # gaming, tech, art, music, etc.
   field :tags, {:array, :string}          # Additional tags
-  
+
   # Subscription tier
   field :tier, :string                    # free, basic, pro, enterprise
-  
+
   belongs_to :owner, User
   has_many :boards, Board                 # Forum categories/boards
   has_many :forum_members, ForumMember    # Forum-specific memberships
@@ -133,18 +137,18 @@ schema "boards" do
   field :description, :string
   field :icon, :string                    # Icon or emoji
   field :position, :integer               # Display order
-  
+
   # Permissions
   field :is_locked, :boolean              # No new threads
   field :is_hidden, :boolean              # Only visible to certain groups
   field :min_posts_to_post, :integer      # Required post count
   field :min_reputation_to_post, :integer
-  
+
   # Stats
   field :thread_count, :integer
   field :post_count, :integer
   field :last_post_at, :utc_datetime
-  
+
   belongs_to :forum, Forum
   belongs_to :parent_board, Board         # For sub-boards
   has_many :sub_boards, Board             # Child boards
@@ -161,30 +165,30 @@ schema "threads" do
   field :slug, :string
   field :content, :string                 # First post content
   field :content_html, :string            # Rendered HTML
-  
+
   # Thread type
   field :thread_type, :string             # normal, sticky, announcement, poll
-  
+
   # Status
   field :is_locked, :boolean              # No new replies
   field :is_pinned, :boolean              # Sticky
   field :is_hidden, :boolean              # Soft delete
   field :is_approved, :boolean            # Moderation queue
-  
+
   # Prefix/Tags (MyBB-style)
   field :prefix, :string                  # [SOLVED], [HELP], etc.
   field :prefix_color, :string
-  
+
   # Stats
   field :view_count, :integer
   field :reply_count, :integer
   field :last_post_at, :utc_datetime
-  
-  # Voting (optional, for Reddit-style threads)
+
+  # Voting (optional, for  threads)
   field :score, :integer
   field :upvotes, :integer
   field :downvotes, :integer
-  
+
   belongs_to :board, Board
   belongs_to :author, User
   belongs_to :last_poster, User
@@ -202,20 +206,20 @@ schema "posts" do
   field :is_edited, :boolean
   field :edit_count, :integer
   field :edit_reason, :string
-  
+
   # Moderation
   field :is_hidden, :boolean
   field :is_approved, :boolean
   field :reported_count, :integer
-  
+
   # Features
   field :attachments, {:array, :map}      # File attachments
-  
+
   # Voting
   field :score, :integer
   field :upvotes, :integer
   field :downvotes, :integer
-  
+
   belongs_to :thread, Thread
   belongs_to :author, User
   belongs_to :reply_to, Post              # Quote reply
@@ -230,23 +234,23 @@ schema "forum_members" do
   field :title, :string                   # Custom user title
   field :signature, :string               # Forum signature
   field :avatar_url, :string              # Forum-specific avatar
-  
+
   # Stats (forum-specific)
   field :post_count, :integer
   field :thread_count, :integer
   field :reputation, :integer             # MyBB-style reputation
   field :reputation_received, :integer
   field :reputation_given, :integer
-  
+
   # Permissions
   field :role, :string                    # member, moderator, admin
   field :user_group_id, :binary_id        # Forum user group
-  
+
   # Status
   field :is_banned, :boolean
   field :ban_reason, :string
   field :ban_expires_at, :utc_datetime
-  
+
   belongs_to :forum, Forum
   belongs_to :user, User
   belongs_to :user_group, ForumUserGroup
@@ -262,7 +266,7 @@ schema "forum_user_groups" do
   field :icon, :string                    # Group icon/badge
   field :is_staff, :boolean               # Staff indicator
   field :is_default, :boolean             # Default group for new members
-  
+
   # Permissions (MyBB-style granular permissions)
   field :can_view_boards, :boolean
   field :can_create_threads, :boolean
@@ -275,7 +279,7 @@ schema "forum_user_groups" do
   field :can_receive_reputation, :boolean
   field :can_view_profiles, :boolean
   field :can_send_pm, :boolean
-  
+
   # Moderation permissions
   field :can_moderate, :boolean
   field :can_edit_posts, :boolean
@@ -284,13 +288,13 @@ schema "forum_user_groups" do
   field :can_lock_threads, :boolean
   field :can_ban_users, :boolean
   field :can_manage_users, :boolean
-  
+
   # Limits
   field :max_attachments_per_post, :integer
   field :max_attachment_size_kb, :integer
   field :max_signature_length, :integer
   field :post_flood_limit_seconds, :integer
-  
+
   belongs_to :forum, Forum
   has_many :members, ForumMember
 end
@@ -307,7 +311,7 @@ schema "forum_themes" do
   field :variables, :map                  # CSS variables
   field :is_default, :boolean
   field :is_official, :boolean            # CGraph official theme
-  
+
   belongs_to :forum, Forum
   belongs_to :parent_theme, ForumTheme    # Based on another theme
 end
@@ -324,10 +328,10 @@ schema "forum_plugins" do
   field :author, :string
   field :is_enabled, :boolean
   field :settings, :map                   # Plugin configuration
-  
+
   # Plugin type
   field :plugin_type, :string             # widget, moderation, integration, theme
-  
+
   belongs_to :forum, Forum
 end
 ```
@@ -342,7 +346,7 @@ schema "subscriptions" do
   field :current_period_start, :utc_datetime
   field :current_period_end, :utc_datetime
   field :stripe_subscription_id, :string
-  
+
   belongs_to :user, User
 end
 ```
@@ -351,35 +355,37 @@ end
 
 ## Subscription Tiers
 
-| Feature | Free | Basic ($5/mo) | Pro ($15/mo) | Enterprise ($50/mo) |
-|---------|------|---------------|--------------|---------------------|
-| Forums Allowed | 1 | 3 | 10 | Unlimited |
-| Custom Domain | ❌ | ❌ | ✅ | ✅ |
-| Remove CGraph Branding | ❌ | ❌ | ✅ | ✅ |
-| Custom CSS | Limited | Full | Full | Full |
-| Custom Themes | 1 | 5 | Unlimited | Unlimited |
-| Plugins | 3 | 10 | Unlimited | Unlimited |
-| Storage | 100MB | 1GB | 10GB | 100GB |
-| Members | 100 | 1,000 | 10,000 | Unlimited |
-| Analytics | Basic | Advanced | Advanced | Enterprise |
-| Priority Support | ❌ | ❌ | ✅ | ✅ |
-| API Access | ❌ | ✅ | ✅ | ✅ |
-| SSO Integration | ❌ | ❌ | ❌ | ✅ |
+| Feature                | Free    | Basic ($5/mo) | Pro ($15/mo) | Enterprise ($50/mo) |
+| ---------------------- | ------- | ------------- | ------------ | ------------------- |
+| Forums Allowed         | 1       | 3             | 10           | Unlimited           |
+| Custom Domain          | ❌      | ❌            | ✅           | ✅                  |
+| Remove CGraph Branding | ❌      | ❌            | ✅           | ✅                  |
+| Custom CSS             | Limited | Full          | Full         | Full                |
+| Custom Themes          | 1       | 5             | Unlimited    | Unlimited           |
+| Plugins                | 3       | 10            | Unlimited    | Unlimited           |
+| Storage                | 100MB   | 1GB           | 10GB         | 100GB               |
+| Members                | 100     | 1,000         | 10,000       | Unlimited           |
+| Analytics              | Basic   | Advanced      | Advanced     | Enterprise          |
+| Priority Support       | ❌      | ❌            | ✅           | ✅                  |
+| API Access             | ❌      | ✅            | ✅           | ✅                  |
+| SSO Integration        | ❌      | ❌            | ❌           | ✅                  |
 
 ---
 
-## Discovery Feed (Reddit-style)
+## Discovery Feed ()
 
-The main discovery page shows user-created forums like Reddit shows subreddits/posts:
+The main discovery page shows user-created forums like CGraph shows subreddits/posts:
 
 ### Sort Options
-- **Hot**: Score weighted by recency (Reddit's hot algorithm)
+
+- **Hot**: Score weighted by recency (CGraph's hot algorithm)
 - **Top**: Highest score (all time, this year, month, week, today)
 - **New**: Most recently created
 - **Rising**: Gaining votes quickly
 - **Trending**: Most activity growth
 
 ### Categories
+
 - Gaming
 - Technology
 - Art & Design
@@ -393,6 +399,7 @@ The main discovery page shows user-created forums like Reddit shows subreddits/p
 - Other
 
 ### Forum Cards (Discovery View)
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ [↑]                                                              │
@@ -452,12 +459,14 @@ Owners access a MyBB-style Admin Control Panel:
 ## API Endpoints
 
 ### Discovery
+
 - `GET /api/v1/discover` - Discovery feed with sort/filter
 - `GET /api/v1/discover/categories` - List categories
 - `GET /api/v1/discover/trending` - Trending forums
 - `POST /api/v1/forums/:id/vote` - Vote on forum
 
 ### Forum Management
+
 - `POST /api/v1/forums` - Create forum
 - `GET /api/v1/forums/:slug` - Get forum details
 - `PUT /api/v1/forums/:id` - Update forum
@@ -465,12 +474,14 @@ Owners access a MyBB-style Admin Control Panel:
 - `GET /api/v1/forums/:id/stats` - Forum statistics
 
 ### Boards
+
 - `GET /api/v1/forums/:id/boards` - List boards
 - `POST /api/v1/forums/:id/boards` - Create board
 - `PUT /api/v1/boards/:id` - Update board
 - `DELETE /api/v1/boards/:id` - Delete board
 
 ### Threads
+
 - `GET /api/v1/boards/:id/threads` - List threads
 - `POST /api/v1/boards/:id/threads` - Create thread
 - `GET /api/v1/threads/:id` - Get thread with posts
@@ -478,6 +489,7 @@ Owners access a MyBB-style Admin Control Panel:
 - `DELETE /api/v1/threads/:id` - Delete thread
 
 ### Posts
+
 - `GET /api/v1/threads/:id/posts` - List posts (paginated)
 - `POST /api/v1/threads/:id/posts` - Create reply
 - `PUT /api/v1/posts/:id` - Edit post
@@ -485,12 +497,14 @@ Owners access a MyBB-style Admin Control Panel:
 - `POST /api/v1/posts/:id/vote` - Vote on post
 
 ### Membership
+
 - `POST /api/v1/forums/:id/join` - Join forum
 - `DELETE /api/v1/forums/:id/membership` - Leave forum
 - `GET /api/v1/forums/:id/members` - List members
 - `PUT /api/v1/forums/:id/members/:user_id` - Update member
 
 ### Themes & Plugins
+
 - `GET /api/v1/forums/:id/themes` - List available themes
 - `POST /api/v1/forums/:id/themes` - Install theme
 - `PUT /api/v1/forums/:id/themes/:id` - Update theme
@@ -498,6 +512,7 @@ Owners access a MyBB-style Admin Control Panel:
 - `POST /api/v1/forums/:id/plugins` - Install plugin
 
 ### Subscriptions
+
 - `GET /api/v1/subscriptions` - Get user subscription
 - `POST /api/v1/subscriptions` - Create subscription
 - `PUT /api/v1/subscriptions` - Update subscription
@@ -508,6 +523,7 @@ Owners access a MyBB-style Admin Control Panel:
 ## Implementation Status
 
 ### Phase 1: Core Forum Structure ✅ COMPLETE
+
 - [x] Forum schema with voting fields
 - [x] Board schema (forum categories) - `Cgraph.Forums.Board`
 - [x] Thread schema - `Cgraph.Forums.Thread`
@@ -521,11 +537,12 @@ Owners access a MyBB-style Admin Control Panel:
 - [x] Tier-based forum limits (free: 1, starter: 3, pro: 10, business: unlimited)
 
 ### Phase 2: Discovery System ✅ COMPLETE
+
 - [x] Forum voting (upvote/downvote)
 - [x] Leaderboard API
 - [x] Discovery feed with sorting (hot, top, new, rising)
 - [x] Categories and tags
-- [x] Hot score algorithm (Reddit-style)
+- [x] Hot score algorithm ()
 - [x] Rising score algorithm (vote velocity)
 - [x] Trending score algorithm (growth + performance)
 - [x] Controversy score algorithm
@@ -534,6 +551,7 @@ Owners access a MyBB-style Admin Control Panel:
 - [x] Auto-featuring top forums
 
 ### Phase 3: Forum Features ✅ COMPLETE
+
 - [x] User groups and permissions - `Cgraph.Forums.ForumUserGroup`
 - [x] Thread prefixes - migration created
 - [x] Post voting - `Cgraph.Forums.PostVote`
@@ -544,6 +562,7 @@ Owners access a MyBB-style Admin Control Panel:
 - [x] Moderation logs - `forum_mod_logs` table
 
 ### Phase 4: Customization ✅ COMPLETE
+
 - [x] Theme system - `Cgraph.Forums.ForumTheme`
 - [x] Custom CSS support in Forum schema
 - [x] Plugin architecture - `Cgraph.Forums.ForumPlugin`
@@ -551,6 +570,7 @@ Owners access a MyBB-style Admin Control Panel:
 - [x] Announcements - `Cgraph.Forums.ForumAnnouncement`
 
 ### Phase 5: Subscription System 🔄 IN PROGRESS
+
 - [x] Subscription table created
 - [x] Tier field on forums
 - [x] Tier-based forum limits enforced in API
@@ -559,6 +579,7 @@ Owners access a MyBB-style Admin Control Panel:
 - [ ] Usage limit enforcement
 
 ### Phase 6: Advanced Features 🔄 IN PROGRESS
+
 - [x] Polls - `Cgraph.Forums.ThreadPoll`, `Cgraph.Forums.PollVote`
 - [x] File attachments - `Cgraph.Forums.ThreadAttachment`
 - [x] Ranking Engine - `Cgraph.Forums.RankingEngine`
@@ -567,6 +588,7 @@ Owners access a MyBB-style Admin Control Panel:
 - [ ] Real-time updates (WebSocket)
 
 ### Phase 7: Frontend UI ✅ COMPLETE
+
 - [x] ForumLeaderboard.tsx - Competition view with voting
 - [x] CreateForum.tsx - Multi-step forum creation wizard
 - [x] ForumBoardView.tsx - MyBB-style board/thread listing
@@ -580,47 +602,51 @@ Owners access a MyBB-style Admin Control Panel:
 
 The following tables have been created for the forum hosting platform:
 
-| Table | Description | Status |
-|-------|-------------|--------|
-| `forums` | Main forum entities | ✅ Extended |
-| `boards` | Forum sections/categories | ✅ Created |
-| `threads` | Discussion topics | ✅ Created |
-| `thread_posts` | Thread replies | ✅ Created |
-| `forum_members` | Forum memberships | ✅ Created |
-| `forum_user_groups` | Permission groups | ✅ Created |
-| `forum_votes` | Forum upvotes/downvotes | ✅ Created |
-| `thread_votes` | Thread upvotes/downvotes | ✅ Created |
-| `post_votes` | Post upvotes/downvotes | ✅ Created |
-| `forum_themes` | Custom themes | ✅ Created |
-| `forum_plugins` | Installed plugins | ✅ Created |
-| `forum_announcements` | Forum announcements | ✅ Created |
-| `thread_attachments` | File attachments | ✅ Created |
-| `thread_polls` | Thread polls | ✅ Created |
-| `poll_votes` | Poll responses | ✅ Created |
-| `reputation_entries` | Reputation system | ✅ Created |
-| `forum_warnings` | User warnings | ✅ Created |
-| `forum_mod_logs` | Moderation logs | ✅ Created |
-| `thread_prefixes` | Thread tags/prefixes | ✅ Created |
-| `subscriptions` | Paid subscriptions | ✅ Created |
+| Table                 | Description               | Status      |
+| --------------------- | ------------------------- | ----------- |
+| `forums`              | Main forum entities       | ✅ Extended |
+| `boards`              | Forum sections/categories | ✅ Created  |
+| `threads`             | Discussion topics         | ✅ Created  |
+| `thread_posts`        | Thread replies            | ✅ Created  |
+| `forum_members`       | Forum memberships         | ✅ Created  |
+| `forum_user_groups`   | Permission groups         | ✅ Created  |
+| `forum_votes`         | Forum upvotes/downvotes   | ✅ Created  |
+| `thread_votes`        | Thread upvotes/downvotes  | ✅ Created  |
+| `post_votes`          | Post upvotes/downvotes    | ✅ Created  |
+| `forum_themes`        | Custom themes             | ✅ Created  |
+| `forum_plugins`       | Installed plugins         | ✅ Created  |
+| `forum_announcements` | Forum announcements       | ✅ Created  |
+| `thread_attachments`  | File attachments          | ✅ Created  |
+| `thread_polls`        | Thread polls              | ✅ Created  |
+| `poll_votes`          | Poll responses            | ✅ Created  |
+| `reputation_entries`  | Reputation system         | ✅ Created  |
+| `forum_warnings`      | User warnings             | ✅ Created  |
+| `forum_mod_logs`      | Moderation logs           | ✅ Created  |
+| `thread_prefixes`     | Thread tags/prefixes      | ✅ Created  |
+| `subscriptions`       | Paid subscriptions        | ✅ Created  |
 
 ---
 
 ## Technical Considerations
 
 ### Multi-tenancy
+
 Each forum is a logical tenant with:
+
 - Isolated data (boards, threads, posts)
 - Separate member lists
 - Custom settings and theming
 - Individual permissions
 
 ### Performance
+
 - Denormalized counters for stats
 - Hot score caching
 - Pagination for all lists
 - CDN for user uploads
 
 ### Security
+
 - Sanitized custom CSS/HTML
 - Rate limiting
 - Spam detection
@@ -629,6 +655,7 @@ Each forum is a logical tenant with:
 ---
 
 ## Related Documents
+
 - [API Reference](../api/API_REFERENCE.md)
 - [Architecture](../architecture/ARCHITECTURE.md)
 - [Database Schema](../architecture/DATABASE.md)

@@ -1,7 +1,7 @@
 /**
  * Chat Facade Hook
  *
- * Discord-style composition hook that aggregates chat store,
+ * Composition hook that aggregates chat store,
  * effects store, and bubble store into a single domain interface.
  *
  * Provides a unified API for conversations, messages, typing indicators,

@@ -2,7 +2,7 @@
  * Badge Selection Screen
  *
  * Allows users to browse earned badges and select one to display on their profile.
- * Similar to Discord's profile badge showcase.
+ * Profile badge showcase.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';

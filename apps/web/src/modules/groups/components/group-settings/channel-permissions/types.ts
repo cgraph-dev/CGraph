@@ -31,7 +31,7 @@ export interface ChannelPermissionsPanelProps {
 export type PermState = 'allow' | 'deny' | 'inherit';
 
 /**
- * Permission flags matching Discord's permission system.
+ * Permission flags for the channel permission system.
  * Stored as bitmask integers.
  */
 export const PERMISSION_FLAGS = [

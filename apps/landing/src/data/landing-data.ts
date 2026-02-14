@@ -55,7 +55,7 @@ export const features: readonly FeatureData[] = [
   {
     icon: '🏛️',
     title: 'Forums & Communities',
-    description: 'Reddit-style communities with voting, threads, and powerful moderation tools.',
+    description: 'Communities with voting, threads, and powerful moderation tools.',
   },
   {
     icon: '👥',

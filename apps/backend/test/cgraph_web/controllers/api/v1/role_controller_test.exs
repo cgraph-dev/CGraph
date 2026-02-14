@@ -1,5 +1,5 @@
 defmodule CgraphWeb.API.V1.RoleControllerTest do
-  @moduledoc "Role controller tests — Discord-style RBAC"
+  @moduledoc "Role controller tests — RBAC"
   use CgraphWeb.ConnCase, async: true
 
   import CgraphWeb.UserFixtures

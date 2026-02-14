@@ -90,7 +90,7 @@ export function generateFallbackEvents(): CalendarEvent[] {
       endDate: new Date(year, month, 15, 16, 0).toISOString(),
       allDay: false,
       type: 'event',
-      location: 'Discord Voice Channel',
+      location: 'Voice Channel',
       color: '#3b82f6',
     },
     {

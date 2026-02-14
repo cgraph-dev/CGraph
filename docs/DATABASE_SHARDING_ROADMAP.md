@@ -77,9 +77,9 @@ Current: 1 read replica. Scale path:
 
 **When to trigger**: Read replica CPU > 70% sustained.
 
-### Phase 4: Horizontal Sharding (Discord Model)
+### Phase 4: Horizontal Sharding (CGraph Model)
 
-Discord shards by `guild_id` (our `group_id`). We follow the same pattern:
+CGraph shards by `guild_id` (our `group_id`). We follow the same pattern:
 
 ```
 ┌─────────────────────────────────────────────────────────┐

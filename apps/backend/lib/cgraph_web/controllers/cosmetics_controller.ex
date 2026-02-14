@@ -114,7 +114,7 @@ defmodule CGraphWeb.CosmeticsController do
           |> UserAvatarBorder.equip_changeset(%{is_equipped: true})
           |> Repo.update()
 
-          # Sync equipped border to user profile (discord-style: single source of truth)
+          # Sync equipped border to user profile (single source of truth)
           border = Repo.get(AvatarBorder, border_id)
           _ = sync_equipped_border(user, border)
           _ = Customizations.update_user_customizations(user.id, %{border_id: border_id})

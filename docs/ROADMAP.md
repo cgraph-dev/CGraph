@@ -8,7 +8,7 @@
 ## Vision Statement
 
 CGraph aims to be the **most trusted collaboration platform** for communities, teams, and
-creators—combining the best of Discord's real-time experience with **end-to-end encryption by
+creators—combining the best of CGraph's real-time experience with **end-to-end encryption by
 default** and modern customization.
 
 ---
@@ -117,7 +117,7 @@ After this date, only the following are allowed:
 - [ ] Mobile apps in TestFlight/Play Store
 - [ ] Status page live (status.cgraph.org)
 - [ ] Support ticketing system ready
-- [ ] Community Discord/server seeded
+- [ ] Community CGraph/server seeded
 - [ ] Press kit and launch blog post
 - [ ] Analytics and error tracking verified
 
@@ -257,7 +257,7 @@ Feature freezes are declared 2 weeks before major releases (x.0.0).
 
 - **GitHub Discussions:** Feature requests, ideas
 - **GitHub Issues:** Bug reports
-- **Discord/CGraph Server:** Real-time chat
+- **CGraph/CGraph Server:** Real-time chat
 - **Email:** feedback@cgraph.app
 
 ### Prioritization Framework

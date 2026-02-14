@@ -364,7 +364,7 @@ CGraph/
 │   │   │   │   ├── accounts/     # User auth, settings
 │   │   │   │   ├── messaging/    # DMs, conversations
 │   │   │   │   ├── groups/       # Servers and channels
-│   │   │   │   ├── forums/       # Reddit-style forums
+│   │   │   │   ├── forums/       #  forums
 │   │   │   │   └── notifications/
 │   │   │   └── cgraph_web/       # Web layer
 │   │   │       ├── controllers/  # REST endpoints
@@ -661,7 +661,7 @@ cd apps/backend && mix deps.get && mix ecto.reset
 Stuck? Resources:
 
 1. **GitHub Issues** — for bugs or feature requests
-2. **Project Discord** — community support
+2. **Project CGraph** — community support
 3. **Documentation** — check docs/ folder for detailed guides
 4. **Website** — [www.cgraph.org](https://www.cgraph.org)
 

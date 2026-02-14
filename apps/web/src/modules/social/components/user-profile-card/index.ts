@@ -1,7 +1,7 @@
 /**
  * User Profile Card Module
  *
- * Discord-style profile card with hover and click triggers
+ * Profile card with hover and click triggers
  */
 
 // Main component

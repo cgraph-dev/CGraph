@@ -1,6 +1,6 @@
 defmodule CGraph.Messaging.DeliveryTracking do
   @moduledoc """
-  WhatsApp-style delivery tracking sub-context.
+  Delivery tracking sub-context.
 
   Manages the full message delivery lifecycle:
   1. Message sent → server creates DeliveryReceipt with status=:sent

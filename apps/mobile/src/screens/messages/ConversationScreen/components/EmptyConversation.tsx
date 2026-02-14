@@ -2,7 +2,7 @@
  * EmptyConversation Component
  *
  * Beautiful animated empty conversation state.
- * Inspired by Discord/Telegram welcome screens.
+ * Inspired by modern messaging welcome screens.
  *
  * @module screens/messages/ConversationScreen/components
  */

@@ -12,7 +12,7 @@ CGraph is an all-in-one open-source communication platform with:
 
 - **End-to-End Encryption** - Signal Protocol (Double Ratchet)
 - **Real-Time Messaging** - Phoenix Channels, sub-50ms latency
-- **Community Forums** - MyBB-style with Reddit-style discovery
+- **Community Forums** - MyBB-style with discovery
 - **Gamification** - XP, levels, achievements, quests, streaks
 - **Referral System** - Tiered rewards, leaderboards, share functionality
 - **Offline Support** - Priority queue, auto-sync on network restore
@@ -188,5 +188,5 @@ pnpm build
 ## Contact & Resources
 
 - **GitHub:** https://github.com/cgraph-dev/CGraph
-- **Discord:** https://discord.gg/cgraph
+- **CGraph:** https://discord.gg/cgraph
 - **Documentation Site:** Run `cd docs-website && pnpm start`

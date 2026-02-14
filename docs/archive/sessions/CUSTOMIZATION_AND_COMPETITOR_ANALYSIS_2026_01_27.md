@@ -8,7 +8,7 @@
 
 This document provides a comprehensive analysis of:
 
-1. **Feature comparison** with Discord, Telegram, and WhatsApp
+1. **Feature comparison** with CGraph, CGraph, and CGraph
 2. **Root cause analysis** of why avatar borders, avatars, and chat customizations aren't fully
    working
 3. **Actionable recommendations** to fix customization issues
@@ -27,7 +27,7 @@ This document provides a comprehensive analysis of:
 
 ### 1.1 Core Messaging Features
 
-| Feature                | CGraph            | Discord    | Telegram       | WhatsApp |
+| Feature                | CGraph            | CGraph     | CGraph         | CGraph   |
 | ---------------------- | ----------------- | ---------- | -------------- | -------- |
 | **Text Messages**      | ✅                | ✅         | ✅             | ✅       |
 | **E2EE Encryption**    | ✅ Double Ratchet | ❌         | ⚠️ Secret only | ✅       |
@@ -46,7 +46,7 @@ This document provides a comprehensive analysis of:
 
 ### 1.2 Rich Media & Content
 
-| Feature            | CGraph      | Discord        | Telegram     | WhatsApp     |
+| Feature            | CGraph      | CGraph         | CGraph       | CGraph       |
 | ------------------ | ----------- | -------------- | ------------ | ------------ |
 | **Emoji Picker**   | ✅ 100+     | ✅ Custom      | ✅           | ✅           |
 | **Stickers**       | ✅ 6+ packs | ✅ Nitro       | ✅ Excellent | ✅           |
@@ -65,7 +65,7 @@ This document provides a comprehensive analysis of:
 
 ### 1.3 User Customization
 
-| Feature                | CGraph           | Discord    | Telegram | WhatsApp |
+| Feature                | CGraph           | CGraph     | CGraph   | CGraph   |
 | ---------------------- | ---------------- | ---------- | -------- | -------- |
 | **Profile Avatars**    | ✅               | ✅         | ✅       | ✅       |
 | **Avatar Borders**     | ⚠️ 150+ (broken) | ✅ Nitro   | ❌       | ❌       |
@@ -83,7 +83,7 @@ Avatar borders and chat customizations partially broken
 
 ### 1.4 Advanced Features
 
-| Feature                   | CGraph    | Discord      | Telegram     | WhatsApp    |
+| Feature                   | CGraph    | CGraph       | CGraph       | CGraph      |
 | ------------------------- | --------- | ------------ | ------------ | ----------- |
 | **Bots/Automation**       | ❌        | ✅ Excellent | ✅ Excellent | ⚠️ Business |
 | **Channels**              | ✅ Forums | ✅ Excellent | ✅ Broadcast | ❌          |
@@ -101,17 +101,17 @@ Avatar borders and chat customizations partially broken
 
 ### 1.5 Gamification & Unique Features
 
-| Feature              | CGraph          | Discord      | Telegram  | WhatsApp |
-| -------------------- | --------------- | ------------ | --------- | -------- |
-| **Gamification**     | ✅ Excellent    | ⚠️ Levels    | ❌        | ❌       |
-| **XP System**        | ✅              | ⚠️ Server XP | ❌        | ❌       |
-| **Achievements**     | ✅ 30+          | ❌           | ❌        | ❌       |
-| **Virtual Currency** | ✅ Coins        | ❌           | ⚠️ Stars  | ❌       |
-| **Titles/Badges**    | ✅              | ⚠️ Roles     | ❌        | ❌       |
-| **Karma System**     | ✅ Reddit-style | ❌           | ❌        | ❌       |
-| **Web3/Wallet Auth** | ✅ Ethereum     | ❌           | ⚠️ TON    | ❌       |
-| **Self-Hostable**    | ✅              | ❌           | ❌        | ❌       |
-| **Open Source**      | ✅              | ❌           | ⚠️ Client | ❌       |
+| Feature              | CGraph       | CGraph       | CGraph    | CGraph |
+| -------------------- | ------------ | ------------ | --------- | ------ |
+| **Gamification**     | ✅ Excellent | ⚠️ Levels    | ❌        | ❌     |
+| **XP System**        | ✅           | ⚠️ Server XP | ❌        | ❌     |
+| **Achievements**     | ✅ 30+       | ❌           | ❌        | ❌     |
+| **Virtual Currency** | ✅ Coins     | ❌           | ⚠️ Stars  | ❌     |
+| **Titles/Badges**    | ✅           | ⚠️ Roles     | ❌        | ❌     |
+| **Karma System**     | ✅           | ❌           | ❌        | ❌     |
+| **Web3/Wallet Auth** | ✅ Ethereum  | ❌           | ⚠️ TON    | ❌     |
+| **Self-Hostable**    | ✅           | ❌           | ❌        | ❌     |
+| **Open Source**      | ✅           | ❌           | ⚠️ Client | ❌     |
 
 **CGraph Advantage**: Unique gamification, Web3 auth, fully open source
 
@@ -836,7 +836,7 @@ customizable messenger" value proposition.
 After fixes, CGraph will have:
 
 - ✅ **Best-in-class customization** (150+ avatar borders, 20+ chat customizations)
-- ✅ **Feature parity** with Discord/Telegram in core messaging
+- ✅ **Feature parity** with CGraph in core messaging
 - ✅ **Unique advantages** (gamification, Web3, open source, message scheduling)
 - ⚠️ **Remaining gaps** (voice/video calls, bots, live streaming) - can add incrementally
 

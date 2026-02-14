@@ -62,7 +62,12 @@ export { default as TypingIndicator } from './conversation/TypingIndicator';
 // UI Components - Premium Glassmorphism Design
 export { default as GlassCard } from './ui/GlassCard';
 export { default as GlassCardV2 } from './ui/GlassCardV2';
-export type { GlassVariant, GlassCardV2Props, BorderAnimationMode, PressAnimation } from './ui/GlassCardV2';
+export type {
+  GlassVariant,
+  GlassCardV2Props,
+  BorderAnimationMode,
+  PressAnimation,
+} from './ui/GlassCardV2';
 export { default as AnimatedAvatar } from './ui/AnimatedAvatar';
 export { default as BottomSheet } from './ui/BottomSheet';
 export type { BottomSheetProps, SnapPoint } from './ui/BottomSheet';
@@ -164,21 +169,11 @@ export type {
 } from './visualization';
 
 // Input Components - User Input Elements
-export {
-  ColorPicker,
-  Slider,
-  RangeSlider,
-  SliderGroup,
-} from './inputs';
-export type {
-  ColorPickerProps,
-  SliderProps,
-  RangeSliderProps,
-  SliderGroupProps,
-} from './inputs';
+export { ColorPicker, Slider, RangeSlider, SliderGroup } from './inputs';
+export type { ColorPickerProps, SliderProps, RangeSliderProps, SliderGroupProps } from './inputs';
 
 // Attachment Picker
-export { default as TelegramAttachmentPicker } from './TelegramAttachmentPicker';
+export { default as AttachmentPicker } from './AttachmentPicker';
 
 // Error Boundaries - Production Stability
 export {

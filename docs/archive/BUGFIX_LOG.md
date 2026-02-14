@@ -252,7 +252,7 @@ users with an empty gallery grid showing only selection circles.
 
 **Files Changed**:
 
-- `apps/mobile/src/components/TelegramAttachmentPicker.tsx`
+- `apps/mobile/src/components/CGraphAttachmentPicker.tsx`
 
 **Implementation**:
 
@@ -325,7 +325,7 @@ const shouldShowContent = item.type !== 'video' && item.type !== 'image' && !isM
 
 ### Contact Sharing Feature
 
-**Issue**: Contact button did nothing, needed Telegram-style contact picker.
+**Issue**: Contact button did nothing, needed contact picker.
 
 **Solution**: Full contact picker implementation with expo-contacts.
 
@@ -871,8 +871,8 @@ cache-control: public
 
 ### Overview
 
-Comprehensive overhaul of the presence system to mimic WhatsApp's real-time user status tracking.
-This update fixes 12 critical issues identified in the presence architecture, adds missing channel
+Comprehensive overhaul of the presence system to mimic CGraph's real-time user status tracking. This
+update fixes 12 critical issues identified in the presence architecture, adds missing channel
 implementations, standardizes event formats, and adds mobile typing indicator support.
 
 ### Critical Issues Fixed
@@ -890,13 +890,13 @@ implementations, standardizes event formats, and adds mobile typing indicator su
 
 ### 1. New PresenceChannel (BACKEND)
 
-Created global presence channel for WhatsApp-style real-time user status tracking:
+Created global presence channel for real-time user status tracking:
 
 ```elixir
 # apps/backend/lib/cgraph_web/channels/presence_channel.ex
 defmodule CgraphWeb.PresenceChannel do
   @moduledoc """
-  Global presence channel for WhatsApp-style real-time user status tracking.
+  Global presence channel for  real-time user status tracking.
 
   Handles:
   - User online/offline state broadcasting
@@ -1075,7 +1075,7 @@ isUserOnline(conversationId: string, userId: string): boolean {
 | `apps/web/src/pages/messages/Conversation.tsx`                      | Updated typing timeout to 5s                     |
 | `apps/web/src/pages/groups/GroupChannel.tsx`                        | Updated typing timeout to 5s                     |
 
-### WhatsApp-Style Presence Flow
+### CGraph-Style Presence Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐

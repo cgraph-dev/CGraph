@@ -170,7 +170,7 @@ export const lightColors = {
 } as const;
 
 /**
- * Dark Theme - Discord-inspired with Matrix green accents.
+ * Dark Theme - Dark theme with Matrix green accents.
  * Optimized for late-night use and OLED screens.
  */
 export const darkColors = {

@@ -554,7 +554,7 @@ curl -I https://cgraph-web-v2.vercel.app
 ## 🆘 Getting Help
 
 1. **Search existing issues:** [GitHub Issues](https://github.com/cgraph/cgraph/issues)
-2. **Join Discord:** [CGraph Community](https://discord.gg/cgraph)
+2. **Join CGraph:** [CGraph Community](https://discord.gg/cgraph)
 3. **Check documentation:** [docs/](../README.md)
 4. **Create detailed bug report** with:
    - Environment (OS, Node version, browser)

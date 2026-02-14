@@ -5,7 +5,7 @@
 ## Overview
 
 The CGraph Landing Page is a standalone React application designed for maximum performance and
-scalability, following Discord's architecture pattern of separating the marketing site from the main
+scalability, following the architecture pattern of separating the marketing site from the main
 application.
 
 ## Architecture
@@ -19,7 +19,7 @@ app.cgraph.org/      → Main Web App (separate deployment)
 
 ### Why Separate Apps?
 
-Following Discord's architecture:
+Architecture:
 
 1. **Performance**: Marketing pages can be statically generated and aggressively cached
 2. **SEO**: Landing pages need different SEO strategies than SPAs

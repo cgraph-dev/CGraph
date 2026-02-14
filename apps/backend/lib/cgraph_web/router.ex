@@ -30,7 +30,7 @@ defmodule CGraphWeb.Router do
     plug :accepts, ["json"]
     # Security headers for API responses
     plug CGraphWeb.Plugs.SecurityHeaders, mode: :api
-    # End-to-end request tracing (Meta/Discord standard)
+    # End-to-end request tracing
     plug CGraphWeb.Plugs.RequestTracing
     # Enhanced rate limiter with sliding window algorithm
     # See CGraphWeb.Plugs.RateLimiterV2 for tier documentation
@@ -375,7 +375,7 @@ defmodule CGraphWeb.Router do
     post "/saved-messages", SavedMessageController, :create
     delete "/saved-messages/:id", SavedMessageController, :delete
 
-    # Group Channels (Discord-style)
+    # Group Channels
     resources "/groups", GroupController do
       resources "/channels", ChannelController do
         resources "/messages", ChannelMessageController, only: [:index, :create]
@@ -410,7 +410,7 @@ defmodule CGraphWeb.Router do
     get "/plugins/marketplace", PluginController, :marketplace
     get "/plugins/marketplace/:plugin_id", PluginController, :marketplace_show
 
-    # Forums (Reddit-style discovery + MyBB-style hosting)
+    # Forums (Discovery + Hosting)
     # Note: GET /forums, /forums/:id, /forums/leaderboard, /forums/top are public (no auth required)
 
     # Home feed - posts from forums the user has joined (requires auth)

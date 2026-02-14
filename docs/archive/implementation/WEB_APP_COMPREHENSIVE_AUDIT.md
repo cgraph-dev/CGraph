@@ -23,7 +23,7 @@ end-to-end.
 - **Read Receipts**: Avatar stack showing who read message (own messages only)
 - **Message Reactions**: Add/remove emoji reactions with haptic feedback, 48+ emojis
 - **Voice Messages**: Record, play, scrub waveform, duration tracking
-- **Rich Media Embeds**: Auto-detect URLs, YouTube/Twitter embed support
+- **Rich Media Embeds**: Auto-detect URLs, YouTube/Social embed support
 - **Message List Virtualization**: React Virtual for performance
 - **Date Separators**: Messages grouped by date with glass effect separators
 
@@ -295,7 +295,7 @@ end-to-end.
 - [ ] Moderation tools
 - [ ] Group customization (icon, banner, colors)
 - [ ] Roles and permissions
-- [ ] Comparison with Discord/Telegram
+- [ ] Comparison with CGraph
 
 **Known Issues**:
 
@@ -969,9 +969,8 @@ const avatarStyle = isOwnProfile
 ### Executive Summary
 
 CGraph's Groups functionality has a **solid foundation with modern UI/UX** but suffers from
-**incomplete backend integration** and **partially functional features**. Discord-inspired
-architecture with Phoenix WebSocket support for real-time messaging, but many advanced features
-still in development.
+**incomplete backend integration** and **partially functional features**. architecture with Phoenix
+WebSocket support for real-time messaging, but many advanced features still in development.
 
 **Overall Status**: 65-70% Complete  
 **Working**: UI structure, real-time messaging, typing indicators, member lists, role definitions  
@@ -1082,22 +1081,22 @@ still in development.
 - Ban appeals
 - Bulk message operations
 
-### 📊 Discord/Telegram Feature Comparison
+### 📊 CGraph Feature Comparison
 
-| Feature           | Discord | Telegram | CGraph | Status       |
-| ----------------- | ------- | -------- | ------ | ------------ |
-| Text Channels     | ✅      | ✅       | ✅     | Complete     |
-| Voice Channels    | ✅      | ✅       | ❌     | Type only    |
-| Categories        | ✅      | ❌       | ✅     | Complete     |
-| Roles/Permissions | ✅      | ⚠️       | ⚠️     | UI only      |
-| Invite System     | ✅      | ✅       | ✅     | Complete     |
-| Message Reactions | ✅      | ✅       | ⚠️     | Display only |
-| Message Pins      | ✅      | ✅       | ❌     | Missing      |
-| File Sharing      | ✅      | ✅       | ❌     | Missing      |
-| Message Search    | ✅      | ✅       | ❌     | Missing      |
-| Audit Log         | ✅      | ❌       | ❌     | Missing      |
-| Threads           | ✅      | ❌       | ❌     | Missing      |
-| Forum Channels    | ✅      | ❌       | ❌     | Missing      |
+| Feature           | CGraph | CGraph | CGraph | Status       |
+| ----------------- | ------ | ------ | ------ | ------------ |
+| Text Channels     | ✅     | ✅     | ✅     | Complete     |
+| Voice Channels    | ✅     | ✅     | ❌     | Type only    |
+| Categories        | ✅     | ❌     | ✅     | Complete     |
+| Roles/Permissions | ✅     | ⚠️     | ⚠️     | UI only      |
+| Invite System     | ✅     | ✅     | ✅     | Complete     |
+| Message Reactions | ✅     | ✅     | ⚠️     | Display only |
+| Message Pins      | ✅     | ✅     | ❌     | Missing      |
+| File Sharing      | ✅     | ✅     | ❌     | Missing      |
+| Message Search    | ✅     | ✅     | ❌     | Missing      |
+| Audit Log         | ✅     | ❌     | ❌     | Missing      |
+| Threads           | ✅     | ❌     | ❌     | Missing      |
+| Forum Channels    | ✅     | ❌     | ❌     | Missing      |
 
 ### 🔧 Priority Fix Roadmap
 
@@ -1171,9 +1170,9 @@ still in development.
 
 ### Executive Summary
 
-CGraph's Forums has **solid core functionality for Reddit-style forums** but suffers from
-**architectural confusion** with two competing systems (Reddit-style posts/comments vs MyBB-style
-boards/threads). Many advanced features are defined in code but disconnected from UI.
+CGraph's Forums has **solid core functionality for forums** but suffers from **architectural
+confusion** with two competing systems ( posts/comments vs MyBB-style boards/threads). Many advanced
+features are defined in code but disconnected from UI.
 
 **Overall Status**: 60% Complete  
 **Working**: Voting system, comments, forum creation, moderation basics, leaderboard  
@@ -1184,7 +1183,7 @@ features
 
 **CRITICAL FINDING**: CGraph has **TWO separate forum systems**:
 
-1. **Reddit-Style** (`forumStore.ts`):
+1. **Forum-Style** (`forumStore.ts`):
    - Forums → Posts → Comments
    - Upvote/downvote karma system
    - Hot/New/Top sorting
@@ -1317,9 +1316,9 @@ wasted effort.
 - Karma thresholds
 - Karma decay
 
-### 📊 Reddit/MyBB Feature Comparison
+### 📊 Forum/MyBB Feature Comparison
 
-| Feature           | Reddit | MyBB | CGraph | Status         |
+| Feature           | CGraph | MyBB | CGraph | Status         |
 | ----------------- | ------ | ---- | ------ | -------------- |
 | Forum Creation    | ✅     | ✅   | ✅     | Complete       |
 | Post Voting       | ✅     | ❌   | ✅     | Complete       |
@@ -1341,7 +1340,7 @@ wasted effort.
 
 **Phase 1: Critical (1-2 weeks)**
 
-1. Choose one architecture (Reddit OR MyBB style)
+1. Choose one architecture (Forum OR MyBB style)
 2. Add markdown/rich text editor
 3. Fix comment tree insertion logic
 4. Complete post creation (drafts, preview)
@@ -1402,14 +1401,14 @@ wasted effort.
 
 **Immediate Actions:**
 
-1. **Decide on architecture** - Reddit-style OR MyBB-style, not both
+1. **Decide on architecture** - OR MyBB-style, not both
 2. **Add markdown editor** - Critical for content creation
 3. **Integrate boards properly** - If keeping MyBB features
 4. **Build moderation dashboard** - Essential for forum health
 
 **Architectural Decision Required:**
 
-**Option A: Go Full Reddit-Style**
+**Option A: Go Full Forum-Style**
 
 - Remove board/thread system
 - Focus on forums → posts → comments

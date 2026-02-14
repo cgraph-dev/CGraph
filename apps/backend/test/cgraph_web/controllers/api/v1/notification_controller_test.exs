@@ -1,6 +1,6 @@
 defmodule CGraphWeb.API.V1.NotificationControllerTest do
   @moduledoc """
-  Tests for the notification controller — Discord/Meta standard:
+  Tests for the notification controller — Standard:
   every user-facing endpoint must have coverage for happy path,
   authorization, and edge cases.
   """

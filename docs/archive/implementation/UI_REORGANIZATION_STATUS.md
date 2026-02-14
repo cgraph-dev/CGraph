@@ -371,7 +371,7 @@ Currently no tasks in progress. Ready to continue with next phase.
 - Users can instantly access profile info without navigation
 - Validates the profile card component with real data
 - **Estimated effort**: 2-3 hours
-- **Impact**: Discord-level UX across the entire app
+- **Impact**: CGraph-level UX across the entire app
 
 ### Option C: Build Social Hub
 
@@ -381,7 +381,7 @@ Currently no tasks in progress. Ready to continue with next phase.
 - Makes /social tab functional
 - Users can access friends, notifications, search in one place
 - **Estimated effort**: 2 days
-- **Impact**: Telegram-level efficiency for social features
+- **Impact**: CGraph-level efficiency for social features
 
 ---
 
@@ -391,7 +391,7 @@ Currently no tasks in progress. Ready to continue with next phase.
 
 - **Before**: 9 tabs (confusing, cluttered)
 - **After**: 6 tabs (clean, organized)
-- **Impact**: Matches Discord/Telegram efficiency
+- **Impact**: Matches CGraph efficiency
 
 ### 2. Dedicated Customization Tab ✅
 
@@ -402,7 +402,7 @@ Currently no tasks in progress. Ready to continue with next phase.
 
 ### 3. Profile Popup Component ✅
 
-- **Discord-level UX**: Mini + Full card variants
+- **CGraph-level UX**: Mini + Full card variants
 - **Before**: Must navigate to full profile page
 - **After**: Hover/click for instant info
 - **Impact**: 80% of profile views don't need full page
@@ -414,7 +414,7 @@ Currently no tasks in progress. Ready to continue with next phase.
 - **Search & Filter**: Real-time search + rarity filtering
 - **Visual Preview**: See exactly what you're equipping
 - **Lock System**: Clear unlock requirements for locked items
-- **Comparison**: Discord has 0 avatar borders, Telegram has minimal customization
+- **Comparison**: CGraph has 0 avatar borders, CGraph has minimal customization
 - **Impact**: Revolutionary level of personalization
 
 ---

@@ -82,7 +82,7 @@ fly deploy  # or railway up
 - ✅ Authentication (email/password, OAuth, Ethereum wallet)
 - ✅ Real-time messaging with encryption
 - ✅ Forums with karma system
-- ✅ Groups (Discord-style servers)
+- ✅ Groups ( servers)
 - ✅ Gamification (XP, achievements, leaderboards)
 - ✅ Customization hub (5 pages)
 - ✅ Theme application system

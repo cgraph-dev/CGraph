@@ -1,7 +1,7 @@
 /**
  * ChannelPermissionsPanel - Manage per-channel permission overwrites
  *
- * Discord-style channel permission overrides for roles and members.
+ * Channel permission overrides for roles and members.
  * Uses the permissions API at /api/v1/groups/:group_id/channels/:channel_id/permissions
  *
  * Orchestrator that composes sub-components from ./channel-permissions/
@@ -16,7 +16,11 @@ import { api } from '@/lib/api';
 
 import { AddOverrideForm } from './channel-permissions/AddOverrideForm';
 import { OverwriteCard } from './channel-permissions/OverwriteCard';
-import { getPermState, cyclePermState, applyPermChange } from './channel-permissions/permission-utils';
+import {
+  getPermState,
+  cyclePermState,
+  applyPermChange,
+} from './channel-permissions/permission-utils';
 import type {
   PermissionOverwrite,
   RoleOption,
@@ -111,10 +115,10 @@ export function ChannelPermissionsPanel({
     if (!changes) return;
     try {
       setSaving(true);
-      await api.put(
-        `/api/v1/groups/${groupId}/channels/${channelId}/permissions/${overwriteId}`,
-        { allow: changes.allow, deny: changes.deny }
-      );
+      await api.put(`/api/v1/groups/${groupId}/channels/${channelId}/permissions/${overwriteId}`, {
+        allow: changes.allow,
+        deny: changes.deny,
+      });
       setPendingChanges((prev) => {
         const next = { ...prev };
         delete next[overwriteId];
@@ -242,9 +246,7 @@ export function ChannelPermissionsPanel({
                         pendingDeny={changes?.deny ?? overwrite.deny}
                         hasPendingChanges={!!changes}
                         onToggleEdit={() =>
-                          setEditingId(
-                            editingId === overwrite.id ? null : overwrite.id
-                          )
+                          setEditingId(editingId === overwrite.id ? null : overwrite.id)
                         }
                         onDelete={() => handleDelete(overwrite.id)}
                         onPermToggle={(bit) => handlePermToggle(overwrite.id, bit)}

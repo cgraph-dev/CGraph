@@ -1,7 +1,7 @@
 /**
  * MessageActionsMenu Component
  *
- * Discord/Telegram-style message action sheet with quick reactions,
+ * Message action sheet with quick reactions,
  * message preview, and action buttons for reply, copy, pin, and delete.
  *
  * @module components/conversation/MessageActionsMenu
@@ -67,7 +67,7 @@ export interface MessageActionsMenuProps {
 }
 
 /**
- * Message context menu with modern iOS/Discord-style design.
+ * Message context menu with modern iOS-style design.
  *
  * Features:
  * - Blur backdrop with fade animation

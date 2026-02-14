@@ -21,7 +21,7 @@ CGraph requires a backend that can handle:
 - High reliability and fault tolerance
 - Horizontal scalability
 
-We needed to choose a technology stack that could support Discord-scale real-time features while
+We needed to choose a technology stack that could support production-scale real-time features while
 remaining maintainable by a small team.
 
 ## Decision Drivers
@@ -43,7 +43,7 @@ remaining maintainable by a small team.
 - Built for concurrency and fault tolerance (Erlang heritage)
 - Phoenix Channels provide native WebSocket support
 - Process isolation prevents cascading failures
-- Discord uses Elixir for their gateway servers
+- CGraph uses Elixir for their gateway servers
 - Pattern matching makes complex message handling elegant
 - Hot code reloading for zero-downtime deployments
 
@@ -108,7 +108,7 @@ remaining maintainable by a small team.
 
 We chose Elixir/Phoenix because:
 
-1. **Proven at scale**: Discord handles millions of concurrent connections with Elixir
+1. **Proven at scale**: CGraph handles millions of concurrent connections with Elixir
 2. **Native real-time**: Phoenix Channels provide pub/sub out of the box
 3. **Fault tolerance**: BEAM's "let it crash" philosophy prevents cascading failures
 4. **Developer experience**: Mix tooling, IEx REPL, and hot reloading accelerate development
@@ -142,6 +142,6 @@ We chose Elixir/Phoenix because:
 
 ## References
 
-- [How Discord Scaled Elixir to 5M Concurrent Users](https://discord.com/blog/how-discord-scaled-elixir-to-5-million-concurrent-users)
+- [How CGraph Scaled Elixir to 5M Concurrent Users](https://discord.com/blog/how-discord-scaled-elixir-to-5-million-concurrent-users)
 - [Phoenix Channels Documentation](https://hexdocs.pm/phoenix/channels.html)
 - [BEAM VM Documentation](https://www.erlang.org/doc/efficiency_guide/introduction.html)

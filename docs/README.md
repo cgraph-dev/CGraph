@@ -156,13 +156,13 @@ See [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) for full configura
 
 ## 🚀 Quick Links
 
-| Resource          | Link                                                                 |
-| ----------------- | -------------------------------------------------------------------- |
-| Source Code       | [github.com/cgraph-dev/CGraph](https://github.com/cgraph-dev/CGraph) |
-| Official Website  | [cgraph.org](https://www.cgraph.org)                                 |
-| Community Discord | [discord.gg/cgraph](https://discord.gg/cgraph)                       |
-| Security Policy   | [SECURITY.md](../SECURITY.md)                                        |
-| Code of Conduct   | [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)                          |
+| Resource         | Link                                                                 |
+| ---------------- | -------------------------------------------------------------------- |
+| Source Code      | [github.com/cgraph-dev/CGraph](https://github.com/cgraph-dev/CGraph) |
+| Official Website | [cgraph.org](https://www.cgraph.org)                                 |
+| Community CGraph | [discord.gg/cgraph](https://discord.gg/cgraph)                       |
+| Security Policy  | [SECURITY.md](../SECURITY.md)                                        |
+| Code of Conduct  | [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md)                          |
 
 ---
 

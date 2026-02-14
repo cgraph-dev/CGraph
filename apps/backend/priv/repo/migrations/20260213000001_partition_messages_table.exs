@@ -106,7 +106,7 @@ defmodule CGraph.Repo.Migrations.PartitionMessagesTable do
 
     # Note: PostgreSQL partitioned tables cannot have a UNIQUE index on id alone
     # (must include partition key). Downstream FKs reference messages(id) but
-    # we rely on application-level integrity here (Discord pattern — no FKs on
+    # we rely on application-level integrity here (No FKs on
     # hot-path partitioned tables).
 
     # Step 6: Recreate foreign key references

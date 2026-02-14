@@ -282,7 +282,7 @@ defmodule CGraphWeb.API.V1.UserController do
   end
 
   @doc """
-  Get presence status for a specific user (WhatsApp-style).
+  Get presence status for a specific user .
 
   Returns:
   - `online: true/false` - whether user is currently connected

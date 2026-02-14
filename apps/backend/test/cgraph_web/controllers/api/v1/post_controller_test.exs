@@ -1,5 +1,5 @@
 defmodule CgraphWeb.API.V1.PostControllerTest do
-  @moduledoc "Post controller tests — Reddit-style forum post CRUD"
+  @moduledoc "Post controller tests — Forum post CRUD"
   use CgraphWeb.ConnCase, async: true
 
   import CgraphWeb.UserFixtures

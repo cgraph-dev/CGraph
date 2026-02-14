@@ -1,5 +1,5 @@
 /**
- * TelegramAttachmentPicker Types
+ * AttachmentPicker Types
  */
 
 export interface Asset {
@@ -27,7 +27,7 @@ export interface SelectedAsset {
 
 export type TabType = 'gallery' | 'gift' | 'file' | 'location' | 'checklist' | 'contact';
 
-export interface TelegramAttachmentPickerProps {
+export interface AttachmentPickerProps {
   visible: boolean;
   onClose: () => void;
   onSelectAssets: (assets: SelectedAsset[]) => void;
