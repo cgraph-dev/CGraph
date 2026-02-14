@@ -11,8 +11,8 @@
 
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
-import Navigation from './Navigation';
-import Footer from './Footer';
+import Navigation from './layout/Navigation';
+import Footer from './layout/Footer';
 import './marketing-pages.css';
 
 interface MarketingLayoutProps {
