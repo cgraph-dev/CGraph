@@ -42,7 +42,7 @@ defmodule CGraph.Messaging.SavedMessage do
     if get_field(changeset, :saved_at) do
       changeset
     else
-      put_change(changeset, :saved_at, DateTime.utc_now() |> DateTime.truncate(:microsecond))
+      put_change(changeset, :saved_at, DateTime.utc_now())
     end
   end
 end

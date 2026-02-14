@@ -20,7 +20,7 @@ defmodule CGraph.Gamification.UserChatEffect do
     field :custom_config, :map
 
     belongs_to :user, CGraph.Accounts.User
-    belongs_to :chat_effect, CGraph.Gamification.ChatEffect
+    belongs_to :chat_effect, CGraph.Gamification.ChatEffect, foreign_key: :effect_id
 
     timestamps(type: :utc_datetime)
   end
@@ -29,14 +29,14 @@ defmodule CGraph.Gamification.UserChatEffect do
   def changeset(user_effect, attrs) do
     user_effect
     |> cast(attrs, [
-      :user_id, :chat_effect_id, :is_active, :unlock_source,
+      :user_id, :effect_id, :is_active, :unlock_source,
       :unlock_data, :expires_at, :custom_config
     ])
-    |> validate_required([:user_id, :chat_effect_id, :unlock_source])
+    |> validate_required([:user_id, :effect_id, :unlock_source])
     |> validate_inclusion(:unlock_source, @unlock_sources)
     |> foreign_key_constraint(:user_id)
-    |> foreign_key_constraint(:chat_effect_id)
-    |> unique_constraint([:user_id, :chat_effect_id])
+    |> foreign_key_constraint(:effect_id)
+    |> unique_constraint([:user_id, :effect_id])
   end
 
   def activate_changeset(user_effect, attrs) do

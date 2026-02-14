@@ -48,7 +48,7 @@ defmodule CGraph.Gamification.UserQuest do
   """
   def complete_changeset(user_quest) do
     user_quest
-    |> cast(%{completed: true, completed_at: DateTime.utc_now()}, [:completed, :completed_at])
+    |> cast(%{completed: true, completed_at: DateTime.truncate(DateTime.utc_now(), :second)}, [:completed, :completed_at])
   end
 
   @doc """
@@ -56,6 +56,6 @@ defmodule CGraph.Gamification.UserQuest do
   """
   def claim_changeset(user_quest) do
     user_quest
-    |> cast(%{claimed: true, claimed_at: DateTime.utc_now()}, [:claimed, :claimed_at])
+    |> cast(%{claimed: true, claimed_at: DateTime.truncate(DateTime.utc_now(), :second)}, [:claimed, :claimed_at])
   end
 end

@@ -168,6 +168,7 @@ defmodule CGraph.Audit do
       )
   """
   def log(category, event_type, metadata \\ %{}, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     entry = build_entry(category, event_type, metadata, opts)
 
     if Keyword.get(opts, :sync, false) do
@@ -186,6 +187,7 @@ defmodule CGraph.Audit do
   Log with Plug.Conn context extraction.
   """
   def log_with_conn(conn, category, event_type, metadata \\ %{}, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     context_opts = [
       ip_address: format_ip(conn.remote_ip),
       user_agent: get_header(conn, "user-agent"),
@@ -212,6 +214,7 @@ defmodule CGraph.Audit do
   - `:offset` - Pagination offset
   """
   def query(opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     GenServer.call(__MODULE__, {:query, opts})
   end
 
@@ -219,6 +222,7 @@ defmodule CGraph.Audit do
   Get audit entries for a specific user (for GDPR exports).
   """
   def get_user_audit_trail(user_id, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     query(Keyword.merge([actor_id: user_id, limit: 1000], opts))
   end
 
@@ -226,6 +230,7 @@ defmodule CGraph.Audit do
   Export audit log to JSON for compliance.
   """
   def export(opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     case query(Keyword.put(opts, :limit, 10_000)) do
       {:ok, entries} ->
         json = Jason.encode!(entries, pretty: true)
@@ -238,6 +243,7 @@ defmodule CGraph.Audit do
   Get audit statistics for dashboard.
   """
   def stats(opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     GenServer.call(__MODULE__, {:stats, opts})
   end
 

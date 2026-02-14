@@ -114,7 +114,7 @@ defmodule CGraph.Query.SoftDelete do
 
       # Get messages deleted more than 30 days ago
       Message
-      |> deleted_before(DateTime.add(DateTime.utc_now(), -30, :day))
+      |> deleted_before(DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -30, :day))
       |> Repo.delete_all()
   """
   @spec deleted_before(queryable(), DateTime.t()) :: Ecto.Query.t()
@@ -225,7 +225,7 @@ defmodule CGraph.Query.SoftDelete do
     """
     def soft_delete(%{__struct__: _} = struct) do
       struct
-      |> Ecto.Changeset.change(deleted_at: DateTime.utc_now())
+      |> Ecto.Changeset.change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
       |> Repo.update()
     end
 
@@ -247,7 +247,7 @@ defmodule CGraph.Query.SoftDelete do
     """
     def soft_delete_with_reason(%{__struct__: _} = struct, reason) when is_binary(reason) do
       changes = %{
-        deleted_at: DateTime.utc_now()
+        deleted_at: DateTime.truncate(DateTime.utc_now(), :second)
       }
 
       # Add reason to metadata if the struct has that field

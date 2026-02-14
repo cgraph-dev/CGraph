@@ -113,7 +113,7 @@ defmodule CGraph.Forums.CustomEmoji do
   def approve_changeset(emoji, approver_id) do
     emoji
     |> change(%{
-      approved_at: DateTime.utc_now(),
+      approved_at: DateTime.truncate(DateTime.utc_now(), :second),
       approved_by_id: approver_id,
       is_active: true,
       rejected_at: nil,
@@ -127,7 +127,7 @@ defmodule CGraph.Forums.CustomEmoji do
   def reject_changeset(emoji, reason) do
     emoji
     |> change(%{
-      rejected_at: DateTime.utc_now(),
+      rejected_at: DateTime.truncate(DateTime.utc_now(), :second),
       rejection_reason: reason,
       is_active: false,
       approved_at: nil,
@@ -141,7 +141,7 @@ defmodule CGraph.Forums.CustomEmoji do
   def increment_usage(emoji_id) do
     from(e in __MODULE__, where: e.id == ^emoji_id)
     |> Repo.update_all(
-      set: [last_used_at: DateTime.utc_now()],
+      set: [last_used_at: DateTime.truncate(DateTime.utc_now(), :second)],
       inc: [usage_count: 1]
     )
   end

@@ -68,7 +68,7 @@ defmodule CGraph.Gamification.ProfileTheme do
     field :is_active, :boolean, default: true
     field :preview_url, :string
 
-    has_many :user_profile_themes, CGraph.Gamification.UserProfileTheme
+    has_many :user_profile_themes, CGraph.Gamification.UserProfileTheme, foreign_key: :theme_id
 
     timestamps(type: :utc_datetime)
   end

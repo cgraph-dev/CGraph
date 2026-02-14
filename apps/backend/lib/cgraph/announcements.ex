@@ -17,9 +17,18 @@ defmodule CGraph.Announcements do
   List announcements for a user.
   """
   def list_for_user(user, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     forum_id = Keyword.get(opts, :forum_id)
     include_global = Keyword.get(opts, :include_global, true)
     include_dismissed = Keyword.get(opts, :include_dismissed, false)
+
+    # Normalize: if caller passes a user_id string, wrap it so helpers work
+    user =
+      cond do
+        is_binary(user) -> %{id: user, groups: []}
+        is_nil(user) -> nil
+        true -> user
+      end
 
     now = DateTime.utc_now()
 

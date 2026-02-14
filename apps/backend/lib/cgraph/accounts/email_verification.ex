@@ -50,7 +50,7 @@ defmodule CGraph.Accounts.EmailVerification do
   """
   def mark_email_verified(user) do
     user
-    |> Ecto.Changeset.change(email_verified_at: DateTime.utc_now())
+    |> Ecto.Changeset.change(email_verified_at: DateTime.truncate(DateTime.utc_now(), :second))
     |> Repo.update()
   end
 
@@ -87,7 +87,7 @@ defmodule CGraph.Accounts.EmailVerification do
   """
   def generate_email_verification_token(user) do
     token = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
-    expires_at = DateTime.utc_now() |> DateTime.add(86_400, :second)  # 24 hours
+    expires_at = DateTime.truncate(DateTime.utc_now(), :second) |> DateTime.add(86_400, :second)  # 24 hours
 
     Cachex.put(:cgraph_cache, "email_verification:#{token}", %{
       user_id: user.id,
@@ -106,7 +106,7 @@ defmodule CGraph.Accounts.EmailVerification do
         {:error, :invalid_token}
 
       {:ok, %{user_id: user_id, expires_at: expires_at}} ->
-        if DateTime.compare(DateTime.utc_now(), expires_at) == :lt do
+        if DateTime.compare(DateTime.truncate(DateTime.utc_now(), :second), expires_at) == :lt do
           {:ok, user_id}
         else
           {:error, :expired_token}

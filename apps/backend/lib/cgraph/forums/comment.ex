@@ -88,7 +88,7 @@ defmodule CGraph.Forums.Comment do
   def remove_changeset(comment, attrs) do
     comment
     |> cast(attrs, [:removed_by_id, :removal_reason])
-    |> put_change(:removed_at, DateTime.utc_now())
+    |> put_change(:removed_at, DateTime.truncate(DateTime.utc_now(), :second))
   end
 
   @doc """
@@ -96,7 +96,7 @@ defmodule CGraph.Forums.Comment do
   """
   def delete_changeset(comment) do
     comment
-    |> change(deleted_at: DateTime.utc_now())
+    |> change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
     |> change(content: "[deleted]")
   end
 

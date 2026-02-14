@@ -15,6 +15,22 @@ defmodule CGraphWeb.FallbackController do
     |> render(:error, changeset: changeset)
   end
 
+  # Handle Ecto.NoResultsError (raised by Repo.one!, Repo.get!, etc.)
+  def call(conn, {:error, %Ecto.NoResultsError{}}) do
+    conn
+    |> put_status(:not_found)
+    |> put_view(json: CGraphWeb.ErrorJSON)
+    |> render(:"404")
+  end
+
+  # Handle bare Ecto.NoResultsError (not wrapped in {:error, ...})
+  def call(conn, %Ecto.NoResultsError{}) do
+    conn
+    |> put_status(:not_found)
+    |> put_view(json: CGraphWeb.ErrorJSON)
+    |> render(:"404")
+  end
+
   # Handle :not_found errors
   def call(conn, {:error, :not_found}) do
     conn

@@ -173,7 +173,7 @@ defmodule CgraphWeb.API.V1.MessageControllerTest do
           bubble_color: "#ff00ff",
           chat_theme: "midnight",
           entrance_animation: "slide_up",
-          glass_effect: true,
+          glass_effect: "frosted",
           text_color: "#ffffff",
           font_family: "monospace"
         })

@@ -46,7 +46,7 @@ defmodule CGraph.Groups.Member do
     member
     |> cast(attrs, [:user_id, :group_id, :nickname])
     |> validate_required([:user_id, :group_id])
-    |> put_change(:joined_at, DateTime.utc_now() |> DateTime.truncate(:second))
+    |> put_change(:joined_at, DateTime.truncate(DateTime.utc_now(), :second))
     |> validate_length(:nickname, max: 32)
     |> unique_constraint([:user_id, :group_id])
     |> foreign_key_constraint(:user_id)

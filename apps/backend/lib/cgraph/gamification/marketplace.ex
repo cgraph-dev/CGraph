@@ -29,7 +29,7 @@ defmodule CGraph.Gamification.Marketplace do
     end
   end
   def create_listing(seller_id, item_id, attrs) do
-    attrs = Map.merge(attrs, %{seller_id: seller_id, item_id: item_id, price: 0, currency_type: "free", listing_status: "active", listed_at: DateTime.utc_now()})
+    attrs = Map.merge(attrs, %{seller_id: seller_id, item_id: item_id, price: 0, currency_type: "free", listing_status: "active", listed_at: DateTime.truncate(DateTime.utc_now(), :second)})
     changeset = MarketplaceItem.changeset(%MarketplaceItem{}, attrs)
     case Repo.insert(changeset) do
       {:ok, item} -> {:ok, item}
@@ -44,13 +44,13 @@ defmodule CGraph.Gamification.Marketplace do
     end
   end
   def cancel_listing(%MarketplaceItem{} = listing, reason \\ nil) do
-    update_listing(listing, %{listing_status: "cancelled", cancelled_reason: reason, expires_at: DateTime.utc_now()})
+    update_listing(listing, %{listing_status: "cancelled", cancelled_reason: reason, expires_at: DateTime.truncate(DateTime.utc_now(), :second)})
   end
   def approve_listing(%MarketplaceItem{} = listing, _approved_by, _reason \\ nil) do
     update_listing(listing, %{listing_status: "active"})
   end
   def reject_listing(%MarketplaceItem{} = listing, _rejected_by, reason) do
-    update_listing(listing, %{listing_status: "rejected", rejected_reason: reason, expires_at: DateTime.utc_now()})
+    update_listing(listing, %{listing_status: "rejected", rejected_reason: reason, expires_at: DateTime.truncate(DateTime.utc_now(), :second)})
   end
   def bulk_approve_listings(ids, _opts) when is_list(ids) do
     approved = Enum.map(ids, fn id -> approve_listing(%MarketplaceItem{id: id}, "admin") end)
@@ -63,7 +63,7 @@ defmodule CGraph.Gamification.Marketplace do
 
   # Purchases
   def purchase_listing(%MarketplaceItem{} = listing, buyer_id) do
-    update_listing(listing, %{listing_status: "sold", buyer_id: buyer_id, sold_at: DateTime.utc_now(), price: 0, currency_type: "free"})
+    update_listing(listing, %{listing_status: "sold", buyer_id: buyer_id, sold_at: DateTime.truncate(DateTime.utc_now(), :second), price: 0, currency_type: "free"})
   end
 
   # Offers
@@ -86,10 +86,10 @@ defmodule CGraph.Gamification.Marketplace do
     {:ok, %{total_listings: 100, active_listings: 80, total_volume: 0, average_price: 0}}
   end
   def get_price_history(_item_type, _opts \\ []) do
-    {:ok, [%{price: 0, sold_at: DateTime.utc_now()}]}
+    {:ok, [%{price: 0, sold_at: DateTime.truncate(DateTime.utc_now(), :second)}]}
   end
   def get_transactions(_opts \\ []) do
-    {:ok, [%{id: "tx1", price: 0, buyer_id: "user1", seller_id: "user2", sold_at: DateTime.utc_now()}]}
+    {:ok, [%{id: "tx1", price: 0, buyer_id: "user1", seller_id: "user2", sold_at: DateTime.truncate(DateTime.utc_now(), :second)}]}
   end
 
   # User Management

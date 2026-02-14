@@ -27,7 +27,7 @@ defmodule CGraph.Messaging.ReadReceipt do
     read_receipt
     |> cast(attrs, [:message_id, :user_id])
     |> validate_required([:message_id, :user_id])
-    |> put_change(:read_at, DateTime.utc_now())
+    |> put_change(:read_at, DateTime.truncate(DateTime.utc_now(), :second))
     |> unique_constraint([:message_id, :user_id])
     |> foreign_key_constraint(:message_id)
     |> foreign_key_constraint(:user_id)

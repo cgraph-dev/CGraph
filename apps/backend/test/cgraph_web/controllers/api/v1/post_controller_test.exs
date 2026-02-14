@@ -70,7 +70,7 @@ defmodule CgraphWeb.API.V1.PostControllerTest do
     setup %{conn: conn} do
       user = user_fixture()
       forum = forum_fixture(user)
-      post = post_fixture(forum, user, %{title: "Detailed Post", content: "Content"})
+      %{post: post} = post_fixture(forum, user, %{title: "Detailed Post", content: "Content"})
       %{conn: conn, forum: forum, post: post}
     end
 

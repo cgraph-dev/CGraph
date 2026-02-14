@@ -107,10 +107,10 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
 
     since =
       case time_window do
-        :day -> DateTime.add(DateTime.utc_now(), -1, :day)
-        :week -> DateTime.add(DateTime.utc_now(), -7, :day)
-        :month -> DateTime.add(DateTime.utc_now(), -30, :day)
-        _ -> DateTime.add(DateTime.utc_now(), -7, :day)
+        :day -> DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -1, :day)
+        :week -> DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -7, :day)
+        :month -> DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -30, :day)
+        _ -> DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -7, :day)
       end
 
     base_query =
@@ -176,7 +176,7 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
   """
   @spec soft_delete(Thread.t()) :: {:ok, Thread.t()} | {:error, Ecto.Changeset.t()}
   def soft_delete(%Thread{} = thread) do
-    update(thread, %{deleted_at: DateTime.utc_now()})
+    update(thread, %{deleted_at: DateTime.truncate(DateTime.utc_now(), :second)})
   end
 
   @doc """

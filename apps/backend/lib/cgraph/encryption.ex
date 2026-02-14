@@ -108,7 +108,23 @@ defmodule CGraph.Encryption do
   - `:aad` - Additional authenticated data
   - `:format` - Output format (:binary or :base64)
   """
-  def encrypt(plaintext, opts \\ []) when is_binary(plaintext) do
+  def encrypt(plaintext, key_or_opts \\ [])
+
+  def encrypt(plaintext, key) when is_binary(plaintext) and is_binary(key) and byte_size(key) == 32 do
+    encrypt(plaintext, key: key)
+  end
+
+  def encrypt(plaintext, key) when is_binary(plaintext) and is_binary(key) do
+    # Try to decode base64-encoded key
+    case Base.decode64(key) do
+      {:ok, decoded} when byte_size(decoded) == 32 ->
+        encrypt(plaintext, key: decoded)
+      _ ->
+        {:error, :invalid_key}
+    end
+  end
+
+  def encrypt(plaintext, opts) when is_binary(plaintext) and is_list(opts) do
     key = Keyword.get(opts, :key, get_master_key())
     aad = Keyword.get(opts, :aad, @aad)
     format = Keyword.get(opts, :format, :base64)
@@ -145,7 +161,21 @@ defmodule CGraph.Encryption do
   """
   def decrypt(ciphertext, opts \\ [])
 
-  def decrypt(ciphertext, opts) when is_binary(ciphertext) do
+  def decrypt(ciphertext, key) when is_binary(ciphertext) and is_binary(key) and byte_size(key) == 32 do
+    decrypt(ciphertext, key: key)
+  end
+
+  def decrypt(ciphertext, key) when is_binary(ciphertext) and is_binary(key) do
+    # Try to decode base64-encoded key
+    case Base.decode64(key) do
+      {:ok, decoded} when byte_size(decoded) == 32 ->
+        decrypt(ciphertext, key: decoded)
+      _ ->
+        {:error, :invalid_key}
+    end
+  end
+
+  def decrypt(ciphertext, opts) when is_binary(ciphertext) and is_list(opts) do
     # Decode if base64
     data = case Base.decode64(ciphertext) do
       {:ok, decoded} -> decoded

@@ -14,7 +14,7 @@ defmodule CGraph.Repo do
   """
   def soft_delete(struct) do
     struct
-    |> Ecto.Changeset.change(deleted_at: DateTime.utc_now())
+    |> Ecto.Changeset.change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
     |> update()
   end
 

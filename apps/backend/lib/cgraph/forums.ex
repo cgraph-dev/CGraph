@@ -494,7 +494,7 @@ defmodule CGraph.Forums do
     |> ForumMember.changeset(%{
       forum_id: forum_id,
       user_id: user_id,
-      joined_at: DateTime.utc_now() |> DateTime.truncate(:second)
+      joined_at: DateTime.truncate(DateTime.utc_now(), :second)
     })
     |> Repo.insert()
 
@@ -786,11 +786,11 @@ defmodule CGraph.Forums do
   end
   defp maybe_apply_time_filter(query, _sort, _time_range), do: query
 
-  defp time_range_to_filter("hour"), do: DateTime.add(DateTime.utc_now(), -1, :hour)
-  defp time_range_to_filter("day"), do: DateTime.add(DateTime.utc_now(), -1, :day)
-  defp time_range_to_filter("week"), do: DateTime.add(DateTime.utc_now(), -7, :day)
-  defp time_range_to_filter("month"), do: DateTime.add(DateTime.utc_now(), -30, :day)
-  defp time_range_to_filter("year"), do: DateTime.add(DateTime.utc_now(), -365, :day)
+  defp time_range_to_filter("hour"), do: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -1, :hour)
+  defp time_range_to_filter("day"), do: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -1, :day)
+  defp time_range_to_filter("week"), do: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -7, :day)
+  defp time_range_to_filter("month"), do: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -30, :day)
+  defp time_range_to_filter("year"), do: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -365, :day)
   defp time_range_to_filter(_all), do: nil
 
   defp apply_feed_sort(query, "new"), do: from(p in query, order_by: [desc: p.inserted_at, desc: p.id])
@@ -873,7 +873,7 @@ defmodule CGraph.Forums do
   def delete_post(post) do
     result =
       post
-      |> Ecto.Changeset.change(deleted_at: DateTime.utc_now() |> DateTime.truncate(:second))
+      |> Ecto.Changeset.change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
       |> Repo.update()
 
     case result do
@@ -893,7 +893,7 @@ defmodule CGraph.Forums do
   Makes the post invisible without deleting it.
   """
   def hide_post(post_id, reason) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.truncate(DateTime.utc_now(), :second)
     case Repo.get(Post, post_id) do
       nil -> {:error, :not_found}
       post ->
@@ -913,7 +913,7 @@ defmodule CGraph.Forums do
   def soft_delete_post(post_id, opts \\ []) do
     reason = Keyword.get(opts, :reason, :user_deleted)
     report_id = Keyword.get(opts, :report_id)
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.truncate(DateTime.utc_now(), :second)
 
     case Repo.get(Post, post_id) do
       nil -> {:error, :not_found}
@@ -944,7 +944,7 @@ defmodule CGraph.Forums do
   Hide a comment for moderation purposes (quarantine).
   """
   def hide_comment(comment_id, reason) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.truncate(DateTime.utc_now(), :second)
     case Repo.get(Comment, comment_id) do
       nil -> {:error, :not_found}
       comment ->
@@ -964,7 +964,7 @@ defmodule CGraph.Forums do
   def soft_delete_comment(comment_id, opts \\ []) do
     reason = Keyword.get(opts, :reason, :user_deleted)
     report_id = Keyword.get(opts, :report_id)
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.truncate(DateTime.utc_now(), :second)
 
     case Repo.get(Comment, comment_id) do
       nil -> {:error, :not_found}
@@ -1248,7 +1248,7 @@ defmodule CGraph.Forums do
   end
 
   defp calculate_user_trust_level(user) do
-    account_age_days = DateTime.diff(DateTime.utc_now(), user.inserted_at, :day)
+    account_age_days = DateTime.diff(DateTime.truncate(DateTime.utc_now(), :second), user.inserted_at, :day)
     post_count = user.total_posts_created || 0
 
     cond do
@@ -1425,7 +1425,7 @@ defmodule CGraph.Forums do
   Uses DateTime.truncate(:second) for :utc_datetime field compatibility.
   """
   def delete_comment(comment) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.truncate(DateTime.utc_now(), :second)
     comment
     |> Ecto.Changeset.change(deleted_at: now, content: "[deleted]")
     |> Repo.update()
@@ -1683,7 +1683,7 @@ defmodule CGraph.Forums do
 
   # Check if user account is old enough and has enough karma for downvotes
   defp validate_vote_eligibility(user, value) do
-    account_age_days = DateTime.diff(DateTime.utc_now(), user.inserted_at, :day)
+    account_age_days = DateTime.diff(DateTime.truncate(DateTime.utc_now(), :second), user.inserted_at, :day)
 
     cond do
       account_age_days < @vote_min_account_age_days ->
@@ -1718,7 +1718,7 @@ defmodule CGraph.Forums do
     case get_user_forum_vote(user_id, forum_id) do
       nil -> :ok
       %ForumVote{updated_at: updated_at} ->
-        seconds_since_vote = DateTime.diff(DateTime.utc_now(), updated_at, :second)
+        seconds_since_vote = DateTime.diff(DateTime.truncate(DateTime.utc_now(), :second), updated_at, :second)
         if seconds_since_vote < @vote_change_cooldown_seconds do
           remaining = @vote_change_cooldown_seconds - seconds_since_vote
           {:error, {:vote_cooldown, remaining}}
@@ -1989,7 +1989,7 @@ defmodule CGraph.Forums do
   """
   def delete_board(%Board{} = board) do
     board
-    |> Ecto.Changeset.change(deleted_at: DateTime.utc_now())
+    |> Ecto.Changeset.change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
     |> Repo.update()
   end
 
@@ -2157,10 +2157,12 @@ defmodule CGraph.Forums do
   def get_user_auto_subscribe_preference(user_id) do
     # Check customizations for auto_subscribe setting
     case CGraph.Customizations.get_user_customizations(user_id) do
-      nil -> true  # Default to auto-subscribe
-      customizations ->
+      {:ok, customizations} ->
         # Look for auto_subscribe in settings, default to true
         Map.get(customizations, :auto_subscribe_threads, true)
+
+      nil -> true  # Default to auto-subscribe
+      _ -> true
     end
   end
 
@@ -2178,7 +2180,7 @@ defmodule CGraph.Forums do
   """
   def delete_thread(%Thread{} = thread) do
     thread
-    |> Ecto.Changeset.change(deleted_at: DateTime.utc_now())
+    |> Ecto.Changeset.change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
     |> Repo.update()
   end
 
@@ -2260,7 +2262,7 @@ defmodule CGraph.Forums do
       case result do
         {:ok, post} ->
           # Update thread stats
-          now = DateTime.utc_now()
+          now = DateTime.truncate(DateTime.utc_now(), :second)
           from(t in Thread, where: t.id == ^thread_id)
           |> Repo.update_all(
             inc: [reply_count: 1],
@@ -2318,7 +2320,7 @@ defmodule CGraph.Forums do
     attrs = Map.merge(attrs, %{
       is_edited: true,
       edit_count: (post.edit_count || 0) + 1,
-      edited_at: DateTime.utc_now(),
+      edited_at: DateTime.truncate(DateTime.utc_now(), :second),
       edited_by_id: editor_id
     })
 
@@ -2332,7 +2334,7 @@ defmodule CGraph.Forums do
   """
   def delete_thread_post(%ThreadPost{} = post) do
     post
-    |> Ecto.Changeset.change(deleted_at: DateTime.utc_now())
+    |> Ecto.Changeset.change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
     |> Repo.update()
   end
 
@@ -2350,7 +2352,7 @@ defmodule CGraph.Forums do
         |> ForumMember.changeset(%{
           forum_id: forum_id,
           user_id: user_id,
-          joined_at: DateTime.utc_now() |> DateTime.truncate(:second)
+          joined_at: DateTime.truncate(DateTime.utc_now(), :second)
         })
         |> Repo.insert()
 
@@ -2627,9 +2629,9 @@ defmodule CGraph.Forums do
     {users_with_karma, meta}
   end
 
-  defp build_time_filter(:week), do: DateTime.add(DateTime.utc_now(), -7, :day)
-  defp build_time_filter(:month), do: DateTime.add(DateTime.utc_now(), -30, :day)
-  defp build_time_filter(:year), do: DateTime.add(DateTime.utc_now(), -365, :day)
+  defp build_time_filter(:week), do: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -7, :day)
+  defp build_time_filter(:month), do: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -30, :day)
+  defp build_time_filter(:year), do: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -365, :day)
   defp build_time_filter(_all), do: nil
 
   defp build_post_karma_query(forum_id, nil) do
@@ -2692,7 +2694,7 @@ defmodule CGraph.Forums do
   Useful for frontend to show why a user can't vote.
   """
   def get_vote_eligibility(user) do
-    account_age_days = DateTime.diff(DateTime.utc_now(), user.inserted_at, :day)
+    account_age_days = DateTime.diff(DateTime.truncate(DateTime.utc_now(), :second), user.inserted_at, :day)
     karma = user.karma || 0
 
     %{
@@ -3133,7 +3135,7 @@ defmodule CGraph.Forums do
   end
 
   defp compute_hot_value(post) do
-    age_seconds = DateTime.diff(DateTime.utc_now(), post.inserted_at, :second)
+    age_seconds = DateTime.diff(DateTime.truncate(DateTime.utc_now(), :second), post.inserted_at, :second)
     age_hours = age_seconds / 3600.0
     (post.score || 0) / :math.pow(age_hours + 2, 1.8)
   end

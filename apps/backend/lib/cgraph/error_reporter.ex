@@ -206,17 +206,21 @@ defmodule CGraph.ErrorReporter do
 
   @impl true
   def handle_cast({:report, exception, stacktrace, context}, state) do
-    state = maybe_reset_rate_limit(state)
+    try do
+      state = maybe_reset_rate_limit(state)
 
-    if should_report?(exception, state) do
-      state = increment_rate_limit(state)
+      if should_report?(exception, state) do
+        state = increment_rate_limit(state)
 
-      event = build_error_event(exception, stacktrace, context, state.config)
-      dispatch_to_adapters(event, state.adapters)
+        event = build_error_event(exception, stacktrace, context, state.config)
+        dispatch_to_adapters(event, state.adapters)
 
-      {:noreply, %{state | error_count: state.error_count + 1}}
-    else
-      {:noreply, state}
+        {:noreply, %{state | error_count: state.error_count + 1}}
+      else
+        {:noreply, state}
+      end
+    rescue
+      _ -> {:noreply, state}
     end
   end
 
@@ -249,12 +253,19 @@ defmodule CGraph.ErrorReporter do
     tags = Process.get(:error_reporter_tags, %{})
     extra = Process.get(:error_reporter_extra, %{})
 
+    {exc_type, exc_message, exc_module} =
+      if is_struct(exception) do
+        {exception_type(exception), Exception.message(exception), exception.__struct__}
+      else
+        {inspect(exception), inspect(exception), nil}
+      end
+
     %{
       type: :exception,
       exception: %{
-        type: exception_type(exception),
-        message: Exception.message(exception),
-        module: exception.__struct__
+        type: exc_type,
+        message: exc_message,
+        module: exc_module
       },
       stacktrace: format_stacktrace(stacktrace),
       fingerprint: generate_fingerprint(exception, stacktrace),
@@ -292,7 +303,7 @@ defmodule CGraph.ErrorReporter do
   defp exception_type(%{__struct__: struct}), do: struct |> Module.split() |> Enum.join(".")
   defp exception_type(_), do: "Unknown"
 
-  defp format_stacktrace(stacktrace) do
+  defp format_stacktrace(stacktrace) when is_list(stacktrace) do
     Enum.map(stacktrace, fn
       {mod, fun, arity, location} when is_integer(arity) ->
         %{
@@ -313,7 +324,14 @@ defmodule CGraph.ErrorReporter do
     end)
   end
 
+  defp format_stacktrace(stacktrace) when is_binary(stacktrace) do
+    [%{raw: stacktrace}]
+  end
+
+  defp format_stacktrace(_), do: []
+
   defp generate_fingerprint(exception, stacktrace) do
+    stacktrace = if is_list(stacktrace), do: stacktrace, else: []
     # Create a fingerprint based on exception type and top stack frames
     frames = stacktrace
     |> Enum.take(3)
@@ -356,9 +374,11 @@ defmodule CGraph.ErrorReporter do
   # ---------------------------------------------------------------------------
 
   defp should_report?(exception, state) do
-    exception_module = exception.__struct__
+    exception_module = if is_struct(exception), do: exception.__struct__, else: nil
 
     cond do
+      is_nil(exception_module) -> true
+
       # Excluded exception types
       exception_module in @excluded_exceptions -> false
 

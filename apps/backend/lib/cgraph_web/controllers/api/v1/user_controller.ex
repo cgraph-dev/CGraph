@@ -91,7 +91,7 @@ defmodule CGraphWeb.API.V1.UserController do
       |> put_status(:ok)
       |> json(%{
         message: "Account scheduled for deletion. You have 30 days to recover it.",
-        deletion_scheduled_at: DateTime.utc_now() |> DateTime.to_iso8601()
+        deletion_scheduled_at: DateTime.truncate(DateTime.utc_now(), :second) |> DateTime.to_iso8601()
       })
     end
   end
@@ -233,6 +233,13 @@ defmodule CGraphWeb.API.V1.UserController do
     )
 
     render(conn, :leaderboard, users: users, meta: meta)
+  end
+
+  @doc """
+  Check username availability (delegates to UsernameController).
+  """
+  def check_username_availability(conn, params) do
+    CGraphWeb.API.UsernameController.check_availability(conn, params)
   end
 
   @doc """
@@ -427,7 +434,7 @@ defmodule CGraphWeb.API.V1.UserController do
       "particle_effect", "glow_intensity", "config"
     ])
     |> Map.new(fn {k, v} -> {String.to_existing_atom(k), v} end)
-    |> Map.put(:avatar_border_equipped_at, DateTime.utc_now())
+    |> Map.put(:avatar_border_equipped_at, DateTime.truncate(DateTime.utc_now(), :second))
 
     # Convert snake_case API params to schema field names
     schema_params = %{

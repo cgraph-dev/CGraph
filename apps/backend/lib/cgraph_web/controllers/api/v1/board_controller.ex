@@ -66,6 +66,12 @@ defmodule CGraphWeb.API.V1.BoardController do
     end
   end
 
+  # Fallback: accept flat params
+  def create(conn, %{"forum_id" => forum_id} = params) do
+    board_params = Map.drop(params, ["forum_id"])
+    create(conn, %{"forum_id" => forum_id, "board" => board_params})
+  end
+
   @doc """
   Update a board.
   PUT /api/v1/forums/:forum_id/boards/:id

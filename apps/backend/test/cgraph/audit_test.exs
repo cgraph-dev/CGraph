@@ -4,6 +4,15 @@ defmodule CGraph.AuditTest do
 
   alias CGraph.Audit
 
+  setup do
+    # Start the Audit GenServer if not already running
+    case GenServer.whereis(Audit) do
+      nil -> start_supervised!(Audit)
+      _pid -> :ok
+    end
+    :ok
+  end
+
   describe "module structure" do
     test "module compiles and is loaded" do
       assert Code.ensure_loaded?(Audit)

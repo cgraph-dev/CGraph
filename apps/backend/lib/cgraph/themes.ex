@@ -168,9 +168,19 @@ defmodule CGraph.Themes do
   end
 
   defp save_theme(user, theme) do
-    user
-    |> Ecto.Changeset.change(%{theme_preferences: theme})
-    |> Repo.update()
+    alias CGraph.Customizations.UserCustomization
+
+    case Repo.get_by(UserCustomization, user_id: user.id) do
+      nil ->
+        %UserCustomization{}
+        |> Ecto.Changeset.change(%{user_id: user.id, app_theme: theme["mode"] || "dark", profile_theme: theme["accent"] || "classic-purple"})
+        |> Repo.insert()
+
+      customization ->
+        customization
+        |> Ecto.Changeset.change(%{app_theme: theme["mode"] || customization.app_theme, profile_theme: theme["accent"] || customization.profile_theme})
+        |> Repo.update()
+    end
   end
 
   # ============================================================================
@@ -190,14 +200,16 @@ defmodule CGraph.Themes do
   end
 
   defp fetch_and_cache_theme(user_id) do
-    theme = case Repo.get(User, user_id) do
+    alias CGraph.Customizations.UserCustomization
+
+    theme = case Repo.get_by(UserCustomization, user_id: user_id) do
       nil -> @default_theme
-      user ->
-        case user.theme_preferences do
-          nil -> @default_theme
-          prefs when map_size(prefs) == 0 -> @default_theme
-          prefs -> Map.merge(@default_theme, prefs)
-        end
+      customization ->
+        %{
+          "mode" => customization.app_theme || "dark",
+          "accent" => customization.profile_theme || "classic-purple"
+        }
+        |> then(&Map.merge(@default_theme, &1))
     end
 
     cache_theme(user_id, theme)

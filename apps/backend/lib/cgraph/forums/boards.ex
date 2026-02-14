@@ -85,7 +85,7 @@ defmodule CGraph.Forums.Boards do
   """
   def delete_board(%Board{} = board) do
     board
-    |> Ecto.Changeset.change(deleted_at: DateTime.utc_now())
+    |> Ecto.Changeset.change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
     |> Repo.update()
   end
 end

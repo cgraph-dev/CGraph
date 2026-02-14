@@ -125,7 +125,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
   """
   @spec soft_delete(Message.t()) :: {:ok, Message.t()} | {:error, Ecto.Changeset.t()}
   def soft_delete(%Message{} = message) do
-    update(message, %{deleted_at: DateTime.utc_now()})
+    update(message, %{deleted_at: DateTime.truncate(DateTime.utc_now(), :second)})
   end
 
   @doc """

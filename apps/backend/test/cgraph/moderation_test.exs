@@ -280,7 +280,11 @@ defmodule CGraph.ModerationTest do
         target_type: :user, target_id: target.id, category: :harassment
       })
 
-      reports = Moderation.list_user_reports(reporter1.id)
+      result = Moderation.list_user_reports(reporter1.id)
+      reports = case result do
+        {list, _meta} -> list
+        list when is_list(list) -> list
+      end
       assert length(reports) == 1
       assert hd(reports).id == report1.id
     end

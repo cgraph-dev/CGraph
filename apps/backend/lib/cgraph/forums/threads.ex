@@ -177,7 +177,7 @@ defmodule CGraph.Forums.Threads do
     from(t in Thread, where: t.id == ^thread.id)
     |> Repo.update_all(
       inc: [reply_count: 1],
-      set: [last_post_at: DateTime.utc_now()]
+      set: [last_post_at: DateTime.truncate(DateTime.utc_now(), :second)]
     )
   end
 end

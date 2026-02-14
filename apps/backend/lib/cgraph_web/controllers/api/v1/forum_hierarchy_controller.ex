@@ -174,6 +174,12 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
     end
   end
 
+  # Fallback: accept params with alternative key names
+  def move(conn, %{"id" => id} = params) do
+    parent_id = Map.get(params, "parent_id") || Map.get(params, "new_parent_id")
+    move(conn, %{"id" => id, "parent_forum_id" => parent_id})
+  end
+
   @doc """
   PUT /api/v1/forums/:id/reorder
   Reorder a forum within its current parent.

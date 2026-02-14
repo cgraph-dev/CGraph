@@ -40,7 +40,7 @@ defmodule CGraphWeb.API.UsernameController do
   """
   def change_username(conn, %{"username" => new_username}) do
     user = conn.assigns.current_user
-    is_premium = user.premium_tier != nil
+    is_premium = user.subscription_tier not in [nil, "free"]
 
     case UsernameService.change_username(user.id, new_username, premium: is_premium) do
       {:ok, updated_user} ->
@@ -120,7 +120,7 @@ defmodule CGraphWeb.API.UsernameController do
   """
   def cooldown_status(conn, _params) do
     user = conn.assigns.current_user
-    is_premium = user.premium_tier != nil
+    is_premium = user.subscription_tier not in [nil, "free"]
 
     case UsernameService.can_change_username?(user.id, is_premium) do
       {:ok, _} ->

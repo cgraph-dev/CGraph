@@ -16,6 +16,8 @@ defmodule CGraph.Forums.Subscription do
     field :notification_level, :string, default: "all"  # all, mentions, none
 
     belongs_to :forum, CGraph.Forums.Forum
+    belongs_to :thread, CGraph.Forums.Thread
+    belongs_to :board, CGraph.Forums.Board
     belongs_to :user, CGraph.Accounts.User
 
     timestamps()
@@ -26,8 +28,8 @@ defmodule CGraph.Forums.Subscription do
   """
   def changeset(subscription, attrs) do
     subscription
-    |> cast(attrs, [:forum_id, :user_id, :notification_level])
-    |> validate_required([:forum_id, :user_id])
+    |> cast(attrs, [:forum_id, :thread_id, :board_id, :user_id, :notification_level])
+    |> validate_required([:user_id])
     |> validate_inclusion(:notification_level, ["all", "mentions", "none"])
     |> unique_constraint([:forum_id, :user_id])
     |> foreign_key_constraint(:forum_id)

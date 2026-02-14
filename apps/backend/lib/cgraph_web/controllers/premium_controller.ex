@@ -150,6 +150,16 @@ defmodule CGraphWeb.PremiumController do
     end
   end
 
+  # Fallback: extract tier from nested params
+  def subscribe(conn, %{"subscription" => %{"tier" => _}} = params) do
+    subscribe(conn, Map.get(params, "subscription"))
+  end
+
+  def subscribe(conn, params) do
+    tier = Map.get(params, "plan") || Map.get(params, "plan_id") || "premium"
+    subscribe(conn, %{"tier" => tier})
+  end
+
   # Handle downgrade to free tier
   defp handle_downgrade_to_free(conn, user) do
     {:ok, updated_user} =

@@ -91,7 +91,7 @@ defmodule CGraph.Accounts.Users do
   """
   def delete_user(user) do
     user
-    |> User.changeset(%{deleted_at: DateTime.utc_now()})
+    |> User.changeset(%{deleted_at: DateTime.truncate(DateTime.utc_now(), :second)})
     |> Repo.update()
   end
 

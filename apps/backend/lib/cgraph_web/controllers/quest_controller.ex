@@ -43,14 +43,19 @@ defmodule CGraphWeb.QuestController do
   """
   def show(conn, %{"id" => quest_id}) do
     user = conn.assigns.current_user
-    quest = Repo.get!(Gamification.Quest, quest_id)
 
-    # Get user's progress if they've accepted this quest
-    user_quest = Repo.get_by(Gamification.UserQuest, user_id: user.id, quest_id: quest_id)
+    case Repo.get(Gamification.Quest, quest_id) do
+      nil ->
+        {:error, :not_found}
 
-    conn
-    |> put_status(:ok)
-    |> render(:show, quest: quest, user_quest: user_quest)
+      quest ->
+        # Get user's progress if they've accepted this quest
+        user_quest = Repo.get_by(Gamification.UserQuest, user_id: user.id, quest_id: quest_id)
+
+        conn
+        |> put_status(:ok)
+        |> render(:show, quest: quest, user_quest: user_quest)
+    end
   end
 
   @doc """
@@ -67,6 +72,9 @@ defmodule CGraphWeb.QuestController do
         conn
         |> put_status(:created)
         |> render(:user_quest, user_quest: user_quest)
+
+      {:error, :not_found} ->
+        {:error, :not_found}
 
       {:error, changeset} ->
         conn

@@ -10,7 +10,7 @@ config :cgraph, CGraph.Repo,
   hostname: "localhost",
   database: "cgraph_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: min(System.schedulers_online() * 2, 10)
+  pool_size: 50
 
 # ReadRepo shares the primary database in test (no replica needed).
 # Discord pattern: read replicas are a prod optimization, not a test concern.
@@ -20,7 +20,7 @@ config :cgraph, CGraph.ReadRepo,
   hostname: "localhost",
   database: "cgraph_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: min(System.schedulers_online() * 2, 10)
+  pool_size: 50
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
@@ -35,8 +35,8 @@ config :cgraph, CGraph.Mailer, adapter: Swoosh.Adapters.Test
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
 
-# Print only errors during test (suppress noisy warnings from Meilisearch/Redis)
-config :logger, level: :error
+# Suppress all logging during test (prevent Meilisearch/Redis error spam)
+config :logger, level: :none
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
@@ -53,3 +53,9 @@ config :cgraph, skip_partitioning: true
 
 # Oban testing mode
 config :cgraph, Oban, testing: :inline
+
+# Force PostgreSQL search backend in test (no Meilisearch needed)
+config :cgraph, CGraph.Search.Engine,
+  backend: :postgres,
+  meilisearch_url: nil,
+  meilisearch_key: nil

@@ -43,6 +43,7 @@ defmodule CGraph.Search do
   Attempts Meilisearch first, falls back to PostgreSQL on failure.
   """
   def search_users(query, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     limit = Keyword.get(opts, :limit, 20)
     cursor = Keyword.get(opts, :cursor)
     current_user = Keyword.get(opts, :current_user)
@@ -125,10 +126,11 @@ defmodule CGraph.Search do
 
   defp maybe_exclude_blocked(query, nil), do: query
   defp maybe_exclude_blocked(query, current_user) do
+    blocker_id = current_user.id
     from u in query,
       where: u.id not in subquery(
         from b in "blocks",
-        where: b.blocker_id == ^current_user.id,
+        where: b.blocker_id == type(^blocker_id, Ecto.UUID),
         select: b.blocked_id
       )
   end
@@ -167,6 +169,7 @@ defmodule CGraph.Search do
   Attempts Meilisearch first for fuzzy matching, falls back to PostgreSQL.
   """
   def search_messages(user, query, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     limit = Keyword.get(opts, :limit, 50)
     cursor = Keyword.get(opts, :cursor)
     conversation_id = Keyword.get(opts, :conversation_id)
@@ -226,7 +229,7 @@ defmodule CGraph.Search do
 
     # Get user's conversations
     user_conversations = from cp in "conversation_participants",
-      where: cp.user_id == ^user.id,
+      where: cp.user_id == type(^user.id, Ecto.UUID),
       select: cp.conversation_id
 
     base_query = from m in Message,
@@ -283,6 +286,7 @@ defmodule CGraph.Search do
   Search posts in forums using cursor-based pagination.
   """
   def search_posts(query, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     limit = Keyword.get(opts, :limit, 20)
     cursor = Keyword.get(opts, :cursor)
     forum_id = Keyword.get(opts, :forum_id)
@@ -351,6 +355,7 @@ defmodule CGraph.Search do
   Search groups/servers using cursor-based pagination.
   """
   def search_groups(query, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     limit = Keyword.get(opts, :limit, 20)
     cursor = Keyword.get(opts, :cursor)
 
@@ -385,6 +390,7 @@ defmodule CGraph.Search do
   Unified search across all content types.
   """
   def search_all(query, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     current_user = Keyword.get(opts, :current_user)
 
     # Search in parallel
@@ -415,6 +421,7 @@ defmodule CGraph.Search do
   Get search suggestions based on partial query.
   """
   def get_suggestions(query, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     limit = Keyword.get(opts, :limit, 10)
 
     search_term = "#{sanitize_query(query)}%"

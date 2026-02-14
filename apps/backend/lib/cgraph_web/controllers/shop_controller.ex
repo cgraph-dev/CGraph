@@ -72,6 +72,9 @@ defmodule CGraphWeb.ShopController do
           message: "Purchase successful"
         })
 
+      {:error, :not_found} ->
+        {:error, :not_found}
+
       {:error, :not_available} ->
         conn
         |> put_status(:bad_request)

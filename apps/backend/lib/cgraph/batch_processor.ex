@@ -207,6 +207,7 @@ defmodule CGraph.BatchProcessor do
   """
   @spec process([item()], processor(), options()) :: {:ok, result()} | {:error, term()}
   def process(items, processor, opts \\ []) when is_function(processor, 1) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     batch_id = generate_batch_id()
     total = length(items)
 
@@ -242,6 +243,7 @@ defmodule CGraph.BatchProcessor do
   """
   @spec process_batches([item()], batch_processor(), options()) :: {:ok, result()} | {:error, term()}
   def process_batches(items, processor, opts \\ []) when is_function(processor, 1) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     batch_id = generate_batch_id()
     batch_size = Keyword.get(opts, :batch_size, get_config(:default_batch_size))
 
@@ -283,6 +285,7 @@ defmodule CGraph.BatchProcessor do
   """
   @spec stream_process(Ecto.Query.t(), batch_processor(), options()) :: {:ok, result()} | {:error, term()}
   def stream_process(query, processor, opts \\ []) when is_function(processor, 1) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     batch_id = generate_batch_id()
     batch_size = Keyword.get(opts, :batch_size, get_config(:default_batch_size))
 
@@ -341,6 +344,7 @@ defmodule CGraph.BatchProcessor do
   """
   @spec start_async([item()], processor(), options()) :: {:ok, batch_id()}
   def start_async(items, processor, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     batch_id = generate_batch_id()
     name = Keyword.get(opts, :name, batch_id)
 
@@ -404,16 +408,21 @@ defmodule CGraph.BatchProcessor do
   """
   @spec list_jobs(keyword()) :: [map()]
   def list_jobs(opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     status_filter = Keyword.get(opts, :status)
     limit = Keyword.get(opts, :limit, 100)
 
-    :ets.tab2list(@jobs_table)
-    |> Enum.map(fn {_id, job} -> job end)
-    |> Enum.filter(fn job ->
-      is_nil(status_filter) or job.status == status_filter
-    end)
-    |> Enum.sort_by(& &1.started_at, {:desc, DateTime})
-    |> Enum.take(limit)
+    case :ets.whereis(@jobs_table) do
+      :undefined -> []
+      _ ->
+        :ets.tab2list(@jobs_table)
+        |> Enum.map(fn {_id, job} -> job end)
+        |> Enum.filter(fn job ->
+          is_nil(status_filter) or job.status == status_filter
+        end)
+        |> Enum.sort_by(& &1.started_at, {:desc, DateTime})
+        |> Enum.take(limit)
+    end
   end
 
   # ---------------------------------------------------------------------------

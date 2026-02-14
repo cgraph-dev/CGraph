@@ -12,7 +12,7 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
 
   alias CGraph.Accounts
   alias CGraph.Messaging
-  alias CgraphWeb.ConversationChannel
+  alias CGraphWeb.ConversationChannel
   alias CGraphWeb.UserSocket
 
   @moduletag :channel

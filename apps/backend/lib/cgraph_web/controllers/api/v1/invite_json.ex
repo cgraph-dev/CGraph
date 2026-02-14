@@ -80,7 +80,7 @@ defmodule CGraphWeb.API.V1.InviteJSON do
     %{
       id: group.id,
       name: group.name,
-      icon: group.icon,
+      icon: Map.get(group, :icon_url) || Map.get(group, :icon),
       member_count: Map.get(group, :member_count),
       description: group.description
     }

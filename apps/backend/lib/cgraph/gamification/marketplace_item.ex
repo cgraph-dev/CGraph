@@ -101,7 +101,7 @@ defmodule CGraph.Gamification.MarketplaceItem do
     |> cast(%{
       listing_status: "sold",
       buyer_id: buyer_id,
-      sold_at: DateTime.utc_now()
+      sold_at: DateTime.truncate(DateTime.utc_now(), :second)
     }, [:listing_status, :buyer_id, :sold_at])
   end
 

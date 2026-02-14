@@ -78,7 +78,7 @@ defmodule CGraph.Forums.ForumAnnouncement do
   def active?(%__MODULE__{is_active: false}), do: false
   def active?(%__MODULE__{start_date: nil, end_date: nil, is_active: true}), do: true
   def active?(%__MODULE__{start_date: start_date, end_date: end_date, is_active: true}) do
-    now = DateTime.utc_now()
+    now = DateTime.truncate(DateTime.utc_now(), :second)
 
     after_start = is_nil(start_date) or DateTime.compare(now, start_date) in [:gt, :eq]
     before_end = is_nil(end_date) or DateTime.compare(now, end_date) in [:lt, :eq]

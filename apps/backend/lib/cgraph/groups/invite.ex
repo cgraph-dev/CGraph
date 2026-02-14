@@ -61,7 +61,7 @@ defmodule CGraph.Groups.Invite do
   def valid?(%__MODULE__{max_uses: max, uses: uses}) when is_integer(max) and uses >= max, do: false
   def valid?(%__MODULE__{expires_at: nil}), do: true
   def valid?(%__MODULE__{expires_at: expires_at}) do
-    DateTime.compare(expires_at, DateTime.utc_now()) == :gt
+    DateTime.compare(expires_at, DateTime.truncate(DateTime.utc_now(), :second)) == :gt
   end
 
   defp generate_code(changeset) do
@@ -73,7 +73,7 @@ defmodule CGraph.Groups.Invite do
     case get_change(changeset, :expires_at) do
       nil -> changeset
       expires_at ->
-        if DateTime.compare(expires_at, DateTime.utc_now()) == :lt do
+        if DateTime.compare(expires_at, DateTime.truncate(DateTime.utc_now(), :second)) == :lt do
           add_error(changeset, :expires_at, "must be in the future")
         else
           changeset

@@ -223,7 +223,11 @@ defmodule CGraph.Messaging.VoiceMessageTest do
         })
       end)
 
-      messages = VoiceMessage.for_user(user.id)
+      result = VoiceMessage.for_user(user.id)
+      messages = case result do
+        {list, _meta} -> list
+        list when is_list(list) -> list
+      end
 
       assert length(messages) == 3
     end
@@ -248,7 +252,11 @@ defmodule CGraph.Messaging.VoiceMessageTest do
         is_processed: true
       })
 
-      messages = VoiceMessage.for_user(user1.id)
+      result = VoiceMessage.for_user(user1.id)
+      messages = case result do
+        {list, _meta} -> list
+        list when is_list(list) -> list
+      end
 
       assert length(messages) == 1
       assert hd(messages).user_id == user1.id

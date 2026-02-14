@@ -120,6 +120,11 @@ defmodule CGraph.Cache do
   - `:promote` - Whether to promote to higher tiers (default: true)
   """
   def get(key, opts \\ []) do
+    opts = cond do
+      is_map(opts) -> Map.to_list(opts)
+      is_list(opts) -> opts
+      true -> []
+    end
     tier = Keyword.get(opts, :tier, :all)
     promote = Keyword.get(opts, :promote, true)
 
@@ -147,6 +152,7 @@ defmodule CGraph.Cache do
   - `:tags` - Tags for group invalidation
   """
   def set(key, value, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     ttl = Keyword.get(opts, :ttl, @default_ttl)
     tier = Keyword.get(opts, :tier, :all)
     tags = Keyword.get(opts, :tags, [])
@@ -235,6 +241,12 @@ defmodule CGraph.Cache do
       end, ttl: :timer.hours(1))
   """
   def fetch(key, compute_fn, opts \\ []) when is_function(compute_fn, 0) do
+    opts = cond do
+      is_map(opts) -> Map.to_list(opts)
+      is_integer(opts) -> [ttl: opts]
+      is_list(opts) -> opts
+      true -> []
+    end
     case get(key) do
       {:ok, value} ->
         value
@@ -256,6 +268,7 @@ defmodule CGraph.Cache do
   Fetch with a fallback value on error.
   """
   def fetch_or_default(key, default, compute_fn, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     fetch(key, compute_fn, opts)
   rescue
     _ -> default
@@ -267,6 +280,7 @@ defmodule CGraph.Cache do
   Returns a map of key => value for found keys.
   """
   def fetch_many(keys, compute_fn, opts \\ []) when is_list(keys) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     # First, try to get all from cache
     cached = keys
     |> Enum.map(fn key -> {key, get(key)} end)
@@ -303,6 +317,7 @@ defmodule CGraph.Cache do
   Useful for pre-loading cache on startup.
   """
   def warm_up(items, opts \\ []) when is_list(items) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     concurrency = Keyword.get(opts, :concurrency, 5)
 
     items

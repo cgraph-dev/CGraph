@@ -71,12 +71,17 @@ defmodule CGraphWeb.GamificationController do
   def show_achievement(conn, %{"id" => achievement_id}) do
     user = conn.assigns.current_user
 
-    achievement = CGraph.Repo.get!(Gamification.Achievement, achievement_id)
-    {:ok, user_achievement} = Gamification.get_or_create_user_achievement(user.id, achievement_id)
+    case CGraph.Repo.get(Gamification.Achievement, achievement_id) do
+      nil ->
+        {:error, :not_found}
 
-    conn
-    |> put_status(:ok)
-    |> render(:achievement, achievement: achievement, user_achievement: user_achievement)
+      achievement ->
+        {:ok, user_achievement} = Gamification.get_or_create_user_achievement(user.id, achievement_id)
+
+        conn
+        |> put_status(:ok)
+        |> render(:achievement, achievement: achievement, user_achievement: user_achievement)
+    end
   end
 
   @doc """

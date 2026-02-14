@@ -120,6 +120,7 @@ defmodule CGraph.Tracing do
   - `:attributes` - Initial span attributes
   """
   def start_trace(name, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     trace_id = generate_trace_id()
     span_id = generate_span_id()
     sampled = Keyword.get(opts, :sampled, true)
@@ -151,6 +152,7 @@ defmodule CGraph.Tracing do
   Parses W3C traceparent header and continues the trace.
   """
   def continue_trace(name, traceparent, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     case parse_traceparent(traceparent) do
       {:ok, trace_id, parent_span_id, trace_flags} ->
         span_id = generate_span_id()
@@ -222,6 +224,17 @@ defmodule CGraph.Tracing do
       end)
   """
   def with_span(ctx, name, opts_or_fun, fun_or_nil \\ nil)
+
+  # Handle case where ctx is a string (treat as name with auto-context)
+  def with_span(name, _name2, attributes, fun) when is_binary(name) and is_map(attributes) and is_function(fun, 0) do
+    {:ok, ctx} = start_trace(name)
+    with_span(ctx, name, attributes, fun)
+  end
+
+  # Handle {:ok, ctx} tuple (unwrap automatically)
+  def with_span({:ok, ctx}, name, opts_or_fun, fun_or_nil) when is_map(ctx) do
+    with_span(ctx, name, opts_or_fun, fun_or_nil)
+  end
 
   def with_span(ctx, name, fun, nil) when is_function(fun, 0) do
     with_span(ctx, name, %{}, fun)
@@ -367,6 +380,8 @@ defmodule CGraph.Tracing do
 
   Returns W3C Trace Context compliant header value.
   """
+  def traceparent({:ok, ctx}), do: traceparent(ctx)
+
   def traceparent(ctx) do
     version = "00"
     trace_id = ctx.trace_id
@@ -425,6 +440,7 @@ defmodule CGraph.Tracing do
   Uses configurable sampling strategy.
   """
   def should_sample?(opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     strategy = Keyword.get(opts, :strategy, :always)
     rate = Keyword.get(opts, :rate, 1.0)
 

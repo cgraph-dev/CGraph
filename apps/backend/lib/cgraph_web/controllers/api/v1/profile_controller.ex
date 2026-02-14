@@ -22,6 +22,22 @@ defmodule CGraphWeb.API.V1.ProfileController do
   @max_per_page 100
 
   @doc """
+  Get current user's profile.
+  """
+  def me(conn, _params) do
+    user = conn.assigns.current_user
+    show(conn, %{"user_id" => user.id})
+  end
+
+  @doc """
+  Update current user's profile.
+  """
+  def update_me(conn, params) do
+    user = conn.assigns.current_user
+    update(conn, Map.put(params, "user_id", user.id))
+  end
+
+  @doc """
   Get user profile.
   """
   def show(conn, %{"user_id" => user_id}) do

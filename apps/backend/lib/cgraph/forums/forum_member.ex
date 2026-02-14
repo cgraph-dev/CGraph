@@ -72,7 +72,7 @@ defmodule CGraph.Forums.ForumMember do
   Changeset for creating a new forum membership.
   """
   def changeset(member, attrs) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.truncate(DateTime.utc_now(), :second)
 
     member
     |> cast(attrs, [
@@ -133,7 +133,7 @@ defmodule CGraph.Forums.ForumMember do
   """
   def banned?(member) do
     member.is_banned &&
-      (is_nil(member.ban_expires_at) || DateTime.compare(member.ban_expires_at, DateTime.utc_now()) == :gt)
+      (is_nil(member.ban_expires_at) || DateTime.compare(member.ban_expires_at, DateTime.truncate(DateTime.utc_now(), :second)) == :gt)
   end
 
   @doc """

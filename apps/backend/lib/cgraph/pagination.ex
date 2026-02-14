@@ -107,7 +107,13 @@ defmodule CGraph.Pagination do
   - `:sort_field` - Default sort field (default: :id)
   - `:sort_direction` - Default sort direction (default: :desc)
   """
-  def parse_params(params, opts \\ []) do
+  def parse_params(params, opts \\ [])
+
+  def parse_params(params, opts) when is_map(opts) do
+    parse_params(params, Map.to_list(opts))
+  end
+
+  def parse_params(params, opts) when is_list(opts) do
     default_limit = Keyword.get(opts, :default_limit, @default_limit)
     max_limit = Keyword.get(opts, :max_limit, @max_limit)
     sort_field = Keyword.get(opts, :sort_field, :id)

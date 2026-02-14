@@ -174,6 +174,6 @@ defmodule CGraph.Customizations.UserCustomization do
 
   # Private helper: Automatically update last_updated_at timestamp
   defp put_timestamp(changeset, field) do
-    put_change(changeset, field, DateTime.utc_now())
+    put_change(changeset, field, DateTime.truncate(DateTime.utc_now(), :second))
   end
 end

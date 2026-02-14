@@ -97,7 +97,7 @@ defmodule CGraph.Referrals do
           id: u.id,
           username: u.username,
           display_name: u.display_name,
-          avatar: u.avatar
+          avatar: u.avatar_url
         }
 
     case Repo.one(query) do
@@ -158,6 +158,7 @@ defmodule CGraph.Referrals do
   List referrals made by a user.
   """
   def list_referrals(user_id, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     status = Keyword.get(opts, :status)
 
     base_query =
@@ -186,6 +187,7 @@ defmodule CGraph.Referrals do
   List pending referrals.
   """
   def list_pending_referrals(user_id, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     list_referrals(user_id, Keyword.put(opts, :status, "pending"))
   end
 
@@ -258,7 +260,7 @@ defmodule CGraph.Referrals do
     ) ranked WHERE referrer_id = $1
     """
 
-    case SQL.query(Repo, query, [user_id]) do
+    case SQL.query(Repo, query, [Ecto.UUID.dump!(user_id)]) do
       {:ok, %{rows: [[rank]]}} -> rank
       _ -> nil
     end
@@ -304,6 +306,7 @@ defmodule CGraph.Referrals do
   Get referral leaderboard.
   """
   def get_leaderboard(opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     period = Keyword.get(opts, :period, "all")
     limit = Keyword.get(opts, :limit, 10)
 
@@ -312,14 +315,14 @@ defmodule CGraph.Referrals do
         where: r.status == "confirmed",
         join: u in User,
         on: u.id == r.referrer_id,
-        group_by: [r.referrer_id, u.id, u.username, u.display_name, u.avatar],
+        group_by: [r.referrer_id, u.id, u.username, u.display_name, u.avatar_url],
         order_by: [desc: count(r.id)],
         limit: ^limit,
         select: %{
           user_id: r.referrer_id,
           username: u.username,
           display_name: u.display_name,
-          avatar: u.avatar,
+          avatar: u.avatar_url,
           referral_count: count(r.id)
         }
 

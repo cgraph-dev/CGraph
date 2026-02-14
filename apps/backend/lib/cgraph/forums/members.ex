@@ -58,7 +58,7 @@ defmodule CGraph.Forums.Members do
           forum_id: forum_id,
           user_id: user_id,
           role: "member",
-          joined_at: DateTime.utc_now() |> DateTime.truncate(:second)
+          joined_at: DateTime.utc_now()
         })
         |> Repo.insert()
 
@@ -270,7 +270,7 @@ defmodule CGraph.Forums.Members do
         |> ForumMember.changeset(%{
           forum_id: forum_id,
           user_id: user_id,
-          joined_at: DateTime.utc_now() |> DateTime.truncate(:second)
+          joined_at: DateTime.utc_now()
         })
         |> Repo.insert()
         true

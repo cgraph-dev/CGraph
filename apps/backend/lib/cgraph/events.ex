@@ -137,6 +137,7 @@ defmodule CGraph.Events do
   Publish an event synchronously, waiting for all handlers.
   """
   def publish_sync(type, payload, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     timeout = Keyword.get(opts, :timeout, 5000)
     event = build_event(type, payload, opts)
 
@@ -319,6 +320,7 @@ defmodule CGraph.Events do
 
   @impl true
   def handle_call({:get_events, aggregate_type, aggregate_id, opts}, _from, state) do
+    opts = if is_list(opts), do: opts, else: []
     limit = Keyword.get(opts, :limit, 100)
 
     events = state.event_store
@@ -332,6 +334,7 @@ defmodule CGraph.Events do
 
   @impl true
   def handle_call({:get_events_by_type, event_type, opts}, _from, state) do
+    opts = if is_list(opts), do: opts, else: []
     limit = Keyword.get(opts, :limit, 100)
     since = Keyword.get(opts, :since)
 

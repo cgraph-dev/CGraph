@@ -125,7 +125,7 @@ defmodule CGraph.Messaging.Message do
   """
   def delete_changeset(message, for_everyone \\ false) do
     message
-    |> change(deleted_at: DateTime.utc_now())
+    |> change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
     |> change(deleted_for_everyone: for_everyone)
   end
 

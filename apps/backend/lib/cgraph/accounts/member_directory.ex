@@ -183,7 +183,8 @@ defmodule CGraph.Accounts.MemberDirectory do
   defp enrich_member(user) do
     # Add is_online based on last_online_at
     threshold = DateTime.add(DateTime.utc_now(), -15, :minute)
-    is_online = user.last_online_at && DateTime.compare(user.last_online_at, threshold) != :lt
+    last_seen = Map.get(user, :last_seen_at) || Map.get(user, :last_online_at)
+    is_online = last_seen && DateTime.compare(last_seen, threshold) != :lt
 
     Map.put(user, :is_online, is_online)
   end

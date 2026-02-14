@@ -44,7 +44,7 @@ defmodule CGraph.Messaging.Conversation do
   Update last message timestamp.
   """
   def touch_changeset(conversation) do
-    change(conversation, last_message_at: DateTime.utc_now())
+    change(conversation, last_message_at: DateTime.truncate(DateTime.utc_now(), :second))
   end
 
   # Ensure user_one_id < user_two_id for consistent uniqueness

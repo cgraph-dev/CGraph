@@ -167,7 +167,7 @@ defmodule CGraph.Gamification.Events do
   Start an event.
   """
   def start_event(%SeasonalEvent{} = event) do
-    now = DateTime.utc_now()
+    now = DateTime.truncate(DateTime.utc_now(), :second)
     attrs = %{status: "active", starts_at: min_datetime(event.starts_at, now)}
     update_event(event, attrs)
   end
@@ -215,7 +215,7 @@ defmodule CGraph.Gamification.Events do
   End an event.
   """
   def end_event(%SeasonalEvent{} = event) do
-    now = DateTime.utc_now()
+    now = DateTime.truncate(DateTime.utc_now(), :second)
     attrs = %{status: "ended", ends_at: min_datetime(event.ends_at, now)}
     update_event(event, attrs)
   end
@@ -407,9 +407,9 @@ defmodule CGraph.Gamification.Events do
           attrs = %{
             user_id: user_id,
             seasonal_event_id: event_id,
-            first_participated_at: DateTime.utc_now(),
-            last_participated_at: DateTime.utc_now(),
-            total_sessions: 1
+            first_activity_at: DateTime.truncate(DateTime.utc_now(), :second),
+            last_activity_at: DateTime.truncate(DateTime.utc_now(), :second),
+            days_participated: 1
           }
 
           case Repo.insert(%UserEventProgress{} |> UserEventProgress.changeset(attrs)) do
@@ -430,8 +430,8 @@ defmodule CGraph.Gamification.Events do
       nil -> {:error, :not_found}
       progress ->
         changeset = Ecto.Changeset.change(progress, %{
-          total_sessions: (progress.total_sessions || 0) + 1,
-          last_participated_at: DateTime.utc_now()
+          days_participated: (progress.days_participated || 0) + 1,
+          last_activity_at: DateTime.truncate(DateTime.utc_now(), :second)
         })
         Repo.update(changeset)
     end
@@ -570,8 +570,8 @@ defmodule CGraph.Gamification.Events do
 
     total_participants = Repo.aggregate(base_query, :count, :id) || 0
 
-    yesterday = DateTime.add(DateTime.utc_now(), -24 * 60 * 60, :second)
-    active_query = from(p in base_query, where: p.last_participated_at >= ^yesterday)
+    yesterday = DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -24 * 60 * 60, :second)
+    active_query = from(p in base_query, where: p.last_activity_at >= ^yesterday)
     active_participants = Repo.aggregate(active_query, :count, :id) || 0
 
     bp_query = from(p in base_query, where: p.has_battle_pass == true)

@@ -126,6 +126,11 @@ defmodule CGraphWeb.TitleController do
         conn
         |> put_status(:bad_request)
         |> json(%{error: "already_owned", message: "You already own this title"})
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "not_found", message: "Title not found"})
     end
   end
 end

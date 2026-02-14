@@ -103,7 +103,7 @@ defmodule CGraph.Forums.Posts do
   """
   def delete_post(post) do
     post
-    |> Ecto.Changeset.change(%{deleted_at: DateTime.utc_now()})
+    |> Ecto.Changeset.change(%{deleted_at: DateTime.truncate(DateTime.utc_now(), :second)})
     |> Repo.update()
     |> case do
       {:ok, _post} ->
@@ -116,12 +116,10 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Hides a post (moderation action).
   """
-  def hide_post(post_id, reason) do
+  def hide_post(post_id, _reason) do
     from(p in Post, where: p.id == ^post_id)
     |> Repo.update_all(set: [
-      is_hidden: true,
-      hidden_reason: reason,
-      hidden_at: DateTime.utc_now()
+      deleted_at: DateTime.truncate(DateTime.utc_now(), :second)
     ])
     :ok
   end
@@ -130,13 +128,11 @@ defmodule CGraph.Forums.Posts do
   Soft deletes a post.
   """
   def soft_delete_post(post_id, opts \\ []) do
-    reason = Keyword.get(opts, :reason, "Removed by moderator")
+    _reason = Keyword.get(opts, :reason, "Removed by moderator")
 
     from(p in Post, where: p.id == ^post_id)
     |> Repo.update_all(set: [
-      is_deleted: true,
-      deleted_reason: reason,
-      deleted_at: DateTime.utc_now()
+      deleted_at: DateTime.truncate(DateTime.utc_now(), :second)
     ])
     :ok
   end
@@ -146,7 +142,7 @@ defmodule CGraph.Forums.Posts do
   """
   def increment_views(post) do
     from(p in Post, where: p.id == ^post.id)
-    |> Repo.update_all(inc: [views: 1])
+    |> Repo.update_all(inc: [view_count: 1])
     :ok
   end
 

@@ -127,7 +127,7 @@ defmodule CGraph.Messaging.Repositories.ConversationRepository do
   def touch(conversation_id) do
     case get(conversation_id) do
       nil -> {:error, :not_found}
-      conversation -> update(conversation, %{last_message_at: DateTime.utc_now()})
+      conversation -> update(conversation, %{last_message_at: DateTime.truncate(DateTime.utc_now(), :second)})
     end
   end
 

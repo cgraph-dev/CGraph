@@ -7,7 +7,7 @@ defmodule CgraphWeb.Channels.GroupChannelTest do
 
   setup do
     user = user_fixture()
-    group = group_fixture(user)
+    %{group: group} = group_fixture(user)
 
     {:ok, socket} = connect(CGraphWeb.UserSocket, %{"token" => generate_token(user)})
     {:ok, _, socket} = subscribe_and_join(socket, "group:#{group.id}", %{})

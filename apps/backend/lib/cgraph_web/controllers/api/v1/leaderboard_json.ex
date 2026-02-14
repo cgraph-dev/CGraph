@@ -18,10 +18,9 @@ defmodule CGraphWeb.API.V1.LeaderboardJSON do
         userRank: render_user_rank(user_rank)
       },
       meta: %{
-        page: meta.page,
-        pageSize: meta.page_size,
-        totalCount: meta.total_count,
-        totalPages: meta.total_pages,
+        limit: meta.limit,
+        hasMore: meta.has_more,
+        nextCursor: meta.next_cursor,
         lastUpdated: DateTime.to_iso8601(meta.last_updated)
       }
     }

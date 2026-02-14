@@ -175,7 +175,7 @@ defmodule CGraph.Groups do
   Sets deleted_at timestamp rather than removing the record.
   """
   def delete_group(group) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.truncate(DateTime.utc_now(), :second)
     group
     |> Ecto.Changeset.change(deleted_at: now)
     |> Repo.update()
@@ -448,7 +448,7 @@ defmodule CGraph.Groups do
   """
   def mute_member(member, duration_seconds) do
     # Truncate to seconds for :utc_datetime field (not _usec)
-    muted_until = DateTime.utc_now()
+    muted_until = DateTime.truncate(DateTime.utc_now(), :second)
       |> DateTime.add(duration_seconds, :second)
       |> DateTime.truncate(:second)
 
@@ -499,7 +499,7 @@ defmodule CGraph.Groups do
     duration = Keyword.get(opts, :duration)
 
     expires_at = if duration do
-      DateTime.add(DateTime.utc_now(), duration, :second)
+      DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), duration, :second)
     else
       nil
     end
@@ -514,7 +514,7 @@ defmodule CGraph.Groups do
       user_id: member.user_id,
       reason: reason,
       expires_at: expires_at,
-      inserted_at: DateTime.utc_now()
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second)
     }}
   end
 
@@ -773,7 +773,7 @@ defmodule CGraph.Groups do
     # Use explicit expires_at if provided, otherwise calculate from expires_in
     final_expires_at = cond do
       expires_at != nil -> expires_at
-      expires_in != nil -> DateTime.add(DateTime.utc_now(), expires_in, :second)
+      expires_in != nil -> DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), expires_in, :second)
       true -> nil
     end
 
@@ -1103,7 +1103,7 @@ defmodule CGraph.Groups do
   Check if a member can send messages in a channel.
   """
   def can_send_messages?(%Member{} = member) do
-    !member.is_muted && (is_nil(member.muted_until) || DateTime.compare(member.muted_until, DateTime.utc_now()) == :lt)
+    !member.is_muted && (is_nil(member.muted_until) || DateTime.compare(member.muted_until, DateTime.truncate(DateTime.utc_now(), :second)) == :lt)
   end
 
   @doc """

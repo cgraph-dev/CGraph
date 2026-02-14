@@ -80,7 +80,7 @@ defmodule CGraphWeb.CosmeticsController do
     |> put_status(:ok)
     |> json(%{
       unlocked: Enum.map(user_borders, &serialize_user_border/1),
-      equipped_id: equipped && equipped.avatar_border_id
+      equipped_id: equipped && equipped.border_id
     })
   end
 
@@ -92,7 +92,7 @@ defmodule CGraphWeb.CosmeticsController do
     user = conn.assigns.current_user
 
     # Check if user has unlocked this border
-    case Repo.get_by(UserAvatarBorder, user_id: user.id, avatar_border_id: border_id) do
+    case Repo.get_by(UserAvatarBorder, user_id: user.id, border_id: border_id) do
       nil ->
         conn
         |> put_status(:forbidden)
@@ -117,7 +117,7 @@ defmodule CGraphWeb.CosmeticsController do
           # Sync equipped border to user profile (discord-style: single source of truth)
           border = Repo.get(AvatarBorder, border_id)
           _ = sync_equipped_border(user, border)
-          _ = Customizations.update_user_customizations(user.id, %{avatar_border_id: border_id})
+          _ = Customizations.update_user_customizations(user.id, %{border_id: border_id})
 
           conn
           |> put_status(:ok)
@@ -137,7 +137,7 @@ defmodule CGraphWeb.CosmeticsController do
       end
 
     Accounts.update_user(user, %{
-      avatar_border_id: border.id,
+      border_id: border.id,
       avatar_border_animation: border.animation_type,
       avatar_border_color_primary: primary,
       avatar_border_color_secondary: secondary,
@@ -241,7 +241,7 @@ defmodule CGraphWeb.CosmeticsController do
   def activate_profile_theme(conn, %{"id" => theme_id}) do
     user = conn.assigns.current_user
 
-    case Repo.get_by(UserProfileTheme, user_id: user.id, profile_theme_id: theme_id) do
+    case Repo.get_by(UserProfileTheme, user_id: user.id, theme_id: theme_id) do
       nil ->
         conn
         |> put_status(:forbidden)
@@ -276,7 +276,7 @@ defmodule CGraphWeb.CosmeticsController do
   def customize_profile_theme(conn, %{"id" => theme_id} = params) do
     user = conn.assigns.current_user
 
-    case Repo.get_by(UserProfileTheme, user_id: user.id, profile_theme_id: theme_id) do
+    case Repo.get_by(UserProfileTheme, user_id: user.id, theme_id: theme_id) do
       nil ->
         conn
         |> put_status(:forbidden)
@@ -357,7 +357,7 @@ defmodule CGraphWeb.CosmeticsController do
   def activate_chat_effect(conn, %{"id" => effect_id}) do
     user = conn.assigns.current_user
 
-    case Repo.get_by(UserChatEffect, user_id: user.id, chat_effect_id: effect_id) do
+    case Repo.get_by(UserChatEffect, user_id: user.id, effect_id: effect_id) do
       nil ->
         conn
         |> put_status(:forbidden)
@@ -373,7 +373,7 @@ defmodule CGraphWeb.CosmeticsController do
 
           # Deactivate other effects of the same type
           from(ue in UserChatEffect,
-            join: ce in ChatEffect, on: ue.chat_effect_id == ce.id,
+            join: ce in ChatEffect, on: ue.effect_id == ce.id,
             where: ue.user_id == ^user.id and ue.is_active == true and ce.effect_type == ^effect.effect_type
           )
           |> Repo.update_all(set: [is_active: false])
@@ -404,7 +404,7 @@ defmodule CGraphWeb.CosmeticsController do
   end
 
   defp check_not_already_owned(user_id, border_id) do
-    case Repo.get_by(UserAvatarBorder, user_id: user_id, avatar_border_id: border_id) do
+    case Repo.get_by(UserAvatarBorder, user_id: user_id, border_id: border_id) do
       nil -> {:ok, :not_owned}
       _ -> {:error, "Border already owned"}
     end
@@ -413,7 +413,7 @@ defmodule CGraphWeb.CosmeticsController do
   defp deduct_currency(user_id, border, currency) do
     cost = if currency == "gems", do: border.gem_cost, else: border.coin_cost
 
-    case Gamification.deduct_currency(user_id, currency, cost) do
+    case Gamification.deduct_currency(user_id, cost, String.to_existing_atom(currency)) do
       {:ok, _} -> {:ok, :deducted}
       {:error, _} -> {:error, "Insufficient #{currency}"}
     end
@@ -423,8 +423,9 @@ defmodule CGraphWeb.CosmeticsController do
     %UserAvatarBorder{}
     |> UserAvatarBorder.changeset(%{
       user_id: user_id,
-      avatar_border_id: border_id,
-      unlock_source: source
+      border_id: border_id,
+      unlock_source: source,
+      acquired_at: DateTime.truncate(DateTime.utc_now(), :second)
     })
     |> Repo.insert()
   end
@@ -456,7 +457,7 @@ defmodule CGraphWeb.CosmeticsController do
   defp serialize_user_border(user_border) do
     %{
       id: user_border.id,
-      borderId: user_border.avatar_border_id,
+      borderId: user_border.border_id,
       isEquipped: user_border.is_equipped,
       unlockSource: user_border.unlock_source,
       expiresAt: user_border.expires_at,
@@ -491,7 +492,7 @@ defmodule CGraphWeb.CosmeticsController do
   defp serialize_user_profile_theme(user_theme) do
     %{
       id: user_theme.id,
-      themeId: user_theme.profile_theme_id,
+      themeId: user_theme.theme_id,
       isActive: user_theme.is_active,
       unlockSource: user_theme.unlock_source,
       expiresAt: user_theme.expires_at,
@@ -506,7 +507,7 @@ defmodule CGraphWeb.CosmeticsController do
   defp serialize_user_chat_effect(user_effect) do
     %{
       id: user_effect.id,
-      effectId: user_effect.chat_effect_id,
+      effectId: user_effect.effect_id,
       isActive: user_effect.is_active,
       unlockSource: user_effect.unlock_source,
       expiresAt: user_effect.expires_at,

@@ -36,7 +36,7 @@ defmodule CGraph.Gamification.AvatarBorder do
 
     # Unlock configuration
     field :unlock_type, :string
-    field :unlock_requirement, :string
+    field :unlock_requirement, :map, default: %{}
     field :is_purchasable, :boolean, default: false
     field :coin_cost, :integer, default: 0
     field :gem_cost, :integer, default: 0
@@ -50,9 +50,10 @@ defmodule CGraph.Gamification.AvatarBorder do
     # Meta
     field :sort_order, :integer, default: 0
     field :is_active, :boolean, default: true
+    field :is_tradeable, :boolean, default: false
     field :preview_url, :string
 
-    has_many :user_avatar_borders, CGraph.Gamification.UserAvatarBorder
+    has_many :user_avatar_borders, CGraph.Gamification.UserAvatarBorder, foreign_key: :border_id
 
     timestamps(type: :utc_datetime)
   end

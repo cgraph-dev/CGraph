@@ -46,6 +46,7 @@ defmodule CGraph.Accounts.User do
     field :avatar_url, :string
     field :banner_url, :string
     field :bio, :string
+    field :signature, :string
     field :pronouns, :string
     field :status, :string, default: "online"
     field :custom_status, :string
@@ -307,7 +308,7 @@ defmodule CGraph.Accounts.User do
   """
   def profile_changeset(user, attrs) do
     user
-    |> cast(attrs, [:display_name, :bio, :avatar_url, :banner_url, :custom_status, :pronouns])
+    |> cast(attrs, [:display_name, :bio, :signature, :avatar_url, :banner_url, :custom_status, :pronouns])
     |> validate_length(:bio, max: 500)
     |> validate_length(:custom_status, max: 100)
     |> validate_length(:pronouns, max: 50)
@@ -322,7 +323,7 @@ defmodule CGraph.Accounts.User do
     |> validate_required([:username])
     |> validate_username()
     |> validate_username_cooldown()
-    |> put_change(:username_changed_at, DateTime.utc_now() |> DateTime.truncate(:second))
+    |> put_change(:username_changed_at, DateTime.truncate(DateTime.utc_now(), :second))
   end
 
   defp validate_username_cooldown(changeset) do
@@ -335,7 +336,7 @@ defmodule CGraph.Accounts.User do
 
       last_changed ->
         cooldown_end = DateTime.add(last_changed, @username_change_cooldown_days * 24 * 60 * 60, :second)
-        now = DateTime.utc_now()
+        now = DateTime.truncate(DateTime.utc_now(), :second)
 
         if DateTime.compare(now, cooldown_end) == :lt do
           days_remaining = div(DateTime.diff(cooldown_end, now, :second), 86_400) + 1
@@ -352,7 +353,7 @@ defmodule CGraph.Accounts.User do
   def can_change_username?(%__MODULE__{username_changed_at: nil}), do: true
   def can_change_username?(%__MODULE__{username_changed_at: last_changed}) do
     cooldown_end = DateTime.add(last_changed, @username_change_cooldown_days * 24 * 60 * 60, :second)
-    DateTime.compare(DateTime.utc_now(), cooldown_end) != :lt
+    DateTime.compare(DateTime.truncate(DateTime.utc_now(), :second), cooldown_end) != :lt
   end
 
   @doc """

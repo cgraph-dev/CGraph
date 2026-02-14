@@ -162,7 +162,7 @@ defmodule CGraph.Messaging.Messages do
     message
     |> Message.changeset(%{
       is_pinned: true,
-      pinned_at: DateTime.utc_now(),
+      pinned_at: DateTime.truncate(DateTime.utc_now(), :second),
       pinned_by_id: user.id
     })
     |> Repo.update()

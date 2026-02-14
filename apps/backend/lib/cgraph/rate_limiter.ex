@@ -145,6 +145,7 @@ defmodule CGraph.RateLimiter do
   This is useful for test environments.
   """
   def check(identifier, scope, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     # Check if rate limiting is enabled (defaults to true)
     if enabled?() do
       do_check(identifier, scope, opts)

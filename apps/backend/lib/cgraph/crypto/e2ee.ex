@@ -558,7 +558,7 @@ defmodule CGraph.Crypto.E2EE do
       nil -> {:error, :not_found}
       key ->
         key
-        |> IdentityKey.changeset(%{is_verified: true, verified_at: DateTime.utc_now()})
+        |> IdentityKey.changeset(%{is_verified: true, verified_at: DateTime.truncate(DateTime.utc_now(), :second)})
         |> Repo.update()
     end
   end
@@ -579,7 +579,7 @@ defmodule CGraph.Crypto.E2EE do
       nil -> {:error, :not_found}
       key ->
         key
-        |> IdentityKey.changeset(%{revoked_at: DateTime.utc_now()})
+        |> IdentityKey.changeset(%{revoked_at: DateTime.truncate(DateTime.utc_now(), :second)})
         |> Repo.update()
     end
   end
@@ -787,7 +787,7 @@ defmodule CGraph.Crypto.E2EE do
       signature: signature,
       key_id: prekey_id,
       is_current: true,
-      expires_at: DateTime.add(DateTime.utc_now(), 30, :day)
+      expires_at: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), 30, :day)
     }
 
     %SignedPrekey{}
@@ -846,7 +846,7 @@ defmodule CGraph.Crypto.E2EE do
       nil -> nil
       key ->
         key
-        |> OneTimePrekey.changeset(%{used_at: DateTime.utc_now()})
+        |> OneTimePrekey.changeset(%{used_at: DateTime.truncate(DateTime.utc_now(), :second)})
         |> Repo.update!()
     end
   end

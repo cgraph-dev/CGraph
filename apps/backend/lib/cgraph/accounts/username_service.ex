@@ -21,7 +21,7 @@ defmodule CGraph.Accounts.UsernameService do
     user = Repo.get!(User, user_id)
     cooldown_days = if is_premium, do: @premium_cooldown_days, else: @default_cooldown_days
 
-    case user.last_username_change_at do
+    case user.username_changed_at do
       nil ->
         {:ok, 0}
 

@@ -23,7 +23,7 @@ defmodule CGraph.Gamification.UserProfileTheme do
     field :custom_effects, :map
 
     belongs_to :user, CGraph.Accounts.User
-    belongs_to :profile_theme, CGraph.Gamification.ProfileTheme
+    belongs_to :profile_theme, CGraph.Gamification.ProfileTheme, foreign_key: :theme_id
 
     timestamps(type: :utc_datetime)
   end
@@ -32,14 +32,14 @@ defmodule CGraph.Gamification.UserProfileTheme do
   def changeset(user_theme, attrs) do
     user_theme
     |> cast(attrs, [
-      :user_id, :profile_theme_id, :is_active, :unlock_source, :unlock_data,
+      :user_id, :theme_id, :is_active, :unlock_source, :unlock_data,
       :expires_at, :custom_colors, :custom_background, :custom_layout, :custom_effects
     ])
-    |> validate_required([:user_id, :profile_theme_id, :unlock_source])
+    |> validate_required([:user_id, :theme_id, :unlock_source])
     |> validate_inclusion(:unlock_source, @unlock_sources)
     |> foreign_key_constraint(:user_id)
-    |> foreign_key_constraint(:profile_theme_id)
-    |> unique_constraint([:user_id, :profile_theme_id])
+    |> foreign_key_constraint(:theme_id)
+    |> unique_constraint([:user_id, :theme_id])
   end
 
   def activate_changeset(user_theme, attrs) do

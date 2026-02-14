@@ -87,7 +87,7 @@ defmodule CGraph.Forums.Comments do
   """
   def delete_comment(comment) do
     comment
-    |> Ecto.Changeset.change(%{deleted_at: DateTime.utc_now()})
+    |> Ecto.Changeset.change(%{deleted_at: DateTime.truncate(DateTime.utc_now(), :second)})
     |> Repo.update()
     |> case do
       {:ok, _comment} ->
@@ -100,12 +100,10 @@ defmodule CGraph.Forums.Comments do
   @doc """
   Hides a comment (moderation action).
   """
-  def hide_comment(comment_id, reason) do
+  def hide_comment(comment_id, _reason) do
     from(c in Comment, where: c.id == ^comment_id)
     |> Repo.update_all(set: [
-      is_hidden: true,
-      hidden_reason: reason,
-      hidden_at: DateTime.utc_now()
+      deleted_at: DateTime.truncate(DateTime.utc_now(), :second)
     ])
     :ok
   end
@@ -114,13 +112,11 @@ defmodule CGraph.Forums.Comments do
   Soft deletes a comment.
   """
   def soft_delete_comment(comment_id, opts \\ []) do
-    reason = Keyword.get(opts, :reason, "Removed by moderator")
+    _reason = Keyword.get(opts, :reason, "Removed by moderator")
 
     from(c in Comment, where: c.id == ^comment_id)
     |> Repo.update_all(set: [
-      is_deleted: true,
-      deleted_reason: reason,
-      deleted_at: DateTime.utc_now()
+      deleted_at: DateTime.truncate(DateTime.utc_now(), :second)
     ])
     :ok
   end

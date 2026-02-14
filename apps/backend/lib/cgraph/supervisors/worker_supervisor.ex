@@ -21,6 +21,9 @@ defmodule CGraph.WorkerSupervisor do
       # Start sampled presence for large channels
       CGraph.Presence.Sampled,
 
+      # Start Phoenix Presence for channel tracking
+      CGraphWeb.Presence,
+
       # Start data export service
       CGraph.DataExport
     ]

@@ -39,7 +39,7 @@ defmodule CGraph.Forums.Moderation do
     |> Repo.update_all(set: [
       is_hidden: true,
       hidden_reason: reason,
-      hidden_at: DateTime.utc_now()
+      hidden_at: DateTime.truncate(DateTime.utc_now(), :second)
     ])
     :ok
   end
@@ -54,7 +54,7 @@ defmodule CGraph.Forums.Moderation do
     |> Repo.update_all(set: [
       is_deleted: true,
       deleted_reason: reason,
-      deleted_at: DateTime.utc_now()
+      deleted_at: DateTime.truncate(DateTime.utc_now(), :second)
     ])
     :ok
   end
@@ -149,7 +149,7 @@ defmodule CGraph.Forums.Moderation do
     Repo.exists?(
       from(b in Ban,
         where: b.forum_id == ^forum.id and b.user_id == ^user.id,
-        where: is_nil(b.expires_at) or b.expires_at > ^DateTime.utc_now()
+        where: is_nil(b.expires_at) or b.expires_at > ^DateTime.truncate(DateTime.utc_now(), :second)
       )
     )
   end
@@ -161,7 +161,7 @@ defmodule CGraph.Forums.Moderation do
     from(p in Post, where: p.id == ^post.id)
     |> Repo.update_all(set: [
       is_flagged: true,
-      flagged_at: DateTime.utc_now(),
+      flagged_at: DateTime.truncate(DateTime.utc_now(), :second),
       flag_reason: reason,
       flagged_by_id: user.id
     ])

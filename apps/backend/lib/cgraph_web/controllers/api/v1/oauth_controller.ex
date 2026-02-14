@@ -254,6 +254,12 @@ defmodule CGraphWeb.API.V1.OAuthController do
     end
   end
 
+  # Fallback: accept token param instead of access_token
+  def link(conn, %{"provider" => provider} = params) do
+    access_token = Map.get(params, "token") || Map.get(params, "code") || ""
+    link(conn, Map.put(params, "access_token", access_token))
+  end
+
   @doc """
   Unlink an OAuth account from the current user.
 

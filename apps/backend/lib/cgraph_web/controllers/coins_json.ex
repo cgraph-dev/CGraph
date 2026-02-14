@@ -3,8 +3,17 @@ defmodule CGraphWeb.CoinsJSON do
   JSON rendering for coins endpoints.
   """
 
-  def history(%{transactions: transactions}) do
+  def history(%{transactions: {transactions, meta}}) when is_list(transactions) do
+    %{data: Enum.map(transactions, &render_transaction/1), meta: meta}
+  end
+
+  def history(%{transactions: transactions}) when is_list(transactions) do
     %{data: Enum.map(transactions, &render_transaction/1)}
+  end
+
+  def history(%{transactions: transactions}) do
+    # Fallback: if it's something else, wrap in list
+    %{data: Enum.map(List.wrap(transactions), &render_transaction/1)}
   end
 
   # Private helpers

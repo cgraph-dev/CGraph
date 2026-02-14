@@ -188,6 +188,10 @@ defmodule CGraph.Redis do
     catch
       :exit, {:timeout, _} ->
         {:error, :timeout}
+      :exit, {:noproc, _} ->
+        {:error, :redis_not_running}
+      :exit, _ ->
+        {:error, :redis_unavailable}
     end
 
     emit_pipeline_telemetry(commands, result, start_time)

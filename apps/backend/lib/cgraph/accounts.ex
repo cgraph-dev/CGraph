@@ -469,7 +469,7 @@ defmodule CGraph.Accounts do
   end
 
   defp expired?(datetime, seconds) do
-    DateTime.diff(DateTime.utc_now(), datetime) > seconds
+    DateTime.diff(DateTime.truncate(DateTime.utc_now(), :second), datetime) > seconds
   end
 
   # ============================================================================
@@ -499,7 +499,7 @@ defmodule CGraph.Accounts do
   Sets deleted_at timestamp but preserves the record for data integrity.
   """
   def deactivate_user(user) do
-    deleted_at = DateTime.utc_now() |> DateTime.truncate(:second)
+    deleted_at = DateTime.truncate(DateTime.utc_now(), :second)
 
     user
     |> Ecto.Changeset.change(deleted_at: deleted_at)
@@ -598,7 +598,7 @@ defmodule CGraph.Accounts do
         user
         |> Ecto.Changeset.change(%{
           flagged_for_review: true,
-          flagged_at: DateTime.utc_now() |> DateTime.truncate(:second)
+          flagged_at: DateTime.truncate(DateTime.utc_now(), :second)
         })
         |> Repo.update()
       error -> error
@@ -894,7 +894,7 @@ defmodule CGraph.Accounts do
   """
   def accept_friend_request(%Friendship{} = friendship) do
     # Truncate to seconds for :utc_datetime field (not _usec)
-    accepted_time = DateTime.utc_now() |> DateTime.truncate(:second)
+    accepted_time = DateTime.truncate(DateTime.utc_now(), :second)
 
     friendship
     |> Ecto.Changeset.change(status: :accepted, accepted_at: accepted_time)
@@ -1215,7 +1215,7 @@ defmodule CGraph.Accounts do
   def schedule_user_deletion(user) do
     # Truncate microseconds to match :utc_datetime schema type
     deletion_time =
-      DateTime.utc_now()
+      DateTime.truncate(DateTime.utc_now(), :second)
       |> DateTime.add(30 * 24 * 60 * 60, :second)
       |> DateTime.truncate(:second)
 
@@ -1290,7 +1290,7 @@ defmodule CGraph.Accounts do
       user_id: user.id,
       token: token,
       platform: mapped_platform,
-      last_used_at: DateTime.utc_now()
+      last_used_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
 
     # Upsert: update if exists, insert if not
@@ -1302,7 +1302,7 @@ defmodule CGraph.Accounts do
 
       existing ->
         existing
-        |> PushToken.changeset(%{last_used_at: DateTime.utc_now(), platform: mapped_platform})
+        |> PushToken.changeset(%{last_used_at: DateTime.truncate(DateTime.utc_now(), :second), platform: mapped_platform})
         |> Repo.update()
     end
   end

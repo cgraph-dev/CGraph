@@ -54,7 +54,7 @@ defmodule CGraphWeb.MarketplaceController do
     end
 
     pagination_opts = CGraph.Pagination.parse_params(
-      params,
+      Map.drop(params, ["sort"]),
       sort_field: sort_field,
       sort_direction: sort_dir,
       default_limit: 20,
@@ -88,19 +88,24 @@ defmodule CGraphWeb.MarketplaceController do
   Get detailed listing information.
   """
   def show(conn, %{"id" => listing_id}) do
-    listing = Repo.get!(MarketplaceItem, listing_id)
-    |> Repo.preload(:seller)
+    case Repo.get(MarketplaceItem, listing_id) do
+      nil ->
+        {:error, :not_found}
 
-    # Get price history for this item type
-    price_history = get_price_history(listing.item_type, listing.item_id)
+      listing ->
+        listing = Repo.preload(listing, :seller)
 
-    conn
-    |> put_status(:ok)
-    |> json(%{
-      listing: serialize_listing_detailed(listing),
-      priceHistory: price_history,
-      recommendedPrice: MarketplaceItem.recommended_price_for_rarity(listing.item_rarity)
-    })
+        # Get price history for this item type
+        price_history = get_price_history(listing.item_type, listing.item_id)
+
+        conn
+        |> put_status(:ok)
+        |> json(%{
+          listing: serialize_listing_detailed(listing),
+          priceHistory: price_history,
+          recommendedPrice: MarketplaceItem.recommended_price_for_rarity(listing.item_rarity)
+        })
+    end
   end
 
   @doc """
@@ -120,7 +125,7 @@ defmodule CGraphWeb.MarketplaceController do
       listing_fee = calculate_listing_fee(recommended.suggested)
 
       # Deduct listing fee
-      case Gamification.deduct_currency(user.id, "coins", listing_fee) do
+      case Gamification.deduct_currency(user.id, listing_fee, :coins) do
         {:ok, _} ->
           {:ok, listing} = %MarketplaceItem{}
           |> MarketplaceItem.changeset(%{
@@ -166,24 +171,29 @@ defmodule CGraphWeb.MarketplaceController do
   """
   def update(conn, %{"id" => listing_id} = params) do
     user = conn.assigns.current_user
-    listing = Repo.get!(MarketplaceItem, listing_id)
 
-    if listing.seller_id != user.id do
-      conn
-      |> put_status(:forbidden)
-      |> json(%{error: "Not your listing"})
-    else
-      case MarketplaceItem.update_price_changeset(listing, params["price"]) |> Repo.update() do
-        {:ok, updated} ->
-          conn
-          |> put_status(:ok)
-          |> json(%{success: true, listing: serialize_listing(Repo.preload(updated, :seller))})
+    case Repo.get(MarketplaceItem, listing_id) do
+      nil ->
+        {:error, :not_found}
 
-        {:error, changeset} ->
+      listing ->
+        if listing.seller_id != user.id do
           conn
-          |> put_status(:bad_request)
-          |> json(%{error: format_errors(changeset)})
-      end
+          |> put_status(:forbidden)
+          |> json(%{error: "Not your listing"})
+        else
+          case MarketplaceItem.update_price_changeset(listing, params["price"]) |> Repo.update() do
+            {:ok, updated} ->
+              conn
+              |> put_status(:ok)
+              |> json(%{success: true, listing: serialize_listing(Repo.preload(updated, :seller))})
+
+            {:error, changeset} ->
+              conn
+              |> put_status(:bad_request)
+              |> json(%{error: format_errors(changeset)})
+          end
+        end
     end
   end
 
@@ -193,20 +203,25 @@ defmodule CGraphWeb.MarketplaceController do
   """
   def delete(conn, %{"id" => listing_id}) do
     user = conn.assigns.current_user
-    listing = Repo.get!(MarketplaceItem, listing_id)
 
-    if listing.seller_id != user.id do
-      conn
-      |> put_status(:forbidden)
-      |> json(%{error: "Not your listing"})
-    else
-      {:ok, _} = listing
-      |> MarketplaceItem.cancel_changeset()
-      |> Repo.update()
+    case Repo.get(MarketplaceItem, listing_id) do
+      nil ->
+        {:error, :not_found}
 
-      conn
-      |> put_status(:ok)
-      |> json(%{success: true})
+      listing ->
+        if listing.seller_id != user.id do
+          conn
+          |> put_status(:forbidden)
+          |> json(%{error: "Not your listing"})
+        else
+          {:ok, _} = listing
+          |> MarketplaceItem.cancel_changeset()
+          |> Repo.update()
+
+          conn
+          |> put_status(:ok)
+          |> json(%{success: true})
+        end
     end
   end
 
@@ -216,52 +231,59 @@ defmodule CGraphWeb.MarketplaceController do
   """
   def buy(conn, %{"id" => listing_id}) do
     user = conn.assigns.current_user
-    listing = Repo.get!(MarketplaceItem, listing_id) |> Repo.preload(:seller)
 
-    cond do
-      listing.listing_status != "active" ->
-        conn
-        |> put_status(:bad_request)
-        |> json(%{error: "Listing is no longer available"})
+    case Repo.get(MarketplaceItem, listing_id) do
+      nil ->
+        {:error, :not_found}
 
-      listing.seller_id == user.id ->
-        conn
-        |> put_status(:bad_request)
-        |> json(%{error: "Cannot buy your own listing"})
+      listing ->
+        listing = Repo.preload(listing, :seller)
 
-      true ->
-        # Deduct buyer's currency
-        case Gamification.deduct_currency(user.id, listing.currency_type, listing.price) do
-          {:ok, _} ->
-            # Calculate seller proceeds
-            fee = MarketplaceItem.calculate_fee(listing)
-            proceeds = MarketplaceItem.calculate_proceeds(listing)
-
-            # Credit seller
-            Gamification.add_currency(listing.seller_id, listing.currency_type, proceeds)
-
-            # Transfer item ownership
-            transfer_item(listing, user.id)
-
-            # Update listing
-            {:ok, updated} = listing
-            |> MarketplaceItem.purchase_changeset(user.id)
-            |> Repo.update()
-
-            conn
-            |> put_status(:ok)
-            |> json(%{
-              success: true,
-              listing: serialize_listing(Repo.preload(updated, [:seller, :buyer])),
-              paid: listing.price,
-              fee: fee,
-              sellerReceived: proceeds
-            })
-
-          {:error, _} ->
+        cond do
+          listing.listing_status != "active" ->
             conn
             |> put_status(:bad_request)
-            |> json(%{error: "Insufficient #{listing.currency_type}"})
+            |> json(%{error: "Listing is no longer available"})
+
+          listing.seller_id == user.id ->
+            conn
+            |> put_status(:bad_request)
+            |> json(%{error: "Cannot buy your own listing"})
+
+          true ->
+            # Deduct buyer's currency
+            case Gamification.deduct_currency(user.id, listing.price, String.to_existing_atom(listing.currency_type || "coins")) do
+              {:ok, _} ->
+                # Calculate seller proceeds
+                fee = MarketplaceItem.calculate_fee(listing)
+                proceeds = MarketplaceItem.calculate_proceeds(listing)
+
+                # Credit seller
+                Gamification.add_currency(listing.seller_id, proceeds, String.to_existing_atom(listing.currency_type || "coins"))
+
+                # Transfer item ownership
+                transfer_item(listing, user.id)
+
+                # Update listing
+                {:ok, updated} = listing
+                |> MarketplaceItem.purchase_changeset(user.id)
+                |> Repo.update()
+
+                conn
+                |> put_status(:ok)
+                |> json(%{
+                  success: true,
+                  listing: serialize_listing(Repo.preload(updated, [:seller, :buyer])),
+                  paid: listing.price,
+                  fee: fee,
+                  sellerReceived: proceeds
+                })
+
+              {:error, _} ->
+                conn
+                |> put_status(:bad_request)
+                |> json(%{error: "Insufficient #{listing.currency_type}"})
+            end
         end
     end
   end
@@ -342,11 +364,11 @@ defmodule CGraphWeb.MarketplaceController do
     # Check ownership based on item type
     owned = case item_type do
       "avatar_border" ->
-        Repo.get_by(Gamification.UserAvatarBorder, user_id: user_id, avatar_border_id: item_id)
+        Repo.get_by(Gamification.UserAvatarBorder, user_id: user_id, border_id: item_id)
       "profile_theme" ->
-        Repo.get_by(Gamification.UserProfileTheme, user_id: user_id, profile_theme_id: item_id)
+        Repo.get_by(Gamification.UserProfileTheme, user_id: user_id, theme_id: item_id)
       "chat_effect" ->
-        Repo.get_by(Gamification.UserChatEffect, user_id: user_id, chat_effect_id: item_id)
+        Repo.get_by(Gamification.UserChatEffect, user_id: user_id, effect_id: item_id)
       _ -> nil
     end
 
@@ -399,19 +421,19 @@ defmodule CGraphWeb.MarketplaceController do
       "avatar_border" ->
         # Update ownership
         from(ub in Gamification.UserAvatarBorder,
-          where: ub.user_id == ^listing.seller_id and ub.avatar_border_id == ^listing.item_id
+          where: ub.user_id == ^listing.seller_id and ub.border_id == ^listing.item_id
         )
         |> Repo.update_all(set: [user_id: buyer_id, is_equipped: false])
 
       "profile_theme" ->
         from(ut in Gamification.UserProfileTheme,
-          where: ut.user_id == ^listing.seller_id and ut.profile_theme_id == ^listing.item_id
+          where: ut.user_id == ^listing.seller_id and ut.theme_id == ^listing.item_id
         )
         |> Repo.update_all(set: [user_id: buyer_id, is_active: false])
 
       "chat_effect" ->
         from(ue in Gamification.UserChatEffect,
-          where: ue.user_id == ^listing.seller_id and ue.chat_effect_id == ^listing.item_id
+          where: ue.user_id == ^listing.seller_id and ue.effect_id == ^listing.item_id
         )
         |> Repo.update_all(set: [user_id: buyer_id, is_active: false])
 
@@ -491,17 +513,25 @@ defmodule CGraphWeb.MarketplaceController do
       listedAt: listing.listed_at,
       expiresAt: listing.expires_at,
       soldAt: listing.sold_at,
-      seller: listing.seller && %{
+      seller: assoc_loaded?(listing, :seller) && %{
         id: listing.seller.id,
         username: listing.seller.username,
         displayName: listing.seller.display_name,
         avatarUrl: listing.seller.avatar_url
       },
-      buyer: listing.buyer && %{
+      buyer: assoc_loaded?(listing, :buyer) && %{
         id: listing.buyer.id,
         username: listing.buyer.username
       }
     }
+  end
+
+  defp assoc_loaded?(struct, field) do
+    case Map.get(struct, field) do
+      %Ecto.Association.NotLoaded{} -> false
+      nil -> false
+      _ -> true
+    end
   end
 
   defp serialize_listing_detailed(listing) do

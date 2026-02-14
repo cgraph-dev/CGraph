@@ -67,6 +67,11 @@ defmodule CGraphWeb.API.SubscriptionController do
         conn
         |> put_status(:forbidden)
         |> json(%{error: "Not authorized to update this subscription"})
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "Subscription not found"})
     end
   end
 
@@ -95,6 +100,11 @@ defmodule CGraphWeb.API.SubscriptionController do
         conn
         |> put_status(:forbidden)
         |> json(%{error: "Not authorized to delete this subscription"})
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "Subscription not found"})
     end
   end
 

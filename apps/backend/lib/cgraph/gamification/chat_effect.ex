@@ -46,7 +46,7 @@ defmodule CGraph.Gamification.ChatEffect do
     field :is_active, :boolean, default: true
     field :preview_url, :string
 
-    has_many :user_chat_effects, CGraph.Gamification.UserChatEffect
+    has_many :user_chat_effects, CGraph.Gamification.UserChatEffect, foreign_key: :effect_id
 
     timestamps(type: :utc_datetime)
   end

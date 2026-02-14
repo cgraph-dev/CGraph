@@ -196,19 +196,24 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
   GET /api/v1/emojis/favorites
   """
   def favorites(conn, _params) do
-    user = conn.assigns.current_user
+    case conn.assigns[:current_user] do
+      nil ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: %{code: "unauthorized", message: "Authentication required"}})
+      user ->
+        favorites = from(f in "user_emoji_favorites",
+          where: f.user_id == type(^user.id, Ecto.UUID),
+          join: e in CustomEmoji, on: e.id == f.emoji_id,
+          where: e.is_active == true,
+          order_by: [asc: f.order],
+          select: e
+        )
+        |> Repo.all()
+        |> Repo.preload([:category])
 
-    favorites = from(f in "user_emoji_favorites",
-      where: f.user_id == ^user.id,
-      join: e in CustomEmoji, on: e.id == f.emoji_id,
-      where: e.is_active == true,
-      order_by: [asc: f.order],
-      select: e
-    )
-    |> Repo.all()
-    |> Repo.preload([:category])
-
-    render(conn, :index, emojis: favorites)
+        render(conn, :index, emojis: favorites)
+    end
   end
 
   @doc """
@@ -221,16 +226,16 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
     # Get current max order
     max_order = from(f in "user_emoji_favorites",
-      where: f.user_id == ^user.id,
+      where: f.user_id == type(^user.id, Ecto.UUID),
       select: max(f.order)
     )
     |> Repo.one() || 0
 
     Repo.insert_all("user_emoji_favorites", [
       %{
-        id: Ecto.UUID.generate(),
-        user_id: user.id,
-        emoji_id: emoji_id,
+        id: Ecto.UUID.dump!(Ecto.UUID.generate()),
+        user_id: Ecto.UUID.dump!(user.id),
+        emoji_id: Ecto.UUID.dump!(emoji_id),
         order: max_order + 1,
         inserted_at: DateTime.utc_now()
       }
@@ -248,7 +253,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
     user = conn.assigns.current_user
 
     from(f in "user_emoji_favorites",
-      where: f.user_id == ^user.id and f.emoji_id == ^emoji_id
+      where: f.user_id == type(^user.id, Ecto.UUID) and f.emoji_id == type(^emoji_id, Ecto.UUID)
     )
     |> Repo.delete_all()
 
@@ -261,22 +266,28 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
   GET /api/v1/emojis/recent
   """
   def recent(conn, params) do
-    user = conn.assigns.current_user
-    limit = params |> Map.get("limit", "20") |> String.to_integer() |> min(50)
+    case conn.assigns[:current_user] do
+      nil ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: %{code: "unauthorized", message: "Authentication required"}})
+      user ->
+        limit = params |> Map.get("limit", "20") |> String.to_integer() |> min(50)
 
-    recent = from(h in "emoji_usage_history",
-      where: h.user_id == ^user.id,
-      distinct: h.emoji_id,
-      order_by: [desc: h.inserted_at],
-      limit: ^limit,
-      join: e in CustomEmoji, on: e.id == h.emoji_id,
-      where: e.is_active == true,
-      select: e
-    )
-    |> Repo.all()
-    |> Repo.preload([:category])
+        recent = from(h in "emoji_usage_history",
+          where: h.user_id == type(^user.id, Ecto.UUID),
+          distinct: h.emoji_id,
+          order_by: [desc: h.inserted_at],
+          limit: ^limit,
+          join: e in CustomEmoji, on: e.id == h.emoji_id,
+          where: e.is_active == true,
+          select: e
+        )
+        |> Repo.all()
+        |> Repo.preload([:category])
 
-    render(conn, :index, emojis: recent)
+        render(conn, :index, emojis: recent)
+    end
   end
 
   # ============================================================================

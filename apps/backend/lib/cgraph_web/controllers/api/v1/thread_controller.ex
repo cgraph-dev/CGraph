@@ -73,6 +73,12 @@ defmodule CGraphWeb.API.V1.ThreadController do
     end
   end
 
+  # Fallback: accept flat params (no "thread" wrapper)
+  def create(conn, %{"board_id" => board_id} = params) do
+    thread_params = Map.drop(params, ["board_id", "forum_id"])
+    create(conn, %{"board_id" => board_id, "thread" => thread_params})
+  end
+
   @doc """
   Update a thread.
   PUT /api/v1/boards/:board_id/threads/:id
@@ -90,6 +96,12 @@ defmodule CGraphWeb.API.V1.ThreadController do
       false -> {:error, :forbidden}
       error -> error
     end
+  end
+
+  # Fallback: accept flat params (no "thread" wrapper)
+  def update(conn, %{"id" => _id} = params) do
+    thread_params = Map.drop(params, ["id", "board_id", "forum_id"])
+    update(conn, Map.put(params, "thread", thread_params))
   end
 
   @doc """

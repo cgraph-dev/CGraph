@@ -30,15 +30,19 @@ defmodule CGraph.Gamification.UserEventProgress do
 
     # Leaderboard
     field :leaderboard_points, :integer, default: 0
-    field :best_rank, :integer
+    field :leaderboard_rank, :integer
 
     # Participation tracking
-    field :first_participated_at, :utc_datetime
-    field :last_participated_at, :utc_datetime
-    field :total_sessions, :integer, default: 0
+    field :first_activity_at, :utc_datetime
+    field :last_activity_at, :utc_datetime
+    field :days_participated, :integer, default: 0
+    field :streak_days, :integer, default: 0
+    field :longest_streak, :integer, default: 0
 
-    # Rewards claimed
-    field :rewards_claimed, {:array, :map}, default: []
+    # Completion
+    field :completed, :boolean, default: false
+    field :completed_at, :utc_datetime
+    field :completion_rank, :integer
 
     belongs_to :user, CGraph.Accounts.User
     belongs_to :seasonal_event, CGraph.Gamification.SeasonalEvent
@@ -55,9 +59,10 @@ defmodule CGraph.Gamification.UserEventProgress do
       :quests_completed, :daily_challenges_completed, :milestones_claimed,
       :has_battle_pass, :battle_pass_tier, :battle_pass_xp,
       :claimed_free_rewards, :claimed_premium_rewards,
-      :leaderboard_points, :best_rank,
-      :first_participated_at, :last_participated_at, :total_sessions,
-      :rewards_claimed
+      :leaderboard_points, :leaderboard_rank,
+      :first_activity_at, :last_activity_at, :days_participated,
+      :streak_days, :longest_streak,
+      :completed, :completed_at, :completion_rank
     ])
     |> validate_required([:user_id, :seasonal_event_id])
     |> validate_number(:event_points, greater_than_or_equal_to: 0)
@@ -78,8 +83,8 @@ defmodule CGraph.Gamification.UserEventProgress do
     |> cast(%{
       event_points: new_points,
       leaderboard_points: new_leaderboard,
-      last_participated_at: DateTime.utc_now()
-    }, [:event_points, :leaderboard_points, :last_participated_at])
+      last_activity_at: DateTime.truncate(DateTime.utc_now(), :second)
+    }, [:event_points, :leaderboard_points, :last_activity_at])
   end
 
   def add_currency_changeset(progress, amount) do

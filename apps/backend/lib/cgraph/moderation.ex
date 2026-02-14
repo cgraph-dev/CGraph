@@ -181,13 +181,26 @@ defmodule CGraph.Moderation do
   defp validate_not_self_report(_, _), do: :ok
 
   defp check_duplicate_report(reporter, attrs) do
-    exists? = Repo.exists?(
-      from r in Report,
-        where: r.reporter_id == ^reporter.id,
-        where: r.target_type == ^attrs[:target_type],
-        where: r.target_id == ^attrs[:target_id],
-        where: r.status == :pending
-    )
+    target_type = attrs[:target_type]
+    target_id = attrs[:target_id]
+
+    query = from r in Report,
+      where: r.reporter_id == ^reporter.id,
+      where: r.status == :pending
+
+    query = if is_nil(target_type) do
+      from r in query, where: is_nil(r.target_type)
+    else
+      from r in query, where: r.target_type == ^target_type
+    end
+
+    query = if is_nil(target_id) do
+      from r in query, where: is_nil(r.target_id)
+    else
+      from r in query, where: r.target_id == ^target_id
+    end
+
+    exists? = Repo.exists?(query)
 
     if exists?, do: {:error, :duplicate}, else: :ok
   end
@@ -230,17 +243,17 @@ defmodule CGraph.Moderation do
 
   # Quarantine content by setting visibility to hidden and flagging for review
   defp quarantine_reported_content(report) do
-    case report.content_type do
+    case report.target_type do
       :message ->
-        CGraph.Messaging.hide_message(report.content_id, :moderation_quarantine)
+        CGraph.Messaging.hide_message(report.target_id, :moderation_quarantine)
       :post ->
-        CGraph.Forums.hide_post(report.content_id, :moderation_quarantine)
+        CGraph.Forums.hide_post(report.target_id, :moderation_quarantine)
       :comment ->
-        CGraph.Forums.hide_comment(report.content_id, :moderation_quarantine)
+        CGraph.Forums.hide_comment(report.target_id, :moderation_quarantine)
       :profile ->
         CGraph.Accounts.flag_profile_for_review(report.target_id)
       _ ->
-        Logger.warning("Unknown content type for quarantine: #{report.content_type}")
+        Logger.warning("Unknown content type for quarantine: #{report.target_type}")
     end
   rescue
     e ->
@@ -252,14 +265,14 @@ defmodule CGraph.Moderation do
     %{
       incident_type: "CSAM",
       report_id: report.id,
-      reported_at: DateTime.utc_now() |> DateTime.to_iso8601(),
+      reported_at: DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.to_iso8601(),
       reporter_info: %{
         esp_name: "CGraph",
         esp_contact: Application.get_env(:cgraph, :legal_contact_email, "legal@cgraph.org")
       },
       incident_details: %{
-        content_id: report.content_id,
-        content_type: report.content_type,
+        content_id: report.target_id,
+        content_type: report.target_type,
         reported_user_id: report.target_id,
         original_report_text: report.description,
         category: report.category
@@ -278,7 +291,7 @@ defmodule CGraph.Moderation do
       report_id: report.id,
       category: report.category,
       requires_immediate_action: true,
-      escalation_deadline: DateTime.utc_now() |> DateTime.add(3600, :second)
+      escalation_deadline: DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.add(3600, :second)
     }
 
     # Broadcast to admin channel for real-time alerting
@@ -299,7 +312,7 @@ defmodule CGraph.Moderation do
   defp log_critical_incident(report, incident_data) do
     audit_entry = %{
       event_type: :critical_content_report,
-      timestamp: DateTime.utc_now(),
+      timestamp: DateTime.utc_now() |> DateTime.truncate(:second),
       report_id: report.id,
       incident_data: incident_data,
       actions_taken: [:quarantine, :ncmec_report_prepared, :staff_alerted],
@@ -442,11 +455,11 @@ defmodule CGraph.Moderation do
       warning_data = %{
         report_id: report.id,
         category: report.category,
-        content_type: report.content_type,
+        content_type: report.target_type,
         warning_level: calculate_warning_level(target_user, report.category),
-        issued_at: DateTime.utc_now(),
+        issued_at: DateTime.utc_now() |> DateTime.truncate(:second),
         notes: attrs[:notes] || "Your content was flagged for review.",
-        appeal_deadline: DateTime.utc_now() |> DateTime.add(7 * 24 * 3600, :second)
+        appeal_deadline: DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.add(7 * 24 * 3600, :second)
       }
 
       # Create persistent warning record for user history
@@ -468,28 +481,28 @@ defmodule CGraph.Moderation do
 
   defp apply_action(report, %{action: :remove_content}) do
     # Soft-delete the reported content based on content type
-    removal_result = case report.content_type do
+    removal_result = case report.target_type do
       :message ->
-        CGraph.Messaging.soft_delete_message(report.content_id,
+        CGraph.Messaging.soft_delete_message(report.target_id,
           reason: :moderation_removal,
           report_id: report.id
         )
       :post ->
-        CGraph.Forums.soft_delete_post(report.content_id,
+        CGraph.Forums.soft_delete_post(report.target_id,
           reason: :moderation_removal,
           report_id: report.id
         )
       :comment ->
-        CGraph.Forums.soft_delete_comment(report.content_id,
+        CGraph.Forums.soft_delete_comment(report.target_id,
           reason: :moderation_removal,
           report_id: report.id
         )
       :profile_content ->
-        CGraph.Accounts.remove_profile_content(report.target_id, report.content_id,
+        CGraph.Accounts.remove_profile_content(report.target_id, report.target_id,
           reason: :moderation_removal
         )
       _ ->
-        Logger.warning("Unknown content type for removal: #{report.content_type}")
+        Logger.warning("Unknown content type for removal: #{report.target_type}")
         {:ok, :no_action}
     end
 
@@ -501,9 +514,9 @@ defmodule CGraph.Moderation do
             title: "Content Removed",
             body: "Your content was removed for violating community guidelines.",
             data: %{
-              content_type: report.content_type,
+              content_type: report.target_type,
               category: report.category,
-              removed_at: DateTime.utc_now()
+              removed_at: DateTime.utc_now() |> DateTime.truncate(:second)
             }
           )
         end
@@ -554,7 +567,7 @@ defmodule CGraph.Moderation do
   """
   def create_user_restriction(user_id, type, duration_hours) do
     expires_at = if duration_hours do
-      DateTime.utc_now()
+      DateTime.utc_now() |> DateTime.truncate(:second)
       |> DateTime.truncate(:second)
       |> DateTime.add(duration_hours * 3600, :second)
     else
@@ -574,7 +587,7 @@ defmodule CGraph.Moderation do
   Check if a user is currently restricted.
   """
   def user_restricted?(user_id) do
-    now = DateTime.utc_now()
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
 
     Repo.exists?(
       from r in UserRestriction,
@@ -588,7 +601,7 @@ defmodule CGraph.Moderation do
   Get active restriction for a user.
   """
   def get_user_restriction(user_id) do
-    now = DateTime.utc_now()
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
 
     Repo.one(
       from r in UserRestriction,
@@ -710,7 +723,7 @@ defmodule CGraph.Moderation do
   Get count of reports reviewed today.
   """
   def reports_reviewed_today do
-    today_start = DateTime.utc_now() |> DateTime.to_date() |> DateTime.new!(~T[00:00:00], "Etc/UTC")
+    today_start = DateTime.utc_now() |> DateTime.truncate(:second) |> DateTime.to_date() |> DateTime.new!(~T[00:00:00], "Etc/UTC")
 
     Repo.one(
       from r in Report,
@@ -740,7 +753,7 @@ defmodule CGraph.Moderation do
   Get count of currently active restrictions.
   """
   def active_restriction_count do
-    now = DateTime.utc_now()
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
 
     Repo.one(
       from r in UserRestriction,

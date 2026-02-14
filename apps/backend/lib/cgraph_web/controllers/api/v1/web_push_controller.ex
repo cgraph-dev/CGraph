@@ -82,7 +82,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
             data: %{
               id: push_token.id,
               platform: "web",
-              device_name: push_token.device_name,
+              device_name: Map.get(push_token, :device_name, push_token.device_id),
               created_at: push_token.inserted_at,
               message: "Web push subscription registered successfully"
             }

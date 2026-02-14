@@ -557,23 +557,27 @@ defmodule CGraph.Gamification do
   Accept a quest for a user.
   """
   def accept_quest(user_id, quest_id) do
-    quest = Repo.get!(Quest, quest_id)
-
-    # Check if already accepted
-    case Repo.get_by(UserQuest, user_id: user_id, quest_id: quest_id) do
+    case Repo.get(Quest, quest_id) do
       nil ->
-        expires_at = calculate_quest_expiry(quest)
+        {:error, :not_found}
 
-        %UserQuest{}
-        |> UserQuest.changeset(%{
-          user_id: user_id,
-          quest_id: quest_id,
-          expires_at: expires_at
-        })
-        |> Repo.insert()
+      quest ->
+        # Check if already accepted
+        case Repo.get_by(UserQuest, user_id: user_id, quest_id: quest_id) do
+          nil ->
+            expires_at = calculate_quest_expiry(quest)
 
-      existing ->
-        {:ok, existing}
+            %UserQuest{}
+            |> UserQuest.changeset(%{
+              user_id: user_id,
+              quest_id: quest_id,
+              expires_at: expires_at
+            })
+            |> Repo.insert()
+
+          existing ->
+            {:ok, existing}
+        end
     end
   end
 
@@ -777,29 +781,33 @@ defmodule CGraph.Gamification do
   Purchase a title with coins.
   """
   def purchase_title(%User{} = user, title_id) do
-    title = Repo.get!(Title, title_id)
+    case Repo.get(Title, title_id) do
+      nil ->
+        {:error, :not_found}
 
-    cond do
-      not title.is_purchasable ->
-        {:error, :not_purchasable}
+      title ->
+        cond do
+          not title.is_purchasable ->
+            {:error, :not_purchasable}
 
-      user.coins < title.coin_cost ->
-        {:error, :insufficient_funds}
+          user.coins < title.coin_cost ->
+            {:error, :insufficient_funds}
 
-      Repo.get_by(UserTitle, user_id: user.id, title_id: title.id) != nil ->
-        {:error, :already_owned}
+          Repo.get_by(UserTitle, user_id: user.id, title_id: title.id) != nil ->
+            {:error, :already_owned}
 
-      true ->
-        Repo.transaction(fn ->
-          {:ok, updated_user} = spend_coins(user, title.coin_cost, "purchase",
-            description: "Purchased title: #{title.name}",
-            reference_type: "title",
-            reference_id: title.id)
+          true ->
+            Repo.transaction(fn ->
+              {:ok, updated_user} = spend_coins(user, title.coin_cost, "purchase",
+                description: "Purchased title: #{title.name}",
+                reference_type: "title",
+                reference_id: title.id)
 
-          {:ok, _} = unlock_title_by_slug(updated_user, title.slug)
+              {:ok, _} = unlock_title_by_slug(updated_user, title.slug)
 
-          updated_user
-        end)
+              updated_user
+            end)
+        end
     end
   end
 
@@ -835,30 +843,34 @@ defmodule CGraph.Gamification do
   Purchase a shop item.
   """
   def purchase_shop_item(%User{} = user, item_id, quantity \\ 1) do
-    item = Repo.get!(ShopItem, item_id)
-    total_cost = item.coin_cost * quantity
+    case Repo.get(ShopItem, item_id) do
+      nil ->
+        {:error, :not_found}
 
-    cond do
-      not ShopItem.available?(item) ->
-        {:error, :not_available}
+      item ->
+        total_cost = item.coin_cost * quantity
 
-      item.premium_only and user.subscription_tier == "free" ->
-        {:error, :premium_required}
+        cond do
+          not ShopItem.available?(item) ->
+            {:error, :not_available}
 
-      user.coins < total_cost ->
-        {:error, :insufficient_funds}
+          item.premium_only and user.subscription_tier == "free" ->
+            {:error, :premium_required}
 
-      # Check if already owns permanent item
-      item.type == "permanent" and user_owns_item?(user.id, item_id) ->
-        {:error, :already_owned}
+          user.coins < total_cost ->
+            {:error, :insufficient_funds}
 
-      true ->
-        Repo.transaction(fn ->
-          # Spend coins
-          {:ok, updated_user} = spend_coins(user, total_cost, "purchase",
-            description: "Purchased: #{item.name} x#{quantity}",
-            reference_type: "shop_item",
-            reference_id: item_id)
+          # Check if already owns permanent item
+          item.type == "permanent" and user_owns_item?(user.id, item_id) ->
+            {:error, :already_owned}
+
+          true ->
+            Repo.transaction(fn ->
+              # Spend coins
+              {:ok, updated_user} = spend_coins(user, total_cost, "purchase",
+                description: "Purchased: #{item.name} x#{quantity}",
+                reference_type: "shop_item",
+                reference_id: item_id)
 
           # Create purchase record
           {:ok, _purchase} =
@@ -878,8 +890,9 @@ defmodule CGraph.Gamification do
             |> Ecto.Changeset.change(%{sold_count: item.sold_count + quantity})
             |> Repo.update()
 
-          updated_user
-        end)
+              updated_user
+            end)
+        end
     end
   end
 
@@ -1455,7 +1468,7 @@ defmodule CGraph.Gamification do
           battle_pass_tier: progress.battle_pass_tier || 0,
           has_battle_pass: progress.has_battle_pass || false,
           quests_completed: length(progress.quests_completed || []),
-          rewards_claimed: progress.rewards_claimed || [],
+          milestones_claimed: progress.milestones_claimed || [],
           leaderboard_points: progress.leaderboard_points || 0
         }}
     end

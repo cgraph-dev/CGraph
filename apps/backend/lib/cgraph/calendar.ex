@@ -23,6 +23,8 @@ defmodule CGraph.Calendar do
   List events with filtering.
   """
   def list_events(user, opts \\ []) do
+    user_id = extract_user_id(user)
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 50)
     offset = (page - 1) * per_page
@@ -37,7 +39,7 @@ defmodule CGraph.Calendar do
       from e in Event,
         left_join: c in assoc(e, :category),
         left_join: a in assoc(e, :author),
-        where: e.visibility == "public" or e.author_id == ^user.id,
+        where: e.visibility == "public" or e.author_id == ^user_id,
         order_by: [asc: e.start_date],
         preload: [:category, :author]
 
@@ -95,10 +97,12 @@ defmodule CGraph.Calendar do
   Get a single event.
   """
   def get_event(id, user) do
+    user_id = extract_user_id(user)
+
     query =
       from e in Event,
         where: e.id == ^id,
-        where: e.visibility == "public" or e.author_id == ^user.id,
+        where: e.visibility == "public" or e.author_id == ^user_id,
         preload: [:category, :author]
 
     case Repo.one(query) do
@@ -256,4 +260,7 @@ defmodule CGraph.Calendar do
     Repo.all(query)
     |> Enum.into(%{})
   end
+
+  defp extract_user_id(%{id: id}), do: id
+  defp extract_user_id(id) when is_binary(id), do: id
 end

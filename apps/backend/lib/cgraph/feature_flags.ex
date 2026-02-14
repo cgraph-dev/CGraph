@@ -133,6 +133,7 @@ defmodule CGraph.FeatureFlags do
       FeatureFlags.enabled?(:unknown_flag, default: true)
   """
   def enabled?(flag_name, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     flag_name = normalize_flag_name(flag_name)
     user_id = Keyword.get(opts, :user_id)
     default = Keyword.get(opts, :default, false)
@@ -158,6 +159,7 @@ defmodule CGraph.FeatureFlags do
   Returns the variant name, or nil if not enrolled.
   """
   def variant(flag_name, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     flag_name = normalize_flag_name(flag_name)
     user_id = Keyword.get(opts, :user_id)
 

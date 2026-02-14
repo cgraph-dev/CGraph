@@ -26,6 +26,11 @@ defmodule CGraphWeb.ErrorJSON do
     envelope(nil, message)
   end
 
+  # Render with error key (used by some plugs like RequireAdmin)
+  def error(%{error: message}) when is_binary(message) do
+    envelope(nil, message)
+  end
+
   # Render with code, message and details (for tier limits, etc.)
   def error(%{code: code, message: message, details: details}) do
     envelope(code, message, details)

@@ -42,6 +42,16 @@ defmodule CGraphWeb.API.V1.ReportController do
   - `422 Unprocessable Entity` - Cannot report own content
   """
   def create(conn, %{"report" => report_params}) do
+    do_create(conn, report_params)
+  end
+
+  def create(conn, params) when is_map(params) do
+    # Accept params without "report" wrapper
+    report_params = Map.drop(params, ["_format"])
+    do_create(conn, report_params)
+  end
+
+  defp do_create(conn, report_params) do
     user = conn.assigns.current_user
 
     # Convert string keys to atoms for category and target_type

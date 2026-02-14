@@ -47,6 +47,6 @@ defmodule CGraph.Gamification.UserAchievement do
   """
   def unlock_changeset(user_achievement) do
     user_achievement
-    |> cast(%{unlocked: true, unlocked_at: DateTime.utc_now()}, [:unlocked, :unlocked_at])
+    |> cast(%{unlocked: true, unlocked_at: DateTime.truncate(DateTime.utc_now(), :second)}, [:unlocked, :unlocked_at])
   end
 end

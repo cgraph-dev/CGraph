@@ -344,6 +344,13 @@ defmodule CGraphWeb.ConversationChannel do
     end
   end
 
+  # Catch-all for unhandled events — prevents FunctionClauseError crashes
+  def handle_in(event, _payload, socket) do
+    require Logger
+    Logger.warning("Unhandled conversation channel event: #{event}")
+    {:reply, {:error, %{reason: "unhandled_event"}}, socket}
+  end
+
   defp format_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Enum.reduce(opts, msg, fn {key, value}, acc ->

@@ -8,7 +8,7 @@ defmodule CgraphWeb.API.V1.RoleControllerTest do
   describe "GET /api/v1/groups/:group_id/roles" do
     setup %{conn: conn} do
       user = user_fixture()
-      group = group_fixture(user)
+      %{group: group} = group_fixture(user)
       conn = log_in_user(conn, user)
       %{conn: conn, user: user, group: group}
     end
@@ -31,7 +31,7 @@ defmodule CgraphWeb.API.V1.RoleControllerTest do
   describe "POST /api/v1/groups/:group_id/roles" do
     setup %{conn: conn} do
       user = user_fixture()
-      group = group_fixture(user)
+      %{group: group} = group_fixture(user)
       conn = log_in_user(conn, user)
       %{conn: conn, user: user, group: group}
     end
@@ -55,7 +55,7 @@ defmodule CgraphWeb.API.V1.RoleControllerTest do
   describe "PUT /api/v1/groups/:group_id/roles/:id" do
     setup %{conn: conn} do
       user = user_fixture()
-      group = group_fixture(user)
+      %{group: group} = group_fixture(user)
       role = role_fixture(group, %{name: "Test Role"})
       conn = log_in_user(conn, user)
       %{conn: conn, group: group, role: role}

@@ -8,7 +8,7 @@ defmodule CgraphWeb.API.V1.InviteControllerTest do
   describe "POST /api/v1/groups/:group_id/invites" do
     setup %{conn: conn} do
       user = user_fixture()
-      group = group_fixture(user)
+      %{group: group} = group_fixture(user)
       conn = log_in_user(conn, user)
       %{conn: conn, user: user, group: group}
     end
@@ -33,7 +33,7 @@ defmodule CgraphWeb.API.V1.InviteControllerTest do
   describe "GET /api/v1/invites/:code" do
     setup %{conn: conn} do
       user = user_fixture()
-      group = group_fixture(user)
+      %{group: group} = group_fixture(user)
       invite = invite_fixture(group, user)
       conn = log_in_user(conn, user)
       %{conn: conn, invite: invite}
@@ -55,7 +55,7 @@ defmodule CgraphWeb.API.V1.InviteControllerTest do
     setup %{conn: conn} do
       creator = user_fixture()
       joiner = user_fixture()
-      group = group_fixture(creator)
+      %{group: group} = group_fixture(creator)
       invite = invite_fixture(group, creator)
       conn = log_in_user(conn, joiner)
       %{conn: conn, invite: invite, joiner: joiner}

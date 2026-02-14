@@ -1,0 +1,37 @@
+     column_name      
+----------------------
+ id
+ slug
+ name
+ description
+ theme
+ rarity
+ tier
+ border_style
+ animation_type
+ animation_config
+ particle_config
+ glow_config
+ preview_static_url
+ preview_animated_url
+ unlock_type
+ unlock_requirement
+ coin_cost
+ gem_cost
+ is_purchasable
+ is_tradeable
+ is_limited
+ limited_quantity
+ sold_count
+ season_id
+ event_id
+ available_from
+ available_until
+ sort_order
+ is_active
+ deactivated_at
+ metadata
+ inserted_at
+ updated_at
+(33 rows)
+

@@ -1,0 +1,29 @@
+defmodule CGraphWeb.API.V1.CustomEmojiJSON do
+  @moduledoc "JSON rendering for Custom Emoji endpoints."
+
+  def index(%{emojis: emojis}) do
+    %{data: Enum.map(emojis, &emoji_data/1)}
+  end
+
+  def show(%{emoji: emoji}) do
+    %{data: emoji_data(emoji)}
+  end
+
+  def categories(%{categories: categories}) do
+    %{data: categories}
+  end
+
+  defp emoji_data(emoji) when is_map(emoji) do
+    %{
+      id: Map.get(emoji, :id),
+      name: Map.get(emoji, :name),
+      shortcode: Map.get(emoji, :shortcode),
+      image_url: Map.get(emoji, :image_url),
+      category: Map.get(emoji, :category),
+      group_id: Map.get(emoji, :group_id),
+      creator_id: Map.get(emoji, :creator_id),
+      is_animated: Map.get(emoji, :is_animated, false),
+      usage_count: Map.get(emoji, :usage_count, 0)
+    }
+  end
+end

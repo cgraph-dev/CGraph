@@ -51,7 +51,7 @@ defmodule CGraph.Messaging.ConversationParticipant do
   """
   def mark_read_changeset(participant) do
     participant
-    |> change(last_read_at: DateTime.utc_now())
+    |> change(last_read_at: DateTime.truncate(DateTime.utc_now(), :second))
     |> change(unread_count: 0)
   end
 

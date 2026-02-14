@@ -21,7 +21,7 @@ defmodule CGraph.Messaging.ReadReceipts do
   """
   @spec mark_as_read(map(), Conversation.t(), String.t() | nil) :: {:ok, map()} | {:error, term()}
   def mark_as_read(user, conversation, last_read_message_id \\ nil) do
-    now = DateTime.utc_now()
+    now = DateTime.truncate(DateTime.utc_now(), :second)
 
     # Update participant's last_read_at
     participant_query = from cp in ConversationParticipant,
@@ -119,7 +119,7 @@ defmodule CGraph.Messaging.ReadReceipts do
   """
   @spec mark_as_delivered(map(), Message.t()) :: {:ok, ReadReceipt.t()} | {:error, term()}
   def mark_as_delivered(user, message) do
-    now = DateTime.utc_now()
+    now = DateTime.truncate(DateTime.utc_now(), :second)
 
     case get_receipt(user, message) do
       nil ->
@@ -153,7 +153,8 @@ defmodule CGraph.Messaging.ReadReceipts do
   end
 
   defp create_read_receipts(user, conversation, up_to_message_id) do
-    now = DateTime.utc_now()
+    read_now = DateTime.truncate(DateTime.utc_now(), :second)
+    ts_now = DateTime.utc_now()
 
     # Get message timestamp
     case Repo.get(Message, up_to_message_id) do
@@ -175,10 +176,10 @@ defmodule CGraph.Messaging.ReadReceipts do
           %{
             user_id: user.id,
             message_id: msg_id,
-            read_at: now,
-            delivered_at: now,
-            inserted_at: now,
-            updated_at: now
+            read_at: read_now,
+            delivered_at: read_now,
+            inserted_at: ts_now,
+            updated_at: ts_now
           }
         end)
 

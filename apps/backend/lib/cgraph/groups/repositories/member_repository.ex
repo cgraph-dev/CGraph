@@ -110,7 +110,7 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
   """
   @spec remove(Member.t()) :: {:ok, Member.t()} | {:error, Ecto.Changeset.t()}
   def remove(%Member{} = member) do
-    update(member, %{left_at: DateTime.utc_now()})
+    update(member, %{left_at: DateTime.truncate(DateTime.utc_now(), :second)})
   end
 
   @doc """

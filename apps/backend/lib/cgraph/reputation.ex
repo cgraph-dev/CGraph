@@ -19,6 +19,7 @@ defmodule CGraph.Reputation do
   Get user reputation with pagination.
   """
   def get_user_reputation(user_id, opts \\ []) do
+    opts = if is_map(opts), do: Map.to_list(opts), else: opts
     type = Keyword.get(opts, :type)
 
     base_query =

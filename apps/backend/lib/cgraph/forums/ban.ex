@@ -35,7 +35,7 @@ defmodule CGraph.Forums.Ban do
 
   def revoke_changeset(ban, revoked_by_id) do
     change(ban,
-      revoked_at: DateTime.utc_now(),
+      revoked_at: DateTime.truncate(DateTime.utc_now(), :second),
       revoked_by_id: revoked_by_id
     )
   end

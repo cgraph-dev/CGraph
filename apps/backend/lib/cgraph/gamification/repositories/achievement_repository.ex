@@ -96,7 +96,7 @@ defmodule CGraph.Gamification.Repositories.AchievementRepository do
       achievement_id: achievement_id,
       current_progress: progress,
       is_unlocked: achievement && progress >= achievement.target_progress,
-      unlocked_at: if(achievement && progress >= achievement.target_progress, do: DateTime.utc_now(), else: nil)
+      unlocked_at: if(achievement && progress >= achievement.target_progress, do: DateTime.truncate(DateTime.utc_now(), :second), else: nil)
     }
 
     %UserAchievement{}

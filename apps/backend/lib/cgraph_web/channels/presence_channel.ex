@@ -82,6 +82,9 @@ defmodule CGraphWeb.PresenceChannel do
     {:noreply, socket}
   end
 
+  # Catch-all for unhandled messages
+  def handle_info(_msg, socket), do: {:noreply, socket}
+
   @impl true
   def handle_in("heartbeat", _params, socket) do
     user = socket.assigns.current_user
@@ -228,6 +231,11 @@ defmodule CGraphWeb.PresenceChannel do
     push(socket, "presence_state", %{users: presence_list})
 
     {:reply, :ok, assign(socket, :friend_ids, friend_ids)}
+  end
+
+  # Catch-all for unhandled events
+  def handle_in(_event, _params, socket) do
+    {:reply, {:error, %{reason: "unhandled event"}}, socket}
   end
 
   @impl true

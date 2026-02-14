@@ -388,25 +388,45 @@ defmodule CGraph.Search.Engine do
   # ---------------------------------------------------------------------------
 
   defp search_postgres(index, query, opts) do
-    # Delegate to existing CGraph.Search functions using cursor-based pagination
+    # Direct PostgreSQL search using ILIKE — avoids recursion back through CGraph.Search
+    import Ecto.Query
     limit = Keyword.get(opts, :limit, 20)
-    cursor = Keyword.get(opts, :cursor)
+    offset = Keyword.get(opts, :offset, 0)
+    search_term = "%#{query}%"
 
     result = case index do
       :users ->
-        {users, _meta} = CGraph.Search.search_users(query, limit: limit, cursor: cursor)
-        users
+        CGraph.Repo.all(
+          from(u in CGraph.Accounts.User,
+            where: ilike(u.username, ^search_term) or ilike(u.display_name, ^search_term),
+            where: is_nil(u.deleted_at) and is_nil(u.banned_at),
+            limit: ^limit,
+            offset: ^offset,
+            order_by: [asc: u.username]
+          )
+        )
 
       :posts ->
-        {posts, _meta} = CGraph.Search.search_posts(query, limit: limit, cursor: cursor)
-        posts
+        CGraph.Repo.all(
+          from(p in CGraph.Forums.Post,
+            where: ilike(p.title, ^search_term) or ilike(p.content, ^search_term),
+            limit: ^limit,
+            offset: ^offset,
+            order_by: [desc: p.inserted_at]
+          )
+        )
 
       :groups ->
-        {groups, _meta} = CGraph.Search.search_groups(query, limit: limit, cursor: cursor)
-        groups
+        CGraph.Repo.all(
+          from(g in CGraph.Groups.Group,
+            where: ilike(g.name, ^search_term) or ilike(g.description, ^search_term),
+            limit: ^limit,
+            offset: ^offset,
+            order_by: [asc: g.name]
+          )
+        )
 
       :messages ->
-        # Messages require a user context, return empty for postgres fallback
         []
 
       _ ->
@@ -414,7 +434,7 @@ defmodule CGraph.Search.Engine do
     end
 
     {:ok, %{
-      hits: result,
+      hits: Enum.map(result, &stringify_keys/1),
       total: length(result),
       processing_time_ms: 0,
       query: query,
@@ -495,6 +515,15 @@ defmodule CGraph.Search.Engine do
   # ---------------------------------------------------------------------------
   # Helpers
   # ---------------------------------------------------------------------------
+
+  defp stringify_keys(%Ecto.Association.NotLoaded{}), do: nil
+
+  defp stringify_keys(%{__struct__: _} = struct) do
+    struct
+    |> Map.from_struct()
+    |> Map.drop([:__meta__])
+    |> stringify_keys()
+  end
 
   defp stringify_keys(map) when is_map(map) do
     Map.new(map, fn

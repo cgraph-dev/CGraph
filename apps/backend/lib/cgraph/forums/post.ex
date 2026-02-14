@@ -140,7 +140,7 @@ defmodule CGraph.Forums.Post do
   def remove_changeset(post, attrs) do
     post
     |> cast(attrs, [:removed_by_id, :removal_reason])
-    |> put_change(:removed_at, DateTime.utc_now())
+    |> put_change(:removed_at, DateTime.truncate(DateTime.utc_now(), :second))
   end
 
   # Validate content based on post type

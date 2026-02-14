@@ -169,6 +169,7 @@ defmodule CGraphWeb.Router do
     # Subscription tiers - public info
     get "/tiers", TierController, :index
     get "/tiers/compare", TierController, :compare
+    get "/tiers/me", TierController, :my_tier
     get "/tiers/:tier", TierController, :show
 
     # Public forum browsing - forums are public by default
@@ -176,6 +177,9 @@ defmodule CGraphWeb.Router do
     get "/forums/leaderboard", ForumController, :leaderboard
     get "/forums/top", ForumController, :top
     get "/forums/feed/popular", ForumController, :popular_feed
+    get "/forums/tree", ForumHierarchyController, :tree
+    get "/forums/roots", ForumHierarchyController, :roots
+    get "/forums/vote-eligibility", ForumController, :vote_eligibility
     get "/forums/:id", ForumController, :show
     get "/forums/:id/contributors", ForumController, :contributors
 
@@ -222,13 +226,14 @@ defmodule CGraphWeb.Router do
     get "/emojis/categories", CustomEmojiController, :categories
     get "/emojis/search", CustomEmojiController, :search
     get "/emojis/popular", CustomEmojiController, :popular
+    get "/emojis/favorites", CustomEmojiController, :favorites
+    get "/emojis/recent", CustomEmojiController, :recent
     get "/emojis/:id", CustomEmojiController, :show
 
     # ==========================================================================
     # Forum Hierarchy - Public tree navigation
+    # (Note: /forums/tree and /forums/roots are defined above, before /forums/:id)
     # ==========================================================================
-    get "/forums/tree", ForumHierarchyController, :tree
-    get "/forums/roots", ForumHierarchyController, :roots
     get "/forums/:id/subtree", ForumHierarchyController, :subtree
     get "/forums/:id/children", ForumHierarchyController, :children
     get "/forums/:id/ancestors", ForumHierarchyController, :ancestors
@@ -318,6 +323,7 @@ defmodule CGraphWeb.Router do
 
     # Users
     get "/users/leaderboard", UserController, :leaderboard
+    get "/users/check-username", UserController, :check_username_availability
     resources "/users", UserController, only: [:index, :show]
     get "/users/:username/profile", UserController, :profile
     get "/users/:id/presence", UserController, :presence
@@ -394,6 +400,8 @@ defmodule CGraphWeb.Router do
 
     # Join group via invite
     post "/invites/:code/join", InviteController, :join
+    get "/invites/:code", InviteController, :show
+    post "/invites/:code/accept", InviteController, :join
 
     # Plugin marketplace (global, not forum-specific)
     get "/plugins/marketplace", PluginController, :marketplace
@@ -485,12 +493,25 @@ defmodule CGraphWeb.Router do
       end
     end
 
+    # Standalone thread routes (for direct thread access without board context)
+    get "/threads/:id", ThreadController, :show
+
+    # Forum > Board > Threads nested route
+    get "/forums/:forum_id/boards/:board_id/threads", ThreadController, :index
+    post "/forums/:forum_id/boards/:board_id/threads", ThreadController, :create
+
     # Reactions (for messages)
     post "/messages/:id/reactions", ReactionController, :create
     delete "/messages/:id/reactions/:emoji", ReactionController, :delete
 
+    # Reactions (for conversation messages - nested under conversations)
+    post "/conversations/:conversation_id/messages/:message_id/reactions", ReactionController, :create
+    delete "/conversations/:conversation_id/messages/:message_id/reactions/:emoji", ReactionController, :delete
+
     # File uploads
     post "/upload", UploadController, :create
+    post "/uploads", UploadController, :create
+    post "/uploads/presigned", UploadController, :presigned
     get "/files/:id", UploadController, :show
 
     # Voice Messages
@@ -546,8 +567,11 @@ defmodule CGraphWeb.Router do
 
     # Notifications
     get "/notifications", NotificationController, :index
+    put "/notifications/read_all", NotificationController, :mark_all_read
     post "/notifications/read", NotificationController, :mark_all_read
+    get "/notifications/:id", NotificationController, :show
     post "/notifications/:id/read", NotificationController, :mark_read
+    delete "/notifications/:id", NotificationController, :delete
 
     # Push notification tokens
     post "/push-tokens", PushTokenController, :create
@@ -600,6 +624,9 @@ defmodule CGraphWeb.Router do
     delete "/pm/messages/:id", PMController, :delete_message
     post "/pm/messages/:id/read", PMController, :mark_read
     post "/pm/messages/:id/move", PMController, :move_to_folder
+
+    # PMs - alternative plural path
+    post "/pms", PMController, :send_message
     get "/pm/drafts", PMController, :list_drafts
     post "/pm/drafts", PMController, :save_draft
     put "/pm/drafts/:id", PMController, :update_draft
@@ -663,6 +690,10 @@ defmodule CGraphWeb.Router do
     # ========================================
     # MyBB Feature: User Profile Enhancements
     # ========================================
+    # Current user profile (no username needed)
+    get "/profile", ProfileController, :me
+    put "/profile", ProfileController, :update_me
+
     get "/profiles/:username", ProfileController, :show
     put "/profiles/signature", ProfileController, :update_signature
     put "/profiles/bio", ProfileController, :update_bio
@@ -735,6 +766,7 @@ defmodule CGraphWeb.Router do
     get "/titles", TitleController, :index
     get "/titles/owned", TitleController, :owned
     post "/titles/:id/equip", TitleController, :equip
+    post "/titles/:id/unequip", TitleController, :unequip
     post "/titles/unequip", TitleController, :unequip
     post "/titles/:id/purchase", TitleController, :purchase
 
@@ -768,6 +800,11 @@ defmodule CGraphWeb.Router do
     # Alias for frontend compatibility
     post "/avatar-borders/:id/unlock", CosmeticsController, :purchase_border
 
+    # Cosmetics aliases (test path compatibility)
+    get "/cosmetics/borders", CosmeticsController, :list_borders
+    post "/cosmetics/borders/:id/equip", CosmeticsController, :equip_border
+    post "/cosmetics/borders/:id/purchase", CosmeticsController, :purchase_border
+
     # ========================================
     # Cosmetics: Profile Themes
     # ========================================
@@ -787,6 +824,7 @@ defmodule CGraphWeb.Router do
     # Prestige System
     # ========================================
     get "/prestige", PrestigeController, :show
+    post "/prestige/activate", PrestigeController, :reset
     post "/prestige/reset", PrestigeController, :reset
     get "/prestige/rewards", PrestigeController, :rewards
     get "/prestige/leaderboard", PrestigeController, :leaderboard
@@ -795,6 +833,7 @@ defmodule CGraphWeb.Router do
     # Seasonal Events
     # ========================================
     get "/events", EventsController, :index
+    get "/events/active", EventsController, :index
     get "/events/:id", EventsController, :show
     get "/events/:id/progress", EventsController, :progress
     post "/events/:id/join", EventsController, :join
@@ -808,6 +847,9 @@ defmodule CGraphWeb.Router do
     get "/marketplace", MarketplaceController, :index
     get "/marketplace/my-listings", MarketplaceController, :my_listings
     get "/marketplace/history", MarketplaceController, :history
+    get "/marketplace/listings", MarketplaceController, :index
+    post "/marketplace/listings", MarketplaceController, :create
+    post "/marketplace/listings/:id/purchase", MarketplaceController, :buy
     get "/marketplace/:id", MarketplaceController, :show
     post "/marketplace", MarketplaceController, :create
     put "/marketplace/:id", MarketplaceController, :update
@@ -821,6 +863,7 @@ defmodule CGraphWeb.Router do
 
     # System metrics and real-time stats
     get "/metrics", AdminController, :metrics
+    get "/stats", AdminController, :metrics
     get "/realtime", AdminController, :realtime
 
     # User management

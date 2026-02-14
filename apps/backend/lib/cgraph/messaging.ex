@@ -284,7 +284,7 @@ defmodule CGraph.Messaging do
       {:ok, message} ->
         # Update conversation last_message_at
         # Truncate to seconds for :utc_datetime field
-        now = DateTime.utc_now() |> DateTime.truncate(:second)
+        now = DateTime.truncate(DateTime.utc_now(), :second)
         conversation
         |> Ecto.Changeset.change(last_message_at: now)
         |> Repo.update()
@@ -350,7 +350,7 @@ defmodule CGraph.Messaging do
         case Repo.get_by(ReadReceipt, user_id: user_id, message_id: message_id) do
           nil ->
             # Truncate to seconds for :utc_datetime field
-            now = DateTime.utc_now() |> DateTime.truncate(:second)
+            now = DateTime.truncate(DateTime.utc_now(), :second)
             %ReadReceipt{}
             |> ReadReceipt.changeset(%{
               user_id: user_id,
@@ -691,7 +691,7 @@ defmodule CGraph.Messaging do
 
           true ->
             message
-            |> Ecto.Changeset.change(is_pinned: true, pinned_at: DateTime.utc_now() |> DateTime.truncate(:second), pinned_by_id: user_id)
+            |> Ecto.Changeset.change(is_pinned: true, pinned_at: DateTime.truncate(DateTime.utc_now(), :second), pinned_by_id: user_id)
             |> Repo.update()
         end
     end
@@ -799,7 +799,7 @@ defmodule CGraph.Messaging do
   """
   def delete_message(message) when is_struct(message) do
     # Truncate to seconds for :utc_datetime field
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.truncate(DateTime.utc_now(), :second)
     message
     |> Ecto.Changeset.change(deleted_at: now)
     |> Repo.update()
@@ -810,7 +810,7 @@ defmodule CGraph.Messaging do
   Sets visibility to hidden and records the reason.
   """
   def hide_message(message_id, reason) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.truncate(DateTime.utc_now(), :second)
     case get_message(message_id) do
       {:ok, message} ->
         message
@@ -831,7 +831,7 @@ defmodule CGraph.Messaging do
   def soft_delete_message(message_id, opts \\ []) do
     reason = Keyword.get(opts, :reason, :user_deleted)
     report_id = Keyword.get(opts, :report_id)
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.truncate(DateTime.utc_now(), :second)
 
     case get_message(message_id) do
       {:ok, message} ->
@@ -927,7 +927,7 @@ defmodule CGraph.Messaging do
   end
 
   defp create_default_pm_folders(user_id) do
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    now = DateTime.truncate(DateTime.utc_now(), :second)
 
     default_entries =
       @default_pm_folders
@@ -1118,8 +1118,9 @@ defmodule CGraph.Messaging do
   Send a private message.
   """
   def send_private_message(attrs) do
-    recipient_inbox = get_pm_folder_by_name(attrs.recipient_id, "Inbox") ||
-      create_default_pm_folders_and_get_folder(attrs.recipient_id, "Inbox")
+    recipient_id = Map.get(attrs, :recipient_id) || List.first(Map.get(attrs, :recipient_ids, []))
+    recipient_inbox = get_pm_folder_by_name(recipient_id, "Inbox") ||
+      create_default_pm_folders_and_get_folder(recipient_id, "Inbox")
 
     sender_sent = get_pm_folder_by_name(attrs.sender_id, "Sent") ||
       create_default_pm_folders_and_get_folder(attrs.sender_id, "Sent")
@@ -1180,7 +1181,7 @@ defmodule CGraph.Messaging do
     from(m in PrivateMessage,
       where: m.id in ^message_ids and m.recipient_id == ^user_id
     )
-    |> Repo.update_all(set: [is_read: true, read_at: DateTime.utc_now()])
+    |> Repo.update_all(set: [is_read: true, read_at: DateTime.truncate(DateTime.utc_now(), :second)])
 
     :ok
   end

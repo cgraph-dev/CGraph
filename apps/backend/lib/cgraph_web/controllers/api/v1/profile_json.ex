@@ -16,7 +16,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
       id: profile.id,
       username: profile.username,
       display_name: profile.display_name,
-      avatar: profile.avatar,
+      avatar: Map.get(profile, :avatar_url) || Map.get(profile, :avatar),
       signature: profile.signature,
       bio: profile.bio,
       title: profile.title,

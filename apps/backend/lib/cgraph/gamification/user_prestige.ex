@@ -35,6 +35,9 @@ defmodule CGraph.Gamification.UserPrestige do
     field :exclusive_borders, {:array, :binary_id}, default: []
     field :exclusive_effects, {:array, :binary_id}, default: []
 
+    # Multiplier
+    field :xp_multiplier, :float, default: 1.0
+
     # Stats preserved across prestiges
     field :lifetime_xp, :integer, default: 0
     field :lifetime_karma, :integer, default: 0
@@ -51,7 +54,7 @@ defmodule CGraph.Gamification.UserPrestige do
     prestige
     |> cast(attrs, [
       :user_id, :prestige_level, :prestige_xp, :xp_to_next_prestige,
-      :xp_bonus, :coin_bonus, :karma_bonus, :drop_rate_bonus,
+      :xp_bonus, :coin_bonus, :karma_bonus, :drop_rate_bonus, :xp_multiplier,
       :prestige_history, :total_resets, :last_prestige_at,
       :exclusive_titles, :exclusive_borders, :exclusive_effects,
       :lifetime_xp, :lifetime_karma, :lifetime_coins_earned, :lifetime_messages

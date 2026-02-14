@@ -72,11 +72,16 @@ defmodule CGraphWeb.API.V1.TierController do
     - 401: Unauthorized
   """
   def my_tier(conn, _params) do
-    user = conn.assigns.current_user
-
-    json(conn, %{
-      data: TierLimits.serialize_user_limits(user)
-    })
+    case conn.assigns[:current_user] do
+      nil ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: %{code: "unauthorized", message: "Authentication required"}})
+      user ->
+        json(conn, %{
+          data: TierLimits.serialize_user_limits(user)
+        })
+    end
   end
 
   @doc """

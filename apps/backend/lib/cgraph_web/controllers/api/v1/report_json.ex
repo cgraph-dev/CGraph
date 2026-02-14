@@ -8,7 +8,11 @@ defmodule CGraphWeb.API.V1.ReportJSON do
   @doc """
   Renders a list of reports.
   """
-  def index(%{reports: reports}) do
+  def index(%{reports: {reports, _meta}}) when is_list(reports) do
+    %{data: for(report <- reports, do: data(report))}
+  end
+
+  def index(%{reports: reports}) when is_list(reports) do
     %{data: for(report <- reports, do: data(report))}
   end
 

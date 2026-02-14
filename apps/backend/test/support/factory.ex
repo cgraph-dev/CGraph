@@ -50,9 +50,9 @@ defmodule CGraph.Factory do
       level: 1,
       coins: 0,
       streak_days: 0,
-      last_active_at: DateTime.utc_now(),
-      inserted_at: DateTime.utc_now(),
-      updated_at: DateTime.utc_now()
+      last_active_at: DateTime.truncate(DateTime.utc_now(), :second),
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -109,9 +109,9 @@ defmodule CGraph.Factory do
       user_one: user1,
       user_two: user2,
       is_encrypted: true,
-      last_message_at: DateTime.utc_now(),
-      inserted_at: DateTime.utc_now(),
-      updated_at: DateTime.utc_now()
+      last_message_at: DateTime.truncate(DateTime.utc_now(), :second),
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -122,7 +122,7 @@ defmodule CGraph.Factory do
       user_one: user1,
       user_two: user2,
       is_encrypted: true,
-      last_message_at: DateTime.utc_now()
+      last_message_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -135,8 +135,8 @@ defmodule CGraph.Factory do
       is_pinned: false,
       sender: build(:user),
       conversation: build(:conversation),
-      inserted_at: DateTime.utc_now(),
-      updated_at: DateTime.utc_now()
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -176,8 +176,8 @@ defmodule CGraph.Factory do
       is_discoverable: true,
       member_count: 1,
       owner: build(:user),
-      inserted_at: DateTime.utc_now(),
-      updated_at: DateTime.utc_now()
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -196,7 +196,7 @@ defmodule CGraph.Factory do
       is_banned: false,
       user: build(:user),
       group: build(:group),
-      joined_at: DateTime.utc_now()
+      joined_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -222,8 +222,8 @@ defmodule CGraph.Factory do
       post_count: 0,
       thread_count: 0,
       owner: build(:user),
-      inserted_at: DateTime.utc_now(),
-      updated_at: DateTime.utc_now()
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -241,8 +241,8 @@ defmodule CGraph.Factory do
       thread_count: 0,
       post_count: 0,
       forum: build(:forum),
-      inserted_at: DateTime.utc_now(),
-      updated_at: DateTime.utc_now()
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -263,8 +263,8 @@ defmodule CGraph.Factory do
       score: 0,
       author: build(:user),
       board: build(:board),
-      inserted_at: DateTime.utc_now(),
-      updated_at: DateTime.utc_now()
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -295,8 +295,8 @@ defmodule CGraph.Factory do
       score: 0,
       author: build(:user),
       forum: build(:forum),
-      inserted_at: DateTime.utc_now(),
-      updated_at: DateTime.utc_now()
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -340,8 +340,8 @@ defmodule CGraph.Factory do
       rarity: Enum.random(["common", "uncommon", "rare", "epic", "legendary"]),
       is_hidden: false,
       max_progress: Enum.random([1, 5, 10, 25, 50]),
-      inserted_at: DateTime.utc_now(),
-      updated_at: DateTime.utc_now()
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -361,7 +361,7 @@ defmodule CGraph.Factory do
     %UserAchievement{
       user: build(:user),
       achievement: build(:achievement),
-      unlocked_at: DateTime.utc_now(),
+      unlocked_at: DateTime.truncate(DateTime.utc_now(), :second),
       unlocked: true,
       progress: 100
     }
@@ -380,10 +380,10 @@ defmodule CGraph.Factory do
       xp_reward: Enum.random([25, 50, 100, 250]),
       coin_reward: Enum.random([5, 10, 25]),
       is_active: true,
-      starts_at: DateTime.utc_now() |> DateTime.add(-1, :hour),
-      ends_at: DateTime.utc_now() |> DateTime.add(23, :hour),
-      inserted_at: DateTime.utc_now(),
-      updated_at: DateTime.utc_now()
+      starts_at: DateTime.truncate(DateTime.utc_now(), :second) |> DateTime.add(-1, :hour),
+      ends_at: DateTime.truncate(DateTime.utc_now(), :second) |> DateTime.add(23, :hour),
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -391,7 +391,7 @@ defmodule CGraph.Factory do
     build(:quest,
       type: "weekly",
       xp_reward: Enum.random([250, 500, 1000]),
-      ends_at: DateTime.utc_now() |> DateTime.add(7, :day)
+      ends_at: DateTime.truncate(DateTime.utc_now(), :second) |> DateTime.add(7, :day)
     )
   end
 
@@ -413,7 +413,7 @@ defmodule CGraph.Factory do
       progress: %{},
       completed: true,
       claimed: false,
-      completed_at: DateTime.utc_now()
+      completed_at: DateTime.truncate(DateTime.utc_now(), :second)
     )
   end
 
@@ -500,23 +500,28 @@ defmodule CGraph.Factory do
       preview_url: "/borders/preview/#{:rand.uniform(100)}.png",
       is_active: true,
       sort_order: 0,
-      inserted_at: DateTime.utc_now() |> DateTime.truncate(:second),
-      updated_at: DateTime.utc_now() |> DateTime.truncate(:second)
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
   def user_avatar_border_factory do
     %CGraph.Gamification.UserAvatarBorder{
       user_id: nil,
-      avatar_border_id: nil,
+      border_id: nil,
       is_equipped: false,
+      acquired_at: DateTime.truncate(DateTime.utc_now(), :second),
+      acquisition_type: "default",
+      is_tradeable: false,
+      is_expired: false,
+      equip_count: 0,
       unlock_source: Enum.random(~w(default achievement purchase event gift)),
       unlock_data: %{},
       expires_at: nil,
       custom_colors: nil,
       custom_animation_speed: nil,
-      inserted_at: DateTime.utc_now() |> DateTime.truncate(:second),
-      updated_at: DateTime.utc_now() |> DateTime.truncate(:second)
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -535,8 +540,8 @@ defmodule CGraph.Factory do
         "surface" => "#1a1a2e",
         "text" => "#ffffff"
       },
-      inserted_at: DateTime.utc_now() |> DateTime.truncate(:second),
-      updated_at: DateTime.utc_now() |> DateTime.truncate(:second)
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -560,8 +565,8 @@ defmodule CGraph.Factory do
       gem_cost: 0,
       is_active: true,
       sort_order: 0,
-      inserted_at: DateTime.utc_now() |> DateTime.truncate(:second),
-      updated_at: DateTime.utc_now() |> DateTime.truncate(:second)
+      inserted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      updated_at: DateTime.truncate(DateTime.utc_now(), :second)
     }
   end
 
@@ -592,15 +597,12 @@ defmodule CGraph.Factory do
     }
   end
 
-  # Note: prestige_reward_factory removed - PrestigeReward module does not exist
-  # Prestige rewards are stored as arrays on UserPrestige (exclusive_titles, etc.)
-
   # ============================================================================
   # Seasonal Events Factories
   # ============================================================================
 
   def seasonal_event_factory do
-    start_date = DateTime.add(DateTime.utc_now(), -Enum.random(1..7), :day)
+    start_date = DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -Enum.random(1..7), :day)
     end_date = DateTime.add(start_date, Enum.random(14..60), :day)
 
     %CGraph.Gamification.SeasonalEvent{
@@ -635,8 +637,8 @@ defmodule CGraph.Factory do
       seasonal_event_factory(),
       %{
         status: "active",
-        starts_at: DateTime.add(DateTime.utc_now(), -1, :day),
-        ends_at: DateTime.add(DateTime.utc_now(), 14, :day)
+        starts_at: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -1, :day),
+        ends_at: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), 14, :day)
       }
     )
   end
@@ -657,16 +659,39 @@ defmodule CGraph.Factory do
       claimed_free_rewards: [],
       claimed_premium_rewards: [],
       leaderboard_points: 0,
-      best_rank: nil,
-      first_participated_at: DateTime.utc_now(),
-      last_participated_at: DateTime.utc_now(),
-      total_sessions: 0,
-      rewards_claimed: []
+      leaderboard_rank: nil,
+      first_activity_at: DateTime.truncate(DateTime.utc_now(), :second),
+      last_activity_at: DateTime.truncate(DateTime.utc_now(), :second),
+      days_participated: 0,
+      streak_days: 0,
+      longest_streak: 0,
+      completed: false,
+      completed_at: nil,
+      completion_rank: nil
     }
   end
 
-  # Note: battle_pass_tier_factory removed - BattlePassTier module doesn't exist
-  # Battle pass tiers are stored as array on SeasonalEvent (battle_pass_tiers field)
+  def battle_pass_tier_factory do
+    %CGraph.Gamification.BattlePassTier{
+      tier_number: sequence(:tier_number, & &1),
+      xp_required: 1000,
+      free_reward_type: "coins",
+      free_reward_amount: 100,
+      premium_reward_type: "avatar_border",
+      premium_reward_amount: 1,
+      seasonal_event_id: nil
+    }
+  end
+
+  def prestige_reward_factory do
+    %CGraph.Gamification.PrestigeReward{
+      prestige_level: 1,
+      reward_type: "coins",
+      reward_amount: 1000,
+      name: "Prestige Reward",
+      description: "Reward for reaching prestige level"
+    }
+  end
 
   # ============================================================================
   # Marketplace Factories
@@ -686,8 +711,8 @@ defmodule CGraph.Factory do
       max_price: nil,
       listing_fee: 0,
       transaction_fee_percent: 0.05,
-      listed_at: DateTime.utc_now(),
-      expires_at: DateTime.add(DateTime.utc_now(), 30, :day),
+      listed_at: DateTime.truncate(DateTime.utc_now(), :second),
+      expires_at: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), 30, :day),
       sold_at: nil,
       item_name: sequence(:item_name, &"Item #{&1}"),
       item_rarity: Enum.random(["common", "uncommon", "rare", "epic", "legendary"]),
@@ -717,7 +742,7 @@ defmodule CGraph.Factory do
     # Add some owned cosmetics
     borders = insert_list(Keyword.get(opts, :border_count, 3), :avatar_border)
     Enum.each(borders, fn border ->
-      insert(:user_avatar_border, user_id: user.id, avatar_border_id: border.id)
+      insert(:user_avatar_border, user_id: user.id, border_id: border.id)
     end)
 
     user

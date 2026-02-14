@@ -318,6 +318,12 @@ defmodule CGraphWeb.API.V1.PermissionsController do
     ArgumentError -> {:error, :bad_request}
   end
 
+  # Fallback: accept action param instead of permission
+  def check_board_permission(conn, %{"board_id" => board_id} = params) do
+    permission = Map.get(params, "action") || "can_post"
+    check_board_permission(conn, %{"board_id" => board_id, "permission" => permission})
+  end
+
   @doc """
   GET /api/v1/boards/:board_id/my-permissions
   Get all effective permissions for current user on a board.
