@@ -6,6 +6,7 @@ import { ChatDemo } from './ChatDemo';
 import { TitlesDemo } from './TitlesDemo';
 import { AchievementsDemo } from './AchievementsDemo';
 import { GamificationDemo } from './GamificationDemo';
+import { FlowingBorder } from '../customization-demo/effects';
 
 export const InteractiveDemo = memo(function InteractiveDemo({
   className = '',
@@ -13,7 +14,8 @@ export const InteractiveDemo = memo(function InteractiveDemo({
   const [activeTab, setActiveTab] = useState('chat');
 
   return (
-    <div className={`interactive-demo ${className}`}>
+    <div className={`interactive-demo panel-border-glow ${className}`}>
+      <FlowingBorder borderRadius="24px" />
       <div className="interactive-demo__header">
         <div className="interactive-demo__tabs">
           {DEMO_TABS.map((tab) => (

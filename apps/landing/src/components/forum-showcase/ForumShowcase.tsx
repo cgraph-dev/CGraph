@@ -10,6 +10,7 @@ import { OrganizeTab } from './OrganizeTab';
 import { ThreadsTab } from './ThreadsTab';
 import { ModerationTab } from './ModerationTab';
 import { FeaturesSidebar } from './FeaturesSidebar';
+import { FlowingBorder } from '../customization-demo/effects';
 import type { ForumCategory, ForumBoard, ActiveTab } from './types';
 import { springs } from './springs';
 import { StarBorder } from '../effects';
@@ -102,11 +103,12 @@ export function ForumShowcase() {
         <div className="grid gap-8 lg:grid-cols-5">
           <div className="min-w-0 lg:col-span-3">
             <motion.div
-              className="overflow-x-auto rounded-2xl border border-gray-800 bg-gray-900/50 p-4 sm:p-6"
+              className="panel-border-glow overflow-x-auto rounded-2xl bg-gray-900/50 p-4 sm:p-6"
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
+              <FlowingBorder borderRadius="1rem" />
               <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="flex gap-1.5">

@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { FlowingBorder } from '../../customization-demo/effects';
 
 export interface LandingButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'ghost';
@@ -80,6 +81,9 @@ export const LandingButton: React.FC<LandingButtonProps> = ({
       {variant === 'primary' && (
         <span className="absolute bottom-0 left-0 h-[2px] w-full scale-x-0 bg-gradient-to-r from-transparent via-emerald-500 to-transparent transition-transform duration-500 group-hover:scale-x-100" />
       )}
+
+      {/* Secondary Animated Gradient Border */}
+      {variant === 'secondary' && <FlowingBorder variant="button" borderRadius="9999px" />}
     </>
   );
 

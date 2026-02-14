@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 import { valueProps } from '../../../data/landing-data';
 import type { ValuePropData } from '../../../data/landing-data';
 import { SectionHeader } from '../ui/SectionHeader';
+import { FlowingBorder } from '../../customization-demo/effects';
 
 const ValueCard = memo(function ValueCard({ data, index }: { data: ValuePropData; index: number }) {
   return (
@@ -71,12 +72,13 @@ export default function ValueProposition(): React.JSX.Element {
 
       {/* Comparison row */}
       <motion.div
-        className="value-comparison"
+        className="value-comparison panel-border-glow"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
+        <FlowingBorder borderRadius="12px" />
         {[
           { feature: 'E2E Encryption', us: '✓', them: 'Limited' },
           { feature: 'Built-in Forums', us: '✓', them: '✗' },

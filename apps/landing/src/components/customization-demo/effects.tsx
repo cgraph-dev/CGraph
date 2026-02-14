@@ -61,6 +61,30 @@ export function AnimatedBorder({
   );
 }
 
+// ── FlowingBorder ───────────────────────────────────────────────────────
+
+/**
+ * FlowingBorder — lightweight overlay that renders the animated
+ * emerald→purple gradient ring from the navbar on any element.
+ *
+ * Requires the parent to be `position: relative` (or use the
+ * `panel-border-glow` CSS class on the parent).
+ *
+ * @param borderRadius  CSS border-radius (default `'1rem'`)
+ * @param variant       `'panel'` (visible at rest, bright on hover) or
+ *                      `'button'` (hidden at rest, visible on group-hover)
+ */
+interface FlowingBorderProps {
+  borderRadius?: string;
+  variant?: 'panel' | 'button';
+}
+
+export function FlowingBorder({ borderRadius = '1rem', variant = 'panel' }: FlowingBorderProps) {
+  const className = variant === 'button' ? 'btn-border-glow__border' : 'panel-border-glow__border';
+
+  return <span className={className} style={{ borderRadius }} />;
+}
+
 // ── TiltCard ────────────────────────────────────────────────────────────
 
 interface TiltCardProps {

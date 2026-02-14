@@ -11,7 +11,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AnimatedBorder, TiltCard, GlowText } from './effects';
+import { AnimatedBorder, TiltCard, GlowText, FlowingBorder } from './effects';
 import { fadeInUp, staggerContainer } from './animations';
 import { StarBorder } from '../effects';
 
@@ -115,7 +115,8 @@ export function CustomizationDemo() {
           viewport={{ once: true }}
         >
           {/* Preview Panel */}
-          <motion.div variants={fadeInUp}>
+          <motion.div variants={fadeInUp} className="panel-border-glow">
+            <FlowingBorder borderRadius="1rem" />
             <TiltCard maxTilt={5}>
               <AnimatePresence mode="wait">
                 <motion.div
