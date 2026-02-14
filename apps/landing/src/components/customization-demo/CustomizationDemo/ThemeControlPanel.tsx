@@ -43,6 +43,7 @@ export const ThemeControlPanel = memo(function ThemeControlPanel({
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               title={themeColors[theme].name}
+              aria-label={`Select ${themeColors[theme].name} theme`}
             />
           ))}
         </div>

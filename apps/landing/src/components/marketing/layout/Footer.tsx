@@ -115,7 +115,7 @@ export default function Footer() {
         >
           {/* Logo & Copyright */}
           <div className="gl-footer-unified__brand">
-            <Link to="/" className="gl-footer-unified__logo">
+            <Link to="/" className="gl-footer-unified__logo" aria-label="CGraph Home">
               <LogoIcon size={96} color="white" showGlow={false} />
             </Link>
             <span className="gl-footer-unified__copy">

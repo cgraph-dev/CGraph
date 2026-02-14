@@ -91,6 +91,7 @@ export const AvatarControlPanel = memo(function AvatarControlPanel({
                 background: `linear-gradient(135deg, ${themeColors[color].primary}, ${themeColors[color].secondary})`,
               }}
               onClick={() => onChange({ avatarBorderColor: color })}
+              aria-label={`Select ${themeColors[color].name} border color`}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
             />

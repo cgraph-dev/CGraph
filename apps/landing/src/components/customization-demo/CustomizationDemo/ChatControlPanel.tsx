@@ -65,6 +65,7 @@ export const ChatControlPanel = memo(function ChatControlPanel({
               onClick={() => onChange({ chatBubbleColor: color })}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
+              aria-label={`Select ${themeColors[color].name} bubble color`}
             />
           ))}
         </div>

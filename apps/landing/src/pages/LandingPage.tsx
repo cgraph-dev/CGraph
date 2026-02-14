@@ -12,8 +12,8 @@
  * Version: 2.0.0 - Added resource pages (/docs, /blog, /status, /download)
  */
 
-import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect, lazy, Suspense } from 'react';
+
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, useReducedMotion } from 'framer-motion';
@@ -35,43 +35,7 @@ gsap.registerPlugin(ScrollTrigger);
 // =============================================================================
 
 /** Scroll-triggered fade-up — the universal entrance used on all footer pages */
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (delay: number = 0) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  }),
-};
-
-/** Spring-based scale-in — used for icon/stat badges (About page pattern) */
-const springScaleIn = {
-  hidden: { scale: 0.5, opacity: 0 },
-  visible: (delay: number = 0) => ({
-    scale: 1,
-    opacity: 1,
-    transition: { delay, type: 'spring' as const, stiffness: 300, damping: 12 },
-  }),
-};
-
-/** Stagger container — wraps children that animate in sequence */
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
-  },
-};
-
-/** Child item for stagger containers */
-const staggerItem = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  },
-};
+// Variants removed (moved to primitives or sections)
 
 // =============================================================================
 // ANIMATED SECTION HEADER (matches MarketingLayout hero stagger pattern)
@@ -91,105 +55,13 @@ const ForumShowcase = lazy(() =>
 );
 
 // Web app URL for auth links (direct navigation, not SPA routing)
-const WEB_APP_URL = 'https://web.cgraph.org';
+// Constants moved to relevant components
 
 // =============================================================================
 // COMPONENTS
 // =============================================================================
 
-function SecurityIconCard({ feature }: { feature: (typeof securityFeatures)[0] }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({});
-  const [position, setPosition] = useState<'top' | 'bottom'>('top');
-
-  const getParentScale = useCallback(() => {
-    if (!cardRef.current) return 1;
-    const section = cardRef.current.closest('.zoom-section');
-    if (!section) return 1;
-    const { transform } = window.getComputedStyle(section);
-    if (transform === 'none') return 1;
-    const matrix = transform.match(/matrix\(([^)]+)\)/);
-    if (matrix && matrix[1]) {
-      const values = matrix[1].split(',').map((v) => parseFloat(v.trim()));
-      return values[0] || 1;
-    }
-    return 1;
-  }, []);
-
-  const updatePosition = useCallback(() => {
-    if (cardRef.current) {
-      const rect = cardRef.current.getBoundingClientRect();
-      const spaceAbove = rect.top;
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const isTop = spaceAbove > spaceBelow;
-      setPosition(isTop ? 'top' : 'bottom');
-
-      const scale = getParentScale();
-
-      setTooltipStyle({
-        position: 'fixed',
-        left: rect.left + rect.width / 2,
-        top: isTop ? rect.top - 12 * scale : rect.bottom + 12 * scale,
-        transform: isTop
-          ? `translate(-50%, -100%) scale(${scale})`
-          : `translate(-50%, 0) scale(${scale})`,
-        transformOrigin: isTop ? 'bottom center' : 'top center',
-        zIndex: 9999,
-        opacity: 1,
-      });
-      setIsReady(true);
-    }
-  }, [getParentScale]);
-
-  useEffect(() => {
-    if (isHovered) {
-      updatePosition();
-      window.addEventListener('scroll', updatePosition, { passive: true });
-      return () => {
-        window.removeEventListener('scroll', updatePosition);
-        setIsReady(false);
-      };
-    }
-    return undefined;
-  }, [isHovered, updatePosition]);
-
-  const tooltip = isHovered && isReady && (
-    <div
-      className={`security-preview security-preview--portal ${position === 'top' ? 'security-preview--top' : 'security-preview--bottom'}`}
-      style={tooltipStyle}
-    >
-      <div className="security-preview__glow" />
-      <div className="security-preview__content">
-        <div className="security-preview__icon">{feature.icon}</div>
-        <div className="security-preview__info">
-          <h4 className="security-preview__title">{feature.title}</h4>
-          <p className="security-preview__desc">{feature.description}</p>
-        </div>
-      </div>
-      <div className="security-preview__arrow" />
-    </div>
-  );
-
-  return (
-    <div
-      ref={cardRef}
-      className="about__icon-item"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onFocus={() => setIsHovered(true)}
-      onBlur={() => setIsHovered(false)}
-      role="button"
-      tabIndex={0}
-      aria-label={`${feature.title}: ${feature.description}`}
-      aria-expanded={isHovered}
-    >
-      <span aria-hidden="true">{feature.icon}</span>
-      {tooltip && createPortal(tooltip, document.body)}
-    </div>
-  );
-}
+// Security sections moved to dedicated component: Security.tsx
 
 // TiltCard extracted/replaced by GlassCard
 
@@ -220,7 +92,6 @@ export default function LandingPage() {
   // GSAP ScrollTrigger animations (desktop only)
   useEffect(() => {
     const isDesktop = window.matchMedia('(min-width: 768px)').matches;
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     let gsapContextRef: gsap.Context | null = null;
 
@@ -393,7 +264,7 @@ export default function LandingPage() {
 
       {/* CTA */}
       {/* CTA */}
-      <CTA prefersReduced={prefersReduced} />
+      <CTA prefersReduced={!!prefersReduced} />
 
       {/* Unified Footer */}
       <Footer />

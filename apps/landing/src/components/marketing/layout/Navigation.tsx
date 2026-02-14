@@ -81,7 +81,7 @@ export default function Navigation({
         <div className="gl-nav-unified__border" />
 
         {/* Logo */}
-        <Link to="/" className="gl-nav-unified__logo">
+        <Link to="/" className="gl-nav-unified__logo" aria-label="CGraph Home">
           <LogoIcon size={48} showGlow={false} color="gradient" />
         </Link>
 
