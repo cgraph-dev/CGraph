@@ -29,7 +29,8 @@ defmodule CGraph.Gamification.Marketplace do
     end
   end
   def create_listing(seller_id, item_id, attrs) do
-    attrs = Map.merge(attrs, %{seller_id: seller_id, item_id: item_id, price: 0, currency_type: "free", listing_status: "active", listed_at: DateTime.truncate(DateTime.utc_now(), :second)})
+    defaults = %{seller_id: seller_id, item_id: item_id, listing_status: "active", listed_at: DateTime.truncate(DateTime.utc_now(), :second)}
+    attrs = Map.merge(defaults, attrs)
     changeset = MarketplaceItem.changeset(%MarketplaceItem{}, attrs)
     case Repo.insert(changeset) do
       {:ok, item} -> {:ok, item}

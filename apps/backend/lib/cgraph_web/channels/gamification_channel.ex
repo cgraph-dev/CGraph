@@ -33,6 +33,16 @@ defmodule CGraphWeb.GamificationChannel do
     marketplace_update: 20
   }
 
+  # Intercept outgoing events to allow passthrough
+  intercept ["level_up", "xp_gained", "achievement_unlocked", "cosmetic_unlocked",
+             "item_sold", "listing_created", "event_milestone"]
+
+  @impl true
+  def handle_out(event, payload, socket) do
+    push(socket, event, payload)
+    {:noreply, socket}
+  end
+
   @impl true
   def join("gamification:" <> user_id, _params, socket) do
     # Only allow users to join their own gamification channel

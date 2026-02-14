@@ -95,6 +95,12 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   end
 
   @doc """
+  Kick a member from a group.
+  POST /api/v1/groups/:group_id/members/:id/kick
+  """
+  def kick(conn, params), do: delete(conn, params)
+
+  @doc """
   Kick a member from the group.
   DELETE /api/v1/groups/:group_id/members/:id
   """
@@ -104,7 +110,7 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
 
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :kick_members),
-         {:ok, member} <- Groups.get_member(group, member_id),
+         {:ok, member} <- find_member(group, member_id),
          :ok <- validate_not_self(user, member),
          :ok <- validate_can_moderate(user, member, group),
          {:ok, _} <- Groups.remove_member(member) do
@@ -273,6 +279,18 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
     case Groups.compare_hierarchy(actor_member, target_member) do
       :higher -> :ok
       _ -> {:error, :insufficient_permissions}
+    end
+  end
+
+  # Try to find member by member record ID first, then by user ID
+  defp find_member(group, id) do
+    case Groups.get_member(group, id) do
+      {:ok, member} -> {:ok, member}
+      {:error, :not_found} ->
+        case Groups.get_member_by_user(group, id) do
+          nil -> {:error, :not_found}
+          member -> {:ok, member}
+        end
     end
   end
 

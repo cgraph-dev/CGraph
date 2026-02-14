@@ -121,7 +121,7 @@ defmodule CGraphWeb.API.V1.PMController do
 
     attrs = %{
       sender_id: user.id,
-      recipient_ids: parse_recipient_ids(params["recipient_ids"] || params["recipients"]),
+      recipient_ids: parse_recipient_ids(params["recipient_ids"] || params["recipients"] || params["recipient_id"]),
       subject: params["subject"],
       content: params["content"],
       parent_id: Map.get(params, "parent_id"),

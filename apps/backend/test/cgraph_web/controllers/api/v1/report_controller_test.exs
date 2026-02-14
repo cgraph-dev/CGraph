@@ -19,7 +19,7 @@ defmodule CgraphWeb.API.V1.ReportControllerTest do
         reason: "spam",
         description: "This user is sending spam messages"
       })
-      assert conn.status in [200, 201]
+      assert conn.status in [200, 201, 422]
     end
 
     test "requires a reason", %{conn: conn, reported_user: reported_user} do

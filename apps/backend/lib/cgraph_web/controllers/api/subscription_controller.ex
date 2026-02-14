@@ -168,10 +168,10 @@ defmodule CGraphWeb.API.SubscriptionController do
       targetId: subscription.forum_id || subscription.board_id || subscription.thread_id,
       targetName: get_target_name(subscription),
       targetPath: get_target_path(subscription),
-      notificationMode: subscription.notification_mode,
-      emailNotifications: subscription.email_notifications,
-      pushNotifications: subscription.push_notifications,
-      unreadCount: subscription.unread_count || 0,
+      notificationMode: Map.get(subscription, :notification_mode) || Map.get(subscription, :notification_level, "all"),
+      emailNotifications: Map.get(subscription, :email_notifications, false),
+      pushNotifications: Map.get(subscription, :push_notifications, false),
+      unreadCount: Map.get(subscription, :unread_count, 0),
       createdAt: subscription.inserted_at
     }
   end
@@ -187,18 +187,27 @@ defmodule CGraphWeb.API.SubscriptionController do
 
   defp get_target_name(sub) do
     cond do
-      sub.thread && sub.thread.title -> sub.thread.title
-      sub.board && sub.board.name -> sub.board.name
-      sub.forum && sub.forum.name -> sub.forum.name
+      loaded?(sub, :thread) && sub.thread && sub.thread.title -> sub.thread.title
+      loaded?(sub, :board) && sub.board && sub.board.name -> sub.board.name
+      loaded?(sub, :forum) && sub.forum && sub.forum.name -> sub.forum.name
       true -> "Unknown"
+    end
+  end
+
+  defp loaded?(struct, field) do
+    case Map.get(struct, field) do
+      %Ecto.Association.NotLoaded{} -> false
+      _ -> true
     end
   end
 
   defp get_target_path(sub) do
     cond do
-      sub.thread && sub.board && sub.forum ->
+      loaded?(sub, :thread) && loaded?(sub, :board) && loaded?(sub, :forum) &&
+        sub.thread && sub.board && sub.forum ->
         "#{sub.forum.name} / #{sub.board.name}"
-      sub.board && sub.forum ->
+      loaded?(sub, :board) && loaded?(sub, :forum) &&
+        sub.board && sub.forum ->
         sub.forum.name
       true ->
         nil

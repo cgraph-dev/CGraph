@@ -62,6 +62,9 @@ defmodule CGraphWeb.Router do
     plug CGraphWeb.Plugs.SentryContext
     # ETag support for bandwidth reduction on public read endpoints
     plug CGraphWeb.Plugs.ETagPlug, public: true, compute_from_body: true
+    # Optional auth: sets current_user if a valid token is present
+    plug CGraphWeb.Plugs.OptionalAuthPipeline
+    plug CGraphWeb.Plugs.CurrentUser
   end
 
   pipeline :api_auth do

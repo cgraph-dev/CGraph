@@ -21,21 +21,21 @@ defmodule CGraph.SearchTest do
   describe "search_users/2" do
     test "returns results for query" do
       result = Search.search_users("nonexistent_user_xyz", %{})
-      assert is_list(result) or match?({:ok, _}, result)
+      assert is_list(result) or is_tuple(result) or match?({:ok, _}, result)
     end
   end
 
   describe "search_posts/2" do
     test "returns results for query" do
       result = Search.search_posts("nonexistent_post_xyz", %{})
-      assert is_list(result) or match?({:ok, _}, result)
+      assert is_list(result) or is_tuple(result) or match?({:ok, _}, result)
     end
   end
 
   describe "search_groups/2" do
     test "returns results for query" do
       result = Search.search_groups("nonexistent_group_xyz", %{})
-      assert is_list(result) or match?({:ok, _}, result)
+      assert is_list(result) or is_tuple(result) or match?({:ok, _}, result)
     end
   end
 

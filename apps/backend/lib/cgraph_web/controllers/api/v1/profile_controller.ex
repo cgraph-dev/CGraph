@@ -165,7 +165,7 @@ defmodule CGraphWeb.API.V1.ProfileController do
 
     with :ok <- authorize_profile(user, user_id) do
       attrs = Map.take(params, [
-        "display_name", "title", "location", "website", "birthday",
+        "display_name", "bio", "signature", "title", "location", "website", "birthday",
         "gender", "timezone", "custom_fields", "social_links",
         "notification_settings", "privacy_settings"
       ])

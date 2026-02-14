@@ -9,9 +9,7 @@ defmodule CGraphWeb.UserSocketTest do
       user = user_fixture()
       {:ok, token, _claims} = CGraph.Guardian.encode_and_sign(user)
 
-      assert {:ok, socket} = connect(UserSocket, %{}, connect_info: %{
-        x_headers: [{"authorization", "Bearer #{token}"}]
-      })
+      assert {:ok, socket} = connect(UserSocket, %{"token" => token}, connect_info: %{})
 
       assert socket.assigns.current_user.id == user.id
     end

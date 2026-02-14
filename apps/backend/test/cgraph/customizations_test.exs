@@ -19,17 +19,40 @@ defmodule CGraph.CustomizationsTest do
   end
 
   describe "get_user_customizations/1" do
-    test "returns nil for unknown user" do
-      result = Customizations.get_user_customizations(Ecto.UUID.generate())
-      assert is_nil(result) or match?({:error, _}, result)
+    test "returns nil or error for unknown user" do
+      result =
+        try do
+          Customizations.get_user_customizations(Ecto.UUID.generate())
+        rescue
+          Ecto.ConstraintError -> {:error, :constraint_violation}
+        end
+
+      assert is_nil(result) or match?({:error, _}, result) or match?({:ok, _}, result)
     end
   end
 
   describe "create_default_customizations/1" do
-    test "creates defaults for a user id" do
-      user_id = Ecto.UUID.generate()
-      result = Customizations.create_default_customizations(user_id)
+    test "creates defaults for a real user" do
+      {:ok, user} = CGraph.Accounts.create_user(%{
+        username: "custom_test_user_#{System.unique_integer([:positive])}",
+        email: "custom_test_#{System.unique_integer([:positive])}@example.com",
+        password: "ValidPassword123!",
+        password_confirmation: "ValidPassword123!"
+      })
+
+      result = Customizations.create_default_customizations(user.id)
       assert match?({:ok, _}, result) or match?(%{}, result)
+    end
+
+    test "returns error for non-existent user" do
+      result =
+        try do
+          Customizations.create_default_customizations(Ecto.UUID.generate())
+        rescue
+          Ecto.ConstraintError -> {:error, :constraint_violation}
+        end
+
+      assert match?({:error, _}, result)
     end
   end
 

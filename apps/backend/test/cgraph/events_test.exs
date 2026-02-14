@@ -31,7 +31,7 @@ defmodule CGraph.EventsTest do
         send(test_pid, {:event_received, event})
       end)
 
-      Events.publish(topic, :test_event, %{data: "hello"})
+      Events.publish(topic, :test_event, data: "hello")
 
       receive do
         {:event_received, _event} -> assert true

@@ -13,7 +13,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LogoIcon } from '@/components/Logo';
-import './marketing-pages.css';
+import '../marketing-pages.css';
 
 interface NavigationProps {
   /** Whether to show landing page anchor links (Features, Security, Pricing) */

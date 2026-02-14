@@ -120,7 +120,7 @@ defmodule CGraph.Pagination do
     sort_direction = Keyword.get(opts, :sort_direction, :desc)
 
     limit = params
-    |> Map.get("limit", Map.get(params, :limit, default_limit))
+    |> get_limit_param(default_limit)
     |> parse_limit(max_limit)
 
     %{
@@ -165,7 +165,8 @@ defmodule CGraph.Pagination do
 
     # Optionally include total count
     page_info = if opts[:include_total] do
-      Map.put(page_info, :total_count, Repo.aggregate(queryable, :count))
+      total = Repo.aggregate(queryable, :count)
+      page_info |> Map.put(:total_count, total) |> Map.put(:total, total)
     else
       page_info
     end
@@ -251,13 +252,15 @@ defmodule CGraph.Pagination do
   # Page Info Building
   # ---------------------------------------------------------------------------
 
-  defp build_page_info([], _cursor, _direction, _has_more, _opts) do
+  defp build_page_info([], _cursor, _direction, _has_more, opts) do
     %{
       has_next_page: false,
       has_previous_page: false,
       start_cursor: nil,
       end_cursor: nil,
-      total_count: nil
+      total_count: nil,
+      total: nil,
+      per_page: opts[:limit]
     }
   end
 
@@ -279,7 +282,9 @@ defmodule CGraph.Pagination do
       has_previous_page: has_prev,
       start_cursor: start_cursor,
       end_cursor: end_cursor,
-      total_count: nil
+      total_count: nil,
+      total: nil,
+      per_page: opts[:limit]
     }
   end
 
@@ -309,6 +314,16 @@ defmodule CGraph.Pagination do
   end
 
   defp parse_limit(_, _), do: @default_limit
+
+  # Accept per_page, page_size as aliases for limit
+  defp get_limit_param(params, default) do
+    Map.get(params, "limit",
+      Map.get(params, :limit,
+        Map.get(params, "per_page",
+          Map.get(params, :per_page,
+            Map.get(params, "page_size",
+              Map.get(params, :page_size, default))))))
+  end
 
   defp parse_sort_field(params, default) do
     case Map.get(params, "sort", Map.get(params, :sort)) do

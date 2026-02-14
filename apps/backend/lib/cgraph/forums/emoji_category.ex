@@ -11,6 +11,7 @@ defmodule CGraph.Forums.EmojiCategory do
 
   alias CGraph.Forums.{CustomEmoji, Forum}
 
+  @derive {Jason.Encoder, only: [:id, :name, :description, :display_order, :icon, :is_active, :is_system, :emojis]}
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 

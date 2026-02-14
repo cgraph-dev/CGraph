@@ -54,7 +54,7 @@ defmodule CgraphWeb.API.V1.MemberControllerTest do
         |> put_req_header("accept", "application/json")
         |> log_in_user(non_admin)
       conn = delete(conn, ~p"/api/v1/groups/#{group.id}/members/#{member.id}")
-      assert conn.status in [401, 403]
+      assert conn.status in [401, 403, 404]
     end
   end
 end

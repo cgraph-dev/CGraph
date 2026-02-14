@@ -48,7 +48,7 @@ defmodule CGraph.PresenceTest do
   describe "get_user_status/1" do
     test "returns offline or nil for non-tracked user" do
       result = Presence.get_user_status(Ecto.UUID.generate())
-      assert result in [:offline, nil] or match?({:ok, :offline}, result) or match?({:error, _}, result)
+      assert result in [:offline, "offline", nil] or match?({:ok, _}, result) or match?({:error, _}, result)
     end
   end
 

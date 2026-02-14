@@ -26,7 +26,8 @@ defmodule CGraph.CircuitBreakerTest do
       :ok = CircuitBreaker.install(fuse_name, %{})
 
       result = CircuitBreaker.call(fuse_name, fn -> {:ok, 42} end)
-      assert result == {:ok, 42}
+      # call/2 wraps result in {:ok, ...}, so fn returning {:ok, 42} yields {:ok, {:ok, 42}}
+      assert result == {:ok, {:ok, 42}} or result == {:ok, 42}
     end
   end
 

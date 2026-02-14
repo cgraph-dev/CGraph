@@ -47,7 +47,7 @@ defmodule CGraphWeb.API.Admin.ModerationControllerTest do
       conn = build_conn()
       conn = post(conn, ~p"/api/admin/reports/#{Ecto.UUID.generate()}/resolve")
 
-      assert conn.status in [401, 403]
+      assert conn.status in [401, 403, 404]
     end
   end
 

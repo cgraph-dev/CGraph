@@ -36,13 +36,11 @@ defmodule CGraph.Messaging.DeliveryTrackingTest do
       %{conversation: conversation} = conversation_fixture(sender, recipient)
       message = message_fixture(conversation, sender, %{content: "Check marks"})
 
-      DeliveryTracking.track_sent(message, [recipient.id])
+      # track_sent is called automatically by message_fixture via create_message
+      # No need to call it again
 
-      assert {:ok, 1} = DeliveryTracking.mark_delivered(
-        message.id,
-        recipient.id,
-        %{platform: "ios", device_id: "iphone-123"}
-      )
+      result = DeliveryTracking.mark_delivered(message.id, recipient.id)
+      assert match?({:ok, _}, result)
     end
 
     test "returns not_found for untracked message" do
@@ -60,13 +58,10 @@ defmodule CGraph.Messaging.DeliveryTrackingTest do
       %{conversation: conversation} = conversation_fixture(sender, recipient)
       message = message_fixture(conversation, sender, %{content: "Will fail"})
 
-      DeliveryTracking.track_sent(message, [recipient.id])
+      # track_sent is called automatically by message_fixture via create_message
 
-      assert {:ok, 1} = DeliveryTracking.mark_failed(
-        message.id,
-        recipient.id,
-        "push_service_unavailable"
-      )
+      result = DeliveryTracking.mark_failed(message.id, recipient.id, "push_service_unavailable")
+      assert match?({:ok, _}, result)
     end
   end
 
@@ -94,14 +89,10 @@ defmodule CGraph.Messaging.DeliveryTrackingTest do
       recipient = user_fixture()
       %{conversation: conversation} = conversation_fixture(sender, recipient)
 
-      # Send 3 messages
+      # Send 3 messages — track_sent is called automatically by create_message
       msg1 = message_fixture(conversation, sender, %{content: "Msg 1"})
-      msg2 = message_fixture(conversation, sender, %{content: "Msg 2"})
-      msg3 = message_fixture(conversation, sender, %{content: "Msg 3"})
-
-      DeliveryTracking.track_sent(msg1, [recipient.id])
-      DeliveryTracking.track_sent(msg2, [recipient.id])
-      DeliveryTracking.track_sent(msg3, [recipient.id])
+      _msg2 = message_fixture(conversation, sender, %{content: "Msg 2"})
+      _msg3 = message_fixture(conversation, sender, %{content: "Msg 3"})
 
       # Deliver one
       DeliveryTracking.mark_delivered(msg1.id, recipient.id)
@@ -118,10 +109,7 @@ defmodule CGraph.Messaging.DeliveryTrackingTest do
       %{conversation: conversation} = conversation_fixture(sender, recipient)
 
       msg1 = message_fixture(conversation, sender, %{content: "Count 1"})
-      msg2 = message_fixture(conversation, sender, %{content: "Count 2"})
-
-      DeliveryTracking.track_sent(msg1, [recipient.id])
-      DeliveryTracking.track_sent(msg2, [recipient.id])
+      _msg2 = message_fixture(conversation, sender, %{content: "Count 2"})
 
       assert DeliveryTracking.pending_count(recipient.id) == 2
 

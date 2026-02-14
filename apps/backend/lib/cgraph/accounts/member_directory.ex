@@ -194,10 +194,11 @@ defmodule CGraph.Accounts.MemberDirectory do
 
     # Calculate additional fields
     days_registered = Date.diff(Date.utc_today(), DateTime.to_date(user.inserted_at))
-    posts_per_day = if days_registered > 0, do: (user.post_count || 0) / days_registered, else: 0
+    post_count = Map.get(user, :post_count) || Map.get(user, :total_posts_created) || 0
+    posts_per_day = if days_registered > 0, do: post_count / days_registered, else: 0.0
 
     is_friend = if current_user do
-      case CGraph.Accounts.get_friendship_status(current_user.id, user.id) do
+      case CGraph.Accounts.get_friendship_status(current_user, user) do
         :friends -> true
         _ -> false
       end

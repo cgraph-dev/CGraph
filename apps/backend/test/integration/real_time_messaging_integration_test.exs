@@ -278,14 +278,14 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
       {:ok, owner_socket} = connect(UserSocket, %{"token" => generate_token(owner)})
       {:ok, _, owner_channel} = subscribe_and_join(
         owner_socket,
-        CgraphWeb.GroupChannel,
+        CGraphWeb.GroupChannel,
         "group:#{channel.id}"
       )
 
       {:ok, member_socket} = connect(UserSocket, %{"token" => generate_token(member)})
       {:ok, _, _member_channel} = subscribe_and_join(
         member_socket,
-        CgraphWeb.GroupChannel,
+        CGraphWeb.GroupChannel,
         "group:#{channel.id}"
       )
 

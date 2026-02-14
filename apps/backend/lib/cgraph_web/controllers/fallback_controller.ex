@@ -80,6 +80,21 @@ defmodule CGraphWeb.FallbackController do
     |> render(:error, code: "already_exists", message: "Resource already exists.")
   end
 
+  # Handle recipient errors (PM system)
+  def call(conn, {:error, :recipient_not_found}) do
+    conn
+    |> put_status(:not_found)
+    |> put_view(json: CGraphWeb.ErrorJSON)
+    |> render(:error, code: "not_found", message: "Recipient not found.")
+  end
+
+  def call(conn, {:error, :recipient_required}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(json: CGraphWeb.ErrorJSON)
+    |> render(:error, code: "validation_error", message: "Recipient is required.")
+  end
+
   # Handle forum limit reached (tier-based limits)
   def call(conn, {:error, %{code: :forum_limit_reached} = error_info}) do
     conn

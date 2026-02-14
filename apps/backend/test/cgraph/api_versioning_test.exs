@@ -25,12 +25,12 @@ defmodule CGraph.ApiVersioningTest do
 
   describe "version_supported?/1" do
     test "returns true for v1" do
-      result = ApiVersioning.version_supported?("v1")
+      result = ApiVersioning.version_supported?(1)
       assert result == true or match?({:ok, true}, result)
     end
 
     test "returns false for unknown version" do
-      result = ApiVersioning.version_supported?("v999")
+      result = ApiVersioning.version_supported?(999)
       assert result == false or match?({:ok, false}, result) or match?({:error, _}, result)
     end
   end

@@ -19,7 +19,7 @@ defmodule CGraph.ReputationTest do
   describe "get_user_reputation/2" do
     test "returns empty or default reputation for unknown user" do
       result = Reputation.get_user_reputation(Ecto.UUID.generate(), %{})
-      assert is_list(result) or is_map(result) or match?({:ok, _}, result)
+      assert match?({entries, _page_info, _summary} when is_list(entries), result)
     end
   end
 

@@ -22,14 +22,23 @@ defmodule CGraph.IdempotencyTest do
     test "returns :new for unknown key" do
       key = "idem-test-#{System.unique_integer([:positive])}"
       result = Idempotency.check(key, %{})
-      assert result == :new or match?({:ok, :new}, result) or match?({:new, _}, result)
+      # check/2 returns {:ok, lock_ref} for new keys
+      assert result == :new or match?({:ok, _}, result)
     end
   end
 
   describe "store/2 and get/1" do
     test "stores and retrieves idempotency result" do
       key = "idem-store-#{System.unique_integer([:positive])}"
-      Idempotency.store(key, %{status: 200, body: "ok"})
+      check_result = Idempotency.check(key, %{})
+      # check returns {:ok, lock} for new key
+      lock = case check_result do
+        {:ok, lock} -> lock
+        _ -> nil
+      end
+      if lock do
+        Idempotency.store(lock, %{status: 200, body: "ok"})
+      end
       result = Idempotency.get(key)
       assert is_map(result) or match?({:ok, _}, result) or is_nil(result)
       Idempotency.delete(key)

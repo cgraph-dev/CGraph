@@ -224,6 +224,15 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
   def add_favorite(conn, %{"id" => emoji_id}) do
     user = conn.assigns.current_user
 
+    # Check emoji exists
+    emoji_exists = from(e in CustomEmoji, where: e.id == ^emoji_id, select: true) |> Repo.one()
+
+    unless emoji_exists do
+      conn
+      |> put_status(:not_found)
+      |> json(%{error: %{code: "not_found", message: "Emoji not found"}})
+    else
+
     # Get current max order
     max_order = from(f in "user_emoji_favorites",
       where: f.user_id == type(^user.id, Ecto.UUID),
@@ -242,6 +251,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
     ], on_conflict: :nothing)
 
     json(conn, %{data: %{favorited: true}})
+    end
   end
 
   @doc """
@@ -252,12 +262,21 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
   def remove_favorite(conn, %{"id" => emoji_id}) do
     user = conn.assigns.current_user
 
-    from(f in "user_emoji_favorites",
-      where: f.user_id == type(^user.id, Ecto.UUID) and f.emoji_id == type(^emoji_id, Ecto.UUID)
-    )
-    |> Repo.delete_all()
+    # Check emoji exists
+    emoji_exists = from(e in CustomEmoji, where: e.id == ^emoji_id, select: true) |> Repo.one()
 
-    json(conn, %{data: %{favorited: false}})
+    unless emoji_exists do
+      conn
+      |> put_status(:not_found)
+      |> json(%{error: %{code: "not_found", message: "Emoji not found"}})
+    else
+      from(f in "user_emoji_favorites",
+        where: f.user_id == type(^user.id, Ecto.UUID) and f.emoji_id == type(^emoji_id, Ecto.UUID)
+      )
+      |> Repo.delete_all()
+
+      json(conn, %{data: %{favorited: false}})
+    end
   end
 
   @doc """
@@ -436,16 +455,24 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
   end
 
   defp get_emoji(id) do
-    case Repo.get(CustomEmoji, id) do
-      nil -> {:error, :not_found}
-      emoji -> {:ok, Repo.preload(emoji, [:category, :created_by])}
+    case Ecto.UUID.cast(id) do
+      :error -> {:error, :not_found}
+      {:ok, _uuid} ->
+        case Repo.get(CustomEmoji, id) do
+          nil -> {:error, :not_found}
+          emoji -> {:ok, Repo.preload(emoji, [:category, :created_by])}
+        end
     end
   end
 
   defp get_category(id) do
-    case Repo.get(EmojiCategory, id) do
-      nil -> {:error, :not_found}
-      category -> {:ok, category}
+    case Ecto.UUID.cast(id) do
+      :error -> {:error, :not_found}
+      {:ok, _uuid} ->
+        case Repo.get(EmojiCategory, id) do
+          nil -> {:error, :not_found}
+          category -> {:ok, category}
+        end
     end
   end
 

@@ -133,6 +133,26 @@ defmodule CGraphWeb.API.V1.CommentController do
   end
 
   @doc """
+  Vote on a comment (unified endpoint).
+  POST /api/v1/forums/:forum_id/posts/:post_id/comments/:id/vote
+
+  Accepts a `direction` param of "up" or "down".
+  """
+  def vote(conn, %{"direction" => "up"} = params) do
+    upvote(conn, normalize_vote_params(params))
+  end
+
+  def vote(conn, %{"direction" => "down"} = params) do
+    downvote(conn, normalize_vote_params(params))
+  end
+
+  def vote(conn, _params) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> json(%{error: "direction parameter must be 'up' or 'down'"})
+  end
+
+  @doc """
   Upvote a comment.
   POST /api/v1/forums/:forum_id/posts/:post_id/comments/:id/upvote
   """
@@ -236,4 +256,11 @@ defmodule CGraphWeb.API.V1.CommentController do
       true -> {:error, :unauthorized}
     end
   end
+
+  # Remap "comment_id" → "id" for nested vote routes
+  defp normalize_vote_params(%{"comment_id" => id} = params) do
+    params |> Map.put("id", id) |> Map.delete("comment_id")
+  end
+
+  defp normalize_vote_params(params), do: params
 end

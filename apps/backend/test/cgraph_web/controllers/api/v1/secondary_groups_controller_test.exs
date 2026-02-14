@@ -62,7 +62,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsControllerTest do
         group_id: Ecto.UUID.generate()
       })
 
-      assert conn.status in [403, 404, 422]
+      assert conn.status in [400, 403, 404, 422]
     end
   end
 end

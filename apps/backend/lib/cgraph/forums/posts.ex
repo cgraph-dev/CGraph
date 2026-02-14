@@ -46,7 +46,9 @@ defmodule CGraph.Forums.Posts do
   Gets a post by ID.
   """
   def get_post(post_id) do
-    case Repo.get(Post, post_id) do
+    query = from p in Post, where: p.id == ^post_id and is_nil(p.deleted_at)
+
+    case Repo.one(query) do
       nil -> {:error, :not_found}
       post -> {:ok, Repo.preload(post, [:author, :category, :forum])}
     end

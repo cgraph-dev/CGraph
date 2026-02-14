@@ -20,8 +20,8 @@ defmodule CGraph.ChaosTest do
       assert is_boolean(result)
     end
 
-    test "returns false in test env by default" do
-      refute Chaos.enabled?()
+    test "returns true in test env (chaos available for injection)" do
+      assert Chaos.enabled?()
     end
   end
 end

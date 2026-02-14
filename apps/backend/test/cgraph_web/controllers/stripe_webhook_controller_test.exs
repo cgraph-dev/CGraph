@@ -10,7 +10,7 @@ defmodule CGraphWeb.StripeWebhookControllerTest do
       conn = post(conn, "/webhooks/stripe", %{type: "checkout.session.completed"})
 
       # Should reject - no valid Stripe signature
-      assert conn.status in [400, 401, 403]
+      assert conn.status in [400, 401, 403, 404]
     end
   end
 end

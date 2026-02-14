@@ -164,9 +164,9 @@ defmodule CGraph.Forums.MembersTest do
     end
 
     test "ban_member/5 supports expiration", %{user: user, forum: forum, owner: owner} do
-      expires_at = DateTime.add(DateTime.utc_now(), 86400, :second)
+      expires_at = DateTime.utc_now() |> DateTime.add(86400, :second) |> DateTime.truncate(:second)
       assert {:ok, ban} = Members.ban_member(forum.id, user.id, "Temp ban", owner.id, expires_at)
-      assert ban.expires_at == expires_at
+      assert DateTime.compare(ban.expires_at, expires_at) == :eq
     end
   end
 

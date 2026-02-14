@@ -47,20 +47,25 @@ html.site-ready {
 }
 
 .demo-landing {
-  /* Primary colors - Emerald theme from CustomizationDemo */
-  --color-primary: #10b981;
-  --color-primary-dark: #059669;
-  --color-primary-light: #34d399;
-  --color-secondary: #8b5cf6;
-  --color-secondary-dark: #7c3aed;
-  --color-secondary-light: #a78bfa;
+  /* Primary colors - Strict Emerald-Purple Theme */
+  --color-primary: #10b981;       /* Emerald-500 */
+  --color-primary-dark: #059669;  /* Emerald-600 */
+  --color-primary-light: #34d399; /* Emerald-400 */
+  
+  --color-secondary: #8b5cf6;       /* Violet-500 */
+  --color-secondary-dark: #7c3aed;  /* Violet-600 */
+  --color-secondary-light: #a78bfa; /* Violet-400 */
+  
   --color-accent: #10b981;
   --color-accent-alt: #8b5cf6;
   
-  /* Backgrounds - Gray-950 style */
-  --color-dark: #030712;
-  --color-dark-alt: #0a0f1a;
-  --color-dark-tertiary: #111827;
+  /* Backgrounds - Deep Space Glass */
+  --color-dark: #030712;          /* Gray-950 (Nebula Base) */
+  --color-dark-alt: #0a0f1a;      /* Deep Blue-Grey */
+  --color-dark-tertiary: #111827; /* Gray-900 */
+  --color-glass: rgba(3, 7, 18, 0.6);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  
   --color-light: #FFFFFF;
   --color-gray: #9ca3af;
   --color-gray-dark: #6b7280;
@@ -70,7 +75,7 @@ html.site-ready {
   --color-error: #ef4444;
   --color-warning: #f59e0b;
   
-  /* Gradients */
+  /* Gradients - Unified Brand Gradient */
   --gradient-primary: linear-gradient(135deg, #10b981 0%, #8b5cf6 100%);
   --gradient-button: linear-gradient(90deg, #10b981 0%, #8b5cf6 100%);
   --gradient-hero: linear-gradient(135deg, #030712 0%, #0a0f1a 50%, #111827 100%);
@@ -2652,7 +2657,7 @@ html.site-ready {
 /* Stats Section - Enhanced with animations */
 .stats {
   padding: 8rem 2rem;
-  background: linear-gradient(135deg, #030712 0%, #0a0f1a 50%, #111827 100%);
+  background: transparent;
   position: relative;
   overflow: hidden;
 }

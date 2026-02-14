@@ -48,7 +48,7 @@ defmodule CGraph.Gamification.ProfileTheme do
 
     # Effects
     field :hover_effect, :string, default: "scale"
-    field :glassmorphism, :boolean, default: false
+    field :glassmorphism, :map, default: %{}
     field :border_radius, :string, default: "md"
     field :effects_config, :map, default: %{}
 
@@ -58,7 +58,7 @@ defmodule CGraph.Gamification.ProfileTheme do
 
     # Unlock configuration
     field :unlock_type, :string
-    field :unlock_requirement, :string
+    field :unlock_requirement, :map
     field :is_purchasable, :boolean, default: false
     field :coin_cost, :integer, default: 0
     field :gem_cost, :integer, default: 0

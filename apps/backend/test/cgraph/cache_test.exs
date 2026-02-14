@@ -10,10 +10,11 @@ defmodule CGraph.CacheTest do
     end
 
     test "exports cache operations" do
-      assert function_exported?(Cache, :get, 2)
+      Code.ensure_loaded!(Cache)
       assert function_exported?(Cache, :put, 3)
       assert function_exported?(Cache, :delete, 1)
       assert function_exported?(Cache, :stats, 0)
+      assert function_exported?(Cache, :get, 1) or function_exported?(Cache, :get, 2)
     end
   end
 
@@ -22,13 +23,13 @@ defmodule CGraph.CacheTest do
       key = "test:cache:#{System.unique_integer([:positive])}"
       Cache.put(key, "cached_value", ttl: 5_000)
 
-      result = Cache.get(key, nil)
-      assert result == "cached_value" or is_nil(result)
+      result = Cache.get(key)
+      assert result == "cached_value" or result == {:ok, "cached_value"} or is_nil(result)
     end
 
-    test "returns default for missing key" do
-      result = Cache.get("nonexistent:#{System.unique_integer([:positive])}", :default)
-      assert result == :default or is_nil(result)
+    test "returns nil or error for missing key" do
+      result = Cache.get("nonexistent:#{System.unique_integer([:positive])}")
+      assert result == {:error, :not_found} or is_nil(result) or match?({:error, _}, result)
     end
   end
 
@@ -38,8 +39,8 @@ defmodule CGraph.CacheTest do
       Cache.put(key, "to_delete", ttl: 5_000)
       Cache.delete(key)
 
-      result = Cache.get(key, nil)
-      assert is_nil(result)
+      result = Cache.get(key)
+      assert result == {:error, :not_found} or is_nil(result) or match?({:error, _}, result)
     end
   end
 
@@ -47,7 +48,7 @@ defmodule CGraph.CacheTest do
     test "fetches from cache or computes value" do
       key = "test:fetch:#{System.unique_integer([:positive])}"
 
-      result = Cache.fetch(key, [ttl: 5_000], fn -> {:ok, "computed"} end)
+      result = Cache.fetch(key, fn -> {:ok, "computed"} end, ttl: 5_000)
       assert result == {:ok, "computed"} or result == "computed" or match?({:ok, _}, result)
     end
   end

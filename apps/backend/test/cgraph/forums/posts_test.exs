@@ -52,11 +52,11 @@ defmodule CGraph.Forums.PostsTest do
         "title" => "Link Post",
         "content" => "Check this out",
         "post_type" => "link",
-        "link_url" => "https://example.com"
+        "url" => "https://example.com"
       })
 
       assert post.post_type == "link"
-      assert post.link_url == "https://example.com"
+      assert post.url == "https://example.com"
     end
 
     test "creates an image post", %{user: user, forum: forum} do
@@ -137,7 +137,7 @@ defmodule CGraph.Forums.PostsTest do
 
     test "supports sorting by new", %{user: user, forum: forum} do
       {:ok, _} = Posts.create_post(forum, user, %{"title" => "First", "content" => "C1"})
-      :timer.sleep(10)
+      :timer.sleep(1100)
       {:ok, _} = Posts.create_post(forum, user, %{"title" => "Second", "content" => "C2"})
 
       {posts, _meta} = Posts.list_posts(forum, sort: "new")
@@ -268,12 +268,12 @@ defmodule CGraph.Forums.PostsTest do
         "content" => "Content"
       })
 
-      initial_views = post.views || 0
+      initial_views = post.view_count || 0
 
       :ok = Posts.increment_views(post)
 
       {:ok, updated} = Posts.get_post(post.id)
-      assert updated.views == initial_views + 1
+      assert updated.view_count == initial_views + 1
     end
   end
 

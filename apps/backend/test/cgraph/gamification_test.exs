@@ -412,7 +412,7 @@ defmodule CGraph.GamificationTest do
 
   describe "POST /api/v1/marketplace/listings" do
     test "creates a new listing", %{authed_conn: conn, user: user} do
-      border = insert(:avatar_border, is_purchasable: true)
+      border = insert(:avatar_border, is_purchasable: true, rarity: "common")
       insert(:user_avatar_border, user_id: user.id, border_id: border.id)
       update_user_balance(user, 10_000)
 
@@ -421,14 +421,14 @@ defmodule CGraph.GamificationTest do
         |> post("/api/v1/marketplace/listings", %{
           item_type: "avatar_border",
           item_id: border.id,
-          price: 1000,
+          price: 250,
           currency: "coins"
         })
         |> json_response(201)
 
       assert response["success"] == true
       assert response["listing"]["id"] != nil
-      assert response["listing"]["price"] == 1000
+      assert response["listing"]["price"] == 250
     end
 
     test "fails for non-tradeable items", %{authed_conn: conn, user: user} do

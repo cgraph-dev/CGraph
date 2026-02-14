@@ -11,7 +11,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LogoIcon } from '@/components/Logo';
-import './marketing-pages.css';
+import '../marketing-pages.css';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();

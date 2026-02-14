@@ -1,6 +1,14 @@
 ExUnit.start()
 Ecto.Adapters.SQL.Sandbox.mode(CGraph.Repo, :manual)
 
+# Force-load all application modules before tests run.
+# This prevents function_exported?/3 from returning false
+# in async tests due to modules not being loaded yet.
+case :application.get_key(:cgraph, :modules) do
+  {:ok, modules} -> Enum.each(modules, &Code.ensure_loaded!/1)
+  _ -> :ok
+end
+
 # Import ExMachina factory helpers in all tests
 {:ok, _} = Application.ensure_all_started(:ex_machina)
 
@@ -13,7 +21,8 @@ for mod <- [
   CGraph.ErrorReporter,
   CGraph.ConnectionPool,
   CGraph.Idempotency,
-  CGraph.Webhooks
+  CGraph.Webhooks,
+  CGraph.Metrics
 ] do
   case mod.start_link([]) do
     {:ok, _pid} -> :ok

@@ -12,19 +12,21 @@
  * Version: 2.0.0 - Added resource pages (/docs, /blog, /status, /download)
  */
 
-import { useState, useEffect, useRef, useCallback, memo, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { createPortal } from 'react-dom';
-import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion, useReducedMotion } from 'framer-motion';
-import Navigation from '../components/marketing/Navigation';
-import Footer from '../components/marketing/Footer';
-import Hero from '../components/hero/Hero';
-import ValueProposition from '../components/sections/ValueProposition';
-import { features, securityFeatures } from '../data/landing-data';
-import { StarBorder } from '../components/effects';
+import Navigation from '../components/marketing/layout/Navigation';
+import Footer from '../components/marketing/layout/Footer';
+import Hero from '../components/marketing/sections/Hero';
+import { Features } from '../components/marketing/sections/Features';
+import ValueProposition from '../components/marketing/sections/ValueProposition';
+import { Security } from '../components/marketing/sections/Security';
+import { CTA } from '../components/marketing/sections/CTA';
+import { SectionHeader } from '../components/marketing/ui/SectionHeader';
 import './landing-page.css';
+import './mobile-fixes.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -75,66 +77,7 @@ const staggerItem = {
 // ANIMATED SECTION HEADER (matches MarketingLayout hero stagger pattern)
 // =============================================================================
 
-const BADGE_COLORS: Record<string, string> = {
-  emerald: '#10b981',
-  purple: '#a855f7',
-  cyan: '#22d3ee',
-  orange: '#f97316',
-};
-
-const SectionHeader = memo(function SectionHeader({
-  badge,
-  badgeVariant = 'emerald',
-  title,
-  titleAccent,
-  titleAccentClass = '',
-  description,
-}: {
-  badge: string;
-  badgeVariant?: 'emerald' | 'purple' | 'cyan' | 'orange';
-  title: string;
-  titleAccent: string;
-  titleAccentClass?: string;
-  description: string;
-}) {
-  return (
-    <div className="section-header">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.85, y: 10 }}
-        whileInView={{ opacity: 1, scale: 1, y: 0 }}
-        viewport={{ once: true, margin: '-40px' }}
-        transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-      >
-        <StarBorder
-          color={BADGE_COLORS[badgeVariant] || '#10b981'}
-          speed="5s"
-          className={`section-header__badge section-header__badge--${badgeVariant}`}
-        >
-          {badge}
-        </StarBorder>
-      </motion.div>
-      <motion.h2
-        className="section-header__title font-zentry"
-        initial={{ opacity: 0, y: 20, clipPath: 'inset(0 100% 0 0)' }}
-        whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0 0% 0 0)' }}
-        viewport={{ once: true, margin: '-40px' }}
-        transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-      >
-        {title}{' '}
-        <span className={titleAccentClass || 'section-header__gradient'}>{titleAccent}</span>
-      </motion.h2>
-      <motion.p
-        className="section-header__desc font-space"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: '-40px' }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        {description}
-      </motion.p>
-    </div>
-  );
-});
+// SectionHeader extracted to components/marketing/ui/SectionHeader.tsx
 
 // Lazy-load showcase sections to reduce initial bundle size
 const InteractiveDemo = lazy(() =>
@@ -248,172 +191,9 @@ function SecurityIconCard({ feature }: { feature: (typeof securityFeatures)[0] }
   );
 }
 
-/** Wraps SecurityIconCard in a spring-scaled motion.div for staggered entrance */
-function AnimatedSecurityIcon({
-  feature,
-  index,
-}: {
-  feature: (typeof securityFeatures)[0];
-  index: number;
-}) {
-  return (
-    <motion.div
-      variants={springScaleIn}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: '-30px' }}
-      custom={index * 0.06}
-    >
-      <SecurityIconCard feature={feature} />
-    </motion.div>
-  );
-}
+// TiltCard extracted/replaced by GlassCard
 
-function TiltCard({
-  icon,
-  title,
-  description,
-}: {
-  icon: string;
-  title: string;
-  description: string;
-}) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const card = cardRef.current;
-    if (!card) return;
-
-    let rect: DOMRect | null = null;
-    let raf = 0;
-    let hover = false;
-    let tx = 0.5,
-      ty = 0.5,
-      targetX = 0.5,
-      targetY = 0.5;
-    const max = 12;
-    const scaleHover = 0.985;
-
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-    const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);
-
-    const measure = () => {
-      rect = card.getBoundingClientRect();
-    };
-
-    const tick = () => {
-      raf = 0;
-      tx = lerp(tx, targetX, 0.18);
-      ty = lerp(ty, targetY, 0.18);
-
-      const ry = clamp((tx - 0.5) * (max * 2), -max, max);
-      const rx = clamp(-(ty - 0.5) * (max * 2), -max, max);
-
-      card.style.setProperty('--ry', ry + 'deg');
-      card.style.setProperty('--rx', rx + 'deg');
-      card.style.setProperty('--s', hover ? String(scaleHover) : '1');
-      card.style.setProperty('--mouse-x', clamp(tx * 100, 2, 98) + '%');
-      card.style.setProperty('--mouse-y', clamp(ty * 100, 2, 98) + '%');
-
-      const settling = Math.abs(targetX - tx) > 1e-3 || Math.abs(targetY - ty) > 1e-3 || hover;
-      if (settling) raf = requestAnimationFrame(tick);
-    };
-
-    const handleMouseEnter = () => {
-      measure();
-      hover = true;
-      card.classList.add('is-tilting');
-      if (!raf) raf = requestAnimationFrame(tick);
-    };
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!hover || !rect) return;
-      const rawX = (e.clientX - rect.left) / rect.width;
-      const rawY = (e.clientY - rect.top) / rect.height;
-      targetX = clamp(rawX, 0, 1);
-      targetY = clamp(rawY, 0, 1);
-      if (!raf) raf = requestAnimationFrame(tick);
-    };
-
-    const handleMouseLeave = () => {
-      hover = false;
-      targetX = 0.5;
-      targetY = 0.5;
-      card.classList.remove('is-tilting');
-      if (!raf) raf = requestAnimationFrame(tick);
-    };
-
-    card.addEventListener('mouseenter', handleMouseEnter);
-    card.addEventListener('mousemove', handleMouseMove, { passive: true });
-    card.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      card.removeEventListener('mouseenter', handleMouseEnter);
-      card.removeEventListener('mousemove', handleMouseMove);
-      card.removeEventListener('mouseleave', handleMouseLeave);
-      if (raf) cancelAnimationFrame(raf);
-    };
-  }, []);
-
-  return (
-    <div ref={cardRef} className="tilt-card">
-      <div className="tilt-card__animated-border" />
-      <div className="tilt-card__bg" />
-      <div className="tilt-card__glare" />
-      <div className="tilt-card__content">
-        <span className="tilt-card__icon">{icon}</span>
-        <h3 className="tilt-card__title font-robert">{title}</h3>
-        <p className="tilt-card__desc font-space">{description}</p>
-      </div>
-      <div className="tilt-card__accent" />
-    </div>
-  );
-}
-
-function SwapButton({
-  primary = false,
-  mainText,
-  altText,
-  href,
-}: {
-  primary?: boolean;
-  mainText: string;
-  altText: string;
-  href?: string;
-}) {
-  const className = `btn-swap ${primary ? 'btn-swap--primary' : ''}`;
-
-  const content = (
-    <>
-      <span className="btn-swap__main">{mainText}</span>
-      <span className="btn-swap__alt">{altText}</span>
-    </>
-  );
-
-  if (href) {
-    // External links or hash links
-    if (href.startsWith('http') || href.startsWith('#')) {
-      return (
-        <motion.a
-          href={href}
-          className={className}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-        >
-          {content}
-        </motion.a>
-      );
-    }
-    return (
-      <Link to={href} className={className}>
-        {content}
-      </Link>
-    );
-  }
-
-  return <button className={className}>{content}</button>;
-}
+// SwapButton extracted/replaced by LandingButton
 
 // =============================================================================
 // MAIN COMPONENT
@@ -421,9 +201,6 @@ function SwapButton({
 
 export default function LandingPage() {
   const prefersReduced = useReducedMotion();
-  const featuresRef = useRef<HTMLDivElement>(null);
-  const aboutRef = useRef<HTMLDivElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
 
   // Handle hash navigation on page load
   useEffect(() => {
@@ -566,30 +343,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features */}
-      <section ref={featuresRef} id="features" className="features zoom-section">
-        <SectionHeader
-          badge="Powerful Features"
-          badgeVariant="orange"
-          title="Everything You"
-          titleAccent="Need"
-          titleAccentClass="title-fx--fire"
-          description="Build, customize, and grow your community with our comprehensive feature set."
-        />
-
-        <motion.div
-          className="features__grid"
-          variants={prefersReduced ? undefined : staggerContainer}
-          initial={prefersReduced ? undefined : 'hidden'}
-          whileInView={prefersReduced ? undefined : 'visible'}
-          viewport={{ once: true, margin: '-60px' }}
-        >
-          {features.map((feature) => (
-            <motion.div key={feature.title} variants={staggerItem}>
-              <TiltCard {...feature} />
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
+      <Features />
 
       {/* Customization Demo */}
       <section className="showcase-section zoom-section">
@@ -631,111 +385,15 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
-      {/* About/Security */}
-      <section ref={aboutRef} id="security" className="about about--centered zoom-section">
-        <div className="about__container about__container--centered">
-          {/* Centered header */}
-          <motion.div
-            className="about__content about__content--centered"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85, y: 10 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ type: 'spring' as const, stiffness: 200, damping: 15, delay: 0.15 }}
-            >
-              <StarBorder
-                color="#a855f7"
-                speed="5s"
-                className="section-header__badge section-header__badge--purple"
-              >
-                Privacy-First Design
-              </StarBorder>
-            </motion.div>
-            <motion.h2
-              className="about__title font-zentry"
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              custom={0.2}
-            >
-              Your Privacy Is Our <span className="title-fx--shadow">Priority</span>
-            </motion.h2>
-            <motion.p
-              className="about__desc"
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              custom={0.3}
-            >
-              Built from the ground up with security in mind. Your messages are end-to-end encrypted
-              with AES-256, and we use Signal-inspired encryption protocols. Not even we can access
-              your private conversations.
-            </motion.p>
-          </motion.div>
-
-          {/* Security icons — centered grid */}
-          <motion.div
-            className="about__visual about__visual--centered"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-60px' }}
-            transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] as const }}
-          >
-            <div className="about__orb" />
-            <div className="about__icon-grid">
-              {securityFeatures.map((feature, i) => (
-                <AnimatedSecurityIcon key={i} feature={feature} index={i} />
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      {/* Security */}
+      <Security />
 
       {/* Value Proposition (replaces pricing) */}
       <ValueProposition />
 
       {/* CTA */}
-      <section ref={ctaRef} className="cta zoom-section">
-        <motion.div
-          className="cta__content"
-          variants={prefersReduced ? undefined : staggerContainer}
-          initial={prefersReduced ? undefined : 'hidden'}
-          whileInView={prefersReduced ? undefined : 'visible'}
-          viewport={{ once: true, margin: '-60px' }}
-        >
-          <motion.div variants={staggerItem}>
-            <StarBorder
-              color="#10b981"
-              speed="5s"
-              className="section-header__badge section-header__badge--emerald"
-            >
-              Ready to Start?
-            </StarBorder>
-          </motion.div>
-          <motion.h2 variants={staggerItem} className="cta__title font-zentry">
-            Build Your <span className="title-fx--air">Community</span>
-          </motion.h2>
-          <motion.p variants={staggerItem} className="cta__desc">
-            Create forums, customize your space, and connect with like-minded people.
-          </motion.p>
-          <motion.div variants={staggerItem} className="cta__buttons">
-            <SwapButton
-              primary
-              mainText="Create Account"
-              altText="Join Now!"
-              href={`${WEB_APP_URL}/register`}
-            />
-            <SwapButton mainText="Sign In" altText="Welcome Back" href={`${WEB_APP_URL}/login`} />
-          </motion.div>
-        </motion.div>
-      </section>
+      {/* CTA */}
+      <CTA prefersReduced={prefersReduced} />
 
       {/* Unified Footer */}
       <Footer />

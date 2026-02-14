@@ -54,6 +54,9 @@ config :cgraph, skip_partitioning: true
 # Oban testing mode
 config :cgraph, Oban, testing: :inline
 
+# Tell the app we're in :test env (used by Encryption, Chaos, etc.)
+config :cgraph, env: :test
+
 # Force PostgreSQL search backend in test (no Meilisearch needed)
 config :cgraph, CGraph.Search.Engine,
   backend: :postgres,

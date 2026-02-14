@@ -18,6 +18,19 @@ defmodule CGraph.BatchProcessorTest do
 
   describe "process/3" do
     test "processes a list of items" do
+      # Ensure ETS table exists (normally created by GenServer init)
+      try do
+        :ets.new(:cgraph_batch_progress, [:named_table, :set, :public, read_concurrency: true])
+      rescue
+        ArgumentError -> :ok  # Table already exists
+      end
+
+      try do
+        :ets.new(:cgraph_batch_jobs, [:named_table, :set, :public, read_concurrency: true])
+      rescue
+        ArgumentError -> :ok
+      end
+
       items = [1, 2, 3, 4, 5]
       result = BatchProcessor.process(items, fn item -> item * 2 end, batch_size: 2)
       assert is_list(result) or match?({:ok, _}, result)

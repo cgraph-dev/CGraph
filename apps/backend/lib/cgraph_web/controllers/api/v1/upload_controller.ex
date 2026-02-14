@@ -117,6 +117,11 @@ defmodule CGraphWeb.API.V1.UploadController do
   end
 
   @doc """
+  Alias for presign/2 to match route naming.
+  """
+  def presigned(conn, params), do: presign(conn, params)
+
+  @doc """
   Get a presigned URL for direct upload to cloud storage.
   POST /api/v1/uploads/presign
   """

@@ -431,7 +431,8 @@ defmodule CGraph.Security.AccountLockout do
 
     attempts = case get_from_redis(attempts_key) do
       {:ok, nil} -> 0
-      {:ok, count} -> String.to_integer(count)
+      {:ok, count} when is_binary(count) -> String.to_integer(count)
+      {:ok, count} when is_integer(count) -> count
       _ -> 0
     end
 
@@ -510,7 +511,8 @@ defmodule CGraph.Security.AccountLockout do
     key = lock_count_key(identifier)
     case get_from_redis(key) do
       {:ok, nil} -> 0
-      {:ok, count} -> String.to_integer(count)
+      {:ok, count} when is_binary(count) -> String.to_integer(count)
+      {:ok, count} when is_integer(count) -> count
       _ -> 0
     end
   end

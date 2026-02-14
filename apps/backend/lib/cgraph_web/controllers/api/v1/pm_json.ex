@@ -1,4 +1,4 @@
-defmodule CGraphWeb.API.V1.PMJson do
+defmodule CGraphWeb.API.V1.PMJSON do
   @moduledoc """
   JSON rendering for Private Message endpoints.
   """
@@ -51,15 +51,16 @@ defmodule CGraphWeb.API.V1.PMJson do
       id: message.id,
       subject: message.subject,
       content: message.content,
-      icon: message.icon,
-      sender: user_data(message.sender),
-      recipients: Enum.map(message.recipients || [], &user_data/1),
-      parent_id: message.parent_id,
+      icon: Map.get(message, :icon),
+      sender: user_data(Map.get(message, :sender)),
+      recipient: user_data(Map.get(message, :recipient)),
+      recipients: Enum.map(Map.get(message, :recipients) || [], &user_data/1),
+      parent_id: Map.get(message, :parent_id) || Map.get(message, :reply_to_id),
       folder_id: message.folder_id,
       is_read: message.is_read,
       read_at: message.read_at,
       is_starred: Map.get(message, :is_starred, false),
-      is_deleted: message.is_deleted,
+      is_deleted: Map.get(message, :is_deleted, false),
       created_at: message.inserted_at,
       updated_at: message.updated_at
     }

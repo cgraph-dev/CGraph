@@ -229,7 +229,8 @@ defmodule CGraph.RateLimiter do
 
     @ets_table
     |> :ets.tab2list()
-    |> Enum.each(fn {key, _, _} ->
+    |> Enum.each(fn record ->
+      key = elem(record, 0)
       if is_binary(key) and String.ends_with?(key, suffix) do
         :ets.delete(@ets_table, key)
       end

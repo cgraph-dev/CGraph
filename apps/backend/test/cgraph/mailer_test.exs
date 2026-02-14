@@ -19,8 +19,10 @@ defmodule CGraph.MailerTest do
 
   describe "deliver_welcome_email/1" do
     test "requires a valid user" do
-      result = Mailer.deliver_welcome_email(nil)
-      assert match?({:error, _}, result) or is_nil(result)
+      # Function expects %User{} struct — nil raises FunctionClauseError
+      assert_raise FunctionClauseError, fn ->
+        Mailer.deliver_welcome_email(nil)
+      end
     end
   end
 end

@@ -51,13 +51,16 @@ defmodule CGraph.Accounts.Profile do
     case Repo.get(User, user_id) do
       nil -> {:error, :not_found}
       user ->
-        allowed_fields = [:display_name, :title, :bio, :signature, :timezone]
+        allowed_fields = [:display_name, :bio, :signature]
         changes = Map.take(attrs, Enum.map(allowed_fields, &to_string/1))
         |> Enum.map(fn {k, v} -> {String.to_existing_atom(k), v} end)
         |> Enum.into(%{})
 
         user
-        |> Ecto.Changeset.change(changes)
+        |> Ecto.Changeset.cast(changes, allowed_fields)
+        |> Ecto.Changeset.validate_length(:bio, max: 500)
+        |> Ecto.Changeset.validate_length(:signature, max: 500)
+        |> Ecto.Changeset.validate_length(:display_name, max: 50)
         |> Repo.update()
     end
   end

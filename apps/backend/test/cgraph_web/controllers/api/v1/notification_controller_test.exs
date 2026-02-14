@@ -38,7 +38,7 @@ defmodule CGraphWeb.API.V1.NotificationControllerTest do
     end
 
     test "accepts type filter param", %{conn: conn} do
-      conn = get(conn, ~p"/api/v1/notifications?type=mention")
+      conn = get(conn, ~p"/api/v1/notifications?type=message_mention")
 
       assert json_response(conn, 200)
     end
@@ -63,7 +63,7 @@ defmodule CGraphWeb.API.V1.NotificationControllerTest do
     end
 
     test "accepts optional type filter", %{conn: conn} do
-      conn = put(conn, ~p"/api/v1/notifications/read_all?type=message")
+      conn = put(conn, ~p"/api/v1/notifications/read_all?type=new_message")
 
       assert json_response(conn, 200)
     end

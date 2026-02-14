@@ -10,9 +10,9 @@
 
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import { valueProps } from '../../data/landing-data';
-import type { ValuePropData } from '../../data/landing-data';
-import { StarBorder } from '../effects';
+import { valueProps } from '../../../data/landing-data';
+import type { ValuePropData } from '../../../data/landing-data';
+import { SectionHeader } from '../ui/SectionHeader';
 
 const ValueCard = memo(function ValueCard({ data, index }: { data: ValuePropData; index: number }) {
   return (
@@ -54,41 +54,14 @@ const ValueCard = memo(function ValueCard({ data, index }: { data: ValuePropData
 export default function ValueProposition(): React.JSX.Element {
   return (
     <section id="pricing" className="value-section zoom-section">
-      <div className="section-header">
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.9 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.5 }}
-        >
-          <StarBorder
-            color="#22d3ee"
-            speed="5s"
-            className="section-header__badge section-header__badge--cyan"
-          >
-            Why CGraph?
-          </StarBorder>
-        </motion.div>
-        <motion.h2
-          className="section-header__title font-zentry"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          Built <span className="title-fx--ice">Different</span>
-        </motion.h2>
-        <motion.p
-          className="section-header__desc"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-40px' }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-        >
-          Not just another chat app. CGraph combines the best of Discord, Signal, and Reddit into
-          one privacy-first platform.
-        </motion.p>
-      </div>
+      <SectionHeader
+        badge="Why CGraph?"
+        badgeVariant="cyan"
+        title="Built"
+        titleAccent="Different"
+        titleAccentClass="title-fx--ice"
+        description="Not just another chat app. CGraph combines the best of Discord, Signal, and Reddit into one privacy-first platform."
+      />
 
       <div className="value-grid">
         {valueProps.map((prop, i) => (

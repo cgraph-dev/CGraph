@@ -14,7 +14,9 @@
 
 import { memo, useState, useEffect, useRef } from 'react';
 import { motion, useReducedMotion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import './hero.css';
+import { GradientText } from '../ui/GradientText';
+import { NeuralBackground } from '../effects/NeuralBackground';
+import './Hero.css';
 
 const WEB_APP_URL = 'https://web.cgraph.org';
 
@@ -83,30 +85,19 @@ const Hero = memo(function Hero(): React.JSX.Element {
 
   return (
     <section ref={heroRef} className="hero-pro" aria-label="CGraph — Beyond Messaging">
-      {/* Background layers — parallax drift on scroll */}
+      {/* Background layers — neural network + parallax */}
       <motion.div
         className="hero-pro__bg"
         aria-hidden="true"
         style={prefersReduced ? undefined : { y: bgY }}
       >
-        {/* Base gradient */}
+        {/* Neural Network Canvas */}
+        {!prefersReduced && <NeuralBackground />}
+
+        {/* Base gradient fallback */}
         <div className="hero-pro__gradient-base" />
 
-        {/* Animated gradient mesh */}
-        <div className="hero-pro__mesh" />
-
-        {/* Floating glow orbs */}
-        <div className="hero-pro__orb hero-pro__orb--emerald" />
-        <div className="hero-pro__orb hero-pro__orb--purple" />
-        <div className="hero-pro__orb hero-pro__orb--cyan" />
-
-        {/* Floating particles */}
-        <div className="hero-pro__particles" />
-
-        {/* Subtle scan lines */}
-        <div className="hero-pro__scanlines" />
-
-        {/* Dot grid */}
+        {/* Dot grid overlay */}
         <div className="hero-pro__grid" />
 
         {/* Noise texture overlay */}
@@ -127,7 +118,14 @@ const Hero = memo(function Hero(): React.JSX.Element {
         {/* Title */}
         <motion.h1 variants={itemVariants} className="hero-pro__title">
           <span className="hero-pro__title-line">Communication</span>
-          <span className="hero-pro__title-accent">Reimagined</span>
+          <GradientText
+            variant="emerald-purple"
+            animated
+            as="span"
+            className="hero-pro__title-accent"
+          >
+            Reimagined
+          </GradientText>
         </motion.h1>
 
         {/* Cycling Subtitle */}

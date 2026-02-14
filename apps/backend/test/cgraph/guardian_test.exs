@@ -18,10 +18,10 @@ defmodule CGraph.GuardianTest do
   end
 
   describe "subject_for_token/2" do
-    test "returns subject string for user" do
+    test "returns error for plain map (requires User struct)" do
       user = %{id: "user-123"}
       result = Guardian.subject_for_token(user, %{})
-      assert match?({:ok, _}, result)
+      assert match?({:error, :invalid_resource}, result)
     end
   end
 

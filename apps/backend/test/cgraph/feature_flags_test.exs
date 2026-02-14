@@ -64,7 +64,7 @@ defmodule CGraph.FeatureFlagsTest do
     test "lifecycle: create, check, delete" do
       flag_name = :"test_flag_#{System.unique_integer([:positive])}"
 
-      case FeatureFlags.create_flag(flag_name, %{enabled: true}) do
+      case FeatureFlags.create_flag(flag_name, %{enabled: true, type: :boolean}) do
         {:ok, _} ->
           assert FeatureFlags.enabled?(flag_name, %{})
           FeatureFlags.delete_flag(flag_name)

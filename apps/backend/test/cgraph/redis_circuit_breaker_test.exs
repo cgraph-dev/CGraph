@@ -11,9 +11,23 @@ defmodule CGraph.RedisCircuitBreakerTest do
   use ExUnit.Case, async: false
 
   # The Redis fuse name used in CGraph.Redis
-  @fuse_name :redis_fuse
+  @fuse_name :redis_circuit_breaker
 
   describe "circuit breaker integration" do
+    setup do
+      # Ensure fuse is installed for testing
+      :fuse.install(@fuse_name, {{:standard, 5, 10_000}, {:reset, 30_000}})
+      on_exit(fn ->
+        try do
+          :fuse.remove(@fuse_name)
+        rescue
+          _ -> :ok
+        catch
+          _, _ -> :ok
+        end
+      end)
+      :ok
+    end
     test "fuse is installed on application start" do
       # The fuse should exist after the application starts
       result = :fuse.ask(@fuse_name, :sync)

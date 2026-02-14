@@ -35,6 +35,17 @@ defmodule CGraph.MetricsTest do
 
   describe "all/0" do
     test "returns map of all metrics" do
+      # Ensure Metrics server is running
+      case Process.whereis(CGraph.Metrics) do
+        nil ->
+          case CGraph.Metrics.start_link([]) do
+            {:ok, _} -> :ok
+            {:error, {:already_started, _}} -> :ok
+            _ -> :ok
+          end
+        _pid -> :ok
+      end
+
       result = Metrics.all()
       assert is_map(result) or is_list(result)
     end

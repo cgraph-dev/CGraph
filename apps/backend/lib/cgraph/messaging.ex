@@ -1119,25 +1119,37 @@ defmodule CGraph.Messaging do
   """
   def send_private_message(attrs) do
     recipient_id = Map.get(attrs, :recipient_id) || List.first(Map.get(attrs, :recipient_ids, []))
-    recipient_inbox = get_pm_folder_by_name(recipient_id, "Inbox") ||
-      create_default_pm_folders_and_get_folder(recipient_id, "Inbox")
 
-    sender_sent = get_pm_folder_by_name(attrs.sender_id, "Sent") ||
-      create_default_pm_folders_and_get_folder(attrs.sender_id, "Sent")
+    if is_nil(recipient_id) do
+      {:error, :recipient_required}
+    else
+      # Validate recipient exists
+      case Repo.get(CGraph.Accounts.User, recipient_id) do
+        nil ->
+          {:error, :recipient_not_found}
 
-    recipient_attrs = Map.merge(attrs, %{
-      folder_id: recipient_inbox.id,
-      is_read: false
-    })
+        _user ->
+          recipient_inbox = get_pm_folder_by_name(recipient_id, "Inbox") ||
+            create_default_pm_folders_and_get_folder(recipient_id, "Inbox")
 
-    with {:ok, message} <- create_private_message(recipient_attrs) do
-      sender_attrs = Map.merge(attrs, %{
-        folder_id: sender_sent.id,
-        is_read: true
-      })
-      create_private_message(sender_attrs)
+          sender_sent = get_pm_folder_by_name(attrs.sender_id, "Sent") ||
+            create_default_pm_folders_and_get_folder(attrs.sender_id, "Sent")
 
-      {:ok, Repo.preload(message, [:sender, :recipient])}
+          recipient_attrs = attrs
+            |> Map.put(:recipient_id, recipient_id)
+            |> Map.put(:folder_id, recipient_inbox.id)
+            |> Map.put(:is_read, false)
+
+          with {:ok, message} <- create_private_message(recipient_attrs) do
+            sender_attrs = attrs
+              |> Map.put(:recipient_id, recipient_id)
+              |> Map.put(:folder_id, sender_sent.id)
+              |> Map.put(:is_read, true)
+            create_private_message(sender_attrs)
+
+            {:ok, Repo.preload(message, [:sender, :recipient])}
+          end
+      end
     end
   end
 

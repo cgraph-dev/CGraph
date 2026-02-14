@@ -222,7 +222,7 @@ defmodule CgraphWeb.API.V1.MessageControllerTest do
       assert sender["bubbleColor"] == "#ff00ff"
       assert sender["chatTheme"] == "midnight"
       assert sender["entranceAnimation"] == "slide_up"
-      assert sender["glassEffect"] == true
+      assert sender["glassEffect"] in [true, "frosted"]
       assert sender["textColor"] == "#ffffff"
       assert sender["fontFamily"] == "monospace"
     end

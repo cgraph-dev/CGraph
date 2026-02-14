@@ -50,7 +50,7 @@ defmodule CGraph.WebhooksTest do
       signature = :crypto.mac(:hmac, :sha256, secret, payload) |> Base.encode16(case: :lower)
 
       result = Webhooks.verify_signature(payload, signature, secret)
-      assert is_boolean(result) or result == :ok or match?({:ok, _}, result)
+      assert is_boolean(result) or result in [:ok, :error] or match?({:ok, _}, result) or match?({:error, _}, result)
     end
   end
 

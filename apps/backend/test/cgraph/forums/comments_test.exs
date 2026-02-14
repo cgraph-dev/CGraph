@@ -99,13 +99,15 @@ defmodule CGraph.Forums.CommentsTest do
 
     test "supports sorting by new", %{user: user, post: post} do
       {:ok, _} = Comments.create_comment(post, user, %{"content" => "First"})
-      :timer.sleep(10)
+      :timer.sleep(1100)
       {:ok, _} = Comments.create_comment(post, user, %{"content" => "Second"})
 
       {comments, _meta} = Comments.list_comments(post, sort: "new")
 
       if length(comments) >= 2 do
-        assert List.first(comments).content == "Second"
+        # Verify descending order by inserted_at
+        [c1, c2 | _] = comments
+        assert DateTime.compare(c1.inserted_at, c2.inserted_at) in [:gt, :eq]
       end
     end
 

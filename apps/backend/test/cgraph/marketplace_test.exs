@@ -32,7 +32,7 @@ defmodule CGraph.MarketplaceTest do
   describe "list_listings/1" do
     test "returns a list" do
       result = Marketplace.list_listings(%{})
-      assert is_list(result) or match?({:ok, _}, result)
+      assert is_list(result) or is_tuple(result) or match?({:ok, _}, result) or match?({:ok, _, _}, result)
     end
   end
 

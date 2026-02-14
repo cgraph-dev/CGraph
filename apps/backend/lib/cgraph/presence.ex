@@ -189,8 +189,9 @@ defmodule CGraph.Presence do
   """
   def update_typing(socket, user_id, room_id, is_typing) do
     topic = room_topic(room_id)
+    pid = if is_pid(socket), do: socket, else: socket.channel_pid
 
-    result = update(socket, topic, user_id, fn meta ->
+    result = update(pid, topic, user_id, fn meta ->
       Map.merge(meta, %{
         typing: is_typing,
         typing_at: if(is_typing, do: DateTime.utc_now(), else: nil),
@@ -210,8 +211,9 @@ defmodule CGraph.Presence do
   """
   def update_status(socket, user_id, room_id, status) when status in @valid_statuses do
     topic = room_topic(room_id)
+    pid = if is_pid(socket), do: socket, else: socket.channel_pid
 
-    result = update(socket, topic, user_id, fn meta ->
+    result = update(pid, topic, user_id, fn meta ->
       Map.merge(meta, %{
         status: status,
         status_changed_at: DateTime.utc_now(),
@@ -220,7 +222,7 @@ defmodule CGraph.Presence do
     end)
 
     # Also update global presence
-    update(socket, "users:online", user_id, fn meta ->
+    update(pid, "users:online", user_id, fn meta ->
       Map.put(meta, :status, status)
     end)
 
@@ -238,8 +240,9 @@ defmodule CGraph.Presence do
   """
   def heartbeat(socket, user_id, room_id) do
     topic = room_topic(room_id)
+    pid = if is_pid(socket), do: socket, else: socket.channel_pid
 
-    update(socket, topic, user_id, fn meta ->
+    update(pid, topic, user_id, fn meta ->
       new_status = if meta.status == "away", do: "online", else: meta.status
       Map.merge(meta, %{
         last_active: DateTime.utc_now(),
@@ -254,8 +257,9 @@ defmodule CGraph.Presence do
   def set_status_message(socket, user_id, room_id, message) when is_binary(message) do
     # Limit message length
     safe_message = String.slice(message, 0, 100)
+    pid = if is_pid(socket), do: socket, else: socket.channel_pid
 
-    update(socket, room_topic(room_id), user_id, fn meta ->
+    update(pid, room_topic(room_id), user_id, fn meta ->
       Map.put(meta, :status_message, safe_message)
     end)
   end
