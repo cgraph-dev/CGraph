@@ -2342,9 +2342,9 @@ html.site-ready {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.06) 25%,
-    rgba(255, 255, 255, 0.15) 50%,
-    rgba(255, 255, 255, 0.06) 75%,
+    rgba(255, 255, 255, 0.048) 25%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.048) 75%,
     transparent 100%
   );
   z-index: -1;
