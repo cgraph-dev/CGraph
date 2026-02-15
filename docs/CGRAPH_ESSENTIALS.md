@@ -351,4 +351,4 @@ For comprehensive guidelines (8,400+ lines), see:
 
 ---
 
-<sub>**CGraph Essentials** • Version 0.9.24 • Last updated: February 2026</sub>
+<sub>**CGraph Essentials** • Version 0.9.26 • Last updated: February 16, 2026</sub>

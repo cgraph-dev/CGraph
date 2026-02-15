@@ -1,6 +1,6 @@
 # CGraph Backend
 
-> Elixir/Phoenix API server for CGraph messaging platform
+> Elixir/Phoenix API server for CGraph messaging platform (v0.9.26)
 
 ## Quick Start
 
@@ -32,13 +32,17 @@ The API will be available at http://localhost:4000
 ### Running Tests
 
 ```bash
-mix test                    # Run all tests
+mix test                    # Run all tests (1633 tests, 0 failures)
 mix test path/file.exs      # Run single test file
 mix test --only tag         # Run tests with specific tag
 mix credo                   # Static analysis
 mix dialyzer                # Type checking
 mix sobelow                 # Security scan
 ```
+
+> **Note**: Tests require `TokenBlacklist`, `AccountLockout`, and `KeyRotation` GenServers to be
+> running. These start automatically via the supervision tree in test mode. If you see
+> `** (EXIT) no process` errors, ensure `CGraph.Application` starts correctly.
 
 ---
 
@@ -188,24 +192,63 @@ lib/
 ├── cgraph/                    # Business logic
 │   ├── accounts.ex            # Users, auth, sessions
 │   ├── messaging.ex           # DMs, conversations
-│   ├── forums.ex              # Posts, comments, karma
+│   ├── forums.ex              # Posts, comments, voting
 │   ├── groups.ex              # Servers, channels, roles
 │   ├── presence.ex            # Online status
 │   ├── cache.ex               # Multi-tier caching
 │   └── workers/               # Oban background jobs
 ├── cgraph_web/                # Web layer
-│   ├── router.ex              # API routes
+│   ├── router.ex              # API routes (126 lines, 8 route modules)
+│   ├── router/                # Route macro modules (8 files)
 │   ├── controllers/           # REST endpoints
 │   ├── channels/              # Phoenix channels
-│   └── plugs/                 # Auth, rate limiting
+│   └── plugs/                 # Auth, rate limiting, cookies
 └── release.ex                 # Release tasks
 ```
+
+### Router Pipeline Architecture
+
+The router uses 5 pipelines and 8 route macro modules evaluated in this exact order:
+
+| Pipeline           | Key Plugs                                                             | Purpose              |
+| ------------------ | --------------------------------------------------------------------- | -------------------- |
+| `:api`             | SecurityHeaders, CookieAuth, RequestTracing, RateLimiterV2(:standard) | Default API          |
+| `:api_auth_strict` | Same as `:api` but RateLimiterV2(:strict)                             | Auth endpoints       |
+| `:api_relaxed`     | SecurityHeaders, RequestTracing, RateLimiterV2(:relaxed)              | Health checks        |
+| `:api_auth`        | `:api` + RequireAuth                                                  | Authenticated routes |
+| `:api_admin`       | `:api` + RequireAuth + RequireAdmin                                   | Admin only           |
+
+**Route evaluation order** (position matters!):
+
+1. `health_routes()` → `/health`, `/ready`
+2. `auth_routes()` → `/auth/*`
+3. `user_routes()` → `/users/me`, `/tiers/me`, `/emojis/favorites` ⚠️ **MUST be before
+   public_routes**
+4. `public_routes()` → `/tiers/:tier`, `/emojis/:id` (wildcards would shadow user_routes if ordered
+   first)
+5. `messaging_routes()` → `/conversations/*`
+6. `forum_routes()` → `/forums/*`, `/threads/*`
+7. `gamification_routes()` → `/achievements/*`
+8. `admin_routes()` → `/admin/*`
+
+### Critical Schema Knowledge
+
+| Schema     | Field/Gotcha                              | Correct Usage                                          |
+| ---------- | ----------------------------------------- | ------------------------------------------------------ |
+| `User`     | `username_changed_at`                     | NOT `last_username_change` — enforces 30-day cooldown  |
+| `Post`     | `score`                                   | NOT `vote_count` — field is named `score`              |
+| `Message`  | `sender_id`                               | NOT `user_id` — FK to users table                      |
+| `Token`    | `type` is `string`, `token` is `binary`   | SHA-256 hashes stored as binary, not hex strings       |
+| `Thread`   | `board_id` (belongs_to `Board`)           | NOT `forum_id` — joins through Board for forum queries |
+| `Vote`     | table: `votes`, FK to `posts`             | For post voting                                        |
+| `PostVote` | table: `post_votes`, FK to `thread_posts` | For thread post voting — different schema!             |
 
 ### Key Technologies
 
 - **Phoenix 1.8** with Bandit adapter
-- **Ecto** for PostgreSQL
-- **Guardian** for JWT authentication
+- **Ecto 3.13.5** for PostgreSQL (78 migrations)
+- **Guardian** for JWT authentication (CookieAuth plug translates HTTP-only cookies → Bearer
+  headers)
 - **Oban** for background jobs
 - **Cachex** for local caching
 - **Redix** for Redis (optional)
@@ -216,7 +259,11 @@ Services are grouped to isolate failures:
 
 - **CacheSupervisor**: `cgraph_cache` (L2), `session_cache`, `token_cache`
 - **WorkerSupervisor**: Oban, Presence, WebRTC, DataExport
-- **SecuritySupervisor**: Token blacklist, Account lockout, Key rotation
+- **SecuritySupervisor**: TokenBlacklist (fail-closed!), AccountLockout, KeyRotation
+
+> **⚠️ TokenBlacklist is fail-closed**: If the GenServer is down, ALL token checks return
+> `{:error, :token_revoked}`. This is intentional for security but means tests will fail if the
+> supervision tree doesn't start properly.
 
 ---
 
@@ -262,6 +309,4 @@ See [DEPLOYMENT.md](../../docs/guides/DEPLOYMENT.md#deployment-troubleshooting) 
 
 ---
 
-_Last updated: January 2026 (v0.9.3)_
-
-# Trigger deploy Mon 02 Feb 2026 01:31:18 AM EET
+_Last updated: February 16, 2026 (v0.9.26) — 1633 tests, 0 failures_

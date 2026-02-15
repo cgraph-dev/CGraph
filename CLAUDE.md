@@ -43,8 +43,8 @@ AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls,
 forum system.
 
 **Version**: 0.9.26  
-**Last Updated**: February 15, 2026  
-**Architecture Score**: 9.2/10 (audit-verified)  
+**Last Updated**: February 16, 2026  
+**Architecture Score**: 9.4/10 (audit-verified)  
 **License**: Proprietary (see LICENSE)
 
 ## Key Features
@@ -60,23 +60,23 @@ forum system.
 
 ## Operational Maturity
 
-| Capability            | Status          | Implementation                                              |
-| --------------------- | --------------- | ----------------------------------------------------------- |
-| **Metrics Export**    | Active          | TelemetryMetricsPrometheus.Core → `/metrics` endpoint       |
-| **SLO Monitoring**    | Active          | Prometheus recording rules + multi-burn-rate alerts         |
-| **Error Tracking**    | Active          | Sentry integration (severity-mapped levels + tags)          |
-| **Circuit Breakers**  | Active          | 7 fuses: Redis, APNs, FCM, Expo, WebPush, Mailer, HTTP      |
-| **Search Fallback**   | Active          | MeiliSearch → PostgreSQL ILIKE automatic failover           |
-| **Search Indexing**   | Active          | Oban async: messages, posts, threads indexed on create      |
-| **Load Testing**      | Ready           | k6 scripts: smoke, load, stress, WebSocket, writes          |
-| **DB Partitioning**   | Migration ready | Messages table monthly range partitions + Snowflake IDs     |
-| **Delivery Tracking** | Active          | ✓✓ receipts (sent/delivered/read)                           |
-| **Backpressure**      | Active          | Channel write throttling with configurable limits           |
-| **Request Tracing**   | Active          | Plug in 3 router pipelines (api, api_auth, api_admin)       |
-| **Chaos Testing**     | Ready           | Fault injection, fuse stress testing, failure scenarios     |
-| **Feature Flags**     | Active          | GenServer + ETS/Redis with percentage rollouts              |
-| **Test Coverage**     | Active          | 352 test files (163 backend, 171 web, 15 mobile, 3 landing) |
-| **CI/CD**             | Active          | 12 GH Actions workflows, CI-gated canary deploys            |
+| Capability            | Status          | Implementation                                                                      |
+| --------------------- | --------------- | ----------------------------------------------------------------------------------- |
+| **Metrics Export**    | Active          | TelemetryMetricsPrometheus.Core → `/metrics` endpoint                               |
+| **SLO Monitoring**    | Active          | Prometheus recording rules + multi-burn-rate alerts                                 |
+| **Error Tracking**    | Active          | Sentry integration (severity-mapped levels + tags)                                  |
+| **Circuit Breakers**  | Active          | 7 fuses: Redis, APNs, FCM, Expo, WebPush, Mailer, HTTP                              |
+| **Search Fallback**   | Active          | MeiliSearch → PostgreSQL ILIKE automatic failover                                   |
+| **Search Indexing**   | Active          | Oban async: messages, posts, threads indexed on create                              |
+| **Load Testing**      | Ready           | k6 scripts: smoke, load, stress, WebSocket, writes                                  |
+| **DB Partitioning**   | Migration ready | Messages table monthly range partitions + Snowflake IDs                             |
+| **Delivery Tracking** | Active          | ✓✓ receipts (sent/delivered/read)                                                   |
+| **Backpressure**      | Active          | Channel write throttling with configurable limits                                   |
+| **Request Tracing**   | Active          | Plug in 5 router pipelines (api, api_auth, api_auth_strict, api_relaxed, api_admin) |
+| **Chaos Testing**     | Ready           | Fault injection, fuse stress testing, failure scenarios                             |
+| **Feature Flags**     | Active          | GenServer + ETS/Redis with percentage rollouts                                      |
+| **Test Coverage**     | Active          | 352 test files (163 backend, 171 web, 15 mobile, 3 landing), 1633 tests 0 failures  |
+| **CI/CD**             | Active          | 12 GH Actions workflows, CI-gated canary deploys                                    |
 
 ### Key Operational Docs
 
@@ -483,20 +483,24 @@ Core business logic organized by domain:
 
 ### Backend Web Layer (apps/backend/lib/cgraph_web/)
 
-- `router.ex` - Main router (122 lines, imports 7 domain route modules)
+- `router.ex` - Main router (126 lines, imports 8 domain route modules)
 - `router/` - Domain route modules (health, auth, public, user, messaging, forum, gamification,
-  admin)
+  admin). **Route order matters**: user_routes before public_routes to prevent wildcard shadowing
 - `controllers/` - REST endpoints (81 controllers, 100% test coverage)
 - `channels/` - Phoenix channels for real-time features
-- `plugs/` - Authentication, rate limiting, CORS, security headers
+- `plugs/` - Authentication, rate limiting, CORS, security headers, cookie auth
 
 ### Key Plugs (Middleware)
 
+- `RequireAuth` - Verifies JWT via Guardian, assigns `current_user` or returns 401
 - `RateLimiterV2` - Distributed rate limiting (standard, strict, relaxed, burst tiers)
-- `CookieAuth` - HTTP-only cookie JWT extraction (XSS-safe)
-- `AuthPipeline` - Guardian JWT verification
+- `CookieAuth` - HTTP-only cookie JWT extraction (XSS-safe); translates cookie → Bearer header
 - `SecurityHeaders` - HSTS, CSP, X-Frame-Options, etc.
-- `CurrentUser` - Load authenticated user into conn
+- `RequireAdmin` - Checks `current_user.is_admin` after RequireAuth
+- `RequestTracing` - Generates trace_id/span_id for request correlation
+- `ApiVersion` - API version header handling
+- `IdempotencyPlug` - Idempotency key support for POST/PUT
+- `SentryContext` - Enriches Sentry error reports with request context
 
 ### Real-time Communication
 
@@ -507,8 +511,13 @@ Core business logic organized by domain:
 
 ### Security Architecture
 
-- **Authentication**: Guardian JWT with JTI revocation, HTTP-only cookies
+- **Authentication**: Guardian JWT with JTI revocation, HTTP-only cookies, fail-closed
+  TokenBlacklist
+- **Token Blacklist**: `CGraph.Security.TokenBlacklist` GenServer — `verify_claims` returns
+  `token_revoked` on error (fail-closed). Must be running for auth to work.
 - **Rate Limiting**: Redis-backed distributed limiter with trusted proxy enforcement
+- **Account Lockout**: `CGraph.Security.AccountLockout` GenServer — progressive lockout on failed
+  logins
 - **E2EE**: Server stores only public keys; encryption/decryption client-side
 - **Upload Security**: Magic byte MIME sniffing, content-type verification
 - **IP Protection**: Only trusts X-Forwarded-For from Cloudflare/private CIDRs
@@ -550,8 +559,67 @@ To prevent "blast radius" failures, the backend uses a hierarchical supervision 
 
 ### Database
 
-PostgreSQL with Ecto. Migrations in `apps/backend/priv/repo/migrations/`. Uses ULID for IDs,
-supports full-text search.
+PostgreSQL with Ecto. Migrations in `apps/backend/priv/repo/migrations/` (78 migration files). Uses
+binary_id (UUID) for primary keys, supports full-text search.
+
+### Critical Schema Knowledge (MUST READ for backend work)
+
+These are the actual field names in production schemas. Getting these wrong causes test failures:
+
+| Schema     | Field                 | NOT this               | Notes                                                            |
+| ---------- | --------------------- | ---------------------- | ---------------------------------------------------------------- |
+| `User`     | `username_changed_at` | `last_username_change` | Tracks username change cooldown                                  |
+| `User`     | `deactivated_at`      | `disabled_at`          | Soft deactivation timestamp                                      |
+| `Post`     | `score`               | `vote_count`           | Karma score on forum posts                                       |
+| `Message`  | `sender_id`           | `user_id`              | FK to users table, assoc is `:sender`                            |
+| `Token`    | `type`                | `context`              | Values: "session", "reset_password", "email_verification", "api" |
+| `Token`    | `token` (`:binary`)   | `token` (`:string`)    | SHA-256 hashes are binary, not string                            |
+| `Thread`   | `board_id`            | `forum_id`             | Thread belongs_to Board, NOT Forum                               |
+| `Vote`     | table: `votes`        | table: `post_votes`    | FK to `posts` — for forum post voting                            |
+| `PostVote` | table: `post_votes`   | —                      | FK to `thread_posts` — for thread post voting                    |
+| `Session`  | table: `sessions`     | table: `tokens`        | Device tracking, JWT refresh tokens                              |
+
+**Schema conventions:**
+
+- `@timestamps_opts [type: :utc_datetime_usec]` — microsecond precision timestamps
+- `@primary_key {:id, :binary_id, autogenerate: true}` — UUID primary keys
+- `@foreign_key_type :binary_id` — UUID foreign keys
+- All Ecto operations use string keys (Ecto 3.13.5 rejects mixed atom/string maps)
+- Use `stringify_keys/1` helper when accepting external params
+
+**Router pipeline architecture** (order matters!):
+
+```
+:api              → SecurityHeaders, CookieAuth, RequestTracing, RateLimiterV2(:standard), ApiVersion, Idempotency, Sentry
+:api_auth_strict  → SecurityHeaders, CookieAuth, RequestTracing, RateLimiterV2(:strict), ApiVersion, Idempotency, Sentry
+:api_relaxed      → SecurityHeaders, RequestTracing, RateLimiterV2(:relaxed), ApiVersion, Sentry
+:api_auth         → SecurityHeaders, RequestTracing, RateLimiterV2(:standard), ApiVersion, Idempotency, Sentry, RequireAuth
+:api_admin        → SecurityHeaders, RequestTracing, RateLimiterV2(:standard), RequireAuth, RequireAdmin, ApiVersion, Idempotency, Sentry
+```
+
+**Route macro evaluation order** (in router.ex):
+
+```
+health_routes()    → /health, /ready, /metrics, webhooks
+auth_routes()      → /auth/register, /auth/login, /auth/logout, OAuth, wallet, 2FA
+user_routes()      → /me, /users, /tiers/me, /emojis/favorites (auth required)
+public_routes()    → /tiers, /forums, /emojis (public, no auth)
+messaging_routes() → /conversations, /groups, /channels
+forum_routes()     → /forums/:id/boards, /boards/:id/threads
+gamification_routes() → /xp, /achievements, /shop, /quests
+admin_routes()     → /admin/* (admin only)
+```
+
+**IMPORTANT**: `user_routes()` MUST come before `public_routes()`. Public routes contain wildcard
+patterns (`/tiers/:tier`, `/emojis/:id`) that would shadow specific auth-required routes
+(`/tiers/me`, `/emojis/favorites`, `/emojis/recent`).
+
+**GenServers that MUST be running for tests:**
+
+- `CGraph.Security.TokenBlacklist` — fail-closed JWT verification (returns revoked on error)
+- `CGraph.Security.AccountLockout` — login attempt tracking
+- `CGraph.Metrics` — telemetry metrics collection
+- All are started in `test/test_helper.exs`
 
 ## Code Quality Standards (MANDATORY)
 
@@ -751,27 +819,29 @@ Required:
 
 Copy `.env.example` to `.env` in `apps/backend/` and configure database credentials and secrets.
 
-## Current Status (v0.9.24)
+## Current Status (v0.9.26)
 
-**Updated:** February 15, 2026  
-**Commit:** (Session 19 — `33b6d33e`)
+**Updated:** February 16, 2026  
+**Commit:** `cdddf1f6` (Session 21 — full test suite green)
 
 ### Remediation Progress
 
-| Phase                          | Target                      | Status      | Completion |
-| ------------------------------ | --------------------------- | ----------- | ---------- |
-| Phase 0: Critical Security     | Remove secrets from git     | ✅ COMPLETE | 100%       |
-| Phase 1: Security Hardening    | OAuth, CORS, SSL, Audit     | ✅ COMPLETE | 100%       |
-| Phase 2: Code Quality          | Console.log, as any         | ✅ COMPLETE | 95%        |
-| Phase 3: Store Consolidation   | 32 → 7 facades              | ✅ COMPLETE | 100%       |
-| Phase 4: Component Refactoring | Break down large components | ✅ COMPLETE | 100%       |
-| Phase 5: Feature Completeness  | Edit/delete, voice, E2EE    | ✅ COMPLETE | 100%       |
-| Phase 6: Test Coverage         | 80% coverage                | ✅ COMPLETE | 100%       |
-| Phase 7: Operational Maturity  | SRE-grade ops               | ✅ COMPLETE | 100%       |
-| Phase 8: Code Quality Cleanup  | Fix compile warnings        | ✅ COMPLETE | 100%       |
-| Phase 9: Credo Cleanup         | Fix static analysis issues  | ✅ COMPLETE | 100%       |
-| Phase 10: Test Suite Green     | 0 backend test failures     | ✅ COMPLETE | 100%       |
-| Phase 11: Compliance Pass      | <500 BE / <300 FE lines     | ✅ COMPLETE | 100%       |
+| Phase                           | Target                      | Status      | Completion |
+| ------------------------------- | --------------------------- | ----------- | ---------- |
+| Phase 0: Critical Security      | Remove secrets from git     | ✅ COMPLETE | 100%       |
+| Phase 1: Security Hardening     | OAuth, CORS, SSL, Audit     | ✅ COMPLETE | 100%       |
+| Phase 2: Code Quality           | Console.log, as any         | ✅ COMPLETE | 95%        |
+| Phase 3: Store Consolidation    | 32 → 7 facades              | ✅ COMPLETE | 100%       |
+| Phase 4: Component Refactoring  | Break down large components | ✅ COMPLETE | 100%       |
+| Phase 5: Feature Completeness   | Edit/delete, voice, E2EE    | ✅ COMPLETE | 100%       |
+| Phase 6: Test Coverage          | 80% coverage                | ✅ COMPLETE | 100%       |
+| Phase 7: Operational Maturity   | SRE-grade ops               | ✅ COMPLETE | 100%       |
+| Phase 8: Code Quality Cleanup   | Fix compile warnings        | ✅ COMPLETE | 100%       |
+| Phase 9: Credo Cleanup          | Fix static analysis issues  | ✅ COMPLETE | 100%       |
+| Phase 10: Test Suite Green      | 0 backend test failures     | ✅ COMPLETE | 100%       |
+| Phase 11: Compliance Pass       | <500 BE / <300 FE lines     | ✅ COMPLETE | 100%       |
+| Phase 12: Architecture Refactor | Router split, component org | ✅ COMPLETE | 100%       |
+| Phase 13: Audit Fix             | P0/P1/P2 audit findings     | ✅ COMPLETE | 100%       |
 
 ### Key Metrics
 
@@ -795,6 +865,39 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Operational score    | N/A         | **9.8/10**                 |
 
 **Overall Score:** 9.4/10 (up from 7.3/10)
+
+### Sessions 20–21 Changes (v0.9.26 — audit fixes + full test green)
+
+- **635 test failures resolved**: Full suite green (1633 tests, 0 failures, 7 skipped)
+- **27 files changed**: +336 insertions, −89 deletions (commit `cdddf1f6`)
+- **Root causes fixed** (17 distinct issues):
+  - `PostVote` → `Vote` schema FK mismatch in voting.ex
+  - `vote_count` → `score` field (Post schema uses `score`)
+  - `sender_id` vs `user_id` in Message schema → fixed `create_channel_message`
+  - `last_username_change` → `username_changed_at` in User schema (3 references)
+  - Token schema `context` → `type` field naming (3 references)
+  - Thread `forum_id` removed (Thread has no forum assoc, joins through Board)
+  - Thread sort field normalization (`"latest"` → `"last_post_at"`, etc.)
+  - Duplicate route definitions: `/tiers/me`, `/emojis/favorites`, `/emojis/recent` in both
+    `public_routes.ex` (no auth) and `user_routes.ex` (auth). Public match first → 401
+  - Router order: `user_routes()` moved before `public_routes()` to prevent wildcard shadowing
+    (`/tiers/:tier` catching `/tiers/me`)
+  - `CookieAuth` plug added to `:api` and `:api_auth_strict` pipelines (cookie→Bearer translation)
+  - `RequireAuth` plug created — verifies JWT via Guardian, assigns `current_user` or returns 401
+  - Token table migration created (`tokens` table was missing entirely)
+  - Token schema field type: `:string` → `:binary` for SHA-256 hashed tokens
+  - `get_role` return type: raw struct → `{:ok, role}` / `{:error, :not_found}`
+  - `TokenBlacklist` GenServer added to test_helper.exs startup list
+  - Defensive `metric_key/2` fallback clause for non-map labels
+  - Metrics `increment` arg order fixed (labels map, then amount integer)
+- **Key architectural lessons**:
+  - Ecto 3.13.5 strictly rejects mixed atom/string key maps — use `stringify_keys/1` everywhere
+  - Guardian's fail-closed `TokenBlacklist.verify_claims` masks auth issues when GenServer not
+    running
+  - Phoenix router order determines which pipeline handles a request — specific routes must come
+    before wildcard routes
+  - Two vote schemas exist: `Vote` (table: `votes`, FK to `posts`) and `PostVote` (table:
+    `post_votes`, FK to `thread_posts`)
 
 ### Sessions 14–19 Changes (v0.9.24 — compliance pass)
 

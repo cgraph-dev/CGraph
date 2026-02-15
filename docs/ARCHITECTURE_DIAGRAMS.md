@@ -1,6 +1,6 @@
 # CGraph Architecture Diagrams
 
-> **Version: 0.9.14** | Last Updated: February 2026
+> **Version: 0.9.26** | Last Updated: February 16, 2026
 
 Visual documentation of CGraph's system architecture.
 
@@ -230,13 +230,62 @@ erDiagram
         uuid author_id FK
         string title
         text content
-        int vote_count
+        int score
     }
 ```
 
 ---
 
-## 7. Authentication Flow
+## 7. Phoenix Router Pipeline Architecture (v0.9.26)
+
+```mermaid
+flowchart TB
+    subgraph Request["Incoming Request"]
+        REQ["HTTP Request"]
+    end
+
+    subgraph Pipelines["Router Pipelines"]
+        API["api<br/>SecurityHeaders → CookieAuth<br/>→ RequestTracing → RateLimiter(standard)<br/>→ ApiVersion → Idempotency → Sentry"]
+        STRICT["api_auth_strict<br/>SecurityHeaders → CookieAuth<br/>→ RequestTracing → RateLimiter(strict)<br/>→ ApiVersion → Idempotency → Sentry"]
+        RELAXED["api_relaxed<br/>SecurityHeaders → RequestTracing<br/>→ RateLimiter(relaxed)<br/>→ ApiVersion → Sentry"]
+        AUTH["api_auth<br/>api plugs + RequireAuth<br/>(JWT verification → current_user)"]
+        ADMIN["api_admin<br/>RequireAuth + RequireAdmin<br/>(admin role check)"]
+    end
+
+    subgraph Routes["Route Evaluation Order"]
+        R1["health_routes()"]
+        R2["auth_routes()<br/>register, login, OAuth, wallet, 2FA"]
+        R3["user_routes() ⚠️ BEFORE public<br/>/tiers/me, /emojis/favorites"]
+        R4["public_routes()<br/>/tiers/:tier, /emojis/:id"]
+        R5["messaging_routes()<br/>conversations, groups"]
+        R6["forum_routes()<br/>boards, threads"]
+        R7["gamification_routes()<br/>XP, quests, shop"]
+        R8["admin_routes()<br/>admin dashboard"]
+    end
+
+    REQ --> R1
+    R1 --> R2 --> R3 --> R4 --> R5 --> R6 --> R7 --> R8
+
+    R1 -.->|":api"| API
+    R2 -.->|":api_auth_strict"| STRICT
+    R3 -.->|":api + :api_auth"| AUTH
+    R4 -.->|":api_relaxed"| RELAXED
+    R5 -.->|":api + :api_auth"| AUTH
+    R6 -.->|":api + :api_auth"| AUTH
+    R7 -.->|":api + :api_auth"| AUTH
+    R8 -.->|":api_admin"| ADMIN
+
+    style Routes fill:#e3f2fd
+    style Pipelines fill:#f3e5f5
+```
+
+> **Critical**: `user_routes()` MUST evaluate before `public_routes()`. Public routes contain
+> wildcard patterns (`/tiers/:tier`, `/emojis/:id`) that would shadow specific authenticated routes
+> (`/tiers/me`, `/emojis/favorites`, `/emojis/recent`).
+
+---
+
+## 8. Authentication Flow
 
 ```mermaid
 flowchart TB
@@ -270,7 +319,7 @@ flowchart TB
 
 ---
 
-## 8. Deployment Pipeline
+## 9. Deployment Pipeline
 
 ```mermaid
 flowchart LR
@@ -309,7 +358,7 @@ flowchart LR
 
 ---
 
-## 9. State Management (Zustand Stores)
+## 10. State Management (Zustand Stores)
 
 ```mermaid
 flowchart TB
@@ -340,7 +389,7 @@ flowchart TB
 
 ---
 
-## 10. Facade Hook Architecture ()
+## 11. Facade Hook Architecture
 
 ```mermaid
 flowchart TB
@@ -412,7 +461,7 @@ object.
 
 ---
 
-## 11. Socket Module Architecture
+## 12. Socket Module Architecture
 
 ```mermaid
 graph TD
@@ -444,7 +493,7 @@ graph TD
 
 ---
 
-## 12. Request Flow
+## 13. Request Flow
 
 ```mermaid
 flowchart LR
@@ -482,4 +531,4 @@ flowchart LR
 
 ---
 
-<sub>**CGraph Architecture Diagrams** • Version 0.9.14 • Last updated: February 2026</sub>
+<sub>**CGraph Architecture Diagrams** • Version 0.9.26 • Last updated: February 16, 2026</sub>

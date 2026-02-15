@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.26** | Generated: February 15, 2026
+> **Version: 0.9.26** | Generated: February 16, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
@@ -8,18 +8,18 @@ Real-time overview of project health, architecture status, and operational state
 
 ## Overall Health
 
-| Dimension         | Status | Score | Notes                                                                      |
-| ----------------- | ------ | ----- | -------------------------------------------------------------------------- |
-| **Build**         | OK     | 10/10 | All apps building successfully                                             |
-| **TypeScript**    | OK     | 10/10 | 0 errors across all packages                                               |
-| **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                             |
-| **Architecture**  | OK     | 9/10  | Router split (7 domain modules), component categorization, remote caching  |
-| **Tests**         | OK     | 10/10 | 1,633 tests passing, 0 failures, 7 skipped — backend suite fully green     |
-| **Security**      | WARN   | 7/10  | E2EE implemented; recovery codes hashed; no external audit yet             |
-| **Documentation** | OK     | 9/10  | Architecture + API docs current; load test baselines published             |
-| **Observability** | OK     | 10/10 | Prometheus + SLO dashboards + Alerting + Tracing + runtime SLO enforcement |
-| **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing (singleflight)     |
-| **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags                              |
+| Dimension         | Status | Score | Notes                                                                           |
+| ----------------- | ------ | ----- | ------------------------------------------------------------------------------- |
+| **Build**         | OK     | 10/10 | All apps building successfully                                                  |
+| **TypeScript**    | OK     | 10/10 | 0 errors across all packages                                                    |
+| **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                                  |
+| **Architecture**  | OK     | 9/10  | Router split (7 domain modules), component categorization, remote caching       |
+| **Tests**         | OK     | 10/10 | 1,633 tests passing, 0 failures, 7 skipped — 635 pre-existing failures resolved |
+| **Security**      | WARN   | 7/10  | E2EE implemented; recovery codes hashed; no external audit yet                  |
+| **Documentation** | OK     | 9/10  | Architecture + API docs current; load test baselines published                  |
+| **Observability** | OK     | 10/10 | Prometheus + SLO dashboards + Alerting + Tracing + runtime SLO enforcement      |
+| **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing (singleflight)          |
+| **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags                                   |
 
 **Composite Score: 9.4/10** — Production-grade foundation; external security audit is the primary
 remaining gap
@@ -116,7 +116,7 @@ Remaining:          10 (15%)
 
 | Component     | Tech Stack           | Status | Notes                       |
 | ------------- | -------------------- | ------ | --------------------------- |
-| Backend API   | Phoenix 1.8 / Elixir | ✅     | Router split into 7 modules |
+| Backend API   | Phoenix 1.8 / Elixir | ✅     | Router split into 8 modules |
 | Web App       | React 19 / Vite      | ✅     | Components organized (9/10) |
 | Landing App   | React 19 / Vite      | ✅     | Deployed separately         |
 | Mobile App    | Expo 54 / RN 0.81    | ✅     | Feature parity with web     |
@@ -132,16 +132,20 @@ Remaining:          10 (15%)
 
 ```
 apps/backend/lib/cgraph_web/       # Router architecture (v0.9.26)
-├── router.ex                      # Main router (122 lines) imports domain macros
+├── router.ex                      # Main router (126 lines) imports domain macros
 └── router/                        # Domain route modules
     ├── health_routes.ex           #   Health checks (38 lines)
-    ├── auth_routes.ex             #   Auth + OAuth (90 lines)
-    ├── public_routes.ex           #   Public API endpoints (71 lines)
-    ├── user_routes.ex             #   User CRUD + features (257 lines)
+    ├── auth_routes.ex             #   Auth + OAuth + 2FA (100 lines)
+    ├── user_routes.ex             #   User CRUD + features (258 lines) [BEFORE public!]
+    ├── public_routes.ex           #   Public API endpoints (68 lines)
     ├── messaging_routes.ex        #   DMs, conversations (87 lines)
     ├── forum_routes.ex            #   Forums, posts, comments (117 lines)
     ├── gamification_routes.ex     #   XP, achievements, quests (124 lines)
     └── admin_routes.ex            #   Admin panel routes (135 lines)
+
+IMPORTANT: user_routes() evaluates BEFORE public_routes() in router.ex.
+This prevents wildcard routes (/tiers/:tier, /emojis/:id) from shadowing
+specific auth-required routes (/tiers/me, /emojis/favorites, /emojis/recent).
 
 apps/web/src/components/           # Frontend component organization (v0.9.26)
 ├── ui/                            # Buttons, inputs, modals, selects
@@ -245,24 +249,25 @@ apps/mobile/src/screens/
 
 ## 📅 Release Timeline
 
-| Version | Date       | Highlights                                                                                                                        |
-| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| 0.9.26  | 2026-02-15 | **Architecture refactor**: Router split (7 modules), component org (6 dirs), remote caching, bundle monitoring, dead code removal |
-| 0.9.24+ | 2026-02-15 | **Compliance pass**: 8 backend modules split (<500 lines), 5 React splits (<300 lines), 56 @spec annotations, soft delete audit   |
-| 0.9.24  | 2026-02-15 | **Backend tests green**: 1,633 tests, 0 failures — 13 source bugs fixed, 114 files changed                                        |
-| 0.9.23  | 2026-02-14 | **Credo zero**: 64→0 issues, 56 alias fixes, 8 TODOs implemented                                                                  |
-| 0.9.22  | 2026-02-13 | **Refactoring**: 0 Credo warnings/refactoring, context structs, pattern matching                                                  |
-| 0.9.21  | 2026-02-13 | **Credo cleanup**: 1,277→83 issues, 14 routes wired, alias ordering, atom safety                                                  |
-| 0.9.20  | 2026-02-13 | **Compile cleanup**: 90→0 warnings, Elixir 1.19 bitwise fix, 30+ files cleaned                                                    |
-| 0.9.19  | 2026-02-14 | **163 backend tests**, 70 context tests, 4 controllers wired, observability stack                                                 |
-| 0.9.18  | 2026-02-14 | **100% controller coverage**, MeiliSearch pipeline, chaos testing                                                                 |
-| 0.9.12  | 2026-02-03 | **Reanimated v4 migration** (222→0 TS errors)                                                                                     |
-| 0.9.11  | 2026-02-02 | Architecture transformation, module system                                                                                        |
-| 0.9.10  | 2026-02-01 | E2EE test suite, store facades, 893 tests                                                                                         |
-| 0.9.9   | 2026-01-31 | Type safety improvements, production logging                                                                                      |
-| 0.9.8   | 2026-01-30 | Code simplification, component extraction                                                                                         |
-| 0.9.7   | 2026-01-27 | Enterprise landing page, dual-app arch                                                                                            |
-| 1.0.0   | TBD        | First stable release (post-audit)                                                                                                 |
+| Version | Date       | Highlights                                                                                                                                                                 |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.9.26+ | 2026-02-16 | **Test suite fully green**: 635 pre-existing failures resolved, 17 root causes fixed, route architecture corrected, CookieAuth + RequireAuth plugs, tokens table migration |
+| 0.9.26  | 2026-02-15 | **Architecture refactor**: Router split (8 modules), component org (6 dirs), remote caching, bundle monitoring, dead code removal                                          |
+| 0.9.24+ | 2026-02-15 | **Compliance pass**: 8 backend modules split (<500 lines), 5 React splits (<300 lines), 56 @spec annotations, soft delete audit                                            |
+| 0.9.24  | 2026-02-15 | **Backend tests green**: 1,633 tests, 0 failures — 13 source bugs fixed, 114 files changed                                                                                 |
+| 0.9.23  | 2026-02-14 | **Credo zero**: 64→0 issues, 56 alias fixes, 8 TODOs implemented                                                                                                           |
+| 0.9.22  | 2026-02-13 | **Refactoring**: 0 Credo warnings/refactoring, context structs, pattern matching                                                                                           |
+| 0.9.21  | 2026-02-13 | **Credo cleanup**: 1,277→83 issues, 14 routes wired, alias ordering, atom safety                                                                                           |
+| 0.9.20  | 2026-02-13 | **Compile cleanup**: 90→0 warnings, Elixir 1.19 bitwise fix, 30+ files cleaned                                                                                             |
+| 0.9.19  | 2026-02-14 | **163 backend tests**, 70 context tests, 4 controllers wired, observability stack                                                                                          |
+| 0.9.18  | 2026-02-14 | **100% controller coverage**, MeiliSearch pipeline, chaos testing                                                                                                          |
+| 0.9.12  | 2026-02-03 | **Reanimated v4 migration** (222→0 TS errors)                                                                                                                              |
+| 0.9.11  | 2026-02-02 | Architecture transformation, module system                                                                                                                                 |
+| 0.9.10  | 2026-02-01 | E2EE test suite, store facades, 893 tests                                                                                                                                  |
+| 0.9.9   | 2026-01-31 | Type safety improvements, production logging                                                                                                                               |
+| 0.9.8   | 2026-01-30 | Code simplification, component extraction                                                                                                                                  |
+| 0.9.7   | 2026-01-27 | Enterprise landing page, dual-app arch                                                                                                                                     |
+| 1.0.0   | TBD        | First stable release (post-audit)                                                                                                                                          |
 
 ---
 
@@ -283,4 +288,4 @@ apps/mobile/src/screens/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.26 • Updated: February 15, 2026</sub>
+<sub>**CGraph Dashboard** • Version 0.9.26 • Updated: February 16, 2026</sub>
