@@ -74,7 +74,7 @@ defmodule CGraph.Forums.Posts do
   Creates a post in a forum.
   """
   def create_post(forum, user, attrs) do
-    attrs = Map.merge(attrs, %{
+    attrs = attrs |> stringify_keys() |> Map.merge(%{
       "forum_id" => forum.id,
       "author_id" => user.id
     })
@@ -96,7 +96,7 @@ defmodule CGraph.Forums.Posts do
   """
   def update_post(post, attrs) do
     post
-    |> Post.changeset(attrs)
+    |> Post.edit_changeset(attrs)
     |> Repo.update()
   end
 
@@ -108,9 +108,9 @@ defmodule CGraph.Forums.Posts do
     |> Ecto.Changeset.change(%{deleted_at: DateTime.truncate(DateTime.utc_now(), :second)})
     |> Repo.update()
     |> case do
-      {:ok, _post} ->
+      {:ok, deleted_post} ->
         update_forum_post_count(post.forum_id, -1)
-        {:ok, :deleted}
+        {:ok, deleted_post}
       error -> error
     end
   end
@@ -242,5 +242,12 @@ defmodule CGraph.Forums.Posts do
   defp update_forum_post_count(forum_id, delta) do
     from(f in CGraph.Forums.Forum, where: f.id == ^forum_id)
     |> Repo.update_all(inc: [post_count: delta])
+  end
+
+  defp stringify_keys(map) when is_map(map) do
+    Map.new(map, fn
+      {k, v} when is_atom(k) -> {Atom.to_string(k), v}
+      {k, v} -> {k, v}
+    end)
   end
 end

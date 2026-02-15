@@ -6,7 +6,7 @@ defmodule CGraph.Forums.Voting do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Forums.{Post, PostVote, Vote}
+  alias CGraph.Forums.{Post, Vote}
   alias CGraph.Repo
 
   @doc """
@@ -17,38 +17,39 @@ defmodule CGraph.Forums.Voting do
 
     Repo.transaction(fn ->
       # Check for existing vote
-      existing_vote = Repo.get_by(PostVote, user_id: user.id, post_id: post.id)
+      existing_vote = Repo.get_by(Vote, user_id: user.id, post_id: post.id)
 
-      case existing_vote do
+      vote_result = case existing_vote do
         nil ->
           # Create new vote
-          %PostVote{}
-          |> PostVote.changeset(%{
+          %Vote{}
+          |> Vote.changeset(%{
             user_id: user.id,
             post_id: post.id,
             value: vote_value
           })
           |> Repo.insert!()
-
-          update_post_karma(post, vote_value)
+          |> tap(fn _vote -> update_post_karma(post, vote_value) end)
 
         vote ->
           if vote.value == vote_value do
             # Same vote - remove it
             Repo.delete!(vote)
             update_post_karma(post, -vote_value)
+            nil
           else
             # Different vote - update it
-            vote
-            |> PostVote.changeset(%{value: vote_value})
+            updated = vote
+            |> Vote.changeset(%{value: vote_value})
             |> Repo.update!()
 
             # Adjust karma (remove old, add new)
             update_post_karma(post, vote_value * 2)
+            updated
           end
       end
 
-      get_post_karma(post)
+      vote_result
     end)
   end
 
@@ -56,14 +57,14 @@ defmodule CGraph.Forums.Voting do
   Removes a vote from a post.
   """
   def remove_vote(user, post) do
-    case Repo.get_by(PostVote, user_id: user.id, post_id: post.id) do
+    case Repo.get_by(Vote, user_id: user.id, post_id: post.id) do
       nil ->
-        {:ok, get_post_karma(post)}
+        {:ok, Repo.get(Post, post.id)}
 
       vote ->
         Repo.delete!(vote)
         update_post_karma(post, -vote.value)
-        {:ok, get_post_karma(post)}
+        {:ok, Repo.get(Post, post.id)}
     end
   end
 
@@ -71,7 +72,7 @@ defmodule CGraph.Forums.Voting do
   Gets the current karma score for a post.
   """
   def get_post_karma(post) do
-    from(v in PostVote,
+    from(v in Vote,
       where: v.post_id == ^post.id,
       select: coalesce(sum(v.value), 0)
     )
@@ -82,7 +83,7 @@ defmodule CGraph.Forums.Voting do
   Gets a user's vote on a post.
   """
   def get_user_vote(user, post) do
-    case Repo.get_by(PostVote, user_id: user.id, post_id: post.id) do
+    case Repo.get_by(Vote, user_id: user.id, post_id: post.id) do
       nil -> nil
       vote -> if vote.value > 0, do: :up, else: :down
     end
@@ -126,7 +127,7 @@ defmodule CGraph.Forums.Voting do
 
     from(p in Post,
       where: p.inserted_at >= ^since,
-      order_by: [desc: p.vote_count],
+      order_by: [desc: p.score],
       limit: ^limit,
       preload: [:author, :forum]
     )
@@ -137,6 +138,6 @@ defmodule CGraph.Forums.Voting do
 
   defp update_post_karma(post, delta) do
     from(p in Post, where: p.id == ^post.id)
-    |> Repo.update_all(inc: [vote_count: delta])
+    |> Repo.update_all(inc: [score: delta])
   end
 end

@@ -17,12 +17,13 @@ defmodule CGraph.Groups.Channels do
   # ============================================================================
 
   @doc "List channels for a group, optionally filtered by category."
-  @spec list_channels(struct(), keyword()) :: {list(), map()}
+  @spec list_channels(struct(), keyword()) :: list()
   def list_channels(group, opts \\ []) do
     category_id = Keyword.get(opts, :category_id)
 
     query = from c in Channel,
       where: c.group_id == ^group.id,
+      where: is_nil(c.deleted_at),
       order_by: [asc: c.position, asc: c.inserted_at]
 
     query = if category_id do
@@ -31,14 +32,7 @@ defmodule CGraph.Groups.Channels do
       query
     end
 
-    pagination_opts = CGraph.Pagination.parse_params(
-      Enum.into(opts, %{}),
-      sort_field: :position,
-      sort_direction: :asc,
-      default_limit: 50
-    )
-
-    CGraph.Pagination.paginate(query, pagination_opts)
+    Repo.all(query)
   end
 
   @doc "Get a channel by group and channel ID."
@@ -88,7 +82,7 @@ defmodule CGraph.Groups.Channels do
   @spec delete_channel(struct()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def delete_channel(channel) do
     channel
-    |> Ecto.Changeset.change(deleted_at: DateTime.utc_now())
+    |> Ecto.Changeset.change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
     |> Repo.update()
   end
 
@@ -121,9 +115,13 @@ defmodule CGraph.Groups.Channels do
 
   @doc "Create a channel message."
   @spec create_channel_message(struct(), struct(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
+  def create_channel_message(%CGraph.Accounts.User{} = user, channel, attrs) do
+    create_channel_message(channel, user, attrs)
+  end
+
   def create_channel_message(channel, user, attrs) do
-    message_attrs = Map.merge(attrs, %{
-      "user_id" => user.id,
+    message_attrs = attrs |> stringify_keys() |> Map.merge(%{
+      "sender_id" => user.id,
       "channel_id" => channel.id
     })
 
@@ -131,7 +129,7 @@ defmodule CGraph.Groups.Channels do
     |> Message.changeset(message_attrs)
     |> Repo.insert()
     |> case do
-      {:ok, message} -> {:ok, Repo.preload(message, [:user, :reactions])}
+      {:ok, message} -> {:ok, Repo.preload(message, [:sender, :reactions])}
       error -> error
     end
   end

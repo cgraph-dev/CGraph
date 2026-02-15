@@ -101,7 +101,9 @@ defmodule CGraph.Groups do
   defdelegate get_invite_by_code(code), to: Invites
   defdelegate create_invite(group, user, opts \\ %{}), to: Invites
   defdelegate delete_invite(invite), to: Invites
-  defdelegate join_via_invite(invite, user), to: Invites
+
+  @doc "Join a group via invite. Accepts (invite, user) or (user, invite)."
+  def join_via_invite(first, second), do: Invites.join_via_invite(first, second)
 
   # ============================================================================
   # Delegated: Emojis

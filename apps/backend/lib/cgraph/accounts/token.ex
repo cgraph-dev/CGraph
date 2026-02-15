@@ -17,7 +17,7 @@ defmodule CGraph.Accounts.Token do
   @foreign_key_type :binary_id
 
   schema "tokens" do
-    field :token, :string
+    field :token, :binary
     field :type, :string  # session, reset_password, email_verification, api
     field :expires_at, :utc_datetime
     field :used_at, :utc_datetime

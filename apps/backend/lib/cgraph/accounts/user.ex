@@ -91,6 +91,7 @@ defmodule CGraph.Accounts.User do
     field :login_count, :integer, default: 0
     field :email_verified_at, :utc_datetime
     field :deleted_at, :utc_datetime
+    field :deactivated_at, :utc_datetime
     field :previous_usernames, {:array, :string}, default: []
 
     # Gamification

@@ -359,8 +359,8 @@ defmodule CGraph.Forums.Core do
   @doc "Increment post views."
   def increment_post_views(post) do
     from(p in Post, where: p.id == ^post.id)
-    |> Repo.update_all(inc: [views: 1])
-    {:ok, %{post | views: (post.views || 0) + 1}}
+    |> Repo.update_all(inc: [view_count: 1])
+    {:ok, %{post | view_count: (post.view_count || 0) + 1}}
   end
 
   @doc "Increment thread views."

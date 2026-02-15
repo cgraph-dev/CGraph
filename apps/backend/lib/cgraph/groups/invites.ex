@@ -19,7 +19,7 @@ defmodule CGraph.Groups.Invites do
   def list_invites(group) do
     from(i in Invite,
       where: i.group_id == ^group.id,
-      preload: [:creator]
+      preload: [:created_by]
     )
     |> Repo.all()
   end
@@ -30,19 +30,23 @@ defmodule CGraph.Groups.Invites do
     from(i in Invite,
       where: i.id == ^invite_id,
       where: i.group_id == ^group.id,
-      preload: [:creator, :group]
+      preload: [:created_by, :group]
     )
     |> Repo.one()
   end
 
   @doc "Get an invite by its code."
-  @spec get_invite_by_code(binary()) :: Invite.t() | nil
+  @spec get_invite_by_code(binary()) :: {:ok, Invite.t()} | {:error, :not_found}
   def get_invite_by_code(code) do
-    from(i in Invite,
+    query = from(i in Invite,
       where: i.code == ^code,
-      preload: [:creator, :group]
+      preload: [:created_by, :group]
     )
-    |> Repo.one()
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      invite -> {:ok, invite}
+    end
   end
 
   @doc "Create an invite with default options."
@@ -69,8 +73,12 @@ defmodule CGraph.Groups.Invites do
   # ============================================================================
 
   @doc "Join a group via an invite code. Atomically increments the use count."
-  @spec join_via_invite(Invite.t(), struct()) :: {:ok, Member.t()} | {:error, any()}
-  def join_via_invite(invite, user) do
+  @spec join_via_invite(Invite.t() | struct(), struct() | Invite.t()) :: {:ok, Member.t()} | {:error, any()}
+  def join_via_invite(%CGraph.Accounts.User{} = user, %Invite{} = invite) do
+    join_via_invite(invite, user)
+  end
+
+  def join_via_invite(%Invite{} = invite, user) do
     # Increment uses atomically
     from(i in Invite, where: i.id == ^invite.id)
     |> Repo.update_all(inc: [uses: 1])
@@ -92,7 +100,7 @@ defmodule CGraph.Groups.Invites do
   defp create_invite_impl(group, user, opts) do
     invite_attrs = %{
       group_id: group.id,
-      creator_id: user.id,
+      created_by_id: user.id,
       code: generate_invite_code(),
       max_uses: Map.get(opts, :max_uses) || Map.get(opts, "max_uses"),
       expires_at: Map.get(opts, :expires_at) || Map.get(opts, "expires_at")
@@ -102,7 +110,7 @@ defmodule CGraph.Groups.Invites do
     |> Invite.changeset(invite_attrs)
     |> Repo.insert()
     |> case do
-      {:ok, invite} -> {:ok, Repo.preload(invite, [:creator, :group])}
+      {:ok, invite} -> {:ok, Repo.preload(invite, [:created_by, :group])}
       error -> error
     end
   end

@@ -101,7 +101,7 @@ defmodule CGraph.Forums.Post do
   """
   def edit_changeset(post, attrs) do
     post
-    |> cast(attrs, [:content, :is_nsfw, :is_spoiler, :flair_text, :flair_color])
+    |> cast(attrs, [:title, :content, :is_nsfw, :is_spoiler, :flair_text, :flair_color])
     |> validate_length(:content, max: 40_000)
     |> put_change(:is_edited, true)
   end

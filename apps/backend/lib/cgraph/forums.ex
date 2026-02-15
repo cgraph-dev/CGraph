@@ -373,8 +373,18 @@ defmodule CGraph.Forums do
     post_scores = build_post_karma_query(forum_id, time_filter) |> Repo.all()
     comment_scores = build_comment_karma_query(forum_id, time_filter) |> Repo.all()
     combined = combine_karma_scores(post_scores, comment_scores)
+    total = length(combined)
     paginated = paginate_scores(combined, page, per_page)
-    hydrate_users(paginated)
+    entries = hydrate_users(paginated)
+
+    meta = %{
+      page: page,
+      per_page: per_page,
+      total: total,
+      total_pages: max(ceil(total / per_page), 1)
+    }
+
+    {entries, meta}
   end
 
   # ============================================================================

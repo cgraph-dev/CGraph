@@ -24,7 +24,7 @@ defmodule CGraph.MetricsTest do
 
       case Metrics.define(:counter, name, help: "Test counter") do
         :ok ->
-          Metrics.increment(name, 1, %{})
+          Metrics.increment(name, %{}, 1)
           assert true
 
         {:error, _} ->
@@ -62,6 +62,17 @@ defmodule CGraph.MetricsTest do
 
   describe "reset/0" do
     test "resets all metrics" do
+      # Ensure Metrics server is running
+      case Process.whereis(CGraph.Metrics) do
+        nil ->
+          case CGraph.Metrics.start_link([]) do
+            {:ok, _} -> :ok
+            {:error, {:already_started, _}} -> :ok
+            _ -> :ok
+          end
+        _pid -> :ok
+      end
+
       result = Metrics.reset()
       assert result == :ok or match?({:ok, _}, result)
     end

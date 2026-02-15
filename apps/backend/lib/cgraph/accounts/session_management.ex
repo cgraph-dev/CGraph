@@ -21,7 +21,7 @@ defmodule CGraph.Accounts.SessionManagement do
     %Token{}
     |> Token.changeset(%{
       token: hashed,
-      context: "session",
+      type: "session",
       user_id: user.id
     })
     |> Repo.insert!()
@@ -35,7 +35,7 @@ defmodule CGraph.Accounts.SessionManagement do
     hashed = :crypto.hash(:sha256, token)
 
     query = from t in Token,
-      where: t.token == ^hashed and t.context == "session",
+      where: t.token == ^hashed and t.type == "session",
       where: t.inserted_at > ago(@session_token_validity_days, "day"),
       join: u in User, on: u.id == t.user_id,
       select: u
@@ -49,7 +49,7 @@ defmodule CGraph.Accounts.SessionManagement do
     hashed = :crypto.hash(:sha256, token)
 
     from(t in Token,
-      where: t.token == ^hashed and t.context == "session"
+      where: t.token == ^hashed and t.type == "session"
     )
     |> Repo.delete_all()
 
@@ -74,7 +74,7 @@ defmodule CGraph.Accounts.SessionManagement do
   @doc "Revoke a session."
   @spec revoke_session(Session.t()) :: {:ok, Session.t()} | {:error, Ecto.Changeset.t()}
   def revoke_session(%Session{} = session) do
-    now = DateTime.truncate(DateTime.utc_now(), :second)
+    now = DateTime.utc_now()
     session
     |> Ecto.Changeset.change(revoked_at: now)
     |> Repo.update()

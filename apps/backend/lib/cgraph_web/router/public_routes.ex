@@ -15,7 +15,6 @@ defmodule CGraphWeb.Router.PublicRoutes do
         # Subscription tiers - public info
         get "/tiers", TierController, :index
         get "/tiers/compare", TierController, :compare
-        get "/tiers/me", TierController, :my_tier
         get "/tiers/:tier", TierController, :show
 
         # Public forum browsing - forums are public by default
@@ -53,8 +52,6 @@ defmodule CGraphWeb.Router.PublicRoutes do
         get "/emojis/categories", CustomEmojiController, :categories
         get "/emojis/search", CustomEmojiController, :search
         get "/emojis/popular", CustomEmojiController, :popular
-        get "/emojis/favorites", CustomEmojiController, :favorites
-        get "/emojis/recent", CustomEmojiController, :recent
         get "/emojis/:id", CustomEmojiController, :show
 
         # Forum Hierarchy - Public tree navigation

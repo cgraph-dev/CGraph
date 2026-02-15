@@ -56,7 +56,7 @@ defmodule CGraph.Forums.Comments do
   Creates a comment on a post.
   """
   def create_comment(post, user, attrs) do
-    attrs = Map.merge(attrs, %{
+    attrs = attrs |> stringify_keys() |> Map.merge(%{
       "post_id" => post.id,
       "author_id" => user.id
     })
@@ -78,7 +78,7 @@ defmodule CGraph.Forums.Comments do
   """
   def update_comment(comment, attrs) do
     comment
-    |> Comment.changeset(attrs)
+    |> Comment.edit_changeset(attrs)
     |> Repo.update()
   end
 
@@ -87,12 +87,15 @@ defmodule CGraph.Forums.Comments do
   """
   def delete_comment(comment) do
     comment
-    |> Ecto.Changeset.change(%{deleted_at: DateTime.truncate(DateTime.utc_now(), :second)})
+    |> Ecto.Changeset.change(%{
+      deleted_at: DateTime.truncate(DateTime.utc_now(), :second),
+      content: "[deleted]"
+    })
     |> Repo.update()
     |> case do
-      {:ok, _comment} ->
+      {:ok, deleted_comment} ->
         update_post_comment_count(comment.post_id, -1)
-        {:ok, :deleted}
+        {:ok, deleted_comment}
       error -> error
     end
   end
@@ -212,5 +215,12 @@ defmodule CGraph.Forums.Comments do
   defp update_post_comment_count(post_id, delta) do
     from(p in Post, where: p.id == ^post_id)
     |> Repo.update_all(inc: [comment_count: delta])
+  end
+
+  defp stringify_keys(map) when is_map(map) do
+    Map.new(map, fn
+      {k, v} when is_atom(k) -> {Atom.to_string(k), v}
+      {k, v} -> {k, v}
+    end)
   end
 end

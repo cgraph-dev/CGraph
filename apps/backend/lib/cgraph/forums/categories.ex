@@ -39,7 +39,7 @@ defmodule CGraph.Forums.Categories do
   """
   def create_category(forum, attrs) do
     %Category{}
-    |> Category.changeset(Map.put(attrs, "forum_id", forum.id))
+    |> Category.changeset(attrs |> stringify_keys() |> Map.put("forum_id", forum.id))
     |> Repo.insert()
   end
 
@@ -70,5 +70,12 @@ defmodule CGraph.Forums.Categories do
     end)
 
     {:ok, list_categories(forum)}
+  end
+
+  defp stringify_keys(map) when is_map(map) do
+    Map.new(map, fn
+      {k, v} when is_atom(k) -> {Atom.to_string(k), v}
+      {k, v} -> {k, v}
+    end)
   end
 end

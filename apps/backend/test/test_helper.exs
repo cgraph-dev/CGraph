@@ -22,7 +22,8 @@ for mod <- [
   CGraph.ConnectionPool,
   CGraph.Idempotency,
   CGraph.Webhooks,
-  CGraph.Metrics
+  CGraph.Metrics,
+  CGraph.Security.TokenBlacklist
 ] do
   case mod.start_link([]) do
     {:ok, _pid} -> :ok

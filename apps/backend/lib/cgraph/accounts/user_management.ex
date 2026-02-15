@@ -31,7 +31,7 @@ defmodule CGraph.Accounts.UserManagement do
   def deactivate_user(user) do
     now = DateTime.truncate(DateTime.utc_now(), :second)
     user
-    |> Ecto.Changeset.change(%{deactivated_at: now, is_active: false})
+    |> Ecto.Changeset.change(%{deactivated_at: now, deleted_at: now, is_active: false})
     |> Repo.update()
   end
 
@@ -94,15 +94,23 @@ defmodule CGraph.Accounts.UserManagement do
   @doc "List top users by karma."
   @spec list_top_users_by_karma(keyword()) :: [User.t()]
   def list_top_users_by_karma(opts \\ []) do
-    limit = Keyword.get(opts, :limit, 10)
+    per_page = Keyword.get(opts, :per_page, Keyword.get(opts, :limit, 10))
+    page = Keyword.get(opts, :page, 1)
 
-    from(u in User,
+    query = from(u in User,
       where: is_nil(u.deleted_at),
       order_by: [desc: u.karma],
-      limit: ^limit,
       preload: [:customization]
     )
-    |> Repo.all()
+
+    pagination_opts = CGraph.Pagination.parse_params(
+      %{"per_page" => per_page, "page" => page},
+      sort_field: :karma,
+      sort_direction: :desc,
+      default_limit: per_page
+    )
+
+    CGraph.Pagination.paginate(query, pagination_opts)
   end
 
   @doc "Update user attributes."
@@ -155,14 +163,14 @@ defmodule CGraph.Accounts.UserManagement do
   def change_username(user, new_username) do
     user
     |> User.username_changeset(%{username: new_username})
-    |> Ecto.Changeset.put_change(:last_username_change, DateTime.truncate(DateTime.utc_now(), :second))
+    |> Ecto.Changeset.put_change(:username_changed_at, DateTime.truncate(DateTime.utc_now(), :second))
     |> Repo.update()
   end
 
   @doc "Check if a user can change their username."
   @spec can_change_username?(User.t()) :: boolean()
   def can_change_username?(user) do
-    case user.last_username_change do
+    case user.username_changed_at do
       nil -> true
       last_change -> DateTime.diff(DateTime.utc_now(), last_change, :day) >= 30
     end
@@ -171,7 +179,7 @@ defmodule CGraph.Accounts.UserManagement do
   @doc "Get next allowed username change date."
   @spec next_username_change_date(User.t()) :: DateTime.t()
   def next_username_change_date(user) do
-    case user.last_username_change do
+    case user.username_changed_at do
       nil -> DateTime.utc_now()
       last_change -> DateTime.add(last_change, 30 * 24 * 60 * 60, :second)
     end

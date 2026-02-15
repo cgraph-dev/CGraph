@@ -15,9 +15,13 @@ defmodule CGraph.Forums.Threads do
   def list_threads(forum_or_board, opts \\ []) do
     base_query = case forum_or_board do
       %{__struct__: CGraph.Forums.Forum} = forum ->
-        from(t in Thread, where: t.forum_id == ^forum.id)
+        from(t in Thread,
+          join: b in CGraph.Forums.Board, on: b.id == t.board_id,
+          where: b.forum_id == ^forum.id)
       %{__struct__: CGraph.Forums.Board} = board ->
         from(t in Thread, where: t.board_id == ^board.id)
+      board_id when is_binary(board_id) ->
+        from(t in Thread, where: t.board_id == ^board_id)
       _ ->
         from(t in Thread)
     end
@@ -25,6 +29,18 @@ defmodule CGraph.Forums.Threads do
     base_query = base_query
     |> order_by([t], [desc: t.is_pinned])
     |> preload([:author, :last_poster])
+
+    # Normalize sort field names
+    sort = case Keyword.get(opts, :sort) do
+      "latest" -> "last_post_at"
+      "newest" -> "inserted_at"
+      "top" -> "score"
+      "hot" -> "hot_score"
+      "views" -> "view_count"
+      other -> other
+    end
+
+    opts = Keyword.put(opts, :sort, sort)
 
     pagination_opts = CGraph.Pagination.parse_params(
       Enum.into(opts, %{}),
@@ -42,7 +58,7 @@ defmodule CGraph.Forums.Threads do
   def get_thread(id) do
     case Repo.get(Thread, id) do
       nil -> {:error, :not_found}
-      thread -> {:ok, Repo.preload(thread, [:author, :forum, :board])}
+      thread -> {:ok, Repo.preload(thread, [:author, :board])}
     end
   end
 
@@ -51,14 +67,17 @@ defmodule CGraph.Forums.Threads do
   """
   def create_thread(forum, user, attrs) do
     Repo.transaction(fn ->
+      # Get or determine the board_id
+      board_id = attrs["board_id"] || attrs[:board_id]
+
       # Create thread
       thread_result =
         %Thread{}
         |> Thread.changeset(%{
-          forum_id: forum.id,
+          board_id: board_id,
           author_id: user.id,
           title: attrs["title"] || attrs[:title],
-          board_id: attrs["board_id"] || attrs[:board_id]
+          content: attrs["content"] || attrs[:content]
         })
         |> Repo.insert()
 

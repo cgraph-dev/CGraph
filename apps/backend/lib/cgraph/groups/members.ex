@@ -44,12 +44,16 @@ defmodule CGraph.Groups.Members do
   @doc "Get a member by group and member ID."
   @spec get_member(struct(), binary()) :: Member.t() | nil
   def get_member(group, member_id) do
-    from(m in Member,
+    query = from(m in Member,
       where: m.id == ^member_id,
       where: m.group_id == ^group.id,
       preload: [:user, :roles]
     )
-    |> Repo.one()
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      member -> {:ok, member}
+    end
   end
 
   @doc "Get a member by group and user ID."
@@ -131,9 +135,17 @@ defmodule CGraph.Groups.Members do
 
   @doc "Mute a member until a specified time."
   @spec mute_member(Member.t(), DateTime.t()) :: {:ok, Member.t()} | {:error, Ecto.Changeset.t()}
-  def mute_member(member, until) do
+  def mute_member(member, duration_or_until) do
+    muted_until = case duration_or_until do
+      seconds when is_integer(seconds) ->
+        DateTime.utc_now()
+        |> DateTime.add(seconds, :second)
+        |> DateTime.truncate(:second)
+      %DateTime{} = dt -> dt
+    end
+
     member
-    |> Ecto.Changeset.change(is_muted: true, muted_until: until)
+    |> Ecto.Changeset.change(is_muted: true, muted_until: muted_until)
     |> Repo.update()
   end
 

@@ -359,10 +359,11 @@ defmodule CGraph.Metrics do
   end
 
   defp metric_key(name, labels) when labels == %{}, do: {name, []}
-  defp metric_key(name, labels) do
+  defp metric_key(name, labels) when is_map(labels) do
     sorted_labels = labels |> Enum.sort() |> Enum.to_list()
     {name, sorted_labels}
   end
+  defp metric_key(name, _labels), do: {name, []}
 
   defp get_counter(state, name, labels) do
     key = metric_key(name, labels)

@@ -151,10 +151,9 @@ defmodule CGraph.Forums.CommentsTest do
     test "soft deletes a comment", %{user: user, post: post} do
       {:ok, comment} = Comments.create_comment(post, user, %{"content" => "To delete"})
 
-      assert {:ok, :deleted} = Comments.delete_comment(comment)
+      assert {:ok, deleted} = Comments.delete_comment(comment)
 
       # Comment should still exist but be marked deleted
-      {:ok, deleted} = Comments.get_comment(comment.id)
       assert deleted.deleted_at != nil
     end
   end

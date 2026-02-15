@@ -51,6 +51,8 @@ defmodule CGraphWeb.Router do
     plug :accepts, ["json"]
     # Security headers for API responses
     plug CGraphWeb.Plugs.SecurityHeaders, mode: :api
+    # Cookie-to-Bearer translation for web clients
+    plug CGraphWeb.Plugs.CookieAuth
     # End-to-end request tracing
     plug CGraphWeb.Plugs.RequestTracing
     # Enhanced rate limiter with sliding window algorithm
@@ -65,6 +67,7 @@ defmodule CGraphWeb.Router do
   pipeline :api_auth_strict do
     plug :accepts, ["json"]
     plug CGraphWeb.Plugs.SecurityHeaders, mode: :api
+    plug CGraphWeb.Plugs.CookieAuth
     plug CGraphWeb.Plugs.RequestTracing
     plug CGraphWeb.Plugs.RateLimiterV2, tier: :strict
     plug CGraphWeb.Plugs.ApiVersion
@@ -113,8 +116,8 @@ defmodule CGraphWeb.Router do
 
   health_routes()
   auth_routes()
-  public_routes()
   user_routes()
+  public_routes()
   messaging_routes()
   forum_routes()
   gamification_routes()

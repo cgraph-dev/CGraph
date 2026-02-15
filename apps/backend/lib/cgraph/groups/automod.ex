@@ -29,7 +29,7 @@ defmodule CGraph.Groups.Automod do
   @doc "Create a new automod rule for a group."
   def create_rule(group_id, attrs) do
     %AutomodRule{}
-    |> AutomodRule.changeset(Map.put(attrs, "group_id", group_id))
+    |> AutomodRule.changeset(attrs |> stringify_keys() |> Map.put("group_id", group_id))
     |> Repo.insert()
   end
 
@@ -50,5 +50,12 @@ defmodule CGraph.Groups.Automod do
     rule
     |> AutomodRule.changeset(%{is_enabled: !rule.is_enabled})
     |> Repo.update()
+  end
+
+  defp stringify_keys(map) when is_map(map) do
+    Map.new(map, fn
+      {k, v} when is_atom(k) -> {Atom.to_string(k), v}
+      {k, v} -> {k, v}
+    end)
   end
 end

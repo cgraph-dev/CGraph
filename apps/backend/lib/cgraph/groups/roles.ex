@@ -27,17 +27,20 @@ defmodule CGraph.Groups.Roles do
   @doc "Get a specific role by group and role ID."
   @spec get_role(struct(), binary()) :: Role.t() | nil
   def get_role(group, role_id) do
-    from(r in Role,
+    case from(r in Role,
       where: r.id == ^role_id,
       where: r.group_id == ^group.id
     )
-    |> Repo.one()
+    |> Repo.one() do
+      nil -> {:error, :not_found}
+      role -> {:ok, role}
+    end
   end
 
   @doc "Create a role in a group."
   @spec create_role(struct(), map()) :: {:ok, Role.t()} | {:error, Ecto.Changeset.t()}
   def create_role(group, attrs) do
-    attrs = Map.put(attrs, "group_id", group.id)
+    attrs = attrs |> stringify_keys() |> Map.put("group_id", group.id)
 
     %Role{}
     |> Role.changeset(attrs)
@@ -164,5 +167,12 @@ defmodule CGraph.Groups.Roles do
       {field, default} -> Map.get(role, field, default)
       nil -> false
     end
+  end
+
+  defp stringify_keys(map) when is_map(map) do
+    Map.new(map, fn
+      {k, v} when is_atom(k) -> {Atom.to_string(k), v}
+      {k, v} -> {k, v}
+    end)
   end
 end
