@@ -7,7 +7,7 @@ defmodule CGraph.Accounts do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Accounts.{Friendship, Session, User, UserSettings, WalletChallenge}
+  alias CGraph.Accounts.{Friendship, Session, User}
   alias CGraph.Repo
   alias CGraph.Security.PasswordBreachCheck
 
@@ -326,477 +326,57 @@ defmodule CGraph.Accounts do
   end
 
   # ============================================================================
-  # Wallet Authentication
+  # Wallet Authentication (delegated to WalletAuthentication)
   # ============================================================================
 
-  @doc """
-  Get or create a wallet authentication challenge nonce.
-  """
-  def get_or_create_wallet_challenge(wallet_address) do
-    normalized_address = String.downcase(wallet_address)
+  alias CGraph.Accounts.WalletAuthentication
 
-    case Repo.get_by(WalletChallenge, wallet_address: normalized_address) do
-      nil -> create_new_wallet_challenge(normalized_address)
-      wallet_challenge -> refresh_wallet_challenge_if_needed(wallet_challenge)
-    end
-  end
-
-  defp create_new_wallet_challenge(normalized_address) do
-    nonce = generate_nonce()
-
-    %WalletChallenge{}
-    |> WalletChallenge.changeset(%{wallet_address: normalized_address, nonce: nonce})
-    |> Repo.insert()
-    |> extract_nonce_from_result("Failed to create challenge")
-  end
-
-  defp refresh_wallet_challenge_if_needed(wallet_challenge) do
-    if expired?(wallet_challenge.updated_at, 5 * 60) do
-      regenerate_wallet_nonce(wallet_challenge)
-    else
-      {:ok, wallet_challenge.nonce}
-    end
-  end
-
-  defp regenerate_wallet_nonce(wallet_challenge) do
-    nonce = generate_nonce()
-
-    wallet_challenge
-    |> WalletChallenge.changeset(%{nonce: nonce})
-    |> Repo.update()
-    |> extract_nonce_from_result("Failed to update challenge")
-  end
-
-  defp extract_nonce_from_result({:ok, record}, _error_msg), do: {:ok, record.nonce}
-  defp extract_nonce_from_result({:error, _}, error_msg), do: {:error, error_msg}
-
-  @doc """
-  Verify a wallet signature and authenticate/register user.
-  Deletes the challenge nonce after successful verification to prevent replay attacks.
-  """
-  def verify_wallet_signature(wallet_address, signature) do
-    normalized_address = String.downcase(wallet_address)
-
-    with {:ok, wallet_challenge} <- get_wallet_challenge(normalized_address),
-         message <- build_sign_message(wallet_challenge.nonce),
-         :ok <- verify_signature(message, signature, normalized_address) do
-      # Delete the challenge to prevent replay attacks
-      Repo.delete(wallet_challenge)
-
-      # Get or create user for this wallet
-      case get_user_by_wallet(normalized_address) do
-        {:ok, user} -> {:ok, user}
-        {:error, :not_found} -> create_wallet_user(normalized_address)
-      end
-    end
-  end
-
-  defp get_wallet_challenge(address) do
-    case Repo.get_by(WalletChallenge, wallet_address: address) do
-      nil -> {:error, :no_challenge}
-      wallet_challenge -> {:ok, wallet_challenge}
-    end
-  end
-
-  defp build_sign_message(nonce) do
-    "Sign this message to authenticate with CGraph.\n\nNonce: #{nonce}"
-  end
-
-  defp verify_signature(message, signature, expected_address) do
-    # Compute message hash using Ethereum prefix
-    prefix = "\x19Ethereum Signed Message:\n#{byte_size(message)}"
-    full_message = prefix <> message
-    {:ok, hash} = ExKeccak.hash_256(full_message)
-
-    # Decode signature
-    with {:ok, sig_bytes} <- decode_signature(signature),
-         {:ok, recovered_pubkey} <- recover_public_key(hash, sig_bytes),
-         recovered_address <- pubkey_to_address(recovered_pubkey) do
-      if recovered_address == expected_address do
-        :ok
-      else
-        {:error, :invalid_signature}
-      end
-    end
-  end
-
-  defp decode_signature("0x" <> hex), do: decode_signature(hex)
-  defp decode_signature(hex) when byte_size(hex) == 130 do
-    {:ok, Base.decode16!(hex, case: :mixed)}
-  end
-  defp decode_signature(_), do: {:error, :invalid_signature}
-
-  defp recover_public_key(hash, sig_bytes) do
-    <<r::binary-size(32), s::binary-size(32), v::integer>> = sig_bytes
-    recovery_id = if v >= 27, do: v - 27, else: v
-
-    case ExSecp256k1.recover_compact(hash, r <> s, recovery_id) do
-      {:ok, pubkey} -> {:ok, pubkey}
-      _ -> {:error, :invalid_signature}
-    end
-  end
-
-  defp pubkey_to_address(pubkey) do
-    # Remove the first byte (0x04 uncompressed point marker)
-    <<_::8, rest::binary>> = pubkey
-    {:ok, hash} = ExKeccak.hash_256(rest)
-    # Take last 20 bytes
-    <<_::binary-size(12), address::binary-size(20)>> = hash
-    "0x" <> Base.encode16(address, case: :lower)
-  end
-
-  defp get_user_by_wallet(address) do
-    case Repo.get_by(User, wallet_address: address) do
-      nil -> {:error, :not_found}
-      user -> {:ok, user}
-    end
-  end
-
-  defp create_wallet_user(wallet_address) do
-    username = "wallet_" <> String.slice(wallet_address, 2, 8)
-
-    %User{}
-    |> User.wallet_registration_changeset(%{
-      wallet_address: wallet_address,
-      username: username,
-      display_name: String.slice(wallet_address, 0, 10) <> "..."
-    })
-    |> Repo.insert()
-  end
-
-  defp generate_nonce do
-    :crypto.strong_rand_bytes(32) |> Base.encode16(case: :lower)
-  end
-
-  defp expired?(datetime, seconds) do
-    DateTime.diff(DateTime.truncate(DateTime.utc_now(), :second), datetime) > seconds
-  end
+  defdelegate get_or_create_wallet_challenge(wallet_address), to: WalletAuthentication
+  defdelegate verify_wallet_signature(wallet_address, signature), to: WalletAuthentication
 
   # ============================================================================
-  # User Management
+  # User Management (delegated to UserManagement)
   # ============================================================================
 
-  @doc """
-  Get a user by ID.
-  """
-  def get_user(id) do
-    case Repo.get(User, id) do
-      nil -> {:error, :not_found}
-      user -> {:ok, user}
-    end
-  end
+  alias CGraph.Accounts.UserManagement
 
-  @doc """
-  Get a user by ID, raising if not found.
-  """
-  def get_user!(id) do
-    Repo.get!(User, id)
-  end
-
-  @doc """
-  Deactivate (soft delete) a user account.
-
-  Sets deleted_at timestamp but preserves the record for data integrity.
-  """
-  def deactivate_user(user) do
-    deleted_at = DateTime.truncate(DateTime.utc_now(), :second)
-
-    user
-    |> Ecto.Changeset.change(deleted_at: deleted_at)
-    |> Repo.update()
-  end
-
-  @doc """
-  Get a user by username (case-insensitive).
-  """
-  def get_user_by_username(username) do
-    query = from u in User,
-      where: fragment("lower(?)", u.username) == ^String.downcase(username)
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      user -> {:ok, user}
-    end
-  end
-
-  @doc """
-  Get user with profile data loaded.
-  """
-  def get_user_profile(user_id) do
-    query = from u in User,
-      where: u.id == ^user_id,
-      preload: [:settings]
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      user -> {:ok, user}
-    end
-  end
-
-  @doc """
-  List users with pagination.
-  """
-  def list_users(opts \\ []) do
-    query = from u in User
-
-    pagination_opts = CGraph.Pagination.parse_params(
-      Enum.into(opts, %{}),
-      sort_field: :username,
-      sort_direction: :asc,
-      default_limit: 20
-    )
-
-    CGraph.Pagination.paginate(query, pagination_opts)
-  end
-
-  @doc """
-  List all admin users for notification purposes.
-  Returns users with admin or moderator roles.
-  """
-  def list_admin_users do
-    query = from u in User,
-      where: u.role in ["admin", "moderator", "super_admin"],
-      where: is_nil(u.deleted_at),
-      select: u
-
-    Repo.all(query)
-  end
-
-  @doc """
-  List top users by karma with pagination.
-  """
-  def list_top_users_by_karma(opts \\ []) do
-    query = from u in User,
-      where: u.deleted_at |> is_nil()
-
-    pagination_opts = CGraph.Pagination.parse_params(
-      Enum.into(opts, %{}),
-      sort_field: :karma,
-      sort_direction: :desc,
-      default_limit: 20
-    )
-
-    CGraph.Pagination.paginate(query, pagination_opts)
-  end
-
-  @doc """
-  Update a user.
-  """
-  def update_user(user, attrs) do
-    user
-    |> User.update_changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Flag a user's profile for moderation review.
-  Used when profile content is reported for violations.
-  """
-  def flag_profile_for_review(user_id) do
-    case get_user(user_id) do
-      {:ok, user} ->
-        user
-        |> Ecto.Changeset.change(%{
-          flagged_for_review: true,
-          flagged_at: DateTime.truncate(DateTime.utc_now(), :second)
-        })
-        |> Repo.update()
-      error -> error
-    end
-  end
-
-  @doc """
-  Remove specific content from a user's profile.
-  Used for moderation actions on profile bio, signature, etc.
-  """
-  def remove_profile_content(user_id, content_type, opts \\ []) do
-    _reason = Keyword.get(opts, :reason, :moderation_removal)
-
-    case get_user(user_id) do
-      {:ok, user} ->
-        changes = case content_type do
-          :bio -> %{bio: nil}
-          :signature -> %{signature: nil}
-          :avatar -> %{avatar_url: nil}
-          :banner -> %{banner_url: nil}
-          _ -> %{}
-        end
-
-        if map_size(changes) > 0 do
-          user
-          |> Ecto.Changeset.change(changes)
-          |> Repo.update()
-        else
-          {:ok, user}
-        end
-      error -> error
-    end
-  end
-
-  @doc """
-  Change a user's username with 14-day cooldown enforcement.
-
-  Returns {:error, changeset} if within cooldown period.
-  """
-  def change_username(user, new_username) do
-    user
-    |> User.username_changeset(%{username: new_username})
-    |> Repo.update()
-  end
-
-  @doc """
-  Check if user can change their username.
-  """
-  def can_change_username?(user) do
-    User.can_change_username?(user)
-  end
-
-  @doc """
-  Get the date when user can next change their username.
-  """
-  def next_username_change_date(user) do
-    User.next_username_change_date(user)
-  end
-
-  @doc """
-  Delete a user account.
-  """
-  def delete_user(user) do
-    Repo.delete(user)
-  end
-
-  @doc """
-  Update user's avatar URL.
-  """
-  def update_avatar(user, avatar_url) do
-    user
-    |> Ecto.Changeset.change(avatar_url: avatar_url)
-    |> Repo.update()
-  end
+  defdelegate get_user(id), to: UserManagement
+  defdelegate get_user!(id), to: UserManagement
+  defdelegate deactivate_user(user), to: UserManagement
+  defdelegate get_user_by_username(username), to: UserManagement
+  defdelegate get_user_profile(user_id), to: UserManagement
+  defdelegate list_users(opts \\ []), to: UserManagement
+  defdelegate list_admin_users(), to: UserManagement
+  defdelegate list_top_users_by_karma(opts \\ []), to: UserManagement
+  defdelegate update_user(user, attrs), to: UserManagement
+  defdelegate flag_profile_for_review(user_id), to: UserManagement
+  defdelegate remove_profile_content(user_id, content_type, opts \\ []), to: UserManagement
+  defdelegate change_username(user, new_username), to: UserManagement
+  defdelegate can_change_username?(user), to: UserManagement
+  defdelegate next_username_change_date(user), to: UserManagement
+  defdelegate delete_user(user), to: UserManagement
+  defdelegate update_avatar(user, avatar_url), to: UserManagement
 
   # ============================================================================
-  # Sessions
+  # Sessions (delegated to SessionManagement)
   # ============================================================================
 
-  @doc """
-  Generate a session token for browser session storage.
-  """
-  def generate_session_token(user) do
-    token = :crypto.strong_rand_bytes(32)
-    token_hash = :crypto.hash(:sha256, token) |> Base.encode64()
+  alias CGraph.Accounts.SessionManagement
 
-    %Session{}
-    |> Session.changeset(%{
-      user_id: user.id,
-      token_hash: token_hash,
-      expires_at: DateTime.utc_now() |> DateTime.add(30 * 24 * 60 * 60, :second)
-    })
-    |> Repo.insert!()
-
-    token
-  end
-
-  @doc """
-  Get user by session token.
-  """
-  def get_user_by_session_token(token) when is_binary(token) do
-    token_hash = :crypto.hash(:sha256, token) |> Base.encode64()
-
-    query = from s in Session,
-      where: s.token_hash == ^token_hash,
-      where: is_nil(s.revoked_at),
-      where: s.expires_at > ^DateTime.utc_now(),
-      join: u in User, on: u.id == s.user_id,
-      select: u
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      user -> {:ok, user}
-    end
-  end
-
-  @doc """
-  Delete a session token.
-  """
-  def delete_session_token(token) when is_binary(token) do
-    token_hash = :crypto.hash(:sha256, token) |> Base.encode64()
-
-    from(s in Session, where: s.token_hash == ^token_hash)
-    |> Repo.update_all(set: [revoked_at: DateTime.utc_now()])
-
-    :ok
-  end
-
-  @doc """
-  List active sessions for a user.
-  """
-  def list_sessions(user) do
-    query = from s in Session,
-      where: s.user_id == ^user.id,
-      where: is_nil(s.revoked_at),
-      order_by: [desc: s.last_active_at]
-
-    Repo.all(query)
-  end
-
-  @doc """
-  Alias for list_sessions for controller compatibility.
-  """
-  def list_user_sessions(user), do: list_sessions(user)
-
-  @doc """
-  Revoke a session by session struct.
-  """
-  def revoke_session(%Session{} = session) do
-    session
-    |> Ecto.Changeset.change(revoked_at: DateTime.utc_now())
-    |> Repo.update()
-  end
-
-  @doc """
-  Revoke a session by user and session ID.
-  """
-  def revoke_session(user, session_id) do
-    query = from s in Session,
-      where: s.id == ^session_id,
-      where: s.user_id == ^user.id
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      session -> revoke_session(session)
-    end
-  end
+  defdelegate generate_session_token(user), to: SessionManagement
+  defdelegate get_user_by_session_token(token), to: SessionManagement
+  defdelegate delete_session_token(token), to: SessionManagement
+  defdelegate list_sessions(user), to: SessionManagement
+  defdelegate list_user_sessions(user), to: SessionManagement
+  def revoke_session(%Session{} = session), do: SessionManagement.revoke_session(session)
+  def revoke_session(user, session_id), do: SessionManagement.revoke_session(user, session_id)
 
   # ============================================================================
-  # Settings
+  # Settings (delegated to UserManagement)
   # ============================================================================
 
-  @doc """
-  Get user settings.
-  """
-  def get_settings(user) do
-    case Repo.get_by(UserSettings, user_id: user.id) do
-      nil -> create_default_settings(user)
-      settings -> {:ok, settings}
-    end
-  end
-
-  @doc """
-  Update user settings.
-  """
-  def update_settings(user, attrs) do
-    with {:ok, settings} <- get_settings(user) do
-      settings
-      |> UserSettings.changeset(attrs)
-      |> Repo.update()
-    end
-  end
-
-  defp create_default_settings(user) do
-    %UserSettings{user_id: user.id}
-    |> UserSettings.changeset(%{})
-    |> Repo.insert()
-  end
+  defdelegate get_settings(user), to: UserManagement
+  defdelegate update_settings(user, attrs), to: UserManagement
 
   # ============================================================================
   # Friendships
@@ -844,31 +424,8 @@ defmodule CGraph.Accounts do
   defdelegate get_recent_searches(user, opts \\ []), to: CGraph.Accounts.Search
   defdelegate clear_search_history(user), to: CGraph.Accounts.Search
 
-  @doc """
-  Schedule user deletion after grace period.
-
-  The account will be soft-deleted after 30 days, during which the user
-  can recover their account by logging in again.
-  """
-  def schedule_user_deletion(user) do
-    # Truncate microseconds to match :utc_datetime schema type
-    deletion_time =
-      DateTime.truncate(DateTime.utc_now(), :second)
-      |> DateTime.add(30 * 24 * 60 * 60, :second)
-      |> DateTime.truncate(:second)
-
-    user
-    |> Ecto.Changeset.change(deleted_at: deletion_time)
-    |> Repo.update()
-  end
-
-  @doc """
-  Upload a user's avatar.
-  """
-  def upload_avatar(user, upload) do
-    avatar_url = "/uploads/avatars/#{user.id}/#{upload.filename}"
-    update_avatar(user, avatar_url)
-  end
+  defdelegate schedule_user_deletion(user), to: UserManagement
+  defdelegate upload_avatar(user, upload), to: UserManagement
 
   # ============================================================================
   # Password Reset (delegated to CGraph.Accounts.PasswordReset)
@@ -877,14 +434,7 @@ defmodule CGraph.Accounts do
   defdelegate request_password_reset(email), to: CGraph.Accounts.PasswordReset
   defdelegate reset_password(token, new_password, new_password_confirmation), to: CGraph.Accounts.PasswordReset
 
-  @doc """
-  Update user preferences/settings.
-  """
-  def update_user_preferences(user, preferences) do
-    user
-    |> Ecto.Changeset.change(preferences: Map.merge(user.preferences || %{}, preferences))
-    |> Repo.update()
-  end
+  defdelegate update_user_preferences(user, preferences), to: UserManagement
 
   # ============================================================================
   # Email Verification (delegated to CGraph.Accounts.EmailVerification)
@@ -896,86 +446,14 @@ defmodule CGraph.Accounts do
   defdelegate resend_verification_email(user), to: CGraph.Accounts.EmailVerification
 
   # ==========================================================================
-  # Push Token Functions
+  # Push Token Functions (delegated to PushTokens)
   # ==========================================================================
 
-  alias CGraph.Accounts.PushToken
+  alias CGraph.Accounts.PushTokens
 
-  @doc """
-  Register a push notification token for a user.
-
-  ## Parameters
-
-    - user: The user struct
-    - token: The push token string (e.g., "ExponentPushToken[xxx]")
-    - platform: The platform ("ios", "android", "web")
-
-  ## Examples
-
-      iex> register_push_token(user, "ExponentPushToken[abc123]", "ios")
-      {:ok, %PushToken{}}
-
-  """
-  def register_push_token(user, token, platform) do
-    # Map user-facing platform names to internal schema values
-    mapped_platform = case platform do
-      "ios" -> "apns"
-      "android" -> "fcm"
-      other -> other
-    end
-
-    attrs = %{
-      user_id: user.id,
-      token: token,
-      platform: mapped_platform,
-      last_used_at: DateTime.truncate(DateTime.utc_now(), :second)
-    }
-
-    # Upsert: update if exists, insert if not
-    case Repo.get_by(PushToken, user_id: user.id, token: token) do
-      nil ->
-        %PushToken{}
-        |> PushToken.changeset(attrs)
-        |> Repo.insert()
-
-      existing ->
-        existing
-        |> PushToken.changeset(%{last_used_at: DateTime.truncate(DateTime.utc_now(), :second), platform: mapped_platform})
-        |> Repo.update()
-    end
-  end
-
-  @doc """
-  Delete a push token for a user.
-
-  ## Parameters
-
-    - user: The user struct
-    - token: The push token string to delete
-
-  ## Examples
-
-      iex> delete_push_token(user, "ExponentPushToken[abc123]")
-      {:ok, %PushToken{}}
-
-  """
-  def delete_push_token(user, token) do
-    case Repo.get_by(PushToken, user_id: user.id, token: token) do
-      nil ->
-        {:error, :not_found}
-
-      push_token ->
-        Repo.delete(push_token)
-    end
-  end
-
-  @doc """
-  List all push tokens for a user.
-  """
-  def list_push_tokens(user) do
-    from(pt in PushToken, where: pt.user_id == ^user.id, order_by: [desc: :last_used_at])
-    |> Repo.all()
-  end
+  defdelegate register_push_token(user, token, platform), to: PushTokens
+  defdelegate delete_push_token(user, token), to: PushTokens
+  defdelegate list_push_tokens(user), to: PushTokens
 
   # ==========================================================================
   # Member Directory Functions (delegated to CGraph.Accounts.MemberDirectory)

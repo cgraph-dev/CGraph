@@ -1,104 +1,42 @@
 defmodule CGraph.Messaging do
   @moduledoc """
-  The Messaging context.
+  The Messaging context — thin delegation facade.
 
-  Handles direct messages, conversations, reactions, and read receipts.
+  Delegates to specialized sub-contexts:
 
-  This module acts as the main entry point and delegates to specialized
-  sub-contexts for better organization:
-
-  - `CGraph.Messaging.Conversations` - Conversation CRUD and participant management
-  - `CGraph.Messaging.Messages` - Message CRUD, pinning, editing
-  - `CGraph.Messaging.Reactions` - Message reactions
-  - `CGraph.Messaging.ReadReceipts` - Read status and delivery tracking
-  - `CGraph.Messaging.Search` - Message search functionality
-
-  @since v0.7.29 - Refactored to use sub-contexts
+  - `Conversations` — Conversation CRUD and participant management
+  - `MessageOperations` — Message CRUD, pinning, read receipts, scheduling
+  - `Reactions` — Message reactions
+  - `Search` — Full-text message search
+  - `SavedMessages` — Bookmarks
+  - `PrivateMessageSystem` — MyBB-style PM system
   """
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Messaging.{Conversation, ConversationParticipant, DeliveryTracking, Message, Reaction, ReadReceipt}
-  alias CGraph.Messaging.Conversations
+  alias CGraph.Messaging.{Conversation, ConversationParticipant, DeliveryTracking, Message, Reaction}
+  alias CGraph.Messaging.{Conversations, MessageOperations, SavedMessages}
   alias CGraph.Repo
   alias CGraph.Search.Indexer
 
   # ============================================================================
-  # Conversations - Delegated to Conversations sub-context
-
+  # Conversations
   # ============================================================================
 
-  @doc """
-  List conversations for a user.
-
-  See `CGraph.Messaging.Conversations.list_conversations/2` for details.
-  """
   defdelegate list_conversations(user, opts \\ []), to: Conversations
-
-  @doc """
-  Alias for list_conversations with user first.
-  """
   def list_user_conversations(user, opts \\ []), do: Conversations.list_conversations(user, opts)
-
-  @doc """
-  Get a conversation by ID.
-
-  See `CGraph.Messaging.Conversations.get_conversation/1` for details.
-  """
   defdelegate get_conversation(id), to: Conversations
-
-  @doc """
-  Get a conversation for a specific user, ensuring they have access.
-
-  See `CGraph.Messaging.Conversations.get_user_conversation/2` for details.
-  """
   defdelegate get_user_conversation(user, conversation_id), to: Conversations
-
-  @doc """
-  Authorize user access to a conversation.
-
-  See `CGraph.Messaging.Conversations.authorize_access/2` for details.
-  """
   defdelegate authorize_access(user, conversation), to: Conversations
-
-  @doc """
-  Get or create a DM conversation between two users.
-
-  See `CGraph.Messaging.Conversations.get_or_create_dm/2` for details.
-  """
   defdelegate get_or_create_dm(user, other_user), to: Conversations
-
-  @doc """
-  Create or get an existing conversation between users.
-
-  See `CGraph.Messaging.Conversations.create_or_get_conversation/2` for details.
-  """
   defdelegate create_or_get_conversation(user, participant_ids), to: Conversations
-
-  @doc """
-  Create a new conversation.
-
-  See `CGraph.Messaging.Conversations.create_conversation/2` for details.
-  """
   defdelegate create_conversation(user, attrs), to: Conversations
 
   # ============================================================================
-  # Messages
+  # Messages — core message listing + creation with idempotency
   # ============================================================================
 
-  @doc """
-  List messages in a conversation using cursor-based pagination.
-
-  ## Options
-
-    * `:cursor` - Opaque cursor string for pagination
-    * `:limit` - Number of messages to fetch (default: 50, max: 100)
-    * `:before` - Fetch messages before this message ID (legacy, prefer cursor)
-    * `:after` - Fetch messages after this message ID (legacy, prefer cursor)
-    * `:include_total` - Include total count (default: false, expensive at scale)
-
-  Returns `{messages, page_info}` where page_info contains cursor metadata.
-  """
+  @doc "List messages in a conversation using cursor-based pagination."
   def list_messages(conversation, opts \\ []) do
     alias CGraph.Pagination
 
@@ -112,35 +50,18 @@ defmodule CGraph.Messaging do
       where: m.conversation_id == ^conversation.id,
       preload: [[sender: :customization], [reactions: :user], [reply_to: [sender: :customization]]]
 
-    # Support legacy before_id/after_id params alongside cursor pagination
-    base_query = if before_id do
-      from m in base_query, where: m.id < ^before_id
-    else
-      base_query
-    end
-
-    base_query = if after_id do
-      from m in base_query, where: m.id > ^after_id
-    else
-      base_query
-    end
+    base_query = if before_id, do: from(m in base_query, where: m.id < ^before_id), else: base_query
+    base_query = if after_id, do: from(m in base_query, where: m.id > ^after_id), else: base_query
 
     pagination_opts = %{
-      cursor: cursor,
-      after_cursor: nil,
-      before_cursor: nil,
-      limit: min(limit, 100),
-      sort_field: :inserted_at,
-      sort_direction: :desc,
-      include_total: include_total
+      cursor: cursor, after_cursor: nil, before_cursor: nil,
+      limit: min(limit, 100), sort_field: :inserted_at,
+      sort_direction: :desc, include_total: include_total
     }
 
     {messages, page_info} = Pagination.paginate(base_query, pagination_opts)
-
-    # Return in chronological order (oldest first) for chat display
     messages = Enum.reverse(messages)
 
-    # Build backward-compatible meta with cursor pagination info
     meta = %{
       has_more: page_info.has_next_page,
       end_cursor: page_info.end_cursor,
@@ -149,18 +70,11 @@ defmodule CGraph.Messaging do
       has_previous_page: page_info.has_previous_page
     }
 
-    meta = if include_total do
-      Map.put(meta, :total, page_info[:total_count])
-    else
-      meta
-    end
-
+    meta = if include_total, do: Map.put(meta, :total, page_info[:total_count]), else: meta
     {messages, meta}
   end
 
-  @doc """
-  Get a message by ID.
-  """
+  @doc "Get a message by conversation + message_id."
   def get_message(conversation, message_id) do
     query = from m in Message,
       where: m.id == ^message_id,
@@ -173,19 +87,9 @@ defmodule CGraph.Messaging do
     end
   end
 
-  @doc """
-  List all replies (thread) for a given parent message.
-
-  Returns replies in chronological order (oldest first) with cursor pagination.
-  Uses the DB index on `reply_to_id` for O(log N) lookups.
-
-  ## Options
-    * `:cursor` - Pagination cursor
-    * `:limit` - Max replies per page (default: 50, max: 100)
-  """
+  @doc "List thread replies for a parent message."
   def list_thread_replies(parent_message_id, opts \\ []) do
     alias CGraph.Pagination
-
     limit = min(Keyword.get(opts, :limit, 50), 100)
     cursor = Keyword.get(opts, :cursor)
 
@@ -195,13 +99,9 @@ defmodule CGraph.Messaging do
         preload: [[sender: :customization], [reactions: :user], [reply_to: [sender: :customization]]]
 
     pagination_opts = %{
-      cursor: cursor,
-      after_cursor: nil,
-      before_cursor: nil,
-      limit: limit,
-      sort_field: :inserted_at,
-      sort_direction: :asc,
-      include_total: false
+      cursor: cursor, after_cursor: nil, before_cursor: nil,
+      limit: limit, sort_field: :inserted_at,
+      sort_direction: :asc, include_total: false
     }
 
     {messages, page_info} = Pagination.paginate(base_query, pagination_opts)
@@ -217,12 +117,7 @@ defmodule CGraph.Messaging do
     {messages, meta}
   end
 
-  @doc """
-  Count replies to a list of parent message IDs.
-
-  Returns a map of `%{message_id => reply_count}`.
-  Uses a single aggregate query — O(N) where N = number of parent IDs.
-  """
+  @doc "Count replies per parent message ID. Returns `%{message_id => count}`."
   def count_thread_replies(parent_message_ids) when is_list(parent_message_ids) do
     from(m in Message,
       where: m.reply_to_id in ^parent_message_ids,
@@ -234,149 +129,23 @@ defmodule CGraph.Messaging do
     |> Map.new()
   end
 
-  @doc """
-  Create a message in a conversation.
-
-  Supports idempotency via `client_message_id` parameter. If a message with
-  the same client_message_id already exists in the conversation, returns
-  the existing message instead of creating a duplicate.
-  """
+  @doc "Create a message in a conversation (with idempotency via client_message_id)."
   def create_message(user, conversation, attrs) do
-    # Ensure consistent string keys
-    # Message schema uses sender_id, not user_id
     message_attrs = attrs
       |> stringify_keys()
       |> Map.put("sender_id", user.id)
       |> Map.put("conversation_id", conversation.id)
 
-    # Check for idempotency - if client_message_id exists, return existing message
     case check_idempotency(conversation.id, message_attrs) do
-      {:ok, existing_message} ->
-        {:ok, existing_message}
-
-      :not_found ->
-        do_create_message(conversation, message_attrs)
+      {:ok, existing_message} -> {:ok, existing_message}
+      :not_found -> do_create_message(conversation, message_attrs)
     end
   end
 
-  defp check_idempotency(conversation_id, attrs) do
-    client_id = Map.get(attrs, "client_message_id") || Map.get(attrs, :client_message_id)
+  @doc "Send a message (alias for create_message with conversation first)."
+  def send_message(conversation, user, attrs), do: create_message(user, conversation, attrs)
 
-    if client_id do
-      case Repo.get_by(Message, conversation_id: conversation_id, client_message_id: client_id) do
-        nil -> :not_found
-        message -> {:ok, Repo.preload(message, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])}
-      end
-    else
-      :not_found
-    end
-  end
-
-  defp do_create_message(conversation, message_attrs) do
-    # Auto-set expires_at based on conversation TTL
-    message_attrs = maybe_set_expires_at(conversation, message_attrs)
-
-    result = %Message{}
-      |> Message.changeset(message_attrs)
-      |> Repo.insert()
-
-    case result do
-      {:ok, message} ->
-        # Update conversation last_message_at
-        # Truncate to seconds for :utc_datetime field
-        now = DateTime.truncate(DateTime.utc_now(), :second)
-        conversation
-        |> Ecto.Changeset.change(last_message_at: now)
-        |> Repo.update()
-
-        # Track delivery receipts for all participants (double-check ✓✓ marks)
-        track_delivery_for_participants(message, conversation)
-
-        # Index message in MeiliSearch for full-text search
-        try do
-          Indexer.index_async(:messages, message)
-        rescue
-          _ -> :ok  # Don't fail message creation if search indexing fails
-        end
-
-        # Note: Message broadcasting is handled by the channel layer (conversation_channel.ex)
-        # to ensure proper serialization and consistent camelCase format for WebSocket clients.
-        # Do not broadcast here to avoid duplicate messages.
-
-        {:ok, Repo.preload(message, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])}
-
-      error -> error
-    end
-  end
-
-  # Track delivery receipts for all conversation participants except the sender
-  defp track_delivery_for_participants(message, conversation) do
-    recipient_ids =
-      from(cp in CGraph.Messaging.ConversationParticipant,
-        where: cp.conversation_id == ^conversation.id,
-        where: cp.user_id != ^message.sender_id,
-        select: cp.user_id
-      )
-      |> Repo.all()
-
-    if recipient_ids != [] do
-      DeliveryTracking.track_sent(message, recipient_ids)
-    end
-  rescue
-    _ -> :ok  # Don't fail message creation if delivery tracking fails
-  end
-
-  @doc """
-  Send a message (alias for create_message with conversation first).
-  """
-  def send_message(conversation, user, attrs) do
-    create_message(user, conversation, attrs)
-  end
-
-  @doc """
-  Mark a message as read.
-
-  Supports multiple argument patterns:
-  - `mark_message_read(message_id, user_id)` - binary IDs for WebSocket channels
-  - `mark_message_read(message, user)` - Message struct and user struct
-  - `mark_message_read(conversation, user, message_id)` - full context with conversation
-  """
-  def mark_message_read(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
-    # Get the message to verify it exists
-    case Repo.get(Message, message_id) do
-      nil -> {:error, :not_found}
-      _message ->
-        # Update or create read receipt by message_id and user_id
-        case Repo.get_by(ReadReceipt, user_id: user_id, message_id: message_id) do
-          nil ->
-            # Truncate to seconds for :utc_datetime field
-            now = DateTime.truncate(DateTime.utc_now(), :second)
-            %ReadReceipt{}
-            |> ReadReceipt.changeset(%{
-              user_id: user_id,
-              message_id: message_id
-            })
-            |> Ecto.Changeset.put_change(:read_at, now)
-            |> Repo.insert()
-
-          receipt ->
-            # Already read, just return it
-            {:ok, receipt}
-        end
-    end
-  end
-
-  def mark_message_read(%Message{} = message, user) do
-    mark_message_read(message.id, user.id)
-  end
-
-  def mark_message_read(conversation, user, message_id) do
-    mark_messages_read(user, conversation, message_id)
-  end
-
-  @doc """
-  Check if a user is a participant in a conversation.
-  """
+  @doc "Check if a user is a participant in a conversation."
   def user_in_conversation?(conversation_id, user_id) do
     query = from cp in ConversationParticipant,
       where: cp.conversation_id == ^conversation_id,
@@ -386,69 +155,7 @@ defmodule CGraph.Messaging do
     Repo.exists?(query)
   end
 
-  @doc """
-  Mark messages as read up to a given message.
-  Creates read receipts for all messages up to and including the specified message.
-  Uses batch insert for efficiency.
-  """
-  def mark_messages_read(user, conversation, message_id) do
-    # Get all unread messages in this conversation up to message_id
-    # A message is unread if there's no read receipt for it by this user
-    unread_query = from m in Message,
-      where: m.conversation_id == ^conversation.id,
-      where: m.sender_id != ^user.id,
-      where: m.id <= ^message_id,
-      left_join: r in ReadReceipt, on: r.message_id == m.id and r.user_id == ^user.id,
-      where: is_nil(r.id),
-      select: m.id
-
-    unread_message_ids = Repo.all(unread_query)
-
-    unless Enum.empty?(unread_message_ids) do
-      # read_at uses :utc_datetime (no microseconds)
-      # inserted_at uses :utc_datetime_usec (with microseconds)
-      # Note: ReadReceipt schema has timestamps(updated_at: false) - no updated_at field
-      now = DateTime.utc_now()
-      read_at = DateTime.truncate(now, :second)
-
-      # Batch insert read receipts - much more efficient than individual inserts
-      read_receipts = Enum.map(unread_message_ids, fn mid ->
-        %{
-          id: Ecto.UUID.generate(),
-          message_id: mid,
-          user_id: user.id,
-          read_at: read_at,
-          inserted_at: now
-        }
-      end)
-
-      # Insert all at once, ignoring conflicts (on_conflict: :nothing)
-      Repo.insert_all(ReadReceipt, read_receipts, on_conflict: :nothing)
-    end
-
-    {:ok, length(unread_message_ids)}
-  end
-
-  @doc """
-  Get unread message count for a conversation.
-  """
-  def get_unread_count(user, conversation) do
-    # Count messages in the conversation that:
-    # 1. Were not sent by this user
-    # 2. Don't have a read receipt from this user
-    query = from m in Message,
-      where: m.conversation_id == ^conversation.id,
-      where: m.sender_id != ^user.id,
-      left_join: r in ReadReceipt, on: r.message_id == m.id and r.user_id == ^user.id,
-      where: is_nil(r.id),
-      select: count(m.id)
-
-    Repo.one(query) || 0
-  end
-
-  @doc """
-  Broadcast typing indicator.
-  """
+  @doc "Broadcast typing indicator."
   def broadcast_typing(conversation, user) do
     CGraphWeb.Endpoint.broadcast(
       "conversation:#{conversation.id}",
@@ -458,30 +165,14 @@ defmodule CGraph.Messaging do
     :ok
   end
 
-  # Note: Message broadcasting is now handled exclusively by the channel layer
-  # This function is kept for reference but should not be called
-  # Uncommented to avoid unused function warning
-  # defp broadcast_message(_conversation, _message) do
-  #   CGraphWeb.Endpoint.broadcast(
-  #     "conversation:#{conversation.id}",
-  #     "new_message",
-  #     %{message: message}
-  #   )
-  # end
-
   # ============================================================================
   # Reactions
   # ============================================================================
 
   defdelegate list_reactions(message, opts \\ []), to: CGraph.Messaging.Reactions
 
-  @doc """
-  Add a reaction to a message.
-  Allows multiple different emoji reactions per user per message (multi-reaction pattern).
-  Returns {:ok, reaction} on success, {:error, :already_exists} if same emoji already used.
-  """
+  @doc "Add reaction. Returns `{:ok, reaction, nil}` (3-element tuple for callers)."
   def add_reaction(user, message, emoji) do
-    # Check if already reacted with this exact emoji
     existing_same = Repo.get_by(Reaction,
       user_id: user.id,
       message_id: message.id,
@@ -491,13 +182,8 @@ defmodule CGraph.Messaging do
     if existing_same do
       {:error, :already_exists}
     else
-      # Allow multiple unique emoji per user per message
       case %Reaction{}
-        |> Reaction.changeset(%{
-          user_id: user.id,
-          message_id: message.id,
-          emoji: emoji
-        })
+        |> Reaction.changeset(%{user_id: user.id, message_id: message.id, emoji: emoji})
         |> Repo.insert() do
         {:ok, reaction} -> {:ok, reaction, nil}
         {:error, changeset} -> {:error, changeset}
@@ -505,9 +191,7 @@ defmodule CGraph.Messaging do
     end
   end
 
-  @doc """
-  Remove a reaction from a message.
-  """
+  @doc "Remove reaction."
   def remove_reaction(user, message, emoji) do
     query = from r in Reaction,
       where: r.user_id == ^user.id,
@@ -520,11 +204,8 @@ defmodule CGraph.Messaging do
     end
   end
 
-  @doc """
-  Broadcast reaction added event.
-  """
+  @doc "Broadcast reaction added event."
   def broadcast_reaction_added(conversation, message, reaction, user \\ nil) do
-    # Use provided user or try to get from reaction
     user_data = user || reaction.user
 
     CGraphWeb.Endpoint.broadcast(
@@ -534,23 +215,15 @@ defmodule CGraph.Messaging do
         message_id: message.id,
         emoji: reaction.emoji,
         user_id: reaction.user_id,
-        user: if user_data do
-          %{
-            id: user_data.id,
-            username: user_data.username,
-            display_name: user_data.display_name,
-            avatar_url: user_data.avatar_url
-          }
-        else
-          %{id: reaction.user_id}
-        end
+        user: if(user_data,
+          do: %{id: user_data.id, username: user_data.username,
+                display_name: user_data.display_name, avatar_url: user_data.avatar_url},
+          else: %{id: reaction.user_id})
       }
     )
   end
 
-  @doc """
-  Broadcast reaction removed event.
-  """
+  @doc "Broadcast reaction removed event."
   def broadcast_reaction_removed(conversation, message, user, emoji) do
     CGraphWeb.Endpoint.broadcast(
       "conversation:#{conversation.id}",
@@ -562,346 +235,53 @@ defmodule CGraph.Messaging do
   defdelegate get_reaction_users(message, emoji, opts \\ []), to: CGraph.Messaging.Reactions
 
   # ============================================================================
-  # Search
+  # Search — delegated to Messaging.Search
   # ============================================================================
 
-  @doc """
-  Search messages accessible to user using cursor-based pagination.
-
-  ## Options
-
-    * `:cursor` - Opaque cursor string for pagination
-    * `:limit` - Number of results to fetch (default: 20, max: 100)
-    * `:conversation_id` - Filter by specific conversation
-    * `:include_total` - Include total count (default: false)
-  """
-  def search_messages(user, query, opts \\ []) do
-    alias CGraph.Pagination
-
-    cursor = Keyword.get(opts, :cursor)
-    limit = Keyword.get(opts, :limit, Keyword.get(opts, :per_page, 20))
-    conversation_id = Keyword.get(opts, :conversation_id)
-    include_total = Keyword.get(opts, :include_total, false)
-    search_term = "%#{query}%"
-
-    # Get conversation IDs user is part of
-    user_conversation_ids = from(cp in ConversationParticipant,
-      where: cp.user_id == ^user.id,
-      where: is_nil(cp.left_at),
-      select: cp.conversation_id
-    ) |> Repo.all()
-
-    base_query = from m in Message,
-      where: m.conversation_id in ^user_conversation_ids,
-      where: ilike(m.content, ^search_term),
-      preload: [:sender, :conversation]
-
-    base_query = if conversation_id do
-      from m in base_query, where: m.conversation_id == ^conversation_id
-    else
-      base_query
-    end
-
-    pagination_opts = %{
-      cursor: cursor,
-      after_cursor: nil,
-      before_cursor: nil,
-      limit: min(limit, 100),
-      sort_field: :inserted_at,
-      sort_direction: :desc,
-      include_total: include_total
-    }
-
-    {messages, page_info} = Pagination.paginate(base_query, pagination_opts)
-
-    meta = %{
-      has_more: page_info.has_next_page,
-      end_cursor: page_info.end_cursor,
-      start_cursor: page_info.start_cursor,
-      has_next_page: page_info.has_next_page,
-      has_previous_page: page_info.has_previous_page
-    }
-
-    meta = if include_total do
-      total = Repo.aggregate(base_query, :count, :id)
-      Map.put(meta, :total, total)
-    else
-      meta
-    end
-
-    {messages, meta}
-  end
+  defdelegate search_messages(user, query, opts \\ []), to: CGraph.Messaging.Search
 
   # ============================================================================
-  # Single-arity helpers for channels
+  # Message Operations — delegated to MessageOperations
   # ============================================================================
 
-  @doc """
-  Create a message with a map of attributes (for channel messages).
-  """
-  def create_message(attrs) when is_map(attrs) do
-    %Message{}
-    |> Message.changeset(attrs)
-    |> Repo.insert()
-    |> case do
-      {:ok, message} -> {:ok, Repo.preload(message, [[sender: :customization], :reactions])}
-      error -> error
-    end
-  end
+  @doc "Create a message from a map (channel messages)."
+  def create_message(attrs) when is_map(attrs), do: MessageOperations.create_message(attrs)
 
-  @doc """
-  Get a message by ID.
-  """
-  def get_message(message_id) when is_binary(message_id) do
-    case Repo.get(Message, message_id) do
-      nil -> {:error, :not_found}
-      message -> {:ok, Repo.preload(message, [[sender: :customization], :reactions])}
-    end
-  end
+  @doc "Get a message by ID."
+  def get_message(message_id) when is_binary(message_id), do: MessageOperations.get_message(message_id)
 
-  @doc """
-  Update a message content.
-  """
-  def update_message(message, attrs) do
-    message
-    |> Message.edit_changeset(stringify_keys(attrs))
-    |> Repo.update()
-  end
+  defdelegate update_message(message, attrs), to: MessageOperations
+  defdelegate pin_message(message_id, user_id), to: MessageOperations
+  defdelegate count_user_pins(conversation_id, user_id), to: MessageOperations
+  defdelegate unpin_message(message_id, user_id), to: MessageOperations
+  defdelegate list_scheduled_messages(conversation, opts \\ []), to: MessageOperations
+  defdelegate reschedule_message(message, new_scheduled_at), to: MessageOperations
+  defdelegate cancel_scheduled_message(message), to: MessageOperations
+  defdelegate edit_message(message_id, user_id, content), to: MessageOperations
+  defdelegate hide_message(message_id, reason), to: MessageOperations
+  defdelegate soft_delete_message(message_id, opts \\ []), to: MessageOperations
+  defdelegate mark_message_read(message_id, user_id), to: MessageOperations
+  defdelegate mark_messages_read(user, conversation, message_id), to: MessageOperations
+  defdelegate get_unread_count(user, conversation), to: MessageOperations
+  defdelegate mark_conversation_read(conversation, user), to: MessageOperations
 
-  @doc """
-  Pin a message in a conversation.
-  Only participants can pin messages.
-  Each user can pin up to 3 messages per conversation.
-  """
-  @max_pins_per_user 3
+  def mark_message_read(%Message{} = message, user), do: MessageOperations.mark_message_read(message, user)
+  def mark_message_read(conversation, user, message_id), do: MessageOperations.mark_messages_read(user, conversation, message_id)
+  def mark_as_read(message, user), do: MessageOperations.mark_message_read(message, user)
 
-  def pin_message(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
-    case get_message(message_id) do
-      {:error, :not_found} -> {:error, :not_found}
-      {:ok, message} ->
-        cond do
-          !message.conversation_id || !user_in_conversation?(message.conversation_id, user_id) ->
-            {:error, :unauthorized}
-
-          message.is_pinned ->
-            {:error, :already_pinned}
-
-          count_user_pins(message.conversation_id, user_id) >= @max_pins_per_user ->
-            {:error, :pin_limit_reached}
-
-          true ->
-            message
-            |> Ecto.Changeset.change(is_pinned: true, pinned_at: DateTime.truncate(DateTime.utc_now(), :second), pinned_by_id: user_id)
-            |> Repo.update()
-        end
-    end
-  end
-
-  @doc """
-  Count how many messages a user has pinned in a conversation.
-  """
-  def count_user_pins(conversation_id, user_id) do
-    from(m in Message,
-      where: m.conversation_id == ^conversation_id,
-      where: m.pinned_by_id == ^user_id,
-      where: m.is_pinned == true,
-      select: count(m.id)
-    )
-    |> Repo.one() || 0
-  end
-
-  @doc """
-  Unpin a message in a conversation.
-  """
-  def unpin_message(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
-    case get_message(message_id) do
-      {:error, :not_found} -> {:error, :not_found}
-      {:ok, message} ->
-        if message.conversation_id && user_in_conversation?(message.conversation_id, user_id) do
-          message
-          |> Ecto.Changeset.change(is_pinned: false, pinned_at: nil, pinned_by_id: nil)
-          |> Repo.update()
-        else
-          {:error, :unauthorized}
-        end
-    end
-  end
-
-  @doc """
-  List scheduled messages for a conversation.
-  Returns messages with schedule_status = 'scheduled', ordered by scheduled_at.
-  """
-  def list_scheduled_messages(conversation, opts \\ []) do
-    query =
-      from m in Message,
-        where: m.conversation_id == ^conversation.id,
-        where: m.schedule_status == "scheduled",
-        where: not is_nil(m.scheduled_at),
-        where: is_nil(m.deleted_at),
-        preload: [:sender]
-
-    pagination_opts = CGraph.Pagination.parse_params(
-      Enum.into(opts, %{}),
-      sort_field: :scheduled_at,
-      sort_direction: :asc
-    )
-
-    CGraph.Pagination.paginate(query, pagination_opts)
-  end
-
-  @doc """
-  Reschedule a scheduled message to a new time.
-  Only works for messages with schedule_status = 'scheduled'.
-  """
-  def reschedule_message(message, new_scheduled_at) do
-    if message.schedule_status == "scheduled" do
-      message
-      |> Ecto.Changeset.change(scheduled_at: new_scheduled_at)
-      |> Repo.update()
-    else
-      {:error, :message_not_scheduled}
-    end
-  end
-
-  @doc """
-  Cancel a scheduled message.
-  Updates schedule_status to 'cancelled'.
-  """
-  def cancel_scheduled_message(message) do
-    if message.schedule_status == "scheduled" do
-      message
-      |> Ecto.Changeset.change(schedule_status: "cancelled")
-      |> Repo.update()
-    else
-      {:error, :message_not_scheduled}
-    end
-  end
-
-  @doc """
-  Edit a message by ID (only by sender).
-  """
-  def edit_message(message_id, user_id, content) do
-    case get_message(message_id) do
-      {:error, :not_found} ->
-        {:error, :not_found}
-
-      {:ok, message} ->
-        if message.sender_id == user_id do
-          update_message(message, %{content: content})
-        else
-          {:error, :unauthorized}
-        end
-    end
-  end
-
-  @doc """
-  Delete a message (soft delete, no authorization check).
-  """
-  def delete_message(message) when is_struct(message) do
-    # Truncate to seconds for :utc_datetime field
-    now = DateTime.truncate(DateTime.utc_now(), :second)
-    message
-    |> Ecto.Changeset.change(deleted_at: now)
-    |> Repo.update()
-  end
-
-  @doc """
-  Hide a message for moderation purposes (quarantine).
-  Sets visibility to hidden and records the reason.
-  """
-  def hide_message(message_id, reason) do
-    now = DateTime.truncate(DateTime.utc_now(), :second)
-    case get_message(message_id) do
-      {:ok, message} ->
-        message
-        |> Ecto.Changeset.change(%{
-          hidden_at: now,
-          hidden_reason: reason,
-          visible: false
-        })
-        |> Repo.update()
-      error -> error
-    end
-  end
-
-  @doc """
-  Soft delete a message with tracking information.
-  Used for moderation actions that need audit trail.
-  """
-  def soft_delete_message(message_id, opts \\ []) do
-    reason = Keyword.get(opts, :reason, :user_deleted)
-    report_id = Keyword.get(opts, :report_id)
-    now = DateTime.truncate(DateTime.utc_now(), :second)
-
-    case get_message(message_id) do
-      {:ok, message} ->
-        message
-        |> Ecto.Changeset.change(%{
-          deleted_at: now,
-          deletion_reason: reason,
-          deleted_by_report_id: report_id
-        })
-        |> Repo.update()
-      error -> error
-    end
-  end
-
-  @doc """
-  Delete a message.
-  Can be called with message_id and user_id, or with message struct and user.
-  """
-  def delete_message(message_id, user_id)
+  @doc "Delete a message (soft delete, no auth check)."
+  def delete_message(message) when is_struct(message), do: MessageOperations.delete_message(message)
 
   def delete_message(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
-    case get_message(message_id) do
-      {:error, :not_found} ->
-        {:error, :not_found}
-
-      {:ok, message} ->
-        if message.sender_id == user_id do
-          delete_message(message)
-        else
-          {:error, :unauthorized}
-        end
-    end
+    MessageOperations.delete_message(message_id, user_id)
   end
 
-  def delete_message(%{sender_id: sender_id} = message, %{id: user_id}) do
-    if sender_id == user_id do
-      delete_message(message)
-    else
-      {:error, :unauthorized}
-    end
-  end
-
-  @doc """
-  Mark a message as read (alias for mark_message_read).
-  """
-  def mark_as_read(message, user) do
-    mark_message_read(message, user)
-  end
-
-  @doc """
-  Mark all messages in a conversation as read up to the latest message.
-  """
-  def mark_conversation_read(conversation, user) do
-    # Get the latest message in the conversation
-    latest_message = Repo.one(
-      from m in Message,
-        where: m.conversation_id == ^conversation.id,
-        order_by: [desc: m.inserted_at],
-        limit: 1
-    )
-
-    if latest_message do
-      mark_messages_read(user, conversation, latest_message.id)
-    else
-      {:ok, :no_messages}
-    end
+  def delete_message(%{sender_id: _} = message, %{id: _} = user) do
+    MessageOperations.delete_message_by_user(message, user)
   end
 
   # ============================================================================
-  # Private Messages (delegated to PrivateMessageSystem)
+  # Private Messages — delegated to PrivateMessageSystem
   # ============================================================================
 
   alias CGraph.Messaging.PrivateMessageSystem
@@ -930,63 +310,13 @@ defmodule CGraph.Messaging do
   defdelegate export_pm(user_id, opts \\ []), to: PrivateMessageSystem
 
   # ============================================================================
-  # Private Helpers
+  # Saved Messages — delegated to SavedMessages
   # ============================================================================
 
-  defp stringify_keys(map) when is_map(map) do
-    Map.new(map, fn
-      {k, v} when is_atom(k) -> {Atom.to_string(k), v}
-      {k, v} -> {k, v}
-    end)
-  end
-
-  # ============================================================================
-  # Saved Messages (Bookmarks)
-  # ============================================================================
-
-  alias CGraph.Messaging.SavedMessage
-
-  def list_saved_messages(user_id, opts \\ []) do
-    search = Keyword.get(opts, :search)
-
-    query =
-      from sm in SavedMessage,
-        where: sm.user_id == ^user_id,
-        join: m in Message, on: m.id == sm.message_id,
-        join: sender in assoc(m, :sender),
-        order_by: [desc: sm.saved_at],
-        preload: [message: {m, sender: sender}]
-
-    query = if search && search != "" do
-      term = "%#{search}%"
-      from [sm, m, _s] in query, where: ilike(m.content, ^term)
-    else
-      query
-    end
-
-    Repo.all(query)
-  end
-
-  def save_message(user_id, message_id, opts \\ []) do
-    note = Keyword.get(opts, :note)
-    %SavedMessage{}
-    |> SavedMessage.changeset(%{user_id: user_id, message_id: message_id, note: note})
-    |> Repo.insert()
-  end
-
-  def unsave_message(user_id, saved_message_id) do
-    case Repo.get_by(SavedMessage, id: saved_message_id, user_id: user_id) do
-      nil -> {:error, :not_found}
-      saved -> Repo.delete(saved)
-    end
-  end
-
-  def message_saved?(user_id, message_id) do
-    Repo.exists?(
-      from sm in SavedMessage,
-        where: sm.user_id == ^user_id and sm.message_id == ^message_id
-    )
-  end
+  defdelegate list_saved_messages(user_id, opts \\ []), to: SavedMessages
+  defdelegate save_message(user_id, message_id, opts \\ []), to: SavedMessages
+  defdelegate unsave_message(user_id, saved_message_id), to: SavedMessages
+  defdelegate message_saved?(user_id, message_id), to: SavedMessages
 
   # ============================================================================
   # Ephemeral / Disappearing Messages
@@ -1001,6 +331,72 @@ defmodule CGraph.Messaging do
       nil -> {:error, :not_found}
       conv -> {:ok, conv.message_ttl}
     end
+  end
+
+  # ============================================================================
+  # Private Helpers
+  # ============================================================================
+
+  defp check_idempotency(conversation_id, attrs) do
+    client_id = Map.get(attrs, "client_message_id") || Map.get(attrs, :client_message_id)
+
+    if client_id do
+      case Repo.get_by(Message, conversation_id: conversation_id, client_message_id: client_id) do
+        nil -> :not_found
+        message -> {:ok, Repo.preload(message, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])}
+      end
+    else
+      :not_found
+    end
+  end
+
+  defp do_create_message(conversation, message_attrs) do
+    message_attrs = maybe_set_expires_at(conversation, message_attrs)
+
+    result = %Message{}
+      |> Message.changeset(message_attrs)
+      |> Repo.insert()
+
+    case result do
+      {:ok, message} ->
+        now = DateTime.truncate(DateTime.utc_now(), :second)
+        conversation
+        |> Ecto.Changeset.change(last_message_at: now)
+        |> Repo.update()
+
+        track_delivery_for_participants(message, conversation)
+
+        try do
+          Indexer.index_async(:messages, message)
+        rescue
+          _ -> :ok
+        end
+
+        {:ok, Repo.preload(message, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])}
+
+      error -> error
+    end
+  end
+
+  defp track_delivery_for_participants(message, conversation) do
+    recipient_ids =
+      from(cp in ConversationParticipant,
+        where: cp.conversation_id == ^conversation.id,
+        where: cp.user_id != ^message.sender_id,
+        select: cp.user_id
+      )
+      |> Repo.all()
+
+    if recipient_ids != [], do: DeliveryTracking.track_sent(message, recipient_ids)
+  rescue
+    _ -> :ok
+  end
+
+  defp stringify_keys(map) when is_map(map) do
+    Map.new(map, fn
+      {k, v} when is_atom(k) -> {Atom.to_string(k), v}
+      {k, v} -> {k, v}
+    end)
   end
 
   defp maybe_set_expires_at(%Conversation{message_ttl: nil}, attrs), do: attrs
