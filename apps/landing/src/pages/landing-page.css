@@ -2342,12 +2342,12 @@ html.site-ready {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    var(--badge-border-1) 30%,
-    var(--badge-border-2) 50%,
-    var(--badge-color-1) 70%,
+    #10b981 25%,
+    #8b5cf6 50%,
+    #10b981 75%,
     transparent 100%
   );
-  opacity: 0.5;
+  opacity: 0.45;
   z-index: -1;
   animation: badge-line-sweep 3.5s ease-in-out infinite;
   border-radius: 9999px;
