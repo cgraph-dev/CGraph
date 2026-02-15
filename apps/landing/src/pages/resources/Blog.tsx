@@ -39,7 +39,7 @@ const blogPosts: BlogPost[] = [
     author: 'Burca Lucas',
     date: 'February 15, 2026',
     readTime: '10 min read',
-    featured: true,
+    featured: false,
     image: '🏗️',
     tags: ['Architecture', 'Elixir', 'React', 'Compliance'],
   },
