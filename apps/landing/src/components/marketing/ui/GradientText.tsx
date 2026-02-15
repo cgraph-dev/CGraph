@@ -5,11 +5,11 @@ export type GradientVariant = 'emerald-purple' | 'fire' | 'ice' | 'cosmic';
 
 const GRADIENT_PRESETS: Record<GradientVariant, string> = {
   'emerald-purple':
-    'linear-gradient(90deg, #10b981 0%, #34d399 20%, #8b5cf6 40%, #a78bfa 60%, #10b981 80%, #34d399 100%)',
-  fire: 'linear-gradient(90deg, #f97316 0%, #dc2626 25%, #fbbf24 50%, #f97316 75%, #dc2626 100%)',
-  ice: 'linear-gradient(90deg, #22d3ee 0%, #a855f7 25%, #f0abfc 50%, #22d3ee 75%, #a855f7 100%)',
+    'linear-gradient(90deg, #10b981 0%, #34d399 12%, #6ee7b7 24%, #a78bfa 38%, #8b5cf6 50%, #a78bfa 62%, #6ee7b7 76%, #34d399 88%, #10b981 100%)',
+  fire: 'linear-gradient(90deg, #f97316 0%, #ef4444 20%, #dc2626 40%, #fbbf24 60%, #ef4444 80%, #f97316 100%)',
+  ice: 'linear-gradient(90deg, #22d3ee 0%, #67e8f9 20%, #a855f7 40%, #f0abfc 60%, #67e8f9 80%, #22d3ee 100%)',
   cosmic:
-    'linear-gradient(90deg, #8b5cf6 0%, #ec4899 20%, #f59e0b 40%, #10b981 60%, #8b5cf6 80%, #ec4899 100%)',
+    'linear-gradient(90deg, #8b5cf6 0%, #c084fc 15%, #ec4899 30%, #f59e0b 50%, #ec4899 70%, #c084fc 85%, #8b5cf6 100%)',
 };
 
 export interface GradientTextProps {
