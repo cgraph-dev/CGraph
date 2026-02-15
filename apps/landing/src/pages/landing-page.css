@@ -188,6 +188,11 @@ html.site-ready {
   font-family: 'Zentry', 'Outfit', system-ui, sans-serif;
 }
 
+.font-pixelify {
+  font-family: 'Pixelify Sans', 'Space Grotesk', 'Inter', system-ui, sans-serif !important;
+  font-weight: 500 !important;
+}
+
 .demo-landing .font-general {
   font-family: 'General', system-ui, sans-serif;
 }

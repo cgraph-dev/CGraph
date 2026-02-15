@@ -65,7 +65,11 @@ export function CTA({ prefersReduced = false }: CTAProps) {
           <LandingButton variant="primary" href={`${WEB_APP_URL}/register`}>
             Create Account
           </LandingButton>
-          <LandingButton variant="secondary" href={`${WEB_APP_URL}/login`}>
+          <LandingButton
+            variant="secondary"
+            href={`${WEB_APP_URL}/login`}
+            className="font-pixelify"
+          >
             Sign In
           </LandingButton>
         </motion.div>
