@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import '../../effects/TitleEffects.css';
 
 export type GradientVariant = 'emerald-purple' | 'fire' | 'ice' | 'cosmic';
 
