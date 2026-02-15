@@ -5,6 +5,7 @@ defmodule Cgraph.UploadsSecurityTest do
   use Cgraph.DataCase, async: true
 
   alias CGraph.Uploads
+  alias CGraph.Uploads.ImageOptimizer
 
   describe "validate_mime_type/3" do
     test "accepts valid JPEG file" do
@@ -121,29 +122,29 @@ defmodule Cgraph.UploadsSecurityTest do
   describe "image optimization" do
     test "should_optimize_image? returns true for large JPEG" do
       # Size above threshold (100KB)
-      assert Uploads.should_optimize_image?("image/jpeg", 150_000, false) == true
+      assert ImageOptimizer.should_optimize_image?("image/jpeg", 150_000, false) == true
     end
 
     test "should_optimize_image? returns false for small images" do
       # Size below threshold
-      assert Uploads.should_optimize_image?("image/jpeg", 50_000, false) == false
+      assert ImageOptimizer.should_optimize_image?("image/jpeg", 50_000, false) == false
     end
 
     test "should_optimize_image? returns false for GIF (animated)" do
-      assert Uploads.should_optimize_image?("image/gif", 500_000, false) == false
+      assert ImageOptimizer.should_optimize_image?("image/gif", 500_000, false) == false
     end
 
     test "should_optimize_image? returns false for SVG (vector)" do
-      assert Uploads.should_optimize_image?("image/svg+xml", 200_000, false) == false
+      assert ImageOptimizer.should_optimize_image?("image/svg+xml", 200_000, false) == false
     end
 
     test "should_optimize_image? returns false when skip_optimization is true" do
-      assert Uploads.should_optimize_image?("image/jpeg", 500_000, true) == false
+      assert ImageOptimizer.should_optimize_image?("image/jpeg", 500_000, true) == false
     end
 
     test "should_optimize_image? returns false for non-image types" do
-      assert Uploads.should_optimize_image?("application/pdf", 500_000, false) == false
-      assert Uploads.should_optimize_image?("video/mp4", 500_000, false) == false
+      assert ImageOptimizer.should_optimize_image?("application/pdf", 500_000, false) == false
+      assert ImageOptimizer.should_optimize_image?("video/mp4", 500_000, false) == false
     end
 
     @tag :imagemagick
@@ -159,7 +160,7 @@ defmodule Cgraph.UploadsSecurityTest do
 
       # Run optimization
       {thumb_url, preview_url, original_url, dimensions} =
-        Uploads.optimize_image(source_path, "test_id", test_dir, "image/jpeg")
+        ImageOptimizer.optimize_image(source_path, "test_id", test_dir, "image/jpeg")
 
       # Verify outputs exist or are nil (depending on ImageMagick availability)
       # At minimum, original_url should be set
@@ -179,7 +180,7 @@ defmodule Cgraph.UploadsSecurityTest do
     end
 
     test "supports_webp? returns boolean" do
-      result = Uploads.supports_webp?()
+      result = ImageOptimizer.supports_webp?()
       assert is_boolean(result)
     end
   end

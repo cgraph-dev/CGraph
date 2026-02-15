@@ -11,6 +11,7 @@ defmodule CGraph.Accounts.PushTokens do
   alias CGraph.Repo
 
   @doc "Register a push notification token for a user."
+  @spec register_push_token(map(), String.t(), String.t()) :: {:ok, PushToken.t()} | {:error, Ecto.Changeset.t()}
   def register_push_token(user, token, platform) do
     mapped_platform = case platform do
       "ios" -> "apns"
@@ -39,6 +40,7 @@ defmodule CGraph.Accounts.PushTokens do
   end
 
   @doc "Delete a push token for a user."
+  @spec delete_push_token(map(), String.t()) :: {:ok, PushToken.t()} | {:error, :not_found}
   def delete_push_token(user, token) do
     case Repo.get_by(PushToken, user_id: user.id, token: token) do
       nil -> {:error, :not_found}
@@ -47,6 +49,7 @@ defmodule CGraph.Accounts.PushTokens do
   end
 
   @doc "List all push tokens for a user."
+  @spec list_push_tokens(map()) :: [PushToken.t()]
   def list_push_tokens(user) do
     from(pt in PushToken, where: pt.user_id == ^user.id, order_by: [desc: :last_used_at])
     |> Repo.all()

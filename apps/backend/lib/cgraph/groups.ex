@@ -2,17 +2,121 @@ defmodule CGraph.Groups do
   @moduledoc """
   The Groups context.
 
-  Handles group (server) management, channels, members, roles, and invites.
-  Server/community functionality.
+  Thin facade delegating to focused sub-modules:
+  - `CGraph.Groups.Channels` — channels, messages, reactions, pinning, categories, overwrites
+  - `CGraph.Groups.Members` — member CRUD, muting, hierarchy, bans
+  - `CGraph.Groups.Roles` — role CRUD, permissions, reordering
+  - `CGraph.Groups.Invites` — invite CRUD, join-via-invite
+  - `CGraph.Groups.Emojis` — custom emoji CRUD
+
+  Groups CRUD, authorization, search, audit log, and orchestrating operations
+  (e.g. send_channel_message, transfer_ownership) remain inline.
   """
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Groups.{AuditLog, Channel, Group, Invite, Member, Role}
+  alias CGraph.Groups.{AuditLog, Group, Member}
+  alias CGraph.Groups.{Channels, Emojis, Invites, Members, Roles}
   alias CGraph.Messaging.Message
   alias CGraph.Repo
 
-  # Helper to convert atom keys to string keys
+  # ============================================================================
+  # Delegated: Channels
+  # ============================================================================
+
+  defdelegate list_channels(group, opts \\ []), to: Channels
+
+  @doc "Get a channel by group + channel_id, or by channel_id alone."
+  def get_channel(channel_id) when is_binary(channel_id), do: Channels.get_channel(channel_id)
+  def get_channel(group, channel_id), do: Channels.get_channel(group, channel_id)
+  defdelegate create_channel(group, attrs), to: Channels
+  defdelegate update_channel(channel, attrs), to: Channels
+  defdelegate delete_channel(channel), to: Channels
+  defdelegate list_channel_messages(channel_or_id, opts \\ []), to: Channels
+  defdelegate create_channel_message(channel, user, attrs), to: Channels
+  defdelegate get_channel_message(channel, message_id), to: Channels
+  defdelegate broadcast_channel_typing(channel, user), to: Channels
+  defdelegate broadcast_channel_message(channel, message), to: Channels
+  defdelegate list_message_reactions(message, opts \\ []), to: Channels
+  defdelegate add_message_reaction(user, message, emoji), to: Channels
+  defdelegate remove_message_reaction(user, message, emoji), to: Channels
+  defdelegate broadcast_reaction_added(channel, message, reaction, user \\ nil), to: Channels
+  defdelegate broadcast_reaction_removed(channel, message, user, emoji), to: Channels
+  defdelegate can_view_channel?(member, channel), to: Channels
+  defdelegate can_send_messages?(member), to: Channels
+  defdelegate can_manage_messages?(member), to: Channels
+  defdelegate pin_message(message, user), to: Channels
+  defdelegate list_pinned_messages(channel), to: Channels
+  defdelegate get_pinned_message(channel_id, pinned_id), to: Channels
+  defdelegate unpin_message(pinned_message), to: Channels
+  defdelegate list_permission_overwrites(channel), to: Channels
+  defdelegate get_permission_overwrite(channel_id, overwrite_id), to: Channels
+  defdelegate create_permission_overwrite(channel, attrs), to: Channels
+  defdelegate update_permission_overwrite(overwrite, attrs), to: Channels
+  defdelegate delete_permission_overwrite(overwrite), to: Channels
+  defdelegate list_channel_categories(group), to: Channels
+  defdelegate get_channel_category(group, category_id), to: Channels
+  defdelegate create_channel_category(group, attrs), to: Channels
+  defdelegate update_channel_category(category, attrs), to: Channels
+  defdelegate delete_channel_category(category), to: Channels
+
+  # ============================================================================
+  # Delegated: Members
+  # ============================================================================
+
+  defdelegate list_group_members(group, opts \\ []), to: Members
+  defdelegate get_member(group, member_id), to: Members
+  defdelegate get_member_by_user(group, user_id), to: Members
+  defdelegate add_member(group, user, role_ids \\ []), to: Members
+  defdelegate update_member(member, attrs), to: Members
+  defdelegate update_member_notifications(member, attrs), to: Members
+  defdelegate update_member_roles(member, role_ids), to: Members
+  defdelegate remove_member(member), to: Members
+  defdelegate mute_member(member, until), to: Members
+  defdelegate unmute_member(member), to: Members
+  defdelegate compare_hierarchy(member_a, member_b), to: Members
+  defdelegate ban_member(group, user, reason \\ nil), to: Members
+  defdelegate unban_user(group, user_id), to: Members
+  defdelegate list_bans(group), to: Members
+  defdelegate get_ban(group, user_id), to: Members
+
+  # ============================================================================
+  # Delegated: Roles
+  # ============================================================================
+
+  defdelegate list_roles(group), to: Roles
+  defdelegate get_role(group, role_id), to: Roles
+  defdelegate create_role(group, attrs), to: Roles
+  defdelegate update_role(role, attrs), to: Roles
+  defdelegate delete_role(role), to: Roles
+  defdelegate reorder_roles(group, role_ids), to: Roles
+  defdelegate calculate_permissions(member, group), to: Roles
+
+  # ============================================================================
+  # Delegated: Invites
+  # ============================================================================
+
+  defdelegate list_invites(group), to: Invites
+  defdelegate get_invite(group, invite_id), to: Invites
+  defdelegate get_invite_by_code(code), to: Invites
+  defdelegate create_invite(group, user, opts \\ %{}), to: Invites
+  defdelegate delete_invite(invite), to: Invites
+  defdelegate join_via_invite(invite, user), to: Invites
+
+  # ============================================================================
+  # Delegated: Emojis
+  # ============================================================================
+
+  defdelegate list_group_emojis(group), to: Emojis
+  defdelegate get_group_emoji(group, emoji_id), to: Emojis
+  defdelegate create_group_emoji(group, user, attrs), to: Emojis
+  defdelegate update_group_emoji(emoji, attrs), to: Emojis
+  defdelegate delete_group_emoji(emoji), to: Emojis
+
+  # ============================================================================
+  # Groups CRUD (inline — orchestrates sub-modules)
+  # ============================================================================
+
   defp stringify_keys(map) when is_map(map) do
     Map.new(map, fn
       {k, v} when is_atom(k) -> {Atom.to_string(k), v}
@@ -20,13 +124,8 @@ defmodule CGraph.Groups do
     end)
   end
 
-  # ============================================================================
-  # Groups
-  # ============================================================================
-
-  @doc """
-  List groups for a user.
-  """
+  @doc "List groups for a user."
+  @spec list_groups(struct(), keyword()) :: {list(), map()}
   def list_groups(user, opts \\ []) do
     query = from g in Group,
       join: m in Member, on: m.group_id == g.id,
@@ -43,23 +142,19 @@ defmodule CGraph.Groups do
     CGraph.Pagination.paginate(query, pagination_opts)
   end
 
-  @doc """
-  List user groups (alias for list_groups).
-  """
+  @doc "List user groups (alias for list_groups)."
+  @spec list_user_groups(struct(), keyword()) :: {list(), map()}
   def list_user_groups(user, opts \\ []), do: list_groups(user, opts)
 
-  @doc """
-  Count the number of groups owned by a user.
-  Used for subscription tier limit enforcement.
-  """
+  @doc "Count the number of groups owned by a user."
+  @spec count_user_groups(binary()) :: non_neg_integer()
   def count_user_groups(user_id) do
     from(g in Group, where: g.owner_id == ^user_id and is_nil(g.deleted_at))
     |> Repo.aggregate(:count, :id)
   end
 
-  @doc """
-  Get a group by ID.
-  """
+  @doc "Get a group by ID."
+  @spec get_group(binary()) :: {:ok, struct()} | {:error, :not_found}
   def get_group(id) do
     query = from g in Group,
       where: g.id == ^id,
@@ -71,9 +166,8 @@ defmodule CGraph.Groups do
     end
   end
 
-  @doc """
-  Get a group that user is a member of.
-  """
+  @doc "Get a group that user is a member of."
+  @spec get_user_group(struct(), binary()) :: {:ok, struct()} | {:error, :not_found}
   def get_user_group(user, group_id) do
     with {:ok, group} <- get_group(group_id),
          true <- member?(user, group) do
@@ -84,14 +178,12 @@ defmodule CGraph.Groups do
     end
   end
 
-  @doc """
-  Authorize an action (alias for authorize_action).
-  """
+  @doc "Authorize an action (alias for authorize_action)."
+  @spec authorize(struct(), struct(), atom()) :: :ok | {:error, atom()}
   def authorize(user, group, action), do: authorize_action(user, group, action)
 
-  @doc """
-  Check if user is a member of a group.
-  """
+  @doc "Check if user is a member of a group."
+  @spec member?(struct(), struct()) :: boolean()
   def member?(user, group) do
     query = from m in Member,
       where: m.group_id == ^group.id,
@@ -100,80 +192,67 @@ defmodule CGraph.Groups do
     Repo.exists?(query)
   end
 
-  @doc """
-  Authorize an action on a group.
-  """
+  @doc "Authorize an action on a group."
+  @spec authorize_action(struct(), struct(), atom()) :: :ok | {:error, atom()}
   def authorize_action(user, group, action) do
-    member = get_member_by_user(group, user.id)
+    member = Members.get_member_by_user(group, user.id)
 
     cond do
       is_nil(member) -> {:error, :not_found}
       group.owner_id == user.id -> :ok
-      has_permission?(member, action) -> :ok
+      Roles.has_permission?(member, action) -> :ok
       true -> {:error, :insufficient_permissions}
     end
   end
 
-  @doc """
-  Create a new group.
-  """
+  @doc "Create a new group."
+  @spec create_group(struct(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def create_group(user, attrs) do
-    # Convert to string keys for consistency
     attrs = stringify_keys(attrs) |> Map.put("owner_id", user.id)
 
-    # Create the group first, handle validation errors
     case %Group{} |> Group.changeset(attrs) |> Repo.insert() do
       {:error, changeset} ->
         {:error, changeset}
 
       {:ok, group} ->
-        # Wrap the rest in a transaction
         Repo.transaction(fn ->
-          # Create default roles
-          {:ok, admin_role} = create_role(group, %{
+          {:ok, admin_role} = Roles.create_role(group, %{
             "name" => "Admin",
             "color" => "#FF0000",
             "position" => 1,
             "is_admin" => true
           })
 
-          {:ok, _member_role} = create_role(group, %{
+          {:ok, _member_role} = Roles.create_role(group, %{
             "name" => "Member",
             "color" => "#808080",
             "position" => 0,
             "is_default" => true
           })
 
-          # Add owner as member with admin role
-          {:ok, _member} = add_member(group, user, [admin_role.id])
+          {:ok, _member} = Members.add_member(group, user, [admin_role.id])
 
-          # Create default channel
-          {:ok, _channel} = create_channel(group, %{
+          {:ok, _channel} = Channels.create_channel(group, %{
             "name" => "general",
             "type" => "text"
           })
 
-          # Reload group with associations
           {:ok, loaded_group} = get_group(group.id)
           loaded_group
         end)
     end
   end
 
-  @doc """
-  Update a group.
-  """
+  @doc "Update a group."
+  @spec update_group(struct(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def update_group(group, attrs) do
     group
     |> Group.changeset(attrs)
     |> Repo.update()
   end
 
-  @doc """
-  Delete a group (soft delete).
-
-  Sets deleted_at timestamp rather than removing the record.
-  """
+  @doc "Delete a group (soft delete)."
+  @spec delete_group(struct()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def delete_group(group) do
     now = DateTime.truncate(DateTime.utc_now(), :second)
     group
@@ -182,662 +261,57 @@ defmodule CGraph.Groups do
   end
 
   # ============================================================================
-  # Channels
+  # Search
   # ============================================================================
 
-  @doc """
-  List channels in a group.
-  """
-  def list_channels(group, opts \\ []) do
-    category_id = Keyword.get(opts, :category_id)
+  @doc "Search groups."
+  @spec search_groups(binary(), keyword()) :: {list(), map()}
+  def search_groups(query, opts \\ []) do
+    user = Keyword.get(opts, :user)
+    search_term = "%#{query}%"
 
-    query = from c in Channel,
-      where: c.group_id == ^group.id,
-      order_by: [asc: c.position]
-
-    query = if category_id do
-      from c in query, where: c.category_id == ^category_id
-    else
-      query
-    end
-
-    Repo.all(query)
-  end
-
-  @doc """
-  Get a channel by ID.
-  """
-  def get_channel(group, channel_id) do
-    query = from c in Channel,
-      where: c.id == ^channel_id,
-      where: c.group_id == ^group.id
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      channel -> {:ok, channel}
-    end
-  end
-
-  @doc """
-  Create a channel.
-
-  Accepts both :type and :channel_type for the channel type field.
-  """
-  def create_channel(group, attrs) do
-    channel_attrs = attrs
-      |> stringify_keys()
-      |> Map.put("group_id", group.id)
-      |> normalize_channel_type()
-
-    %Channel{}
-    |> Channel.changeset(channel_attrs)
-    |> Repo.insert()
-  end
-
-  # Normalize "type" to "channel_type" for API consistency
-  defp normalize_channel_type(attrs) do
-    case Map.pop(attrs, "type") do
-      {nil, attrs} -> attrs
-      {type, attrs} -> Map.put_new(attrs, "channel_type", type)
-    end
-  end
-
-  @doc """
-  Update a channel.
-  """
-  def update_channel(channel, attrs) do
-    channel
-    |> Channel.changeset(stringify_keys(attrs))
-    |> Repo.update()
-  end
-
-  @doc """
-  Delete a channel.
-  """
-  def delete_channel(channel) do
-    Repo.delete(channel)
-  end
-
-  # ============================================================================
-  # Channel Messages
-  # ============================================================================
-
-  @doc """
-  List messages in a channel.
-  Accepts either a channel struct or channel_id string.
-  """
-  def list_channel_messages(channel_or_id, opts \\ [])
-
-  def list_channel_messages(channel_id, opts) when is_binary(channel_id) do
-    query = from m in Message,
-      where: m.channel_id == ^channel_id,
-      preload: [[sender: :customization], :reactions]
+    db_query = from g in Group,
+      where: ilike(g.name, ^search_term) or ilike(g.description, ^search_term),
+      where: g.is_public == true
 
     pagination_opts = CGraph.Pagination.parse_params(
       Enum.into(opts, %{}),
-      sort_field: :inserted_at,
+      sort_field: :member_count,
       sort_direction: :desc,
-      default_limit: 50
+      default_limit: 20
     )
 
-    {messages, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
-    {Enum.reverse(messages), page_info}
+    {groups, page_info} = CGraph.Pagination.paginate(db_query, pagination_opts)
+
+    groups = Enum.map(groups, fn g ->
+      is_member = if user, do: member?(user, g), else: false
+      Map.put(g, :is_member, is_member)
+    end)
+
+    {groups, page_info}
   end
 
-  def list_channel_messages(channel, opts) when is_struct(channel) do
-    list_channel_messages(channel.id, opts)
-  end
+  @doc "Get group suggestions for autocomplete."
+  @spec get_group_suggestions(binary(), keyword()) :: list()
+  def get_group_suggestions(query, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 10)
+    search_term = "#{query}%"
 
-  @doc """
-  Create a message in a channel.
-  """
-  def create_channel_message(user, channel, attrs) do
-    message_attrs = attrs
-      |> Map.put("sender_id", user.id)
-      |> Map.put("channel_id", channel.id)
-
-    result = %Message{}
-      |> Message.changeset(message_attrs)
-      |> Repo.insert()
-
-    case result do
-      {:ok, message} ->
-        broadcast_channel_message(channel, message)
-        {:ok, Repo.preload(message, [[sender: :customization], :reactions])}
-      error -> error
-    end
-  end
-
-  @doc """
-  Broadcast typing indicator in channel.
-  """
-  def broadcast_channel_typing(channel, user) do
-    CGraphWeb.Endpoint.broadcast(
-      "channel:#{channel.id}",
-      "typing",
-      %{user_id: user.id, username: user.username}
-    )
-    :ok
-  end
-
-  defp broadcast_channel_message(channel, message) do
-    CGraphWeb.Endpoint.broadcast(
-      "channel:#{channel.id}",
-      "new_message",
-      %{message: message}
-    )
-  end
-
-  # ============================================================================
-  # Members
-  # ============================================================================
-
-  @doc """
-  List members of a group.
-  """
-  def list_group_members(group, opts \\ []) do
-    role_filter = Keyword.get(opts, :role)
-
-    query = from m in Member,
-      where: m.group_id == ^group.id,
-      preload: [:user, :roles]
-
-    query = if role_filter do
-      from m in query,
-        join: r in assoc(m, :roles),
-        where: r.id == ^role_filter
-    else
-      query
-    end
-
-    pagination_opts = CGraph.Pagination.parse_params(
-      Enum.into(opts, %{}),
-      sort_field: :inserted_at,
-      sort_direction: :desc,
-      default_limit: 50
-    )
-
-    CGraph.Pagination.paginate(query, pagination_opts)
-  end
-
-  @doc """
-  Get a member by ID.
-  """
-  def get_member(group, member_id) do
-    query = from m in Member,
-      where: m.id == ^member_id,
-      where: m.group_id == ^group.id,
-      preload: [:user, :roles]
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      member -> {:ok, member}
-    end
-  end
-
-  @doc """
-  Get a member by user ID.
-  """
-  def get_member_by_user(group, user_id) do
-    query = from m in Member,
-      where: m.group_id == ^group.id,
-      where: m.user_id == ^user_id,
-      preload: [:roles]
-
-    Repo.one(query)
-  end
-
-  @doc """
-  Add a member to a group.
-  """
-  def add_member(group, user, role_ids \\ []) do
-    %Member{}
-    |> Member.changeset(%{group_id: group.id, user_id: user.id})
-    |> Repo.insert()
-    |> case do
-      {:ok, member} ->
-        if role_ids != [] do
-          update_member_roles(member, role_ids)
-        else
-          {:ok, member}
-        end
-      error -> error
-    end
-  end
-
-  @doc """
-  Update a member.
-  """
-  def update_member(member, attrs) do
-    member
-    |> Member.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Update a member's notification preferences (self-service).
-  """
-  def update_member_notifications(member, attrs) do
-    member
-    |> Member.update_changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Update member roles.
-  """
-  def update_member_roles(member, role_ids) do
-    roles = Repo.all(from r in Role, where: r.id in ^role_ids)
-
-    member
-    |> Repo.preload(:roles)
-    |> Ecto.Changeset.change()
-    |> Ecto.Changeset.put_assoc(:roles, roles)
-    |> Repo.update()
-  end
-
-  @doc """
-  Remove a member from a group.
-  """
-  def remove_member(member) do
-    Repo.delete(member)
-  end
-
-  @doc """
-  Mute a member.
-  """
-  def mute_member(member, duration_seconds) do
-    # Truncate to seconds for :utc_datetime field (not _usec)
-    muted_until = DateTime.truncate(DateTime.utc_now(), :second)
-      |> DateTime.add(duration_seconds, :second)
-      |> DateTime.truncate(:second)
-
-    member
-    |> Ecto.Changeset.change(muted_until: muted_until)
-    |> Repo.update()
-  end
-
-  @doc """
-  Unmute a member.
-  """
-  def unmute_member(member) do
-    member
-    |> Ecto.Changeset.change(muted_until: nil)
-    |> Repo.update()
-  end
-
-  @doc """
-  Compare hierarchy of two members.
-  Returns :higher, :lower, or :equal.
-  """
-  def compare_hierarchy(actor_member, target_member) do
-    actor_highest = get_highest_role_position(actor_member)
-    target_highest = get_highest_role_position(target_member)
-
-    cond do
-      actor_highest > target_highest -> :higher
-      actor_highest < target_highest -> :lower
-      true -> :equal
-    end
-  end
-
-  defp get_highest_role_position(member) do
-    member.roles
-    |> Enum.map(& &1.position)
-    |> Enum.max(fn -> 0 end)
-  end
-
-  # ============================================================================
-  # Bans
-  # ============================================================================
-
-  @doc """
-  Ban a member from a group.
-  """
-  def ban_member(group, member, opts \\ []) do
-    reason = Keyword.get(opts, :reason, "")
-    duration = Keyword.get(opts, :duration)
-
-    expires_at = if duration do
-      DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), duration, :second)
-    else
-      nil
-    end
-
-    # Remove from group
-    Repo.delete(member)
-
-    # Return ban record
-    {:ok, %{
-      id: Ecto.UUID.generate(),
-      group_id: group.id,
-      user_id: member.user_id,
-      reason: reason,
-      expires_at: expires_at,
-      inserted_at: DateTime.truncate(DateTime.utc_now(), :second)
-    }}
-  end
-
-  @doc """
-  Unban a user from a group.
-  """
-  def unban_user(_group, _user_id) do
-    # Remove ban record
-    {:ok, :unbanned}
-  end
-
-  @doc """
-  List banned users.
-  """
-  def list_bans(_group) do
-    # Return list of bans
-    []
-  end
-
-  @doc """
-  Get a ban record.
-  """
-  def get_ban(_group, _user_id) do
-    nil
-  end
-
-  # ============================================================================
-  # Roles
-  # ============================================================================
-
-  @doc """
-  List roles in a group.
-  """
-  def list_roles(group) do
-    from(r in Role,
-      where: r.group_id == ^group.id,
-      order_by: [desc: r.position]
+    from(g in Group,
+      where: ilike(g.name, ^search_term),
+      where: g.is_public == true,
+      order_by: [desc: g.member_count],
+      limit: ^limit
     )
     |> Repo.all()
-  end
-
-  @doc """
-  Get a role by ID.
-  """
-  def get_role(group, role_id) do
-    query = from r in Role,
-      where: r.id == ^role_id,
-      where: r.group_id == ^group.id
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      role -> {:ok, role}
-    end
-  end
-
-  @doc """
-  Create a role.
-  """
-  def create_role(group, attrs) do
-    role_attrs = attrs
-      |> stringify_keys()
-      |> Map.put("group_id", group.id)
-
-    %Role{}
-    |> Role.changeset(role_attrs)
-    |> Repo.insert()
-  end
-
-  @doc """
-  Update a role.
-  """
-  def update_role(role, attrs) do
-    role
-    |> Role.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Delete a role.
-  """
-  def delete_role(role) do
-    Repo.delete(role)
-  end
-
-  @doc """
-  Reorder roles.
-  """
-  def reorder_roles(group, role_ids) do
-    Enum.with_index(role_ids)
-    |> Enum.each(fn {role_id, index} ->
-      from(r in Role, where: r.id == ^role_id and r.group_id == ^group.id)
-      |> Repo.update_all(set: [position: length(role_ids) - index])
-    end)
-
-    {:ok, list_roles(group)}
-  end
-
-  @doc """
-  Calculate the effective permissions for a member based on their roles.
-
-  Returns a list of permission strings the member has.
-  """
-  def calculate_permissions(%Member{} = member, %Group{} = group) do
-    roles = member.roles || []
-
-    # Owner has all permissions
-    if group.owner_id == member.user_id do
-      all_permissions()
-    else
-      roles
-      |> Enum.flat_map(&role_permissions/1)
-      |> Enum.uniq()
-    end
-  end
-
-  defp all_permissions do
-    [
-      "view", "view_members", "send_messages", "manage_messages",
-      "manage_channels", "manage_roles", "manage_members",
-      "kick_members", "ban_members", "mute_members", "view_audit_log",
-      "create_invites", "manage_invites", "add_reactions", "administrator"
-    ]
-  end
-
-  @permission_fields [
-    {:can_send_messages, "send_messages", true},
-    {:can_manage_messages, "manage_messages", false},
-    {:can_manage_channels, "manage_channels", false},
-    {:can_manage_roles, "manage_roles", false},
-    {:can_manage_members, "manage_members", false},
-    {:can_kick_members, "kick_members", false},
-    {:can_ban_members, "ban_members", false},
-    {:can_mute_members, "mute_members", false},
-    {:can_view_audit_log, "view_audit_log", false},
-    {:can_create_invites, "create_invites", true},
-    {:can_manage_invites, "manage_invites", false},
-    {:can_add_reactions, "add_reactions", true}
-  ]
-
-  defp role_permissions(%{is_admin: true}), do: all_permissions()
-  defp role_permissions(role) do
-    base_permissions = ["view", "view_members"]
-
-    Enum.reduce(@permission_fields, base_permissions, fn {field, perm, default}, acc ->
-      if Map.get(role, field, default), do: [perm | acc], else: acc
-    end)
-  end
-
-  defp has_permission?(member, action) do
-    Enum.any?(member.roles, fn role ->
-      role.is_admin || check_role_permission(role, action)
-    end)
-  end
-
-  # Permission mapping: action -> {field_name, default_value}
-  @role_permissions %{
-    view: {:always, true},
-    view_members: {:always, true},
-    send_messages: {:can_send_messages, true},
-    manage_messages: {:can_manage_messages, false},
-    manage_channels: {:can_manage_channels, false},
-    manage_roles: {:can_manage_roles, false},
-    manage_members: {:can_manage_members, false},
-    kick_members: {:can_kick_members, false},
-    ban_members: {:can_ban_members, false},
-    mute_members: {:can_mute_members, false},
-    view_audit_log: {:can_view_audit_log, false},
-    create_invites: {:can_create_invites, true},
-    view_invites: {:can_create_invites, true},
-    manage_invites: {:can_manage_invites, false},
-    add_reactions: {:can_add_reactions, true}
-  }
-
-  defp check_role_permission(role, action) do
-    case Map.get(@role_permissions, action) do
-      {:always, value} -> value
-      {field, default} -> Map.get(role, field, default)
-      nil -> false
-    end
-  end
-
-  # ============================================================================
-  # Invites
-  # ============================================================================
-
-  @doc """
-  List invites for a group.
-  Filters out revoked invites and preloads creator info.
-  """
-  def list_invites(group) do
-    from(i in Invite,
-      where: i.group_id == ^group.id,
-      where: i.is_revoked == false,
-      preload: [:created_by]
-    )
-    |> Repo.all()
-  end
-
-  @doc """
-  Get an invite by ID.
-  """
-  def get_invite(group, invite_id) do
-    query = from i in Invite,
-      where: i.id == ^invite_id,
-      where: i.group_id == ^group.id
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      invite -> {:ok, invite}
-    end
-  end
-
-  @doc """
-  Get an invite by code.
-  """
-  def get_invite_by_code(code) do
-    # Note: Invite schema has :created_by association, not :inviter
-    query = from i in Invite,
-      where: i.code == ^code,
-      preload: [:created_by, :group]
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      invite -> {:ok, invite}
-    end
-  end
-
-  @doc """
-  Create an invite.
-
-  Accepts either a keyword list or map for options:
-    - max_uses: Maximum number of times the invite can be used
-    - expires_in: Seconds until expiration (default: 86400 = 24 hours)
-    - expires_at: Explicit expiration DateTime (overrides expires_in)
-  """
-  def create_invite(group, user, opts \\ [])
-
-  def create_invite(group, user, opts) when is_map(opts) do
-    # Convert map to keyword list for consistent handling
-    keyword_opts = Enum.map(opts, fn
-      {k, v} when is_atom(k) -> {k, v}
-      {k, v} when is_binary(k) -> {String.to_existing_atom(k), v}
-    end)
-    create_invite_impl(group, user, keyword_opts)
-  end
-
-  def create_invite(group, user, opts) when is_list(opts) do
-    create_invite_impl(group, user, opts)
-  end
-
-  defp create_invite_impl(group, user, opts) do
-    max_uses = Keyword.get(opts, :max_uses)
-    expires_at = Keyword.get(opts, :expires_at)
-    expires_in = Keyword.get(opts, :expires_in, 86_400)
-
-    # Use explicit expires_at if provided, otherwise calculate from expires_in
-    final_expires_at = cond do
-      expires_at != nil -> expires_at
-      expires_in != nil -> DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), expires_in, :second)
-      true -> nil
-    end
-
-    code = generate_invite_code()
-
-    # Invite schema uses created_by_id, not inviter_id
-    %Invite{}
-    |> Invite.changeset(%{
-      code: code,
-      group_id: group.id,
-      created_by_id: user.id,
-      max_uses: max_uses,
-      expires_at: final_expires_at
-    })
-    |> Repo.insert()
-  end
-
-  @doc """
-  Delete an invite.
-  """
-  def delete_invite(invite) do
-    Repo.delete(invite)
-  end
-
-  @doc """
-  Join a group via invite.
-  Uses atomic increment to prevent race conditions when multiple users join simultaneously.
-  """
-  def join_via_invite(user, invite) do
-    # Atomic increment to prevent race conditions - ensures max_uses limit is enforced
-    {count, _} = from(i in Invite, where: i.id == ^invite.id)
-    |> Repo.update_all(inc: [uses: 1])
-
-    if count == 0 do
-      {:error, :invite_not_found}
-    else
-      # Get default role
-      default_role = Repo.one(from r in Role,
-        where: r.group_id == ^invite.group_id,
-        where: r.is_default == true
-      )
-
-      role_ids = if default_role, do: [default_role.id], else: []
-
-      # Add as member
-      {:ok, group} = get_group(invite.group_id)
-      add_member(group, user, role_ids)
-    end
-  end
-
-  defp generate_invite_code do
-    :crypto.strong_rand_bytes(6)
-    |> Base.url_encode64()
-    |> String.replace(~r/[^a-zA-Z0-9]/, "")
-    |> String.slice(0, 8)
   end
 
   # ============================================================================
   # Audit Log
   # ============================================================================
 
-  @doc """
-  Log an audit event.
-  """
+  @doc "Log an audit event."
+  @spec log_audit_event(struct(), struct(), atom() | binary(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def log_audit_event(group, user, action, data \\ %{}) do
     %AuditLog{}
     |> AuditLog.changeset(%{
@@ -849,9 +323,8 @@ defmodule CGraph.Groups do
     |> Repo.insert()
   end
 
-  @doc """
-  Get audit log entries.
-  """
+  @doc "Get audit log entries."
+  @spec get_audit_log(struct(), keyword()) :: {list(), map()}
   def get_audit_log(group, opts \\ []) do
     action_filter = Keyword.get(opts, :action)
     user_filter = Keyword.get(opts, :user_id)
@@ -882,14 +355,16 @@ defmodule CGraph.Groups do
     CGraph.Pagination.paginate(query, pagination_opts)
   end
 
-  @doc """
-  Alias for get_audit_log for controller compatibility.
-  """
+  @doc "Alias for get_audit_log for controller compatibility."
+  @spec list_audit_log(struct(), keyword()) :: {list(), map()}
   def list_audit_log(group, opts \\ []), do: get_audit_log(group, opts)
 
-  @doc """
-  Send a message to a channel.
-  """
+  # ============================================================================
+  # Orchestrating Operations
+  # ============================================================================
+
+  @doc "Send a message to a channel with idempotency support."
+  @spec send_channel_message(struct(), struct(), map()) :: {:ok, struct()} | {:error, any()}
   def send_channel_message(channel, user, attrs) do
     message_attrs = attrs
       |> Map.put("user_id", user.id)
@@ -919,14 +394,17 @@ defmodule CGraph.Groups do
     end
   end
 
-  @doc """
-  Transfer group ownership.
-  """
+  @doc "Transfer group ownership."
+  @spec transfer_ownership(struct(), binary()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def transfer_ownership(group, new_owner_id) do
     group
     |> Ecto.Changeset.change(owner_id: new_owner_id)
     |> Repo.update()
   end
+
+  # ============================================================================
+  # Private Helpers
+  # ============================================================================
 
   defp idempotency_conflict?(changeset) do
     Enum.any?(changeset.errors, fn {field, {_, _}} ->
@@ -945,397 +423,4 @@ defmodule CGraph.Groups do
   end
 
   defp get_channel_message_by_client_id(_, _), do: nil
-
-  # ============================================================================
-  # Search
-  # ============================================================================
-
-  @doc """
-  Search groups.
-  """
-  def search_groups(query, opts \\ []) do
-    user = Keyword.get(opts, :user)
-    search_term = "%#{query}%"
-
-    db_query = from g in Group,
-      where: ilike(g.name, ^search_term) or ilike(g.description, ^search_term),
-      where: g.is_public == true
-
-    pagination_opts = CGraph.Pagination.parse_params(
-      Enum.into(opts, %{}),
-      sort_field: :member_count,
-      sort_direction: :desc,
-      default_limit: 20
-    )
-
-    {groups, page_info} = CGraph.Pagination.paginate(db_query, pagination_opts)
-
-    groups = Enum.map(groups, fn g ->
-      is_member = if user, do: member?(user, g), else: false
-      Map.put(g, :is_member, is_member)
-    end)
-
-    {groups, page_info}
-  end
-
-  @doc """
-  Get group suggestions for autocomplete.
-  """
-  def get_group_suggestions(query, opts \\ []) do
-    limit = Keyword.get(opts, :limit, 10)
-    search_term = "#{query}%"
-
-    from(g in Group,
-      where: ilike(g.name, ^search_term),
-      where: g.is_public == true,
-      order_by: [desc: g.member_count],
-      limit: ^limit
-    )
-    |> Repo.all()
-  end
-
-  # ============================================================================
-  # Channel Reactions
-  # ============================================================================
-
-  @doc """
-  Get a channel message.
-  """
-  def get_channel_message(channel, message_id) do
-    query = from m in Message,
-      where: m.id == ^message_id,
-      where: m.channel_id == ^channel.id,
-      preload: [:user, :reactions]
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      message -> {:ok, message}
-    end
-  end
-
-  @doc """
-  List reactions on a channel message.
-  """
-  def list_message_reactions(message, opts \\ []) do
-    CGraph.Messaging.list_reactions(message, opts)
-  end
-
-  @doc """
-  Add a reaction to a channel message.
-  """
-  def add_message_reaction(user, message, emoji) do
-    CGraph.Messaging.add_reaction(user, message, emoji)
-  end
-
-  @doc """
-  Remove a reaction from a channel message.
-  """
-  def remove_message_reaction(user, message, emoji) do
-    CGraph.Messaging.remove_reaction(user, message, emoji)
-  end
-
-  @doc """
-  Broadcast reaction added in channel.
-  """
-  def broadcast_reaction_added(channel, message, reaction, user \\ nil) do
-    # Use provided user or try to get from reaction
-    user_data = user || reaction.user
-
-    CGraphWeb.Endpoint.broadcast(
-      "channel:#{channel.id}",
-      "reaction_added",
-      %{
-        message_id: message.id,
-        emoji: reaction.emoji,
-        user_id: reaction.user_id,
-        user: if user_data do
-          %{
-            id: user_data.id,
-            username: user_data.username,
-            display_name: user_data.display_name,
-            avatar_url: user_data.avatar_url
-          }
-        else
-          %{id: reaction.user_id}
-        end
-      }
-    )
-  end
-
-  @doc """
-  Broadcast reaction removed in channel.
-  """
-  def broadcast_reaction_removed(channel, message, user, emoji) do
-    CGraphWeb.Endpoint.broadcast(
-      "channel:#{channel.id}",
-      "reaction_removed",
-      %{message_id: message.id, user_id: user.id, emoji: emoji}
-    )
-  end
-
-  # ============================================================================
-  # Permission Helpers
-  # ============================================================================
-
-  @doc """
-  Get a channel by ID only (without group context).
-  """
-  def get_channel(channel_id) when is_binary(channel_id) do
-    case Repo.get(Channel, channel_id) do
-      nil -> {:error, :not_found}
-      channel -> {:ok, Repo.preload(channel, [:group])}
-    end
-  end
-
-  @doc """
-  Check if a member can view a channel.
-  """
-  def can_view_channel?(%Member{} = member, %Channel{} = channel) do
-    # Load group if not already loaded
-    channel = if Ecto.assoc_loaded?(channel.group), do: channel, else: Repo.preload(channel, :group)
-
-    # Group owner can view all channels
-    # Otherwise all members can view (channel privacy via PermissionOverwrites later)
-    member.user_id == channel.group.owner_id || true
-  end
-
-  @doc """
-  Check if a member can send messages in a channel.
-  """
-  def can_send_messages?(%Member{} = member) do
-    !member.is_muted && (is_nil(member.muted_until) || DateTime.compare(member.muted_until, DateTime.truncate(DateTime.utc_now(), :second)) == :lt)
-  end
-
-  @doc """
-  Check if a member can manage messages (edit/delete others' messages).
-  """
-  def can_manage_messages?(%Member{} = member) do
-    member_has_permission?(member, :manage_messages) || member_has_permission?(member, :administrator)
-  end
-
-  @doc """
-  Pin a message in a channel.
-  """
-  def pin_message(message, user) do
-    alias CGraph.Groups.PinnedMessage
-
-    %PinnedMessage{}
-    |> PinnedMessage.changeset(%{
-      channel_id: message.channel_id,
-      message_id: message.id,
-      pinned_by_id: user.id
-    })
-    |> Repo.insert()
-  end
-
-  # ---------------------------------------------------------------------------
-  # Permission Overwrites
-  # ---------------------------------------------------------------------------
-
-  @doc """
-  List permission overwrites for a channel.
-  """
-  def list_permission_overwrites(channel) do
-    alias CGraph.Groups.PermissionOverwrite
-
-    PermissionOverwrite
-    |> where([po], po.channel_id == ^channel.id)
-    |> Repo.all()
-  end
-
-  @doc """
-  Get a specific permission overwrite.
-  """
-  def get_permission_overwrite(channel_id, overwrite_id) do
-    alias CGraph.Groups.PermissionOverwrite
-
-    case Repo.get_by(PermissionOverwrite, id: overwrite_id, channel_id: channel_id) do
-      nil -> {:error, :not_found}
-      overwrite -> {:ok, overwrite}
-    end
-  end
-
-  @doc """
-  Create a permission overwrite for a channel.
-  """
-  def create_permission_overwrite(channel, attrs) do
-    alias CGraph.Groups.PermissionOverwrite
-
-    %PermissionOverwrite{}
-    |> PermissionOverwrite.changeset(Map.put(attrs, :channel_id, channel.id))
-    |> Repo.insert()
-  end
-
-  @doc """
-  Update a permission overwrite.
-  """
-  def update_permission_overwrite(overwrite, attrs) do
-    alias CGraph.Groups.PermissionOverwrite
-
-    overwrite
-    |> PermissionOverwrite.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Delete a permission overwrite.
-  """
-  def delete_permission_overwrite(overwrite) do
-    Repo.delete(overwrite)
-  end
-
-  # ---------------------------------------------------------------------------
-  # Pinned Messages
-  # ---------------------------------------------------------------------------
-
-  @doc """
-  List pinned messages for a channel, ordered by position.
-  """
-  def list_pinned_messages(channel) do
-    alias CGraph.Groups.PinnedMessage
-
-    PinnedMessage
-    |> where([pm], pm.channel_id == ^channel.id)
-    |> order_by([pm], asc: pm.position, asc: pm.inserted_at)
-    |> Repo.all()
-  end
-
-  @doc """
-  Get a specific pinned message.
-  """
-  def get_pinned_message(channel_id, pinned_id) do
-    alias CGraph.Groups.PinnedMessage
-
-    case Repo.get_by(PinnedMessage, id: pinned_id, channel_id: channel_id) do
-      nil -> {:error, :not_found}
-      pinned -> {:ok, pinned}
-    end
-  end
-
-  @doc """
-  Unpin a message from a channel.
-  """
-  def unpin_message(pinned_message) do
-    Repo.delete(pinned_message)
-  end
-
-  # ---------------------------------------------------------------------------
-  # Channel Categories
-  # ---------------------------------------------------------------------------
-
-  @doc """
-  List channel categories for a group, ordered by position.
-  """
-  def list_channel_categories(group) do
-    alias CGraph.Groups.ChannelCategory
-
-    ChannelCategory
-    |> where([cc], cc.group_id == ^group.id)
-    |> order_by([cc], asc: cc.position)
-    |> Repo.all()
-  end
-
-  @doc """
-  Get a specific channel category.
-  """
-  def get_channel_category(group, category_id) do
-    alias CGraph.Groups.ChannelCategory
-
-    case Repo.get_by(ChannelCategory, id: category_id, group_id: group.id) do
-      nil -> {:error, :not_found}
-      category -> {:ok, category}
-    end
-  end
-
-  @doc """
-  Create a channel category.
-  """
-  def create_channel_category(group, attrs) do
-    alias CGraph.Groups.ChannelCategory
-
-    %ChannelCategory{}
-    |> ChannelCategory.changeset(Map.put(attrs, :group_id, group.id))
-    |> Repo.insert()
-  end
-
-  @doc """
-  Update a channel category.
-  """
-  def update_channel_category(category, attrs) do
-    alias CGraph.Groups.ChannelCategory
-
-    category
-    |> ChannelCategory.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Delete a channel category.
-  """
-  def delete_channel_category(category) do
-    Repo.delete(category)
-  end
-
-  # ---------------------------------------------------------------------------
-  # Group Emojis
-  # ---------------------------------------------------------------------------
-
-  @doc """
-  List custom emojis for a group.
-  """
-  def list_group_emojis(group) do
-    alias CGraph.Groups.GroupEmoji
-
-    GroupEmoji
-    |> where([ge], ge.group_id == ^group.id)
-    |> order_by([ge], asc: ge.name)
-    |> Repo.all()
-  end
-
-  @doc """
-  Get a specific custom emoji.
-  """
-  def get_group_emoji(group, emoji_id) do
-    alias CGraph.Groups.GroupEmoji
-
-    case Repo.get_by(GroupEmoji, id: emoji_id, group_id: group.id) do
-      nil -> {:error, :not_found}
-      emoji -> {:ok, emoji}
-    end
-  end
-
-  @doc """
-  Create a custom emoji in a group.
-  """
-  def create_group_emoji(group, user, attrs) do
-    alias CGraph.Groups.GroupEmoji
-
-    %GroupEmoji{}
-    |> GroupEmoji.changeset(Map.merge(attrs, %{group_id: group.id, uploaded_by_id: user.id}))
-    |> Repo.insert()
-  end
-
-  @doc """
-  Update a custom emoji (rename).
-  """
-  def update_group_emoji(emoji, attrs) do
-    alias CGraph.Groups.GroupEmoji
-
-    emoji
-    |> GroupEmoji.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Delete a custom emoji.
-  """
-  def delete_group_emoji(emoji) do
-    Repo.delete(emoji)
-  end
-
-  defp member_has_permission?(member, permission) do
-    Enum.any?(member.roles, fn role ->
-      Role.has_permission?(role, permission)
-    end)
-  end
 end

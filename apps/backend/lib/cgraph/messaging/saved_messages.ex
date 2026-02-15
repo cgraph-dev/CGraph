@@ -11,6 +11,7 @@ defmodule CGraph.Messaging.SavedMessages do
   alias CGraph.Repo
 
   @doc "List saved messages for a user, optionally filtered by search term."
+  @spec list_saved_messages(String.t(), keyword()) :: [SavedMessage.t()]
   def list_saved_messages(user_id, opts \\ []) do
     search = Keyword.get(opts, :search)
 
@@ -33,6 +34,7 @@ defmodule CGraph.Messaging.SavedMessages do
   end
 
   @doc "Save a message (bookmark it)."
+  @spec save_message(String.t(), String.t(), keyword()) :: {:ok, SavedMessage.t()} | {:error, Ecto.Changeset.t()}
   def save_message(user_id, message_id, opts \\ []) do
     note = Keyword.get(opts, :note)
     %SavedMessage{}
@@ -41,6 +43,7 @@ defmodule CGraph.Messaging.SavedMessages do
   end
 
   @doc "Remove a saved message."
+  @spec unsave_message(String.t(), String.t()) :: {:ok, SavedMessage.t()} | {:error, :not_found}
   def unsave_message(user_id, saved_message_id) do
     case Repo.get_by(SavedMessage, id: saved_message_id, user_id: user_id) do
       nil -> {:error, :not_found}
@@ -49,6 +52,7 @@ defmodule CGraph.Messaging.SavedMessages do
   end
 
   @doc "Check if a message is saved by a user."
+  @spec message_saved?(String.t(), String.t()) :: boolean()
   def message_saved?(user_id, message_id) do
     Repo.exists?(
       from sm in SavedMessage,

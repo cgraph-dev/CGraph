@@ -178,10 +178,11 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
     message |> PrivateMessage.changeset(attrs) |> Repo.update()
   end
 
-  @doc "Delete a private message (moves to Trash first, then hard-deletes from Trash)."
+  @doc "Delete a private message. Two-stage: moves to Trash first; hard-deletes from Trash (intentional — user explicitly empties Trash)."
   def delete_private_message(%PrivateMessage{} = message, user_id) do
     trash = get_pm_folder_by_name(user_id, "Trash")
     if message.folder_id == trash.id do
+      # Hard delete intentional: user explicitly deletes from Trash (permanent)
       Repo.delete(message)
     else
       update_private_message(message, %{folder_id: trash.id})

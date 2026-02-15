@@ -15,6 +15,7 @@ defmodule CGraph.Accounts.WalletAuthentication do
   @doc """
   Get or create a wallet authentication challenge nonce.
   """
+  @spec get_or_create_wallet_challenge(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def get_or_create_wallet_challenge(wallet_address) do
     normalized_address = String.downcase(wallet_address)
 
@@ -28,6 +29,7 @@ defmodule CGraph.Accounts.WalletAuthentication do
   Verify a wallet signature and authenticate/register user.
   Deletes the challenge nonce after successful verification to prevent replay attacks.
   """
+  @spec verify_wallet_signature(String.t(), String.t()) :: {:ok, User.t()} | {:error, atom() | String.t()}
   def verify_wallet_signature(wallet_address, signature) do
     normalized_address = String.downcase(wallet_address)
 

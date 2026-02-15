@@ -2,88 +2,22 @@ defmodule CGraph.Events do
   @moduledoc """
   Domain event system for event-driven architecture.
 
-  ## Overview
-
   Provides event sourcing and domain event dispatching:
-
-  - **Event Publishing**: Emit events from domain operations
-  - **Event Subscription**: React to events asynchronously
-  - **Event Store**: Persist events for replay and audit
-  - **Event Replay**: Rebuild state from event history
-
-  ## Architecture
-
-  ```
-  ┌─────────────────────────────────────────────────────────────────┐
-  │                     EVENT SYSTEM                                 │
-  ├─────────────────────────────────────────────────────────────────┤
-  │                                                                  │
-  │  Domain ──► Event ──► Bus ──► Handlers                          │
-  │  Action      │                    │                              │
-  │              ▼                    ▼                              │
-  │         ┌─────────┐        ┌──────────────┐                     │
-  │         │ Event   │        │  Subscriber  │                     │
-  │         │ Store   │        │  • Analytics │                     │
-  │         │ (append)│        │  • Webhooks  │                     │
-  │         └─────────┘        │  • Cache     │                     │
-  │              │             │  • Search    │                     │
-  │              ▼             └──────────────┘                     │
-  │         ┌─────────┐                                              │
-  │         │ Replay  │                                              │
-  │         └─────────┘                                              │
-  │                                                                  │
-  └─────────────────────────────────────────────────────────────────┘
-  ```
+  publish/subscribe, persistent event store, and replay.
 
   ## Usage
 
-      # Publish an event
-      Events.publish(:message_sent, %{
-        message_id: "msg_123",
-        sender_id: "user_456",
-        content: "Hello!"
-      })
+      Events.publish(:message_sent, %{message_id: "msg_123", sender_id: "user_456"})
+      Events.subscribe(:message_sent, fn event -> Analytics.track_message(event) end)
 
-      # Subscribe to events
-      Events.subscribe(:message_sent, fn event ->
-        Analytics.track_message(event)
-      end)
+  ## Event Categories
 
-      # Subscribe with a module handler
-      Events.subscribe(:user_registered, MyApp.Handlers.SendWelcomeEmail)
+  Users (`user_registered`, `user_updated`, `user_deleted`),
+  Messages (`message_sent`, `message_edited`, `message_deleted`),
+  Channels (`channel_created`, `channel_updated`, `member_joined`),
+  Auth (`login_success`, `login_failed`, `token_refreshed`).
 
-  ## Event Types
-
-  | Category | Events |
-  |----------|--------|
-  | Users | `user_registered`, `user_updated`, `user_deleted` |
-  | Messages | `message_sent`, `message_edited`, `message_deleted` |
-  | Channels | `channel_created`, `channel_updated`, `member_joined` |
-  | Auth | `login_success`, `login_failed`, `token_refreshed` |
-
-  ## Event Structure
-
-  ```elixir
-  %Event{
-    id: "evt_abc123",
-    type: :message_sent,
-    aggregate_type: :message,
-    aggregate_id: "msg_123",
-    payload: %{...},
-    metadata: %{
-      user_id: "user_456",
-      correlation_id: "corr_789",
-      causation_id: "evt_xyz"
-    },
-    occurred_at: ~U[2024-01-15 12:00:00Z]
-  }
-  ```
-
-  ## Telemetry Events
-
-  - `[:cgraph, :events, :published]` - Event published
-  - `[:cgraph, :events, :handled]` - Event handler completed
-  - `[:cgraph, :events, :handler_error]` - Handler raised error
+  See `CGraph.Events.TypedEvents` for typed event structs.
   """
 
   use GenServer

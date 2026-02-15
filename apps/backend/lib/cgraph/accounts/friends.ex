@@ -11,15 +11,8 @@ defmodule CGraph.Accounts.Friends do
   alias CGraph.Notifications
   alias CGraph.Repo
 
-  # =============================================================================
-  # Friend Requests
-  # =============================================================================
 
-  @doc """
-  Sends a friend request from one user to another.
-
-  Returns `{:ok, friendship}` on success, or `{:error, reason}` on failure.
-  """
+  @doc "Sends a friend request from one user to another."
   def send_friend_request(from_user_id, to_user_id, message \\ nil) do
     # Check if there's an existing relationship
     case get_relationship(from_user_id, to_user_id) do
@@ -64,10 +57,7 @@ defmodule CGraph.Accounts.Friends do
     end
   end
 
-  @doc """
-  Accepts a pending friend request.
-  Uses upsert with conflict handling to prevent race conditions.
-  """
+  @doc "Accepts a pending friend request. Uses upsert for race condition safety."
   def accept_friend_request(accepting_user_id, requesting_user_id) do
     # Find the pending request where they sent to us
     query =
@@ -124,9 +114,7 @@ defmodule CGraph.Accounts.Friends do
     end
   end
 
-  @doc """
-  Cancels a sent friend request.
-  """
+  @doc "Cancels a sent friend request."
   def cancel_friend_request(from_user_id, to_user_id) do
     query =
       from f in Friendship,
@@ -143,9 +131,6 @@ defmodule CGraph.Accounts.Friends do
     end
   end
 
-  # =============================================================================
-  # Friend Management
-  # =============================================================================
 
   @doc """
   Removes a friend (unfriend).
@@ -206,9 +191,6 @@ defmodule CGraph.Accounts.Friends do
     end
   end
 
-  # =============================================================================
-  # Queries
-  # =============================================================================
 
   @doc """
   Gets the list of friends for a user.
@@ -443,9 +425,6 @@ defmodule CGraph.Accounts.Friends do
     |> Enum.sort_by(& &1.mutual_friends_count, :desc)
   end
 
-  # =============================================================================
-  # Nickname Management
-  # =============================================================================
 
   @doc """
   Sets a custom nickname for a friend (only visible to you).
@@ -475,9 +454,6 @@ defmodule CGraph.Accounts.Friends do
     set_friend_nickname(user_id, friend_id, nil)
   end
 
-  # =============================================================================
-  # Stats
-  # =============================================================================
 
   @doc """
   Gets friend counts for a user.

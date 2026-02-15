@@ -303,143 +303,18 @@ defmodule CGraph.Subscriptions.TierLimits do
   end
 
   # ===========================================================================
-  # Limit Checks
+  # Limit Checks — delegated to CGraph.Subscriptions.TierLimits.Checks
   # ===========================================================================
 
-  @doc """
-  Checks if a user can create a new forum.
-  """
-  def can_create_forum?(%User{} = user) do
-    max = get_effective_limit(user, :max_forums_owned)
-    current = CGraph.Forums.count_user_forums(user.id)
-    TierLimit.within_limit?(max, current)
-  end
-
-  @doc """
-  Checks if a user can join another forum.
-  """
-  def can_join_forum?(%User{} = user) do
-    max = get_effective_limit(user, :max_forums_joined)
-    current = CGraph.Forums.count_user_joined_forums(user.id)
-    TierLimit.within_limit?(max, current)
-  end
-
-  @doc """
-  Checks if a user can create a thread today.
-  """
-  def can_create_thread?(%User{} = user) do
-    max = get_effective_limit(user, :max_threads_per_day)
-    current = CGraph.Forums.count_user_threads_today(user.id)
-    TierLimit.within_limit?(max, current)
-  end
-
-  @doc """
-  Checks if a user can create a post today.
-  """
-  def can_create_post?(%User{} = user) do
-    max = get_effective_limit(user, :max_posts_per_day)
-    current = CGraph.Forums.count_user_posts_today(user.id)
-    TierLimit.within_limit?(max, current)
-  end
-
-  @doc """
-  Checks if a user has storage space for a file.
-  """
-  def has_storage_space?(%User{} = user, file_size_bytes) do
-    max_storage = get_effective_limit(user, :max_storage_bytes)
-    max_file_size = get_effective_limit(user, :max_file_size_bytes)
-    current_usage = CGraph.Storage.get_user_usage(user.id)
-
-    cond do
-      max_file_size != nil and file_size_bytes > max_file_size ->
-        {:error, :file_too_large}
-
-      max_storage != nil and (current_usage + file_size_bytes) > max_storage ->
-        {:error, :storage_limit_exceeded}
-
-      true ->
-        :ok
-    end
-  end
-
-  @doc """
-  Checks if a user has access to a feature.
-  """
-  def has_feature?(%User{} = user, feature_key) when is_binary(feature_key) do
-    case get_user_tier_limits(user) do
-      {:ok, tier} ->
-        # First check tier-level features table
-        case get_tier_feature(tier.id, feature_key) do
-          %TierFeature{enabled: enabled} -> enabled
-          nil -> check_tier_boolean_field(tier, feature_key)
-        end
-
-      _ -> false
-    end
-  end
-
-  defp get_tier_feature(tier_id, feature_key) do
-    TierFeature
-    |> where([f], f.tier_id == ^tier_id and f.feature_key == ^feature_key)
-    |> Repo.one()
-  end
-
-  defp check_tier_boolean_field(tier, feature_key) do
-    # Map common feature keys to tier fields
-    case feature_key do
-      "ai.moderation" -> tier.ai_moderation_enabled
-      "ai.suggestions" -> tier.ai_suggestions_enabled
-      "ai.search" -> tier.ai_search_enabled
-      "forums.custom_css" -> tier.custom_css_enabled
-      "forums.custom_themes" -> tier.custom_themes_enabled
-      "forums.custom_domain" -> tier.custom_domain_enabled
-      "forums.analytics" -> tier.forum_analytics_enabled
-      "messaging.video_calls" -> tier.video_calls_enabled
-      "messaging.screen_sharing" -> tier.screen_sharing_enabled
-      "gamification.battle_pass" -> tier.battle_pass_enabled
-      "gamification.trading" -> tier.trading_enabled
-      "api.access" -> tier.api_access_enabled
-      "api.webhooks" -> tier.webhook_enabled
-      _ -> false
-    end
-  end
-
-  # ===========================================================================
-  # AI Feature Checks (Prepared for v1.1)
-  # ===========================================================================
-
-  @doc """
-  Checks if AI moderation is available for this user's tier.
-  """
-  def ai_moderation_available?(%User{} = user) do
-    has_feature?(user, "ai.moderation")
-  end
-
-  @doc """
-  Checks if user can make another AI moderation request today.
-  """
-  def can_make_ai_moderation_request?(%User{} = user) do
-    max = get_effective_limit(user, :ai_moderation_requests_per_day)
-    current = get_ai_requests_today(user.id, :moderation)
-    TierLimit.within_limit?(max, current)
-  end
-
-  @doc """
-  Checks if AI suggestions are available for this user.
-  """
-  def ai_suggestions_available?(%User{} = user) do
-    has_feature?(user, "ai.suggestions")
-  end
-
-  defp get_ai_requests_today(user_id, type) do
-    # Count AI requests from rate limiter for today
-    key = "ai_#{type}:#{user_id}:#{Date.utc_today()}"
-    case CGraph.Redis.command(["GET", key]) do
-      {:ok, nil} -> 0
-      {:ok, count} -> String.to_integer(count)
-      {:error, _} -> 0
-    end
-  end
+  defdelegate can_create_forum?(user), to: CGraph.Subscriptions.TierLimits.Checks
+  defdelegate can_join_forum?(user), to: CGraph.Subscriptions.TierLimits.Checks
+  defdelegate can_create_thread?(user), to: CGraph.Subscriptions.TierLimits.Checks
+  defdelegate can_create_post?(user), to: CGraph.Subscriptions.TierLimits.Checks
+  defdelegate has_storage_space?(user, file_size_bytes), to: CGraph.Subscriptions.TierLimits.Checks
+  defdelegate has_feature?(user, feature_key), to: CGraph.Subscriptions.TierLimits.Checks
+  defdelegate ai_moderation_available?(user), to: CGraph.Subscriptions.TierLimits.Checks
+  defdelegate can_make_ai_moderation_request?(user), to: CGraph.Subscriptions.TierLimits.Checks
+  defdelegate ai_suggestions_available?(user), to: CGraph.Subscriptions.TierLimits.Checks
 
   # ===========================================================================
   # Tier Comparison

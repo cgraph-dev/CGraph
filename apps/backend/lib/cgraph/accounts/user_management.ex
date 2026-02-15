@@ -11,6 +11,7 @@ defmodule CGraph.Accounts.UserManagement do
   alias CGraph.Repo
 
   @doc "Get a user by ID."
+  @spec get_user(String.t()) :: {:ok, User.t()} | {:error, :not_found}
   def get_user(id) do
     case Repo.get(User, id) do
       nil -> {:error, :not_found}
@@ -19,12 +20,14 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Get a user by ID (raises on not found)."
+  @spec get_user!(String.t()) :: User.t()
   def get_user!(id) do
     Repo.get!(User, id)
     |> Repo.preload(:customization)
   end
 
   @doc "Deactivate a user account."
+  @spec deactivate_user(User.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def deactivate_user(user) do
     now = DateTime.truncate(DateTime.utc_now(), :second)
     user
@@ -33,6 +36,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Get a user by username (case-insensitive)."
+  @spec get_user_by_username(String.t()) :: {:ok, User.t()} | {:error, :not_found}
   def get_user_by_username(username) do
     query = from u in User,
       where: fragment("lower(?)", u.username) == ^String.downcase(username),
@@ -45,6 +49,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Get a user profile by ID with customization."
+  @spec get_user_profile(String.t()) :: {:ok, User.t()} | {:error, :not_found}
   def get_user_profile(user_id) do
     query = from u in User,
       where: u.id == ^user_id,
@@ -57,6 +62,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "List users with cursor pagination and optional filters."
+  @spec list_users(keyword()) :: {[User.t()], map()}
   def list_users(opts \\ []) do
     query = from u in User,
       where: is_nil(u.deleted_at),
@@ -74,6 +80,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "List admin users."
+  @spec list_admin_users() :: [User.t()]
   def list_admin_users do
     from(u in User,
       where: u.role in ["admin", "superadmin"],
@@ -85,6 +92,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "List top users by karma."
+  @spec list_top_users_by_karma(keyword()) :: [User.t()]
   def list_top_users_by_karma(opts \\ []) do
     limit = Keyword.get(opts, :limit, 10)
 
@@ -98,6 +106,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Update user attributes."
+  @spec update_user(User.t(), map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def update_user(user, attrs) do
     user
     |> User.update_changeset(attrs)
@@ -105,6 +114,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Flag a user's profile for review."
+  @spec flag_profile_for_review(String.t()) :: {:ok, User.t()} | {:error, :not_found | Ecto.Changeset.t()}
   def flag_profile_for_review(user_id) do
     case get_user(user_id) do
       {:ok, user} ->
@@ -119,6 +129,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Remove specific profile content."
+  @spec remove_profile_content(String.t(), atom(), keyword()) :: {:ok, User.t()} | {:error, :not_found | Ecto.Changeset.t()}
   def remove_profile_content(user_id, content_type, opts \\ []) do
     reason = Keyword.get(opts, :reason, :moderation)
 
@@ -140,6 +151,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Change a user's username (rate-limited: once per 30 days)."
+  @spec change_username(User.t(), String.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def change_username(user, new_username) do
     user
     |> User.username_changeset(%{username: new_username})
@@ -148,6 +160,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Check if a user can change their username."
+  @spec can_change_username?(User.t()) :: boolean()
   def can_change_username?(user) do
     case user.last_username_change do
       nil -> true
@@ -156,6 +169,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Get next allowed username change date."
+  @spec next_username_change_date(User.t()) :: DateTime.t()
   def next_username_change_date(user) do
     case user.last_username_change do
       nil -> DateTime.utc_now()
@@ -164,12 +178,14 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Soft-delete a user."
+  @spec delete_user(User.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def delete_user(user) do
     now = DateTime.truncate(DateTime.utc_now(), :second)
     user |> Ecto.Changeset.change(deleted_at: now) |> Repo.update()
   end
 
   @doc "Update a user's avatar URL."
+  @spec update_avatar(User.t(), String.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def update_avatar(user, avatar_url) do
     user
     |> Ecto.Changeset.change(avatar_url: avatar_url)
@@ -177,6 +193,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Schedule user deletion after 30-day grace period."
+  @spec schedule_user_deletion(User.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def schedule_user_deletion(user) do
     deletion_time =
       DateTime.truncate(DateTime.utc_now(), :second)
@@ -189,12 +206,14 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Upload a user's avatar."
+  @spec upload_avatar(User.t(), %{filename: String.t()}) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def upload_avatar(user, upload) do
     avatar_url = "/uploads/avatars/#{user.id}/#{upload.filename}"
     update_avatar(user, avatar_url)
   end
 
   @doc "Update user preferences."
+  @spec update_user_preferences(User.t(), map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def update_user_preferences(user, preferences) do
     user
     |> Ecto.Changeset.change(preferences: Map.merge(user.preferences || %{}, preferences))
@@ -202,6 +221,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Get user settings."
+  @spec get_settings(User.t()) :: {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
   def get_settings(user) do
     case Repo.get_by(UserSettings, user_id: user.id) do
       nil -> create_default_settings(user)
@@ -210,6 +230,7 @@ defmodule CGraph.Accounts.UserManagement do
   end
 
   @doc "Update user settings."
+  @spec update_settings(User.t(), map()) :: {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
   def update_settings(user, attrs) do
     with {:ok, settings} <- get_settings(user) do
       settings

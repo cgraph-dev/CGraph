@@ -14,6 +14,7 @@ defmodule CGraph.Messaging.MessageOperations do
   @max_pins_per_user 3
 
   @doc "Create a message from a map (for channel messages)."
+  @spec create_message(map()) :: {:ok, Message.t()} | {:error, Ecto.Changeset.t()}
   def create_message(attrs) when is_map(attrs) do
     %Message{}
     |> Message.changeset(attrs)
@@ -25,6 +26,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Get a message by ID."
+  @spec get_message(String.t()) :: {:ok, Message.t()} | {:error, :not_found}
   def get_message(message_id) when is_binary(message_id) do
     case Repo.get(Message, message_id) do
       nil -> {:error, :not_found}
@@ -33,6 +35,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Update a message."
+  @spec update_message(Message.t(), map()) :: {:ok, Message.t()} | {:error, Ecto.Changeset.t()}
   def update_message(message, attrs) do
     message
     |> Message.edit_changeset(stringify_keys(attrs))
@@ -40,6 +43,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Pin a message. Each user can pin up to #{@max_pins_per_user} per conversation."
+  @spec pin_message(String.t(), String.t()) :: {:ok, Message.t()} | {:error, atom()}
   def pin_message(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
     case get_message(message_id) do
       {:error, :not_found} -> {:error, :not_found}
@@ -63,6 +67,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Count how many messages a user has pinned in a conversation."
+  @spec count_user_pins(String.t(), String.t()) :: non_neg_integer()
   def count_user_pins(conversation_id, user_id) do
     from(m in Message,
       where: m.conversation_id == ^conversation_id,
@@ -74,6 +79,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Unpin a message."
+  @spec unpin_message(String.t(), String.t()) :: {:ok, Message.t()} | {:error, atom()}
   def unpin_message(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
     case get_message(message_id) do
       {:error, :not_found} -> {:error, :not_found}
@@ -89,6 +95,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "List scheduled messages for a conversation."
+  @spec list_scheduled_messages(map(), keyword()) :: {[Message.t()], map()}
   def list_scheduled_messages(conversation, opts \\ []) do
     query =
       from m in Message,
@@ -108,6 +115,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Reschedule a scheduled message."
+  @spec reschedule_message(Message.t(), DateTime.t()) :: {:ok, Message.t()} | {:error, :message_not_scheduled}
   def reschedule_message(message, new_scheduled_at) do
     if message.schedule_status == "scheduled" do
       message
@@ -119,6 +127,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Cancel a scheduled message."
+  @spec cancel_scheduled_message(Message.t()) :: {:ok, Message.t()} | {:error, :message_not_scheduled}
   def cancel_scheduled_message(message) do
     if message.schedule_status == "scheduled" do
       message
@@ -130,6 +139,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Edit a message by ID (only by sender)."
+  @spec edit_message(String.t(), String.t(), String.t()) :: {:ok, Message.t()} | {:error, atom()}
   def edit_message(message_id, user_id, content) do
     case get_message(message_id) do
       {:error, :not_found} ->
@@ -145,6 +155,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Delete a message (soft delete, no authorization check)."
+  @spec delete_message(Message.t()) :: {:ok, Message.t()} | {:error, Ecto.Changeset.t()}
   def delete_message(message) when is_struct(message) do
     now = DateTime.truncate(DateTime.utc_now(), :second)
     message
@@ -153,6 +164,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Hide a message for moderation (quarantine)."
+  @spec hide_message(String.t(), String.t()) :: {:ok, Message.t()} | {:error, :not_found}
   def hide_message(message_id, reason) do
     now = DateTime.truncate(DateTime.utc_now(), :second)
     case get_message(message_id) do
@@ -169,6 +181,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Soft delete with audit trail for moderation."
+  @spec soft_delete_message(String.t(), keyword()) :: {:ok, Message.t()} | {:error, :not_found}
   def soft_delete_message(message_id, opts \\ []) do
     reason = Keyword.get(opts, :reason, :user_deleted)
     report_id = Keyword.get(opts, :report_id)
@@ -188,6 +201,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Delete message with authorization check (binary IDs)."
+  @spec delete_message(String.t(), String.t()) :: {:ok, Message.t()} | {:error, atom()}
   def delete_message(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
     case get_message(message_id) do
       {:error, :not_found} ->
@@ -203,6 +217,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Delete message with authorization check (structs)."
+  @spec delete_message_by_user(map(), map()) :: {:ok, Message.t()} | {:error, :unauthorized}
   def delete_message_by_user(%{sender_id: sender_id} = message, %{id: user_id}) do
     if sender_id == user_id do
       delete_message(message)
@@ -212,6 +227,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Mark a message as read (message_id + user_id)."
+  @spec mark_message_read(String.t(), String.t()) :: {:ok, ReadReceipt.t()} | {:error, :not_found}
   def mark_message_read(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
     case Repo.get(Message, message_id) do
       nil -> {:error, :not_found}
@@ -235,6 +251,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Mark messages as read up to a given message (batch)."
+  @spec mark_messages_read(map(), map(), String.t()) :: {:ok, non_neg_integer()}
   def mark_messages_read(user, conversation, message_id) do
     unread_query = from m in Message,
       where: m.conversation_id == ^conversation.id,
@@ -267,6 +284,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Get unread message count for a conversation."
+  @spec get_unread_count(map(), map()) :: non_neg_integer()
   def get_unread_count(user, conversation) do
     query = from m in Message,
       where: m.conversation_id == ^conversation.id,
@@ -279,6 +297,7 @@ defmodule CGraph.Messaging.MessageOperations do
   end
 
   @doc "Mark all messages in a conversation as read."
+  @spec mark_conversation_read(map(), map()) :: {:ok, non_neg_integer()} | {:ok, :no_messages}
   def mark_conversation_read(conversation, user) do
     latest_message = Repo.one(
       from m in Message,

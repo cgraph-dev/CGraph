@@ -1,31 +1,16 @@
-/**
- * Conversation Message List
- *
- * Renders grouped messages by date with animated message wrappers,
- * reaction bubbles, typing indicator, and load-more functionality.
- *
- * @module pages/messages/conversation/ConversationMessages
- */
+/** Conversation message list with virtualized rendering, date headers, and typing indicator. */
 
 import { type RefObject, useRef, useState, useEffect, useCallback, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { type Message } from '@/modules/chat/store';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDateHeader } from '@/lib/chat/messageUtils';
 import type { MessageGroup } from '@/lib/chat/messageUtils';
-import { getMessageSenderId } from '@/lib/apiUtils';
-import { handleAddReaction } from '@/lib/chat/reactionUtils';
-import { createLogger } from '@/lib/logger';
-import {
-  AnimatedMessageWrapper,
-  AnimatedReactionBubble,
-  TypingIndicator,
-} from '@/modules/chat/components';
+import { TypingIndicator } from '@/modules/chat/components';
 import { GlassCard } from '@/shared/components/ui';
-import { MessageBubble } from '@/modules/chat/components';
 import { ScrollToBottomButton } from '@/modules/chat/components/ScrollToBottomButton';
 import { MessageListSkeleton } from '@/components/ui/skeletons';
+import { MessageRow } from './MessageRow';
 import type { UIPreferences } from './types';
 
 // ---------------------------------------------------------------------------
@@ -42,31 +27,17 @@ type VirtualRow =
       key: string;
     };
 
-const logger = createLogger('ConversationMessages');
-
-/** Props for the ConversationMessages component */
 export interface ConversationMessagesProps {
-  /** Messages grouped by date */
   groupedMessages: MessageGroup[];
-  /** Whether more messages can be loaded */
   hasMore: boolean;
-  /** Whether messages are currently loading */
   isLoading: boolean;
-  /** Users currently typing */
   typing: string[];
-  /** Current user for ownership detection */
   user: { id: string } | null;
-  /** UI display preferences */
   uiPreferences: UIPreferences;
-  /** Ref to the bottom of messages for auto-scroll */
   messagesEndRef: RefObject<HTMLDivElement | null>;
-  /** Ref to the messages scroll container */
   messagesContainerRef: RefObject<HTMLDivElement | null>;
-  /** Active message context menu ID */
   activeMessageMenu: string | null;
-  /** Message currently being edited */
   editingMessageId: string | null;
-  /** Current edit text content */
   editContent: string;
   /** Callbacks */
   onLoadMore: () => void;
@@ -108,13 +79,9 @@ export function ConversationMessages({
   onSaveEdit,
   onCancelEdit,
 }: ConversationMessagesProps) {
-  const navigate = useNavigate();
-
   // Track message IDs we've already rendered so we can detect truly new ones
   const seenIdsRef = useRef<Set<string>>(new Set());
-  const allCurrentIds = new Set(
-    groupedMessages.flatMap((g) => g.messages.map((m) => m.id)),
-  );
+  const allCurrentIds = new Set(groupedMessages.flatMap((g) => g.messages.map((m) => m.id)));
   // A message is "new" if we haven't seen it before in this component's lifetime
   const newIds = new Set<string>();
   allCurrentIds.forEach((id) => {
@@ -206,9 +173,7 @@ export function ConversationMessages({
       )}
 
       {/* Skeleton loading state when no messages yet */}
-      {isLoading && groupedMessages.length === 0 && (
-        <MessageListSkeleton count={8} />
-      )}
+      {isLoading && groupedMessages.length === 0 && <MessageListSkeleton count={8} />}
 
       {/* Virtualized message list */}
       <div
@@ -259,29 +224,6 @@ export function ConversationMessages({
 
           // ── Message row ──────────────────────────────────────────
           const { message, groupMessages, msgIndex } = row;
-          const messageSenderId =
-            getMessageSenderId(message as unknown as Record<string, unknown>) || '';
-          const currentUserId = user?.id || '';
-
-          if (import.meta.env.DEV && msgIndex === 0) {
-            logger.debug('Web] First message debug:', {
-              messageId: message.id,
-              messageSenderId,
-              currentUserId,
-              isEqual: messageSenderId === currentUserId,
-            });
-          }
-
-          const isOwn =
-            messageSenderId.length > 0 &&
-            currentUserId.length > 0 &&
-            messageSenderId === currentUserId;
-
-          const prevMessage = groupMessages[msgIndex - 1];
-          const prevSenderId = prevMessage
-            ? getMessageSenderId(prevMessage as unknown as Record<string, unknown>) || ''
-            : '';
-          const showAvatar = !isOwn && (msgIndex === 0 || prevSenderId !== messageSenderId);
 
           return (
             <div
@@ -296,55 +238,26 @@ export function ConversationMessages({
                 transform: `translateY(${virtualRow.start}px)`,
               }}
             >
-              <AnimatedMessageWrapper
-                isOwnMessage={isOwn}
-                index={msgIndex}
+              <MessageRow
+                message={message}
+                groupMessages={groupMessages}
+                msgIndex={msgIndex}
+                user={user}
+                uiPreferences={uiPreferences}
                 isNew={newIds.has(message.id)}
-                messageId={message.id}
-                onSwipeReply={() => onReply(message)}
-                enableGestures={true}
-              >
-                <MessageBubble
-                  message={message}
-                  isOwn={isOwn}
-                  showAvatar={showAvatar}
-                  onReply={() => onReply(message)}
-                  uiPreferences={uiPreferences}
-                  onAvatarClick={(avatarUserId) => navigate(`/user/${avatarUserId}`)}
-                  onEdit={() => onStartEdit(message)}
-                  onDelete={() => onDeleteMessage(message.id)}
-                  onPin={() => onPinMessage(message.id)}
-                  onForward={() => onOpenForward(message)}
-                  isMenuOpen={activeMessageMenu === message.id}
-                  onToggleMenu={() => onToggleMessageMenu(message.id)}
-                  isEditing={editingMessageId === message.id}
-                  editContent={editContent}
-                  onEditContentChange={onEditContentChange}
-                  onSaveEdit={onSaveEdit}
-                  onCancelEdit={onCancelEdit}
-                />
-                {message.reactions && message.reactions.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {Object.entries(
-                      message.reactions.reduce<
-                        Record<string, { count: number; hasReacted: boolean }>
-                      >((acc, r) => {
-                        const entry = (acc[r.emoji] ??= { count: 0, hasReacted: false });
-                        entry.count++;
-                        if (user && r.userId === user.id) entry.hasReacted = true;
-                        return acc;
-                      }, {})
-                    ).map(([emoji, { count, hasReacted }]) => (
-                      <AnimatedReactionBubble
-                        key={emoji}
-                        reaction={{ emoji, count, hasReacted }}
-                        isOwnMessage={isOwn}
-                        onPress={() => handleAddReaction(message.id, emoji)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </AnimatedMessageWrapper>
+                activeMessageMenu={activeMessageMenu}
+                editingMessageId={editingMessageId}
+                editContent={editContent}
+                onReply={onReply}
+                onStartEdit={onStartEdit}
+                onDeleteMessage={onDeleteMessage}
+                onPinMessage={onPinMessage}
+                onOpenForward={onOpenForward}
+                onToggleMessageMenu={onToggleMessageMenu}
+                onEditContentChange={onEditContentChange}
+                onSaveEdit={onSaveEdit}
+                onCancelEdit={onCancelEdit}
+              />
             </div>
           );
         })}
@@ -360,10 +273,7 @@ export function ConversationMessages({
 
       <div ref={messagesEndRef} />
 
-      <ScrollToBottomButton
-        visible={isScrolledUp}
-        onClick={scrollToBottom}
-      />
+      <ScrollToBottomButton visible={isScrolledUp} onClick={scrollToBottom} />
     </div>
   );
 }

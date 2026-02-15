@@ -1,10 +1,4 @@
-/**
- * Message Bubble - Main Component
- *
- * Memoized message display component.
- * Displays individual chat messages with all media types, reactions, and actions.
- * Integrates with customization store for dynamic bubble styles, effects, and titles.
- */
+/** Message Bubble — memoized message display with media, reactions, and actions. */
 
 import { useState, memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
@@ -15,12 +9,8 @@ import {
   getMessageBubbleClass,
   getMessageEffectClass,
 } from '@/modules/settings/hooks/useCustomizationApplication';
-import { VoiceMessagePlayer } from '@/components/VoiceMessagePlayer';
-import AdvancedVoiceVisualizer from '@/modules/chat/components/audio/AdvancedVoiceVisualizer';
 import MessageReactions from '@/modules/chat/components/MessageReactions';
 import RichMediaEmbed from '@/modules/chat/components/RichMediaEmbed';
-import { GifMessage } from '@/modules/chat/components/GifMessage';
-import { FileMessage } from '@/modules/chat/components/FileMessage';
 import { MarkdownContent } from '@/modules/chat/components/MarkdownContent';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import UserProfileCard from '@/modules/social/components/UserProfileCard';
@@ -29,21 +19,16 @@ import { aggregateReactions, handleRemoveReaction } from '@/lib/chat';
 import { cn } from '@/lib/utils';
 
 import type { MessageBubbleProps, ReadByEntry } from './types';
-import type { Message } from '@/modules/chat/store';
-import { formatMessageTime, handleAddReaction, mapVisualizerTheme } from './utils';
-import { ReplyIcon, FileIcon } from './icons';
+import { formatMessageTime, handleAddReaction } from './utils';
+import { ReplyIcon } from './icons';
 import { ReadReceipts } from './ReadReceipts';
 import { MessageStatusIndicator } from './MessageStatusIndicator';
 import { MessageEditForm } from './MessageEditForm';
 import { MessageActionMenu } from './MessageActionMenu';
-import { useThreadStore } from '@/modules/chat/store/threadStore';
+import { MessageMediaContent } from './MessageMediaContent';
+import { ThreadReplyBadge } from './ThreadReplyBadge';
 import { springs } from '@/lib/animation-presets/presets';
 
-/**
- * MessageBubble - Memoized message display component
- * Displays individual chat messages with all media types, reactions, and actions.
- * Own messages use YOUR customization store; others use sender's customization from API.
- */
 export const MessageBubble = memo(
   function MessageBubble({
     message,
@@ -65,41 +50,31 @@ export const MessageBubble = memo(
   }: MessageBubbleProps) {
     const [showActions, setShowActions] = useState(false);
 
-    // Own customization from Zustand store
     const ownBubbleStyle = useCustomizationStore((s) => s.chatBubbleStyle);
     const ownBubbleRadius = useCustomizationStore((s) => s.bubbleBorderRadius);
     const ownMessageEffect = useCustomizationStore((s) => s.messageEffect);
     const ownEquippedTitle = useCustomizationStore((s) => s.equippedTitle);
 
-    // Resolve customization: own messages use store, others use sender data from API
     const bubbleStyle = isOwn ? ownBubbleStyle : (message.sender?.bubbleStyle ?? 'default');
-    const bubbleColor = isOwn ? null : (message.sender?.bubbleColor ?? null); // Own color handled by CSS class + theme
+    const bubbleColor = isOwn ? null : (message.sender?.bubbleColor ?? null);
     const bubbleRadius = isOwn ? ownBubbleRadius : (message.sender?.bubbleRadius ?? null);
     const messageEffect = isOwn
       ? (ownMessageEffect ?? 'none')
       : (message.sender?.messageEffect ?? 'none');
     const equippedTitleId = isOwn ? ownEquippedTitle : (message.sender?.equippedTitleId ?? null);
 
-    // Compute CSS classes from customization helpers
     const bubbleCssClass = useMemo(() => getMessageBubbleClass(bubbleStyle), [bubbleStyle]);
     const effectCssClass = useMemo(
       () => getMessageEffectClass(messageEffect ?? 'none'),
       [messageEffect]
     );
 
-    // Inline style overrides for custom colors and radius
     const bubbleInlineStyle = useMemo(() => {
       const style: React.CSSProperties = {};
-      if (bubbleColor) {
-        style.backgroundColor = bubbleColor;
-      }
-      if (bubbleRadius != null) {
-        style.borderRadius = `${bubbleRadius}px`;
-      }
+      if (bubbleColor) style.backgroundColor = bubbleColor;
+      if (bubbleRadius != null) style.borderRadius = `${bubbleRadius}px`;
       return style;
     }, [bubbleColor, bubbleRadius]);
-
-    // Message entrance animation variants — directional slide (own→right, others→left)
     const bubbleVariants = useMemo(
       () => ({
         initial: { opacity: 0, x: isOwn ? 16 : -16, y: 8, scale: 0.97 },
@@ -195,67 +170,11 @@ export const MessageBubble = memo(
               )}
               style={bubbleInlineStyle}
             >
-              {/* Image/Media messages */}
-              {message.messageType === 'image' && message.metadata?.url && (
-                <img
-                  src={message.metadata.url as string}
-                  alt="Shared image"
-                  className="mb-2 max-w-xs cursor-pointer rounded-lg transition-opacity hover:opacity-90"
-                  onClick={() => window.open(message.metadata.url as string, '_blank')}
-                />
-              )}
-              {message.messageType === 'video' && message.metadata?.url && (
-                <video
-                  src={message.metadata.url as string}
-                  controls
-                  className="mb-2 max-w-xs rounded-lg"
-                />
-              )}
-              {message.messageType === 'file' && message.metadata?.url && (
-                <a
-                  href={message.metadata.url as string}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mb-2 flex items-center gap-2 rounded-lg bg-dark-600/50 p-2 transition-colors hover:bg-dark-600"
-                >
-                  <FileIcon />
-                  <span className="truncate text-sm">
-                    {(message.metadata.filename as string) || 'File'}
-                  </span>
-                </a>
-              )}
-
-              {/* Voice/Audio messages with Advanced Visualizer */}
-              {(message.messageType === 'voice' || message.messageType === 'audio') &&
-                message.metadata?.url && (
-                  <div className="min-w-[280px] space-y-2">
-                    <AdvancedVoiceVisualizer
-                      audioUrl={message.metadata.url as string}
-                      variant="spectrum"
-                      theme={mapVisualizerTheme(uiPreferences.voiceVisualizerTheme)}
-                      height={120}
-                      width={280}
-                      className="rounded-xl"
-                    />
-                    <VoiceMessagePlayer
-                      messageId={message.id}
-                      audioUrl={message.metadata.url as string}
-                      duration={(message.metadata.duration as number) || 0}
-                      waveformData={message.metadata.waveform as number[] | undefined}
-                      className={isOwn ? 'voice-player-own' : ''}
-                    />
-                  </div>
-                )}
-
-              {/* GIF Message */}
-              {message.messageType === 'gif' && (
-                <GifMessage message={message} isOwnMessage={isOwn} className="mb-2" />
-              )}
-
-              {/* File Message */}
-              {message.messageType === 'file' && (
-                <FileMessage message={message} isOwnMessage={isOwn} className="mb-2" />
-              )}
+              <MessageMediaContent
+                message={message}
+                isOwn={isOwn}
+                voiceVisualizerTheme={uiPreferences.voiceVisualizerTheme}
+              />
 
               {/* Text content */}
               {message.content &&
@@ -345,8 +264,6 @@ export const MessageBubble = memo(
             conversationId={message.conversationId}
             message={message}
           />
-
-          {/* Read Receipts */}
           {isOwn && message.metadata?.readBy && Array.isArray(message.metadata.readBy) && (
             <ReadReceipts readBy={message.metadata.readBy as ReadByEntry[]} />
           )}
@@ -379,46 +296,3 @@ export const MessageBubble = memo(
 );
 
 export default MessageBubble;
-
-/** Inline thread reply count badge — opens ThreadPanel on click */
-function ThreadReplyBadge({
-  messageId,
-  conversationId,
-  message,
-}: {
-  messageId: string;
-  conversationId: string;
-  message: Message;
-}) {
-  const replyCount = useThreadStore((s) => s.replyCounts[messageId]);
-  const openThread = useThreadStore((s) => s.openThread);
-
-  if (!replyCount || replyCount <= 0) return null;
-
-  return (
-    <motion.button
-      initial={{ opacity: 0, y: 4 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="mt-1 flex items-center gap-1.5 rounded-md px-2 py-0.5 text-xs text-primary-400 transition-colors hover:bg-dark-700/60"
-      onClick={() => openThread(conversationId, message)}
-      title="View thread"
-    >
-      <svg
-        className="h-3.5 w-3.5"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={2}
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M7.5 8.25h9m-9 3H12m-6.75 3.75L3 21l3.75-3.75h10.5A2.25 2.25 0 0019.5 15V5.25A2.25 2.25 0 0017.25 3H6.75A2.25 2.25 0 004.5 5.25V15a2.25 2.25 0 002.25 2.25z"
-        />
-      </svg>
-      <span className="font-medium">
-        {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
-      </span>
-    </motion.button>
-  );
-}

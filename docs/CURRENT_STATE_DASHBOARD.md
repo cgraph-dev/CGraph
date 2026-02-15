@@ -8,21 +8,21 @@ Real-time overview of project health, architecture status, and operational state
 
 ## Overall Health
 
-| Dimension         | Status | Score | Notes                                                                        |
-| ----------------- | ------ | ----- | ---------------------------------------------------------------------------- |
-| **Build**         | OK     | 10/10 | All apps building successfully                                               |
-| **TypeScript**    | OK     | 10/10 | 0 errors across all packages                                                 |
-| **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                               |
-| **Architecture**  | WARN   | 7/10  | 4 god modules >500 lines need splitting                                      |
-| **Tests**         | OK     | 10/10 | 1,633 tests passing, 0 failures, 7 skipped — backend suite fully green       |
-| **Security**      | WARN   | 6/10  | E2EE implemented; no external audit; no PII encryption at rest               |
-| **Documentation** | OK     | 8/10  | Architecture + API docs current; some aspirational content removed           |
-| **Observability** | OK     | 9/10  | Prometheus + SLO dashboards + Alerting + Tracing; no runtime SLO enforcement |
-| **Resilience**    | OK     | 9/10  | CB + DLQ + Backpressure + Snowflake; no general request coalescing           |
-| **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags                                |
+| Dimension         | Status | Score | Notes                                                                      |
+| ----------------- | ------ | ----- | -------------------------------------------------------------------------- |
+| **Build**         | OK     | 10/10 | All apps building successfully                                             |
+| **TypeScript**    | OK     | 10/10 | 0 errors across all packages                                               |
+| **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                             |
+| **Architecture**  | OK     | 9/10  | All primary contexts refactored (<500 lines); sub-module architecture      |
+| **Tests**         | OK     | 10/10 | 1,633 tests passing, 0 failures, 7 skipped — backend suite fully green     |
+| **Security**      | WARN   | 7/10  | E2EE implemented; recovery codes hashed; no external audit yet             |
+| **Documentation** | OK     | 9/10  | Architecture + API docs current; load test baselines published             |
+| **Observability** | OK     | 10/10 | Prometheus + SLO dashboards + Alerting + Tracing + runtime SLO enforcement |
+| **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing (singleflight)     |
+| **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags                              |
 
-**Composite Score: 8.9/10** — Strong foundation with known security and architecture gaps to close
-before 1.0
+**Composite Score: 9.4/10** — Production-grade foundation; external security audit is the primary
+remaining gap
 
 > **Implementation Registry**: See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file-level
 > inventory of all operational systems, their locations, and remaining gaps.
@@ -60,18 +60,18 @@ before 1.0
 
 ### Security Controls
 
-| Control               | Status | Notes                                 |
-| --------------------- | ------ | ------------------------------------- |
-| E2EE (X3DH + DR)      | ✅     | Implemented; no external audit yet    |
-| TLS 1.3               | ✅     | Enforced on all connections           |
-| CSP Headers           | ✅     | Strict policy on landing + web app    |
-| Rate Limiting         | ✅     | Redis-backed, per-user and per-IP     |
-| Trusted Proxy         | ✅     | Cloudflare CIDR enforcement           |
-| 2FA                   | ✅     | TOTP with backup codes                |
-| Secret Scanning       | ✅     | Gitleaks in CI                        |
-| Dependency Audit      | ✅     | pnpm audit + mix audit in CI          |
-| **External Pen Test** | ❌     | **Not yet conducted — HIGH PRIORITY** |
-| **E2EE Formal Audit** | ❌     | **Not yet conducted — HIGH PRIORITY** |
+| Control               | Status | Notes                                             |
+| --------------------- | ------ | ------------------------------------------------- |
+| E2EE (X3DH + DR)      | ✅     | Implemented; no external audit yet                |
+| TLS 1.3               | ✅     | Enforced on all connections                       |
+| CSP Headers           | ✅     | Strict policy on landing + web app                |
+| Rate Limiting         | ✅     | Redis-backed, per-user and per-IP                 |
+| Trusted Proxy         | ✅     | Cloudflare CIDR enforcement                       |
+| 2FA                   | ✅     | TOTP with hashed recovery codes (separate schema) |
+| Secret Scanning       | ✅     | Gitleaks in CI                                    |
+| Dependency Audit      | ✅     | pnpm audit + mix audit in CI                      |
+| **External Pen Test** | ❌     | **Not yet conducted — HIGH PRIORITY**             |
+| **E2EE Formal Audit** | ❌     | **Not yet conducted — HIGH PRIORITY**             |
 
 ### Recent Security Fixes
 
@@ -191,7 +191,7 @@ apps/mobile/src/screens/
 | External E2EE security audit | @security | Q1 2026 |
 | External penetration test    | @security | Q1 2026 |
 | Run coverage report (80%+)   | @dev-team | Q1 2026 |
-| Record load test baselines   | @dev-team | Q1 2026 |
+| Record load test baselines   | @dev-team | ✅ Done |
 | Deploy Grafana dashboards    | @infra    | Q1 2026 |
 
 ### P2 — Medium Priority

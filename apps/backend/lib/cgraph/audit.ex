@@ -2,82 +2,24 @@ defmodule CGraph.Audit do
   @moduledoc """
   Production-grade audit logging system for compliance and security.
 
-  ## Overview
+  Provides an immutable, buffered audit trail covering security events,
+  data access, administrative actions, and compliance (GDPR exports).
 
-  Provides immutable audit trail for:
+  Categories: `:auth`, `:user`, `:admin`, `:data`, `:security`,
+  `:compliance`, `:general`.
 
-  - **Security Events**: Login attempts, password changes, 2FA events
-  - **Data Access**: Who accessed what data and when
-  - **Administrative Actions**: User bans, config changes, moderation
-  - **Compliance**: GDPR data exports, consent tracking
+  Entries are buffered in-process and flushed periodically or when the
+  buffer reaches its max size. Real-time alerts fire for critical events.
 
-  ## Architecture
+  Retention periods range from 1 year (general) to 7 years (security/compliance).
 
-  ```
-  ┌─────────────────────────────────────────────────────────────────┐
-  │                      AUDIT LOGGING SYSTEM                        │
-  ├─────────────────────────────────────────────────────────────────┤
-  │                                                                  │
-  │   ┌─────────────┐     ┌─────────────┐     ┌─────────────┐       │
-  │   │  Ingestion  │────►│   Buffer    │────►│  Database   │       │
-  │   │    API      │     │ (async batch)│     │ (immutable) │       │
-  │   └─────────────┘     └─────────────┘     └─────────────┘       │
-  │          │                                       │              │
-  │          ▼                                       ▼              │
-  │   ┌─────────────┐                        ┌─────────────┐        │
-  │   │  Real-time  │                        │  Retention  │        │
-  │   │  Alerting   │                        │   Policy    │        │
-  │   └─────────────┘                        └─────────────┘        │
-  │                                                                  │
-  └─────────────────────────────────────────────────────────────────┘
-  ```
-
-  ## Event Categories
-
-  | Category | Events |
-  |----------|--------|
-  | `auth` | login, logout, password_change, 2fa_enable |
-  | `user` | profile_update, email_change, deletion |
-  | `admin` | ban, unban, verify, config_change |
-  | `data` | export, access, modification |
-  | `security` | suspicious_activity, rate_limit, blocked |
-
-  ## Usage
-
-      # Log an authentication event
-      Audit.log(:auth, :login_success, %{
-        user_id: user.id,
-        ip_address: conn.remote_ip,
-        user_agent: get_user_agent(conn)
-      })
-
-      # Log with context
-      Audit.log(:admin, :user_banned, %{
-        admin_id: admin.id,
-        target_user_id: user.id,
-        reason: "TOS violation"
-      }, context: conn)
-
-      # Query audit log
-      Audit.query(
-        category: :auth,
-        user_id: user.id,
-        from: ~D[2024-01-01],
-        limit: 100
-      )
-
-  ## Retention
-
-  Audit logs are retained based on category:
-
-  - Security events: 7 years
-  - Admin actions: 5 years
-  - User actions: 2 years
-  - General: 1 year
+  See `CGraph.Audit.Query` for filtering and aggregation helpers.
   """
 
   use GenServer
   require Logger
+
+  alias CGraph.Audit.Query
 
   @buffer_flush_interval :timer.seconds(5)
   @buffer_max_size 100
@@ -311,7 +253,7 @@ defmodule CGraph.Audit do
 
   @impl true
   def handle_call({:query, opts}, _from, state) do
-    entries = filter_entries(state.buffer, opts)
+    entries = Query.filter_entries(state.buffer, opts)
     {:reply, {:ok, entries}, state}
   end
 
@@ -328,8 +270,8 @@ defmodule CGraph.Audit do
       total_logged: state.total_logged,
       buffer_size: state.buffer_count,
       last_flush: state.last_flush,
-      period_counts: count_by_category(recent_entries),
-      event_counts: count_by_event(recent_entries)
+      period_counts: Query.count_by_category(recent_entries),
+      event_counts: Query.count_by_event(recent_entries)
     }
 
     {:reply, {:ok, stats}, state}
@@ -458,63 +400,7 @@ defmodule CGraph.Audit do
     :ok
   end
 
-  # ---------------------------------------------------------------------------
-  # Query Helpers
-  # ---------------------------------------------------------------------------
 
-  defp filter_entries(entries, opts) do
-    entries
-    |> maybe_filter_category(opts[:category])
-    |> maybe_filter_event_type(opts[:event_type])
-    |> maybe_filter_actor(opts[:actor_id])
-    |> maybe_filter_target(opts[:target_id])
-    |> maybe_filter_date_range(opts[:from], opts[:to])
-    |> limit_entries(opts[:limit] || 100, opts[:offset] || 0)
-  end
-
-  defp maybe_filter_category(entries, nil), do: entries
-  defp maybe_filter_category(entries, category) do
-    Enum.filter(entries, &(&1.category == category))
-  end
-
-  defp maybe_filter_event_type(entries, nil), do: entries
-  defp maybe_filter_event_type(entries, event_type) do
-    Enum.filter(entries, &(&1.event_type == event_type))
-  end
-
-  defp maybe_filter_actor(entries, nil), do: entries
-  defp maybe_filter_actor(entries, actor_id) do
-    Enum.filter(entries, &(&1.actor_id == actor_id))
-  end
-
-  defp maybe_filter_target(entries, nil), do: entries
-  defp maybe_filter_target(entries, target_id) do
-    Enum.filter(entries, &(&1.target_id == target_id))
-  end
-
-  defp maybe_filter_date_range(entries, nil, nil), do: entries
-  defp maybe_filter_date_range(entries, from, to) do
-    Enum.filter(entries, fn entry ->
-      (from == nil or Date.compare(DateTime.to_date(entry.timestamp), from) != :lt) and
-      (to == nil or Date.compare(DateTime.to_date(entry.timestamp), to) != :gt)
-    end)
-  end
-
-  defp limit_entries(entries, limit, offset) do
-    entries
-    |> Enum.drop(offset)
-    |> Enum.take(limit)
-  end
-
-  defp count_by_category(entries) do
-    Enum.frequencies_by(entries, & &1.category)
-  end
-
-  defp count_by_event(entries) do
-    Enum.frequencies_by(entries, fn entry ->
-      {entry.category, entry.event_type}
-    end)
-  end
 
   # ---------------------------------------------------------------------------
   # Alerting
