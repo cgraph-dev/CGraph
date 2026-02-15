@@ -1195,6 +1195,69 @@ const docArticles: Record<string, DocArticleData> = {
 </ul>
 `,
   },
+  'backend-sub-module-architecture-defdelegate-pattern': {
+    title: 'Backend Sub-module Architecture & Defdelegate Pattern',
+    category: 'Architecture & Design',
+    categoryIcon: '🏗️',
+    categoryColor: '#818cf8',
+    readTime: '10 min read',
+    content: `
+<p>As of v0.9.25, CGraph enforces a strict <strong>500-line limit</strong> on all backend Elixir modules. Modules that exceed this limit are refactored using the <strong>sub-module + defdelegate pattern</strong> — business logic moves into focused sub-modules under the parent namespace, while the parent retains its public API via <code>defdelegate</code> calls.</p>
+
+<h3>The Pattern</h3>
+<p>Consider a module <code>Cgraph.Notifications</code> that grew to 680 lines. Instead of one monolithic file, it becomes:</p>
+
+<pre><code>lib/cgraph/notifications.ex          # 312 lines — public API + defdelegate
+lib/cgraph/notifications/delivery.ex  # ~120 lines — push, email, in-app delivery
+lib/cgraph/notifications/preferences.ex # ~110 lines — user prefs, muting, schedules
+lib/cgraph/notifications/templates.ex  # ~100 lines — notification templates, formatting
+</code></pre>
+
+<p>The parent module's public API stays identical:</p>
+
+<pre><code>defmodule Cgraph.Notifications do
+  alias Cgraph.Notifications.{Delivery, Preferences, Templates}
+
+  defdelegate send_push(user, payload), to: Delivery
+  defdelegate get_preferences(user_id), to: Preferences
+  defdelegate render_template(type, assigns), to: Templates
+  # ... all existing public functions remain callable
+end
+</code></pre>
+
+<h3>Refactored Modules</h3>
+<table>
+  <thead><tr><th>Module</th><th>Before</th><th>After</th><th>Sub-modules</th></tr></thead>
+  <tbody>
+    <tr><td><strong>CgraphWeb.GroupChannel</strong></td><td>892 lines</td><td>285 lines</td><td>MessageHandler, ReactionHandler, TypingHandler, PinHandler</td></tr>
+    <tr><td><strong>Cgraph.Notifications</strong></td><td>680 lines</td><td>312 lines</td><td>Delivery, Preferences, Templates</td></tr>
+    <tr><td><strong>Cgraph.Audit</strong></td><td>620 lines</td><td>289 lines</td><td>Logger, QueryBuilder, Retention</td></tr>
+    <tr><td><strong>Cgraph.Uploads</strong></td><td>590 lines</td><td>276 lines</td><td>Processor, Storage, Validator</td></tr>
+    <tr><td><strong>Cgraph.Admin</strong></td><td>575 lines</td><td>298 lines</td><td>Reports, UserManagement, ServerManagement</td></tr>
+    <tr><td><strong>Cgraph.TierLimits</strong></td><td>560 lines</td><td>267 lines</td><td>Calculator, Enforcer, FeatureGates</td></tr>
+    <tr><td><strong>Cgraph.Friends</strong></td><td>545 lines</td><td>254 lines</td><td>Requests, Blocking, Suggestions</td></tr>
+    <tr><td><strong>Cgraph.Events</strong></td><td>530 lines</td><td>241 lines</td><td>Scheduler, RSVP, Reminders</td></tr>
+  </tbody>
+</table>
+
+<p>Total: <strong>4,992 lines refactored</strong> into 26 focused sub-modules averaging ~115 lines each.</p>
+
+<h3>Benefits</h3>
+<ul>
+  <li><strong>Zero breaking changes</strong> — All callers continue using the parent module's API</li>
+  <li><strong>Focused files</strong> — Each sub-module handles exactly one responsibility</li>
+  <li><strong>Better compilation</strong> — Elixir only recompiles changed sub-modules</li>
+  <li><strong>Easier testing</strong> — Sub-modules can be unit tested in isolation</li>
+  <li><strong>Clear ownership</strong> — Smaller files are easier to review and maintain</li>
+</ul>
+
+<h3>Frontend Equivalent</h3>
+<p>On the frontend, over-sized React components (&gt;300 lines) are split using <strong>component extraction + custom hooks</strong>. The same principle applies: the parent component coordinates, child components handle specific UI concerns, and hooks encapsulate shared state/logic.</p>
+
+<h3>Enforcement</h3>
+<p>The line limits are enforced in CI via a script that counts non-comment, non-blank lines. Any module or component that exceeds its limit will fail the build. The current score: <strong>0 / 63 backend modules</strong> and <strong>0 / 47 frontend components</strong> over limit.</p>
+`,
+  },
   '3-tier-caching-ets-cachex-redis': {
     title: '3-Tier Caching: ETS → Cachex → Redis',
     category: 'Architecture & Design',

@@ -30,6 +30,20 @@ interface BlogPost {
 
 const blogPosts: BlogPost[] = [
   {
+    id: 10,
+    slug: 'compliance-pass',
+    title: 'Architecture Compliance Pass: All Modules Under Size Limits',
+    excerpt:
+      'v0.9.25 enforces <500 lines for backend modules and <300 lines for React components. 8 backend modules split using sub-module + defdelegate pattern, 5 React components extracted, 56 @spec annotations added, and a full soft delete audit across 45 Repo.delete calls.',
+    category: 'Architecture',
+    author: 'Burca Lucas',
+    date: 'February 15, 2026',
+    readTime: '10 min read',
+    featured: true,
+    image: '🏗️',
+    tags: ['Architecture', 'Elixir', 'React', 'Compliance'],
+  },
+  {
     id: 1,
     slug: 'platform-parity',
     title: 'Platform Parity: 17/17 Features on Web & Mobile',
@@ -232,14 +246,14 @@ export default function Blog() {
                   >
                     Latest Release
                   </span>
-                  <span className="font-mono text-sm text-gray-400">v0.9.14</span>
+                  <span className="font-mono text-sm text-gray-400">v0.9.25</span>
                 </div>
                 <h3 className="mb-2 text-xl font-bold text-white md:text-2xl">
-                  Platform Parity Achieved
+                  Architecture Compliance Pass Complete
                 </h3>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--color-gray)' }}>
-                  17/17 features on web &amp; mobile, 1,342 passing tests, Reanimated v4 migration
-                  complete. Architecture score: 9.0/10.
+                  All backend modules under 500 lines, all React components under 300 lines. 8
+                  module splits, 56 @spec annotations, soft delete audit. Score: 9.4/10.
                 </p>
               </div>
               <div className="flex shrink-0 flex-col items-center gap-2">
@@ -251,9 +265,9 @@ export default function Blog() {
                     border: '1px solid rgba(255,255,255,0.1)',
                   }}
                 >
-                  🎯
+                  🏗️
                 </div>
-                <span className="text-xs text-gray-500">Feb 8, 2026</span>
+                <span className="text-xs text-gray-500">Feb 15, 2026</span>
               </div>
             </div>
           </motion.div>

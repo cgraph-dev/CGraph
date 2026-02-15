@@ -117,6 +117,7 @@ const docCategories = [
       { title: 'Monorepo: pnpm Workspaces + Turborepo', time: '8 min read' },
       { title: 'Dual-App Architecture (Landing vs Web App)', time: '10 min read' },
       { title: '12 Feature Modules & 7 Facade Hooks', time: '12 min read' },
+      { title: 'Backend Sub-module Architecture & Defdelegate Pattern', time: '10 min read' },
       { title: '3-Tier Caching: ETS → Cachex → Redis', time: '10 min read' },
       { title: 'Phoenix Supervision Tree', time: '8 min read' },
       { title: 'Socket Architecture & Channel Modules', time: '10 min read' },
