@@ -5848,6 +5848,23 @@ html.site-ready {
   animation: title-pulse 2.5s ease-in-out infinite;
 }
 
+.demo-titles__preview-title--id-flame-bearer {
+  background: linear-gradient(180deg, #fff3d9 0%, #ffd166 25%, #ff9f1c 55%, #ff4d00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: saturate(1.1);
+  animation: title-fire-core 1.6s ease-in-out infinite, title-flame-flicker 0.24s steps(2, end) infinite;
+}
+
+.demo-titles__preview-title--id-cosmic-traveler {
+  background: linear-gradient(105deg, #9d7bff 0%, #6ea8ff 35%, #8b5cf6 65%, #67e8f9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: title-cosmic-drift 5.5s ease-in-out infinite;
+}
+
 @keyframes title-shimmer {
   0%, 100% { text-shadow: 0 0 4px currentColor; filter: brightness(1); }
   50% { text-shadow: 0 0 20px currentColor, 0 0 40px currentColor; filter: brightness(1.6); }
@@ -5890,6 +5907,36 @@ html.site-ready {
   40% { text-shadow: -1px 2px 6px currentColor; filter: brightness(0.9); }
   60% { text-shadow: 2px 1px 16px currentColor, -3px -1px 10px currentColor; filter: brightness(1.5); }
   80% { text-shadow: 0 -2px 8px currentColor; filter: brightness(1.1); }
+}
+
+@keyframes title-fire-core {
+  0%, 100% {
+    text-shadow: 0 -1px 10px rgba(255, 118, 0, 0.7), 0 -5px 18px rgba(255, 68, 0, 0.45);
+  }
+  40% {
+    text-shadow: 0 -4px 16px rgba(255, 180, 0, 0.9), 0 -8px 26px rgba(255, 98, 0, 0.52);
+  }
+  70% {
+    text-shadow: 0 -2px 13px rgba(255, 149, 0, 0.8), 0 -6px 22px rgba(255, 68, 0, 0.48);
+  }
+}
+
+@keyframes title-flame-flicker {
+  0%, 100% { transform: translateY(0) scale(1); }
+  25% { transform: translateY(-0.5px) scale(1.01); }
+  50% { transform: translateY(0.2px) scale(0.995); }
+  75% { transform: translateY(-0.6px) scale(1.005); }
+}
+
+@keyframes title-cosmic-drift {
+  0%, 100% {
+    filter: brightness(1.05) saturate(1.1);
+    text-shadow: 0 0 10px rgba(139, 92, 246, 0.42), 0 0 24px rgba(99, 102, 241, 0.28);
+  }
+  50% {
+    filter: brightness(1.2) saturate(1.2);
+    text-shadow: 0 0 14px rgba(103, 232, 249, 0.44), 0 0 30px rgba(139, 92, 246, 0.34);
+  }
 }
 
 /* Reusing animations for chat message badges */
@@ -5980,6 +6027,122 @@ html.site-ready {
 .demo-title-card--selected {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.15);
+}
+
+.demo-title-card--id-cosmic-traveler,
+.demo-title-card--id-flame-bearer {
+  overflow: hidden;
+}
+
+.demo-title-card--id-cosmic-traveler > *,
+.demo-title-card--id-flame-bearer > * {
+  position: relative;
+  z-index: 2;
+}
+
+.demo-title-card--id-cosmic-traveler {
+  background: radial-gradient(140% 140% at 20% 0%, rgba(139, 92, 246, 0.16), rgba(59, 130, 246, 0.05) 45%, rgba(255, 255, 255, 0.03) 100%);
+  border-color: rgba(139, 92, 246, 0.22);
+  box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.08);
+}
+
+.demo-title-card--id-cosmic-traveler::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 12% 22%, rgba(255, 255, 255, 0.8) 0 1px, transparent 2px),
+    radial-gradient(circle at 76% 20%, rgba(167, 139, 250, 0.9) 0 1px, transparent 2px),
+    radial-gradient(circle at 64% 76%, rgba(103, 232, 249, 0.8) 0 1px, transparent 2px),
+    radial-gradient(circle at 32% 68%, rgba(196, 181, 253, 0.85) 0 1px, transparent 2px);
+  opacity: 0.7;
+  animation: cosmic-star-twinkle 3.2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.demo-title-card--id-cosmic-traveler::after {
+  content: '';
+  position: absolute;
+  inset: -25% -10%;
+  background: radial-gradient(circle at 40% 50%, rgba(167, 139, 250, 0.2), transparent 55%);
+  filter: blur(10px);
+  animation: cosmic-nebula-shift 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.demo-title-card--id-cosmic-traveler .demo-title-card__name {
+  background: linear-gradient(100deg, #c4b5fd, #93c5fd, #a78bfa, #67e8f9);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: title-cosmic-drift 5s ease-in-out infinite;
+}
+
+.demo-title-card--id-flame-bearer {
+  background: linear-gradient(120deg, rgba(255, 110, 26, 0.13), rgba(255, 60, 0, 0.06) 40%, rgba(255, 255, 255, 0.03));
+  border-color: rgba(255, 133, 51, 0.28);
+  box-shadow: inset 0 0 20px rgba(255, 120, 0, 0.1);
+}
+
+.demo-title-card--id-flame-bearer::before {
+  content: '';
+  position: absolute;
+  left: -18%;
+  right: -18%;
+  bottom: -50%;
+  height: 115%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(255, 153, 0, 0.35), rgba(255, 69, 0, 0.18) 45%, transparent 70%);
+  filter: blur(8px);
+  animation: flame-plume-rise 2.2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.demo-title-card--id-flame-bearer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 86%, rgba(255, 180, 0, 0.45) 0 2px, transparent 3px),
+    radial-gradient(circle at 42% 92%, rgba(255, 140, 0, 0.45) 0 2px, transparent 3px),
+    radial-gradient(circle at 72% 88%, rgba(255, 96, 0, 0.45) 0 2px, transparent 3px);
+  opacity: 0;
+  animation: ember-rise 2.6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.demo-title-card--id-flame-bearer .demo-title-card__name {
+  background: linear-gradient(180deg, #ffe4bf 0%, #ffbe55 30%, #ff7a1a 60%, #ff4d00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: title-fire-core 1.45s ease-in-out infinite, title-flame-flicker 0.2s steps(2, end) infinite;
+}
+
+@keyframes cosmic-star-twinkle {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.02); }
+}
+
+@keyframes cosmic-nebula-shift {
+  0%, 100% { transform: translate3d(-3%, 0, 0) scale(1); opacity: 0.45; }
+  50% { transform: translate3d(3%, -2%, 0) scale(1.08); opacity: 0.72; }
+}
+
+@keyframes flame-plume-rise {
+  0%, 100% { transform: translateY(8%) scale(0.96); opacity: 0.45; }
+  50% { transform: translateY(-6%) scale(1.1); opacity: 0.82; }
+}
+
+@keyframes ember-rise {
+  0% { opacity: 0; transform: translateY(8px); }
+  35% { opacity: 0.75; transform: translateY(0); }
+  70% { opacity: 0.5; transform: translateY(-8px); }
+  100% { opacity: 0; transform: translateY(-16px); }
 }
 
 /* Glow variants for high-rarity cards */
