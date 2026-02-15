@@ -115,7 +115,7 @@ export function CustomizationDemo() {
           viewport={{ once: true }}
         >
           {/* Preview Panel */}
-          <motion.div variants={fadeInUp} className="panel-border-glow">
+          <motion.div variants={fadeInUp}>
             <TiltCard maxTilt={0} glare={false}>
               <AnimatePresence mode="wait">
                 <motion.div
@@ -170,25 +170,23 @@ export function CustomizationDemo() {
             <AnimatedBorder>
               <div className="p-5">
                 {/* Panel Tabs */}
-                <div className="mb-6 flex rounded-lg bg-gray-800/50 p-1">
+                <div className="mb-6 flex rounded-xl border border-white/10 bg-white/5 p-1 backdrop-blur-md">
                   {panels.map((panel) => (
                     <button
                       type="button"
                       key={panel.id}
-                      className={`demo-tab-affordance group flex-1 rounded-md px-3 py-2 text-sm ${
-                        activePanel === panel.id ? 'is-active' : ''
+                      className={`relative flex-1 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 ${
+                        activePanel === panel.id ? 'text-white' : 'text-gray-300 hover:text-white'
                       }`}
                       onClick={() => setActivePanel(panel.id)}
                     >
-                      <span className="demo-tab-affordance__label flex items-center justify-center gap-1.5">
+                      <span className="relative z-10 flex items-center justify-center gap-1.5">
                         <span className="hidden sm:inline">{panel.label}</span>
                       </span>
-                      <span className="gl-nav-unified__link-sweep opacity-0 group-hover:opacity-100" />
-                      <span className="gl-nav-unified__link-shimmer" />
                       {activePanel === panel.id && (
                         <motion.div
                           layoutId="activeCustomPanel"
-                          className="absolute inset-0 rounded-md bg-white/10"
+                          className="absolute inset-0 rounded-lg border border-white/20 bg-[linear-gradient(135deg,rgba(16,185,129,0.32),rgba(139,92,246,0.34))] shadow-[0_10px_24px_-14px_rgba(16,185,129,0.85)]"
                           transition={springs.stiff}
                         />
                       )}
