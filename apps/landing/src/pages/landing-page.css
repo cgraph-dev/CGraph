@@ -5848,6 +5848,34 @@ html.site-ready {
   animation: title-pulse 2.5s ease-in-out infinite;
 }
 
+.demo-titles__preview-title--rarity-common {
+  opacity: 0.92;
+}
+
+.demo-titles__preview-title--rarity-uncommon {
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.25);
+}
+
+.demo-titles__preview-title--rarity-rare {
+  text-shadow: 0 0 12px rgba(59, 130, 246, 0.3);
+}
+
+.demo-titles__preview-title--rarity-epic {
+  text-shadow: 0 0 14px rgba(168, 85, 247, 0.34), 0 0 26px rgba(168, 85, 247, 0.18);
+}
+
+.demo-titles__preview-title--rarity-legendary {
+  text-shadow: 0 0 16px rgba(245, 158, 11, 0.38), 0 0 30px rgba(245, 158, 11, 0.2);
+}
+
+.demo-titles__preview-title--rarity-mythic {
+  text-shadow: 0 0 18px rgba(239, 68, 68, 0.42), 0 0 34px rgba(239, 68, 68, 0.24);
+}
+
+.demo-titles__preview-title--rarity-unique {
+  text-shadow: 0 0 18px rgba(236, 72, 153, 0.4), 0 0 34px rgba(139, 92, 246, 0.24);
+}
+
 .demo-titles__preview-title--id-flame-bearer {
   background: linear-gradient(180deg, #fff3d9 0%, #ffd166 25%, #ff9f1c 55%, #ff4d00 100%);
   -webkit-background-clip: text;
@@ -6463,23 +6491,67 @@ html.site-ready {
   55% { transform: translateX(120%); opacity: 0.2; }
 }
 
-/* Glow variants for high-rarity cards */
-.demo-title-card--epic {
+@keyframes icon-soft-bob {
+  0%, 100% { transform: translateY(0); opacity: 0.85; }
+  50% { transform: translateY(-1px); opacity: 1; }
+}
+
+@keyframes icon-rare-flicker {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(96, 165, 250, 0.3)); }
+  50% { transform: scale(1.07); filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.55)); }
+}
+
+@keyframes icon-epic-orbit {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-1px) rotate(10deg); }
+}
+
+@keyframes icon-legendary-ember {
+  0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 0 3px rgba(251, 146, 60, 0.45)); }
+  50% { transform: translateY(-2px) scale(1.12); filter: drop-shadow(0 0 8px rgba(251, 146, 60, 0.75)); }
+}
+
+@keyframes icon-mythic-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.14); opacity: 1; }
+}
+
+@keyframes icon-unique-prism {
+  0% { filter: hue-rotate(0deg) saturate(1.1); }
+  100% { filter: hue-rotate(360deg) saturate(1.2); }
+}
+
+/* Rarity baseline envelope — each title still has unique VFX layered on top */
+.demo-title-card--rarity-common {
+  border-color: rgba(156, 163, 175, 0.16);
+}
+
+.demo-title-card--rarity-uncommon {
+  border-color: rgba(34, 197, 94, 0.18);
+  box-shadow: inset 0 0 10px rgba(34, 197, 94, 0.04);
+}
+
+.demo-title-card--rarity-rare {
+  border-color: rgba(59, 130, 246, 0.2);
+  box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.05);
+}
+
+.demo-title-card--rarity-epic {
   animation: card-glow-purple 3s ease-in-out infinite;
   border-color: rgba(168, 85, 247, 0.25);
 }
 
-.demo-title-card--legendary {
+.demo-title-card--rarity-legendary {
   animation: card-glow-gold 3s ease-in-out infinite;
   border-color: rgba(245, 158, 11, 0.25);
 }
 
-.demo-title-card--mythic {
+.demo-title-card--rarity-mythic {
   animation: card-glow-red 2.5s ease-in-out infinite;
   border-color: rgba(239, 68, 68, 0.25);
 }
 
-.demo-title-card--unique {
+.demo-title-card--rarity-unique {
   animation: card-glow-pink 2.5s ease-in-out infinite;
   border-color: rgba(236, 72, 153, 0.25);
 }
@@ -6519,10 +6591,10 @@ html.site-ready {
   z-index: 1;
 }
 
-.demo-title-card--epic .demo-title-card__name,
-.demo-title-card--legendary .demo-title-card__name,
-.demo-title-card--mythic .demo-title-card__name,
-.demo-title-card--unique .demo-title-card__name {
+.demo-title-card--rarity-epic .demo-title-card__name,
+.demo-title-card--rarity-legendary .demo-title-card__name,
+.demo-title-card--rarity-mythic .demo-title-card__name,
+.demo-title-card--rarity-unique .demo-title-card__name {
   font-size: 0.9375rem;
 }
 
@@ -6539,6 +6611,45 @@ html.site-ready {
 .demo-title-card__anim-icon {
   font-size: 0.75rem;
   flex-shrink: 0;
+  display: inline-flex;
+  transform-origin: center;
+}
+
+.demo-title-card__anim-icon--rarity-common {
+  opacity: 0.7;
+}
+
+.demo-title-card__anim-icon--rarity-uncommon {
+  animation: icon-soft-bob 2.8s ease-in-out infinite;
+}
+
+.demo-title-card__anim-icon--rarity-rare {
+  animation: icon-rare-flicker 2.1s ease-in-out infinite;
+}
+
+.demo-title-card__anim-icon--rarity-epic {
+  animation: icon-epic-orbit 2.5s ease-in-out infinite;
+}
+
+.demo-title-card__anim-icon--rarity-legendary {
+  animation: icon-legendary-ember 1.6s ease-in-out infinite;
+}
+
+.demo-title-card__anim-icon--rarity-mythic {
+  animation: icon-mythic-pulse 1.9s ease-in-out infinite;
+}
+
+.demo-title-card__anim-icon--rarity-unique {
+  animation: icon-unique-prism 3.4s linear infinite;
+}
+
+.demo-title-card__anim-icon--id-cosmic-traveler {
+  animation-duration: 3.2s;
+}
+
+.demo-title-card__anim-icon--id-flame-bearer,
+.demo-title-card__anim-icon--id-ancient-one {
+  animation-duration: 1.25s;
 }
 
 .demo-title-card__bottom {

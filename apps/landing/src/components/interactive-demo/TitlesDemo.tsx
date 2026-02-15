@@ -25,21 +25,6 @@ const ANIMATION_ICONS: Record<string, string> = {
   rainbow: '🌈',
 };
 
-const CUSTOM_VFX_TITLE_IDS = new Set([
-  'newcomer',
-  'chatterbox',
-  'social-butterfly',
-  'forum-founder',
-  'cyber-punk',
-  'master-discourse',
-  'shadow-walker',
-  'cosmic-traveler',
-  'flame-bearer',
-  'founding-member',
-  'ancient-one',
-  'developer',
-]);
-
 export const TitlesDemo = memo(function TitlesDemo() {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [selectedTitle, setSelectedTitle] = useState(DEMO_TITLES[4]); // Cyber Punk default
@@ -56,7 +41,7 @@ export const TitlesDemo = memo(function TitlesDemo() {
       <div className="demo-titles__preview">
         <span className="demo-titles__preview-label">Equipped Title</span>
         <span
-          className={`demo-titles__preview-title demo-titles__preview-title--${selectedTitle?.animation} demo-titles__preview-title--id-${selectedTitle?.id}`}
+          className={`demo-titles__preview-title demo-titles__preview-title--${selectedTitle?.animation} demo-titles__preview-title--id-${selectedTitle?.id} demo-titles__preview-title--rarity-${selectedTitle?.rarity}`}
           style={{ color: selectedTitle?.color }}
         >
           {selectedTitle?.name}
@@ -90,8 +75,6 @@ export const TitlesDemo = memo(function TitlesDemo() {
         <AnimatePresence mode="popLayout">
           {filteredTitles.map((title, i) => {
             const rc = RARITY_COLORS[title.rarity];
-            const isHighRarity = ['epic', 'legendary', 'mythic', 'unique'].includes(title.rarity);
-            const hasCustomVfx = CUSTOM_VFX_TITLE_IDS.has(title.id);
             return (
               <motion.button
                 type="button"
@@ -101,22 +84,23 @@ export const TitlesDemo = memo(function TitlesDemo() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.2, delay: i * 0.03 }}
-                className={`demo-title-card demo-title-card--id-${title.id} ${selectedTitle?.id === title.id ? 'demo-title-card--selected' : ''} ${isHighRarity ? `demo-title-card--${title.rarity}` : ''}`}
+                className={`demo-title-card demo-title-card--id-${title.id} demo-title-card--rarity-${title.rarity} ${selectedTitle?.id === title.id ? 'demo-title-card--selected' : ''}`}
                 style={{
                   borderLeftColor: rc?.primary,
-                  ...(isHighRarity && !hasCustomVfx ? { boxShadow: `0 0 20px ${rc?.glow}` } : {}),
                 }}
                 onClick={() => setSelectedTitle(title)}
               >
                 <div className="demo-title-card__top">
                   <span
-                    className={`demo-title-card__name demo-title-card__name--${title.animation}`}
+                    className={`demo-title-card__name demo-title-card__name--${title.animation} demo-title-card__name--rarity-${title.rarity}`}
                     style={{ color: title.color }}
                   >
                     {title.name}
                   </span>
                   {ANIMATION_ICONS[title.animation] && (
-                    <span className="demo-title-card__anim-icon">
+                    <span
+                      className={`demo-title-card__anim-icon demo-title-card__anim-icon--id-${title.id} demo-title-card__anim-icon--rarity-${title.rarity}`}
+                    >
                       {ANIMATION_ICONS[title.animation]}
                     </span>
                   )}
