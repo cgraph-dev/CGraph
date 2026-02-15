@@ -209,6 +209,7 @@
 .hero-pro__title-line {
   color: #ffffff;
   font-size: clamp(2.75rem, 7vw, 5.25rem);
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
 }
 
 .hero-pro__title-accent {
@@ -219,6 +220,9 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: hero-accent-flow 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.25));
+  line-height: 1.25;
+  padding-bottom: 0.1em;
 }
 
 @keyframes hero-accent-flow {
@@ -477,17 +481,17 @@
   top: 0;
   left: -1px;
   width: 3px;
-  height: 10px;
+  height: 12px;
   border-radius: 2px;
-  background: #10b981;
-  animation: hero-scroll-dot 2s ease-in-out infinite;
+  background: linear-gradient(to bottom, #10b981, #8b5cf6);
+  animation: hero-scroll-dot 2.2s cubic-bezier(0.76, 0, 0.24, 1) infinite;
 }
 
 @keyframes hero-scroll-dot {
-  0%   { top: 0; opacity: 0; }
-  20%  { opacity: 1; }
-  80%  { opacity: 1; }
-  100% { top: 30px; opacity: 0; }
+  0%   { top: 0; height: 4px; opacity: 0; }
+  20%  { height: 12px; opacity: 1; }
+  80%  { height: 12px; opacity: 1; }
+  100% { top: 28px; height: 4px; opacity: 0; }
 }
 
 @keyframes hero-scroll-pulse {
@@ -535,7 +539,9 @@
   }
 
   .hero-pro__scroll {
-    display: none;
+    display: flex;
+    bottom: 1.5rem;
+    scale: 0.8;
   }
 
   .hero-pro__grid {

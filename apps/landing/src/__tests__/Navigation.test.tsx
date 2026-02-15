@@ -7,7 +7,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import Navigation from '../components/marketing/Navigation';
+import Navigation from '../components/marketing/layout/Navigation';
 
 // Mock framer-motion to avoid animation issues in tests
 vi.mock('framer-motion', () => ({

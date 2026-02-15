@@ -1119,30 +1119,28 @@
   z-index: 3;
 }
 
-/* Animated gradient border ring — hidden at rest, fades in on hover */
-.gl-nav-unified__link-border {
+/* Diagonal light sweep reflection — fades in on hover */
+.gl-nav-unified__link-sweep {
   position: absolute;
   inset: 0;
-  border-radius: 50px;
-  padding: 1px;
   background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(16, 185, 129, 0.5) 25%,
-    rgba(139, 92, 246, 0.5) 50%,
-    rgba(16, 185, 129, 0.5) 75%,
-    transparent 100%
+    110deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.03) 45%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 55%,
+    transparent 70%
   );
-  background-size: 200% 100%;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
+  background-size: 300% 100%;
   opacity: 0;
-  animation: nav-border-flow 4s linear infinite;
   transition: opacity 0.3s ease;
   pointer-events: none;
   z-index: 1;
+}
+
+.gl-nav-unified__link:hover .gl-nav-unified__link-sweep {
+  opacity: 1;
+  animation: cta-sweep 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .gl-nav-unified__link:hover {
@@ -1156,10 +1154,6 @@
 
 .gl-nav-unified__link:hover .gl-nav-unified__link-shimmer {
   transform: scaleX(1);
-}
-
-.gl-nav-unified__link:hover .gl-nav-unified__link-border {
-  opacity: 1;
 }
 
 /* CTA Button — dark glass shell with living gradient accents */
@@ -1223,13 +1217,13 @@
   background: linear-gradient(
     110deg,
     transparent 30%,
-    rgba(255, 255, 255, 0.04) 42%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.04) 58%,
+    rgba(255, 255, 255, 0.03) 45%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 55%,
     transparent 70%
   );
-  background-size: 400% 100%;
-  animation: cta-sweep 6s ease-in-out infinite;
+  background-size: 300% 100%;
+  animation: cta-sweep 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   pointer-events: none;
   z-index: 0;
 }
@@ -1397,7 +1391,7 @@
 
 .gl-nav-unified__mobile-link:hover {
   color: #ffffff;
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(16, 185, 129, 0.08);
 }
 
 .gl-nav-unified__mobile-divider {
@@ -1462,13 +1456,13 @@
   background: linear-gradient(
     110deg,
     transparent 30%,
-    rgba(255, 255, 255, 0.04) 42%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.04) 58%,
+    rgba(255, 255, 255, 0.03) 45%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.03) 55%,
     transparent 70%
   );
-  background-size: 400% 100%;
-  animation: cta-sweep 6s ease-in-out infinite;
+  background-size: 300% 100%;
+  animation: cta-sweep 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   pointer-events: none;
   z-index: 0;
 }

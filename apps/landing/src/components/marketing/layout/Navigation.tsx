@@ -52,7 +52,7 @@ function NavLink({
     <>
       <span className="gl-nav-unified__link-text">{children}</span>
       <span className="gl-nav-unified__link-shimmer" />
-      <span className="gl-nav-unified__link-border" />
+      <span className="gl-nav-unified__link-sweep" />
     </>
   );
 

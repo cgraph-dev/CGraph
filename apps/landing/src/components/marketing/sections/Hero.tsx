@@ -23,9 +23,9 @@ const WEB_APP_URL = 'https://web.cgraph.org';
 
 // Trust badges shown below the CTA
 const trustBadges = [
-  { icon: '🔐', label: 'E2E Encrypted' },
-  { icon: '⚡', label: 'Sub-200ms Delivery' },
-  { icon: '🌐', label: 'Open Platform' },
+  { label: 'E2E Encrypted' },
+  { label: 'Sub-200ms Delivery' },
+  { label: 'Open Platform' },
 ] as const;
 
 const containerVariants = {
@@ -190,7 +190,6 @@ const Hero = memo(function Hero(): React.JSX.Element {
               }}
               whileHover={{ scale: 1.1, y: -2 }}
             >
-              <span aria-hidden="true">{badge.icon}</span>
               <span>{badge.label}</span>
             </motion.div>
           ))}
