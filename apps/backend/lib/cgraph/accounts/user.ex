@@ -78,7 +78,6 @@ defmodule CGraph.Accounts.User do
     field :totp_enabled_at, :utc_datetime
     field :totp_backup_codes, {:array, :string}, default: []
     field :totp_backup_hashes, {:array, :string}, default: []
-    field :recovery_codes, {:array, :string}, default: []
 
     # OAuth authentication
     field :oauth_provider, :string  # Primary OAuth provider (google, apple, facebook, tiktok)

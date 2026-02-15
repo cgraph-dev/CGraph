@@ -112,7 +112,7 @@ defmodule CGraphWeb.ConversationChannel do
           conversation_id: conversation_id,
           content_type: Map.get(params, "content_type", "text"),
           reply_to_id: Map.get(params, "reply_to_id"),
-          is_encrypted: Map.get(params, "is_encrypted", false),
+          is_encrypted: Map.get(params, "is_encrypted", true),
           # File attachment fields
           file_url: Map.get(params, "file_url"),
           file_name: Map.get(params, "file_name"),

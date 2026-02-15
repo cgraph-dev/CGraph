@@ -175,7 +175,7 @@ defmodule CGraph.MixProject do
     [
       cgraph: [
         include_executables_for: [:unix],
-        validate_compile_env: false
+        validate_compile_env: true
       ]
     ]
   end

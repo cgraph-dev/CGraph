@@ -40,7 +40,7 @@ defmodule CGraphWeb.Validation.MessageParams do
     field :reply_to_id, Ecto.UUID
     field :conversation_id, Ecto.UUID
     field :channel_id, Ecto.UUID
-    field :is_encrypted, :boolean, default: false
+    field :is_encrypted, :boolean, default: true
 
     # Attachments
     field :file_url, :string

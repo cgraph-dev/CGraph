@@ -8,20 +8,21 @@ Real-time overview of project health, architecture status, and operational state
 
 ## Overall Health
 
-| Dimension         | Status | Score | Notes                                                                  |
-| ----------------- | ------ | ----- | ---------------------------------------------------------------------- |
-| **Build**         | OK     | 10/10 | All apps building successfully                                         |
-| **TypeScript**    | OK     | 10/10 | 0 errors across all packages                                           |
-| **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                         |
-| **Architecture**  | OK     | 9/10  | Facade hooks + module architecture complete                            |
-| **Tests**         | OK     | 10/10 | 1,633 tests passing, 0 failures, 7 skipped — backend suite fully green |
-| **Security**      | WARN   | 7/10  | No critical CVEs; E2EE audit pending                                   |
-| **Documentation** | OK     | 9/10  | Updated with facade & platform parity docs                             |
-| **Observability** | OK     | 10/10 | Prometheus + SLO + Alerting Rules + Sentry + Tracing                   |
-| **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + Chaos Testing                    |
-| **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags                          |
+| Dimension         | Status | Score | Notes                                                                        |
+| ----------------- | ------ | ----- | ---------------------------------------------------------------------------- |
+| **Build**         | OK     | 10/10 | All apps building successfully                                               |
+| **TypeScript**    | OK     | 10/10 | 0 errors across all packages                                                 |
+| **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                               |
+| **Architecture**  | WARN   | 7/10  | 4 god modules >500 lines need splitting                                      |
+| **Tests**         | OK     | 10/10 | 1,633 tests passing, 0 failures, 7 skipped — backend suite fully green       |
+| **Security**      | WARN   | 6/10  | E2EE implemented; no external audit; no PII encryption at rest               |
+| **Documentation** | OK     | 8/10  | Architecture + API docs current; some aspirational content removed           |
+| **Observability** | OK     | 9/10  | Prometheus + SLO dashboards + Alerting + Tracing; no runtime SLO enforcement |
+| **Resilience**    | OK     | 9/10  | CB + DLQ + Backpressure + Snowflake; no general request coalescing           |
+| **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags                                |
 
-**Composite Score: 9.8/10** — Production-ready with CGraph-grade operational maturity
+**Composite Score: 8.9/10** — Strong foundation with known security and architecture gaps to close
+before 1.0
 
 > **Implementation Registry**: See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file-level
 > inventory of all operational systems, their locations, and remaining gaps.
@@ -122,7 +123,7 @@ Remaining:          18 (26%)
 | Real-time     | Phoenix Channels     | ✅     | WebSocket + PubSub sharding |
 | Database      | PostgreSQL 16        | ✅     | 91 tables, optimized        |
 | CDN           | Cloudflare           | ✅     | Global edge caching         |
-| Hosting (API) | Fly.io               | ✅     | Multi-region                |
+| Hosting (API) | Fly.io               | ✅     | Single-region (IAD)         |
 | Hosting (Web) | Vercel               | ✅     | Edge functions              |
 
 ### Module Architecture (v0.9.14)
@@ -230,7 +231,7 @@ apps/mobile/src/screens/
 | ------------------------ | -------------------------------------------------------------------------- |
 | Architecture             | [ARCHITECTURE_TRANSFORMATION_PLAN.md](ARCHITECTURE_TRANSFORMATION_PLAN.md) |
 | Quality Gates            | [QUALITY_GATES.md](QUALITY_GATES.md)                                       |
-| Coding Standards         | [CODE_SIMPLIFICATION_GUIDELINES.md](CODE_SIMPLIFICATION_GUIDELINES.md)     |
+| Engineering Standards    | [ENGINEERING_STANDARDS.md](PrivateFolder/ENGINEERING_STANDARDS.md)         |
 | Security Policy          | [SECURITY.md](../SECURITY.md)                                              |
 | Changelog                | [CHANGELOG.md](../CHANGELOG.md)                                            |
 | AI Instructions          | [CLAUDE.md](../CLAUDE.md)                                                  |

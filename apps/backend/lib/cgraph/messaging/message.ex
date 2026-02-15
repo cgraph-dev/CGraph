@@ -34,7 +34,7 @@ defmodule CGraph.Messaging.Message do
 
     field :content, :string
     field :content_type, :string, default: "text"
-    field :is_encrypted, :boolean, default: false
+    field :is_encrypted, :boolean, default: true
     field :is_edited, :boolean, default: false
     field :edit_count, :integer, default: 0
     field :deleted_at, :utc_datetime
