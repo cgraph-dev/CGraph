@@ -175,8 +175,10 @@ export function CustomizationDemo() {
                     <button
                       type="button"
                       key={panel.id}
-                      className={`relative flex-1 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 ${
-                        activePanel === panel.id ? 'text-white' : 'text-gray-300 hover:text-white'
+                      className={`relative flex-1 rounded-lg px-3 py-2.5 text-sm font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/70 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 ${
+                        activePanel === panel.id
+                          ? 'text-white'
+                          : 'text-gray-300 hover:bg-white/5 hover:text-white'
                       }`}
                       onClick={() => setActivePanel(panel.id)}
                     >
@@ -186,7 +188,7 @@ export function CustomizationDemo() {
                       {activePanel === panel.id && (
                         <motion.div
                           layoutId="activeCustomPanel"
-                          className="absolute inset-0 rounded-lg border border-white/20 bg-[linear-gradient(135deg,rgba(16,185,129,0.32),rgba(139,92,246,0.34))] shadow-[0_10px_24px_-14px_rgba(16,185,129,0.85)]"
+                          className="bg-white/12 absolute inset-0 rounded-lg border border-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
                           transition={springs.stiff}
                         />
                       )}
