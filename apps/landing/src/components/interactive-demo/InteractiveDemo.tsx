@@ -12,6 +12,12 @@ export const InteractiveDemo = memo(function InteractiveDemo({
   className = '',
 }: InteractiveDemoProps) {
   const [activeTab, setActiveTab] = useState('chat');
+  const footerMessages: Record<string, string> = {
+    chat: '🔒 End-to-end encrypted • Try it yourself!',
+    titles: '🏷️ Preview premium titles and badge styles instantly.',
+    achievements: '🏆 Track milestone progress and unlock achievements.',
+    gamify: '🎮 Explore XP, levels, and progression rewards in action.',
+  };
 
   return (
     <div className={`interactive-demo panel-border-glow ${className}`}>
@@ -55,7 +61,7 @@ export const InteractiveDemo = memo(function InteractiveDemo({
       </div>
 
       <div className="interactive-demo__footer">
-        <span>🔒 End-to-end encrypted • Try it yourself!</span>
+        <span>{footerMessages[activeTab] ?? footerMessages.chat}</span>
       </div>
     </div>
   );
