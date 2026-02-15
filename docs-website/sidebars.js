@@ -7,10 +7,7 @@ const sidebars = {
       type: 'category',
       label: 'Getting Started',
       collapsed: false,
-      items: [
-        'guides/QUICKSTART',
-        'guides/USER_GUIDE',
-      ],
+      items: ['guides/QUICKSTART', 'guides/USER_GUIDE'],
     },
     {
       type: 'category',
@@ -25,20 +22,12 @@ const sidebars = {
     {
       type: 'category',
       label: 'Development',
-      items: [
-        'guides/FRONTEND',
-        'guides/MOBILE',
-        'guides/UI_CUSTOMIZATION',
-      ],
+      items: ['guides/FRONTEND', 'guides/MOBILE', 'guides/UI_CUSTOMIZATION'],
     },
     {
       type: 'category',
       label: 'Security',
-      items: [
-        'guides/SECURITY',
-        'guides/SECURITY_CONFIGURATION',
-        'guides/SECURITY_HARDENING',
-      ],
+      items: ['guides/SECURITY', 'guides/SECURITY_CONFIGURATION', 'guides/SECURITY_HARDENING'],
     },
     {
       type: 'category',
@@ -52,13 +41,10 @@ const sidebars = {
     {
       type: 'category',
       label: 'Maintenance',
-      items: [
-        'guides/BUGFIX_LOG',
-        'guides/PRESENCE_FIX_2026_01_04',
-      ],
+      items: ['guides/BUGFIX_LOG', 'guides/PRESENCE_FIX_2026_01_04'],
     },
   ],
-  
+
   apiSidebar: [
     'api/API',
     'api/API_REFERENCE',
@@ -68,24 +54,18 @@ const sidebars = {
       href: '/api/openapi.yaml',
     },
   ],
-  
+
   architectureSidebar: [
     {
       type: 'category',
       label: 'System Design',
       collapsed: false,
-      items: [
-        'architecture/ARCHITECTURE',
-        'architecture/TECHNICAL_OVERVIEW',
-      ],
+      items: ['architecture/ARCHITECTURE', 'architecture/TECHNICAL_OVERVIEW'],
     },
     {
       type: 'category',
       label: 'Database',
-      items: [
-        'architecture/DATABASE',
-        'architecture/DATABASE_SCALING',
-      ],
+      items: ['architecture/DATABASE', 'architecture/DATABASE_SCALING'],
     },
     {
       type: 'category',
@@ -99,18 +79,23 @@ const sidebars = {
     {
       type: 'category',
       label: 'Infrastructure',
-      items: [
-        'architecture/INFRASTRUCTURE_WARNING_CODES',
-      ],
+      items: ['architecture/INFRASTRUCTURE_WARNING_CODES'],
     },
   ],
-  
+
   releaseNotesSidebar: [
     {
       type: 'category',
       label: 'Release Notes',
       collapsed: false,
       items: [
+        'release-notes/V0.9.25_RELEASE_NOTES',
+        'release-notes/V0.9.6_RELEASE_NOTES',
+        'release-notes/V0.9.5_RELEASE_NOTES',
+        'release-notes/V0.9.4_RELEASE_NOTES',
+        'release-notes/V0.9.2_RELEASE_NOTES',
+        'release-notes/V0.9.1_RELEASE_NOTES',
+        'release-notes/V0.9.0_RELEASE_NOTES',
         'release-notes/V0.7.57_RELEASE_NOTES',
         'release-notes/V0.7.56_RELEASE_NOTES',
         'release-notes/V0.7.47_RELEASE_NOTES',
@@ -127,7 +112,7 @@ const sidebars = {
       ],
     },
   ],
-  
+
   legalSidebar: [
     {
       type: 'category',

@@ -480,18 +480,19 @@
   position: absolute;
   top: 0;
   left: -1px;
-  width: 3px;
-  height: 12px;
-  border-radius: 2px;
+  width: 4px;
+  height: 14px;
+  border-radius: 4px;
   background: linear-gradient(to bottom, #10b981, #8b5cf6);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
   animation: hero-scroll-dot 2.2s cubic-bezier(0.76, 0, 0.24, 1) infinite;
 }
 
 @keyframes hero-scroll-dot {
-  0%   { top: 0; height: 4px; opacity: 0; }
-  20%  { height: 12px; opacity: 1; }
-  80%  { height: 12px; opacity: 1; }
-  100% { top: 28px; height: 4px; opacity: 0; }
+  0%   { top: 0; height: 4px; opacity: 0; transform: scaleY(0.5); }
+  20%  { height: 14px; opacity: 1; transform: scaleY(1); }
+  80%  { height: 14px; opacity: 1; transform: scaleY(1); }
+  100% { top: 28px; height: 4px; opacity: 0; transform: scaleY(0.5); }
 }
 
 @keyframes hero-scroll-pulse {

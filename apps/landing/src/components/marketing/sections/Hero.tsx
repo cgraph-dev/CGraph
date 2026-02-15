@@ -84,6 +84,9 @@ const Hero = memo(function Hero(): React.JSX.Element {
     return () => clearInterval(interval);
   }, [prefersReduced]);
 
+  const { scrollY } = useScroll();
+  const scrollOpacity = useTransform(scrollY, [0, 100], [1, 0]);
+
   return (
     <section ref={heroRef} className="hero-pro" aria-label="CGraph — Beyond Messaging">
       {/* Background layers — neural network + parallax */}
@@ -197,12 +200,16 @@ const Hero = memo(function Hero(): React.JSX.Element {
       </motion.div>
 
       {/* Scroll indicator */}
-      <div className="hero-pro__scroll" aria-hidden="true">
+      <motion.div
+        className="hero-pro__scroll"
+        aria-hidden="true"
+        style={{ opacity: scrollOpacity }}
+      >
         <span className="hero-pro__scroll-text">Scroll</span>
         <div className="hero-pro__scroll-line">
           <span className="hero-pro__scroll-dot" />
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 });

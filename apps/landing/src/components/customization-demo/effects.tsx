@@ -46,16 +46,18 @@ export function AnimatedBorder({
         />
       )}
       <div
-        className="absolute -inset-[1px] opacity-30"
+        className="absolute -inset-[2px] opacity-30"
         style={{
           borderRadius,
           background: gradient,
           backgroundSize: '200% 200%',
-          animation: 'gradient-shift 3s ease infinite',
+          animation: 'gradient-shift 4s linear infinite',
         }}
       />
-      <div className="relative bg-gray-900/90 backdrop-blur-xl" style={{ borderRadius }}>
-        {children}
+      <div className="relative bg-gray-900/90 p-1 backdrop-blur-xl" style={{ borderRadius }}>
+        <div className="relative" style={{ borderRadius: `calc(${borderRadius} - 1px)` }}>
+          {children}
+        </div>
       </div>
     </div>
   );

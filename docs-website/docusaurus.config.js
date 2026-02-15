@@ -66,14 +66,21 @@ const config = {
           lastVersion: 'current',
           versions: {
             current: {
-              label: '0.8.6',
+              label: '0.9.25',
               path: '',
             },
           },
           // Include all docs
           includeCurrentVersion: true,
         },
-        blog: false,
+        blog: {
+          showReadingTime: true,
+          blogTitle: 'CGraph Blog',
+          blogDescription: 'Engineering updates from the CGraph team',
+          postsPerPage: 10,
+          blogSidebarTitle: 'Recent Posts',
+          blogSidebarCount: 'ALL',
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -118,6 +125,11 @@ const config = {
             sidebarId: 'releaseNotesSidebar',
             position: 'left',
             label: 'Releases',
+          },
+          {
+            to: '/blog',
+            label: 'Blog',
+            position: 'left',
           },
           {
             type: 'docSidebar',

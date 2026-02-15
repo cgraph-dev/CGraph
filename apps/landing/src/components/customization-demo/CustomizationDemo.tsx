@@ -11,7 +11,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AnimatedBorder, TiltCard, GlowText, FlowingBorder } from './effects';
+import { AnimatedBorder, TiltCard, GlowText } from './effects';
 import { fadeInUp, staggerContainer } from './animations';
 import { StarBorder } from '../effects';
 
@@ -67,10 +67,10 @@ export function CustomizationDemo() {
   };
 
   const panels: { id: DemoPanel; label: string; icon: string }[] = [
-    { id: 'theme', label: 'Theme', icon: '🎨' },
-    { id: 'avatar', label: 'Avatar', icon: '👤' },
-    { id: 'chat', label: 'Chat', icon: '💬' },
-    { id: 'profile', label: 'Profile', icon: '📋' },
+    { id: 'theme', label: 'Theme', icon: '' },
+    { id: 'avatar', label: 'Avatar', icon: '' },
+    { id: 'chat', label: 'Chat', icon: '' },
+    { id: 'profile', label: 'Profile', icon: '' },
   ];
 
   return (
@@ -116,8 +116,7 @@ export function CustomizationDemo() {
         >
           {/* Preview Panel */}
           <motion.div variants={fadeInUp} className="panel-border-glow">
-            <FlowingBorder borderRadius="1rem" />
-            <TiltCard maxTilt={5}>
+            <TiltCard maxTilt={0} glare={false}>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activePanel}
@@ -153,13 +152,15 @@ export function CustomizationDemo() {
                 'Cross-Platform',
                 'Premium Options',
               ].map((tag) => (
-                <motion.span
+                <motion.div
                   key={tag}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-gray-400"
+                  className="group relative cursor-default overflow-hidden rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-medium text-gray-300 transition-all hover:border-emerald-500/30 hover:bg-white/10 hover:text-white"
                   variants={fadeInUp}
+                  whileHover={{ y: -1 }}
                 >
-                  {tag}
-                </motion.span>
+                  <span className="relative z-10">{tag}</span>
+                  <span className="gl-nav-unified__link-sweep opacity-0 group-hover:opacity-100" />
+                </motion.div>
               ))}
             </motion.div>
           </motion.div>
@@ -173,17 +174,18 @@ export function CustomizationDemo() {
                   {panels.map((panel) => (
                     <button
                       key={panel.id}
-                      className={`relative flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                      className={`group relative flex-1 overflow-hidden rounded-md px-3 py-2 text-sm font-semibold transition-all duration-300 ${
                         activePanel === panel.id
-                          ? 'text-white'
-                          : 'text-gray-400 hover:text-gray-300'
+                          ? 'border-white/20 text-white'
+                          : 'border-transparent text-gray-400 hover:text-gray-200'
                       }`}
+                      style={{ border: '1px solid' }}
                       onClick={() => setActivePanel(panel.id)}
                     >
                       <span className="relative z-10 flex items-center justify-center gap-1.5">
-                        <span>{panel.icon}</span>
                         <span className="hidden sm:inline">{panel.label}</span>
                       </span>
+                      <span className="gl-nav-unified__link-sweep opacity-0 group-hover:opacity-40" />
                       {activePanel === panel.id && (
                         <motion.div
                           layoutId="activeCustomPanel"

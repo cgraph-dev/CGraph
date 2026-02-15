@@ -4,6 +4,41 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.25] - 2026-02-15
+
+**🏗️ ARCHITECTURE COMPLIANCE PASS — ALL MODULES UNDER SIZE LIMITS**
+
+Comprehensive compliance pass enforcing <500 lines for backend modules and <300 lines for React
+components. 8 backend modules split using sub-module + defdelegate pattern, 5 React components split
+via extraction, 56 @spec annotations added, soft delete audit completed.
+
+### Backend Module Splits
+
+- `groups.ex` (1,342→423): 5 sub-modules (channels, members, roles, invites, emojis)
+- `notifications.ex` (711→238): 3 sub-modules (queries, delivery, push_tokens)
+- `audit.ex` (598→484): extracted query.ex (132 lines)
+- `uploads.ex` (579→428): extracted image_optimizer.ex (180 lines)
+- `admin.ex` (535→402): extracted metrics.ex (168 lines)
+- `tier_limits.ex` (570→444): extracted checks.ex (187 lines)
+- `friends.ex` (522→497): trimmed
+- `events.ex` (502→435): trimmed
+
+### Frontend Component Splits
+
+- `MessageBubble.tsx` (425→293): ThreadReplyBadge + MessageMediaContent
+- `Matrix3DEnvironment.tsx` (394→151): MatrixRain + ParticleField + FloatingGlyphs + matrix-theme
+- `ConversationMessages.tsx` (370→289): MessageRow
+- `VoiceMessageRecorder.tsx` (327→136): useVoiceRecorder hook
+- `Sidebar.tsx` (327→170): FloatingSidebar
+
+### Other
+
+- 56 @spec annotations on backend sub-modules
+- Soft delete: fixed delete_channel, documented intentional hard-deletes
+- Documentation: 9 files updated, broken refs fixed, version sync
+
+---
+
 ## [0.9.24] - 2026-02-15
 
 **🧪 BACKEND TEST SUITE: FULLY GREEN (1,633 TESTS, 0 FAILURES)**
