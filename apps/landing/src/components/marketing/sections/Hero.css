@@ -213,7 +213,8 @@
 }
 
 .hero-pro__title-accent {
-  font-family: 'DotGothic16', 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  font-family: 'Pixelify Sans', 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  font-weight: 500;
   font-size: clamp(2.75rem, 7vw, 5.25rem);
   background: linear-gradient(135deg, #10b981 0%, #06b6d4 30%, #8b5cf6 60%, #10b981 100%);
   background-size: 200% 200%;
