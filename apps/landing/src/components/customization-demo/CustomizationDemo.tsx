@@ -175,15 +175,12 @@ export function CustomizationDemo() {
                     <button
                       type="button"
                       key={panel.id}
-                      className={`group relative flex-1 overflow-hidden rounded-md px-3 py-2 text-sm font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/80 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 ${
-                        activePanel === panel.id
-                          ? 'bg-white/12 border-white/25 text-white shadow-[0_10px_24px_-14px_rgba(16,185,129,0.85)]'
-                          : 'border-white/12 bg-white/6 hover:bg-white/12 text-gray-200 hover:border-white/25 hover:text-white hover:shadow-[0_10px_24px_-14px_rgba(16,185,129,0.75)]'
+                      className={`demo-tab-affordance group flex-1 rounded-md px-3 py-2 text-sm ${
+                        activePanel === panel.id ? 'is-active' : ''
                       }`}
-                      style={{ border: '1px solid' }}
                       onClick={() => setActivePanel(panel.id)}
                     >
-                      <span className="relative z-10 flex items-center justify-center gap-1.5">
+                      <span className="demo-tab-affordance__label flex items-center justify-center gap-1.5">
                         <span className="hidden sm:inline">{panel.label}</span>
                       </span>
                       <span className="gl-nav-unified__link-sweep opacity-0 group-hover:opacity-100" />

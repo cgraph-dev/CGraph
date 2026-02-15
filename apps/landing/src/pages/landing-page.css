@@ -5104,7 +5104,7 @@ html.site-ready {
   gap: 0.5rem;
 }
 
-.interactive-demo__tab {
+.demo-tab-affordance {
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -5122,7 +5122,7 @@ html.site-ready {
   transition: all 0.25s ease;
 }
 
-.interactive-demo__tab::before {
+.demo-tab-affordance::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -5133,12 +5133,12 @@ html.site-ready {
   z-index: 1;
 }
 
-.interactive-demo__tab-label {
+.demo-tab-affordance__label {
   position: relative;
   z-index: 2;
 }
 
-.interactive-demo__tab:hover {
+.demo-tab-affordance:hover {
   background: rgba(255, 255, 255, 0.11);
   border-color: rgba(255, 255, 255, 0.24);
   color: #ffffff;
@@ -5146,34 +5146,36 @@ html.site-ready {
   box-shadow: 0 10px 28px -14px rgba(16, 185, 129, 0.65);
 }
 
-.interactive-demo__tab:hover::before {
+.demo-tab-affordance:hover::before {
   opacity: 1;
 }
 
-.interactive-demo__tab:hover .gl-nav-unified__link-sweep {
+.demo-tab-affordance:hover .gl-nav-unified__link-sweep {
   opacity: 1;
   animation: cta-sweep 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-.interactive-demo__tab:hover .gl-nav-unified__link-shimmer {
+.demo-tab-affordance:hover .gl-nav-unified__link-shimmer {
   transform: scaleX(1);
 }
 
-.interactive-demo__tab:focus-visible {
+.demo-tab-affordance:focus-visible {
   outline: 2px solid rgba(16, 185, 129, 0.95);
   outline-offset: 2px;
   border-color: rgba(16, 185, 129, 0.75);
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2), 0 10px 28px -14px rgba(16, 185, 129, 0.65);
 }
 
-.interactive-demo__tab.active {
+.demo-tab-affordance.is-active,
+.demo-tab-affordance.active {
   background: linear-gradient(135deg, var(--color-primary, #10b981), var(--color-secondary, #8b5cf6));
   color: white;
   border-color: rgba(255, 255, 255, 0.28);
   box-shadow: 0 12px 32px -14px rgba(139, 92, 246, 0.8);
 }
 
-.interactive-demo__tab.active::before {
+.demo-tab-affordance.is-active::before,
+.demo-tab-affordance.active::before {
   opacity: 0;
 }
 
