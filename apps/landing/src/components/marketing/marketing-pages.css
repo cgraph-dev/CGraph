@@ -1119,23 +1119,9 @@
   z-index: 3;
 }
 
-/* Diagonal light sweep reflection — fades in on hover */
+/* Diagonal light sweep reflection — DISABLED */
 .gl-nav-unified__link-sweep {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    110deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.05) 45%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0.05) 55%,
-    transparent 70%
-  );
-  background-size: 300% 100%;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  z-index: 1;
+  display: none;
 }
 
 .gl-nav-unified__link:hover .gl-nav-unified__link-sweep,
@@ -1212,21 +1198,9 @@
 }
 
 /* Diagonal light sweep — travels across the button on a loop */
+/* CTA sweep — DISABLED */
 .gl-nav-unified__cta-sweep {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    110deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.03) 45%,
-    rgba(255, 255, 255, 0.06) 50%,
-    rgba(255, 255, 255, 0.03) 55%,
-    transparent 70%
-  );
-  background-size: 300% 100%;
-  animation: cta-sweep 5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 @keyframes cta-sweep {
