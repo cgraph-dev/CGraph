@@ -191,7 +191,7 @@ export default function LandingPage() {
           badgeVariant="cyan"
           title="Experience CGraph"
           titleAccent="Live"
-          titleAccentClass="title-fx--electric"
+          titleAccentClass="title-fx--air"
           description="No signup required. Explore our features in this interactive demo."
         />
         <motion.div

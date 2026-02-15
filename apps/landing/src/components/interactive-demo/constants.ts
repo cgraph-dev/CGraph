@@ -1,4 +1,4 @@
-import type { DemoTab, DemoUserProfile } from './types';
+import type { DemoTab, DemoUserProfile, DemoTitle } from './types';
 
 export const DEMO_TABS: DemoTab[] = [
   { id: 'chat', label: 'Chat', icon: '' },
@@ -7,96 +7,37 @@ export const DEMO_TABS: DemoTab[] = [
   { id: 'gamify', label: 'Gamification', icon: '' },
 ];
 
-/** Rich user profiles for the chat demo — showcases avatar borders, titles, badges */
-export const DEMO_USER_PROFILES: Record<string, DemoUserProfile> = {
-  Alex: {
-    level: 50,
-    title: 'Social Butterfly',
-    titleColor: 'linear-gradient(135deg, #06b6d4, #3b82f6)',
-    titleAnimation: 'shimmer',
-    borderStyle: 'linear-gradient(135deg, #06b6d4, #3b82f6, #06b6d4)',
-    borderType: 'ice',
-    borderColor: 'cyan',
-    bubbleAccent: 'linear-gradient(135deg, rgba(6,182,212,0.12), rgba(59,130,246,0.06))',
-    bubbleBorder: 'rgba(6, 182, 212, 0.2)',
-    nameColor: '#22d3ee',
-    badges: [
-      { icon: '❄️', label: 'Frost' },
-      { icon: '🦋', label: 'Social' },
-    ],
-    xp: 4200,
-    maxXp: 5000,
-    karma: 1847,
-    streak: 42,
-  },
-  Jordan: {
-    level: 32,
-    title: 'Cosmic Traveler',
-    titleColor: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
-    titleAnimation: 'sparkle',
-    borderStyle: 'linear-gradient(135deg, #8b5cf6, #06b6d4, #8b5cf6)',
-    borderType: 'electric',
-    borderColor: 'purple',
-    bubbleAccent: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(99,102,241,0.06))',
-    bubbleBorder: 'rgba(139, 92, 246, 0.2)',
-    nameColor: '#a78bfa',
-    badges: [
-      { icon: '⚡', label: 'Storm' },
-      { icon: '🌌', label: 'Cosmic' },
-    ],
-    xp: 2100,
-    maxXp: 3500,
-    karma: 923,
-    streak: 18,
-  },
-  Sam: {
-    level: 78,
-    title: 'Flame Bearer',
-    titleColor: 'linear-gradient(135deg, #f97316, #ef4444)',
-    titleAnimation: 'fire',
-    borderStyle: 'linear-gradient(135deg, #f97316, #ef4444, #f97316)',
-    borderType: 'legendary',
-    borderColor: 'gold',
-    bubbleAccent: 'linear-gradient(135deg, rgba(249,115,22,0.12), rgba(239,68,68,0.06))',
-    bubbleBorder: 'rgba(249, 115, 22, 0.2)',
-    nameColor: '#fbbf24',
-    badges: [
-      { icon: '🔥', label: 'Legend' },
-      { icon: '⚔️', label: 'Warrior' },
-    ],
-    xp: 7800,
-    maxXp: 8500,
-    karma: 3241,
-    streak: 67,
-  },
-};
-
 export const DEMO_MESSAGES: Array<{
   author: string;
   avatar: string;
   content: string;
-  reactions?: { emoji: string; count: number }[];
+  reactions?: { type: 'approved' | 'disapproved'; count: number }[];
+  showTutorial?: boolean;
 }> = [
   {
     author: 'Alex',
     avatar: '🦊',
-    content: 'Hey everyone! Just hit level 50! 🎉',
+    content: 'Hey there! Welcome to CGraph — glad to have you with us!',
     reactions: [
-      { emoji: '🔥', count: 12 },
-      { emoji: '👏', count: 8 },
+      { type: 'approved', count: 12 },
+      { type: 'disapproved', count: 3 },
     ],
   },
   {
     author: 'Jordan',
     avatar: '🐺',
-    content: 'Congrats! That new avatar border looks amazing',
-    reactions: [{ emoji: '💜', count: 5 }],
+    content: 'This is a live preview of how conversations look and feel inside CGraph.',
+    reactions: [{ type: 'approved', count: 5 }],
   },
   {
     author: 'Sam',
     avatar: '🦁',
-    content: "The E2E encryption here is chef's kiss 👨‍🍳",
-    reactions: [{ emoji: '🔒', count: 15 }],
+    content: 'Swipe up on any message to approve it, or swipe down to disapprove — give it a try!',
+    showTutorial: true,
+    reactions: [
+      { type: 'approved', count: 15 },
+      { type: 'disapproved', count: 1 },
+    ],
   },
 ];
 
@@ -134,7 +75,7 @@ export const ACHIEVEMENTS = [
   {
     id: 'streaker',
     name: 'Dedicated',
-    icon: '🔥',
+    icon: '✕',
     desc: '7-day login streak',
     rarity: 'rare' as const,
     xp: 500,
@@ -197,7 +138,7 @@ export const ACHIEVEMENTS = [
 ];
 
 /** Title data from web app — showcases rarity tiers and animations */
-export const DEMO_TITLES = [
+export const DEMO_TITLES: DemoTitle[] = [
   {
     id: 'newcomer',
     name: 'Newcomer',
@@ -295,6 +236,87 @@ export const DEMO_TITLES = [
     unlock: 'Staff only',
   },
 ];
+
+export type DemoTitleId = (typeof DEMO_TITLES)[number]['id'];
+
+const DEMO_TITLES_BY_ID = DEMO_TITLES.reduce(
+  (accumulator, title) => {
+    accumulator[title.id] = title;
+    return accumulator;
+  },
+  {} as Record<DemoTitleId, (typeof DEMO_TITLES)[number]>
+);
+
+export const getDemoTitleById = (titleId: DemoTitleId) => DEMO_TITLES_BY_ID[titleId];
+
+type DemoUserProfileSeed = Omit<DemoUserProfile, 'title' | 'titleAnimation'>;
+
+const createDemoUserProfile = (seed: DemoUserProfileSeed): DemoUserProfile => {
+  const title = getDemoTitleById(seed.titleId as DemoTitleId);
+  return {
+    ...seed,
+    title: title.name,
+    titleAnimation: title.animation as DemoUserProfile['titleAnimation'],
+  };
+};
+
+/** Rich user profiles for the chat demo — titles are sourced from DEMO_TITLES */
+export const DEMO_USER_PROFILES: Record<string, DemoUserProfile> = {
+  Alex: createDemoUserProfile({
+    titleId: 'social-butterfly',
+    level: 50,
+    borderStyle: 'linear-gradient(135deg, #06b6d4, #3b82f6, #06b6d4)',
+    borderType: 'ice',
+    borderColor: 'cyan',
+    bubbleAccent: 'linear-gradient(135deg, rgba(6,182,212,0.12), rgba(59,130,246,0.06))',
+    bubbleBorder: 'rgba(6, 182, 212, 0.2)',
+    nameColor: '#22d3ee',
+    badges: [
+      { icon: '❄️', label: 'Frost' },
+      { icon: '🦋', label: 'Social' },
+    ],
+    xp: 4200,
+    maxXp: 5000,
+    karma: 1847,
+    streak: 42,
+  }),
+  Jordan: createDemoUserProfile({
+    titleId: 'cosmic-traveler',
+    level: 32,
+    borderStyle: 'linear-gradient(135deg, #8b5cf6, #06b6d4, #8b5cf6)',
+    borderType: 'electric',
+    borderColor: 'purple',
+    bubbleAccent: 'linear-gradient(135deg, rgba(139,92,246,0.12), rgba(99,102,241,0.06))',
+    bubbleBorder: 'rgba(139, 92, 246, 0.2)',
+    nameColor: '#a78bfa',
+    badges: [
+      { icon: '⚡', label: 'Storm' },
+      { icon: '🌌', label: 'Cosmic' },
+    ],
+    xp: 2100,
+    maxXp: 3500,
+    karma: 923,
+    streak: 18,
+  }),
+  Sam: createDemoUserProfile({
+    titleId: 'flame-bearer',
+    level: 78,
+    borderStyle: 'linear-gradient(135deg, #f97316, #ef4444, #f97316)',
+    borderType: 'legendary',
+    borderColor: 'gold',
+    bubbleAccent: 'linear-gradient(135deg, rgba(249,115,22,0.12), rgba(239,68,68,0.06))',
+    bubbleBorder: 'rgba(249, 115, 22, 0.2)',
+    nameColor: '#fbbf24',
+    badges: [
+      { icon: '✕', label: 'Legend' },
+      { icon: '⚔️', label: 'Warrior' },
+    ],
+    xp: 7800,
+    maxXp: 8500,
+    karma: 3241,
+    streak: 67,
+  }),
+};
 
 export const RARITY_COLORS: Record<string, { primary: string; glow: string }> = {
   common: { primary: '#9ca3af', glow: 'rgba(156, 163, 175, 0.3)' },

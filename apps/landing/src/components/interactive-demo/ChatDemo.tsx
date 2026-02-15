@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AnimatedAvatar } from '../customization-demo/CustomizationDemo/AnimatedAvatar';
+import { AnimatedBorder } from '../customization-demo/effects';
 import type { Message, DemoUserProfile } from './types';
 import { DEMO_MESSAGES, DEMO_USER_PROFILES } from './constants';
 
@@ -50,8 +51,7 @@ function DemoProfilePopup({
           {author}
         </span>
         <span
-          className={`demo-profile-popup__title ${profile.titleAnimation ? `demo-message__title-badge--${profile.titleAnimation}` : ''}`}
-          style={{ backgroundImage: profile.titleColor }}
+          className={`demo-profile-popup__title demo-message__title-badge--id-${profile.titleId}`}
         >
           {profile.title}
         </span>
@@ -81,7 +81,7 @@ function DemoProfilePopup({
           <span className="demo-profile-popup__stat-label">Karma</span>
         </div>
         <div className="demo-profile-popup__stat">
-          <span className="demo-profile-popup__stat-value">🔥 {profile.streak}</span>
+          <span className="demo-profile-popup__stat-value">✕ {profile.streak}</span>
           <span className="demo-profile-popup__stat-label">Streak</span>
         </div>
       </div>
@@ -168,10 +168,456 @@ function HoverableAvatar({
   );
 }
 
+function AnimatedReaction({ type, count }: { type: 'approved' | 'disapproved'; count: number }) {
+  const isDisapproved = type === 'disapproved';
+  const [displayCount, setDisplayCount] = useState(count);
+  const [tickBurstKey, setTickBurstKey] = useState(0);
+  const prevCountRef = useRef(count);
+
+  useEffect(() => {
+    const prev = prevCountRef.current;
+    prevCountRef.current = count;
+    if (count !== prev) {
+      setDisplayCount(count);
+      setTickBurstKey((k) => k + 1);
+    }
+  }, [count]);
+
+  return (
+    <motion.span
+      className={`demo-reaction demo-reaction--${type}`}
+      initial={{ opacity: 0, scale: 0.94, y: 4 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <span
+        className={`demo-reaction__icon demo-reaction__icon--${type}`}
+        aria-label={type === 'approved' ? 'Approved' : 'Disapproved'}
+      >
+        {type === 'approved' ? '✓' : '✕'}
+      </span>
+      <motion.span
+        key={displayCount}
+        className="demo-reaction__count"
+        initial={{ scale: 1.08, opacity: 0.78, y: 0.5 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {displayCount}
+      </motion.span>
+
+      {tickBurstKey > 0 && (
+        <motion.span
+          key={tickBurstKey}
+          className={`demo-reaction__increment demo-reaction__increment--${type}`}
+          initial={{ opacity: 0, y: 2, scale: 0.88 }}
+          animate={{
+            opacity: [0, 0.72, 0],
+            y: isDisapproved ? [0, 6, 10] : [0, -6, -10],
+            scale: [0.88, 1.01, 0.98],
+          }}
+          transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1], times: [0, 0.35, 1] }}
+        >
+          {isDisapproved ? '-1' : '+1'}
+        </motion.span>
+      )}
+    </motion.span>
+  );
+}
+
+/** Game-style tutorial overlay: animated cursor demonstrates double-click (✓) then triple-click (✕) */
+function ClickTutorial({ phase }: { phase: string }) {
+  const showApprove = phase === 'approve-badge';
+  const showDisapprove = phase === 'disapprove-badge';
+  const isGrabbing = phase === 'grab' || phase === 'grab2';
+  const isSwiping = phase === 'swipe-up' || phase === 'swipe-down';
+  const showCursor = isGrabbing || isSwiping;
+  const swipeDir = phase === 'swipe-up' ? -14 : phase === 'swipe-down' ? 14 : 0;
+
+  return (
+    <div className="demo-input-tutorial">
+      {/* Arrow pointing up to messages */}
+      <AnimatePresence>
+        {(showCursor || showApprove || showDisapprove) && (
+          <motion.span
+            className="demo-input-tutorial__arrow-up"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 4 }}
+            transition={{ duration: 0.2 }}
+          >
+            ↑
+          </motion.span>
+        )}
+      </AnimatePresence>
+
+      {/* Idle hint text */}
+      <AnimatePresence>
+        {phase === 'idle' && (
+          <motion.span
+            className="demo-input-tutorial__hint"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.5 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            Swipe ↑ up or ↓ down on a message to react
+          </motion.span>
+        )}
+      </AnimatePresence>
+
+      {/* Cursor */}
+      <AnimatePresence>
+        {showCursor && (
+          <motion.span
+            className="demo-input-tutorial__cursor"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1, y: isSwiping ? swipeDir : 0 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            transition={{ duration: isSwiping ? 0.3 : 0.15, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {/* Finger / touch circle */}
+              <circle
+                cx="12"
+                cy="12"
+                r="4"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                fill="none"
+                opacity="0.6"
+              />
+              <circle cx="12" cy="12" r="1.5" fill="currentColor" opacity="0.8" />
+              {/* Up arrow */}
+              <path d="M12 4L9 7h6L12 4z" fill="currentColor" opacity="0.9" />
+              <line
+                x1="12"
+                y1="7"
+                x2="12"
+                y2="8.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+              {/* Down arrow */}
+              <path d="M12 20l3-3H9l3 3z" fill="currentColor" opacity="0.9" />
+              <line
+                x1="12"
+                y1="17"
+                x2="12"
+                y2="15.5"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+              />
+            </svg>
+          </motion.span>
+        )}
+      </AnimatePresence>
+
+      {/* Approve badge */}
+      <AnimatePresence>
+        {showApprove && (
+          <motion.div
+            className="demo-input-tutorial__badge demo-input-tutorial__badge--approve"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 10 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+          >
+            <span className="demo-input-tutorial__badge-icon">✓</span>
+            <span className="demo-input-tutorial__badge-label">
+              Swipe ↑ on a message to approve it
+            </span>
+            <span className="demo-input-tutorial__badge-xp">+10 XP</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Disapprove badge */}
+      <AnimatePresence>
+        {showDisapprove && (
+          <motion.div
+            className="demo-input-tutorial__badge demo-input-tutorial__badge--disapprove"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 10 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+          >
+            <span className="demo-input-tutorial__badge-icon demo-input-tutorial__badge-icon--red">
+              ✕
+            </span>
+            <span className="demo-input-tutorial__badge-label">
+              Swipe ↓ on a message to disapprove
+            </span>
+            <span className="demo-input-tutorial__badge-xp demo-input-tutorial__badge-xp--red">
+              −5 XP
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/** Floating ember + heat-wave + smoke particles for fire-themed bubbles */
+function FireEmbers() {
+  // Rising embers
+  const embers = useRef(
+    Array.from({ length: 10 }, (_, i) => ({
+      id: i,
+      left: 8 + Math.random() * 84,
+      size: 1.5 + Math.random() * 3.5,
+      delay: Math.random() * 4,
+      duration: 1.4 + Math.random() * 1.6,
+      drift: -12 + Math.random() * 24,
+      color: i % 3 === 0 ? 'ember-yellow' : i % 3 === 1 ? 'ember-orange' : 'ember-red',
+    }))
+  ).current;
+
+  // Heat shimmer waves
+  const waves = useRef(
+    Array.from({ length: 3 }, (_, i) => ({
+      id: i,
+      delay: i * 1.2,
+      duration: 2 + Math.random() * 1,
+    }))
+  ).current;
+
+  // Smoke wisps
+  const smoke = useRef(
+    Array.from({ length: 4 }, (_, i) => ({
+      id: i,
+      left: 20 + Math.random() * 60,
+      delay: i * 0.8 + Math.random() * 1.5,
+      duration: 2.5 + Math.random() * 1.5,
+      drift: -15 + Math.random() * 30,
+    }))
+  ).current;
+
+  return (
+    <div className="demo-bubble-particles">
+      {/* Ember particles */}
+      {embers.map((e) => (
+        <motion.span
+          key={`e-${e.id}`}
+          className={`demo-ember demo-ember--${e.color}`}
+          style={{ left: `${e.left}%`, width: e.size, height: e.size }}
+          animate={{
+            y: [0, -22, -45],
+            x: [0, e.drift * 0.4, e.drift],
+            opacity: [0, 1, 0],
+            scale: [0.3, 1.2, 0.1],
+          }}
+          transition={{
+            duration: e.duration,
+            delay: e.delay,
+            repeat: Infinity,
+            ease: 'easeOut',
+          }}
+        />
+      ))}
+      {/* Heat shimmer waves */}
+      {waves.map((w) => (
+        <motion.div
+          key={`w-${w.id}`}
+          className="demo-heat-wave"
+          animate={{
+            y: [10, -8],
+            opacity: [0, 0.35, 0],
+            scaleX: [0.9, 1.1, 0.95],
+          }}
+          transition={{
+            duration: w.duration,
+            delay: w.delay,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+      {/* Smoke wisps */}
+      {smoke.map((s) => (
+        <motion.div
+          key={`s-${s.id}`}
+          className="demo-smoke"
+          style={{ left: `${s.left}%` }}
+          animate={{
+            y: [0, -30, -55],
+            x: [0, s.drift * 0.3, s.drift],
+            opacity: [0, 0.2, 0],
+            scale: [0.5, 1.5, 2.5],
+          }}
+          transition={{
+            duration: s.duration,
+            delay: s.delay,
+            repeat: Infinity,
+            ease: 'easeOut',
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/** Twinkling shooting star for galaxy-themed bubbles */
+function GalaxyParticles() {
+  const stars = useRef(
+    Array.from({ length: 4 }, (_, i) => ({
+      id: i,
+      top: 15 + Math.random() * 60,
+      delay: i * 1.5 + Math.random(),
+      duration: 1.2 + Math.random() * 0.8,
+    }))
+  ).current;
+
+  return (
+    <div className="demo-bubble-particles">
+      {stars.map((s) => (
+        <motion.span
+          key={s.id}
+          className="demo-shooting-star"
+          style={{ top: `${s.top}%` }}
+          animate={{
+            x: ['-10%', '110%'],
+            opacity: [0, 0.8, 0.8, 0],
+          }}
+          transition={{
+            duration: s.duration,
+            delay: s.delay,
+            repeat: Infinity,
+            repeatDelay: 3 + Math.random() * 3,
+            ease: [0.22, 1, 0.36, 1],
+            times: [0, 0.1, 0.8, 1],
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 export const ChatDemo = memo(function ChatDemo() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [inputFocused, setInputFocused] = useState(false);
+
+  // Tutorial phase cycle — runs until user focuses input
+  type TutorialPhase =
+    | 'idle'
+    | 'grab'
+    | 'swipe-up'
+    | 'approve-burst'
+    | 'approve-badge'
+    | 'pause'
+    | 'grab2'
+    | 'swipe-down'
+    | 'disapprove-burst'
+    | 'disapprove-badge';
+  const [tutorialPhase, setTutorialPhase] = useState<TutorialPhase>('idle');
+  const tutorialTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  useEffect(() => {
+    if (inputFocused) return; // stop when user focuses
+    let mounted = true;
+    const clearAll = () => {
+      tutorialTimersRef.current.forEach(clearTimeout);
+      tutorialTimersRef.current = [];
+    };
+    const schedule = (fn: () => void, ms: number) => {
+      tutorialTimersRef.current.push(setTimeout(() => mounted && fn(), ms));
+    };
+    const run = () => {
+      clearAll();
+      setTutorialPhase('idle');
+      schedule(() => setTutorialPhase('grab'), 500);
+      schedule(() => setTutorialPhase('swipe-up'), 900);
+      schedule(() => setTutorialPhase('approve-burst'), 1300);
+      schedule(() => setTutorialPhase('approve-badge'), 1700);
+      schedule(() => setTutorialPhase('pause'), 3800);
+      schedule(() => setTutorialPhase('grab2'), 4300);
+      schedule(() => setTutorialPhase('swipe-down'), 4700);
+      schedule(() => setTutorialPhase('disapprove-burst'), 5100);
+      schedule(() => setTutorialPhase('disapprove-badge'), 5500);
+      schedule(run, 8000);
+    };
+    run();
+    return () => {
+      mounted = false;
+      clearAll();
+    };
+  }, [inputFocused]);
+  const reactionTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const userReactionsRef = useRef<Record<string, 'approved' | 'disapproved'>>({});
+  const swipeStartRef = useRef<{ msgId: string; y: number } | null>(null);
+  const SWIPE_THRESHOLD = 40;
+
+  const applyReaction = (msgId: string, targetType: 'approved' | 'disapproved') => {
+    const currentReaction = userReactionsRef.current[msgId];
+
+    if (currentReaction === targetType) {
+      delete userReactionsRef.current[msgId];
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.id !== msgId) return m;
+          const reactions = (m.reactions ?? [])
+            .map((r) => (r.type === targetType ? { ...r, count: Math.max(0, r.count - 1) } : r))
+            .filter((r) => r.count > 0);
+          return { ...m, reactions, reactionsVisible: reactions.length > 0 };
+        })
+      );
+      return;
+    }
+
+    userReactionsRef.current[msgId] = targetType;
+    setMessages((prev) =>
+      prev.map((m) => {
+        if (m.id !== msgId) return m;
+        let reactions = m.reactions ? [...m.reactions] : [];
+        if (currentReaction) {
+          reactions = reactions
+            .map((r) =>
+              r.type === currentReaction ? { ...r, count: Math.max(0, r.count - 1) } : r
+            )
+            .filter((r) => r.count > 0);
+        }
+        const idx = reactions.findIndex((r) => r.type === targetType);
+        if (idx >= 0) {
+          reactions[idx] = { ...reactions[idx], count: reactions[idx].count + 1 };
+        } else {
+          reactions.push({ type: targetType, count: 1 });
+        }
+        return { ...m, reactions, reactionsVisible: true };
+      })
+    );
+  };
+
+  const handlePointerDown = (msgId: string, e: React.PointerEvent) => {
+    const msg = messages.find((m) => m.id === msgId);
+    if (msg?.author === 'You') return; // can't react to own messages
+    swipeStartRef.current = { msgId, y: e.clientY };
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    if (!swipeStartRef.current) return;
+    const { msgId, y: startY } = swipeStartRef.current;
+    swipeStartRef.current = null;
+    (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    const deltaY = startY - e.clientY;
+    if (Math.abs(deltaY) < SWIPE_THRESHOLD) return;
+    if (deltaY > 0) applyReaction(msgId, 'approved');
+    else applyReaction(msgId, 'disapproved');
+  };
+
+  const handlePointerCancel = () => {
+    swipeStartRef.current = null;
+  };
 
   useEffect(() => {
     let messageIndex = 0;
@@ -182,18 +628,31 @@ export const ChatDemo = memo(function ChatDemo() {
         setTimeout(() => {
           setIsTyping(false);
           const profile = DEMO_USER_PROFILES[msg.author];
+          const id = `msg-${Date.now()}`;
           setMessages((prev) => [
             ...prev,
             {
-              id: `msg-${Date.now()}`,
+              id,
               author: msg.author,
               avatar: msg.avatar,
               content: msg.content,
               timestamp: new Date(),
               reactions: msg.reactions,
+              reactionsVisible: false,
               profile,
+              showTutorial: msg.showTutorial,
             },
           ]);
+          if (msg.reactions?.length) {
+            const revealTimer = setTimeout(() => {
+              setMessages((prev) =>
+                prev.map((entry) =>
+                  entry.id === id ? { ...entry, reactionsVisible: true } : entry
+                )
+              );
+            }, 900);
+            reactionTimersRef.current.push(revealTimer);
+          }
           messageIndex++;
         }, 1500);
       }
@@ -205,7 +664,11 @@ export const ChatDemo = memo(function ChatDemo() {
       setTimeout(addMessage, 7000),
     ];
 
-    return () => timers.forEach(clearTimeout);
+    return () => {
+      timers.forEach(clearTimeout);
+      reactionTimersRef.current.forEach(clearTimeout);
+      reactionTimersRef.current = [];
+    };
   }, []);
 
   const handleSend = () => {
@@ -224,99 +687,186 @@ export const ChatDemo = memo(function ChatDemo() {
   };
 
   return (
-    <div className="demo-chat">
-      <div className="demo-chat__messages">
-        <AnimatePresence>
-          {messages.map((msg) => {
-            const isSelf = msg.author === 'You';
+    <div className="mx-auto max-w-2xl">
+      <AnimatedBorder>
+        <div className="rounded-xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
+          <div className="demo-chat__messages scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/10 hover:scrollbar-thumb-white/20 mb-4 h-[400px] overflow-y-auto pr-2">
+            <AnimatePresence>
+              {messages.map((msg) => {
+                const isSelf = msg.author === 'You';
+                const hasBubbleAnim =
+                  msg.profile?.borderType === 'electric' || msg.profile?.borderType === 'legendary';
+                return (
+                  <motion.div
+                    key={msg.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className={`demo-message ${isSelf ? 'demo-message--self' : ''}${msg.profile?.borderType === 'electric' ? 'demo-message--bubble-electric' : ''}${msg.profile?.borderType === 'legendary' ? 'demo-message--bubble-legendary' : ''}`}
+                    onPointerDown={(e) => handlePointerDown(msg.id, e)}
+                    onPointerUp={handlePointerUp}
+                    onPointerCancel={handlePointerCancel}
+                    style={{
+                      cursor: 'grab',
+                      ...(msg.profile && !hasBubbleAnim
+                        ? {
+                            background: msg.profile.bubbleAccent,
+                            border: `1px solid ${msg.profile.bubbleBorder}`,
+                            boxShadow: `0 0 15px ${msg.profile.bubbleBorder}`,
+                          }
+                        : {}),
+                    }}
+                  >
+                    {msg.profile?.borderType === 'electric' && <GalaxyParticles />}
+                    {!isSelf && (
+                      <HoverableAvatar
+                        author={msg.author}
+                        avatar={msg.avatar}
+                        profile={msg.profile}
+                      />
+                    )}
+                    <div className="demo-message__content">
+                      <div className="demo-message__header">
+                        <span
+                          className="demo-message__author"
+                          style={
+                            isSelf
+                              ? { color: 'rgba(255,255,255,0.85)' }
+                              : msg.profile
+                                ? { color: msg.profile.nameColor }
+                                : undefined
+                          }
+                        >
+                          {msg.author}
+                        </span>
+                        {msg.profile && (
+                          <span
+                            className={`demo-message__title-badge demo-message__title-badge--id-${msg.profile.titleId}`}
+                          >
+                            {msg.profile.title}
+                          </span>
+                        )}
+                        {msg.profile?.badges.slice(0, 2).map((b) => (
+                          <span
+                            key={b.label}
+                            className="demo-message__inline-badge"
+                            title={b.label}
+                          >
+                            {b.icon}
+                          </span>
+                        ))}
+                      </div>
+                      <p className="demo-message__text">{msg.content}</p>
+
+                      <AnimatePresence>
+                        {msg.reactions && msg.reactionsVisible && (
+                          <motion.div
+                            className="demo-message__reactions"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 6 }}
+                            transition={{ duration: 0.52, ease: [0.22, 1, 0.36, 1] }}
+                          >
+                            {msg.reactions.map((r, i) => (
+                              <AnimatedReaction
+                                key={`${msg.id}-${r.type}-${i}`}
+                                type={r.type}
+                                count={r.count}
+                              />
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                    {isSelf && (
+                      <div className="demo-message__avatar demo-message__avatar--self">😎</div>
+                    )}
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+
+            {isTyping && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="demo-typing">
+                <span className="demo-typing__dot" />
+                <span className="demo-typing__dot" />
+                <span className="demo-typing__dot" />
+              </motion.div>
+            )}
+          </div>
+
+          {(() => {
+            const isGreen =
+              tutorialPhase === 'grab' ||
+              tutorialPhase === 'swipe-up' ||
+              tutorialPhase === 'approve-burst' ||
+              tutorialPhase === 'approve-badge';
+            const isRed =
+              tutorialPhase === 'grab2' ||
+              tutorialPhase === 'swipe-down' ||
+              tutorialPhase === 'disapprove-burst' ||
+              tutorialPhase === 'disapprove-badge';
+            const borderColor = inputFocused
+              ? 'rgba(16, 185, 129, 0.5)'
+              : isGreen
+                ? 'rgba(16, 185, 129, 0.4)'
+                : isRed
+                  ? 'rgba(239, 68, 68, 0.4)'
+                  : 'rgba(255, 255, 255, 0.1)';
+            const bgColor = inputFocused
+              ? 'rgba(255, 255, 255, 0.1)'
+              : isGreen
+                ? 'rgba(16, 185, 129, 0.06)'
+                : isRed
+                  ? 'rgba(239, 68, 68, 0.06)'
+                  : 'rgba(255, 255, 255, 0.03)';
+            const shadowColor =
+              isGreen && !inputFocused
+                ? '0 0 12px rgba(16, 185, 129, 0.15)'
+                : isRed && !inputFocused
+                  ? '0 0 12px rgba(239, 68, 68, 0.15)'
+                  : 'none';
+
             return (
               <motion.div
-                key={msg.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className={`demo-message ${isSelf ? 'demo-message--self' : ''}`}
-                style={
-                  msg.profile
-                    ? {
-                        background: msg.profile.bubbleAccent,
-                        border: `1px solid ${msg.profile.bubbleBorder}`,
-                        boxShadow: `0 0 15px ${msg.profile.bubbleBorder}`,
-                      }
-                    : undefined
-                }
+                className="demo-chat__input-box"
+                animate={{ borderColor, backgroundColor: bgColor, boxShadow: shadowColor }}
+                transition={{ duration: 0.3 }}
               >
-                {!isSelf && (
-                  <HoverableAvatar author={msg.author} avatar={msg.avatar} profile={msg.profile} />
+                {!inputFocused ? (
+                  <ClickTutorial phase={tutorialPhase} />
+                ) : (
+                  <input
+                    type="text"
+                    className="demo-chat__input-field"
+                    placeholder="Try sending a message..."
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                    onBlur={() => {
+                      if (!inputValue.trim()) setInputFocused(false);
+                    }}
+                    autoFocus
+                  />
                 )}
-                <div className="demo-message__content">
-                  <div className="demo-message__header">
-                    <span
-                      className="demo-message__author"
-                      style={
-                        isSelf
-                          ? { color: 'rgba(255,255,255,0.85)' }
-                          : msg.profile
-                            ? { color: msg.profile.nameColor }
-                            : undefined
-                      }
-                    >
-                      {msg.author}
-                    </span>
-                    {msg.profile && (
-                      <span
-                        className={`demo-message__title-badge ${msg.profile.titleAnimation ? `demo-message__title-badge--${msg.profile.titleAnimation}` : ''}`}
-                        style={{ backgroundImage: msg.profile.titleColor }}
-                      >
-                        {msg.profile.title}
-                      </span>
-                    )}
-                    {msg.profile?.badges.slice(0, 2).map((b) => (
-                      <span key={b.label} className="demo-message__inline-badge" title={b.label}>
-                        {b.icon}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="demo-message__text">{msg.content}</p>
-                  {msg.reactions && (
-                    <div className="demo-message__reactions">
-                      {msg.reactions.map((r, i) => (
-                        <span key={i} className="demo-reaction">
-                          {r.emoji} {r.count}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                {isSelf && (
-                  <div className="demo-message__avatar demo-message__avatar--self">😎</div>
-                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!inputFocused) {
+                      setInputFocused(true);
+                      return;
+                    }
+                    handleSend();
+                  }}
+                  className="demo-chat__send-btn"
+                >
+                  Send
+                </button>
               </motion.div>
             );
-          })}
-        </AnimatePresence>
-
-        {isTyping && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="demo-typing">
-            <span className="demo-typing__dot" />
-            <span className="demo-typing__dot" />
-            <span className="demo-typing__dot" />
-          </motion.div>
-        )}
-      </div>
-
-      <div className="demo-chat__input">
-        <input
-          type="text"
-          placeholder="Try sending a message..."
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-        />
-        <button type="button" onClick={handleSend}>
-          Send
-        </button>
-      </div>
+          })()}
+        </div>
+      </AnimatedBorder>
     </div>
   );
 });

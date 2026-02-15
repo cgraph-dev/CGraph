@@ -1590,6 +1590,18 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   margin: 0;
+  background: linear-gradient(90deg, #10b981, #60a5fa, #a78bfa, #10b981);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: footer-header-flow 6s linear infinite;
+}
+
+@keyframes footer-header-flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
 .gl-footer-unified__links {
@@ -1598,31 +1610,55 @@
   gap: 0.75rem;
 }
 
-/* Footer Links - Aurora Text Effect */
+/* Footer Links - Center-Out Gradient Fill */
 .gl-footer-unified__link {
-  color: #9ca3af;
+  color: #9ca3af; /* Default gray */
   text-decoration: none;
   font-size: 0.875rem;
-  transition: color 0.3s ease;
   display: inline-block;
   padding: 0.25rem 0;
   position: relative;
+  line-height: 1.5;
+  transition: color 0.3s ease;
 }
 
-.gl-footer-unified__link:hover {
+/* Original Text (Span) - stays in place */
+.gl-footer-unified__link span {
+  display: block;
+  z-index: 10;
+  position: relative;
+}
+
+/* Gradient Overlay (Pseudo-element on SPAN) */
+.gl-footer-unified__link span::before {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: linear-gradient(90deg, #10b981, #60a5fa, #a78bfa, #10b981);
-  background-size: 300% 100%;
+  background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  animation: footer-link-aurora 3s linear infinite;
-  text-shadow: 0 0 15px rgba(139, 92, 246, 0.3); /* Subtle glow behind gradient */
+  z-index: 20;
+  
+  /* Center-Out Animation Logic */
+  clip-path: inset(0 50% 0 50%); /* Hidden in center */
+  transition: clip-path 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes footer-link-aurora {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
+/* Hover State - Expand from Center & Animate Gradient */
+.gl-footer-unified__link:hover span::before {
+  clip-path: inset(0 0 0 0); /* Fully revealed */
+  animation: footer-link-shimmer 3s linear infinite;
+}
+
+/* Optional: Slight dim of original text on hover to make gradient pop */
+.gl-footer-unified__link:hover {
+  color: #4b5563;
 }
 
 /* Bottom Bar */

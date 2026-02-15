@@ -1,13 +1,6 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import { StarBorder } from '../../effects';
-
-export const BADGE_COLORS: Record<string, string> = {
-  emerald: '#10b981',
-  purple: '#a855f7',
-  cyan: '#22d3ee',
-  orange: '#f97316',
-};
+import { GradientText } from './GradientText';
 
 export interface SectionHeaderProps {
   badge: string;
@@ -34,23 +27,21 @@ export const SectionHeader = memo(function SectionHeader({
         viewport={{ once: true, margin: '-40px' }}
         transition={{ type: 'spring', stiffness: 200, damping: 15 }}
       >
-        <StarBorder
-          color={BADGE_COLORS[badgeVariant] || '#10b981'}
-          speed="5s"
-          className={`section-header__badge section-header__badge--${badgeVariant}`}
-        >
+        <span className={`section-header__badge section-header__badge--${badgeVariant}`}>
           {badge}
-        </StarBorder>
+        </span>
       </motion.div>
       <motion.h2
         className="section-header__title font-zentry"
-        initial={{ opacity: 0, y: 20, clipPath: 'inset(0 100% 0 0)' }}
-        whileInView={{ opacity: 1, y: 0, clipPath: 'inset(0 0% 0 0)' }}
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-40px' }}
         transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
       >
         {title}{' '}
-        <span className={titleAccentClass || 'section-header__gradient'}>{titleAccent}</span>
+        <GradientText variant="emerald-purple" animated className={titleAccentClass}>
+          {titleAccent}
+        </GradientText>
       </motion.h2>
       <motion.p
         className="section-header__desc font-space"

@@ -11,9 +11,9 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AnimatedBorder, TiltCard, GlowText } from './effects';
+import { AnimatedBorder, TiltCard } from './effects';
+import { GradientText } from '../marketing/ui/GradientText';
 import { fadeInUp, staggerContainer } from './animations';
-import { StarBorder } from '../effects';
 
 // Import all types and components from submodule
 import type { DemoState, DemoPanel } from './CustomizationDemo/types';
@@ -89,15 +89,14 @@ export function CustomizationDemo() {
           variants={fadeInUp}
           transition={springs.gentle}
         >
-          <StarBorder
-            color="#10b981"
-            speed="5s"
-            className="section-header__badge section-header__badge--emerald"
-          >
+          <span className="section-header__badge section-header__badge--emerald">
             100+ Customization Options
-          </StarBorder>
-          <h2 className="mb-4 text-4xl font-bold text-white sm:text-5xl">
-            Make It <GlowText>Yours</GlowText>
+          </span>
+          <h2 className="mb-4 font-zentry text-4xl font-bold text-white sm:text-5xl">
+            Make It{' '}
+            <GradientText variant="emerald-purple" animated className="title-fx--air">
+              Yours
+            </GradientText>
           </h2>
           <p className="mx-auto max-w-2xl text-xl text-gray-400">
             Create your unique identity with animated avatar borders, custom chat bubbles, and

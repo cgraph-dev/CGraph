@@ -10,10 +10,10 @@ import { OrganizeTab } from './OrganizeTab';
 import { ThreadsTab } from './ThreadsTab';
 import { ModerationTab } from './ModerationTab';
 import { FeaturesSidebar } from './FeaturesSidebar';
-import { FlowingBorder } from '../customization-demo/effects';
+import { AnimatedBorder } from '../customization-demo/effects';
 import type { ForumCategory, ForumBoard, ActiveTab } from './types';
-import { springs } from './springs';
-import { StarBorder } from '../effects';
+
+import { GradientText } from '../marketing/ui/GradientText';
 
 export function ForumShowcase() {
   const [categories, setCategories] = useState<ForumCategory[]>(initialCategories);
@@ -57,18 +57,14 @@ export function ForumShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <StarBorder
-            color="#a855f7"
-            speed="5s"
-            className="section-header__badge section-header__badge--purple"
-          >
+          <span className="section-header__badge section-header__badge--purple">
             Revolutionary Forums
-          </StarBorder>
-          <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+          </span>
+          <h2 className="mb-4 font-zentry text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
             Build Your Community,{' '}
-            <span className="bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">
+            <GradientText variant="emerald-purple" animated className="title-fx--air">
               Your Way
-            </span>
+            </GradientText>
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-400">
             The first forum platform with true drag-and-drop organization. Arrange boards,
@@ -76,88 +72,84 @@ export function ForumShowcase() {
           </p>
         </motion.div>
 
-        <div className="mb-8 flex justify-center">
-          <div className="inline-flex rounded-xl bg-gray-800/50 p-1">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`relative flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                  activeTab === tab.id ? 'text-white' : 'text-gray-400 hover:text-gray-300'
-                }`}
-              >
-                <span>{tab.icon}</span>
-                <span className="hidden sm:inline">{tab.label}</span>
-                {activeTab === tab.id && (
-                  <motion.div
-                    layoutId="activeForumTab"
-                    className="absolute inset-0 rounded-lg bg-emerald-500/20"
-                    transition={springs.stiff}
-                  />
-                )}
-              </button>
-            ))}
-          </div>
+        <div className="mb-8 flex justify-center gap-2">
+          {tabs.map((tab) => (
+            <motion.button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-all ${
+                activeTab === tab.id
+                  ? 'border-white/50 bg-white/10 text-white'
+                  : 'border-white/10 text-gray-400 hover:border-white/30'
+              }`}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <span>{tab.icon}</span>
+              <span className="hidden sm:inline">{tab.label}</span>
+            </motion.button>
+          ))}
         </div>
 
         <div className="grid gap-8 lg:grid-cols-5">
           <div className="min-w-0 lg:col-span-3">
-            <motion.div
-              className="panel-border-glow overflow-x-auto rounded-2xl bg-gray-900/50 p-4 sm:p-6"
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <FlowingBorder borderRadius="1rem" />
-              <div className="mb-6 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex gap-1.5">
-                    <div className="h-3 w-3 rounded-full bg-red-500" />
-                    <div className="h-3 w-3 rounded-full bg-yellow-500" />
-                    <div className="h-3 w-3 rounded-full bg-green-500" />
+            <AnimatedBorder className="h-full">
+              <motion.div
+                className="h-full overflow-x-auto rounded-2xl bg-gray-900/50 p-4 backdrop-blur-sm sm:p-6"
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+              >
+                <div className="mb-6 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex gap-1.5">
+                      <div className="box-border h-3 w-3 rounded-full border border-red-500/50 bg-red-500/20" />
+                      <div className="box-border h-3 w-3 rounded-full border border-yellow-500/50 bg-yellow-500/20" />
+                      <div className="box-border h-3 w-3 rounded-full border border-green-500/50 bg-green-500/20" />
+                    </div>
+                    <span className="text-sm font-medium text-gray-400">Forum Organization</span>
                   </div>
-                  <span className="text-sm text-gray-400">Forum Organization</span>
+
+                  <AnimatePresence>
+                    {hasChanges && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        className="flex items-center gap-2"
+                      >
+                        <button
+                          onClick={handleReset}
+                          className="rounded-lg border border-white/10 px-3 py-1.5 text-sm text-gray-400 hover:border-white/20 hover:text-white"
+                        >
+                          Reset
+                        </button>
+                        <button
+                          onClick={handleSave}
+                          className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-sm font-medium text-emerald-400 hover:bg-emerald-500/20"
+                        >
+                          Save Changes
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
-                <AnimatePresence>
-                  {hasChanges && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      className="flex items-center gap-2"
-                    >
-                      <button
-                        onClick={handleReset}
-                        className="rounded-lg border border-gray-700 px-3 py-1.5 text-sm text-gray-400 hover:text-white"
-                      >
-                        Reset
-                      </button>
-                      <button
-                        onClick={handleSave}
-                        className="rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-600"
-                      >
-                        Save Changes
-                      </button>
-                    </motion.div>
+                <AnimatePresence mode="wait">
+                  {activeTab === 'organize' && (
+                    <OrganizeTab
+                      categories={categories}
+                      setCategories={setCategories}
+                      toggleCategory={toggleCategory}
+                      reorderBoards={reorderBoards}
+                      draggingBoardId={draggingBoardId}
+                    />
                   )}
+                  {activeTab === 'threads' && <ThreadsTab />}
+                  {activeTab === 'moderation' && <ModerationTab />}
                 </AnimatePresence>
-              </div>
-
-              <AnimatePresence mode="wait">
-                {activeTab === 'organize' && (
-                  <OrganizeTab
-                    categories={categories}
-                    setCategories={setCategories}
-                    toggleCategory={toggleCategory}
-                    reorderBoards={reorderBoards}
-                    draggingBoardId={draggingBoardId}
-                  />
-                )}
-                {activeTab === 'threads' && <ThreadsTab />}
-                {activeTab === 'moderation' && <ModerationTab />}
-              </AnimatePresence>
-            </motion.div>
+              </motion.div>
+            </AnimatedBorder>
           </div>
 
           <div className="lg:col-span-2">

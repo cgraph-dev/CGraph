@@ -23,20 +23,21 @@ export const InteractiveDemo = memo(function InteractiveDemo({
     <div className={`interactive-demo panel-border-glow ${className}`}>
       <FlowingBorder borderRadius="24px" />
       <div className="interactive-demo__header">
-        <div className="interactive-demo__tabs">
+        <div className="flex flex-wrap justify-center gap-2">
           {DEMO_TABS.map((tab) => (
             <motion.button
               key={tab.id}
               type="button"
-              className={`interactive-demo__tab demo-tab-affordance group ${activeTab === tab.id ? 'is-active' : ''}`}
+              className={`rounded-lg border px-4 py-2 text-sm font-medium transition-all ${
+                activeTab === tab.id
+                  ? 'border-white/50 bg-white/10 text-white'
+                  : 'border-white/10 text-gray-400 hover:border-white/30'
+              }`}
               onClick={() => setActiveTab(tab.id)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <span className="interactive-demo__tab-ring" />
-              <span className="interactive-demo__tab-glow" />
-              <span className="demo-tab-affordance__label">{tab.label}</span>
-              <span className="interactive-demo__tab-shimmer" />
+              {tab.label}
             </motion.button>
           ))}
         </div>

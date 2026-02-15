@@ -177,8 +177,7 @@ export default function Navigation({
         >
           {/* Animated gradient border ring */}
           <span className="gl-nav-unified__cta-ring" />
-          {/* Diagonal light sweep */}
-          <span className="gl-nav-unified__cta-sweep" />
+
           {/* Inner glow on hover */}
           <span className="gl-nav-unified__cta-glow" />
           {/* Content */}
@@ -274,7 +273,7 @@ export default function Navigation({
               </a>
               <a href="https://web.cgraph.org/register" className="gl-nav-unified__mobile-cta">
                 <span className="gl-nav-unified__mobile-cta-ring" />
-                <span className="gl-nav-unified__mobile-cta-sweep" />
+
                 <span className="gl-nav-unified__mobile-cta-glow" />
                 <span className="gl-nav-unified__mobile-cta-text">Get Started</span>
                 <svg

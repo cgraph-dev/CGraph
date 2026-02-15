@@ -29,7 +29,7 @@ export const Features = () => {
         badgeVariant="orange"
         title="Everything You"
         titleAccent="Need"
-        titleAccentClass="title-fx--fire"
+        titleAccentClass="title-fx--air"
         description="Build, customize, and grow your community with our comprehensive feature set."
       />
 

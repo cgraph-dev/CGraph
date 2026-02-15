@@ -13,18 +13,6 @@ const RARITY_ORDER = [
   'unique',
 ] as const;
 
-const ANIMATION_ICONS: Record<string, string> = {
-  none: '',
-  pulse: '💫',
-  shimmer: '✨',
-  wave: '🌊',
-  electric: '⚡',
-  sparkle: '✨',
-  fire: '🔥',
-  glow: '💛',
-  rainbow: '🌈',
-};
-
 export const TitlesDemo = memo(function TitlesDemo() {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [selectedTitle, setSelectedTitle] = useState(DEMO_TITLES[4]); // Cyber Punk default
@@ -97,13 +85,6 @@ export const TitlesDemo = memo(function TitlesDemo() {
                   >
                     {title.name}
                   </span>
-                  {ANIMATION_ICONS[title.animation] && (
-                    <span
-                      className={`demo-title-card__anim-icon demo-title-card__anim-icon--id-${title.id} demo-title-card__anim-icon--rarity-${title.rarity}`}
-                    >
-                      {ANIMATION_ICONS[title.animation]}
-                    </span>
-                  )}
                 </div>
                 <div className="demo-title-card__bottom">
                   <span

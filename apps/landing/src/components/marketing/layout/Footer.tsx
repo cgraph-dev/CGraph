@@ -57,13 +57,17 @@ export default function Footer() {
           rel="noopener noreferrer"
           className="gl-footer-unified__link group"
         >
-          {content}
+          <span className="relative z-10 block" data-text={link.label}>
+            {link.label}
+          </span>
         </a>
       );
     }
     return (
       <Link key={link.label} to={link.to!} className="gl-footer-unified__link group">
-        {content}
+        <span className="relative z-10 block" data-text={link.label}>
+          {link.label}
+        </span>
       </Link>
     );
   };

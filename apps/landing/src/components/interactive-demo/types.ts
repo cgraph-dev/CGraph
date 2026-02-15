@@ -4,9 +4,9 @@
 
 /** Per-user profile metadata for the chat demo */
 export interface DemoUserProfile {
+  titleId: string;
   level: number;
   title: string;
-  titleColor: string;
   borderStyle: string;
   borderType: 'legendary' | 'electric' | 'fire' | 'ice' | 'none' | 'static';
   borderColor?: 'emerald' | 'purple' | 'cyan' | 'orange' | 'pink' | 'gold' | 'crimson' | 'arctic';
@@ -37,8 +37,10 @@ export interface Message {
   avatar: string;
   content: string;
   timestamp: Date;
-  reactions?: { emoji: string; count: number }[];
+  reactions?: { type: 'approved' | 'disapproved'; count: number }[];
+  reactionsVisible?: boolean;
   profile?: DemoUserProfile;
+  showTutorial?: boolean;
 }
 
 /** Tab configuration for the demo switcher */

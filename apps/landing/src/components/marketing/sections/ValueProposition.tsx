@@ -60,7 +60,7 @@ export default function ValueProposition(): React.JSX.Element {
         badgeVariant="cyan"
         title="Built"
         titleAccent="Different"
-        titleAccentClass="title-fx--ice"
+        titleAccentClass="title-fx--air"
         description="Not just another chat app. CGraph unifies real-time messaging, community forums, and military-grade encryption into one privacy-first platform."
       />
 
