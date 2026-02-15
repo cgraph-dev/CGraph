@@ -101,8 +101,8 @@
 /* ── Air 🌊 ──────────────────────────────────────────────────────────────── */
 
 .title-fx--air {
-  font-family: 'Pixelify Sans', 'Space Grotesk', 'Inter', system-ui, sans-serif;
-  font-weight: 500;
+  font-family: 'Pixelify Sans', 'Space Grotesk', 'Inter', system-ui, sans-serif !important;
+  font-weight: 500 !important;
   background-image: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.95) 0%,
