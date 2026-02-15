@@ -1,10 +1,10 @@
 import type { DemoTab, DemoUserProfile } from './types';
 
 export const DEMO_TABS: DemoTab[] = [
-  { id: 'chat', label: 'Chat', icon: '💬' },
-  { id: 'titles', label: 'Titles', icon: '🏷️' },
-  { id: 'achievements', label: 'Achievements', icon: '🏆' },
-  { id: 'gamify', label: 'Gamification', icon: '🎮' },
+  { id: 'chat', label: 'Chat', icon: '' },
+  { id: 'titles', label: 'Titles', icon: '' },
+  { id: 'achievements', label: 'Achievements', icon: '' },
+  { id: 'gamify', label: 'Gamification', icon: '' },
 ];
 
 /** Rich user profiles for the chat demo — showcases avatar borders, titles, badges */

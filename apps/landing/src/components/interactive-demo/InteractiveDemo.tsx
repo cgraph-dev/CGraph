@@ -22,13 +22,14 @@ export const InteractiveDemo = memo(function InteractiveDemo({
             <motion.button
               key={tab.id}
               type="button"
-              className={`interactive-demo__tab ${activeTab === tab.id ? 'active' : ''}`}
+              className={`interactive-demo__tab group ${activeTab === tab.id ? 'active' : ''}`}
               onClick={() => setActiveTab(tab.id)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <span>{tab.icon}</span>
-              <span>{tab.label}</span>
+              <span className="interactive-demo__tab-label">{tab.label}</span>
+              <span className="gl-nav-unified__link-sweep opacity-0" />
+              <span className="gl-nav-unified__link-shimmer" />
             </motion.button>
           ))}
         </div>
