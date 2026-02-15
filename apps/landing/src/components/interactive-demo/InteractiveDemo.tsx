@@ -27,9 +27,10 @@ export const InteractiveDemo = memo(function InteractiveDemo({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
+              <span className="interactive-demo__tab-ring" />
+              <span className="interactive-demo__tab-glow" />
               <span className="demo-tab-affordance__label">{tab.label}</span>
-              <span className="gl-nav-unified__link-sweep opacity-0" />
-              <span className="gl-nav-unified__link-shimmer" />
+              <span className="interactive-demo__tab-shimmer" />
             </motion.button>
           ))}
         </div>

@@ -5122,20 +5122,66 @@ html.site-ready {
   transition: all 0.25s ease;
 }
 
-.demo-tab-affordance::before {
-  content: '';
+.demo-tab-affordance__label {
+  position: relative;
+  z-index: 3;
+}
+
+.interactive-demo__tab-ring {
+  position: absolute;
+  inset: -1px;
+  border-radius: 12px;
+  padding: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(16, 185, 129, 0.6) 25%,
+    rgba(139, 92, 246, 0.6) 50%,
+    rgba(16, 185, 129, 0.6) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.25s ease;
+}
+
+.interactive-demo__tab-glow {
   position: absolute;
   inset: 0;
   border-radius: 12px;
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(139, 92, 246, 0.12));
   opacity: 0;
   transition: opacity 0.25s ease;
+  pointer-events: none;
   z-index: 1;
 }
 
-.demo-tab-affordance__label {
-  position: relative;
-  z-index: 2;
+.interactive-demo__tab-shimmer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #10b981 40%, #8b5cf6 60%, transparent);
+  transform: scaleX(0);
+  transition: transform 0.35s ease;
+  pointer-events: none;
+  z-index: 3;
+}
+
+@keyframes interactive-tab-border-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
 }
 
 .demo-tab-affordance:hover {
@@ -5146,17 +5192,8 @@ html.site-ready {
   box-shadow: 0 10px 28px -14px rgba(16, 185, 129, 0.65);
 }
 
-.demo-tab-affordance:hover::before {
-  opacity: 1;
-}
-
-.demo-tab-affordance:hover .gl-nav-unified__link-sweep {
-  opacity: 1;
-  animation: cta-sweep 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-.demo-tab-affordance:hover .gl-nav-unified__link-shimmer {
-  transform: scaleX(1);
+.demo-tab-affordance:hover .interactive-demo__tab-glow {
+  opacity: 0.45;
 }
 
 .demo-tab-affordance:focus-visible {
@@ -5168,15 +5205,26 @@ html.site-ready {
 
 .demo-tab-affordance.is-active,
 .demo-tab-affordance.active {
-  background: linear-gradient(135deg, var(--color-primary, #10b981), var(--color-secondary, #8b5cf6));
+  background: rgba(0, 0, 0, 0.35);
   color: white;
   border-color: rgba(255, 255, 255, 0.28);
-  box-shadow: 0 12px 32px -14px rgba(139, 92, 246, 0.8);
+  box-shadow: 0 0 20px -6px rgba(16, 185, 129, 0.45);
 }
 
-.demo-tab-affordance.is-active::before,
-.demo-tab-affordance.active::before {
-  opacity: 0;
+.demo-tab-affordance.is-active .interactive-demo__tab-ring,
+.demo-tab-affordance.active .interactive-demo__tab-ring {
+  opacity: 0.9;
+  animation: interactive-tab-border-flow 4s linear infinite;
+}
+
+.demo-tab-affordance.is-active .interactive-demo__tab-glow,
+.demo-tab-affordance.active .interactive-demo__tab-glow {
+  opacity: 1;
+}
+
+.demo-tab-affordance.is-active .interactive-demo__tab-shimmer,
+.demo-tab-affordance.active .interactive-demo__tab-shimmer {
+  transform: scaleX(1);
 }
 
 .interactive-demo__content {
