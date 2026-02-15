@@ -9,7 +9,7 @@ import {
   SparklesIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline';
-import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
+import { VoiceMessageRecorder } from '@/components/media/VoiceMessageRecorder';
 import { GlassCard } from '@/shared/components/ui';
 import { StickerPicker, StickerButton } from '@/modules/chat/components/StickerPicker';
 import { GifPicker, type GifResult } from '@/modules/chat/components/GifPicker';

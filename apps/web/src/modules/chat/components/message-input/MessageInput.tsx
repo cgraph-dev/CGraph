@@ -18,7 +18,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { GlassCard } from '@/shared/components/ui';
-import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
+import { VoiceMessageRecorder } from '@/components/media/VoiceMessageRecorder';
 import { StickerPicker } from '@/modules/chat/components/StickerPicker';
 import { GifPicker } from '@/modules/chat/components/GifPicker';
 import { useMessageInput } from './useMessageInput';

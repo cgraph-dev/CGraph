@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/state",
-  "version": "0.9.4",
+  "version": "0.9.26",
   "description": "Shared state management for CGraph platforms",
   "main": "src/index.ts",
   "types": "src/index.ts",

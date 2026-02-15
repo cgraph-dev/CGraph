@@ -10,7 +10,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useForumStore } from '@/modules/forums/store';
 import { useAuthStore } from '@/modules/auth/store';
-import Dropdown, { DropdownItem, DropdownDivider } from '@/components/Dropdown';
+import Dropdown, { DropdownItem, DropdownDivider } from '@/components/navigation/Dropdown';
 import { toast } from '@/shared/components/ui';
 import {
   ChatBubbleLeftIcon,

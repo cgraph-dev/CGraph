@@ -1,74 +1,99 @@
-import { ButtonHTMLAttributes, ReactNode } from 'react';
+import React, { forwardRef } from 'react';
 
-export type ButtonVariant =
-  | 'primary'
-  | 'secondary'
-  | 'ghost'
-  | 'danger'
-  | 'success'
-  | 'outline'
-  | 'destructive'
-  | 'default';
-export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon' | 'default';
-
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  children: ReactNode;
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  loading?: boolean;
-  icon?: ReactNode;
-  iconPosition?: 'left' | 'right';
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger' | 'success';
+  size?: 'sm' | 'md' | 'lg';
+  isLoading?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
   fullWidth?: boolean;
 }
 
 /**
- * Button - A versatile button component with multiple variants.
+ * Versatile button component with multiple variants and sizes.
  */
-export default function Button({
-  children,
-  variant = 'primary',
-  size = 'md',
-  loading = false,
-  icon,
-  iconPosition = 'left',
-  fullWidth = false,
-  disabled,
-  className = '',
-  ...props
-}: ButtonProps) {
-  const baseStyles =
-    'inline-flex items-center justify-center font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-900';
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      variant = 'primary',
+      size = 'md',
+      isLoading = false,
+      leftIcon,
+      rightIcon,
+      fullWidth = false,
+      disabled,
+      children,
+      className = '',
+      ...props
+    },
+    ref
+  ) => {
+    const baseStyles =
+      'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98]';
 
-  const variantStyles: Record<ButtonVariant, string> = {
-    primary:
-      'bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500 shadow-sm hover:shadow-md',
-    secondary:
-      'bg-dark-700 hover:bg-dark-600 text-white focus:ring-dark-500 border border-dark-600',
-    ghost: 'bg-transparent hover:bg-dark-700 text-gray-300 hover:text-white focus:ring-dark-500',
-    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
-    success: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500',
-    outline:
-      'bg-transparent border-2 border-primary-500 text-primary-400 hover:bg-primary-500/10 focus:ring-primary-500',
-    destructive: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
-    default: 'bg-dark-700 hover:bg-dark-600 text-white focus:ring-dark-500 border border-dark-600',
-  };
+    const variantStyles: Record<typeof variant, string> = {
+      primary:
+        'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 shadow-sm hover:shadow-lg hover:shadow-indigo-600/30 hover:-translate-y-0.5',
+      secondary:
+        'bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 hover:shadow-md',
+      outline:
+        'border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 hover:border-gray-400 dark:hover:border-gray-500',
+      ghost:
+        'text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white',
+      danger:
+        'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm hover:shadow-lg hover:shadow-red-600/30 hover:-translate-y-0.5',
+      success:
+        'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 shadow-sm hover:shadow-lg hover:shadow-green-600/30 hover:-translate-y-0.5',
+    };
 
-  // Normalize size - 'default' maps to 'md'
-  const normalizedSize = size === 'default' ? 'md' : size;
+    const sizeStyles: Record<typeof size, string> = {
+      sm: 'px-3 py-1.5 text-sm gap-1.5',
+      md: 'px-4 py-2 text-sm gap-2',
+      lg: 'px-6 py-3 text-base gap-2',
+    };
 
-  const sizeStyles: Record<Exclude<ButtonSize, 'default'>, string> = {
-    sm: 'text-sm px-3 py-1.5 rounded-md gap-1.5',
-    md: 'text-sm px-4 py-2 rounded-lg gap-2',
-    lg: 'text-base px-6 py-3 rounded-lg gap-2',
-    icon: 'p-2 rounded-lg',
-  };
+    return (
+      <button
+        ref={ref}
+        disabled={disabled || isLoading}
+        className={` ${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${fullWidth ? 'w-full' : ''} ${className} `}
+        {...props}
+      >
+        {isLoading ? (
+          <>
+            <LoadingSpinner size={size} />
+            <span>Loading...</span>
+          </>
+        ) : (
+          <>
+            {leftIcon && <span className="flex-shrink-0">{leftIcon}</span>}
+            {children}
+            {rightIcon && <span className="flex-shrink-0">{rightIcon}</span>}
+          </>
+        )}
+      </button>
+    );
+  }
+);
 
-  const widthStyles = fullWidth ? 'w-full' : '';
+Button.displayName = 'Button';
 
-  const LoadingSpinner = () => (
+const SPINNER_SIZE_CLASSES = {
+  sm: 'w-3.5 h-3.5',
+  md: 'w-4 h-4',
+  lg: 'w-5 h-5',
+  icon: 'w-5 h-5',
+} as const;
+
+interface LoadingSpinnerProps {
+  size: keyof typeof SPINNER_SIZE_CLASSES;
+  className?: string;
+}
+
+function LoadingSpinner({ size, className = '' }: LoadingSpinnerProps): React.ReactElement {
+  return (
     <svg
-      className="h-4 w-4 animate-spin"
-      xmlns="http://www.w3.org/2000/svg"
+      className={`animate-spin ${SPINNER_SIZE_CLASSES[size]} ${className}`}
       fill="none"
       viewBox="0 0 24 24"
     >
@@ -80,50 +105,75 @@ export default function Button({
       />
     </svg>
   );
-
-  return (
-    <button
-      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[normalizedSize]} ${widthStyles} ${className}`}
-      disabled={disabled || loading}
-      {...props}
-    >
-      {loading && <LoadingSpinner />}
-      {!loading && icon && iconPosition === 'left' && icon}
-      {normalizedSize !== 'icon' && children}
-      {!loading && icon && iconPosition === 'right' && icon}
-    </button>
-  );
 }
 
-// Icon button variant
-interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  icon: ReactNode;
-  variant?: ButtonVariant;
+// Icon button variant for toolbar actions
+interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  icon: React.ReactNode;
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   size?: 'sm' | 'md' | 'lg';
-  tooltip?: string;
+  label: string; // Required for accessibility
+  isLoading?: boolean;
 }
 
-export function IconButton({
-  icon,
-  variant: _variant = 'ghost',
-  size = 'md',
-  tooltip,
-  className = '',
-  ...props
-}: IconButtonProps) {
-  const sizeStyles = {
-    sm: 'p-1.5',
-    md: 'p-2',
-    lg: 'p-3',
-  };
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
+  (
+    {
+      icon,
+      variant = 'ghost',
+      size = 'md',
+      label,
+      isLoading = false,
+      disabled,
+      className = '',
+      ...props
+    },
+    ref
+  ) => {
+    const baseStyles =
+      'inline-flex items-center justify-center rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
 
-  return (
-    <button
-      className={`inline-flex items-center justify-center rounded-lg transition-colors ${sizeStyles[size]} ${className}`}
-      title={tooltip}
-      {...props}
-    >
-      {icon}
-    </button>
-  );
-}
+    const variantStyles: Record<typeof variant, string> = {
+      primary: 'bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500',
+      secondary:
+        'bg-gray-100 text-gray-900 hover:bg-gray-200 focus:ring-gray-500 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700',
+      ghost:
+        'text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white',
+      danger:
+        'text-red-600 hover:bg-red-50 hover:text-red-700 focus:ring-red-500 dark:hover:bg-red-900/20',
+    };
+
+    const sizeStyles: Record<typeof size, string> = {
+      sm: 'p-1.5',
+      md: 'p-2',
+      lg: 'p-3',
+    };
+
+    const iconSizes: Record<typeof size, string> = {
+      sm: 'w-4 h-4',
+      md: 'w-5 h-5',
+      lg: 'w-6 h-6',
+    };
+
+    return (
+      <button
+        ref={ref}
+        disabled={disabled || isLoading}
+        aria-label={label}
+        title={label}
+        className={` ${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className} `}
+        {...props}
+      >
+        {isLoading ? (
+          <LoadingSpinner size="icon" className={iconSizes[size]} />
+        ) : (
+          <span className={iconSizes[size]}>{icon}</span>
+        )}
+      </button>
+    );
+  }
+);
+
+IconButton.displayName = 'IconButton';
+
+export default Button;

@@ -11,7 +11,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSocket } from '@/lib/socket';
 import { WebRTCManager, CallState, CallEventHandler } from '@/lib/webrtc/webrtcService';
-import { toast } from '@/components/Toast';
+import { toast } from '@/components/feedback/Toast';
 import { logger } from '@/lib/logger';
 
 export interface UseWebRTCOptions {

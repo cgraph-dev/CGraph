@@ -9,7 +9,7 @@
 
 import { Link } from 'react-router-dom';
 import { formatTimeAgo } from '@/lib/utils';
-import MarkdownRenderer from '@/components/MarkdownRenderer';
+import MarkdownRenderer from '@/components/content/MarkdownRenderer';
 import ThreadPrefix from '@/modules/forums/components/ThreadPrefix';
 import ThreadRating from '@/modules/forums/components/ThreadRating';
 import PollWidget from '@/modules/forums/components/PollWidget';

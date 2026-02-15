@@ -1,6 +1,9 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
+  "remoteCache": {
+    "enabled": true
+  },
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -28,6 +31,10 @@
     },
     "clean": {
       "cache": false
+    },
+    "size": {
+      "dependsOn": ["build"],
+      "outputs": []
     }
   }
 }

@@ -10,7 +10,7 @@ import {
   EllipsisHorizontalIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/components';
-import Dropdown, { DropdownItem } from '@/components/Dropdown';
+import Dropdown, { DropdownItem } from '@/components/navigation/Dropdown';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { FriendshipStatus } from '@/types/profile.types';
 

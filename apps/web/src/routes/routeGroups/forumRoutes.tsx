@@ -5,7 +5,7 @@
  */
 
 import { Route } from 'react-router-dom';
-import { RouteErrorBoundary } from '@/components/RouteErrorBoundary';
+import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
 import {
   Forums,
   ForumPost,

@@ -16,7 +16,7 @@ import {
   ClockIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
+import { VoiceMessageRecorder } from '@/components/media/VoiceMessageRecorder';
 import { StickerPicker, StickerButton } from '@/modules/chat/components/StickerPicker';
 import { GifPicker, type GifResult } from '@/modules/chat/components/GifPicker';
 import { EmojiPicker } from '@/modules/chat/components/EmojiPicker';

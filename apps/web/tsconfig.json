@@ -30,7 +30,13 @@
       "@cgraph/ui": ["../../packages/ui/src"],
       "@cgraph/config": ["../../packages/config/src"],
       "@cgraph/core": ["../../packages/core/src"],
-      "@cgraph/animation-constants": ["../../packages/animation-constants/src"]
+      "@cgraph/animation-constants": ["../../packages/animation-constants/src"],
+      "@cgraph/crypto": ["../../packages/crypto/src"],
+      "@cgraph/hooks": ["../../packages/hooks/src"],
+      "@cgraph/socket": ["../../packages/socket/src"],
+      "@cgraph/state": ["../../packages/state/src"],
+      "@cgraph/api-client": ["../../packages/api-client/src"],
+      "@cgraph/test-utils": ["../../packages/test-utils/src"]
     }
   },
   "include": ["src"],

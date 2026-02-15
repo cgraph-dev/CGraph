@@ -5,7 +5,7 @@
  * Handles image, video, file, voice/audio, and GIF message types.
  */
 
-import { VoiceMessagePlayer } from '@/components/VoiceMessagePlayer';
+import { VoiceMessagePlayer } from '@/components/media/VoiceMessagePlayer';
 import AdvancedVoiceVisualizer from '@/modules/chat/components/audio/AdvancedVoiceVisualizer';
 import { GifMessage } from '@/modules/chat/components/GifMessage';
 import { FileMessage } from '@/modules/chat/components/FileMessage';

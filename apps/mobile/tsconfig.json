@@ -28,7 +28,12 @@
       "@cgraph/ui": ["../../packages/ui/src"],
       "@cgraph/core": ["../../packages/core/src"],
       "@cgraph/hooks": ["../../packages/hooks/src"],
-      "@cgraph/socket": ["../../packages/socket/src"]
+      "@cgraph/socket": ["../../packages/socket/src"],
+      "@cgraph/crypto": ["../../packages/crypto/src"],
+      "@cgraph/state": ["../../packages/state/src"],
+      "@cgraph/animation-constants": ["../../packages/animation-constants/src"],
+      "@cgraph/api-client": ["../../packages/api-client/src"],
+      "@cgraph/test-utils": ["../../packages/test-utils/src"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "*.js", ".expo/types/**/*.ts", "expo-env.d.ts"],

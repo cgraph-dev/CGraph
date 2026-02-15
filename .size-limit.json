@@ -1,0 +1,50 @@
+[
+  {
+    "name": "Web App - JS Bundle",
+    "path": "apps/web/dist/assets/*.js",
+    "limit": "500 KB",
+    "gzip": true
+  },
+  {
+    "name": "Web App - CSS Bundle",
+    "path": "apps/web/dist/assets/*.css",
+    "limit": "100 KB",
+    "gzip": true
+  },
+  {
+    "name": "Landing - JS Bundle",
+    "path": "apps/landing/dist/assets/*.js",
+    "limit": "200 KB",
+    "gzip": true
+  },
+  {
+    "name": "Landing - CSS Bundle",
+    "path": "apps/landing/dist/assets/*.css",
+    "limit": "50 KB",
+    "gzip": true
+  },
+  {
+    "name": "@cgraph/core",
+    "path": "packages/core/dist/index.js",
+    "limit": "50 KB",
+    "gzip": true
+  },
+  {
+    "name": "@cgraph/utils",
+    "path": "packages/utils/dist/index.js",
+    "limit": "30 KB",
+    "gzip": true
+  },
+  {
+    "name": "@cgraph/ui",
+    "path": "packages/ui/dist/index.js",
+    "limit": "80 KB",
+    "gzip": true
+  },
+  {
+    "name": "@cgraph/shared-types",
+    "path": "packages/shared-types/dist/index.js",
+    "limit": "20 KB",
+    "gzip": true
+  }
+]

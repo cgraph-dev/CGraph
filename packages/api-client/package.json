@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/api-client",
-  "version": "0.1.0",
+  "version": "0.9.26",
   "description": "Typed HTTP API client for CGraph platform — shared between web and mobile",
   "private": true,
   "main": "./src/index.ts",

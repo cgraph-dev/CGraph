@@ -1,4 +1,4 @@
-import BBCodeRenderer from '@/components/BBCodeRenderer';
+import BBCodeRenderer from '@/components/content/BBCodeRenderer';
 
 interface UserSignatureProps {
   content: string;

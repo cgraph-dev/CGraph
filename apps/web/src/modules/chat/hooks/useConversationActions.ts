@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import { useChatStore, Message } from '@/modules/chat/store';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
-import { toast } from '@/components/Toast';
+import { toast } from '@/components/feedback/Toast';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 const logger = createLogger('ConversationActions');

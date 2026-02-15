@@ -10,7 +10,7 @@ import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { formatTimeAgo } from '@/lib/utils';
-import Dropdown, { DropdownItem } from '@/components/Dropdown';
+import Dropdown, { DropdownItem } from '@/components/navigation/Dropdown';
 import { NotificationActions } from '@/shared/components/NotificationActions';
 import { TYPE_ICONS, TYPE_COLORS, DEFAULT_ICON, DEFAULT_COLOR } from './constants';
 import type { NotificationItemProps } from './types';
@@ -107,9 +107,13 @@ export function NotificationItem({
             ) && (
               <div className="mt-2" onClick={(e) => e.stopPropagation()}>
                 <NotificationActions
-                  type={notification.type as 'friend_request' | 'message' | 'group_invite' | 'mention'}
+                  type={
+                    notification.type as 'friend_request' | 'message' | 'group_invite' | 'mention'
+                  }
                   notificationId={notification.id}
-                  sourceId={(notification.data?.sourceId as string) ?? notification.sender?.id ?? ''}
+                  sourceId={
+                    (notification.data?.sourceId as string) ?? notification.sender?.id ?? ''
+                  }
                   onAction={() => onMarkAsRead()}
                 />
               </div>

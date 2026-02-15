@@ -5,7 +5,7 @@
 import { NavLink, type Location } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { springs, staggerConfigs } from '@/lib/animation-presets/presets';
-import AnimatedLogo from '@/components/AnimatedLogo';
+import AnimatedLogo from '@/components/navigation/AnimatedLogo';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { getAvatarBorderId } from '@/lib/utils';
