@@ -242,8 +242,8 @@
     /* Reduce heavy glow for performance + readability */
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.04),
-      0 0 10px -2px var(--badge-glow-1),
-      0 0 20px -4px var(--badge-glow-2);
+      0 0 10px -2px rgba(16, 185, 129, 0.4),
+      0 0 20px -4px rgba(139, 92, 246, 0.3);
     /* Drop glow-pulse on mobile, line sweep only */
     animation: badge-line-sweep 4s ease-in-out infinite;
   }
