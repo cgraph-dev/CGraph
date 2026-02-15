@@ -2304,28 +2304,14 @@ html.site-ready {
   z-index: 1;
   isolation: isolate;
 
-  /* Shiny text gradient */
-  color: transparent;
-  background-clip: text;
-  -webkit-background-clip: text;
-  background-image: linear-gradient(
-    110deg,
-    rgba(255, 255, 255, 0.7) 0%,
-    rgba(255, 255, 255, 0.7) 35%,
-    var(--badge-color-1) 42%,
-    rgba(255, 255, 255, 1) 50%,
-    var(--badge-color-2) 58%,
-    rgba(255, 255, 255, 0.7) 65%,
-    rgba(255, 255, 255, 0.7) 100%
-  );
-  background-size: 300% 100%;
-  animation: badge-shiny-text 4s ease-in-out infinite;
+  /* Solid visible text with subtle gradient tint */
+  color: rgba(255, 255, 255, 0.92);
 
   border: 1px solid rgba(255, 255, 255, 0.06);
   transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               border-color 0.4s ease;
-  overflow: visible;
+  overflow: hidden;
 }
 
 /* Glassmorphic background layer — sits behind text but inside the pill */
@@ -2345,32 +2331,26 @@ html.site-ready {
   -webkit-backdrop-filter: blur(20px) saturate(140%);
 }
 
-/* Rotating conic-gradient border with glow */
+/* Thin gradient line that sweeps across the badge */
 .section-header__badge::after {
   content: '';
   position: absolute;
-  inset: -1.5px;
-  border-radius: 9999px;
-  padding: 1.5px;
-  background: conic-gradient(
-    from var(--badge-angle, 0deg),
-    var(--badge-border-1) 0%,
-    transparent 12%,
-    var(--badge-border-2) 25%,
-    transparent 37%,
-    var(--badge-border-1) 50%,
-    transparent 62%,
-    var(--badge-border-2) 75%,
-    transparent 87%,
-    var(--badge-border-1) 100%
+  top: 0;
+  left: -100%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--badge-border-1) 30%,
+    var(--badge-border-2) 50%,
+    var(--badge-color-1) 70%,
+    transparent 100%
   );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  animation: badge-border-rotate 3s linear infinite;
+  opacity: 0.5;
   z-index: -1;
-  filter: blur(0.5px);
+  animation: badge-line-sweep 3.5s ease-in-out infinite;
+  border-radius: 9999px;
 }
 
 /* Pulsing outer glow aura */
@@ -2380,8 +2360,7 @@ html.site-ready {
     0 0 15px -2px var(--badge-glow-1),
     0 0 30px -4px var(--badge-glow-2),
     0 0 60px -8px var(--badge-glow-1);
-  animation: badge-shiny-text 4s ease-in-out infinite,
-             badge-glow-pulse 3s ease-in-out infinite;
+  animation: badge-glow-pulse 3s ease-in-out infinite;
 }
 
 .section-header__badge:hover {
@@ -2440,19 +2419,11 @@ html.site-ready {
 }
 
 /* ---- Animations ---- */
-@property --badge-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes badge-border-rotate {
-  to { --badge-angle: 360deg; }
-}
-
-@keyframes badge-shiny-text {
-  0%   { background-position: 100% 50%; }
-  100% { background-position: -100% 50%; }
+@keyframes badge-line-sweep {
+  0%   { left: -100%; opacity: 0; }
+  10%  { opacity: 0.5; }
+  90%  { opacity: 0.5; }
+  100% { left: 200%; opacity: 0; }
 }
 
 @keyframes badge-glow-pulse {
@@ -2476,10 +2447,6 @@ html.site-ready {
 @media (prefers-reduced-motion: reduce) {
   .section-header__badge {
     animation: none;
-    color: rgba(255, 255, 255, 0.85);
-    background-image: none;
-    background-clip: border-box;
-    -webkit-background-clip: border-box;
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.04),
       0 0 15px -2px var(--badge-glow-1),
@@ -2487,7 +2454,7 @@ html.site-ready {
   }
   .section-header__badge::after {
     animation: none;
-    background: linear-gradient(90deg, var(--badge-border-1), var(--badge-border-2));
+    opacity: 0;
   }
 }
 

@@ -244,13 +244,8 @@
       0 0 0 1px rgba(255, 255, 255, 0.04),
       0 0 10px -2px var(--badge-glow-1),
       0 0 20px -4px var(--badge-glow-2);
-    /* Keep shiny-text but drop the glow-pulse on mobile */
-    animation: badge-shiny-text 4s ease-in-out infinite;
-  }
-
-  .section-header__badge::after {
-    /* Simplify rotating border on mobile — less blur */
-    filter: none;
+    /* Drop glow-pulse on mobile, line sweep only */
+    animation: badge-line-sweep 4s ease-in-out infinite;
   }
 }
 
@@ -457,7 +452,7 @@
 @media (max-width: 768px) {
   /* Disable heavy box-shadow pulse animation on mobile badges */
   .section-header__badge {
-    animation: badge-shiny-text 5s ease-in-out infinite;
+    animation: badge-line-sweep 4.5s ease-in-out infinite;
   }
 
   /* Simplify panel border glow */
