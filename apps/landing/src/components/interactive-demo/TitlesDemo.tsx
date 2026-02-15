@@ -25,6 +25,21 @@ const ANIMATION_ICONS: Record<string, string> = {
   rainbow: '🌈',
 };
 
+const CUSTOM_VFX_TITLE_IDS = new Set([
+  'newcomer',
+  'chatterbox',
+  'social-butterfly',
+  'forum-founder',
+  'cyber-punk',
+  'master-discourse',
+  'shadow-walker',
+  'cosmic-traveler',
+  'flame-bearer',
+  'founding-member',
+  'ancient-one',
+  'developer',
+]);
+
 export const TitlesDemo = memo(function TitlesDemo() {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [selectedTitle, setSelectedTitle] = useState(DEMO_TITLES[4]); // Cyber Punk default
@@ -76,7 +91,7 @@ export const TitlesDemo = memo(function TitlesDemo() {
           {filteredTitles.map((title, i) => {
             const rc = RARITY_COLORS[title.rarity];
             const isHighRarity = ['epic', 'legendary', 'mythic', 'unique'].includes(title.rarity);
-            const hasCustomVfx = title.id === 'flame-bearer' || title.id === 'cosmic-traveler';
+            const hasCustomVfx = CUSTOM_VFX_TITLE_IDS.has(title.id);
             return (
               <motion.button
                 type="button"

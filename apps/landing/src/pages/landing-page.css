@@ -5865,6 +5865,77 @@ html.site-ready {
   animation: title-cosmic-drift 5.5s ease-in-out infinite;
 }
 
+.demo-titles__preview-title--id-newcomer {
+  color: #cbd5e1 !important;
+  animation: title-newcomer-breathe 3.2s ease-in-out infinite;
+}
+
+.demo-titles__preview-title--id-chatterbox {
+  background: linear-gradient(90deg, #d1d5db 0%, #9ca3af 50%, #d1d5db 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: title-chatterbox-buzz 1.8s ease-in-out infinite;
+}
+
+.demo-titles__preview-title--id-social-butterfly {
+  background: linear-gradient(95deg, #86efac 0%, #22c55e 45%, #a7f3d0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: title-butterfly-flutter 3.4s ease-in-out infinite;
+}
+
+.demo-titles__preview-title--id-forum-founder {
+  background: linear-gradient(90deg, #93c5fd 0%, #3b82f6 50%, #60a5fa 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: title-forum-wave 2.8s ease-in-out infinite;
+}
+
+.demo-titles__preview-title--id-cyber-punk {
+  text-shadow: 1px 0 0 rgba(0, 255, 255, 0.45), -1px 0 0 rgba(168, 85, 247, 0.4);
+  animation: title-cyber-glitch 2.3s steps(2, end) infinite;
+}
+
+.demo-titles__preview-title--id-master-discourse {
+  background: linear-gradient(90deg, #d8b4fe 0%, #a855f7 45%, #e9d5ff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: title-discourse-arcane 3.8s ease-in-out infinite;
+}
+
+.demo-titles__preview-title--id-shadow-walker {
+  color: #7c3aed !important;
+  animation: title-shadow-phase 3.5s ease-in-out infinite;
+}
+
+.demo-titles__preview-title--id-founding-member {
+  background: linear-gradient(100deg, #fde68a 0%, #f59e0b 45%, #fcd34d 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: title-founder-regal 3.2s ease-in-out infinite;
+}
+
+.demo-titles__preview-title--id-ancient-one {
+  background: linear-gradient(95deg, #fecaca 0%, #ef4444 45%, #fb7185 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: title-ancient-ritual 2.7s ease-in-out infinite;
+}
+
+.demo-titles__preview-title--id-developer {
+  background: linear-gradient(120deg, #fbcfe8 0%, #ec4899 35%, #a78bfa 70%, #67e8f9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: title-dev-prism 4.4s linear infinite;
+}
+
 @keyframes title-shimmer {
   0%, 100% { text-shadow: 0 0 4px currentColor; filter: brightness(1); }
   50% { text-shadow: 0 0 20px currentColor, 0 0 40px currentColor; filter: brightness(1.6); }
@@ -6040,6 +6111,115 @@ html.site-ready {
   z-index: 2;
 }
 
+.demo-title-card--id-newcomer {
+  background: linear-gradient(120deg, rgba(148, 163, 184, 0.08), rgba(148, 163, 184, 0.03));
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.demo-title-card--id-newcomer .demo-title-card__name {
+  animation: title-newcomer-breathe 3.2s ease-in-out infinite;
+}
+
+.demo-title-card--id-chatterbox {
+  background: linear-gradient(120deg, rgba(156, 163, 175, 0.12), rgba(148, 163, 184, 0.03));
+}
+
+.demo-title-card--id-chatterbox .demo-title-card__name {
+  animation: title-chatterbox-buzz 1.8s ease-in-out infinite;
+}
+
+.demo-title-card--id-social-butterfly {
+  background: radial-gradient(120% 120% at 10% 0%, rgba(34, 197, 94, 0.12), rgba(34, 197, 94, 0.03) 50%, rgba(255, 255, 255, 0.02) 100%);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+.demo-title-card--id-social-butterfly .demo-title-card__name {
+  animation: title-butterfly-flutter 3.4s ease-in-out infinite;
+}
+
+.demo-title-card--id-forum-founder {
+  background: linear-gradient(130deg, rgba(59, 130, 246, 0.12), rgba(59, 130, 246, 0.03));
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.demo-title-card--id-forum-founder::after {
+  content: '';
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  bottom: -20%;
+  height: 60%;
+  background: radial-gradient(ellipse at 50% 100%, rgba(59, 130, 246, 0.24), transparent 70%);
+  filter: blur(6px);
+  animation: forum-ripple 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.demo-title-card--id-forum-founder .demo-title-card__name {
+  animation: title-forum-wave 2.8s ease-in-out infinite;
+}
+
+.demo-title-card--id-cyber-punk {
+  background:
+    linear-gradient(180deg, rgba(0, 255, 255, 0.08), rgba(168, 85, 247, 0.07)),
+    repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0 1px, transparent 1px 4px);
+  border-color: rgba(0, 255, 255, 0.22);
+  overflow: hidden;
+}
+
+.demo-title-card--id-cyber-punk::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.18), transparent);
+  transform: translateX(-100%);
+  animation: cyber-scan 2.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.demo-title-card--id-cyber-punk .demo-title-card__name {
+  animation: title-cyber-glitch 2.3s steps(2, end) infinite;
+}
+
+.demo-title-card--id-master-discourse {
+  background: radial-gradient(130% 130% at 0% 0%, rgba(168, 85, 247, 0.18), rgba(168, 85, 247, 0.04) 50%, rgba(255, 255, 255, 0.02));
+  border-color: rgba(168, 85, 247, 0.26);
+  overflow: hidden;
+}
+
+.demo-title-card--id-master-discourse::before {
+  content: '';
+  position: absolute;
+  inset: -20%;
+  background: conic-gradient(from 0deg, transparent, rgba(216, 180, 254, 0.25), transparent 70%);
+  animation: arcane-orbit 6.5s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.demo-title-card--id-master-discourse .demo-title-card__name {
+  animation: title-discourse-arcane 3.8s ease-in-out infinite;
+}
+
+.demo-title-card--id-shadow-walker {
+  background: linear-gradient(130deg, rgba(74, 20, 140, 0.2), rgba(31, 41, 55, 0.22));
+  border-color: rgba(124, 58, 237, 0.24);
+  overflow: hidden;
+}
+
+.demo-title-card--id-shadow-walker::before {
+  content: '';
+  position: absolute;
+  inset: -15%;
+  background: radial-gradient(circle at 30% 50%, rgba(124, 58, 237, 0.25), transparent 60%);
+  animation: shadow-mist-drift 4.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.demo-title-card--id-shadow-walker .demo-title-card__name {
+  animation: title-shadow-phase 3.5s ease-in-out infinite;
+}
+
 .demo-title-card--id-cosmic-traveler {
   background: radial-gradient(140% 140% at 20% 0%, rgba(139, 92, 246, 0.16), rgba(59, 130, 246, 0.05) 45%, rgba(255, 255, 255, 0.03) 100%);
   border-color: rgba(139, 92, 246, 0.22);
@@ -6123,6 +6303,55 @@ html.site-ready {
   animation: title-fire-core 1.45s ease-in-out infinite, title-flame-flicker 0.2s steps(2, end) infinite;
 }
 
+.demo-title-card--id-founding-member {
+  background: linear-gradient(130deg, rgba(245, 158, 11, 0.14), rgba(255, 255, 255, 0.03));
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.demo-title-card--id-founding-member .demo-title-card__name {
+  animation: title-founder-regal 3.2s ease-in-out infinite;
+}
+
+.demo-title-card--id-ancient-one {
+  background: radial-gradient(120% 120% at 10% 0%, rgba(239, 68, 68, 0.2), rgba(127, 29, 29, 0.08) 45%, rgba(255, 255, 255, 0.02));
+  border-color: rgba(239, 68, 68, 0.3);
+  overflow: hidden;
+}
+
+.demo-title-card--id-ancient-one::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 0 28%, rgba(255, 120, 120, 0.25) 32%, transparent 36%, transparent 62%, rgba(255, 80, 80, 0.2) 66%, transparent 70%);
+  opacity: 0.55;
+  animation: ancient-crack-flicker 2.7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.demo-title-card--id-ancient-one .demo-title-card__name {
+  animation: title-ancient-ritual 2.7s ease-in-out infinite;
+}
+
+.demo-title-card--id-developer {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.13), rgba(139, 92, 246, 0.1), rgba(103, 232, 249, 0.08));
+  border-color: rgba(236, 72, 153, 0.24);
+  overflow: hidden;
+}
+
+.demo-title-card--id-developer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 45%, transparent 100%);
+  transform: translateX(-100%);
+  animation: dev-code-scan 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.demo-title-card--id-developer .demo-title-card__name {
+  animation: title-dev-prism 4.4s linear infinite;
+}
+
 @keyframes cosmic-star-twinkle {
   0%, 100% { opacity: 0.45; transform: scale(1); }
   50% { opacity: 0.85; transform: scale(1.02); }
@@ -6143,6 +6372,95 @@ html.site-ready {
   35% { opacity: 0.75; transform: translateY(0); }
   70% { opacity: 0.5; transform: translateY(-8px); }
   100% { opacity: 0; transform: translateY(-16px); }
+}
+
+@keyframes title-newcomer-breathe {
+  0%, 100% { opacity: 0.82; text-shadow: 0 0 4px rgba(203, 213, 225, 0.3); }
+  50% { opacity: 1; text-shadow: 0 0 10px rgba(203, 213, 225, 0.45); }
+}
+
+@keyframes title-chatterbox-buzz {
+  0%, 100% { transform: translateX(0); text-shadow: 0 0 6px rgba(156, 163, 175, 0.45); }
+  20% { transform: translateX(0.4px); }
+  40% { transform: translateX(-0.6px); }
+  60% { transform: translateX(0.3px); }
+}
+
+@keyframes title-butterfly-flutter {
+  0%, 100% { transform: translateY(0) scale(1); filter: brightness(1); }
+  30% { transform: translateY(-1px) scale(1.02); filter: brightness(1.15); }
+  70% { transform: translateY(0.4px) scale(0.995); filter: brightness(1.05); }
+}
+
+@keyframes title-forum-wave {
+  0%, 100% { text-shadow: 0 0 8px rgba(59, 130, 246, 0.35); }
+  50% { text-shadow: 0 0 14px rgba(96, 165, 250, 0.55), 0 0 22px rgba(59, 130, 246, 0.3); }
+}
+
+@keyframes forum-ripple {
+  0%, 100% { transform: scale(0.98); opacity: 0.3; }
+  50% { transform: scale(1.08); opacity: 0.7; }
+}
+
+@keyframes cyber-scan {
+  0%, 100% { transform: translateX(-120%); opacity: 0; }
+  20% { opacity: 0.8; }
+  50% { transform: translateX(120%); opacity: 0.2; }
+}
+
+@keyframes title-cyber-glitch {
+  0%, 100% { text-shadow: 1px 0 0 rgba(0, 255, 255, 0.45), -1px 0 0 rgba(168, 85, 247, 0.35); }
+  25% { text-shadow: 2px 0 0 rgba(0, 255, 255, 0.55), -2px 0 0 rgba(168, 85, 247, 0.45); }
+  50% { text-shadow: -1px 0 0 rgba(0, 255, 255, 0.35), 1px 0 0 rgba(168, 85, 247, 0.3); }
+}
+
+@keyframes arcane-orbit {
+  0% { transform: rotate(0deg); opacity: 0.45; }
+  50% { opacity: 0.75; }
+  100% { transform: rotate(360deg); opacity: 0.45; }
+}
+
+@keyframes title-discourse-arcane {
+  0%, 100% { text-shadow: 0 0 10px rgba(168, 85, 247, 0.4); }
+  50% { text-shadow: 0 0 18px rgba(216, 180, 254, 0.6), 0 0 30px rgba(168, 85, 247, 0.3); }
+}
+
+@keyframes shadow-mist-drift {
+  0%, 100% { transform: translateX(-4%) scale(1); opacity: 0.35; }
+  50% { transform: translateX(4%) scale(1.07); opacity: 0.6; }
+}
+
+@keyframes title-shadow-phase {
+  0%, 100% { opacity: 0.95; text-shadow: 0 0 8px rgba(124, 58, 237, 0.35); }
+  50% { opacity: 0.7; text-shadow: 0 0 16px rgba(124, 58, 237, 0.55); }
+}
+
+@keyframes title-founder-regal {
+  0%, 100% { text-shadow: 0 0 8px rgba(245, 158, 11, 0.35); }
+  50% { text-shadow: 0 0 16px rgba(251, 191, 36, 0.55), 0 0 26px rgba(245, 158, 11, 0.35); }
+}
+
+@keyframes title-ancient-ritual {
+  0%, 100% { text-shadow: 0 0 10px rgba(239, 68, 68, 0.4); filter: brightness(1); }
+  50% { text-shadow: 0 0 18px rgba(248, 113, 113, 0.65), 0 0 30px rgba(239, 68, 68, 0.35); filter: brightness(1.2); }
+}
+
+@keyframes ancient-crack-flicker {
+  0%, 100% { opacity: 0.3; }
+  35% { opacity: 0.55; }
+  70% { opacity: 0.4; }
+}
+
+@keyframes title-dev-prism {
+  0% { filter: hue-rotate(0deg) saturate(1.05) brightness(1); }
+  50% { filter: hue-rotate(120deg) saturate(1.2) brightness(1.15); }
+  100% { filter: hue-rotate(360deg) saturate(1.05) brightness(1); }
+}
+
+@keyframes dev-code-scan {
+  0%, 100% { transform: translateX(-120%); opacity: 0; }
+  25% { opacity: 0.7; }
+  55% { transform: translateX(120%); opacity: 0.2; }
 }
 
 /* Glow variants for high-rarity cards */
