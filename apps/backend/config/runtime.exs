@@ -155,12 +155,12 @@ if config_env() == :prod do
     secret_key: System.get_env("JWT_SECRET") ||
       raise "environment variable JWT_SECRET is missing"
 
-  # JWT token TTL
+  # JWT token TTL (access: 15 minutes, refresh: 7 days)
   config :cgraph, :jwt_access_token_ttl,
-    String.to_integer(System.get_env("JWT_ACCESS_TOKEN_TTL") || "7200")
+    String.to_integer(System.get_env("JWT_ACCESS_TOKEN_TTL") || "900")
 
   config :cgraph, :jwt_refresh_token_ttl,
-    String.to_integer(System.get_env("JWT_REFRESH_TOKEN_TTL") || "2592000")
+    String.to_integer(System.get_env("JWT_REFRESH_TOKEN_TTL") || "604800")
 
   # Configure Swoosh for production
   config :cgraph, CGraph.Mailer,

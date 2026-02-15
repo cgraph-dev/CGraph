@@ -400,15 +400,33 @@ defmodule CGraph.Mailer do
     if Keyword.get(opts, :bypass_rate_limit, false) do
       :ok
     else
-      # ✅ SECURITY FIX: Rate limit emails to prevent abuse
-      # Limit: 10 emails per hour per user
-      case Hammer.check_rate("email:#{user.id}", :timer.hours(1), 10) do
-        {:allow, _count} ->
-          :ok
+      # Rate limit emails: 10 per hour per user (ETS-based)
+      key = {:email_rate, user.id}
+      now = System.system_time(:second)
+      window = 3600  # 1 hour
+      limit = 10
 
-        {:deny, _limit} ->
-          Logger.warning("email_rate_limit_exceeded", user_id: user.id)
-          {:error, :rate_limited}
+      try do
+        case :ets.lookup(:email_rate_limits, key) do
+          [{^key, count, window_start}] when now - window_start < window ->
+            if count < limit do
+              :ets.insert(:email_rate_limits, {key, count + 1, window_start})
+              :ok
+            else
+              Logger.warning("email_rate_limit_exceeded", user_id: user.id)
+              {:error, :rate_limited}
+            end
+
+          _ ->
+            :ets.insert(:email_rate_limits, {key, 1, now})
+            :ok
+        end
+      rescue
+        ArgumentError ->
+          # Table doesn't exist yet, create it and allow
+          :ets.new(:email_rate_limits, [:set, :named_table, :public])
+          :ets.insert(:email_rate_limits, {key, 1, now})
+          :ok
       end
     end
   end

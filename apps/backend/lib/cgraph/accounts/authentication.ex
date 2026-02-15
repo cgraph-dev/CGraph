@@ -22,7 +22,7 @@ defmodule CGraph.Accounts.Authentication do
     cond do
       is_nil(user) ->
         # Prevent timing attacks
-        Bcrypt.no_user_verify()
+        Argon2.no_user_verify()
         {:error, :invalid_credentials}
 
       not User.valid_password?(user, password) ->

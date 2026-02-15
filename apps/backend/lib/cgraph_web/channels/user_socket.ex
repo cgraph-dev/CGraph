@@ -9,7 +9,6 @@ defmodule CGraphWeb.UserSocket do
   alias CGraph.Accounts
 
   # Channels
-  channel "room:*", CGraphWeb.RoomChannel
   channel "conversation:*", CGraphWeb.ConversationChannel
   channel "group:*", CGraphWeb.GroupChannel
   channel "user:*", CGraphWeb.UserChannel

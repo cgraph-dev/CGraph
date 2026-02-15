@@ -183,7 +183,12 @@ defmodule CGraph.Guardian do
   defp token_revoked_by_jti?(jti) do
     TokenBlacklist.revoked_by_jti?(jti)
   rescue
-    _ -> false
+    error ->
+      Logger.error("TokenBlacklist.revoked_by_jti? failed (fail-closed)",
+        jti: jti,
+        error: inspect(error)
+      )
+      true
   end
 
   defp token_revoked_for_user?(claims, user_id) do
@@ -200,6 +205,11 @@ defmodule CGraph.Guardian do
         false
     end
   rescue
-    _ -> false
+    error ->
+      Logger.error("TokenBlacklist.user_tokens_revoked_before? failed (fail-closed)",
+        user_id: user_id,
+        error: inspect(error)
+      )
+      true
   end
 end

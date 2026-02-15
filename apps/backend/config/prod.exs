@@ -41,11 +41,10 @@ config :cgraph, CGraphWeb.Endpoint,
     "https://cgraph.org",
     "https://www.cgraph.org",
     "https://*.cgraph.org",
-    # Vercel deployment domains
+    # Vercel deployment domains (explicit — no wildcards)
     "https://cgraph.vercel.app",
     "https://cgraph-web.vercel.app",
-    "https://c-graph.vercel.app",
-    "https://*.vercel.app"
+    "https://c-graph.vercel.app"
   ]
 
 # Use secure cookie settings in production

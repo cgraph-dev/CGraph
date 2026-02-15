@@ -13,86 +13,42 @@ defmodule CGraph.Accounts do
 
   # ============================================================================
   # Submodule Delegations (Phase 6 Architecture Refactor)
-  # These delegate to extracted submodules for better code organization
+  # Canonical delegations to extracted submodules for better code organization.
+  # Legacy _v2 suffixes removed — these are now the primary API.
   # ============================================================================
 
-  # Users submodule delegations
+  # Users submodule
   alias CGraph.Accounts.Users, as: UsersModule
-  defdelegate get_user_v2(id), to: UsersModule, as: :get_user
-  defdelegate get_user_by_email_v2(email), to: UsersModule, as: :get_user_by_email
-  defdelegate get_user_by_username_v2(username), to: UsersModule, as: :get_user_by_username
-  defdelegate list_users_v2(opts \\ []), to: UsersModule, as: :list_users
 
-  # Authentication submodule delegations
+  # Authentication submodule
   alias CGraph.Accounts.Authentication, as: AuthModule
-  defdelegate authenticate_v2(identifier, password), to: AuthModule, as: :authenticate
-  defdelegate create_session_v2(user, device_info \\ %{}), to: AuthModule, as: :create_session
-  defdelegate get_session_by_token_v2(token), to: AuthModule, as: :get_session_by_token
-  defdelegate revoke_session_v2(session), to: AuthModule, as: :revoke_session
 
-  # Registration submodule delegations
+  # Registration submodule
   alias CGraph.Accounts.Registration, as: RegModule
-  defdelegate register_user_v2(attrs), to: RegModule, as: :register
 
-  # Sessions submodule delegations
+  # Sessions submodule
   alias CGraph.Accounts.Sessions, as: SessionsModule
-  defdelegate list_user_sessions_v2(user), to: SessionsModule, as: :list_sessions
-  defdelegate revoke_all_sessions_v2(user), to: SessionsModule, as: :revoke_all_sessions
 
-  # Friends submodule delegations
+  # Friends submodule
   alias CGraph.Accounts.Friends, as: FriendsModule
-  defdelegate send_friend_request_v2(from_user_id, to_user_id, message \\ nil), to: FriendsModule, as: :send_friend_request
-  defdelegate accept_friend_request_v2(user_id, friend_id), to: FriendsModule, as: :accept_friend_request
-  defdelegate decline_friend_request_v2(user_id, friend_id), to: FriendsModule, as: :decline_friend_request
-  defdelegate remove_friend_v2(user_id, friend_id), to: FriendsModule, as: :remove_friend
-  defdelegate block_user_v2(blocker_id, blocked_id), to: FriendsModule, as: :block_user
-  defdelegate unblock_user_v2(blocker_id, blocked_id), to: FriendsModule, as: :unblock_user
-  defdelegate list_friends_v2(user_id, opts \\ []), to: FriendsModule, as: :list_friends
-  defdelegate list_pending_requests_v2(user_id), to: FriendsModule, as: :list_incoming_requests
-  defdelegate are_friends_v2?(user_id, friend_id), to: FriendsModule, as: :are_friends?
 
-  # Settings submodule delegations
+  # Settings submodule
   alias CGraph.Accounts.Settings, as: SettingsModule
-  defdelegate get_user_settings_v2(user_id), to: SettingsModule, as: :get_user_settings
-  defdelegate update_user_settings_v2(user_id, attrs), to: SettingsModule, as: :update_settings
 
-  # Wallet auth submodule delegations — stubs until wallet features are implemented
-  @doc false
-  def get_or_create_wallet_challenge_v2(_address), do: {:error, :not_implemented}
-  @doc false
-  def verify_wallet_signature_v2(_address, _signature), do: {:error, :not_implemented}
-
-  # Search submodule delegations
+  # Search submodule
   alias CGraph.Accounts.Search, as: SearchModule
-  defdelegate search_users_v2(query, opts \\ []), to: SearchModule, as: :search_users
-  defdelegate get_user_suggestions_v2(query, opts \\ []), to: SearchModule, as: :get_user_suggestions
 
-  # Password reset submodule delegations
+  # Password reset submodule
   alias CGraph.Accounts.PasswordReset, as: PasswordResetModule
-  defdelegate request_password_reset_v2(email), to: PasswordResetModule, as: :request_password_reset
-  defdelegate reset_password_v2(token, password, confirmation), to: PasswordResetModule, as: :reset_password
-  defdelegate verify_password_reset_token_v2(token), to: PasswordResetModule, as: :verify_password_reset_token
 
-  # Email verification submodule delegations
+  # Email verification submodule
   alias CGraph.Accounts.EmailVerification, as: EmailVerificationModule
-  defdelegate send_verification_email_v2(user), to: EmailVerificationModule, as: :send_verification_email
-  defdelegate verify_email_v2(token), to: EmailVerificationModule, as: :verify_email
-  defdelegate resend_verification_email_v2(user), to: EmailVerificationModule, as: :resend_verification_email
 
-  # Member directory submodule delegations
+  # Member directory submodule
   alias CGraph.Accounts.MemberDirectory, as: MemberDirectoryModule
-  defdelegate list_members_v2(opts \\ []), to: MemberDirectoryModule, as: :list_members
-  defdelegate get_member_profile_v2(user_id, viewer), to: MemberDirectoryModule, as: :get_member_profile
-  defdelegate list_user_groups_v2(opts \\ []), to: MemberDirectoryModule, as: :list_user_groups
-  defdelegate get_member_stats_v2(), to: MemberDirectoryModule, as: :get_member_stats
-  defdelegate search_members_v2(opts \\ []), to: MemberDirectoryModule, as: :search_members
 
-  # Profile submodule delegations
+  # Profile submodule
   alias CGraph.Accounts.Profile, as: ProfileModule
-  defdelegate get_profile_v2(user_id, viewer), to: ProfileModule, as: :get_profile
-  defdelegate update_signature_v2(user_id, signature), to: ProfileModule, as: :update_signature
-  defdelegate update_bio_v2(user_id, bio), to: ProfileModule, as: :update_bio
-  defdelegate update_profile_v2(user_id, attrs), to: ProfileModule, as: :update_profile
 
   # ============================================================================
   # Stub Functions (planned features, not yet implemented)

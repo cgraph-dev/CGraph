@@ -56,12 +56,10 @@ defmodule CGraph.MixProject do
 
       # Authentication & Security (latest stable)
       {:argon2_elixir, "~> 4.1"},
-      {:bcrypt_elixir, "~> 3.2"},
       {:guardian, "~> 2.4"},
       {:guardian_phoenix, "~> 2.0"},
       {:corsica, "~> 2.1"},
       {:nimble_totp, "~> 1.0"},
-      {:hammer, "~> 6.2"},
 
       # Web3 / Ethereum wallet auth
       {:ex_keccak, "~> 0.7"},
@@ -97,10 +95,9 @@ defmodule CGraph.MixProject do
       # JSON
       {:jason, "~> 1.4"},
 
-      # HTTP client (latest stable)
+      # HTTP client (latest stable — Tesla with Finch adapter)
       {:tesla, "~> 1.15"},
-      {:hackney, "~> 1.20"},
-      {:httpoison, "~> 2.2"},
+      {:hackney, "~> 1.20"},  # Required by ExAws (S3/R2 uploads)
 
       # Circuit breaker for fault tolerance
       {:fuse, "~> 2.5"},
@@ -139,7 +136,6 @@ defmodule CGraph.MixProject do
 
       # Server (latest stable)
       {:bandit, "~> 1.10"},
-      {:plug_cowboy, "~> 2.7"},
       {:gettext, "~> 0.26"},
 
       # JWT library (latest - OTP 28 compatible)

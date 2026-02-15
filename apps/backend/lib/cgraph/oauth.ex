@@ -728,12 +728,10 @@ defmodule CGraph.OAuth do
   end
 
   defp fetch_jwks_from_apple do
-    case :hackney.get(@apple_jwks_url, [], "", [recv_timeout: 10_000, connect_timeout: 10_000]) do
-      {:ok, 200, _headers, client_ref} ->
-        {:ok, body} = :hackney.body(client_ref)
+    case Finch.build(:get, @apple_jwks_url) |> Finch.request(CGraph.Finch, receive_timeout: 10_000) do
+      {:ok, %Finch.Response{status: 200, body: body}} ->
         {:ok, Jason.decode!(body)}
-      {:ok, status, _headers, client_ref} ->
-        :hackney.skip_body(client_ref)
+      {:ok, %Finch.Response{status: status}} ->
         {:error, {:jwks_fetch_failed, status}}
       {:error, reason} ->
         {:error, {:jwks_fetch_failed, reason}}

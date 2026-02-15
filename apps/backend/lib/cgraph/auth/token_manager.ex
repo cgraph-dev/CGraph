@@ -78,6 +78,7 @@ defmodule CGraph.Auth.TokenManager do
   require Logger
 
   alias CGraph.Accounts.User
+  alias CGraph.Auth.TokenManager.Store
   alias CGraph.Guardian
 
   @access_token_ttl {15, :minutes}
@@ -85,8 +86,8 @@ defmodule CGraph.Auth.TokenManager do
   @max_sessions_per_user 10
   @cleanup_interval :timer.hours(1)
 
-  # Token storage: In production, use Redis for distributed systems
-  # This ETS implementation is for single-node or development
+  # Token storage: Uses Redis as primary distributed store via TokenManager.Store.
+  # ETS serves as local cache and fallback when Redis is unavailable.
 
   # ---------------------------------------------------------------------------
   # GenServer API
@@ -180,7 +181,7 @@ defmodule CGraph.Auth.TokenManager do
          {:ok, refresh_token, _full_claims} <- Guardian.encode_and_sign(user, refresh_claims, ttl: refresh_ttl) do
 
       # Store refresh token metadata
-      store_refresh_token(%{
+      Store.store_refresh_token(%{
         jti: refresh_claims["jti"],
         user_id: user.id,
         family_id: family_id,
@@ -192,7 +193,7 @@ defmodule CGraph.Auth.TokenManager do
       })
 
       # Store family info
-      store_token_family(%{
+      Store.store_family(%{
         family_id: family_id,
         user_id: user.id,
         created_at: DateTime.utc_now(),
@@ -233,14 +234,14 @@ defmodule CGraph.Auth.TokenManager do
 
     with {:ok, claims} <- Guardian.decode_and_verify(refresh_token),
          :ok <- verify_token_type(claims, "refresh"),
-         {:ok, stored_token} <- get_stored_refresh_token(claims["jti"]),
+         {:ok, stored_token} <- Store.get_refresh_token(claims["jti"]),
          :ok <- verify_not_used(stored_token),
          :ok <- verify_family_not_revoked(stored_token.family_id),
          :ok <- verify_device_fingerprint(stored_token, device_info),
          {:ok, user} <- get_user(claims["sub"]) do
 
       # Mark old token as used
-      mark_token_used(claims["jti"])
+      Store.mark_token_used(claims["jti"])
 
       # Generate new token pair in same family
       generate_tokens(user, [
@@ -266,7 +267,7 @@ defmodule CGraph.Auth.TokenManager do
   def revoke(token) do
     case Guardian.decode_and_verify(token) do
       {:ok, %{"jti" => jti, "typ" => "refresh"}} ->
-        revoke_by_jti(jti)
+        Store.revoke_by_jti(jti)
         :ok
 
       {:ok, %{"typ" => "access"}} ->
@@ -285,13 +286,11 @@ defmodule CGraph.Auth.TokenManager do
   @spec revoke_all_user_tokens(String.t()) :: :ok
   def revoke_all_user_tokens(user_id) do
     # Revoke all families for user
-    :ets.match_object(:token_families, {:_, %{user_id: user_id}})
-    |> Enum.each(fn {family_id, _} ->
-      revoke_family(family_id)
-    end)
+    Store.get_user_family_ids(user_id)
+    |> Enum.each(&Store.revoke_family/1)
 
     # Delete all refresh tokens
-    :ets.match_delete(:refresh_tokens, {:_, %{user_id: user_id}})
+    Store.delete_user_tokens(user_id)
 
     :telemetry.execute(
       [:cgraph, :auth, :tokens, :revoked_all],
@@ -309,10 +308,10 @@ defmodule CGraph.Auth.TokenManager do
   """
   @spec revoke_other_sessions(String.t(), String.t()) :: :ok
   def revoke_other_sessions(user_id, current_jti) do
-    :ets.match_object(:refresh_tokens, {:_, %{user_id: user_id}})
-    |> Enum.each(fn {jti, _} ->
+    Store.get_user_token_jtis(user_id)
+    |> Enum.each(fn jti ->
       if jti != current_jti do
-        revoke_by_jti(jti)
+        Store.revoke_by_jti(jti)
       end
     end)
 
@@ -326,7 +325,14 @@ defmodule CGraph.Auth.TokenManager do
   def list_user_sessions(user_id) do
     now = DateTime.utc_now()
 
-    :ets.match_object(:refresh_tokens, {:_, %{user_id: user_id}})
+    Store.get_user_token_jtis(user_id)
+    |> Enum.map(fn jti ->
+      case Store.get_refresh_token(jti) do
+        {:ok, token} -> {jti, token}
+        _ -> nil
+      end
+    end)
+    |> Enum.reject(&is_nil/1)
     |> Enum.filter(fn {_, token} ->
       not token.used and DateTime.compare(token.expires_at, now) == :gt
     end)
@@ -352,10 +358,10 @@ defmodule CGraph.Auth.TokenManager do
   def valid?(token) do
     case Guardian.decode_and_verify(token) do
       {:ok, %{"typ" => "access", "fam" => family_id}} ->
-        not family_revoked?(family_id)
+        not Store.family_revoked?(family_id)
 
       {:ok, %{"typ" => "refresh", "jti" => jti, "fam" => family_id}} ->
-        not family_revoked?(family_id) and not token_revoked?(jti)
+        not Store.family_revoked?(family_id) and not Store.token_revoked?(jti)
 
       _ ->
         false
@@ -394,20 +400,9 @@ defmodule CGraph.Auth.TokenManager do
     DateTime.utc_now() |> DateTime.add(amount * 86_400, :second)
   end
 
-  defp store_refresh_token(token_data) do
-    :ets.insert(:refresh_tokens, {token_data.jti, token_data})
-  end
-
-  defp store_token_family(family_data) do
-    :ets.insert(:token_families, {family_data.family_id, family_data})
-  end
-
-  defp get_stored_refresh_token(jti) do
-    case :ets.lookup(:refresh_tokens, jti) do
-      [{^jti, token_data}] -> {:ok, token_data}
-      [] -> {:error, :token_not_found}
-    end
-  end
+  defp store_refresh_token(token_data), do: Store.store_refresh_token(token_data)
+  defp store_token_family(family_data), do: Store.store_family(family_data)
+  defp get_stored_refresh_token(jti), do: Store.get_refresh_token(jti)
 
   defp verify_token_type(%{"typ" => expected}, expected), do: :ok
   defp verify_token_type(_, _), do: {:error, :invalid_token_type}
@@ -434,43 +429,13 @@ defmodule CGraph.Auth.TokenManager do
     end
   end
 
-  defp mark_token_used(jti) do
-    case :ets.lookup(:refresh_tokens, jti) do
-      [{^jti, token_data}] ->
-        updated = %{token_data | used: true, used_at: DateTime.utc_now()}
-        :ets.insert(:refresh_tokens, {jti, updated})
-      [] ->
-        :ok
-    end
-  end
+  defp mark_token_used(jti), do: Store.mark_token_used(jti)
 
-  defp revoke_by_jti(jti) do
-    :ets.insert(:revoked_tokens, {jti, DateTime.utc_now()})
-  end
+  defp revoke_by_jti(jti), do: Store.revoke_by_jti(jti)
 
-  defp revoke_family(family_id) do
-    case :ets.lookup(:token_families, family_id) do
-      [{^family_id, family_data}] ->
-        updated = %{family_data | revoked: true, revoked_at: DateTime.utc_now()}
-        :ets.insert(:token_families, {family_id, updated})
-      [] ->
-        :ok
-    end
-  end
-
-  defp family_revoked?(family_id) do
-    case :ets.lookup(:token_families, family_id) do
-      [{^family_id, %{revoked: true}}] -> true
-      _ -> false
-    end
-  end
-
-  defp token_revoked?(jti) do
-    case :ets.lookup(:revoked_tokens, jti) do
-      [{^jti, _}] -> true
-      [] -> false
-    end
-  end
+  defp revoke_family(family_id), do: Store.revoke_family(family_id)
+  defp family_revoked?(family_id), do: Store.family_revoked?(family_id)
+  defp token_revoked?(jti), do: Store.token_revoked?(jti)
 
   defp handle_token_reuse(token) do
     case Guardian.decode_and_verify(token) do
@@ -514,21 +479,6 @@ defmodule CGraph.Auth.TokenManager do
   end
 
   defp cleanup_expired_tokens do
-    now = DateTime.utc_now()
-
-    # Clean expired refresh tokens
-    :ets.foldl(
-      fn {jti, token}, acc ->
-        if DateTime.compare(token.expires_at, now) == :lt do
-          :ets.delete(:refresh_tokens, jti)
-          :ets.delete(:revoked_tokens, jti)
-        end
-        acc
-      end,
-      nil,
-      :refresh_tokens
-    )
-
-    Logger.debug("Token cleanup completed")
+    Store.cleanup_expired()
   end
 end

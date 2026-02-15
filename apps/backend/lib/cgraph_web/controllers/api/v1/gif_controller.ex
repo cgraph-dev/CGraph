@@ -135,11 +135,11 @@ defmodule CGraphWeb.API.V1.GifController do
 
       url = "#{@tenor_api_url}/#{endpoint}?#{query_params}"
 
-      case HTTPoison.get(url, [], timeout: 5000, recv_timeout: 5000) do
-        {:ok, %{status_code: 200, body: body}} ->
+      case Finch.build(:get, url) |> Finch.request(CGraph.Finch, receive_timeout: 5_000) do
+        {:ok, %Finch.Response{status: 200, body: body}} ->
           Jason.decode(body)
 
-        {:ok, %{status_code: status}} ->
+        {:ok, %Finch.Response{status: status}} ->
           Logger.warning("Tenor API returned status #{status}")
           {:error, :api_error}
 
