@@ -43,6 +43,13 @@ export default function Footer() {
   };
 
   const renderLink = (link: { label: string; to?: string; href?: string }) => {
+    const content = (
+      <>
+        <span className="relative z-10">{link.label}</span>
+        <span className="gl-nav-unified__link-sweep opacity-0 group-hover:opacity-100" />
+      </>
+    );
+
     if (link.href) {
       return (
         <a
@@ -50,15 +57,15 @@ export default function Footer() {
           href={link.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="gl-footer-unified__link"
+          className="gl-footer-unified__link group"
         >
-          {link.label}
+          {content}
         </a>
       );
     }
     return (
-      <Link key={link.label} to={link.to!} className="gl-footer-unified__link">
-        {link.label}
+      <Link key={link.label} to={link.to!} className="gl-footer-unified__link group">
+        {content}
       </Link>
     );
   };

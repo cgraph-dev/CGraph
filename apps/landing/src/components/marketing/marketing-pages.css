@@ -1509,12 +1509,13 @@
    ========================================================================== */
 .gl-footer-unified {
   padding: 5rem 2rem 3rem;
-  background: transparent;
+  background: radial-gradient(ellipse at bottom, rgba(16, 185, 129, 0.05) 0%, transparent 70%);
   position: relative;
   overflow: hidden;
 }
 
 /* Animated top border */
+/* Electric top border */
 .gl-footer-unified__border {
   position: absolute;
   top: 0;
@@ -1523,13 +1524,12 @@
   height: 1px;
   background: linear-gradient(90deg, 
     transparent 0%, 
-    rgba(16, 185, 129, 0.5) 20%, 
-    rgba(139, 92, 246, 0.5) 50%, 
-    rgba(16, 185, 129, 0.5) 80%, 
+    rgba(16, 185, 129, 0.8) 20%, #ffffff 50%, rgba(139, 92, 246, 0.8) 80%, 
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: footer-border-flow 8s linear infinite;
+  animation: footer-border-flow 4s linear infinite;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
 }
 
 /* Subtle glow accent */
@@ -1606,26 +1606,17 @@
   display: inline-block;
   padding: 0.25rem 0;
   position: relative;
-}
-
-.gl-footer-unified__link::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 1px;
-  background: linear-gradient(90deg, #10b981, #8b5cf6);
-  transition: width 0.3s ease;
+  overflow: hidden;
 }
 
 .gl-footer-unified__link:hover {
-  color: #10b981;
+  color: #ffffff;
   transform: translateX(4px);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
 }
 
-.gl-footer-unified__link:hover::after {
-  width: 100%;
+.gl-footer-unified__link::after {
+  display: none;
 }
 
 /* Bottom Bar */
@@ -1701,16 +1692,19 @@
   width: 40px;
   height: 40px;
   color: #9ca3af;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
 }
 
 .gl-footer-unified__social-link:hover {
   color: #ffffff;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(139, 92, 246, 0.2));
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
   transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2), 0 0 10px rgba(16, 185, 129, 0.1);
 }
 
 .gl-footer-unified__social-link svg {
