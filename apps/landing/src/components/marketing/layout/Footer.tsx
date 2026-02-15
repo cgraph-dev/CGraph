@@ -43,11 +43,6 @@ export default function Footer() {
   };
 
   const renderLink = (link: { label: string; to?: string; href?: string }) => {
-    const content = (
-      <span className="relative z-10">{link.label}</span>
-      // Sweep effect removed for Aurora text gradient
-    );
-
     if (link.href) {
       return (
         <a

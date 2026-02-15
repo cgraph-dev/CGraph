@@ -15,11 +15,20 @@ export default defineConfig({
     minify: 'terser',
     // Suppress chunk size warnings - animation libraries are large
     chunkSizeWarningLimit: 1500,
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+      },
+    },
+    cssCodeSplit: true,
     rollupOptions: {
       output: {
         manualChunks: {
           gsap: ['gsap'],
           'framer-motion': ['framer-motion'],
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
         },
       },
     },

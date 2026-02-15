@@ -1,0 +1,12 @@
+# CGraph Landing - Robots.txt
+# https://cgraph.org
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://cgraph.org/sitemap.xml
+
+# Disallow non-public paths
+Disallow: /api/
+Disallow: /_vercel/

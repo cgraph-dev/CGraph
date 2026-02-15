@@ -366,105 +366,6 @@ function ClickTutorial({ phase }: { phase: string }) {
   );
 }
 
-/** Floating ember + heat-wave + smoke particles for fire-themed bubbles */
-function FireEmbers() {
-  // Rising embers
-  const embers = useRef(
-    Array.from({ length: 10 }, (_, i) => ({
-      id: i,
-      left: 8 + Math.random() * 84,
-      size: 1.5 + Math.random() * 3.5,
-      delay: Math.random() * 4,
-      duration: 1.4 + Math.random() * 1.6,
-      drift: -12 + Math.random() * 24,
-      color: i % 3 === 0 ? 'ember-yellow' : i % 3 === 1 ? 'ember-orange' : 'ember-red',
-    }))
-  ).current;
-
-  // Heat shimmer waves
-  const waves = useRef(
-    Array.from({ length: 3 }, (_, i) => ({
-      id: i,
-      delay: i * 1.2,
-      duration: 2 + Math.random() * 1,
-    }))
-  ).current;
-
-  // Smoke wisps
-  const smoke = useRef(
-    Array.from({ length: 4 }, (_, i) => ({
-      id: i,
-      left: 20 + Math.random() * 60,
-      delay: i * 0.8 + Math.random() * 1.5,
-      duration: 2.5 + Math.random() * 1.5,
-      drift: -15 + Math.random() * 30,
-    }))
-  ).current;
-
-  return (
-    <div className="demo-bubble-particles">
-      {/* Ember particles */}
-      {embers.map((e) => (
-        <motion.span
-          key={`e-${e.id}`}
-          className={`demo-ember demo-ember--${e.color}`}
-          style={{ left: `${e.left}%`, width: e.size, height: e.size }}
-          animate={{
-            y: [0, -22, -45],
-            x: [0, e.drift * 0.4, e.drift],
-            opacity: [0, 1, 0],
-            scale: [0.3, 1.2, 0.1],
-          }}
-          transition={{
-            duration: e.duration,
-            delay: e.delay,
-            repeat: Infinity,
-            ease: 'easeOut',
-          }}
-        />
-      ))}
-      {/* Heat shimmer waves */}
-      {waves.map((w) => (
-        <motion.div
-          key={`w-${w.id}`}
-          className="demo-heat-wave"
-          animate={{
-            y: [10, -8],
-            opacity: [0, 0.35, 0],
-            scaleX: [0.9, 1.1, 0.95],
-          }}
-          transition={{
-            duration: w.duration,
-            delay: w.delay,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
-      {/* Smoke wisps */}
-      {smoke.map((s) => (
-        <motion.div
-          key={`s-${s.id}`}
-          className="demo-smoke"
-          style={{ left: `${s.left}%` }}
-          animate={{
-            y: [0, -30, -55],
-            x: [0, s.drift * 0.3, s.drift],
-            opacity: [0, 0.2, 0],
-            scale: [0.5, 1.5, 2.5],
-          }}
-          transition={{
-            duration: s.duration,
-            delay: s.delay,
-            repeat: Infinity,
-            ease: 'easeOut',
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 /** Twinkling shooting star for galaxy-themed bubbles */
 function GalaxyParticles() {
   const stars = useRef(
@@ -587,8 +488,8 @@ export const ChatDemo = memo(function ChatDemo() {
             .filter((r) => r.count > 0);
         }
         const idx = reactions.findIndex((r) => r.type === targetType);
-        if (idx >= 0) {
-          reactions[idx] = { ...reactions[idx], count: reactions[idx].count + 1 };
+        if (idx >= 0 && reactions[idx]) {
+          reactions[idx] = { type: reactions[idx].type, count: reactions[idx].count + 1 };
         } else {
           reactions.push({ type: targetType, count: 1 });
         }

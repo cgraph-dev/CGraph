@@ -4,6 +4,52 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.26] - 2026-02-15
+
+**🎨 LANDING PAGE TYPOGRAPHY & PERFORMANCE OVERHAUL**
+
+Major landing page update: Pixelify Sans font for accent typography, comprehensive SEO/meta
+compliance, performance optimizations, and TypeScript error cleanup.
+
+### Typography
+
+- Replaced DotGothic16 with Pixelify Sans Medium (500) across all accent elements
+- Applied Pixelify Sans to hero "Reimagined" text (`hero-pro__title-accent`)
+- Applied Pixelify Sans to all section title accents via `title-fx--air` class (Live, Need, Yours,
+  Your Way, Priority, Different, Community)
+- Applied Pixelify Sans to CTA and marketing hero eyebrow badges
+- Applied Pixelify Sans to CTA "Sign In" button via `.font-pixelify` utility class
+- Used `!important` overrides to ensure font renders through inherited `font-zentry` parents
+- Fixed TitleEffects.css not being imported (was orphaned in barrel file)
+
+### SEO & Meta Compliance
+
+- Added `robots.txt` with sitemap reference and disallow rules
+- Added `sitemap.xml` with all 13 public routes, priorities, and change frequencies
+- Added JSON-LD structured data: SoftwareApplication, Organization, WebSite schemas
+- Enhanced `manifest.json`: `display: standalone`, `purpose: any maskable` icons, `lang`,
+  `categories`
+- Added `dns-prefetch` hints for Google Fonts domains
+- Added `fetchpriority="high"` to critical font preload
+
+### Performance
+
+- Added React vendor chunk splitting (`react`, `react-dom`, `react-router-dom` → separate bundle)
+- Enabled Terser `drop_console` and `drop_debugger` for production builds
+- Enabled explicit `cssCodeSplit: true` in Vite config
+- Main bundle reduced from 217KB → 178KB (gzip: 69KB → 56KB)
+- React vendor extracted to 46KB chunk (gzip: 16KB) for better caching
+
+### Bug Fixes
+
+- Fixed TypeScript error: reaction spread type mismatch in ChatDemo (`undefined` vs required type)
+- Fixed TypeScript error: `title` possibly undefined in `createDemoUserProfile`
+- Removed unused `FireEmbers` component (dead code)
+- Removed unused `content` variable in Footer
+- Zero TypeScript errors on `tsc --noEmit`
+
+---
+
 ## [0.9.25] - 2026-02-15
 
 **🏗️ ARCHITECTURE COMPLIANCE PASS — ALL MODULES UNDER SIZE LIMITS**

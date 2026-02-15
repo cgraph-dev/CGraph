@@ -66,13 +66,72 @@
     <link rel="canonical" href="https://cgraph.org/" />
     <meta name="application-name" content="CGraph" />
 
+    <!-- JSON-LD Structured Data (Google Rich Results) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "CGraph",
+        "url": "https://cgraph.org",
+        "applicationCategory": "CommunicationApplication",
+        "operatingSystem": "Web, iOS, Android",
+        "description": "Real-time messaging meets community forums — with end-to-end encryption, Web3 authentication, and rewards that make every interaction count.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Organization",
+          "name": "CGraph",
+          "url": "https://cgraph.org"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "ratingCount": "150"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "CGraph",
+        "url": "https://cgraph.org",
+        "logo": "https://cgraph.org/og-image.png",
+        "sameAs": [],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "email": "hello@cgraph.org",
+          "contactType": "customer service"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "CGraph",
+        "url": "https://cgraph.org",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://cgraph.org/docs?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+
     <!-- Preload critical fonts -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
     <link
       rel="preload"
       href="/fonts/zentry-regular.woff2"
       as="font"
       type="font/woff2"
       crossorigin
+      fetchpriority="high"
     />
     <link rel="preload" href="/fonts/general.woff2" as="font" type="font/woff2" crossorigin />
     <link

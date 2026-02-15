@@ -255,8 +255,8 @@ const createDemoUserProfile = (seed: DemoUserProfileSeed): DemoUserProfile => {
   const title = getDemoTitleById(seed.titleId as DemoTitleId);
   return {
     ...seed,
-    title: title.name,
-    titleAnimation: title.animation as DemoUserProfile['titleAnimation'],
+    title: title?.name ?? '',
+    titleAnimation: (title?.animation ?? 'none') as DemoUserProfile['titleAnimation'],
   };
 };
 
