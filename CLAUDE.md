@@ -42,9 +42,9 @@ forums, and gamification. Features include Signal Protocol encryption (X3DH + Do
 AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a karma-based
 forum system.
 
-**Version**: 0.9.24  
-**Last Updated**: February 14, 2026  
-**Architecture Score**: 9.4/10  
+**Version**: 0.9.26  
+**Last Updated**: February 15, 2026  
+**Architecture Score**: 9.2/10 (audit-verified)  
 **License**: Proprietary (see LICENSE)
 
 ## Key Features
@@ -94,7 +94,8 @@ forum system.
 - `CGraph.CircuitBreaker` — Fuse wrapper, generic services
 - `CGraph.HTTP.Middleware.CircuitBreaker` — Tesla middleware, HTTP services
 - `CGraph.Redis` — Built-in Fuse protection (`:redis_circuit_breaker`)
-- **DEPRECATED**: `CGraph.Services.CircuitBreaker`, `CGraph.Performance.CircuitBreaker`
+- ~~`CGraph.Services.CircuitBreaker`~~ — **REMOVED** in v0.9.26 (zero callers)
+- ~~`CGraph.Performance.CircuitBreaker`~~ — **REMOVED** in v0.9.26 (zero callers)
 
 ## Common Commands
 
@@ -107,6 +108,8 @@ pnpm build                # Build all packages
 pnpm test                 # Run all tests
 pnpm lint                 # Lint all packages
 pnpm typecheck            # Type-check all packages
+pnpm size                 # Check bundle sizes
+pnpm size:check           # CI-gated bundle size check
 pnpm web                  # Run only web app
 pnpm mobile               # Run only mobile app
 ```
@@ -294,7 +297,14 @@ apps/web/
 │   │   ├── settings/              # User settings
 │   │   └── LandingPage.tsx        # Fallback for unauthenticated
 │   ├── stores/                    # Zustand state management
-│   ├── components/                # Legacy components (migrating)
+│   ├── components/                # Shared components (organized)
+│   │   ├── ui/                    # Button, Input, Modal, Select, Tooltip
+│   │   ├── feedback/              # ErrorBoundary, Loading, Toast, ProgressBar
+│   │   ├── media/                 # VoiceMessagePlayer, FileUpload, Waveform
+│   │   ├── content/               # MarkdownRenderer/Editor, BBCode
+│   │   ├── user/                  # Avatar, UserBadge
+│   │   ├── navigation/            # Tabs, Switch, Dropdown, AnimatedLogo
+│   │   └── index.ts               # Barrel re-exports all subdirectories
 │   └── App.tsx                    # Main router
 ├── package.json
 └── vite.config.ts
@@ -473,7 +483,9 @@ Core business logic organized by domain:
 
 ### Backend Web Layer (apps/backend/lib/cgraph_web/)
 
-- `router.ex` - All API routes under `/api/v1`
+- `router.ex` - Main router (122 lines, imports 7 domain route modules)
+- `router/` - Domain route modules (health, auth, public, user, messaging, forum, gamification,
+  admin)
 - `controllers/` - REST endpoints (81 controllers, 100% test coverage)
 - `channels/` - Phoenix channels for real-time features
 - `plugs/` - Authentication, rate limiting, CORS, security headers

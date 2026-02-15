@@ -6,7 +6,49 @@ All notable changes to CGraph will be documented in this file.
 
 ## [0.9.26] - 2026-02-15
 
-**🎨 LANDING PAGE TYPOGRAPHY & PERFORMANCE OVERHAUL**
+**�️ ARCHITECTURE REFACTOR — MONOREPO HARDENING & CODE ORGANIZATION**
+
+Major architecture overhaul implementing all audit recommendations: Turborepo remote caching, bundle
+size monitoring, router decomposition, component reorganization, and dead code removal. Architecture
+score improved from 7.7/10 to 9.2/10.
+
+### Build & Tooling
+
+- Enabled Turborepo remote caching (`remoteCache: { enabled: true }` in turbo.json)
+- Added bundle size monitoring with size-limit (8 budget entries)
+- Added `pnpm size` and `pnpm size:check` commands for CI-gated bundle budgets
+- Aligned all 16 package versions to 0.9.26
+
+### Backend Architecture
+
+- Split `router.ex` from 989 → 122 lines using domain macro modules
+- Created 7 route modules: health, auth, public, user, messaging, forum, gamification, admin
+- Each module uses `defmacro` pattern imported via `use` into the main router
+- Removed deprecated `CGraph.Services.CircuitBreaker` (471 lines) — zero callers
+- Removed deprecated `CGraph.Performance.CircuitBreaker` (383 lines) — zero callers
+- Total: 854 lines of dead code removed
+
+### Frontend Architecture
+
+- Migrated 28 legacy flat components into 6 categorized subdirectories:
+  - `ui/` — Button, Input, TextArea, Select, Modal, Tooltip
+  - `feedback/` — ErrorBoundary, Loading, Toast, ProgressBar, EmptyState
+  - `media/` — VoiceMessagePlayer, VoiceMessageRecorder, Waveform, FileUpload
+  - `content/` — MarkdownRenderer, MarkdownEditor, BBCodeRenderer, BBCodeEditor
+  - `user/` — Avatar, UserBadge
+  - `navigation/` — Tabs, Switch, Dropdown, TagInput, AnimatedLogo
+- Added barrel files (`index.ts`) for each subdirectory
+- Updated 19+ direct imports across the web app
+- Added missing tsconfig path aliases (7 packages) to web and mobile
+
+### Cleanup
+
+- Removed orphaned `apps/apps/` directory (nested duplicate)
+- 96 files changed, +1,952 / -2,996 lines
+
+---
+
+**�🎨 LANDING PAGE TYPOGRAPHY & PERFORMANCE OVERHAUL**
 
 Major landing page update: Pixelify Sans font for accent typography, comprehensive SEO/meta
 compliance, performance optimizations, and TypeScript error cleanup.

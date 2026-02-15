@@ -1,6 +1,6 @@
 # CGraph Product Roadmap
 
-> **Version: 0.9.24** | Last Updated: February 2026 **Status:** Pre-Launch → Public Beta Target: Q2
+> **Version: 0.9.26** | Last Updated: February 2026 **Status:** Pre-Launch → Public Beta Target: Q2
 > 2026
 
 ---
@@ -33,11 +33,23 @@ default** and modern customization.
 
 ---
 
-## Current Release: v0.9.24 (February 2026)
+## Current Release: v0.9.26 (February 2026)
 
 > **Note:** Many features listed under v0.9.9–v1.1 milestones below have already been implemented
 > (e.g., Polls, Events, Reactions, Moderation Tools, Push Notifications). See
 > `docs/PROJECT_STATUS.md` for accurate feature completion tracking (59/69 features, 85%).
+
+### v0.9.26 Highlights (Architecture Refactor)
+
+| Category       | Change                                           | Impact              |
+| -------------- | ------------------------------------------------ | ------------------- |
+| **Build**      | Turborepo remote caching enabled                 | Faster CI builds    |
+| **Build**      | Bundle size monitoring (size-limit, 8 budgets)   | Regression guard    |
+| **Backend**    | Router split: 989 → 122 lines + 7 domain modules | Maintainability     |
+| **Backend**    | Removed 854 lines of deprecated circuit breakers | Dead code cleanup   |
+| **Frontend**   | 28 components organized into 6 subdirectories    | Discoverability     |
+| **TypeScript** | All 12 @cgraph/\* path aliases in web + mobile   | Import consistency  |
+| **Monorepo**   | All 16 packages aligned to v0.9.26               | Version consistency |
 
 ### ✅ Completed Features
 
@@ -275,4 +287,4 @@ We prioritize based on:
 
 ---
 
-<sub>**CGraph Product Roadmap** • Version 0.9.24 • Last updated: February 2026</sub>
+<sub>**CGraph Product Roadmap** • Version 0.9.26 • Last updated: February 2026</sub>

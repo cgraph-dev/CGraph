@@ -31,6 +31,7 @@ const categoryColors: Record<string, { bg: string; text: string }> = {
 };
 
 const articleSlugs = [
+  'architecture-refactor',
   'compliance-pass',
   'platform-parity',
   'architecture-transformation',
@@ -44,6 +45,81 @@ const articleSlugs = [
 ];
 
 const blogArticles: Record<string, BlogArticleData> = {
+  'architecture-refactor': {
+    title: 'Architecture Refactor: Router Split, Component Organization & Build Hardening',
+    category: 'Architecture',
+    author: 'Burca Lucas',
+    date: 'February 15, 2026',
+    readTime: '8 min read',
+    image: '🏗️',
+    tags: ['Architecture', 'Phoenix', 'React', 'Turborepo', 'DX'],
+    content: `
+<p>With v0.9.26 we implemented all recommendations from our architecture audit (scored 7.7/10), bringing the codebase to <strong>9.2/10</strong>. The refactor touched 96 files with +1,952 / -2,996 lines — a net reduction of over 1,000 lines while improving structure, discoverability, and build performance.</p>
+
+<h3>Phoenix Router Split</h3>
+
+<p>The monolithic <code>router.ex</code> had grown to <strong>989 lines</strong> — every API route in a single file. We decomposed it into <strong>7 domain macro modules</strong> using Phoenix's <code>defmacro</code> pattern:</p>
+
+<table>
+<thead><tr><th>Module</th><th>Lines</th><th>Scope</th></tr></thead>
+<tbody>
+<tr><td>health_routes.ex</td><td>38</td><td>Health checks, readiness probes</td></tr>
+<tr><td>auth_routes.ex</td><td>90</td><td>Login, register, OAuth, tokens</td></tr>
+<tr><td>public_routes.ex</td><td>71</td><td>Public API endpoints</td></tr>
+<tr><td>user_routes.ex</td><td>257</td><td>User CRUD, profiles, settings</td></tr>
+<tr><td>messaging_routes.ex</td><td>87</td><td>DMs, conversations, voice</td></tr>
+<tr><td>forum_routes.ex</td><td>117</td><td>Forums, posts, comments, votes</td></tr>
+<tr><td>gamification_routes.ex</td><td>124</td><td>XP, achievements, quests, leaderboards</td></tr>
+<tr><td>admin_routes.ex</td><td>135</td><td>Admin panel, moderation, metrics</td></tr>
+</tbody>
+</table>
+
+<p>The main <code>router.ex</code> dropped from 989 to <strong>122 lines</strong> — containing only pipeline definitions and macro imports. Each domain module expands at compile time, so zero runtime overhead.</p>
+
+<h3>Frontend Component Organization</h3>
+
+<p>The web app's <code>components/</code> directory had <strong>28 files in a flat structure</strong>. We organized them into 6 categorized subdirectories:</p>
+
+<ul>
+<li><strong>ui/</strong> — Button, Input, TextArea, Select, Modal, Tooltip</li>
+<li><strong>feedback/</strong> — ErrorBoundary, Loading, Toast, ProgressBar, EmptyState</li>
+<li><strong>media/</strong> — VoiceMessagePlayer, VoiceMessageRecorder, Waveform, FileUpload</li>
+<li><strong>content/</strong> — MarkdownRenderer, MarkdownEditor, BBCodeRenderer, BBCodeEditor</li>
+<li><strong>user/</strong> — Avatar, UserBadge</li>
+<li><strong>navigation/</strong> — Tabs, Switch, Dropdown, TagInput, AnimatedLogo</li>
+</ul>
+
+<p>Each directory has a barrel <code>index.ts</code> for clean imports. The root barrel re-exports everything for backward compatibility — <strong>zero breaking changes</strong> for the 17 consumers importing through the barrel.</p>
+
+<h3>Build & Tooling Hardening</h3>
+
+<ul>
+<li><strong>Turborepo remote caching</strong> — enabled in <code>turbo.json</code> for faster CI builds across the team</li>
+<li><strong>Bundle size monitoring</strong> — 8 size-limit budgets (Web JS 500KB, CSS 100KB, Landing JS 200KB, core 50KB, utils 30KB, ui 80KB, shared-types 20KB) with <code>pnpm size:check</code> for CI gating</li>
+<li><strong>TypeScript path aliases</strong> — all 12 <code>@cgraph/*</code> aliases now defined in both web and mobile tsconfigs</li>
+<li><strong>Version alignment</strong> — all 16 packages synchronized to v0.9.26</li>
+</ul>
+
+<h3>Dead Code Removal</h3>
+
+<p>Removed <strong>854 lines</strong> of deprecated circuit breaker code (two modules with zero callers) and cleaned up the orphaned <code>apps/apps/</code> directory. The active circuit breakers (<code>CGraph.CircuitBreaker</code>, <code>CGraph.HTTP.Middleware.CircuitBreaker</code>, <code>CGraph.Redis</code>) remain unchanged.</p>
+
+<h3>Impact Summary</h3>
+
+<table>
+<thead><tr><th>Metric</th><th>Before</th><th>After</th></tr></thead>
+<tbody>
+<tr><td>Architecture audit score</td><td>7.7/10</td><td>9.2/10</td></tr>
+<tr><td>router.ex lines</td><td>989</td><td>122 + 7 modules</td></tr>
+<tr><td>Flat component files</td><td>28</td><td>0 (6 directories)</td></tr>
+<tr><td>Deprecated dead code</td><td>854 lines</td><td>0</td></tr>
+<tr><td>tsconfig path aliases</td><td>6 (web), 7 (mobile)</td><td>12 each</td></tr>
+<tr><td>Bundle monitoring</td><td>None</td><td>8 budgets, CI-gated</td></tr>
+<tr><td>Remote caching</td><td>Disabled</td><td>Enabled</td></tr>
+</tbody>
+</table>
+`,
+  },
   'compliance-pass': {
     title: 'Architecture Compliance Pass: All Modules Under Size Limits',
     category: 'Architecture',

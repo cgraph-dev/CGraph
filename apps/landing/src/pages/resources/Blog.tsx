@@ -30,6 +30,20 @@ interface BlogPost {
 
 const blogPosts: BlogPost[] = [
   {
+    id: 11,
+    slug: 'architecture-refactor',
+    title: 'Architecture Refactor: Router Split, Component Organization & Build Hardening',
+    excerpt:
+      'v0.9.26 implements all architecture audit recommendations: Phoenix router split from 989→122 lines with 7 domain modules, 28 components organized into 6 categorized subdirectories, Turborepo remote caching, bundle size monitoring with size-limit, and 854 lines of deprecated code removed.',
+    category: 'Architecture',
+    author: 'Burca Lucas',
+    date: 'February 15, 2026',
+    readTime: '8 min read',
+    featured: true,
+    image: '🏗️',
+    tags: ['Architecture', 'Phoenix', 'React', 'Turborepo', 'DX'],
+  },
+  {
     id: 10,
     slug: 'compliance-pass',
     title: 'Architecture Compliance Pass: All Modules Under Size Limits',
@@ -246,14 +260,14 @@ export default function Blog() {
                   >
                     Latest Release
                   </span>
-                  <span className="font-mono text-sm text-gray-400">v0.9.25</span>
+                  <span className="font-mono text-sm text-gray-400">v0.9.26</span>
                 </div>
                 <h3 className="mb-2 text-xl font-bold text-white md:text-2xl">
-                  Architecture Compliance Pass Complete
+                  Architecture Refactor Complete
                 </h3>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--color-gray)' }}>
-                  All backend modules under 500 lines, all React components under 300 lines. 8
-                  module splits, 56 @spec annotations, soft delete audit. Score: 9.4/10.
+                  Router split into 7 domain modules (989→122 lines), 28 components organized into 6
+                  directories, Turborepo remote caching, bundle size monitoring. Score: 9.2/10.
                 </p>
               </div>
               <div className="flex shrink-0 flex-col items-center gap-2">

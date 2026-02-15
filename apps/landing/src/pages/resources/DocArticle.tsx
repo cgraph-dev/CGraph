@@ -53,7 +53,7 @@ const docArticles: Record<string, DocArticleData> = {
 </table>
 
 <h3>Current Status</h3>
-<p>CGraph is in active development at <strong>v0.9.14</strong> with 55 of 69 planned features complete (80%), 1,342 passing tests, and an architecture quality score of 9.0/10. The platform is approaching its v1.0 public launch.</p>
+<p>CGraph is in active development at <strong>v0.9.26</strong> with 59 of 69 planned features complete (85%), 1,633 passing tests, and an architecture quality score of 9.2/10. The platform is approaching its v1.0 public launch.</p>
 `,
   },
   'creating-your-account': {
