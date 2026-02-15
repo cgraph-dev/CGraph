@@ -89,10 +89,10 @@ remaining gap
 
 ```
 Total Features:     69
-Implemented:        51 (74%)
-Remaining:          18 (26%)
+Implemented:        59 (85%)
+Remaining:          10 (15%)
 
-████████████████████░░░░░░░ 74%
+██████████████████████░░░░ 85%
 ```
 
 ### By Category
@@ -126,9 +126,25 @@ Remaining:          18 (26%)
 | Hosting (API) | Fly.io               | ✅     | Single-region (IAD)         |
 | Hosting (Web) | Vercel               | ✅     | Edge functions              |
 
-### Module Architecture (v0.9.14)
+### Module Architecture (v0.9.24)
 
 ```
+apps/backend/lib/cgraph/           # Backend sub-module architecture
+├── groups.ex                      # Facade (423 lines) → delegates to:
+│   ├── groups/channels.ex         #   Channel CRUD, soft delete (402)
+│   ├── groups/members.ex          #   Member management (219)
+│   ├── groups/roles.ex            #   Role/permission management (168)
+│   ├── groups/invites.ex          #   Invite system (116)
+│   └── groups/emojis.ex           #   Custom emoji (52)
+├── notifications/notifications.ex # Facade (238 lines) → delegates to:
+│   ├── notifications/queries.ex   #   Query/listing functions (208)
+│   ├── notifications/delivery.ex  #   Delivery pipeline (68)
+│   └── notifications/push_tokens.ex #  Token management (91)
+├── audit.ex                       # Facade (484) → audit/query.ex (132)
+├── uploads.ex                     # Facade (428) → uploads/image_optimizer.ex (180)
+├── admin.ex                       # Facade (402) → admin/metrics.ex (168)
+└── subscriptions/tier_limits.ex   # Facade (444) → tier_limits/checks.ex (187)
+
 apps/web/src/
 ├── modules/           # 12 feature modules
 │   ├── auth/          ├── chat/          ├── forums/
@@ -206,22 +222,23 @@ apps/mobile/src/screens/
 
 ## 📅 Release Timeline
 
-| Version | Date       | Highlights                                                                                 |
-| ------- | ---------- | ------------------------------------------------------------------------------------------ |
-| 0.9.24  | 2026-02-15 | **Backend tests green**: 1,633 tests, 0 failures — 13 source bugs fixed, 114 files changed |
-| 0.9.23  | 2026-02-14 | **Credo zero**: 64→0 issues, 56 alias fixes, 8 TODOs implemented                           |
-| 0.9.22  | 2026-02-13 | **Refactoring**: 0 Credo warnings/refactoring, context structs, pattern matching           |
-| 0.9.21  | 2026-02-13 | **Credo cleanup**: 1,277→83 issues, 14 routes wired, alias ordering, atom safety           |
-| 0.9.20  | 2026-02-13 | **Compile cleanup**: 90→0 warnings, Elixir 1.19 bitwise fix, 30+ files cleaned             |
-| 0.9.19  | 2026-02-14 | **163 backend tests**, 70 context tests, 4 controllers wired, observability stack          |
-| 0.9.18  | 2026-02-14 | **100% controller coverage**, MeiliSearch pipeline, chaos testing                          |
-| 0.9.12  | 2026-02-03 | **Reanimated v4 migration** (222→0 TS errors)                                              |
-| 0.9.11  | 2026-02-02 | Architecture transformation, module system                                                 |
-| 0.9.10  | 2026-02-01 | E2EE test suite, store facades, 893 tests                                                  |
-| 0.9.9   | 2026-01-31 | Type safety improvements, production logging                                               |
-| 0.9.8   | 2026-01-30 | Code simplification, component extraction                                                  |
-| 0.9.7   | 2026-01-27 | Enterprise landing page, dual-app arch                                                     |
-| 1.0.0   | TBD        | First stable release (post-audit)                                                          |
+| Version | Date       | Highlights                                                                                                                      |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 0.9.24+ | 2026-02-15 | **Compliance pass**: 8 backend modules split (<500 lines), 5 React splits (<300 lines), 56 @spec annotations, soft delete audit |
+| 0.9.24  | 2026-02-15 | **Backend tests green**: 1,633 tests, 0 failures — 13 source bugs fixed, 114 files changed                                      |
+| 0.9.23  | 2026-02-14 | **Credo zero**: 64→0 issues, 56 alias fixes, 8 TODOs implemented                                                                |
+| 0.9.22  | 2026-02-13 | **Refactoring**: 0 Credo warnings/refactoring, context structs, pattern matching                                                |
+| 0.9.21  | 2026-02-13 | **Credo cleanup**: 1,277→83 issues, 14 routes wired, alias ordering, atom safety                                                |
+| 0.9.20  | 2026-02-13 | **Compile cleanup**: 90→0 warnings, Elixir 1.19 bitwise fix, 30+ files cleaned                                                  |
+| 0.9.19  | 2026-02-14 | **163 backend tests**, 70 context tests, 4 controllers wired, observability stack                                               |
+| 0.9.18  | 2026-02-14 | **100% controller coverage**, MeiliSearch pipeline, chaos testing                                                               |
+| 0.9.12  | 2026-02-03 | **Reanimated v4 migration** (222→0 TS errors)                                                                                   |
+| 0.9.11  | 2026-02-02 | Architecture transformation, module system                                                                                      |
+| 0.9.10  | 2026-02-01 | E2EE test suite, store facades, 893 tests                                                                                       |
+| 0.9.9   | 2026-01-31 | Type safety improvements, production logging                                                                                    |
+| 0.9.8   | 2026-01-30 | Code simplification, component extraction                                                                                       |
+| 0.9.7   | 2026-01-27 | Enterprise landing page, dual-app arch                                                                                          |
+| 1.0.0   | TBD        | First stable release (post-audit)                                                                                               |
 
 ---
 

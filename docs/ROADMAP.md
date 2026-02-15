@@ -1,6 +1,6 @@
 # CGraph Product Roadmap
 
-> **Version: 0.9.8** | Last Updated: January 2026 **Status:** Pre-Launch → Public Beta Target: Q2
+> **Version: 0.9.24** | Last Updated: February 2026 **Status:** Pre-Launch → Public Beta Target: Q2
 > 2026
 
 ---
@@ -33,7 +33,11 @@ default** and modern customization.
 
 ---
 
-## Current Release: v0.9.8 (January 2026)
+## Current Release: v0.9.24 (February 2026)
+
+> **Note:** Many features listed under v0.9.9–v1.1 milestones below have already been implemented
+> (e.g., Polls, Events, Reactions, Moderation Tools, Push Notifications). See
+> `docs/PROJECT_STATUS.md` for accurate feature completion tracking (59/69 features, 85%).
 
 ### ✅ Completed Features
 
@@ -271,4 +275,4 @@ We prioritize based on:
 
 ---
 
-<sub>**CGraph Product Roadmap** • Version 0.9.8 • Last updated: January 2026</sub>
+<sub>**CGraph Product Roadmap** • Version 0.9.24 • Last updated: February 2026</sub>

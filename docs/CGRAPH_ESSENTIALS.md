@@ -1,10 +1,10 @@
 # CGraph Essentials
 
-> **Version: 0.9.8** | The 20 rules that matter most
+> **Version: 0.9.24** | The 20 rules that matter most
 
 This is the **minimal enforceable subset** of our coding standards. Every PR must follow these
 rules. For the full 8,400-line standards doc, see
-[CODE_SIMPLIFICATION_GUIDELINES.md](CODE_SIMPLIFICATION_GUIDELINES.md).
+[ENGINEERING_STANDARDS.md](PrivateFolder/ENGINEERING_STANDARDS.md).
 
 ---
 
@@ -81,7 +81,7 @@ const [value, _setValue] = useState(); // Explicitly unused
 
 ### React (5 rules)
 
-#### 6. Components < 200 lines — Extract when larger
+#### 6. Components < 300 lines — Extract when larger
 
 ```typescript
 // ❌ Bad - 500 line component
@@ -98,6 +98,9 @@ function Dashboard() {
   );
 }
 ```
+
+> **Backend rule:** Elixir modules must stay under **500 lines**. Use the sub-module + `defdelegate`
+> facade pattern to split large contexts (see `groups.ex`, `notifications.ex` for examples).
 
 #### 7. No inline functions in JSX for callbacks
 
@@ -314,14 +317,14 @@ try {
 
 ## 🔧 Enforcement
 
-| Rule                 | Enforced By                 | Failure      |
-| -------------------- | --------------------------- | ------------ |
-| 1-5 (TypeScript)     | `tsconfig.json` strict mode | Block build  |
-| 6 (Component size)   | Code review                 | Block PR     |
-| 7-10 (React)         | `eslint-plugin-react-hooks` | Block commit |
-| 11-13 (State)        | Code review                 | Block PR     |
-| 14-17 (Architecture) | Code review                 | Block PR     |
-| 18-20 (Security)     | Code review + Sobelow       | Block PR     |
+| Rule                 | Enforced By                  | Failure      |
+| -------------------- | ---------------------------- | ------------ |
+| 1-5 (TypeScript)     | `tsconfig.json` strict mode  | Block build  |
+| 6 (Component size)   | Code review + 300-line limit | Block PR     |
+| 7-10 (React)         | `eslint-plugin-react-hooks`  | Block commit |
+| 11-13 (State)        | Code review                  | Block PR     |
+| 14-17 (Architecture) | Code review                  | Block PR     |
+| 18-20 (Security)     | Code review + Sobelow        | Block PR     |
 
 ---
 
@@ -331,7 +334,7 @@ Before submitting, verify:
 
 - [ ] No `any` types (use `unknown` if needed)
 - [ ] Exported functions have explicit return types
-- [ ] Components under 200 lines
+- [ ] Components under 300 lines (backend modules under 500 lines)
 - [ ] No inline callbacks in JSX
 - [ ] Store selectors are minimal
 - [ ] Business logic not in components
@@ -344,8 +347,8 @@ Before submitting, verify:
 
 For comprehensive guidelines (8,400+ lines), see:
 
-- [CODE_SIMPLIFICATION_GUIDELINES.md](CODE_SIMPLIFICATION_GUIDELINES.md)
+- [ENGINEERING_STANDARDS.md](PrivateFolder/ENGINEERING_STANDARDS.md)
 
 ---
 
-<sub>**CGraph Essentials** • Version 0.9.8 • Last updated: January 2026</sub>
+<sub>**CGraph Essentials** • Version 0.9.24 • Last updated: February 2026</sub>

@@ -177,7 +177,7 @@ lib/cgraph/subscriptions/tier_feature.ex # Per-subscription-tier feature gates
 - Custom implementation (no external dependency like LaunchDarkly)
 - Supports percentage-based rollouts
 - Telemetry events: `[:cgraph, :feature_flags, :check]`, `[:cgraph, :feature_flags, :updated]`
-- Documented in `docs/CODE_SIMPLIFICATION_GUIDELINES.md` Section 44
+- Documented in `docs/PrivateFolder/ENGINEERING_STANDARDS.md` Section 44
 
 ### Remaining Gap
 

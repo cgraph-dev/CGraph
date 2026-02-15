@@ -3,8 +3,8 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this
 repository.
 
-> **MANDATORY**: Before writing ANY code, read `docs/CODE_SIMPLIFICATION_GUIDELINES.md`. All code
-> must follow industry best practices. No exceptions.
+> **MANDATORY**: Before writing ANY code, read `docs/PrivateFolder/ENGINEERING_STANDARDS.md`. All
+> code must follow industry best practices. No exceptions.
 
 ## Technology-Specific Guidelines
 
@@ -21,7 +21,7 @@ The guidelines document (v4.0) includes CGraph-specific patterns for:
 | **Phoenix 1.8**     | Backend         | Verified routes, socket handling, LiveView        |
 | **Fly.io**          | Deployment      | Health checks, secrets, multi-region              |
 
-See `docs/CODE_SIMPLIFICATION_GUIDELINES.md` Part 8-9 for implementation details.
+See `docs/PrivateFolder/ENGINEERING_STANDARDS.md` Part 8-9 for implementation details.
 
 ## Industry Standards We Follow
 
@@ -44,7 +44,7 @@ forum system.
 
 **Version**: 0.9.24  
 **Last Updated**: February 14, 2026  
-**Architecture Score**: 9.8/10  
+**Architecture Score**: 9.4/10  
 **License**: Proprietary (see LICENSE)
 
 ## Key Features
@@ -447,7 +447,15 @@ Core business logic organized by domain:
 - `accounts.ex` - User management, authentication, sessions
 - `messaging.ex` - DMs, conversations, message handling
 - `forums.ex` - Posts, comments, voting, karma
-- `groups.ex` - Servers, channels, roles, permissions
+- `groups.ex` - Servers (facade) → delegates to `groups/channels.ex`, `groups/members.ex`,
+  `groups/roles.ex`, `groups/invites.ex`, `groups/emojis.ex`
+- `notifications/notifications.ex` - Notification facade → delegates to `notifications/queries.ex`,
+  `notifications/delivery.ex`, `notifications/push_tokens.ex`
+- `audit.ex` - Audit logging (facade) → delegates queries to `audit/query.ex`
+- `uploads.ex` - File uploads (facade) → delegates to `uploads/image_optimizer.ex`
+- `admin.ex` - Admin operations (facade) → delegates to `admin/metrics.ex`
+- `subscriptions/tier_limits.ex` - Tier enforcement → delegates to
+  `subscriptions/tier_limits/checks.ex`
 - `presence.ex` - Online status, typing indicators
 - `crypto/` - E2EE key management (X3DH, prekeys, identity keys)
 - `moderation.ex` - Content moderation, reports
@@ -536,7 +544,7 @@ supports full-text search.
 ## Code Quality Standards (MANDATORY)
 
 **IMPORTANT**: All agents and developers MUST follow the guidelines in
-`docs/CODE_SIMPLIFICATION_GUIDELINES.md`.
+`docs/PrivateFolder/ENGINEERING_STANDARDS.md`.
 
 ### Google TypeScript Naming (Mandatory)
 
@@ -612,7 +620,7 @@ rate_limits: 60 sec   (counters)
 
 ### Reference
 
-See `docs/CODE_SIMPLIFICATION_GUIDELINES.md` for:
+See `docs/PrivateFolder/ENGINEERING_STANDARDS.md` for:
 
 **Industry Standards:**
 
@@ -734,7 +742,7 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 ## Current Status (v0.9.24)
 
 **Updated:** February 15, 2026  
-**Commit:** (Session 13)
+**Commit:** (Session 19 — `33b6d33e`)
 
 ### Remediation Progress
 
@@ -750,6 +758,8 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Phase 7: Operational Maturity  | SRE-grade ops               | ✅ COMPLETE | 100%       |
 | Phase 8: Code Quality Cleanup  | Fix compile warnings        | ✅ COMPLETE | 100%       |
 | Phase 9: Credo Cleanup         | Fix static analysis issues  | ✅ COMPLETE | 100%       |
+| Phase 10: Test Suite Green     | 0 backend test failures     | ✅ COMPLETE | 100%       |
+| Phase 11: Compliance Pass      | <500 BE / <300 FE lines     | ✅ COMPLETE | 100%       |
 
 ### Key Metrics
 
@@ -772,7 +782,35 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Credo issues         | 1,277       | **0** (100% — fully clean) |
 | Operational score    | N/A         | **9.8/10**                 |
 
-**Overall Score:** 9.8/10 (up from 7.3/10)
+**Overall Score:** 9.4/10 (up from 7.3/10)
+
+### Sessions 14–19 Changes (v0.9.24 — compliance pass)
+
+- **Backend module splits** (all under 500-line limit):
+  - `groups.ex` (1,342→423): Extracted 5 sub-modules (`channels.ex`, `members.ex`, `roles.ex`,
+    `invites.ex`, `emojis.ex`) with defdelegate facade
+  - `notifications.ex` (711→238): Extracted 3 sub-modules (`queries.ex`, `delivery.ex`,
+    `push_tokens.ex`)
+  - `audit.ex` (598→484): Extracted `audit/query.ex` (132 lines, 9 filter functions)
+  - `uploads.ex` (579→428): Extracted `uploads/image_optimizer.ex` (180 lines)
+  - `admin.ex` (535→402): Extracted `admin/metrics.ex` (168 lines)
+  - `tier_limits.ex` (570→444): Extracted `subscriptions/tier_limits/checks.ex` (187 lines, 9
+    `can_*?` predicates)
+  - `friends.ex` (522→497): Trimmed section separators and condensed doc blocks
+  - `events.ex` (502→435): Condensed moduledoc
+- **React component splits** (all under 300-line limit):
+  - `MessageBubble.tsx` (425→293): Extracted `ThreadReplyBadge.tsx`, `MessageMediaContent.tsx`
+  - `Matrix3DEnvironment.tsx` (394→151): Extracted `MatrixRain.tsx`, `ParticleField.tsx`,
+    `FloatingGlyphs.tsx`, `matrix-theme.ts`
+  - `ConversationMessages.tsx` (370→289): Extracted `MessageRow.tsx`
+  - `VoiceMessageRecorder.tsx` (327→136): Extracted `useVoiceRecorder.ts` hook
+  - `Sidebar.tsx` (327→170): Extracted `FloatingSidebar.tsx`
+- **56 @spec annotations** added across 6 backend sub-modules
+- **Soft delete compliance**: Audited 45 `Repo.delete` calls; fixed `delete_channel` to use soft
+  delete; documented intentional hard-deletes
+- **43 files changed**: +3,391 / −3,251 (commit `33b6d33e`)
+- **Standards applied**: Sub-module + defdelegate facade pattern (backend), component + hook
+  extraction (frontend)
 
 ### Session 13 Changes (v0.9.24)
 

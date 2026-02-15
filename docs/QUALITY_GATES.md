@@ -183,7 +183,7 @@ Bypasses are audited monthly.
 
 ## 📚 Related Documents
 
-- [CODE_SIMPLIFICATION_GUIDELINES.md](CODE_SIMPLIFICATION_GUIDELINES.md) - Full coding standards
+- [ENGINEERING_STANDARDS.md](PrivateFolder/ENGINEERING_STANDARDS.md) - Full coding standards
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution workflow
 - [SECURITY.md](../SECURITY.md) - Security policy
 

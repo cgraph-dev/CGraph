@@ -55,12 +55,12 @@ import { ForumPost } from '@/modules/forums';
 
 ## 🔒 Quality & Security
 
-| Document                                                    | Description                            |
-| ----------------------------------------------------------- | -------------------------------------- |
-| [**Quality Gates**](QUALITY_GATES.md)                       | CI requirements and enforcement policy |
-| [**CGraph Essentials**](CGRAPH_ESSENTIALS.md)               | The 20 rules that matter most          |
-| [**Security Review Tracking**](SECURITY_REVIEW_TRACKING.md) | Audit schedule and findings            |
-| [**Code Standards**](CODE_SIMPLIFICATION_GUIDELINES.md)     | Comprehensive coding guidelines        |
+| Document                                                     | Description                            |
+| ------------------------------------------------------------ | -------------------------------------- |
+| [**Quality Gates**](QUALITY_GATES.md)                        | CI requirements and enforcement policy |
+| [**CGraph Essentials**](CGRAPH_ESSENTIALS.md)                | The 20 rules that matter most          |
+| [**Security Review Tracking**](SECURITY_REVIEW_TRACKING.md)  | Audit schedule and findings            |
+| [**Code Standards**](PrivateFolder/ENGINEERING_STANDARDS.md) | Comprehensive coding guidelines        |
 
 ---
 
