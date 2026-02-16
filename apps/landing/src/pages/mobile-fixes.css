@@ -166,7 +166,7 @@
   }
   
   /* Footer - Stack columns */
-  .footer__grid {
+  .gl-footer-unified__grid {
     grid-template-columns: 1fr !important;
     gap: 2rem;
   }
@@ -268,32 +268,6 @@
   .security__icon-grid,
   .about__icon-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-  }
-}
-
-/* ==========================================================================
-   NAVIGATION MOBILE FIXES
-   ========================================================================== */
-@media (max-width: 768px) {
-  /* Fix navigation overlap */
-  nav {
-    padding: 0.75rem 1rem;
-  }
-  
-  /* Reduce navigation size on mobile */
-  .navigation {
-    padding: 0.5rem;
-    gap: 0.5rem;
-  }
-  
-  .navigation a {
-    font-size: 0.875rem;
-    padding: 0.5rem 0.75rem;
-  }
-  
-  /* Ensure navigation doesn't overlap hero */
-  .hero {
-    padding-top: 7rem; /* Account for fixed nav */
   }
 }
 

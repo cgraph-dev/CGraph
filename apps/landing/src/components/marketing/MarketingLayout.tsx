@@ -13,6 +13,7 @@ import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from './layout/Navigation';
 import Footer from './layout/Footer';
+import { GlobalBackground } from './layout/GlobalBackground';
 import './marketing-pages.css';
 
 interface MarketingLayoutProps {
@@ -42,15 +43,7 @@ export default function MarketingLayout({
 }: MarketingLayoutProps) {
   return (
     <div className="marketing-enhanced relative min-h-screen overflow-hidden">
-      {/* Animated Background - CSS-only for better performance */}
-      <div className="marketing-animated-bg">
-        {/* Floating orbs with CSS animations (no React re-renders) */}
-        <div className="marketing-bg-orb marketing-bg-orb--1" />
-        <div className="marketing-bg-orb marketing-bg-orb--2" />
-        <div className="marketing-bg-orb marketing-bg-orb--3" />
-        {/* Subtle grid overlay */}
-        <div className="marketing-bg-grid" />
-      </div>
+      <GlobalBackground />
 
       <Navigation transparent={transparentNav} showLandingLinks={showLandingLinks} />
 

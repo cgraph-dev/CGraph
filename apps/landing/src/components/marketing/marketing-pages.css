@@ -976,7 +976,7 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0.55;
-  animation: nav-border-flow 5s linear infinite;
+  animation: gl-nav-border-flow 5s linear infinite;
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
@@ -985,7 +985,7 @@
   opacity: 1;
 }
 
-@keyframes nav-border-flow {
+@keyframes gl-nav-border-flow {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
@@ -1216,7 +1216,7 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0.45;
-  animation: nav-border-flow 4s linear infinite;
+  animation: gl-nav-border-flow 4s linear infinite;
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
@@ -1468,7 +1468,7 @@
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0.55;
-  animation: nav-border-flow 4s linear infinite;
+  animation: gl-nav-border-flow 4s linear infinite;
   pointer-events: none;
 }
 
@@ -1652,7 +1652,7 @@
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: footer-border-flow 4s linear infinite;
+  animation: gl-footer-border-flow 4s linear infinite;
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
 }
 
@@ -1669,7 +1669,7 @@
   animation: footer-glow-pulse 6s ease-in-out infinite;
 }
 
-@keyframes footer-border-flow {
+@keyframes gl-footer-border-flow {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
