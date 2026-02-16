@@ -2272,7 +2272,7 @@ html.site-ready {
    ======================================== */
 .section-header {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 3.25rem;
 }
 
 /* ==========================================================================
@@ -2285,8 +2285,8 @@ html.site-ready {
 .section-header__badge {
   --badge-color-1: #10b981;
   --badge-color-2: #8b5cf6;
-  --badge-glow-1: rgba(16, 185, 129, 0.5);
-  --badge-glow-2: rgba(139, 92, 246, 0.42);
+  --badge-glow-1: rgba(16, 185, 129, 0.25);
+  --badge-glow-2: rgba(139, 92, 246, 0.21);
   --badge-border-1: rgba(16, 185, 129, 0.78);
   --badge-border-2: rgba(139, 92, 246, 0.68);
   --badge-bg-1: rgba(16, 185, 129, 0.08);
@@ -2309,9 +2309,9 @@ html.site-ready {
 
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.05),
-    0 0 18px -2px var(--badge-glow-1),
-    0 0 34px -4px var(--badge-glow-2),
-    0 0 68px -8px var(--badge-glow-1);
+    0 0 9px -2px var(--badge-glow-1),
+    0 0 17px -4px var(--badge-glow-2),
+    0 0 34px -8px var(--badge-glow-1);
 
   transition:
     transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
@@ -2365,8 +2365,8 @@ html.site-ready {
   border-radius: 9999px;
   background: linear-gradient(120deg, var(--badge-color-1), var(--badge-color-2));
   box-shadow:
-    0 0 10px var(--badge-glow-1),
-    0 0 18px var(--badge-glow-2);
+    0 0 5px var(--badge-glow-1),
+    0 0 9px var(--badge-glow-2);
   animation: badge-dot-pulse 1.8s ease-in-out infinite;
 }
 
@@ -2382,8 +2382,8 @@ html.site-ready {
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.95);
   text-shadow:
-    0 0 8px rgba(255, 255, 255, 0.1),
-    0 0 14px var(--badge-glow-2);
+    0 0 4px rgba(255, 255, 255, 0.1),
+    0 0 7px var(--badge-glow-2);
 }
 
 .section-header__badge-text::after {
@@ -2394,9 +2394,9 @@ html.site-ready {
   transform: translateY(-2px) scale(1.048);
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.09),
-    0 0 26px -1px var(--badge-glow-1),
-    0 0 54px -2px var(--badge-glow-2),
-    0 0 86px -6px var(--badge-glow-1);
+    0 0 13px -1px var(--badge-glow-1),
+    0 0 27px -2px var(--badge-glow-2),
+    0 0 43px -6px var(--badge-glow-1);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
@@ -2405,16 +2405,16 @@ html.site-ready {
   0%, 100% {
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.05),
-      0 0 18px -2px var(--badge-glow-1),
-      0 0 34px -4px var(--badge-glow-2),
-      0 0 68px -8px var(--badge-glow-1);
+      0 0 9px -2px var(--badge-glow-1),
+      0 0 17px -4px var(--badge-glow-2),
+      0 0 34px -8px var(--badge-glow-1);
   }
   50% {
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.08),
-      0 0 24px 0 var(--badge-glow-1),
-      0 0 52px -2px var(--badge-glow-2),
-      0 0 92px -4px var(--badge-glow-1);
+      0 0 12px 0 var(--badge-glow-1),
+      0 0 26px -2px var(--badge-glow-2),
+      0 0 46px -4px var(--badge-glow-1);
   }
 }
 
@@ -2526,7 +2526,7 @@ html.site-ready {
 
 /* Features Section */
 .features {
-  padding: 8rem 2rem;
+  padding: 7rem 2rem;
   background: transparent;
   scroll-margin-top: 15vh;
 }
@@ -2760,7 +2760,7 @@ html.site-ready {
 
 /* Stats Section - Enhanced with animations */
 .stats {
-  padding: 8rem 2rem;
+  padding: 7rem 2rem;
   background: transparent;
   position: relative;
   overflow: hidden;
@@ -2971,7 +2971,7 @@ html.site-ready {
 
 /* About/Security Section */
 .about {
-  padding: 10rem 2rem;
+  padding: 8rem 2rem;
   position: relative;
   overflow: hidden;
   background: transparent;
@@ -3290,7 +3290,7 @@ html.site-ready {
 
 /* CTA Section */
 .cta {
-  padding: 10rem 2rem;
+  padding: 8rem 2rem;
   background: linear-gradient(180deg, transparent 0%, rgba(16, 185, 129, 0.03) 50%, transparent 100%);
   text-align: center;
   position: relative;
@@ -3473,7 +3473,7 @@ html.site-ready {
 
 /* Showcase Sections (Forums & Customization) */
 .showcase-section {
-  padding: 6rem 2rem;
+  padding: 5rem 2rem;
   background: transparent;
   scroll-margin-top: 15vh;
 }

@@ -1,6 +1,6 @@
 .security-vault {
   position: relative;
-  padding: 12rem 2rem;
+  padding: 8rem 2rem;
   background: transparent;
   overflow: hidden;
   display: flex;
@@ -77,7 +77,7 @@
   gap: 2.5rem;
   width: 100%;
   max-width: 1400px;
-  margin: 0 auto 6rem;
+  margin: 0 auto 1rem;
   position: relative;
   z-index: 10;
   justify-content: center;
@@ -410,7 +410,7 @@
 /* Mobile Adjustments */
 @media (max-width: 768px) {
   .security-vault {
-    padding: 6rem 1rem;
+    padding: 5rem 1rem;
   }
   
   .security-vault__grid {

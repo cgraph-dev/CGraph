@@ -88,7 +88,7 @@
   
   /* Section Spacing */
   section {
-    padding: 3.75rem 1rem !important;
+    padding: 3.25rem 1rem !important;
   }
   
   /* Section Headers */
@@ -319,8 +319,8 @@
     /* Reduce heavy glow for performance + readability */
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.04),
-      0 0 10px -2px var(--badge-glow-1),
-      0 0 20px -4px var(--badge-glow-2);
+      0 0 5px -2px var(--badge-glow-1),
+      0 0 10px -4px var(--badge-glow-2);
     animation: none;
   }
 
