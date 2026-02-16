@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 import DOMPurify from 'dompurify';
 import { MarketingLayout } from '@/components/marketing';
 import { NeonIcon } from '@/components/marketing/ui';
+import SEO from '@/components/SEO';
 import { docArticles } from '@/data/docs';
 
 // Get all article slugs in order
@@ -53,6 +54,12 @@ export default function DocArticle() {
       subtitle={`${article.category} · ${article.readTime}`}
       eyebrow="Documentation"
     >
+      <SEO
+        title={`${article.title} — Docs`}
+        description={`${article.category} documentation — ${article.readTime} read.`}
+        path={`/docs/${slug}`}
+        type="article"
+      />
       <section className="marketing-section marketing-section--alt">
         <div className="mx-auto max-w-4xl px-4">
           {/* Breadcrumb */}

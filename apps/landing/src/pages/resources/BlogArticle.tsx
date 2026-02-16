@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 import DOMPurify from 'dompurify';
 import { MarketingLayout } from '@/components/marketing';
 import { NeonIcon } from '@/components/marketing/ui';
+import SEO from '@/components/SEO';
 import { blogArticles, categoryColors, articleSlugs } from '@/data/blog';
 
 export default function BlogArticle() {
@@ -74,6 +75,12 @@ export default function BlogArticle() {
       subtitle={`${article.date} · ${article.readTime}`}
       eyebrow={article.category}
     >
+      <SEO
+        title={article.title}
+        description={`${article.category} — ${article.date}. ${article.readTime} read.`}
+        path={`/blog/${slug}`}
+        type="article"
+      />
       {/* Back to Blog */}
       <section
         className="marketing-section marketing-section--dark"

@@ -27,6 +27,7 @@ import { GlobalBackground } from '../components/marketing/layout/GlobalBackgroun
 import '../components/marketing/sections/Security.css';
 import { CTA } from '../components/marketing/sections/CTA';
 import { SectionHeader } from '../components/marketing/ui/SectionHeader';
+import SEO from '../components/SEO';
 
 /* ── Split CSS architecture (replaces monolithic landing-page.css) ── */
 import '../styles/css-variables.css';
@@ -197,6 +198,8 @@ export default function LandingPage() {
 
   return (
     <div className="demo-landing">
+      <SEO path="/" />
+
       {/* Unified Navigation */}
       <Navigation showLandingLinks />
 

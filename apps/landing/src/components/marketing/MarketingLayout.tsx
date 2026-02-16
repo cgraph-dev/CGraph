@@ -15,6 +15,7 @@ import { useLocation } from 'react-router-dom';
 import Navigation from './layout/Navigation';
 import Footer from './layout/Footer';
 import { GlobalBackground } from './layout/GlobalBackground';
+import SEO from '@/components/SEO';
 import './marketing-pages.css';
 
 interface MarketingLayoutProps {
@@ -54,6 +55,7 @@ export default function MarketingLayout({
 
   return (
     <div className="marketing-enhanced relative min-h-screen overflow-hidden">
+      {title && <SEO title={title} description={subtitle} path={location.pathname} />}
       <GlobalBackground />
 
       <Navigation transparent={transparentNav} showLandingLinks={showLandingLinks} />
