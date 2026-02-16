@@ -15,8 +15,8 @@ const pressReleases = [
     date: 'January 2026',
     title: 'CGraph Launches: Customizable Community Platform',
     summary:
-      'Introducing CGraph — a new communication platform combining powerful customization with gamified community features.',
-    link: '#',
+      'CGraph launches a privacy-first communication platform combining secure messaging, forums, and community engagement.',
+    link: '/press-kit/press-release-2026-01.md',
   },
 ];
 
@@ -33,26 +33,30 @@ const brandAssets = [
   {
     name: 'Logo Pack',
     description: 'Full logo in various formats (SVG, PNG, PDF)',
-    formats: 'SVG, PNG, PDF',
+    formats: 'PNG',
     icon: '🎨',
+    href: '/press-kit/assets/logo.png',
   },
   {
     name: 'Brand Guidelines',
     description: 'Colors, typography, and usage guidelines',
-    formats: 'PDF',
+    formats: 'Markdown',
     icon: '📐',
+    href: '/press-kit/brand-guidelines.md',
   },
   {
     name: 'Product Screenshots',
     description: 'High-resolution app screenshots for press use',
-    formats: 'PNG, JPG',
+    formats: 'PNG',
     icon: '📱',
+    href: '/press-kit/assets/og-image.png',
   },
   {
-    name: 'Team Photos',
-    description: 'Founder and team photos for press articles',
-    formats: 'JPG',
-    icon: '👥',
+    name: 'Fact Sheet',
+    description: 'Structured company profile, product, and contact data',
+    formats: 'JSON',
+    icon: '📊',
+    href: '/press-kit/fact-sheet.json',
   },
 ];
 
@@ -60,7 +64,10 @@ const companyFacts = [
   { label: 'Founded', value: '2026' },
   { label: 'Headquarters', value: 'Georgia' },
   { label: 'Team Size', value: 'Solo Founder' },
-  { label: 'Stage', value: 'In Development' },
+  { label: 'Stage', value: 'Active Development' },
+  { label: 'Core Product', value: 'Privacy-First Community Platform' },
+  { label: 'Primary Contact', value: 'press@cgraph.org' },
+  { label: 'Website', value: 'cgraph.org' },
 ];
 
 export default function Press() {
@@ -83,22 +90,45 @@ export default function Press() {
                 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%)',
             }}
           >
-            <h2 className="mb-4 text-2xl font-bold text-white">Download Press Kit</h2>
+            <h2 className="mb-4 text-2xl font-bold text-white">Professional Press Kit</h2>
             <p className="mb-6 text-gray-400">
-              Get logos, brand guidelines, product screenshots, and everything you need for your
-              story.
+              Download a complete, publication-ready package with approved copy, brand assets, fact
+              sheet, and launch press release.
             </p>
-            <a
-              href="#"
-              className="inline-flex rounded-lg px-8 py-4 font-semibold text-white shadow-lg transition-all"
-              style={{
-                background:
-                  'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)',
-                boxShadow: '0 10px 40px rgba(16, 185, 129, 0.25)',
-              }}
-            >
-              Download Press Kit (ZIP)
-            </a>
+
+            <div className="mx-auto mb-6 grid max-w-3xl gap-3 text-left sm:grid-cols-2">
+              {[
+                'Brand guidelines and approved boilerplate',
+                'Fact sheet with structured company metadata',
+                'High-resolution product and brand visuals',
+                'Launch press release and media contact info',
+              ].map((item) => (
+                <div key={item} className="flex items-start gap-2 text-sm text-gray-300">
+                  <span className="mt-1">
+                    <NeonIcon symbol="✅" size={14} title="Included" />
+                  </span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <a
+                href="/downloads/cgraph-press-kit.zip"
+                download
+                className="inline-flex rounded-lg px-8 py-4 font-semibold text-white shadow-lg transition-all"
+                style={{
+                  background:
+                    'linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)',
+                  boxShadow: '0 10px 40px rgba(16, 185, 129, 0.25)',
+                }}
+              >
+                Download Press Kit (ZIP)
+              </a>
+              <a href="/press-kit/README.md" className="marketing-btn marketing-btn--secondary">
+                Preview Contents
+              </a>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -120,7 +150,8 @@ export default function Press() {
             {brandAssets.map((asset, index) => (
               <motion.a
                 key={asset.name}
-                href="#"
+                href={asset.href}
+                download
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -195,6 +226,7 @@ export default function Press() {
               <motion.a
                 key={release.title}
                 href={release.link}
+                download
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -209,6 +241,12 @@ export default function Press() {
                   {release.title}
                 </h3>
                 <p className="mt-2 text-gray-400">{release.summary}</p>
+                <span
+                  className="mt-3 inline-block text-sm"
+                  style={{ color: 'var(--color-primary)' }}
+                >
+                  Download release →
+                </span>
               </motion.a>
             ))}
           </div>

@@ -1,0 +1,12 @@
+{
+  "company": "CGraph",
+  "founded": "2026",
+  "headquarters": "Georgia",
+  "founder": "Burca Lucas",
+  "product": "Privacy-first community platform for messaging, forums, and gamified engagement",
+  "platforms": ["Web", "iOS", "Android"],
+  "security": ["Post-quantum-ready E2EE", "PQXDH + Triple Ratchet", "AES-256-GCM"],
+  "website": "https://cgraph.org",
+  "app": "https://web.cgraph.org",
+  "press_contact": "press@cgraph.org"
+}

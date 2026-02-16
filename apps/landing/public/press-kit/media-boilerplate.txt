@@ -1,0 +1,1 @@
+CGraph is a privacy-first communication platform for modern communities. It combines secure messaging, forum-style discussion, and engagement mechanics in one product experience. CGraph is built for teams and communities that need strong privacy controls without sacrificing usability or growth.
