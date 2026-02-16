@@ -517,12 +517,32 @@
   }
 
   .hero-pro__mesh {
-    display: none;
+    display: block;
+    inset: -62%;
+    opacity: 0.42;
+    animation-duration: 42s;
   }
 
-  .hero-pro__orb--emerald { width: 300px; height: 300px; }
-  .hero-pro__orb--purple { width: 250px; height: 250px; }
-  .hero-pro__orb--cyan { display: none; }
+  .hero-pro__orb--emerald {
+    width: 360px;
+    height: 360px;
+    opacity: 0.58;
+  }
+
+  .hero-pro__orb--purple {
+    width: 300px;
+    height: 300px;
+    opacity: 0.52;
+  }
+
+  .hero-pro__orb--cyan {
+    display: block;
+    width: 220px;
+    height: 220px;
+    bottom: 8%;
+    left: 42%;
+    opacity: 0.4;
+  }
 
   .hero-pro__particles { display: none; }
   .hero-pro__scanlines { display: none; }
