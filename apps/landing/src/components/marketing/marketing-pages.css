@@ -280,7 +280,9 @@
     transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.35s ease;
-  animation: marketing-eyebrow-pulse 2.8s ease-in-out infinite;
+  animation:
+    marketing-eyebrow-pulse 2.8s ease-in-out infinite,
+    marketing-eyebrow-float-shift 6s ease-in-out infinite;
 }
 
 .marketing-hero__eyebrow-chrome {
@@ -315,6 +317,7 @@
   background: linear-gradient(120deg, var(--eyebrow-color-1), var(--eyebrow-color-2));
   box-shadow: 0 0 8px var(--eyebrow-glow-1), 0 0 16px var(--eyebrow-glow-2);
   flex-shrink: 0;
+  animation: marketing-eyebrow-dot-pulse 1.8s ease-in-out infinite;
 }
 
 .marketing-hero__eyebrow-text {
@@ -361,9 +364,26 @@
   100% { transform: rotate(360deg); }
 }
 
+@keyframes marketing-eyebrow-float-shift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1px); }
+}
+
+@keyframes marketing-eyebrow-dot-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.88;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
 .marketing-hero__title {
   font-size: clamp(2.5rem, 6vw, 4rem);
   font-weight: 700;
+  font-family: 'Tektur', 'Inter', system-ui, sans-serif;
   letter-spacing: -0.03em;
   margin: 0 0 1rem;
   line-height: 1.1;
@@ -1834,6 +1854,27 @@
 
   .marketing-btn {
     width: 100%;
+  }
+
+  .gl-footer-unified__grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .gl-footer-unified__column {
+    padding: 0.8rem 0.95rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .gl-footer-unified__links {
+    gap: 0.55rem;
+  }
+
+  .gl-footer-unified__link {
+    font-size: 0.82rem;
   }
 
   .legal-content {

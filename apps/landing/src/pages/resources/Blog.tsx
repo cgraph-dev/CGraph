@@ -63,13 +63,13 @@ const blogPosts: BlogPost[] = [
     slug: 'platform-parity',
     title: 'Platform Parity: 17/17 Features on Web & Mobile',
     excerpt:
-      'v0.9.13\u201314 — Every feature on web now works on mobile too. 1,342 tests passing. Migrated to Reanimated v4 (had to fix 222 TypeScript errors to get there). 132 facade tests covering store reliability.',
+      'v0.9.13–14 — Every feature on web now works on mobile too. 1,342 tests passing. Migrated to Reanimated v4 (had to fix 222 TypeScript errors to get there). 132 facade tests covering store reliability.',
     category: 'Engineering',
     author: 'Burca Lucas',
     date: 'February 8, 2026',
     readTime: '6 min read',
     featured: true,
-    image: '\ud83c\udfaf',
+    image: '🎯',
     tags: ['React Native', 'Reanimated v4', 'Testing'],
   },
   {
@@ -83,7 +83,7 @@ const blogPosts: BlogPost[] = [
     date: 'February 2, 2026',
     readTime: '12 min read',
     featured: true,
-    image: '\ud83c\udfd7\ufe0f',
+    image: '🏗️',
     tags: ['Architecture', 'Zustand', 'Modules'],
   },
   {
@@ -103,7 +103,7 @@ const blogPosts: BlogPost[] = [
   {
     id: 4,
     slug: 'store-consolidation',
-    title: 'Store Consolidation: 32 Stores \u2192 7 Facades',
+    title: 'Store Consolidation: 32 Stores → 7 Facades',
     excerpt:
       "32 Zustand stores was too many. Consolidated them into 7 facade hooks (Auth, Chat, Gamification, Settings, Community, Marketplace, UI) with composition patterns. 25 dedicated tests to make sure the facades don't lie.",
     category: 'Engineering',
@@ -111,13 +111,13 @@ const blogPosts: BlogPost[] = [
     date: 'February 1, 2026',
     readTime: '8 min read',
     featured: false,
-    image: '\u2699\ufe0f',
+    image: '⚙️',
     tags: ['Zustand', 'State Management', 'Facades'],
   },
   {
     id: 5,
     slug: 'code-simplification',
-    title: 'Code Simplification Sprint: console.log 325 \u2192 2',
+    title: 'Code Simplification Sprint: console.log 325 → 2',
     excerpt:
       'Killed 323 console.log calls (two were printing decrypted messages — yikes). Replaced 27 `as any` casts with proper types. Split Settings.tsx from 1,172 lines to 221. SocketManager from 960 to 5 focused modules.',
     category: 'Engineering',
@@ -125,7 +125,7 @@ const blogPosts: BlogPost[] = [
     date: 'January 30, 2026',
     readTime: '7 min read',
     featured: false,
-    image: '\u2728',
+    image: '✨',
     tags: ['Code Quality', 'TypeScript', 'Refactoring'],
   },
   {
@@ -139,7 +139,7 @@ const blogPosts: BlogPost[] = [
     date: 'January 27, 2026',
     readTime: '9 min read',
     featured: false,
-    image: '\ud83c\udf10',
+    image: '🌐',
     tags: ['Architecture', 'Performance', 'Vite'],
   },
   {
@@ -153,7 +153,7 @@ const blogPosts: BlogPost[] = [
     date: 'January 27, 2026',
     readTime: '8 min read',
     featured: false,
-    image: '\ud83d\udee1\ufe0f',
+    image: '🛡️',
     tags: ['Security', 'E2EE', 'Vulnerability'],
   },
   {
@@ -167,7 +167,7 @@ const blogPosts: BlogPost[] = [
     date: 'January 2026',
     readTime: '14 min read',
     featured: false,
-    image: '\ud83d\udc9c',
+    image: '💜',
     tags: ['Elixir', 'Phoenix', 'Backend'],
   },
   {
@@ -181,7 +181,7 @@ const blogPosts: BlogPost[] = [
     date: 'January 2026',
     readTime: '5 min read',
     featured: false,
-    image: '\ud83d\ude80',
+    image: '🚀',
     tags: ['Product', 'Vision', 'Launch'],
   },
 ];
@@ -222,7 +222,6 @@ export default function Blog() {
       title="Dev Log"
       subtitle="What I shipped, what broke, and how I fixed it. Every post traces back to a real commit."
       eyebrow="Blog"
-      showCTA
     >
       {/* Latest Release Banner */}
       <section
@@ -363,7 +362,7 @@ export default function Blog() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <h2 className="marketing-section__title font-zentry">Featured</h2>
+                <h2 className="marketing-section__title">Featured</h2>
                 <p className="marketing-section__desc">Latest highlights from development</p>
               </motion.div>
             </div>
@@ -490,7 +489,7 @@ export default function Blog() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <h2 className="marketing-section__title font-zentry">All Posts</h2>
+                <h2 className="marketing-section__title">All Posts</h2>
                 <p className="marketing-section__desc">Every milestone from the changelog.</p>
               </motion.div>
             </div>
@@ -603,7 +602,7 @@ export default function Blog() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">By the Numbers</h2>
+              <h2 className="marketing-section__title">By the Numbers</h2>
               <p className="marketing-section__desc">
                 Real metrics from the codebase — updated with each release.
               </p>

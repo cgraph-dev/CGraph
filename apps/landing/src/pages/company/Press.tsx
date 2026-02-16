@@ -112,7 +112,7 @@ export default function Press() {
             viewport={{ once: true }}
             className="marketing-section__header"
           >
-            <h2 className="marketing-section__title font-zentry">Brand Assets</h2>
+            <h2 className="marketing-section__title">Brand Assets</h2>
             <p className="marketing-section__desc">Download individual assets for your coverage</p>
           </motion.div>
 
@@ -151,7 +151,7 @@ export default function Press() {
             viewport={{ once: true }}
             className="marketing-section__header"
           >
-            <h2 className="marketing-section__title font-zentry">Company Facts</h2>
+            <h2 className="marketing-section__title">Company Facts</h2>
             <p className="marketing-section__desc">Key information about CGraph</p>
           </motion.div>
 
@@ -186,7 +186,7 @@ export default function Press() {
             viewport={{ once: true }}
             className="marketing-section__header"
           >
-            <h2 className="marketing-section__title font-zentry">Press Releases</h2>
+            <h2 className="marketing-section__title">Press Releases</h2>
             <p className="marketing-section__desc">Recent announcements and news</p>
           </motion.div>
 
@@ -225,7 +225,7 @@ export default function Press() {
               viewport={{ once: true }}
               className="marketing-section__header"
             >
-              <h2 className="marketing-section__title font-zentry">In the News</h2>
+              <h2 className="marketing-section__title">In the News</h2>
               <p className="marketing-section__desc">Selected media coverage</p>
             </motion.div>
 

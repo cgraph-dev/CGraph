@@ -116,7 +116,7 @@ export default function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Reach Out Directly</h2>
+              <h2 className="marketing-section__title">Reach Out Directly</h2>
               <p className="marketing-section__desc">Choose the best channel for your needs</p>
             </motion.div>
           </div>
@@ -158,7 +158,7 @@ export default function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Send Us a Message</h2>
+              <h2 className="marketing-section__title">Send Us a Message</h2>
               <p className="marketing-section__desc">
                 Fill out the form below and we'll get back to you
               </p>
@@ -284,7 +284,7 @@ export default function Contact() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Frequently Asked Questions</h2>
+              <h2 className="marketing-section__title">Frequently Asked Questions</h2>
             </motion.div>
           </div>
 
@@ -315,7 +315,7 @@ export default function Contact() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="marketing-section__title font-zentry">Join Our Community</h2>
+            <h2 className="marketing-section__title">Join Our Community</h2>
             <p className="marketing-section__desc" style={{ marginBottom: '2rem' }}>
               Connect with other CGraph users
             </p>

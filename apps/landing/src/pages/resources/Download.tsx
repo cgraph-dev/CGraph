@@ -43,7 +43,6 @@ export default function Download() {
       title="Get CGraph"
       subtitle="Access CGraph on the web today, and on mobile soon. Desktop apps are on our roadmap."
       eyebrow="Get Started"
-      showCTA
     >
       {/* Web App — Available Now */}
       <section className="marketing-section marketing-section--alt">
@@ -54,7 +53,7 @@ export default function Download() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Web App</h2>
+              <h2 className="marketing-section__title">Web App</h2>
               <p className="marketing-section__desc">
                 Use CGraph directly in your browser. No download required.
               </p>
@@ -137,7 +136,7 @@ export default function Download() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Mobile App</h2>
+              <h2 className="marketing-section__title">Mobile App</h2>
               <p className="marketing-section__desc">
                 CGraph for iOS and Android is currently in beta, built with React Native and Expo.
               </p>
@@ -212,7 +211,7 @@ export default function Download() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Desktop Apps</h2>
+              <h2 className="marketing-section__title">Desktop Apps</h2>
               <p className="marketing-section__desc">
                 Native desktop apps are on our roadmap for 2027.
               </p>
@@ -262,7 +261,7 @@ export default function Download() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Why Choose CGraph?</h2>
+              <h2 className="marketing-section__title">Why Choose CGraph?</h2>
               <p className="marketing-section__desc">
                 Privacy and security aren't add-ons. They're how it works.
               </p>

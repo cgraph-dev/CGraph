@@ -42,11 +42,15 @@ export default function MarketingLayout({
   transparentNav = false,
   showLandingLinks = false,
 }: MarketingLayoutProps) {
-  const { pathname } = useLocation();
+  const location = useLocation();
 
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-  }, [pathname]);
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
+  }, [location.pathname, location.search, location.hash, location.key]);
 
   return (
     <div className="marketing-enhanced relative min-h-screen overflow-hidden">
@@ -75,11 +79,7 @@ export default function MarketingLayout({
                 className="marketing-hero__eyebrow"
               >
                 <span className="marketing-hero__eyebrow-chrome" aria-hidden="true" />
-                <motion.span
-                  className="marketing-hero__eyebrow-dot"
-                  animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                />
+                <span className="marketing-hero__eyebrow-dot" />
                 <span className="marketing-hero__eyebrow-text">{eyebrow}</span>
               </motion.span>
             )}
@@ -87,7 +87,7 @@ export default function MarketingLayout({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="marketing-hero__title font-zentry"
+              className="marketing-hero__title"
             >
               {title}
             </motion.h1>

@@ -262,7 +262,6 @@ export default function Documentation() {
       title="Documentation"
       subtitle="Architecture, API references, security docs, and developer guides — pulled straight from our internal docs."
       eyebrow="Developer Docs"
-      showCTA
     >
       {/* Quick Nav */}
       <section
@@ -387,7 +386,7 @@ export default function Documentation() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Documentation Index</h2>
+              <h2 className="marketing-section__title">Documentation Index</h2>
               <p className="marketing-section__desc">
                 Guides organized by topic — from getting started to architecture deep-dives.
               </p>
@@ -499,7 +498,7 @@ export default function Documentation() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">API at a Glance</h2>
+              <h2 className="marketing-section__title">API at a Glance</h2>
               <p className="marketing-section__desc">
                 RESTful API with WebSocket real-time events. Full OpenAPI spec coming with v1.0.
               </p>
@@ -598,7 +597,7 @@ export default function Documentation() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Cryptographic Reference</h2>
+              <h2 className="marketing-section__title">Cryptographic Reference</h2>
               <p className="marketing-section__desc">
                 Every algorithm, every security level — no black boxes.
               </p>
@@ -686,7 +685,7 @@ export default function Documentation() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Architecture Decisions</h2>
+              <h2 className="marketing-section__title">Architecture Decisions</h2>
               <p className="marketing-section__desc">
                 Key ADRs documenting why we made critical technical choices.
               </p>
@@ -781,7 +780,7 @@ export default function Documentation() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Tech Stack</h2>
+              <h2 className="marketing-section__title">Tech Stack</h2>
               <p className="marketing-section__desc">The technologies powering CGraph.</p>
             </motion.div>
           </div>

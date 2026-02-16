@@ -66,7 +66,7 @@ export default function Careers() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">What We Believe</h2>
+              <h2 className="marketing-section__title">What We Believe</h2>
               <p className="marketing-section__desc">Our values guide everything we do</p>
             </motion.div>
           </div>
@@ -102,7 +102,7 @@ export default function Careers() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-                <h2 className="marketing-section__title font-zentry">Benefits & Perks</h2>
+                <h2 className="marketing-section__title">Benefits & Perks</h2>
                 <p className="marketing-section__desc">
                   We take care of our team so they can focus on great work
                 </p>
@@ -143,7 +143,7 @@ export default function Careers() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Open Positions</h2>
+              <h2 className="marketing-section__title">Open Positions</h2>
               <p className="marketing-section__desc">Find your next opportunity</p>
             </motion.div>
           </div>

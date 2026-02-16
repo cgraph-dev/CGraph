@@ -32,7 +32,7 @@ const capabilities = [
     icon: '🔐',
     title: 'End-to-End Encryption',
     description:
-      'Triple Ratchet protocol \u2014 PQXDH key exchange (P-256 + ML-KEM-768), hybrid post-quantum ratchet, AES\u2011256\u2011GCM encryption, and forward secrecy.',
+      'Triple Ratchet protocol — PQXDH key exchange (P-256 + ML-KEM-768), hybrid post-quantum ratchet, AES-256-GCM encryption, and forward secrecy.',
   },
   {
     icon: '🏛️',
@@ -120,15 +120,15 @@ const milestones = [
     date: 'Feb 2, 2026',
     title: 'Architecture Transformation',
     description:
-      'Architecture score: 4.2 \u2192 8.0. 12 feature modules, 7 facade hooks, 90+ shared UI components.',
+      'Architecture score: 4.2 → 8.0. 12 feature modules, 7 facade hooks, 90+ shared UI components.',
     completed: true,
   },
   {
-    version: 'v0.9.13\u201314',
+    version: 'v0.9.13–14',
     date: 'Feb 8, 2026',
     title: 'Platform Parity',
     description:
-      '17/17 features on web + mobile. 1,342 passing tests. Reanimated v4 migration (222 \u2192 0 TS errors).',
+      '17/17 features on web + mobile. 1,342 passing tests. Reanimated v4 migration (222 → 0 TS errors).',
     completed: true,
   },
   {
@@ -152,7 +152,7 @@ const values = [
     icon: '⚡',
     title: 'Performance at Scale',
     description:
-      'Elixir/BEAM VM for massive concurrency. 3-tier caching (ETS \u2192 Cachex \u2192 Redis). Sub-200ms latency targets. Built to handle millions of concurrent connections.',
+      'Elixir/BEAM VM for massive concurrency. 3-tier caching (ETS → Cachex → Redis). Sub-200ms latency targets. Built to handle millions of concurrent connections.',
   },
   {
     icon: '🎨',
@@ -170,7 +170,7 @@ const values = [
     icon: '📱',
     title: 'Cross-Platform',
     description:
-      'Native mobile apps with offline support, priority-based message queuing, and automatic sync on reconnect. Web, iOS, and Android \u2014 all in parity.',
+      'Native mobile apps with offline support, priority-based message queuing, and automatic sync on reconnect. Web, iOS, and Android — all in parity.',
   },
   {
     icon: '🏗️',
@@ -184,9 +184,8 @@ export default function About() {
   return (
     <MarketingLayout
       title="About CGraph"
-      subtitle="The all-in-one secure communication platform \u2014 real-time messaging, community forums, E2EE, and gamification."
+      subtitle="The all-in-one secure communication platform — real-time messaging, community forums, E2EE, and gamification."
       eyebrow="Our Story"
-      showCTA
     >
       {/* Mission Section */}
       <section className="marketing-section marketing-section--alt">
@@ -197,14 +196,14 @@ export default function About() {
             viewport={{ once: true }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="marketing-section__title font-zentry">Why I Built This</h2>
+            <h2 className="marketing-section__title">Why I Built This</h2>
             <p className="text-xl leading-relaxed" style={{ color: 'var(--color-gray)' }}>
               I got tired of needing one app for chat, another for forums, and a separate plugin for
               anything engaging.{' '}
               <span className="marketing-hero__highlight">
                 CGraph puts messaging, forums, encryption, and gamification in one place
               </span>
-              . Private by default. Fun to use. That\u2019s the whole idea.
+              . Private by default. Fun to use. That’s the whole idea.
             </p>
           </motion.div>
         </div>
@@ -219,9 +218,9 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Platform at a Glance</h2>
+              <h2 className="marketing-section__title">Platform at a Glance</h2>
               <p className="marketing-section__desc">
-                Real numbers from our codebase \u2014 no vanity metrics.
+                Real numbers from our codebase — no vanity metrics.
               </p>
             </motion.div>
           </div>
@@ -273,7 +272,7 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">What's in Here</h2>
+              <h2 className="marketing-section__title">What's in Here</h2>
               <p className="marketing-section__desc">
                 Six things CGraph does, all shipped and working.
               </p>
@@ -310,7 +309,7 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">What We Care About</h2>
+              <h2 className="marketing-section__title">What We Care About</h2>
               <p className="marketing-section__desc">
                 The principles that shape every decision in the codebase.
               </p>
@@ -347,7 +346,7 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Tech Stack</h2>
+              <h2 className="marketing-section__title">Tech Stack</h2>
               <p className="marketing-section__desc">
                 The technologies behind CGraph and why they were picked.
               </p>
@@ -401,7 +400,7 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Meet the Founder</h2>
+              <h2 className="marketing-section__title">Meet the Founder</h2>
               <p className="marketing-section__desc">Solo project. I do everything.</p>
             </motion.div>
           </div>
@@ -441,14 +440,14 @@ export default function About() {
                   className="text-sm transition-colors hover:text-white"
                   style={{ color: 'var(--color-primary)' }}
                 >
-                  GitHub \u2192
+                  GitHub →
                 </a>
                 <a
                   href="mailto:hello@cgraph.org"
                   className="text-sm transition-colors hover:text-white"
                   style={{ color: 'var(--color-primary)' }}
                 >
-                  Contact \u2192
+                  Contact →
                 </a>
               </div>
             </motion.div>
@@ -465,9 +464,9 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Timeline</h2>
+              <h2 className="marketing-section__title">Timeline</h2>
               <p className="marketing-section__desc">
-                What shipped and when \u2014 straight from the changelog.
+                What shipped and when — straight from the changelog.
               </p>
             </motion.div>
           </div>
@@ -585,9 +584,9 @@ export default function About() {
             viewport={{ once: true }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="marketing-section__title font-zentry">Security</h2>
+            <h2 className="marketing-section__title">Security</h2>
             <p className="mb-8 text-lg" style={{ color: 'var(--color-gray)' }}>
-              Security isn\u2019t a feature we ship. It\u2019s the foundation.
+              Security isn’t a feature we ship. It’s the foundation.
             </p>
           </motion.div>
 
@@ -596,17 +595,17 @@ export default function About() {
               {
                 title: 'Post-Quantum E2EE',
                 detail:
-                  'PQXDH + Triple Ratchet with AES-256-GCM and ML-KEM-768. Past messages stay safe even if a key gets compromised \u2014 including against quantum computers.',
+                  'PQXDH + Triple Ratchet with AES-256-GCM and ML-KEM-768. Past messages stay safe even if a key gets compromised — including against quantum computers.',
               },
               {
                 title: 'Automated Security in CI',
                 detail:
-                  'Gitleaks for secrets, Sobelow for Elixir, Grype for containers, pnpm audit for deps. All blocking \u2014 nothing merges if these fail.',
+                  'Gitleaks for secrets, Sobelow for Elixir, Grype for containers, pnpm audit for deps. All blocking — nothing merges if these fail.',
               },
               {
                 title: 'GDPR',
                 detail:
-                  'Full data export as JSON. Account deletion. Data minimization. Configurable retention. We don\u2019t keep what we don\u2019t need.',
+                  'Full data export as JSON. Account deletion. Data minimization. Configurable retention. We don’t keep what we don’t need.',
               },
               {
                 title: 'Infrastructure',
@@ -641,7 +640,7 @@ export default function About() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="marketing-section__title font-zentry">What's Next</h2>
+            <h2 className="marketing-section__title">What's Next</h2>
             <p className="marketing-section__desc mx-auto max-w-2xl" style={{ lineHeight: 1.8 }}>
               Public beta is targeting Q2 2026. After that: message threads, SSO/SAML for teams,
               desktop apps, and more. The roadmap goes through 2027.

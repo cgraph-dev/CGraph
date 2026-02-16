@@ -248,7 +248,7 @@ export default function Status() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">SLO Targets</h2>
+              <h2 className="marketing-section__title">SLO Targets</h2>
               <p className="marketing-section__desc">
                 Service Level Objectives we're engineering toward for production launch.
               </p>
@@ -308,7 +308,7 @@ export default function Status() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Monitored Services</h2>
+              <h2 className="marketing-section__title">Monitored Services</h2>
               <p className="marketing-section__desc">
                 These services will be tracked on the live status page at launch.
               </p>
@@ -377,7 +377,7 @@ export default function Status() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Health Endpoints</h2>
+              <h2 className="marketing-section__title">Health Endpoints</h2>
               <p className="marketing-section__desc">
                 Built-in health check endpoints for monitoring and orchestration.
               </p>
@@ -431,7 +431,7 @@ export default function Status() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Infrastructure Architecture</h2>
+              <h2 className="marketing-section__title">Infrastructure Architecture</h2>
               <p className="marketing-section__desc">
                 Multi-layer infrastructure designed for reliability, security, and performance.
               </p>
@@ -483,7 +483,7 @@ export default function Status() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Security & CI Pipeline</h2>
+              <h2 className="marketing-section__title">Security & CI Pipeline</h2>
               <p className="marketing-section__desc">
                 Automated security scanning runs on every commit and pull request.
               </p>
@@ -549,7 +549,7 @@ export default function Status() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Monitoring at Launch</h2>
+              <h2 className="marketing-section__title">Monitoring at Launch</h2>
               <p className="marketing-section__desc">
                 What the live status page will include when CGraph goes into production.
               </p>
