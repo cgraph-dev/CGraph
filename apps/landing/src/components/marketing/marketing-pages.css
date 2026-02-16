@@ -256,142 +256,147 @@
   50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
 }
 
-/* Animated Eyebrow - with flowing gradient glow border */
+/* Cinematic Eyebrow - unified with landing eyebrow behavior */
 .marketing-hero__eyebrow {
+  --eyebrow-color-1: #10b981;
+  --eyebrow-color-2: #8b5cf6;
+  --eyebrow-glow-1: rgba(16, 185, 129, 0.52);
+  --eyebrow-glow-2: rgba(139, 92, 246, 0.42);
+
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1.5rem;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(139, 92, 246, 0.15) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.4);
+  padding: 0.52rem 1.45rem;
+  margin-bottom: 2rem;
   border-radius: 9999px;
-  color: var(--color-primary);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  cursor: default;
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 46%),
+    radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 42%),
+    linear-gradient(140deg, rgba(2, 6, 23, 0.75) 0%, rgba(3, 7, 18, 0.62) 100%);
+
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 0 18px -2px var(--eyebrow-glow-1),
+    0 0 34px -4px var(--eyebrow-glow-2),
+    0 0 72px -8px var(--eyebrow-glow-1);
+
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease;
+  animation: marketing-eyebrow-pulse 2.8s ease-in-out infinite;
+}
+
+.marketing-hero__eyebrow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -48%;
+  width: 38%;
+  height: 100%;
+  border-radius: 9999px;
+  z-index: 2;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.07) 20%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.07) 80%,
+    transparent 100%
+  );
+  animation: marketing-eyebrow-line-sweep 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.marketing-hero__eyebrow-chrome {
+  position: absolute;
+  inset: -1px;
+  border-radius: 9999px;
+  padding: 1px;
+  z-index: 1;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(16, 185, 129, 0.78) 58deg,
+    rgba(139, 92, 246, 0.7) 146deg,
+    transparent 230deg,
+    rgba(16, 185, 129, 0.78) 300deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: marketing-eyebrow-chrome-spin 4.1s linear infinite;
+}
+
+.marketing-hero__eyebrow-dot {
+  position: relative;
+  z-index: 3;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(120deg, var(--eyebrow-color-1), var(--eyebrow-color-2));
+  box-shadow: 0 0 8px var(--eyebrow-glow-1), 0 0 16px var(--eyebrow-glow-2);
+  flex-shrink: 0;
+}
+
+.marketing-hero__eyebrow-text {
+  position: relative;
+  z-index: 3;
   font-family: 'Pixelify Sans', 'Space Grotesk', 'Inter', system-ui, sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  margin-bottom: 2rem;
-  box-shadow: 0 0 12px rgba(16, 185, 129, 0.15), 0 0 24px rgba(139, 92, 246, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  cursor: default;
-  animation: marketing-eyebrow-pulse 4s ease-in-out infinite;
-  /* Performance */
-  will-change: box-shadow, transform;
-  contain: layout style;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.12), 0 0 14px var(--eyebrow-glow-2);
 }
 
-/* Subtle continuous glow pulse */
+.marketing-hero__eyebrow:hover {
+  transform: translateY(-2px) scale(1.04);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.09),
+    0 0 26px -1px var(--eyebrow-glow-1),
+    0 0 54px -2px var(--eyebrow-glow-2),
+    0 0 88px -6px var(--eyebrow-glow-1);
+}
+
 @keyframes marketing-eyebrow-pulse {
   0%, 100% {
-    box-shadow: 0 0 12px rgba(16, 185, 129, 0.15), 0 0 24px rgba(139, 92, 246, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 0 18px -2px var(--eyebrow-glow-1),
+      0 0 34px -4px var(--eyebrow-glow-2),
+      0 0 72px -8px var(--eyebrow-glow-1);
   }
   50% {
-    box-shadow: 0 0 18px rgba(16, 185, 129, 0.22), 0 0 32px rgba(139, 92, 246, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 0 24px 0 var(--eyebrow-glow-1),
+      0 0 52px -2px var(--eyebrow-glow-2),
+      0 0 94px -4px var(--eyebrow-glow-1);
   }
 }
 
-/* Enhanced glow on hover */
-.marketing-hero__eyebrow:hover {
-  box-shadow: 0 0 30px rgba(16, 185, 129, 0.4), 0 0 60px rgba(139, 92, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  transform: scale(1.02);
-  animation: none;
+@keyframes marketing-eyebrow-line-sweep {
+  0% { left: -48%; opacity: 0; }
+  16% { opacity: 0.9; }
+  82% { opacity: 0.9; }
+  100% { left: 124%; opacity: 0; }
 }
 
-/* Flowing gradient border overlay — matches landing nav pattern */
-.marketing-hero__eyebrow::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 9999px;
-  padding: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(16, 185, 129, 0.45) 25%,
-    rgba(139, 92, 246, 0.45) 50%,
-    rgba(16, 185, 129, 0.45) 75%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  animation: eyebrow-gradient-flow 4s linear infinite;
-  opacity: 0.8;
-}
-
-@keyframes eyebrow-gradient-flow {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-
-/* Pulsing dot inside eyebrow badge */
-.marketing-hero__eyebrow-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-primary, #10b981);
-  box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
-  flex-shrink: 0;
-}
-
-/* Shimmer sweep effect - only on hover (performance optimized) */
-.marketing-hero__eyebrow::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    transparent 100%
-  );
-  transition: left 0.5s ease;
-}
-
-.marketing-hero__eyebrow:hover::before {
-  animation: marketing-eyebrow-shimmer 1s ease-in-out;
-}
-
-@keyframes marketing-eyebrow-shimmer {
-  0% { left: -100%; }
-  50%, 100% { left: 100%; }
-}
-
-/* Animated border gradient - only on hover */
-.marketing-hero__eyebrow::after {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: 9999px;
-  padding: 1px;
-  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-primary));
-  background-size: 200% 100%;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0.5;
-  z-index: -1;
-  transition: opacity 0.3s ease;
-}
-
-.marketing-hero__eyebrow:hover::after {
-  opacity: 1;
-  animation: marketing-eyebrow-border 2s linear infinite;
-}
-
-@keyframes marketing-eyebrow-border {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 200% 50%; }
+@keyframes marketing-eyebrow-chrome-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .marketing-hero__title {
@@ -1913,6 +1918,9 @@
   .marketing-bg-orb,
   .marketing-animated-bg::before,
   .marketing-hero__eyebrow,
+  .marketing-hero__eyebrow::before,
+  .marketing-hero__eyebrow-chrome,
+  .marketing-hero__eyebrow-dot,
   .status-indicator,
   .status-overall-card::after,
   .status-icon-wrapper,

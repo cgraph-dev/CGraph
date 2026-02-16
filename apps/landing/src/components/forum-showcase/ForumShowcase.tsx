@@ -58,7 +58,9 @@ export function ForumShowcase() {
           viewport={{ once: true }}
         >
           <span className="section-header__badge section-header__badge--purple">
-            Revolutionary Forums
+            <span className="section-header__badge-chrome" aria-hidden="true" />
+            <span className="section-header__badge-dot" aria-hidden="true" />
+            <span className="section-header__badge-text">Revolutionary Forums</span>
           </span>
           <h2 className="mb-4 font-zentry text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
             Build Your Community,{' '}

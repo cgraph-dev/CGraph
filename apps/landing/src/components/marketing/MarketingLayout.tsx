@@ -74,12 +74,13 @@ export default function MarketingLayout({
                 }}
                 className="marketing-hero__eyebrow"
               >
+                <span className="marketing-hero__eyebrow-chrome" aria-hidden="true" />
                 <motion.span
                   className="marketing-hero__eyebrow-dot"
                   animate={{ scale: [1, 1.4, 1], opacity: [1, 0.6, 1] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 />
-                {eyebrow}
+                <span className="marketing-hero__eyebrow-text">{eyebrow}</span>
               </motion.span>
             )}
             <motion.h1

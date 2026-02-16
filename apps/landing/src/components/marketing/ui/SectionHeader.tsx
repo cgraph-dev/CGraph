@@ -28,7 +28,9 @@ export const SectionHeader = memo(function SectionHeader({
         transition={{ type: 'spring', stiffness: 200, damping: 15 }}
       >
         <span className={`section-header__badge section-header__badge--${badgeVariant}`}>
-          {badge}
+          <span className="section-header__badge-chrome" aria-hidden="true" />
+          <span className="section-header__badge-dot" aria-hidden="true" />
+          <span className="section-header__badge-text">{badge}</span>
         </span>
       </motion.div>
       <motion.h2

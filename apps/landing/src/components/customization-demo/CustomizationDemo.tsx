@@ -90,7 +90,9 @@ export function CustomizationDemo() {
           transition={springs.gentle}
         >
           <span className="section-header__badge section-header__badge--emerald">
-            100+ Customization Options
+            <span className="section-header__badge-chrome" aria-hidden="true" />
+            <span className="section-header__badge-dot" aria-hidden="true" />
+            <span className="section-header__badge-text">100+ Customization Options</span>
           </span>
           <h2 className="mb-4 font-zentry text-4xl font-bold text-white sm:text-5xl">
             Make It{' '}

@@ -96,7 +96,7 @@ html.site-ready {
   --glow-purple: 0 0 20px rgba(139, 92, 246, 0.5);
   
   font-family: 'Inter', system-ui, sans-serif;
-  background: var(--color-dark);
+  background: transparent;
   color: var(--color-light);
   overflow-x: hidden;
   min-height: 100vh;
@@ -2283,99 +2283,156 @@ html.site-ready {
    ========================================================================== */
 
 .section-header__badge {
-  /* Default palette (emerald + purple) — overridden per variant */
   --badge-color-1: #10b981;
   --badge-color-2: #8b5cf6;
-  --badge-glow-1: rgba(16, 185, 129, 0.45);
-  --badge-glow-2: rgba(139, 92, 246, 0.4);
-  --badge-border-1: rgba(16, 185, 129, 0.7);
-  --badge-border-2: rgba(139, 92, 246, 0.6);
-  --badge-bg-1: rgba(16, 185, 129, 0.06);
-  --badge-bg-2: rgba(139, 92, 246, 0.06);
+  --badge-glow-1: rgba(16, 185, 129, 0.5);
+  --badge-glow-2: rgba(139, 92, 246, 0.42);
+  --badge-border-1: rgba(16, 185, 129, 0.78);
+  --badge-border-2: rgba(139, 92, 246, 0.68);
+  --badge-bg-1: rgba(16, 185, 129, 0.08);
+  --badge-bg-2: rgba(139, 92, 246, 0.08);
 
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1.25rem;
+  gap: 0.48rem;
+  padding: 0.52rem 1.3rem;
   margin-bottom: 1.5rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  font-family: 'Pixelify Sans', 'Space Grotesk', 'Inter', system-ui, sans-serif;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   border-radius: 9999px;
   cursor: default;
   position: relative;
-  z-index: 1;
+  overflow: hidden;
   isolation: isolate;
 
-  /* Solid visible text with subtle gradient tint */
-  color: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
 
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              border-color 0.4s ease;
-  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 0 18px -2px var(--badge-glow-1),
+    0 0 34px -4px var(--badge-glow-2),
+    0 0 68px -8px var(--badge-glow-1);
+
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.35s ease;
+  animation: badge-glow-pulse 2.7s ease-in-out infinite, badge-float-shift 6s ease-in-out infinite;
 }
 
-/* Glassmorphic background layer — sits behind text but inside the pill */
 .section-header__badge::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: 9999px;
-  z-index: -2;
-  background: linear-gradient(
-    135deg,
-    var(--badge-bg-1) 0%,
-    rgba(3, 7, 18, 0.7) 40%,
-    var(--badge-bg-2) 100%
-  );
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  z-index: 0;
+  background:
+    radial-gradient(circle at 20% 50%, var(--badge-bg-1) 0%, transparent 45%),
+    radial-gradient(circle at 80% 50%, var(--badge-bg-2) 0%, transparent 42%),
+    linear-gradient(140deg, rgba(2, 6, 23, 0.74) 0%, rgba(3, 7, 18, 0.62) 100%);
 }
 
-/* Transparent white reflection that sweeps across the badge */
 .section-header__badge::after {
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
-  width: 40%;
+  left: -48%;
+  width: 38%;
   height: 100%;
+  border-radius: 9999px;
+  z-index: 2;
+  pointer-events: none;
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.048) 25%,
-    rgba(255, 255, 255, 0.12) 50%,
-    rgba(255, 255, 255, 0.048) 75%,
+    rgba(255, 255, 255, 0.06) 20%,
+    rgba(255, 255, 255, 0.32) 50%,
+    rgba(255, 255, 255, 0.06) 80%,
     transparent 100%
   );
-  z-index: -1;
-  animation: badge-line-sweep 3.5s ease-in-out infinite;
-  border-radius: 9999px;
+  animation: badge-line-sweep 3.2s ease-in-out infinite;
 }
 
-/* Pulsing outer glow aura — always uses brand emerald→purple */
-.section-header__badge {
+.section-header__badge-chrome {
+  position: absolute;
+  inset: -1px;
+  border-radius: 9999px;
+  padding: 1px;
+  z-index: 1;
+  pointer-events: none;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    var(--badge-border-1) 58deg,
+    var(--badge-border-2) 146deg,
+    transparent 230deg,
+    var(--badge-border-1) 300deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: badge-chrome-spin 4.1s linear infinite;
+  opacity: 0.95;
+}
+
+.section-header__badge-dot {
+  position: relative;
+  z-index: 3;
+  width: 0.4rem;
+  height: 0.4rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: linear-gradient(120deg, var(--badge-color-1), var(--badge-color-2));
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.04),
-    0 0 15px -2px rgba(16, 185, 129, 0.45),
-    0 0 30px -4px rgba(139, 92, 246, 0.4),
-    0 0 60px -8px rgba(16, 185, 129, 0.3);
-  animation: badge-glow-pulse 3s ease-in-out infinite;
+    0 0 10px var(--badge-glow-1),
+    0 0 18px var(--badge-glow-2);
+  animation: badge-dot-pulse 1.8s ease-in-out infinite;
+}
+
+.section-header__badge-text {
+  position: relative;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: 'Pixelify Sans', 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow:
+    0 0 8px rgba(255, 255, 255, 0.1),
+    0 0 14px var(--badge-glow-2);
+}
+
+.section-header__badge-text::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 45%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  opacity: 0;
+  transform: translateX(-140%);
+  animation: badge-text-sheen 3.8s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .section-header__badge:hover {
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-2px) scale(1.048);
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.1),
-    0 0 20px 0 rgba(16, 185, 129, 0.5),
-    0 0 40px -2px rgba(139, 92, 246, 0.45),
-    0 0 80px -4px rgba(16, 185, 129, 0.35);
-  border-color: rgba(255, 255, 255, 0.15);
+    0 0 0 1px rgba(255, 255, 255, 0.09),
+    0 0 26px -1px var(--badge-glow-1),
+    0 0 54px -2px var(--badge-glow-2),
+    0 0 86px -6px var(--badge-glow-1);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* ---- Per-variant color theming ---- */
@@ -2425,26 +2482,65 @@ html.site-ready {
 
 /* ---- Animations ---- */
 @keyframes badge-line-sweep {
-  0%   { left: -100%; opacity: 0; }
-  10%  { opacity: 1; }
-  90%  { opacity: 1; }
-  100% { left: 200%; opacity: 0; }
+  0%   { left: -48%; opacity: 0; }
+  16%  { opacity: 0.9; }
+  82%  { opacity: 0.9; }
+  100% { left: 124%; opacity: 0; }
 }
 
 @keyframes badge-glow-pulse {
   0%, 100% {
     box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.04),
-      0 0 15px -2px rgba(16, 185, 129, 0.45),
-      0 0 30px -4px rgba(139, 92, 246, 0.4),
-      0 0 60px -8px rgba(16, 185, 129, 0.3);
+      0 0 0 1px rgba(255, 255, 255, 0.05),
+      0 0 18px -2px var(--badge-glow-1),
+      0 0 34px -4px var(--badge-glow-2),
+      0 0 68px -8px var(--badge-glow-1);
   }
   50% {
     box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.06),
-      0 0 20px 0 rgba(16, 185, 129, 0.5),
-      0 0 45px -2px rgba(139, 92, 246, 0.45),
-      0 0 80px -4px rgba(16, 185, 129, 0.35);
+      0 0 0 1px rgba(255, 255, 255, 0.08),
+      0 0 24px 0 var(--badge-glow-1),
+      0 0 52px -2px var(--badge-glow-2),
+      0 0 92px -4px var(--badge-glow-1);
+  }
+}
+
+@keyframes badge-float-shift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1px); }
+}
+
+@keyframes badge-chrome-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes badge-dot-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.88;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes badge-text-sheen {
+  0%, 60% {
+    opacity: 0;
+    transform: translateX(-140%);
+  }
+  70% {
+    opacity: 1;
+  }
+  86% {
+    opacity: 1;
+    transform: translateX(140%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(140%);
   }
 }
 
@@ -2457,7 +2553,10 @@ html.site-ready {
       0 0 15px -2px var(--badge-glow-1),
       0 0 30px -4px var(--badge-glow-2);
   }
-  .section-header__badge::after {
+  .section-header__badge::after,
+  .section-header__badge-chrome,
+  .section-header__badge-dot,
+  .section-header__badge-text::after {
     animation: none;
     opacity: 0;
   }
