@@ -155,7 +155,7 @@ export const blogPosts: BlogPost[] = [
     slug: 'introducing-cgraph',
     title: 'Introducing CGraph: The Vision',
     excerpt:
-      'The idea behind CGraph — one platform that handles messaging, forums, encryption, and gamification. 5 subscription tiers from free to enterprise. Built for communities that want privacy without giving up engagement.',
+      'The idea behind CGraph — one platform that handles messaging, forums, encryption, and gamification. 3 subscription tiers from free to enterprise. Built for communities that want privacy without giving up engagement.',
     category: 'Product',
     author: 'Burca Lucas',
     date: 'January 2026',

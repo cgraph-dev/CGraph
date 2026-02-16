@@ -83,7 +83,8 @@ const techStack = [
     category: 'Infrastructure',
     items: [
       { name: 'Fly.io (Frankfurt)', role: 'Backend hosting' },
-      { name: 'Vercel', role: 'Web & landing deployment' },
+      { name: 'Vercel', role: 'Landing site deployment' },
+      { name: 'Fly.io (IAD)', role: 'Web app deployment' },
       { name: 'Cloudflare', role: 'CDN, WAF, DDoS protection' },
       { name: 'Supabase', role: 'Managed PostgreSQL, Europe region' },
     ],

@@ -137,10 +137,10 @@ export const docCategories: DocCategory[] = [
 ];
 
 export const apiOverview = [
-  { label: 'Base URL', value: 'api.cgraph.org/api/v1' },
+  { label: 'Base URL', value: 'cgraph-backend.fly.dev/api/v1' },
   { label: 'Auth', value: 'JWT Bearer (15min access + refresh rotation)' },
   { label: 'Pagination', value: 'Cursor-based (never offset)' },
-  { label: 'WebSocket', value: 'wss://api.cgraph.org/socket' },
+  { label: 'WebSocket', value: 'wss://cgraph-backend.fly.dev/socket' },
   { label: 'Rate Limit', value: '300 req/min general, 60 msg/min, 5 auth/15min' },
   { label: 'Upload Limit', value: '25MB free, 100MB premium' },
 ];
@@ -152,7 +152,7 @@ export const securityTable = [
     level: '256-bit (post-quantum)',
   },
   { component: 'Encryption', algorithm: 'AES-256-GCM + Triple Ratchet', level: '256-bit' },
-  { component: 'Signatures', algorithm: 'Ed25519', level: '128-bit' },
+  { component: 'Signatures', algorithm: 'ECDSA P-256', level: '128-bit' },
   { component: 'Passwords', algorithm: 'Argon2id', level: 'Memory-hard' },
   { component: 'Transport', algorithm: 'TLS 1.3', level: 'Enforced' },
   { component: 'Key Derivation', algorithm: 'HKDF-SHA256', level: 'Per-conversation' },

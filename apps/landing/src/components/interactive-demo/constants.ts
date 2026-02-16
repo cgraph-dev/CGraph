@@ -116,7 +116,7 @@ export const ACHIEVEMENTS = [
     id: 'code-contributor',
     name: 'Code Contributor',
     icon: '💻',
-    desc: 'Contribute to open source',
+    desc: 'Contribute to the project',
     rarity: 'legendary' as const,
     xp: 2500,
     category: 'special',

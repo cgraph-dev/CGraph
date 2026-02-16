@@ -50,7 +50,7 @@ const sections = [
       <ul>
         <li>Email and password</li>
         <li>Web3 wallet (Ethereum/Polygon)</li>
-        <li>OAuth providers (Google, Apple, Facebook, TikTok)</li>
+        <li>OAuth providers (Google, Apple)</li>
       </ul>
       <p>You agree to provide accurate, current, and complete information during registration. You may not create accounts with false information, impersonate another person, or create accounts on behalf of others without authorization.</p>
       
@@ -226,7 +226,7 @@ const sections = [
       </ul>
       
       <h4>10.3 In-App Purchases</h4>
-      <p>Purchases made through the Apple App Store or Google Play Store are subject to the respective store's terms and refund policies. CGraph cannot issue refunds for purchases made through these platforms — contact Apple or Google directly.</p>
+      <p>Purchases made through the Apple App Store or Google Play Store are subject to the respective store's terms and refund policies. CGraph cannot issue refunds for purchases made through these platforms — contact Apple or Google directly. <em>Note: Mobile apps are currently in development and not yet available on app stores.</em></p>
       
       <h4>10.4 Free Tier</h4>
       <p>The free tier includes full messaging, end-to-end encryption, forums, and basic gamification. We will not retroactively remove core features from the free tier.</p>
@@ -365,7 +365,7 @@ const sections = [
     title: '20. App Store Terms',
     content: `
       <h4>20.1 Apple App Store</h4>
-      <p>If you download or use the CGraph mobile application from the Apple App Store, the following terms apply:</p>
+      <p><em>The following terms will apply when the CGraph mobile app becomes available on the Apple App Store (currently in development):</em></p>
       <ul>
         <li>These Terms are between you and CGraph, not Apple. Apple has no obligation to provide maintenance or support for the app</li>
         <li>Apple is not responsible for addressing any claims relating to the app, including product liability, consumer protection, or intellectual property claims</li>
@@ -375,7 +375,7 @@ const sections = [
       </ul>
       
       <h4>20.2 Google Play Store</h4>
-      <p>If you download or use the CGraph mobile application from Google Play, your use of the app is also subject to the Google Play Terms of Service.</p>
+      <p><em>When available on Google Play:</em> Your use of the app will also be subject to the Google Play Terms of Service.</p>
     `,
   },
   {

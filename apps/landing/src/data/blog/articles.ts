@@ -366,7 +366,7 @@ const { messages, channels, typingUsers, sendMessage } = useChat();</code></pre>
 <tbody>
 <tr><td>Key Agreement</td><td>PQXDH (P-256 ECDH + ML-KEM-768)</td><td>Hybrid post-quantum key exchange</td></tr>
 <tr><td>Symmetric Encryption</td><td>AES-256-GCM</td><td>Encrypt/decrypt message payloads</td></tr>
-<tr><td>Signing</td><td>Ed25519</td><td>Identity key signatures, prekey signatures</td></tr>
+<tr><td>Signing</td><td>ECDSA P-256</td><td>Identity key signatures, prekey signatures</td></tr>
 <tr><td>Key Derivation</td><td>HKDF-SHA256</td><td>Derive encryption keys from shared secrets</td></tr>
 </tbody>
 </table>
@@ -376,7 +376,7 @@ const { messages, channels, typingUsers, sendMessage } = useChat();</code></pre>
 <p>PQXDH establishes a hybrid shared secret using P-256 ECDH + ML-KEM-768, without both parties needing to be online. The tests validate:</p>
 
 <ul>
-<li><strong>Identity key pair generation</strong> — Ed25519 keys are generated with proper entropy</li>
+<li><strong>Identity key pair generation</strong> — ECDSA P-256 keys are generated with proper entropy</li>
 <li><strong>Signed prekey generation</strong> — P-256 prekeys signed by the identity key</li>
 <li><strong>One-time prekey bundles</strong> — Ephemeral keys consumed correctly (no reuse)</li>
 <li><strong>Key agreement computation</strong> — All four DH operations (DH1-DH4) produce correct shared secrets</li>
@@ -723,7 +723,7 @@ if (result.success) {
 <p>Marketing pages need to be statically renderable and crawlable. The landing site uses Vite with server-side rendering hints and prerendered routes. The web app is a client-side SPA that requires authentication — it's invisible (and should be) to search engines.</p>
 
 <h4>3. Deployment Independence</h4>
-<p>The landing site deploys to Vercel with global edge caching and automatic preview deployments. The web app also deploys to Vercel with serverless functions for API proxying. They have independent CI pipelines, independent release cycles, and can be updated without affecting each other.</p>
+<p>The landing site deploys to Vercel with global edge caching and automatic preview deployments. The web app deploys to Fly.io (IAD) as a containerized application. They have independent CI pipelines, independent release cycles, and can be updated without affecting each other.</p>
 
 <h3>The Monorepo Structure</h3>
 
@@ -1035,7 +1035,7 @@ end</code></pre>
 <li><strong>Triple Ratchet</strong> — EC Double Ratchet ∥ SPQR for forward secrecy and break-in recovery</li>
 <li><strong>ML-KEM-768</strong> — Post-quantum key encapsulation for quantum resistance</li>
 <li><strong>AES-256-GCM</strong> — Authenticated encryption for message payloads</li>
-<li><strong>Ed25519</strong> — Digital signatures for identity verification</li>
+<li><strong>ECDSA P-256</strong> — Digital signatures for identity verification</li>
 </ul>
 
 <p>E2EE is on by default for DMs and available for group channels. The server stores encrypted blobs — we can’t read your messages. Safety numbers let you verify identities, and key changes show a visible warning.</p>
@@ -1065,24 +1065,22 @@ end</code></pre>
 
 <h3>Subscription Tiers</h3>
 
-<p>CGraph offers five subscription tiers designed to scale from individual users to enterprise deployments. Pricing will be finalized at public launch — here's what each tier includes:</p>
+<p>CGraph offers three subscription tiers designed to scale from individual users to enterprise deployments. Pricing will be finalized at public launch — here's what each tier includes:</p>
 
 <table>
 <thead><tr><th>Tier</th><th>Price</th><th>Key Features</th></tr></thead>
 <tbody>
-<tr><td>Free</td><td>Free forever</td><td>Full messaging, E2EE, forums, basic gamification, 5 servers</td></tr>
-<tr><td>Plus</td><td>TBD</td><td>HD video, custom emojis, extended file uploads (50MB), 15 servers</td></tr>
-<tr><td>Pro</td><td>TBD</td><td>4K video, priority support, advanced analytics, 50 servers, API access</td></tr>
-<tr><td>Teams</td><td>TBD per user</td><td>Team management, SSO, audit logs, compliance tools, unlimited servers</td></tr>
-<tr><td>Enterprise</td><td>Custom</td><td>On-premise option, dedicated support, SLA, custom integrations</td></tr>
+<tr><td>Free</td><td>Free forever</td><td>Full messaging, E2EE, forums, basic gamification, 1 forum, 100MB storage</td></tr>
+<tr><td>Premium</td><td>TBD</td><td>HD/4K video, custom emojis, extended file uploads, priority support, advanced analytics, API access</td></tr>
+<tr><td>Enterprise</td><td>Custom</td><td>On-premise option, dedicated support, SLA, SSO, audit logs, compliance tools, custom integrations</td></tr>
 </tbody>
 </table>
 
-<p>Every tier includes E2EE — encryption is not a premium feature. The free tier is generous enough for personal communities, while Teams and Enterprise add the administrative and compliance tools organizations need.</p>
+<p>Every tier includes E2EE — encryption is not a premium feature. The free tier is designed for personal communities, while Enterprise adds the administrative and compliance tools organizations need.</p>
 
 <h3>Built for Communities</h3>
 
-<p>CGraph is built for <strong>communities</strong> — open-source projects, gaming guilds, study groups, company teams. The stack (Elixir/Phoenix, React/React Native, Triple Ratchet, PostgreSQL with 91 tables) is designed to handle everything from a 10-person group to 100k members without rearchitecting.</p>
+<p>CGraph is built for <strong>communities</strong> — gaming guilds, study groups, company teams, and project collaborators. The stack (Elixir/Phoenix, React/React Native, Triple Ratchet, PostgreSQL with 91 tables) is designed to handle everything from a 10-person group to 100k members without rearchitecting.</p>
 
 <h4>Join the Beta</h4>
 

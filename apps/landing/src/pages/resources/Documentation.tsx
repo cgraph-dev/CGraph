@@ -311,7 +311,7 @@ export default function Documentation() {
                 }}
               >
                 <span className="font-mono text-sm font-bold text-white">
-                  https://api.cgraph.org/api/v1
+                  https://cgraph-backend.fly.dev/api/v1
                 </span>
                 <span
                   className="rounded-full px-2 py-0.5 text-xs font-medium"

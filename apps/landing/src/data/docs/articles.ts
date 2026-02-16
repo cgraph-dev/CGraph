@@ -59,7 +59,7 @@ export const docArticles: Record<string, DocArticleData> = {
   <thead><tr><th>Method</th><th>How It Works</th><th>Security Level</th></tr></thead>
   <tbody>
     <tr><td><strong>Email + Password</strong></td><td>Traditional registration with email verification</td><td>Argon2id hashed, 2FA available</td></tr>
-    <tr><td><strong>OAuth Providers</strong></td><td>Google, Apple, Facebook, TikTok sign-in</td><td>Delegated authentication</td></tr>
+    <tr><td><strong>OAuth Providers</strong></td><td>Google, Apple sign-in</td><td>Delegated authentication</td></tr>
     <tr><td><strong>Web3 Wallet</strong></td><td>Ethereum/Polygon wallet connection</td><td>Cryptographic signature verification</td></tr>
   </tbody>
 </table>
@@ -413,7 +413,7 @@ export const docArticles: Record<string, DocArticleData> = {
     categoryColor: '#f87171',
     readTime: '15 min read',
     content: `
-<p>CGraph implements the <strong>Triple Ratchet protocol</strong> (Signal Protocol Revision 4) for end-to-end encryption of direct messages. This is a post-quantum hybrid protocol that provides security against both classical and quantum attacks.</p>
+<p>CGraph implements the <strong>Triple Ratchet protocol</strong> for end-to-end encryption of direct messages. This is a post-quantum hybrid protocol that provides security against both classical and quantum attacks.</p>
 
 <h3>Protocol Components</h3>
 <table>
@@ -425,7 +425,7 @@ export const docArticles: Record<string, DocArticleData> = {
     <tr><td><strong>Key Derivation</strong></td><td>HKDF-SHA256 + KDF_HYBRID</td><td>Derive new keys from hybrid shared secrets</td></tr>
     <tr><td><strong>Curve</strong></td><td>P-256 (NIST)</td><td>Elliptic curve for classical DH key exchange</td></tr>
     <tr><td><strong>Post-Quantum KEM</strong></td><td>ML-KEM-768 (FIPS 203)</td><td>Lattice-based key encapsulation</td></tr>
-    <tr><td><strong>Signatures</strong></td><td>Ed25519</td><td>Identity key signatures</td></tr>
+    <tr><td><strong>Signatures</strong></td><td>ECDSA P-256</td><td>Identity key signatures</td></tr>
   </tbody>
 </table>
 
@@ -553,7 +553,7 @@ export const docArticles: Record<string, DocArticleData> = {
 
 <h3>How Safety Numbers Work</h3>
 <ol>
-  <li>Each user has a unique <strong>identity key</strong> (Ed25519 public key)</li>
+  <li>Each user has a unique <strong>identity key</strong> (ECDSA P-256 public key)</li>
   <li>A safety number is derived from both parties' identity keys</li>
   <li>If either party's identity key changes, the safety number changes</li>
   <li>Users can compare safety numbers in person (QR code) or out-of-band</li>
@@ -637,7 +637,7 @@ export const docArticles: Record<string, DocArticleData> = {
 </ol>
 
 <h3>Scope</h3>
-<p>In scope for our bug bounty program:</p>
+<p>We are interested in reports related to:</p>
 <ul>
   <li>Authentication and authorization bypasses</li>
   <li>E2EE implementation flaws</li>
@@ -647,7 +647,7 @@ export const docArticles: Record<string, DocArticleData> = {
   <li>Privilege escalation</li>
 </ul>
 
-<h3>Rules</h3>
+<h3>Guidelines</h3>
 <ul>
   <li>Do not access, modify, or delete other users' data</li>
   <li>Do not perform denial-of-service attacks</li>
@@ -656,7 +656,7 @@ export const docArticles: Record<string, DocArticleData> = {
 </ul>
 
 <h3>Recognition</h3>
-<p>We maintain a Security Hall of Fame and offer monetary rewards based on severity. Critical vulnerabilities affecting E2EE are eligible for our highest reward tier.</p>
+<p>We acknowledge all valid reports and credit researchers (with permission) in our security advisories. A formal bug bounty program with monetary rewards is planned for a future release.</p>
 `,
   },
   'xp-levels-how-progression-works': {
@@ -984,9 +984,9 @@ export const docArticles: Record<string, DocArticleData> = {
 <h3>Prekey Bundle Response</h3>
 <p>When fetching a user's prekey bundle, the response contains:</p>
 <ul>
-  <li><code>identity_key</code> — User's long-term identity public key (Ed25519)</li>
+  <li><code>identity_key</code> — User's long-term identity public key (ECDSA P-256)</li>
   <li><code>signed_prekey</code> — Regularly rotated prekey with signature</li>
-  <li><code>signed_prekey_signature</code> — Ed25519 signature over the signed prekey</li>
+  <li><code>signed_prekey_signature</code> — ECDSA P-256 signature over the signed prekey</li>
   <li><code>one_time_prekey</code> — Single-use prekey (consumed after fetch)</li>
 </ul>
 
@@ -1004,7 +1004,7 @@ export const docArticles: Record<string, DocArticleData> = {
 <p>CGraph uses Phoenix Channels over WebSocket for all real-time communication.</p>
 
 <h3>Connection</h3>
-<p>Connect to: <code>wss://api.cgraph.org/socket?token=&lt;access_token&gt;</code></p>
+<p>Connect to: <code>wss://cgraph-backend.fly.dev/socket?token=&lt;access_token&gt;</code></p>
 
 <h3>Channel Topics</h3>
 <table>
@@ -1130,7 +1130,7 @@ export const docArticles: Record<string, DocArticleData> = {
     <tr><td><strong>Build Chunks</strong></td><td>~20</td><td>168</td></tr>
     <tr><td><strong>Auth Required</strong></td><td>No</td><td>Yes</td></tr>
     <tr><td><strong>SEO</strong></td><td>Full (marketing content)</td><td>Minimal (app shell)</td></tr>
-    <tr><td><strong>Hosting</strong></td><td>Vercel</td><td>Vercel</td></tr>
+    <tr><td><strong>Hosting</strong></td><td>Vercel</td><td>Fly.io (IAD)</td></tr>
   </tbody>
 </table>
 

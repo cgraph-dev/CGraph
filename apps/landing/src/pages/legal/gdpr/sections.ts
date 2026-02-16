@@ -169,7 +169,7 @@ export const sections: GDPRSection[] = [
         <li>End-to-end encryption (PQXDH + Triple Ratchet with AES-256-GCM)</li>
         <li>TLS 1.3 for all connections</li>
         <li>At-rest encryption for databases</li>
-        <li>Regular security audits and penetration testing</li>
+        <li>Security audits and penetration testing are planned</li>
       </ul>
       
       <h4>6.2 Organizational Measures</h4>

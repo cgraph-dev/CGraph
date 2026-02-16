@@ -17,14 +17,14 @@ import { NeonIcon } from '@/components/marketing/ui';
 const plannedServices = [
   {
     name: 'API Server',
-    domain: 'api.cgraph.org',
+    domain: 'cgraph-backend.fly.dev',
     description: 'Elixir/Phoenix REST API on Fly.io (Frankfurt)',
     icon: '🔌',
   },
   {
     name: 'Web Application',
     domain: 'web.cgraph.org',
-    description: 'React 19 SPA on Vercel Edge Network',
+    description: 'React 19 SPA on Fly.io (IAD)',
     icon: '🌐',
   },
   {
@@ -36,7 +36,7 @@ const plannedServices = [
   {
     name: 'Authentication',
     domain: 'OAuth + JWT',
-    description: 'Google, Apple, Facebook, TikTok OAuth providers',
+    description: 'Google, Apple OAuth providers + Web3 wallets',
     icon: '🔑',
   },
   {
@@ -107,7 +107,7 @@ const infrastructureDetails = [
         value: 'Fly.io (Frankfurt, FRA)',
         detail: 'Elixir/Phoenix with auto-scaling',
       },
-      { label: 'Frontend', value: 'Vercel (Edge Network)', detail: 'React 19 SPA with CDN' },
+      { label: 'Frontend', value: 'Fly.io (IAD)', detail: 'React 19 SPA (WIP deployment)' },
       { label: 'Landing', value: 'Vercel (Edge Network)', detail: 'Vite static site, ~200KB' },
     ],
   },
@@ -398,7 +398,9 @@ export default function Status() {
                   'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(99, 102, 241, 0.08))',
               }}
             >
-              <span className="font-mono text-sm font-bold text-white">https://api.cgraph.org</span>
+              <span className="font-mono text-sm font-bold text-white">
+                https://cgraph-backend.fly.dev
+              </span>
             </div>
             <div className="divide-y divide-white/5">
               {healthEndpoints.map((ep) => (
