@@ -827,6 +827,88 @@ export class DoubleRatchetEngine {
   }
 
   // ===========================================================================
+  // RAW KEY DERIVATION — for Triple Ratchet composition
+  // ===========================================================================
+
+  /**
+   * RatchetSendKey — derive raw message key + header for sending.
+   * Used by Triple Ratchet to get EC message key before KDF_HYBRID.
+   * Advances sending chain state (Ns, CKs) like encryptMessage does.
+   */
+  async ratchetSendKey(): Promise<{ messageKey: Uint8Array; header: MessageHeader }> {
+    if (!this.state.DHs) {
+      throw new Error('Session not initialized');
+    }
+    if (!this.state.CKs) {
+      throw new Error('No sending chain established');
+    }
+
+    const [newCKs, messageKey] = await kdfCK(this.state.CKs);
+    this.state.CKs = newCKs;
+
+    const header: MessageHeader = {
+      dh: this.state.DHs.rawPublicKey,
+      pn: this.state.PN,
+      n: this.state.Ns,
+      sessionId: this.state.sessionId,
+      timestamp: Date.now(),
+      version: 3,
+    };
+
+    this.state.Ns++;
+    this.state.messageCount++;
+    this.state.ratchetSteps++;
+    this.state.lastActivity = Date.now();
+
+    return { messageKey, header };
+  }
+
+  /**
+   * RatchetReceiveKey — derive raw message key for receiving.
+   * Used by Triple Ratchet to get EC message key before KDF_HYBRID.
+   * Handles DH ratchet steps and skipped messages like decryptMessage does.
+   */
+  async ratchetReceiveKey(
+    header: MessageHeader
+  ): Promise<{ messageKey: Uint8Array; isOutOfOrder: boolean }> {
+    // Check skipped keys
+    const skipKey = this.makeSkipKey(header.dh, header.n);
+    const skippedMK = this.state.MKSKIPPED.get(skipKey);
+    if (skippedMK) {
+      this.state.MKSKIPPED.delete(skipKey);
+      return { messageKey: skippedMK, isOutOfOrder: true };
+    }
+
+    // DH ratchet step if new public key
+    const needsRatchet = !this.state.DHr || !this.arraysEqual(header.dh, this.state.DHr);
+    if (needsRatchet) {
+      if (this.state.CKr) {
+        await this.skipMessageKeys(this.state.DHr!, this.state.Nr, header.pn);
+      }
+      await this.dhRatchet(header.dh);
+    }
+
+    // Skip messages if out of order
+    const isOutOfOrder = header.n > this.state.Nr;
+    if (isOutOfOrder) {
+      await this.skipMessageKeys(header.dh, this.state.Nr, header.n);
+    }
+
+    if (!this.state.CKr) {
+      throw new Error('No receiving chain established');
+    }
+
+    const [newCKr, messageKey] = await kdfCK(this.state.CKr);
+    this.state.CKr = newCKr;
+    this.state.Nr++;
+    this.state.messageCount++;
+    this.state.ratchetSteps++;
+    this.state.lastActivity = Date.now();
+
+    return { messageKey, isOutOfOrder };
+  }
+
+  // ===========================================================================
   // DIAGNOSTICS
   // ===========================================================================
 

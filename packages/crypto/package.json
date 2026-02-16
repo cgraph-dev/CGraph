@@ -1,26 +1,36 @@
 {
   "name": "@cgraph/crypto",
-  "version": "0.9.26",
-  "description": "End-to-end encryption implementation for CGraph platform",
+  "version": "0.9.28",
+  "description": "Signal-grade E2EE for CGraph: Triple Ratchet (ECDH + ML-KEM-768), PQXDH, Double Ratchet, AES-256-GCM",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./x3dh": "./src/x3dh.ts",
     "./aes": "./src/aes.ts",
+    "./utils": "./src/utils.ts",
+    "./errors": "./src/errors.ts",
+    "./stores": "./src/stores.ts",
+    "./kem": "./src/kem.ts",
+    "./x3dh": "./src/x3dh.ts",
+    "./pqxdh": "./src/pqxdh.ts",
     "./doubleRatchet": "./src/doubleRatchet.ts",
-    "./utils": "./src/utils.ts"
+    "./spqr": "./src/spqr.ts",
+    "./tripleRatchet": "./src/tripleRatchet.ts"
   },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
-    "test": "vitest"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@cgraph/shared-types": "workspace:*"
+    "@noble/hashes": "^1.8.0",
+    "@noble/post-quantum": "^0.2.1"
   },
   "devDependencies": {
+    "fast-check": "^3.23.2",
     "typescript": "^5.3.0",
     "vitest": "^1.0.0"
   }
