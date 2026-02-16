@@ -95,19 +95,7 @@ const Hero = memo(function Hero(): React.JSX.Element {
         aria-hidden="true"
         style={prefersReduced ? undefined : { y: bgY }}
       >
-        {/* Neural Network Canvas */}
-        {!prefersReduced && <NeuralBackground />}
-
-        {/* Base gradient fallback */}
-        <div className="hero-pro__gradient-base" />
-
-        {/* Dot grid overlay */}
-        <div className="hero-pro__grid" />
-
-        {/* Noise texture overlay */}
-        <div className="hero-pro__noise" />
-
-        {/* Bottom fade */}
+        {/* Bottom fade for smooth transition */}
         <div className="hero-pro__fade" />
       </motion.div>
 

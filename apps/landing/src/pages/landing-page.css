@@ -1072,7 +1072,7 @@ html.site-ready {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   opacity: 0;
-  animation: nav-border-flow 4s linear infinite;
+  animation: nav-border-flow-legacy 4s linear infinite;
   transition: opacity 0.3s ease;
   pointer-events: none;
 }
@@ -1081,7 +1081,7 @@ html.site-ready {
   opacity: 1;
 }
 
-@keyframes nav-border-flow {
+@keyframes nav-border-flow-legacy {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
@@ -3416,7 +3416,7 @@ html.site-ready {
     transparent 100%
   );
   background-size: 200% 100%;
-  animation: footer-border-flow 8s linear infinite;
+  animation: footer-border-flow-legacy 8s linear infinite;
 }
 
 /* Subtle glow accent */
@@ -3433,7 +3433,7 @@ html.site-ready {
   animation: footer-glow-pulse 6s ease-in-out infinite;
 }
 
-@keyframes footer-border-flow {
+@keyframes footer-border-flow-legacy {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }

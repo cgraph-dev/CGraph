@@ -23,6 +23,8 @@ import Hero from '../components/marketing/sections/Hero';
 import { Features } from '../components/marketing/sections/Features';
 import ValueProposition from '../components/marketing/sections/ValueProposition';
 import { Security } from '../components/marketing/sections/Security';
+import { GlobalBackground } from '../components/marketing/layout/GlobalBackground';
+import '../components/marketing/sections/Security.css';
 import { CTA } from '../components/marketing/sections/CTA';
 import { SectionHeader } from '../components/marketing/ui/SectionHeader';
 import './landing-page.css';
@@ -180,6 +182,9 @@ export default function LandingPage() {
     <div className="demo-landing">
       {/* Unified Navigation */}
       <Navigation showLandingLinks />
+
+      {/* Global Background */}
+      <GlobalBackground />
 
       {/* Hero — Professional SaaS hero */}
       <Hero />

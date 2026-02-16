@@ -18,6 +18,7 @@ interface Node {
   vy: number;
   baseX: number;
   baseY: number;
+  color: string; // Assigned color
 }
 
 interface Connection {
@@ -32,6 +33,7 @@ export interface GraphNetworkOptions {
   mouseRepulsionRadius?: number;
   mouseRepulsionStrength?: number;
   nodeColor?: string;
+  nodeColors?: string[]; // New: support for multiple node colors
   connectionColorStart?: string;
   connectionColorEnd?: string;
   nodeSize?: number;
@@ -53,6 +55,7 @@ export class GraphNetwork {
   private mouseRepulsionRadius: number;
   private mouseRepulsionStrength: number;
   private nodeColor: string;
+  private nodeColors: string[];
   private connectionColorStart: string;
   private connectionColorEnd: string;
   private nodeSize: number;
@@ -70,6 +73,7 @@ export class GraphNetwork {
     this.mouseRepulsionRadius = options.mouseRepulsionRadius ?? 180;
     this.mouseRepulsionStrength = options.mouseRepulsionStrength ?? 0.5;
     this.nodeColor = options.nodeColor ?? '#10b981';
+    this.nodeColors = options.nodeColors ?? [this.nodeColor];
     this.connectionColorStart = options.connectionColorStart ?? '#10b981';
     this.connectionColorEnd = options.connectionColorEnd ?? '#8b5cf6';
     this.nodeSize = options.nodeSize ?? 2.5;
@@ -121,6 +125,8 @@ export class GraphNetwork {
         baseY: y,
         vx: (Math.random() - 0.5) * 0.2 * this.animationSpeed,
         vy: (Math.random() - 0.5) * 0.2 * this.animationSpeed,
+        color:
+          this.nodeColors[Math.floor(Math.random() * this.nodeColors.length)] || this.nodeColor,
       });
     }
   }
@@ -243,13 +249,13 @@ export class GraphNetwork {
 
     // Draw nodes
     for (const node of this.nodes) {
-      this.ctx.fillStyle = this.nodeColor;
+      this.ctx.fillStyle = node.color;
       this.ctx.beginPath();
       this.ctx.arc(node.x, node.y, this.nodeSize, 0, Math.PI * 2);
       this.ctx.fill();
 
       // Glow effect
-      this.ctx.fillStyle = this.nodeColor + '40';
+      this.ctx.fillStyle = node.color + '40';
       this.ctx.beginPath();
       this.ctx.arc(node.x, node.y, this.nodeSize * 2, 0, Math.PI * 2);
       this.ctx.fill();
@@ -294,12 +300,24 @@ export class GraphNetwork {
       this.mouseRepulsionRadius = options.mouseRepulsionRadius;
     if (options.mouseRepulsionStrength !== undefined)
       this.mouseRepulsionStrength = options.mouseRepulsionStrength;
-    if (options.nodeColor !== undefined) this.nodeColor = options.nodeColor;
+    if (options.nodeColor !== undefined) {
+      this.nodeColor = options.nodeColor;
+      this.nodeColors = [this.nodeColor];
+    }
+    if (options.nodeColors !== undefined) this.nodeColors = options.nodeColors;
     if (options.connectionColorStart !== undefined)
       this.connectionColorStart = options.connectionColorStart;
     if (options.connectionColorEnd !== undefined)
       this.connectionColorEnd = options.connectionColorEnd;
     if (options.nodeSize !== undefined) this.nodeSize = options.nodeSize;
     if (options.animationSpeed !== undefined) this.animationSpeed = options.animationSpeed;
+
+    // Recreate nodes if colors changed significantly or if forced (simplified for performance, usually creates new engine)
+    // For now, let's just update colors if count didn't change?
+    // Actually, easier to just accept the new options for next createNodes call or if nodeCount changes.
+    // If user wants immediate color change they should trigger createNodes.
+    if (options.nodeColors !== undefined || options.nodeColor !== undefined) {
+      this.createNodes();
+    }
   }
 }

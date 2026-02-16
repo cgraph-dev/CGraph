@@ -3,7 +3,7 @@ import { GraphNetwork, GraphNetworkOptions } from './GraphNetwork';
 
 export interface NeuralBackgroundProps {
   className?: string;
-  options?: GraphNetworkOptions;
+  options?: GraphNetworkOptions & { nodeColors?: string[] };
 }
 
 /**
