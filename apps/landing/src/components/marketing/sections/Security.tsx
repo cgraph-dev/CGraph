@@ -7,6 +7,7 @@
  * @since v2.1.0 - Redesigned as "Security Vault"
  */
 
+import React from 'react';
 import { motion } from 'framer-motion';
 import { SectionHeader } from '../ui/SectionHeader';
 import { GlassCard } from '../ui/GlassCard';
@@ -74,16 +75,34 @@ const securityStatusRows: SecurityStatusRow[] = [
   },
 ];
 
-const SecurityIcon = ({ type }: { type: string }) => {
-  // Simple stylized SVG icons to replace emojis
-  if (type.includes('Encryption') || type.includes('Encrypted')) {
+type SecurityIconVariant = 'encrypted' | 'zero-knowledge' | 'argon2' | 'sync' | '2fa' | 'web3';
+
+const getSecurityIconVariant = (title: string): SecurityIconVariant => {
+  if (title === 'End-to-End Encrypted') return 'encrypted';
+  if (title === 'Zero-Knowledge') return 'zero-knowledge';
+  if (title === 'Argon2 Passwords') return 'argon2';
+  if (title === 'Multi-Device Sync') return 'sync';
+  if (title === '2FA Protection') return '2fa';
+  return 'web3';
+};
+
+const SecurityIcon = ({ title, index }: { title: string; index: number }) => {
+  const variant = getSecurityIconVariant(title);
+  const style = {
+    '--security-icon-delay': `${index * 0.2}s`,
+  } as React.CSSProperties;
+
+  const iconClass = `security-card__icon-svg security-card__icon-svg--${variant}`;
+
+  if (variant === 'encrypted') {
     return (
       <svg
-        className="h-12 w-12 text-emerald-400"
+        className={iconClass}
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
-        strokeWidth={1.5}
+        strokeWidth={1.6}
+        style={style}
       >
         <path
           strokeLinecap="round"
@@ -93,36 +112,104 @@ const SecurityIcon = ({ type }: { type: string }) => {
       </svg>
     );
   }
-  if (type.includes('Privacy') || type.includes('Knowledge')) {
+
+  if (variant === 'zero-knowledge') {
     return (
       <svg
-        className="h-12 w-12 text-purple-400"
+        className={iconClass}
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
-        strokeWidth={1.5}
+        strokeWidth={1.6}
+        style={style}
       >
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.744c0 1.947.466 3.784 1.294 5.41a12.04 12.04 0 009.61 7.593c.31.042.625.063.944.063a12.054 12.054 0 009.61-7.593 11.99 11.99 0 001.294-5.41c0-1.306-.208-2.564-.598-3.743A11.959 11.959 0 0112 2.714z"
+          d="M3 12s3.75-6 9-6 9 6 9 6-3.75 6-9 6-9-6-9-6z"
+        />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.5 9.5l5 5m0-5l-5 5" />
+      </svg>
+    );
+  }
+
+  if (variant === 'argon2') {
+    return (
+      <svg
+        className={iconClass}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        style={style}
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75L9.75 14.25" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M16.5 12a4.5 4.5 0 004.5-4.5V6.75h-1.5A4.5 4.5 0 0015 11.25V12h1.5zm-9 0A4.5 4.5 0 013 7.5V6.75h1.5A4.5 4.5 0 019 11.25V12H7.5zM12 16.5A4.5 4.5 0 007.5 21H6.75v-1.5A4.5 4.5 0 0111.25 15H12v1.5z"
         />
       </svg>
     );
   }
+
+  if (variant === 'sync') {
+    return (
+      <svg
+        className={iconClass}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        style={style}
+      >
+        <rect x="3.75" y="4.5" width="8.5" height="14.5" rx="1.5" />
+        <rect x="13.75" y="7" width="6.5" height="11" rx="1.25" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 16h.01M17 15h.01" />
+      </svg>
+    );
+  }
+
+  if (variant === '2fa') {
+    return (
+      <svg
+        className={iconClass}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        style={style}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 3.75c2.4 0 4.35 1.95 4.35 4.35V12.75"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M8.25 10.5h7.5a2.25 2.25 0 012.25 2.25v5.25a2.25 2.25 0 01-2.25 2.25h-7.5A2.25 2.25 0 016 18v-5.25a2.25 2.25 0 012.25-2.25z"
+        />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 14.25h1.5m-1.5 2.25h1.5" />
+      </svg>
+    );
+  }
+
   return (
     <svg
-      className="h-12 w-12 text-cyan-400"
+      className={iconClass}
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
-      strokeWidth={1.5}
+      strokeWidth={1.6}
+      style={style}
     >
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.744c0 1.947.466 3.784 1.294 5.41a12.04 12.04 0 009.61 7.593c.31.042.625.063.944.063a12.054 12.054 0 009.61-7.593 11.99 11.99 0 001.294-5.41c0-1.306-.208-2.564-.598-3.743A11.959 11.959 0 0112 2.714z"
+        d="M12 3.75l6.25 3.5v9L12 20.25l-6.25-4v-9L12 3.75z"
       />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.5 13.5l2.5-5 2.5 5M10.5 11.5h3" />
     </svg>
   );
 };
@@ -143,7 +230,7 @@ const SecurityCard = ({ feature, index }: SecurityCardProps) => {
 
       <div className="security-card__content">
         <div className="security-card__icon-wrapper">
-          <SecurityIcon type={feature.title} />
+          <SecurityIcon title={feature.title} index={index} />
         </div>
         <motion.h3
           className="security-card__title font-zentry"
