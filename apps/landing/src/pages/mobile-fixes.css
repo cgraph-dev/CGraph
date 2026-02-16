@@ -16,7 +16,11 @@
   }
   
   /* Fix horizontal overflow */
-  * {
+  img,
+  svg,
+  video,
+  canvas,
+  iframe {
     max-width: 100%;
   }
   
@@ -33,7 +37,7 @@
   
   /* Hero Title - Prevent clipping and ensure readability */
   .hero__title {
-    font-size: clamp(1.75rem, 12vw, 2.5rem) !important;
+    font-size: clamp(2rem, 11vw, 3rem) !important;
     line-height: 1.15 !important;
     letter-spacing: 0.01em;
     word-break: break-word;
@@ -55,7 +59,7 @@
   
   /* Hero Subtitle */
   .hero__subtitle {
-    font-size: 0.875rem !important;
+    font-size: 0.95rem !important;
     line-height: 1.5;
     padding: 0;
     margin: 0 0 1.5rem;
@@ -88,13 +92,13 @@
   
   /* Section Spacing */
   section {
-    padding: 3.25rem 1rem !important;
+    padding: 3.5rem 1rem !important;
   }
   
   /* Section Headers */
   .section-header__title,
   h2 {
-    font-size: clamp(1.5rem, 8vw, 2.25rem) !important;
+    font-size: clamp(1.75rem, 8.2vw, 2.5rem) !important;
     line-height: 1.2;
     word-break: break-word;
     hyphens: auto;
@@ -103,7 +107,7 @@
   /* Features Grid - Single column */
   .features__grid {
     grid-template-columns: 1fr !important;
-    gap: 1rem;
+    gap: 1.25rem;
     padding: 0;
   }
   
@@ -181,8 +185,8 @@
   .security-vault,
   .value-section,
   .cta {
-    padding-left: 0.85rem !important;
-    padding-right: 0.85rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
   }
 
   .interactive-demo,
@@ -221,8 +225,8 @@
   .security-vault,
   .value-section,
   .cta {
-    padding-left: 0.7rem !important;
-    padding-right: 0.7rem !important;
+    padding-left: 0.875rem !important;
+    padding-right: 0.875rem !important;
   }
 
   .hero {
@@ -237,10 +241,6 @@
     border-radius: 1rem !important;
   }
 
-  .security-comparison__footer {
-    letter-spacing: 0.08em !important;
-    font-size: 0.58rem !important;
-  }
 }
 
 /* Tablet Breakpoint (481px - 768px) */

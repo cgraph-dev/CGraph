@@ -38,10 +38,19 @@ html.site-ready {
 .showcase-section,
 .interactive-demo-section,
 .features,
+.security-vault,
 .value-section,
 .cta {
   content-visibility: auto;
   contain-intrinsic-size: auto 600px;
+}
+
+.feature-card,
+.value-card,
+.security-card,
+.showcase-card,
+.interactive-demo {
+  contain: layout paint;
 }
 
 /* ==========================================================================
