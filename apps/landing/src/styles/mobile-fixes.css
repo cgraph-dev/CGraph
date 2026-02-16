@@ -1,0 +1,551 @@
+/* ==========================================================================
+   MOBILE RESPONSIVENESS FIXES - Priority 1 (Phase 5 Verification)
+   Applied: 2026-02-14
+   Target: Fix critical mobile issues at 375px (iPhone SE)
+   ========================================================================== */
+
+/* Mobile First: Base styles for small screens (375px+) */
+@media (max-width: 480px) {
+  /* Global overflow prevention */
+  .demo-landing {
+    overflow-x: hidden !important;
+  }
+  
+  body {
+    overflow-x: hidden;
+  }
+  
+  /* Fix horizontal overflow */
+  img,
+  svg,
+  video,
+  canvas,
+  iframe {
+    max-width: 100%;
+  }
+  
+  /* Hero Section Fixes */
+  .hero-pro {
+    min-height: 88vh;
+    min-height: 88dvh;
+    padding: 6.75rem 1rem 3.5rem;
+  }
+
+  .hero-pro__content {
+    max-width: 100%;
+    padding: 0 0.75rem;
+    gap: 1.15rem;
+  }
+  
+  /* Hero Title - Prevent clipping and ensure readability */
+  .hero-pro__title-line,
+  .hero-pro__title-accent {
+    font-size: clamp(2.1rem, 11.2vw, 3.05rem) !important;
+    line-height: 1.1 !important;
+    letter-spacing: 0.01em;
+    word-break: normal;
+    hyphens: none;
+  }
+
+  .hero-pro__title {
+    margin: 0 0 0.4rem;
+  }
+
+  .hero-pro__title-accent {
+    padding-bottom: 0.06em;
+  }
+
+  /* Hero Subtitle */
+  .hero-pro__subtitle {
+    font-size: clamp(0.96rem, 3.6vw, 1.04rem) !important;
+    line-height: 1.55;
+    padding: 0;
+    margin: 0;
+    max-width: 38ch;
+  }
+
+  /* Hero Buttons - Stack vertically */
+  .hero-pro__actions {
+    flex-direction: column;
+    gap: 0.7rem;
+    width: 100%;
+    max-width: 22rem;
+  }
+
+  .hero-pro__actions a,
+  .hero-pro__actions button {
+    width: 100%;
+    max-width: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  /* Hero Stats - Smaller text */
+  .hero-pro__trust {
+    gap: 0.65rem;
+    margin-top: 0.4rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero-pro__badge {
+    font-size: 0.78rem;
+  }
+  
+  /* Section Spacing */
+  section {
+    padding: 3.5rem 1rem !important;
+  }
+  
+  /* Section Headers */
+  .section-header__title,
+  h2 {
+    font-size: clamp(1.75rem, 8.2vw, 2.5rem) !important;
+    line-height: 1.2;
+    word-break: break-word;
+    hyphens: auto;
+  }
+  
+  /* Features Grid - Single column */
+  .features__grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem;
+    padding: 0;
+  }
+  
+  /* Value Proposition Cards - Single column */
+  .value-proposition__grid,
+  .about__grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem;
+  }
+  
+  /* Security Icons - 2 columns max */
+  .about__icon-grid,
+  .security__icon-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem;
+  }
+  
+  /* CTA Section */
+  .cta {
+    padding: 3rem 1rem !important;
+  }
+  
+  .cta__title {
+    font-size: clamp(1.75rem, 10vw, 2.5rem) !important;
+  }
+  
+  .cta__buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  
+  .cta__buttons button,
+  .cta__buttons a {
+    width: 100%;
+  }
+  
+  /* Interactive Demo - Hide or stack */
+  .interactive-demo,
+  .customization-demo {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Tables - Horizontal scroll */
+  .comparison-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  table {
+    min-width: 600px; /* Force scroll for wide tables */
+  }
+  
+  /* Footer - Stack columns */
+  .gl-footer-unified__grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem;
+  }
+}
+
+/* Landing visual parity tune — preserve desktop look on mobile */
+@media (max-width: 768px) {
+  .demo-landing {
+    --mobile-surface: rgba(10, 15, 26, 0.7);
+    --mobile-surface-border: rgba(255, 255, 255, 0.11);
+  }
+
+  .hero-pro {
+    padding-top: 7.25rem !important;
+  }
+
+  .interactive-demo-section,
+  .showcase-section,
+  .security-vault,
+  .value-section,
+  .cta {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .interactive-demo,
+  .security-comparison,
+  .security-card,
+  .value-card,
+  .feature-card {
+    border-radius: 1.1rem !important;
+    border: 1px solid var(--mobile-surface-border) !important;
+    background: var(--mobile-surface) !important;
+    backdrop-filter: blur(14px) saturate(120%);
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
+    box-shadow:
+      0 10px 34px rgba(0, 0, 0, 0.34),
+      0 0 18px rgba(16, 185, 129, 0.05);
+  }
+
+  .section-header {
+    margin-bottom: 2.25rem;
+  }
+
+  .section-header__title {
+    letter-spacing: -0.02em;
+  }
+
+  .section-header__desc {
+    max-width: 34ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .interactive-demo-section,
+  .showcase-section,
+  .security-vault,
+  .value-section,
+  .cta {
+    padding-left: 0.875rem !important;
+    padding-right: 0.875rem !important;
+  }
+
+  .hero-pro {
+    padding-top: 6.9rem !important;
+  }
+
+  .interactive-demo,
+  .security-comparison,
+  .security-card,
+  .value-card,
+  .feature-card {
+    border-radius: 1rem !important;
+  }
+
+}
+
+/* Tablet Breakpoint (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .hero-pro__title-line,
+  .hero-pro__title-accent {
+    font-size: clamp(2.45rem, 7.8vw, 3.8rem) !important;
+  }
+
+  .hero-pro__subtitle {
+    font-size: clamp(1rem, 2.3vw, 1.12rem) !important;
+  }
+  
+  .features__grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .value-proposition__grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .security__icon-grid,
+  .about__icon-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Very Small Screens - Additional fixes */
+@media (max-width: 375px) {
+  .hero-pro__title-line,
+  .hero-pro__title-accent {
+    font-size: clamp(1.8rem, 12.8vw, 2.45rem) !important;
+  }
+
+  .hero-pro__subtitle {
+    font-size: 0.9rem !important;
+  }
+  
+  section {
+    padding: 2rem 0.75rem !important;
+  }
+  
+  .section-header__title {
+    font-size: clamp(1.25rem, 10vw, 2rem) !important;
+  }
+}
+
+/* ==========================================================================
+   ENHANCED MOBILE FIXES — Phase 6
+   Covers all identified gaps from mobile audit
+   ========================================================================== */
+
+/* ---------- Eyebrow badges — smaller + lighter on mobile ---------- */
+@media (max-width: 640px) {
+  .section-header__badge {
+    padding: 0.375rem 0.875rem;
+    letter-spacing: 0.05em;
+    gap: 0.35rem;
+    margin-bottom: 1rem;
+    /* Reduce heavy glow for performance + readability */
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.04),
+      0 0 5px -2px var(--badge-glow-1),
+      0 0 10px -4px var(--badge-glow-2);
+    animation: none;
+  }
+
+  .section-header__badge-chrome,
+  .section-header__badge::after,
+  .section-header__badge-text::after,
+  .section-header__badge-dot {
+    animation: none;
+  }
+
+  .section-header__badge-text {
+    font-size: 0.7rem;
+  }
+}
+
+/* ---------- Interactive demo section — tighter spacing ---------- */
+@media (max-width: 480px) {
+  .interactive-demo-section {
+    padding: 3rem 0.75rem !important;
+  }
+
+  .interactive-demo {
+    border-radius: 16px;
+  }
+
+  .interactive-demo__tabs {
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    padding: 0.375rem;
+  }
+
+  .demo-tab-affordance {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .interactive-demo__content {
+    padding: 0.75rem;
+    min-height: 260px;
+  }
+}
+
+/* ---------- Chat demo — compact on mobile ---------- */
+@media (max-width: 480px) {
+  .demo-chat__messages {
+    min-height: 180px;
+    gap: 0.625rem;
+    padding: 0.5rem;
+  }
+
+  .demo-message {
+    padding: 0.5rem 0.75rem;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+  }
+
+  .demo-message__avatar {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+  }
+
+  .demo-message__author {
+    font-size: 0.7rem;
+  }
+
+  .demo-message__text {
+    font-size: 0.8rem;
+  }
+
+  .demo-chat__input {
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .demo-chat__input button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+    min-width: 0;
+  }
+
+  .demo-chat__input-box {
+    padding: 0.35rem 0.625rem;
+    font-size: 0.8125rem;
+    min-height: 40px;
+  }
+
+  .demo-input-tutorial__hint {
+    font-size: 0.65rem;
+  }
+
+  .demo-input-tutorial__cursor {
+    transform: scale(0.85);
+  }
+}
+
+/* ---------- Gamification stats — collapse 3-col grid ---------- */
+@media (max-width: 480px) {
+  .demo-gamify__stats {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem;
+  }
+
+  .demo-gamify__stat {
+    flex-direction: row;
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+  }
+}
+
+/* ---------- Pricing cards ---------- */
+@media (max-width: 480px) {
+  .pricing {
+    padding: 3rem 1rem !important;
+  }
+
+  .pricing__grid {
+    grid-template-columns: 1fr !important;
+    max-width: 100%;
+    gap: 1.25rem;
+  }
+
+  .pricing__card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .pricing__card--highlighted {
+    transform: none !important;
+  }
+
+  .pricing__card--highlighted:hover {
+    transform: translateY(-4px) !important;
+  }
+
+  .pricing__amount {
+    font-size: 2.25rem;
+  }
+
+  .pricing__feature-list {
+    font-size: 0.8125rem;
+  }
+}
+
+/* ---------- Stats container — collapse to 1 col ---------- */
+@media (max-width: 480px) {
+  .stats__container {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+}
+
+/* ---------- Value section — tighter padding ---------- */
+@media (max-width: 480px) {
+  .value-section {
+    padding: 3rem 1rem !important;
+  }
+
+  .value-card {
+    padding: 1.25rem 1rem;
+  }
+
+  .value-comparison__header,
+  .value-comparison__row {
+    grid-template-columns: 1fr 60px 60px;
+    font-size: 0.75rem;
+  }
+
+  .value-cta__btn {
+    font-size: 0.8125rem;
+    padding: 0.75rem 1rem;
+    width: 100%;
+  }
+}
+
+/* ---------- Showcase cards ---------- */
+@media (max-width: 480px) {
+  .showcase-card {
+    min-height: 180px;
+    padding: 1rem;
+  }
+
+  .showcase-header__title {
+    font-size: 0.875rem;
+  }
+}
+
+/* ---------- Section header description ---------- */
+@media (max-width: 480px) {
+  .section-header__desc {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    padding: 0 0.25rem;
+  }
+
+  .section-header {
+    margin-bottom: 2.5rem;
+  }
+}
+
+/* ---------- Security preview overflow fix ---------- */
+@media (max-width: 480px) {
+  .security-preview {
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: break-word;
+  }
+}
+
+/* ==========================================================================
+   MOBILE PERFORMANCE — reduce GPU-heavy effects on small screens
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Disable heavy box-shadow pulse animation on mobile badges */
+  .section-header__badge {
+    animation: none;
+  }
+
+  /* Simplify panel border glow */
+  .panel-border-glow__border {
+    animation: none;
+    opacity: 0.2;
+  }
+
+  /* Reduce blur radius on glassmorphism for GPU savings */
+  .section-header__badge::before {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  .hero-pro__btn--primary,
+  .hero-pro__grid,
+  .hero-pro__scroll,
+  .hero-pro__scroll-dot,
+  .hero-pro__orb {
+    animation: none !important;
+  }
+}

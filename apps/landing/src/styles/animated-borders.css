@@ -1,0 +1,74 @@
+
+/* ==========================================================================
+   ANIMATED GRADIENT BORDER — panels & buttons
+   Replicates the navbar's emerald→purple flowing gradient technique.
+   Uses mask-composite XOR to render only the border ring.
+   ========================================================================== */
+
+/* Container marker — adds `position: relative` so the overlay can anchor */
+.panel-border-glow {
+  position: relative;
+}
+
+/* The animated border overlay (panels — visible at rest, brighter on hover) */
+.panel-border-glow__border {
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(16, 185, 129, 0.5) 25%,
+    rgba(139, 92, 246, 0.5) 50%,
+    rgba(16, 185, 129, 0.5) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.3;
+  animation: panel-border-flow 4s linear infinite;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.panel-border-glow:hover .panel-border-glow__border {
+  opacity: 1;
+}
+
+/* Button variant — sits inside overflow:hidden, hover-only */
+.btn-border-glow__border {
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(16, 185, 129, 0.5) 25%,
+    rgba(139, 92, 246, 0.5) 50%,
+    rgba(16, 185, 129, 0.5) 75%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  animation: panel-border-flow 4s linear infinite;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.group:hover .btn-border-glow__border {
+  opacity: 1;
+}
+
+@keyframes panel-border-flow {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

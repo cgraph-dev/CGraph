@@ -27,8 +27,25 @@ import { GlobalBackground } from '../components/marketing/layout/GlobalBackgroun
 import '../components/marketing/sections/Security.css';
 import { CTA } from '../components/marketing/sections/CTA';
 import { SectionHeader } from '../components/marketing/ui/SectionHeader';
-import './landing-page.css';
-import './mobile-fixes.css';
+
+/* ── Split CSS architecture (replaces monolithic landing-page.css) ── */
+import '../styles/css-variables.css';
+import '../styles/preloader.css';
+import '../styles/buttons.css';
+import '../styles/hero-landing.css';
+import '../styles/section-header.css';
+import '../styles/features-section.css';
+import '../styles/stats-section.css';
+import '../styles/about-security-section.css';
+import '../styles/cta-section.css';
+import '../styles/showcase-section.css';
+import '../styles/pricing-section.css';
+import '../styles/interactive-demo-section.css';
+import '../styles/customization-preview.css';
+import '../styles/value-proposition.css';
+import '../styles/animated-borders.css';
+import '../styles/mobile-landing.css';
+import '../styles/mobile-fixes.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
