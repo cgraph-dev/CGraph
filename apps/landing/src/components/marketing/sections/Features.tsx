@@ -1,3 +1,4 @@
+import React from 'react';
 import { motion } from 'framer-motion';
 import { features } from '../../../data/landing-data';
 import { SectionHeader } from '../ui/SectionHeader';
@@ -14,7 +15,15 @@ const getFeatureIconVariant = (title: string): NeonFeatureIconVariant => {
   return 'spark';
 };
 
-const NeonFeatureIcon = ({ variant }: { variant: NeonFeatureIconVariant }) => {
+const NeonFeatureIcon = ({
+  variant,
+  delay = 0,
+}: {
+  variant: NeonFeatureIconVariant;
+  delay?: number;
+}) => {
+  const style = { '--feature-icon-delay': `${delay}s` } as React.CSSProperties;
+
   const shared = {
     className: 'feature-card__icon-svg',
     fill: 'none',
@@ -25,7 +34,11 @@ const NeonFeatureIcon = ({ variant }: { variant: NeonFeatureIconVariant }) => {
 
   if (variant === 'shield') {
     return (
-      <span className="feature-card__icon-neon feature-card__icon-neon--shield" aria-hidden="true">
+      <span
+        className="feature-card__icon-neon feature-card__icon-neon--shield"
+        style={style}
+        aria-hidden="true"
+      >
         <svg {...shared}>
           <path
             strokeLinecap="round"
@@ -39,7 +52,11 @@ const NeonFeatureIcon = ({ variant }: { variant: NeonFeatureIconVariant }) => {
 
   if (variant === 'bolt') {
     return (
-      <span className="feature-card__icon-neon feature-card__icon-neon--bolt" aria-hidden="true">
+      <span
+        className="feature-card__icon-neon feature-card__icon-neon--bolt"
+        style={style}
+        aria-hidden="true"
+      >
         <svg {...shared}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" />
         </svg>
@@ -49,7 +66,11 @@ const NeonFeatureIcon = ({ variant }: { variant: NeonFeatureIconVariant }) => {
 
   if (variant === 'chain') {
     return (
-      <span className="feature-card__icon-neon feature-card__icon-neon--chain" aria-hidden="true">
+      <span
+        className="feature-card__icon-neon feature-card__icon-neon--chain"
+        style={style}
+        aria-hidden="true"
+      >
         <svg {...shared}>
           <path
             strokeLinecap="round"
@@ -63,7 +84,11 @@ const NeonFeatureIcon = ({ variant }: { variant: NeonFeatureIconVariant }) => {
 
   if (variant === 'crown') {
     return (
-      <span className="feature-card__icon-neon feature-card__icon-neon--crown" aria-hidden="true">
+      <span
+        className="feature-card__icon-neon feature-card__icon-neon--crown"
+        style={style}
+        aria-hidden="true"
+      >
         <svg {...shared}>
           <path
             strokeLinecap="round"
@@ -77,7 +102,11 @@ const NeonFeatureIcon = ({ variant }: { variant: NeonFeatureIconVariant }) => {
 
   if (variant === 'folder') {
     return (
-      <span className="feature-card__icon-neon feature-card__icon-neon--folder" aria-hidden="true">
+      <span
+        className="feature-card__icon-neon feature-card__icon-neon--folder"
+        style={style}
+        aria-hidden="true"
+      >
         <svg {...shared}>
           <path
             strokeLinecap="round"
@@ -90,7 +119,11 @@ const NeonFeatureIcon = ({ variant }: { variant: NeonFeatureIconVariant }) => {
   }
 
   return (
-    <span className="feature-card__icon-neon feature-card__icon-neon--spark" aria-hidden="true">
+    <span
+      className="feature-card__icon-neon feature-card__icon-neon--spark"
+      style={style}
+      aria-hidden="true"
+    >
       <svg {...shared}>
         <path
           strokeLinecap="round"
@@ -139,11 +172,16 @@ export const Features = () => {
         whileInView="visible"
         viewport={{ once: true, margin: '-60px' }}
       >
-        {features.map((feature) => (
+        {features.map((feature, index) => (
           <motion.div key={feature.title} variants={staggerItem}>
             <FeatureCard
               {...feature}
-              icon={<NeonFeatureIcon variant={getFeatureIconVariant(feature.title)} />}
+              icon={
+                <NeonFeatureIcon
+                  variant={getFeatureIconVariant(feature.title)}
+                  delay={index * 0.14}
+                />
+              }
             />
           </motion.div>
         ))}
