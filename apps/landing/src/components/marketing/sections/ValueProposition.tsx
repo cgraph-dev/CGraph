@@ -8,12 +8,109 @@
  * @since v2.1.0
  */
 
-import { memo } from 'react';
+import { memo, type CSSProperties } from 'react';
 import { motion } from 'framer-motion';
 import { valueProps } from '../../../data/landing-data';
 import type { ValuePropData } from '../../../data/landing-data';
 import { SectionHeader } from '../ui/SectionHeader';
 import { FlowingBorder } from '../../customization-demo/effects';
+
+type ValueIconVariant = 'encryption' | 'forums' | 'gamification' | 'realtime';
+
+const getValueIconVariant = (title: string): ValueIconVariant => {
+  if (title === 'Post-Quantum Encryption') return 'encryption';
+  if (title === 'Forums Built In') return 'forums';
+  if (title === 'Gamification That Works') return 'gamification';
+  return 'realtime';
+};
+
+const ValueCardIcon = ({ title, index }: { title: string; index: number }) => {
+  const variant = getValueIconVariant(title);
+  const style = {
+    '--value-icon-delay': `${index * 0.18}s`,
+  } as CSSProperties;
+
+  const className = `value-card__icon-neon value-card__icon-neon--${variant}`;
+
+  if (variant === 'encryption') {
+    return (
+      <svg
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        style={style}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"
+        />
+      </svg>
+    );
+  }
+
+  if (variant === 'forums') {
+    return (
+      <svg
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        style={style}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M7.5 17.25h-3a1.5 1.5 0 01-1.5-1.5V6.75a1.5 1.5 0 011.5-1.5h10.5a1.5 1.5 0 011.5 1.5v9a1.5 1.5 0 01-1.5 1.5H10.5l-3 3v-3z"
+        />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 9h3m-3 3h6" />
+      </svg>
+    );
+  }
+
+  if (variant === 'gamification') {
+    return (
+      <svg
+        className={className}
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth={1.6}
+        style={style}
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M8.25 5.25h7.5v2.25a3.75 3.75 0 01-3.75 3.75A3.75 3.75 0 018.25 7.5V5.25z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M9.75 11.25v2.25a2.25 2.25 0 01-2.25 2.25H6.75m7.5-4.5v2.25a2.25 2.25 0 002.25 2.25h.75"
+        />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 18.75h3m-4.5 0h6" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      style={style}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v10.5m0-10.5l-3 3m3-3l3 3" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 13.5h2.25v4.5h9v-4.5h2.25" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 15.75h4.5" />
+    </svg>
+  );
+};
 
 const ValueCard = memo(function ValueCard({ data, index }: { data: ValuePropData; index: number }) {
   return (
@@ -33,7 +130,7 @@ const ValueCard = memo(function ValueCard({ data, index }: { data: ValuePropData
         viewport={{ once: true }}
         transition={{ delay: index * 0.1 + 0.2, type: 'spring', stiffness: 300, damping: 12 }}
       >
-        {data.icon}
+        <ValueCardIcon title={data.title} index={index} />
       </motion.div>
       {data.highlight && (
         <motion.span

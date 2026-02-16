@@ -294,21 +294,11 @@ export function Security() {
         >
           <GlassCard className="security-comparison panel-border-glow relative overflow-hidden">
             <div className="security-comparison__header relative z-10 pb-3 pt-8">
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="security-comparison__chip"
-              >
-                <span className="security-comparison__chip-dot" />
-                <span className="security-comparison__chip-text">Security Posture Snapshot</span>
-              </motion.div>
-
               <motion.h3
-                className="mb-3 font-zentry text-4xl tracking-wide text-white md:text-5xl"
+                className="security-comparison__title"
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+                transition={{ delay: 0.45 }}
               >
                 The Security Vault
               </motion.h3>
@@ -316,7 +306,7 @@ export function Security() {
                 className="security-comparison__subtitle"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
+                transition={{ delay: 0.55 }}
               >
                 Real controls currently deployed across crypto, infrastructure, and operations.
               </motion.p>
