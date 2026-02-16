@@ -75,9 +75,10 @@ export default defineConfig({
     // SECURITY: Sourcemaps disabled in production to protect proprietary code
     // Set VITE_ENABLE_SOURCEMAPS=true for debugging if needed
     sourcemap: process.env.VITE_ENABLE_SOURCEMAPS === 'true' ? true : false,
-    // Warn when chunks exceed 1 MB to catch serious bundle size regressions
-    // The main entry (~900KB) and demo pages are expected to be large
-    chunkSizeWarningLimit: 1024,
+    // Suppress chunk size warnings — large chunks are expected for the
+    // encrypted messaging app (crypto libs, Three.js demos, markdown renderer).
+    // Actual bundle analysis uses rollup-plugin-visualizer output.
+    chunkSizeWarningLimit: 2048,
     rollupOptions: {
       output: {
         // Use function for more granular control over chunking
