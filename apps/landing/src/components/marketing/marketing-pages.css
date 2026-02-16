@@ -1698,6 +1698,7 @@
 .gl-footer-unified__heading {
   color: #ffffff;
   font-size: 0.875rem;
+  font-family: 'Tektur', 'Inter', system-ui, sans-serif;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
