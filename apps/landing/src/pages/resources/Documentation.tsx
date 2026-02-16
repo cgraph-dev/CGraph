@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
 
 const docCategories = [
   {
@@ -281,9 +282,11 @@ export default function Documentation() {
                 href={`#${cat.id}`}
                 className="flex items-center gap-1.5 rounded-lg border border-white/5 bg-white/5 px-3 py-2 text-xs font-medium text-gray-300 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
               >
-                <span>{cat.icon}</span>
+                <NeonIcon symbol={cat.icon} size={14} title={cat.title} />
                 <span className="hidden sm:inline">{cat.title.split(' ')[0]}</span>
-                <span className="sm:hidden">{cat.icon}</span>
+                <span className="sm:hidden">
+                  <NeonIcon symbol={cat.icon} size={14} title={cat.title} />
+                </span>
               </a>
             ))}
           </motion.div>
@@ -361,10 +364,10 @@ export default function Documentation() {
             className="flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-5 py-3"
           >
             <div
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
               style={{ background: 'rgba(16, 185, 129, 0.15)' }}
             >
-              📝
+              <NeonIcon symbol="📝" size={16} title="Documentation note" />
             </div>
             <p className="text-sm" style={{ color: 'var(--color-gray)' }}>
               These docs reflect our internal engineering documentation. Full public developer docs
@@ -414,13 +417,18 @@ export default function Documentation() {
                 <div className="p-6">
                   <div className="mb-4 flex items-center gap-4">
                     <div
-                      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-2xl"
+                      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl"
                       style={{
                         background: `${category.color}15`,
                         border: `1px solid ${category.color}25`,
                       }}
                     >
-                      {category.icon}
+                      <NeonIcon
+                        symbol={category.icon}
+                        size={28}
+                        title={category.title}
+                        color={category.color}
+                      />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-white">{category.title}</h3>
@@ -552,7 +560,7 @@ export default function Documentation() {
                   style={{ padding: '1.25rem' }}
                 >
                   <div className="mb-3 flex items-center gap-2">
-                    <span className="text-lg">{group.icon}</span>
+                    <NeonIcon symbol={group.icon} size={18} title={group.group} />
                     <h4 className="text-sm font-bold text-white">{group.group}</h4>
                   </div>
                   <div className="space-y-1.5">
@@ -660,7 +668,7 @@ export default function Documentation() {
                   viewport={{ once: true }}
                   className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs"
                 >
-                  <span>{badge.icon}</span>
+                  <NeonIcon symbol={badge.icon} size={14} title={badge.label} />
                   <span className="text-gray-300">{badge.label}</span>
                 </motion.div>
               ))}
@@ -838,7 +846,9 @@ export default function Documentation() {
                 className="marketing-card text-center"
                 style={{ padding: '1.5rem 1rem' }}
               >
-                <div className="mb-3 text-3xl">{tech.icon}</div>
+                <div className="mb-3 inline-flex">
+                  <NeonIcon symbol={tech.icon} size={30} title={tech.name} />
+                </div>
                 <h3 className="mb-1 text-sm font-bold text-white">{tech.name}</h3>
                 <p className="mb-2 text-xs" style={{ color: 'var(--color-gray)' }}>
                   {tech.desc}

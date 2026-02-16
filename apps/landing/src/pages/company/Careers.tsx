@@ -9,6 +9,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
 
 const benefits: Array<{
   icon: string;
@@ -121,7 +122,9 @@ export default function Careers() {
                   transition={{ delay: index * 0.05 }}
                   className="marketing-card"
                 >
-                  <span className="marketing-card__icon">{benefit.icon}</span>
+                  <span className="marketing-card__icon">
+                    <NeonIcon symbol={benefit.icon} size={34} title={benefit.title} />
+                  </span>
                   <h3 className="marketing-card__title">{benefit.title}</h3>
                   <p className="marketing-card__desc">{benefit.description}</p>
                 </motion.div>
@@ -152,7 +155,9 @@ export default function Careers() {
               viewport={{ once: true }}
               className="marketing-card text-center"
             >
-              <span className="marketing-card__icon">🚀</span>
+              <span className="marketing-card__icon">
+                <NeonIcon symbol="🚀" size={34} title="Launch" />
+              </span>
               <h3 className="marketing-card__title">We're Just Getting Started</h3>
               <p className="marketing-card__desc">
                 CGraph is currently a solo project in active development. While we don't have open

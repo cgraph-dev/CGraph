@@ -11,6 +11,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import DOMPurify from 'dompurify';
 import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
 
 interface BlogArticleData {
   title: string;
@@ -1139,14 +1140,14 @@ export default function BlogArticle() {
           <div className="marketing-section__container" style={{ textAlign: 'center' }}>
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <div
-                className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl text-4xl"
+                className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl"
                 style={{
                   background:
                     'linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(139, 92, 246, 0.15))',
                   border: '1px solid rgba(255,255,255,0.1)',
                 }}
               >
-                📄
+                <NeonIcon symbol="📄" size={40} title="Document" />
               </div>
               <p className="mb-8 text-lg" style={{ color: 'var(--color-gray)' }}>
                 This article may have been moved or removed.

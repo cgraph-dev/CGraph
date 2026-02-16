@@ -9,6 +9,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
 
 const contactMethods = [
   {
@@ -132,7 +133,9 @@ export default function Contact() {
                 className="marketing-card"
                 style={{ textDecoration: 'none' }}
               >
-                <span className="marketing-card__icon">{method.icon}</span>
+                <span className="marketing-card__icon">
+                  <NeonIcon symbol={method.icon} size={34} title={method.title} />
+                </span>
                 <h3 className="marketing-card__title">{method.title}</h3>
                 <p className="marketing-card__desc">{method.description}</p>
                 <span
@@ -176,7 +179,9 @@ export default function Contact() {
                   background: 'rgba(16, 185, 129, 0.1)',
                 }}
               >
-                <span className="marketing-card__icon">✅</span>
+                <span className="marketing-card__icon">
+                  <NeonIcon symbol="✅" size={34} title="Message sent" />
+                </span>
                 <h3 className="marketing-card__title">Message Sent!</h3>
                 <p className="marketing-card__desc">
                   Thank you for reaching out. We'll get back to you within 24-48 hours.

@@ -8,6 +8,7 @@
  */
 
 import { motion } from 'framer-motion';
+import { NeonIcon } from '@/components/marketing/ui';
 
 export default function QuickActions() {
   return (
@@ -25,7 +26,9 @@ export default function QuickActions() {
           background: 'rgba(16, 185, 129, 0.1)',
         }}
       >
-        <span className="marketing-card__icon">📥</span>
+        <span className="marketing-card__icon">
+          <NeonIcon symbol="📥" size={34} title="Download data" />
+        </span>
         <h3 className="marketing-card__title">Download Data</h3>
         <p className="marketing-card__desc">Settings → Privacy → Download</p>
       </div>
@@ -36,7 +39,9 @@ export default function QuickActions() {
           background: 'rgba(139, 92, 246, 0.1)',
         }}
       >
-        <span className="marketing-card__icon">📤</span>
+        <span className="marketing-card__icon">
+          <NeonIcon symbol="📤" size={34} title="Export data" />
+        </span>
         <h3 className="marketing-card__title">Export Data</h3>
         <p className="marketing-card__desc">Settings → Privacy → Export</p>
       </div>
@@ -47,7 +52,9 @@ export default function QuickActions() {
           background: 'rgba(239, 68, 68, 0.1)',
         }}
       >
-        <span className="marketing-card__icon">🗑️</span>
+        <span className="marketing-card__icon">
+          <NeonIcon symbol="🗑️" size={34} title="Delete account" />
+        </span>
         <h3 className="marketing-card__title">Delete Account</h3>
         <p className="marketing-card__desc">Settings → Account → Delete</p>
       </div>

@@ -13,3 +13,6 @@ export type { FeatureCardProps } from './FeatureCard';
 
 export { SectionHeader } from './SectionHeader';
 export type { SectionHeaderProps } from './SectionHeader';
+
+export { NeonIcon } from './NeonIcon';
+export type { NeonIconProps } from './NeonIcon';

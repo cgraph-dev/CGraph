@@ -11,6 +11,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import DOMPurify from 'dompurify';
 import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
 
 interface DocArticleData {
   title: string;
@@ -1799,13 +1800,18 @@ export default function DocArticle() {
             className="mb-8 flex items-center gap-3"
           >
             <span
-              className="flex h-10 w-10 items-center justify-center rounded-lg text-xl"
+              className="flex h-10 w-10 items-center justify-center rounded-lg"
               style={{
                 background: `${article.categoryColor}15`,
                 border: `1px solid ${article.categoryColor}25`,
               }}
             >
-              {article.categoryIcon}
+              <NeonIcon
+                symbol={article.categoryIcon}
+                size={22}
+                color={article.categoryColor}
+                title={article.category}
+              />
             </span>
             <div>
               <span

@@ -8,6 +8,7 @@
 
 import { motion } from 'framer-motion';
 import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
 
 const pressReleases = [
   {
@@ -127,7 +128,9 @@ export default function Press() {
                 className="marketing-card group"
                 style={{ padding: '1.5rem' }}
               >
-                <div className="mb-3 text-4xl">{asset.icon}</div>
+                <div className="mb-3">
+                  <NeonIcon symbol={asset.icon} size={36} title={asset.name} />
+                </div>
                 <h3 className="mb-1 font-semibold text-white">{asset.name}</h3>
                 <p className="mb-3 text-sm text-gray-400">{asset.description}</p>
                 <span className="text-xs" style={{ color: 'var(--color-primary)' }}>

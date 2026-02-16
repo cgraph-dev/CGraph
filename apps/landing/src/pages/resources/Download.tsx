@@ -8,6 +8,7 @@
 
 import { motion } from 'framer-motion';
 import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
 
 const features = [
   {
@@ -41,7 +42,7 @@ export default function Download() {
     <MarketingLayout
       title="Get CGraph"
       subtitle="Access CGraph on the web today, and on mobile soon. Desktop apps are on our roadmap."
-      eyebrow="⬇️ Get Started"
+      eyebrow="Get Started"
       showCTA
     >
       {/* Web App — Available Now */}
@@ -68,7 +69,9 @@ export default function Download() {
             className="marketing-card mx-auto max-w-2xl text-center"
             style={{ padding: '3rem' }}
           >
-            <div className="mb-4 text-6xl">🌐</div>
+            <div className="mb-4 inline-flex">
+              <NeonIcon symbol="🌐" size={56} title="Web app" />
+            </div>
             <h3 className="mb-2 text-2xl font-bold text-white">CGraph for Web</h3>
             <p className="mb-2 text-sm" style={{ color: 'var(--color-gray)' }}>
               Works in Chrome, Firefox, Safari, and Edge
@@ -161,13 +164,13 @@ export default function Download() {
                 style={{ padding: '2rem' }}
               >
                 <div
-                  className="flex h-20 w-20 items-center justify-center rounded-2xl text-4xl"
+                  className="flex h-20 w-20 items-center justify-center rounded-2xl"
                   style={{
                     background:
                       'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(139, 92, 246, 0.2))',
                   }}
                 >
-                  {app.icon}
+                  <NeonIcon symbol={app.icon} size={40} title={app.name} />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
@@ -231,7 +234,9 @@ export default function Download() {
                 className="marketing-card text-center"
                 style={{ padding: '2rem', opacity: 0.7 }}
               >
-                <div className="mb-4 text-5xl">{platform.icon}</div>
+                <div className="mb-4 inline-flex">
+                  <NeonIcon symbol={platform.icon} size={44} title={platform.name} />
+                </div>
                 <h3 className="mb-2 text-xl font-bold text-white">{platform.name}</h3>
                 <span
                   className="inline-block rounded-full px-3 py-1 text-xs font-medium"
@@ -274,7 +279,9 @@ export default function Download() {
                 viewport={{ once: true }}
                 className="marketing-card"
               >
-                <span className="marketing-card__icon">{feature.icon}</span>
+                <span className="marketing-card__icon">
+                  <NeonIcon symbol={feature.icon} size={34} title={feature.title} />
+                </span>
                 <h3 className="marketing-card__title">{feature.title}</h3>
                 <p className="marketing-card__desc">{feature.description}</p>
               </motion.div>

@@ -13,6 +13,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
 
 interface BlogPost {
   id: number;
@@ -404,14 +405,14 @@ export default function Blog() {
                         {/* Icon + Category */}
                         <div className="mb-5 flex items-center gap-4">
                           <div
-                            className="flex h-14 w-14 items-center justify-center rounded-xl text-3xl"
+                            className="flex h-14 w-14 items-center justify-center rounded-xl"
                             style={{
                               background:
                                 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(139, 92, 246, 0.15))',
                               border: '1px solid rgba(255,255,255,0.08)',
                             }}
                           >
-                            {post.image}
+                            <NeonIcon symbol={post.image} size={30} title={post.title} />
                           </div>
                           <div>
                             <span
@@ -519,14 +520,14 @@ export default function Blog() {
 
                     <div className="flex gap-5 p-5 pl-6">
                       <div
-                        className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl text-2xl"
+                        className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl"
                         style={{
                           background:
                             'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1))',
                           border: '1px solid rgba(255,255,255,0.06)',
                         }}
                       >
-                        {post.image}
+                        <NeonIcon symbol={post.image} size={26} title={post.title} />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -633,11 +634,8 @@ export default function Blog() {
                   }}
                 />
                 <div className="relative">
-                  <div
-                    className="mb-2 font-mono text-xs font-bold tracking-wider"
-                    style={{ color: stat.color }}
-                  >
-                    {stat.icon}
+                  <div className="mb-2 inline-flex">
+                    <NeonIcon symbol={stat.icon} size={15} title={stat.label} color={stat.color} />
                   </div>
                   <div
                     className="font-zentry text-3xl font-bold"

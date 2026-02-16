@@ -12,6 +12,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
 
 const plannedServices = [
   {
@@ -156,7 +157,7 @@ export default function Status() {
     <MarketingLayout
       title="System Status"
       subtitle="Infrastructure overview, SLO targets, and service monitoring for CGraph."
-      eyebrow="📊 Status"
+      eyebrow="Status"
     >
       {/* Current Status Banner */}
       <section className="marketing-section marketing-section--alt">
@@ -273,7 +274,9 @@ export default function Status() {
                   }}
                 />
                 <div className="relative">
-                  <div className="mb-3 text-2xl">{slo.icon}</div>
+                  <div className="mb-3 inline-flex">
+                    <NeonIcon symbol={slo.icon} size={28} title={slo.metric} />
+                  </div>
                   <div
                     className="mb-1 font-zentry text-2xl font-bold"
                     style={{
@@ -332,14 +335,14 @@ export default function Status() {
                 />
                 <div className="flex items-center gap-4 p-4 pl-5">
                   <div
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl"
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
                     style={{
                       background:
                         'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1))',
                       border: '1px solid rgba(255,255,255,0.06)',
                     }}
                   >
-                    {service.icon}
+                    <NeonIcon symbol={service.icon} size={24} title={service.name} />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2.5">
@@ -594,7 +597,9 @@ export default function Status() {
                 viewport={{ once: true }}
                 className="marketing-card"
               >
-                <span className="marketing-card__icon">{feature.icon}</span>
+                <span className="marketing-card__icon">
+                  <NeonIcon symbol={feature.icon} size={34} title={feature.title} />
+                </span>
                 <h3 className="marketing-card__title">{feature.title}</h3>
                 <p className="marketing-card__desc">{feature.desc}</p>
               </motion.div>

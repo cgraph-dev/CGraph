@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 
 const springs = { bouncy: { type: 'spring' as const, stiffness: 300, damping: 10 } };
 import { MarketingLayout } from '@/components/marketing';
+import { NeonIcon } from '@/components/marketing/ui';
 
 const platformStats = [
   { label: 'Features Shipped', value: '55+', detail: 'of 69 tracked' },
@@ -289,7 +290,9 @@ export default function About() {
                 transition={{ delay: index * 0.08 }}
                 className="marketing-card"
               >
-                <span className="marketing-card__icon">{cap.icon}</span>
+                <span className="marketing-card__icon">
+                  <NeonIcon symbol={cap.icon} size={34} title={cap.title} />
+                </span>
                 <h3 className="marketing-card__title">{cap.title}</h3>
                 <p className="marketing-card__desc">{cap.description}</p>
               </motion.div>
@@ -324,7 +327,9 @@ export default function About() {
                 transition={{ delay: index * 0.08 }}
                 className="marketing-card"
               >
-                <span className="marketing-card__icon">{value.icon}</span>
+                <span className="marketing-card__icon">
+                  <NeonIcon symbol={value.icon} size={34} title={value.title} />
+                </span>
                 <h3 className="marketing-card__title">{value.title}</h3>
                 <p className="marketing-card__desc">{value.description}</p>
               </motion.div>
