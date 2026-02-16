@@ -224,45 +224,22 @@ export default function Blog() {
       eyebrow="Blog"
     >
       {/* Latest Release Banner */}
-      <section
-        className="marketing-section marketing-section--dark"
-        style={{ paddingTop: '2rem', paddingBottom: '2rem' }}
-      >
+      <section className="marketing-section marketing-section--dark blog-release">
         <div className="mx-auto max-w-4xl px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="relative overflow-hidden rounded-2xl border border-white/10"
-            style={{
-              background:
-                'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(139, 92, 246, 0.08) 50%, rgba(99, 102, 241, 0.08) 100%)',
-            }}
+            className="blog-release-card"
           >
-            {/* Decorative gradient line at top */}
-            <div
-              className="h-1 w-full"
-              style={{
-                background:
-                  'linear-gradient(90deg, var(--color-primary), var(--color-secondary), var(--color-primary))',
-              }}
-            />
-            <div className="flex flex-col items-center gap-6 p-8 md:flex-row">
+            <div className="blog-release-card__bar" />
+            <div className="blog-release-content flex flex-col items-center gap-6 p-8 md:flex-row">
               <div className="flex-1">
                 <div className="mb-3 flex items-center gap-3">
-                  <span
-                    className="rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider"
-                    style={{
-                      background:
-                        'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                      color: 'white',
-                    }}
-                  >
-                    Latest Release
-                  </span>
+                  <span className="blog-release-badge">Latest Release</span>
                   <span className="font-mono text-sm text-gray-400">v0.9.26</span>
                 </div>
-                <h3 className="mb-2 text-xl font-bold text-white md:text-2xl">
+                <h3 className="blog-release-title mb-2 text-xl font-bold text-white md:text-2xl">
                   Architecture Refactor Complete
                 </h3>
                 <p className="text-sm leading-relaxed" style={{ color: 'var(--color-gray)' }}>
@@ -271,14 +248,7 @@ export default function Blog() {
                 </p>
               </div>
               <div className="flex shrink-0 flex-col items-center gap-2">
-                <div
-                  className="flex h-20 w-20 items-center justify-center rounded-2xl"
-                  style={{
-                    background:
-                      'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(139, 92, 246, 0.2))',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                  }}
-                >
+                <div className="blog-release-icon flex items-center justify-center">
                   <NeonIcon symbol="🏗️" size={40} title="Architecture refactor" />
                 </div>
                 <span className="text-xs text-gray-500">Feb 15, 2026</span>
@@ -289,10 +259,7 @@ export default function Blog() {
       </section>
 
       {/* Category Filter */}
-      <section
-        className="marketing-section marketing-section--alt"
-        style={{ paddingTop: '2rem', paddingBottom: '2rem' }}
-      >
+      <section className="marketing-section marketing-section--alt blog-filter">
         <div className="marketing-section__container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -307,32 +274,10 @@ export default function Blog() {
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`rounded-full px-5 py-2.5 text-sm font-medium transition-all ${
-                    isActive
-                      ? 'text-white shadow-lg'
-                      : 'border border-white/10 bg-white/5 text-gray-300 hover:border-white/20 hover:bg-white/10'
-                  }`}
-                  style={
-                    isActive
-                      ? {
-                          background:
-                            'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                          boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)',
-                        }
-                      : undefined
-                  }
+                  className={`blog-filter-button ${isActive ? 'is-active' : ''}`}
                 >
                   {category}
-                  {category !== 'All' && (
-                    <span
-                      className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded-full text-xs"
-                      style={{
-                        background: isActive ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.08)',
-                      }}
-                    >
-                      {count}
-                    </span>
-                  )}
+                  {category !== 'All' && <span className="blog-filter-count">{count}</span>}
                 </button>
               );
             })}
@@ -377,7 +322,7 @@ export default function Blog() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.15 }}
                       whileHover={{ y: -8, transition: { duration: 0.2 } }}
-                      className="marketing-card group relative overflow-hidden"
+                      className="marketing-card blog-featured-card group relative"
                       style={{ padding: 0 }}
                     >
                       {/* Gradient top border */}
@@ -388,29 +333,13 @@ export default function Blog() {
                         }}
                       />
 
-                      <div className="p-7">
+                      <div className="blog-featured-body p-7">
                         {/* Featured badge */}
-                        <div
-                          className="absolute right-4 top-5 rounded-full px-2.5 py-1 text-xs font-semibold"
-                          style={{
-                            background:
-                              'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                            color: 'white',
-                          }}
-                        >
-                          Featured
-                        </div>
+                        <div className="blog-featured-badge absolute right-4 top-5">Featured</div>
 
                         {/* Icon + Category */}
                         <div className="mb-5 flex items-center gap-4">
-                          <div
-                            className="flex h-14 w-14 items-center justify-center rounded-xl"
-                            style={{
-                              background:
-                                'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(139, 92, 246, 0.15))',
-                              border: '1px solid rgba(255,255,255,0.08)',
-                            }}
-                          >
+                          <div className="blog-post-icon">
                             <NeonIcon symbol={post.image} size={30} title={post.title} />
                           </div>
                           <div>
@@ -436,11 +365,7 @@ export default function Blog() {
                         {/* Tags */}
                         <div className="mb-5 flex flex-wrap gap-2">
                           {post.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="rounded-md border border-white/5 bg-white/5 px-2.5 py-1 text-xs"
-                              style={{ color: 'var(--color-gray)' }}
-                            >
+                            <span key={tag} className="blog-tag">
                               {tag}
                             </span>
                           ))}
@@ -449,15 +374,7 @@ export default function Blog() {
                         {/* Author + Meta */}
                         <div className="flex items-center justify-between border-t border-white/5 pt-4">
                           <div className="flex items-center gap-2.5">
-                            <div
-                              className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold text-white"
-                              style={{
-                                background:
-                                  'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                              }}
-                            >
-                              BL
-                            </div>
+                            <div className="blog-author-avatar">BL</div>
                             <span className="text-sm font-medium text-white">{post.author}</span>
                           </div>
                           <div
@@ -506,7 +423,7 @@ export default function Blog() {
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.06 }}
                     whileHover={{ x: 4, transition: { duration: 0.15 } }}
-                    className="marketing-card group relative overflow-hidden"
+                    className="marketing-card blog-list-card group relative"
                     style={{ padding: 0 }}
                   >
                     {/* Left accent bar */}
@@ -517,15 +434,8 @@ export default function Blog() {
                       }}
                     />
 
-                    <div className="flex gap-5 p-5 pl-6">
-                      <div
-                        className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl"
-                        style={{
-                          background:
-                            'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1))',
-                          border: '1px solid rgba(255,255,255,0.06)',
-                        }}
-                      >
+                    <div className="blog-list-body flex gap-5 p-5 pl-6">
+                      <div className="blog-list-icon">
                         <NeonIcon symbol={post.image} size={26} title={post.title} />
                       </div>
                       <div className="min-w-0 flex-1">
@@ -561,22 +471,15 @@ export default function Blog() {
                         <div className="flex items-center justify-between">
                           <div className="flex flex-wrap gap-1.5">
                             {post.tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="rounded-md border border-white/5 bg-white/5 px-2 py-0.5 text-xs"
-                                style={{ color: 'var(--color-gray)' }}
-                              >
+                              <span key={tag} className="blog-tag">
                                 {tag}
                               </span>
                             ))}
                           </div>
                           <div className="ml-4 flex shrink-0 items-center gap-2">
                             <div
-                              className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-white"
-                              style={{
-                                background:
-                                  'linear-gradient(135deg, var(--color-primary), var(--color-secondary))',
-                              }}
+                              className="blog-author-avatar"
+                              style={{ width: '1.25rem', height: '1.25rem', fontSize: '9px' }}
                             >
                               BL
                             </div>
@@ -622,7 +525,7 @@ export default function Blog() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="marketing-card relative overflow-hidden text-center"
+                className="marketing-card blog-stat-card relative text-center"
                 style={{ padding: '2rem 1.5rem' }}
               >
                 {/* Background glow */}
@@ -637,7 +540,7 @@ export default function Blog() {
                     <NeonIcon symbol={stat.icon} size={15} title={stat.label} color={stat.color} />
                   </div>
                   <div
-                    className="font-zentry text-3xl font-bold"
+                    className="text-3xl font-bold"
                     style={{
                       background: `linear-gradient(135deg, ${stat.color}, var(--color-secondary))`,
                       WebkitBackgroundClip: 'text',
@@ -693,17 +596,13 @@ export default function Blog() {
 
       {/* Newsletter */}
       <section className="marketing-section marketing-section--alt">
-        <div className="marketing-section__container" style={{ maxWidth: '48rem' }}>
+        <div className="marketing-section__container blog-newsletter">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="relative overflow-hidden rounded-2xl border border-white/10"
-            style={{
-              padding: '3rem',
-              background:
-                'linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(139, 92, 246, 0.08))',
-            }}
+            className="blog-newsletter-card blog-newsletter-shell"
+            style={{ padding: '3rem' }}
           >
             {/* Decorative circles */}
             <div
@@ -715,8 +614,8 @@ export default function Blog() {
               style={{ background: 'var(--color-secondary)' }}
             />
 
-            <div className="relative text-center">
-              <h2 className="mb-2 font-zentry text-3xl font-bold text-white">Stay Updated</h2>
+            <div className="blog-newsletter-content relative text-center">
+              <h2 className="blog-newsletter-title mb-2 font-bold">Stay Updated</h2>
               <p className="mx-auto mb-8 max-w-lg text-sm" style={{ color: 'var(--color-gray)' }}>
                 Get notified about engineering updates, security advisories, and launch
                 announcements. No spam — just real development progress.
@@ -771,10 +670,7 @@ export default function Blog() {
       </section>
 
       {/* Social */}
-      <section
-        className="marketing-section marketing-section--dark"
-        style={{ padding: '3rem 2rem' }}
-      >
+      <section className="marketing-section marketing-section--dark blog-social">
         <div className="mx-auto max-w-4xl">
           <div
             className="flex flex-wrap items-center justify-center gap-4 text-sm"
@@ -784,17 +680,14 @@ export default function Blog() {
               href="https://github.com/cgraph-dev/CGraph"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-lg border border-white/5 bg-white/5 px-4 py-2.5 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
+              className="blog-social-link"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
               </svg>
               GitHub
             </a>
-            <a
-              href="mailto:hello@cgraph.org"
-              className="flex items-center gap-2 rounded-lg border border-white/5 bg-white/5 px-4 py-2.5 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
-            >
+            <a href="mailto:hello@cgraph.org" className="blog-social-link">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
@@ -805,10 +698,7 @@ export default function Blog() {
               </svg>
               hello@cgraph.org
             </a>
-            <a
-              href="mailto:security@cgraph.org"
-              className="flex items-center gap-2 rounded-lg border border-white/5 bg-white/5 px-4 py-2.5 transition-all hover:border-white/20 hover:bg-white/10 hover:text-white"
-            >
+            <a href="mailto:security@cgraph.org" className="blog-social-link">
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
                   strokeLinecap="round"
