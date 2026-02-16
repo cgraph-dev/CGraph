@@ -18,8 +18,7 @@ import { GradientText } from '../ui/GradientText';
 import { LandingButton } from '../ui/LandingButton';
 import { NeuralBackground } from '../effects/NeuralBackground';
 import './Hero.css';
-
-const WEB_APP_URL = 'https://web.cgraph.org';
+import { WEB_APP_URL } from '@/constants';
 
 // Trust badges shown below the CTA
 const trustBadges = [

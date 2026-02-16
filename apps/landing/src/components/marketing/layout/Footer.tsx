@@ -11,36 +11,11 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LogoIcon } from '@/components/Logo';
+import { footerLinks } from '@/data/landing-data';
 import '../marketing-pages.css';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-
-  const footerLinks = {
-    product: [
-      { label: 'Features', to: '/#features' },
-      { label: 'Security', to: '/#security' },
-      { label: 'Download', to: '/download' },
-    ],
-    resources: [
-      { label: 'Documentation', to: '/docs' },
-      { label: 'API Reference', to: '/docs' },
-      { label: 'Status', to: '/status' },
-      { label: 'Blog', to: '/blog' },
-    ],
-    company: [
-      { label: 'About', to: '/about' },
-      { label: 'Careers', to: '/careers' },
-      { label: 'Contact', to: '/contact' },
-      { label: 'Press', to: '/press' },
-    ],
-    legal: [
-      { label: 'Privacy Policy', to: '/privacy' },
-      { label: 'Terms of Service', to: '/terms' },
-      { label: 'Cookie Policy', to: '/cookies' },
-      { label: 'GDPR', to: '/gdpr' },
-    ],
-  };
 
   const renderLink = (link: { label: string; to?: string; href?: string }) => {
     if (link.href) {

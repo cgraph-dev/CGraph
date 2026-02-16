@@ -10,8 +10,7 @@
 import { motion, Variants } from 'framer-motion';
 import { SectionHeader } from '../ui/SectionHeader';
 import { LandingButton } from '../ui/LandingButton';
-
-const WEB_APP_URL = 'https://web.cgraph.org';
+import { WEB_APP_URL } from '@/constants';
 
 const staggerContainer: Variants = {
   hidden: { opacity: 0 },

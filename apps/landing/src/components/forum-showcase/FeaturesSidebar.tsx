@@ -6,8 +6,7 @@
 import { motion } from 'framer-motion';
 import { features } from './constants';
 import { LandingButton } from '../marketing/ui/LandingButton';
-
-const WEB_APP_URL = 'https://web.cgraph.org';
+import { WEB_APP_URL } from '@/constants';
 
 export function FeaturesSidebar() {
   return (

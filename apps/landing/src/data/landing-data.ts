@@ -38,7 +38,7 @@ export interface ValuePropData {
   readonly highlight?: string;
 }
 
-export const WEB_APP_URL = 'https://web.cgraph.org';
+export { WEB_APP_URL } from '@/constants';
 
 export const features: readonly FeatureData[] = [
   {
@@ -156,27 +156,30 @@ export const securityFeatures: readonly SecurityFeatureData[] = [
   },
 ] as const;
 
+/** Footer navigation links — single source of truth shared with Footer.tsx */
 export const footerLinks = {
   product: [
-    { label: 'Features', href: '/#features' },
-    { label: 'Security', href: '/#security' },
-    { label: 'Download', href: '/download' },
+    { label: 'Features', to: '/#features' },
+    { label: 'Security', to: '/#security' },
+    { label: 'Download', to: '/download' },
   ],
   resources: [
-    { label: 'Documentation', href: '/docs' },
-    { label: 'Blog', href: '/blog' },
-    { label: 'Status', href: '/status' },
+    { label: 'Documentation', to: '/docs' },
+    { label: 'API Reference', to: '/docs' },
+    { label: 'Status', to: '/status' },
+    { label: 'Blog', to: '/blog' },
   ],
   company: [
-    { label: 'About', href: '/about' },
-    { label: 'Careers', href: '/careers' },
-    { label: 'Contact', href: '/contact' },
+    { label: 'About', to: '/about' },
+    { label: 'Careers', to: '/careers' },
+    { label: 'Contact', to: '/contact' },
+    { label: 'Press', to: '/press' },
   ],
   legal: [
-    { label: 'Privacy', href: '/privacy' },
-    { label: 'Terms', href: '/terms' },
-    { label: 'Cookie Policy', href: '/cookies' },
-    { label: 'GDPR', href: '/gdpr' },
+    { label: 'Privacy Policy', to: '/privacy' },
+    { label: 'Terms of Service', to: '/terms' },
+    { label: 'Cookie Policy', to: '/cookies' },
+    { label: 'GDPR', to: '/gdpr' },
   ],
 } as const;
 
