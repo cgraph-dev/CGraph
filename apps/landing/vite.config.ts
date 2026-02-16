@@ -1,9 +1,14 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { compression } from 'vite-plugin-compression2';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    compression({ algorithm: 'gzip', threshold: 1024 }),
+    compression({ algorithm: 'brotliCompress', threshold: 1024 }),
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -11,10 +16,10 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    target: 'es2020',
     sourcemap: false,
     minify: 'terser',
-    // Suppress chunk size warnings - animation libraries are large
-    chunkSizeWarningLimit: 1500,
+    chunkSizeWarningLimit: 800,
     terserOptions: {
       compress: {
         drop_console: true,
