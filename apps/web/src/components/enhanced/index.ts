@@ -91,7 +91,7 @@ export type {
 // SECURITY & CRYPTOGRAPHY
 // =============================================================================
 
-// Double Ratchet Protocol (NEW v0.7.35)
+// Triple Ratchet Protocol (v0.9.28 — Post-Quantum upgrade)
 export {
   DoubleRatchetEngine,
   PostQuantumDoubleRatchet,

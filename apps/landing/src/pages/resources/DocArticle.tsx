@@ -35,7 +35,7 @@ const docArticles: Record<string, DocArticleData> = {
 <ul>
   <li><strong>Real-Time Messaging</strong> — Text, voice, and video chat with servers, channels, and direct messages. WebSocket-powered with typing indicators, read receipts, and presence.</li>
   <li><strong>Community Forums</strong> — Threaded discussions with voting, karma, nested comments, polls, and rich text editing using a custom BBCode parser.</li>
-  <li><strong>Military-Grade Encryption</strong> — End-to-end encryption using the Signal Protocol (X3DH key agreement + Double Ratchet) for all private messages.</li>
+  <li><strong>Post-Quantum Encryption</strong> — End-to-end encryption using Triple Ratchet (PQXDH + ML-KEM-768) for all private messages.</li>
   <li><strong>RPG Gamification</strong> — 30+ achievements across 6 categories, XP/level progression, daily and weekly quests, streak multipliers, and a virtual marketplace.</li>
 </ul>
 
@@ -417,74 +417,77 @@ const docArticles: Record<string, DocArticleData> = {
 <p>Each reaction is stored with the user ID, emoji identifier, and timestamp. Reactions are aggregated and displayed as counts. You can click on a reaction count to see who reacted.</p>
 `,
   },
-  'e2ee-overview-x3dh-double-ratchet': {
-    title: 'E2EE Overview: X3DH + Double Ratchet',
+  'e2ee-overview-pqxdh-triple-ratchet': {
+    title: 'E2EE Overview: PQXDH + Triple Ratchet',
     category: 'Security & Encryption',
     categoryIcon: '🔐',
     categoryColor: '#f87171',
     readTime: '15 min read',
     content: `
-<p>CGraph implements the <strong>Signal Protocol</strong> for end-to-end encryption of direct messages. This is the same proven cryptographic protocol trusted by billions of users worldwide.</p>
+<p>CGraph implements the <strong>Triple Ratchet protocol</strong> (Signal Protocol Revision 4) for end-to-end encryption of direct messages. This is a post-quantum hybrid protocol that provides security against both classical and quantum attacks.</p>
 
 <h3>Protocol Components</h3>
 <table>
   <thead><tr><th>Component</th><th>Algorithm</th><th>Purpose</th></tr></thead>
   <tbody>
-    <tr><td><strong>Key Agreement</strong></td><td>X3DH (Extended Triple Diffie-Hellman)</td><td>Initial key exchange between two parties</td></tr>
-    <tr><td><strong>Message Encryption</strong></td><td>Double Ratchet</td><td>Per-message key derivation with forward secrecy</td></tr>
+    <tr><td><strong>Key Agreement</strong></td><td>PQXDH (P-256 ECDH + ML-KEM-768)</td><td>Hybrid post-quantum key exchange</td></tr>
+    <tr><td><strong>Message Encryption</strong></td><td>Triple Ratchet (EC DR ∥ SPQR)</td><td>Per-message key derivation with post-quantum forward secrecy</td></tr>
     <tr><td><strong>Symmetric Cipher</strong></td><td>AES-256-GCM</td><td>Authenticated encryption of message content</td></tr>
-    <tr><td><strong>Key Derivation</strong></td><td>HKDF-SHA256</td><td>Derive new keys from shared secrets</td></tr>
-    <tr><td><strong>Curve</strong></td><td>X25519</td><td>Elliptic curve for DH key exchange</td></tr>
+    <tr><td><strong>Key Derivation</strong></td><td>HKDF-SHA256 + KDF_HYBRID</td><td>Derive new keys from hybrid shared secrets</td></tr>
+    <tr><td><strong>Curve</strong></td><td>P-256 (NIST)</td><td>Elliptic curve for classical DH key exchange</td></tr>
+    <tr><td><strong>Post-Quantum KEM</strong></td><td>ML-KEM-768 (FIPS 203)</td><td>Lattice-based key encapsulation</td></tr>
     <tr><td><strong>Signatures</strong></td><td>Ed25519</td><td>Identity key signatures</td></tr>
   </tbody>
 </table>
 
-<h3>X3DH Key Exchange</h3>
+<h3>PQXDH Key Exchange</h3>
 <p>When Alice wants to start an encrypted conversation with Bob:</p>
 <ol>
-  <li>Alice fetches Bob's <strong>prekey bundle</strong> from the server (identity key, signed prekey, one-time prekey)</li>
-  <li>Alice performs 3 (or 4) Diffie-Hellman computations to derive a shared secret</li>
-  <li>Alice uses HKDF to derive the initial root key and chain keys</li>
-  <li>Alice sends her first message along with her ephemeral public key</li>
-  <li>Bob derives the same shared secret from Alice's ephemeral key and his own keys</li>
+  <li>Alice fetches Bob's <strong>prekey bundle</strong> from the server (identity key, signed prekey, one-time prekey, ML-KEM public key)</li>
+  <li>Alice performs P-256 ECDH + ML-KEM-768 encapsulation to derive a hybrid shared secret</li>
+  <li>Alice uses HKDF to derive the initial root key and chain keys from both classical and PQ secrets</li>
+  <li>Alice sends her first message along with her ephemeral public key and KEM ciphertext</li>
+  <li>Bob derives the same hybrid shared secret from Alice's keys and his own</li>
 </ol>
 
-<h3>Double Ratchet</h3>
-<p>After the initial X3DH exchange, every message uses the Double Ratchet algorithm:</p>
+<h3>Triple Ratchet</h3>
+<p>After the initial PQXDH exchange, every message uses the Triple Ratchet algorithm:</p>
 <ul>
-  <li><strong>Symmetric ratchet</strong> — Each message advances the chain key, deriving a new message key</li>
-  <li><strong>DH ratchet</strong> — Periodically, new DH key pairs are exchanged to provide forward secrecy</li>
+  <li><strong>EC Double Ratchet</strong> — Classical symmetric + DH ratchet for proven forward secrecy</li>
+  <li><strong>SPQR (Symmetric Post-Quantum Ratchet)</strong> — Periodic post-quantum key refreshes</li>
+  <li><strong>KDF_HYBRID</strong> — Combines EC and PQ ratchet outputs into message keys</li>
   <li><strong>Forward secrecy</strong> — Compromising current keys cannot decrypt past messages</li>
-  <li><strong>Future secrecy</strong> — The DH ratchet ensures recovery from key compromise</li>
+  <li><strong>Future secrecy</strong> — Both EC and PQ ratchets ensure recovery from key compromise</li>
 </ul>
 
 <h3>CGraph's Implementation</h3>
-<p>Our E2EE implementation is covered by a dedicated test suite of 28 tests verifying:</p>
+<p>Our E2EE implementation is covered by a comprehensive test suite of 192 tests across 14 files verifying:</p>
 <ul>
-  <li>X3DH key exchange correctness</li>
-  <li>Double Ratchet message encryption/decryption</li>
-  <li>Forward secrecy (past messages remain secure)</li>
-  <li>Ciphertext randomization (same plaintext → different ciphertext)</li>
-  <li>Tampered message rejection (integrity verification)</li>
+  <li>PQXDH key exchange correctness (classical + post-quantum)</li>
+  <li>Triple Ratchet message encryption/decryption</li>
+  <li>Post-quantum forward secrecy</li>
+  <li>Adversarial scenarios (replay attacks, key tampering, out-of-order messages)</li>
+  <li>Stress testing (1000+ message sequences, concurrent sessions)</li>
+  <li>Cross-platform compatibility</li>
 </ul>
 `,
   },
-  'key-exchange-x25519-aes-256-gcm': {
-    title: 'Key Exchange: X25519 & AES-256-GCM',
+  'key-exchange-pqxdh-aes-256-gcm': {
+    title: 'Key Exchange: PQXDH & AES-256-GCM',
     category: 'Security & Encryption',
     categoryIcon: '🔐',
     categoryColor: '#f87171',
     readTime: '12 min read',
     content: `
-<p>A deep dive into the cryptographic primitives used in CGraph's encryption system.</p>
+<p>A deep dive into the cryptographic primitives used in CGraph's post-quantum encryption system.</p>
 
-<h3>X25519 Key Exchange</h3>
-<p>X25519 is an elliptic curve Diffie-Hellman function using Curve25519. It provides:</p>
+<h3>PQXDH Key Exchange</h3>
+<p>PQXDH combines P-256 ECDH with ML-KEM-768 key encapsulation for hybrid post-quantum security:</p>
 <ul>
-  <li><strong>128-bit security level</strong> — Equivalent to 3072-bit RSA</li>
-  <li><strong>Constant-time implementation</strong> — Resistant to timing attacks</li>
-  <li><strong>Compact keys</strong> — 32-byte public and private keys</li>
-  <li><strong>Fast computation</strong> — ~125 microseconds per key exchange</li>
+  <li><strong>256-bit post-quantum security level</strong> — ML-KEM-768 provides NIST Level 3 security</li>
+  <li><strong>Hybrid safety</strong> — If either primitive is broken, the other still protects</li>
+  <li><strong>Classical P-256 ECDH</strong> — NIST-approved curve with constant-time implementation</li>
+  <li><strong>ML-KEM-768 KEM</strong> — Lattice-based key encapsulation (FIPS 203)</li>
 </ul>
 
 <h3>AES-256-GCM</h3>
@@ -518,7 +521,7 @@ const docArticles: Record<string, DocArticleData> = {
 <p>Forward secrecy is one of the most important properties of CGraph's encryption system. It ensures that even if long-term keys are compromised, past communications remain secure.</p>
 
 <h3>How Forward Secrecy Works</h3>
-<p>In the Double Ratchet protocol:</p>
+<p>In the Triple Ratchet protocol:</p>
 <ul>
   <li>Each message uses a <strong>unique message key</strong> derived from the chain key</li>
   <li>After deriving a message key, the chain key is advanced (one-way ratchet)</li>
@@ -534,7 +537,7 @@ const docArticles: Record<string, DocArticleData> = {
 </ol>
 <p>HKDF is used to derive:</p>
 <ul>
-  <li>Root keys from X3DH shared secrets</li>
+  <li>Root keys from PQXDH hybrid shared secrets</li>
   <li>Chain keys from DH ratchet outputs</li>
   <li>Message keys from chain keys</li>
   <li>Encryption key + IV + authentication key from message keys</li>
@@ -1104,7 +1107,7 @@ const docArticles: Record<string, DocArticleData> = {
     <tr><td><strong>@cgraph/ui</strong></td><td>90+ shared UI components</td><td>Web, Mobile</td></tr>
     <tr><td><strong>@cgraph/hooks</strong></td><td>7 facade hooks</td><td>Web, Mobile</td></tr>
     <tr><td><strong>@cgraph/state</strong></td><td>Zustand stores</td><td>Web, Mobile</td></tr>
-    <tr><td><strong>@cgraph/crypto</strong></td><td>E2EE Signal Protocol</td><td>Web, Mobile</td></tr>
+    <tr><td><strong>@cgraph/crypto</strong></td><td>E2EE Triple Ratchet / PQXDH</td><td>Web, Mobile</td></tr>
     <tr><td><strong>@cgraph/socket</strong></td><td>WebSocket client</td><td>Web, Mobile</td></tr>
     <tr><td><strong>@cgraph/api-client</strong></td><td>API client with types</td><td>Web, Mobile</td></tr>
   </tbody>

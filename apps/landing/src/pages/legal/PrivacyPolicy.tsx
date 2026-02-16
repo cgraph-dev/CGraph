@@ -56,7 +56,7 @@ const sections = [
     title: '2. End-to-End Encryption',
     content: `
       <h4>2.1 Private Messages</h4>
-      <p>All direct messages between users are <strong>end-to-end encrypted</strong> using the X3DH key agreement protocol with AES-256-GCM encryption. This means:</p>
+      <p>All direct messages between users are <strong>end-to-end encrypted</strong> using the PQXDH key agreement protocol (P-256 + ML-KEM-768) with AES-256-GCM encryption. This means:</p>
       <ul>
         <li>Only you and your conversation partner can read messages</li>
         <li>We cannot decrypt or access message content</li>

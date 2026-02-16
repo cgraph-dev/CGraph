@@ -1492,7 +1492,7 @@ Delete a voice message.
 
 ### End-to-End Encryption (E2EE)
 
-CGraph uses the Signal Protocol for end-to-end encrypted messaging.
+CGraph uses the Triple Ratchet protocol (PQXDH + ML-KEM-768) for end-to-end encrypted messaging.
 
 #### `POST /e2ee/keys`
 

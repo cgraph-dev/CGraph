@@ -127,8 +127,8 @@ export default function E2EEConnectionTester({
                 <p>
                   This diagnostic performs real cryptographic operations using Web Crypto API to
                   verify that end-to-end encryption is functioning correctly. All tests use
-                  industry-standard algorithms: X25519 for key exchange, AES-256-GCM for encryption,
-                  and HMAC-SHA256 for authentication.
+                  industry-standard algorithms: PQXDH (P-256 + ML-KEM-768) for key exchange,
+                  AES-256-GCM for encryption, and HMAC-SHA256 for authentication.
                 </p>
               </div>
             </div>

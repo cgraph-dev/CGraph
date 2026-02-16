@@ -2,7 +2,8 @@
 
 ## Status
 
-Accepted
+**Superseded** by [ADR-011: Post-Quantum Triple Ratchet E2EE](011-post-quantum-triple-ratchet.md)
+(2026-02-15)
 
 ## Date
 

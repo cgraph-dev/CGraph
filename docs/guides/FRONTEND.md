@@ -23,7 +23,7 @@ here.
 10. [Enhanced UI v3.0](#enhanced-ui-v30)
 11. [Theme Engine v4.0](#theme-engine-v40) ⭐ **v0.7.36**
 12. [Holographic UI v4.0](#holographic-ui-v40) ⭐ **v0.7.36**
-13. [Signal Protocol Encryption](#signal-protocol-encryption)
+13. [Triple Ratchet Encryption](#triple-ratchet-encryption)
 14. [AI Message Intelligence](#ai-message-intelligence)
 15. [Spatial Audio Engine](#spatial-audio-engine)
 16. [Gamification & Customization](#gamification--customization-system) ⭐ **v0.7.52**
@@ -40,24 +40,24 @@ here.
 
 ## Tech Stack
 
-| Technology           | Version | Purpose                    |
-| -------------------- | ------- | -------------------------- |
-| **React**            | 19.1    | UI framework               |
-| **TypeScript**       | 5.8     | Type safety                |
-| **Vite**             | 6.3     | Build tool / dev server    |
-| **TailwindCSS**      | 3.4     | Utility-first styling      |
-| **Zustand**          | 5.x     | Global state management    |
-| **React Query**      | 5.x     | Server state / caching     |
-| **React Router**     | 7.x     | Client-side routing        |
-| **Phoenix Channels** | 1.7     | WebSocket real-time        |
-| **Wagmi/Viem**       | 2.x     | Web3 wallet integration    |
-| **Radix UI**         | Latest  | Accessible components      |
-| **Framer Motion**    | 12.x    | Animations                 |
-| **GSAP**             | 3.14    | Professional animations    |
-| **Three.js**         | 0.182   | 3D graphics engine         |
-| **Storybook**        | 8.6     | Component documentation    |
-| **Web Crypto API**   | Native  | Signal Protocol encryption |
-| **Web Audio API**    | Native  | Spatial audio processing   |
+| Technology           | Version | Purpose                           |
+| -------------------- | ------- | --------------------------------- |
+| **React**            | 19.1    | UI framework                      |
+| **TypeScript**       | 5.8     | Type safety                       |
+| **Vite**             | 6.3     | Build tool / dev server           |
+| **TailwindCSS**      | 3.4     | Utility-first styling             |
+| **Zustand**          | 5.x     | Global state management           |
+| **React Query**      | 5.x     | Server state / caching            |
+| **React Router**     | 7.x     | Client-side routing               |
+| **Phoenix Channels** | 1.7     | WebSocket real-time               |
+| **Wagmi/Viem**       | 2.x     | Web3 wallet integration           |
+| **Radix UI**         | Latest  | Accessible components             |
+| **Framer Motion**    | 12.x    | Animations                        |
+| **GSAP**             | 3.14    | Professional animations           |
+| **Three.js**         | 0.182   | 3D graphics engine                |
+| **Storybook**        | 8.6     | Component documentation           |
+| **Web Crypto API**   | Native  | Triple Ratchet / PQXDH encryption |
+| **Web Audio API**    | Native  | Spatial audio processing          |
 
 ---
 
@@ -1406,18 +1406,18 @@ function SearchInput() {
 ## Enhanced UI v3.0
 
 CGraph v0.7.35 introduces the most advanced UI system yet, building on the foundation of v2.0 with
-Signal Protocol encryption, AI message intelligence, holographic components, and spatial audio. This
+Triple Ratchet encryption, AI message intelligence, holographic components, and spatial audio. This
 release adds **~3,500 new lines** of cutting-edge code.
 
 ### What's New in v3.0
 
-| Feature             | Description                                    | Lines |
-| ------------------- | ---------------------------------------------- | ----- |
-| **Signal Protocol** | Double Ratchet encryption with forward secrecy | 750+  |
-| **AI Engine**       | Smart replies, sentiment, moderation           | 750+  |
-| **Holographic UI**  | 8 futuristic components                        | 650+  |
-| **Spatial Audio**   | 3D positional audio with HRTF                  | 600+  |
-| **Tests**           | Comprehensive test suites                      | 750+  |
+| Feature            | Description                                  | Lines |
+| ------------------ | -------------------------------------------- | ----- |
+| **Triple Ratchet** | Post-quantum encryption with forward secrecy | 750+  |
+| **AI Engine**      | Smart replies, sentiment, moderation         | 750+  |
+| **Holographic UI** | 8 futuristic components                      | 650+  |
+| **Spatial Audio**  | 3D positional audio with HRTF                | 600+  |
+| **Tests**          | Comprehensive test suites                    | 750+  |
 
 ### Enhanced Stack (v3.0)
 
@@ -1456,7 +1456,7 @@ src/components/enhanced/
 
 src/lib/
 ├── crypto/
-│   ├── doubleRatchet.ts          (750 lines) - ⭐ Signal Protocol
+│   ├── doubleRatchet.ts          (750 lines) - ⭐ Triple Ratchet (EC DR ∥ SPQR)
 │   └── __tests__/
 │       └── doubleRatchet.test.ts (350 lines)
 ├── ai/
@@ -1472,20 +1472,20 @@ Total v3.0: 7,458 lines (+88% increase)
 
 ---
 
-## Signal Protocol Encryption
+## Triple Ratchet Encryption
 
-Industry-standard end-to-end encryption using the Signal Protocol Double Ratchet algorithm.
+Post-quantum end-to-end encryption using PQXDH + Triple Ratchet (Signal Protocol Revision 4).
 
 ### Security Features
 
-| Feature               | Implementation                        |
-| --------------------- | ------------------------------------- |
-| **Key Agreement**     | X3DH (Extended Triple Diffie-Hellman) |
-| **Curve**             | ECDH P-384 (NIST approved)            |
-| **Encryption**        | AES-256-GCM (authenticated)           |
-| **Key Derivation**    | HKDF (HMAC-based)                     |
-| **Forward Secrecy**   | New keys for each message exchange    |
-| **Break-in Recovery** | Automatic key refresh                 |
+| Feature               | Implementation                           |
+| --------------------- | ---------------------------------------- |
+| **Key Agreement**     | PQXDH (P-256 ECDH + ML-KEM-768)          |
+| **Curve**             | P-256 (NIST) + ML-KEM-768 (FIPS 203)     |
+| **Encryption**        | AES-256-GCM (authenticated)              |
+| **Key Derivation**    | HKDF (HMAC-based) + KDF_HYBRID           |
+| **Forward Secrecy**   | Post-quantum forward secrecy per message |
+| **Break-in Recovery** | Automatic hybrid key refresh             |
 
 ### Usage
 

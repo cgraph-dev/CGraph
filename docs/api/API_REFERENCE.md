@@ -1747,7 +1747,7 @@ Authorization: Bearer <token>
 
 ### Get Prekey Bundle
 
-Get recipient's public keys for establishing an E2EE session (X3DH key exchange).
+Get recipient's public keys for establishing an E2EE session (PQXDH key exchange).
 
 ```http
 GET /e2ee/keys/:user_id/bundle

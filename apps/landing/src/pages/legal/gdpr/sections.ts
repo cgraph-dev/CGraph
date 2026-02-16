@@ -166,7 +166,7 @@ export const sections: GDPRSection[] = [
       
       <h4>6.1 Technical Measures</h4>
       <ul>
-        <li>End-to-end encryption (X3DH + AES-256-GCM)</li>
+        <li>End-to-end encryption (PQXDH + Triple Ratchet with AES-256-GCM)</li>
         <li>TLS 1.3 for all connections</li>
         <li>At-rest encryption for databases</li>
         <li>Regular security audits and penetration testing</li>

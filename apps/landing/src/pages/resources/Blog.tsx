@@ -88,16 +88,16 @@ const blogPosts: BlogPost[] = [
   {
     id: 3,
     slug: 'e2ee-test-suite',
-    title: 'E2EE Test Suite: 28 Tests for Signal Protocol',
+    title: 'E2EE Test Suite: 192 Tests for Triple Ratchet Protocol',
     excerpt:
-      'We built a dedicated test suite for our Signal Protocol implementation covering X3DH key exchange, Double Ratchet message encryption, forward secrecy verification, ciphertext randomization, and tampered-message rejection.',
+      'We built a comprehensive test suite for our Triple Ratchet implementation covering PQXDH key exchange, hybrid ratchet encryption, post-quantum forward secrecy, adversarial scenarios, stress testing, and cross-platform compatibility.',
     category: 'Security',
     author: 'Burca Lucas',
     date: 'February 1, 2026',
     readTime: '10 min read',
     featured: false,
-    image: '\ud83d\udd10',
-    tags: ['E2EE', 'Signal Protocol', 'Testing'],
+    image: '🔐',
+    tags: ['E2EE', 'Triple Ratchet', 'Post-Quantum', 'Testing'],
   },
   {
     id: 4,

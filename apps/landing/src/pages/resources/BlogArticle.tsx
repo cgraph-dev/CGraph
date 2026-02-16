@@ -212,7 +212,7 @@ const blogArticles: Record<string, BlogArticleData> = {
 <thead><tr><th>Feature Module</th><th>Web</th><th>Mobile</th><th>Notes</th></tr></thead>
 <tbody>
 <tr><td>Real-time Messaging</td><td>✅</td><td>✅</td><td>WebSocket via Phoenix Channels</td></tr>
-<tr><td>End-to-End Encryption</td><td>✅</td><td>✅</td><td>Signal Protocol (X3DH + Double Ratchet)</td></tr>
+<tr><td>End-to-End Encryption</td><td>✅</td><td>✅</td><td>Triple Ratchet (PQXDH + ML-KEM-768)</td></tr>
 <tr><td>Forums / Threads</td><td>✅</td><td>✅</td><td>Nested discussions</td></tr>
 <tr><td>Voice Calls</td><td>✅</td><td>✅</td><td>WebRTC with TURN fallback</td></tr>
 <tr><td>Video Calls</td><td>✅</td><td>✅</td><td>WebRTC with adaptive bitrate</td></tr>
@@ -251,7 +251,7 @@ const blogArticles: Record<string, BlogArticleData> = {
 
 <ul>
 <li><strong>132 facade tests</strong> — ensuring every store facade (Auth, Chat, Gamification, Settings, Community, Marketplace, UI) correctly composes from underlying stores</li>
-<li><strong>28 E2EE tests</strong> — dedicated Signal Protocol test suite covering key exchange, ratcheting, forward secrecy</li>
+<li><strong>192 E2EE tests</strong> — comprehensive Triple Ratchet test suite covering PQXDH key exchange, hybrid ratcheting, post-quantum forward secrecy, adversarial scenarios, and stress testing</li>
 <li><strong>200+ component tests</strong> — rendering, interaction, and accessibility tests for shared UI components</li>
 <li><strong>Platform-specific tests</strong> — mobile gesture handlers, navigation flows, and native module mocks</li>
 </ul>
@@ -300,7 +300,7 @@ const blogArticles: Record<string, BlogArticleData> = {
 │   ├── auth/           # Authentication, session, OAuth
 │   ├── chat/           # Messaging, channels, DMs, reactions
 │   ├── community/      # Servers, roles, permissions, moderation
-│   ├── e2ee/           # Signal Protocol, key management
+│   ├── e2ee/           # Triple Ratchet / PQXDH, key management
 │   ├── forums/         # Threads, posts, nested comments
 │   ├── gamification/   # XP, levels, achievements, leaderboards
 │   ├── marketplace/    # Items, currency, transactions
@@ -380,37 +380,37 @@ const { messages, channels, typingUsers, sendMessage } = useChat();</code></pre>
   },
 
   'e2ee-test-suite': {
-    title: 'E2EE Test Suite: 28 Tests for Signal Protocol',
+    title: 'E2EE Test Suite: 192 Tests for Triple Ratchet Protocol',
     category: 'Security',
     author: 'Burca Lucas',
     date: 'February 1, 2026',
     readTime: '10 min read',
     image: '🔐',
-    tags: ['E2EE', 'Signal Protocol', 'Testing'],
+    tags: ['E2EE', 'Triple Ratchet', 'Post-Quantum', 'Testing'],
     content: `
-<p>End-to-end encryption is the most security-critical component in CGraph. Our implementation uses the <strong>Signal Protocol</strong> — the same cryptographic protocol trusted by billions of users worldwide. But implementation correctness requires rigorous testing. We built a dedicated test suite of <strong>28 tests</strong> that validate every layer of the cryptographic stack.</p>
+<p>End-to-end encryption is the most security-critical component in CGraph. Our implementation uses the <strong>Triple Ratchet protocol</strong> — a post-quantum hybrid cryptographic protocol based on Signal Protocol Revision 4. Implementation correctness requires rigorous testing. We built a comprehensive test suite of <strong>192 tests</strong> across 14 files that validate every layer of the cryptographic stack.</p>
 
 <h3>The Cryptographic Stack</h3>
 
-<p>CGraph's E2EE implementation relies on four core primitives:</p>
+<p>CGraph's E2EE implementation relies on five core primitives:</p>
 
 <table>
 <thead><tr><th>Primitive</th><th>Algorithm</th><th>Purpose</th></tr></thead>
 <tbody>
-<tr><td>Key Agreement</td><td>X25519 (Curve25519 ECDH)</td><td>Establish shared secrets between parties</td></tr>
+<tr><td>Key Agreement</td><td>PQXDH (P-256 ECDH + ML-KEM-768)</td><td>Hybrid post-quantum key exchange</td></tr>
 <tr><td>Symmetric Encryption</td><td>AES-256-GCM</td><td>Encrypt/decrypt message payloads</td></tr>
 <tr><td>Signing</td><td>Ed25519</td><td>Identity key signatures, prekey signatures</td></tr>
 <tr><td>Key Derivation</td><td>HKDF-SHA256</td><td>Derive encryption keys from shared secrets</td></tr>
 </tbody>
 </table>
 
-<h3>X3DH Key Exchange Tests (8 Tests)</h3>
+<h3>PQXDH Key Exchange Tests (8 Tests)</h3>
 
-<p>The Extended Triple Diffie-Hellman (X3DH) protocol establishes a shared secret between two parties without requiring both to be online simultaneously. Our test suite validates:</p>
+<p>The Post-Quantum Extended Diffie-Hellman (PQXDH) protocol establishes a hybrid shared secret using both classical P-256 ECDH and post-quantum ML-KEM-768, without requiring both parties to be online simultaneously. Our test suite validates:</p>
 
 <ul>
 <li><strong>Identity key pair generation</strong> — Ed25519 keys are generated with proper entropy</li>
-<li><strong>Signed prekey generation</strong> — X25519 prekeys signed by the identity key</li>
+<li><strong>Signed prekey generation</strong> — P-256 prekeys signed by the identity key</li>
 <li><strong>One-time prekey bundles</strong> — Ephemeral keys consumed correctly (no reuse)</li>
 <li><strong>Key agreement computation</strong> — All four DH operations (DH1-DH4) produce correct shared secrets</li>
 <li><strong>Bundle serialization</strong> — Prekey bundles serialize/deserialize without data loss</li>
@@ -419,24 +419,24 @@ const { messages, channels, typingUsers, sendMessage } = useChat();</code></pre>
 <li><strong>Cross-device key agreement</strong> — Same identity, different devices, correct session creation</li>
 </ul>
 
-<pre><code>// Example: X3DH Key Agreement Test
-describe('X3DH Key Exchange', () =&gt; {
+<pre><code>// Example: PQXDH Key Agreement Test
+describe('PQXDH Key Exchange', () =&gt; {
   it('should establish matching shared secrets', async () =&gt; {
     const alice = await generateIdentityKeyPair();
     const bob = await generateIdentityKeyPair();
     const bobBundle = await createPrekeyBundle(bob);
 
-    const aliceSession = await initiateX3DH(alice, bobBundle);
-    const bobSession = await respondX3DH(bob, aliceSession.ephemeralKey);
+    const aliceSession = await initiatePQXDH(alice, bobBundle);
+    const bobSession = await respondPQXDH(bob, aliceSession.ephemeralKey);
 
     expect(aliceSession.sharedSecret).toEqual(bobSession.sharedSecret);
     expect(aliceSession.sharedSecret.length).toBe(32);
   });
 });</code></pre>
 
-<h3>Double Ratchet Tests (10 Tests)</h3>
+<h3>Triple Ratchet Tests (10 Tests)</h3>
 
-<p>The Double Ratchet algorithm provides forward secrecy and break-in recovery for ongoing message exchanges. Each message uses a unique key derived from the ratcheting state. Our tests cover:</p>
+<p>The Triple Ratchet algorithm provides forward secrecy and break-in recovery for ongoing message exchanges, combining an EC Double Ratchet with a post-quantum SPQR ratchet via KDF_HYBRID. Each message uses a unique key derived from the hybrid ratcheting state. Our tests cover:</p>
 
 <ul>
 <li><strong>Symmetric ratchet step</strong> — Each message advances the chain key and derives a unique message key</li>
@@ -739,7 +739,7 @@ if (result.success) {
 <tr><td>Routing</td><td>Static pages, no auth</td><td>62 lazy-loaded routes</td></tr>
 <tr><td>State Management</td><td>Minimal (form state only)</td><td>7 Zustand facades, 32 stores</td></tr>
 <tr><td>Real-time</td><td>None</td><td>Phoenix Channels WebSocket</td></tr>
-<tr><td>E2EE</td><td>None</td><td>Full Signal Protocol</td></tr>
+<tr><td>E2EE</td><td>None</td><td>Full Triple Ratchet / PQXDH</td></tr>
 <tr><td>Build Chunks</td><td>12 chunks</td><td>168 optimized chunks</td></tr>
 <tr><td>TTI (3G)</td><td>&lt;2s</td><td>&lt;5s</td></tr>
 </tbody>
@@ -835,7 +835,7 @@ const SettingsPage = lazy(() =&gt; import('./modules/settings/pages/SettingsLayo
 <h3>CVE-Level: E2EE Plaintext Fallback</h3>
 
 <h4>The Vulnerability</h4>
-<p>When the Signal Protocol session between two users was in a corrupted state — for example, after a failed key ratchet or a deserialization error — the encryption layer threw an exception. The message-sending code caught this exception in a generic try/catch block and, instead of aborting the send, fell back to sending the message <strong>as plaintext</strong> through the normal channel. The message was delivered successfully, the UI showed a "sent" confirmation, and neither party was informed that encryption had failed.</p>
+<p>When the Triple Ratchet session between two users was in a corrupted state — for example, after a failed key ratchet or a deserialization error — the encryption layer threw an exception. The message-sending code caught this exception in a generic try/catch block and, instead of aborting the send, fell back to sending the message <strong>as plaintext</strong> through the normal channel. The message was delivered successfully, the UI showed a "sent" confirmation, and neither party was informed that encryption had failed.</p>
 
 <pre><code>// VULNERABLE CODE (removed)
 try {
@@ -1060,13 +1060,13 @@ end</code></pre>
 
 <p>Forums are fully searchable with PostgreSQL full-text search across titles, body content, and tags. Users can subscribe to threads for notifications without participating, and moderators have granular controls over thread visibility and permissions.</p>
 
-<h4>3. Military-Grade End-to-End Encryption</h4>
-<p>Privacy isn't a feature — it's a foundation. CGraph implements the <strong>Signal Protocol</strong> for end-to-end encryption:</p>
+<h4>3. Post-Quantum End-to-End Encryption</h4>
+<p>Privacy isn't a feature — it's a foundation. CGraph implements the <strong>Triple Ratchet protocol</strong> for post-quantum end-to-end encryption:</p>
 
 <ul>
-<li><strong>X3DH key exchange</strong> — Asynchronous key agreement without both parties online</li>
-<li><strong>Double Ratchet</strong> — Forward secrecy and break-in recovery for every message</li>
-<li><strong>X25519</strong> — Elliptic curve Diffie-Hellman for key agreement</li>
+<li><strong>PQXDH key exchange</strong> — Hybrid key agreement combining P-256 ECDH + ML-KEM-768</li>
+<li><strong>Triple Ratchet</strong> — EC Double Ratchet ∥ SPQR for forward secrecy and break-in recovery</li>
+<li><strong>ML-KEM-768</strong> — Post-quantum key encapsulation for quantum resistance</li>
 <li><strong>AES-256-GCM</strong> — Authenticated encryption for message payloads</li>
 <li><strong>Ed25519</strong> — Digital signatures for identity verification</li>
 </ul>
@@ -1117,7 +1117,7 @@ end</code></pre>
 
 <p>CGraph isn't trying to replace every communication tool. It's built specifically for <strong>communities</strong> — groups of people who share a common interest, goal, or identity. Whether it's an open-source project, a gaming guild, a study group, a professional network, or a company team, CGraph provides the tools to communicate in real-time, discuss asynchronously, stay secure, and stay engaged.</p>
 
-<p>The technical foundation — Elixir/Phoenix backend, React/React Native frontend, Signal Protocol encryption, PostgreSQL with 91 tables — is designed to scale from a 10-person friend group to a 100,000-member community without changing architecture. We're building for the long term.</p>
+<p>The technical foundation — Elixir/Phoenix backend, React/React Native frontend, Triple Ratchet encryption with PQXDH, PostgreSQL with 91 tables — is designed to scale from a 10-person friend group to a 100,000-member community without changing architecture. We're building for the long term.</p>
 
 <h4>Join the Beta</h4>
 

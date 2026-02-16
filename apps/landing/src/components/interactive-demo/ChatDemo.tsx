@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect, useRef, memo, useCallback } from 'react';
+import { motion, AnimatePresence, useSpring, useMotionValue } from 'framer-motion';
 import { AnimatedAvatar } from '../customization-demo/CustomizationDemo/AnimatedAvatar';
 import { AnimatedBorder } from '../customization-demo/effects';
 import type { Message, DemoUserProfile } from './types';
@@ -170,18 +170,30 @@ function HoverableAvatar({
 
 function AnimatedReaction({ type, count }: { type: 'approved' | 'disapproved'; count: number }) {
   const isDisapproved = type === 'disapproved';
-  const [displayCount, setDisplayCount] = useState(count);
   const [tickBurstKey, setTickBurstKey] = useState(0);
   const prevCountRef = useRef(count);
 
+  // Gamified counting logic
+  const motionCount = useMotionValue(0);
+  const springCount = useSpring(motionCount, { stiffness: 45, damping: 22 });
+  const [displayCount, setDisplayCount] = useState(0);
+
   useEffect(() => {
+    // Initial mount or update: animate from current (or 0) to target
+    motionCount.set(count);
+
     const prev = prevCountRef.current;
-    prevCountRef.current = count;
     if (count !== prev) {
-      setDisplayCount(count);
       setTickBurstKey((k) => k + 1);
+      prevCountRef.current = count;
     }
-  }, [count]);
+  }, [count, motionCount]);
+
+  useEffect(() => {
+    return springCount.on('change', (latest) => {
+      setDisplayCount(Math.round(latest));
+    });
+  }, [springCount]);
 
   return (
     <motion.span
@@ -197,7 +209,6 @@ function AnimatedReaction({ type, count }: { type: 'approved' | 'disapproved'; c
         {type === 'approved' ? '✓' : '✕'}
       </span>
       <motion.span
-        key={displayCount}
         className="demo-reaction__count"
         initial={{ scale: 1.08, opacity: 0.78, y: 0.5 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -256,15 +267,15 @@ function ClickTutorial({ phase }: { phase: string }) {
         )}
       </AnimatePresence>
 
-      {/* Idle hint text */}
+      {/* Instructional hint text (visible unless a badge is actively showing) */}
       <AnimatePresence>
-        {phase === 'idle' && (
+        {!showApprove && !showDisapprove && (
           <motion.span
             className="demo-input-tutorial__hint"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.5 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2 }}
           >
             Swipe ↑ or ↓ to react
           </motion.span>
@@ -432,41 +443,7 @@ export const ChatDemo = memo(function ChatDemo() {
   const [tutorialPhase, setTutorialPhase] = useState<TutorialPhase>('idle');
   const tutorialTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  useEffect(() => {
-    if (inputFocused) return; // stop when user focuses
-    let mounted = true;
-    const clearAll = () => {
-      tutorialTimersRef.current.forEach(clearTimeout);
-      tutorialTimersRef.current = [];
-    };
-    const schedule = (fn: () => void, ms: number) => {
-      tutorialTimersRef.current.push(setTimeout(() => mounted && fn(), ms));
-    };
-    const run = () => {
-      clearAll();
-      setTutorialPhase('idle');
-      schedule(() => setTutorialPhase('grab'), 400);
-      schedule(() => setTutorialPhase('swipe-up'), 700);
-      schedule(() => setTutorialPhase('approve-burst'), 1000);
-      schedule(() => setTutorialPhase('approve-badge'), 1300);
-      schedule(() => setTutorialPhase('grab2'), 3200);
-      schedule(() => setTutorialPhase('swipe-down'), 3500);
-      schedule(() => setTutorialPhase('disapprove-burst'), 3800);
-      schedule(() => setTutorialPhase('disapprove-badge'), 4100);
-      schedule(run, 6500);
-    };
-    run();
-    return () => {
-      mounted = false;
-      clearAll();
-    };
-  }, [inputFocused]);
-  const reactionTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const userReactionsRef = useRef<Record<string, 'approved' | 'disapproved'>>({});
-  const swipeStartRef = useRef<{ msgId: string; y: number } | null>(null);
-  const SWIPE_THRESHOLD = 40;
-
-  const applyReaction = (msgId: string, targetType: 'approved' | 'disapproved') => {
+  const applyReaction = useCallback((msgId: string, targetType: 'approved' | 'disapproved') => {
     const currentReaction = userReactionsRef.current[msgId];
 
     if (currentReaction === targetType) {
@@ -504,7 +481,62 @@ export const ChatDemo = memo(function ChatDemo() {
         return { ...m, reactions, reactionsVisible: true };
       })
     );
-  };
+  }, []);
+
+  // Keep a ref to messages so the tutorial run cycle can access latest state without restarting
+  const messagesRef = useRef(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  useEffect(() => {
+    if (inputFocused) return; // stop when user focuses
+    let mounted = true;
+    const clearAll = () => {
+      tutorialTimersRef.current.forEach(clearTimeout);
+      tutorialTimersRef.current = [];
+    };
+    const schedule = (fn: () => void, ms: number) => {
+      tutorialTimersRef.current.push(setTimeout(() => mounted && fn(), ms));
+    };
+    const run = () => {
+      // Wait for Sam's message to be present before starting the tutorial cycle
+      const samMsg = messagesRef.current.find((m) => m.author === 'Sam');
+      if (!samMsg) {
+        schedule(run, 500);
+        return;
+      }
+
+      clearAll();
+      setTutorialPhase('idle');
+      schedule(() => setTutorialPhase('grab'), 400);
+      schedule(() => setTutorialPhase('swipe-up'), 700);
+      schedule(() => {
+        setTutorialPhase('approve-burst');
+        // Actually react in state for realism (using the Sam message we found)
+        applyReaction(samMsg.id, 'approved');
+      }, 1000);
+      schedule(() => setTutorialPhase('approve-badge'), 1300);
+      schedule(() => setTutorialPhase('grab2'), 3200);
+      schedule(() => setTutorialPhase('swipe-down'), 3500);
+      schedule(() => {
+        setTutorialPhase('disapprove-burst');
+        // Actually react in state for realism
+        applyReaction(samMsg.id, 'disapproved');
+      }, 3800);
+      schedule(() => setTutorialPhase('disapprove-badge'), 4100);
+      schedule(run, 6500);
+    };
+    run();
+    return () => {
+      mounted = false;
+      clearAll();
+    };
+  }, [inputFocused, applyReaction]);
+  const reactionTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const userReactionsRef = useRef<Record<string, 'approved' | 'disapproved'>>({});
+  const swipeStartRef = useRef<{ msgId: string; y: number } | null>(null);
+  const SWIPE_THRESHOLD = 40;
 
   const handlePointerDown = (msgId: string, e: React.PointerEvent) => {
     const msg = messages.find((m) => m.id === msgId);

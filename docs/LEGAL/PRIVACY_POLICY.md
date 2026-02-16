@@ -3,27 +3,29 @@
 **Last Updated: January 8, 2026**  
 **Version: 1.0**
 
-CGraph ("we", "us", "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our mobile application and web platform (collectively, the "Service").
+CGraph ("we", "us", "our") is committed to protecting your privacy. This Privacy Policy explains how
+we collect, use, disclose, and safeguard your information when you use our mobile application and
+web platform (collectively, the "Service").
 
 ## 1. Information We Collect
 
 ### 1.1 Information You Provide
 
-| Data Type | Purpose | Retention |
-|-----------|---------|-----------|
-| **Account Information** | Email, username, profile picture | Until account deletion |
-| **Messages** | Direct messages, group chat content | Until deleted by user |
-| **Profile Data** | Bio, display name, avatar | Until account deletion |
-| **Wallet Address** | Web3 authentication (optional) | Until account deletion |
+| Data Type               | Purpose                             | Retention              |
+| ----------------------- | ----------------------------------- | ---------------------- |
+| **Account Information** | Email, username, profile picture    | Until account deletion |
+| **Messages**            | Direct messages, group chat content | Until deleted by user  |
+| **Profile Data**        | Bio, display name, avatar           | Until account deletion |
+| **Wallet Address**      | Web3 authentication (optional)      | Until account deletion |
 
 ### 1.2 Automatically Collected Information
 
-| Data Type | Purpose | Retention |
-|-----------|---------|-----------|
-| **Device Information** | App functionality, debugging | 90 days |
-| **Usage Data** | Analytics, service improvement | 90 days (anonymized) |
-| **IP Address** | Security, rate limiting | 30 days |
-| **Push Tokens** | Notification delivery | Until logout |
+| Data Type              | Purpose                        | Retention            |
+| ---------------------- | ------------------------------ | -------------------- |
+| **Device Information** | App functionality, debugging   | 90 days              |
+| **Usage Data**         | Analytics, service improvement | 90 days (anonymized) |
+| **IP Address**         | Security, rate limiting        | 30 days              |
+| **Push Tokens**        | Notification delivery          | Until logout         |
 
 ### 1.3 Information We Do NOT Collect
 
@@ -37,7 +39,8 @@ CGraph ("we", "us", "our") is committed to protecting your privacy. This Privacy
 
 ### 2.1 Private Messages
 
-All direct messages between users are **end-to-end encrypted** using the X3DH key agreement protocol with AES-256-GCM encryption. This means:
+All direct messages between users are **end-to-end encrypted** using the PQXDH key agreement
+protocol (P-256 + ML-KEM-768) with AES-256-GCM encryption. This means:
 
 - Only you and your conversation partner can read messages
 - We cannot decrypt or access message content
@@ -68,6 +71,7 @@ We use collected information to:
 5. **Comply with Law** - Legal obligations, valid court orders
 
 **We do NOT:**
+
 - Sell your personal data to third parties
 - Use your data for targeted advertising
 - Share data with advertisers
@@ -78,19 +82,23 @@ We use collected information to:
 We may share your information only in these limited circumstances:
 
 ### 4.1 With Your Consent
+
 - Profile information you make public
 - Content you explicitly share
 
 ### 4.2 Service Providers
-| Provider | Purpose | Data Shared |
-|----------|---------|-------------|
-| Cloudflare | CDN, Security | Request metadata |
-| Resend | Email delivery | Email addresses |
-| Expo | Push notifications | Push tokens |
-| Sentry | Error tracking | Crash logs (anonymized) |
+
+| Provider   | Purpose            | Data Shared             |
+| ---------- | ------------------ | ----------------------- |
+| Cloudflare | CDN, Security      | Request metadata        |
+| Resend     | Email delivery     | Email addresses         |
+| Expo       | Push notifications | Push tokens             |
+| Sentry     | Error tracking     | Crash logs (anonymized) |
 
 ### 4.3 Legal Requirements
+
 We may disclose data when required by law, such as:
+
 - Valid court orders
 - Government requests (with legal basis)
 - To protect rights, safety, or property
@@ -99,17 +107,18 @@ We may disclose data when required by law, such as:
 
 ## 5. Data Retention
 
-| Data Type | Retention Period |
-|-----------|------------------|
-| Account data | Until account deletion |
+| Data Type            | Retention Period        |
+| -------------------- | ----------------------- |
+| Account data         | Until account deletion  |
 | Messages (encrypted) | Until deleted by sender |
-| Server logs | 30 days |
-| Analytics | 90 days (anonymized) |
-| Backup data | 30 days after deletion |
+| Server logs          | 30 days                 |
+| Analytics            | 90 days (anonymized)    |
+| Backup data          | 30 days after deletion  |
 
 ### 5.1 Account Deletion
 
 You can delete your account at any time:
+
 1. Go to **Settings > Account > Delete Account**
 2. Confirm deletion
 3. Your data is permanently removed within 30 days
@@ -118,14 +127,14 @@ You can delete your account at any time:
 
 Depending on your jurisdiction, you may have the right to:
 
-| Right | Description |
-|-------|-------------|
-| **Access** | Request a copy of your data |
-| **Rectification** | Correct inaccurate data |
-| **Erasure** | Delete your data |
-| **Portability** | Export your data |
-| **Object** | Opt out of certain processing |
-| **Restrict** | Limit how we use your data |
+| Right             | Description                   |
+| ----------------- | ----------------------------- |
+| **Access**        | Request a copy of your data   |
+| **Rectification** | Correct inaccurate data       |
+| **Erasure**       | Delete your data              |
+| **Portability**   | Export your data              |
+| **Object**        | Opt out of certain processing |
+| **Restrict**      | Limit how we use your data    |
 
 ### 6.1 Exercising Your Rights
 
@@ -139,7 +148,7 @@ We implement industry-standard security measures:
 
 - **Encryption in Transit:** TLS 1.3 for all connections
 - **Encryption at Rest:** AES-256 for stored data
-- **E2EE:** X3DH + AES-256-GCM for messages
+- **E2EE:** PQXDH + Triple Ratchet with AES-256-GCM for messages
 - **Access Controls:** Role-based access, audit logging
 - **Monitoring:** 24/7 security monitoring
 - **Penetration Testing:** Regular third-party audits
@@ -147,16 +156,19 @@ We implement industry-standard security measures:
 ## 8. International Data Transfers
 
 CGraph operates globally. Your data may be processed in:
+
 - United States
 - European Union
 
 For transfers outside the EU, we use:
+
 - Standard Contractual Clauses (SCCs)
 - Adequacy decisions where applicable
 
 ## 9. Children's Privacy
 
-CGraph is not intended for users under 13 years of age. We do not knowingly collect personal information from children under 13. If we discover such data, we will delete it immediately.
+CGraph is not intended for users under 13 years of age. We do not knowingly collect personal
+information from children under 13. If we discover such data, we will delete it immediately.
 
 ## 10. Regional Provisions
 
@@ -182,6 +194,7 @@ CGraph is not intended for users under 13 years of age. We do not knowingly coll
 ## 11. Changes to This Policy
 
 We may update this Privacy Policy periodically. We will notify you of material changes via:
+
 - In-app notification
 - Email (if significant)
 - Updated "Last Modified" date

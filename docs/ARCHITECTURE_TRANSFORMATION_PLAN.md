@@ -4050,10 +4050,10 @@ CGraph/
 ## What's Already Built (Solid Foundation)
 
 ✅ **12 proper modules** - Structure matches CGraph ✅ **117 components migrated** - Real
-implementation ✅ **Signal Protocol E2EE** - Industry-leading encryption ✅ **7 working facades** -
-Clean abstraction pattern ✅ **Phoenix/Elixir backend** - Same stack as CGraph ✅ **TypeScript
-strict mode** - Professional quality ✅ **9 shared packages** - Platform parity infrastructure ✅
-**Stripe integration** - Subscription tiers ready
+implementation ✅ **Triple Ratchet E2EE** - Post-quantum encryption (PQXDH + ML-KEM-768) ✅ **7
+working facades** - Clean abstraction pattern ✅ **Phoenix/Elixir backend** - Same stack as CGraph
+✅ **TypeScript strict mode** - Professional quality ✅ **9 shared packages** - Platform parity
+infrastructure ✅ **Stripe integration** - Subscription tiers ready
 
 ---
 
@@ -4185,7 +4185,7 @@ pnpm test -- --filter="invite"
 
 ## This Plan Will Make CGraph:
 
-1. **The most secure** - Signal Protocol E2EE everywhere
+1. **The most secure** - Triple Ratchet / PQXDH E2EE everywhere
 2. **The most feature-rich** - Forums + Chat + Calls + Gamification
 3. **The most accessible** - Web + iOS + Android with parity
 4. **The most scalable** - Built on CGraph's proven Elixir stack

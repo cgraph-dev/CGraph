@@ -12,27 +12,27 @@ has not undergone formal third-party security audit.
 
 ### What We Have Today
 
-| Component                 | Status           | Details                                        |
-| ------------------------- | ---------------- | ---------------------------------------------- |
-| **E2EE Implementation**   | ✅ Complete      | Signal Protocol-inspired X3DH + Double Ratchet |
-| **Encryption Algorithm**  | ✅ AES-256-GCM   | Industry-standard authenticated encryption     |
-| **Key Exchange**          | ✅ P-256 ECDH    | NIST-approved curve via Web Crypto API         |
-| **Forward Secrecy**       | ✅ Per-message   | Double Ratchet key rotation                    |
-| **Break-in Recovery**     | ✅ Implemented   | New keys heal after compromise                 |
-| **Rate Limiting**         | ✅ Comprehensive | Per-endpoint, per-user, per-IP                 |
-| **Authentication**        | ✅ Argon2id      | OWASP-recommended password hashing             |
-| **2FA**                   | ✅ TOTP          | Brute-force protected                          |
-| **Audit Logging**         | ✅ Comprehensive | 30+ event types                                |
-| **Third-Party Audit**     | ❌ Not Yet       | Planned for Phase 2                            |
-| **Libsignal Integration** | ❌ Not Yet       | Custom implementation                          |
-| **Bug Bounty Program**    | ❌ Not Yet       | Planned for Phase 3                            |
+| Component                 | Status           | Details                                       |
+| ------------------------- | ---------------- | --------------------------------------------- |
+| **E2EE Implementation**   | ✅ Complete      | Triple Ratchet / PQXDH (Signal Rev 4)         |
+| **Encryption Algorithm**  | ✅ AES-256-GCM   | Industry-standard authenticated encryption    |
+| **Key Exchange**          | ✅ PQXDH         | P-256 ECDH + ML-KEM-768 (hybrid post-quantum) |
+| **Forward Secrecy**       | ✅ Per-message   | Triple Ratchet key rotation (EC DR ∥ SPQR)    |
+| **Break-in Recovery**     | ✅ Implemented   | New keys heal after compromise                |
+| **Rate Limiting**         | ✅ Comprehensive | Per-endpoint, per-user, per-IP                |
+| **Authentication**        | ✅ Argon2id      | OWASP-recommended password hashing            |
+| **2FA**                   | ✅ TOTP          | Brute-force protected                         |
+| **Audit Logging**         | ✅ Comprehensive | 30+ event types                               |
+| **Third-Party Audit**     | ❌ Not Yet       | Planned for Phase 2                           |
+| **Libsignal Integration** | ❌ Not Yet       | Custom implementation                         |
+| **Bug Bounty Program**    | ❌ Not Yet       | Planned for Phase 3                           |
 
 ### Honest Assessment
 
 **Strengths:**
 
-- Well-established cryptographic primitives (P-256, AES-256-GCM, HKDF-SHA256)
-- Protocol design follows Signal Protocol patterns
+- Well-established cryptographic primitives (P-256, ML-KEM-768, AES-256-GCM, HKDF-SHA256)
+- Protocol design follows Signal Protocol Revision 4 (PQXDH + Triple Ratchet)
 - Comprehensive rate limiting and abuse protection
 - Zero-knowledge server (plaintext never touches backend)
 - Forward secrecy with per-message key rotation
@@ -43,7 +43,6 @@ has not undergone formal third-party security audit.
 - No formal security audit
 - Limited penetration testing
 - No bug bounty program
-- Post-quantum readiness is placeholder only
 
 ---
 
@@ -53,7 +52,7 @@ has not undergone formal third-party security audit.
 
 ### Completed
 
-- [x] Signal Protocol-inspired E2EE implementation
+- [x] Triple Ratchet / PQXDH E2EE implementation (v0.9.28)
 - [x] Cross-platform curve standardization (P-256)
 - [x] Comprehensive rate limiting system
 - [x] Audit logging infrastructure
@@ -83,7 +82,7 @@ has not undergone formal third-party security audit.
 
 - [ ] **Cryptographic Code Review**
   - Focus: `apps/web/src/lib/crypto/` and `apps/mobile/src/lib/crypto/`
-  - Scope: X3DH, Double Ratchet, key serialization, ECDH implementation
+  - Scope: PQXDH, Triple Ratchet, ML-KEM-768, key serialization, hybrid key derivation
   - Deliverable: Formal audit report with findings
 
 - [ ] **Penetration Testing**

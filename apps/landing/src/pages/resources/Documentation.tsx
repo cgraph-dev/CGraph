@@ -66,10 +66,10 @@ const docCategories = [
     title: 'Security & Encryption',
     color: '#f87171',
     description:
-      'Signal Protocol E2EE, key management, device verification, and security architecture.',
+      'Triple Ratchet E2EE with PQXDH, key management, device verification, and security architecture.',
     articles: [
-      { title: 'E2EE Overview: X3DH + Double Ratchet', time: '15 min read' },
-      { title: 'Key Exchange: X25519 & AES-256-GCM', time: '12 min read' },
+      { title: 'E2EE Overview: PQXDH + Triple Ratchet', time: '15 min read' },
+      { title: 'Key Exchange: ML-KEM-768 + P-256 ECDH', time: '12 min read' },
       { title: 'Forward Secrecy & Key Derivation (HKDF)', time: '10 min read' },
       { title: 'Device Verification & Safety Numbers', time: '6 min read' },
       { title: 'Security Headers: CSP, HSTS, CORS', time: '8 min read' },
@@ -150,8 +150,12 @@ const apiOverview = [
 ];
 
 const securityTable = [
-  { component: 'Key Exchange', algorithm: 'X25519 (X3DH)', level: '128-bit' },
-  { component: 'Encryption', algorithm: 'AES-256-GCM + Double Ratchet', level: '256-bit' },
+  {
+    component: 'Key Exchange',
+    algorithm: 'PQXDH (P-256 + ML-KEM-768)',
+    level: '256-bit (post-quantum)',
+  },
+  { component: 'Encryption', algorithm: 'AES-256-GCM + Triple Ratchet', level: '256-bit' },
   { component: 'Signatures', algorithm: 'Ed25519', level: '128-bit' },
   { component: 'Passwords', algorithm: 'Argon2id', level: 'Memory-hard' },
   { component: 'Transport', algorithm: 'TLS 1.3', level: 'Enforced' },
@@ -705,8 +709,8 @@ export default function Documentation() {
               },
               {
                 id: 'ADR-004',
-                title: 'Signal Protocol E2EE',
-                detail: 'X3DH + Double Ratchet chosen for proven security with forward secrecy.',
+                title: 'Post-Quantum E2EE (ADR-004)',
+                detail: 'PQXDH + Triple Ratchet with ML-KEM-768 for post-quantum forward secrecy.',
                 status: 'Accepted',
               },
               {
@@ -802,10 +806,10 @@ export default function Documentation() {
                 version: '0.81 / SDK 54',
               },
               {
-                name: 'Signal Protocol',
+                name: 'Triple Ratchet / PQXDH',
                 icon: '🔐',
-                desc: 'X3DH, Double Ratchet, AES-256-GCM',
-                version: 'Custom impl',
+                desc: 'PQXDH, Triple Ratchet, ML-KEM-768, AES-256-GCM',
+                version: 'v0.9.28',
               },
               {
                 name: 'Fly.io / Vercel',

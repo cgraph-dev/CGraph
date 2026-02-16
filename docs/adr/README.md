@@ -9,13 +9,14 @@ and consequences. ADRs help new team members understand why things are the way t
 
 ## Index
 
-| ADR                                     | Title                          | Status   | Date       |
-| --------------------------------------- | ------------------------------ | -------- | ---------- |
-| [001](001-monorepo-structure.md)        | Monorepo Structure             | Accepted | 2025-01-01 |
-| [002](002-dual-app-architecture.md)     | Dual App Architecture          | Accepted | 2025-01-01 |
-| [003](003-zustand-state-management.md)  | Zustand State Management       | Accepted | 2025-01-01 |
-| [004](004-signal-protocol-e2ee.md)      | Signal Protocol E2EE           | Accepted | 2025-01-01 |
-| [005](005-phoenix-channels-realtime.md) | Phoenix Channels for Real-time | Accepted | 2025-01-01 |
+| ADR                                       | Title                            | Status     | Date       |
+| ----------------------------------------- | -------------------------------- | ---------- | ---------- |
+| [001](001-monorepo-structure.md)          | Monorepo Structure               | Accepted   | 2025-01-01 |
+| [002](002-dual-app-architecture.md)       | Dual App Architecture            | Accepted   | 2025-01-01 |
+| [003](003-zustand-state-management.md)    | Zustand State Management         | Accepted   | 2025-01-01 |
+| [004](004-signal-protocol-e2ee.md)        | Signal Protocol E2EE             | Superseded | 2025-01-01 |
+| [005](005-phoenix-channels-realtime.md)   | Phoenix Channels for Real-time   | Accepted   | 2025-01-01 |
+| [011](011-post-quantum-triple-ratchet.md) | Post-Quantum Triple Ratchet E2EE | Accepted   | 2026-02-15 |
 
 ## Template
 

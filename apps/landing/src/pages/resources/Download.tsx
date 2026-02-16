@@ -14,7 +14,7 @@ const features = [
     icon: '🔒',
     title: 'End-to-End Encryption',
     description:
-      'Your messages are encrypted on your device using the Signal Protocol (X3DH + Double Ratchet).',
+      'Your messages are encrypted on your device using the Triple Ratchet protocol (PQXDH + ML-KEM-768).',
   },
   {
     icon: '⚡',

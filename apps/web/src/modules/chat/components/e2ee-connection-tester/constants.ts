@@ -9,7 +9,7 @@ export const INITIAL_TESTS: TestResult[] = [
   {
     name: 'Key Exchange Protocol',
     status: 'pending',
-    message: 'Verifying X25519 key exchange...',
+    message: 'Verifying PQXDH key exchange...',
   },
   {
     name: 'Public Key Retrieval',
@@ -59,7 +59,7 @@ export const INITIAL_TESTS: TestResult[] = [
 ];
 
 export const SUCCESS_MESSAGES: Record<number, string> = {
-  0: 'X25519 protocol verified ✓',
+  0: 'PQXDH protocol verified ✓',
   1: 'Public key retrieved successfully',
   2: 'Shared secret computed securely',
   3: 'AES-256-GCM encryption working',

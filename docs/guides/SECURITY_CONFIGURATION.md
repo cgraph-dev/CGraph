@@ -1,12 +1,11 @@
 # Security Configuration Guide
 
-> **Version**: 0.7.33
-> **Status**: CRITICAL SECURITY UPDATE
-> **Last Updated**: 2026-01-10
+> **Version**: 0.7.33 **Status**: CRITICAL SECURITY UPDATE **Last Updated**: 2026-01-10
 
 ## 🔒 Overview
 
-This document outlines the security fixes implemented in v0.7.33 to address critical vulnerabilities identified in the security audit (CVE-CGRAPH-2026-001 through CVE-CGRAPH-2026-008).
+This document outlines the security fixes implemented in v0.7.33 to address critical vulnerabilities
+identified in the security audit (CVE-CGRAPH-2026-001 through CVE-CGRAPH-2026-008).
 
 ---
 
@@ -14,16 +13,17 @@ This document outlines the security fixes implemented in v0.7.33 to address crit
 
 ### CVE-CGRAPH-2026-001: E2EE Private Keys in Unencrypted localStorage
 
-**Severity**: CRITICAL (CVSS 9.1)
-**Status**: ✅ FIXED in v0.7.33
+**Severity**: CRITICAL (CVSS 9.1) **Status**: ✅ FIXED in v0.7.33
 
 **Problem**:
+
 ```typescript
 // INSECURE - Old implementation
 localStorage.setItem('cgraph_e2ee_identity', JSON.stringify(privateKey));
 ```
 
 **Solution**:
+
 ```typescript
 // SECURE - New implementation
 import SecureStorage from '@/lib/crypto/secureStorage';
@@ -36,6 +36,7 @@ await SecureStorage.setItem('e2ee_identity_key', JSON.stringify(privateKey));
 ```
 
 **Implementation**:
+
 - ✅ Created `secureStorage.ts` - AES-256-GCM encrypted IndexedDB
 - ✅ Created `e2ee.secure.ts` - Secure drop-in replacement
 - ✅ Created `migrateToSecureStorage.ts` - Migration utility
@@ -44,6 +45,7 @@ await SecureStorage.setItem('e2ee_identity_key', JSON.stringify(privateKey));
 - ✅ Non-extractable encryption keys
 
 **Migration Steps**:
+
 ```typescript
 import { migrateToSecureStorage } from '@/lib/crypto/migrateToSecureStorage';
 
@@ -61,15 +63,16 @@ if (result.success) {
 
 ### CVE-CGRAPH-2026-002: JWT Tokens in sessionStorage (XSS Vulnerable)
 
-**Severity**: HIGH (CVSS 8.5)
-**Status**: ⚠️ PARTIALLY MITIGATED
+**Severity**: HIGH (CVSS 8.5) **Status**: ⚠️ PARTIALLY MITIGATED
 
 **Current State**:
+
 - Backend already supports HTTP-only cookies
 - Frontend has `withCredentials: true` configured
 - Token still in sessionStorage for WebSocket authentication
 
 **Remaining Work** (Backend Required):
+
 ```elixir
 # config/config.exs
 config :cgraph, CGraphWeb.Auth.Guardian,
@@ -83,6 +86,7 @@ config :cgraph, CGraphWeb.Auth.Guardian,
 ```
 
 **Frontend Cleanup** (After backend update):
+
 ```typescript
 // Remove token from authStore.ts
 // Keep only for WebSocket (with short TTL)
@@ -92,10 +96,10 @@ config :cgraph, CGraphWeb.Auth.Guardian,
 
 ### CVE-CGRAPH-2026-003: Token Refresh Race Condition
 
-**Severity**: HIGH (CVSS 7.2)
-**Status**: ✅ FIXED in existing code
+**Severity**: HIGH (CVSS 7.2) **Status**: ✅ FIXED in existing code
 
 **Implementation**:
+
 ```typescript
 // apps/web/src/lib/api.ts - lines 7-30
 let isRefreshing = false;
@@ -118,10 +122,10 @@ if (isRefreshing) {
 
 ### CVE-CGRAPH-2026-004: Weak HMAC Signatures Instead of ECDSA
 
-**Severity**: HIGH (CVSS 7.5)
-**Status**: 📝 DOCUMENTED (Requires refactor)
+**Severity**: HIGH (CVSS 7.5) **Status**: 📝 DOCUMENTED (Requires refactor)
 
 **Current Implementation**:
+
 ```typescript
 // apps/web/src/lib/crypto/e2ee.ts - lines 216-226
 export async function sign(privateKey: CryptoKey, data: ArrayBuffer): Promise<ArrayBuffer> {
@@ -139,6 +143,7 @@ export async function sign(privateKey: CryptoKey, data: ArrayBuffer): Promise<Ar
 ```
 
 **Required Fix** (Breaking change - requires migration):
+
 ```typescript
 // Generate separate ECDSA signing key
 export async function generateSigningKeyPair(): Promise<KeyPair> {
@@ -153,10 +158,7 @@ export async function generateSigningKeyPair(): Promise<KeyPair> {
 }
 
 // Proper ECDSA signature
-export async function signECDSA(
-  privateKey: CryptoKey,
-  data: ArrayBuffer
-): Promise<ArrayBuffer> {
+export async function signECDSA(privateKey: CryptoKey, data: ArrayBuffer): Promise<ArrayBuffer> {
   return await crypto.subtle.sign(
     {
       name: 'ECDSA',
@@ -168,23 +170,22 @@ export async function signECDSA(
 }
 ```
 
-**Impact**: Requires all users to regenerate E2EE keys
-**Planned**: v0.8.0
+**Impact**: Requires all users to regenerate E2EE keys **Planned**: v0.8.0
 
 ---
 
 ### CVE-CGRAPH-2026-008: Production console.log Statements
 
-**Severity**: MEDIUM (CVSS 5.3)
-**Status**: ✅ FIXED in v0.7.33
+**Severity**: MEDIUM (CVSS 5.3) **Status**: ✅ FIXED in v0.7.33
 
 **Solution**:
+
 ```typescript
 import logger from '@/lib/logger.production';
 
 // Automatically disabled in production
-logger.info('User logged in', { userId });  // Only in development
-logger.error('API failed', error);           // Always logged
+logger.info('User logged in', { userId }); // Only in development
+logger.error('API failed', error); // Always logged
 
 // Replace all instances of:
 // console.log() → logger.info()
@@ -194,11 +195,13 @@ logger.error('API failed', error);           // Always logged
 ```
 
 **Files Created**:
+
 - ✅ `apps/web/src/lib/logger.production.ts`
 
 **Migration Required**:
+
 - [ ] Replace 149 console.log occurrences across codebase
-- [ ] Use ESLint rule to prevent new console.* calls
+- [ ] Use ESLint rule to prevent new console.\* calls
 
 ---
 
@@ -207,6 +210,7 @@ logger.error('API failed', error);           // Always logged
 ### 1. Encryption at Rest
 
 **E2EE Private Keys**:
+
 ```typescript
 // ✅ CORRECT
 await SecureStorage.setItem('identity_key', serializedKey);
@@ -216,6 +220,7 @@ localStorage.setItem('identity_key', serializedKey);
 ```
 
 **Session Tokens**:
+
 ```typescript
 // ✅ CORRECT (backend sets HTTP-only cookie)
 // No manual token storage needed
@@ -229,6 +234,7 @@ sessionStorage.setItem('token', jwt);
 ### 2. Content Security Policy (CSP)
 
 **Recommended Headers** (Backend configuration):
+
 ```nginx
 Content-Security-Policy:
   default-src 'self';
@@ -244,14 +250,14 @@ Content-Security-Policy:
   upgrade-insecure-requests;
 ```
 
-**Status**: ⚠️ Not yet implemented
-**Priority**: HIGH
+**Status**: ⚠️ Not yet implemented **Priority**: HIGH
 
 ---
 
 ### 3. Secure Cookie Configuration
 
 **Required Backend Settings**:
+
 ```elixir
 # Phoenix endpoint configuration
 config :cgraph, CGraphWeb.Endpoint,
@@ -282,6 +288,7 @@ config :cgraph, CGraphWeb.Endpoint,
 ### 4. Rate Limiting
 
 **API Protection**:
+
 ```elixir
 # Recommended: Plug.RateLimit
 plug Plug.RateLimit,
@@ -291,8 +298,7 @@ plug Plug.RateLimit,
   storage: Plug.RateLimit.Storage.ETS
 ```
 
-**Status**: ⚠️ Not yet implemented
-**Priority**: HIGH
+**Status**: ⚠️ Not yet implemented **Priority**: HIGH
 
 ---
 
@@ -335,12 +341,14 @@ plug Plug.RateLimit,
 ## 🔄 Migration Guide for v0.7.33
 
 ### Step 1: Update Dependencies
+
 ```bash
 cd /CGraph
 pnpm install
 ```
 
 ### Step 2: Initialize Secure Storage (First User Login)
+
 ```typescript
 // In your login handler
 import SecureStorage from '@/lib/crypto/secureStorage';
@@ -365,6 +373,7 @@ async function handleLogin(email: string, password: string) {
 ```
 
 ### Step 3: Update E2EE Imports
+
 ```typescript
 // Replace old import
 - import e2ee from '@/lib/crypto/e2ee';
@@ -372,16 +381,18 @@ async function handleLogin(email: string, password: string) {
 ```
 
 ### Step 4: Replace console.log Calls
+
 ```typescript
 // Replace throughout codebase
-- console.log('User authenticated', user);
-+ logger.info('User authenticated', { user });
+-console.log('User authenticated', user);
++logger.info('User authenticated', { user });
 
-- console.error('API error:', error);
-+ logger.error('API error', error);
+-console.error('API error:', error);
++logger.error('API error', error);
 ```
 
 ### Step 5: Update Logger Imports
+
 ```bash
 # Find and replace across project
 find apps/web/src -type f -name "*.ts" -o -name "*.tsx" | \
@@ -393,6 +404,7 @@ find apps/web/src -type f -name "*.ts" -o -name "*.tsx" | \
 ## 🧪 Testing Security Fixes
 
 ### Test E2EE Encryption
+
 ```typescript
 import SecureStorage from '@/lib/crypto/secureStorage';
 
@@ -414,18 +426,19 @@ describe('SecureStorage', () => {
 ```
 
 ### Test Token Refresh Mutex
+
 ```typescript
 describe('API Token Refresh', () => {
   it('should not have race condition', async () => {
     // Simulate 10 concurrent requests with expired token
-    const promises = Array(10).fill(null).map(() =>
-      api.get('/api/v1/protected-resource')
-    );
+    const promises = Array(10)
+      .fill(null)
+      .map(() => api.get('/api/v1/protected-resource'));
 
     const results = await Promise.all(promises);
 
     // All should succeed with same refreshed token
-    results.forEach(r => expect(r.status).toBe(200));
+    results.forEach((r) => expect(r.status).toBe(200));
 
     // Verify refresh was called only once
     expect(refreshTokenCallCount).toBe(1);
@@ -438,6 +451,7 @@ describe('API Token Refresh', () => {
 ## 📞 Security Contact
 
 For security vulnerabilities, please report to:
+
 - **Email**: security@cgraph.io (recommended)
 - **GitHub**: Create a private security advisory
 - **PGP Key**: Available at https://cgraph.io/.well-known/security.txt
@@ -450,11 +464,10 @@ For security vulnerabilities, please report to:
 
 - [OWASP Top 10 2021](https://owasp.org/www-project-top-ten/)
 - [Mozilla Web Security Guidelines](https://infosec.mozilla.org/guidelines/web_security)
-- [Signal Protocol Documentation](https://signal.org/docs/)
+- [Signal Protocol Revision 4 / PQXDH](https://signal.org/docs/specifications/pqxdh/)
 - [Web Crypto API Spec](https://www.w3.org/TR/WebCryptoAPI/)
 
 ---
 
-**Last Security Audit**: 2026-01-10
-**Next Scheduled Audit**: 2026-04-10
-**Responsible Team**: @security-team
+**Last Security Audit**: 2026-01-10 **Next Scheduled Audit**: 2026-04-10 **Responsible Team**:
+@security-team

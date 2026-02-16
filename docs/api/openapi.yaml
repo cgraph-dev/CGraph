@@ -24,9 +24,9 @@ info:
 
     ## End-to-End Encryption (v0.9.0+)
 
-    CGraph implements Signal Protocol-inspired E2EE:
-    - X3DH for initial key agreement
-    - Double Ratchet for forward secrecy
+    CGraph implements Triple Ratchet E2EE (Signal Protocol Rev 4):
+    - PQXDH for initial key agreement (P-256 + ML-KEM-768)
+    - Triple Ratchet for post-quantum forward secrecy
     - AES-256-GCM for message encryption
 
     See the E2EE endpoints under `/api/v1/e2ee/*` for key management.

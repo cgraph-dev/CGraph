@@ -31,7 +31,7 @@ const capabilities = [
     icon: '🔐',
     title: 'End-to-End Encryption',
     description:
-      'Signal Protocol implementation — X3DH key exchange, Double Ratchet, AES\u2011256\u2011GCM encryption, X25519 key agreement, and forward secrecy.',
+      'Triple Ratchet protocol \u2014 PQXDH key exchange (P-256 + ML-KEM-768), hybrid post-quantum ratchet, AES\u2011256\u2011GCM encryption, and forward secrecy.',
   },
   {
     icon: '🏛️',
