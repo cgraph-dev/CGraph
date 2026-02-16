@@ -40,7 +40,7 @@
   /* Hero Title - Prevent clipping and ensure readability */
   .hero-pro__title-line,
   .hero-pro__title-accent {
-    font-size: clamp(2rem, 11vw, 3rem) !important;
+    font-size: clamp(2.1rem, 11.2vw, 3.05rem) !important;
     line-height: 1.1 !important;
     letter-spacing: 0.01em;
     word-break: normal;
@@ -57,7 +57,7 @@
 
   /* Hero Subtitle */
   .hero-pro__subtitle {
-    font-size: 0.95rem !important;
+    font-size: clamp(0.96rem, 3.6vw, 1.04rem) !important;
     line-height: 1.55;
     padding: 0;
     margin: 0;
@@ -76,6 +76,9 @@
   .hero-pro__actions button {
     width: 100%;
     max-width: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
   }
 
   /* Hero Stats - Smaller text */
@@ -247,7 +250,11 @@
 @media (min-width: 481px) and (max-width: 768px) {
   .hero-pro__title-line,
   .hero-pro__title-accent {
-    font-size: clamp(2.5rem, 8vw, 4rem) !important;
+    font-size: clamp(2.45rem, 7.8vw, 3.8rem) !important;
+  }
+
+  .hero-pro__subtitle {
+    font-size: clamp(1rem, 2.3vw, 1.12rem) !important;
   }
   
   .features__grid {
@@ -292,8 +299,13 @@
 
 /* Very Small Screens - Additional fixes */
 @media (max-width: 375px) {
-  .hero__title {
-    font-size: clamp(1.5rem, 14vw, 2.25rem) !important;
+  .hero-pro__title-line,
+  .hero-pro__title-accent {
+    font-size: clamp(1.8rem, 12.8vw, 2.45rem) !important;
+  }
+
+  .hero-pro__subtitle {
+    font-size: 0.9rem !important;
   }
   
   section {
@@ -515,7 +527,7 @@
 /* ---------- Section header description ---------- */
 @media (max-width: 480px) {
   .section-header__desc {
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     line-height: 1.5;
     padding: 0 0.25rem;
   }
