@@ -602,12 +602,12 @@ export default function Documentation() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="marketing-card overflow-hidden"
+              className="marketing-card docs-crypto-table overflow-hidden"
               style={{ padding: 0 }}
             >
               {/* Header */}
               <div
-                className="grid grid-cols-3 gap-4 px-5 py-3 text-xs font-bold uppercase tracking-wider"
+                className="docs-crypto-table__header grid grid-cols-3 gap-4 px-5 py-3 text-xs font-bold uppercase tracking-wider"
                 style={{
                   color: 'var(--color-primary)',
                   background:
@@ -623,7 +623,7 @@ export default function Documentation() {
                 {securityTable.map((row) => (
                   <div
                     key={row.component}
-                    className="grid grid-cols-3 gap-4 px-5 py-3 text-sm transition-colors hover:bg-white/5"
+                    className="docs-crypto-table__row grid grid-cols-3 gap-4 px-5 py-3 text-sm transition-colors hover:bg-white/5"
                   >
                     <span className="font-medium text-white">{row.component}</span>
                     <span className="font-mono text-xs" style={{ color: 'var(--color-gray)' }}>
