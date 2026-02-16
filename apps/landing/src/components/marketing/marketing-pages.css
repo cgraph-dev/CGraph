@@ -1253,8 +1253,11 @@
   width: 100%;
   height: 2px;
   background: linear-gradient(90deg, transparent, #10b981 40%, #8b5cf6 60%, transparent);
+  background-size: 220% 100%;
+  background-position: 200% 0;
   transform: scaleX(0);
-  transition: transform 0.45s ease;
+  transition: transform 0.45s ease, opacity 0.3s ease;
+  opacity: 0.85;
   pointer-events: none;
   z-index: 3;
 }
@@ -1282,6 +1285,7 @@
 
 .gl-nav-unified__cta:hover .gl-nav-unified__cta-shimmer {
   transform: scaleX(1);
+  animation: cta-underline-flow 1.8s linear infinite;
 }
 
 .gl-nav-unified__cta-arrow {
@@ -1503,9 +1507,22 @@
   width: 100%;
   height: 2px;
   background: linear-gradient(90deg, transparent, #10b981 40%, #8b5cf6 60%, transparent);
-  transform: scaleX(0.6);
+  background-size: 220% 100%;
+  background-position: 200% 0;
+  transform: scaleX(0.78);
+  opacity: 0.9;
+  animation: cta-underline-flow 2.3s linear infinite;
   pointer-events: none;
   z-index: 3;
+}
+
+@keyframes cta-underline-flow {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -20% 0;
+  }
 }
 
 .gl-nav-unified__mobile-cta-text {
