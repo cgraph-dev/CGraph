@@ -565,8 +565,13 @@
 
   .hero-pro__scroll {
     display: flex;
-    bottom: 1.5rem;
-    scale: 0.8;
+    bottom: 2.5rem;
+    z-index: 20;
+    scale: 0.9;
+  }
+
+  .hero-pro__scroll-text {
+    color: rgba(255, 255, 255, 0.4);
   }
 
   .hero-pro__grid {

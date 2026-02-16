@@ -1666,6 +1666,7 @@
     min-width: 0;
     padding: 0.62rem 0.8rem;
     border-radius: 20px;
+    border: none;
     justify-content: center;
     background:
       radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 42%),

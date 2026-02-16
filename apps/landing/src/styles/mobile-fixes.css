@@ -530,8 +530,6 @@
 
   .hero-pro__btn--primary,
   .hero-pro__grid,
-  .hero-pro__scroll,
-  .hero-pro__scroll-dot,
   .hero-pro__orb {
     animation: none !important;
   }
