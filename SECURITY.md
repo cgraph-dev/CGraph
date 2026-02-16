@@ -64,8 +64,8 @@ CGraph implements defense-in-depth with multiple security layers:
 #### End-to-End Encryption (E2EE)
 
 - **Algorithm**: AES-256-GCM via Web Crypto API
-- **Key Exchange**: X25519 ECDH (Signal Protocol X3DH)
-- **Ratcheting**: Double Ratchet protocol for forward secrecy
+- **Key Exchange**: PQXDH (P-256 ECDH + ML-KEM-768 post-quantum KEM)
+- **Ratcheting**: Triple Ratchet (EC Double Ratchet ∥ Sparse Post-Quantum Ratchet)
 - **Key Derivation**: HKDF-SHA256 with conversation-specific salt
 - **Zero-Knowledge**: Server stores only public keys; encryption/decryption client-side
 - **Forward Secrecy**: Per-message key ratcheting
@@ -131,17 +131,12 @@ Security researchers acting in good faith can expect:
 
 ### Bug Bounty
 
-We offer rewards for qualifying security vulnerabilities. Contact security@cgraph.org for details.
+A formal bug bounty program is planned. In the meantime, qualifying security vulnerability reports
+may be eligible for recognition and rewards at our discretion. Contact **security@cgraph.org** with
+your findings.
 
-| Severity | Reward Range |
-| -------- | ------------ |
-| Critical | $500 - $2000 |
-| High     | $200 - $500  |
-| Medium   | $50 - $200   |
-| Low      | Recognition  |
-
-_Rewards are at our discretion and depend on the quality of the report and impact of the
-vulnerability._
+> **Note:** No external security audit or penetration test has been conducted yet. This is a
+> high-priority item on our security roadmap.
 
 ### Security Updates
 

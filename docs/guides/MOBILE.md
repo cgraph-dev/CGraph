@@ -132,7 +132,7 @@ apps/mobile/
 
 ### Prerequisites
 
-- **Node.js 22+** (required for SDK 54)
+- **Node.js 20+** (>=20.x required; 22 LTS recommended)
 - **pnpm 10+** (required for workspace compatibility)
 - iOS: Xcode 16+ (for simulator)
 - Android: Android Studio Ladybug+ (for emulator)
@@ -170,8 +170,8 @@ const IS_PREVIEW = process.env.APP_VARIANT === 'preview';
 const getApiUrl = () => {
   if (process.env.API_URL) return process.env.API_URL;
   if (IS_DEV) return 'http://localhost:4000';
-  if (IS_PREVIEW) return 'https://staging-api.cgraph.org';
-  return 'https://api.cgraph.org';
+  if (IS_PREVIEW) return 'https://staging-cgraph-backend.fly.dev';
+  return 'https://cgraph-backend.fly.dev';
 };
 
 export default {
@@ -206,10 +206,10 @@ const getApiUrl = (): string => {
 };
 ```
 
-| Environment | Android Emulator | iOS Simulator  | Physical Device |
-| ----------- | ---------------- | -------------- | --------------- |
-| Development | 10.0.2.2:4000    | localhost:4000 | LAN IP:4000     |
-| Production  | api.cgraph.org   | api.cgraph.org | api.cgraph.org  |
+| Environment | Android Emulator       | iOS Simulator          | Physical Device        |
+| ----------- | ---------------------- | ---------------------- | ---------------------- |
+| Development | 10.0.2.2:4000          | localhost:4000         | LAN IP:4000            |
+| Production  | cgraph-backend.fly.dev | cgraph-backend.fly.dev | cgraph-backend.fly.dev |
 
 ### Expo Configuration
 

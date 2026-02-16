@@ -1,7 +1,7 @@
 # CGraph Deployment Guide
 
 > Comprehensive production deployment documentation  
-> Version 0.9.3 | January 2026
+> Version 0.9.28 | January 2026
 
 This guide covers deploying CGraph to production. Fly.io is the primary platform due to excellent
 Elixir/OTP support, though concepts translate to other cloud providers.
@@ -156,7 +156,7 @@ DATABASE_URL=ecto://user:pass@db.internal:5432/cgraph
 # Application
 SECRET_KEY_BASE=<generate with: mix phx.gen.secret>
 GUARDIAN_SECRET=<generate with: mix phx.gen.secret>
-PHX_HOST=api.cgraph.org
+PHX_HOST=cgraph-backend.fly.dev
 
 # Redis
 REDIS_URL=redis://default:password@redis.internal:6379
@@ -394,8 +394,8 @@ jobs:
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: '1.15'
-          otp-version: '26'
+          elixir-version: '1.17'
+          otp-version: '27'
 
       - name: Cache deps
         uses: actions/cache@v3
@@ -482,12 +482,12 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -505,8 +505,8 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          VITE_API_URL: https://api.cgraph.org
-          VITE_WS_URL: wss://api.cgraph.org
+          VITE_API_URL: https://cgraph-backend.fly.dev
+          VITE_WS_URL: wss://cgraph-backend.fly.dev
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
@@ -629,7 +629,7 @@ fly deploy
 fly logs
 
 # Hit the health endpoint
-curl https://api.cgraph.org/api/health
+curl https://cgraph-backend.fly.dev/api/health
 
 # Check error rates in Sentry
 # Monitor response times

@@ -17,6 +17,10 @@ and consequences. ADRs help new team members understand why things are the way t
 | [004](004-signal-protocol-e2ee.md)        | Signal Protocol E2EE             | Superseded | 2025-01-01 |
 | [005](005-phoenix-channels-realtime.md)   | Phoenix Channels for Real-time   | Accepted   | 2025-01-01 |
 | [011](011-post-quantum-triple-ratchet.md) | Post-Quantum Triple Ratchet E2EE | Accepted   | 2026-02-15 |
+| [018](018-reanimated-v4-migration.md)     | Reanimated v4 Migration          | Accepted   | 2026-01-01 |
+| [019](019-elixir-phoenix-backend.md)      | Elixir/Phoenix for Backend       | Accepted   | 2025-07-15 |
+| [020](020-postgresql-database.md)         | PostgreSQL as Primary Database   | Accepted   | 2025-07-15 |
+| [021](021-ddd-feature-structure.md)       | DDD Feature Module Structure     | Accepted   | 2025-07-15 |
 
 ## Template
 

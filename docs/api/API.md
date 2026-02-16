@@ -24,11 +24,11 @@ you're building an integration, mobile app, or just exploring—you'll find ever
 
 ### Base URL
 
-| Environment | URL                                     |
-| ----------- | --------------------------------------- |
-| Production  | `https://api.cgraph.org/api/v1`         |
-| Staging     | `https://staging-api.cgraph.org/api/v1` |
-| Local       | `http://localhost:4000/api/v1`          |
+| Environment | URL                                             |
+| ----------- | ----------------------------------------------- |
+| Production  | `https://cgraph-backend.fly.dev/api/v1`         |
+| Staging     | `https://staging-cgraph-backend.fly.dev/api/v1` |
+| Local       | `http://localhost:4000/api/v1`                  |
 
 ### Request Format
 
@@ -1634,7 +1634,7 @@ CGraph uses Phoenix Channels for real-time communication.
 ```javascript
 import { Socket } from 'phoenix';
 
-const socket = new Socket('wss://api.cgraph.org/socket', {
+const socket = new Socket('wss://cgraph-backend.fly.dev/socket', {
   params: { token: 'your-jwt-token' },
 });
 
@@ -1952,8 +1952,8 @@ callChannel.on('call:error', ({ reason }) => {
 
 Full OpenAPI 3.0 spec available at:
 
-- **Interactive Docs:** https://api.cgraph.org/docs
-- **OpenAPI JSON:** https://api.cgraph.org/openapi.json
+- **Interactive Docs:** https://cgraph-backend.fly.dev/docs
+- **OpenAPI JSON:** https://cgraph-backend.fly.dev/openapi.json
 
 ### Sample OpenAPI Snippet
 
@@ -2199,7 +2199,7 @@ components:
 import { CGraphClient } from '@cgraph/sdk';
 
 const client = new CGraphClient({
-  baseUrl: 'https://api.cgraph.org/api/v1',
+  baseUrl: 'https://cgraph-backend.fly.dev/api/v1',
   token: 'your-jwt-token',
 });
 
@@ -2225,7 +2225,7 @@ client.on('new_message', (message) => {
 from cgraph import CGraphClient
 
 client = CGraphClient(
-    base_url="https://api.cgraph.org/api/v1",
+    base_url="https://cgraph-backend.fly.dev/api/v1",
     token="your-jwt-token"
 )
 
@@ -2246,16 +2246,16 @@ message = client.conversations.send_message(
 
 ```bash
 # Login
-curl -X POST https://api.cgraph.org/api/v1/auth/login \
+curl -X POST https://cgraph-backend.fly.dev/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"alice@example.com","password":"secret"}'
 
 # Get current user
-curl https://api.cgraph.org/api/v1/me \
+curl https://cgraph-backend.fly.dev/api/v1/me \
   -H "Authorization: Bearer YOUR_TOKEN"
 
 # Send a message
-curl -X POST https://api.cgraph.org/api/v1/conversations/conv_abc123/messages \
+curl -X POST https://cgraph-backend.fly.dev/api/v1/conversations/conv_abc123/messages \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"content":"Hello!"}'

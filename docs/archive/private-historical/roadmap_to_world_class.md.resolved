@@ -1,0 +1,125 @@
+# Roadmap to 9.5/10: From MVP to World-Class
+
+> **Current State**: 6.1/10 (Solo MVP with deep tech but significant risks)  
+> **Target State**: 9.5/10 (Production-grade, scalable, secure, venture-backable)
+
+To reach a **9.5/10** score, CGraph must transition from an "impressive solo prototype" to a "validated, scalable, and secure platform." This requires a shift in mindset: **prove it, don't just claim it.**
+
+---
+
+## Phase 1: Cleaning House (Months 1-2)
+
+**Goal**: Eliminate debts that scream "amateur project" to investors/auditors.
+
+### 1.1 Architecture Refactoring (The "God-Module" Fix)
+
+- **Action**: Adopt **[CGraph Engineering Standards](./ENGINEERING_STANDARDS.md)** immediately. All new code MUST follow these rules.
+- We must break the dangerously large files.
+- **Action**: Refactor [forums.ex](file:///CGraph/apps/backend/lib/cgraph/forums.ex) (3,139 lines) into contexts:
+  - `CGraph.Forums.Content` (Posts, Threads)
+  - `CGraph.Forums.Moderation` (Mod actions, Queues)
+  - `CGraph.Forums.Interaction` (Voting, Saving)
+- **Action**: Split [gamification.ex](file:///CGraph/apps/backend/lib/cgraph/gamification.ex) and [messaging.ex](file:///CGraph/apps/backend/lib/cgraph/messaging.ex) similarly.
+- **Why**: Keeps code maintainable and testable; critical for growing a team.
+
+### 1.2 Security Hygiene
+
+- **Action**: Fix `is_encrypted: false` default on messages to `true`.
+- **Action**: Encrypt/Hash `recovery_codes` in the database immediately.
+- **Action**: Remove [erl_crash.dump](file:///CGraph/apps/backend/erl_crash.dump) (10MB) and `monitoring_log` from git history.
+- **Action**: Enable `validate_compile_env` in [mix.exs](file:///CGraph/apps/backend/mix.exs) for production safety.
+
+### 1.3 Honest Documentation
+
+- **Action**: Rewrite [CURRENT_STATE_DASHBOARD.md](file:///CGraph/docs/CURRENT_STATE_DASHBOARD.md) to reflect reality.
+- **Action**: Delete the AI-generated 8,000-line [CODE_SIMPLIFICATION_GUIDELINES.md](file:///CGraph/docs/CODE_SIMPLIFICATION_GUIDELINES.md).
+- **Why**: Transparency builds trust. Investors will respect a brutally honest "Work in Progress" more than a fake "10/10".
+
+---
+
+## Phase 2: Proving Scalability & Performance (Months 2-3)
+
+**Goal**: Move from "theoretical" scalability to "proven" capabilities.
+
+### 2.1 Message Storage Strategy
+
+- **The "Hidden Cost" of ScyllaDB**: While the software is free, the _operational cost_ is massive.
+  - **Infrastructure**: Minimum 3 nodes (CPU/RAM hungry) = ~$150-300/mo vs ~$20/mo for Postgres.
+  - **Complexity**: Requires managing tokens, consistency levels, and repairs.
+  - **Dev Time**: 2-3 weeks to rewrite the data access layer.
+- **Strategic Decision**: Stick with **Partitioned PostgreSQL** until you hit **1M messages/day**.
+  - **Action**: Implement the **Repository Pattern** now. This acts as an "interface" between your code and the database.
+  - **Benefit**: This makes the future migration to ScyllaDB a code refactor, not a rewrite. You get 90% of the benefit (clean architecture) with 10% of the cost.
+- **Action**: If staying on Postgres, implement **Read Replicas** configuration in `runtime.exs` and Fly.io config.
+
+### 2.2 Load Testing
+
+- **Action**: Run a real load test with **k6** or **Vegeta**.
+  - Target: 10,000 concurrent WebSocket connections.
+  - Target: 1,000 messages/sec throughput.
+- **Action**: Publish the results in `docs/LOAD_TEST_RESULTS.md`.
+  - Graphs of latency vs throughput.
+  - CPU/Memory usage logs.
+
+---
+
+## Phase 3: Security Maturity (Months 3-4)
+
+**Goal**: Transform "unaudited E2EE" redundancy into a verified asset.
+
+### 3.1 External Audit
+
+- **Action**: Commission a **formal security assessment** of the E2EE implementation (`@cgraph/crypto`).
+  - Since funds might be tight, start with a "white box" review by a reputable freelance security researcher if a firm is too expensive.
+- **Action**: Publish a transparent transparency report or security summary.
+
+### 3.2 Advanced Security Features
+
+- **Action**: Implement **Certificate Pinning** for mobile.
+- **Action**: Add **Device Management** (view/revoke sessions) in the mobile app UI.
+
+---
+
+## Phase 4: Mobile & Frontend Robustness (Months 4-5)
+
+**Goal**: Bring client-side coverage up to reliable standards.
+
+### 4.1 Testing
+
+- **Action**: Increase Mobile test coverage from 2.4% to **40%+**.
+  - Focus: E2EE message flows, Auth flows, Push notification handling.
+- **Action**: Increase Web test coverage from 7% to **50%+**.
+- **Action**: Implement "Smoke Tests" that run on every PR (e.g., "Can a user log in and send a message?").
+
+### 4.2 Error Handling
+
+- **Action**: Implement proper **Error Boundaries** in React/React Native.
+- **Action**: Ensure offline-first capabilities are robust (queueing messages when offline).
+
+---
+
+## Phase 5: The "9.5/10" Differentiator (Validation)
+
+**Goal**: User validation. A 10/10 tech stack with 0 users is an academic exercise.
+
+### 5.1 User Traction
+
+- **Action**: Launch a **Closed Beta** (100-500 users).
+- **Metric**: Achieve >40% D30 retention.
+- **Why**: Real users break things in ways you cannot imagine. Fixing those bugs is what creates "Discord-grade" maturity.
+
+### 5.2 Team Growth
+
+- **Action**: Onboard **one** other contributor (even part-time/contract).
+- **Why**: Proves the codebase is understandable by someone other than you (Bus Factor > 1).
+
+---
+
+## Scorecard Progression
+
+| Quarter | Milestone                                             | Projected Score |
+| ------- | ----------------------------------------------------- | --------------- |
+| **Now** | Solo MVP, inflated docs, untested E2EE                | **6.1/10**      |
+| **Q2**  | Clean architecture, honest docs, >40% test coverage   | **7.5/10**      |
+| **Q3**  | Proven load tests, ScyllaDB plan, Security Audit      | **8.5/10**      |
+| **Q4**  | 1,000 users, 2 contributors, production battle-tested | **9.5/10**      |

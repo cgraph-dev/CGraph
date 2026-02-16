@@ -30,7 +30,7 @@ specified.
 ### Base URL
 
 ```
-Production: https://api.cgraph.org/api/v1
+Production: https://cgraph-backend.fly.dev/api/v1
 Development: http://localhost:4000/api/v1
 ```
 
@@ -2141,7 +2141,7 @@ Clears the authenticated user's search history.
 Connect to the WebSocket at:
 
 ```
-wss://api.cgraph.org/socket/websocket?token=<jwt_token>
+wss://cgraph-backend.fly.dev/socket/websocket?token=<jwt_token>
 ```
 
 ### Channels

@@ -1,7 +1,8 @@
 # Load Test Results
 
-> **Status**: Infrastructure ready, pending first staging run  
-> **Last Updated**: 2025-02-15  
+> **⚠️ STATUS: PENDING** — No load tests have been executed yet.  
+> k6 test scripts are ready but no staging or production runs have been completed.  
+> **Last Updated**: 2026-02-16  
 > **Scripts**: [`infrastructure/load-tests/k6/`](../infrastructure/load-tests/k6/)
 
 ## Test Suite Overview

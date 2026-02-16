@@ -1,0 +1,135 @@
+# CGraph Engineering Standards (The "Meta/Discord" Standard)
+
+> **Status**: MANDATORY  
+> **Applicability**: Humans & AI Agents  
+> **Enforcement**: CI/CD & Code Review
+
+This document defines the **non-negotiable** engineering standards required to move CGraph from a solo MVP to a scalable, production-grade platform. These rules are inspired by engineering handbooks from Meta, Google, and Discord.
+
+---
+
+## 1. The Golden Rules (Zero Tolerance)
+
+1.  **The "Boy Scout" Rule**: Always leave the code cleaner than you found it. If you touch a file with `any` types, you must fix at least one.
+2.  **No God Modules**: No single file shall exceed **300 lines** (Frontend) or **500 lines** (Backend). Code must be broken into small, single-responsibility units.
+3.  **Strict Types**: `any` is banned. If you "can't figure out the type", you don't understand the code well enough to modify it.
+4.  **Tests or It Didn't Happen**: No feature PR is merged without accompanying tests.
+5.  **Security by Default**: All new data fields must be private/encrypted by default. explicit action is required to make data public.
+
+---
+
+## 2. Architectural Constraints
+
+### 2.1 File Size Limits
+
+- **React Components**: Max 300 lines.
+  - _Why?_ Large components are hard to read, test, and memoize.
+  - _Solution_: Extract sub-components, move logic to custom hooks, or move styles to separate files.
+- **Backend Modules (Elixir)**: Max 500 lines.
+  - _Why?_ "God contexts" (like [forums.ex](file:///CGraph/apps/backend/lib/cgraph/forums.ex)) create merge conflicts and tight coupling.
+  - _Solution_: Split Contexts into sub-modules (e.g., `Forums.Posts`, `Forums.Moderation`).
+
+### 2.2 Directory Structure (Colocation)
+
+- **Frontend**: Value colocation over segregation.
+  - ✅ **Good**: `src/modules/auth/components/Login.tsx`, `src/modules/auth/hooks/useLogin.ts`, `src/modules/auth/tests/Login.test.tsx`
+  - ❌ **Bad**: `src/components/Login.tsx` ... `src/hooks/useLogin.ts` (scattered)
+- **Backend**: Contexts must own their data. Cross-context calls must go through public APIs, not direct repo calls.
+
+---
+
+## 3. Code Quality & Hygiene
+
+### 3.1 TypeScript (Strict Mode)
+
+- **No `any`**: Use `unknown` if you must, then narrow it.
+- **No `ts-ignore`**: Fix the problem. If it's an external library issue, use a declaration file.
+- **Explicit Returns**: All exported functions must have explicit return types.
+
+### 3.2 Elixir / Phoenix
+
+- **No `defdelegate` chaining**: Don't hide logic behind 3 layers of delegation.
+- **Specs**: All public functions must have `@spec` and `@doc`.
+- **Credo**: Zero tolerance for Credo warnings in new code.
+
+### 3.3 Logs & Debugging
+
+- **No `console.log`**: Use the structured logger (`Logger.info` / `logger.ts`).
+- **No Crash Dumps**: [erl_crash.dump](file:///CGraph/apps/backend/erl_crash.dump) and other artifacts must be gitignored.
+
+---
+
+## 4. Testing Standards
+
+### 4.1 Test Colocation
+
+- Tests sit **next to** the code they test.
+  - `Logic.ts` -> `Logic.test.ts`
+  - `Button.tsx` -> `Button.test.tsx`
+
+### 4.2 Coverage Requirements
+
+- **Core Logic (Auth, E2EE, Payments)**: 100% Branch Coverage.
+- **UI Components**: Smoke tests (renders without crashing).
+- **Happy Paths**: Must be covered by E2E tests.
+
+### 4.3 Snapshot Testing
+
+- **Avoid** large snapshots. They are brittle and people approve them without reading.
+- **Prefer** explicit assertions: `expect(getByText('Submit')).toBeInTheDocument()`.
+
+---
+
+## 5. Scalability & Database
+
+### 5.1 Database Interactions
+
+- **No N+1 Queries**: All associations must be preloaded in the controller/resolver.
+- **Indexing**: precise indexes required for all columns used in `WHERE`, `ORDER BY`, or `JOIN`.
+- **Migrations**:
+  - Never modify an existing migration. Create a new one.
+  - All table creates must include `timestamps()`.
+
+### 5.2 Performance
+
+- **Memoization**: Use `useMemo` and `useCallback` for expensive calculations or reference stability in React.
+- **Lazy Loading**: All routes must be lazy-loaded. All large libraries (charts, maps) must be lazy-loaded.
+
+---
+
+## 6. Security Protocol
+
+### 6.1 Data Protection
+
+- **E2EE**: End-to-End Encryption is the core value proposition.
+  - **Never** fallback to plaintext. If encryption fails, the message fails.
+  - **Keys**: Private keys never leave the client device.
+- **PII**: Personally Identifiable Information (email, phone, IP) must be encrypted at rest.
+
+### 6.2 Authentication
+
+- **Zero Trust**: Validate every request. Do not trust the client.
+- **Rate Limiting**: Every public endpoint must have a rate limit.
+
+---
+### 5.3 Infrastructure Scalability (Fly.io Specifics)
+- **Stateless Backend**: The application must be stateless.
+    - **No Local Files**: Do not write to the local filesystem (except `/tmp`). Deployments are ephemeral.
+    - **Use Redis/S3**: Session state goes to Redis. User uploads go to S3/R2 immediately.
+- **Connection Hygiene**:
+    - **Pool Size**: Respect `POOL_SIZE` config. Do not spawn unlimited tasks that open DB connections.
+
+### 5.4 Data Scalability
+- **Pagination is Mandatory**: ALL list endpoints must be cursor-paginated.
+    - **Banned**: `SELECT * FROM messages`.
+    - **Required**: `WHERE id < cursor ORDER BY id DESC LIMIT 50`.
+- **Soft Deletes**: Data is never `DELETE`d, only marked `deleted_at`.
+- **Foreign Keys**: Always use database-level foreign key constraints.
+
+## 7. AI Agent Instructions
+
+_If you are an AI agent reading this:_
+
+1.  **Refuse** to generate code that violates these standards.
+2.  If asked to edit a "God Module", **propose a refactor** first.
+3.  **Always** write a test for the code you generate.

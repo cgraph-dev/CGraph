@@ -14,7 +14,9 @@
 
 ## Context
 
-As CGraph grew from a small project to a multi-platform communication platform, the original flat file structure became increasingly difficult to navigate and maintain. With teams working on web, mobile, and backend simultaneously, we needed a structure that:
+As CGraph grew from a small project to a multi-platform communication platform, the original flat
+file structure became increasingly difficult to navigate and maintain. With teams working on web,
+mobile, and backend simultaneously, we needed a structure that:
 
 1. Allows teams to work independently on features
 2. Promotes code reuse across platforms
@@ -22,6 +24,7 @@ As CGraph grew from a small project to a multi-platform communication platform, 
 4. Scales with team size and feature complexity
 
 The previous structure organized code by technical layer (components, hooks, utils), which led to:
+
 - Related code scattered across directories
 - Difficulty understanding feature boundaries
 - Merge conflicts when multiple teams touch shared directories
@@ -51,10 +54,12 @@ src/
 ```
 
 **Pros**:
+
 - No migration effort
 - Familiar to the team
 
 **Cons**:
+
 - Doesn't scale with team size
 - Related code remains scattered
 - Unclear feature boundaries
@@ -75,11 +80,13 @@ src/features/
 ```
 
 **Pros**:
+
 - Clear feature boundaries
 - Easy to find related code
 - Supports team ownership
 
 **Cons**:
+
 - Migration effort required
 - Some shared code duplication
 
@@ -96,19 +103,22 @@ packages/ui/            # Shared components
 ```
 
 **Pros**:
+
 - Maximum code reuse
 - Clear domain boundaries
 - Platform-agnostic core logic
 - Scales to large teams
 
 **Cons**:
+
 - Higher initial complexity
 - Requires careful package API design
 - More tooling needed
 
 ## Decision
 
-We will adopt **Option 3: Full DDD with Shared Packages** because it provides the best foundation for multi-platform development and team scaling.
+We will adopt **Option 3: Full DDD with Shared Packages** because it provides the best foundation
+for multi-platform development and team scaling.
 
 ### Implementation Notes
 
@@ -124,6 +134,7 @@ We will adopt **Option 3: Full DDD with Shared Packages** because it provides th
    - `@cgraph/utils`: Pure utility functions
 
 3. **Dependency Flow**:
+
    ```
    apps/web ──┐
               ├──► packages/core
@@ -155,11 +166,11 @@ We will adopt **Option 3: Full DDD with Shared Packages** because it provides th
 
 ### Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Circular dependencies | Medium | High | Strict dependency rules, tooling checks |
-| Over-abstraction | Low | Medium | Feature flags for gradual rollout |
-| Build time increase | Medium | Low | Turborepo caching |
+| Risk                  | Likelihood | Impact | Mitigation                              |
+| --------------------- | ---------- | ------ | --------------------------------------- |
+| Circular dependencies | Medium     | High   | Strict dependency rules, tooling checks |
+| Over-abstraction      | Low        | Medium | Feature flags for gradual rollout       |
+| Build time increase   | Medium     | Low    | Turborepo caching                       |
 
 ## Compliance
 
@@ -176,6 +187,7 @@ We will adopt **Option 3: Full DDD with Shared Packages** because it provides th
 ## Notes
 
 This structure is inspired by:
+
 - Nx monorepo patterns
 - Domain-Driven Design tactical patterns
 - Feature-Sliced Design methodology
@@ -184,4 +196,4 @@ The structure should be reviewed annually or when significant scaling events occ
 
 ---
 
-*Accepted: January 2026*
+_Accepted: January 2026_

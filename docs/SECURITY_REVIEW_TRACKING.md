@@ -63,7 +63,7 @@ This document tracks all security reviews, audits, and penetration tests for CGr
 
 - Web application (app.cgraph.org)
 - Landing site (cgraph.org)
-- API endpoints (api.cgraph.org)
+- API endpoints (cgraph-backend.fly.dev)
 - WebSocket/real-time channels
 - Authentication flows
 - Mobile app (if applicable)
@@ -202,4 +202,4 @@ This document tracks all security reviews, audits, and penetration tests for CGr
 
 ---
 
-<sub>**CGraph Security Review Tracking** • Version 0.9.8 • Last updated: January 30, 2026</sub>
+<sub>**CGraph Security Review Tracking** • Version 0.9.28 • Last updated: January 30, 2026</sub>

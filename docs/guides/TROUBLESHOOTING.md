@@ -403,8 +403,8 @@ lsof -i :5432   # PostgreSQL
 2. **Update frontend API URLs:**
    ```typescript
    // Use https:// and wss:// in production
-   const API_URL = import.meta.env.VITE_API_URL; // https://api.cgraph.org
-   const WS_URL = import.meta.env.VITE_WS_URL; // wss://api.cgraph.org
+   const API_URL = import.meta.env.VITE_API_URL; // https://cgraph-backend.fly.dev
+   const WS_URL = import.meta.env.VITE_WS_URL; // wss://cgraph-backend.fly.dev
    ```
 
 ---
@@ -540,10 +540,10 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 ```bash
 # Monitor WebSocket connections
-wscat -c wss://api.cgraph.org/socket/websocket
+wscat -c wss://cgraph-backend.fly.dev/socket/websocket
 
 # Test API endpoints
-curl -v https://api.cgraph.org/api/v1/health
+curl -v https://cgraph-backend.fly.dev/api/v1/health
 
 # Check response headers
 curl -I https://cgraph-web-v2.vercel.app

@@ -4,7 +4,8 @@ This directory contains Architecture Decision Records (ADRs) for the CGraph proj
 
 ## What is an ADR?
 
-An Architecture Decision Record is a document that captures an important architectural decision made along with its context and consequences.
+An Architecture Decision Record is a document that captures an important architectural decision made
+along with its context and consequences.
 
 ## How to Create an ADR
 
@@ -15,8 +16,8 @@ An Architecture Decision Record is a document that captures an important archite
 
 ## ADR Index
 
-| Number | Title | Status | Date |
-|--------|-------|--------|------|
+| Number                                | Title                        | Status   | Date    |
+| ------------------------------------- | ---------------------------- | -------- | ------- |
 | [006](./006-ddd-feature-structure.md) | DDD Feature Module Structure | Accepted | 2026-01 |
 
 > Note: ADRs 001-005 document historical decisions made before this tracking system was established.

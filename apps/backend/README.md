@@ -6,7 +6,8 @@
 
 ### Prerequisites
 
-- Elixir 1.17+ with Erlang/OTP 27+
+- Elixir 1.17+ with Erlang/OTP 27+ (production uses 1.17.3/OTP 27.1.2; local dev uses 1.19.4/OTP
+  28.3)
 - PostgreSQL 16+
 - Redis (optional, for distributed rate limiting)
 
@@ -143,7 +144,7 @@ fly scale memory 1024
 ### Health Checks
 
 ```
-GET /health  → {"status":"ok","version":"0.9.3","service":"cgraph-api"}
+GET /health  → {"status":"ok","version":"0.9.28","service":"cgraph-api"}
 GET /ready   → {"status":"ready","checks":{"database":"ok","cache":"ok","redis":"not_configured"}}
 ```
 

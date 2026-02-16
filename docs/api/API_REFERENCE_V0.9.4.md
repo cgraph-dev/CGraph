@@ -1,6 +1,6 @@
 # CGraph API Reference - v0.9.4
 
-**Last Updated**: January 20, 2026 **Base URL**: `https://api.cgraph.org/api/v1`
+**Last Updated**: January 20, 2026 **Base URL**: `https://cgraph-backend.fly.dev/api/v1`
 
 ## Table of Contents
 

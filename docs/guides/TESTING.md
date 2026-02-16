@@ -2,7 +2,7 @@
 
 > Comprehensive testing documentation for the CGraph platform
 
-**Version:** 0.9.4 | **Last Updated:** January 2026
+**Version:** 0.9.28 | **Last Updated:** January 2026
 
 ---
 

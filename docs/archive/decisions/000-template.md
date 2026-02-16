@@ -3,6 +3,7 @@
 ## Status
 
 <!-- Choose one: Proposed | Accepted | Deprecated | Superseded | Rejected -->
+
 **Proposed**
 
 ## Date
@@ -18,6 +19,7 @@ YYYY-MM-DD
 > What is the issue that we're seeing that is motivating this decision or change?
 
 Describe the context and problem statement. Include:
+
 - Current state of the system
 - Forces at play (technical, business, team constraints)
 - Why this decision is needed now
@@ -36,10 +38,12 @@ Describe the context and problem statement. Include:
 **Description**: Brief description of this option.
 
 **Pros**:
+
 - Pro 1
 - Pro 2
 
 **Cons**:
+
 - Con 1
 - Con 2
 
@@ -48,10 +52,12 @@ Describe the context and problem statement. Include:
 **Description**: Brief description of this option.
 
 **Pros**:
+
 - Pro 1
 - Pro 2
 
 **Cons**:
+
 - Con 1
 - Con 2
 
@@ -60,10 +66,12 @@ Describe the context and problem statement. Include:
 **Description**: Brief description of this option.
 
 **Pros**:
+
 - Pro 1
 - Pro 2
 
 **Cons**:
+
 - Con 1
 - Con 2
 
@@ -93,10 +101,10 @@ We will use **[Option X]** because [key reasons].
 
 ### Risks
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Risk 1 | Medium | High | Mitigation strategy |
-| Risk 2 | Low | Medium | Mitigation strategy |
+| Risk   | Likelihood | Impact | Mitigation          |
+| ------ | ---------- | ------ | ------------------- |
+| Risk 1 | Medium     | High   | Mitigation strategy |
+| Risk 2 | Low        | Medium | Mitigation strategy |
 
 ## Compliance
 
@@ -108,6 +116,7 @@ We will use **[Option X]** because [key reasons].
 ## Related
 
 <!-- Update these with actual links when applicable -->
+
 - Related ADR: (link to related ADR if any)
 - Related issue: (link to GitHub issue)
 - Related documentation: (link to docs)
@@ -118,4 +127,4 @@ Any additional notes, discussions, or future considerations.
 
 ---
 
-*Template version 1.0*
+_Template version 1.0_

@@ -4,6 +4,77 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.28] - 2026-02-16
+
+**DOCUMENTATION OVERHAUL — COMPREHENSIVE ACCURACY AUDIT**
+
+Full documentation audit and correction across ~135 markdown files. Eliminated false claims, unified
+E2EE terminology, corrected infrastructure references, and updated version headers.
+
+### Documentation Accuracy
+
+- Fixed E2EE terminology across all docs: X3DH→PQXDH, Double Ratchet→Triple Ratchet, X25519→P-256
+  ECDH, Ed25519→P-256 ECDSA, added ML-KEM-768 post-quantum references
+- Corrected hosting claims: Web App = Fly.io (not Vercel), Landing = Vercel, Backend = Fly.io
+  Frankfurt
+- Fixed subscription tiers: 3 tiers (free/premium/enterprise) not 5
+- Removed false bug bounty payout table from SECURITY.md
+- Corrected "regular third-party audits" → "planned but not yet conducted" in PRIVACY_POLICY.md
+- Fixed API URL: api.cgraph.org → cgraph-backend.fly.dev
+- Updated database hosting: Neon → Supabase (PostgreSQL 16+)
+- Fixed Node.js version references: 22 LTS → >=20.x (per engines field)
+
+### Scores & Metrics
+
+- Corrected composite quality score: 9.4 → 8.8 across CLAUDE.md, PROJECT_STATUS,
+  CURRENT_STATE_DASHBOARD
+- Fixed `as any` count: 12 → 10 (verified via grep)
+- Fixed `console.log` count: 55 → 65 (verified via grep)
+- Fixed web test coverage: 9.31% → ~20% (vitest threshold is 19%)
+- Corrected operational maturity: 9.8 → 8.2 (load testing 9→3, observability 10→7)
+
+### Archive & Organization
+
+- Created docs/archive/ with subdirectories: release-notes/ (20 files), decisions/ (8),
+  private-historical/ (5)
+- Archived 4 stub documents: WEBRTC.md, PREMIUM_SUBSCRIPTIONS.md, MYBB_FEATURES.md, SECRETS.md
+- Merged 3 unique ADRs from architecture/decisions/ into docs/adr/ as ADR-019, 020, 021
+- Updated ADR README index with entries 018-021
+
+### Version Updates
+
+- Updated version headers in 17 documentation files from various old versions to 0.9.28
+- Updated backend README health check version 0.9.3 → 0.9.28
+
+---
+
+## [0.9.27] - 2026-02-16
+
+**LANDING PAGE OPTIMIZATION & BUG FIXES**
+
+8-phase landing page optimization, workspace-wide lint/type error fixes, and mobile responsive
+improvements.
+
+### Landing Page
+
+- Split 7902-line CSS monolith into 17 component-scoped files
+- Extracted content data into dedicated data modules
+- Replaced emoji icons with animated neon SVG icons throughout
+- Unified footer typography and mobile responsive parity
+- Added SEO meta tags (react-helmet-async) and security headers (CSP, HSTS, Permissions-Policy)
+- Added error boundary and branded 404 page
+- Added gzip/brotli compression, ES2020 target, dns-prefetch for web app
+- Main bundle reduced from 217KB → 178KB gzipped
+
+### Bug Fixes
+
+- Fixed lint errors and type issues across 13 workspace files
+- Fixed Vercel build by prefixing docs/ in .vercelignore
+- Fixed mobile landing page CSS issues (nav, hero, footer)
+- Fixed mobile nav double outline and hero scroll indicator visibility
+
+---
+
 ## [0.9.26] - 2026-02-15
 
 **�️ ARCHITECTURE REFACTOR — MONOREPO HARDENING & CODE ORGANIZATION**

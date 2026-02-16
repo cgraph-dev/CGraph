@@ -44,7 +44,7 @@ karma-based forum system.
 
 **Version**: 0.9.28  
 **Last Updated**: February 16, 2026  
-**Architecture Score**: 9.4/10 (audit-verified)  
+**Architecture Score**: 8.8/10 (see CURRENT_STATE_DASHBOARD.md for breakdown)  
 **License**: Proprietary (see LICENSE)
 
 ## Key Features
@@ -848,23 +848,43 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Metric               | Before      | After                      |
 | -------------------- | ----------- | -------------------------- |
 | `.env` with secrets  | Present     | **DELETED**                |
-| `as any` casts       | 27          | **12** (56% reduction)     |
-| `console.log` calls  | 325         | **55** (acceptable)        |
+| `as any` casts       | 27          | **10** (63% reduction)     |
+| `console.log` calls  | 325         | **65** (80% reduction)     |
 | Settings.tsx         | 1,172 lines | **221 lines**              |
 | UserProfile.tsx      | 1,157 lines | **715 lines**              |
 | Store facades        | 0           | **7 domains** (29 stores)  |
 | Passing tests        | 840         | **1,633** (+793)           |
 | Test failures        | 234+        | **0** (fully green)        |
-| Statement coverage   | 8.79%       | **9.31%**                  |
+| Statement coverage   | 8.79%       | **~20%** (web, vitest)     |
 | Test files (backend) | 40          | **163** (308% increase)    |
 | Controller coverage  | 40%         | **100%** (83/83)           |
 | Context module tests | 23          | **70** (47 new)            |
 | Circuit breakers     | 1 (Redis)   | **7** (all ext. deps)      |
 | Compile warnings     | 90+         | **0** (fully clean)        |
 | Credo issues         | 1,277       | **0** (100% — fully clean) |
-| Operational score    | N/A         | **9.8/10**                 |
+| Operational score    | N/A         | **8.2/10**                 |
 
-**Overall Score:** 9.4/10 (up from 7.3/10)
+**Overall Score:** 8.8/10 (up from 7.3/10)
+
+### Known Stubs & Limitations
+
+The following areas are scaffolded but not fully implemented:
+
+- **Marketplace channel**: ~10 methods return `:not_implemented` in `marketplace_channel.ex`
+- **Friend suggestions**: `dismiss_friend_suggestion/2` always returns `:ok` (no-op)
+- **Storage tracking**: `Storage.get_user_storage_used/1` returns `0` (not implemented)
+- **Group auto-rules**: `Forums.GroupAutoRule` permission check always returns `true`
+- **Email digests**: `EmailDigestWorker` has placeholder templates
+- **AI integration**: Explicitly disabled; placeholder architecture doc exists
+- **Social Hub mock data**: Notifications and Discover tabs in web app use `MOCK_NOTIFICATIONS` /
+  `MOCK_SEARCH_RESULTS` from `mock-data.ts` despite real stores existing
+- **Premium billing**: UI built, Stripe scaffolded, but `premiumStore` is client-side only;
+  `PremiumPage.tsx` hardcodes `currentSubscription='free'`, `coinBalance=0`
+- **Meilisearch**: Not deployed; PostgreSQL full-text search used as interim
+- **Redis in production**: Optional; ETS fallback active. Required for distributed rate limiting
+- **Web Fly.io deployment**: `fly.web.toml` exists but `Dockerfile.web` is missing
+- **Load testing**: k6 scripts ready but no staging/production runs completed
+- **Grafana dashboards**: JSON definitions exist but not provisioned in production
 
 ### Sessions 20–21 Changes (v0.9.26 — audit fixes + full test green)
 

@@ -96,7 +96,7 @@ fly status
 fly logs --app cgraph
 
 # Verify version
-curl -s https://api.cgraph.org/health
+curl -s https://cgraph-backend.fly.dev/health
 ```
 
 ---
@@ -229,7 +229,7 @@ fly releases list | head -5
 fly postgres connect -a cgraph-db -c "SELECT count(*) FROM pg_stat_activity;"
 
 # 4. Check specific endpoints
-curl -w "%{http_code}" https://api.cgraph.org/api/v1/health
+curl -w "%{http_code}" https://cgraph-backend.fly.dev/api/v1/health
 ```
 
 **Common Causes:** | Symptom | Likely Cause | Fix | |---------|--------------|-----| | 500 errors

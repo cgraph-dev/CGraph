@@ -1,6 +1,7 @@
 # CGraph Production Readiness Checklist
 
-> **Goal**: Support 100+ concurrent users with fully functional UI, deployed to Google Play Store and Apple App Store.
+> **Goal**: Support 100+ concurrent users with fully functional UI, deployed to Google Play Store
+> and Apple App Store.
 
 **Last Updated:** January 12, 2026 (v0.7.57)
 
@@ -8,16 +9,16 @@
 
 ## Executive Summary
 
-| Category | Status | Effort | Priority |
-|----------|--------|--------|----------|
-| **Backend Infrastructure** | ✅ Ready | Deployed | Critical |
-| **Web UI Completion** | ✅ Ready | Complete | High |
-| **Mobile UI Completion** | 🟡 Partial | Missing Calendar/Referrals | Medium |
-| **App Store Preparation** | 🟡 Partial | 1-2 days | High |
-| **Security Hardening** | ✅ Ready | Complete (v0.7.57) | Critical |
-| **Content Moderation** | ✅ Ready | Complete (v0.7.57) | Critical |
-| **Rate Limiting** | ✅ Ready | Trust-based system | High |
-| **Testing & QA** | ✅ Ready | 620 tests | High |
+| Category                   | Status     | Effort                     | Priority |
+| -------------------------- | ---------- | -------------------------- | -------- |
+| **Backend Infrastructure** | ✅ Ready   | Deployed                   | Critical |
+| **Web UI Completion**      | ✅ Ready   | Complete                   | High     |
+| **Mobile UI Completion**   | 🟡 Partial | Missing Calendar/Referrals | Medium   |
+| **App Store Preparation**  | 🟡 Partial | 1-2 days                   | High     |
+| **Security Hardening**     | ✅ Ready   | Complete (v0.7.57)         | Critical |
+| **Content Moderation**     | ✅ Ready   | Complete (v0.7.57)         | Critical |
+| **Rate Limiting**          | ✅ Ready   | Trust-based system         | High     |
+| **Testing & QA**           | ✅ Ready   | 620 tests                  | High     |
 
 **Estimated Remaining Time**: 1-2 days (App Store assets + mobile feature parity)
 
@@ -38,6 +39,7 @@ The following critical items were addressed in v0.7.57:
 ## 1. Backend Infrastructure (Support 100 Users)
 
 ### Current State
+
 - ✅ Phoenix/Elixir backend with 620 tests (212 source files, 4499 functions)
 - ✅ PostgreSQL database configured
 - ✅ WebSocket channels for real-time messaging
@@ -52,6 +54,7 @@ The following critical items were addressed in v0.7.57:
 ### Required Changes
 
 #### 1.1 Production Configuration
+
 ```elixir
 # config/prod.exs - Ensure these are set:
 - [ ] SECRET_KEY_BASE environment variable
@@ -62,6 +65,7 @@ The following critical items were addressed in v0.7.57:
 ```
 
 #### 1.2 Database Scaling (100 users is minimal)
+
 ```
 Minimum requirements for 100 concurrent users:
 - PostgreSQL: 2 vCPU, 4GB RAM (any managed provider)
@@ -76,6 +80,7 @@ Recommended providers:
 ```
 
 #### 1.3 Deployment Checklist
+
 - [ ] Set up production environment on Fly.io/Railway
 - [ ] Configure database with connection pooling
 - [ ] Set up SSL certificate (automatic on most platforms)
@@ -86,12 +91,13 @@ Recommended providers:
 - [ ] Create database backup strategy
 
 #### 1.4 Environment Variables Required
+
 ```bash
 # Production environment variables
 SECRET_KEY_BASE=<64+ char random string>
 DATABASE_URL=postgresql://user:pass@host:5432/cgraph_prod
 GUARDIAN_SECRET=<64+ char random string>
-PHX_HOST=api.cgraph.org
+PHX_HOST=cgraph-backend.fly.dev
 PORT=4000
 POOL_SIZE=20
 MIX_ENV=prod
@@ -114,6 +120,7 @@ R2_ENDPOINT=https://xxx.r2.cloudflarestorage.com
 ## 2. Web UI Completion
 
 ### Current State
+
 - ✅ React 19 + Vite 6 builds successfully
 - ✅ TailwindCSS configured
 - ✅ Zustand state management with proper API utilities
@@ -125,6 +132,7 @@ R2_ENDPOINT=https://xxx.r2.cloudflarestorage.com
 - ✅ Friend requests by username working
 
 ### UI Components Implemented
+
 - Button, Input, TextArea, Select
 - Modal, Toast, Tooltip, Dropdown
 - Avatar, UserBadge, EmptyState
@@ -134,20 +142,22 @@ R2_ENDPOINT=https://xxx.r2.cloudflarestorage.com
 ### Completed UI Work
 
 #### 2.1 Critical Pages (All Complete)
-| Page | Status | Notes |
-|------|--------|-------|
-| Login | ✅ Complete | Form validation, error handling |
-| Register | ✅ Complete | Optional username, wallet auth |
+
+| Page          | Status      | Notes                           |
+| ------------- | ----------- | ------------------------------- |
+| Login         | ✅ Complete | Form validation, error handling |
+| Register      | ✅ Complete | Optional username, wallet auth  |
 | Messages List | ✅ Complete | With userId query param support |
-| Chat View | ✅ Complete | Message input, reactions |
-| Settings | ✅ Complete | Full settings management |
-| Friends | ✅ Complete | Add by username, mutual friends |
-| Forums | ✅ Complete | Posts, comments, voting |
-| Groups | ✅ Complete | Channels, roles, permissions |
-| Notifications | ✅ Complete | Inbox with filtering |
-| User Profile | ✅ Complete | With friend actions |
+| Chat View     | ✅ Complete | Message input, reactions        |
+| Settings      | ✅ Complete | Full settings management        |
+| Friends       | ✅ Complete | Add by username, mutual friends |
+| Forums        | ✅ Complete | Posts, comments, voting         |
+| Groups        | ✅ Complete | Channels, roles, permissions    |
+| Notifications | ✅ Complete | Inbox with filtering            |
+| User Profile  | ✅ Complete | With friend actions             |
 
 #### 2.2 Implemented Features
+
 - ✅ Loading states and skeletons for all pages
 - ✅ Error boundaries for graceful failure
 - ✅ Toast notifications for actions
@@ -162,6 +172,7 @@ R2_ENDPOINT=https://xxx.r2.cloudflarestorage.com
 ## 3. Mobile UI Completion
 
 ### Current State
+
 - ✅ React Native 0.81 + Expo SDK 54
 - ✅ TypeScript compiles clean
 - ✅ Navigation structure complete
@@ -174,20 +185,22 @@ R2_ENDPOINT=https://xxx.r2.cloudflarestorage.com
 ### Implemented Mobile Work
 
 #### 3.1 Critical Screens (All Complete)
-| Screen | Status | Notes |
-|--------|--------|-------|
-| Login | ✅ Complete | With wallet auth support |
-| Register | ✅ Complete | Optional username |
-| Messages | ✅ Complete | Conversation list |
-| Chat | ✅ Complete | Real-time messaging |
-| Settings | ✅ Complete | Push notification toggles |
-| Friends | ✅ Complete | Add by username |
+
+| Screen       | Status      | Notes                     |
+| ------------ | ----------- | ------------------------- |
+| Login        | ✅ Complete | With wallet auth support  |
+| Register     | ✅ Complete | Optional username         |
+| Messages     | ✅ Complete | Conversation list         |
+| Chat         | ✅ Complete | Real-time messaging       |
+| Settings     | ✅ Complete | Push notification toggles |
+| Friends      | ✅ Complete | Add by username           |
 | User Profile | ✅ Complete | Send message button works |
-| Forums | ✅ Complete | Posts, comments, voting |
-| Groups | ✅ Complete | Channels, members |
-| Search | ✅ Complete | Global search |
+| Forums       | ✅ Complete | Posts, comments, voting   |
+| Groups       | ✅ Complete | Channels, members         |
+| Search       | ✅ Complete | Global search             |
 
 #### 3.2 Mobile Components
+
 - Avatar, Button, Card, Input
 - Modal, Toast, LoadingSpinner
 - AnimatedCard, UserBadge, UserListItem
@@ -199,11 +212,11 @@ R2_ENDPOINT=https://xxx.r2.cloudflarestorage.com
 ## 4. App Store Preparation
 
 ### 4.1 Developer Accounts
+
 - [ ] **Google Play Console**: $25 one-time fee
   - URL: https://play.google.com/console
   - Create developer profile
   - Accept developer agreement
-  
 - [ ] **Apple Developer Program**: $99/year
   - URL: https://developer.apple.com/programs/
   - Requires D-U-N-S number for organization
@@ -212,14 +225,16 @@ R2_ENDPOINT=https://xxx.r2.cloudflarestorage.com
 ### 4.2 Required Assets
 
 #### App Icons
-| Platform | Size | File |
-|----------|------|------|
-| iOS | 1024×1024 | AppIcon.png (no alpha) |
-| Android | 512×512 | icon.png |
-| Adaptive Icon | 432×432 | adaptive-icon.png |
-| Notification | 96×96 | notification-icon.png |
+
+| Platform      | Size      | File                   |
+| ------------- | --------- | ---------------------- |
+| iOS           | 1024×1024 | AppIcon.png (no alpha) |
+| Android       | 512×512   | icon.png               |
+| Adaptive Icon | 432×432   | adaptive-icon.png      |
+| Notification  | 96×96     | notification-icon.png  |
 
 #### Screenshots (Both Platforms)
+
 ```
 Required screenshots per device type:
 - 5-10 screenshots minimum
@@ -228,7 +243,7 @@ Required screenshots per device type:
 
 iOS Sizes:
 - iPhone 6.7" (1290×2796)
-- iPhone 6.5" (1242×2688)  
+- iPhone 6.5" (1242×2688)
 - iPhone 5.5" (1242×2208)
 - iPad Pro 12.9" (2048×2732) - if supporting tablet
 
@@ -239,6 +254,7 @@ Android Sizes:
 ```
 
 #### App Store Metadata
+
 - [ ] App name (30 chars)
 - [ ] Short description (80 chars)
 - [ ] Full description (4000 chars)
@@ -250,7 +266,9 @@ Android Sizes:
 - [ ] Marketing URL (optional)
 
 ### 4.3 Privacy Policy (Required)
+
 Create a privacy policy that covers:
+
 - [ ] What data you collect
 - [ ] How you use the data
 - [ ] Third-party services used
@@ -261,6 +279,7 @@ Create a privacy policy that covers:
 **Host at**: `https://cgraph.org/privacy` or similar
 
 ### 4.4 EAS Build Setup (Expo)
+
 ```bash
 # Install EAS CLI
 npm install -g eas-cli
@@ -281,6 +300,7 @@ eas submit --platform android
 ```
 
 #### eas.json Configuration
+
 ```json
 {
   "cli": {
@@ -322,6 +342,7 @@ eas submit --platform android
 ```
 
 ### 4.5 Google Play Submission
+
 1. [ ] Create app in Google Play Console
 2. [ ] Complete store listing
 3. [ ] Upload screenshots
@@ -332,6 +353,7 @@ eas submit --platform android
 8. [ ] Submit for review (typically 1-3 days)
 
 ### 4.6 Apple App Store Submission
+
 1. [ ] Create app in App Store Connect
 2. [ ] Complete app information
 3. [ ] Upload screenshots for all device sizes
@@ -346,6 +368,7 @@ eas submit --platform android
 ## 5. Security Hardening
 
 ### 5.1 Backend Security
+
 - [ ] Ensure all endpoints require authentication
 - [ ] Verify rate limiting is active in production
 - [ ] Enable CORS only for your domains
@@ -355,6 +378,7 @@ eas submit --platform android
 - [ ] Enable HTTPS only
 
 ### 5.2 Data Protection
+
 - [ ] Encrypt sensitive data at rest
 - [ ] Use secure password hashing (Argon2 ✅)
 - [ ] Implement token rotation
@@ -362,6 +386,7 @@ eas submit --platform android
 - [ ] Log security events
 
 ### 5.3 Mobile Security
+
 - [ ] Use secure storage for tokens
 - [ ] Certificate pinning (optional but recommended)
 - [ ] Disable debug logging in production
@@ -372,6 +397,7 @@ eas submit --platform android
 ## 6. Testing & QA
 
 ### 6.1 Backend Testing
+
 - [x] Unit tests passing (620 tests across all modules)
 - [x] API endpoint coverage complete
 - [x] WebSocket channels tested
@@ -379,12 +405,14 @@ eas submit --platform android
 - [ ] Load testing with 100 concurrent connections (optional)
 
 ### 6.2 Frontend Testing
+
 - [x] TypeScript compiles clean (`npx tsc --noEmit`)
 - [x] All Zustand stores use type-safe API utilities
 - [ ] E2E tests with Playwright/Cypress (optional)
 - [ ] Cross-browser testing (optional)
 
 ### 6.3 Mobile Testing
+
 - [ ] Test on real iOS device
 - [ ] Test on real Android device
 - [ ] Test push notifications
@@ -393,6 +421,7 @@ eas submit --platform android
 - [ ] Test app backgrounding/foregrounding
 
 ### 6.4 Pre-Launch Checklist
+
 - [ ] Test complete user journey (signup → messaging)
 - [ ] Verify password reset flow
 - [ ] Test file uploads
@@ -405,38 +434,43 @@ eas submit --platform android
 ## 7. Cost Estimation (100 Users)
 
 ### Monthly Infrastructure Costs
-| Service | Provider | Cost/Month |
-|---------|----------|------------|
-| Application Server | Fly.io | $5-15 |
-| PostgreSQL Database | Fly.io/Railway | $10-20 |
-| File Storage | Cloudflare R2 | $0-5 |
-| Email Service | Resend | $0 (free tier) |
-| Push Notifications | Expo | $0 (free tier) |
-| Domain + SSL | Cloudflare | $10-15/year |
-| **Total** | | **$15-40/month** |
+
+| Service             | Provider       | Cost/Month       |
+| ------------------- | -------------- | ---------------- |
+| Application Server  | Fly.io         | $5-15            |
+| PostgreSQL Database | Fly.io/Railway | $10-20           |
+| File Storage        | Cloudflare R2  | $0-5             |
+| Email Service       | Resend         | $0 (free tier)   |
+| Push Notifications  | Expo           | $0 (free tier)   |
+| Domain + SSL        | Cloudflare     | $10-15/year      |
+| **Total**           |                | **$15-40/month** |
 
 ### One-Time Costs
-| Item | Cost |
-|------|------|
-| Google Play Developer | $25 |
+
+| Item                    | Cost     |
+| ----------------------- | -------- |
+| Google Play Developer   | $25      |
 | Apple Developer Program | $99/year |
-| **Total** | **$124** |
+| **Total**               | **$124** |
 
 ---
 
 ## 8. Launch Timeline
 
 ### Week 1: Infrastructure & Security
+
 - Day 1-2: Set up production environment
 - Day 3-4: Security hardening
 - Day 5: Load testing
 
 ### Week 2: UI Polish & Testing
+
 - Day 1-3: Web UI completion
 - Day 4-5: Mobile UI completion
 - Day 6-7: QA and bug fixes
 
 ### Week 3: App Store Submission
+
 - Day 1: Create developer accounts
 - Day 2: Prepare assets and metadata
 - Day 3: Submit to Google Play
@@ -469,18 +503,21 @@ k6 run infrastructure/scripts/load-test.js
 ## Priority Action Items
 
 ### This Week (Critical)
+
 1. Set up production environment on Fly.io
 2. Configure SSL and domain
 3. Create privacy policy page
 4. Set up developer accounts
 
 ### Next Week (High)
+
 5. Polish UI for critical user flows
 6. Complete mobile screen implementation
 7. Create app store assets
 8. Submit for review
 
 ### Before Launch
+
 9. Set up monitoring and alerting
 10. Create support/feedback channel
 11. Prepare launch announcement
@@ -488,4 +525,4 @@ k6 run infrastructure/scripts/load-test.js
 
 ---
 
-*Last Updated: January 5, 2026*
+_Last Updated: January 5, 2026_

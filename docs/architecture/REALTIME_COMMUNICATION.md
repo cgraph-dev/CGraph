@@ -63,7 +63,7 @@ Complete documentation for CGraph's real-time communication stack, including mes
 | Real-time messages    | ✅     | `ConversationChannel`     | Phoenix Channels        |
 | Typing indicators     | ✅     | `ConversationChannel`     | Auto-timeout 5s         |
 | Read receipts         | ✅     | `MessageController`       | Opt-in per conversation |
-| E2EE (1:1 DMs)        | ✅     | `Cgraph.Crypto.E2EE`      | X3DH + AES-256-GCM      |
+| E2EE (1:1 DMs)        | ✅     | `Cgraph.Crypto.E2EE`      | PQXDH + AES-256-GCM     |
 | Voice messages        | ✅     | `Storage`                 | AAC, 5min max           |
 | **Presence**          |
 | Online status         | ✅     | `Cgraph.Presence`         | Phoenix Presence (CRDT) |

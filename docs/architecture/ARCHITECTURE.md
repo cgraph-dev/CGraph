@@ -1,7 +1,7 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.9.1  
-> Living documentation — HTTP-only cookie auth, Signal Double Ratchet E2EE, sampled presence at
+> Last updated: January 2026 | Version 0.9.28  
+> Living documentation — HTTP-only cookie auth, PQXDH + Triple Ratchet E2EE, sampled presence at
 > scale, WebRTC voice/video, gamification/premium services
 
 ---
@@ -22,8 +22,8 @@ features.
 **v0.9.1 highlights (platform-wide):**
 
 - **Auth** — HTTP-only cookie authentication with JWT rotation; OAuth (Google/Apple), Web3 wallets
-- **E2EE** — Signal X3DH + Double Ratchet with per-message AES-256-GCM; forward secrecy + break-in
-  recovery
+- **E2EE** — PQXDH + Triple Ratchet with per-message AES-256-GCM; forward secrecy + break-in
+  recovery; post-quantum via ML-KEM-768
 - **Presence** — Phoenix Presence with sampled tiers for 100K+ member channels; HyperLogLog counts
 - **Real-time** — WebRTC voice/video with TURN/STUN, screen share, spatial audio; CRDT-backed
   presence
@@ -57,7 +57,7 @@ with tiered sampling for million-user channels.
 │  - TypeScript everywhere       │    - Same shared-types package     │
 │  ┌───────────────────────────────────────────────────────────────┐  │
 │  │ ENHANCED UI v3.0 (v0.7.35)                                    │  │
-│  │ - Double Ratchet Encryption    - AI Message Intelligence      │  │
+│  │ - PQXDH + Triple Ratchet E2EE   - AI Message Intelligence     │  │
 │  │ - Holographic UI Components    - Spatial Audio Engine         │  │
 │  │ - Three.js 3D Environments     - GSAP/Framer Motion          │  │
 │  └───────────────────────────────────────────────────────────────┘  │
@@ -110,30 +110,30 @@ with tiered sampling for million-user channels.
 
 ---
 
-## Client-Side Security Architecture (v0.7.35)
+## Client-Side Security Architecture (current)
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                   SIGNAL PROTOCOL ENCRYPTION                         │
+│                 PQXDH + TRIPLE RATCHET ENCRYPTION                    │
 ├─────────────────────────────────────────────────────────────────────┤
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐ │
-│  │   X3DH Key      │───▶│  Double Ratchet │───▶│   AES-256-GCM   │ │
-│  │   Agreement     │    │   Engine        │    │   Encryption    │ │
-│  │   (P-384)       │    │                 │    │                 │ │
-│  └─────────────────┘    └─────────────────┘    └─────────────────┘ │
+│  ┌─────────────────┐    ┌──────────────────┐   ┌─────────────────┐ │
+│  │   PQXDH Key     │───▶│  Triple Ratchet  │──▶│   AES-256-GCM   │ │
+│  │   Agreement     │    │   Engine         │   │   Encryption    │ │
+│  │  (P-256+KEM)    │    │                  │   │                 │ │
+│  └─────────────────┘    └──────────────────┘   └─────────────────┘ │
 │           │                      │                      │          │
 │           ▼                      ▼                      ▼          │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐ │
-│  │  Identity Keys  │    │  DH Ratchet     │    │  Message Keys   │ │
-│  │  Pre-Keys       │    │  (per exchange) │    │  (per message)  │ │
-│  │  One-Time Keys  │    │  Chain Keys     │    │  Nonces         │ │
-│  └─────────────────┘    └─────────────────┘    └─────────────────┘ │
+│  ┌─────────────────┐    ┌──────────────────┐   ┌─────────────────┐ │
+│  │  Identity Keys  │    │  DH Ratchet      │   │  Message Keys   │ │
+│  │  Pre-Keys       │    │  (per exchange)  │   │  (per message)  │ │
+│  │  Kyber Prekeys  │    │  Chain Keys      │   │  Nonces         │ │
+│  └─────────────────┘    └──────────────────┘   └─────────────────┘ │
 ├─────────────────────────────────────────────────────────────────────┤
 │  Security Properties:                                                │
 │  ✓ Forward Secrecy — Past messages stay secure if keys compromise   │
 │  ✓ Break-in Recovery — Future messages secure after key refresh     │
 │  ✓ Out-of-Order — Skipped message keys stored for later delivery    │
-│  ✓ Post-Quantum Ready — CRYSTALS-Kyber placeholder for future       │
+│  ✓ Post-Quantum — ML-KEM-768 via PQXDH key agreement               │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -248,9 +248,9 @@ with tiered sampling for million-user channels.
 | Guardian                      | 2.4     | JWT token management with refresh tokens               |
 | Argon2                        | 4.1     | Password hashing (OWASP recommended)                   |
 | Assent                        | 0.2     | OAuth 2.0/OIDC multi-provider support                  |
-| Double Ratchet                | 1.0.0   | Signal Protocol E2EE (v0.7.35)                         |
+| @cgraph/crypto                | 1.0.0   | PQXDH + Triple Ratchet E2EE (P-256 + ML-KEM-768)       |
 | **Frontend (Web)**            |
-| Node.js                       | 22 LTS  | Active LTS until April 2027                            |
+| Node.js                       | >=20.x  | LTS required (engines field in package.json)           |
 | React                         | 19.1.0  | Latest with concurrent features                        |
 | Vite                          | 6.4.1   | Lightning-fast HMR and builds                          |
 | TailwindCSS                   | 3.5     | Utility-first styling                                  |
@@ -526,13 +526,13 @@ Security is a first-class concern throughout the architecture.
 
 ### Encryption Layers
 
-| Layer         | What's Protected | How                                             |
-| ------------- | ---------------- | ----------------------------------------------- |
-| Transport     | All traffic      | TLS 1.3 (Cloudflare terminates)                 |
-| Application   | Sensitive fields | AES-256-GCM                                     |
-| Database      | At rest          | PostgreSQL native encryption                    |
-| Backups       | Backup files     | GPG encrypted before S3                         |
-| E2EE Messages | Message content  | X3DH + AES-256-GCM (industry-standard protocol) |
+| Layer         | What's Protected | How                                  |
+| ------------- | ---------------- | ------------------------------------ |
+| Transport     | All traffic      | TLS 1.3 (Cloudflare terminates)      |
+| Application   | Sensitive fields | AES-256-GCM                          |
+| Database      | At rest          | PostgreSQL native encryption         |
+| Backups       | Backup files     | GPG encrypted before S3              |
+| E2EE Messages | Message content  | PQXDH + Triple Ratchet + AES-256-GCM |
 
 ### E2EE Architecture
 
@@ -544,20 +544,21 @@ Security is a first-class concern throughout the architecture.
 │   Client Side (Never leaves device)     Server Side (Public)    │
 │   ┌─────────────────────────┐          ┌─────────────────────┐ │
 │   │ Identity Private Key    │   ──▶    │ Identity Public Key │ │
-│   │ (Ed25519)               │          │ (Ed25519)           │ │
+│   │ (P-256 ECDSA)           │          │ (P-256 ECDSA)       │ │
 │   └─────────────────────────┘          └─────────────────────┘ │
 │   ┌─────────────────────────┐          ┌─────────────────────┐ │
 │   │ Signed Prekey Private   │   ──▶    │ Signed Prekey Pub   │ │
-│   │ (X25519)                │          │ + Signature         │ │
+│   │ (P-256 ECDH)            │          │ + Signature         │ │
 │   └─────────────────────────┘          └─────────────────────┘ │
 │   ┌─────────────────────────┐          ┌─────────────────────┐ │
-│   │ One-Time Prekey Private │   ──▶    │ One-Time Prekeys    │ │
-│   │ (X25519, 100 batch)     │          │ (consumed on use)   │ │
+│   │ Kyber Prekey Private    │   ──▶    │ Kyber Prekeys       │ │
+│   │ (ML-KEM-768)            │          │ (consumed on use)   │ │
 │   └─────────────────────────┘          └─────────────────────┘ │
 │                                                                  │
-│   Key Exchange: X3DH (Extended Triple Diffie-Hellman)           │
+│   Key Exchange: PQXDH (P-256 ECDH + ML-KEM-768)                │
+│   Ratcheting: Triple Ratchet (DH + KEM + symmetric)             │
 │   Message Encryption: AES-256-GCM                               │
-│   Implementation: Cgraph.Crypto.E2EE                            │
+│   Implementation: @cgraph/crypto                                │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -929,12 +930,12 @@ Planned for 2026:
 1. **Voice/Video calls** — Evaluating LiveKit vs. Jitsi
 2. **AI features** — Message summarization, smart search
 3. **ActivityPub** — Federation with other platforms
-4. **Double Ratchet** — Full Signal protocol with session ratcheting
+4. **Post-Quantum E2EE** — Already shipped: PQXDH + Triple Ratchet with ML-KEM-768
 5. **Self-hosting** — Docker compose for power users
 
 ### Recently Completed (v0.7.x)
 
-- ✅ **E2EE Implementation** — XChaCha20-Poly1305 via libsodium
+- ✅ **E2EE Implementation** — PQXDH + Triple Ratchet (P-256 + ML-KEM-768, AES-256-GCM)
 - ✅ **Moderation System** — Reports, bans, audit logs
 - ✅ **Voice Messages** — Recording, transcoding, waveform visualization
 - ✅ **Multi-backend Storage** — Local, S3, Cloudflare R2 support

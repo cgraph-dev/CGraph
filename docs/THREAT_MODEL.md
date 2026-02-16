@@ -213,7 +213,7 @@ A systematic analysis of potential threats to CGraph and corresponding mitigatio
 | Key Exchange       | ML-KEM-768 + P-256 (PQXDH) | 192-bit (PQ) + 128-bit (EC) | Hybrid post-quantum key exchange |
 | Message Encryption | AES-256-GCM                | 256-bit                     | With Triple Ratchet              |
 | KEM                | ML-KEM-768                 | 192-bit                     | NIST FIPS 203                    |
-| Signatures         | Ed25519 / ECDSA P-256      | 128-bit                     | For identity verification        |
+| Signatures         | ECDSA P-256                | 128-bit                     | For identity verification        |
 | Password Hashing   | Argon2id                   | Configurable                | Memory-hard                      |
 | Session Tokens     | JWT + refresh              | -                           | RS256 signing                    |
 
@@ -345,4 +345,4 @@ A systematic analysis of potential threats to CGraph and corresponding mitigatio
 
 ---
 
-<sub>**CGraph Threat Model** • Version 0.9.8 • Internal Use Only</sub>
+<sub>**CGraph Threat Model** • Version 0.9.28 • Internal Use Only</sub>

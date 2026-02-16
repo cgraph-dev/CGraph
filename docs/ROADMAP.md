@@ -287,4 +287,4 @@ We prioritize based on:
 
 ---
 
-<sub>**CGraph Product Roadmap** • Version 0.9.26 • Last updated: February 2026</sub>
+<sub>**CGraph Product Roadmap** • Version 0.9.28 • Last updated: February 2026</sub>

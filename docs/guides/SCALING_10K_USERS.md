@@ -24,7 +24,8 @@
 | Component   | Service          | Current Config      | 10K Ready?             |
 | ----------- | ---------------- | ------------------- | ---------------------- |
 | Backend API | Fly.io           | 1 machine, 512MB    | ⚠️ Needs scaling       |
-| Frontend    | Vercel           | Edge + CDN          | ✅ Ready               |
+| Landing     | Vercel           | Edge + CDN          | ✅ Ready               |
+| Web App     | Fly.io (IAD)     | WIP deployment      | ⚠️ Needs setup         |
 | Database    | Supabase         | Shared              | ⚠️ Monitor closely     |
 | Redis       | Upstash/Fly      | Single instance     | ⚠️ May need upgrade    |
 | WebSockets  | Phoenix Channels | Included in backend | ⚠️ Needs more machines |
@@ -180,9 +181,9 @@ config :cgraph, CGraph.PubSub,
 
 ## Frontend Optimization
 
-### Vercel Configuration (Already Applied)
+### Vercel Configuration (Landing Page)
 
-The current `vercel.json` is optimized with:
+The landing page `vercel.json` is optimized with:
 
 - API rewrites to backend
 - WebSocket proxy
@@ -356,7 +357,7 @@ export const options = {
 
 export default function () {
   // Simulate typical user flow
-  const res = http.get('https://your-app.vercel.app/api/health');
+  const res = http.get('https://cgraph-backend.fly.dev/api/health');
   check(res, {
     'status is 200': (r) => r.status === 200,
     'response time OK': (r) => r.timings.duration < 500,
@@ -420,7 +421,8 @@ k6 run load-test.js
 | Backend (3 machines) | Fly.io        | Performance 2x, 2GB | ~$60                |
 | Database             | Supabase      | Pro                 | ~$25                |
 | Redis                | Upstash       | Pay-as-go           | ~$10-20             |
-| Frontend             | Vercel        | Pro                 | ~$20                |
+| Landing Page         | Vercel        | Pro                 | ~$20                |
+| Web App              | Fly.io        | Shared w/ backend   | (included above)    |
 | Monitoring           | Grafana Cloud | Free tier           | $0                  |
 | **Total**            |               |                     | **~$115-125/month** |
 

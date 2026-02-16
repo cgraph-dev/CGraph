@@ -176,4 +176,4 @@ Some exceptions are allowed:
 
 ---
 
-<sub>**CGraph Architecture Enforcement** • Version 0.9.8</sub>
+<sub>**CGraph Architecture Enforcement** • Version 0.9.28</sub>

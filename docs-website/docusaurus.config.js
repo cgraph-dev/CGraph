@@ -2,7 +2,7 @@
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'CGraph Documentation',
-  tagline: 'The All-in-One Open-Source Communication Platform',
+  tagline: 'The All-in-One Communication Platform',
   favicon: 'img/favicon.svg',
 
   // Production URL
@@ -66,7 +66,7 @@ const config = {
           lastVersion: 'current',
           versions: {
             current: {
-              label: '0.9.25',
+              label: '0.9.28',
               path: '',
             },
           },
@@ -226,10 +226,10 @@ const config = {
         additionalLanguages: ['elixir', 'bash', 'json', 'yaml', 'typescript'],
       },
 
-      // Algolia search (configure with your Algolia credentials)
+      // Algolia search — placeholder credentials, replace before deploying docs site
       algolia: {
-        appId: 'YOUR_APP_ID',
-        apiKey: 'YOUR_SEARCH_API_KEY',
+        appId: 'YOUR_APP_ID', // TODO: Replace with real Algolia App ID
+        apiKey: 'YOUR_SEARCH_API_KEY', // TODO: Replace with real Algolia Search API Key
         indexName: 'cgraph',
         contextualSearch: true,
         searchPagePath: 'search',

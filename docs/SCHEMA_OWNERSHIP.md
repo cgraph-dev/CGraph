@@ -47,12 +47,12 @@ This document defines ownership and responsibility for all database tables in CG
 
 ## E2EE & Encryption
 
-| Table              | Owner Team     | Priority | Notes                   |
-| ------------------ | -------------- | -------- | ----------------------- |
-| `identity_keys`    | @security-team | 🔴       | X25519 identity keys    |
-| `signed_prekeys`   | @security-team | 🔴       | Signed pre-keys         |
-| `one_time_prekeys` | @security-team | 🔴       | One-time pre-keys       |
-| `sessions_e2ee`    | @security-team | 🔴       | Double Ratchet sessions |
+| Table              | Owner Team     | Priority | Notes                     |
+| ------------------ | -------------- | -------- | ------------------------- |
+| `identity_keys`    | @security-team | 🔴       | P-256 ECDSA identity keys |
+| `signed_prekeys`   | @security-team | 🔴       | Signed pre-keys           |
+| `one_time_prekeys` | @security-team | 🔴       | Kyber + ECDH pre-keys     |
+| `sessions_e2ee`    | @security-team | 🔴       | Triple Ratchet sessions   |
 
 **⚠️ WARNING**: These tables store public keys only. Private keys NEVER leave the client.
 
@@ -247,4 +247,4 @@ This document defines ownership and responsibility for all database tables in CG
 
 ---
 
-<sub>**CGraph Schema Ownership** • Version 0.9.8 • Last updated: January 2026</sub>
+<sub>**CGraph Schema Ownership** • Version 0.9.28 • Last updated: January 2026</sub>

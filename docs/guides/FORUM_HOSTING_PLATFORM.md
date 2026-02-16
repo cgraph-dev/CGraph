@@ -534,7 +534,7 @@ Owners access a MyBB-style Admin Control Panel:
 - [x] Thread controller and routes
 - [x] Post controller and routes
 - [x] Forum creation by any authenticated user
-- [x] Tier-based forum limits (free: 1, starter: 3, pro: 10, business: unlimited)
+- [x] Tier-based forum limits (free: 1, premium: 5, enterprise: unlimited)
 
 ### Phase 2: Discovery System ✅ COMPLETE
 

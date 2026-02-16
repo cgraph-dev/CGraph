@@ -189,4 +189,4 @@ Bypasses are audited monthly.
 
 ---
 
-<sub>**CGraph Quality Gates** • Version 0.9.8 • Last updated: January 2026</sub>
+<sub>**CGraph Quality Gates** • Version 0.9.28 • Last updated: January 2026</sub>

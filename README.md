@@ -107,11 +107,9 @@ engagement shouldn't be boring.
 
 | Tier           | Features                                              |
 | -------------- | ----------------------------------------------------- |
-| **Free**       | 5 forums/groups, basic features                       |
-| **Starter**    | 10 forums/groups, custom themes                       |
-| **Pro**        | 50 forums/groups, HD video, priority support          |
-| **Business**   | Unlimited forums/groups, API access, analytics        |
-| **Enterprise** | SSO/SAML, dedicated support, SLA, custom integrations |
+| **Free**       | 1 forum/group, basic features, 100MB storage          |
+| **Premium**    | 5 forums/groups, custom themes, HD video, 5GB storage |
+| **Enterprise** | Unlimited forums/groups, SSO/SAML, SLA, API access    |
 
 ### 📱 Mobile
 
@@ -140,17 +138,16 @@ Access CGraph directly in your browser at [app.cgraph.org](https://app.cgraph.or
 
 ### Mobile Apps
 
-- **iOS**: Download from the [App Store](https://apps.apple.com/app/cgraph)
-- **Android**: Download from [Google Play](https://play.google.com/store/apps/details?id=app.cgraph)
+Mobile apps for iOS and Android are in development using React Native + Expo SDK 54. App Store and
+Google Play releases are planned.
 
 ### API Access
 
-For developers, CGraph provides a public API. See our
-[API Documentation](https://api.cgraph.org/docs).
+For developers, CGraph provides a REST API. See our [API Documentation](docs/api/API_REFERENCE.md).
 
 ```bash
-# Example: Get current user
-curl -H "Authorization: Bearer YOUR_TOKEN" https://api.cgraph.org/v1/me
+# Example: Get current user (production URL: cgraph-backend.fly.dev)
+curl -H "Authorization: Bearer YOUR_TOKEN" https://cgraph-backend.fly.dev/api/v1/me
 ```
 
 ---

@@ -1421,16 +1421,16 @@ release adds **~3,500 new lines** of cutting-edge code.
 
 ### Enhanced Stack (v3.0)
 
-| Package                         | Version  | Purpose                        |
-| ------------------------------- | -------- | ------------------------------ |
-| **three**                       | ^0.182.0 | 3D graphics engine             |
-| **@react-three/fiber**          | ^9.5.0   | React renderer for Three.js    |
-| **@react-three/drei**           | ^10.7.7  | Useful helpers for R3F         |
-| **@react-three/postprocessing** | ^3.0.4   | Post-processing effects        |
-| **gsap**                        | ^3.14.2  | Professional animation library |
-| **framer-motion**               | ^12.0.0  | Declarative React animations   |
-| **Web Crypto API**              | Native   | ECDH P-384, AES-256-GCM, HKDF  |
-| **Web Audio API**               | Native   | Spatial audio, HRTF, VAD       |
+| Package                         | Version  | Purpose                                    |
+| ------------------------------- | -------- | ------------------------------------------ |
+| **three**                       | ^0.182.0 | 3D graphics engine                         |
+| **@react-three/fiber**          | ^9.5.0   | React renderer for Three.js                |
+| **@react-three/drei**           | ^10.7.7  | Useful helpers for R3F                     |
+| **@react-three/postprocessing** | ^3.0.4   | Post-processing effects                    |
+| **gsap**                        | ^3.14.2  | Professional animation library             |
+| **framer-motion**               | ^12.0.0  | Declarative React animations               |
+| **Web Crypto API**              | Native   | ECDH P-256, AES-256-GCM, HKDF + ML-KEM-768 |
+| **Web Audio API**               | Native   | Spatial audio, HRTF, VAD                   |
 
 ### Component Architecture (v3.0)
 
@@ -1490,11 +1490,11 @@ Post-quantum end-to-end encryption using PQXDH + Triple Ratchet (Signal Protocol
 ### Usage
 
 ```tsx
-import { DoubleRatchetEngine, generateDHKeyPair } from '@/lib/crypto/doubleRatchet';
+import { TripleRatchetEngine, generateDHKeyPair } from '@cgraph/crypto';
 
 // Initialize Alice's session
-const alice = new DoubleRatchetEngine({ enableAuditLog: true });
-const sharedSecret = await x3dhKeyAgreement(); // From your X3DH implementation
+const alice = new TripleRatchetEngine({ enableAuditLog: true });
+const sharedSecret = await pqxdhKeyAgreement(); // PQXDH: P-256 ECDH + ML-KEM-768
 
 // Bob's identity key
 const bobKeyPair = await generateDHKeyPair();

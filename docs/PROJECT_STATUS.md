@@ -1,6 +1,6 @@
 # CGraph Project Status
 
-> **Version: 0.9.26** | Last Updated: February 16, 2026 | Commit: `cdddf1f6`
+> **Version: 0.9.28** | Last Updated: February 16, 2026
 
 This document consolidates the project status, feature tracking, and development roadmap.
 
@@ -32,8 +32,8 @@ This document consolidates the project status, feature tracking, and development
 | Metric                | Before  | After       | Status                   |
 | --------------------- | ------- | ----------- | ------------------------ |
 | `.env` with secrets   | Present | **DELETED** | ✅                       |
-| `as any` casts        | 27      | **1**       | ✅ 96% reduction         |
-| `console.log` calls   | 325     | **2**       | ✅ 99% reduction         |
+| `as any` casts        | 27      | **10**      | ✅ 63% reduction         |
+| `console.log` calls   | 325     | **65**      | ✅ 80% reduction         |
 | Settings.tsx lines    | 1,172   | **221**     | ✅ 81% reduction         |
 | UserProfile.tsx lines | 1,157   | **715**     | ✅ 38% reduction         |
 | SocketManager.ts      | 960     | **616**     | ✅ 36% reduction         |
@@ -53,17 +53,17 @@ This document consolidates the project status, feature tracking, and development
 
 ### Overall Health Score
 
-**9.4/10** (up from 9.0/10)
+**8.8/10** (up from 7.3/10)
 
 | Category             | Score | Target |
 | -------------------- | ----- | ------ |
-| Security             | 9/10  | 9/10   |
-| Code Quality         | 10/10 | 9/10   |
+| Security             | 7/10  | 9/10   |
+| Code Quality         | 9/10  | 9/10   |
 | Feature Completeness | 9/10  | 9/10   |
-| Test Coverage        | 10/10 | 8/10   |
-| Maintainability      | 10/10 | 9/10   |
-| Production Readiness | 10/10 | 10/10  |
-| Observability        | 10/10 | 10/10  |
+| Test Coverage        | 7/10  | 8/10   |
+| Maintainability      | 9/10  | 9/10   |
+| Production Readiness | 8/10  | 10/10  |
+| Observability        | 8/10  | 10/10  |
 | Resilience           | 10/10 | 10/10  |
 | Architecture (new)   | 9/10  | 9/10   |
 

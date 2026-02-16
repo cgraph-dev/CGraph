@@ -3,13 +3,13 @@
 > **⚠️ Security Maturity Disclaimer**
 >
 > CGraph's end-to-end encryption is **Signal Protocol-inspired** but **custom-implemented** using
-> the Web Crypto API. While we follow cryptographic best practices (X3DH key agreement, Double
+> the Web Crypto API. While we follow cryptographic best practices (PQXDH key agreement, Triple
 > Ratchet, AES-256-GCM), our implementation has **not undergone formal third-party security audit**.
 >
 > **What this means:**
 >
-> - ✅ We use well-established cryptographic primitives (P-256 ECDH, AES-256-GCM, HKDF)
-> - ✅ We implement the Signal Protocol patterns (X3DH, Double Ratchet, forward secrecy)
+> - ✅ We use well-established cryptographic primitives (P-256 ECDH, ML-KEM-768, AES-256-GCM, HKDF)
+> - ✅ We implement Signal Protocol Rev 4 patterns (PQXDH, Triple Ratchet, forward secrecy)
 > - ⚠️ We do NOT use libsignal or other audited implementations
 > - ⚠️ Custom crypto code may contain implementation bugs
 > - 🔜 Third-party audit is planned (see [SECURITY_ROADMAP.md](./SECURITY_ROADMAP.md))
@@ -27,8 +27,8 @@ spot something off, please let us know.
 **v0.7.47 introduces critical security hardening** — 2FA brute force protection, race condition
 fixes, and safe parameter parsing across all controllers.
 
-**v0.7.35 introduced Signal Protocol-inspired Double Ratchet encryption** — using the same
-cryptographic patterns that secure Signal, CGraph, and other industry-leading messengers.
+**v0.7.35 introduced PQXDH + Triple Ratchet encryption** — using post-quantum hybrid cryptographic
+patterns for industry-leading security.
 
 This doc explains what we've built and why. It's not exhaustive (that would be a book), but it
 covers the stuff you actually need to know.
@@ -45,12 +45,12 @@ fails, the others still protect you. Here's the high-level picture:
 │                                                                  │
 │   Client-Side E2EE (v0.7.35)                                    │
 │   ┌─────────────────────────────────────────────────────────┐   │
-│   │                SIGNAL PROTOCOL LAYER                     │   │
+│   │                PQXDH + TRIPLE RATCHET LAYER               │   │
 │   │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │   │
-│   │  │    X3DH     │  │   Double    │  │  AES-256    │      │   │
+│   │  │   PQXDH     │  │   Triple    │  │  AES-256    │      │   │
 │   │  │    Key      │──│   Ratchet   │──│    GCM      │      │   │
 │   │  │  Agreement  │  │   Engine    │  │ Encryption  │      │   │
-│   │  │   (P-256)   │  │             │  │             │      │   │
+│   │  │ (P-256+KEM) │  │             │  │             │      │   │
 │   │  └─────────────┘  └─────────────┘  └─────────────┘      │   │
 │   │                                                          │   │
 │   │  Properties: Forward Secrecy | Break-in Recovery         │   │
@@ -86,39 +86,42 @@ fails, the others still protect you. Here's the high-level picture:
 
 ---
 
-## Signal Protocol Double Ratchet (v0.7.35)
+## PQXDH + Triple Ratchet E2EE (current)
 
-The gold standard in end-to-end encryption. Every message uses a unique key, providing perfect
-forward secrecy and future secrecy.
+Post-quantum hybrid E2EE following Signal Protocol Revision 4. Every message uses a unique key,
+providing perfect forward secrecy and future secrecy with post-quantum resistance.
 
 ### Implementation Details
 
-**File:** `apps/web/src/lib/crypto/doubleRatchet.ts` (750+ lines)
+**Package:** `packages/crypto/src/` (~2,800 lines)
 
-| Algorithm      | Specification                         |
-| -------------- | ------------------------------------- |
-| Key Agreement  | X3DH (Extended Triple Diffie-Hellman) |
-| Curve          | ECDH P-384 (NIST approved)            |
-| Encryption     | AES-256-GCM (authenticated)           |
-| Key Derivation | HKDF-SHA256                           |
-| MAC            | HMAC-SHA256                           |
+| Algorithm      | Specification                                    |
+| -------------- | ------------------------------------------------ |
+| Key Agreement  | PQXDH (P-256 ECDH + ML-KEM-768 post-quantum KEM) |
+| Curve          | ECDH P-256 (NIST approved)                       |
+| Post-Quantum   | ML-KEM-768 via @noble/post-quantum               |
+| Ratcheting     | Triple Ratchet (EC Double Ratchet ∥ SPQR)        |
+| Encryption     | AES-256-GCM (authenticated)                      |
+| Key Derivation | HKDF-SHA256                                      |
+| MAC            | HMAC-SHA256                                      |
 
 ### Security Properties
 
-| Property               | Description                                               |
-| ---------------------- | --------------------------------------------------------- |
-| **Forward Secrecy**    | Compromise of long-term keys doesn't reveal past messages |
-| **Break-in Recovery**  | Session automatically heals after key compromise          |
-| **Out-of-Order**       | Handles delayed/reordered messages securely               |
-| **Key Erasure**        | Message keys deleted after use                            |
-| **Post-Quantum Ready** | Placeholder for CRYSTALS-Kyber upgrade                    |
+| Property              | Description                                               |
+| --------------------- | --------------------------------------------------------- |
+| **Forward Secrecy**   | Compromise of long-term keys doesn't reveal past messages |
+| **Break-in Recovery** | Session automatically heals after key compromise          |
+| **Out-of-Order**      | Handles delayed/reordered messages securely               |
+| **Key Erasure**       | Message keys deleted after use                            |
+| **Post-Quantum**      | ML-KEM-768 via PQXDH protects against quantum attacks     |
 
-### How the Double Ratchet Works
+### How the Triple Ratchet Works
 
 ```
 Alice                                                    Bob
   │                                                       │
-  │─────── Initial X3DH Key Agreement ────────────────────│
+  │─────── Initial PQXDH Key Agreement ───────────────────│
+  │        (P-256 ECDH + ML-KEM-768 encapsulation)        │
   │                                                       │
   │──[DH Ratchet]── Message 1 ─────────────────────────►│
   │                 (New DH key pair)                     │
@@ -139,11 +142,11 @@ Alice                                                    Bob
 ### Usage Example
 
 ```typescript
-import { DoubleRatchetEngine, generateDHKeyPair } from '@/lib/crypto/doubleRatchet';
+import { TripleRatchetEngine, generateDHKeyPair } from '@cgraph/crypto';
 
 // Initialize session
-const alice = new DoubleRatchetEngine({ enableAuditLog: true });
-const sharedSecret = await x3dhKeyAgreement(aliceIdentity, bobPreKey, bobOneTimeKey);
+const alice = new TripleRatchetEngine({ enableAuditLog: true });
+const sharedSecret = await pqxdhKeyAgreement(aliceIdentity, bobPreKey, bobKyberKey);
 
 await alice.initializeAlice(sharedSecret, bobPublicKey);
 
@@ -170,15 +173,15 @@ const log = engine.getAuditLog();
 // ]
 ```
 
-### Post-Quantum Placeholder
+### Post-Quantum Status
 
 ```typescript
-import { PostQuantumDoubleRatchet } from '@/lib/crypto/doubleRatchet';
+import { TripleRatchetEngine } from '@cgraph/crypto';
 
-// Future-ready: when CRYSTALS-Kyber is standardized,
-// upgrade is a drop-in replacement
-const pqEngine = new PostQuantumDoubleRatchet();
-await pqEngine.initializeWithQuantumResistance(sharedSecret, peerPublicKey);
+// ML-KEM-768 is shipped and active in PQXDH key agreement.
+// No placeholder — post-quantum is the default path.
+const engine = new TripleRatchetEngine();
+await engine.initializeWithQuantumResistance(sharedSecret, peerPublicKey);
 ```
 
 ---
@@ -616,7 +619,7 @@ recipient.
 
 | Component                 | Status      | Notes                                          |
 | ------------------------- | ----------- | ---------------------------------------------- |
-| Server Key Storage        | ✅ Complete | Full X3DH key hierarchy support                |
+| Server Key Storage        | ✅ Complete | Full PQXDH key hierarchy support               |
 | Key Registration API      | ✅ Complete | `/api/v1/e2ee/keys` endpoint                   |
 | Prekey Bundle API         | ✅ Complete | `/api/v1/e2ee/bundle/:user_id`                 |
 | Web Crypto Module         | ✅ Complete | `lib/crypto/e2ee.ts`                           |
@@ -629,11 +632,12 @@ recipient.
 **How It Works:**
 
 1. When a user sends a message, the client fetches the recipient's public key bundle
-2. Using X3DH, a shared secret is derived without ever transmitting private keys
-3. The message content is encrypted with AES-256-GCM using the derived key
-4. Encrypted payload, ephemeral public key, and nonce are sent to the server
-5. The server stores the encrypted blob and metadata (cannot decrypt)
-6. Recipient fetches the message and decrypts using their private key
+2. Using PQXDH, a shared secret is derived (P-256 ECDH + ML-KEM-768 encapsulation)
+3. The Triple Ratchet derives per-message keys with post-quantum forward secrecy
+4. The message content is encrypted with AES-256-GCM using the derived key
+5. Encrypted payload, ephemeral public key, and nonce are sent to the server
+6. The server stores the encrypted blob and metadata (cannot decrypt)
+7. Recipient fetches the message and decrypts using their private key
 
 **Architecture:**
 
@@ -642,12 +646,14 @@ recipient.
 │                    E2EE KEY HIERARCHY                           │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│   Identity Key (Ed25519)         Long-term signing key          │
-│   ├── Signed Prekey (X25519)     Medium-term key exchange       │
+│   Identity Key (P-256 ECDSA)     Long-term signing key          │
+│   ├── Signed Prekey (P-256 ECDH)  Medium-term key exchange       │
 │   │   └── Signature              Identity key signature         │
-│   └── One-Time Prekeys           Single-use keys (100 batch)    │
+│   ├── One-Time Prekeys (P-256)   Single-use keys (100 batch)    │
+│   └── Kyber Prekeys (ML-KEM-768) Post-quantum prekeys            │
 │                                                                  │
-│   Key Exchange: X3DH (Extended Triple Diffie-Hellman)           │
+│   Key Exchange: PQXDH (P-256 ECDH + ML-KEM-768)                 │
+│   Ratcheting: Triple Ratchet (EC DR ∥ SPQR)                     │
 │   Encryption: AES-256-GCM                                       │
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘

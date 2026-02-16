@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.26** | Generated: February 16, 2026
+> **Version: 0.9.28** | Generated: February 16, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
@@ -8,21 +8,21 @@ Real-time overview of project health, architecture status, and operational state
 
 ## Overall Health
 
-| Dimension         | Status | Score | Notes                                                                           |
-| ----------------- | ------ | ----- | ------------------------------------------------------------------------------- |
-| **Build**         | OK     | 10/10 | All apps building successfully                                                  |
-| **TypeScript**    | OK     | 10/10 | 0 errors across all packages                                                    |
-| **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                                  |
-| **Architecture**  | OK     | 9/10  | Router split (7 domain modules), component categorization, remote caching       |
-| **Tests**         | OK     | 10/10 | 1,633 tests passing, 0 failures, 7 skipped — 635 pre-existing failures resolved |
-| **Security**      | WARN   | 7/10  | E2EE implemented; recovery codes hashed; no external audit yet                  |
-| **Documentation** | OK     | 9/10  | Architecture + API docs current; load test baselines published                  |
-| **Observability** | OK     | 10/10 | Prometheus + SLO dashboards + Alerting + Tracing + runtime SLO enforcement      |
-| **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing (singleflight)          |
-| **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags                                   |
+| Dimension         | Status | Score | Notes                                                                         |
+| ----------------- | ------ | ----- | ----------------------------------------------------------------------------- |
+| **Build**         | OK     | 10/10 | All apps building successfully                                                |
+| **TypeScript**    | OK     | 10/10 | 0 errors across all packages                                                  |
+| **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                                |
+| **Architecture**  | OK     | 9/10  | Router split (7 domain modules), component categorization, remote caching     |
+| **Tests**         | WARN   | 7/10  | 1,633 backend tests passing; web coverage ~20% (floor 19%); mobile minimal    |
+| **Security**      | WARN   | 7/10  | E2EE implemented; recovery codes hashed; no external audit yet                |
+| **Documentation** | WARN   | 7/10  | Architecture + API docs exist; several version inconsistencies being resolved |
+| **Observability** | WARN   | 8/10  | Prometheus + SLO rules defined; Grafana dashboards not yet deployed live      |
+| **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing (singleflight)        |
+| **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags                                 |
 
-**Composite Score: 9.4/10** — Production-grade foundation; external security audit is the primary
-remaining gap
+**Composite Score: 8.8/10** — Strong production foundation with gaps in test coverage, observability
+deployment, and external security audit
 
 > **Implementation Registry**: See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file-level
 > inventory of all operational systems, their locations, and remaining gaps.
@@ -31,20 +31,20 @@ remaining gap
 
 ## 📊 Version Matrix
 
-| Component          | Version | Latest Available | Status |
-| ------------------ | ------- | ---------------- | ------ |
-| React              | 19.1.0  | 19.1.0           | ✅     |
-| TypeScript         | 5.8.x   | 5.8.x            | ✅     |
-| ESLint             | 9.27.0  | 9.x              | ✅     |
-| Node.js            | 20.x    | 22.x LTS         | ⚠️     |
-| pnpm               | 10.26.2 | 10.x             | ✅     |
-| Phoenix            | 1.8.x   | 1.8.x            | ✅     |
-| Elixir             | 1.19.4  | 1.19.x           | ✅     |
-| Expo SDK           | 54      | 54               | ✅     |
-| React Native       | 0.81    | 0.81             | ✅     |
-| RN Reanimated      | 4.1.1   | 4.1.x            | ✅     |
-| RN Gesture Handler | 2.28.x  | 2.28.x           | ✅     |
-| Native Stack Nav   | 7.3.0   | 7.x              | ✅     |
+| Component          | Version | Latest Available | Status                                           |
+| ------------------ | ------- | ---------------- | ------------------------------------------------ |
+| React              | 19.1.0  | 19.1.0           | ✅                                               |
+| TypeScript         | 5.8.x   | 5.8.x            | ✅                                               |
+| ESLint             | 9.27.0  | 9.x              | ✅                                               |
+| Node.js            | 20.x    | 22.x LTS         | ⚠️                                               |
+| pnpm               | 10.26.2 | 10.x             | ✅                                               |
+| Phoenix            | 1.8.x   | 1.8.x            | ✅                                               |
+| Elixir             | 1.17.3  | 1.19.x           | ⚠️ Dockerfile pins 1.17.3; local dev uses 1.19.4 |
+| Expo SDK           | 54      | 54               | ✅                                               |
+| React Native       | 0.81    | 0.81             | ✅                                               |
+| RN Reanimated      | 4.1.1   | 4.1.x            | ✅                                               |
+| RN Gesture Handler | 2.28.x  | 2.28.x           | ✅                                               |
+| Native Stack Nav   | 7.3.0   | 7.x              | ✅                                               |
 
 ---
 
@@ -98,14 +98,14 @@ Remaining:          10 (15%)
 ### By Category
 
 | Category         | Progress | Bar                    |
-| ---------------- | -------- | ---------------------- | ------------------------- |
+| ---------------- | -------- | ---------------------- | ----------------------------------------- |
 | Calendar/Events  | 100%     | ██████████████████████ |
 | Referrals        | 100%     | ██████████████████████ |
 | Moderation       | 93%      | ████████████████████░░ |
 | Private Messages | 83%      | ██████████████████░░░░ |
 | Announcements    | 83%      | ██████████████████░░░░ |
 | Core Forums      | 80%      | █████████████████░░░░░ |
-| Search           | 100%     | ██████████████████████ | MeiliSearch pipeline live |
+| Search           | 75%      | █████████████████░░░░░ | PostgreSQL full-text; Meilisearch planned |
 | Formatting       | 80%      | █████████████████░░░░░ |
 | Reputation       | 75%      | ████████████████░░░░░░ |
 | User System      | 67%      | ██████████████░░░░░░░░ |
@@ -114,19 +114,20 @@ Remaining:          10 (15%)
 
 ## 🏗️ Architecture Status
 
-| Component     | Tech Stack           | Status | Notes                       |
-| ------------- | -------------------- | ------ | --------------------------- |
-| Backend API   | Phoenix 1.8 / Elixir | ✅     | Router split into 8 modules |
-| Web App       | React 19 / Vite      | ✅     | Components organized (9/10) |
-| Landing App   | React 19 / Vite      | ✅     | Deployed separately         |
-| Mobile App    | Expo 54 / RN 0.81    | ✅     | Feature parity with web     |
-| Real-time     | Phoenix Channels     | ✅     | WebSocket + PubSub sharding |
-| Database      | PostgreSQL 16        | ✅     | 91 tables, optimized        |
-| CDN           | Cloudflare           | ✅     | Global edge caching         |
-| Hosting (API) | Fly.io               | ✅     | Single-region (IAD)         |
-| Hosting (Web) | Vercel               | ✅     | Edge functions              |
-| Build         | Turborepo            | ✅     | Remote caching enabled      |
-| Bundles       | size-limit           | ✅     | 8 budget entries, CI-gated  |
+| Component         | Tech Stack           | Status | Notes                                                |
+| ----------------- | -------------------- | ------ | ---------------------------------------------------- |
+| Backend API       | Phoenix 1.8 / Elixir | ✅     | Router split into 8 modules                          |
+| Web App           | React 19 / Vite      | ✅     | Components organized (9/10)                          |
+| Landing App       | React 19 / Vite      | ✅     | Deployed separately                                  |
+| Mobile App        | Expo 54 / RN 0.81    | ✅     | Feature parity with web                              |
+| Real-time         | Phoenix Channels     | ✅     | WebSocket + PubSub sharding                          |
+| Database          | PostgreSQL 16        | ✅     | 91 tables, optimized                                 |
+| CDN               | Cloudflare           | ✅     | Global edge caching                                  |
+| Hosting (API)     | Fly.io               | ✅     | Primary: Frankfurt (fra); Read replica: IAD          |
+| Hosting (Web)     | Fly.io               | ⚠️     | Configured (fly.web.toml) but Dockerfile.web missing |
+| Hosting (Landing) | Vercel               | ✅     | Edge deployment via Vercel                           |
+| Build             | Turborepo            | ✅     | Remote caching enabled                               |
+| Bundles           | size-limit           | ✅     | 8 budget entries, CI-gated                           |
 
 ### Module Architecture (v0.9.26)
 
@@ -288,4 +289,4 @@ apps/mobile/src/screens/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.26 • Updated: February 16, 2026</sub>
+<sub>**CGraph Dashboard** • Version 0.9.28 • Updated: February 16, 2026</sub>

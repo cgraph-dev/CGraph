@@ -640,4 +640,4 @@ describe('ComponentName', () => {
 
 ---
 
-<sub>**CGraph Testing Strategy** • Version 0.9.8</sub>
+<sub>**CGraph Testing Strategy** • Version 0.9.28</sub>

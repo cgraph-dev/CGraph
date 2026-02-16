@@ -10,7 +10,7 @@ Complete reference for the CGraph REST and WebSocket APIs.
 
 | Environment | REST API                                | WebSocket                             |
 | ----------- | --------------------------------------- | ------------------------------------- |
-| Production  | `https://api.cgraph.org/api/v1`         | `wss://api.cgraph.org/socket`         |
+| Production  | `https://cgraph-backend.fly.dev/api/v1` | `wss://cgraph-backend.fly.dev/socket` |
 | Staging     | `https://api.staging.cgraph.org/api/v1` | `wss://api.staging.cgraph.org/socket` |
 
 ---
@@ -480,7 +480,7 @@ file: <binary>
 Connect to the WebSocket endpoint with authentication:
 
 ```javascript
-const socket = new WebSocket('wss://api.cgraph.org/socket');
+const socket = new WebSocket('wss://cgraph-backend.fly.dev/socket');
 
 socket.onopen = () => {
   socket.send(
@@ -605,4 +605,4 @@ const expected = crypto.createHmac('sha256', webhookSecret).update(body).digest(
 
 ---
 
-<sub>**CGraph API Documentation** • Version 0.9.8 • [OpenAPI Spec](/api/openapi.json)</sub>
+<sub>**CGraph API Documentation** • Version 0.9.28 • [OpenAPI Spec](/api/openapi.json)</sub>

@@ -362,7 +362,7 @@ describe('E2EE Cryptographic Security', () => {
 
   describe('Forward Secrecy', () => {
     it('compromised session key does not expose past messages', async () => {
-      // Simulate Double Ratchet - each message uses derived key
+      // Simulate Triple Ratchet - each message uses derived key
       const session = await createSession();
 
       const messages = [];
@@ -581,7 +581,7 @@ jobs:
 **In Scope:**
 
 - Web application (app.cgraph.org)
-- API endpoints (api.cgraph.org)
+- API endpoints (cgraph-backend.fly.dev)
 - Mobile applications (iOS, Android)
 - WebSocket connections
 - Authentication flows
@@ -640,4 +640,4 @@ See [SECURITY.md](../SECURITY.md) for full policy.
 
 ---
 
-<sub>**CGraph Security Testing Framework** • Version 0.9.8</sub>
+<sub>**CGraph Security Testing Framework** • Version 0.9.28</sub>

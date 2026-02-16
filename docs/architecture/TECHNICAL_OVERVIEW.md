@@ -1,7 +1,7 @@
 # CGraph Technical Overview
 
 > Comprehensive technical reference for the CGraph platform  
-> Version 0.7.32 | January 2026
+> Version 0.9.28 | January 2026
 
 ---
 
@@ -438,26 +438,31 @@ channel.on('presence_diff', (diff) => {
 
 ### 4. End-to-End Encryption
 
-**X3DH Key Exchange Protocol:**
+**PQXDH + Triple Ratchet Protocol:**
 
 ```typescript
+import { TripleRatchetEngine, generateIdentityKeyPair, generateSignedPreKey } from '@cgraph/crypto';
+
 // Initialize identity keys (once per device)
-const identityKey = await generateIdentityKeyPair();
-const signedPreKey = await generateSignedPreKey(identityKey);
+const identityKey = await generateIdentityKeyPair(); // P-256 ECDSA
+const signedPreKey = await generateSignedPreKey(identityKey); // P-256 ECDH
+const kyberPreKey = await generateKyberPreKey(); // ML-KEM-768
 
 // Register public keys with server
 await api.post('/api/v1/keys', {
   identity_key: identityKey.publicKey,
   signed_pre_key: signedPreKey.publicKey,
   signature: signedPreKey.signature,
+  kyber_pre_key: kyberPreKey.publicKey,
 });
 
-// Establish session with recipient
+// Establish session with recipient via PQXDH
 const recipientKeys = await api.get(`/api/v1/keys/${recipientId}`);
-const sharedSecret = await x3dhKeyAgreement(myKeys, recipientKeys);
+const sharedSecret = await pqxdhKeyAgreement(myKeys, recipientKeys); // P-256 ECDH + ML-KEM-768
 
-// Derive encryption key
-const encryptionKey = await hkdf(sharedSecret, 'CGraph-E2EE-v1');
+// Initialize Triple Ratchet session
+const engine = new TripleRatchetEngine({ enableAuditLog: true });
+await engine.initializeAlice(sharedSecret, recipientKeys.publicKey);
 ```
 
 **Message Encryption (AES-256-GCM):**

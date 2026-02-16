@@ -151,7 +151,7 @@ We implement industry-standard security measures:
 - **E2EE:** PQXDH + Triple Ratchet with AES-256-GCM for messages
 - **Access Controls:** Role-based access, audit logging
 - **Monitoring:** 24/7 security monitoring
-- **Penetration Testing:** Regular third-party audits
+- **Penetration Testing:** External security audits are planned but have not yet been conducted
 
 ## 8. International Data Transfers
 
