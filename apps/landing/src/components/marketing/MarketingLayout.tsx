@@ -9,8 +9,9 @@
  * @updated v0.9.4 - Added enhanced styling matching landing page
  */
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useLocation } from 'react-router-dom';
 import Navigation from './layout/Navigation';
 import Footer from './layout/Footer';
 import { GlobalBackground } from './layout/GlobalBackground';
@@ -41,6 +42,12 @@ export default function MarketingLayout({
   transparentNav = false,
   showLandingLinks = false,
 }: MarketingLayoutProps) {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [pathname]);
+
   return (
     <div className="marketing-enhanced relative min-h-screen overflow-hidden">
       <GlobalBackground />

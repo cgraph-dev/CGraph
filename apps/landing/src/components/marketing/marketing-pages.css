@@ -55,7 +55,7 @@
 
   background: var(--color-dark);
   color: var(--color-light);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: 'Tektur', 'Inter', system-ui, sans-serif;
 }
 
 /* ===== 2026 Glassmorphism Styles ===== */
@@ -238,17 +238,7 @@
 }
 
 .marketing-hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 1000px;
-  height: 600px;
-  background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.15) 0%, rgba(139, 92, 246, 0.1) 40%, transparent 70%);
-  filter: blur(80px);
-  pointer-events: none;
-  animation: hero-glow-pulse 8s ease-in-out infinite;
+  content: none;
 }
 
 @keyframes hero-glow-pulse {
@@ -679,48 +669,70 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.875rem 2rem;
-  border-radius: 0.75rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 50px;
+  font-family: 'Tektur', 'Inter', system-ui, sans-serif;
   font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border: 1px solid rgba(16, 185, 129, 0.34);
+  transition: color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
   cursor: pointer;
   text-decoration: none;
 }
 
 .marketing-btn--primary {
-  background: var(--gradient-button);
+  background:
+    linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(139, 92, 246, 0.16) 100%),
+    rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
   color: white;
-  border: none;
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
-  position: relative;
-  overflow: hidden;
+  box-shadow:
+    0 0 20px -4px rgba(16, 185, 129, 0.3),
+    0 0 14px -7px rgba(139, 92, 246, 0.25);
 }
 
 .marketing-btn--primary::before {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: -1px;
+  border-radius: 50px;
+  padding: 1px;
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(255, 255, 255, 0.2),
+    rgba(16, 185, 129, 0.6) 25%,
+    rgba(139, 92, 246, 0.6) 50%,
+    rgba(16, 185, 129, 0.6) 75%,
     transparent
   );
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
+  background-size: 200% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.45;
+  animation: gl-nav-border-flow 4s linear infinite;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .marketing-btn--primary:hover::before {
-  transform: translateX(100%);
+  opacity: 1;
 }
 
 .marketing-btn--primary:hover {
-  transform: translateY(-2px);
+  border-color: rgba(16, 185, 129, 0.5);
+  transform: translateY(-1px);
   box-shadow: 
-    0 6px 30px rgba(16, 185, 129, 0.4),
-    0 0 40px rgba(16, 185, 129, 0.2);
-  animation: marketing-btn-glow 2s ease-in-out infinite;
+    0 0 30px -4px rgba(16, 185, 129, 0.46),
+    0 0 16px -2px rgba(139, 92, 246, 0.28);
+  animation: none;
 }
 
 @keyframes marketing-btn-glow {
@@ -729,11 +741,10 @@
 }
 
 .marketing-btn--secondary {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.36);
   color: var(--color-light);
-  border: 1px solid rgba(55, 65, 81, 0.8);
-  position: relative;
-  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 16px -10px rgba(139, 92, 246, 0.3);
 }
 
 .marketing-btn--secondary::before {
@@ -750,9 +761,10 @@
 }
 
 .marketing-btn--secondary:hover {
-  background: transparent;
+  background: rgba(16, 185, 129, 0.08);
   border-color: rgba(16, 185, 129, 0.5);
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.15), 0 0 16px rgba(139, 92, 246, 0.12);
+  transform: translateY(-1px);
 }
 
 /* ===== Legal Page Styles ===== */
