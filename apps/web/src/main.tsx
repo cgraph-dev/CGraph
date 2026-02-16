@@ -14,6 +14,7 @@ import { QueryClient, QueryClientProvider, onlineManager } from '@tanstack/react
 import { persistQueryClient } from '@tanstack/react-query-persist-client';
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
 import { Toaster } from 'react-hot-toast';
+import { Analytics } from '@vercel/analytics/react';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -159,6 +160,7 @@ try {
                       },
                     }}
                   />
+                  <Analytics />
                 </BrowserRouter>
               </QueryClientProvider>
             </ThemeProviderEnhanced>
