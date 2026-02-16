@@ -34,7 +34,7 @@ const blogPosts: BlogPost[] = [
     slug: 'architecture-refactor',
     title: 'Architecture Refactor: Router Split, Component Organization & Build Hardening',
     excerpt:
-      'v0.9.26 implements all architecture audit recommendations: Phoenix router split from 989→122 lines with 7 domain modules, 28 components organized into 6 categorized subdirectories, Turborepo remote caching, bundle size monitoring with size-limit, and 854 lines of deprecated code removed.',
+      'v0.9.26 — Phoenix router went from 989 lines down to 122 by splitting into 7 domain modules. Organized 28 flat component files into 6 categorized directories. Added Turborepo remote caching, bundle size monitoring with size-limit, and removed 854 lines of dead code.',
     category: 'Architecture',
     author: 'Burca Lucas',
     date: 'February 15, 2026',
@@ -48,7 +48,7 @@ const blogPosts: BlogPost[] = [
     slug: 'compliance-pass',
     title: 'Architecture Compliance Pass: All Modules Under Size Limits',
     excerpt:
-      'v0.9.25 enforces <500 lines for backend modules and <300 lines for React components. 8 backend modules split using sub-module + defdelegate pattern, 5 React components extracted, 56 @spec annotations added, and a full soft delete audit across 45 Repo.delete calls.',
+      'v0.9.25 — Set hard caps: 500 lines max for backend modules, 300 for React components. Had to split 8 Elixir modules and 5 React components. Also added 56 @spec annotations and audited all 45 Repo.delete calls for soft delete compliance.',
     category: 'Architecture',
     author: 'Burca Lucas',
     date: 'February 15, 2026',
@@ -62,7 +62,7 @@ const blogPosts: BlogPost[] = [
     slug: 'platform-parity',
     title: 'Platform Parity: 17/17 Features on Web & Mobile',
     excerpt:
-      'v0.9.13\u201314 marks full feature parity between web and mobile. 1,342 passing tests, Reanimated v4 migration complete (222 \u2192 0 TypeScript errors), and 132 facade tests ensuring store reliability.',
+      'v0.9.13\u201314 — Every feature on web now works on mobile too. 1,342 tests passing. Migrated to Reanimated v4 (had to fix 222 TypeScript errors to get there). 132 facade tests covering store reliability.',
     category: 'Engineering',
     author: 'Burca Lucas',
     date: 'February 8, 2026',
@@ -76,7 +76,7 @@ const blogPosts: BlogPost[] = [
     slug: 'architecture-transformation',
     title: 'Architecture Transformation: From 4.2 to 9.0',
     excerpt:
-      'How we restructured the entire codebase into 12 feature modules with 7 facade hooks, consolidated 32 stores into 7 facades, and built 90+ shared UI components. Architecture score jumped from 4.2/10 to 9.0/10.',
+      'The codebase was a mess — 32 scattered stores, god components, circular deps. Restructured everything into 12 feature modules with 7 facade hooks, extracted 90+ shared UI components. Architecture score jumped from 4.2 to 9.0.',
     category: 'Engineering',
     author: 'Burca Lucas',
     date: 'February 2, 2026',
@@ -90,7 +90,7 @@ const blogPosts: BlogPost[] = [
     slug: 'e2ee-test-suite',
     title: 'E2EE Test Suite: 192 Tests for Triple Ratchet Protocol',
     excerpt:
-      'We built a comprehensive test suite for our Triple Ratchet implementation covering PQXDH key exchange, hybrid ratchet encryption, post-quantum forward secrecy, adversarial scenarios, stress testing, and cross-platform compatibility.',
+      "Wrote 192 tests for the crypto layer — PQXDH key exchange, hybrid ratcheting, post-quantum forward secrecy, adversarial scenarios, and stress tests. If it can break, there's a test for it.",
     category: 'Security',
     author: 'Burca Lucas',
     date: 'February 1, 2026',
@@ -104,7 +104,7 @@ const blogPosts: BlogPost[] = [
     slug: 'store-consolidation',
     title: 'Store Consolidation: 32 Stores \u2192 7 Facades',
     excerpt:
-      'Adopting composition patterns, we consolidated 32 scattered Zustand stores into 7 clean facade hooks: Auth, Chat, Gamification, Settings, Community, Marketplace, and UI. 25 dedicated facade tests ensure reliability.',
+      "32 Zustand stores was too many. Consolidated them into 7 facade hooks (Auth, Chat, Gamification, Settings, Community, Marketplace, UI) with composition patterns. 25 dedicated tests to make sure the facades don't lie.",
     category: 'Engineering',
     author: 'Burca Lucas',
     date: 'February 1, 2026',
@@ -118,7 +118,7 @@ const blogPosts: BlogPost[] = [
     slug: 'code-simplification',
     title: 'Code Simplification Sprint: console.log 325 \u2192 2',
     excerpt:
-      'A deep-dive into our simplification sprint: eliminated 96% of `as any` casts (27 \u2192 1), removed 99% of console.log calls (325 \u2192 2), reduced Settings.tsx from 1,172 to 221 lines, and split SocketManager from 960 to 616 lines across 5 modules.',
+      'Killed 323 console.log calls (two were printing decrypted messages — yikes). Replaced 27 `as any` casts with proper types. Split Settings.tsx from 1,172 lines to 221. SocketManager from 960 to 5 focused modules.',
     category: 'Engineering',
     author: 'Burca Lucas',
     date: 'January 30, 2026',
@@ -132,7 +132,7 @@ const blogPosts: BlogPost[] = [
     slug: 'dual-app-architecture',
     title: 'Dual-App Architecture: Landing vs Web App',
     excerpt:
-      'Why we separated cgraph.org (landing, ~200KB) from app.cgraph.org (full app, ~2MB). The enterprise-grade dual-app pattern with modular architecture, 62 lazy-loaded pages, and 168 optimized build chunks.',
+      'Why cgraph.org (landing, ~200KB) and app.cgraph.org (full app, ~2MB) are separate apps. Separate CI, separate deploys, separate performance budgets. 62 lazy-loaded pages, 168 build chunks.',
     category: 'Architecture',
     author: 'Burca Lucas',
     date: 'January 27, 2026',
@@ -146,7 +146,7 @@ const blogPosts: BlogPost[] = [
     slug: 'critical-security-fixes',
     title: 'Critical Security Fixes: E2EE Plaintext Fallback',
     excerpt:
-      'We discovered and fixed a critical vulnerability where messages could silently fall back to unencrypted delivery. Plus: presence privacy leak, Stripe webhook misconfiguration, IP spoofing, and MIME type spoofing fixes.',
+      'Found a bad one — messages could silently fall back to unencrypted delivery when encryption failed. Fixed that, plus a presence privacy leak, Stripe webhook without signature verification, IP spoofing via X-Forwarded-For, and MIME type spoofing in uploads.',
     category: 'Security',
     author: 'Burca Lucas',
     date: 'January 27, 2026',
@@ -160,7 +160,7 @@ const blogPosts: BlogPost[] = [
     slug: 'why-elixir',
     title: 'Why Elixir, Phoenix, and the BEAM VM',
     excerpt:
-      'Our tech stack deep-dive: Elixir 1.17+ with Phoenix 1.8 for the backend, PostgreSQL 16 with 91 tables, 3-tier caching (ETS \u2192 Cachex \u2192 Redis), and Phoenix Channels for WebSocket real-time. Why we chose the BEAM VM for massive concurrency.',
+      'Looked at Node, Go, Rust, and Elixir for the backend. Picked Elixir because the BEAM VM was literally built for telecom-scale concurrency. 91 Postgres tables, 3-tier caching (ETS → Cachex → Redis), Phoenix Channels for WebSocket.',
     category: 'Engineering',
     author: 'Burca Lucas',
     date: 'January 2026',
@@ -174,7 +174,7 @@ const blogPosts: BlogPost[] = [
     slug: 'introducing-cgraph',
     title: 'Introducing CGraph: The Vision',
     excerpt:
-      'The vision behind CGraph \u2014 combining real-time messaging, community forums, military-grade encryption, and RPG gamification into one platform. 5 subscription tiers from free to enterprise, built for communities of all sizes.',
+      'The idea behind CGraph — one platform that handles messaging, forums, encryption, and gamification. 5 subscription tiers from free to enterprise. Built for communities that want privacy without giving up engagement.',
     category: 'Product',
     author: 'Burca Lucas',
     date: 'January 2026',
@@ -218,9 +218,9 @@ export default function Blog() {
 
   return (
     <MarketingLayout
-      title="Engineering Blog"
-      subtitle="Development milestones, architecture decisions, and security updates — every post backed by real commits."
-      eyebrow="Dev Log"
+      title="Dev Log"
+      subtitle="What I shipped, what broke, and how I fixed it. Every post traces back to a real commit."
+      eyebrow="Blog"
       showCTA
     >
       {/* Latest Release Banner */}
@@ -490,9 +490,7 @@ export default function Blog() {
                 viewport={{ once: true }}
               >
                 <h2 className="marketing-section__title font-zentry">All Posts</h2>
-                <p className="marketing-section__desc">
-                  The full development timeline — every milestone documented.
-                </p>
+                <p className="marketing-section__desc">Every milestone from the changelog.</p>
               </motion.div>
             </div>
           )}

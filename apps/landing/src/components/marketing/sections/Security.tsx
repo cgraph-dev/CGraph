@@ -19,23 +19,23 @@ interface SecurityFeature {
 const securityFeatures: SecurityFeature[] = [
   {
     icon: '🔒',
-    title: 'End-to-End Encryption',
-    desc: 'AES-256-GCM with post-quantum key exchange',
+    title: 'End-to-End Encrypted',
+    desc: 'AES-256-GCM. Your device encrypts, their device decrypts.',
   },
   {
     icon: '🛡️',
-    title: 'Triple Ratchet Protocol',
-    desc: 'Signal Protocol Rev 4 with ML-KEM-768',
+    title: 'Triple Ratchet',
+    desc: 'Post-quantum protocol based on Signal Rev 4',
   },
   {
     icon: '🔐',
     title: 'Zero Access',
-    desc: "We can't read your messages",
+    desc: "We store ciphertext. We can't read it.",
   },
   {
     icon: '🔑',
-    title: 'Post-Quantum Security',
-    desc: 'Future-proof hybrid key derivation',
+    title: 'Post-Quantum Ready',
+    desc: 'ML-KEM-768 hybrid key exchange',
   },
 ];
 
@@ -79,12 +79,12 @@ export function Security() {
           transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] as const }}
         >
           <SectionHeader
-            badge="Privacy-First Design"
+            badge="Privacy-First"
             badgeVariant="purple"
             title="Your Privacy Is Our"
             titleAccent="Priority"
             titleAccentClass="title-fx--air"
-            description="Built from the ground up with security in mind. Your messages are end-to-end encrypted with AES-256-GCM using PQXDH + Triple Ratchet — a post-quantum hybrid protocol based on Signal Protocol Revision 4. Not even we can access your private conversations."
+            description="Messages are encrypted on your device with AES-256-GCM before they leave. Key exchange uses PQXDH + Triple Ratchet — a post-quantum hybrid based on Signal Protocol Revision 4. The server only ever sees ciphertext."
           />
         </motion.div>
 

@@ -29,9 +29,9 @@ const docArticles: Record<string, DocArticleData> = {
     categoryColor: '#34d399',
     readTime: '3 min read',
     content: `
-<p>CGraph is a <strong>next-generation community platform</strong> that combines real-time messaging, forum discussions, and end-to-end encryption into a single, unified experience — with RPG-style gamification built in from day one.</p>
+<p>CGraph is a <strong>community platform</strong> that combines real-time messaging, forum discussions, and end-to-end encryption in one app — with RPG-style gamification baked in.</p>
 
-<h3>Core Feature Pillars</h3>
+<h3>Core Features</h3>
 <ul>
   <li><strong>Real-Time Messaging</strong> — Text, voice, and video chat with servers, channels, and direct messages. WebSocket-powered with typing indicators, read receipts, and presence.</li>
   <li><strong>Community Forums</strong> — Threaded discussions with voting, karma, nested comments, polls, and rich text editing using a custom BBCode parser.</li>
@@ -1154,7 +1154,7 @@ const docArticles: Record<string, DocArticleData> = {
 </ul>
 
 <h3>Routing</h3>
-<p>Auth routes on cgraph.org (e.g., /login, /register) redirect to web.cgraph.org via Vercel rewrites. This provides a seamless experience while keeping the apps separate.</p>
+<p>Auth routes on cgraph.org (e.g., /login, /register) redirect to web.cgraph.org via Vercel rewrites, so users don’t notice the split.</p>
 `,
   },
   '12-feature-modules-7-facade-hooks': {
@@ -1305,7 +1305,7 @@ end
     categoryColor: '#818cf8',
     readTime: '8 min read',
     content: `
-<p>CGraph's backend leverages the BEAM VM's supervision tree for fault-tolerant, self-healing services.</p>
+<p>CGraph’s backend uses the BEAM VM’s supervision tree for fault-tolerant, self-healing services.</p>
 
 <h3>Top-Level Supervisors</h3>
 <ul>
@@ -1408,7 +1408,7 @@ end
     categoryColor: '#f472b6',
     readTime: '8 min read',
     content: `
-<p>CGraph mobile provides a seamless experience even when network connectivity is poor or unavailable.</p>
+<p>CGraph mobile works well even with bad or no connectivity.</p>
 
 <h3>Offline Capabilities</h3>
 <ul>

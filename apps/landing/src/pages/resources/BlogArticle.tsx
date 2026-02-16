@@ -54,7 +54,7 @@ const blogArticles: Record<string, BlogArticleData> = {
     image: '🏗️',
     tags: ['Architecture', 'Phoenix', 'React', 'Turborepo', 'DX'],
     content: `
-<p>With v0.9.26 we implemented all recommendations from our architecture audit (scored 7.7/10), bringing the codebase to <strong>9.2/10</strong>. The refactor touched 96 files with +1,952 / -2,996 lines — a net reduction of over 1,000 lines while improving structure, discoverability, and build performance.</p>
+<p>v0.9.26 shipped all the fixes from our architecture audit (scored 7.7/10). The result: <strong>9.2/10</strong>. 96 files changed, +1,952 / -2,996 lines. Net reduction of over 1,000 lines while making the codebase significantly easier to navigate.</p>
 
 <h3>Phoenix Router Split</h3>
 
@@ -129,7 +129,7 @@ const blogArticles: Record<string, BlogArticleData> = {
     image: '🏗️',
     tags: ['Architecture', 'Elixir', 'React', 'Compliance'],
     content: `
-<p>With v0.9.25 we completed a full architecture compliance pass across the entire CGraph codebase. The goal: <strong>every backend module under 500 lines</strong> and <strong>every React component under 300 lines</strong>. We hit both targets — and added 56 <code>@spec</code> type annotations, audited all 45 <code>Repo.delete</code> calls for soft delete compliance, and synchronized documentation across the project.</p>
+<p>v0.9.25 was all about setting hard limits and sticking to them: <strong>every backend module under 500 lines</strong>, <strong>every React component under 300 lines</strong>. Both targets hit. Along the way I added 56 <code>@spec</code> type annotations, audited all 45 <code>Repo.delete</code> calls, and synced documentation across the project.</p>
 
 <h3>Backend Module Splits</h3>
 
@@ -190,7 +190,7 @@ const blogArticles: Record<string, BlogArticleData> = {
 <li><strong>Documentation</strong>: 100% file reference accuracy, versions synchronized</li>
 </ul>
 
-<p>The full release notes are available in the <a href="/docs">documentation</a>. Next up: Phase 12 focuses on performance profiling, database query optimization, and preparing the infrastructure for public beta load testing.</p>
+<p>Full release notes in the <a href="/docs">docs</a>. Up next: performance profiling, query optimization, and load testing for public beta.</p>
 `,
   },
   'platform-parity': {
@@ -202,11 +202,11 @@ const blogArticles: Record<string, BlogArticleData> = {
     image: '🎯',
     tags: ['React Native', 'Reanimated v4', 'Testing'],
     content: `
-<p>With the release of v0.9.13 and v0.9.14, CGraph has achieved a milestone we've been pushing toward for months: <strong>full feature parity between the web and mobile platforms</strong>. Every single feature available on the web app is now fully functional on iOS and Android — 17 out of 17 feature modules, zero gaps.</p>
+<p>v0.9.13 and v0.9.14 hit the milestone I’d been working toward for a while: <strong>every feature on web now works on mobile</strong>. 17 out of 17 modules, no gaps. Not just checkbox parity either — same UX patterns adapted for mobile, same data layer underneath.</p>
 
 <h3>The Full Feature Matrix</h3>
 
-<p>Achieving platform parity isn't just about ticking boxes — it means every feature works with the same reliability, the same UX patterns (adapted to mobile conventions), and the same underlying data layer. Here's what's covered:</p>
+<p>Parity means every feature works with the same reliability on both platforms. Not just "it renders" — same UX, adapted for mobile conventions, same underlying stores. Here’s the list:</p>
 
 <table>
 <thead><tr><th>Feature Module</th><th>Web</th><th>Mobile</th><th>Notes</th></tr></thead>
@@ -233,7 +233,7 @@ const blogArticles: Record<string, BlogArticleData> = {
 
 <h3>Reanimated v4 Migration: 222 → 0 TypeScript Errors</h3>
 
-<p>The biggest hurdle in reaching mobile parity was the migration from Reanimated v2/v3 to <strong>Reanimated v4</strong>. The initial upgrade broke 222 TypeScript type-check errors across the animation layer. Every animated component — from the chat message appear animation to the gamification XP bar — needed to be rewritten against the new shared value API.</p>
+<p>The hardest part was migrating from Reanimated v2/v3 to <strong>Reanimated v4</strong>. Upgrading broke 222 TypeScript errors instantly — basically every animated component needed a rewrite against the new shared value API.</p>
 
 <p>Key changes in the Reanimated v4 migration:</p>
 <ul>
@@ -243,11 +243,11 @@ const blogArticles: Record<string, BlogArticleData> = {
 <li><strong>Gesture handler</strong> integration was updated for Reanimated v4's worklet threading model</li>
 </ul>
 
-<p>The migration took two focused sprints. We created a codemod script (<code>scripts/codemod-springs.mjs</code>) that handled 80% of the mechanical transformations — converting old spring configs to the new <code>withSpring</code> syntax and updating <code>useAnimatedGestureHandler</code> calls. The remaining 20% required manual intervention for complex composed animations.</p>
+<p>The migration took two focused sprints. I wrote a codemod script (<code>scripts/codemod-springs.mjs</code>) that handled about 80% of the mechanical stuff — converting old spring configs, updating gesture handler calls. The rest needed manual work, especially the complex composed animations.</p>
 
 <h3>Test Coverage: 1,342 Passing Tests</h3>
 
-<p>Platform parity means nothing without confidence. Our test suite now includes <strong>1,342 passing tests</strong> across unit, integration, and facade layers:</p>
+<p>Parity without tests is just hope. The suite now has <strong>1,342 passing tests</strong>:</p>
 
 <ul>
 <li><strong>132 facade tests</strong> — ensuring every store facade (Auth, Chat, Gamification, Settings, Community, Marketplace, UI) correctly composes from underlying stores</li>
@@ -258,13 +258,13 @@ const blogArticles: Record<string, BlogArticleData> = {
 
 <h3>Architecture Score: 9.0/10</h3>
 
-<p>Our internal architecture scoring system evaluates module boundaries, dependency direction, API surface cleanliness, and test coverage ratios. With platform parity complete, we've reached <strong>9.0 out of 10</strong> — up from 4.2 just weeks ago. The remaining points are tracked for optimization: reducing a few remaining cross-module imports and adding integration tests for the WebRTC layer.</p>
+<p>The internal scoring system checks module boundaries, dependency direction, API surface, and test coverage. With parity done, we hit <strong>9.0/10</strong> — up from 4.2 a few weeks earlier. The remaining point comes from cleaning up some cross-module imports and adding integration tests for WebRTC.</p>
 
-<h4>What's Next</h4>
+<h4>What’s Next</h4>
 
-<p>With parity achieved, the focus shifts to <strong>performance optimization</strong> and <strong>polish</strong>. Mobile startup time is being profiled with Flipper, and we're targeting sub-2-second cold starts on mid-range Android devices. The shared animation constants package (<code>@cgraph/animation-constants</code>) ensures visual consistency across platforms without runtime overhead.</p>
+<p>Now that parity is done, focus shifts to performance. Profiling mobile startup with Flipper, targeting sub-2-second cold starts on mid-range Android. The shared animation constants package (<code>@cgraph/animation-constants</code>) keeps motion consistent across platforms without runtime cost.</p>
 
-<p>v0.9.15 will focus on the landing site enhancements and preparing the documentation for the public beta launch.</p>
+<p>v0.9.15 will be landing site polish and getting docs ready for public beta.</p>
 `,
   },
 
@@ -277,11 +277,11 @@ const blogArticles: Record<string, BlogArticleData> = {
     image: '🏗️',
     tags: ['Architecture', 'Zustand', 'Modules'],
     content: `
-<p>When we started CGraph, the codebase grew organically. Features were added where they fit, stores proliferated without boundaries, and cross-cutting concerns leaked through every layer. Our architecture scoring tool rated us at <strong>4.2 out of 10</strong>. This is the story of how we restructured the entire application into a clean, modular system and reached <strong>9.0/10</strong>.</p>
+<p>CGraph started the way most projects do: I added features wherever they fit, stores multiplied without anyone stopping them, and everything depended on everything else. Architecture score: <strong>4.2/10</strong>. Here’s how I took it to <strong>9.0</strong>.</p>
 
 <h3>The Problem: Architectural Debt</h3>
 
-<p>By late January 2026, the symptoms were unmistakable:</p>
+<p>By late January 2026, the mess was hard to ignore:</p>
 
 <ul>
 <li><strong>32 scattered Zustand stores</strong> with overlapping concerns — three different stores touched message state</li>
@@ -293,7 +293,7 @@ const blogArticles: Record<string, BlogArticleData> = {
 
 <h3>The Solution: 12 Feature Modules + 7 Facades</h3>
 
-<p>We adopted a <strong>Modular system</strong>, where each domain owns its state, hooks, components, and types. The restructuring created 12 feature modules:</p>
+<p>I reorganized everything into a <strong>modular system</strong> — each domain owns its state, hooks, components, and types. 12 feature modules:</p>
 
 <pre><code>src/
 ├── modules/
@@ -322,7 +322,7 @@ const blogArticles: Record<string, BlogArticleData> = {
 
 <h3>The Facade Pattern</h3>
 
-<p>The key architectural decision was introducing <strong>7 facade hooks</strong> that sit between components and stores. Instead of components importing from <code>useMessageStore</code>, <code>useChannelStore</code>, and <code>usePresenceStore</code> individually, they use a single <code>useChat()</code> facade that composes all chat-related state:</p>
+<p>The biggest win was adding <strong>7 facade hooks</strong> between components and stores. Instead of importing from three different stores, components just call <code>useChat()</code>:</p>
 
 <pre><code>// Before: Components reaching into multiple stores
 const messages = useMessageStore(s =&gt; s.messages);
@@ -333,7 +333,7 @@ const sendMessage = useMessageStore(s =&gt; s.sendMessage);
 // After: Single facade with clean API
 const { messages, channels, typingUsers, sendMessage } = useChat();</code></pre>
 
-<p>This pattern provides several benefits:</p>
+<p>Why this matters:</p>
 
 <ul>
 <li><strong>Encapsulation</strong> — Store internals can change without affecting components</li>
@@ -361,7 +361,7 @@ const { messages, channels, typingUsers, sendMessage } = useChat();</code></pre>
 
 <h3>90+ Shared UI Components</h3>
 
-<p>During the restructuring, we extracted over <strong>90 reusable UI components</strong> into the shared layer. These include primitives like <code>Button</code>, <code>Input</code>, <code>Avatar</code>, and <code>Badge</code>, as well as composed components like <code>MessageBubble</code>, <code>ChannelList</code>, and <code>UserCard</code>. Each component is platform-agnostic, with web and mobile renderers consuming the same props interface.</p>
+<p>Along the way I pulled out <strong>90+ reusable UI components</strong> into a shared layer — everything from <code>Button</code> and <code>Input</code> to <code>MessageBubble</code> and <code>ChannelList</code>. Same props interface on web and mobile.</p>
 
 <h3>Measuring the Transformation</h3>
 
@@ -375,7 +375,7 @@ const { messages, channels, typingUsers, sendMessage } = useChat();</code></pre>
 <li><strong>Code Organization</strong> (before: 6/10, after: 9/10) — Consistent module structure</li>
 </ul>
 
-<p>The overall score moved from <strong>4.2 to 9.0</strong> — a transformation that took three focused sprints but fundamentally changed how the team works with the codebase.</p>
+<p>Overall: <strong>4.2 → 9.0</strong>. Three focused sprints. The codebase went from "don’t touch that file" to actually pleasant to work in.</p>
 `,
   },
 
@@ -388,7 +388,7 @@ const { messages, channels, typingUsers, sendMessage } = useChat();</code></pre>
     image: '🔐',
     tags: ['E2EE', 'Triple Ratchet', 'Post-Quantum', 'Testing'],
     content: `
-<p>End-to-end encryption is the most security-critical component in CGraph. Our implementation uses the <strong>Triple Ratchet protocol</strong> — a post-quantum hybrid cryptographic protocol based on Signal Protocol Revision 4. Implementation correctness requires rigorous testing. We built a comprehensive test suite of <strong>192 tests</strong> across 14 files that validate every layer of the cryptographic stack.</p>
+<p>E2EE is the part of CGraph where bugs are unacceptable. The crypto uses the <strong>Triple Ratchet protocol</strong> — a post-quantum hybrid protocol based on Signal’s Revision 4 spec. I wrote <strong>192 tests</strong> across 14 files to make sure every layer actually works.</p>
 
 <h3>The Cryptographic Stack</h3>
 
@@ -406,7 +406,7 @@ const { messages, channels, typingUsers, sendMessage } = useChat();</code></pre>
 
 <h3>PQXDH Key Exchange Tests (8 Tests)</h3>
 
-<p>The Post-Quantum Extended Diffie-Hellman (PQXDH) protocol establishes a hybrid shared secret using both classical P-256 ECDH and post-quantum ML-KEM-768, without requiring both parties to be online simultaneously. Our test suite validates:</p>
+<p>PQXDH establishes a hybrid shared secret using P-256 ECDH + ML-KEM-768, without both parties needing to be online. The tests validate:</p>
 
 <ul>
 <li><strong>Identity key pair generation</strong> — Ed25519 keys are generated with proper entropy</li>
@@ -436,7 +436,7 @@ describe('PQXDH Key Exchange', () =&gt; {
 
 <h3>Triple Ratchet Tests (10 Tests)</h3>
 
-<p>The Triple Ratchet algorithm provides forward secrecy and break-in recovery for ongoing message exchanges, combining an EC Double Ratchet with a post-quantum SPQR ratchet via KDF_HYBRID. Each message uses a unique key derived from the hybrid ratcheting state. Our tests cover:</p>
+<p>The Triple Ratchet combines an EC Double Ratchet with a post-quantum SPQR ratchet. Each message gets a unique key derived from the hybrid state. Tests cover:</p>
 
 <ul>
 <li><strong>Symmetric ratchet step</strong> — Each message advances the chain key and derives a unique message key</li>
@@ -490,7 +490,7 @@ it('should produce different ciphertext for identical plaintext', async () =&gt;
 
 <h4>Running the Suite</h4>
 
-<p>The E2EE test suite runs in isolation with deterministic random seeds to ensure reproducibility. All 28 tests complete in under 3 seconds on CI, with no network dependencies — all cryptographic operations happen in-process using the <code>@cgraph/crypto</code> package.</p>
+<p>The suite runs with deterministic random seeds so results are reproducible. All 28 tests finish in under 3 seconds on CI, no network needed — everything runs in-process via <code>@cgraph/crypto</code>.</p>
 `,
   },
 
@@ -503,11 +503,11 @@ it('should produce different ciphertext for identical plaintext', async () =&gt;
     image: '⚙️',
     tags: ['Zustand', 'State Management', 'Facades'],
     content: `
-<p>State management can make or break a complex application. CGraph had grown to <strong>32 individual Zustand stores</strong> — each one solving a real problem, but collectively creating an unmaintainable web of dependencies. We consolidated them into <strong>7 facade hooks</strong> using Composition patterns. Here's how.</p>
+<p>CGraph had 32 Zustand stores. Each one made sense when I created it, but together they were a nightmare — components importing from 3-4 stores, naming collisions, re-render hell. I consolidated them into <strong>7 facade hooks</strong>. Here’s how.</p>
 
-<h3>The State Management Problem</h3>
+<h3>The Problem</h3>
 
-<p>With 32 stores, components were importing from an average of 3-4 stores each. The problems compounded:</p>
+<p>With 32 stores, a single chat message component imported from 4 stores. That’s bad. The problems:</p>
 
 <ul>
 <li><strong>Import overhead</strong> — A single chat message component imported from <code>useMessageStore</code>, <code>usePresenceStore</code>, <code>useReactionStore</code>, and <code>useUserStore</code></li>
@@ -519,7 +519,7 @@ it('should produce different ciphertext for identical plaintext', async () =&gt;
 
 <h3>The Facade Pattern in Practice</h3>
 
-<p>The facade pattern wraps multiple stores behind a single, focused API. Each facade is a custom hook that composes from its underlying stores using Zustand's <code>useStore</code> with shallow equality selectors:</p>
+<p>A facade wraps multiple stores behind one hook. Each facade composes from its underlying stores with shallow equality selectors to avoid re-renders:</p>
 
 <pre><code>// facades/useChat.ts
 import { useShallow } from 'zustand/react/shallow';
@@ -593,7 +593,7 @@ export function useChat() {
 
 <h3>Results</h3>
 
-<p>The consolidation reduced component import complexity by <strong>73%</strong>, test setup boilerplate by <strong>60%</strong>, and eliminated all naming collisions. More importantly, it created clean API boundaries that make the codebase navigable for any developer — you don't need to know which of 32 stores holds the data you need; you just use the right facade.</p>
+<p>Import complexity dropped <strong>73%</strong>, test setup boilerplate dropped <strong>60%</strong>, naming collisions gone. The real win: you don’t need to know which of 32 stores has the data you want. Pick the right facade, done.</p>
 `,
   },
 
@@ -606,7 +606,7 @@ export function useChat() {
     image: '✨',
     tags: ['Code Quality', 'TypeScript', 'Refactoring'],
     content: `
-<p>Technical debt doesn't announce itself. It accumulates in <code>console.log</code> statements left from debugging, in <code>as any</code> casts added to "fix it later," and in god-files that grew because nobody wanted to split them. Our code simplification sprint tackled all of it in one focused week.</p>
+<p>I let technical debt pile up. 325 <code>console.log</code> statements, 27 <code>as any</code> casts, a 1,172-line Settings component. Two of those logs were printing decrypted message content. Time to clean house.</p>
 
 <h3>The Numbers</h3>
 
@@ -622,9 +622,9 @@ export function useChat() {
 
 <h3>console.log: 325 → 2</h3>
 
-<p>325 <code>console.log</code> statements were scattered across the codebase. Most were debugging artifacts — developers logging message payloads, WebSocket events, store state transitions, and API responses during development. The problem wasn't just noise in production; it was a security risk. Two logs were printing decrypted message content, and one was logging OAuth tokens.</p>
+<p>325 <code>console.log</code> calls everywhere. Most were leftover debugging — logging message payloads, WebSocket events, API responses. But it wasn’t just noise: two logs printed decrypted messages and one logged OAuth tokens. Security problem.</p>
 
-<p>We replaced all meaningful logs with a <strong>structured logging system</strong> using correlation IDs:</p>
+<p>Replaced everything with a <strong>structured logging system</strong> with correlation IDs:</p>
 
 <pre><code>// Before: Scattered console.log calls
 console.log('Message sent:', message);
@@ -650,13 +650,13 @@ logger.info('auth.token_refreshed', {
   expiresIn: token.expiresIn,
 });</code></pre>
 
-<p>The structured logger supports log levels (debug, info, warn, error), outputs JSON in production for log aggregation, and <strong>never</strong> logs sensitive data. A custom ESLint rule now prevents <code>console.log</code> from being committed.</p>
+<p>JSON output in production, log levels, and it <strong>never</strong> logs sensitive data. Added a custom ESLint rule to block <code>console.log</code> from being committed.</p>
 
-<p>The 2 remaining <code>console.log</code> calls are in third-party integration shims where the library API expects a console-compatible logger interface.</p>
+<p>The 2 remaining calls are in third-party shims where the library expects a console-compatible interface.</p>
 
 <h3>as any: 27 → 1</h3>
 
-<p>Every <code>as any</code> is a lie to the type system. Our 27 instances fell into three categories:</p>
+<p>Every <code>as any</code> hides a bug. The 27 instances broke down into three buckets:</p>
 
 <ul>
 <li><strong>Event handler mismatches</strong> (12 instances) — Fixed by adding proper event type generics</li>
@@ -677,11 +677,11 @@ if (result.success) {
   logger.warn('message.parse_failed', { errors: result.error.issues });
 }</code></pre>
 
-<p>The single remaining <code>as any</code> is in a WebRTC adapter layer where the browser API types are intentionally loose between Chrome and Firefox implementations.</p>
+<p>The last <code>as any</code> is in a WebRTC adapter where Chrome and Firefox intentionally disagree on types.</p>
 
 <h3>Settings.tsx: 1,172 → 221 Lines</h3>
 
-<p><code>Settings.tsx</code> had become a god-component. It rendered every settings panel inline — appearance, notifications, privacy, account, security, accessibility — all in one file with one massive switch statement. We extracted it into a route-based settings module:</p>
+<p><code>Settings.tsx</code> was a god-component. Every settings panel inline, one massive switch statement with 1,172 lines. I split it into a route-based module:</p>
 
 <pre><code>settings/
 ├── SettingsLayout.tsx       # Shell with sidebar navigation (221 lines)
@@ -695,11 +695,11 @@ if (result.success) {
 └── hooks/
     └── useSettingsNavigation.ts</code></pre>
 
-<p>Each panel is self-contained and lazily loaded. The settings sidebar navigation is the only component in <code>SettingsLayout.tsx</code>, now a clean 221-line orchestrator.</p>
+<p>Each panel is self-contained and lazy-loaded. <code>SettingsLayout.tsx</code> is now 221 lines — just the sidebar nav.</p>
 
 <h3>SocketManager: 960 → 616 Lines (5 Modules)</h3>
 
-<p>The original <code>SocketManager.ts</code> handled connection lifecycle, reconnection logic, channel subscriptions, presence tracking, and message routing — all in one file. We split it into 5 focused modules:</p>
+<p>The original <code>SocketManager.ts</code> did everything: connections, reconnection, subscriptions, presence, routing. 960 lines. I split it into 5 modules:</p>
 
 <ul>
 <li><strong>ConnectionManager.ts</strong> — WebSocket connection, heartbeat, reconnection with exponential backoff</li>
@@ -709,11 +709,11 @@ if (result.success) {
 <li><strong>SocketManager.ts</strong> — Orchestrator that composes the above services (616 lines, down from 960)</li>
 </ul>
 
-<p>The codemod script <code>scripts/codemod-structured-logging.mjs</code> automated the logging migration, while the component extractions were done manually with comprehensive test coverage at each step.</p>
+<p>The codemod script <code>scripts/codemod-structured-logging.mjs</code> automated the log migration. Component extractions were done manually with tests at each step.</p>
 
 <h4>Enforcing the Standards</h4>
 
-<p>To prevent regression, we added ESLint rules: <code>no-console</code> with only <code>warn</code> and <code>error</code> allowed, <code>@typescript-eslint/no-explicit-any</code> set to error, and a custom file-length rule that warns at 300 lines and errors at 500. These gates are enforced in CI.</p>
+<p>To keep it clean: <code>no-console</code> ESLint rule (only <code>warn</code>/<code>error</code> allowed), <code>@typescript-eslint/no-explicit-any</code> set to error, and a file-length rule (warn at 300, error at 500). All enforced in CI.</p>
 `,
   },
 
@@ -726,7 +726,7 @@ if (result.success) {
     image: '🌐',
     tags: ['Architecture', 'Performance', 'Vite'],
     content: `
-<p>Most startups ship a single web application that handles everything — marketing pages, authentication, and the core product. This works fine at first, but creates a fundamental performance problem: visitors who just want to read your pricing page download megabytes of application code they'll never use. CGraph uses a <strong>dual-app architecture</strong> that cleanly separates concerns.</p>
+<p>Most projects ship one app for everything — marketing, auth, product. Works fine until visitors downloading your pricing page also get megabytes of encryption libraries. CGraph splits them into two separate apps.</p>
 
 <h3>The Two Applications</h3>
 
@@ -817,7 +817,7 @@ const SettingsPage = lazy(() =&gt; import('./modules/settings/pages/SettingsLayo
 <li><strong>@cgraph/config</strong> — Shared environment configuration and feature flags</li>
 </ul>
 
-<p>This architecture pattern — common in enterprise-grade applications — gives us the best of both worlds: a blazing-fast marketing presence and a feature-rich application, each optimized for its specific use case.</p>
+<p>Two apps, same monorepo. The landing site stays under 200KB, and the full app gets all the room it needs for crypto, state management, and real-time features.</p>
 `,
   },
 
@@ -830,12 +830,12 @@ const SettingsPage = lazy(() =&gt; import('./modules/settings/pages/SettingsLayo
     image: '🛡️',
     tags: ['Security', 'E2EE', 'Vulnerability'],
     content: `
-<p>On January 25, 2026, during a routine security audit, we discovered a <strong>critical vulnerability</strong> in CGraph's E2EE implementation: under specific failure conditions, messages could silently fall back to unencrypted delivery without notifying the sender. This post details the vulnerability, the fix, and four additional security issues we resolved in the same sprint.</p>
+<p>On January 25, 2026, during a security audit, I found a <strong>critical bug</strong>: under specific failure conditions, messages could silently fall back to unencrypted delivery without telling the sender. Here’s what happened, how I fixed it, and four other security issues I knocked out in the same sprint.</p>
 
 <h3>CVE-Level: E2EE Plaintext Fallback</h3>
 
 <h4>The Vulnerability</h4>
-<p>When the Triple Ratchet session between two users was in a corrupted state — for example, after a failed key ratchet or a deserialization error — the encryption layer threw an exception. The message-sending code caught this exception in a generic try/catch block and, instead of aborting the send, fell back to sending the message <strong>as plaintext</strong> through the normal channel. The message was delivered successfully, the UI showed a "sent" confirmation, and neither party was informed that encryption had failed.</p>
+<p>When the Triple Ratchet session was in a bad state — failed key ratchet, deserialization error, whatever — the encryption layer threw an exception. The message-sending code caught it in a generic try/catch and just... sent the message as plaintext. No warning, no error in the UI. Sent successfully, “encrypted.” Except it wasn’t.</p>
 
 <pre><code>// VULNERABLE CODE (removed)
 try {
@@ -847,10 +847,10 @@ try {
 }</code></pre>
 
 <h4>The Impact</h4>
-<p>This vulnerability meant that an attacker who could trigger session corruption — for example, by tampering with prekey bundles or causing desync through message replay — could force plaintext delivery. The server would receive and store unencrypted messages, completely defeating the E2EE guarantee.</p>
+<p>An attacker who could trigger session corruption — tampered prekey bundles, message replay — could force plaintext delivery. The server would store unencrypted messages. E2EE guarantee: gone.</p>
 
 <h4>The Fix</h4>
-<p>The fix was straightforward but critical: <strong>never fall back to plaintext</strong>. If encryption fails, the message send is aborted, the user is notified of the error, and a session re-establishment is triggered:</p>
+<p>Simple fix: <strong>never fall back to plaintext</strong>. If encryption fails, abort the send, show the user an error, and re-establish the session:</p>
 
 <pre><code>// FIXED: Encryption failure aborts the send
 try {
@@ -867,7 +867,7 @@ try {
   );
 }</code></pre>
 
-<p>Additionally, the server now <strong>rejects any message marked <code>encrypted: false</code></strong> on channels that have E2EE enabled. This server-side validation provides defense-in-depth.</p>
+<p>Also made the server <strong>reject any message marked <code>encrypted: false</code></strong> on E2EE channels. Belt and suspenders.</p>
 
 <h3>Additional Security Fixes</h3>
 
@@ -904,7 +904,7 @@ try {
 </ul>
 
 <h4>Disclosure and Timeline</h4>
-<p>All five vulnerabilities were fixed within 48 hours of discovery. No evidence of exploitation was found in server logs. The plaintext fallback vulnerability existed since the initial E2EE implementation in v0.8.x and persisted through v0.9.12. It was resolved in v0.9.13.</p>
+<p>All five fixed within 48 hours. No evidence of exploitation in logs. The plaintext fallback existed since the first E2EE implementation in v0.8.x and made it all the way to v0.9.12. Fixed in v0.9.13.</p>
 `,
   },
 
@@ -917,13 +917,13 @@ try {
     image: '💜',
     tags: ['Elixir', 'Phoenix', 'Backend'],
     content: `
-<p>When choosing a backend technology for a real-time communication platform, the stakes are high. The server needs to handle millions of concurrent connections, route messages with sub-100ms latency, and never go down for deployments. After evaluating Node.js, Go, Rust, and Elixir, we chose <strong>Elixir 1.17+ with Phoenix 1.8</strong> — a stack proven to handle millions of concurrent users.</p>
+<p>CGraph is a real-time messaging platform. The backend needs to hold millions of WebSocket connections, route messages in under 100ms, and survive deployments without dropping anyone. I looked at Node.js, Go, Rust, and Elixir. Went with <strong>Elixir 1.17+ and Phoenix 1.8</strong>.</p>
 
 <h3>The BEAM VM: Built for Concurrency</h3>
 
-<p>Elixir runs on the BEAM virtual machine, originally built for Ericsson's telephone switches in the 1980s. The BEAM was designed for systems that must never go down and must handle millions of simultaneous connections. These are exactly the requirements of a messaging platform.</p>
+<p>Elixir runs on the BEAM VM — originally built for Ericsson telephone switches in the 80s. Designed for systems that can’t go down and have to handle millions of connections. That’s exactly what a messaging platform needs.</p>
 
-<p>Key BEAM properties that matter for CGraph:</p>
+<p>Why this matters for CGraph:</p>
 
 <ul>
 <li><strong>Lightweight processes</strong> — BEAM processes use ~2KB of memory each. We can spawn millions of them on a single server. Each WebSocket connection gets its own process.</li>
@@ -934,7 +934,7 @@ try {
 
 <h3>OTP Supervision Trees</h3>
 
-<p>OTP (Open Telecom Platform) provides battle-tested patterns for building resilient systems. CGraph's supervision tree uses a combination of strategies:</p>
+<p>OTP gives you patterns that have been running telecom infrastructure since before most developers were born. CGraph’s supervision tree:</p>
 
 <pre><code>CGraph.Application (one_for_one)
 ├── CGraph.Repo (worker)
@@ -959,7 +959,7 @@ try {
 
 <h3>PostgreSQL 16 with 91 Tables</h3>
 
-<p>The data layer uses <strong>PostgreSQL 16</strong> with Ecto as the query interface. The schema has grown to 91 tables covering:</p>
+<p>The data layer is <strong>PostgreSQL 16</strong> with Ecto. Schema has 91 tables:</p>
 
 <table>
 <thead><tr><th>Domain</th><th>Tables</th><th>Key Tables</th></tr></thead>
@@ -978,7 +978,7 @@ try {
 
 <h3>3-Tier Caching: ETS → Cachex → Redis</h3>
 
-<p>Low-latency messaging requires aggressive caching. CGraph uses a <strong>3-tier caching architecture</strong>:</p>
+<p>Messaging needs aggressive caching. CGraph uses <strong>3 tiers</strong>:</p>
 
 <ul>
 <li><strong>Tier 1: ETS (Erlang Term Storage)</strong> — In-process memory tables with sub-microsecond reads. Used for hot data: active channel memberships, online user sets, rate limit counters. ~50µs reads.</li>
@@ -986,11 +986,11 @@ try {
 <li><strong>Tier 3: Redis</strong> — Distributed cache for cross-node data sharing. Used for session tokens, presence state (across BEAM nodes), and pub/sub fanout. ~1ms reads.</li>
 </ul>
 
-<p>Cache reads cascade: check ETS first, then Cachex, then Redis, and finally PostgreSQL. Writes invalidate all tiers. This pattern delivers sub-millisecond reads for 95% of requests.</p>
+<p>Reads cascade: ETS → Cachex → Redis → PostgreSQL. Writes invalidate all tiers. Sub-millisecond reads for 95% of requests.</p>
 
 <h3>Phoenix Channels for WebSocket</h3>
 
-<p>Phoenix Channels provide a high-level abstraction over WebSocket connections with built-in features that would take months to build from scratch:</p>
+<p>Phoenix Channels give you WebSocket with built-in features that would take months to build yourself:</p>
 
 <ul>
 <li><strong>Topic-based routing</strong> — Users join channels like <code>"chat:channel_123"</code> or <code>"presence:server_456"</code></li>
@@ -1002,7 +1002,7 @@ try {
 
 <h3>GenServer-Based Workers</h3>
 
-<p>Background processing uses <strong>GenServer</strong> modules — OTP's generic server abstraction. Each worker is a supervised process that handles specific tasks:</p>
+<p>Background work runs on <strong>GenServer</strong> modules — OTP’s generic server pattern. Each worker is supervised:</p>
 
 <pre><code>defmodule CGraph.Workers.XPCalculator do
   use GenServer
@@ -1029,11 +1029,11 @@ try {
   end
 end</code></pre>
 
-<p>If a GenServer crashes — say, due to a malformed XP event — the supervisor restarts it within milliseconds. No events are lost because pending work is stored in PostgreSQL. This is the level of resilience the BEAM provides out of the box.</p>
+<p>If a GenServer crashes — bad XP event, whatever — the supervisor restarts it in milliseconds. Pending work lives in PostgreSQL so nothing is lost. That’s the BEAM being the BEAM.</p>
 
 <h4>The Bottom Line</h4>
 
-<p>Elixir with Phoenix gives CGraph a backend that's built for exactly what we need: massive concurrent connections, real-time message routing, fault-tolerant processing, and zero-downtime deployments. It's not the most popular choice, but it's the right one for this class of application.</p>
+<p>Elixir and Phoenix give CGraph a backend built for exactly this kind of app: lots of connections, real-time routing, fault tolerance, zero-downtime deploys. Not the trendiest choice, but the right one.</p>
 `,
   },
 
@@ -1046,9 +1046,9 @@ end</code></pre>
     image: '🚀',
     tags: ['Product', 'Vision', 'Launch'],
     content: `
-<p>Communities today are fragmented. Your team uses one app for chat, another for discussions, a third for private messages, and maybe a gamification plugin bolted onto the side. What if one platform did all of it — with <strong>real end-to-end encryption</strong> and an engagement system that makes participation genuinely fun? That's the vision behind <strong>CGraph</strong>.</p>
+<p>Your team uses one app for chat, another for forums, maybe a gamification plugin held together with tape. CGraph puts all of it in one place — <strong>actually encrypted</strong>, with a gamification system that makes people want to participate.</p>
 
-<h3>Four Pillars</h3>
+<h3>What CGraph Does</h3>
 
 <h4>1. Real-Time Messaging</h4>
 <p>CGraph's messaging is built for speed and reliability. Text channels, direct messages, group DMs, threads, reactions, file sharing, and rich embeds — all delivered over WebSocket with sub-100ms latency. Voice and video calls use WebRTC with adaptive bitrate for quality on any connection. Screen sharing works on both desktop and mobile.</p>
@@ -1061,7 +1061,7 @@ end</code></pre>
 <p>Forums are fully searchable with PostgreSQL full-text search across titles, body content, and tags. Users can subscribe to threads for notifications without participating, and moderators have granular controls over thread visibility and permissions.</p>
 
 <h4>3. Post-Quantum End-to-End Encryption</h4>
-<p>Privacy isn't a feature — it's a foundation. CGraph implements the <strong>Triple Ratchet protocol</strong> for post-quantum end-to-end encryption:</p>
+<p>Privacy isn’t a premium upsell — it’s the default. CGraph uses the <strong>Triple Ratchet protocol</strong>:</p>
 
 <ul>
 <li><strong>PQXDH key exchange</strong> — Hybrid key agreement combining P-256 ECDH + ML-KEM-768</li>
@@ -1071,10 +1071,10 @@ end</code></pre>
 <li><strong>Ed25519</strong> — Digital signatures for identity verification</li>
 </ul>
 
-<p>E2EE is enabled by default on direct messages and can be enabled on group channels. The server never sees plaintext message content — it stores and routes encrypted blobs. Safety numbers let users verify each other's identities out-of-band, and key changes trigger visible warnings in the UI.</p>
+<p>E2EE is on by default for DMs and available for group channels. The server stores encrypted blobs — we can’t read your messages. Safety numbers let you verify identities, and key changes show a visible warning.</p>
 
 <h4>4. RPG Gamification</h4>
-<p>The secret sauce that keeps communities engaged. CGraph treats participation like an RPG:</p>
+<p>This is the part that keeps people coming back. CGraph treats participation like an RPG:</p>
 
 <ul>
 <li><strong>Experience Points (XP)</strong> — Earned for sending messages, creating forum posts, helping others, participating in voice chats, and community events</li>
@@ -1094,7 +1094,7 @@ end</code></pre>
 <li><strong>Virtual Items</strong> — Tradeable collectibles and limited-edition items for community events</li>
 </ul>
 
-<p>The virtual currency can be earned (not bought), keeping the economy participation-driven rather than pay-to-win. Server administrators can also create custom items for their communities.</p>
+<p>You earn virtual currency by participating (not buying). Server admins can create custom items for their communities.</p>
 
 <h3>Subscription Tiers</h3>
 
@@ -1115,13 +1115,11 @@ end</code></pre>
 
 <h3>Built for Communities</h3>
 
-<p>CGraph isn't trying to replace every communication tool. It's built specifically for <strong>communities</strong> — groups of people who share a common interest, goal, or identity. Whether it's an open-source project, a gaming guild, a study group, a professional network, or a company team, CGraph provides the tools to communicate in real-time, discuss asynchronously, stay secure, and stay engaged.</p>
-
-<p>The technical foundation — Elixir/Phoenix backend, React/React Native frontend, Triple Ratchet encryption with PQXDH, PostgreSQL with 91 tables — is designed to scale from a 10-person friend group to a 100,000-member community without changing architecture. We're building for the long term.</p>
+<p>CGraph is built for <strong>communities</strong> — open-source projects, gaming guilds, study groups, company teams. The stack (Elixir/Phoenix, React/React Native, Triple Ratchet, PostgreSQL with 91 tables) is designed to handle everything from a 10-person group to 100k members without rearchitecting.</p>
 
 <h4>Join the Beta</h4>
 
-<p>CGraph is currently in closed beta with public launch planned for mid-2026. We're building in public — every engineering decision documented in this blog, every architecture change tracked in our changelog. If you're interested in building a community on a platform that respects privacy and rewards participation, we'd love to have you.</p>
+<p>CGraph is in closed beta, public launch planned for mid-2026. I’m building in public — every engineering decision is in this blog, every architecture change in the changelog. If you want a community platform that respects privacy and rewards participation, come check it out.</p>
 `,
   },
 };

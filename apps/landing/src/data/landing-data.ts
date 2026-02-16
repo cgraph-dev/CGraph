@@ -42,39 +42,37 @@ export const WEB_APP_URL = 'https://web.cgraph.org';
 export const features: readonly FeatureData[] = [
   {
     icon: '🛡️',
-    title: 'Unbreakable Security',
+    title: 'Actually Encrypted',
     description:
-      'PQXDH + Triple Ratchet E2EE with Zero-Knowledge architecture and Argon2id hashing. Your privacy is non-negotiable.',
+      'PQXDH + Triple Ratchet E2EE with zero-knowledge architecture. We literally cannot read your messages.',
   },
   {
     icon: '⚡',
-    title: 'Lightning Discourse',
+    title: 'Real-Time Forums',
     description:
-      'Real-time forum threads with sub-200ms message delivery. Experience the fastest community engine.',
+      'Forum threads with sub-200ms message delivery. Chat and long-form discussions in the same place.',
   },
   {
     icon: '⛓️',
-    title: 'Web3 Reputation',
-    description:
-      'Seamless wallet authentication and reputation-based rewards. Truly own your digital identity.',
+    title: 'Web3 Login',
+    description: 'Connect your wallet and build reputation through participation. No middle-men.',
   },
   {
     icon: '👑',
     title: 'Gamified Communities',
     description:
-      'Level up with XP, custom titles, and unique animated borders. Engagement that feels like a game.',
+      'XP, levels, custom titles, animated borders. Active members get recognized, not just counted.',
   },
   {
     icon: '📂',
-    title: 'Decentralized Vaults',
-    description:
-      'Peer-to-peer file sharing with permanent encrypted backups. Your data, your control.',
+    title: 'Encrypted File Sharing',
+    description: 'Share files with E2EE. Your uploads are encrypted before they leave your device.',
   },
   {
     icon: '🌟',
-    title: 'Unified Hub',
+    title: 'Chat + Forums in One',
     description:
-      'A single platform bridging the gap between fast-paced chat and long-form community interaction.',
+      'Stop switching between Discord for chat and Reddit for discussions. Both live here.',
   },
 ] as const;
 
@@ -127,26 +125,26 @@ export const valueProps: readonly ValuePropData[] = [
     icon: '🔐',
     title: 'Post-Quantum Encryption',
     description:
-      'AES-256-GCM with PQXDH + Triple Ratchet (ML-KEM-768). Not even we can read your messages.',
+      "AES-256-GCM with PQXDH + Triple Ratchet (ML-KEM-768). We store encrypted blobs. That's it.",
     highlight: 'ML-KEM-768',
   },
   {
     icon: '🏛️',
-    title: 'Built-In Community',
+    title: 'Forums Built In',
     description:
-      'Forums, threads, and moderation tools baked in. No third-party integrations needed.',
+      "Threads, voting, moderation — no plugins, no third-party bolt-ons. It's part of the platform.",
     highlight: 'All-in-One',
   },
   {
     icon: '🎮',
-    title: 'Gamification Engine',
-    description: 'XP, achievements, quests, and leaderboards that drive real engagement.',
+    title: 'Gamification That Works',
+    description: 'XP, achievements, quests, and leaderboards. People actually come back.',
     highlight: '50+ Rewards',
   },
   {
     icon: '⚡',
-    title: 'Sub-200ms Latency',
-    description: 'Elixir-powered real-time engine delivering messages faster than you can blink.',
+    title: 'Sub-200ms Messages',
+    description: 'Elixir on BEAM. Messages arrive before you finish switching tabs.',
     highlight: '<200ms',
   },
 ] as const;

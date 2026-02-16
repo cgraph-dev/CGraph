@@ -259,7 +259,7 @@ export default function Documentation() {
   return (
     <MarketingLayout
       title="Documentation"
-      subtitle="Architecture guides, API references, security documentation, and developer resources — all sourced from our internal engineering docs."
+      subtitle="Architecture, API references, security docs, and developer guides — pulled straight from our internal docs."
       eyebrow="Developer Docs"
       showCTA
     >
@@ -386,8 +386,7 @@ export default function Documentation() {
             >
               <h2 className="marketing-section__title font-zentry">Documentation Index</h2>
               <p className="marketing-section__desc">
-                Comprehensive guides organized by topic — from getting started to advanced
-                architecture.
+                Guides organized by topic — from getting started to architecture deep-dives.
               </p>
             </motion.div>
           </div>

@@ -259,7 +259,7 @@ export default function Download() {
             >
               <h2 className="marketing-section__title font-zentry">Why Choose CGraph?</h2>
               <p className="marketing-section__desc">
-                Built from the ground up with privacy and security in mind.
+                Privacy and security aren't add-ons. They're how it works.
               </p>
             </motion.div>
           </div>

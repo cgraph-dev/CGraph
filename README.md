@@ -4,9 +4,9 @@
 
 <img src="docs/assets/logo.png" alt="CGraph Logo" width="140" />
 
-### The All-in-One Secure Communication Platform
+### Secure messaging, forums, and gamification — in one app
 
-#### Real-time messaging • Community forums • End-to-end encryption • Gamification • Subscription tiers
+#### Chat • Forums • E2EE • Leveling & achievements • Subscriptions
 
 [![Version](https://img.shields.io/badge/version-0.9.28-green.svg)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-production-brightgreen.svg)](#)
@@ -43,8 +43,9 @@ See [LICENSE](LICENSE) for complete terms.
 | **Referral System**       | ✅ Tiered rewards & leaderboards |     ❌      |
 | **Offline Support**       |    ✅ Full queue & auto-sync     | ⚠️ Limited  |
 
-CGraph combines the best of modern communication platforms—real-time messaging, organized servers,
-rich forums, end-to-end encryption, and gamification—all in one seamless experience.
+CGraph is a communication platform that puts chat, forums, and encryption together instead of making
+you duct-tape three different apps. It also has an RPG-style leveling system because community
+engagement shouldn't be boring.
 
 ---
 
@@ -52,13 +53,12 @@ rich forums, end-to-end encryption, and gamification—all in one seamless exper
 
 ### 💬 Real-Time Messaging
 
-- Instant message delivery with typing indicators and read receipts
-- End-to-end encryption using PQXDH + Triple Ratchet (Signal Protocol Rev 4, post-quantum)
+- Messages show up instantly — typing indicators, read receipts, the works
+- E2EE via PQXDH + Triple Ratchet (post-quantum, based on Signal Protocol Rev 4)
 - Voice messages with waveform visualization
-- Voice and video calls via WebRTC (1:1 and group calls)
-- Message reactions, editing, deletion, and forwarding
-- GIF search integration (Giphy/Tenor)
-- Cross-platform sync (web, iOS, Android)
+- 1:1 and group calls over WebRTC (voice, video, screen share)
+- Reactions, edits, deletes, forwarding, GIF search
+- Syncs across web, iOS, and Android
 
 ### 🏢 Servers & Channels
 
@@ -71,39 +71,37 @@ rich forums, end-to-end encryption, and gamification—all in one seamless exper
 
 ### 📰 Community Forums
 
-- Forum posts with upvote/downvote
-- Karma tracking and user rankings
-- Nested comment threads with infinite depth
-- Thread prefixes and categories
-- Forum-specific leaderboards
-- Moderator tools (pin, lock, remove, move)
-- Rich text editor with code syntax highlighting
-- RSS/Atom feed support for all forums
+- Posts with upvote/downvote and karma
+- Nested comments (no depth limit)
+- Thread prefixes, categories, polls
+- Leaderboards per forum
+- Moderator tools (pin, lock, move, split, merge)
+- Rich text editor + BBCode parser with syntax highlighting
+- RSS/Atom feeds
 
-### 🎮 Gamification System
+### 🎮 Gamification
 
-- **XP & Levels** - Earn experience from messaging, posting, and daily activity
-- **Achievements** - 30+ achievements across 6 categories (Social, Content, Exploration, Mastery,
-  Legendary, Secret)
-- **Daily/Weekly Quests** - Complete objectives for bonus rewards
-- **Streak System** - Maintain daily login streaks for XP multipliers (3+ days = 1.5x, 7+ days =
-  2.0x)
-- **Titles & Badges** - Unlock and equip cosmetic rewards
-- **Virtual Currency** - Earn coins to spend in the marketplace
-- **Leaderboards** - Compete globally and per-forum
-- **Seasonal Events** - Time-limited challenges and rewards
+- **XP & Levels** — earn XP from chatting, posting, daily logins
+- **30+ Achievements** across 6 categories (Social, Content, Exploration, Mastery, Legendary,
+  Secret)
+- **Daily/Weekly Quests** for bonus XP
+- **Streaks** — 3+ days = 1.5x multiplier, 7+ = 2.0x
+- **Titles & Badges** — cosmetic unlocks you can equip
+- **Virtual Currency** — coins earned through activity, spent in the marketplace
+- **Leaderboards** — global and per-forum
+- **Seasonal Events** — limited-time challenges
 
-### 🔐 Security & Privacy
+### 🔐 Security
 
-- **E2EE Messaging** - AES-256-GCM encryption with PQXDH key exchange (ML-KEM-768 + P-256)
-- **Triple Ratchet** - Post-quantum forward secrecy with per-message hybrid key derivation
-- **Two-Factor Auth** - TOTP with backup codes
-- **OAuth Support** - Google, Apple, Facebook, TikTok
-- **HTTP-only Cookies** - XSS-immune token storage
-- **Trusted Proxy Validation** - IP spoofing protection
-- **MIME Type Verification** - Server-side file type validation via magic bytes
-- **Zero-Knowledge Design** - Server cannot read encrypted messages
-- **GDPR Compliance** - Full data export and deletion
+- **E2EE** — AES-256-GCM + PQXDH key exchange (ML-KEM-768 + P-256)
+- **Triple Ratchet** — post-quantum forward secrecy, per-message key derivation
+- **2FA** — TOTP with backup codes
+- **OAuth** — Google, Apple, Facebook, TikTok
+- **HTTP-only cookies** — no JS access to tokens
+- **Trusted proxy validation** — stops IP spoofing behind Cloudflare
+- **Magic byte file validation** — server checks actual file type, not just headers
+- **Zero-knowledge** — server stores encrypted blobs, can't read messages
+- **GDPR** — full data export and account deletion
 
 ### 💳 Subscription Tiers
 
@@ -115,24 +113,20 @@ rich forums, end-to-end encryption, and gamification—all in one seamless exper
 | **Business**   | Unlimited forums/groups, API access, analytics        |
 | **Enterprise** | SSO/SAML, dedicated support, SLA, custom integrations |
 
-### 📱 Mobile Apps
+### 📱 Mobile
 
-- Native iOS and Android apps via Expo
-- Biometric authentication (Face ID, fingerprint)
-- Push notifications
-- Camera and media integration
-- **Full offline support** - Queue messages, reactions, posts with auto-sync on reconnect
-- Priority-based offline queue with exponential backoff
-- Network state monitoring with automatic retry
+- iOS and Android via React Native + Expo SDK 54
+- Biometric auth (Face ID, fingerprint)
+- Push notifications, camera integration
+- Full offline support — queues messages/reactions while offline, syncs when you're back
+- Exponential backoff on retries so it's not hammering the server
 
-### 🎁 Referral System
+### 🎁 Referrals
 
-- Unique referral codes with easy sharing
-- Tiered reward structure with progressive bonuses
-- Real-time leaderboards (daily, weekly, monthly, all-time)
-- Track referral status and conversions
-- Claim rewards when tiers are reached
-- Platform-aware sharing (iOS Share Sheet, Android intents)
+- Referral codes with tiered rewards
+- Leaderboards (daily, weekly, monthly, all-time)
+- Track who signed up, claim rewards at each tier
+- Native share sheets on iOS and Android
 
 ---
 
@@ -191,7 +185,7 @@ Visit [cgraph.org/pricing](https://cgraph.org/pricing) for full details.
 
 ## Architecture
 
-CGraph uses a **dual-app architecture**:
+CGraph splits the marketing site and the actual app into two separate builds:
 
 ```
 ┌──────────────────────┐              ┌──────────────────────┐
@@ -222,14 +216,13 @@ CGraph uses a **dual-app architecture**:
               └──────────────────────┘
 ```
 
-### Why Two Apps?
+### Why split them?
 
-Like many modern platforms (marketing site vs app):
-
-- **Performance**: Landing page is lightweight (~200KB), app is feature-rich (~2MB)
-- **SEO**: Landing app optimized for search engines and social sharing
-- **Security**: Authenticated app doesn't expose marketing endpoints
-- **Caching**: Landing can be CDN-cached, app is dynamic
+- **Size**: Landing page is ~200KB. The full app is ~2MB. Visitors reading the pricing page
+  shouldn't download the crypto library.
+- **SEO**: Landing pages need to be crawlable. The app is a client-side SPA behind auth.
+- **Caching**: Landing gets CDN-cached globally. The app is dynamic.
+- **Independence**: They deploy separately with different CI pipelines.
 
 ### Deployment
 

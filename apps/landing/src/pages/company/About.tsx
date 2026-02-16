@@ -196,15 +196,14 @@ export default function About() {
             viewport={{ once: true }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="marketing-section__title font-zentry">Our Mission</h2>
+            <h2 className="marketing-section__title font-zentry">Why I Built This</h2>
             <p className="text-xl leading-relaxed" style={{ color: 'var(--color-gray)' }}>
-              CGraph was built on a conviction:{' '}
+              I got tired of needing one app for chat, another for forums, and a separate plugin for
+              anything engaging.{' '}
               <span className="marketing-hero__highlight">
-                communities deserve a platform that is private, powerful, and fun
+                CGraph puts messaging, forums, encryption, and gamification in one place
               </span>
-              . We combine real-time communication, community forums, end-to-end encryption, and
-              RPG-style gamification \u2014 into a single, unified platform where every interaction
-              matters.
+              . Private by default. Fun to use. That\u2019s the whole idea.
             </p>
           </motion.div>
         </div>
@@ -273,9 +272,9 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">What We're Building</h2>
+              <h2 className="marketing-section__title font-zentry">What's in Here</h2>
               <p className="marketing-section__desc">
-                Six core pillars \u2014 each shipped and working today.
+                Six things CGraph does, all shipped and working.
               </p>
             </motion.div>
           </div>
@@ -308,9 +307,9 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Our Principles</h2>
+              <h2 className="marketing-section__title font-zentry">What We Care About</h2>
               <p className="marketing-section__desc">
-                The engineering and design principles behind every decision.
+                The principles that shape every decision in the codebase.
               </p>
             </motion.div>
           </div>
@@ -343,9 +342,9 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Technical Foundation</h2>
+              <h2 className="marketing-section__title font-zentry">Tech Stack</h2>
               <p className="marketing-section__desc">
-                Built on battle-tested technologies chosen for reliability at scale.
+                The technologies behind CGraph and why they were picked.
               </p>
             </motion.div>
           </div>
@@ -398,9 +397,7 @@ export default function About() {
               viewport={{ once: true }}
             >
               <h2 className="marketing-section__title font-zentry">Meet the Founder</h2>
-              <p className="marketing-section__desc">
-                CGraph is a solo-founded project, built with conviction and attention to craft.
-              </p>
+              <p className="marketing-section__desc">Solo project. I do everything.</p>
             </motion.div>
           </div>
 
@@ -425,11 +422,11 @@ export default function About() {
                 BL
               </div>
               <h3 className="team-card__name mt-4">Burca Lucas</h3>
-              <p className="team-card__role">Founder & Lead Developer</p>
+              <p className="team-card__role">Founder & Developer</p>
               <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--color-gray)' }}>
-                Full-stack engineer building CGraph from Georgia. Responsible for architecture,
-                backend (Elixir/Phoenix), frontend (React 19), mobile (React Native), cryptographic
-                implementation (Triple Ratchet / PQXDH), infrastructure, and product design.
+                Full-stack developer based in Georgia. I handle the backend (Elixir/Phoenix),
+                frontend (React), mobile (React Native), crypto (Triple Ratchet / PQXDH),
+                infrastructure, and design. Yeah, all of it.
               </p>
               <div className="mt-4 flex justify-center gap-4">
                 <a
@@ -463,9 +460,9 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="marketing-section__title font-zentry">Development Timeline</h2>
+              <h2 className="marketing-section__title font-zentry">Timeline</h2>
               <p className="marketing-section__desc">
-                Every version, every milestone \u2014 verified from our changelog.
+                What shipped and when \u2014 straight from the changelog.
               </p>
             </motion.div>
           </div>
@@ -583,9 +580,9 @@ export default function About() {
             viewport={{ once: true }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="marketing-section__title font-zentry">Security Commitment</h2>
+            <h2 className="marketing-section__title font-zentry">Security</h2>
             <p className="mb-8 text-lg" style={{ color: 'var(--color-gray)' }}>
-              Security isn't a feature \u2014 it's the foundation everything else is built on.
+              Security isn\u2019t a feature we ship. It\u2019s the foundation.
             </p>
           </motion.div>
 
@@ -594,22 +591,22 @@ export default function About() {
               {
                 title: 'Post-Quantum E2EE',
                 detail:
-                  'PQXDH + Triple Ratchet with AES-256-GCM and ML-KEM-768. Hybrid forward secrecy ensures past messages stay safe — even against quantum computers.',
+                  'PQXDH + Triple Ratchet with AES-256-GCM and ML-KEM-768. Past messages stay safe even if a key gets compromised \u2014 including against quantum computers.',
               },
               {
-                title: 'Automated Security Pipeline',
+                title: 'Automated Security in CI',
                 detail:
-                  'Gitleaks (secret scanning), Sobelow (Elixir security), Grype (container scanning), pnpm audit \u2014 all blocking in CI.',
+                  'Gitleaks for secrets, Sobelow for Elixir, Grype for containers, pnpm audit for deps. All blocking \u2014 nothing merges if these fail.',
               },
               {
-                title: 'GDPR Compliance',
+                title: 'GDPR',
                 detail:
-                  'Full data export (JSON), account deletion, data minimization, configurable retention, consent management.',
+                  'Full data export as JSON. Account deletion. Data minimization. Configurable retention. We don\u2019t keep what we don\u2019t need.',
               },
               {
-                title: 'Infrastructure Protection',
+                title: 'Infrastructure',
                 detail:
-                  'Cloudflare WAF + DDoS protection, TLS 1.3 enforced, HSTS, CSP headers, rate limiting, trusted proxy validation.',
+                  'Cloudflare WAF + DDoS protection, TLS 1.3, HSTS, CSP headers, rate limiting, trusted proxy validation.',
               },
             ].map((item, index) => (
               <motion.div
@@ -639,11 +636,10 @@ export default function About() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="marketing-section__title font-zentry">Looking Ahead</h2>
+            <h2 className="marketing-section__title font-zentry">What's Next</h2>
             <p className="marketing-section__desc mx-auto max-w-2xl" style={{ lineHeight: 1.8 }}>
-              Public beta launches Q2 2026. After that: message threads, self-hosting support,
-              SSO/SAML for enterprise, AI-powered summaries, desktop apps, and post-quantum
-              cryptography migration \u2014 all on the roadmap through 2027 and beyond.
+              Public beta is targeting Q2 2026. After that: message threads, SSO/SAML for teams,
+              desktop apps, and more. The roadmap goes through 2027.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <a
