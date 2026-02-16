@@ -158,7 +158,7 @@ export default function ValueProposition(): React.JSX.Element {
         title="Built"
         titleAccent="Different"
         titleAccentClass="title-fx--air"
-        description="Not just another chat app. CGraph unifies real-time messaging, community forums, and military-grade encryption into one privacy-first platform."
+        description="Not just another chat app. CGraph unifies real-time messaging, community forums, and post-quantum end-to-end encryption into one privacy-first platform."
       />
 
       <div className="value-grid">

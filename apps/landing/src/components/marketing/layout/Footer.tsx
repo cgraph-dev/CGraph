@@ -116,7 +116,7 @@ export default function Footer() {
               </svg>
             </a>
             <a
-              href="https://github.com/cgraph"
+              href="https://github.com/cgraph-dev/CGraph"
               target="_blank"
               rel="noopener noreferrer"
               className="gl-footer-unified__social-link"

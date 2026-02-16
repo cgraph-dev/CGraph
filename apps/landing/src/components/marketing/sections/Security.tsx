@@ -227,7 +227,7 @@ export function Security() {
             title="Your Privacy Is Our"
             titleAccent="Priority"
             titleAccentClass="title-fx--air"
-            description="Military-grade encryption isn't just a marketing buzzword. We've built a zero-trust architecture where you hold the keys, and we only ever handle encrypted blobs."
+            description="PQXDH key exchange, Triple Ratchet forward secrecy, ML-KEM-768 post-quantum resistance. We've built a zero-trust architecture where you hold the keys, and we only ever handle encrypted blobs."
           />
         </motion.div>
 

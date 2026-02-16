@@ -235,7 +235,7 @@ export default function Careers() {
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <a
-                href="https://github.com/cgraph"
+                href="https://github.com/cgraph-dev/CGraph"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="marketing-btn marketing-btn--primary"

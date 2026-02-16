@@ -19,5 +19,5 @@ export const EXTERNAL_LINKS = {
   login: `${WEB_APP_URL}/login`,
   forum: `${WEB_APP_URL}/forum`,
   twitter: 'https://twitter.com/cgraph',
-  github: 'https://github.com/cgraph',
+  github: 'https://github.com/cgraph-dev/CGraph',
 } as const;

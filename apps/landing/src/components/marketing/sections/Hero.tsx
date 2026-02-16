@@ -24,7 +24,7 @@ import { WEB_APP_URL } from '@/constants';
 const trustBadges = [
   { label: 'E2E Encrypted' },
   { label: 'Sub-200ms Delivery' },
-  { label: 'Open Platform' },
+  { label: 'Zero-Knowledge' },
 ] as const;
 
 const containerVariants = {
@@ -52,7 +52,7 @@ const itemVariants = {
 
 // Cycling subtitles — showcases different product features
 const subtitles = [
-  'End-to-end encrypted messaging with military-grade security.',
+  'End-to-end encrypted messaging with post-quantum security.',
   'Real-time community forums with gamification & XP.',
   'Voice & video calls powered by WebRTC — sub-200ms.',
   'Custom themes, achievements, and subscription tiers.',
