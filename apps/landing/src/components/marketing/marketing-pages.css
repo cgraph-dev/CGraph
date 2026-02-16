@@ -293,27 +293,6 @@
   animation: marketing-eyebrow-pulse 2.8s ease-in-out infinite;
 }
 
-.marketing-hero__eyebrow::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -48%;
-  width: 38%;
-  height: 100%;
-  border-radius: 9999px;
-  z-index: 2;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.07) 20%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0.07) 80%,
-    transparent 100%
-  );
-  animation: marketing-eyebrow-line-sweep 3.2s ease-in-out infinite;
-  pointer-events: none;
-}
-
 .marketing-hero__eyebrow-chrome {
   position: absolute;
   inset: -1px;
@@ -385,13 +364,6 @@
       0 0 52px -2px var(--eyebrow-glow-2),
       0 0 94px -4px var(--eyebrow-glow-1);
   }
-}
-
-@keyframes marketing-eyebrow-line-sweep {
-  0% { left: -48%; opacity: 0; }
-  16% { opacity: 0.9; }
-  82% { opacity: 0.9; }
-  100% { left: 124%; opacity: 0; }
 }
 
 @keyframes marketing-eyebrow-chrome-spin {
@@ -1918,7 +1890,6 @@
   .marketing-bg-orb,
   .marketing-animated-bg::before,
   .marketing-hero__eyebrow,
-  .marketing-hero__eyebrow::before,
   .marketing-hero__eyebrow-chrome,
   .marketing-hero__eyebrow-dot,
   .status-indicator,
