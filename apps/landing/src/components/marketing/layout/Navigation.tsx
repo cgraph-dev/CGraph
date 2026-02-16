@@ -127,6 +127,14 @@ export default function Navigation({
 
   return (
     <>
+      {/* Skip to content — a11y best practice */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-lg focus:bg-emerald-500 focus:px-4 focus:py-2 focus:text-white focus:outline-none"
+      >
+        Skip to content
+      </a>
+
       {/* Desktop Navigation - Floating Pill Style */}
       <motion.nav
         className={`gl-nav-unified ${scrolled ? 'scrolled' : ''} ${hidden ? 'hidden' : ''}`}

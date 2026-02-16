@@ -207,89 +207,90 @@ export default function LandingPage() {
       <GlobalBackground />
 
       {/* Hero — Professional SaaS hero */}
-      <Hero />
+      <main id="main-content">
+        <Hero />
 
-      {/* Interactive Demo */}
-      <section className="interactive-demo-section zoom-section">
-        <SectionHeader
-          badge="Try It Now"
-          badgeVariant="cyan"
-          title="Experience CGraph"
-          titleAccent="Live"
-          titleAccentClass="title-fx--air"
-          description="No signup required. Explore our features in this interactive demo."
-        />
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-        >
-          <Suspense
-            fallback={
-              <div className="interactive-demo-skeleton">
-                <div className="interactive-demo-skeleton__header" />
-                <div className="interactive-demo-skeleton__content" />
-              </div>
-            }
+        {/* Interactive Demo */}
+        <section className="interactive-demo-section zoom-section">
+          <SectionHeader
+            badge="Try It Now"
+            badgeVariant="cyan"
+            title="Experience CGraph"
+            titleAccent="Live"
+            titleAccentClass="title-fx--air"
+            description="No signup required. Explore our features in this interactive demo."
+          />
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.7, delay: 0.2 }}
           >
-            <InteractiveDemo />
-          </Suspense>
-        </motion.div>
-      </section>
+            <Suspense
+              fallback={
+                <div className="interactive-demo-skeleton">
+                  <div className="interactive-demo-skeleton__header" />
+                  <div className="interactive-demo-skeleton__content" />
+                </div>
+              }
+            >
+              <InteractiveDemo />
+            </Suspense>
+          </motion.div>
+        </section>
 
-      {/* Features */}
-      <Features />
+        {/* Features */}
+        <Features />
 
-      {/* Customization Demo */}
-      <section className="showcase-section zoom-section">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.7 }}
-        >
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center py-24">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
-              </div>
-            }
+        {/* Customization Demo */}
+        <section className="showcase-section zoom-section">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.7 }}
           >
-            <CustomizationDemo />
-          </Suspense>
-        </motion.div>
-      </section>
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center py-24">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent" />
+                </div>
+              }
+            >
+              <CustomizationDemo />
+            </Suspense>
+          </motion.div>
+        </section>
 
-      {/* Forum Showcase */}
-      <section className="showcase-section zoom-section">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-60px' }}
-          transition={{ duration: 0.7 }}
-        >
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center py-24">
-                <div className="h-8 w-8 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
-              </div>
-            }
+        {/* Forum Showcase */}
+        <section className="showcase-section zoom-section">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.7 }}
           >
-            <ForumShowcase />
-          </Suspense>
-        </motion.div>
-      </section>
+            <Suspense
+              fallback={
+                <div className="flex items-center justify-center py-24">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
+                </div>
+              }
+            >
+              <ForumShowcase />
+            </Suspense>
+          </motion.div>
+        </section>
 
-      {/* Security */}
-      <Security />
+        {/* Security */}
+        <Security />
 
-      {/* Value Proposition (replaces pricing) */}
-      <ValueProposition />
+        {/* Value Proposition (replaces pricing) */}
+        <ValueProposition />
 
-      {/* CTA */}
-      {/* CTA */}
-      <CTA prefersReduced={!!prefersReduced} />
+        {/* CTA */}
+        <CTA prefersReduced={!!prefersReduced} />
+      </main>
 
       {/* Unified Footer */}
       <Footer />

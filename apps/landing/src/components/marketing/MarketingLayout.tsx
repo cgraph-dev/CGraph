@@ -108,7 +108,9 @@ export default function MarketingLayout({
       )}
 
       {/* Main Content */}
-      <main className={!title ? 'pt-24' : ''}>{children}</main>
+      <main id="main-content" className={!title ? 'pt-24' : ''}>
+        {children}
+      </main>
 
       {/* Enhanced CTA Section */}
       {showCTA && <CTASection />}

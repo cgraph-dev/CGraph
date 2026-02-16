@@ -12,9 +12,9 @@ export default [
       '**/coverage/**',
     ],
   },
-  // React Hooks plugin for apps/web and apps/mobile files
+  // React Hooks plugin for apps/web, apps/mobile, and apps/landing files
   {
-    files: ['apps/web/**/*.{ts,tsx}', 'apps/mobile/**/*.{ts,tsx}'],
+    files: ['apps/web/**/*.{ts,tsx}', 'apps/mobile/**/*.{ts,tsx}', 'apps/landing/**/*.{ts,tsx}'],
     plugins: {
       'react-hooks': reactHooks,
     },
@@ -22,7 +22,10 @@ export default [
   },
   // Architectural boundary rules for web app — ENFORCED (error not warn)
   {
-    files: ['apps/web/src/components/**/*.{ts,tsx}', 'apps/web/src/shared/components/**/*.{ts,tsx}'],
+    files: [
+      'apps/web/src/components/**/*.{ts,tsx}',
+      'apps/web/src/shared/components/**/*.{ts,tsx}',
+    ],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -61,7 +64,10 @@ export default [
   },
   // Mobile architectural boundaries — ENFORCED
   {
-    files: ['apps/mobile/src/screens/**/*.{ts,tsx}', 'apps/mobile/src/shared/components/**/*.{ts,tsx}'],
+    files: [
+      'apps/mobile/src/screens/**/*.{ts,tsx}',
+      'apps/mobile/src/shared/components/**/*.{ts,tsx}',
+    ],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -69,7 +75,8 @@ export default [
           patterns: [
             {
               group: ['@/services/*'],
-              message: 'Screens/components should not import services directly. Use hooks or stores instead.',
+              message:
+                'Screens/components should not import services directly. Use hooks or stores instead.',
             },
           ],
         },
