@@ -1861,16 +1861,13 @@
   }
 
   .gl-footer-unified__grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem 1rem;
     margin-bottom: 2rem;
   }
 
   .gl-footer-unified__column {
-    padding: 0.8rem 0.95rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 0.9rem;
-    background: rgba(255, 255, 255, 0.02);
+    padding: 0;
   }
 
   .gl-footer-unified__links {

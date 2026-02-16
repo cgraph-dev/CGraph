@@ -51,7 +51,7 @@ export function ThreadsTab() {
                 {thread.prefix}
               </span>
               <span className="flex-1 truncate text-white">{thread.title}</span>
-              <div className="hidden items-center gap-4 text-sm text-gray-500 sm:flex">
+              <div className="flex items-center gap-4 text-sm text-gray-500">
                 <span>💬 {thread.replies}</span>
                 <span>👁️ {thread.views}</span>
               </div>

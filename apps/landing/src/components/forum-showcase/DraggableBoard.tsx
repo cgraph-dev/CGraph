@@ -50,7 +50,7 @@ export const DraggableBoard = memo(function DraggableBoard({
         <p className="truncate text-sm text-gray-400">{board.description}</p>
       </div>
 
-      <div className="hidden items-center gap-4 text-sm text-gray-500 sm:flex">
+      <div className="flex items-center gap-4 text-sm text-gray-500">
         <div className="text-center">
           <div className="font-medium text-white">{board.threads}</div>
           <div className="text-xs">threads</div>

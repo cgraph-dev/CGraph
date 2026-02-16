@@ -184,7 +184,7 @@ export function CustomizationDemo() {
                       onClick={() => setActivePanel(panel.id)}
                     >
                       <span className="flex items-center justify-center gap-1.5">
-                        <span className="hidden sm:inline">{panel.label}</span>
+                        <span>{panel.label}</span>
                       </span>
                     </button>
                   ))}

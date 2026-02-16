@@ -88,7 +88,7 @@ export function ForumShowcase() {
               whileTap={{ scale: 0.98 }}
             >
               <span>{tab.icon}</span>
-              <span className="hidden sm:inline">{tab.label}</span>
+              <span>{tab.label}</span>
             </motion.button>
           ))}
         </div>

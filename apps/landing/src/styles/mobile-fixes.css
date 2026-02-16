@@ -165,10 +165,10 @@
     min-width: 600px; /* Force scroll for wide tables */
   }
   
-  /* Footer - Stack columns */
+  /* Footer - 2-col grid on small screens */
   .gl-footer-unified__grid {
-    grid-template-columns: 1fr !important;
-    gap: 2rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem 1rem;
   }
 }
 
@@ -303,19 +303,11 @@
     letter-spacing: 0.05em;
     gap: 0.35rem;
     margin-bottom: 1rem;
-    /* Reduce heavy glow for performance + readability */
+    /* Lighter glow on mobile for readability */
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.04),
       0 0 5px -2px var(--badge-glow-1),
       0 0 10px -4px var(--badge-glow-2);
-    animation: none;
-  }
-
-  .section-header__badge-chrome,
-  .section-header__badge::after,
-  .section-header__badge-text::after,
-  .section-header__badge-dot {
-    animation: none;
   }
 
   .section-header__badge-text {
@@ -524,11 +516,6 @@
    MOBILE PERFORMANCE — reduce GPU-heavy effects on small screens
    ========================================================================== */
 @media (max-width: 768px) {
-  /* Disable heavy box-shadow pulse animation on mobile badges */
-  .section-header__badge {
-    animation: none;
-  }
-
   /* Simplify panel border glow */
   .panel-border-glow__border {
     animation: none;
