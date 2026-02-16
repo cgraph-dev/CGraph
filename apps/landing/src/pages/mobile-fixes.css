@@ -88,7 +88,7 @@
   
   /* Section Spacing */
   section {
-    padding: 3rem 1rem !important;
+    padding: 3.75rem 1rem !important;
   }
   
   /* Section Headers */
@@ -162,6 +162,84 @@
   .footer__grid {
     grid-template-columns: 1fr !important;
     gap: 2rem;
+  }
+}
+
+/* Landing visual parity tune — preserve desktop look on mobile */
+@media (max-width: 768px) {
+  .demo-landing {
+    --mobile-surface: rgba(10, 15, 26, 0.7);
+    --mobile-surface-border: rgba(255, 255, 255, 0.11);
+  }
+
+  .hero {
+    padding-top: 7.5rem !important;
+  }
+
+  .interactive-demo-section,
+  .showcase-section,
+  .security-vault,
+  .value-section,
+  .cta {
+    padding-left: 0.85rem !important;
+    padding-right: 0.85rem !important;
+  }
+
+  .interactive-demo,
+  .security-comparison,
+  .security-card,
+  .value-card,
+  .feature-card {
+    border-radius: 1.1rem !important;
+    border: 1px solid var(--mobile-surface-border) !important;
+    background: var(--mobile-surface) !important;
+    backdrop-filter: blur(14px) saturate(120%);
+    -webkit-backdrop-filter: blur(14px) saturate(120%);
+    box-shadow:
+      0 10px 34px rgba(0, 0, 0, 0.34),
+      0 0 18px rgba(16, 185, 129, 0.05);
+  }
+
+  .section-header {
+    margin-bottom: 2.25rem;
+  }
+
+  .section-header__title {
+    letter-spacing: -0.02em;
+  }
+
+  .section-header__desc {
+    max-width: 34ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .interactive-demo-section,
+  .showcase-section,
+  .security-vault,
+  .value-section,
+  .cta {
+    padding-left: 0.7rem !important;
+    padding-right: 0.7rem !important;
+  }
+
+  .hero {
+    padding-top: 7rem !important;
+  }
+
+  .interactive-demo,
+  .security-comparison,
+  .security-card,
+  .value-card,
+  .feature-card {
+    border-radius: 1rem !important;
+  }
+
+  .security-comparison__footer {
+    letter-spacing: 0.08em !important;
+    font-size: 0.58rem !important;
   }
 }
 
