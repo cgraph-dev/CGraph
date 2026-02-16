@@ -60,18 +60,18 @@ remaining gap
 
 ### Security Controls
 
-| Control               | Status | Notes                                             |
-| --------------------- | ------ | ------------------------------------------------- |
-| E2EE (X3DH + DR)      | ✅     | Implemented; no external audit yet                |
-| TLS 1.3               | ✅     | Enforced on all connections                       |
-| CSP Headers           | ✅     | Strict policy on landing + web app                |
-| Rate Limiting         | ✅     | Redis-backed, per-user and per-IP                 |
-| Trusted Proxy         | ✅     | Cloudflare CIDR enforcement                       |
-| 2FA                   | ✅     | TOTP with hashed recovery codes (separate schema) |
-| Secret Scanning       | ✅     | Gitleaks in CI                                    |
-| Dependency Audit      | ✅     | pnpm audit + mix audit in CI                      |
-| **External Pen Test** | ❌     | **Not yet conducted — HIGH PRIORITY**             |
-| **E2EE Formal Audit** | ❌     | **Not yet conducted — HIGH PRIORITY**             |
+| Control                       | Status | Notes                                             |
+| ----------------------------- | ------ | ------------------------------------------------- |
+| E2EE (PQXDH + Triple Ratchet) | ✅     | Post-quantum hybrid; no external audit yet        |
+| TLS 1.3                       | ✅     | Enforced on all connections                       |
+| CSP Headers                   | ✅     | Strict policy on landing + web app                |
+| Rate Limiting                 | ✅     | Redis-backed, per-user and per-IP                 |
+| Trusted Proxy                 | ✅     | Cloudflare CIDR enforcement                       |
+| 2FA                           | ✅     | TOTP with hashed recovery codes (separate schema) |
+| Secret Scanning               | ✅     | Gitleaks in CI                                    |
+| Dependency Audit              | ✅     | pnpm audit + mix audit in CI                      |
+| **External Pen Test**         | ❌     | **Not yet conducted — HIGH PRIORITY**             |
+| **E2EE Formal Audit**         | ❌     | **Not yet conducted — HIGH PRIORITY**             |
 
 ### Recent Security Fixes
 

@@ -117,7 +117,7 @@ sequenceDiagram
 
 ---
 
-## 4. E2EE Message Flow (Signal Protocol)
+## 4. E2EE Message Flow (Triple Ratchet / PQXDH)
 
 ```mermaid
 sequenceDiagram
@@ -125,17 +125,18 @@ sequenceDiagram
     participant S as Server
     participant B as Bob (Recipient)
 
-    Note over A,B: Key Exchange (X3DH)
+    Note over A,B: Key Exchange (PQXDH / ML-KEM-768)
     A->>S: Fetch Bob's prekey bundle
-    S->>A: {identity_key, signed_prekey, one_time_prekey}
-    A->>A: Generate shared secret (X3DH)
+    S->>A: {identity_key, signed_prekey, kem_prekey, one_time_prekey?}
+    A->>A: Generate shared secret (PQXDH: ECDH + ML-KEM-768)
+    A->>A: Split secret → {skEc, skScka}
 
-    Note over A,B: Message Encryption (Double Ratchet)
-    A->>A: Encrypt message (AES-256-GCM)
-    A->>S: Send encrypted message
+    Note over A,B: Message Encryption (Triple Ratchet)
+    A->>A: Encrypt message (KDF_HYBRID → AES-256-GCM)
+    A->>S: Send encrypted message + header
     S->>B: Deliver encrypted message
-    B->>B: Decrypt message
-    B->>B: Ratchet keys forward
+    B->>B: Decrypt message (KDF_HYBRID)
+    B->>B: Advance EC + PQ ratchets
 
     Note over S: Server CANNOT decrypt messages
 ```

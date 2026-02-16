@@ -208,22 +208,23 @@ A systematic analysis of potential threats to CGraph and corresponding mitigatio
 
 ### Current Cryptographic Stack
 
-| Component          | Algorithm     | Security Level | Notes                     |
-| ------------------ | ------------- | -------------- | ------------------------- |
-| Key Exchange       | X25519 (X3DH) | 128-bit        | Curve25519 ECDH           |
-| Message Encryption | AES-256-GCM   | 256-bit        | With Double Ratchet       |
-| Signatures         | Ed25519       | 128-bit        | For identity verification |
-| Password Hashing   | Argon2id      | Configurable   | Memory-hard               |
-| Session Tokens     | JWT + refresh | -              | RS256 signing             |
+| Component          | Algorithm                  | Security Level              | Notes                            |
+| ------------------ | -------------------------- | --------------------------- | -------------------------------- |
+| Key Exchange       | ML-KEM-768 + P-256 (PQXDH) | 192-bit (PQ) + 128-bit (EC) | Hybrid post-quantum key exchange |
+| Message Encryption | AES-256-GCM                | 256-bit                     | With Triple Ratchet              |
+| KEM                | ML-KEM-768                 | 192-bit                     | NIST FIPS 203                    |
+| Signatures         | Ed25519 / ECDSA P-256      | 128-bit                     | For identity verification        |
+| Password Hashing   | Argon2id                   | Configurable                | Memory-hard                      |
+| Session Tokens     | JWT + refresh              | -                           | RS256 signing                    |
 
 ### Cryptographic Risks
 
-| Risk                          | Impact                 | Mitigation             |
-| ----------------------------- | ---------------------- | ---------------------- |
-| Quantum threat to ECDH        | Future decryption      | Plan PQXDH migration   |
-| Weak random number generation | Key compromise         | Use WebCrypto API only |
-| Key reuse across protocols    | Cross-protocol attacks | Domain separation      |
-| Side-channel in JS crypto     | Key extraction         | Use WebCrypto (native) |
+| Risk                          | Impact                 | Mitigation                                 |
+| ----------------------------- | ---------------------- | ------------------------------------------ |
+| Quantum threat to ECDH        | Future decryption      | ✅ Mitigated — PQXDH + ML-KEM-768 deployed |
+| Weak random number generation | Key compromise         | Use WebCrypto API only                     |
+| Key reuse across protocols    | Cross-protocol attacks | Domain separation                          |
+| Side-channel in JS crypto     | Key extraction         | Use WebCrypto (native)                     |
 
 ### Key Management Lifecycle
 

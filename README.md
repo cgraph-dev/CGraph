@@ -8,11 +8,11 @@
 
 #### Real-time messaging • Community forums • End-to-end encryption • Gamification • Subscription tiers
 
-[![Version](https://img.shields.io/badge/version-0.9.26-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.28-green.svg)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-production-brightgreen.svg)](#)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
-**Current version:** 0.9.26 (February 2026)
+**Current version:** 0.9.28 (February 2026)
 
 [🌐 Website](https://cgraph.org) · [📚 Documentation](https://docs.cgraph.org) ·
 [🔌 API Reference](https://api.cgraph.org/docs)
@@ -34,7 +34,7 @@ See [LICENSE](LICENSE) for complete terms.
 
 | Feature                   |              CGraph              | Competitors |
 | ------------------------- | :------------------------------: | :---------: |
-| **End-to-End Encryption** |     ✅ X3DH + Double Ratchet     |  ⚠️ Varies  |
+| **End-to-End Encryption** |  ✅ PQXDH + Triple Ratchet (PQ)  |  ⚠️ Varies  |
 | **OAuth Authentication**  |    ✅ Google, Apple, Facebook    |  ✅ Common  |
 | **Community Forums**      |           ✅ Built-in            |     ❌      |
 | **Gamification**          |   ✅ XP, Achievements, Quests    |     ❌      |
@@ -53,7 +53,7 @@ rich forums, end-to-end encryption, and gamification—all in one seamless exper
 ### 💬 Real-Time Messaging
 
 - Instant message delivery with typing indicators and read receipts
-- End-to-end encryption using X3DH + Double Ratchet (Signal Protocol)
+- End-to-end encryption using PQXDH + Triple Ratchet (Signal Protocol Rev 4, post-quantum)
 - Voice messages with waveform visualization
 - Voice and video calls via WebRTC (1:1 and group calls)
 - Message reactions, editing, deletion, and forwarding
@@ -95,8 +95,8 @@ rich forums, end-to-end encryption, and gamification—all in one seamless exper
 
 ### 🔐 Security & Privacy
 
-- **E2EE Messaging** - AES-256-GCM encryption with X25519 key exchange (X3DH)
-- **Double Ratchet** - Forward secrecy with per-message key derivation
+- **E2EE Messaging** - AES-256-GCM encryption with PQXDH key exchange (ML-KEM-768 + P-256)
+- **Triple Ratchet** - Post-quantum forward secrecy with per-message hybrid key derivation
 - **Two-Factor Auth** - TOTP with backup codes
 - **OAuth Support** - Google, Apple, Facebook, TikTok
 - **HTTP-only Cookies** - XSS-immune token storage
@@ -183,7 +183,7 @@ Visit [cgraph.org/pricing](https://cgraph.org/pricing) for full details.
 | Web        | React 19 / Vite / TailwindCSS / Zustand            |
 | Mobile     | React Native 0.81 / Expo SDK 54                    |
 | Real-time  | Phoenix Channels (WebSocket)                       |
-| Encryption | X3DH + Double Ratchet / AES-256-GCM / X25519       |
+| Encryption | PQXDH + Triple Ratchet / AES-256-GCM / ML-KEM-768  |
 | Payments   | Stripe (subscriptions, webhooks)                   |
 | Hosting    | Fly.io (backend) / Vercel (web) / Cloudflare (CDN) |
 

@@ -10,16 +10,16 @@ repository.
 
 The guidelines document (v4.0) includes CGraph-specific patterns for:
 
-| Technology          | Section         | Key Patterns                                      |
-| ------------------- | --------------- | ------------------------------------------------- |
-| **Oban**            | Background Jobs | Queue config, unique constraints, error handling  |
-| **Stripe**          | Payments        | Webhook handling, idempotency, tier management    |
-| **Signal Protocol** | E2EE            | X3DH, Double Ratchet, prekey bundles              |
-| **WebRTC**          | Voice/Video     | Peer connections, ICE servers, quality monitoring |
-| **React 19**        | Frontend        | `use()`, `useFormStatus`, `useOptimistic`         |
-| **Expo 54**         | Mobile          | Push notifications, deep linking, offline support |
-| **Phoenix 1.8**     | Backend         | Verified routes, socket handling, LiveView        |
-| **Fly.io**          | Deployment      | Health checks, secrets, multi-region              |
+| Technology                 | Section         | Key Patterns                                               |
+| -------------------------- | --------------- | ---------------------------------------------------------- |
+| **Oban**                   | Background Jobs | Queue config, unique constraints, error handling           |
+| **Stripe**                 | Payments        | Webhook handling, idempotency, tier management             |
+| **Triple Ratchet / PQXDH** | E2EE            | PQXDH (ML-KEM-768 + P-256), Triple Ratchet, prekey bundles |
+| **WebRTC**                 | Voice/Video     | Peer connections, ICE servers, quality monitoring          |
+| **React 19**               | Frontend        | `use()`, `useFormStatus`, `useOptimistic`                  |
+| **Expo 54**                | Mobile          | Push notifications, deep linking, offline support          |
+| **Phoenix 1.8**            | Backend         | Verified routes, socket handling, LiveView                 |
+| **Fly.io**                 | Deployment      | Health checks, secrets, multi-region                       |
 
 See `docs/PrivateFolder/ENGINEERING_STANDARDS.md` Part 8-9 for implementation details.
 
@@ -38,18 +38,18 @@ See `docs/PrivateFolder/ENGINEERING_STANDARDS.md` Part 8-9 for implementation de
 ## Project Overview
 
 CGraph is a **proprietary** enterprise messaging platform combining real-time chat, community
-forums, and gamification. Features include Signal Protocol encryption (X3DH + Double Ratchet with
-AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a karma-based
-forum system.
+forums, and gamification. Features include post-quantum E2EE (PQXDH + Triple Ratchet with ML-KEM-768
+and AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a
+karma-based forum system.
 
-**Version**: 0.9.26  
+**Version**: 0.9.28  
 **Last Updated**: February 16, 2026  
 **Architecture Score**: 9.4/10 (audit-verified)  
 **License**: Proprietary (see LICENSE)
 
 ## Key Features
 
-- **End-to-End Encryption**: Signal Protocol (X3DH + Double Ratchet) with AES-256-GCM
+- **End-to-End Encryption**: PQXDH + Triple Ratchet with ML-KEM-768 and AES-256-GCM
 - **Multi-Auth Support**: Email/password, OAuth (Google, Apple, Facebook, TikTok)
 - **Real-time Messaging**: Phoenix Channels with WebSocket, presence tracking
 - **Forums & Groups**: karma, servers with channels
@@ -467,7 +467,7 @@ Core business logic organized by domain:
 - `subscriptions/tier_limits.ex` - Tier enforcement → delegates to
   `subscriptions/tier_limits/checks.ex`
 - `presence.ex` - Online status, typing indicators
-- `crypto/` - E2EE key management (X3DH, prekeys, identity keys)
+- `crypto/` - E2EE key management (PQXDH, ML-KEM-768, prekeys, identity keys)
 - `moderation.ex` - Content moderation, reports
 - `search.ex` - Full-text search across entities (MeiliSearch primary, PostgreSQL fallback)
 - `search/indexer.ex` - Oban async indexer (messages, posts, threads auto-indexed on create)

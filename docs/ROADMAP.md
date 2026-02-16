@@ -53,30 +53,30 @@ default** and modern customization.
 
 ### ✅ Completed Features
 
-| Category           | Feature                | Status     |
-| ------------------ | ---------------------- | ---------- |
-| **Core Messaging** | Real-time channels     | ✅ Shipped |
-|                    | Direct messages (E2EE) | ✅ Shipped |
-|                    | Group DMs (E2EE)       | ✅ Shipped |
-|                    | Message editing        | ✅ Shipped |
-|                    | Message deletion       | ✅ Shipped |
-|                    | Message forwarding     | ✅ Shipped |
-|                    | Message scheduling     | ✅ Shipped |
-| **Voice/Video**    | Voice channels         | ✅ Shipped |
-|                    | Video calls            | ✅ Shipped |
-|                    | Screen sharing         | ✅ Shipped |
-| **Security**       | E2EE (Signal Protocol) | ✅ Shipped |
-|                    | Device verification    | ✅ Shipped |
-|                    | Safety numbers         | ✅ Shipped |
-| **Media**          | File sharing           | ✅ Shipped |
-|                    | GIF integration        | ✅ Shipped |
-|                    | Image previews         | ✅ Shipped |
-| **Customization**  | Theme system           | ✅ Shipped |
-|                    | Custom CSS             | ✅ Shipped |
-|                    | Seasonal events        | ✅ Shipped |
-| **Platform**       | Web app                | ✅ Shipped |
-|                    | Mobile (React Native)  | 🟡 Beta    |
-|                    | Landing page           | ✅ Shipped |
+| Category           | Feature                       | Status     |
+| ------------------ | ----------------------------- | ---------- |
+| **Core Messaging** | Real-time channels            | ✅ Shipped |
+|                    | Direct messages (E2EE)        | ✅ Shipped |
+|                    | Group DMs (E2EE)              | ✅ Shipped |
+|                    | Message editing               | ✅ Shipped |
+|                    | Message deletion              | ✅ Shipped |
+|                    | Message forwarding            | ✅ Shipped |
+|                    | Message scheduling            | ✅ Shipped |
+| **Voice/Video**    | Voice channels                | ✅ Shipped |
+|                    | Video calls                   | ✅ Shipped |
+|                    | Screen sharing                | ✅ Shipped |
+| **Security**       | E2EE (Triple Ratchet / PQXDH) | ✅ Shipped |
+|                    | Device verification           | ✅ Shipped |
+|                    | Safety numbers                | ✅ Shipped |
+| **Media**          | File sharing                  | ✅ Shipped |
+|                    | GIF integration               | ✅ Shipped |
+|                    | Image previews                | ✅ Shipped |
+| **Customization**  | Theme system                  | ✅ Shipped |
+|                    | Custom CSS                    | ✅ Shipped |
+|                    | Seasonal events               | ✅ Shipped |
+| **Platform**       | Web app                       | ✅ Shipped |
+|                    | Mobile (React Native)         | 🟡 Beta    |
+|                    | Landing page                  | ✅ Shipped |
 
 ---
 
@@ -178,13 +178,13 @@ After this date, only the following are allowed:
 
 ### Exploration Areas
 
-| Area                       | Description                      | Timeline  |
-| -------------------------- | -------------------------------- | --------- |
-| **AI Features**            | Smart summarization, translation | H1 2027   |
-| **Federated Messaging**    | Cross-instance communication     | H2 2027   |
-| **Desktop Apps**           | Native Electron/Tauri apps       | H1 2027   |
-| **Post-Quantum Crypto**    | PQXDH migration                  | 2027-2028 |
-| **Decentralized Identity** | DID/Verifiable credentials       | 2028+     |
+| Area                       | Description                         | Timeline             |
+| -------------------------- | ----------------------------------- | -------------------- |
+| **AI Features**            | Smart summarization, translation    | H1 2027              |
+| **Federated Messaging**    | Cross-instance communication        | H2 2027              |
+| **Desktop Apps**           | Native Electron/Tauri apps          | H1 2027              |
+| **Post-Quantum Crypto**    | PQXDH + ML-KEM-768 (Triple Ratchet) | ✅ Shipped (v0.9.28) |
+| **Decentralized Identity** | DID/Verifiable credentials          | 2028+                |
 
 ---
 

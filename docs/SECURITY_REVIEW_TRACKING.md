@@ -29,8 +29,9 @@ This document tracks all security reviews, audits, and penetration tests for CGr
 **Budget:** TBD  
 **Scope:**
 
-- X3DH key exchange implementation
-- Double Ratchet message encryption
+- PQXDH key exchange implementation (ML-KEM-768 + P-256 ECDH)
+- Triple Ratchet message encryption (EC Double Ratchet ∥ SPQR)
+- Post-quantum key encapsulation (ML-KEM-768 / FIPS 203)
 - Key storage and rotation
 - Client-side crypto operations
 - Server-side key management
