@@ -207,6 +207,8 @@
 }
 
 .hero-pro__title-line {
+  font-family: 'Tektur', 'Orbitron', system-ui, sans-serif;
+  font-weight: 600;
   color: #ffffff;
   font-size: clamp(2.75rem, 7vw, 5.25rem);
   text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
