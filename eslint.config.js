@@ -91,6 +91,7 @@ export default [
         ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: { jsx: true },
+        tsconfigRootDir: import.meta.dirname,
       },
       globals: {
         console: 'readonly',

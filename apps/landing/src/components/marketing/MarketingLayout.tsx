@@ -109,7 +109,7 @@ export default function MarketingLayout({
       )}
 
       {/* Main Content */}
-      <main id="main-content" className={!title ? 'pt-24' : ''}>
+      <main id="main-content" className={title ? '' : 'pt-24'}>
         {children}
       </main>
 

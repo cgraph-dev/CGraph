@@ -163,7 +163,7 @@ export default function LandingPage() {
         gsapContextRef = null;
       }
     };
-  }, []);
+  }, [prefersReduced]);
 
   return (
     <div className="demo-landing">

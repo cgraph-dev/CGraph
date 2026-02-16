@@ -12,23 +12,18 @@
  *
  * @module __tests__/adversarial.test
  */
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
 import { generateECKeyPair, generateSigningKeyPair } from '../x3dh';
-import { kemKeygen, kemEncapsulate, kemDecapsulate, KEM_PUBLIC_KEY_LENGTH } from '../kem';
+import { kemKeygen, kemEncapsulate, kemDecapsulate } from '../kem';
 import {
   pqxdhInitiate,
   pqxdhRespond,
   generatePQXDHBundle,
   splitTripleRatchetSecret,
 } from '../pqxdh';
-import {
-  TripleRatchetEngine,
-  TRIPLE_RATCHET_VERSION,
-  type TripleRatchetMessage,
-} from '../tripleRatchet';
+import { TripleRatchetEngine, type TripleRatchetMessage } from '../tripleRatchet';
 import { DoubleRatchetEngine, generateDHKeyPair } from '../doubleRatchet';
-import { CryptoError, CryptoErrorCode } from '../errors';
 
 // =============================================================================
 // HELPERS
@@ -385,7 +380,7 @@ describe('Property-based crypto tests', () => {
   });
 
   it('message keys never repeat across session', async () => {
-    const { alice, bob } = await setupTripleRatchetPair();
+    const { alice, bob: _bob } = await setupTripleRatchetPair();
     const enc = new TextEncoder();
 
     // Each encrypted message uses a unique hybrid key, so even

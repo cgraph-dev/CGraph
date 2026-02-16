@@ -69,8 +69,7 @@ export interface KEMEncapsulation {
  */
 export function kemKeygen(): KEMKeyPair {
   try {
-    const { publicKey, secretKey } = ml_kem768.keygen();
-    return { publicKey, secretKey };
+    return ml_kem768.keygen();
   } catch (e) {
     throw new CryptoError(
       CryptoErrorCode.KEY_GENERATION_FAILED,
@@ -100,8 +99,7 @@ export function kemEncapsulate(publicKey: Uint8Array): KEMEncapsulation {
   }
 
   try {
-    const { cipherText, sharedSecret } = ml_kem768.encapsulate(publicKey);
-    return { cipherText, sharedSecret };
+    return ml_kem768.encapsulate(publicKey);
   } catch (e) {
     throw new CryptoError(
       CryptoErrorCode.KEM_ENCAPSULATION_FAILED,

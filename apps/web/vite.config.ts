@@ -74,7 +74,7 @@ export default defineConfig({
     outDir: 'dist',
     // SECURITY: Sourcemaps disabled in production to protect proprietary code
     // Set VITE_ENABLE_SOURCEMAPS=true for debugging if needed
-    sourcemap: process.env.VITE_ENABLE_SOURCEMAPS === 'true' ? true : false,
+    sourcemap: process.env.VITE_ENABLE_SOURCEMAPS === 'true',
     // Suppress chunk size warnings — large chunks are expected for the
     // encrypted messaging app (crypto libs, Three.js demos, markdown renderer).
     // Actual bundle analysis uses rollup-plugin-visualizer output.

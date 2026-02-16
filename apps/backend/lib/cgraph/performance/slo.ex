@@ -301,8 +301,9 @@ defmodule CGraph.Performance.SLO do
       |> String.replace("/", "_")
       |> String.downcase()
 
-    String.to_atom("#{slug}_#{String.downcase(method)}")
+    String.to_existing_atom("#{slug}_#{String.downcase(method)}")
   rescue
+    ArgumentError -> nil
     _ -> nil
   end
   defp slo_name_from_conn(_), do: nil

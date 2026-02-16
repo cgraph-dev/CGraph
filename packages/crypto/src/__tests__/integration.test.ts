@@ -15,7 +15,6 @@ import {
   splitTripleRatchetSecret,
 } from '../pqxdh';
 import { TripleRatchetEngine } from '../tripleRatchet';
-import { generateDHKeyPair } from '../doubleRatchet';
 
 describe('Full protocol flow: PQXDH → Triple Ratchet', () => {
   it('complete E2EE lifecycle without OPK', async () => {
@@ -25,7 +24,7 @@ describe('Full protocol flow: PQXDH → Triple Ratchet', () => {
 
     // Alice generates her long-term keys
     const aliceIdentity = await generateECKeyPair();
-    const aliceSigning = await generateSigningKeyPair();
+    const _aliceSigning = await generateSigningKeyPair();
 
     // Bob generates his long-term keys
     const bobIdentity = await generateECKeyPair();

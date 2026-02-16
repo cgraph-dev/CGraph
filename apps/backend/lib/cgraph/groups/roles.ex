@@ -65,7 +65,9 @@ defmodule CGraph.Groups.Roles do
   @doc "Reorder roles by providing a list of role IDs in desired order."
   @spec reorder_roles(struct(), list()) :: :ok
   def reorder_roles(group, role_ids) do
-    Enum.with_index(role_ids, fn role_id, index ->
+    role_ids
+    |> Enum.with_index()
+    |> Enum.each(fn {role_id, index} ->
       from(r in Role,
         where: r.id == ^role_id,
         where: r.group_id == ^group.id

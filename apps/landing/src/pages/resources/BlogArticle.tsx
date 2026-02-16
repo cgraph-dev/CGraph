@@ -58,7 +58,7 @@ export default function BlogArticle() {
   };
 
   // Find previous/next articles
-  const currentIndex = articleSlugs.indexOf(slug!);
+  const currentIndex = (articleSlugs as readonly string[]).indexOf(slug!);
   const prevSlug = currentIndex > 0 ? articleSlugs[currentIndex - 1] : null;
   const nextSlug = currentIndex < articleSlugs.length - 1 ? articleSlugs[currentIndex + 1] : null;
   const prevArticle = prevSlug ? blogArticles[prevSlug] : null;

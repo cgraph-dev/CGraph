@@ -104,7 +104,9 @@ export class CryptoError extends Error {
 
     // Maintain proper stack trace in V8
     if ('captureStackTrace' in Error) {
-      (Error as any).captureStackTrace(this, CryptoError);
+      (
+        Error as { captureStackTrace?: (target: Error, constructor: Function) => void }
+      ).captureStackTrace?.(this, CryptoError);
     }
   }
 
