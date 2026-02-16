@@ -3,10 +3,12 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import ErrorBoundary from './components/ErrorBoundary';
 import './index.css';
 
 // Lazy load pages for optimal performance
 const LandingPage = lazy(() => import('./pages/LandingPage'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 // Auth pages are handled via Vercel redirects to web.cgraph.org
 
@@ -45,45 +47,47 @@ function PageLoader() {
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <HelmetProvider>
-      <BrowserRouter>
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            {/* Landing Page */}
-            <Route path="/" element={<LandingPage />} />
+      <ErrorBoundary>
+        <BrowserRouter>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              {/* Landing Page */}
+              <Route path="/" element={<LandingPage />} />
 
-            {/* Auth routes are handled by Vercel redirects to web.cgraph.org */}
+              {/* Auth routes are handled by Vercel redirects to web.cgraph.org */}
 
-            {/* Legal Pages */}
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/terms" element={<TermsOfService />} />
-            <Route path="/cookies" element={<CookiePolicy />} />
-            <Route path="/gdpr" element={<GDPR />} />
+              {/* Legal Pages */}
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
+              <Route path="/cookies" element={<CookiePolicy />} />
+              <Route path="/gdpr" element={<GDPR />} />
 
-            {/* Company Pages */}
-            <Route path="/about" element={<About />} />
-            <Route path="/careers" element={<Careers />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/press" element={<Press />} />
+              {/* Company Pages */}
+              <Route path="/about" element={<About />} />
+              <Route path="/careers" element={<Careers />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/press" element={<Press />} />
 
-            {/* Resource Pages */}
-            <Route path="/download" element={<Download />} />
-            <Route path="/docs" element={<Documentation />} />
-            <Route path="/docs/:slug" element={<DocArticle />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogArticle />} />
-            <Route path="/status" element={<Status />} />
+              {/* Resource Pages */}
+              <Route path="/download" element={<Download />} />
+              <Route path="/docs" element={<Documentation />} />
+              <Route path="/docs/:slug" element={<DocArticle />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogArticle />} />
+              <Route path="/status" element={<Status />} />
 
-            {/* Static Pages - redirect to sections */}
-            <Route path="/features" element={<Navigate to="/#features" replace />} />
-            <Route path="/security" element={<Navigate to="/#security" replace />} />
-            <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
+              {/* Static Pages - redirect to sections */}
+              <Route path="/features" element={<Navigate to="/#features" replace />} />
+              <Route path="/security" element={<Navigate to="/#security" replace />} />
+              <Route path="/pricing" element={<Navigate to="/#pricing" replace />} />
 
-            {/* Catch-all - redirect to landing */}
-            <Route path="*" element={<LandingPage />} />
-          </Routes>
-        </Suspense>
-        <SpeedInsights />
-      </BrowserRouter>
+              {/* Catch-all — branded 404 */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+          <SpeedInsights />
+        </BrowserRouter>
+      </ErrorBoundary>
     </HelmetProvider>
   </React.StrictMode>
 );
