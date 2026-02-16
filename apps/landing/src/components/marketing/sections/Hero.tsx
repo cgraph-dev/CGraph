@@ -16,7 +16,6 @@ import { memo, useState, useEffect, useRef } from 'react';
 import { motion, useReducedMotion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { GradientText } from '../ui/GradientText';
 import { LandingButton } from '../ui/LandingButton';
-import { NeuralBackground } from '../effects/NeuralBackground';
 import './Hero.css';
 import { WEB_APP_URL } from '@/constants';
 
@@ -187,15 +186,21 @@ const Hero = memo(function Hero(): React.JSX.Element {
       </motion.div>
 
       {/* Scroll indicator */}
+      {/* Scroll indicator */}
       <motion.div
         className="hero-pro__scroll"
         aria-hidden="true"
         style={{ opacity: scrollOpacity }}
       >
-        <span className="hero-pro__scroll-text">Scroll</span>
-        <div className="hero-pro__scroll-line">
-          <span className="hero-pro__scroll-dot" />
+        <div className="hero-pro__scroll-mouse">
+          <div className="hero-pro__scroll-wheel" />
         </div>
+        <div className="hero-pro__scroll-arrows">
+          <span />
+          <span />
+          <span />
+        </div>
+        <span className="hero-pro__scroll-text">Scroll to explore</span>
       </motion.div>
     </section>
   );

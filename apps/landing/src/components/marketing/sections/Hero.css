@@ -450,7 +450,7 @@
   100% { background-position: 40px 40px; }
 }
 
-/* ── Scroll indicator ── */
+/* ── Scroll indicator (Complex Tech Style) ── */
 .hero-pro__scroll {
   position: absolute;
   bottom: 2rem;
@@ -460,48 +460,98 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  animation: hero-scroll-pulse 2s ease-in-out infinite;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.hero-pro__scroll:hover {
+  opacity: 1;
+}
+
+.hero-pro__scroll-mouse {
+  width: 26px;
+  height: 42px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+  transition: all 0.3s ease;
+}
+
+.hero-pro__scroll:hover .hero-pro__scroll-mouse {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.2);
+}
+
+.hero-pro__scroll-wheel {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: scroll-wheel 2s ease-in-out infinite;
+  box-shadow: 0 0 8px #10b981;
+}
+
+.hero-pro__scroll-arrows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin-top: -4px;
+}
+
+.hero-pro__scroll-arrows span {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+  transform: rotate(45deg);
+  animation: scroll-arrow 2s infinite;
+  opacity: 0;
+}
+
+.hero-pro__scroll-arrows span:nth-child(1) { animation-delay: 0s; }
+.hero-pro__scroll-arrows span:nth-child(2) { animation-delay: 0.15s; }
+.hero-pro__scroll-arrows span:nth-child(3) { animation-delay: 0.3s; }
+
+.hero-pro__scroll:hover .hero-pro__scroll-arrows span {
+  border-color: rgba(139, 92, 246, 0.5);
 }
 
 .hero-pro__scroll-text {
-  font-size: 0.6875rem;
-  letter-spacing: 0.15em;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.3);
+  transition: color 0.3s ease;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-.hero-pro__scroll-line {
-  width: 1px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.08);
-  position: relative;
-  overflow: hidden;
-  border-radius: 1px;
+.hero-pro__scroll:hover .hero-pro__scroll-text {
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.4);
 }
 
-.hero-pro__scroll-dot {
-  position: absolute;
-  top: 0;
-  left: -1px;
-  width: 4px;
-  height: 14px;
-  border-radius: 4px;
-  background: linear-gradient(to bottom, #10b981, #8b5cf6);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
-  animation: hero-scroll-dot 2.2s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+@keyframes scroll-wheel {
+  0% { top: 6px; opacity: 1; height: 4px; }
+  20% { height: 12px; }
+  100% { top: 24px; opacity: 0; height: 4px; }
 }
 
-@keyframes hero-scroll-dot {
-  0%   { top: 0; height: 4px; opacity: 0; transform: scaleY(0.5); }
-  20%  { height: 14px; opacity: 1; transform: scaleY(1); }
-  80%  { height: 14px; opacity: 1; transform: scaleY(1); }
-  100% { top: 28px; height: 4px; opacity: 0; transform: scaleY(0.5); }
-}
-
-@keyframes hero-scroll-pulse {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.8; }
+@keyframes scroll-arrow {
+  0% { opacity: 0; transform: rotate(45deg) translate(-2px, -2px); }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(45deg) translate(2px, 2px); }
 }
 
 /* ── Responsive ── */
@@ -564,14 +614,18 @@
   }
 
   .hero-pro__scroll {
-    display: flex;
-    bottom: 2.5rem;
+    position: relative;
+    bottom: auto;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
     z-index: 20;
-    scale: 0.9;
+    scale: 0.85;
+    opacity: 1 !important; /* Ensure visibility on mobile */
   }
 
   .hero-pro__scroll-text {
-    color: rgba(255, 255, 255, 0.4);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
   }
 
   .hero-pro__grid {
