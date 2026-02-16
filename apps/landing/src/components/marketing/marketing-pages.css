@@ -1831,6 +1831,8 @@
 .gl-footer-unified__copy {
   color: #6b7280;
   font-size: 0.875rem;
+  font-family: 'Tektur', 'Inter', system-ui, sans-serif;
+  font-weight: 600;
 }
 
 /* Social Links */
