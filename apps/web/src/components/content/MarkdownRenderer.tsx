@@ -5,7 +5,7 @@ import {
   isValidImageUrl,
   sanitizeLinkUrl,
   sanitizeImageUrl,
-} from '../utils/urlSecurity';
+} from '../../utils/urlSecurity';
 
 interface MarkdownRendererProps {
   content: string;
