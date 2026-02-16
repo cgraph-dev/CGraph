@@ -289,7 +289,7 @@
 
 /* Comparison Vault Panel */
 .security-comparison {
-  max-width: 760px;
+  max-width: 500px;
   margin: 0 auto;
   padding: 2rem 0 0;
   background: rgba(255, 255, 255, 0.02);
@@ -328,7 +328,7 @@
 
 .security-comparison__legend {
   display: grid;
-  grid-template-columns: 1fr 180px 180px;
+  grid-template-columns: 1fr 80px 80px;
   align-items: center;
   gap: 0;
   margin-bottom: 0;
@@ -357,7 +357,7 @@
 
 .security-comparison__row-grid {
   display: grid;
-  grid-template-columns: 1fr 180px 180px;
+  grid-template-columns: 1fr 80px 80px;
   align-items: center;
   gap: 0;
   padding: 0.72rem 1.25rem;
@@ -432,12 +432,12 @@
   }
 
   .security-comparison__legend {
-    grid-template-columns: 1fr 100px 100px;
+    grid-template-columns: 1fr 80px 80px;
     padding: 0.68rem 1rem;
   }
   
   .security-comparison__row-grid {
-    grid-template-columns: 1fr 100px 100px;
+    grid-template-columns: 1fr 80px 80px;
     gap: 0;
     padding: 0.7rem 1rem;
   }
