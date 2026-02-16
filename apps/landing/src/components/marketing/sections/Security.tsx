@@ -308,7 +308,7 @@ export function Security() {
                 whileInView={{ opacity: 1 }}
                 transition={{ delay: 0.55 }}
               >
-                Real controls currently deployed across crypto, infrastructure, and operations.
+                E2EE Protocol, infrastructure controls, and operational safeguards in one snapshot.
               </motion.p>
             </div>
 
@@ -329,10 +329,7 @@ export function Security() {
                   transition={{ duration: 0.4, delay: 0.68 + i * 0.08, ease: 'easeOut' }}
                 >
                   <div className="security-comparison__row-grid">
-                    <div>
-                      <span className="security-comparison__label">{row.control}</span>
-                      <p className="security-comparison__detail">{row.detail}</p>
-                    </div>
+                    <span className="security-comparison__label">{row.control}</span>
                     <div
                       className={`security-comparison__value security-comparison__value--${row.tone}`}
                     >
@@ -344,11 +341,6 @@ export function Security() {
                   </div>
                 </motion.div>
               ))}
-            </div>
-
-            <div className="security-comparison__footer mt-4 border-t border-white/5 px-6 pt-6 md:px-12">
-              <span>Source: internal security + infrastructure docs (Feb 2026)</span>
-              <span>Formal E2EE audit: pending</span>
             </div>
           </GlassCard>
         </motion.div>
