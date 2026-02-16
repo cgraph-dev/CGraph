@@ -149,7 +149,7 @@ const sections = [
     id: 'encryption',
     title: '7. End-to-End Encryption',
     content: `
-      <p>CGraph provides end-to-end encryption (E2EE) for direct messages using the Signal Protocol (X3DH key agreement + Double Ratchet with AES-256-GCM). Important points:</p>
+      <p>CGraph provides end-to-end encryption (E2EE) for direct messages using the Triple Ratchet protocol (PQXDH key agreement with ML-KEM-768 + hybrid post-quantum ratchet with AES-256-GCM). Important points:</p>
       <ul>
         <li><strong>We cannot access encrypted content</strong> — Only you and your conversation partners can read messages</li>
         <li><strong>No backdoors</strong> — We will not implement encryption backdoors for any party, including governments</li>

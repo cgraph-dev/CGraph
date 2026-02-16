@@ -225,7 +225,7 @@ function AnimatedReaction({ type, count }: { type: 'approved' | 'disapproved'; c
   );
 }
 
-/** Game-style tutorial overlay: animated cursor demonstrates double-click (✓) then triple-click (✕) */
+/** Game-style tutorial overlay: animated cursor demonstrates swipe up (✓) then swipe down (✕) */
 function ClickTutorial({ phase }: { phase: string }) {
   const showApprove = phase === 'approve-badge';
   const showDisapprove = phase === 'disapprove-badge';
@@ -234,19 +234,24 @@ function ClickTutorial({ phase }: { phase: string }) {
   const showCursor = isGrabbing || isSwiping;
   const swipeDir = phase === 'swipe-up' ? -14 : phase === 'swipe-down' ? 14 : 0;
 
+  // New: Determine if it's an "up" or "down" movement
+  const isUp = phase === 'grab' || phase === 'swipe-up' || phase === 'approve-badge';
+  const isDown = phase === 'grab2' || phase === 'swipe-down' || phase === 'disapprove-badge';
+
   return (
     <div className="demo-input-tutorial">
-      {/* Arrow pointing up to messages */}
-      <AnimatePresence>
+      {/* Dynamic Arrow: ↑ during up phases, ↓ during down phases */}
+      <AnimatePresence mode="wait">
         {(showCursor || showApprove || showDisapprove) && (
           <motion.span
+            key={isUp ? 'up' : 'down'}
             className="demo-input-tutorial__arrow-up"
-            initial={{ opacity: 0, y: 4 }}
+            initial={{ opacity: 0, y: isUp ? 4 : -4 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 4 }}
+            exit={{ opacity: 0, y: isUp ? 4 : -4 }}
             transition={{ duration: 0.2 }}
           >
-            ↑
+            {isUp ? '↑' : '↓'}
           </motion.span>
         )}
       </AnimatePresence>
@@ -261,7 +266,7 @@ function ClickTutorial({ phase }: { phase: string }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
           >
-            Swipe ↑ up or ↓ down on a message to react
+            Swipe ↑ or ↓ to react
           </motion.span>
         )}
       </AnimatePresence>
@@ -294,28 +299,36 @@ function ClickTutorial({ phase }: { phase: string }) {
                 opacity="0.6"
               />
               <circle cx="12" cy="12" r="1.5" fill="currentColor" opacity="0.8" />
-              {/* Up arrow */}
-              <path d="M12 4L9 7h6L12 4z" fill="currentColor" opacity="0.9" />
-              <line
-                x1="12"
-                y1="7"
-                x2="12"
-                y2="8.5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-              {/* Down arrow */}
-              <path d="M12 20l3-3H9l3 3z" fill="currentColor" opacity="0.9" />
-              <line
-                x1="12"
-                y1="17"
-                x2="12"
-                y2="15.5"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
+
+              {/* Conditional Arrows in SVG */}
+              {isUp && (
+                <>
+                  <path d="M12 4L9 7h6L12 4z" fill="currentColor" opacity="0.9" />
+                  <line
+                    x1="12"
+                    y1="7"
+                    x2="12"
+                    y2="8.5"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </>
+              )}
+              {isDown && (
+                <>
+                  <path d="M12 20l3-3H9l3 3z" fill="currentColor" opacity="0.9" />
+                  <line
+                    x1="12"
+                    y1="17"
+                    x2="12"
+                    y2="15.5"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </>
+              )}
             </svg>
           </motion.span>
         )}
@@ -332,9 +345,7 @@ function ClickTutorial({ phase }: { phase: string }) {
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
           >
             <span className="demo-input-tutorial__badge-icon">✓</span>
-            <span className="demo-input-tutorial__badge-label">
-              Swipe ↑ on a message to approve it
-            </span>
+            <span className="demo-input-tutorial__badge-label">Swipe ↑ to approve</span>
             <span className="demo-input-tutorial__badge-xp">+10 XP</span>
           </motion.div>
         )}
@@ -353,9 +364,7 @@ function ClickTutorial({ phase }: { phase: string }) {
             <span className="demo-input-tutorial__badge-icon demo-input-tutorial__badge-icon--red">
               ✕
             </span>
-            <span className="demo-input-tutorial__badge-label">
-              Swipe ↓ on a message to disapprove
-            </span>
+            <span className="demo-input-tutorial__badge-label">Swipe ↓ to disapprove</span>
             <span className="demo-input-tutorial__badge-xp demo-input-tutorial__badge-xp--red">
               −5 XP
             </span>
@@ -436,16 +445,15 @@ export const ChatDemo = memo(function ChatDemo() {
     const run = () => {
       clearAll();
       setTutorialPhase('idle');
-      schedule(() => setTutorialPhase('grab'), 500);
-      schedule(() => setTutorialPhase('swipe-up'), 900);
-      schedule(() => setTutorialPhase('approve-burst'), 1300);
-      schedule(() => setTutorialPhase('approve-badge'), 1700);
-      schedule(() => setTutorialPhase('pause'), 3800);
-      schedule(() => setTutorialPhase('grab2'), 4300);
-      schedule(() => setTutorialPhase('swipe-down'), 4700);
-      schedule(() => setTutorialPhase('disapprove-burst'), 5100);
-      schedule(() => setTutorialPhase('disapprove-badge'), 5500);
-      schedule(run, 8000);
+      schedule(() => setTutorialPhase('grab'), 400);
+      schedule(() => setTutorialPhase('swipe-up'), 700);
+      schedule(() => setTutorialPhase('approve-burst'), 1000);
+      schedule(() => setTutorialPhase('approve-badge'), 1300);
+      schedule(() => setTutorialPhase('grab2'), 3200);
+      schedule(() => setTutorialPhase('swipe-down'), 3500);
+      schedule(() => setTutorialPhase('disapprove-burst'), 3800);
+      schedule(() => setTutorialPhase('disapprove-badge'), 4100);
+      schedule(run, 6500);
     };
     run();
     return () => {

@@ -41,36 +41,40 @@ export const WEB_APP_URL = 'https://web.cgraph.org';
 
 export const features: readonly FeatureData[] = [
   {
-    icon: '🔐',
-    title: 'End-to-End Encryption',
+    icon: '🛡️',
+    title: 'Unbreakable Security',
     description:
-      'Signal Protocol with X3DH key agreement and Double Ratchet algorithm. Your messages stay private.',
+      'PQXDH + Triple Ratchet E2EE with Zero-Knowledge architecture and Argon2id hashing. Your privacy is non-negotiable.',
   },
   {
-    icon: '💬',
-    title: 'Real-Time Messaging',
+    icon: '⚡',
+    title: 'Lightning Discourse',
     description:
-      'Sub-200ms delivery with WebSocket channels. Feel the speed of instant communication.',
+      'Real-time forum threads with sub-200ms message delivery. Experience the fastest community engine.',
   },
   {
-    icon: '🏛️',
-    title: 'Forums & Communities',
-    description: 'Communities with voting, threads, and powerful moderation tools.',
+    icon: '⛓️',
+    title: 'Web3 Reputation',
+    description:
+      'Seamless wallet authentication and reputation-based rewards. Truly own your digital identity.',
   },
   {
-    icon: '👥',
-    title: 'Groups & Channels',
-    description: 'Powerful servers with roles, permissions, and organized channel structures.',
+    icon: '👑',
+    title: 'Gamified Communities',
+    description:
+      'Level up with XP, custom titles, and unique animated borders. Engagement that feels like a game.',
   },
   {
-    icon: '📞',
-    title: 'Voice & Video Calls',
-    description: 'Crystal-clear WebRTC calling with screen sharing and recording capabilities.',
+    icon: '📂',
+    title: 'Decentralized Vaults',
+    description:
+      'Peer-to-peer file sharing with permanent encrypted backups. Your data, your control.',
   },
   {
-    icon: '🎮',
-    title: 'Gamification',
-    description: 'Earn XP, unlock achievements, complete quests, and climb the leaderboards.',
+    icon: '🌟',
+    title: 'Unified Hub',
+    description:
+      'A single platform bridging the gap between fast-paced chat and long-form community interaction.',
   },
 ] as const;
 
@@ -121,9 +125,10 @@ export const footerLinks = {
 export const valueProps: readonly ValuePropData[] = [
   {
     icon: '🔐',
-    title: 'Military-Grade Encryption',
-    description: 'AES-256-GCM encryption with Signal Protocol. Not even we can read your messages.',
-    highlight: 'AES-256',
+    title: 'Post-Quantum Encryption',
+    description:
+      'AES-256-GCM with PQXDH + Triple Ratchet (ML-KEM-768). Not even we can read your messages.',
+    highlight: 'ML-KEM-768',
   },
   {
     icon: '🏛️',

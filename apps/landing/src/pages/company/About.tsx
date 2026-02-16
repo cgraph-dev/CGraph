@@ -429,7 +429,7 @@ export default function About() {
               <p className="mt-3 text-sm leading-relaxed" style={{ color: 'var(--color-gray)' }}>
                 Full-stack engineer building CGraph from Georgia. Responsible for architecture,
                 backend (Elixir/Phoenix), frontend (React 19), mobile (React Native), cryptographic
-                implementation (Signal Protocol), infrastructure, and product design.
+                implementation (Triple Ratchet / PQXDH), infrastructure, and product design.
               </p>
               <div className="mt-4 flex justify-center gap-4">
                 <a
@@ -592,9 +592,9 @@ export default function About() {
           <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
             {[
               {
-                title: 'Signal Protocol E2EE',
+                title: 'Post-Quantum E2EE',
                 detail:
-                  'X3DH + Double Ratchet with AES-256-GCM and X25519. Forward secrecy ensures past messages stay safe.',
+                  'PQXDH + Triple Ratchet with AES-256-GCM and ML-KEM-768. Hybrid forward secrecy ensures past messages stay safe — even against quantum computers.',
               },
               {
                 title: 'Automated Security Pipeline',

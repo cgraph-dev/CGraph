@@ -20,12 +20,12 @@ const securityFeatures: SecurityFeature[] = [
   {
     icon: '🔒',
     title: 'End-to-End Encryption',
-    desc: 'AES-256 encryption on all messages',
+    desc: 'AES-256-GCM with post-quantum key exchange',
   },
   {
     icon: '🛡️',
-    title: 'Signal Protocol',
-    desc: 'Industry-leading security standards',
+    title: 'Triple Ratchet Protocol',
+    desc: 'Signal Protocol Rev 4 with ML-KEM-768',
   },
   {
     icon: '🔐',
@@ -34,8 +34,8 @@ const securityFeatures: SecurityFeature[] = [
   },
   {
     icon: '🔑',
-    title: 'Perfect Forward Secrecy',
-    desc: 'Each message has unique keys',
+    title: 'Post-Quantum Security',
+    desc: 'Future-proof hybrid key derivation',
   },
 ];
 
@@ -84,7 +84,7 @@ export function Security() {
             title="Your Privacy Is Our"
             titleAccent="Priority"
             titleAccentClass="title-fx--air"
-            description="Built from the ground up with security in mind. Your messages are end-to-end encrypted with AES-256 using industry-leading encryption protocols. Not even we can access your private conversations."
+            description="Built from the ground up with security in mind. Your messages are end-to-end encrypted with AES-256-GCM using PQXDH + Triple Ratchet — a post-quantum hybrid protocol based on Signal Protocol Revision 4. Not even we can access your private conversations."
           />
         </motion.div>
 

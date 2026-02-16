@@ -32,7 +32,7 @@ export const DEMO_MESSAGES: Array<{
   {
     author: 'Sam',
     avatar: '🦁',
-    content: 'Swipe up on any message to approve it, or swipe down to disapprove — give it a try!',
+    content: 'Swipe ↑ to approve or ↓ to disapprove — give it a try!',
     showTutorial: true,
     reactions: [
       { type: 'approved', count: 15 },

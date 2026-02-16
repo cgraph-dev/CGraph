@@ -2545,148 +2545,156 @@ html.site-ready {
   margin: 0 auto;
 }
 
-/* Tilt Card - GAMELAND Style 3D Effect */
-.tilt-card {
-  --rx: 0deg;
-  --ry: 0deg;
-  --p: 2500px;
-  --s: 1;
-  
+/* Feature Card - Premium High-Fidelity Design */
+.feature-card {
   position: relative;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(26, 31, 38, 0.95) 50%, rgba(15, 20, 25, 0.98) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  border-radius: 1rem;
-  padding: 2.5rem;
+  background: rgba(10, 15, 26, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1.5rem;
+  padding: 3rem;
   overflow: hidden;
-  transition: border-color 0.3s ease, transform 0.1s ease-out;
-  transform-style: preserve-3d;
-  perspective: var(--p);
-  will-change: transform;
-  box-shadow: 0 4px 24px rgba(16, 185, 129, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  /* Performance: GPU acceleration and layout containment */
-  transform: translateZ(0);
-  contain: layout style paint;
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 
+    0 10px 30px -10px rgba(0, 0, 0, 0.5),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  z-index: 1;
 }
 
-.tilt-card.is-tilting {
-  transform: perspective(var(--p)) rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--s, 0.985));
+.feature-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(10, 15, 26, 0.6);
+  box-shadow: 
+    0 20px 40px -15px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(16, 185, 129, 0.1),
+    0 0 80px rgba(139, 92, 246, 0.05);
 }
 
-.tilt-card:hover {
-  border-color: rgba(16, 185, 129, 0.5);
-  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.2), 0 0 60px rgba(139, 92, 246, 0.1);
-}
-
-/* Animated gradient border overlay */
-.tilt-card__animated-border {
+/* Sophisticated animated border overlay */
+.feature-card__animated-border {
   position: absolute;
-  inset: -1px;
+  inset: 0;
   border-radius: inherit;
+  padding: 1.5px;
   background: linear-gradient(
-    var(--border-angle, 0deg),
-    transparent 0%,
-    rgba(16, 185, 129, 0.5) 25%,
-    rgba(139, 92, 246, 0.5) 50%,
-    rgba(16, 185, 129, 0.5) 75%,
-    transparent 100%
+    var(--border-angle, 135deg),
+    transparent 20%,
+    rgba(16, 185, 129, 0.6) 40%,
+    rgba(139, 92, 246, 0.6) 60%,
+    transparent 80%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask-composite: exclude;
-  padding: 1px;
   opacity: 0;
-  transition: opacity 0.4s ease;
-  animation: tilt-card-border-rotate 4s linear infinite;
-  z-index: 2;
+  transition: opacity 0.6s ease;
   pointer-events: none;
+  z-index: 2;
 }
 
-.tilt-card:hover .tilt-card__animated-border {
+.feature-card:hover .feature-card__animated-border {
   opacity: 1;
+  animation: feature-card-rotate 3s linear infinite;
 }
 
-@keyframes tilt-card-border-rotate {
-  0% { --border-angle: 0deg; }
-  100% { --border-angle: 360deg; }
+@keyframes feature-card-rotate {
+  from { --border-angle: 0deg; }
+  to { --border-angle: 360deg; }
 }
 
-/* CSS Houdini: enable smooth angle interpolation */
-@property --border-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-.tilt-card__bg {
+/* Background luminous glow */
+.feature-card__bg {
   position: absolute;
   inset: 0;
-  background: 
-    radial-gradient(ellipse at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-      rgba(16, 185, 129, 0.2) 0%, 
-      rgba(139, 92, 246, 0.08) 30%,
-      transparent 60%);
+  background: radial-gradient(
+    700px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(16, 185, 129, 0.1),
+    transparent 40%
+  );
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.5s ease;
+  z-index: 0;
 }
 
-.tilt-card:hover .tilt-card__bg {
+.feature-card:hover .feature-card__bg {
   opacity: 1;
 }
 
-.tilt-card__glare {
+/* Modern Shine/Glare effect */
+.feature-card__glare {
   position: absolute;
-  inset: -60%;
-  z-index: 3;
-  opacity: 0;
-  mix-blend-mode: screen;
-  transition: opacity 0.15s ease;
-  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 45%);
-  pointer-events: none;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.03) 45%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.03) 55%,
+    transparent 100%
+  );
+  transform: translateX(-100%) skewX(-15deg);
+  transition: transform 0.8s ease;
+  z-index: 1;
 }
 
-.tilt-card.is-tilting .tilt-card__glare {
-  opacity: 0.55;
+.feature-card:hover .feature-card__glare {
+  transform: translateX(100%) skewX(-15deg);
 }
 
-.tilt-card__content {
+.feature-card__content {
   position: relative;
   z-index: 10;
 }
 
-.tilt-card__icon {
-  font-size: 3rem;
-  margin-bottom: 1.5rem;
-  display: block;
+.feature-card__icon {
+  font-size: 3.5rem;
+  margin-bottom: 2rem;
+  display: inline-block;
+  filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.3));
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.tilt-card__title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin: 0 0 1rem;
-  color: var(--color-light);
+.feature-card:hover .feature-card__icon {
+  transform: scale(1.1) translateY(-2px);
 }
 
-.tilt-card__desc {
+.feature-card__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 1.25rem;
+  color: #fff;
+  letter-spacing: -0.02em;
+  background: linear-gradient(to right, #fff, rgba(255, 255, 255, 0.8));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.feature-card__desc {
   color: var(--color-gray);
-  line-height: 1.6;
+  line-height: 1.8;
+  font-size: 1.05rem;
   margin: 0;
 }
 
-.tilt-card__accent {
+.feature-card__accent {
   position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #10b981, #8b5cf6, #10b981);
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #10b981, #8b5cf6, transparent);
   transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s ease;
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0.6;
 }
 
-.tilt-card:hover .tilt-card__accent {
+.feature-card:hover .feature-card__accent {
   transform: scaleX(1);
 }
 
@@ -5306,7 +5314,7 @@ html.site-ready {
   transition: all 0.2s ease;
   border: 1px solid rgba(255, 255, 255, 0.04);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;

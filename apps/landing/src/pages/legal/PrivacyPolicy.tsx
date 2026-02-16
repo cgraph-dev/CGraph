@@ -216,7 +216,7 @@ const sections = [
       <ul>
         <li><strong>Encryption in Transit</strong> — TLS 1.3 for all connections</li>
         <li><strong>Encryption at Rest</strong> — AES-256 for stored data</li>
-        <li><strong>End-to-End Encryption</strong> — Signal Protocol for direct messages</li>
+        <li><strong>End-to-End Encryption</strong> — Triple Ratchet protocol (PQXDH + ML-KEM-768) for direct messages</li>
         <li><strong>Regular Audits</strong> — Third-party security assessments</li>
         <li><strong>Bug Bounty</strong> — Responsible disclosure program at <a href="mailto:security@cgraph.org">security@cgraph.org</a></li>
         <li><strong>Access Controls</strong> — Least-privilege access for all employees and systems</li>
