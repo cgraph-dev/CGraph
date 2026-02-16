@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { SpeedInsights } from '@vercel/speed-insights/react';
+import { Analytics } from '@vercel/analytics/react';
 import ErrorBoundary from './components/ErrorBoundary';
 import './index.css';
 
@@ -85,6 +86,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
+          <Analytics />
           <SpeedInsights />
         </BrowserRouter>
       </ErrorBoundary>
