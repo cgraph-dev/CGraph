@@ -91,10 +91,10 @@ const sections = [
       
       <h4>What We Do NOT Track</h4>
       <ul>
-        <li>❌ Personal identifiers</li>
-        <li>❌ Cross-site browsing</li>
-        <li>❌ Advertising profiles</li>
-        <li>❌ Third-party cookies</li>
+        <li>No personal identifiers</li>
+        <li>No cross-site browsing</li>
+        <li>No advertising profiles</li>
+        <li>No third-party cookies</li>
       </ul>
     `,
   },
@@ -179,9 +179,9 @@ const sections = [
       
       <p>We do NOT use:</p>
       <ul>
-        <li>❌ Advertising identifiers (IDFA/GAID)</li>
-        <li>❌ Device fingerprinting</li>
-        <li>❌ Third-party SDKs that track users</li>
+        <li>No advertising identifiers (IDFA/GAID)</li>
+        <li>No device fingerprinting</li>
+        <li>No third-party SDKs that track users</li>
       </ul>
     `,
   },

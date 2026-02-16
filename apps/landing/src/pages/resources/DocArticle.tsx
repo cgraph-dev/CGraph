@@ -720,21 +720,21 @@ const docArticles: Record<string, DocArticleData> = {
 <table>
   <thead><tr><th>Category</th><th>Icon</th><th>Examples</th></tr></thead>
   <tbody>
-    <tr><td><strong>Social</strong></td><td>💬</td><td>First Message, Conversation Starter, Community Builder</td></tr>
-    <tr><td><strong>Forum</strong></td><td>📋</td><td>Thread Creator, Popular Post, Karma King</td></tr>
-    <tr><td><strong>Security</strong></td><td>🔐</td><td>Key Exchange, Verified Contact, 2FA Enabled</td></tr>
-    <tr><td><strong>Voice</strong></td><td>🎙️</td><td>First Call, Group Caller, Screen Sharer</td></tr>
-    <tr><td><strong>Community</strong></td><td>🏠</td><td>Server Creator, Event Host, Helper</td></tr>
-    <tr><td><strong>Loyalty</strong></td><td>⭐</td><td>7-Day Streak, Monthly Active, Veteran</td></tr>
+    <tr><td><strong>Social</strong></td><td>Chat</td><td>First Message, Conversation Starter, Community Builder</td></tr>
+    <tr><td><strong>Forum</strong></td><td>Forum</td><td>Thread Creator, Popular Post, Karma King</td></tr>
+    <tr><td><strong>Security</strong></td><td>Secure</td><td>Key Exchange, Verified Contact, 2FA Enabled</td></tr>
+    <tr><td><strong>Voice</strong></td><td>Voice</td><td>First Call, Group Caller, Screen Sharer</td></tr>
+    <tr><td><strong>Community</strong></td><td>Home</td><td>Server Creator, Event Host, Helper</td></tr>
+    <tr><td><strong>Loyalty</strong></td><td>Star</td><td>7-Day Streak, Monthly Active, Veteran</td></tr>
   </tbody>
 </table>
 
 <h3>Achievement Tiers</h3>
 <ul>
-  <li><strong>🥉 Bronze</strong> — Basic milestone (e.g., send 10 messages)</li>
-  <li><strong>🥈 Silver</strong> — Intermediate (e.g., send 100 messages)</li>
-  <li><strong>🥇 Gold</strong> — Advanced (e.g., send 1,000 messages)</li>
-  <li><strong>💎 Platinum</strong> — Elite (e.g., send 10,000 messages)</li>
+  <li><strong>Bronze</strong> — Basic milestone (e.g., send 10 messages)</li>
+  <li><strong>Silver</strong> — Intermediate (e.g., send 100 messages)</li>
+  <li><strong>Gold</strong> — Advanced (e.g., send 1,000 messages)</li>
+  <li><strong>Platinum</strong> — Elite (e.g., send 10,000 messages)</li>
 </ul>
 
 <h3>Achievement Notifications</h3>
@@ -791,11 +791,11 @@ const docArticles: Record<string, DocArticleData> = {
 <table>
   <thead><tr><th>Streak Length</th><th>XP Multiplier</th><th>Badge</th></tr></thead>
   <tbody>
-    <tr><td>3 days</td><td>1.25x</td><td>🔥 Warm</td></tr>
-    <tr><td>7 days</td><td>1.5x</td><td>🔥🔥 Hot</td></tr>
-    <tr><td>14 days</td><td>1.75x</td><td>🔥🔥🔥 Blazing</td></tr>
-    <tr><td>30 days</td><td>2.0x</td><td>⚡ Legendary</td></tr>
-    <tr><td>100 days</td><td>2.5x</td><td>💎 Unstoppable</td></tr>
+    <tr><td>3 days</td><td>1.25x</td><td>Warm</td></tr>
+    <tr><td>7 days</td><td>1.5x</td><td>Hot</td></tr>
+    <tr><td>14 days</td><td>1.75x</td><td>Blazing</td></tr>
+    <tr><td>30 days</td><td>2.0x</td><td>Legendary</td></tr>
+    <tr><td>100 days</td><td>2.5x</td><td>Unstoppable</td></tr>
   </tbody>
 </table>
 `,

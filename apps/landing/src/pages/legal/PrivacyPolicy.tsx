@@ -43,11 +43,11 @@ const sections = [
       
       <h4>1.3 Information We Do NOT Collect</h4>
       <ul>
-        <li>❌ Location data (GPS)</li>
-        <li>❌ Contact lists (without explicit consent)</li>
-        <li>❌ Biometric data (processed locally only)</li>
-        <li>❌ Advertising identifiers</li>
-        <li>❌ Health or fitness data</li>
+        <li>No location data (GPS)</li>
+        <li>No contact lists (without explicit consent)</li>
+        <li>No biometric data (processed locally only)</li>
+        <li>No advertising identifiers</li>
+        <li>No health or fitness data</li>
       </ul>
     `,
   },

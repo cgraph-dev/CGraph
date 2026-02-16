@@ -334,7 +334,7 @@ export default function Documentation() {
                   onClick={() => setSearchQuery('')}
                   className="text-gray-500 hover:text-white"
                 >
-                  ✕
+                  Clear
                 </button>
               </div>
             )}

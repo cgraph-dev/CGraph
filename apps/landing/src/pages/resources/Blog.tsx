@@ -273,14 +273,14 @@ export default function Blog() {
               </div>
               <div className="flex shrink-0 flex-col items-center gap-2">
                 <div
-                  className="flex h-20 w-20 items-center justify-center rounded-2xl text-4xl"
+                  className="flex h-20 w-20 items-center justify-center rounded-2xl"
                   style={{
                     background:
                       'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(139, 92, 246, 0.2))',
                     border: '1px solid rgba(255,255,255,0.1)',
                   }}
                 >
-                  🏗️
+                  <NeonIcon symbol="🏗️" size={40} title="Architecture refactor" />
                 </div>
                 <span className="text-xs text-gray-500">Feb 15, 2026</span>
               </div>

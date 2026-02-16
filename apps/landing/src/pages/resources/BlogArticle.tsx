@@ -212,23 +212,23 @@ const blogArticles: Record<string, BlogArticleData> = {
 <table>
 <thead><tr><th>Feature Module</th><th>Web</th><th>Mobile</th><th>Notes</th></tr></thead>
 <tbody>
-<tr><td>Real-time Messaging</td><td>✅</td><td>✅</td><td>WebSocket via Phoenix Channels</td></tr>
-<tr><td>End-to-End Encryption</td><td>✅</td><td>✅</td><td>Triple Ratchet (PQXDH + ML-KEM-768)</td></tr>
-<tr><td>Forums / Threads</td><td>✅</td><td>✅</td><td>Nested discussions</td></tr>
-<tr><td>Voice Calls</td><td>✅</td><td>✅</td><td>WebRTC with TURN fallback</td></tr>
-<tr><td>Video Calls</td><td>✅</td><td>✅</td><td>WebRTC with adaptive bitrate</td></tr>
-<tr><td>Screen Sharing</td><td>✅</td><td>✅</td><td>Desktop + mobile screen capture</td></tr>
-<tr><td>User Profiles</td><td>✅</td><td>✅</td><td>Avatars, bios, status</td></tr>
-<tr><td>Gamification / XP</td><td>✅</td><td>✅</td><td>RPG-style leveling, achievements</td></tr>
-<tr><td>Marketplace</td><td>✅</td><td>✅</td><td>Virtual currency + item trading</td></tr>
-<tr><td>Settings &amp; Preferences</td><td>✅</td><td>✅</td><td>Theme, notifications, privacy</td></tr>
-<tr><td>Community Management</td><td>✅</td><td>✅</td><td>Roles, permissions, moderation</td></tr>
-<tr><td>File Sharing</td><td>✅</td><td>✅</td><td>Drag-drop on web, picker on mobile</td></tr>
-<tr><td>Notifications</td><td>✅</td><td>✅</td><td>Push + in-app</td></tr>
-<tr><td>Search</td><td>✅</td><td>✅</td><td>Full-text across messages &amp; forums</td></tr>
-<tr><td>Authentication</td><td>✅</td><td>✅</td><td>OAuth, email/password, biometric on mobile</td></tr>
-<tr><td>Subscription / Billing</td><td>✅</td><td>✅</td><td>Stripe integration</td></tr>
-<tr><td>Admin Dashboard</td><td>✅</td><td>✅</td><td>Server stats, user management</td></tr>
+<tr><td>Real-time Messaging</td><td>Yes</td><td>Yes</td><td>WebSocket via Phoenix Channels</td></tr>
+<tr><td>End-to-End Encryption</td><td>Yes</td><td>Yes</td><td>Triple Ratchet (PQXDH + ML-KEM-768)</td></tr>
+<tr><td>Forums / Threads</td><td>Yes</td><td>Yes</td><td>Nested discussions</td></tr>
+<tr><td>Voice Calls</td><td>Yes</td><td>Yes</td><td>WebRTC with TURN fallback</td></tr>
+<tr><td>Video Calls</td><td>Yes</td><td>Yes</td><td>WebRTC with adaptive bitrate</td></tr>
+<tr><td>Screen Sharing</td><td>Yes</td><td>Yes</td><td>Desktop + mobile screen capture</td></tr>
+<tr><td>User Profiles</td><td>Yes</td><td>Yes</td><td>Avatars, bios, status</td></tr>
+<tr><td>Gamification / XP</td><td>Yes</td><td>Yes</td><td>RPG-style leveling, achievements</td></tr>
+<tr><td>Marketplace</td><td>Yes</td><td>Yes</td><td>Virtual currency + item trading</td></tr>
+<tr><td>Settings &amp; Preferences</td><td>Yes</td><td>Yes</td><td>Theme, notifications, privacy</td></tr>
+<tr><td>Community Management</td><td>Yes</td><td>Yes</td><td>Roles, permissions, moderation</td></tr>
+<tr><td>File Sharing</td><td>Yes</td><td>Yes</td><td>Drag-drop on web, picker on mobile</td></tr>
+<tr><td>Notifications</td><td>Yes</td><td>Yes</td><td>Push + in-app</td></tr>
+<tr><td>Search</td><td>Yes</td><td>Yes</td><td>Full-text across messages &amp; forums</td></tr>
+<tr><td>Authentication</td><td>Yes</td><td>Yes</td><td>OAuth, email/password, biometric on mobile</td></tr>
+<tr><td>Subscription / Billing</td><td>Yes</td><td>Yes</td><td>Stripe integration</td></tr>
+<tr><td>Admin Dashboard</td><td>Yes</td><td>Yes</td><td>Server stats, user management</td></tr>
 </tbody>
 </table>
 
