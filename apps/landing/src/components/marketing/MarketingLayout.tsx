@@ -55,6 +55,7 @@ export default function MarketingLayout({
 
   return (
     <div className="marketing-enhanced relative min-h-screen overflow-hidden">
+      {/* Default SEO — child pages can override via their own <SEO> (deepest wins) */}
       {title && <SEO title={title} description={subtitle} path={location.pathname} />}
       <GlobalBackground />
 

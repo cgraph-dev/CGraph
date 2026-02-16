@@ -8,7 +8,9 @@
  * @since v0.9.26
  */
 
-export const docCategories = [
+import type { DocCategory } from './types';
+
+export const docCategories: DocCategory[] = [
   {
     id: 'getting-started',
     icon: '🚀',
@@ -226,4 +228,7 @@ export const methodColors: Record<string, { bg: string; text: string }> = {
   WS: { bg: 'rgba(167, 139, 250, 0.12)', text: '#a78bfa' },
 };
 
-export const defaultMethodColor = methodColors.GET!;
+export const defaultMethodColor = methodColors.GET ?? {
+  bg: 'rgba(52, 211, 153, 0.12)',
+  text: '#34d399',
+};

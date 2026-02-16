@@ -28,7 +28,8 @@ export interface SecurityFeatureData {
 
 export interface FooterLinkData {
   readonly label: string;
-  readonly href: string;
+  readonly to?: string;
+  readonly href?: string;
 }
 
 export interface ValuePropData {

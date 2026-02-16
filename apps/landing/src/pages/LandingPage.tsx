@@ -12,7 +12,7 @@
  * Version: 2.0.0 - Added resource pages (/docs, /blog, /status, /download)
  */
 
-import { useEffect, lazy, Suspense } from 'react';
+import { useEffect, useRef, lazy, Suspense } from 'react';
 
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -50,19 +50,6 @@ import '../styles/mobile-fixes.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-// =============================================================================
-// FRAMER MOTION VARIANTS (matches animation patterns from footer pages)
-// =============================================================================
-
-/** Scroll-triggered fade-up — the universal entrance used on all footer pages */
-// Variants removed (moved to primitives or sections)
-
-// =============================================================================
-// ANIMATED SECTION HEADER (matches MarketingLayout hero stagger pattern)
-// =============================================================================
-
-// SectionHeader extracted to components/marketing/ui/SectionHeader.tsx
-
 // Lazy-load showcase sections to reduce initial bundle size
 const InteractiveDemo = lazy(() =>
   import('../components/interactive-demo').then((m) => ({ default: m.InteractiveDemo }))
@@ -74,25 +61,13 @@ const ForumShowcase = lazy(() =>
   import('../components/forum-showcase').then((m) => ({ default: m.ForumShowcase }))
 );
 
-// Web app URL for auth links (direct navigation, not SPA routing)
-// Constants moved to relevant components
-
-// =============================================================================
-// COMPONENTS
-// =============================================================================
-
-// Security sections moved to dedicated component: Security.tsx
-
-// TiltCard extracted/replaced by GlassCard
-
-// SwapButton extracted/replaced by LandingButton
-
 // =============================================================================
 // MAIN COMPONENT
 // =============================================================================
 
 export default function LandingPage() {
   const prefersReduced = useReducedMotion();
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
   // Handle hash navigation on page load
   useEffect(() => {
@@ -176,19 +151,13 @@ export default function LandingPage() {
         resizeObserver.observe(mainContainer);
       }
 
-      (window as unknown as { _cgraphResizeObserver?: ResizeObserver })._cgraphResizeObserver =
-        resizeObserver;
+      resizeObserverRef.current = resizeObserver;
     }, 100);
 
     return () => {
       clearTimeout(timeoutId);
-      const observer = (window as unknown as { _cgraphResizeObserver?: ResizeObserver })
-        ._cgraphResizeObserver;
-      if (observer) {
-        observer.disconnect();
-        delete (window as unknown as { _cgraphResizeObserver?: ResizeObserver })
-          ._cgraphResizeObserver;
-      }
+      resizeObserverRef.current?.disconnect();
+      resizeObserverRef.current = null;
       if (gsapContextRef) {
         gsapContextRef.revert();
         gsapContextRef = null;

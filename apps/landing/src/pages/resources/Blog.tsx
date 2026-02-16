@@ -469,6 +469,7 @@ export default function Blog() {
                   <input
                     type="email"
                     placeholder="Enter your email"
+                    aria-label="Email address for newsletter"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required

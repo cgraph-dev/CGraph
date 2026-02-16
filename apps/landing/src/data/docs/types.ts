@@ -28,7 +28,6 @@ export interface DocCategory {
 
 /** Article entry within a category listing */
 export interface DocCategoryArticle {
-  readonly slug: string;
   readonly title: string;
-  readonly readTime: string;
+  readonly time: string;
 }

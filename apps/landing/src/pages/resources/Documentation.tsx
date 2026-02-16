@@ -111,6 +111,7 @@ export default function Documentation() {
             <input
               type="text"
               placeholder="Search documentation..."
+              aria-label="Search documentation"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="contact-form__input w-full pl-12"

@@ -15,7 +15,10 @@ export const categoryColors: Record<string, CategoryColor> = {
 } as const;
 
 /** Default fallback color for unknown categories */
-export const defaultCategoryColor: CategoryColor = categoryColors.Engineering!;
+export const defaultCategoryColor: CategoryColor = categoryColors.Engineering ?? {
+  bg: 'rgba(99, 102, 241, 0.12)',
+  text: '#818cf8',
+};
 
 /** Ordered list of all article slugs (newest first) */
 export const articleSlugs = [
