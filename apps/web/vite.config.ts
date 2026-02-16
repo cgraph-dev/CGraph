@@ -78,7 +78,7 @@ export default defineConfig({
     // Suppress chunk size warnings — large chunks are expected for the
     // encrypted messaging app (crypto libs, Three.js demos, markdown renderer).
     // Actual bundle analysis uses rollup-plugin-visualizer output.
-    chunkSizeWarningLimit: 2048,
+    chunkSizeWarningLimit: 3000,
     rollupOptions: {
       output: {
         // Use function for more granular control over chunking

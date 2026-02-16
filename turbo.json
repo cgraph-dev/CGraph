@@ -12,7 +12,8 @@
     },
     "@cgraph/core#build": {
       "dependsOn": ["^build"],
-      "outputs": []
+      "outputs": [],
+      "env": ["VITE_API_URL", "VITE_SOCKET_URL", "VITE_SENTRY_DSN", "VITE_*"]
     },
     "dev": {
       "cache": false,
