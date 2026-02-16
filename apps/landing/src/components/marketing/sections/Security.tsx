@@ -10,7 +10,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { SectionHeader } from '../ui/SectionHeader';
-import { GlassCard } from '../ui/GlassCard';
 import { securityFeatures } from '../../../data/landing-data';
 import type { SecurityFeatureData } from '../../../data/landing-data';
 import './Security.css';
@@ -19,61 +18,6 @@ interface SecurityCardProps {
   feature: SecurityFeatureData;
   index: number;
 }
-
-type SecurityStatusTone = 'good' | 'warn' | 'neutral';
-
-interface SecurityStatusRow {
-  control: string;
-  cgraph: string;
-  baseline: string;
-  detail: string;
-  tone: SecurityStatusTone;
-}
-
-const securityStatusRows: SecurityStatusRow[] = [
-  {
-    control: 'E2EE Protocol',
-    cgraph: 'PQXDH + Triple Ratchet',
-    baseline: 'Transport TLS only',
-    detail: 'Post-quantum hybrid design is active in production.',
-    tone: 'good',
-  },
-  {
-    control: 'Trusted Proxy',
-    cgraph: 'Cloudflare CIDR enforced',
-    baseline: 'Open origin ingress',
-    detail: 'Origin only trusts Cloudflare IP ranges.',
-    tone: 'good',
-  },
-  {
-    control: 'API Hosting',
-    cgraph: 'Fly.io (IAD region)',
-    baseline: 'Single VM / unmanaged edge',
-    detail: 'Current deployment is single-region for backend.',
-    tone: 'neutral',
-  },
-  {
-    control: 'Database Access',
-    cgraph: 'PostgreSQL 16 + PgBouncer',
-    baseline: 'Direct DB connections',
-    detail: 'Connection pooling runs as Fly.io sidecar.',
-    tone: 'good',
-  },
-  {
-    control: 'Observability',
-    cgraph: 'Prometheus + Grafana IaC',
-    baseline: 'No SLO instrumentation',
-    detail: 'Dashboards are infrastructure-as-code ready; full live rollout is pending.',
-    tone: 'neutral',
-  },
-  {
-    control: 'Independent Reviews',
-    cgraph: 'E2EE audit pending (Q1 2026)',
-    baseline: 'Not scheduled',
-    detail: 'Formal protocol audit and external pen test are not yet completed.',
-    tone: 'warn',
-  },
-];
 
 type SecurityIconVariant = 'encrypted' | 'zero-knowledge' | 'argon2' | 'sync' | '2fa' | 'web3';
 
@@ -283,67 +227,6 @@ export function Security() {
             <SecurityCard key={i} feature={feature} index={i} />
           ))}
         </div>
-
-        {/* Comparison Vault Panel */}
-        <motion.div
-          initial={{ opacity: 0, y: 50, scale: 0.98 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          className="w-full max-w-4xl"
-        >
-          <GlassCard className="security-comparison panel-border-glow relative overflow-hidden">
-            <div className="security-comparison__header relative z-10 pb-3 pt-8">
-              <motion.h3
-                className="security-comparison__title"
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.45 }}
-              >
-                The Security Vault
-              </motion.h3>
-              <motion.p
-                className="security-comparison__subtitle"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ delay: 0.55 }}
-              >
-                E2EE Protocol, infrastructure controls, and operational safeguards in one snapshot.
-              </motion.p>
-            </div>
-
-            <div className="security-comparison__table relative z-10 px-4 pb-10 md:px-12">
-              <div className="security-comparison__legend">
-                <span>Control</span>
-                <span>CGraph</span>
-                <span className="hidden md:inline">Typical Baseline</span>
-              </div>
-
-              {securityStatusRows.map((row, i) => (
-                <motion.div
-                  key={row.control}
-                  className="security-comparison__row"
-                  initial={{ opacity: 0, x: -10 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: 0.68 + i * 0.08, ease: 'easeOut' }}
-                >
-                  <div className="security-comparison__row-grid">
-                    <span className="security-comparison__label">{row.control}</span>
-                    <div
-                      className={`security-comparison__value security-comparison__value--${row.tone}`}
-                    >
-                      {row.cgraph}
-                    </div>
-                    <span className="security-comparison__baseline hidden md:block">
-                      {row.baseline}
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </GlassCard>
-        </motion.div>
       </div>
     </section>
   );
