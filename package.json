@@ -82,6 +82,7 @@
       "utf-8-validate"
     ],
     "allowedDeprecatedVersions": {
+      "glob": "*",
       "whatwg-encoding": "3.1.1"
     }
   },

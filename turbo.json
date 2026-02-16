@@ -10,7 +10,6 @@
       "outputs": ["dist/**", ".next/**", "!.next/cache/**", "build/**"],
       "env": ["VITE_API_URL", "VITE_SOCKET_URL", "VITE_SENTRY_DSN", "VITE_*"]
     },
-    "//@cgraph/core#build": "Core exports source directly — build is typecheck-only, no outputs expected",
     "@cgraph/core#build": {
       "dependsOn": ["^build"],
       "outputs": []
