@@ -1,7 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 
 export interface FeatureCardProps {
-  icon: string;
+  icon: React.ReactNode;
   title: string;
   description: string;
   className?: string;

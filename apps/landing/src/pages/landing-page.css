@@ -2647,11 +2647,42 @@ html.site-ready {
 }
 
 .feature-card__icon {
-  font-size: 3.5rem;
+  width: 3.5rem;
+  height: 3.5rem;
   margin-bottom: 2rem;
-  display: inline-block;
-  filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.3));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.feature-card__icon-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.feature-card__icon-neon {
+  width: 100%;
+  height: 100%;
+  color: #34d399;
+  filter:
+    drop-shadow(0 0 10px rgba(16, 185, 129, 0.55))
+    drop-shadow(0 0 18px rgba(139, 92, 246, 0.28));
+}
+
+.feature-card__icon-neon--shield,
+.feature-card__icon-neon--folder {
+  color: #34d399;
+}
+
+.feature-card__icon-neon--bolt,
+.feature-card__icon-neon--spark {
+  color: #22d3ee;
+}
+
+.feature-card__icon-neon--chain,
+.feature-card__icon-neon--crown {
+  color: #a78bfa;
 }
 
 .feature-card:hover .feature-card__icon {
