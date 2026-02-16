@@ -28,7 +28,9 @@ function NavLink({
   to?: string;
   children: React.ReactNode;
 }) {
+  const location = useLocation();
   const [pos, setPos] = useState({ x: 0, y: 0 });
+  const isActive = Boolean(to && location.pathname === to);
 
   const onMove = useCallback((e: React.MouseEvent) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -41,7 +43,7 @@ function NavLink({
   const onLeave = useCallback(() => setPos({ x: 0, y: 0 }), []);
 
   const shared = {
-    className: 'gl-nav-unified__link group',
+    className: `gl-nav-unified__link group ${isActive ? 'is-active' : ''}`,
     onMouseMove: onMove,
     onMouseLeave: onLeave,
     animate: { x: pos.x, y: pos.y },
