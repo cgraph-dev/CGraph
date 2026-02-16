@@ -4,5 +4,5 @@
  * @see ./animated-logo/page.tsx for implementation
  */
 
-export { default } from './animated-logo/index';
-export * from './animated-logo/index';
+export { default } from '../animated-logo/index';
+export * from '../animated-logo/index';
