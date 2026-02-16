@@ -62,7 +62,7 @@ export function ForumShowcase() {
             <span className="section-header__badge-dot" aria-hidden="true" />
             <span className="section-header__badge-text">Revolutionary Forums</span>
           </span>
-          <h2 className="mb-4 font-zentry text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
+          <h2 className="section-header__title mb-4 text-white">
             Build Your Community,{' '}
             <GradientText variant="emerald-purple" animated className="title-fx--air">
               Your Way

@@ -2458,8 +2458,9 @@ html.site-ready {
 
 /* Section title */
 .section-header__title {
+  font-family: 'Tektur', 'Orbitron', system-ui, sans-serif;
   font-size: clamp(2rem, 6vw, 3.5rem);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.1;
   margin: 0 0 1rem;

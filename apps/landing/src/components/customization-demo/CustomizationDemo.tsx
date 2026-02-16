@@ -94,7 +94,7 @@ export function CustomizationDemo() {
             <span className="section-header__badge-dot" aria-hidden="true" />
             <span className="section-header__badge-text">100+ Customization Options</span>
           </span>
-          <h2 className="mb-4 font-zentry text-4xl font-bold text-white sm:text-5xl">
+          <h2 className="section-header__title mb-4 text-white">
             Make It{' '}
             <GradientText variant="emerald-purple" animated className="title-fx--air">
               Yours

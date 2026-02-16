@@ -34,7 +34,7 @@ export const SectionHeader = memo(function SectionHeader({
         </span>
       </motion.div>
       <motion.h2
-        className="section-header__title font-zentry"
+        className="section-header__title"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-40px' }}
