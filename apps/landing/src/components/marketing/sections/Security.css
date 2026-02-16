@@ -257,19 +257,32 @@
 
 .security-card__title {
   font-size: 1.75rem;
+  font-family: 'Tektur', 'Orbitron', system-ui, sans-serif;
   background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 1rem;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.01em;
   font-weight: 700;
+  text-transform: uppercase;
 }
 
 .security-card__desc {
-  color: #9ca3af;
-  line-height: 1.7;
-  font-size: 1.05rem;
+  color: #b6c0d0;
+  line-height: 1.65;
+  font-size: 1rem;
+  font-family: 'Robert', 'Inter', system-ui, sans-serif;
+}
+
+.security-card__extra {
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.62);
+  line-height: 1.55;
+  font-size: 0.9rem;
+  font-family: 'Robert', 'Inter', system-ui, sans-serif;
 }
 
 .security-card__accent {
@@ -421,6 +434,20 @@
   
   .security-card {
     padding: 2rem;
+  }
+
+  .security-card__title {
+    font-size: 1.35rem;
+  }
+
+  .security-card__desc {
+    font-size: 0.95rem;
+  }
+
+  .security-card__extra {
+    font-size: 0.84rem;
+    margin-top: 0.7rem;
+    padding-top: 0.65rem;
   }
   
   .security-comparison {

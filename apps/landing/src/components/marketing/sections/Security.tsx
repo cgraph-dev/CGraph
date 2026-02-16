@@ -177,7 +177,7 @@ const SecurityCard = ({ feature, index }: SecurityCardProps) => {
           <SecurityIcon title={feature.title} index={index} />
         </div>
         <motion.h3
-          className="security-card__title font-zentry"
+          className="security-card__title"
           initial={{ opacity: 0, x: -10 }}
           whileInView={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
@@ -185,13 +185,23 @@ const SecurityCard = ({ feature, index }: SecurityCardProps) => {
           {feature.title}
         </motion.h3>
         <motion.p
-          className="security-card__desc font-space"
+          className="security-card__desc"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
         >
           {feature.description}
         </motion.p>
+        {feature.details && (
+          <motion.p
+            className="security-card__extra"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
+          >
+            {feature.details}
+          </motion.p>
+        )}
       </div>
 
       <div className="security-card__accent" />

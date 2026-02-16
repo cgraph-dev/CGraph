@@ -23,6 +23,7 @@ export interface SecurityFeatureData {
   readonly icon: string;
   readonly title: string;
   readonly description: string;
+  readonly details?: string;
 }
 
 export interface FooterLinkData {
@@ -84,15 +85,75 @@ export const showcaseCards: readonly ShowcaseCardData[] = [
 ] as const;
 
 export const securityFeatures: readonly SecurityFeatureData[] = [
-  { icon: '🔒', title: 'End-to-End Encrypted', description: 'Messages encrypted with AES-256-GCM' },
-  { icon: '🛡️', title: 'Zero-Knowledge', description: 'We cannot read your messages' },
-  { icon: '🔑', title: 'Argon2 Passwords', description: 'OWASP-recommended password hashing' },
-  { icon: '📱', title: 'Multi-Device Sync', description: 'Secure sync across all devices' },
-  { icon: '🔐', title: '2FA Protection', description: 'TOTP-based two-factor authentication' },
-  { icon: '🌐', title: 'Web3 Authentication', description: 'Sign in with your crypto wallet' },
-  { icon: '⚡', title: 'Real-Time Secure', description: 'Encrypted WebSocket connections' },
-  { icon: '🔏', title: 'TLS Everywhere', description: 'All data encrypted in transit' },
-  { icon: '✅', title: 'GDPR Compliant', description: 'Full data export & deletion rights' },
+  {
+    icon: '🔒',
+    title: 'End-to-End Encrypted',
+    description:
+      'Every message is encrypted on-device before transport, so plaintext never traverses the network.',
+    details: 'AES-256-GCM payloads with authenticated encryption and tamper detection.',
+  },
+  {
+    icon: '🛡️',
+    title: 'Zero-Knowledge',
+    description:
+      'CGraph servers operate on encrypted blobs and metadata controls, not your readable conversation content.',
+    details:
+      'Key material stays client-side, and message access is enforced by cryptographic ownership.',
+  },
+  {
+    icon: '🔑',
+    title: 'Argon2 Passwords',
+    description:
+      'Credential storage follows OWASP-aligned hashing strategy with memory-hard parameters to resist brute force.',
+    details:
+      'Argon2id with tuned cost factors and hardened auth endpoints against credential stuffing.',
+  },
+  {
+    icon: '📱',
+    title: 'Multi-Device Sync',
+    description:
+      'You can securely sync across web and mobile clients while preserving encryption boundaries per device.',
+    details:
+      'Device-aware key flows keep cross-platform parity without exposing raw message content.',
+  },
+  {
+    icon: '🔐',
+    title: '2FA Protection',
+    description:
+      'Optional TOTP-based second factor adds a strong layer of account protection beyond passwords.',
+    details:
+      'Authentication gates can enforce second-factor verification for sensitive account operations.',
+  },
+  {
+    icon: '🌐',
+    title: 'Web3 Authentication',
+    description:
+      'Wallet-based sign-in supports decentralized identity flows for users who prefer key-based access.',
+    details:
+      'Challenge/response verification confirms wallet ownership without exposing private keys.',
+  },
+  {
+    icon: '⚡',
+    title: 'Real-Time Secure',
+    description:
+      'Realtime channels are designed for low-latency messaging without weakening transport security.',
+    details: 'Secure WebSocket flows and auth checks protect session integrity at scale.',
+  },
+  {
+    icon: '🔏',
+    title: 'TLS Everywhere',
+    description:
+      'All client-server traffic is encrypted in transit to prevent interception on hostile networks.',
+    details: 'Strict HTTPS/TLS handling protects API, media, and session communication paths.',
+  },
+  {
+    icon: '✅',
+    title: 'GDPR Compliant',
+    description:
+      'Users get clear controls for export, retention, and account deletion in privacy-sensitive workflows.',
+    details:
+      'Data rights flows are built into product operations rather than external afterthoughts.',
+  },
 ] as const;
 
 export const footerLinks = {
