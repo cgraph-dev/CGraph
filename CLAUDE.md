@@ -1426,4 +1426,42 @@ subscriptions move beyond scaffolding.
 - Key blocker: No audit firm selected, no budget finalized (Q1 2026 timeline at risk)
 - Identified 9 prioritized pre-audit actions
 
-**Commits**: `06833c9a` (TS fixes), `522f92a4` (audit + security checklist)
+**Commits**: `06833c9a` (TS fixes), `522f92a4` (audit + security checklist), `87f4bef2` (review
+fixes)
+
+### Session 29 Part 3 — Crypto Consolidation Assessment & Mobile Beta Review
+
+**Crypto State Summary** (web vs mobile):
+
+- Web (`packages/crypto/`): Production-ready — PQXDH (ML-KEM-768 + P-256), Triple Ratchet,
+  AES-256-GCM, 192 tests, 4,071 LOC, 13 source files
+- Mobile (`apps/mobile/src/lib/crypto/e2ee.ts`): **Prototype only** — simplified X3DH with XOR
+  mixing (not real ECDH), HMAC-SHA256 faking signatures (not ECDSA), NO forward secrecy (static
+  `sharedSecret` reused forever), NO post-quantum, ~1,058 LOC, 5 files
+
+**Critical mobile crypto vulnerabilities** (must fix before beta):
+
+1. `e2ee.ts:404` — XOR-based "key agreement" is NOT cryptographic ECDH
+2. `e2ee.ts:236` — HMAC-SHA256 used instead of real digital signatures
+3. No Double Ratchet — one key compromise exposes ALL session messages
+
+**Consolidation plan** (from `packages/crypto/README.md`):
+
+- Phase 1 (v0.9.x): Share types + utils from `@cgraph/crypto` → neither app imports it yet
+- Phase 2 (v1.0): Mobile forward secrecy — `ExpoSecureProtocolStore`, replace mobile X3DH with
+  package PQXDH, add ratchet state persistence
+- Phase 3 (v1.0+): Full consolidation — both apps use `@cgraph/crypto` exclusively
+
+**Mobile Beta Readiness** — App is feature-complete, well-architected:
+
+- ✅ Ready: Navigation (10+ navigators), Error handling (Sentry + ErrorBoundary), Push
+  notifications, Deep linking (scheme + universal links), Legal screens, Build profiles, Privacy
+  manifests, E2E tests
+- ❌ **Blockers** (all config, not code):
+  - `eas.json` has placeholder Apple/Google credentials (`your-apple-id@email.com`)
+  - Missing real EAS project ID (needs `eas init`)
+  - No `google-service-account.json` for Play Store
+  - Sentry DSN not configured for production
+  - Version mismatch: `app.config.js` says 1.0.0, `package.json` says 0.9.31
+  - No store metadata (descriptions, screenshots)
+- **Estimated effort to submission**: ~1-2 days once credentials are ready

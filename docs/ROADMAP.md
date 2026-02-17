@@ -123,8 +123,8 @@ After this date, only the following are allowed:
 | **Test Coverage**          | Reach 70% unit coverage across all apps    | P0       | 🔄 In Progress |
 | **Security Audit**         | External E2EE + penetration test           | P0       | 🔄 In Progress |
 | ~~**Stripe Integration**~~ | Real billing with checkout/portal/webhooks | P0       | ✅ Done        |
-| **Crypto Consolidation**   | Unify web + mobile E2EE implementations    | P1       | 📋 Planned     |
-| **Mobile Beta**            | iOS/Android public TestFlight/Play Store   | P0       | 📋 Planned     |
+| **Crypto Consolidation**   | Unify web + mobile E2EE implementations    | P1       | � In Progress  |
+| **Mobile Beta**            | iOS/Android public TestFlight/Play Store   | P0       | 🔄 In Progress |
 | **Bot API v1**             | Initial bot/integration framework          | P2       | 📋 Planned     |
 
 > **Note:** Public servers, invite system, and forum channels already shipped in v0.9.x.
