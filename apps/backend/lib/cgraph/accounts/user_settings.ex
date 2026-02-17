@@ -40,6 +40,15 @@ defmodule CGraph.Accounts.UserSettings do
     field :show_in_search, :boolean, default: true
     field :allow_group_invites, Ecto.Enum, values: [:anyone, :friends, :nobody], default: :anyone
 
+    # Per-field profile visibility (Discord/Meta-style granular controls)
+    field :show_last_active, :boolean, default: true
+    field :show_post_count, :boolean, default: true
+    field :show_join_date, :boolean, default: true
+    field :show_bio, :boolean, default: true
+    field :show_social_links, :boolean, default: true
+    field :show_activity, :boolean, default: true
+    field :show_in_member_list, :boolean, default: true
+
     # Appearance preferences
     field :theme, Ecto.Enum, values: [:light, :dark, :system], default: :system
     field :compact_mode, :boolean, default: false
@@ -91,6 +100,13 @@ defmodule CGraph.Accounts.UserSettings do
       :allow_message_requests,
       :show_in_search,
       :allow_group_invites,
+      :show_last_active,
+      :show_post_count,
+      :show_join_date,
+      :show_bio,
+      :show_social_links,
+      :show_activity,
+      :show_in_member_list,
       :theme,
       :compact_mode,
       :font_size,

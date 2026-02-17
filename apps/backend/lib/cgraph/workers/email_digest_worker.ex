@@ -20,7 +20,7 @@ defmodule CGraph.Workers.EmailDigestWorker do
   """
 
   use Oban.Worker,
-    queue: :email,
+    queue: :mailers,
     max_attempts: 3,
     priority: 2
 

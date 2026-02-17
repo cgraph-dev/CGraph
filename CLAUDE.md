@@ -42,7 +42,7 @@ forums, and gamification. Features include post-quantum E2EE (PQXDH + Triple Rat
 and AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a
 karma-based forum system.
 
-**Version**: 0.9.29  
+**Version**: 0.9.30  
 **Last Updated**: February 17, 2026  
 **Architecture Score**: 9.0/10 (see CURRENT_STATE_DASHBOARD.md for breakdown)  
 **License**: Proprietary (see LICENSE)
@@ -860,7 +860,7 @@ Required:
 
 Copy `.env.example` to `.env` in `apps/backend/` and configure database credentials and secrets.
 
-## Current Status (v0.9.29)
+## Current Status (v0.9.30)
 
 **Updated:** February 17, 2026
 
@@ -896,7 +896,7 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Store facades        | 0           | **7 domains** (29 stores)  |
 | Passing tests        | 840         | **1,633** (+793)           |
 | Test failures        | 234+        | **0** (fully green)        |
-| Feature completion   | 59/69       | **62/69** (90%)            |
+| Feature completion   | 59/69       | **69/69** (100%)           |
 | Statement coverage   | 8.79%       | **~20%** (web, vitest)     |
 | Test files (backend) | 40          | **163** (308% increase)    |
 | Controller coverage  | 40%         | **100%** (83/83)           |
@@ -916,7 +916,8 @@ The following areas are scaffolded but not fully implemented:
 - **Friend suggestions**: `dismiss_friend_suggestion/2` always returns `:ok` (no-op)
 - **Storage tracking**: `Storage.get_user_storage_used/1` returns `0` (not implemented)
 - **Group auto-rules**: `Forums.GroupAutoRule` permission check always returns `true`
-- **Email digests**: `EmailDigestWorker` has placeholder templates
+- **Email digests**: `EmailDigestWorker` now has full HTML + text templates, cron schedule, and
+  queue fix
 - **AI integration**: Explicitly disabled; placeholder architecture doc exists
 - **Social Hub mock data**: Notifications and Discover tabs in web app use `MOCK_NOTIFICATIONS` /
   `MOCK_SEARCH_RESULTS` from `mock-data.ts` despite real stores existing
@@ -927,6 +928,29 @@ The following areas are scaffolded but not fully implemented:
 - **Web Fly.io deployment**: `fly.web.toml` exists but `Dockerfile.web` is missing
 - **Load testing**: k6 scripts ready but no staging/production runs completed
 - **Grafana dashboards**: JSON definitions exist but not provisioned in production
+
+### Sessions 25–26 Changes (v0.9.30 — final 7 features, 100% completion)
+
+- **Email Digest (#1)**: Fixed `queue: :email` → `:mailers` (jobs silently unprocessed). Added cron
+  entries to dev + prod config. Created full HTML (stats cards, trending posts, achievements) and
+  text digest templates. Fixed `render_template`/`render_text_template` in mailer.ex to properly
+  destructure `{html, text}` tuple from `Templates.render/2`. Added string-to-atom dispatch with
+  rescue fallback.
+- **Push Notification Prompt (#2)**: Created `PushNotificationPrompt.tsx` — Discord-style delayed
+  slide-in banner (15s delay, only when permission is 'default'). Mounted in App.tsx.
+- **Forum Hierarchy Admin (#3)**: Created `ForumHierarchyAdmin.tsx` — admin panel with create
+  subforum modal, move modal, reorder modal. Exported from barrel file.
+- **Forum Permissions Admin (#4)**: Created `ForumPermissionsPanel.tsx` — Discord-style tri-state
+  permission management (Inherit/Allow/Deny) with group overwrites.
+- **Profile Visibility (#5)**: Created migration adding 7 per-field boolean columns. Updated
+  `user_settings.ex` schema + changeset. Updated `PrivacySettingsPanel.tsx` with expandable
+  per-field visibility controls.
+- **Forum Subscriptions (#6)**: Created `SubscribeButton.tsx` (bell with notification level
+  dropdown) and `MySubscriptionsPage.tsx` (filtered subscription management).
+- **Multi-Quote (#7)**: Created `quoteUtils.ts` (BBCode/Markdown formatting), `PostQuoteButton.tsx`
+  (per-post toggle), `useMultiQuote.ts` hook (buffer → editor connection).
+- **Files changed**: 16 files (7 backend, 9 frontend), 11 new files created
+- **Feature completion**: 62/69 → **69/69 (100%)**
 
 ### Sessions 22–24 Changes (v0.9.29 — platform gap completion + review)
 

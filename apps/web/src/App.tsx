@@ -43,6 +43,11 @@ const GroupJoinCelebration = lazy(() =>
     default: m.GroupJoinCelebration,
   }))
 );
+const PushNotificationPrompt = lazy(() =>
+  import('@/shared/components/PushNotificationPrompt').then((m) => ({
+    default: m.PushNotificationPrompt,
+  }))
+);
 
 // Initialize error tracking on module load
 initErrorTracking();
@@ -88,6 +93,7 @@ export default function App() {
           show={!!justJoinedGroupName}
           onComplete={clearJoinCelebration}
         />
+        <PushNotificationPrompt />
       </Suspense>
       <AnimatePresence mode="wait">
         <PageTransition>

@@ -102,7 +102,9 @@ config :cgraph, Oban,
     {Oban.Plugins.Cron,
      crontab: [
        # Process scheduled messages every minute
-       {"* * * * *", CGraph.Workers.ScheduledMessageWorker}
+       {"* * * * *", CGraph.Workers.ScheduledMessageWorker},
+       # Send email digests daily at 8 AM UTC
+       {"0 8 * * *", CGraph.Workers.EmailDigestWorker}
      ]}
   ],
   queues: [

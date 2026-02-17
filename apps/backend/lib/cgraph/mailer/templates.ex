@@ -59,11 +59,22 @@ defmodule CGraph.Mailer.Templates do
     "Your CGraph data export is ready"
   end
 
+  def subject(:digest, data) do
+    period = Map.get(data, :period, "Weekly")
+    "Your CGraph #{period} Digest"
+  end
+
   @doc """
   Renders an email template, returning {html_body, text_body}.
   """
-  @spec render(atom(), map()) :: {String.t(), String.t()}
-  def render(email_type, data) do
+  @spec render(atom() | String.t(), map()) :: {String.t(), String.t()}
+  def render(email_type, data) when is_binary(email_type) do
+    render(String.to_existing_atom(email_type), data)
+  rescue
+    ArgumentError -> render(:notification, data)
+  end
+
+  def render(email_type, data) when is_atom(email_type) do
     html = render_html(email_type, data)
     text = render_text(email_type, data)
     {html, text}
@@ -414,6 +425,130 @@ defmodule CGraph.Mailer.Templates do
     """)
   end
 
+  defp render_html(:digest, data) do
+    user_name = Map.get(data, :user_name, "there")
+    period = Map.get(data, :period, "Weekly")
+    app_url = Map.get(data, :app_url, "https://cgraph.app")
+    stats = Map.get(data, :stats, %{})
+    trending = Map.get(data, :trending_posts, [])
+    achievements = Map.get(data, :new_achievements, [])
+
+    messages_sent = Map.get(stats, :messages_sent, 0)
+    xp_earned = Map.get(stats, :xp_earned, 0)
+    unread = Map.get(stats, :unread_count, 0)
+
+    trending_html =
+      trending
+      |> Enum.take(5)
+      |> Enum.map(fn post ->
+        title = html_escape(Map.get(post, :title, "Post"))
+        votes = Map.get(post, :votes, 0)
+        """
+        <tr>
+          <td style="padding: 10px 16px; color: #4a5568; font-size: 14px; border-bottom: 1px solid #e2e8f0;">
+            #{title}
+          </td>
+          <td style="padding: 10px 16px; color: #6366f1; font-size: 14px; text-align: right; border-bottom: 1px solid #e2e8f0;">
+            #{votes} votes
+          </td>
+        </tr>
+        """
+      end)
+      |> Enum.join("")
+
+    achievements_html =
+      achievements
+      |> Enum.take(3)
+      |> Enum.map(fn a ->
+        icon = Map.get(a, :icon, "🏆")
+        title = html_escape(Map.get(a, :title, "Achievement"))
+        xp = Map.get(a, :xp_reward, 0)
+        """
+        <div style="display: inline-block; text-align: center; margin: 8px 12px;">
+          <div style="font-size: 32px;">#{icon}</div>
+          <div style="color: #4a5568; font-size: 13px; margin-top: 4px;">#{title}</div>
+          <div style="color: #6366f1; font-size: 12px;">+#{xp} XP</div>
+        </div>
+        """
+      end)
+      |> Enum.join("")
+
+    wrap_html_layout("""
+    <div style="text-align: center; margin-bottom: 24px;">
+      <div style="font-size: 48px;">📊</div>
+    </div>
+
+    <h1 style="color: #1a1a2e; font-size: 28px; margin-bottom: 8px; text-align: center;">
+      Your #{html_escape(period)} Digest
+    </h1>
+
+    <p style="color: #718096; font-size: 14px; text-align: center; margin-bottom: 32px;">
+      Hi #{html_escape(user_name)}, here's what happened on CGraph
+    </p>
+
+    <!-- Stats Cards -->
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 32px;">
+      <tr>
+        <td style="padding: 8px;">
+          <div style="background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%); border-radius: 12px; padding: 20px; text-align: center;">
+            <div style="color: rgba(255,255,255,0.8); font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Messages</div>
+            <div style="color: white; font-size: 28px; font-weight: 700; margin-top: 4px;">#{messages_sent}</div>
+          </div>
+        </td>
+        <td style="padding: 8px;">
+          <div style="background: linear-gradient(135deg, #10b981 0%, #34d399 100%); border-radius: 12px; padding: 20px; text-align: center;">
+            <div style="color: rgba(255,255,255,0.8); font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">XP Earned</div>
+            <div style="color: white; font-size: 28px; font-weight: 700; margin-top: 4px;">#{xp_earned}</div>
+          </div>
+        </td>
+        <td style="padding: 8px;">
+          <div style="background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); border-radius: 12px; padding: 20px; text-align: center;">
+            <div style="color: rgba(255,255,255,0.8); font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Unread</div>
+            <div style="color: white; font-size: 28px; font-weight: 700; margin-top: 4px;">#{unread}</div>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    #{if trending_html != "" do
+      """
+      <h2 style="color: #1a1a2e; font-size: 18px; margin-bottom: 12px;">🔥 Trending Posts</h2>
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 32px; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0;">
+        #{trending_html}
+      </table>
+      """
+    else
+      ""
+    end}
+
+    #{if achievements_html != "" do
+      """
+      <h2 style="color: #1a1a2e; font-size: 18px; margin-bottom: 12px;">🏆 New Achievements</h2>
+      <div style="background-color: #f7fafc; border-radius: 12px; padding: 16px; margin-bottom: 32px; text-align: center;">
+        #{achievements_html}
+      </div>
+      """
+    else
+      ""
+    end}
+
+    <div style="text-align: center; margin: 32px 0;">
+      <a href="#{html_escape(app_url)}/dashboard"
+         style="background-color: #6366f1; color: white; padding: 14px 32px;
+                border-radius: 8px; text-decoration: none; font-weight: 600;
+                display: inline-block;">
+        View Full Activity
+      </a>
+    </div>
+
+    <p style="color: #a0aec0; font-size: 12px; text-align: center; margin-top: 24px;">
+      <a href="#{html_escape(app_url)}/settings/notifications" style="color: #6366f1; text-decoration: none;">
+        Manage digest preferences
+      </a>
+    </p>
+    """)
+  end
+
   # ============================================================================
   # Text Templates (Fallback for email clients without HTML support)
   # ============================================================================
@@ -560,6 +695,48 @@ defmodule CGraph.Mailer.Templates do
     Contact support: #{support_url}
 
     — The CGraph Security Team
+    """
+  end
+
+  defp render_text(:digest, data) do
+    user_name = Map.get(data, :user_name, "there")
+    period = Map.get(data, :period, "Weekly")
+    app_url = Map.get(data, :app_url, "https://cgraph.app")
+    stats = Map.get(data, :stats, %{})
+    trending = Map.get(data, :trending_posts, [])
+    achievements = Map.get(data, :new_achievements, [])
+
+    messages_sent = Map.get(stats, :messages_sent, 0)
+    xp_earned = Map.get(stats, :xp_earned, 0)
+    unread = Map.get(stats, :unread_count, 0)
+
+    trending_text =
+      trending
+      |> Enum.take(5)
+      |> Enum.map(fn p -> "- #{Map.get(p, :title, "Post")} (#{Map.get(p, :votes, 0)} votes)" end)
+      |> Enum.join("\n")
+
+    achievements_text =
+      achievements
+      |> Enum.take(3)
+      |> Enum.map(fn a -> "- #{Map.get(a, :title, "Achievement")} (+#{Map.get(a, :xp_reward, 0)} XP)" end)
+      |> Enum.join("\n")
+
+    """
+    Hi #{user_name},
+
+    Here's your #{period} CGraph digest:
+
+    ACTIVITY SUMMARY
+    - Messages sent: #{messages_sent}
+    - XP earned: #{xp_earned}
+    - Unread messages: #{unread}
+
+    #{if trending_text != "", do: "TRENDING POSTS\n#{trending_text}\n", else: ""}
+    #{if achievements_text != "", do: "NEW ACHIEVEMENTS\n#{achievements_text}\n", else: ""}
+    View full activity: #{app_url}/dashboard
+
+    Manage preferences: #{app_url}/settings/notifications
     """
   end
 

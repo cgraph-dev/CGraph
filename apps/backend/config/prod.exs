@@ -65,7 +65,9 @@ config :cgraph, Oban,
     {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},  # 7 days
     {Oban.Plugins.Cron, crontab: [
       # Daily cleanup jobs
-      {"0 3 * * *", CGraph.Workers.CleanupWorker}
+      {"0 3 * * *", CGraph.Workers.CleanupWorker},
+      # Send email digests daily at 8 AM UTC
+      {"0 8 * * *", CGraph.Workers.EmailDigestWorker}
     ]},
     # Rescue stalled jobs
     {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(30)}

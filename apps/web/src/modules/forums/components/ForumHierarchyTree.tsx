@@ -12,6 +12,8 @@ export {
   useForumBreadcrumbs,
 } from './forum-hierarchy-tree';
 
+export { ForumHierarchyAdmin } from './forum-hierarchy-tree/ForumHierarchyAdmin';
+
 export type {
   ForumNode,
   Breadcrumb,

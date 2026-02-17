@@ -471,11 +471,13 @@ defmodule CGraph.Mailer do
   # ============================================================================
 
   defp render_template(template_name, assigns) when is_binary(template_name) do
-    # Try to use the Templates module if available, otherwise fallback to basic rendering
     case Code.ensure_loaded(CGraph.Mailer.Templates) do
       {:module, templates_module} ->
         if function_exported?(templates_module, :render, 2) do
-          templates_module.render(template_name, assigns)
+          case templates_module.render(template_name, assigns) do
+            {html, _text} -> html
+            html when is_binary(html) -> html
+          end
         else
           render_basic_html(template_name, assigns)
         end
@@ -487,8 +489,11 @@ defmodule CGraph.Mailer do
   defp render_text_template(template_name, assigns) when is_binary(template_name) do
     case Code.ensure_loaded(CGraph.Mailer.Templates) do
       {:module, templates_module} ->
-        if function_exported?(templates_module, :render_text, 2) do
-          templates_module.render_text(template_name, assigns)
+        if function_exported?(templates_module, :render, 2) do
+          case templates_module.render(template_name, assigns) do
+            {_html, text} -> text
+            text when is_binary(text) -> text
+          end
         else
           render_basic_text(template_name, assigns)
         end

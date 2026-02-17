@@ -1,3 +1,4 @@
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useSettingsStore } from '@/modules/settings/store';
 import { toast } from '@/shared/components/ui';
@@ -5,6 +6,7 @@ import { GlassCard } from '@/shared/components/ui';
 
 export function PrivacySettingsPanel() {
   const { settings, updatePrivacySettings, isSaving } = useSettingsStore();
+  const [fieldVisExpanded, setFieldVisExpanded] = useState(false);
 
   const handleSelectChange = async (key: keyof typeof settings.privacy, value: string) => {
     try {
@@ -110,6 +112,91 @@ export function PrivacySettingsPanel() {
             <option value="friends">Friends Only</option>
             <option value="private">Private</option>
           </select>
+        </GlassCard>
+
+        {/* Per-field profile visibility (Discord/Meta-style granular controls) */}
+        <GlassCard variant="default" className="p-4">
+          <button
+            onClick={() => setFieldVisExpanded((v) => !v)}
+            className="flex w-full items-center justify-between"
+          >
+            <div>
+              <h3 className="text-left font-medium text-white">Profile Field Visibility</h3>
+              <p className="text-left text-sm text-gray-400">
+                Control which profile fields are visible to others
+              </p>
+            </div>
+            <span
+              className={`text-gray-400 transition-transform ${fieldVisExpanded ? 'rotate-180' : ''}`}
+            >
+              ▾
+            </span>
+          </button>
+
+          {fieldVisExpanded && (
+            <div className="mt-4 space-y-3 border-t border-white/5 pt-4">
+              {(
+                [
+                  { key: 'showBio', label: 'Bio', desc: 'Show your bio on your profile' },
+                  { key: 'showPostCount', label: 'Post Count', desc: 'Show your total post count' },
+                  { key: 'showJoinDate', label: 'Join Date', desc: 'Show when you joined' },
+                  {
+                    key: 'showLastActive',
+                    label: 'Last Active',
+                    desc: 'Show your last active time',
+                  },
+                  {
+                    key: 'showSocialLinks',
+                    label: 'Social Links',
+                    desc: 'Show linked social accounts',
+                  },
+                  {
+                    key: 'showActivity',
+                    label: 'Activity Feed',
+                    desc: 'Show recent activity on your profile',
+                  },
+                  {
+                    key: 'showInMemberList',
+                    label: 'Member List',
+                    desc: 'Appear in forum member lists',
+                  },
+                ] as const
+              ).map(({ key, label, desc }) => (
+                <div key={key} className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-200">{label}</p>
+                    <p className="text-xs text-gray-500">{desc}</p>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      try {
+                        await updatePrivacySettings({
+                          [key]: !(settings.privacy as Record<string, unknown>)[key],
+                        });
+                        toast.success(`${label} visibility updated`);
+                      } catch {
+                        toast.error('Failed to update settings');
+                      }
+                    }}
+                    disabled={isSaving}
+                    className={`relative h-6 w-11 rounded-full transition-colors ${
+                      (settings.privacy as Record<string, unknown>)[key] !== false
+                        ? 'bg-primary-600'
+                        : 'bg-dark-600'
+                    } ${isSaving ? 'opacity-50' : ''}`}
+                  >
+                    <span
+                      className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform ${
+                        (settings.privacy as Record<string, unknown>)[key] !== false
+                          ? 'translate-x-5'
+                          : ''
+                      }`}
+                    />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </GlassCard>
 
         <GlassCard variant="default" className="p-4">
