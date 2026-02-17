@@ -69,6 +69,14 @@ vi.mock('@vercel/speed-insights/react', () => ({
   SpeedInsights: () => null,
 }));
 
+// Mock react-dom/client so importing main.tsx doesn't call createRoot on a missing #root element
+vi.mock('react-dom/client', () => ({
+  default: {
+    createRoot: vi.fn(() => ({ render: vi.fn(), unmount: vi.fn() })),
+  },
+  createRoot: vi.fn(() => ({ render: vi.fn(), unmount: vi.fn() })),
+}));
+
 describe('App smoke tests', () => {
   it('main entry file exists and exports correctly', async () => {
     // Verify the main module can be loaded (static analysis)
