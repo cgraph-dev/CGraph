@@ -45,8 +45,7 @@ import '../styles/interactive-demo-section.css';
 import '../styles/customization-preview.css';
 import '../styles/value-proposition.css';
 import '../styles/animated-borders.css';
-import '../styles/mobile-landing.css';
-import '../styles/mobile-fixes.css';
+import '../styles/mobile.css';
 
 gsap.registerPlugin(ScrollTrigger);
 

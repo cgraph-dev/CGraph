@@ -1,15 +1,14 @@
 /**
- * Navigation Component Tests
+ * CTA Section Tests
  *
- * Smoke tests for the marketing Navigation component.
+ * Verifies call-to-action heading and action buttons.
  */
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import Navigation from '../components/marketing/layout/Navigation';
 
-// Mock framer-motion to avoid animation issues in tests
+// Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: new Proxy(
     {},
@@ -28,10 +27,7 @@ vi.mock('framer-motion', () => ({
                 'whileTap',
                 'whileInView',
                 'viewport',
-                'custom',
                 'transition',
-                'layout',
-                'layoutId',
               ].includes(key)
             ) {
               htmlProps[key] = val;
@@ -47,31 +43,47 @@ vi.mock('framer-motion', () => ({
   useReducedMotion: () => false,
 }));
 
-describe('Navigation', () => {
-  const renderWithRouter = (props = {}) =>
+const importCTA = () => import('../components/marketing/sections/CTA');
+
+describe('CTA', () => {
+  it('renders without crashing', async () => {
+    const { CTA } = await importCTA();
     render(
       <MemoryRouter>
-        <Navigation {...props} />
+        <CTA />
       </MemoryRouter>
     );
-
-  it('renders without crashing', () => {
-    renderWithRouter();
-    // Navigation should render a nav element
-    const nav = document.querySelector('nav');
-    expect(nav).toBeInTheDocument();
+    expect(document.querySelector('section')).toBeInTheDocument();
   });
 
-  it('renders the CGraph logo', () => {
-    renderWithRouter();
-    const logo = screen.getByAltText('CGraph');
-    expect(logo).toBeInTheDocument();
+  it('renders the section badge', async () => {
+    const { CTA } = await importCTA();
+    render(
+      <MemoryRouter>
+        <CTA />
+      </MemoryRouter>
+    );
+    expect(screen.getByText('Ready to Start?')).toBeInTheDocument();
   });
 
-  it('renders navigation links', () => {
-    renderWithRouter();
-    // Should have some links
-    const links = document.querySelectorAll('a');
-    expect(links.length).toBeGreaterThan(0);
+  it('renders CTA buttons', async () => {
+    const { CTA } = await importCTA();
+    render(
+      <MemoryRouter>
+        <CTA />
+      </MemoryRouter>
+    );
+    expect(screen.getByText('Create Account')).toBeInTheDocument();
+    expect(screen.getByText('Sign In')).toBeInTheDocument();
+  });
+
+  it('renders the description text', async () => {
+    const { CTA } = await importCTA();
+    render(
+      <MemoryRouter>
+        <CTA />
+      </MemoryRouter>
+    );
+    expect(screen.getByText(/Create forums, customize your space/i)).toBeInTheDocument();
   });
 });

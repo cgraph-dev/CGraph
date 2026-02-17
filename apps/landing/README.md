@@ -1,156 +1,156 @@
-# CGraph Landing Page
+# @cgraph/landing
 
-> Enterprise-grade marketing and authentication gateway for CGraph
-
-## Overview
-
-The CGraph Landing Page is a standalone React application designed for maximum performance and
-scalability, following the architecture pattern of separating the marketing site from the main
-application.
-
-## Architecture
-
-```
-cgraph.org/          → Landing Page (this app)
-cgraph.org/login     → Login Page
-cgraph.org/register  → Registration Page
-app.cgraph.org/      → Main Web App (separate deployment)
-```
-
-### Why Separate Apps?
-
-Architecture:
-
-1. **Performance**: Marketing pages can be statically generated and aggressively cached
-2. **SEO**: Landing pages need different SEO strategies than SPAs
-3. **Scalability**: Marketing traffic spikes (launches, viral content) don't affect app users
-4. **A/B Testing**: Easy to test different landing page variants
-5. **Deployment**: Can deploy landing page changes without touching the main app
-
-## Features
-
-### Landing Page (`/`)
-
-- **GSAP ScrollTrigger** animations with zoom sections
-- **3D TiltCard** components with glare effects
-- **Feature showcase** with hover-to-reveal premium features
-- **Security section** with portal tooltips
-- **Pricing tiers** with highlighted recommended plan
-- **Premium typography** with Robert, Zentry, and General fonts
-- **Responsive design** with mobile-first approach
-
-### Authentication Pages
-
-- **Login** (`/login`) - Email/password + OAuth (Google, GitHub) + Web3 wallet
-- **Register** (`/register`) - Full registration with password strength indicator
-- **Forgot Password** (`/forgot-password`) - Email-based password reset
+The marketing and documentation site for [CGraph](https://cgraph.org) — a privacy-first community
+platform with post-quantum end-to-end encryption.
 
 ## Tech Stack
 
-- **React 18** with TypeScript
-- **Vite** for blazing-fast builds
-- **React Router 6** for client-side routing
-- **GSAP 3.14** with ScrollTrigger for scroll animations
-- **Framer Motion 12** for micro-interactions
-- **Tailwind CSS** for styling
-- **Custom Fonts**: Robert, Zentry, General (woff2)
+| Layer      | Technology                                           |
+| ---------- | ---------------------------------------------------- |
+| Framework  | React 19 + TypeScript 5.8 (strict)                   |
+| Build      | Vite 6.4 · Terser minify · Gzip + Brotli compression |
+| Routing    | React Router 7 — 20 lazy-loaded routes               |
+| Styling    | Tailwind CSS 3.4 + BEM modules (16 split CSS files)  |
+| Animation  | GSAP 3.14 (ScrollTrigger) + Framer Motion 12         |
+| SEO        | react-helmet-async · 3 JSON-LD schemas · OG/Twitter  |
+| Analytics  | Plausible (GDPR-compliant, no cookies)               |
+| Testing    | Vitest 3.2 + jsdom + @testing-library/react 16       |
+| Deployment | Vercel                                               |
+| License    | BSL 1.1 (see root LICENSE)                           |
 
-## Development
+## Getting Started
 
 ```bash
-# Install dependencies
+# From the monorepo root
 pnpm install
-
-# Start development server
-pnpm dev --filter=@cgraph/landing
-
-# Build for production
-pnpm build --filter=@cgraph/landing
-
-# Preview production build
-pnpm preview --filter=@cgraph/landing
+pnpm --filter @cgraph/landing dev    # http://localhost:3001
 ```
 
-## Environment Variables
+### Scripts
 
-Create a `.env` file in the landing app directory:
+| Script       | Description                        |
+| ------------ | ---------------------------------- |
+| `dev`        | Vite dev server on port 3001       |
+| `build`      | Production build (Terser + Brotli) |
+| `preview`    | Preview production build           |
+| `lint`       | ESLint check                       |
+| `typecheck`  | `tsc --noEmit`                     |
+| `test`       | Run Vitest                         |
+| `test:watch` | Vitest in watch mode               |
 
-```env
-# Web App URL for authentication redirects
-VITE_WEB_APP_URL=https://app.cgraph.org
+## Project Structure
 
-# Optional: Analytics
-VITE_GA_TRACKING_ID=UA-XXXXXXXX-X
+```
+src/
+├── main.tsx                      # Entry — Router, HelmetProvider, Suspense
+├── constants.ts                  # WEB_APP_URL, LANDING_URL, external links
+├── index.css                     # Tailwind directives + global styles
+│
+├── components/
+│   ├── ErrorBoundary.tsx         # Global error boundary
+│   ├── Logo.tsx                  # Logo component (renders /logo.png)
+│   ├── SEO.tsx                   # Per-page <Helmet> + JSON-LD
+│   ├── marketing/                # Landing page layout & sections
+│   │   ├── MarketingLayout.tsx   #   Shared layout shell
+│   │   ├── layout/               #   Navigation, Footer, GlobalBackground
+│   │   ├── sections/             #   Hero, Features, Security, CTA, ValueProposition
+│   │   ├── ui/                   #   FeatureCard, GlassCard, GradientText, LandingButton, …
+│   │   └── effects/              #   GraphNetwork, NeuralBackground
+│   ├── customization-demo/       # Theme/avatar/chat preview interactive demo
+│   ├── forum-showcase/           # Forum threads/moderation/organize demo
+│   ├── interactive-demo/         # Chat, Gamification, Achievements, Titles demos
+│   └── effects/                  # ElectricBorder, StarBorder, TitleEffects
+│
+├── pages/
+│   ├── LandingPage.tsx           # Main marketing page (all sections)
+│   ├── NotFound.tsx              # 404 page
+│   ├── company/                  # About, Careers, Contact, Press
+│   ├── legal/                    # PrivacyPolicy, TermsOfService, CookiePolicy, GDPR
+│   └── resources/                # Blog, BlogArticle, Documentation, DocArticle, Download, Status
+│
+├── data/
+│   ├── landing-data.ts           # Stats, feature cards, pricing tiers
+│   ├── blog/                     # 11 articles — posts.ts (metadata), articles.ts (HTML content)
+│   └── docs/                     # 41 articles across 8 categories — categories.ts, articles.ts
+│
+├── styles/                       # 16 BEM-scoped CSS modules
+│   ├── css-variables.css         #   Design tokens
+│   ├── hero-landing.css          #   Hero section
+│   ├── features-section.css      #   Features grid
+│   ├── mobile.css                #   All responsive breakpoints (768/640/480/375px)
+│   └── …                        #   buttons, cta, pricing, showcase, stats, etc.
+│
+├── assets/fonts/                 # 4 WOFF2 fonts (General Sans, Robert, Zentry)
+└── __tests__/                    # Vitest test suite
 ```
 
-## Deployment
+## Routes
 
-### Vercel (Recommended)
+| Path          | Component      | Notes                         |
+| ------------- | -------------- | ----------------------------- |
+| `/`           | LandingPage    | Main marketing page           |
+| `/about`      | About          | Company info                  |
+| `/careers`    | Careers        | Job listings                  |
+| `/contact`    | Contact        | Contact form                  |
+| `/press`      | Press          | Press resources               |
+| `/download`   | Download       | App download links            |
+| `/docs`       | Documentation  | 41 articles, 8 categories     |
+| `/docs/:slug` | DocArticle     | Individual doc article        |
+| `/blog`       | Blog           | 11 engineering/security posts |
+| `/blog/:slug` | BlogArticle    | Individual blog post          |
+| `/status`     | Status         | Service status page           |
+| `/privacy`    | PrivacyPolicy  | Privacy policy                |
+| `/terms`      | TermsOfService | Terms of service              |
+| `/cookies`    | CookiePolicy   | Cookie policy                 |
+| `/gdpr`       | GDPR           | GDPR compliance               |
+| `/features`   | → `/#features` | Hash redirect                 |
+| `/security`   | → `/#security` | Hash redirect                 |
+| `/pricing`    | → `/#pricing`  | Hash redirect                 |
+| `*`           | NotFound       | 404 page                      |
 
-The app is configured for Vercel deployment with:
+Auth routes (`/login`, `/register`) are handled by Vercel redirects to `web.cgraph.org`.
 
-- **Multi-region deployment**: fra1 (Frankfurt), iad1 (N. Virginia), sfo1 (San Francisco)
-- **CDN caching**: Static assets cached for 1 year
-- **Security headers**: CSP, X-Frame-Options, HSTS
-- **Clean URLs**: No trailing slashes, no .html extensions
+## Build Configuration
+
+- **Target**: ES2020
+- **Minification**: Terser (drops `console.*` and `debugger`)
+- **Compression**: Gzip + Brotli (threshold 1024 bytes) via `vite-plugin-compression2`
+- **Code splitting**: CSS code split enabled; manual chunks for `gsap`, `framer-motion`,
+  `react-vendor`
+- **Chunk size warning**: 800 KB
+
+## Public Assets
+
+```
+public/
+├── favicon.ico / favicon.png / favicon-16x16.png / favicon-32x32.png
+├── apple-touch-icon.png / android-chrome-{192,512}x{192,512}.png
+├── logo.png / og-image.png
+├── manifest.json / robots.txt / sitemap.xml
+├── downloads/cgraph-press-kit.zip
+├── fonts/   (woff2 — also mirrored in src/assets/fonts/)
+└── press-kit/   (brand guidelines, fact sheet, press release)
+```
+
+## Styling Approach
+
+- **Tailwind CSS** for utility classes and responsive layout
+- **BEM CSS modules** (16 files in `src/styles/`) for complex component-specific styles
+- **Design tokens** in `css-variables.css` (colors, spacing, typography)
+- **Responsive**: Single consolidated `mobile.css` covering 768px / 640px / 480px / 375px
+- **Performance**: `content-visibility: auto` and `contain` properties for off-screen sections
+- **Accessibility**: `prefers-reduced-motion` disables all animations
+
+## Testing
 
 ```bash
-# Deploy to Vercel
-vercel --prod
+pnpm --filter @cgraph/landing test        # Run all tests
+pnpm --filter @cgraph/landing test:watch   # Watch mode
 ```
 
-### Domain Configuration
-
-1. Add `cgraph.org` as primary domain in Vercel
-2. Configure `app.cgraph.org` to point to the web app
-3. Set up redirects in Vercel dashboard if needed
-
-## Performance Optimizations
-
-1. **Lazy Loading**: All pages are code-split and lazy-loaded
-2. **Font Preloading**: Critical fonts are preloaded in index.html
-3. **Image Optimization**: SVG icons, optimized assets
-4. **CSS Optimization**: Tailwind purging, minimal runtime CSS
-5. **JS Optimization**: Tree-shaking, minification, compression
-
-## File Structure
-
-```
-apps/landing/
-├── public/
-│   ├── favicon.svg
-│   ├── og-image.svg
-│   └── apple-touch-icon.svg
-├── src/
-│   ├── assets/
-│   │   └── fonts/
-│   │       ├── robert-regular.woff2
-│   │       ├── robert-medium.woff2
-│   │       ├── zentry-regular.woff2
-│   │       └── general.woff2
-│   ├── components/
-│   │   └── Logo.tsx
-│   ├── pages/
-│   │   ├── LandingPage.tsx
-│   │   ├── landing-page.css
-│   │   └── auth/
-│   │       ├── AuthLayout.tsx
-│   │       ├── Login.tsx
-│   │       ├── Register.tsx
-│   │       └── ForgotPassword.tsx
-│   ├── index.css
-│   └── main.tsx
-├── index.html
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-└── vercel.json
-```
+Tests use Vitest with jsdom and `@testing-library/react`. Animation libraries (GSAP, Framer Motion)
+are mocked in test files. Routing context is provided via `MemoryRouter`.
 
 ## Contributing
 
 See the main [CONTRIBUTING.md](../../CONTRIBUTING.md) for guidelines.
-
-## License
-
-MIT © CGraph Team

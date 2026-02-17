@@ -142,6 +142,7 @@ export default [
   // Ban explicit 'any' type assertions
   {
     files: [
+      'apps/landing/src/**/*.{ts,tsx}',
       'apps/web/src/**/*.{ts,tsx}',
       'apps/mobile/src/**/*.{ts,tsx}',
       'packages/**/*.{ts,tsx}',

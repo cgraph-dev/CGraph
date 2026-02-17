@@ -1,15 +1,14 @@
 /**
- * Navigation Component Tests
+ * Security Section Tests
  *
- * Smoke tests for the marketing Navigation component.
+ * Verifies the security section heading and privacy-first messaging.
  */
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import Navigation from '../components/marketing/layout/Navigation';
 
-// Mock framer-motion to avoid animation issues in tests
+// Mock framer-motion
 vi.mock('framer-motion', () => ({
   motion: new Proxy(
     {},
@@ -28,10 +27,7 @@ vi.mock('framer-motion', () => ({
                 'whileTap',
                 'whileInView',
                 'viewport',
-                'custom',
                 'transition',
-                'layout',
-                'layoutId',
               ].includes(key)
             ) {
               htmlProps[key] = val;
@@ -47,31 +43,46 @@ vi.mock('framer-motion', () => ({
   useReducedMotion: () => false,
 }));
 
-describe('Navigation', () => {
-  const renderWithRouter = (props = {}) =>
+const importSecurity = () => import('../components/marketing/sections/Security');
+
+describe('Security', () => {
+  it('renders without crashing', async () => {
+    const { Security } = await importSecurity();
     render(
       <MemoryRouter>
-        <Navigation {...props} />
+        <Security />
       </MemoryRouter>
     );
-
-  it('renders without crashing', () => {
-    renderWithRouter();
-    // Navigation should render a nav element
-    const nav = document.querySelector('nav');
-    expect(nav).toBeInTheDocument();
+    expect(document.querySelector('section')).toBeInTheDocument();
   });
 
-  it('renders the CGraph logo', () => {
-    renderWithRouter();
-    const logo = screen.getByAltText('CGraph');
-    expect(logo).toBeInTheDocument();
+  it('renders the privacy-first badge', async () => {
+    const { Security } = await importSecurity();
+    render(
+      <MemoryRouter>
+        <Security />
+      </MemoryRouter>
+    );
+    expect(screen.getByText('Privacy-First')).toBeInTheDocument();
   });
 
-  it('renders navigation links', () => {
-    renderWithRouter();
-    // Should have some links
-    const links = document.querySelectorAll('a');
-    expect(links.length).toBeGreaterThan(0);
+  it('mentions PQXDH in the description', async () => {
+    const { Security } = await importSecurity();
+    render(
+      <MemoryRouter>
+        <Security />
+      </MemoryRouter>
+    );
+    expect(screen.getByText(/PQXDH/)).toBeInTheDocument();
+  });
+
+  it('mentions Triple Ratchet in the description', async () => {
+    const { Security } = await importSecurity();
+    render(
+      <MemoryRouter>
+        <Security />
+      </MemoryRouter>
+    );
+    expect(screen.getByText(/Triple Ratchet/)).toBeInTheDocument();
   });
 });

@@ -92,7 +92,7 @@ export const LandingButton: React.FC<LandingButtonProps> = ({
       <motion.a
         href={href}
         className={`${baseStyles} ${sizeStyles[size]} ${variantStyles[variant]} ${className}`}
-        onMouseMove={handleMouseMove as any}
+        onMouseMove={handleMouseMove as React.MouseEventHandler}
         onMouseLeave={handleMouseLeave}
         animate={{ x: position.x, y: position.y }}
         transition={{ type: 'spring', stiffness: 150, damping: 15, mass: 0.1 }}
@@ -110,7 +110,7 @@ export const LandingButton: React.FC<LandingButtonProps> = ({
       onMouseLeave={handleMouseLeave}
       animate={{ x: position.x, y: position.y }}
       transition={{ type: 'spring', stiffness: 150, damping: 15, mass: 0.1 }}
-      {...(props as any)}
+      {...(props as Record<string, unknown>)}
     >
       {Content}
     </motion.button>
