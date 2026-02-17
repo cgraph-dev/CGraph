@@ -1,6 +1,6 @@
 # CGraph Backend
 
-> Elixir/Phoenix API server for CGraph messaging platform (v0.9.26)
+> Elixir/Phoenix API server for CGraph messaging platform (v0.9.31)
 
 ## Quick Start
 
@@ -144,7 +144,7 @@ fly scale memory 1024
 ### Health Checks
 
 ```
-GET /health  → {"status":"ok","version":"0.9.28","service":"cgraph-api"}
+GET /health  → {"status":"ok","version":"0.9.31","service":"cgraph-api"}
 GET /ready   → {"status":"ready","checks":{"database":"ok","cache":"ok","redis":"not_configured"}}
 ```
 
@@ -310,4 +310,4 @@ See [DEPLOYMENT.md](../../docs/guides/DEPLOYMENT.md#deployment-troubleshooting) 
 
 ---
 
-_Last updated: February 16, 2026 (v0.9.26) — 1633 tests, 0 failures_
+_Last updated: February 16, 2026 (v0.9.31) — 1633 tests, 0 failures_

@@ -3,7 +3,7 @@
 > Keep the lights on. Make it boring.  
 > — The best compliment for any ops team
 
-**Version**: 0.9.3 | January 2026
+**Version**: 0.9.31 | January 2026
 
 This document covers day-to-day operations, maintenance procedures, troubleshooting, and keeping
 CGraph running smoothly in production.

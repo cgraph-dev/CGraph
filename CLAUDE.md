@@ -952,6 +952,70 @@ The following areas are scaffolded but not fully implemented:
 - **Files changed**: 16 files (7 backend, 9 frontend), 11 new files created
 - **Feature completion**: 62/69 → **69/69 (100%)**
 
+### Session 28 Implementation Sprint (v0.9.31)
+
+**Part 1 — Mobile Data Layer + Version Sync:**
+
+Replaced all 4 mobile stub facades with real Zustand stores backed by API calls and WebSocket:
+
+- **Mobile Chat Store** (`chatStore.ts`): Full conversation/message CRUD, WebSocket subscription per
+  conversation (`new_message`, `message_updated`, `message_deleted`, `typing`, reactions),
+  500-message memory cap with pruning, O(1) dedup via Set, conversation cache TTL.
+- **Mobile Group Store** (`groupStore.ts`): Leverages existing `groupsService.ts` for API calls.
+  Channel message WebSocket subscription, group join/leave/create, member fetching.
+- **Mobile Gamification Store** (`gamificationStore.ts`): Leverages `gamificationService.ts`.
+  Stats/achievements/quests fetching, daily streak claiming, title equip/unequip. Persists
+  level/XP/streak to AsyncStorage.
+- **Mobile Marketplace Store** (`marketplaceStore.ts`): Listing browse/filter/purchase, user
+  listings management, transaction history. Paginated with offset.
+- **Mobile Notification Store** (`notificationStore.ts`): Paginated notification fetching, mark
+  read/all/delete/clear, real-time `addNotification` for socket events.
+- **Mobile Friend Store** (`friendStore.ts`): Friend list, pending/sent requests, send/accept/
+  decline/remove/block/unblock. Presence tracking via socketManager.
+- **Facade Wiring** (`stores/index.ts`): All 4 stubs (`useChatFacade`, `useCommunityFacade`,
+  `useGamificationFacade`, `useMarketplaceFacade`) now use real store selectors. Phase 2
+  initialization fetches data in background after auth.
+- **Version Sync**: Updated 40+ files from various old versions to 0.9.31 (16 package.json, README
+  badges, 12 docs headers, 11 docs footers, 3 guides, backend README).
+- **Mobile store count**: 4 real → **10 real** (auth, theme, settings, customization, chat, groups,
+  gamification, marketplace, notifications, friends)
+
+**Part 2 — Dead Package Removal:**
+
+Audited all 13 shared packages. 9 were dead (zero imports from any app):
+
+- **Removed from deps**: `@cgraph/api-client`, `@cgraph/config`, `@cgraph/core`, `@cgraph/crypto`,
+  `@cgraph/hooks`, `@cgraph/landing-components`, `@cgraph/state`, `@cgraph/test-utils`, `@cgraph/ui`
+- **Cleaned**: web + mobile `package.json` (dependencies removed), web + mobile `tsconfig.json`
+  (path aliases removed), web `lib/packages/index.ts` (orphaned re-exports removed)
+- **Kept**: `@cgraph/animation-constants`, `@cgraph/shared-types`, `@cgraph/socket`, `@cgraph/utils`
+- **Exception**: `@cgraph/crypto` un-deprecated — designated as the consolidation target for web +
+  mobile E2EE (has the most advanced implementation: Triple Ratchet + PQXDH)
+
+**Part 3 — ENGINEERING_STANDARDS.md:**
+
+Created `docs/PrivateFolder/ENGINEERING_STANDARDS.md` (~700 lines) filling the gap referenced by 7+
+other docs. Covers: SOLID with CGraph examples, TypeScript standards, React 19 patterns, Zustand
+architecture, Elixir/Phoenix conventions (contexts, GenServer, Oban), Ecto patterns (N+1, cursor
+pagination, migrations), API design, E2EE protocol stack, Phoenix Channels, WebRTC, Expo 54,
+performance SLOs, error handling, security, deployment, feature flags (Section 44), and 10-item
+anti-pattern catalog.
+
+**Part 4 — ROADMAP.md Overhaul:**
+
+Updated roadmap with realistic timeline. Moved v1.0 target to September 2025. Marked already-
+shipped features (Polls, Events, Threads, Moderation, Push Notifications). Added v1.0 remaining work
+items (test coverage, security audit, Stripe integration, crypto consolidation). Updated ASCII
+timeline art and all dates.
+
+**Part 5 — Crypto Consolidation Plan:**
+
+Documented phased approach in `packages/crypto/README.md`: Phase 1 (shared types/utils), Phase 2
+(mobile forward secrecy), Phase 3 (full consolidation). Key finding: mobile lacks Double Ratchet (no
+forward secrecy), making protocol-level consolidation a v1.0 task.
+
+- **Files changed**: ~60 files across the monorepo
+
 ### Session 27 Review Fixes (v0.9.31 — critical bug fixes for features 1–7)
 
 Comprehensive audit found 6 of 7 features had bugs preventing end-to-end functionality. Fixes:

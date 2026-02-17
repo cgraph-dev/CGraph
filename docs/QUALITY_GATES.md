@@ -1,6 +1,6 @@
 # Quality Gates & CI Requirements
 
-> **Version: 0.9.8** | Last Updated: January 2026
+> **Version: 0.9.31** | Last Updated: January 2026
 
 This document defines the mandatory quality gates that must pass before any code can be merged to
 `main`. All checks are enforced via CI and pre-commit hooks.
@@ -219,4 +219,4 @@ Bypasses are audited monthly.
 
 ---
 
-<sub>**CGraph Quality Gates** • Version 0.9.28 • Last updated: February 2026</sub>
+<sub>**CGraph Quality Gates** • Version 0.9.31 • Last updated: February 2026</sub>

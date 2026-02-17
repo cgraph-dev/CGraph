@@ -119,7 +119,7 @@ Remaining:           7 (10%)
 | Backend API       | Phoenix 1.8 / Elixir | ✅     | Router split into 8 modules                          |
 | Web App           | React 19 / Vite      | ✅     | Components organized (9/10)                          |
 | Landing App       | React 19 / Vite      | ✅     | 98 tests, Lighthouse CI, visual regression           |
-| Mobile App        | Expo 54 / RN 0.81    | ✅     | Feature parity with web                              |
+| Mobile App        | Expo 54 / RN 0.81    | ✅     | 10 real Zustand stores, WebSocket integration        |
 | Real-time         | Phoenix Channels     | ✅     | WebSocket + PubSub sharding                          |
 | Database          | PostgreSQL 16        | ✅     | 94 tables, optimized                                 |
 | Webhooks          | Oban + Finch         | ✅     | HMAC-SHA256 signed, exponential backoff, 5 retries   |
@@ -254,6 +254,7 @@ apps/mobile/src/screens/
 
 | Version | Date       | Highlights                                                                                                                                                                                                                                                                                                                     |
 | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 0.9.31  | 2026-02-17 | **Mobile data layer + version sync**: Replaced 4 stub facades with 6 real Zustand stores (chat, groups, gamification, marketplace, notifications, friends). WebSocket integration for real-time messaging. 40+ files version-synced to 0.9.31. Mobile store count: 4→10.                                                       |
 | 0.9.29  | 2026-02-17 | **Platform gap completion + review**: Webhooks DB (Ecto context + Oban worker), WebRTC call history persistence, admin dashboard API wiring (4 panels), gamification API-sourced counts. Review fixes: Oban `:webhooks` queue config, test_helper cleanup, `UsersManagement` sort/type bugs, dead `PLACEHOLDER_EVENTS` removal |
 | 0.9.28+ | 2026-02-17 | **Landing quality push**: 16 test files (98 tests), web-vitals monitoring, error tracking, Lighthouse CI budgets, visual regression, Playwright E2E                                                                                                                                                                            |
 | 0.9.26+ | 2026-02-16 | **Test suite fully green**: 635 pre-existing failures resolved, 17 root causes fixed, route architecture corrected, CookieAuth + RequireAuth plugs, tokens table migration                                                                                                                                                     |

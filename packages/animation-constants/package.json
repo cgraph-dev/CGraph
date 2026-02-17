@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/animation-constants",
-  "version": "0.9.26",
+  "version": "0.9.31",
   "private": true,
   "description": "Platform-agnostic animation timing, spring, and easing constants shared across web and mobile",
   "main": "./src/index.ts",

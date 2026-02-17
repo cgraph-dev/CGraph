@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/web",
-  "version": "0.9.26",
+  "version": "0.9.31",
   "private": true,
   "type": "module",
   "scripts": {
@@ -22,14 +22,8 @@
   },
   "dependencies": {
     "@cgraph/animation-constants": "workspace:^",
-    "@cgraph/config": "workspace:*",
-    "@cgraph/core": "workspace:*",
-    "@cgraph/crypto": "workspace:*",
-    "@cgraph/hooks": "workspace:*",
     "@cgraph/shared-types": "workspace:*",
     "@cgraph/socket": "workspace:*",
-    "@cgraph/state": "workspace:*",
-    "@cgraph/ui": "workspace:*",
     "@cgraph/utils": "workspace:*",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
@@ -80,7 +74,6 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
-    "@cgraph/test-utils": "workspace:*",
     "@playwright/test": "^1.49.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",

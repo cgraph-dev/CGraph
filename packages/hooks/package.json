@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/hooks",
-  "version": "0.9.26",
+  "version": "0.9.31",
   "description": "Platform-agnostic React hooks for CGraph platform",
   "main": "./src/index.ts",
   "types": "./src/index.ts",

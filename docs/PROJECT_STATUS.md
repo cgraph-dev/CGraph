@@ -1,6 +1,6 @@
 # CGraph Project Status
 
-> **Version: 0.9.29** | Last Updated: February 17, 2026
+> **Version: 0.9.31** | Last Updated: February 17, 2026
 
 This document consolidates the project status, feature tracking, and development roadmap.
 

@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/socket",
-  "version": "0.9.26",
+  "version": "0.9.31",
   "description": "Shared Phoenix channel client for CGraph platforms",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

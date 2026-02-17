@@ -1,6 +1,6 @@
 # Database Schema Ownership
 
-> **Version: 0.9.8** | Last Updated: January 2026
+> **Version: 0.9.31** | Last Updated: January 2026
 
 This document defines ownership and responsibility for all database tables in CGraph.
 
@@ -247,4 +247,4 @@ This document defines ownership and responsibility for all database tables in CG
 
 ---
 
-<sub>**CGraph Schema Ownership** • Version 0.9.28 • Last updated: January 2026</sub>
+<sub>**CGraph Schema Ownership** • Version 0.9.31 • Last updated: January 2026</sub>

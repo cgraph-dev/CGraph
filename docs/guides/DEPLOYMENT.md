@@ -1,7 +1,7 @@
 # CGraph Deployment Guide
 
 > Comprehensive production deployment documentation  
-> Version 0.9.28 | January 2026
+> Version 0.9.31 | January 2026
 
 This guide covers deploying CGraph to production. Fly.io is the primary platform due to excellent
 Elixir/OTP support, though concepts translate to other cloud providers.

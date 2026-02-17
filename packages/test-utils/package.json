@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/test-utils",
-  "version": "0.9.26",
+  "version": "0.9.31",
   "private": true,
   "description": "Shared test builders, factories, and helpers for CGraph apps",
   "main": "./src/index.ts",

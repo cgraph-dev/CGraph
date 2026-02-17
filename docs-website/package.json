@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/docs",
-  "version": "0.9.25",
+  "version": "0.9.31",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",

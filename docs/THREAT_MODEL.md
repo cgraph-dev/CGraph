@@ -1,6 +1,6 @@
 # CGraph Threat Model
 
-> **Version: 0.9.8** | Last Updated: January 2026 **Classification:** Internal Engineering
+> **Version: 0.9.31** | Last Updated: January 2026 **Classification:** Internal Engineering
 
 A systematic analysis of potential threats to CGraph and corresponding mitigations.
 
@@ -345,4 +345,4 @@ A systematic analysis of potential threats to CGraph and corresponding mitigatio
 
 ---
 
-<sub>**CGraph Threat Model** • Version 0.9.28 • Internal Use Only</sub>
+<sub>**CGraph Threat Model** • Version 0.9.31 • Internal Use Only</sub>

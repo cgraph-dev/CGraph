@@ -1,5 +1,8 @@
 # @cgraph/crypto
 
+> **Status**: Active — consolidation target for web + mobile E2EE implementations. See
+> [Consolidation Plan](#consolidation-plan) below.
+
 Post-quantum end-to-end encryption for CGraph, implementing **Signal Protocol Revision 4** with the
 **Triple Ratchet** algorithm.
 
@@ -239,6 +242,42 @@ from this package.
 
 - [`@noble/post-quantum`](https://github.com/paulmillr/noble-post-quantum) — ML-KEM-768 (FIPS 203)
 - [`@noble/hashes`](https://github.com/paulmillr/noble-hashes) — HKDF, HMAC, SHA-256
+
+## Consolidation Plan
+
+### Current State (v0.9.31)
+
+| Location                    | Implementation                              | Forward Secrecy | Post-Quantum |
+| --------------------------- | ------------------------------------------- | --------------- | ------------ |
+| `apps/web/src/lib/crypto/`  | 46 files, 4,859 LOC, full Double Ratchet    | Yes             | No           |
+| `apps/mobile/src/lib/e2ee/` | 5 files, 1,058 LOC, X3DH only               | **No**          | No           |
+| `packages/crypto/` (this)   | 13 files, 4,071 LOC, Triple Ratchet + PQXDH | Yes             | **Yes**      |
+
+Neither web nor mobile currently imports this package. Both have independent implementations.
+
+### Phase 1 — Shared Types & Utils (v0.9.x)
+
+Extract common types and pure utility functions that both apps can import:
+
+- `@cgraph/crypto/types` — `KeyPair`, `IdentityKeyPair`, `KeyBundle`, `EncryptedMessage`, `Session`
+- `@cgraph/crypto/utils` — `randomBytes`, `hkdf`, `arrayBufferToBase64`, `base64ToArrayBuffer`
+
+### Phase 2 — Mobile Forward Secrecy (v1.0)
+
+Mobile must adopt Double Ratchet for security parity. This is a protocol upgrade:
+
+1. Implement `ProtocolStore` interface from this package with `expo-secure-store` backend
+2. Replace mobile's single-secret X3DH with this package's X3DH (or PQXDH)
+3. Add ratchet state persistence via `ProtocolStore`
+
+### Phase 3 — Full Consolidation (v1.0+)
+
+Both apps delegate all crypto operations to `@cgraph/crypto`:
+
+1. Web implements `ProtocolStore` with IndexedDB backend
+2. Mobile implements `ProtocolStore` with SecureStore backend
+3. App-level E2EE stores (Zustand) remain app-specific but call `@cgraph/crypto` APIs
+4. Enable PQXDH + Triple Ratchet for post-quantum security
 
 ## License
 

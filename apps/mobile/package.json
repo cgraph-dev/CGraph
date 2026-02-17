@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/mobile",
-  "version": "0.9.26",
+  "version": "0.9.31",
   "private": true,
   "main": "index.js",
   "scripts": {
@@ -19,8 +19,6 @@
     "storybook:generate": "sb-rn-get-stories"
   },
   "dependencies": {
-    "@cgraph/crypto": "workspace:*",
-    "@cgraph/hooks": "workspace:*",
     "@cgraph/shared-types": "workspace:*",
     "@cgraph/socket": "workspace:*",
     "@cgraph/utils": "workspace:*",
@@ -94,7 +92,6 @@
     "@storybook/react-native": "8.6.1",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^13.2.0",
-    "@cgraph/test-utils": "workspace:*",
     "@types/chroma-js": "^3.1.2",
     "@types/color": "^4.2.0",
     "@types/jest": "^29.5.14",

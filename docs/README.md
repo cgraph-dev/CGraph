@@ -1,6 +1,6 @@
 # CGraph Documentation
 
-> **Current Version: 0.9.11** | Enterprise-grade real-time communication platform
+> **Current Version: 0.9.31** | Enterprise-grade real-time communication platform
 
 ⚠️ **Proprietary Software** - CGraph is proprietary software. Self-hosting is not permitted.
 
@@ -18,7 +18,7 @@ developers and users of our hosted platform.
 | [**Architecture Diagrams**](ARCHITECTURE_DIAGRAMS.md)                       | Visual system architecture (Mermaid)     |
 | [**Schema Ownership**](SCHEMA_OWNERSHIP.md)                                 | Database table ownership matrix          |
 
-### Module Architecture (New in v0.9.11)
+### Module Architecture (New in v0.9.31)
 
 ```
 apps/web/src/

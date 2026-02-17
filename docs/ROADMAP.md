@@ -1,7 +1,6 @@
 # CGraph Product Roadmap
 
-> **Version: 0.9.26** | Last Updated: February 2026 **Status:** Pre-Launch → Public Beta Target: Q2
-> 2026
+> **Version: 0.9.31** | Last Updated: July 2025 **Status:** Pre-Launch → Public Beta Target: Q3 2025
 
 ---
 
@@ -16,40 +15,39 @@ default** and modern customization.
 ## Release Timeline
 
 ```
-            2026
-    ┌─────────────────────────────────────────────────────────────┐
-    │ Q1          │ Q2          │ Q3          │ Q4                │
-    ├─────────────┼─────────────┼─────────────┼───────────────────┤
-    │ v0.9.x      │ v1.0        │ v1.1        │ v1.2              │
-    │ Pre-Launch  │ Public Beta │ Growth      │ Enterprise        │
-    │             │             │             │                   │
-    │ • Security  │ • Launch    │ • Mobile GA │ • Self-hosting    │
-    │   audit     │ • Mobile    │ • Threads   │ • Admin console   │
-    │ • Stability │   beta      │ • Reactions │ • SSO/SAML        │
-    │ • Polish    │ • Forums    │   expansion │ • Audit logs UI   │
-    │             │             │             │                   │
-    └─────────────┴─────────────┴─────────────┴───────────────────┘
+            2025                                        2026
+    ┌───────────────────────────────────────────┬──────────────────┐
+    │ Q3 2025     │ Q4 2025     │ Q1 2026       │ Q2 2026+         │
+    ├─────────────┼─────────────┼───────────────┼──────────────────┤
+    │ v1.0        │ v1.1        │ v1.2          │ v2.0+            │
+    │ Public Beta │ Growth      │ Enterprise    │ Long-term        │
+    │             │             │               │                  │
+    │ • Security  │ • Mobile GA │ • Admin       │ • AI features    │
+    │   audit     │ • Bot API   │   console     │ • Federation     │
+    │ • Stripe    │ • Search    │ • SSO/SAML    │ • Desktop apps   │
+    │ • Mobile    │ • Analytics │ • Compliance  │                  │
+    │   beta      │             │               │                  │
+    └─────────────┴─────────────┴───────────────┴──────────────────┘
 ```
 
 ---
 
-## Current Release: v0.9.26 (February 2026)
+## Current Release: v0.9.31 (July 2025)
 
-> **Note:** Many features listed under v0.9.9–v1.1 milestones below have already been implemented
-> (e.g., Polls, Events, Reactions, Moderation Tools, Push Notifications). See
-> `docs/PROJECT_STATUS.md` for accurate feature completion tracking (59/69 features, 85%).
+> **Note:** 69/69 planned features are implemented (100%). Many features previously listed under
+> v1.0/v1.1 milestones shipped in v0.9.x releases (Polls, Events, Reactions, Moderation Tools, Push
+> Notifications, Threads, Forums). See `docs/PROJECT_STATUS.md` for complete tracking. The project
+> is in **late-alpha / early-beta** stage focused on hardening, testing, and polish.
 
-### v0.9.26 Highlights (Architecture Refactor)
+### v0.9.31 Highlights
 
-| Category       | Change                                           | Impact              |
-| -------------- | ------------------------------------------------ | ------------------- |
-| **Build**      | Turborepo remote caching enabled                 | Faster CI builds    |
-| **Build**      | Bundle size monitoring (size-limit, 8 budgets)   | Regression guard    |
-| **Backend**    | Router split: 989 → 122 lines + 7 domain modules | Maintainability     |
-| **Backend**    | Removed 854 lines of deprecated circuit breakers | Dead code cleanup   |
-| **Frontend**   | 28 components organized into 6 subdirectories    | Discoverability     |
-| **TypeScript** | All 12 @cgraph/\* path aliases in web + mobile   | Import consistency  |
-| **Monorepo**   | All 16 packages aligned to v0.9.26               | Version consistency |
+| Category     | Change                                                | Impact                 |
+| ------------ | ----------------------------------------------------- | ---------------------- |
+| **Mobile**   | 6 real Zustand stores replacing stub facades          | Full mobile data layer |
+| **Mobile**   | WebSocket integration for chat, groups, notifications | Real-time on mobile    |
+| **Monorepo** | 9 dead shared packages deprecated                     | Reduced complexity     |
+| **Monorepo** | All 16 packages + docs aligned to v0.9.31             | Version consistency    |
+| **Docs**     | ENGINEERING_STANDARDS.md created (previously missing) | Standards compliance   |
 
 ### ✅ Completed Features
 
@@ -111,21 +109,24 @@ After this date, only the following are allowed:
 
 ---
 
-## v1.0.0 - Public Beta Launch (March 2026)
+## v1.0.0 - Public Beta Launch (September 2025)
 
-**Theme:** Public launch, mobile beta, forums
+**Theme:** Stability, testing, mobile beta, public launch
 
-**Target Date:** March 17, 2026 (St. Patrick's Day 🍀)
+**Target Date:** September 2025
 
-### New Features
+### Remaining Work for v1.0
 
-| Feature            | Description                              | Priority |
-| ------------------ | ---------------------------------------- | -------- |
-| **Public Servers** | Discoverable community servers           | P0       |
-| **Invite System**  | Shareable invite links                   | P0       |
-| **Forum Channels** | Threaded forum-style discussions         | P1       |
-| **Mobile Beta**    | iOS/Android public TestFlight/Play Store | P0       |
-| **Bot API v1**     | Initial bot/integration framework        | P2       |
+| Feature                  | Description                              | Priority | Status         |
+| ------------------------ | ---------------------------------------- | -------- | -------------- |
+| **Test Coverage**        | Reach 70% unit coverage across all apps  | P0       | 📋 Planned     |
+| **Security Audit**       | External E2EE + penetration test         | P0       | 🔄 In Progress |
+| **Stripe Integration**   | Real billing (currently hardcoded free)  | P0       | 📋 Planned     |
+| **Crypto Consolidation** | Unify web + mobile E2EE implementations  | P1       | 📋 Planned     |
+| **Mobile Beta**          | iOS/Android public TestFlight/Play Store | P0       | 📋 Planned     |
+| **Bot API v1**           | Initial bot/integration framework        | P2       | 📋 Planned     |
+
+> **Note:** Public servers, invite system, and forum channels already shipped in v0.9.x.
 
 ### Launch Checklist
 
@@ -139,27 +140,28 @@ After this date, only the following are allowed:
 
 ---
 
-## v1.1.0 - Community Growth (June 2026)
+## v1.1.0 - Community Growth (December 2025)
 
-**Theme:** Engagement features, mobile GA
+**Theme:** Mobile GA, engagement polish, API ecosystem
 
 ### Planned Features
 
-| Feature                | Description                 | Priority |
-| ---------------------- | --------------------------- | -------- |
-| **Threads**            | Message threads in channels | P1       |
-| **Reaction Expansion** | Custom server emojis        | P1       |
-| **Polls**              | Native polling in channels  | P2       |
-| **Events**             | Scheduled server events     | P2       |
-| **Mobile GA**          | Full mobile app release     | P0       |
-| **Push Notifications** | Rich push for mobile        | P0       |
-| **Moderation Tools**   | AutoMod, ban appeals        | P1       |
+| Feature                 | Description                      | Priority | Status     |
+| ----------------------- | -------------------------------- | -------- | ---------- |
+| **Mobile GA**           | Full mobile app release          | P0       | 📋 Planned |
+| **Bot API v2**          | Webhooks, slash commands         | P1       | 📋 Planned |
+| **Custom Emojis**       | Server-specific emoji uploads    | P2       | 📋 Planned |
+| **Advanced Search**     | Full-text search across messages | P1       | 📋 Planned |
+| **Analytics Dashboard** | Server activity & growth metrics | P2       | 📋 Planned |
+
+> **Note:** Threads, Polls, Events, Push Notifications, and Moderation Tools already shipped in
+> v0.9.x.
 
 ---
 
-## v1.2.0 - Enterprise Ready (September 2026)
+## v1.2.0 - Enterprise Ready (Q1 2026)
 
-**Theme:** Self-hosting, enterprise features
+**Theme:** Enterprise features, compliance
 
 ### Planned Features
 
@@ -287,4 +289,4 @@ We prioritize based on:
 
 ---
 
-<sub>**CGraph Product Roadmap** • Version 0.9.28 • Last updated: February 2026</sub>
+<sub>**CGraph Product Roadmap** • Version 0.9.31 • Last updated: July 2025</sub>
