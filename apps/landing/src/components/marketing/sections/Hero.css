@@ -617,11 +617,13 @@
   .hero-pro__scroll {
     position: relative;
     bottom: auto;
+    left: auto;
+    transform: none; /* Reset desktop transform */
     margin-top: 3rem;
     margin-bottom: 2rem;
     z-index: 20;
     scale: 0.6;
-    opacity: 0.6 !important; /* Ensure visibility on mobile */
+    opacity: 0.6; /* Matches requested opacity, allows framer-motion override */
   }
 
   .hero-pro__scroll-text {

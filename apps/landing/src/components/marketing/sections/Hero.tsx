@@ -83,7 +83,7 @@ const Hero = memo(function Hero(): React.JSX.Element {
   }, [prefersReduced]);
 
   const { scrollY } = useScroll();
-  const scrollOpacity = useTransform(scrollY, [0, 100], [1, 0]);
+  const scrollOpacity = useTransform(scrollY, [0, 100], [0.6, 0]);
 
   return (
     <section ref={heroRef} className="hero-pro" aria-label="CGraph — Beyond Messaging">
