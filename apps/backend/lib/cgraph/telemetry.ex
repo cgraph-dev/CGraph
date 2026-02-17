@@ -393,18 +393,47 @@ defmodule CGraph.Telemetry do
     end
   end
 
-  # Placeholder functions for metrics backends
-  # In production, these would send to StatsD, Prometheus, etc.
+  # ---------------------------------------------------------------------------
+  # Metrics Backends
+  # ---------------------------------------------------------------------------
+  # These functions bridge from handler-local metrics to the Telemetry pipeline.
+  # TelemetryMetricsPrometheus.Core (started in CGraphWeb.Telemetry) automatically
+  # aggregates events matching its metric definitions. The custom CGraph.Metrics
+  # GenServer handles metrics not covered by Telemetry.Metrics definitions.
 
   defp increment_counter(name, tags) do
-    # In production: :statsd.increment(name, 1, tags: tags)
+    # Emit as telemetry event so TelemetryMetricsPrometheus.Core can aggregate
+    :telemetry.execute(
+      [:cgraph, :custom, :counter],
+      %{count: 1},
+      %{name: name, tags: tags}
+    )
+
+    # Also record in custom CGraph.Metrics GenServer for the /metrics endpoint
+    try do
+      CGraph.Metrics.increment(String.to_atom(name), tags)
+    rescue
+      _ -> :ok
+    end
+
     if Application.get_env(:cgraph, :telemetry_debug, false) do
       Logger.debug("telemetry_counter", name: name, tags: tags)
     end
   end
 
   defp record_histogram(name, value, tags) do
-    # In production: :statsd.histogram(name, value, tags: tags)
+    :telemetry.execute(
+      [:cgraph, :custom, :histogram],
+      %{value: value},
+      %{name: name, tags: tags}
+    )
+
+    try do
+      CGraph.Metrics.observe(String.to_atom(name), value, tags)
+    rescue
+      _ -> :ok
+    end
+
     if Application.get_env(:cgraph, :telemetry_debug, false) do
       Logger.debug("telemetry_histogram", name: name, value: value, tags: tags)
     end

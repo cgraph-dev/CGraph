@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
+import QRCode from 'react-native-qrcode-svg';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import api from '../../lib/api';
 
@@ -71,50 +72,31 @@ function SafetyNumberBlock({ number }: SafetyNumberBlockProps) {
 }
 
 // ============================================================================
-// QR CODE PLACEHOLDER COMPONENT
+// QR CODE COMPONENT
 // ============================================================================
 
-interface QRCodePlaceholderProps {
+interface VerificationQRCodeProps {
+  value: string;
   size: number;
 }
 
-function QRCodePlaceholder({ size }: QRCodePlaceholderProps) {
-  // In a real app, you'd use react-native-qrcode-svg or similar
-  // This is a placeholder visualization
-  const gridSize = 8;
-  const cellSize = size / gridSize;
-
-  // Generate pseudo-random pattern based on fixed seed for visual consistency
-  const cells = [];
-  for (let y = 0; y < gridSize; y++) {
-    for (let x = 0; x < gridSize; x++) {
-      // Corner patterns (fixed)
-      const isCorner =
-        (x < 2 && y < 2) || (x >= gridSize - 2 && y < 2) || (x < 2 && y >= gridSize - 2);
-
-      // Pseudo-random for middle
-      const isMiddle = !isCorner && (x + y * gridSize) % 3 !== 0;
-
-      if (isCorner || isMiddle) {
-        cells.push(
-          <View
-            key={`${x}-${y}`}
-            style={{
-              position: 'absolute',
-              left: x * cellSize,
-              top: y * cellSize,
-              width: cellSize - 1,
-              height: cellSize - 1,
-              backgroundColor: '#fff',
-              borderRadius: 2,
-            }}
-          />
-        );
-      }
-    }
-  }
-
-  return <View style={[styles.qrCode, { width: size, height: size }]}>{cells}</View>;
+function VerificationQRCode({ value, size }: VerificationQRCodeProps) {
+  return (
+    <View
+      style={[
+        styles.qrCode,
+        {
+          width: size + 16,
+          height: size + 16,
+          padding: 8,
+          backgroundColor: '#fff',
+          borderRadius: 12,
+        },
+      ]}
+    >
+      <QRCode value={value} size={size} backgroundColor="#fff" color="#000" ecl="M" />
+    </View>
+  );
 }
 
 // ============================================================================
@@ -374,10 +356,8 @@ export default function E2EEVerificationScreen() {
             </Text>
 
             <View style={styles.qrContainer}>
-              <QRCodePlaceholder size={160} />
-              <Text style={styles.qrHint}>
-                In a real implementation, this would be a scannable QR code
-              </Text>
+              <VerificationQRCode value={safetyData.safetyNumber} size={160} />
+              <Text style={styles.qrHint}>Scan with {username}'s device to verify keys match</Text>
             </View>
           </View>
 

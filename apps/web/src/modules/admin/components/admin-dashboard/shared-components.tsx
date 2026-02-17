@@ -82,17 +82,81 @@ export function ModerationQueueItem({ item }: { item: ModerationItem }) {
 }
 
 /**
- * Placeholder for chart visualizations
+ * Reusable area chart panel for dashboard metrics
  */
-export function ChartPlaceholder({ title }: { title: string }) {
+export function DashboardChart({
+  title,
+  data,
+  dataKey,
+  color = '#8b5cf6',
+  loading = false,
+}: {
+  title: string;
+  data: Array<Record<string, unknown>>;
+  dataKey: string;
+  color?: string;
+  loading?: boolean;
+}) {
+  const { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } =
+    React.useMemo(() => require('recharts'), []);
+
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
       <h3 className="mb-4 font-bold">{title}</h3>
-      <div className="flex h-48 items-center justify-center text-gray-600">
-        📊 Chart visualization would render here
-      </div>
+      {loading ? (
+        <div className="flex h-48 items-center justify-center text-gray-600">Loading…</div>
+      ) : data.length === 0 ? (
+        <div className="flex h-48 items-center justify-center text-gray-600">No data available</div>
+      ) : (
+        <ResponsiveContainer width="100%" height={192}>
+          <AreaChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+            <defs>
+              <linearGradient id={`fill-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={color} stopOpacity={0.3} />
+                <stop offset="95%" stopColor={color} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+            <XAxis
+              dataKey="label"
+              tick={{ fill: '#6b7280', fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
+            />
+            <YAxis
+              tick={{ fill: '#6b7280', fontSize: 11 }}
+              axisLine={false}
+              tickLine={false}
+              width={40}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: '#1f2937',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 8,
+                color: '#fff',
+                fontSize: 12,
+              }}
+            />
+            <Area
+              type="monotone"
+              dataKey={dataKey}
+              stroke={color}
+              fill={`url(#fill-${dataKey})`}
+              strokeWidth={2}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      )}
     </div>
   );
+}
+
+/**
+ * @deprecated Use DashboardChart instead
+ */
+export function ChartPlaceholder({ title }: { title: string }) {
+  return <DashboardChart title={title} data={[]} dataKey="value" />;
 }
 
 /**

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { ChannelItem } from './ChannelItem';
+import { SortableChannel } from './SortableChannel';
 import type { CategorySectionProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
 
@@ -59,14 +59,11 @@ export function CategorySection({
             className="overflow-hidden"
           >
             {category.channels?.map((channel) => (
-              <motion.div
+              <SortableChannel
                 key={channel.id}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={springs.snappy}
-              >
-                <ChannelItem channel={channel} isActive={channel.id === activeChannelId} />
-              </motion.div>
+                channel={channel}
+                isActive={channel.id === activeChannelId}
+              />
             ))}
           </motion.div>
         )}

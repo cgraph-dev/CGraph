@@ -125,9 +125,10 @@ export function createGroupActions(
         return {
           channelMessages: {
             ...state.channelMessages,
-            [message.channelId]: updated.length > MAX_CHANNEL_MESSAGES
-              ? updated.slice(updated.length - MAX_CHANNEL_MESSAGES)
-              : updated,
+            [message.channelId]:
+              updated.length > MAX_CHANNEL_MESSAGES
+                ? updated.slice(updated.length - MAX_CHANNEL_MESSAGES)
+                : updated,
           },
         };
       });
@@ -222,7 +223,7 @@ export function createGroupActions(
     },
 
     updateChannelOrder: async (groupId: string, channelIds: string[]) => {
-      await api.patch(`/api/v1/groups/${groupId}/channels/order`, { channel_ids: channelIds });
+      await api.put(`/api/v1/groups/${groupId}/channels/reorder`, { channel_ids: channelIds });
       // Optimistic update - reorder channels locally
       set((state) => ({
         groups: state.groups.map((g) => {

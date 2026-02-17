@@ -86,6 +86,44 @@ defmodule CGraph.Groups.Channels do
     |> Repo.update()
   end
 
+  @doc """
+  Reorder channels within a group.
+
+  Accepts a list of channel IDs in the desired order. Updates the `position`
+  field of each channel to match its index in the list. All channel IDs must
+  belong to the given group.
+
+  ## Examples
+
+      reorder_channels(group, ["ch-1", "ch-3", "ch-2"])
+      # => {:ok, 3}  # 3 channels updated
+  """
+  @spec reorder_channels(struct(), [binary()]) :: {:ok, non_neg_integer()} | {:error, atom()}
+  def reorder_channels(group, channel_ids) when is_list(channel_ids) do
+    # Verify all channels belong to this group
+    existing = from(c in Channel,
+      where: c.group_id == ^group.id and c.id in ^channel_ids and is_nil(c.deleted_at),
+      select: c.id
+    ) |> Repo.all() |> MapSet.new()
+
+    requested = MapSet.new(channel_ids)
+
+    if MapSet.equal?(existing, requested) do
+      Repo.transaction(fn ->
+        channel_ids
+        |> Enum.with_index()
+        |> Enum.each(fn {id, position} ->
+          from(c in Channel, where: c.id == ^id)
+          |> Repo.update_all(set: [position: position])
+        end)
+
+        length(channel_ids)
+      end)
+    else
+      {:error, :invalid_channel_ids}
+    end
+  end
+
   # ============================================================================
   # Channel Messages
   # ============================================================================

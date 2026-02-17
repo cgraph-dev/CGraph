@@ -48,6 +48,9 @@ defmodule CGraphWeb.Router.MessagingRoutes do
             resources "/pins", PinnedMessageController, only: [:index, :create, :delete]
           end
 
+          # Channel reordering (outside nested resource to avoid :id requirement)
+          put "/channels/reorder", ChannelController, :reorder
+
           resources "/members", GroupMemberController, only: [:index, :create, :update, :delete]
           patch "/members/me/notifications", GroupMemberController, :update_notifications
           post "/members/:id/kick", GroupMemberController, :kick

@@ -32,6 +32,7 @@ defmodule CGraph.Groups do
   defdelegate create_channel(group, attrs), to: Channels
   defdelegate update_channel(channel, attrs), to: Channels
   defdelegate delete_channel(channel), to: Channels
+  defdelegate reorder_channels(group, channel_ids), to: Channels
   defdelegate list_channel_messages(channel_or_id, opts \\ []), to: Channels
   defdelegate create_channel_message(channel, user, attrs), to: Channels
   defdelegate get_channel_message(channel, message_id), to: Channels

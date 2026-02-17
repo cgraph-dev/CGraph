@@ -109,14 +109,15 @@
 
 ---
 
-### 9. Admin Dashboard Charts (Placeholder Divs) 🔶 DEFERRED
+### 9. Admin Dashboard Charts (Placeholder Divs) ✅ IMPLEMENTED
 
-| File | What's Missing |
-|------|---------------|
-| [shared-components.tsx](file:///CGraph/apps/web/src/modules/admin/components/admin-dashboard/shared-components.tsx#L87-L96) | `ChartPlaceholder` renders placeholder div |
-| [AdminDashboard.tsx](file:///CGraph/apps/web/src/modules/admin/components/AdminDashboard.tsx#L35) | Uses `PLACEHOLDER_EVENTS` instead of real data |
+**Status:** ~~Placeholder divs~~ → Live Recharts charts with API data (2026-02-18)
 
-**Why deferred:** Requires choosing and integrating a charting library (Recharts recommended) and connecting to backend metrics endpoints. Planned for v1.1.
+| File | Change |
+|------|--------|
+| shared-components.tsx | `ChartPlaceholder` replaced with `DashboardChart` component using Recharts `AreaChart` with gradient fills, dark theme tooltips, responsive container |
+| AnalyticsDashboard.tsx | Full rewrite: fetches from `metricsApi.getMetrics()` + `getRealtimeStats()`, renders 4 live charts (User Activity, Revenue, Events, Marketplace), time range selector (1d/7d/30d/90d), 60s auto-refresh |
+| package.json (web) | Added `recharts ^3.7.0` |
 
 ---
 
@@ -171,9 +172,13 @@
 
 ---
 
-### 15. Mobile E2EE QR Code Verification 🔶 DEFERRED
+### 15. Mobile E2EE QR Code Verification ✅ IMPLEMENTED
 
-**Why deferred:** Requires crypto implementation (safety number generation from key pairs) and `react-native-qrcode-svg` integration. Planned for v1.1.
+**Status:** ~~Fake 8x8 grid~~ → Real QR code using `react-native-qrcode-svg` (2026-02-18)
+
+| File | Change |
+|------|--------|
+| E2EEVerificationScreen.tsx | `QRCodePlaceholder` (fake grid) replaced with `VerificationQRCode` component that renders a real scannable QR code encoding the safety number. Uses `react-native-qrcode-svg` with error correction level M, white background for scanning. Hint text updated to "Scan with {username}'s device to verify keys match". |
 
 ---
 
@@ -200,13 +205,30 @@
 
 ## 🔵 P3 — Polish & Nice-to-Have
 
-### 18. Telemetry Metrics Backend Placeholders 🔶 DEFERRED
+### 18. Telemetry Metrics Backend Placeholders ✅ IMPLEMENTED
 
-**Why deferred:** Requires infrastructure decision (Prometheus vs StatsD vs DataDog). Placeholder functions have no user impact.
+**Status:** ~~Stub logging only~~ → Real Prometheus metrics export (2026-02-18)
 
-### 19. Channel Drag-and-Drop Reordering 🔶 DEFERRED
+| File | Change |
+|------|--------|
+| telemetry.ex | `increment_counter` and `record_histogram` now emit real `:telemetry.execute` events AND record to `CGraph.Metrics` GenServer. Events flow through `TelemetryMetricsPrometheus.Core` for automatic Prometheus aggregation. |
+| metrics_controller.ex | `/metrics` endpoint now combines output from both `CGraph.Metrics.export(:prometheus)` and `TelemetryMetricsPrometheus.Core.scrape(:cgraph_prometheus_metrics)`. Sets proper `text/plain; version=0.0.4` content type. |
 
-**Why deferred:** UI enhancement requiring `@dnd-kit/core` integration. No functional impact.
+### 19. Channel Drag-and-Drop Reordering ✅ IMPLEMENTED
+
+**Status:** ~~@todo(ui) planned~~ → Full DnD with `@dnd-kit` + backend endpoint (2026-02-18)
+
+| File | Change |
+|------|--------|
+| channels.ex (backend) | New `reorder_channels(group, channel_ids)` — validates all IDs belong to group, batch-updates `position` field in a transaction |
+| channel_controller.ex | New `reorder` action accepting `{"channel_ids": [...]}` |
+| messaging_routes.ex | Added `PUT /groups/:group_id/channels/reorder` route |
+| groups.ex | Added `defdelegate reorder_channels/2` |
+| ChannelList.tsx | Wrapped with `DndContext` + `SortableContext` from `@dnd-kit/core` and `@dnd-kit/sortable` |
+| SortableChannel.tsx | NEW: Sortable wrapper for `ChannelItem` with drag handles, transform, opacity |
+| ChannelCategory.tsx | Uses `SortableChannel` instead of raw `ChannelItem` for DnD support |
+| group-actions.ts | `updateChannelOrder` API endpoint updated to `PUT /channels/reorder` |
+| package.json (web) | Added `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities` |
 
 ### 20. Mobile app.json Placeholder Values ✅ FIXED
 
@@ -230,18 +252,18 @@
 | **Marketplace** | 6 stubs | P1 | ✅ Implemented |
 | **Email Digest** | 3 stubs | P1 | ✅ Implemented |
 | **Forum Moderation** | 2 stubs | P1 | ✅ Implemented |
-| **Admin Dashboard** | Charts + mock data | P1 | 🔶 Deferred (v1.1) |
+| **Admin Dashboard** | Charts + mock data | P1 | ✅ Implemented |
 | **Toast System** | 1 stub hook | P1 | ✅ Already resolved + bridged |
 | **Gamification** | 3 mock data files | P2 | 🔶 Deferred (frontend work) |
 | **Search History** | 2 stubs | P2 | ✅ Implemented |
 | **Storage Tracking** | 1 incomplete | P2 | ✅ Fixed |
 | **Connection Pool** | 1 stub | P2 | ✅ Fixed |
-| **E2EE QR Code** | 1 placeholder | P2 | 🔶 Deferred (crypto) |
+| **E2EE QR Code** | 1 placeholder | P2 | ✅ Implemented |
 | **Friend Suggestions** | 1 stub | P2 | ✅ Implemented |
 | **Custom Auto-Rules** | 1 stub | P2 | ✅ Implemented |
-| **Telemetry Backends** | Placeholders | P3 | 🔶 Deferred |
-| **Channel Reorder** | Planned UI | P3 | 🔶 Deferred |
+| **Telemetry Backends** | Placeholders | P3 | ✅ Implemented |
+| **Channel Reorder** | Planned UI | P3 | ✅ Implemented |
 | **Mobile Config** | Placeholder values | P3 | ✅ Fixed |
 
-> **Resolved: 13/20 items (65%)** — 4 new migrations, 2 new schemas, 12 files updated
-> **Deferred: 7/20 items** — require external infrastructure, library integration, or large refactors
+> **Resolved: 17/20 items (85%)** — 4 new migrations, 2 new schemas, 20+ files updated
+> **Deferred: 3/20 items** — require external infrastructure or large refactors (Webhooks, Voice/Video, Gamification mock data)

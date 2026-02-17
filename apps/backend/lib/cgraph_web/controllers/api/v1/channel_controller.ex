@@ -84,4 +84,20 @@ defmodule CGraphWeb.API.V1.ChannelController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  @doc """
+  Reorder channels within a group.
+
+  Accepts `{"channel_ids": ["id1", "id2", ...]}` with the desired order.
+  """
+  def reorder(conn, %{"group_id" => group_id, "channel_ids" => channel_ids})
+      when is_list(channel_ids) do
+    user = conn.assigns.current_user
+
+    with {:ok, group} <- Groups.get_user_group(user, group_id),
+         :ok <- Groups.authorize(user, group, :manage_channels),
+         {:ok, count} <- Groups.reorder_channels(group, channel_ids) do
+      json(conn, %{ok: true, reordered: count})
+    end
+  end
 end
