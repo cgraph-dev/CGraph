@@ -21,7 +21,6 @@ for mod <- [
   CGraph.ErrorReporter,
   CGraph.ConnectionPool,
   CGraph.Idempotency,
-  CGraph.Webhooks,
   CGraph.Metrics,
   CGraph.Security.TokenBlacklist
 ] do

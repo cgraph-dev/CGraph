@@ -1,6 +1,6 @@
 # CGraph Project Status
 
-> **Version: 0.9.28** | Last Updated: February 16, 2026
+> **Version: 0.9.29** | Last Updated: February 17, 2026
 
 This document consolidates the project status, feature tracking, and development roadmap.
 
@@ -53,7 +53,7 @@ This document consolidates the project status, feature tracking, and development
 
 ### Overall Health Score
 
-**8.8/10** (up from 7.3/10)
+**9.0/10** (up from 7.3/10)
 
 | Category             | Score | Target |
 | -------------------- | ----- | ------ |
@@ -73,13 +73,13 @@ See `docs/REMEDIATION_STATUS_2026_01_31.md` for full details.
 
 ## 📊 Feature Implementation Status
 
-### Current Coverage: ~85%
+### Current Coverage: ~90%
 
 ```
-Implemented:        59 features
-Remaining:          10 features
+Implemented:        62 features
+Remaining:           7 features
 Total tracked:      69 features
-Coverage:           ~85%
+Coverage:           ~90%
 ```
 
 ### Category Breakdown
@@ -89,7 +89,7 @@ Coverage:           ~85%
 | Core Forums      | 15    | 12   | 80%      |
 | Private Messages | 12    | 10   | 83%      |
 | User System      | 15    | 10   | 67%      |
-| Moderation       | 15    | 14   | 93%      |
+| Moderation       | 15    | 15   | 100%     |
 | Calendar/Events  | 9     | 9    | 100%     |
 | Announcements    | 6     | 5    | 83%      |
 | Reputation       | 8     | 6    | 75%      |
@@ -164,34 +164,56 @@ Coverage:           ~85%
 - Spoiler tags, code highlighting
 - Nested quote display
 
+### Webhooks & Integrations (v0.9.29)
+
+- Outbound webhook delivery (Oban-powered)
+- HMAC-SHA256 signed payloads
+- Exponential backoff retries (5 attempts)
+- Webhook endpoint CRUD with secret rotation
+- Delivery tracking with status/response storage
+
+### Voice/Video Infrastructure (v0.9.29)
+
+- WebRTC room management (GenServer + ETS)
+- Call history persistence to database
+- TURN/STUN/SFU server configuration
+- ICE candidate relay support
+
+### Admin Dashboard (v0.9.29)
+
+- Dashboard overview with live metrics + moderation queue
+- User management with search, filter, sort (API-backed)
+- Events management with CRUD (API-backed)
+- Marketplace moderation with approve/reject/bulk actions (API-backed)
+
 ---
 
-## ❌ Remaining Features (14)
+## ❌ Remaining Features (7)
 
 ### High Priority
 
 1. **Email Notifications** - Digest emails for subscriptions
 2. **Push Notifications** - Browser push notifications
 3. **Forum Hierarchy** - Infinite subforum nesting
-4. **Username Changes** - With cooldown period
 
 ### Medium Priority
 
-5. **Forum Permissions** - Per-forum granular access
-6. **Profile Visibility** - Full privacy controls
-7. **Ignore List** - Block users from PMs
-8. **Secondary Groups** - Multiple group membership
-9. **Forum Subscriptions** - Subscribe to entire forums
-10. **Auto-Subscribe** - Auto-sub when posting
+4. **Forum Permissions** - Per-forum granular access
+5. **Profile Visibility** - Full privacy controls
+6. **Forum Subscriptions** - Subscribe to entire forums
 
 ### Lower Priority
 
-11. **User Stars** - Visual post count indicators
-12. **Thread View Modes** - Linear vs threaded display
-13. **Printable Version** - Export thread as PDF
-14. **Multi-Quote** - Quote multiple posts
+7. **Multi-Quote** - Quote multiple posts
 
-### Recently Completed (v0.9.13)
+### Recently Completed (v0.9.29)
+
+- ✅ **Webhook System** - Outbound webhook delivery with HMAC-SHA256 signatures
+- ✅ **Call History DB** - WebRTC call history persisted to database
+- ✅ **Admin Dashboard API** - All 4 panels wired to real API endpoints
+- ✅ **Gamification API Counts** - Replaced hardcoded achievement counts with API data
+
+### Previously Completed (v0.9.13)
 
 - ✅ **RSS Feeds** - Subscribe to threads/forums (web page created)
 - ✅ **Custom Emoji** - Custom emoji system (web page + upload modal)
@@ -202,7 +224,7 @@ Coverage:           ~85%
 
 ## 🗄️ Database Schema
 
-**91 tables** supporting all features:
+**91 tables + 3 new** supporting all features:
 
 ### Core Tables
 
@@ -217,6 +239,8 @@ Coverage:           ~85%
 - Referrals: `referral_codes`, `referrals`, `referral_reward_tiers`
 - Reputation: `reputation_entries`
 - Announcements: `announcement_dismissals`
+- Webhooks: `webhook_endpoints`, `webhook_deliveries`
+- WebRTC: `call_history`
 
 ---
 
@@ -303,6 +327,7 @@ See [AI_INTEGRATION.md](architecture/AI_INTEGRATION.md) for details.
 | Backend  | Phoenix 1.8 / Elixir 1.17+        |
 | Database | PostgreSQL (Supabase)             |
 | Realtime | Phoenix Channels (WebSocket)      |
+| Webhooks | Oban + Finch HTTP client          |
 | Payments | Stripe Checkout + Subscriptions   |
 | Deploy   | Vercel (frontend), Fly.io (API)   |
 | CDN      | Cloudflare                        |

@@ -13,10 +13,7 @@ import { STATUS_COLORS, EVENT_FILTERS } from './constants';
 /**
  * Modal for creating new events
  */
-function CreateEventModal({
-  onClose,
-  onSubmit,
-}: CreateEventModalProps & { onSubmit: (params: { name: string; status: string }) => void }) {
+function CreateEventModal({ onClose, onSubmit }: CreateEventModalProps) {
   const [name, setName] = useState('');
   const [status, setStatus] = useState('draft');
 

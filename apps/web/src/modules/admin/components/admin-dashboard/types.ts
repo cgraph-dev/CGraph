@@ -34,7 +34,7 @@ export interface StatCardProps {
   title: string;
   value: string | number;
   icon: string;
-  trend?: string;
+  trend?: { value: number; isPositive: boolean };
   variant?: 'default' | 'success' | 'warning' | 'danger';
 }
 
@@ -47,5 +47,5 @@ export interface NavItem {
 
 export interface CreateEventModalProps {
   onClose: () => void;
-  onSubmit: (event: Omit<EventData, 'id'>) => void;
+  onSubmit: (params: { name: string; status: string }) => void;
 }

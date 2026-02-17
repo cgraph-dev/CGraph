@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.28** | Generated: February 17, 2026
+> **Version: 0.9.29** | Generated: February 17, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
@@ -89,10 +89,10 @@ audit and web test coverage
 
 ```
 Total Features:     69
-Implemented:        59 (85%)
-Remaining:          10 (15%)
+Implemented:        62 (90%)
+Remaining:           7 (10%)
 
-██████████████████████░░░░ 85%
+████████████████████████░░ 90%
 ```
 
 ### By Category
@@ -101,7 +101,7 @@ Remaining:          10 (15%)
 | ---------------- | -------- | ---------------------- | ----------------------------------------- |
 | Calendar/Events  | 100%     | ██████████████████████ |
 | Referrals        | 100%     | ██████████████████████ |
-| Moderation       | 93%      | ████████████████████░░ |
+| Moderation       | 100%     | ██████████████████████ | Marketplace moderation + admin API        |
 | Private Messages | 83%      | ██████████████████░░░░ |
 | Announcements    | 83%      | ██████████████████░░░░ |
 | Core Forums      | 80%      | █████████████████░░░░░ |
@@ -121,7 +121,9 @@ Remaining:          10 (15%)
 | Landing App       | React 19 / Vite      | ✅     | 98 tests, Lighthouse CI, visual regression           |
 | Mobile App        | Expo 54 / RN 0.81    | ✅     | Feature parity with web                              |
 | Real-time         | Phoenix Channels     | ✅     | WebSocket + PubSub sharding                          |
-| Database          | PostgreSQL 16        | ✅     | 91 tables, optimized                                 |
+| Database          | PostgreSQL 16        | ✅     | 94 tables, optimized                                 |
+| Webhooks          | Oban + Finch         | ✅     | HMAC-SHA256 signed, exponential backoff, 5 retries   |
+| WebRTC            | GenServer + ETS      | ✅     | TURN/SFU config, call history DB persistence         |
 | CDN               | Cloudflare           | ✅     | Global edge caching                                  |
 | Hosting (API)     | Fly.io               | ✅     | Primary: Frankfurt (fra); Read replica: IAD          |
 | Hosting (Web)     | Fly.io               | ⚠️     | Configured (fly.web.toml) but Dockerfile.web missing |
@@ -250,26 +252,27 @@ apps/mobile/src/screens/
 
 ## 📅 Release Timeline
 
-| Version | Date       | Highlights                                                                                                                                                                 |
-| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0.9.28+ | 2026-02-17 | **Landing quality push**: 16 test files (98 tests), web-vitals monitoring, error tracking, Lighthouse CI budgets, visual regression, Playwright E2E                        |
-| 0.9.26+ | 2026-02-16 | **Test suite fully green**: 635 pre-existing failures resolved, 17 root causes fixed, route architecture corrected, CookieAuth + RequireAuth plugs, tokens table migration |
-| 0.9.26  | 2026-02-15 | **Architecture refactor**: Router split (8 modules), component org (6 dirs), remote caching, bundle monitoring, dead code removal                                          |
-| 0.9.24+ | 2026-02-15 | **Compliance pass**: 8 backend modules split (<500 lines), 5 React splits (<300 lines), 56 @spec annotations, soft delete audit                                            |
-| 0.9.24  | 2026-02-15 | **Backend tests green**: 1,633 tests, 0 failures — 13 source bugs fixed, 114 files changed                                                                                 |
-| 0.9.23  | 2026-02-14 | **Credo zero**: 64→0 issues, 56 alias fixes, 8 TODOs implemented                                                                                                           |
-| 0.9.22  | 2026-02-13 | **Refactoring**: 0 Credo warnings/refactoring, context structs, pattern matching                                                                                           |
-| 0.9.21  | 2026-02-13 | **Credo cleanup**: 1,277→83 issues, 14 routes wired, alias ordering, atom safety                                                                                           |
-| 0.9.20  | 2026-02-13 | **Compile cleanup**: 90→0 warnings, Elixir 1.19 bitwise fix, 30+ files cleaned                                                                                             |
-| 0.9.19  | 2026-02-14 | **163 backend tests**, 70 context tests, 4 controllers wired, observability stack                                                                                          |
-| 0.9.18  | 2026-02-14 | **100% controller coverage**, MeiliSearch pipeline, chaos testing                                                                                                          |
-| 0.9.12  | 2026-02-03 | **Reanimated v4 migration** (222→0 TS errors)                                                                                                                              |
-| 0.9.11  | 2026-02-02 | Architecture transformation, module system                                                                                                                                 |
-| 0.9.10  | 2026-02-01 | E2EE test suite, store facades, 893 tests                                                                                                                                  |
-| 0.9.9   | 2026-01-31 | Type safety improvements, production logging                                                                                                                               |
-| 0.9.8   | 2026-01-30 | Code simplification, component extraction                                                                                                                                  |
-| 0.9.7   | 2026-01-27 | Enterprise landing page, dual-app arch                                                                                                                                     |
-| 1.0.0   | TBD        | First stable release (post-audit)                                                                                                                                          |
+| Version | Date       | Highlights                                                                                                                                                                                                                                                                                                                     |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 0.9.29  | 2026-02-17 | **Platform gap completion + review**: Webhooks DB (Ecto context + Oban worker), WebRTC call history persistence, admin dashboard API wiring (4 panels), gamification API-sourced counts. Review fixes: Oban `:webhooks` queue config, test_helper cleanup, `UsersManagement` sort/type bugs, dead `PLACEHOLDER_EVENTS` removal |
+| 0.9.28+ | 2026-02-17 | **Landing quality push**: 16 test files (98 tests), web-vitals monitoring, error tracking, Lighthouse CI budgets, visual regression, Playwright E2E                                                                                                                                                                            |
+| 0.9.26+ | 2026-02-16 | **Test suite fully green**: 635 pre-existing failures resolved, 17 root causes fixed, route architecture corrected, CookieAuth + RequireAuth plugs, tokens table migration                                                                                                                                                     |
+| 0.9.26  | 2026-02-15 | **Architecture refactor**: Router split (8 modules), component org (6 dirs), remote caching, bundle monitoring, dead code removal                                                                                                                                                                                              |
+| 0.9.24+ | 2026-02-15 | **Compliance pass**: 8 backend modules split (<500 lines), 5 React splits (<300 lines), 56 @spec annotations, soft delete audit                                                                                                                                                                                                |
+| 0.9.24  | 2026-02-15 | **Backend tests green**: 1,633 tests, 0 failures — 13 source bugs fixed, 114 files changed                                                                                                                                                                                                                                     |
+| 0.9.23  | 2026-02-14 | **Credo zero**: 64→0 issues, 56 alias fixes, 8 TODOs implemented                                                                                                                                                                                                                                                               |
+| 0.9.22  | 2026-02-13 | **Refactoring**: 0 Credo warnings/refactoring, context structs, pattern matching                                                                                                                                                                                                                                               |
+| 0.9.21  | 2026-02-13 | **Credo cleanup**: 1,277→83 issues, 14 routes wired, alias ordering, atom safety                                                                                                                                                                                                                                               |
+| 0.9.20  | 2026-02-13 | **Compile cleanup**: 90→0 warnings, Elixir 1.19 bitwise fix, 30+ files cleaned                                                                                                                                                                                                                                                 |
+| 0.9.19  | 2026-02-14 | **163 backend tests**, 70 context tests, 4 controllers wired, observability stack                                                                                                                                                                                                                                              |
+| 0.9.18  | 2026-02-14 | **100% controller coverage**, MeiliSearch pipeline, chaos testing                                                                                                                                                                                                                                                              |
+| 0.9.12  | 2026-02-03 | **Reanimated v4 migration** (222→0 TS errors)                                                                                                                                                                                                                                                                                  |
+| 0.9.11  | 2026-02-02 | Architecture transformation, module system                                                                                                                                                                                                                                                                                     |
+| 0.9.10  | 2026-02-01 | E2EE test suite, store facades, 893 tests                                                                                                                                                                                                                                                                                      |
+| 0.9.9   | 2026-01-31 | Type safety improvements, production logging                                                                                                                                                                                                                                                                                   |
+| 0.9.8   | 2026-01-30 | Code simplification, component extraction                                                                                                                                                                                                                                                                                      |
+| 0.9.7   | 2026-01-27 | Enterprise landing page, dual-app arch                                                                                                                                                                                                                                                                                         |
+| 1.0.0   | TBD        | First stable release (post-audit)                                                                                                                                                                                                                                                                                              |
 
 ---
 
@@ -290,4 +293,4 @@ apps/mobile/src/screens/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.28 • Updated: February 17, 2026</sub>
+<sub>**CGraph Dashboard** • Version 0.9.29 • Updated: February 17, 2026</sub>

@@ -42,9 +42,9 @@ forums, and gamification. Features include post-quantum E2EE (PQXDH + Triple Rat
 and AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a
 karma-based forum system.
 
-**Version**: 0.9.28  
+**Version**: 0.9.29  
 **Last Updated**: February 17, 2026  
-**Architecture Score**: 8.8/10 (see CURRENT_STATE_DASHBOARD.md for breakdown)  
+**Architecture Score**: 9.0/10 (see CURRENT_STATE_DASHBOARD.md for breakdown)  
 **License**: Proprietary (see LICENSE)
 
 ## Key Features
@@ -860,10 +860,9 @@ Required:
 
 Copy `.env.example` to `.env` in `apps/backend/` and configure database credentials and secrets.
 
-## Current Status (v0.9.26)
+## Current Status (v0.9.29)
 
-**Updated:** February 16, 2026  
-**Commit:** `cdddf1f6` (Session 21 — full test suite green)
+**Updated:** February 17, 2026
 
 ### Remediation Progress
 
@@ -883,6 +882,7 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Phase 11: Compliance Pass       | <500 BE / <300 FE lines     | ✅ COMPLETE | 100%       |
 | Phase 12: Architecture Refactor | Router split, component org | ✅ COMPLETE | 100%       |
 | Phase 13: Audit Fix             | P0/P1/P2 audit findings     | ✅ COMPLETE | 100%       |
+| Phase 14: Platform Gaps         | Webhooks, WebRTC, Admin     | ✅ COMPLETE | 100%       |
 
 ### Key Metrics
 
@@ -896,6 +896,7 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Store facades        | 0           | **7 domains** (29 stores)  |
 | Passing tests        | 840         | **1,633** (+793)           |
 | Test failures        | 234+        | **0** (fully green)        |
+| Feature completion   | 59/69       | **62/69** (90%)            |
 | Statement coverage   | 8.79%       | **~20%** (web, vitest)     |
 | Test files (backend) | 40          | **163** (308% increase)    |
 | Controller coverage  | 40%         | **100%** (83/83)           |
@@ -905,7 +906,7 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Credo issues         | 1,277       | **0** (100% — fully clean) |
 | Operational score    | N/A         | **8.2/10**                 |
 
-**Overall Score:** 8.8/10 (up from 7.3/10)
+**Overall Score:** 9.0/10 (up from 7.3/10)
 
 ### Known Stubs & Limitations
 
@@ -926,6 +927,31 @@ The following areas are scaffolded but not fully implemented:
 - **Web Fly.io deployment**: `fly.web.toml` exists but `Dockerfile.web` is missing
 - **Load testing**: k6 scripts ready but no staging/production runs completed
 - **Grafana dashboards**: JSON definitions exist but not provisioned in production
+
+### Sessions 22–24 Changes (v0.9.29 — platform gap completion + review)
+
+- **Webhooks (#3)**: Rewrote `webhooks.ex` from 971-line GenServer to ~400-line Ecto context module.
+  Added `webhook_endpoints` + `webhook_deliveries` tables, `Endpoint` + `Delivery` schemas,
+  `WebhookDeliveryWorker` Oban worker with HMAC-SHA256 signatures, Finch HTTP delivery, exponential
+  backoff (1s/5s/30s/2m/10m), max 5 retries, telemetry.
+- **Voice/Video (#4)**: Added `call_history` table + `CallHistory` schema. Persistence on room end
+  (both `end_room` and `leave_room` last-participant). TURN/SFU/STUN env var config in
+  `runtime.exs`.
+- **Admin & Gamification (#11)**: Created `eventsApi.ts` + `marketplaceApi.ts` frontend clients.
+  Rewrote all 4 admin dashboard panels (DashboardOverview, UsersManagement, EventsManagement,
+  MarketplaceModeration) to use real API calls. Replaced `ACHIEVEMENT_DEFINITIONS.length` with
+  API-sourced counts in 4 gamification consumer files.
+- **Review fixes**:
+  - Added `:webhooks` Oban queue to dev + prod config (jobs were silently unprocessed)
+  - Removed `CGraph.Webhooks` from `test_helper.exs` GenServer startup loop (crash on test boot)
+  - Fixed `UsersManagement.tsx`: `sortBy` → `sort` param name, imported `AdminUser` from API types
+    (was rendering `undefined` for `role`), display `isPremium` instead of non-existent `role`
+  - Removed dead `PLACEHOLDER_EVENTS` from constants.ts, index.ts, AdminDashboard.tsx
+  - Fixed `StatCardProps.trend` type (string → `{ value: number; isPositive: boolean }`)
+  - Fixed `CreateEventModalProps.onSubmit` signature to match actual usage
+- **20/20 implementation plan items resolved**
+  (docs/archive/private-historical/implementation_plan.md.resolved)
+- **94 DB tables** (91 original + 3 new: webhook_endpoints, webhook_deliveries, call_history)
 
 ### Sessions 20–21 Changes (v0.9.26 — audit fixes + full test green)
 

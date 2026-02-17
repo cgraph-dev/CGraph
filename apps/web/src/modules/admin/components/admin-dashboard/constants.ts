@@ -2,7 +2,7 @@
  * AdminDashboard constants
  */
 
-import type { NavItem, EventData } from './types';
+import type { NavItem } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', icon: '📊', label: 'Dashboard', shortcut: '⌘1' },
@@ -11,12 +11,6 @@ export const NAV_ITEMS: NavItem[] = [
   { id: 'users', icon: '👥', label: 'Users', shortcut: '⌘4' },
   { id: 'analytics', icon: '📈', label: 'Analytics', shortcut: '⌘5' },
   { id: 'settings', icon: '⚙️', label: 'Settings' },
-];
-
-export const PLACEHOLDER_EVENTS: EventData[] = [
-  { id: 1, name: 'Winter Wonderland 2026', status: 'active', participants: 4521 },
-  { id: 2, name: "Valentine's Day Special", status: 'scheduled', participants: 0 },
-  { id: 3, name: 'Anniversary Celebration', status: 'draft', participants: 0 },
 ];
 
 export const RISK_COLORS = {

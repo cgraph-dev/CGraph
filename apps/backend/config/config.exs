@@ -111,7 +111,8 @@ config :cgraph, Oban,
     notifications: 20,
     events: 5,
     cleanup: 3,
-    notification_retry: 5
+    notification_retry: 5,
+    webhooks: 10
   ]
 
 # Swoosh mailer configuration

@@ -32,7 +32,6 @@ export {
   type CreateEventModalProps,
   // Constants
   NAV_ITEMS,
-  PLACEHOLDER_EVENTS,
   RISK_COLORS,
   STATUS_COLORS,
   EVENT_FILTERS,

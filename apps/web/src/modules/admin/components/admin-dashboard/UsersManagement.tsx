@@ -6,18 +6,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 
-import { userManagementApi } from '../../api/admin';
-
-interface AdminUser {
-  id: string;
-  username: string;
-  email: string;
-  role: string;
-  status: string;
-  level?: number;
-  balance?: number;
-  insertedAt: string;
-}
+import { userManagementApi } from '../../api/userManagementApi';
+import type { AdminUser } from '../../api/types';
 
 export function UsersManagement() {
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -34,7 +24,7 @@ export function UsersManagement() {
       const result = await userManagementApi.listUsers({
         search: searchQuery || undefined,
         status: statusFilter || undefined,
-        sortBy: sortBy || undefined,
+        sort: sortBy || undefined,
         page: 1,
         perPage: 20,
       });
@@ -148,8 +138,10 @@ export function UsersManagement() {
                       </div>
                     </td>
                     <td className="p-4">
-                      <span className="rounded bg-purple-500/20 px-2 py-1 text-sm text-purple-400">
-                        {user.role}
+                      <span
+                        className={`rounded px-2 py-1 text-sm ${user.isPremium ? 'bg-yellow-500/20 text-yellow-400' : 'bg-purple-500/20 text-purple-400'}`}
+                      >
+                        {user.isPremium ? 'Premium' : 'Member'}
                       </span>
                     </td>
                     <td className="p-4">

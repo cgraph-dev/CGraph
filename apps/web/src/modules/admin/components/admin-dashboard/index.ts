@@ -13,13 +13,7 @@ export type {
   NavItem,
   CreateEventModalProps,
 } from './types';
-export {
-  NAV_ITEMS,
-  PLACEHOLDER_EVENTS,
-  RISK_COLORS,
-  STATUS_COLORS,
-  EVENT_FILTERS,
-} from './constants';
+export { NAV_ITEMS, RISK_COLORS, STATUS_COLORS, EVENT_FILTERS } from './constants';
 export {
   DashboardOverview,
   EventsManagement,

@@ -75,7 +75,8 @@ config :cgraph, Oban,
     mailers: 20,          # Handle email bursts
     notifications: 60,    # High priority for real-time
     critical: 10,         # Urgent tasks
-    search: 15            # Search indexing
+    search: 15,           # Search indexing
+    webhooks: 20          # Webhook delivery processing
   ]
 
 # Rate limiting settings for production (balanced for 10K users)
