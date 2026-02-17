@@ -43,7 +43,7 @@ and AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video ca
 karma-based forum system.
 
 **Version**: 0.9.28  
-**Last Updated**: February 16, 2026  
+**Last Updated**: February 17, 2026  
 **Architecture Score**: 8.8/10 (see CURRENT_STATE_DASHBOARD.md for breakdown)  
 **License**: Proprietary (see LICENSE)
 
@@ -60,23 +60,23 @@ karma-based forum system.
 
 ## Operational Maturity
 
-| Capability            | Status          | Implementation                                                                      |
-| --------------------- | --------------- | ----------------------------------------------------------------------------------- |
-| **Metrics Export**    | Active          | TelemetryMetricsPrometheus.Core → `/metrics` endpoint                               |
-| **SLO Monitoring**    | Active          | Prometheus recording rules + multi-burn-rate alerts                                 |
-| **Error Tracking**    | Active          | Sentry integration (severity-mapped levels + tags)                                  |
-| **Circuit Breakers**  | Active          | 7 fuses: Redis, APNs, FCM, Expo, WebPush, Mailer, HTTP                              |
-| **Search Fallback**   | Active          | MeiliSearch → PostgreSQL ILIKE automatic failover                                   |
-| **Search Indexing**   | Active          | Oban async: messages, posts, threads indexed on create                              |
-| **Load Testing**      | Ready           | k6 scripts: smoke, load, stress, WebSocket, writes                                  |
-| **DB Partitioning**   | Migration ready | Messages table monthly range partitions + Snowflake IDs                             |
-| **Delivery Tracking** | Active          | ✓✓ receipts (sent/delivered/read)                                                   |
-| **Backpressure**      | Active          | Channel write throttling with configurable limits                                   |
-| **Request Tracing**   | Active          | Plug in 5 router pipelines (api, api_auth, api_auth_strict, api_relaxed, api_admin) |
-| **Chaos Testing**     | Ready           | Fault injection, fuse stress testing, failure scenarios                             |
-| **Feature Flags**     | Active          | GenServer + ETS/Redis with percentage rollouts                                      |
-| **Test Coverage**     | Active          | 352 test files (163 backend, 171 web, 15 mobile, 3 landing), 1633 tests 0 failures  |
-| **CI/CD**             | Active          | 12 GH Actions workflows, CI-gated canary deploys                                    |
+| Capability            | Status          | Implementation                                                                       |
+| --------------------- | --------------- | ------------------------------------------------------------------------------------ |
+| **Metrics Export**    | Active          | TelemetryMetricsPrometheus.Core → `/metrics` endpoint                                |
+| **SLO Monitoring**    | Active          | Prometheus recording rules + multi-burn-rate alerts                                  |
+| **Error Tracking**    | Active          | Sentry integration (severity-mapped levels + tags)                                   |
+| **Circuit Breakers**  | Active          | 7 fuses: Redis, APNs, FCM, Expo, WebPush, Mailer, HTTP                               |
+| **Search Fallback**   | Active          | MeiliSearch → PostgreSQL ILIKE automatic failover                                    |
+| **Search Indexing**   | Active          | Oban async: messages, posts, threads indexed on create                               |
+| **Load Testing**      | Ready           | k6 scripts: smoke, load, stress, WebSocket, writes                                   |
+| **DB Partitioning**   | Migration ready | Messages table monthly range partitions + Snowflake IDs                              |
+| **Delivery Tracking** | Active          | ✓✓ receipts (sent/delivered/read)                                                    |
+| **Backpressure**      | Active          | Channel write throttling with configurable limits                                    |
+| **Request Tracing**   | Active          | Plug in 5 router pipelines (api, api_auth, api_auth_strict, api_relaxed, api_admin)  |
+| **Chaos Testing**     | Ready           | Fault injection, fuse stress testing, failure scenarios                              |
+| **Feature Flags**     | Active          | GenServer + ETS/Redis with percentage rollouts                                       |
+| **Test Coverage**     | Active          | 365 test files (163 backend, 171 web, 15 mobile, 16 landing), 1633+ tests 0 failures |
+| **CI/CD**             | Active          | 12 GH Actions workflows, CI-gated canary deploys                                     |
 
 ### Key Operational Docs
 
@@ -135,6 +135,30 @@ pnpm ios                  # Run on iOS
 pnpm test                 # Run jest
 pnpm typecheck            # TypeScript check
 ```
+
+### Landing App (apps/landing)
+
+```bash
+pnpm dev                  # Vite dev server (localhost:3001)
+pnpm build                # Production build (Terser + Brotli)
+pnpm preview              # Preview production build (localhost:4173)
+pnpm test                 # Run Vitest (63 unit tests)
+pnpm e2e                  # Run Playwright E2E (35 tests: 28 functional + 7 visual)
+pnpm e2e:ui               # Playwright interactive UI mode
+pnpm e2e:headed           # Run E2E in headed browser
+pnpm lighthouse           # Quick local Lighthouse audit (1 run)
+pnpm lighthouse:ci        # Full Lighthouse CI (3 runs + budget assertions)
+```
+
+**Observability**: Web Vitals (CLS/FCP/INP/LCP/TTFB → Plausible), error tracking (unhandled errors +
+ErrorBoundary → Plausible custom events). No backend endpoints — all client-side reporting via
+Plausible Analytics.
+
+**Visual regression**: Playwright screenshot baselines in `e2e/visual.spec.ts-snapshots/`
+(Linux/Chromium). Run `pnpm e2e -- e2e/visual.spec.ts --update-snapshots` to regenerate.
+
+**Lighthouse CI**: Config in `lighthouserc.json`. Budgets: Performance ≥ 0.85, Accessibility ≥ 0.90,
+Best Practices ≥ 0.90, SEO ≥ 0.90. Builds the site then runs `vite preview` on port 4173.
 
 ### Backend (apps/backend)
 
@@ -258,6 +282,23 @@ apps/landing/
 - GSAP ScrollTrigger runs only on desktop (≥768px); skipped for `prefers-reduced-motion`
 - Auth pages handled by web.cgraph.org (Vercel redirects)
 
+**Testing (16 files, 98 tests)**:
+
+- 11 unit test files (63 tests) — Vitest + jsdom + @testing-library/react + user-event
+- 5 E2E spec files (35 tests) — Playwright + Chromium (navigation, accessibility, performance,
+  landing content, visual regression)
+- Animation libs (GSAP, Framer Motion) mocked via Proxy pattern in unit tests
+- Visual regression: 7 screenshot baselines (hero desktop/mobile, nav desktop/mobile, footer, 404,
+  about) with 2% pixel diff threshold
+- Lighthouse CI: `lighthouserc.json` with performance/a11y/SEO budgets
+
+**Observability**:
+
+- Web Vitals v5 (CLS, FCP, INP, LCP, TTFB) → Plausible custom events in prod, console in dev
+- Error tracking: window.error + unhandledrejection + ErrorBoundary → Plausible custom events
+- Rate-limited (10 errors/session), deduped via Set
+- No backend endpoints — purely client-side reporting via Plausible Analytics (GDPR-compliant)
+
 **Routes**:
 
 - `/` - Marketing landing page with features, value proposition, security
@@ -336,7 +377,7 @@ import { cn, formatTimeAgo } from '@/shared/utils';
 ### Local Development
 
 ```bash
-# Terminal 1: Landing app (port 5174)
+# Terminal 1: Landing app (port 3001)
 cd apps/landing && pnpm dev
 
 # Terminal 2: Web app (port 5173)

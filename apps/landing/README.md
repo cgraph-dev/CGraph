@@ -9,7 +9,7 @@ platform with post-quantum end-to-end encryption.
 | ---------- | ---------------------------------------------------- |
 | Framework  | React 19 + TypeScript 5.8 (strict)                   |
 | Build      | Vite 6.4 · Terser minify · Gzip + Brotli compression |
-| Routing    | React Router 7 — 19 lazy-loaded routes               |
+| Routing    | React Router 7 — 19 routes (16 lazy-loaded)          |
 | Styling    | Tailwind CSS 3.4 + BEM modules (16 split CSS files)  |
 | Animation  | GSAP 3.14 (ScrollTrigger) + Framer Motion 12         |
 | SEO        | react-helmet-async · 3 JSON-LD schemas · OG/Twitter  |

@@ -39,13 +39,13 @@ Comprehensive testing approach across all CGraph applications.
 | **Backend** | ~80%    | 80%    | Auth, E2EE, permissions |
 | **Web**     | ~30%    | 70%    | Critical flows, hooks   |
 | **Mobile**  | ~25%    | 60%    | Core features           |
-| **Landing** | ~10%    | 50%    | Components              |
+| **Landing** | ~70%    | 80%    | Components, E2E, visual |
 
 > **Backend**: 163 test files, 83/83 controllers covered (100%), 70 context/module tests, chaos
 > testing framework, 3 integration tests, 6 channel tests. All controllers have HTTP-level tests (0
 > structural-only). See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file inventory.
 >
-> **Web**: 171 test files. **Mobile**: 15 test files. **Landing**: 3 test files.
+> **Web**: 171 test files. **Mobile**: 15 test files. **Landing**: 16 test files (11 unit, 5 E2E).
 
 ### Coverage Enforcement
 
@@ -453,7 +453,113 @@ pnpm test:e2e --ui
 
 ---
 
-## 3. Mobile Testing (React Native)
+## 3. Landing Testing (React + Vite)
+
+### Framework
+
+- **Vitest 3.2** — Unit test runner with jsdom environment
+- **@testing-library/react 16** — Component rendering + queries
+- **@testing-library/user-event 14** — Realistic user interaction simulation
+- **Playwright 1.58** — E2E testing with Chromium
+- **Lighthouse CI 0.15** — Performance budget enforcement
+
+### Test Inventory (16 files, 98 tests)
+
+**Unit tests (11 files, 63 tests):**
+
+| File                     | Tests | Covers                                   |
+| ------------------------ | ----- | ---------------------------------------- |
+| `App.test.tsx`           | 3     | Module imports, smoke test               |
+| `Logo.test.tsx`          | 5     | Logo rendering, alt text, dimensions     |
+| `ErrorBoundary.test.tsx` | 8     | Error catching, fallback UI, recovery    |
+| `Navigation.test.tsx`    | 10    | Links, mobile toggle, active states      |
+| `SEO.test.tsx`           | 9     | Meta tags, JSON-LD, OG/Twitter cards     |
+| `Footer.test.tsx`        | 6     | Link sections, copyright, legal links    |
+| `CTA.test.tsx`           | 4     | Badge, buttons, description              |
+| `Hero.test.tsx`          | 7     | Heading, CTAs, trust badges, a11y        |
+| `Features.test.tsx`      | 4     | Header, description, feature cards       |
+| `Security.test.tsx`      | 4     | Badge, PQXDH, Triple Ratchet mentions    |
+| `NotFound.test.tsx`      | 4     | Error message, back link, resource links |
+
+**E2E tests (5 files, 35 tests):**
+
+| File                    | Tests | Covers                                               |
+| ----------------------- | ----- | ---------------------------------------------------- |
+| `landing.spec.ts`       | 9     | Hero, sections, nav, footer, SEO meta                |
+| `navigation.spec.ts`    | 5     | Routing, legal pages, 404, mobile toggle             |
+| `accessibility.spec.ts` | 7     | Skip link, focus, alt text, headings, lang           |
+| `performance.spec.ts`   | 7     | Load time, fonts, lazy loading, CSP, hints           |
+| `visual.spec.ts`        | 7     | Screenshot baselines (hero, nav, footer, 404, about) |
+
+### Animation Mocking
+
+GSAP and Framer Motion are JS-driven animation libraries that cause non-deterministic test results.
+Both are mocked using a Proxy pattern that returns no-op functions:
+
+```typescript
+// vitest.setup.ts
+vi.mock('gsap', () => new Proxy({}, { get: () => () => ({}) }));
+vi.mock(
+  'framer-motion',
+  () =>
+    new Proxy(
+      {},
+      {
+        get: (_, prop) => {
+          if (prop === 'motion') return new Proxy({}, { get: (_, tag) => tag });
+          return () => ({});
+        },
+      }
+    )
+);
+```
+
+### Visual Regression
+
+- Baselines stored in `e2e/visual.spec.ts-snapshots/` (committed to repo)
+- Generated on Linux/Chromium — CI must match the same OS family
+- Animations disabled via `prefers-reduced-motion: reduce` media emulation
+- Font stability ensured via `document.fonts.ready` (no `waitForTimeout`)
+- Threshold: 2% pixel diff (`maxDiffPixelRatio: 0.02`)
+- Regenerate: `pnpm e2e -- e2e/visual.spec.ts --update-snapshots`
+
+### Lighthouse CI
+
+- Configuration: `lighthouserc.json`
+- Builds site via `pnpm build && pnpm preview` (port 4173)
+- Tests 4 URLs: `/`, `/about`, `/docs`, `/blog`
+- Budgets: Performance ≥ 0.85, Accessibility ≥ 0.90, SEO ≥ 0.90
+- Resource limits: JS < 500 KB, CSS < 100 KB
+- Quick local audit: `pnpm lighthouse` (1 run)
+- Full CI audit: `pnpm lighthouse:ci` (3 runs + assertions)
+
+### Observability (Client-Side Only)
+
+- **Web Vitals v5**: CLS, FCP, INP, LCP, TTFB → Plausible custom events (prod) / console (dev)
+- **Error tracking**: window.error + unhandledrejection + ErrorBoundary → Plausible custom events
+- Rate-limited: max 10 errors per session, deduped via Set
+- No backend endpoints — purely client-side via Plausible Analytics (GDPR-compliant)
+
+### Running Landing Tests
+
+```bash
+# Unit tests
+pnpm --filter @cgraph/landing test          # Run all (63 tests)
+pnpm --filter @cgraph/landing test:watch    # Watch mode
+
+# E2E tests (auto-starts Vite dev server on port 3001)
+pnpm --filter @cgraph/landing e2e           # All E2E (35 tests)
+pnpm --filter @cgraph/landing e2e:ui        # Interactive UI mode
+pnpm --filter @cgraph/landing e2e:headed    # Headed browser
+
+# Performance
+pnpm --filter @cgraph/landing lighthouse    # Quick Lighthouse audit
+pnpm --filter @cgraph/landing lighthouse:ci # Full CI audit with budgets
+```
+
+---
+
+## 4. Mobile Testing (React Native)
 
 ### Framework
 
@@ -484,7 +590,7 @@ describe('LoginScreen', () => {
 
 ---
 
-## 4. CI Integration
+## 5. CI Integration
 
 ### GitHub Actions Workflow
 
@@ -580,7 +686,7 @@ jobs:
 
 ---
 
-## 5. Testing Best Practices
+## 6. Testing Best Practices
 
 ### Do's
 
@@ -618,7 +724,7 @@ describe('ComponentName', () => {
 
 ---
 
-## 6. Mocking Strategy
+## 7. Mocking Strategy
 
 ### When to Mock
 

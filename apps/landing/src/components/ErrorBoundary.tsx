@@ -73,7 +73,7 @@ export default class ErrorBoundary extends Component<Props, State> {
               Something went wrong
             </h1>
             <p style={{ color: '#9ca3af', lineHeight: 1.6, marginBottom: '2rem' }}>
-              An unexpected error occurred. Our team has been notified.
+              An unexpected error occurred. Please try refreshing the page.
             </p>
             <button
               onClick={this.handleReload}

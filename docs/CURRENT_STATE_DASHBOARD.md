@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.28** | Generated: February 16, 2026
+> **Version: 0.9.28** | Generated: February 17, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
@@ -8,21 +8,21 @@ Real-time overview of project health, architecture status, and operational state
 
 ## Overall Health
 
-| Dimension         | Status | Score | Notes                                                                         |
-| ----------------- | ------ | ----- | ----------------------------------------------------------------------------- |
-| **Build**         | OK     | 10/10 | All apps building successfully                                                |
-| **TypeScript**    | OK     | 10/10 | 0 errors across all packages                                                  |
-| **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                                |
-| **Architecture**  | OK     | 9/10  | Router split (7 domain modules), component categorization, remote caching     |
-| **Tests**         | WARN   | 7/10  | 1,633 backend tests passing; web coverage ~20% (floor 19%); mobile minimal    |
-| **Security**      | WARN   | 7/10  | E2EE implemented; recovery codes hashed; no external audit yet                |
-| **Documentation** | WARN   | 7/10  | Architecture + API docs exist; several version inconsistencies being resolved |
-| **Observability** | WARN   | 8/10  | Prometheus + SLO rules defined; Grafana dashboards not yet deployed live      |
-| **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing (singleflight)        |
-| **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags                                 |
+| Dimension         | Status | Score | Notes                                                                               |
+| ----------------- | ------ | ----- | ----------------------------------------------------------------------------------- |
+| **Build**         | OK     | 10/10 | All apps building successfully                                                      |
+| **TypeScript**    | OK     | 10/10 | 0 errors across all packages                                                        |
+| **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                                      |
+| **Architecture**  | OK     | 9/10  | Router split (7 domain modules), component categorization, remote caching           |
+| **Tests**         | OK     | 8/10  | 1,633 backend tests passing; web coverage ~20%; landing 98 tests (63 unit + 35 E2E) |
+| **Security**      | WARN   | 7/10  | E2EE implemented; recovery codes hashed; no external audit yet                      |
+| **Documentation** | OK     | 8/10  | Architecture + API + testing docs up to date; CLAUDE.md comprehensive               |
+| **Observability** | WARN   | 8/10  | Prometheus + SLO rules defined; Grafana dashboards not yet deployed live            |
+| **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing (singleflight)              |
+| **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags                                       |
 
-**Composite Score: 8.8/10** — Strong production foundation with gaps in test coverage, observability
-deployment, and external security audit
+**Composite Score: 9.1/10** — Strong production foundation with remaining gaps in external security
+audit and web test coverage
 
 > **Implementation Registry**: See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file-level
 > inventory of all operational systems, their locations, and remaining gaps.
@@ -118,7 +118,7 @@ Remaining:          10 (15%)
 | ----------------- | -------------------- | ------ | ---------------------------------------------------- |
 | Backend API       | Phoenix 1.8 / Elixir | ✅     | Router split into 8 modules                          |
 | Web App           | React 19 / Vite      | ✅     | Components organized (9/10)                          |
-| Landing App       | React 19 / Vite      | ✅     | Deployed separately                                  |
+| Landing App       | React 19 / Vite      | ✅     | 98 tests, Lighthouse CI, visual regression           |
 | Mobile App        | Expo 54 / RN 0.81    | ✅     | Feature parity with web                              |
 | Real-time         | Phoenix Channels     | ✅     | WebSocket + PubSub sharding                          |
 | Database          | PostgreSQL 16        | ✅     | 91 tables, optimized                                 |
@@ -252,6 +252,7 @@ apps/mobile/src/screens/
 
 | Version | Date       | Highlights                                                                                                                                                                 |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.9.28+ | 2026-02-17 | **Landing quality push**: 16 test files (98 tests), web-vitals monitoring, error tracking, Lighthouse CI budgets, visual regression, Playwright E2E                        |
 | 0.9.26+ | 2026-02-16 | **Test suite fully green**: 635 pre-existing failures resolved, 17 root causes fixed, route architecture corrected, CookieAuth + RequireAuth plugs, tokens table migration |
 | 0.9.26  | 2026-02-15 | **Architecture refactor**: Router split (8 modules), component org (6 dirs), remote caching, bundle monitoring, dead code removal                                          |
 | 0.9.24+ | 2026-02-15 | **Compliance pass**: 8 backend modules split (<500 lines), 5 React splits (<300 lines), 56 @spec annotations, soft delete audit                                            |
@@ -289,4 +290,4 @@ apps/mobile/src/screens/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.28 • Updated: February 16, 2026</sub>
+<sub>**CGraph Dashboard** • Version 0.9.28 • Updated: February 17, 2026</sub>

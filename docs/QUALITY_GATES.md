@@ -100,15 +100,17 @@ commit message    → commitlint (conventional commits)
 
 ## ⚙️ Configuration Files
 
-| File                             | Purpose                         |
-| -------------------------------- | ------------------------------- |
-| `eslint.config.js`               | ESLint flat config + arch rules |
-| `tsconfig.base.json`             | TypeScript base configuration   |
-| `commitlint.config.js`           | Commit message rules            |
-| `turbo.json`                     | Build pipeline configuration    |
-| `.github/workflows/`             | CI workflow definitions         |
-| `.github/workflows/coverage.yml` | Coverage reporting & thresholds |
-| `apps/web/vite.config.ts`        | Coverage thresholds (60%)       |
+| File                                | Purpose                                |
+| ----------------------------------- | -------------------------------------- |
+| `eslint.config.js`                  | ESLint flat config + arch rules        |
+| `tsconfig.base.json`                | TypeScript base configuration          |
+| `commitlint.config.js`              | Commit message rules                   |
+| `turbo.json`                        | Build pipeline configuration           |
+| `.github/workflows/`                | CI workflow definitions                |
+| `.github/workflows/coverage.yml`    | Coverage reporting & thresholds        |
+| `apps/web/vite.config.ts`           | Coverage thresholds (60%)              |
+| `apps/landing/lighthouserc.json`    | Lighthouse CI performance budgets      |
+| `apps/landing/playwright.config.ts` | Landing E2E + visual regression config |
 
 ---
 
@@ -151,12 +153,40 @@ See [ARCHITECTURE_ENFORCEMENT.md](ARCHITECTURE_ENFORCEMENT.md) for details.
 | High CVEs     | <5     | 🔄 TBD  | Review   |
 | Secret Leaks  | 0      | ✅ 0    | CI Block |
 
-### Performance
+### Performance (Landing — Lighthouse CI)
+
+| Metric         | Target   | Current | Enforced              |
+| -------------- | -------- | ------- | --------------------- |
+| Performance    | ≥ 0.85   | ✅      | Lighthouse CI (error) |
+| Accessibility  | ≥ 0.90   | ✅      | Lighthouse CI (error) |
+| Best Practices | ≥ 0.90   | ✅      | Lighthouse CI (error) |
+| SEO            | ≥ 0.90   | ✅      | Lighthouse CI (error) |
+| FCP            | < 2.0s   | ✅      | Lighthouse CI (warn)  |
+| LCP            | < 3.5s   | ✅      | Lighthouse CI (warn)  |
+| CLS            | < 0.1    | ✅      | Lighthouse CI (error) |
+| TBI            | < 300ms  | ✅      | Lighthouse CI (warn)  |
+| JS bundle      | < 500 KB | ✅      | Lighthouse CI (warn)  |
+| CSS bundle     | < 100 KB | ✅      | Lighthouse CI (warn)  |
+
+Run: `pnpm --filter @cgraph/landing lighthouse:ci`  
+Config: `apps/landing/lighthouserc.json`
+
+### Visual Regression (Landing)
+
+| Metric           | Target | Current | Enforced                    |
+| ---------------- | ------ | ------- | --------------------------- |
+| Screenshot drift | < 2%   | ✅ 0%   | Playwright toHaveScreenshot |
+| Baseline OS      | Linux  | Linux   | CI environment match        |
+
+Run: `pnpm --filter @cgraph/landing e2e`  
+Baselines: `apps/landing/e2e/visual.spec.ts-snapshots/`
+
+### Performance (Web App)
 
 | Metric | Target | Current | Enforced |
 | ------ | ------ | ------- | -------- |
 | LCP    | <2.5s  | 🔄 TBD  | —        |
-| FID    | <100ms | 🔄 TBD  | —        |
+| INP    | <200ms | 🔄 TBD  | —        |
 | CLS    | <0.1   | 🔄 TBD  | —        |
 
 ### Architecture
@@ -189,4 +219,4 @@ Bypasses are audited monthly.
 
 ---
 
-<sub>**CGraph Quality Gates** • Version 0.9.28 • Last updated: January 2026</sub>
+<sub>**CGraph Quality Gates** • Version 0.9.28 • Last updated: February 2026</sub>

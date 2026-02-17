@@ -19,7 +19,6 @@ import { test, expect } from '@playwright/test';
 
 /** Wait for fonts, images, and layout to settle after navigation. */
 async function waitForVisualStability(page: import('@playwright/test').Page) {
-  await page.waitForLoadState('networkidle');
   await page.evaluate(() => document.fonts.ready);
 }
 
