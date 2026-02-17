@@ -28,18 +28,20 @@ pnpm --filter @cgraph/landing dev    # http://localhost:3001
 
 ### Scripts
 
-| Script       | Description                        |
-| ------------ | ---------------------------------- |
-| `dev`        | Vite dev server on port 3001       |
-| `build`      | Production build (Terser + Brotli) |
-| `preview`    | Preview production build           |
-| `lint`       | ESLint check                       |
-| `typecheck`  | `tsc --noEmit`                     |
-| `test`       | Run Vitest                         |
-| `test:watch` | Vitest in watch mode               |
-| `e2e`        | Run Playwright E2E tests           |
-| `e2e:ui`     | Playwright interactive UI mode     |
-| `e2e:headed` | Run E2E tests in headed browser    |
+| Script          | Description                          |
+| --------------- | ------------------------------------ |
+| `dev`           | Vite dev server on port 3001         |
+| `build`         | Production build (Terser + Brotli)   |
+| `preview`       | Preview production build             |
+| `lint`          | ESLint check                         |
+| `typecheck`     | `tsc --noEmit`                       |
+| `test`          | Run Vitest                           |
+| `test:watch`    | Vitest in watch mode                 |
+| `e2e`           | Run Playwright E2E tests             |
+| `e2e:ui`        | Playwright interactive UI mode       |
+| `e2e:headed`    | Run E2E tests in headed browser      |
+| `lighthouse`    | One-off Lighthouse audit (4 URLs)    |
+| `lighthouse:ci` | Lighthouse CI with budget assertions |
 
 ## Project Structure
 
@@ -162,6 +164,26 @@ pattern. Routing context is provided via `MemoryRouter`.
 
 E2E tests use Playwright with Chromium, auto-starting the Vite dev server. Specs cover navigation,
 accessibility, performance, and landing page content.
+
+### Visual Regression
+
+```bash
+pnpm --filter @cgraph/landing e2e                           # includes visual tests
+npx --filter @cgraph/landing playwright test e2e/visual.spec.ts --update-snapshots  # update baselines
+```
+
+Screenshot baselines live in `e2e/visual.spec.ts-snapshots/`. Animations are disabled via
+`prefers-reduced-motion: reduce`. Threshold is 1–2 % pixel diff.
+
+### Lighthouse CI
+
+```bash
+pnpm --filter @cgraph/landing lighthouse      # one-off audit
+pnpm --filter @cgraph/landing lighthouse:ci   # CI mode with budget assertions
+```
+
+Configuration in `lighthouserc.json`. Budgets: Performance ≥ 0.85, Accessibility ≥ 0.90, Best
+Practices ≥ 0.90, SEO ≥ 0.90. Resource budgets: JS < 500 KB, CSS < 100 KB.
 
 ## Contributing
 
