@@ -394,8 +394,25 @@ defmodule CGraph.Audit do
       end)
     end
 
-    # In production, batch insert to audit_logs table
-    # Repo.insert_all(AuditLog, entries)
+    # Persist security-critical entries via the DB-backed AuditLog
+    Enum.each(entries, fn entry ->
+      if entry.category in [:security, :auth, :admin, :compliance] do
+        CGraph.Accounts.AuditLog.log(
+          :"#{entry.category}_#{entry.event_type}",
+          entry.actor_id,
+          %{
+            category: to_string(entry.category),
+            event_type: to_string(entry.event_type),
+            target_id: entry.target_id,
+            target_type: entry[:target_type],
+            ip_address: entry[:ip_address],
+            user_agent: entry[:user_agent],
+            session_id: entry[:session_id],
+            metadata: entry.metadata
+          }
+        )
+      end
+    end)
 
     :ok
   end

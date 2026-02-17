@@ -179,7 +179,10 @@ export function createChannelHandler<T>(
   event: string,
   handler: MessageHandler<T>
 ): () => void {
-  const ref = channel.on(event, handler);
+  const ref = channel.on(
+    event,
+    handler as (payload?: unknown, ref?: string, joinRef?: string) => void
+  );
   return () => channel.off(event, ref);
 }
 
@@ -194,8 +197,8 @@ export function pushToChannel<TPayload extends object, TResponse>(
 ): Promise<TResponse> {
   return new Promise((resolve, reject) => {
     channel
-      .push(event, payload, timeout)
-      .receive('ok', (response: TResponse) => resolve(response))
+      .push(event, payload as Record<string, unknown>, timeout)
+      .receive('ok', (response: unknown) => resolve(response as TResponse))
       .receive('error', (error: unknown) => reject(error))
       .receive('timeout', () => reject(new Error('Channel push timeout')));
   });
