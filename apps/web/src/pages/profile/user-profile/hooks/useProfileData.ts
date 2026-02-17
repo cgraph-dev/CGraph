@@ -6,7 +6,6 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
 import { useGamificationStore } from '@/modules/gamification/store';
-import { ACHIEVEMENT_DEFINITIONS } from '@/data/achievements';
 import type { UserProfileData, FriendshipStatus } from '@/types/profile.types';
 
 const logger = createLogger('useProfileData');
@@ -23,14 +22,11 @@ interface UseProfileDataReturn {
   error: string | null;
   friendshipStatus: FriendshipStatus;
   setFriendshipStatus: React.Dispatch<React.SetStateAction<FriendshipStatus>>;
-  unlockedAchievements: typeof achievements;
+  unlockedAchievements: ReturnType<typeof useGamificationStore>['achievements'];
   totalUnlocked: number;
   showAllAchievements: boolean;
   setShowAllAchievements: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-// Get achievements from store for type
-const { achievements } = useGamificationStore.getState();
 
 export function useProfileData({
   userId,
@@ -109,7 +105,7 @@ export function useProfileData({
           loginStreak: userData.login_streak || (isOwnProfile ? myStreakRef.current : 0),
           achievementCount:
             userData.achievement_count || (isOwnProfile ? totalUnlockedRef.current : 0),
-          totalAchievements: ACHIEVEMENT_DEFINITIONS.length,
+          totalAchievements: userData.total_achievements || achievements.length,
           messagesSent: userData.messages_sent || 0,
           postsCreated: userData.posts_created || 0,
           friendsCount: userData.friends_count || 0,
@@ -127,7 +123,7 @@ export function useProfileData({
     }
 
     fetchProfile();
-  }, [userId, isOwnProfile]);
+  }, [userId, isOwnProfile, achievements.length]);
 
   return {
     profile,

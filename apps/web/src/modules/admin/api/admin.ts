@@ -24,6 +24,15 @@ import { userManagementApi } from './userManagementApi';
 import { moderationApi } from './moderationApi';
 import { auditApi } from './auditApi';
 import { systemApi } from './systemApi';
+import { eventsApi } from './eventsApi';
+import { marketplaceApi } from './marketplaceApi';
+
+// Re-export submodule APIs for direct imports
+export { eventsApi } from './eventsApi';
+export { marketplaceApi } from './marketplaceApi';
+export { metricsApi } from './metricsApi';
+export { userManagementApi } from './userManagementApi';
+export { moderationApi } from './moderationApi';
 
 // ============================================================================
 // Composed Admin API (preserves original unified interface)
@@ -40,6 +49,10 @@ export const adminApi = {
   ...auditApi,
   // System config, jobs & announcements
   ...systemApi,
+  // Events management
+  ...eventsApi,
+  // Marketplace moderation
+  ...marketplaceApi,
 };
 
 export default adminApi;

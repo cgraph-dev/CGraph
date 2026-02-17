@@ -284,9 +284,24 @@ if config_env() == :prod do
     fallback_to_postgres: true
 
   # WebRTC Signaling & ICE
+  turn_servers =
+    case System.get_env("WEBRTC_TURN_URL") do
+      nil ->
+        []
+
+      turn_url ->
+        [%{
+          urls: turn_url,
+          username: System.get_env("WEBRTC_TURN_USERNAME", ""),
+          credential: System.get_env("WEBRTC_TURN_CREDENTIAL", "")
+        }]
+    end
+
   config :cgraph, CGraph.WebRTC,
     stun_servers: String.split(System.get_env("WEBRTC_STUN_SERVERS") || "stun:stun.l.google.com:19302", ","),
-    turn_servers: [], # Configure via WEBRTC_TURN_SERVERS if needed
+    turn_servers: turn_servers,
+    sfu_enabled: System.get_env("WEBRTC_SFU_ENABLED") == "true",
+    sfu_url: System.get_env("WEBRTC_SFU_URL", ""),
     max_participants: String.to_integer(System.get_env("WEBRTC_MAX_PARTICIPANTS") || "10")
 
   # Distributed Rate Limiting (Redis-backed, disabled if no Redis)

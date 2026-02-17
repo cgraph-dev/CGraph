@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 import type { UserProfileData, FriendshipStatus } from '@/types/profile.types';
-import { ACHIEVEMENT_DEFINITIONS } from '@/data/achievements';
 
 const logger = createLogger('useProfileActions');
 
@@ -62,7 +61,7 @@ export function useProfileData(
         currentXP: userData.current_xp || 0,
         loginStreak: userData.login_streak || (isOwnProfile ? ownStats.loginStreak : 0),
         achievementCount: userData.achievement_count || (isOwnProfile ? ownStats.totalUnlocked : 0),
-        totalAchievements: ACHIEVEMENT_DEFINITIONS.length,
+        totalAchievements: userData.total_achievements || 0,
         messagesSent: userData.messages_sent || 0,
         postsCreated: userData.posts_created || 0,
         friendsCount: userData.friends_count || 0,

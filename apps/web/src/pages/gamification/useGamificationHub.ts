@@ -7,7 +7,6 @@
 
 import { useEffect } from 'react';
 import { useGamificationStore } from '@/modules/gamification/store';
-import { ACHIEVEMENT_DEFINITIONS } from '@/data/achievements';
 
 export function useGamificationHub() {
   const {
@@ -26,7 +25,7 @@ export function useGamificationHub() {
   }, [fetchGamificationData, checkDailyLogin]);
 
   const unlockedAchievements = achievements.filter((a) => a.unlocked).length;
-  const totalAchievements = ACHIEVEMENT_DEFINITIONS.length;
+  const totalAchievements = achievements.length;
   const completableQuests = activeQuests.filter((q) => q.completed && !q.completedAt).length;
 
   const recentAchievements = achievements

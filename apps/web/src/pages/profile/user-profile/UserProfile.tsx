@@ -17,7 +17,6 @@ import { useGamificationStore } from '@/modules/gamification/store';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import LevelProgress from '@/modules/gamification/components/LevelProgress';
-import { ACHIEVEMENT_DEFINITIONS } from '@/data/achievements';
 
 import {
   ProfileLoadingState,
@@ -188,7 +187,7 @@ export function UserProfile() {
               <AchievementsShowcase
                 achievements={unlockedAchievements}
                 totalUnlocked={totalUnlocked}
-                totalAchievements={ACHIEVEMENT_DEFINITIONS.length}
+                totalAchievements={profile?.totalAchievements || achievements.length}
                 showAll={showAllAchievements}
                 onToggleShowAll={() => setShowAllAchievements(!showAllAchievements)}
               />

@@ -1,25 +1,29 @@
 /**
  * Events Management Panel
- * Create, manage, and monitor events
+ * Create, manage, and monitor events — backed by real API
  */
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import type { EventData, CreateEventModalProps } from './types';
-import { STATUS_COLORS, EVENT_FILTERS, PLACEHOLDER_EVENTS } from './constants';
+import { eventsApi, type AdminEvent } from '../../api/eventsApi';
+import type { CreateEventModalProps } from './types';
+import { STATUS_COLORS, EVENT_FILTERS } from './constants';
 
 /**
  * Modal for creating new events
  */
-function CreateEventModal({ onClose, onSubmit }: CreateEventModalProps) {
+function CreateEventModal({
+  onClose,
+  onSubmit,
+}: CreateEventModalProps & { onSubmit: (params: { name: string; status: string }) => void }) {
   const [name, setName] = useState('');
-  const [status, setStatus] = useState<EventData['status']>('draft');
+  const [status, setStatus] = useState('draft');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    onSubmit({ name: name.trim(), status, participants: 0 });
+    onSubmit({ name: name.trim(), status });
   };
 
   return (
@@ -54,7 +58,7 @@ function CreateEventModal({ onClose, onSubmit }: CreateEventModalProps) {
             <label className="mb-2 block text-sm text-gray-400">Initial Status</label>
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value as EventData['status'])}
+              onChange={(e) => setStatus(e.target.value)}
               className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 focus:border-purple-500 focus:outline-none"
             >
               <option value="draft">Draft</option>
@@ -84,23 +88,44 @@ function CreateEventModal({ onClose, onSubmit }: CreateEventModalProps) {
 }
 
 export function EventsManagement() {
-  const [events, setEvents] = useState<EventData[]>(PLACEHOLDER_EVENTS);
+  const [events, setEvents] = useState<AdminEvent[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>('All');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchEvents = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await eventsApi.listEvents();
+      setEvents(result.events);
+    } catch (err) {
+      console.error('Failed to fetch events:', err);
+      setError('Failed to load events');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchEvents();
+  }, [fetchEvents]);
 
   const filteredEvents = useMemo(() => {
     if (activeFilter === 'All') return events;
     return events.filter((e) => e.status === activeFilter.toLowerCase());
   }, [events, activeFilter]);
 
-  const handleAddEvent = useCallback(
-    (newEvent: Omit<EventData, 'id'>) => {
-      const id = Math.max(0, ...events.map((e) => e.id)) + 1;
-      setEvents((prev) => [...prev, { ...newEvent, id }]);
+  const handleAddEvent = useCallback(async (params: { name: string; status: string }) => {
+    try {
+      const created = await eventsApi.createEvent(params);
+      setEvents((prev) => [...prev, created]);
       setShowCreateModal(false);
-    },
-    [events]
-  );
+    } catch (err) {
+      console.error('Failed to create event:', err);
+    }
+  }, []);
 
   return (
     <motion.div
@@ -119,6 +144,15 @@ export function EventsManagement() {
         </button>
       </div>
 
+      {error && (
+        <div className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-red-400">
+          {error}
+          <button onClick={fetchEvents} className="ml-4 underline hover:no-underline">
+            Retry
+          </button>
+        </div>
+      )}
+
       <div className="mb-6 flex gap-4">
         {EVENT_FILTERS.map((filter) => (
           <button
@@ -134,34 +168,50 @@ export function EventsManagement() {
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-        <table className="w-full">
-          <thead className="border-b border-white/10">
-            <tr className="text-left text-sm text-gray-500">
-              <th className="p-4">Event Name</th>
-              <th className="p-4">Status</th>
-              <th className="p-4">Participants</th>
-              <th className="p-4">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {filteredEvents.map((event) => (
-              <tr key={event.id} className="hover:bg-white/5">
-                <td className="p-4 font-medium">{event.name}</td>
-                <td className="p-4">
-                  <span className={`rounded px-2 py-1 text-xs ${STATUS_COLORS[event.status]}`}>
-                    {event.status}
-                  </span>
-                </td>
-                <td className="p-4 text-gray-400">{event.participants.toLocaleString()}</td>
-                <td className="p-4">
-                  <button className="rounded bg-white/10 px-3 py-1 text-sm hover:bg-white/20">
-                    Edit
-                  </button>
-                </td>
+        {loading ? (
+          <div className="flex items-center justify-center py-12 text-gray-400">
+            Loading events...
+          </div>
+        ) : (
+          <table className="w-full">
+            <thead className="border-b border-white/10">
+              <tr className="text-left text-sm text-gray-500">
+                <th className="p-4">Event Name</th>
+                <th className="p-4">Status</th>
+                <th className="p-4">Participants</th>
+                <th className="p-4">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {filteredEvents.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="p-8 text-center text-gray-500">
+                    No events found
+                  </td>
+                </tr>
+              ) : (
+                filteredEvents.map((event) => (
+                  <tr key={event.id} className="hover:bg-white/5">
+                    <td className="p-4 font-medium">{event.name}</td>
+                    <td className="p-4">
+                      <span
+                        className={`rounded px-2 py-1 text-xs ${STATUS_COLORS[event.status] || 'bg-gray-500/20 text-gray-400'}`}
+                      >
+                        {event.status}
+                      </span>
+                    </td>
+                    <td className="p-4 text-gray-400">{event.participants.toLocaleString()}</td>
+                    <td className="p-4">
+                      <button className="rounded bg-white/10 px-3 py-1 text-sm hover:bg-white/20">
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        )}
       </div>
 
       <AnimatePresence>

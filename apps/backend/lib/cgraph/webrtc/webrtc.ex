@@ -79,8 +79,10 @@ defmodule CGraph.WebRTC do
 
   use GenServer
   require Logger
+  import Ecto.Query
 
-  alias CGraph.WebRTC.{Participant, Room}
+  alias CGraph.Repo
+  alias CGraph.WebRTC.{CallHistory, Participant, Room}
 
   @ets_table :cgraph_webrtc_rooms
   @default_call_timeout 60_000
@@ -324,6 +326,38 @@ defmodule CGraph.WebRTC do
     end
   end
 
+  # ---------------------------------------------------------------------------
+  # Call History API
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  List call history for a user, most recent first.
+  """
+  def list_call_history(user_id, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 50)
+    offset = Keyword.get(opts, :offset, 0)
+
+    query =
+      from(c in CallHistory,
+        where: ^user_id in c.participant_ids or c.creator_id == ^user_id,
+        order_by: [desc: c.ended_at],
+        limit: ^limit,
+        offset: ^offset
+      )
+
+    {:ok, Repo.all(query)}
+  end
+
+  @doc """
+  Get a single call history record by ID.
+  """
+  def get_call(call_id) do
+    case Repo.get(CallHistory, call_id) do
+      nil -> {:error, :not_found}
+      call -> {:ok, call}
+    end
+  end
+
   @doc """
   Send ringing notification to callees.
   """
@@ -407,6 +441,7 @@ defmodule CGraph.WebRTC do
           # Last person left, end the room
           final = %{updated | state: :ended, ended_at: DateTime.utc_now()}
           :ets.delete(@ets_table, room_id)
+          persist_call_history(final, room)
           emit_telemetry(:room_ended, final)
           {:reply, {:ok, :room_ended}, state}
         else
@@ -431,6 +466,7 @@ defmodule CGraph.WebRTC do
         final = %{room | state: :ended, ended_at: DateTime.utc_now()}
         :ets.delete(@ets_table, room_id)
 
+        persist_call_history(final, room)
         broadcast_room_event(room_id, :room_ended, %{})
         emit_telemetry(:room_ended, final)
 
@@ -528,6 +564,48 @@ defmodule CGraph.WebRTC do
 
       _, acc -> acc
     end, nil, @ets_table)
+  end
+
+  defp persist_call_history(%Room{} = final, original_room) do
+    participant_ids =
+      original_room.participants
+      |> Map.keys()
+      |> Enum.uniq()
+
+    duration =
+      if final.started_at && final.ended_at do
+        DateTime.diff(final.ended_at, final.started_at, :second)
+      end
+
+    attrs = %{
+      room_id: final.id,
+      type: to_string(final.type),
+      creator_id: final.creator_id,
+      group_id: final.group_id,
+      state: "ended",
+      participant_ids: participant_ids,
+      max_participants: map_size(original_room.participants),
+      started_at: final.started_at || final.created_at,
+      ended_at: final.ended_at,
+      duration_seconds: duration
+    }
+
+    case Repo.insert(CallHistory.changeset(%CallHistory{}, attrs)) do
+      {:ok, record} ->
+        Logger.info("webrtc_call_persisted", call_id: record.id, room_id: final.id)
+
+      {:error, reason} ->
+        Logger.error("webrtc_call_persist_failed",
+          room_id: final.id,
+          error: inspect(reason)
+        )
+    end
+  rescue
+    e ->
+      Logger.error("webrtc_call_persist_error",
+        room_id: final.id,
+        error: Exception.message(e)
+      )
   end
 
   defp broadcast_room_event(room_id, event, payload) do
