@@ -401,14 +401,14 @@ defmodule CGraph.Audit do
           :"#{entry.category}_#{entry.event_type}",
           entry.actor_id,
           %{
-            category: to_string(entry.category),
-            event_type: to_string(entry.event_type),
-            target_id: entry.target_id,
-            target_type: entry[:target_type],
+            resource_type: to_string(entry[:target_type] || entry.category),
+            resource_id: entry.target_id,
             ip_address: entry[:ip_address],
             user_agent: entry[:user_agent],
+            category: to_string(entry.category),
+            event_type: to_string(entry.event_type),
             session_id: entry[:session_id],
-            metadata: entry.metadata
+            original_metadata: entry.metadata
           }
         )
       end

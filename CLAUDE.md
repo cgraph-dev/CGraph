@@ -1392,9 +1392,11 @@ STRIPE_PRICE_IDS      - JSON map of tier -> price_id
 
 Fixed 53 TypeScript errors across 20+ files:
 
-- Test files: Button.test.tsx (fully rewritten to match API), ErrorBoundary.test.tsx (removed
-  non-existent onError/componentName props), InputTabs.test.tsx (helperText→hint, error as string),
-  EmptyState/Loading/Modal/Toast tests (import path relocations)
+- Test files: Button.test.tsx (fully rewritten to match API), ErrorBoundary.test.tsx (fully
+  rewritten — removed mock error-tracking, non-existent Try Again/Report Issue buttons, error ID
+  display; aligned to actual component: console.error, Reload Page, error message),
+  InputTabs.test.tsx (helperText→hint, error as string), EmptyState/Loading/Modal/Toast tests
+  (import path relocations)
 - Source files: AnalyticsDashboard.tsx (type casts), SubscriptionButton/Item/Manager (implicit any),
   Select.tsx (added Radix-style sub-components), ui/index.ts (casing fixes)
 - Shared package: phoenixClient.ts generic type alignment with Phoenix Channel API
@@ -1406,6 +1408,17 @@ Fixed 53 TypeScript errors across 20+ files:
 commented out. All security, auth, admin, and compliance audit entries are now persisted through
 `CGraph.Accounts.AuditLog` on every flush. This fixes a critical gap where 2FA events, account
 lockouts, token revocations, and data export events were lost on server restart.
+
+**Important**: The metadata map uses `resource_id` / `resource_type` keys (not `target_id` /
+`target_type`) to match the `AuditLog.log/3` schema expectations. This ensures the indexed DB
+columns are properly populated.
+
+**Select.tsx Composable Sub-components**: The `SelectTrigger`, `SelectContent`, `SelectItem`,
+`SelectValue` named exports are **structural stubs** — they render static HTML to satisfy TypeScript
+but lack open/close state and value propagation. The full-featured monolithic `Select` is the
+default export. Consuming components (SubscriptionButton, SubscriptionItem, SubscriptionManager) use
+the composable API. These stubs should be replaced with a real Radix-style implementation when forum
+subscriptions move beyond scaffolding.
 
 **Security Audit Readiness Checklist Created**: `docs/SECURITY_AUDIT_CHECKLIST.md`
 

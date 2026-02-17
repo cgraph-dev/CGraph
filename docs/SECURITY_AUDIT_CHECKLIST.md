@@ -19,27 +19,27 @@
 
 ### 2.1 Cryptographic Protocol (E2EE Audit Scope)
 
-| Component                               | Location                                             | Status         |
-| --------------------------------------- | ---------------------------------------------------- | -------------- |
-| Triple Ratchet Protocol                 | `packages/crypto/` + `apps/backend/lib/cgraph/e2ee/` | ✅ Implemented |
-| PQXDH Key Exchange (ML-KEM-768 + P-256) | `packages/crypto/src/pqxdh/`                         | ✅ Implemented |
-| AES-256-GCM Message Encryption          | `packages/crypto/src/encryption/`                    | ✅ Implemented |
-| Prekey Management                       | `apps/backend/lib/cgraph/e2ee/prekey_manager.ex`     | ✅ Implemented |
-| Device Verification (Safety Numbers)    | `apps/web/src/modules/crypto/`                       | ✅ Implemented |
-| Key Backup / Recovery                   | Not yet implemented                                  | ❌ Gap         |
-| Forward Secrecy (Mobile)                | Mobile lacks Double Ratchet                          | ⚠️ Gap         |
+| Component                               | Location                                                                          | Status         |
+| --------------------------------------- | --------------------------------------------------------------------------------- | -------------- |
+| Triple Ratchet Protocol                 | `packages/crypto/src/tripleRatchet.ts` + `apps/backend/lib/cgraph/crypto/e2ee.ex` | ✅ Implemented |
+| PQXDH Key Exchange (ML-KEM-768 + P-256) | `packages/crypto/src/pqxdh.ts`                                                    | ✅ Implemented |
+| AES-256-GCM Message Encryption          | `packages/crypto/src/aes.ts`                                                      | ✅ Implemented |
+| Prekey Management                       | `apps/backend/lib/cgraph/cache/unified.ex` (prekey bundle caching)                | ✅ Implemented |
+| Device Verification (Safety Numbers)    | `apps/web/src/modules/chat/components/e2ee/` + `apps/web/src/pages/security/`     | ✅ Implemented |
+| Key Backup / Recovery                   | Not yet implemented                                                               | ❌ Gap         |
+| Forward Secrecy (Mobile)                | Mobile lacks Double Ratchet                                                       | ⚠️ Gap         |
 
 ### 2.2 Application Security (Pentest Scope)
 
-| Surface            | Location                                          | Notes                                |
-| ------------------ | ------------------------------------------------- | ------------------------------------ |
-| REST API (v1)      | `apps/backend/lib/cgraph_web/controllers/api/v1/` | Auth, RBAC, input validation         |
-| WebSocket Channels | `apps/backend/lib/cgraph_web/channels/`           | Real-time messaging, presence        |
-| Authentication     | JWT + refresh tokens, OAuth2, TOTP 2FA            | Token blacklist, account lockout     |
-| Authorization      | Role-based (owner, admin, moderator, member)      | Per-group permission checks          |
-| File Upload        | Media attachments, avatars, exports               | Content-type validation, size limits |
-| Admin Panel        | `apps/web/src/modules/admin/`                     | Marketplace, events, moderation      |
-| Payment (Stripe)   | `apps/backend/lib/cgraph/billing/`                | Webhooks, checkout, portal           |
+| Surface            | Location                                                                           | Notes                                |
+| ------------------ | ---------------------------------------------------------------------------------- | ------------------------------------ |
+| REST API (v1)      | `apps/backend/lib/cgraph_web/controllers/api/v1/`                                  | Auth, RBAC, input validation         |
+| WebSocket Channels | `apps/backend/lib/cgraph_web/channels/`                                            | Real-time messaging, presence        |
+| Authentication     | JWT + refresh tokens, OAuth2, TOTP 2FA                                             | Token blacklist, account lockout     |
+| Authorization      | Role-based (owner, admin, moderator, member)                                       | Per-group permission checks          |
+| File Upload        | Media attachments, avatars, exports                                                | Content-type validation, size limits |
+| Admin Panel        | `apps/web/src/modules/admin/`                                                      | Marketplace, events, moderation      |
+| Payment (Stripe)   | `apps/backend/lib/cgraph/subscriptions/` + `controllers/api/payment_controller.ex` | Webhooks, checkout, portal           |
 
 ---
 
