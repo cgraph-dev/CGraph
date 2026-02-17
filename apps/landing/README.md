@@ -9,12 +9,12 @@ platform with post-quantum end-to-end encryption.
 | ---------- | ---------------------------------------------------- |
 | Framework  | React 19 + TypeScript 5.8 (strict)                   |
 | Build      | Vite 6.4 · Terser minify · Gzip + Brotli compression |
-| Routing    | React Router 7 — 20 lazy-loaded routes               |
+| Routing    | React Router 7 — 19 lazy-loaded routes               |
 | Styling    | Tailwind CSS 3.4 + BEM modules (16 split CSS files)  |
 | Animation  | GSAP 3.14 (ScrollTrigger) + Framer Motion 12         |
 | SEO        | react-helmet-async · 3 JSON-LD schemas · OG/Twitter  |
 | Analytics  | Plausible (GDPR-compliant, no cookies)               |
-| Testing    | Vitest 3.2 + jsdom + @testing-library/react 16       |
+| Testing    | Vitest 3.2 + Playwright 1.58 + @testing-library      |
 | Deployment | Vercel                                               |
 | License    | BSL 1.1 (see root LICENSE)                           |
 
@@ -37,6 +37,9 @@ pnpm --filter @cgraph/landing dev    # http://localhost:3001
 | `typecheck`  | `tsc --noEmit`                     |
 | `test`       | Run Vitest                         |
 | `test:watch` | Vitest in watch mode               |
+| `e2e`        | Run Playwright E2E tests           |
+| `e2e:ui`     | Playwright interactive UI mode     |
+| `e2e:headed` | Run E2E tests in headed browser    |
 
 ## Project Structure
 
@@ -144,12 +147,21 @@ public/
 ## Testing
 
 ```bash
-pnpm --filter @cgraph/landing test        # Run all tests
+# Unit tests (Vitest + jsdom + @testing-library/react)
+pnpm --filter @cgraph/landing test        # Run all unit tests
 pnpm --filter @cgraph/landing test:watch   # Watch mode
+
+# E2E tests (Playwright + Chromium)
+pnpm --filter @cgraph/landing e2e          # Run all E2E tests
+pnpm --filter @cgraph/landing e2e:ui       # Interactive UI mode
+pnpm --filter @cgraph/landing e2e:headed   # Headed browser
 ```
 
-Tests use Vitest with jsdom and `@testing-library/react`. Animation libraries (GSAP, Framer Motion)
-are mocked in test files. Routing context is provided via `MemoryRouter`.
+Unit tests use Vitest with jsdom. Animation libraries (GSAP, Framer Motion) are mocked via Proxy
+pattern. Routing context is provided via `MemoryRouter`.
+
+E2E tests use Playwright with Chromium, auto-starting the Vite dev server. Specs cover navigation,
+accessibility, performance, and landing page content.
 
 ## Contributing
 

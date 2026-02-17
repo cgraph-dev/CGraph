@@ -4,17 +4,14 @@
  * Lightweight client-side error tracking that captures:
  *   - Unhandled exceptions (window.onerror)
  *   - Unhandled promise rejections
- *   - React ErrorBoundary errors (via reportError)
+ *   - React ErrorBoundary errors (via reportBoundaryError)
  *
  * Reports errors to:
- *   1. Console (always)
+ *   1. Console (development)
  *   2. Plausible Analytics custom events (production)
- *   3. navigator.sendBeacon for reliable delivery (production)
  *
  * This is a lightweight alternative to Sentry for marketing sites
  * that don't need full session replay / stack trace aggregation.
- *
- * @since v2.2.0
  */
 
 interface ErrorReport {
@@ -41,8 +38,6 @@ function shouldReport(message: string): boolean {
   if (recentErrors.has(message)) return false;
   recentErrors.add(message);
   errorCount++;
-  // Clear dedup set periodically to avoid memory leak
-  if (recentErrors.size > 50) recentErrors.clear();
   return true;
 }
 
@@ -54,7 +49,7 @@ function sendReport(report: ErrorReport): void {
   }
 
   // Production: report to Plausible
-  const plausible = (window as Record<string, unknown>).plausible as
+  const plausible = (window as unknown as Record<string, unknown>).plausible as
     | ((event: string, options: { props: Record<string, unknown> }) => void)
     | undefined;
 
@@ -67,14 +62,6 @@ function sendReport(report: ErrorReport): void {
         url: report.url,
       },
     });
-  }
-
-  // Also beacon for reliability
-  if (navigator.sendBeacon) {
-    navigator.sendBeacon(
-      '/api/errors',
-      new Blob([JSON.stringify(report)], { type: 'application/json' })
-    );
   }
 }
 

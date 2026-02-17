@@ -5,7 +5,6 @@
  * Follows the React 19 class-component error boundary pattern
  * (function component error boundaries are not yet supported).
  *
- * @since v0.9.27
  */
 
 import { Component, type ErrorInfo, type ReactNode } from 'react';

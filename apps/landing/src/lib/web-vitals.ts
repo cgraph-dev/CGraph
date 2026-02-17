@@ -1,16 +1,12 @@
 /**
  * Core Web Vitals Monitoring
  *
- * Measures CLS, FCP, FID, INP, LCP, and TTFB using the web-vitals library.
+ * Measures CLS, FCP, INP, LCP, and TTFB using the web-vitals library (v5).
  * Reports metrics to:
  *   1. Console (development only)
  *   2. Plausible Analytics custom events (production)
- *   3. navigator.sendBeacon fallback for reliable delivery
- *
- * All metrics follow Google's web-vitals v5 API.
  *
  * @see https://web.dev/articles/vitals
- * @since v2.2.0
  */
 
 import type { Metric } from 'web-vitals';
@@ -24,7 +20,6 @@ const RATING_COLORS = {
 
 /**
  * Send a web-vitals metric to Plausible Analytics as a custom event.
- * Falls back to sendBeacon for reliable delivery on page unload.
  */
 function sendToAnalytics(metric: Metric): void {
   const body = {
@@ -48,7 +43,7 @@ function sendToAnalytics(metric: Metric): void {
 
   // Production: report to Plausible custom events
   // Plausible's script exposes window.plausible() for custom events
-  const plausible = (window as Record<string, unknown>).plausible as
+  const plausible = (window as unknown as Record<string, unknown>).plausible as
     | ((event: string, options: { props: Record<string, unknown> }) => void)
     | undefined;
 
@@ -61,14 +56,6 @@ function sendToAnalytics(metric: Metric): void {
       },
     });
   }
-
-  // Also send via beacon for reliability (e.g., during page unload)
-  if (navigator.sendBeacon) {
-    navigator.sendBeacon(
-      '/api/vitals',
-      new Blob([JSON.stringify(body)], { type: 'application/json' })
-    );
-  }
 }
 
 /**
@@ -77,11 +64,15 @@ function sendToAnalytics(metric: Metric): void {
  */
 export function initWebVitals(): void {
   // Dynamic import keeps web-vitals out of the critical path
-  import('web-vitals').then(({ onCLS, onFCP, onINP, onLCP, onTTFB }) => {
-    onCLS(sendToAnalytics);
-    onFCP(sendToAnalytics);
-    onINP(sendToAnalytics);
-    onLCP(sendToAnalytics);
-    onTTFB(sendToAnalytics);
-  });
+  import('web-vitals')
+    .then(({ onCLS, onFCP, onINP, onLCP, onTTFB }) => {
+      onCLS(sendToAnalytics);
+      onFCP(sendToAnalytics);
+      onINP(sendToAnalytics);
+      onLCP(sendToAnalytics);
+      onTTFB(sendToAnalytics);
+    })
+    .catch(() => {
+      // Silently ignore — web-vitals is non-critical
+    });
 }

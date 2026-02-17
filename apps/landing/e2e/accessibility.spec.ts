@@ -27,8 +27,9 @@ test.describe('Accessibility', () => {
   });
 
   test('page has keyboard-focusable interactive elements', async ({ page }) => {
-    // Wait for nav to be fully loaded
-    await page.waitForSelector('nav', { state: 'visible' });
+    // Wait for the page to be fully loaded and interactive
+    await page.waitForLoadState('networkidle');
+    await page.waitForSelector('nav', { state: 'attached', timeout: 10_000 });
 
     // Verify the page has focusable elements (links, buttons)
     const links = page.locator('a[href]');

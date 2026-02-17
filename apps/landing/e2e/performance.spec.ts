@@ -33,10 +33,8 @@ test.describe('Performance', () => {
     await expect(googleFontsLink).toBeAttached();
   });
 
-  test('lazy-loaded sections use suspense fallbacks', async ({ page }) => {
+  test('lazy-loaded interactive demo section is present', async ({ page }) => {
     await page.goto('/');
-    // By the time page is interactive, lazy sections should be loaded
-    // But verify the interactive demo section is present
     await expect(page.locator('.interactive-demo-section')).toBeAttached();
   });
 

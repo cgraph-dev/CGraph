@@ -31,7 +31,6 @@ vi.mock('framer-motion', () => ({
                 'transition',
                 'layout',
                 'layoutId',
-                'style',
               ].includes(key)
             ) {
               htmlProps[key] = val;
