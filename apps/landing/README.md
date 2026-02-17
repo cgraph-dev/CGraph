@@ -28,20 +28,20 @@ pnpm --filter @cgraph/landing dev    # http://localhost:3001
 
 ### Scripts
 
-| Script          | Description                          |
-| --------------- | ------------------------------------ |
-| `dev`           | Vite dev server on port 3001         |
-| `build`         | Production build (Terser + Brotli)   |
-| `preview`       | Preview production build             |
-| `lint`          | ESLint check                         |
-| `typecheck`     | `tsc --noEmit`                       |
-| `test`          | Run Vitest                           |
-| `test:watch`    | Vitest in watch mode                 |
-| `e2e`           | Run Playwright E2E tests             |
-| `e2e:ui`        | Playwright interactive UI mode       |
-| `e2e:headed`    | Run E2E tests in headed browser      |
-| `lighthouse`    | One-off Lighthouse audit (4 URLs)    |
-| `lighthouse:ci` | Lighthouse CI with budget assertions |
+| Script          | Description                                 |
+| --------------- | ------------------------------------------- |
+| `dev`           | Vite dev server on port 3001                |
+| `build`         | Production build (Terser + Brotli)          |
+| `preview`       | Preview production build                    |
+| `lint`          | ESLint check                                |
+| `typecheck`     | `tsc --noEmit`                              |
+| `test`          | Run Vitest                                  |
+| `test:watch`    | Vitest in watch mode                        |
+| `e2e`           | Run Playwright E2E tests                    |
+| `e2e:ui`        | Playwright interactive UI mode              |
+| `e2e:headed`    | Run E2E tests in headed browser             |
+| `lighthouse`    | Quick local Lighthouse audit (1 run)        |
+| `lighthouse:ci` | Full Lighthouse CI audit (3 runs + budgets) |
 
 ## Project Structure
 
@@ -168,22 +168,24 @@ accessibility, performance, and landing page content.
 ### Visual Regression
 
 ```bash
-pnpm --filter @cgraph/landing e2e                           # includes visual tests
-npx --filter @cgraph/landing playwright test e2e/visual.spec.ts --update-snapshots  # update baselines
+pnpm --filter @cgraph/landing e2e                                                  # includes visual tests
+pnpm --filter @cgraph/landing e2e -- e2e/visual.spec.ts --update-snapshots          # update baselines
 ```
 
 Screenshot baselines live in `e2e/visual.spec.ts-snapshots/`. Animations are disabled via
-`prefers-reduced-motion: reduce`. Threshold is 1–2 % pixel diff.
+`prefers-reduced-motion: reduce`. Threshold is 2 % pixel diff. Baselines are generated on Linux — CI
+must match the same OS family or font rendering differences will cause failures.
 
 ### Lighthouse CI
 
 ```bash
-pnpm --filter @cgraph/landing lighthouse      # one-off audit
-pnpm --filter @cgraph/landing lighthouse:ci   # CI mode with budget assertions
+pnpm --filter @cgraph/landing lighthouse      # quick local audit (single run)
+pnpm --filter @cgraph/landing lighthouse:ci   # full CI audit (3 runs + budget assertions)
 ```
 
-Configuration in `lighthouserc.json`. Budgets: Performance ≥ 0.85, Accessibility ≥ 0.90, Best
-Practices ≥ 0.90, SEO ≥ 0.90. Resource budgets: JS < 500 KB, CSS < 100 KB.
+Configuration in `lighthouserc.json`. Both scripts build the site and run it via `vite preview` on
+port 4173. Budgets: Performance ≥ 0.85, Accessibility ≥ 0.90, Best Practices ≥ 0.90, SEO ≥ 0.90.
+Resource budgets: JS < 500 KB, CSS < 100 KB.
 
 ## Contributing
 
