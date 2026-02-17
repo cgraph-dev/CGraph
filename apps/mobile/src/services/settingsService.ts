@@ -21,6 +21,7 @@ import api from '../lib/api';
  * File object for FormData uploads in React Native.
  * This is the format expected by React Native's FormData.append().
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface FormDataFile {
   uri: string;
   type: string;
@@ -38,7 +39,7 @@ export interface AccountInfo {
   twoFactorEnabled: boolean;
   createdAt: string;
   lastLoginAt: string;
-  subscriptionTier: 'free' | 'plus' | 'pro' | 'ultimate';
+  subscriptionTier: 'free' | 'plus' | 'pro' | 'business' | 'enterprise';
   subscriptionExpiresAt: string | null;
 }
 

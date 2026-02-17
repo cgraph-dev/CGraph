@@ -919,13 +919,14 @@ The following areas are scaffolded but not fully implemented:
 - **Email digests**: `EmailDigestWorker` has full HTML + text templates, cron schedule, and queue
   fix. Standalone route `GET /api/v1/posts/:id` added for cross-referencing.
 - **AI integration**: Explicitly disabled; placeholder architecture doc exists
-- **Social Hub mock data**: Notifications and Discover tabs in web app use `MOCK_NOTIFICATIONS` /
-  `MOCK_SEARCH_RESULTS` from `mock-data.ts` despite real stores existing
-- **Premium billing**: UI built, Stripe scaffolded, but `premiumStore` is client-side only;
-  `PremiumPage.tsx` hardcodes `currentSubscription='free'`, `coinBalance=0`
+- ~~**Social Hub mock data**~~: **RESOLVED** — Wired to real `useNotificationStore` +
+  `useSearchStore`; `mock-data.ts` deleted (Session 29)
+- ~~**Premium billing**~~: **RESOLVED** — `premiumStore` has `fetchBillingStatus()` calling backend;
+  `PremiumPage.tsx` uses `usePremiumStore` + `useBilling` hook for Stripe checkout (Session 29)
+- ~~**Web Fly.io deployment**~~: **RESOLVED** — `Dockerfile.web` + `nginx-web.conf` created
+  (Session 29)
 - **Meilisearch**: Not deployed; PostgreSQL full-text search used as interim
 - **Redis in production**: Optional; ETS fallback active. Required for distributed rate limiting
-- **Web Fly.io deployment**: `fly.web.toml` exists but `Dockerfile.web` is missing
 - **Load testing**: k6 scripts ready but no staging/production runs completed
 - **Grafana dashboards**: JSON definitions exist but not provisioned in production
 
@@ -970,6 +971,39 @@ The following areas are scaffolded but not fully implemented:
 
 - Added 4 tests for `fetchBillingStatus` (success, canceled status, API error handling, loading
   state); 28/28 tests pass
+
+**Session 29 Continuation — Deep Tier Alignment Sweep:**
+
+Comprehensive review found 14+ issues (3 critical, 6 high, 5 medium) where old tier names
+(`premium`, `premium_plus`, `starter`, `ultimate`, `elite`, `basic`) persisted. All fixed:
+
+- Backend (12 files): `premium_controller.ex` (5 tier plans, validation, price mapping, features),
+  `stripe_webhook_controller.ex` (config key fix: reads from `CGraph.Subscriptions` module config),
+  `gamification.ex` (XP multipliers: plus=1.5 → enterprise=3.0), `group_auto_rule.ex` (5-level
+  hierarchy), `leaderboard_system.ex` + `leaderboard.ex` (is_premium checks), `subscriptions.ex`,
+  `payment_controller.ex`, `leaderboard_controller.ex`, `coins_controller.ex`, `forum.ex` (tier
+  validation), `group_controller.ex` (group limits per tier)
+- Frontend (15 files): `constants.tsx` (5 tier definitions with prices/features/gradients),
+  `PremiumTier.id` typed as `SubscriptionTier` for compile safety, all comparison/card/modal
+  constants, `coinShopData.tsx`, `premium/types/index.ts`
+- Mobile (8 files): `payment.ts`, `PremiumScreen.tsx`, `PremiumBadge.tsx`, `SubscriptionCard.tsx`,
+  `premiumService.ts`, `friendsService.ts`, `settingsService.ts`, `features/premium/types`
+- Shared packages: `packages/state/src/types.ts`, `packages/core/src/domain/entities/User.ts`
+- Hook architecture: Created `useBilling` hook (ESLint `no-restricted-imports` requires pages use
+  hooks, not services directly)
+
+**Tier Reference (canonical — all layers must match):**
+
+| Tier         | Backend key    | Stripe env var            | Price     | XP mult | Group limit |
+| ------------ | -------------- | ------------------------- | --------- | ------- | ----------- |
+| `free`       | `"free"`       | N/A                       | $0        | 1.0x    | 5           |
+| `plus`       | `"plus"`       | `STRIPE_PRICE_PLUS`       | $4.99/mo  | 1.5x    | 10          |
+| `pro`        | `"pro"`        | `STRIPE_PRICE_PRO`        | $9.99/mo  | 2.0x    | 50          |
+| `business`   | `"business"`   | `STRIPE_PRICE_BUSINESS`   | $19.99/mo | 2.5x    | 100         |
+| `enterprise` | `"enterprise"` | `STRIPE_PRICE_ENTERPRISE` | Custom    | 3.0x    | ∞           |
+
+**IMPORTANT**: Never use old names (`premium`, `premium_plus`, `starter`, `ultimate`, `elite`,
+`basic`). The only valid tiers are: `free | plus | pro | business | enterprise`.
 
 ### Sessions 25–26 Changes (v0.9.30 — final 7 features, 100% completion)
 
@@ -1312,7 +1346,10 @@ See `docs/PROJECT_STATUS.md` for full details.
 
 - **Payment Processing**: Stripe Checkout for subscriptions
 - **Webhooks**: `/api/webhooks/stripe` endpoint
-- **Subscription Tiers**: free, premium, enterprise (prices configured in Stripe)
+- **Subscription Tiers**: free | plus | pro | business | enterprise (prices configured in Stripe)
+- **Env vars**: `STRIPE_PRICE_PLUS`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_BUSINESS`,
+  `STRIPE_PRICE_ENTERPRISE`
+- **Config key**: `config :cgraph, CGraph.Subscriptions, stripe_price_ids: %{...}`
 
 ### Key Configuration Files
 

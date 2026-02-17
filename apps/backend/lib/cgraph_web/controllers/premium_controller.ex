@@ -4,6 +4,8 @@ defmodule CGraphWeb.PremiumController do
   """
   use CGraphWeb, :controller
 
+  require Logger
+
   alias CGraph.Repo
 
   action_fallback CGraphWeb.FallbackController
@@ -53,8 +55,8 @@ defmodule CGraphWeb.PremiumController do
         }
       },
       %{
-        id: "premium",
-        name: "Premium",
+        id: "plus",
+        name: "Plus",
         price: 4.99,
         currency: "USD",
         interval: "month",
@@ -78,13 +80,13 @@ defmodule CGraphWeb.PremiumController do
         }
       },
       %{
-        id: "premium_plus",
-        name: "Premium+",
+        id: "pro",
+        name: "Pro",
         price: 9.99,
         currency: "USD",
         interval: "month",
         features: [
-          "Everything in Premium",
+          "Everything in Plus",
           "2x XP boost",
           "20% coin bonus on purchases",
           "Exclusive effects",
@@ -102,6 +104,66 @@ defmodule CGraphWeb.PremiumController do
           exclusive_effects: true,
           early_access: true,
           custom_banner: true
+        }
+      },
+      %{
+        id: "business",
+        name: "Business",
+        price: 19.99,
+        currency: "USD",
+        interval: "month",
+        features: [
+          "Everything in Pro",
+          "2.5x XP boost",
+          "30% coin bonus on purchases",
+          "Advanced analytics",
+          "Team management",
+          "SSO integration",
+          "Custom branding"
+        ],
+        limits: %{
+          daily_friend_requests: nil,
+          xp_multiplier: 2.5,
+          coin_bonus: 30,
+          custom_themes: true,
+          priority_support: true,
+          exclusive_badges: true,
+          exclusive_effects: true,
+          early_access: true,
+          custom_banner: true,
+          advanced_analytics: true,
+          team_management: true
+        }
+      },
+      %{
+        id: "enterprise",
+        name: "Enterprise",
+        price: -1,
+        currency: "USD",
+        interval: "month",
+        features: [
+          "Everything in Business",
+          "3x XP boost",
+          "50% coin bonus on purchases",
+          "Dedicated account manager",
+          "Custom integrations",
+          "SLA guarantee",
+          "On-premise option"
+        ],
+        limits: %{
+          daily_friend_requests: nil,
+          xp_multiplier: 3.0,
+          coin_bonus: 50,
+          custom_themes: true,
+          priority_support: true,
+          exclusive_badges: true,
+          exclusive_effects: true,
+          early_access: true,
+          custom_banner: true,
+          advanced_analytics: true,
+          team_management: true,
+          dedicated_manager: true,
+          custom_integrations: true
         }
       }
     ]
@@ -130,7 +192,7 @@ defmodule CGraphWeb.PremiumController do
   def subscribe(conn, %{"tier" => tier}) do
     user = conn.assigns.current_user
 
-    if tier in ["free", "premium", "premium_plus"] do
+    if tier in ["free", "plus", "pro", "business", "enterprise"] do
       # Downgrade to free is always allowed
       if tier == "free" do
         handle_downgrade_to_free(conn, user)
@@ -156,7 +218,7 @@ defmodule CGraphWeb.PremiumController do
   end
 
   def subscribe(conn, params) do
-    tier = Map.get(params, "plan") || Map.get(params, "plan_id") || "premium"
+    tier = Map.get(params, "plan") || Map.get(params, "plan_id") || "plus"
     subscribe(conn, %{"tier" => tier})
   end
 
@@ -226,8 +288,10 @@ defmodule CGraphWeb.PremiumController do
       # Stripe checkout session creation would go here
       # For now, return that the feature is coming soon
       price_ids = %{
-        "premium" => System.get_env("STRIPE_PREMIUM_PRICE_ID"),
-        "premium_plus" => System.get_env("STRIPE_PREMIUM_PLUS_PRICE_ID")
+        "plus" => System.get_env("STRIPE_PLUS_PRICE_ID"),
+        "pro" => System.get_env("STRIPE_PRO_PRICE_ID"),
+        "business" => System.get_env("STRIPE_BUSINESS_PRICE_ID"),
+        "enterprise" => System.get_env("STRIPE_ENTERPRISE_PRICE_ID")
       }
 
       price_id = Map.get(price_ids, tier)
@@ -350,7 +414,7 @@ defmodule CGraphWeb.PremiumController do
     }
   end
 
-  defp get_tier_features("premium") do
+  defp get_tier_features("plus") do
     %{
       xp_multiplier: 1.5,
       coin_bonus: 10,
@@ -364,10 +428,38 @@ defmodule CGraphWeb.PremiumController do
     }
   end
 
-  defp get_tier_features("premium_plus") do
+  defp get_tier_features("pro") do
     %{
       xp_multiplier: 2.0,
       coin_bonus: 20,
+      custom_themes: true,
+      exclusive_badges: true,
+      exclusive_effects: true,
+      priority_support: true,
+      early_access: true,
+      custom_banner: true,
+      daily_limits: false
+    }
+  end
+
+  defp get_tier_features("business") do
+    %{
+      xp_multiplier: 2.0,
+      coin_bonus: 25,
+      custom_themes: true,
+      exclusive_badges: true,
+      exclusive_effects: true,
+      priority_support: true,
+      early_access: true,
+      custom_banner: true,
+      daily_limits: false
+    }
+  end
+
+  defp get_tier_features("enterprise") do
+    %{
+      xp_multiplier: 2.5,
+      coin_bonus: 30,
       custom_themes: true,
       exclusive_badges: true,
       exclusive_effects: true,

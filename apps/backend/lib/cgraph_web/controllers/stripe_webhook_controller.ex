@@ -230,7 +230,8 @@ defmodule CGraphWeb.StripeWebhookController do
   defp determine_tier_from_subscription(_), do: {:ok, "plus"}
 
   defp get_tier_from_env(price_id) do
-    price_ids = Application.get_env(:cgraph, :stripe_price_ids, %{})
+    subs_config = Application.get_env(:cgraph, CGraph.Subscriptions, [])
+    price_ids = Keyword.get(subs_config, :stripe_price_ids, %{})
 
     cond do
       price_id == Map.get(price_ids, :plus) -> "plus"

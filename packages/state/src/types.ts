@@ -16,7 +16,7 @@ export interface UserState {
   displayName: string | null;
   email: string | null;
   avatar: string | null;
-  premiumTier: 'free' | 'basic' | 'premium' | 'elite' | null;
+  premiumTier: 'free' | 'plus' | 'pro' | 'business' | 'enterprise' | null;
   level: number;
   xp: number;
   coins: number;

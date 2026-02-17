@@ -2,7 +2,7 @@
  * Premium Types (Mobile)
  */
 
-export type SubscriptionTier = 'free' | 'starter' | 'pro' | 'ultimate';
+export type SubscriptionTier = 'free' | 'plus' | 'pro' | 'business' | 'enterprise';
 
 export interface SubscriptionPlan {
   id: string;

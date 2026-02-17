@@ -1,6 +1,6 @@
 /**
  * User Entity
- * 
+ *
  * Core domain entity representing a user in the CGraph platform.
  */
 
@@ -26,7 +26,7 @@ export interface UserEntity {
 
 export type UserStatus = 'online' | 'idle' | 'dnd' | 'offline' | 'invisible';
 
-export type PremiumTier = 'starter' | 'pro' | 'ultimate';
+export type PremiumTier = 'plus' | 'pro' | 'business' | 'enterprise';
 
 export interface UserSettings {
   theme: 'light' | 'dark' | 'system';
@@ -90,18 +90,22 @@ export function getTotalXPForLevel(level: number): number {
 /**
  * Calculate level from total XP
  */
-export function getLevelFromXP(totalXP: number): { level: number; currentXP: number; progress: number } {
+export function getLevelFromXP(totalXP: number): {
+  level: number;
+  currentXP: number;
+  progress: number;
+} {
   let level = 1;
   let remainingXP = totalXP;
-  
+
   while (remainingXP >= getXPForLevel(level)) {
     remainingXP -= getXPForLevel(level);
     level++;
   }
-  
+
   const xpForCurrentLevel = getXPForLevel(level);
   const progress = (remainingXP / xpForCurrentLevel) * 100;
-  
+
   return {
     level,
     currentXP: remainingXP,

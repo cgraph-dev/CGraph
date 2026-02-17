@@ -5,6 +5,7 @@
  */
 
 import type { ReactNode } from 'react';
+import type { SubscriptionTier } from '@/modules/premium/store/types';
 
 /**
  * Individual feature within a premium tier
@@ -17,9 +18,12 @@ export interface PremiumFeature {
 
 /**
  * Premium subscription tier configuration
+ *
+ * The `id` field must match a valid SubscriptionTier:
+ * free | plus | pro | business | enterprise
  */
 export interface PremiumTier {
-  id: string;
+  id: SubscriptionTier;
   name: string;
   price: number;
   interval: 'month' | 'year';

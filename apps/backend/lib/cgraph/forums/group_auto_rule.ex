@@ -152,7 +152,7 @@ defmodule CGraph.Forums.GroupAutoRule do
     end
   end
 
-  @tier_hierarchy %{"free" => 0, "basic" => 1, "premium" => 2, "premium_plus" => 3}
+  @tier_hierarchy %{"free" => 0, "plus" => 1, "pro" => 2, "business" => 3, "enterprise" => 4}
 
   defp check_subscription_criteria(criteria, member) do
     case Map.get(criteria, "subscription_tier") do

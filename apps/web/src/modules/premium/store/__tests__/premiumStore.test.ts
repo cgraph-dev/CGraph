@@ -52,8 +52,10 @@ const getInitialState = () => ({
   currentTier: null,
   subscribedAt: null,
   expiresAt: null,
+  status: 'none' as const,
   coinBalance: 0,
   purchaseHistory: [],
+  isLoading: false,
 });
 
 afterEach(() => {

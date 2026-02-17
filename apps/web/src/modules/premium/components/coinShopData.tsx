@@ -53,8 +53,8 @@ export const DEFAULT_PACKAGES: CoinPackage[] = [
     isPopular: false,
   },
   {
-    id: 'ultimate',
-    name: 'Ultimate',
+    id: 'enterprise',
+    name: 'Enterprise',
     coins: 12000,
     bonusCoins: 4000,
     price: 79.99,

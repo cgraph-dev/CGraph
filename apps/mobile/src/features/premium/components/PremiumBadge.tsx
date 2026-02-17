@@ -1,37 +1,39 @@
 /**
  * Premium Badge Component
- * 
+ *
  * Displays a premium badge next to usernames for subscribed users.
  */
 
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { 
-  useAnimatedStyle, 
-  useSharedValue, 
-  withRepeat, 
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
   withTiming,
-  Easing 
+  Easing,
 } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 
 interface PremiumBadgeProps {
-  tier: 'starter' | 'pro' | 'ultimate';
+  tier: 'plus' | 'pro' | 'business' | 'enterprise';
   size?: 'sm' | 'md' | 'lg';
   animated?: boolean;
 }
 
 const TIER_COLORS = {
-  starter: ['#60A5FA', '#3B82F6'] as const,
+  plus: ['#60A5FA', '#3B82F6'] as const,
   pro: ['#A78BFA', '#8B5CF6'] as const,
-  ultimate: ['#FCD34D', '#F59E0B'] as const,
+  business: ['#F472B6', '#EC4899'] as const,
+  enterprise: ['#FCD34D', '#F59E0B'] as const,
 };
 
 const TIER_ICONS = {
-  starter: 'star',
+  plus: 'star',
   pro: 'diamond',
-  ultimate: 'crown',
+  business: 'briefcase',
+  enterprise: 'crown',
 };
 
 const SIZE_MAP = {
@@ -40,31 +42,27 @@ const SIZE_MAP = {
   lg: 28,
 };
 
-export default function PremiumBadge({ 
-  tier, 
-  size = 'md', 
-  animated = true 
-}: PremiumBadgeProps) {
+export default function PremiumBadge({ tier, size = 'md', animated = true }: PremiumBadgeProps) {
   const rotation = useSharedValue(0);
-  
+
   React.useEffect(() => {
-    if (animated && tier === 'ultimate') {
+    if (animated && tier === 'enterprise') {
       rotation.value = withRepeat(
         withTiming(360, { duration: 3000, easing: Easing.linear }),
         -1,
         false
       );
     }
-  }, [animated, tier]);
-  
+  }, [animated, tier, rotation]);
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ rotate: `${rotation.value}deg` }],
   }));
-  
+
   const iconSize = SIZE_MAP[size];
   const colors = TIER_COLORS[tier];
   const iconName = TIER_ICONS[tier] as keyof typeof Ionicons.glyphMap;
-  
+
   return (
     <View style={[styles.container, { width: iconSize + 8, height: iconSize + 8 }]}>
       <LinearGradient
@@ -73,7 +71,7 @@ export default function PremiumBadge({
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
-        <Animated.View style={animated && tier === 'ultimate' ? animatedStyle : undefined}>
+        <Animated.View style={animated && tier === 'enterprise' ? animatedStyle : undefined}>
           <Ionicons name={iconName} size={iconSize} color="white" />
         </Animated.View>
       </LinearGradient>

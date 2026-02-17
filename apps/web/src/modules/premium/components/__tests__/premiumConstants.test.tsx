@@ -11,7 +11,7 @@ import { DEFAULT_PACKAGES } from '../coinShopData';
 
 // ── Types reference ────────────────────────────────────────────────────
 
-const ALL_TIERS = ['free', 'plus', 'pro', 'ultimate'] as const;
+const ALL_TIERS = ['free', 'plus', 'pro', 'business', 'enterprise'] as const;
 
 // ── Tests ──────────────────────────────────────────────────────────────
 

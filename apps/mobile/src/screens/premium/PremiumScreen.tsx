@@ -8,7 +8,6 @@ import {
   Platform,
   Alert,
   Linking,
-  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -34,7 +33,7 @@ import paymentService, { PRODUCT_IDS, SubscriptionStatus } from '../../lib/payme
  */
 
 interface PremiumTier {
-  id: 'free' | 'premium' | 'premium_plus';
+  id: 'free' | 'plus' | 'pro';
   name: string;
   price: {
     monthly: number;
@@ -71,8 +70,8 @@ const PREMIUM_TIERS: PremiumTier[] = [
     ],
   },
   {
-    id: 'premium',
-    name: 'Premium',
+    id: 'plus',
+    name: 'Plus',
     price: {
       monthly: 4.99,
       yearly: 47.9, // 20% discount
@@ -93,8 +92,8 @@ const PREMIUM_TIERS: PremiumTier[] = [
     ],
   },
   {
-    id: 'premium_plus',
-    name: 'Premium+',
+    id: 'pro',
+    name: 'Pro',
     price: {
       monthly: 9.99,
       yearly: 95.9, // 20% discount
@@ -119,13 +118,13 @@ type BillingCycle = 'monthly' | 'yearly';
 
 const PremiumScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const { colors } = useTheme();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('yearly');
-  const [selectedTier, setSelectedTier] = useState<PremiumTier['id']>('premium');
+  const [selectedTier, setSelectedTier] = useState<PremiumTier['id']>('plus');
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [_isLoading, setIsLoading] = useState(true);
+  const [_isPurchasing, setIsPurchasing] = useState(false);
 
   // Fetch subscription status on mount
   useEffect(() => {
@@ -182,7 +181,7 @@ const PremiumScreen: React.FC = () => {
             try {
               // Get the correct product ID based on tier and billing cycle
               const productId =
-                tier.id === 'premium'
+                tier.id === 'plus'
                   ? billingCycle === 'yearly'
                     ? PRODUCT_IDS.PREMIUM_YEARLY
                     : PRODUCT_IDS.PREMIUM_MONTHLY
@@ -416,7 +415,7 @@ const PremiumScreen: React.FC = () => {
                   >
                     <Ionicons
                       name={
-                        tier.id === 'free' ? 'people' : tier.id === 'premium' ? 'diamond' : 'rocket'
+                        tier.id === 'free' ? 'people' : tier.id === 'plus' ? 'diamond' : 'rocket'
                       }
                       size={28}
                       color="#fff"

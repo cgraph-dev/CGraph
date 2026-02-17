@@ -17,7 +17,7 @@ import api from '../lib/api';
 
 export interface SubscriptionTier {
   id: string;
-  name: 'free' | 'plus' | 'pro' | 'ultimate';
+  name: 'free' | 'plus' | 'pro' | 'business' | 'enterprise';
   displayName: string;
   price: number;
   currency: string;
@@ -28,7 +28,7 @@ export interface SubscriptionTier {
 }
 
 export interface UserSubscription {
-  tier: 'free' | 'plus' | 'pro' | 'ultimate';
+  tier: 'free' | 'plus' | 'pro' | 'business' | 'enterprise';
   status: 'active' | 'trialing' | 'past_due' | 'canceled' | 'expired';
   currentPeriodStart: string;
   currentPeriodEnd: string;
@@ -41,7 +41,7 @@ export interface PremiumPerk {
   name: string;
   description: string;
   icon: string;
-  requiredTier: 'plus' | 'pro' | 'ultimate';
+  requiredTier: 'plus' | 'pro' | 'business' | 'enterprise';
   enabled: boolean;
   value?: string | number;
 }

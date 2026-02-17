@@ -47,7 +47,7 @@ defmodule CGraphWeb.PremiumControllerTest do
     end
 
     test "accepts valid tier param", %{conn: conn} do
-      conn = post(conn, ~p"/api/v1/premium/subscribe", %{tier: "premium"})
+      conn = post(conn, ~p"/api/v1/premium/subscribe", %{tier: "plus"})
 
       # May succeed or indicate payment needed
       assert conn.status in [200, 402, 422, 503]

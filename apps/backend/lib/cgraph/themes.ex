@@ -137,7 +137,7 @@ defmodule CGraph.Themes do
   end
 
   defp validate_theme(theme_params, user) do
-    is_premium = user.is_premium || user.subscription_tier in ["premium", "enterprise"]
+    is_premium = user.is_premium || user.subscription_tier in ["plus", "pro", "business", "enterprise"]
 
     validated = theme_params
     |> Map.take(Map.keys(@default_theme))

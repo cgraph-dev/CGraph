@@ -216,7 +216,7 @@ defmodule CGraph.Gamification.Leaderboard do
       display_name: Map.get(user, :display_name),
       avatar_url: Map.get(user, :avatar_url),
       level: Map.get(user, :level, 0),
-      is_premium: Map.get(user, :subscription_tier) in ["premium", "premium_plus"],
+      is_premium: Map.get(user, :subscription_tier) in ["plus", "pro", "business", "enterprise"],
       is_verified: Map.get(user, :is_verified, false)
     }
     |> Jason.encode!()

@@ -1,6 +1,6 @@
 /**
  * Subscription Card Component
- * 
+ *
  * Displays subscription tier information with pricing and features.
  */
 
@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
 interface SubscriptionCardProps {
-  tier: 'starter' | 'pro' | 'ultimate';
+  tier: 'plus' | 'pro' | 'business' | 'enterprise';
   name: string;
   priceMonthly: number;
   priceYearly: number;
@@ -38,13 +38,13 @@ export default function SubscriptionCard({
   onSelect,
 }: SubscriptionCardProps) {
   const colors = TIER_COLORS[tier];
-  const yearlyDiscount = Math.round((1 - (priceYearly / 12) / priceMonthly) * 100);
-  
+  const yearlyDiscount = Math.round((1 - priceYearly / 12 / priceMonthly) * 100);
+
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     onSelect();
   };
-  
+
   return (
     <View style={styles.wrapper}>
       {isPopular && (
@@ -52,7 +52,7 @@ export default function SubscriptionCard({
           <Text style={styles.popularText}>MOST POPULAR</Text>
         </View>
       )}
-      
+
       <LinearGradient
         colors={colors.bg}
         style={[styles.container, isCurrentPlan && styles.currentPlan]}
@@ -60,21 +60,21 @@ export default function SubscriptionCard({
         end={{ x: 1, y: 1 }}
       >
         <Text style={styles.tierName}>{name}</Text>
-        
+
         <View style={styles.priceContainer}>
           <Text style={styles.currency}>$</Text>
           <Text style={styles.price}>{priceMonthly}</Text>
           <Text style={styles.period}>/month</Text>
         </View>
-        
+
         {yearlyDiscount > 0 && (
           <Text style={[styles.yearlyPrice, { color: colors.accent }]}>
             ${(priceYearly / 12).toFixed(2)}/mo when billed yearly (save {yearlyDiscount}%)
           </Text>
         )}
-        
+
         <View style={styles.divider} />
-        
+
         <View style={styles.featuresList}>
           {features.map((feature, index) => (
             <View key={index} style={styles.featureRow}>
@@ -83,18 +83,13 @@ export default function SubscriptionCard({
             </View>
           ))}
         </View>
-        
+
         <TouchableOpacity
-          style={[
-            styles.button,
-            { backgroundColor: isCurrentPlan ? '#4B5563' : colors.accent }
-          ]}
+          style={[styles.button, { backgroundColor: isCurrentPlan ? '#4B5563' : colors.accent }]}
           onPress={handlePress}
           disabled={isCurrentPlan}
         >
-          <Text style={styles.buttonText}>
-            {isCurrentPlan ? 'Current Plan' : 'Select Plan'}
-          </Text>
+          <Text style={styles.buttonText}>{isCurrentPlan ? 'Current Plan' : 'Select Plan'}</Text>
         </TouchableOpacity>
       </LinearGradient>
     </View>

@@ -36,7 +36,7 @@ export interface Purchase {
 
 export interface SubscriptionStatus {
   isActive: boolean;
-  tier: 'free' | 'premium' | 'premium_plus';
+  tier: 'free' | 'plus' | 'pro' | 'business' | 'enterprise';
   expiresAt: string | null;
   willRenew: boolean;
   provider: 'stripe' | 'apple' | 'google' | null;
@@ -81,13 +81,13 @@ class PaymentService {
       // In a production app, this would initialize the native IAP SDK
       // For now, we'll use a backend-based approach
 
-      if (__DEV__) console.log('[PaymentService] Initializing...');
+      if (__DEV__) console.warn('[PaymentService] Initializing...');
 
       // Fetch products from backend
       await this.fetchProducts();
 
       this.isInitialized = true;
-      if (__DEV__) console.log('[PaymentService] Initialized successfully');
+      if (__DEV__) console.warn('[PaymentService] Initialized successfully');
       return true;
     } catch (error) {
       console.error('[PaymentService] Initialization failed:', error);
@@ -285,11 +285,11 @@ class PaymentService {
     }
 
     try {
-      if (__DEV__) console.log('[PaymentService] Starting purchase for:', productId);
+      if (__DEV__) console.warn('[PaymentService] Starting purchase for:', productId);
 
       if (product.type === 'subscription') {
-        // Use premium subscription endpoint
-        const tier = productId.includes('premium_plus') ? 'premium_plus' : 'premium';
+        // Map store product IDs to internal tier names
+        const tier = productId.includes('premium_plus') ? 'pro' : 'plus';
         const billingInterval = productId.includes('yearly') ? 'year' : 'month';
 
         const response = await api.post('/api/v1/premium/subscribe', {
@@ -324,7 +324,7 @@ class PaymentService {
           platform: Platform.OS,
         });
 
-        const { checkout_url, success, coins_added } = response.data;
+        const { checkout_url, success: _success, coins_added: _coinsAdded } = response.data;
 
         if (checkout_url) {
           const supported = await Linking.canOpenURL(checkout_url);
@@ -376,7 +376,7 @@ class PaymentService {
    */
   async restorePurchases(): Promise<Purchase[]> {
     try {
-      if (__DEV__) console.log('[PaymentService] Restoring purchases...');
+      if (__DEV__) console.warn('[PaymentService] Restoring purchases...');
 
       // Check current subscription status - this is the "restore" for Stripe
       const status = await this.getSubscriptionStatus();
@@ -384,9 +384,7 @@ class PaymentService {
       if (status.isActive && status.tier !== 'free') {
         // User has an active subscription
         const productId =
-          status.tier === 'premium_plus'
-            ? PRODUCT_IDS.PREMIUM_PLUS_MONTHLY
-            : PRODUCT_IDS.PREMIUM_MONTHLY;
+          status.tier === 'pro' ? PRODUCT_IDS.PREMIUM_PLUS_MONTHLY : PRODUCT_IDS.PREMIUM_MONTHLY;
 
         return [
           {
