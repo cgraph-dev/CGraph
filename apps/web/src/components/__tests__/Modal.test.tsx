@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
-import { Modal, ConfirmDialog } from '../Modal';
+import { Modal, ConfirmDialog } from '../ui/Modal';
 
 describe('Modal', () => {
   const defaultProps = {

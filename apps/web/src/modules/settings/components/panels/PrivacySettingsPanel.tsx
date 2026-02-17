@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSettingsStore } from '@/modules/settings/store';
 import { toast } from '@/shared/components/ui';
@@ -171,7 +171,7 @@ export function PrivacySettingsPanel() {
                     onClick={async () => {
                       try {
                         await updatePrivacySettings({
-                          [key]: !(settings.privacy as Record<string, unknown>)[key],
+                          [key]: !(settings.privacy as unknown as Record<string, unknown>)[key],
                         });
                         toast.success(`${label} visibility updated`);
                       } catch {
@@ -180,14 +180,14 @@ export function PrivacySettingsPanel() {
                     }}
                     disabled={isSaving}
                     className={`relative h-6 w-11 rounded-full transition-colors ${
-                      (settings.privacy as Record<string, unknown>)[key] !== false
+                      (settings.privacy as unknown as Record<string, unknown>)[key] !== false
                         ? 'bg-primary-600'
                         : 'bg-dark-600'
                     } ${isSaving ? 'opacity-50' : ''}`}
                   >
                     <span
                       className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform ${
-                        (settings.privacy as Record<string, unknown>)[key] !== false
+                        (settings.privacy as unknown as Record<string, unknown>)[key] !== false
                           ? 'translate-x-5'
                           : ''
                       }`}

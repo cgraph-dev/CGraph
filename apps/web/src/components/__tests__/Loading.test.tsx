@@ -1,14 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
-import { LoadingSpinner } from '../LoadingSpinner';
+import { LoadingSpinner } from '../feedback/LoadingSpinner';
 import {
   LoadingOverlay,
   SkeletonText,
   SkeletonAvatar,
   SkeletonMessage,
   SkeletonConversation,
-} from '../Loading';
+} from '../feedback/Loading';
 
 describe('LoadingSpinner', () => {
   it('renders the spinner SVG', () => {

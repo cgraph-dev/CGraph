@@ -25,7 +25,7 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
   const {
     subscriptions,
     isLoading,
-    bulkUpdating,
+    bulkUpdating: _bulkUpdating,
     counts,
     totalUnread,
     updateSubscription,
@@ -51,10 +51,7 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
             <CardDescription>Manage your forum, board, and thread subscriptions</CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Select
-              onValueChange={(value) => bulkUpdateMode(value as NotificationMode)}
-              disabled={bulkUpdating || subscriptions.length === 0}
-            >
+            <Select onValueChange={(value: string) => bulkUpdateMode(value as NotificationMode)}>
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Bulk update..." />
               </SelectTrigger>

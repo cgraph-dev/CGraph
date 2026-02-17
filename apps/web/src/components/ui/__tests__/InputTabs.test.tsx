@@ -8,7 +8,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import { Input } from '../input';
+import { Input } from '../Input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../tabs';
 
 // =============================================================================
@@ -39,40 +39,40 @@ describe('Input', () => {
     expect(screen.getByTestId('disabled-input')).toBeDisabled();
   });
 
-  it('shows helper text when provided', () => {
-    render(<Input helperText="Required field" />);
+  it('shows hint text when provided', () => {
+    render(<Input hint="Required field" />);
     expect(screen.getByText('Required field')).toBeInTheDocument();
   });
 
-  it('does not show helper text when not provided', () => {
+  it('does not show hint text when not provided', () => {
     const { container } = render(<Input />);
     const helperEls = container.querySelectorAll('p');
     expect(helperEls.length).toBe(0);
   });
 
-  it('applies error styling when error is true', () => {
-    render(<Input error data-testid="err-input" />);
+  it('applies error styling when error is set', () => {
+    render(<Input error="Invalid input" data-testid="err-input" />);
     const input = screen.getByTestId('err-input');
-    expect(input.className).toContain('border-error');
+    expect(input.className).toContain('border-red-300');
   });
 
-  it('applies normal border when error is false', () => {
-    render(<Input error={false} data-testid="ok-input" />);
+  it('applies normal border when no error', () => {
+    render(<Input data-testid="ok-input" />);
     const input = screen.getByTestId('ok-input');
-    expect(input.className).toContain('border-surfaceBorder');
-    expect(input.className).not.toContain('border-error');
+    expect(input.className).toContain('border-gray-300');
+    expect(input.className).not.toContain('border-red-300');
   });
 
-  it('helper text has error color when error is true', () => {
-    render(<Input error helperText="Invalid" />);
-    const helper = screen.getByText('Invalid');
-    expect(helper.className).toContain('text-error');
+  it('error message has error color', () => {
+    render(<Input error="Invalid" />);
+    const errorMsg = screen.getByText('Invalid');
+    expect(errorMsg.className).toContain('text-red-600');
   });
 
-  it('helper text has muted color when error is false', () => {
-    render(<Input helperText="Hint" />);
-    const helper = screen.getByText('Hint');
-    expect(helper.className).toContain('text-textMuted');
+  it('hint text has muted color', () => {
+    render(<Input hint="Hint" />);
+    const hint = screen.getByText('Hint');
+    expect(hint.className).toContain('text-gray-500');
   });
 
   it('applies custom className', () => {

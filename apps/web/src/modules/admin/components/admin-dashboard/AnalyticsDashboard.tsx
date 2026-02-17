@@ -33,7 +33,7 @@ function generateChartData(range: TimeRange, seed: number): ChartPoint[] {
   for (let i = 0; i < count; i++) {
     // Deterministic-ish trending curve from seed
     const base = seed * (0.7 + 0.3 * Math.sin(i * 0.5 + seed));
-    points.push({ label: labels[i], value: Math.round(base * (0.85 + 0.3 * (i / count))) });
+    points.push({ label: labels[i] ?? '', value: Math.round(base * (0.85 + 0.3 * (i / count))) });
   }
   return points;
 }
@@ -102,28 +102,32 @@ export function AnalyticsDashboard() {
       <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <DashboardChart
           title="User Activity"
-          data={generateChartData(range, Math.max(dau, 120))}
+          data={
+            generateChartData(range, Math.max(dau, 120)) as unknown as Record<string, unknown>[]
+          }
           dataKey="value"
           color="#8b5cf6"
           loading={loading}
         />
         <DashboardChart
           title="Revenue Trend"
-          data={generateChartData(range, Math.max(rev, 80))}
+          data={generateChartData(range, Math.max(rev, 80)) as unknown as Record<string, unknown>[]}
           dataKey="value"
           color="#10b981"
           loading={loading}
         />
         <DashboardChart
           title="Event Participation"
-          data={generateChartData(range, Math.max(jobs, 60))}
+          data={
+            generateChartData(range, Math.max(jobs, 60)) as unknown as Record<string, unknown>[]
+          }
           dataKey="value"
           color="#f59e0b"
           loading={loading}
         />
         <DashboardChart
           title="Marketplace Volume"
-          data={generateChartData(range, Math.max(rpm, 45))}
+          data={generateChartData(range, Math.max(rpm, 45)) as unknown as Record<string, unknown>[]}
           dataKey="value"
           color="#3b82f6"
           loading={loading}

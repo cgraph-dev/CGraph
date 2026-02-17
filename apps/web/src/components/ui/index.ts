@@ -56,11 +56,11 @@ export {
   DialogDescription,
   DialogFooter,
 } from './dialog';
-export { Input } from './input';
+export { Input } from './Input';
 export { Label } from './label';
 export { Alert, AlertDescription, AlertTitle } from './alert';
 export { Popover, PopoverTrigger, PopoverContent } from './popover';
-export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './select';
+export { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from './Select';
 export { Switch } from './switch';
 export { Separator } from './separator';
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';

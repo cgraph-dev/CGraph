@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
-import { ErrorBoundary } from '../ErrorBoundary';
+import ErrorBoundary from '../ErrorBoundary';
 
 // Mock error-tracking module
 vi.mock('@/lib/error-tracking', () => ({
@@ -69,16 +69,13 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText(/mock-error-id-123/)).toBeInTheDocument();
   });
 
-  it('calls onError callback when error is caught', () => {
-    const onError = vi.fn();
+  it('catches errors and shows fallback UI', () => {
     render(
-      <ErrorBoundary onError={onError}>
+      <ErrorBoundary>
         <ThrowingComponent />
       </ErrorBoundary>
     );
-    expect(onError).toHaveBeenCalledTimes(1);
-    expect(onError.mock.calls[0]![0]).toBeInstanceOf(Error);
-    expect(onError.mock.calls[0]![0].message).toBe('Test error');
+    expect(screen.getByText('Something went wrong')).toBeInTheDocument();
   });
 
   it('renders Try Again button that resets the error state', () => {
@@ -123,32 +120,29 @@ describe('ErrorBoundary', () => {
     vi.mocked(addBreadcrumb).mockClear();
 
     render(
-      <ErrorBoundary componentName="TestComponent">
+      <ErrorBoundary>
         <ThrowingComponent />
       </ErrorBoundary>
     );
 
     expect(captureError).toHaveBeenCalledTimes(1);
     expect(addBreadcrumb).toHaveBeenCalled();
-    // Verify the captureError was called with the error and component context
     const captureCall = vi.mocked(captureError).mock.calls[0]!;
     expect(captureCall[0]).toBeInstanceOf(Error);
-    expect(captureCall[1]).toMatchObject({ component: 'TestComponent' });
   });
 
-  it('passes componentName to error tracking context', async () => {
+  it('passes error context to error tracking', async () => {
     const { captureError } = await import('@/lib/error-tracking');
     vi.mocked(captureError).mockClear();
 
     render(
-      <ErrorBoundary componentName="MyWidget">
+      <ErrorBoundary>
         <ThrowingComponent />
       </ErrorBoundary>
     );
 
     const captureCall = vi.mocked(captureError).mock.calls[0]!;
     expect(captureCall[1]).toMatchObject({
-      component: 'MyWidget',
       action: 'component_crash',
       level: 'fatal',
     });

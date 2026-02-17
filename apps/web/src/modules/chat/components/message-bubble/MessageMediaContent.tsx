@@ -13,6 +13,7 @@ import { FileIcon } from './icons';
 import { mapVisualizerTheme } from './utils';
 
 import type { Message } from '@/modules/chat/store';
+import type { UIPreferences } from './types';
 
 interface MessageMediaContentProps {
   message: Message;
@@ -70,7 +71,7 @@ export function MessageMediaContent({
         <AdvancedVoiceVisualizer
           audioUrl={message.metadata.url as string}
           variant="spectrum"
-          theme={mapVisualizerTheme(voiceVisualizerTheme)}
+          theme={mapVisualizerTheme(voiceVisualizerTheme as UIPreferences['voiceVisualizerTheme'])}
           height={120}
           width={280}
           className="rounded-xl"

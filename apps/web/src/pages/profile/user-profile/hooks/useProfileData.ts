@@ -6,6 +6,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
 import { useGamificationStore } from '@/modules/gamification/store';
+import type { Achievement } from '@/modules/gamification/store';
 import type { UserProfileData, FriendshipStatus } from '@/types/profile.types';
 
 const logger = createLogger('useProfileData');
@@ -22,7 +23,7 @@ interface UseProfileDataReturn {
   error: string | null;
   friendshipStatus: FriendshipStatus;
   setFriendshipStatus: React.Dispatch<React.SetStateAction<FriendshipStatus>>;
-  unlockedAchievements: ReturnType<typeof useGamificationStore>['achievements'];
+  unlockedAchievements: Achievement[];
   totalUnlocked: number;
   showAllAchievements: boolean;
   setShowAllAchievements: React.Dispatch<React.SetStateAction<boolean>>;

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { http, HttpResponse } from 'msw';
-import EmptyState from './EmptyState';
+import EmptyState from './feedback/EmptyState';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 

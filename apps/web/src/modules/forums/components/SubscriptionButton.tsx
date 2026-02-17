@@ -30,8 +30,8 @@ interface SubscriptionButtonProps {
   onUnsubscribe: () => Promise<void>;
   onUpdateSettings: (settings: Partial<SubscriptionSettings>) => Promise<void>;
   className?: string;
-  variant?: 'default' | 'outline' | 'ghost';
-  size?: 'default' | 'sm' | 'lg' | 'icon';
+  variant?: 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
 }
 
 interface SubscriptionSettings {
@@ -52,7 +52,7 @@ export const SubscriptionButton: React.FC<SubscriptionButtonProps> = ({
   onUpdateSettings,
   className,
   variant = 'outline',
-  size = 'default',
+  size = 'md',
 }) => {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -130,7 +130,7 @@ export const SubscriptionButton: React.FC<SubscriptionButtonProps> = ({
       {isSubscribed && (
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button variant="ghost" size="sm" className="h-8 w-8">
               <span className="sr-only">Subscription settings</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -164,7 +164,7 @@ export const SubscriptionButton: React.FC<SubscriptionButtonProps> = ({
                   </Label>
                   <Select
                     value={settings.notificationMode}
-                    onValueChange={(value) =>
+                    onValueChange={(value: string) =>
                       handleSettingsChange({ notificationMode: value as NotificationMode })
                     }
                   >
@@ -234,7 +234,7 @@ export const SubscriptionButton: React.FC<SubscriptionButtonProps> = ({
               <Separator />
 
               <Button
-                variant="destructive"
+                variant="danger"
                 size="sm"
                 className="w-full"
                 onClick={() => {

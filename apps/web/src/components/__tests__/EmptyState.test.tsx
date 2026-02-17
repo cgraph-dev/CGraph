@@ -9,7 +9,7 @@ import {
   EmptyForums,
   EmptySearchResults,
   EmptyNotifications,
-} from '../EmptyState';
+} from '../feedback/EmptyState';
 
 describe('EmptyState', () => {
   it('renders the title', () => {

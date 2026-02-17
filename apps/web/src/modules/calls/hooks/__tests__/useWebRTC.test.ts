@@ -128,7 +128,7 @@ describe('useWebRTC', () => {
   });
 
   it('shows toast error when startCall returns no room', async () => {
-    const { toast } = await import('@/components/Toast');
+    const { toast } = await import('@/components/feedback/Toast');
     mockStartCall.mockResolvedValueOnce(null);
 
     const { result } = renderHook(() => useWebRTC());
@@ -165,7 +165,7 @@ describe('useWebRTC', () => {
   });
 
   it('shows toast error when answerCall fails', async () => {
-    const { toast } = await import('@/components/Toast');
+    const { toast } = await import('@/components/feedback/Toast');
     mockAnswerCall.mockResolvedValueOnce(false);
 
     const { result } = renderHook(() => useWebRTC());

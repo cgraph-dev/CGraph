@@ -25,6 +25,7 @@ export const STATUS_COLORS = {
   scheduled: 'bg-blue-500/20 text-blue-400',
   draft: 'bg-gray-500/20 text-gray-400',
   ended: 'bg-red-500/20 text-red-400',
+  paused: 'bg-yellow-500/20 text-yellow-400',
 } as const;
 
 export const EVENT_FILTERS = ['All', 'Active', 'Scheduled', 'Draft', 'Ended'] as const;

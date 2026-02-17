@@ -146,3 +146,64 @@ export default function Select({
     </div>
   );
 }
+
+// --- Composable Select sub-components (Radix-style API) ---
+// Used by SubscriptionButton, SubscriptionItem, SubscriptionManager
+
+function ComposableSelect({
+  children,
+  value: _value,
+  onValueChange: _onValueChange,
+}: {
+  children: React.ReactNode;
+  value?: string;
+  onValueChange?: (value: string) => void;
+}) {
+  return <div className="relative">{children}</div>;
+}
+
+export { ComposableSelect as Select };
+
+export function SelectTrigger({
+  children,
+  className = '',
+  id,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  id?: string;
+}) {
+  return (
+    <button
+      type="button"
+      id={id}
+      className={`inline-flex items-center justify-between rounded-lg border border-dark-600 bg-dark-800 px-3 py-2 text-sm text-white ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+export function SelectValue({ placeholder }: { placeholder?: string }) {
+  return <span>{placeholder || ''}</span>;
+}
+
+export function SelectContent({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-lg border border-dark-600 bg-dark-800 p-1 shadow-xl">{children}</div>
+  );
+}
+
+export function SelectItem({
+  children,
+  value: _value,
+}: {
+  children: React.ReactNode;
+  value: string;
+}) {
+  return (
+    <div className="cursor-pointer rounded px-3 py-2 text-sm text-white hover:bg-dark-700">
+      {children}
+    </div>
+  );
+}

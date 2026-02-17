@@ -81,7 +81,7 @@ export const SubscriptionItem: React.FC<SubscriptionItemProps> = ({
       <div className="flex items-center gap-2">
         <Select
           value={subscription.notificationMode}
-          onValueChange={(value) =>
+          onValueChange={(value: string) =>
             onUpdate(subscription.id, { notificationMode: value as NotificationMode })
           }
         >
@@ -98,7 +98,7 @@ export const SubscriptionItem: React.FC<SubscriptionItemProps> = ({
 
         <Button
           variant="ghost"
-          size="icon"
+          size="sm"
           className="text-destructive hover:text-destructive hover:bg-destructive/10"
           onClick={() => onDelete(subscription.id)}
         >

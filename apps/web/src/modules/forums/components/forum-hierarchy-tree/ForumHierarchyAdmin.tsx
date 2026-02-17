@@ -108,7 +108,7 @@ export function ForumHierarchyAdmin({ tree, onRefresh }: ForumHierarchyAdminProp
 
   // ----- Reorder -----
   const handleReorder = useCallback(
-    async (parentId: string, childIds: string[]) => {
+    async (_parentId: string, childIds: string[]) => {
       try {
         // Backend expects per-forum PUT /api/v1/forums/:id/reorder with { position: int }
         // Send a position update for each child in the new order

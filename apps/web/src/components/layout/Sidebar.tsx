@@ -93,8 +93,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         showUserStatus={showUserStatus}
         onGroupSelect={onGroupSelect}
         className={className}
-        groups={groups}
-        user={user}
+        groups={groups as unknown as Array<{ id: string; name: string; iconUrl?: string }>}
+        user={user as unknown as React.ComponentProps<typeof FloatingSidebar>['user']}
         isSubscribed={isSubscribed}
         quickActions={quickActions}
       />

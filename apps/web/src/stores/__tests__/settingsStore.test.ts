@@ -47,6 +47,13 @@ describe('Settings Store', () => {
           allowMessageRequests: true,
           showInSearch: true,
           allowGroupInvites: 'anyone',
+          showBio: true,
+          showPostCount: true,
+          showJoinDate: true,
+          showLastActive: true,
+          showSocialLinks: true,
+          showActivity: true,
+          showInMemberList: true,
         },
         appearance: {
           theme: 'system',
