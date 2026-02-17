@@ -110,9 +110,15 @@ export function ForumHierarchyAdmin({ tree, onRefresh }: ForumHierarchyAdminProp
   const handleReorder = useCallback(
     async (parentId: string, childIds: string[]) => {
       try {
-        await api.put(`/api/v1/forums/${parentId}/reorder`, {
-          child_ids: childIds,
-        });
+        // Backend expects per-forum PUT /api/v1/forums/:id/reorder with { position: int }
+        // Send a position update for each child in the new order
+        await Promise.all(
+          childIds.map((forumId, index) =>
+            api.put(`/api/v1/forums/${forumId}/reorder`, {
+              position: index,
+            })
+          )
+        );
         toast.success('Order saved');
         onRefresh();
       } catch {
@@ -145,15 +151,13 @@ export function ForumHierarchyAdmin({ tree, onRefresh }: ForumHierarchyAdminProp
     [handleReorder]
   );
 
-  // Flatten tree for parent selection
+  // Flatten tree for parent selection in move modal
   const flattenTree = (nodes: ForumNode[], depth = 0): { node: ForumNode; depth: number }[] => {
     return nodes.flatMap((n) => [
       { node: n, depth },
       ...(n.children ? flattenTree(n.children, depth + 1) : []),
     ]);
   };
-  // Available for drag-and-drop feature
-  flattenTree(tree).filter((f) => f.node.forum_type === 'category' || f.node.children?.length);
 
   return (
     <div className="space-y-4">

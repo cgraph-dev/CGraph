@@ -42,6 +42,13 @@ export interface PrivacySettings {
   allowMessageRequests: boolean;
   showInSearch: boolean;
   allowGroupInvites: GroupInvitePermission;
+  showBio: boolean;
+  showPostCount: boolean;
+  showJoinDate: boolean;
+  showLastActive: boolean;
+  showSocialLinks: boolean;
+  showActivity: boolean;
+  showInMemberList: boolean;
 }
 
 export interface AppearanceSettings {
@@ -103,6 +110,13 @@ export const DEFAULT_PRIVACY_SETTINGS: PrivacySettings = {
   allowMessageRequests: true,
   showInSearch: true,
   allowGroupInvites: 'anyone',
+  showBio: true,
+  showPostCount: true,
+  showJoinDate: true,
+  showLastActive: true,
+  showSocialLinks: true,
+  showActivity: true,
+  showInMemberList: true,
 };
 
 export const DEFAULT_APPEARANCE_SETTINGS: AppearanceSettings = {
@@ -164,6 +178,13 @@ export interface ApiSettings {
   allow_message_requests?: boolean;
   show_in_search?: boolean;
   allow_group_invites?: GroupInvitePermission;
+  show_bio?: boolean;
+  show_post_count?: boolean;
+  show_join_date?: boolean;
+  show_last_active?: boolean;
+  show_social_links?: boolean;
+  show_activity?: boolean;
+  show_in_member_list?: boolean;
 
   // Appearance
   theme?: Theme;

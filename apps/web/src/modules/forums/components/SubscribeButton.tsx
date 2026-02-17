@@ -81,13 +81,13 @@ export function SubscribeButton({
         if (sub) {
           if (level === sub.notification_level) {
             // Unsubscribe
-            await api.delete(`/api/forum/subscriptions/${sub.id}`);
+            await api.delete(`/api/v1/forum/subscriptions/${sub.id}`);
             setSub(null);
             onSubscriptionChange?.(null);
             toast.success('Unsubscribed');
           } else {
             // Update level
-            const res = await api.put(`/api/forum/subscriptions/${sub.id}`, {
+            const res = await api.put(`/api/v1/forum/subscriptions/${sub.id}`, {
               notification_level: level,
             });
             const updated = {
@@ -104,7 +104,7 @@ export function SubscribeButton({
             notification_level: level,
             [`${targetType}_id`]: targetId,
           };
-          const res = await api.post('/api/forum/subscriptions', payload);
+          const res = await api.post('/api/v1/forum/subscriptions', payload);
           const created = {
             id: res.data?.subscription?.id,
             notification_level: level,

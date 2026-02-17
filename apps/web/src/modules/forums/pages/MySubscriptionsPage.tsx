@@ -44,7 +44,7 @@ export function MySubscriptionsPage() {
   const fetchSubscriptions = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await api.get('/api/forum/subscriptions');
+      const res = await api.get('/api/v1/forum/subscriptions');
       setSubscriptions(res.data?.subscriptions ?? []);
     } catch {
       toast.error('Failed to load subscriptions');
@@ -60,7 +60,7 @@ export function MySubscriptionsPage() {
   const handleUnsubscribe = useCallback(async (id: string) => {
     setDeleting(id);
     try {
-      await api.delete(`/api/forum/subscriptions/${id}`);
+      await api.delete(`/api/v1/forum/subscriptions/${id}`);
       setSubscriptions((s) => s.filter((sub) => sub.id !== id));
       toast.success('Unsubscribed');
     } catch {
@@ -72,7 +72,7 @@ export function MySubscriptionsPage() {
 
   const handleUpdateLevel = useCallback(async (id: string, level: 'all' | 'mentions' | 'none') => {
     try {
-      await api.put(`/api/forum/subscriptions/${id}`, { notification_level: level });
+      await api.put(`/api/v1/forum/subscriptions/${id}`, { notification_level: level });
       setSubscriptions((s) =>
         s.map((sub) => (sub.id === id ? { ...sub, notification_level: level } : sub))
       );

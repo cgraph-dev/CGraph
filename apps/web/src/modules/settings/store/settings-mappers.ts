@@ -48,6 +48,13 @@ export function mapSettingsFromApi(data: ApiSettings): UserSettings {
         data.allow_message_requests ?? DEFAULT_PRIVACY_SETTINGS.allowMessageRequests,
       showInSearch: data.show_in_search ?? DEFAULT_PRIVACY_SETTINGS.showInSearch,
       allowGroupInvites: data.allow_group_invites ?? DEFAULT_PRIVACY_SETTINGS.allowGroupInvites,
+      showBio: data.show_bio ?? DEFAULT_PRIVACY_SETTINGS.showBio,
+      showPostCount: data.show_post_count ?? DEFAULT_PRIVACY_SETTINGS.showPostCount,
+      showJoinDate: data.show_join_date ?? DEFAULT_PRIVACY_SETTINGS.showJoinDate,
+      showLastActive: data.show_last_active ?? DEFAULT_PRIVACY_SETTINGS.showLastActive,
+      showSocialLinks: data.show_social_links ?? DEFAULT_PRIVACY_SETTINGS.showSocialLinks,
+      showActivity: data.show_activity ?? DEFAULT_PRIVACY_SETTINGS.showActivity,
+      showInMemberList: data.show_in_member_list ?? DEFAULT_PRIVACY_SETTINGS.showInMemberList,
     },
     appearance: {
       theme: data.theme ?? DEFAULT_APPEARANCE_SETTINGS.theme,
@@ -106,6 +113,13 @@ export function mapSettingsToApi(settings: Partial<UserSettings>): Record<string
       result.allow_message_requests = p.allowMessageRequests;
     if (p.showInSearch !== undefined) result.show_in_search = p.showInSearch;
     if (p.allowGroupInvites !== undefined) result.allow_group_invites = p.allowGroupInvites;
+    if (p.showBio !== undefined) result.show_bio = p.showBio;
+    if (p.showPostCount !== undefined) result.show_post_count = p.showPostCount;
+    if (p.showJoinDate !== undefined) result.show_join_date = p.showJoinDate;
+    if (p.showLastActive !== undefined) result.show_last_active = p.showLastActive;
+    if (p.showSocialLinks !== undefined) result.show_social_links = p.showSocialLinks;
+    if (p.showActivity !== undefined) result.show_activity = p.showActivity;
+    if (p.showInMemberList !== undefined) result.show_in_member_list = p.showInMemberList;
   }
 
   if (settings.appearance) {

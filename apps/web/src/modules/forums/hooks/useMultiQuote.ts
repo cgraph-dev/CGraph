@@ -44,14 +44,8 @@ export function useMultiQuote(): UseMultiQuoteReturn {
 
       for (const postId of multiQuoteBuffer) {
         try {
-          // Try thread posts first, then regular posts
-          let res;
-          try {
-            res = await api.get(`/api/v1/posts/${postId}`);
-          } catch {
-            // Fall back to accessing via thread post endpoint
-            res = await api.get(`/api/v1/thread-posts/${postId}`);
-          }
+          // Standalone post lookup endpoint
+          const res = await api.get(`/api/v1/posts/${postId}`);
 
           const post = res.data?.data ?? res.data;
           if (post) {

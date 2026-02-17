@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.29** | Generated: February 17, 2026
+> **Version: 0.9.31** | Generated: February 17, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 

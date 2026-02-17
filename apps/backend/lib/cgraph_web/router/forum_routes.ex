@@ -14,6 +14,9 @@ defmodule CGraphWeb.Router.ForumRoutes do
         # Home feed - posts from forums the user has joined (requires auth)
         get "/forums/feed/home", ForumController, :home_feed
 
+        # Standalone post lookup (used by multi-quote and cross-references)
+        get "/posts/:id", PostController, :show_by_id
+
         # Vote eligibility check
         get "/forums/vote-eligibility", ForumController, :vote_eligibility
 

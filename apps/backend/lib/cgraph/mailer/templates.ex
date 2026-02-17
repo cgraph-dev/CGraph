@@ -433,23 +433,24 @@ defmodule CGraph.Mailer.Templates do
     trending = Map.get(data, :trending_posts, [])
     achievements = Map.get(data, :new_achievements, [])
 
-    messages_sent = Map.get(stats, :messages_sent, 0)
+    messages_sent = Map.get(stats, :new_messages, 0)
     xp_earned = Map.get(stats, :xp_earned, 0)
-    unread = Map.get(stats, :unread_count, 0)
+    unread_messages = Map.get(data, :unread_messages, [])
+    unread = length(unread_messages)
 
     trending_html =
       trending
       |> Enum.take(5)
       |> Enum.map(fn post ->
         title = html_escape(Map.get(post, :title, "Post"))
-        votes = Map.get(post, :votes, 0)
+        replies = Map.get(post, :replies, 0)
         """
         <tr>
           <td style="padding: 10px 16px; color: #4a5568; font-size: 14px; border-bottom: 1px solid #e2e8f0;">
             #{title}
           </td>
           <td style="padding: 10px 16px; color: #6366f1; font-size: 14px; text-align: right; border-bottom: 1px solid #e2e8f0;">
-            #{votes} votes
+            #{replies} replies
           </td>
         </tr>
         """
@@ -706,14 +707,15 @@ defmodule CGraph.Mailer.Templates do
     trending = Map.get(data, :trending_posts, [])
     achievements = Map.get(data, :new_achievements, [])
 
-    messages_sent = Map.get(stats, :messages_sent, 0)
+    messages_sent = Map.get(stats, :new_messages, 0)
     xp_earned = Map.get(stats, :xp_earned, 0)
-    unread = Map.get(stats, :unread_count, 0)
+    unread_messages = Map.get(data, :unread_messages, [])
+    unread = length(unread_messages)
 
     trending_text =
       trending
       |> Enum.take(5)
-      |> Enum.map(fn p -> "- #{Map.get(p, :title, "Post")} (#{Map.get(p, :votes, 0)} votes)" end)
+      |> Enum.map(fn p -> "- #{Map.get(p, :title, "Post")} (#{Map.get(p, :replies, 0)} replies)" end)
       |> Enum.join("\n")
 
     achievements_text =

@@ -84,6 +84,11 @@ defmodule CGraph.Accounts.User do
     field :oauth_uid, :string       # User ID from the primary OAuth provider
     field :oauth_data, :map         # JSON map of all linked OAuth accounts with metadata
 
+    # Email Digest Preferences
+    field :email_digest_enabled, :boolean, default: true
+    field :email_digest_frequency, :string, default: "weekly"
+    field :last_digest_sent_at, :utc_datetime
+
     # Tracking
     field :last_seen_at, :utc_datetime
     field :last_active_at, :utc_datetime

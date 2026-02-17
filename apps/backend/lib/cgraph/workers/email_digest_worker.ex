@@ -29,6 +29,12 @@ defmodule CGraph.Workers.EmailDigestWorker do
   alias CGraph.Accounts.User
 
   @impl Oban.Worker
+  def perform(%Oban.Job{args: args}) when args == %{} or not is_map_key(args, "user_id") do
+    # Cron-triggered: dispatch digest emails for all eligible users
+    enqueue_all_digests()
+  end
+
+  @impl Oban.Worker
   def perform(%Oban.Job{args: %{"user_id" => user_id}}) do
     with {:ok, user} <- Accounts.get_user(user_id),
          true <- should_send_digest?(user),
@@ -73,8 +79,8 @@ defmodule CGraph.Workers.EmailDigestWorker do
         |> new(scheduled_at: now)
       end)
 
-    {count, _} = Oban.insert_all(jobs)
-    {:ok, "Enqueued #{count} digest emails"}
+    results = Oban.insert_all(jobs)
+    {:ok, "Enqueued #{length(results)} digest emails"}
   end
 
   # Private Functions

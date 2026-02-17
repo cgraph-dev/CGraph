@@ -1,7 +1,7 @@
 defmodule CGraph.MixProject do
   use Mix.Project
 
-  @version "0.9.28"
+  @version "0.9.31"
   # Compatible with Elixir 1.17+ for CI, and 1.19+ for local development
   @elixir_version "~> 1.17"
 

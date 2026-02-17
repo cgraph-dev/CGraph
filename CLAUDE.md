@@ -42,7 +42,7 @@ forums, and gamification. Features include post-quantum E2EE (PQXDH + Triple Rat
 and AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a
 karma-based forum system.
 
-**Version**: 0.9.30  
+**Version**: 0.9.31  
 **Last Updated**: February 17, 2026  
 **Architecture Score**: 9.0/10 (see CURRENT_STATE_DASHBOARD.md for breakdown)  
 **License**: Proprietary (see LICENSE)
@@ -916,8 +916,8 @@ The following areas are scaffolded but not fully implemented:
 - **Friend suggestions**: `dismiss_friend_suggestion/2` always returns `:ok` (no-op)
 - **Storage tracking**: `Storage.get_user_storage_used/1` returns `0` (not implemented)
 - **Group auto-rules**: `Forums.GroupAutoRule` permission check always returns `true`
-- **Email digests**: `EmailDigestWorker` now has full HTML + text templates, cron schedule, and
-  queue fix
+- **Email digests**: `EmailDigestWorker` has full HTML + text templates, cron schedule, and queue
+  fix. Standalone route `GET /api/v1/posts/:id` added for cross-referencing.
 - **AI integration**: Explicitly disabled; placeholder architecture doc exists
 - **Social Hub mock data**: Notifications and Discover tabs in web app use `MOCK_NOTIFICATIONS` /
   `MOCK_SEARCH_RESULTS` from `mock-data.ts` despite real stores existing
@@ -951,6 +951,38 @@ The following areas are scaffolded but not fully implemented:
   (per-post toggle), `useMultiQuote.ts` hook (buffer → editor connection).
 - **Files changed**: 16 files (7 backend, 9 frontend), 11 new files created
 - **Feature completion**: 62/69 → **69/69 (100%)**
+
+### Session 27 Review Fixes (v0.9.31 — critical bug fixes for features 1–7)
+
+Comprehensive audit found 6 of 7 features had bugs preventing end-to-end functionality. Fixes:
+
+- **Email Digest (#1)**:
+  - Added missing `email_digest_enabled`, `email_digest_frequency`, `last_digest_sent_at` fields to
+    User Ecto schema (migration existed but schema didn't declare them → compilation failure)
+  - Added cron dispatcher `perform/1` clause for empty args (Oban Cron fires `%{}`, not
+    `%{"user_id" => id}` → `FunctionClauseError` every run)
+  - Fixed `Oban.insert_all/1` return: returns `[%Job{}]` list, not `{count, _}` tuple → `MatchError`
+  - Fixed template data key mismatches: `messages_sent` → `new_messages`, computed `unread_count`
+    from `length(data.unread_messages)`, `votes` → `replies` for trending posts (all stats showed 0)
+- **Forum Hierarchy Admin (#3)**: Fixed reorder API contract mismatch — frontend sent
+  `{ child_ids: string[] }` but backend expects per-forum `PUT /forums/:id/reorder` with
+  `{ position: int }`. Now sends individual position updates via `Promise.all`. Removed dead code.
+- **Profile Visibility (#5)**: Added 7 missing fields (`showBio`, `showPostCount`, `showJoinDate`,
+  `showLastActive`, `showSocialLinks`, `showActivity`, `showInMemberList`) to `PrivacySettings`
+  TypeScript interface, `DEFAULT_PRIVACY_SETTINGS`, `mapApiToSettings`, and `mapSettingsToApi`.
+  Without these, toggles appeared to work (optimistic UI) but values were silently dropped and never
+  reached the backend.
+- **Forum Subscriptions (#6)**: Fixed all API paths from `/api/forum/subscriptions` to
+  `/api/v1/forum/subscriptions` in `SubscribeButton.tsx` and `MySubscriptionsPage.tsx` (all
+  operations returned 404).
+- **Multi-Quote (#7)**: Added standalone `GET /api/v1/posts/:id` route + `show_by_id` controller
+  action so multi-quote can fetch posts by ID without knowing the parent forum. Previously tried
+  non-existent `/api/v1/posts/:id` and `/api/v1/thread-posts/:id` → always fell through to
+  placeholder text.
+- **Push Notification Prompt (#2)**: Confirmed working, no fixes needed.
+- **Forum Permissions Admin (#4)**: Confirmed working (group discovery is fragile but permissions
+  save correctly).
+- **Files changed**: 12 files (4 backend, 8 frontend)
 
 ### Sessions 22–24 Changes (v0.9.29 — platform gap completion + review)
 

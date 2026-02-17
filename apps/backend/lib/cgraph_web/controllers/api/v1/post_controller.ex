@@ -48,6 +48,19 @@ defmodule CGraphWeb.API.V1.PostController do
   end
 
   @doc """
+  Get a specific post by ID (standalone, no forum_id required).
+  GET /api/v1/posts/:id
+
+  Used by multi-quote and other features that reference posts by ID
+  without knowing the parent forum.
+  """
+  def show_by_id(conn, %{"id" => post_id}) do
+    with {:ok, post} <- Forums.Posts.get_post(post_id) do
+      render(conn, :show, post: post)
+    end
+  end
+
+  @doc """
   Get a specific post.
   GET /api/v1/forums/:forum_id/posts/:id
   """
