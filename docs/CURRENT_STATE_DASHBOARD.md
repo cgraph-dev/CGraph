@@ -294,4 +294,4 @@ apps/mobile/src/screens/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.29 • Updated: February 17, 2026</sub>
+<sub>**CGraph Dashboard** • Version 0.9.31 • Updated: February 17, 2026</sub>

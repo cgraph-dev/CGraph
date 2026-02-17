@@ -86,11 +86,14 @@ function normalizeReactions(raw: unknown): { emoji: string; count: number; hasRe
 
 // ── Store Interface ────────────────────────────────────────────────────
 
+const MAX_CHANNEL_MESSAGES = 500;
+
 interface GroupState {
   groups: Group[];
   activeGroupId: string | null;
   activeChannelId: string | null;
   channelMessages: Record<string, ChannelMessage[]>;
+  channelMessageIds: Record<string, Set<string>>;
   members: Record<string, GroupMember[]>;
   isLoadingGroups: boolean;
   isLoadingMessages: boolean;
@@ -115,6 +118,8 @@ interface GroupState {
   addChannelMessage: (message: ChannelMessage) => void;
   updateChannelMessage: (message: ChannelMessage) => void;
   removeChannelMessage: (messageId: string, channelId: string) => void;
+  addReactionToChannelMessage: (messageId: string, emoji: string, userId: string) => void;
+  removeReactionFromChannelMessage: (messageId: string, emoji: string, userId: string) => void;
   setTypingUser: (channelId: string, userId: string, isTyping: boolean) => void;
 
   // WebSocket
@@ -128,6 +133,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
   activeGroupId: null,
   activeChannelId: null,
   channelMessages: {},
+  channelMessageIds: {},
   members: {},
   isLoadingGroups: false,
   isLoadingMessages: false,
@@ -246,13 +252,26 @@ export const useGroupStore = create<GroupState>((set, get) => ({
 
   addChannelMessage: (message: ChannelMessage) => {
     set((state) => {
-      const existing = state.channelMessages[message.channelId] || [];
-      if (existing.some((m) => m.id === message.id)) return state;
+      const chId = message.channelId;
+      const idSet = state.channelMessageIds[chId] || new Set<string>();
+      if (idSet.has(message.id)) return state;
+
+      const newSet = new Set(idSet);
+      newSet.add(message.id);
+
+      let updated = [...(state.channelMessages[chId] || []), message];
+      // Prune oldest messages if exceeding cap
+      if (updated.length > MAX_CHANNEL_MESSAGES) {
+        const pruned = updated.slice(updated.length - MAX_CHANNEL_MESSAGES);
+        const prunedSet = new Set(pruned.map((m) => m.id));
+        return {
+          channelMessages: { ...state.channelMessages, [chId]: pruned },
+          channelMessageIds: { ...state.channelMessageIds, [chId]: prunedSet },
+        };
+      }
       return {
-        channelMessages: {
-          ...state.channelMessages,
-          [message.channelId]: [...existing, message],
-        },
+        channelMessages: { ...state.channelMessages, [chId]: updated },
+        channelMessageIds: { ...state.channelMessageIds, [chId]: newSet },
       };
     });
   },
@@ -284,6 +303,46 @@ export const useGroupStore = create<GroupState>((set, get) => ({
         ? [...new Set([...current, userId])]
         : current.filter((id) => id !== userId);
       return { typingUsers: { ...state.typingUsers, [channelId]: updated } };
+    });
+  },
+
+  addReactionToChannelMessage: (messageId: string, emoji: string, userId: string) => {
+    set((state) => {
+      const updated: Record<string, ChannelMessage[]> = {};
+      for (const [chId, msgs] of Object.entries(state.channelMessages)) {
+        updated[chId] = msgs.map((m) => {
+          if (m.id !== messageId) return m;
+          const existing = m.reactions.find((r) => r.emoji === emoji);
+          if (existing) {
+            return {
+              ...m,
+              reactions: m.reactions.map((r) =>
+                r.emoji === emoji ? { ...r, count: r.count + 1, hasReacted: true } : r
+              ),
+            };
+          }
+          return { ...m, reactions: [...m.reactions, { emoji, count: 1, hasReacted: true }] };
+        });
+      }
+      return { channelMessages: { ...state.channelMessages, ...updated } };
+    });
+  },
+
+  removeReactionFromChannelMessage: (messageId: string, emoji: string, userId: string) => {
+    set((state) => {
+      const updated: Record<string, ChannelMessage[]> = {};
+      for (const [chId, msgs] of Object.entries(state.channelMessages)) {
+        updated[chId] = msgs.map((m) => {
+          if (m.id !== messageId) return m;
+          return {
+            ...m,
+            reactions: m.reactions
+              .map((r) => (r.emoji === emoji ? { ...r, count: Math.max(0, r.count - 1) } : r))
+              .filter((r) => r.count > 0),
+          };
+        });
+      }
+      return { channelMessages: { ...state.channelMessages, ...updated } };
     });
   },
 
@@ -321,6 +380,24 @@ export const useGroupStore = create<GroupState>((set, get) => ({
           const userId = (data.user_id || data.userId) as string;
           const isTyping = (data.typing ?? data.is_typing ?? false) as boolean;
           if (userId) useGroupStore.getState().setTypingUser(channelId, userId, isTyping);
+          break;
+        }
+        case 'reaction_added': {
+          const msgId = (data.message_id || data.messageId) as string;
+          const emoji = data.emoji as string;
+          const userId = (data.user_id || data.userId) as string;
+          if (msgId && emoji && userId) {
+            useGroupStore.getState().addReactionToChannelMessage(msgId, emoji, userId);
+          }
+          break;
+        }
+        case 'reaction_removed': {
+          const msgId = (data.message_id || data.messageId) as string;
+          const emoji = data.emoji as string;
+          const userId = (data.user_id || data.userId) as string;
+          if (msgId && emoji && userId) {
+            useGroupStore.getState().removeReactionFromChannelMessage(msgId, emoji, userId);
+          }
           break;
         }
       }

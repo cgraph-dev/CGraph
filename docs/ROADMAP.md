@@ -1,6 +1,7 @@
 # CGraph Product Roadmap
 
-> **Version: 0.9.31** | Last Updated: July 2025 **Status:** Pre-Launch → Public Beta Target: Q3 2025
+> **Version: 0.9.31** | Last Updated: February 2026 **Status:** Pre-Launch → Public Beta Target: Q2
+> 2026
 
 ---
 
@@ -15,24 +16,24 @@ default** and modern customization.
 ## Release Timeline
 
 ```
-            2025                                        2026
+            2026                                        2027
     ┌───────────────────────────────────────────┬──────────────────┐
-    │ Q3 2025     │ Q4 2025     │ Q1 2026       │ Q2 2026+         │
+    │ Q1 2026     │ Q2 2026     │ Q3 2026       │ Q4 2026+         │
     ├─────────────┼─────────────┼───────────────┼──────────────────┤
-    │ v1.0        │ v1.1        │ v1.2          │ v2.0+            │
-    │ Public Beta │ Growth      │ Enterprise    │ Long-term        │
+    │ v0.9.31     │ v1.0        │ v1.1          │ v1.2             │
+    │ Hardening   │ Public Beta │ Growth        │ Enterprise       │
     │             │             │               │                  │
-    │ • Security  │ • Mobile GA │ • Admin       │ • AI features    │
-    │   audit     │ • Bot API   │   console     │ • Federation     │
-    │ • Stripe    │ • Search    │ • SSO/SAML    │ • Desktop apps   │
-    │ • Mobile    │ • Analytics │ • Compliance  │                  │
-    │   beta      │             │               │                  │
+    │ • Security  │ • Stripe    │ • Mobile GA   │ • Admin          │
+    │   audit     │ • Mobile    │ • Bot API     │   console        │
+    │ • Stores    │   beta      │ • Search      │ • SSO/SAML       │
+    │ • Polish    │ • Testing   │ • Analytics   │ • Compliance     │
+    │             │             │               │                  │
     └─────────────┴─────────────┴───────────────┴──────────────────┘
 ```
 
 ---
 
-## Current Release: v0.9.31 (July 2025)
+## Current Release: v0.9.31 (February 2026)
 
 > **Note:** 69/69 planned features are implemented (100%). Many features previously listed under
 > v1.0/v1.1 milestones shipped in v0.9.x releases (Polls, Events, Reactions, Moderation Tools, Push
@@ -78,7 +79,7 @@ default** and modern customization.
 
 ---
 
-## v0.9.9 - Pre-Launch Hardening (February 2026)
+## v0.9.32 - Pre-Launch Hardening (March 2026)
 
 **Theme:** Security audit, bug fixes, performance
 
@@ -109,11 +110,11 @@ After this date, only the following are allowed:
 
 ---
 
-## v1.0.0 - Public Beta Launch (September 2025)
+## v1.0.0 - Public Beta Launch (June 2026)
 
 **Theme:** Stability, testing, mobile beta, public launch
 
-**Target Date:** September 2025
+**Target Date:** June 2026
 
 ### Remaining Work for v1.0
 
@@ -140,7 +141,7 @@ After this date, only the following are allowed:
 
 ---
 
-## v1.1.0 - Community Growth (December 2025)
+## v1.1.0 - Community Growth (September 2026)
 
 **Theme:** Mobile GA, engagement polish, API ecosystem
 
@@ -159,7 +160,7 @@ After this date, only the following are allowed:
 
 ---
 
-## v1.2.0 - Enterprise Ready (Q1 2026)
+## v1.2.0 - Enterprise Ready (Q4 2026)
 
 **Theme:** Enterprise features, compliance
 
@@ -289,4 +290,4 @@ We prioritize based on:
 
 ---
 
-<sub>**CGraph Product Roadmap** • Version 0.9.31 • Last updated: July 2025</sub>
+<sub>**CGraph Product Roadmap** • Version 0.9.31 • Last updated: February 2026</sub>

@@ -888,6 +888,7 @@ class SocketManager {
         'message_unpinned',
         'reaction_added',
         'reaction_removed',
+        'typing',
       ].forEach((event) => {
         channel.on(event, (payload: unknown) => {
           // Track sequence number for session resumption
@@ -900,12 +901,11 @@ class SocketManager {
         });
       });
 
-      // Set up typing indicator listener for conversation channels
-      if (topic.startsWith('conversation:')) {
-        const conversationId = topic.replace('conversation:', '');
+      // Internal typing state tracking for all channel types
+      {
+        const entityId = topic.includes(':') ? topic.split(':').slice(1).join(':') : topic;
 
         channel.on('typing', (payload: unknown) => {
-          // Handle both key formats from backend
           const typedPayload = payload as {
             user_id: string;
             username?: string;
@@ -916,7 +916,7 @@ class SocketManager {
           const userId = typedPayload.user_id;
 
           logger.log(`[${topic}] Typing indicator:`, { userId, isTyping });
-          this.updateTypingState(conversationId, userId, isTyping, typedPayload.username);
+          this.updateTypingState(entityId, userId, isTyping, typedPayload.username);
         });
       }
     }

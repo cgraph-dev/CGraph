@@ -64,7 +64,6 @@ interface GamificationState {
   xp: number;
   level: number;
   coins: number;
-  karma: number;
   streak: number;
   levelProgress: number;
   xpForNextLevel: number;
@@ -103,7 +102,6 @@ const INITIAL_STATE = {
   xp: 0,
   level: 1,
   coins: 0,
-  karma: 0,
   streak: 0,
   levelProgress: 0,
   xpForNextLevel: 100,

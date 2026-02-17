@@ -2,8 +2,9 @@
  * Mobile Notification Store
  *
  * Real Zustand store for push/in-app notifications.
- * Leverages the existing notificationsService for API calls and
- * socketManager for real-time notification delivery.
+ * Leverages the existing API client for notification CRUD.
+ * Real-time delivery is handled via the addNotification mutation,
+ * called from the socket layer when notification events arrive.
  *
  * @module stores/notificationStore
  * @since v0.9.31

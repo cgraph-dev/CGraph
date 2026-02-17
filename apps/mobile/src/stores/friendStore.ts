@@ -2,8 +2,9 @@
  * Mobile Friend Store
  *
  * Real Zustand store for friend management.
- * Leverages the existing friendsService for API calls and
- * socketManager for real-time friend presence.
+ * Leverages the existing API client for friend CRUD operations.
+ * Real-time presence updates are received via store mutations
+ * called from the socket layer (e.g., updateFriendStatus, addRequest).
  *
  * @module stores/friendStore
  * @since v0.9.31
@@ -11,7 +12,6 @@
 
 import { create } from 'zustand';
 import api from '../lib/api';
-import socketManager from '../lib/socket';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -172,7 +172,9 @@ export const useFriendStore = create<FriendState>((set, get) => ({
       const body: Record<string, string> = {};
       if (identifier.includes('@')) {
         body.email = identifier;
-      } else if (identifier.match(/^[0-9a-f-]{36}$/i)) {
+      } else if (
+        identifier.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
+      ) {
         body.user_id = identifier;
       } else {
         body.username = identifier;

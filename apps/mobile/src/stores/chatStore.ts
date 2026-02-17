@@ -501,7 +501,6 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   subscribeToConversation: (conversationId: string): (() => void) => {
     const topic = `conversation:${conversationId}`;
-    const store = get();
 
     // Join the channel
     socketManager.joinChannel(topic);

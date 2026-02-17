@@ -7,7 +7,7 @@
  * @module stores
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 // ─── Chat ────────────────────────────────────────────────────────────────────
 export { useChatStore, useConversations, useActiveConversationId } from './chatStore';
@@ -173,7 +173,10 @@ export function useCommunityFacade() {
   return useMemo(
     () => ({
       groups,
-      channels: [] as unknown[], // TODO: wire to group channels when active
+      channels: activeGroupId
+        ? ((groups.find((g) => g.id === activeGroupId) as unknown as Record<string, unknown>)
+            ?.channels as unknown[]) || []
+        : [],
       forums: [] as unknown[], // TODO: wire to forum store
       activeGroup: activeGroupId ? groups.find((g) => g.id === activeGroupId) || null : null,
       activeChannel: activeChannelId,
@@ -192,7 +195,7 @@ export function useCommunityFacade() {
 export function useGamificationFacade() {
   const xp = _useGamification((s) => s.xp);
   const level = _useGamification((s) => s.level);
-  const karma = _useGamification((s) => s.karma);
+  const coins = _useGamification((s) => s.coins);
   const achievements = _useGamification((s) => s.achievements);
   const streak = _useGamification((s) => s.streak);
   const fetchGamificationData = _useGamification((s) => s.fetchGamificationData);
@@ -201,13 +204,13 @@ export function useGamificationFacade() {
     () => ({
       xp,
       level,
-      karma,
+      coins,
       achievements,
       badges: achievements.filter((a) => a.unlocked),
       streak,
       fetchGamificationData,
     }),
-    [xp, level, karma, achievements, streak, fetchGamificationData]
+    [xp, level, coins, achievements, streak, fetchGamificationData]
   );
 }
 
@@ -294,13 +297,6 @@ export function useUIFacade() {
 // Initialization helper — call once in App.tsx
 // ---------------------------------------------------------------------------
 
-import { useAuthStore } from './authStore';
-import { useThemeStore } from './themeStore';
-import { useSettingsStore } from './settingsStore';
-import { useCustomizationStore } from './customizationStore';
-import { useChatStore } from './chatStore';
-import { useGroupStore } from './groupStore';
-import { useGamificationStore } from './gamificationStore';
 import { useFriendStore } from './friendStore';
 import { useNotificationStore } from './notificationStore';
 
@@ -315,19 +311,19 @@ import { useNotificationStore } from './notificationStore';
 export async function initializeStores(): Promise<void> {
   // Phase 1: Core stores — block on these
   await Promise.all([
-    useThemeStore.getState().initialize(),
-    useSettingsStore.getState().initialize(),
-    useAuthStore.getState().initialize(),
-    useCustomizationStore.getState().loadTheme(),
+    _useTheme.getState().initialize(),
+    _useSettings.getState().initialize(),
+    _useAuth.getState().initialize(),
+    _useCustomization.getState().loadTheme(),
   ]);
 
   // Phase 2: Data stores — fetch in background after auth is ready
-  const isAuth = useAuthStore.getState().isAuthenticated;
+  const isAuth = _useAuth.getState().isAuthenticated;
   if (isAuth) {
     Promise.all([
-      useChatStore.getState().fetchConversations(),
-      useGroupStore.getState().fetchGroups(),
-      useGamificationStore.getState().fetchGamificationData(),
+      _useChat.getState().fetchConversations(),
+      _useGroup.getState().fetchGroups(),
+      _useGamification.getState().fetchGamificationData(),
       useFriendStore.getState().fetchFriends(),
       useNotificationStore.getState().fetchNotifications(true),
     ]).catch(() => {
@@ -341,10 +337,9 @@ export async function initializeStores(): Promise<void> {
  * Calls initializeStores() on mount and tracks readiness.
  */
 export function useStoreInitialization() {
-  const React = require('react');
-  const [isReady, setIsReady] = React.useState(false);
+  const [isReady, setIsReady] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     initializeStores()
       .then(() => setIsReady(true))
       .catch(() => setIsReady(true)); // Fail-open to not block app launch

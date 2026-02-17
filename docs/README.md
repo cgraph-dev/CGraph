@@ -199,5 +199,5 @@ outdated information but are retained for historical reference and audit purpose
 
 ---
 
-<sub>**CGraph Documentation** • Version 0.9.28 • Proprietary Software • Last updated: January
+<sub>**CGraph Documentation** • Version 0.9.31 • Proprietary Software • Last updated: February
 2026</sub>
