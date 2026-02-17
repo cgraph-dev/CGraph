@@ -270,8 +270,10 @@ export const ForumNeonIcon: React.FC<ForumNeonIconProps> = ({
   };
 
   return (
-    <span className={`feature-card__icon-neon ${className}`} style={style} aria-hidden="true">
-      <svg {...shared}>{renderPath()}</svg>
+    <span className={`${className} inline-flex items-center justify-center`}>
+      <span className="feature-card__icon-neon" style={style} aria-hidden="true">
+        <svg {...shared}>{renderPath()}</svg>
+      </span>
     </span>
   );
 };
