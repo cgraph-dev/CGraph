@@ -16,18 +16,6 @@ export const DetailedProfileCard = memo(function DetailedProfileCard({
 }: CardProps) {
   return (
     <div>
-      {/* Holographic shine overlay */}
-      <motion.div
-        className="pointer-events-none absolute inset-0 opacity-30"
-        style={{
-          background:
-            'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)',
-          backgroundSize: '200% 200%',
-        }}
-        animate={{ backgroundPosition: ['0% 0%', '200% 200%'] }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-      />
-
       {/* Header */}
       <div className="mb-4 flex items-start gap-4">
         <motion.div whileHover={{ scale: 1.05, rotate: 5 }} transition={springs.bouncy}>
