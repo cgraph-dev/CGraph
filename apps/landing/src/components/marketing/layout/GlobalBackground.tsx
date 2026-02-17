@@ -19,7 +19,7 @@ export const GlobalBackground: React.FC = () => {
   const nodeCount = prefersReducedMotion ? 48 : isMobile ? 64 : 90;
   const connectionDistance = isMobile ? 140 : 160;
   const nodeSize = isMobile ? 1.3 : 1.5;
-  const animationSpeed = prefersReducedMotion ? 0.35 : isMobile ? 0.48 : 0.6;
+  const animationSpeed = prefersReducedMotion ? 0.35 : isMobile ? 0.8 : 1.2;
   const mouseRepulsionStrength = isMobile ? 0.55 : 0.8;
 
   return (

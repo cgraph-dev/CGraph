@@ -442,7 +442,7 @@
 
 /* ── Grid slow drift ── */
 .hero-pro__grid {
-  animation: hero-grid-drift 30s linear infinite;
+  animation: hero-grid-drift 20s linear infinite;
 }
 
 @keyframes hero-grid-drift {

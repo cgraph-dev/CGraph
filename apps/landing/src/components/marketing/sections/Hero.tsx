@@ -93,6 +93,12 @@ const Hero = memo(function Hero(): React.JSX.Element {
         aria-hidden="true"
         style={prefersReduced ? undefined : { y: bgY }}
       >
+        {/* Grid overlay */}
+        <div className="hero-pro__grid" />
+
+        {/* Floating particles */}
+        <div className="hero-pro__particles" />
+
         {/* Bottom fade for smooth transition */}
         <div className="hero-pro__fade" />
       </motion.div>
