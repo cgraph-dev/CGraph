@@ -1385,3 +1385,32 @@ STRIPE_PRICE_IDS      - JSON map of tier -> price_id
 - Uses IPv4 socket option for DNS compatibility
 - CleanupWorker runs daily via Oban cron
 - Sourcemaps disabled in production for code protection
+
+### Session 29 Part 2 — TypeScript Zero-Error & Security Audit Prep
+
+**TypeScript Errors: 53 → 0** (web app now fully type-clean)
+
+Fixed 53 TypeScript errors across 20+ files:
+
+- Test files: Button.test.tsx (fully rewritten to match API), ErrorBoundary.test.tsx (removed
+  non-existent onError/componentName props), InputTabs.test.tsx (helperText→hint, error as string),
+  EmptyState/Loading/Modal/Toast tests (import path relocations)
+- Source files: AnalyticsDashboard.tsx (type casts), SubscriptionButton/Item/Manager (implicit any),
+  Select.tsx (added Radix-style sub-components), ui/index.ts (casing fixes)
+- Shared package: phoenixClient.ts generic type alignment with Phoenix Channel API
+- Removed duplicate lowercase input.tsx/select.tsx files
+
+**Audit Persistence Enabled** (Critical Security Fix)
+
+`CGraph.Audit` GenServer was storing all security events **in-memory only** — DB persistence was
+commented out. All security, auth, admin, and compliance audit entries are now persisted through
+`CGraph.Accounts.AuditLog` on every flush. This fixes a critical gap where 2FA events, account
+lockouts, token revocations, and data export events were lost on server restart.
+
+**Security Audit Readiness Checklist Created**: `docs/SECURITY_AUDIT_CHECKLIST.md`
+
+- Comprehensive pre-audit checklist with scope, controls verification, CI pipeline gaps
+- Key blocker: No audit firm selected, no budget finalized (Q1 2026 timeline at risk)
+- Identified 9 prioritized pre-audit actions
+
+**Commits**: `06833c9a` (TS fixes), `522f92a4` (audit + security checklist)

@@ -120,7 +120,7 @@ After this date, only the following are allowed:
 
 | Feature                    | Description                                | Priority | Status         |
 | -------------------------- | ------------------------------------------ | -------- | -------------- |
-| **Test Coverage**          | Reach 70% unit coverage across all apps    | P0       | 📋 Planned     |
+| **Test Coverage**          | Reach 70% unit coverage across all apps    | P0       | � In Progress  |
 | **Security Audit**         | External E2EE + penetration test           | P0       | 🔄 In Progress |
 | ~~**Stripe Integration**~~ | Real billing with checkout/portal/webhooks | P0       | ✅ Done        |
 | **Crypto Consolidation**   | Unify web + mobile E2EE implementations    | P1       | 📋 Planned     |

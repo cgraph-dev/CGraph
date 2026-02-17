@@ -75,15 +75,17 @@ audit and web test coverage
 
 ### Recent Security Fixes
 
-| Date       | Issue                          | Severity | Status   |
-| ---------- | ------------------------------ | -------- | -------- |
-| 2026-02-17 | Subscription tier misalignment | Critical | ✅ Fixed |
-| 2026-02-17 | Stripe config key mismatch     | Critical | ✅ Fixed |
-| 2026-01-26 | E2EE plaintext fallback        | Critical | ✅ Fixed |
-| 2026-01-27 | Presence privacy leak          | Critical | ✅ Fixed |
-| 2026-01-27 | Stripe webhook config          | High     | ✅ Fixed |
-| 2026-01-27 | IP spoofing (X-Forwarded-For)  | High     | ✅ Fixed |
-| 2026-01-27 | MIME type spoofing             | Medium   | ✅ Fixed |
+| Date       | Issue                           | Severity | Status   |
+| ---------- | ------------------------------- | -------- | -------- |
+| 2026-02-17 | Audit events lost on restart    | Critical | ✅ Fixed |
+| 2026-02-17 | Subscription tier misalignment  | Critical | ✅ Fixed |
+| 2026-02-17 | Stripe config key mismatch      | Critical | ✅ Fixed |
+| 2026-02-17 | TypeScript errors (53→0 in web) | High     | ✅ Fixed |
+| 2026-01-26 | E2EE plaintext fallback         | Critical | ✅ Fixed |
+| 2026-01-27 | Presence privacy leak           | Critical | ✅ Fixed |
+| 2026-01-27 | Stripe webhook config           | High     | ✅ Fixed |
+| 2026-01-27 | IP spoofing (X-Forwarded-For)   | High     | ✅ Fixed |
+| 2026-01-27 | MIME type spoofing              | Medium   | ✅ Fixed |
 
 ---
 
