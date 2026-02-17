@@ -6,7 +6,7 @@ defmodule CGraph.Forums.Core do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Forums.{Comment, Forum, ForumMember, Moderator, Post, Subscription, Thread, ThreadPost}
+  alias CGraph.Forums.{Comment, ContentReport, Forum, ForumMember, Moderator, Post, Subscription, Thread, ThreadPost}
   alias CGraph.Repo
 
   @vote_min_account_age_days 3
@@ -245,11 +245,54 @@ defmodule CGraph.Forums.Core do
     %{post_count: post_count, comment_count: comment_count, member_count: forum.member_count || 0}
   end
 
-  @doc "Get moderation queue."
-  def get_mod_queue(_forum, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    {[], %{page: page, per_page: per_page, total: 0}}
+  @doc "Get moderation queue for a forum (pending reports)."
+  def get_mod_queue(forum, opts \\ []) do
+    pagination_opts = CGraph.Pagination.parse_params(
+      Enum.into(opts, %{}),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      default_limit: 20
+    )
+
+    query = from(r in ContentReport,
+      where: r.forum_id == ^forum.id,
+      where: r.status == "pending",
+      preload: [:reporter]
+    )
+
+    CGraph.Pagination.paginate(query, pagination_opts)
+  end
+
+  @doc "Report content in a forum (post, comment, or user)."
+  def report_content(forum, reporter, target_type, target_id, reason, description \\ nil) do
+    attrs = %{
+      forum_id: forum.id,
+      reporter_id: reporter.id,
+      target_type: target_type,
+      target_id: target_id,
+      reason: reason,
+      description: description
+    }
+
+    %ContentReport{}
+    |> ContentReport.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc "Review a content report (resolve or dismiss)."
+  def review_report(report_id, reviewer, status, note \\ nil) do
+    case Repo.get(ContentReport, report_id) do
+      nil -> {:error, :not_found}
+      report ->
+        report
+        |> ContentReport.review_changeset(%{
+          status: status,
+          reviewed_by_id: reviewer.id,
+          reviewed_at: DateTime.truncate(DateTime.utc_now(), :second),
+          resolution_note: note
+        })
+        |> Repo.update()
+    end
   end
 
   # ============================================================================
@@ -390,6 +433,29 @@ defmodule CGraph.Forums.Core do
     if count >= 20, do: {:error, :rate_limited}, else: :ok
   end
 
-  @doc "Notify comment (placeholder for notification system integration)."
-  def notify_comment(_comment), do: :ok
+  @doc "Notify post author about a new comment."
+  def notify_comment(comment) do
+    comment = Repo.preload(comment, [:author, post: [:author]])
+    post = comment.post
+    commenter = comment.author
+
+    # Don't notify yourself
+    if post && commenter && post.author_id != comment.author_id do
+      CGraph.Notifications.notify(
+        post.author,
+        :forum_comment,
+        "New comment on \"#{post.title}\"",
+        body: "#{commenter.username} commented: #{String.slice(comment.body || "", 0..99)}",
+        actor: commenter,
+        data: %{
+          post_id: post.id,
+          comment_id: comment.id,
+          forum_id: post.forum_id
+        },
+        group_key: "post:#{post.id}:comments"
+      )
+    end
+
+    :ok
+  end
 end

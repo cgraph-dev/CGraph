@@ -166,10 +166,41 @@ defmodule CGraph.Forums.GroupAutoRule do
 
   defp tier_rank(tier), do: Map.get(@tier_hierarchy, tier, 0)
 
-  defp check_custom_criteria(_criteria, _member) do
-    # Custom criteria would be evaluated by a callback
-    # Placeholder - always true for now
-    true
+  defp check_custom_criteria(criteria, member) do
+    # Evaluate custom criteria map with supported predicates
+    Enum.all?(criteria, fn
+      {"min_posts", min} ->
+        (Map.get(member, :post_count, 0) || 0) >= min
+
+      {"min_comments", min} ->
+        (Map.get(member, :comment_count, 0) || 0) >= min
+
+      {"min_karma", min} ->
+        karma = get_in_user(member, :karma) || 0
+        karma >= min
+
+      {"min_level", min} ->
+        level = get_in_user(member, :level) || 0
+        level >= min
+
+      {"joined_before_days", days} ->
+        joined_at = get_in_user(member, :inserted_at)
+        joined_at != nil and DateTime.diff(DateTime.utc_now(), joined_at, :day) >= days
+
+      {"email_verified", required} ->
+        verified = get_in_user(member, :email_verified) || false
+        verified == required
+
+      # Unknown criteria keys pass through (forward-compatible)
+      _ -> true
+    end)
+  end
+
+  defp get_in_user(member, field) do
+    case member do
+      %{user: %{^field => value}} -> value
+      _ -> nil
+    end
   end
 
   @doc """

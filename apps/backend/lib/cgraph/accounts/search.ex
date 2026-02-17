@@ -8,7 +8,7 @@ defmodule CGraph.Accounts.Search do
   import Ecto.Query, warn: false
 
   alias CGraph.Accounts.User
-  alias CGraph.ReadRepo
+  alias CGraph.{ReadRepo, Repo}
 
   @doc """
   Search users by username, display name, email, or UID (random 10-digit like #4829173650).
@@ -70,18 +70,64 @@ defmodule CGraph.Accounts.Search do
   end
 
   @doc """
-  Get recent searches (placeholder for future implementation).
+  Record a search query for a user's search history.
+  Deduplicates by upserting on (user_id, query).
   """
-  def get_recent_searches(_user, _opts \\ []) do
-    []
+  def record_search(user_id, query_text, result_count \\ 0) when is_binary(query_text) do
+    cleaned = String.trim(query_text)
+    if String.length(cleaned) >= 2 do
+      now = DateTime.truncate(DateTime.utc_now(), :second)
+
+      Repo.insert_all("search_history",
+        [%{
+          id: Ecto.UUID.generate(),
+          user_id: user_id,
+          query: cleaned,
+          result_count: result_count,
+          inserted_at: now
+        }],
+        on_conflict: {:replace, [:result_count, :inserted_at]},
+        conflict_target: [:user_id, :query]
+      )
+    end
+
+    :ok
   end
 
   @doc """
-  Clear search history (placeholder for future implementation).
+  Get recent searches for a user, most recent first.
   """
-  def clear_search_history(_user) do
+  def get_recent_searches(user, opts \\ []) do
+    user_id = extract_user_id(user)
+    limit = Keyword.get(opts, :limit, 10)
+
+    from(s in "search_history",
+      where: s.user_id == type(^user_id, :binary_id),
+      order_by: [desc: s.inserted_at],
+      limit: ^limit,
+      select: %{
+        query: s.query,
+        result_count: s.result_count,
+        searched_at: s.inserted_at
+      }
+    )
+    |> Repo.all()
+  end
+
+  @doc """
+  Clear search history for a user.
+  """
+  def clear_search_history(user) do
+    user_id = extract_user_id(user)
+
+    from(s in "search_history", where: s.user_id == type(^user_id, :binary_id))
+    |> Repo.delete_all()
+
     :ok
   end
+
+  defp extract_user_id(%{id: id}), do: id
+  defp extract_user_id(id) when is_binary(id), do: id
 
   # Parse UID query - handles formats like #4829173650 or 4829173650 (10-digit string)
   defp parse_uid_query(query) when is_binary(query) do

@@ -54,8 +54,32 @@ defmodule CGraph.Accounts do
   # Stub Functions (planned features, not yet implemented)
   # ============================================================================
 
-  @doc "Dismiss a friend suggestion. Planned feature."
-  def dismiss_friend_suggestion(_user_id, _suggested_user_id), do: {:ok, :dismissed}
+  @doc "Dismiss a friend suggestion so it won't appear again."
+  def dismiss_friend_suggestion(user_id, suggested_user_id) do
+    now = DateTime.truncate(DateTime.utc_now(), :second)
+
+    Repo.insert_all("dismissed_suggestions",
+      [%{
+        id: Ecto.UUID.generate(),
+        user_id: user_id,
+        suggested_user_id: suggested_user_id,
+        inserted_at: now
+      }],
+      on_conflict: :nothing,
+      conflict_target: [:user_id, :suggested_user_id]
+    )
+
+    {:ok, :dismissed}
+  end
+
+  @doc "Get list of dismissed suggestion user IDs for filtering."
+  def get_dismissed_suggestion_ids(user_id) do
+    from(d in "dismissed_suggestions",
+      where: d.user_id == type(^user_id, :binary_id),
+      select: d.suggested_user_id
+    )
+    |> Repo.all()
+  end
 
   @doc "Look up a user by Stripe customer ID. Requires Stripe integration."
   def get_user_by_stripe_customer(stripe_customer_id) do

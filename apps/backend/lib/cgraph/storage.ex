@@ -242,18 +242,29 @@ defmodule CGraph.Storage do
 
   @doc """
   Gets total storage usage for a user in bytes.
-
-  TODO: Implement proper file tracking per user.
-  Currently returns 0 as a placeholder.
+  Sums file sizes from message attachments and thread/forum attachments.
   """
   @spec get_user_usage(String.t()) :: integer()
   def get_user_usage(user_id) do
-    # Sum file sizes from user's uploads
     import Ecto.Query
-    query = from u in "uploads",
-      where: u.user_id == ^user_id,
-      select: coalesce(sum(u.file_size), 0)
 
-    CGraph.Repo.one(query) || 0
+    # Message attachments (file_size on messages table)
+    message_usage =
+      from(m in "messages",
+        where: m.sender_id == ^user_id,
+        where: not is_nil(m.file_size),
+        select: coalesce(sum(m.file_size), 0)
+      )
+      |> CGraph.Repo.one() || 0
+
+    # Thread/forum attachments
+    thread_usage =
+      from(a in "thread_attachments",
+        where: a.uploader_id == ^user_id,
+        select: coalesce(sum(a.file_size), 0)
+      )
+      |> CGraph.Repo.one() || 0
+
+    message_usage + thread_usage
   end
 end

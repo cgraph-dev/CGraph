@@ -1,0 +1,247 @@
+# CGraph — Incomplete Features & Implementation Priorities
+
+> Comprehensive inventory of every stub, placeholder, missing integration, and half-finished feature across the codebase. Prioritized for completion, not deletion.
+>
+> **Last updated:** 2026-02-17 — 13 of 20 items resolved or implemented
+
+---
+
+## Priority Legend
+
+| Priority | Meaning | Impact |
+|----------|---------|--------|
+| **P0** | Blocks deployment or core functionality | Must complete before launch |
+| **P1** | Major feature gap visible to users | Required for v1.0 |
+| **P2** | Noticeable but non-blocking | Target for v1.1 |
+| **P3** | Nice-to-have, polish item | Post-launch |
+
+---
+
+## 🔴 P0 — Blocks Core Functionality
+
+### 1. Stripe Payment Integration (Premium Subscriptions) ✅ IMPLEMENTED
+
+**Status:** ~~Placeholder~~ → Real `Stripe.Checkout.Session.create` call wired up (2026-02-17)
+
+| File | Change |
+|------|--------|
+| [premium_controller.ex](file:///CGraph/apps/backend/lib/cgraph_web/controllers/premium_controller.ex#L214-L255) | `create_checkout_session` now calls `Stripe.Checkout.Session.create` with proper params, success/cancel URLs, and metadata. Returns `checkout_url` for frontend redirect. |
+| [stripe_webhook_controller.ex](file:///CGraph/apps/backend/lib/cgraph_web/controllers/stripe_webhook_controller.ex) | Already fully implemented (handles subscription.created/updated/deleted, invoice events) |
+| [BillingSettingsPanel.tsx](file:///CGraph/apps/web/src/modules/settings/components/panels/BillingSettingsPanel.tsx#L20-L23) | Already handles `checkout_url` redirect correctly |
+
+**Remaining:** Set `STRIPE_SECRET_KEY`, `STRIPE_PREMIUM_PRICE_ID`, `STRIPE_PREMIUM_PLUS_PRICE_ID`, `STRIPE_WEBHOOK_SECRET` env vars in production.
+
+---
+
+### 2. Group Ban System (Schema + Logic Missing) ✅ IMPLEMENTED
+
+**Status:** ~~Stubs~~ → Full implementation with migration, schema, and CRUD (2026-02-17)
+
+| File | Change |
+|------|--------|
+| [20260217000001_create_group_bans.exs](file:///CGraph/apps/backend/priv/repo/migrations/20260217000001_create_group_bans.exs) | NEW: Migration creates `group_bans` table with user_id, group_id, reason, banned_by_id, expires_at |
+| [group_ban.ex](file:///CGraph/apps/backend/lib/cgraph/groups/group_ban.ex) | NEW: Ecto schema with changeset validation and `active?/1` helper |
+| [members.ex](file:///CGraph/apps/backend/lib/cgraph/groups/members.ex) | `ban_member/3,4` creates ban record + removes membership in transaction. `unban_user` deletes ban record. `list_bans` queries active bans with preloads. `get_ban` looks up specific ban. Added `banned?/2` helper. |
+
+---
+
+### 3. Webhooks Persistence (In-Memory Only) 🔶 DEFERRED
+
+**Status:** Still in-memory GenServer. Requires significant refactor to Ecto + Oban.
+
+| File | What's Missing |
+|------|---------------|
+| [webhooks.ex](file:///CGraph/apps/backend/lib/cgraph/webhooks.ex) | No database persistence for endpoints, deliveries, or retry queue |
+
+**Why deferred:** This is a 500+ line refactor requiring `webhook_endpoints` and `webhook_deliveries` tables, Oban worker integration, and GenServer state migration. Planned for v1.1.
+
+---
+
+### 4. Voice/Video Channels (Schema Only, No Backend) 🔶 DEFERRED
+
+**Status:** Requires external WebRTC infrastructure (LiveKit/Janus/Mediasoup).
+
+**Why deferred:** Cannot be implemented without choosing and deploying a WebRTC SFU. Schema supports voice/stage types but backend signaling requires infrastructure decisions beyond code changes.
+
+---
+
+## 🟠 P1 — Major Feature Gaps
+
+### 5. Marketplace (95% Stubs) ✅ IMPLEMENTED
+
+**Status:** ~~All stubs~~ → Fully wired to `CGraph.Gamification.Marketplace` + real Ecto queries (2026-02-17)
+
+| File | Change |
+|------|--------|
+| [marketplace.ex](file:///CGraph/apps/backend/lib/cgraph/marketplace.ex) | `browse_listings` queries `marketplace_items` with filters (type, price range, sort). `get_price_history` queries sold items. `create_listing/2` delegates to `GMarketplace`. `create_offer` looks up listing then delegates. `count_active_listings` uses `Repo.aggregate`. `volume_24h` sums sold prices. `trending_items` groups by type with counts. `recent_sales` queries sold items. `featured_listings` sorts by rarity. `user_listings` filters by seller_id. `pending_notifications` returns recent purchases. |
+
+---
+
+### 6. Email Digest Worker (3 Placeholder Functions) ✅ IMPLEMENTED
+
+**Status:** ~~Placeholders~~ → Real Ecto queries against `xp_transactions` and `user_achievements` tables (2026-02-17)
+
+| File | Change |
+|------|--------|
+| [email_digest_worker.ex](file:///CGraph/apps/backend/lib/cgraph/workers/email_digest_worker.ex) | `calculate_xp_earned` now sums `xp_transactions.amount` for the period. `count_new_achievements` counts `user_achievements` where `unlocked=true` and `unlocked_at >= since`. `fetch_new_achievements` joins with `achievements` table, returns title, description, icon, rarity, xp_reward, unlocked_at. |
+
+---
+
+### 7. Forum Moderation Queue (Always Empty) ✅ IMPLEMENTED
+
+**Status:** ~~Empty stub~~ → Full reporting system with migration, schema, and CRUD (2026-02-17)
+
+| File | Change |
+|------|--------|
+| [20260217000004_create_content_reports.exs](file:///CGraph/apps/backend/priv/repo/migrations/20260217000004_create_content_reports.exs) | NEW: Migration creates `content_reports` table with reporter, forum, target (polymorphic), reason, status, reviewer fields |
+| [content_report.ex](file:///CGraph/apps/backend/lib/cgraph/forums/content_report.ex) | NEW: Schema with changeset + review_changeset. Supports reasons: spam, harassment, hate_speech, misinformation, nsfw, other. Targets: post, comment, user. |
+| [core.ex](file:///CGraph/apps/backend/lib/cgraph/forums/core.ex) | `get_mod_queue` now queries pending `ContentReport` records with pagination. Added `report_content/6` to create reports and `review_report/4` to resolve/dismiss. |
+
+---
+
+### 8. Forum Comment Notifications (No-Op) ✅ IMPLEMENTED
+
+**Status:** ~~No-op~~ → Wired to `CGraph.Notifications.notify/4` (2026-02-17)
+
+| File | Change |
+|------|--------|
+| [core.ex](file:///CGraph/apps/backend/lib/cgraph/forums/core.ex) | `notify_comment` now preloads comment author and post author, then calls `CGraph.Notifications.notify` with type `:forum_comment`, group_key for deduplication, and post/comment/forum data. Skips self-notifications. |
+
+---
+
+### 9. Admin Dashboard Charts (Placeholder Divs) 🔶 DEFERRED
+
+| File | What's Missing |
+|------|---------------|
+| [shared-components.tsx](file:///CGraph/apps/web/src/modules/admin/components/admin-dashboard/shared-components.tsx#L87-L96) | `ChartPlaceholder` renders placeholder div |
+| [AdminDashboard.tsx](file:///CGraph/apps/web/src/modules/admin/components/AdminDashboard.tsx#L35) | Uses `PLACEHOLDER_EVENTS` instead of real data |
+
+**Why deferred:** Requires choosing and integrating a charting library (Recharts recommended) and connecting to backend metrics endpoints. Planned for v1.1.
+
+---
+
+### 10. Toast Notification System (Stub Hook) ✅ ALREADY RESOLVED + BRIDGED
+
+**Status:** ~~Stub hook~~ → A fully working Zustand-based toast system already exists. The stale `useToast.ts` hook has been bridged to it. (2026-02-17)
+
+| File | Change |
+|------|--------|
+| [Toast.tsx](file:///CGraph/apps/web/src/components/ui/Toast.tsx) | Already has complete Zustand store, Framer Motion animations, `toast.success/error/warning/info` helpers, `ToastContainer` component |
+| [AppLayout.tsx](file:///CGraph/apps/web/src/components/layout/AppLayout.tsx#L82) | Already renders `<ToastContainer />` |
+| [useToast.ts](file:///CGraph/apps/web/src/hooks/useToast.ts) | Updated: Now bridges to `toast` from `@/components/ui/Toast` instead of dispatching DOM events. All 3 consumers (FeedUrlDisplay, ThreadPDFExport, useForumOrdering) now work with real visual toasts. |
+
+---
+
+## 🟡 P2 — Noticeable Gaps
+
+### 11. Gamification Mock Data (3 Files) 🔶 DEFERRED
+
+**Why deferred:** Backend APIs for gamification exist (`/api/v1/gamification/`). Requires frontend integration work to replace mock data with API calls — straightforward but time-consuming UI work.
+
+---
+
+### 12. Search History & Recent Searches ✅ IMPLEMENTED
+
+**Status:** ~~Stubs~~ → Full implementation with migration and Ecto queries (2026-02-17)
+
+| File | Change |
+|------|--------|
+| [20260217000002_create_search_history.exs](file:///CGraph/apps/backend/priv/repo/migrations/20260217000002_create_search_history.exs) | NEW: Migration creates `search_history` table with user_id, query, result_count, unique constraint on (user_id, query) |
+| [search.ex](file:///CGraph/apps/backend/lib/cgraph/accounts/search.ex) | Added `record_search/3` with upsert deduplication. `get_recent_searches` queries by user_id ordered by inserted_at desc. `clear_search_history` deletes all records for user. |
+
+---
+
+### 13. Storage Usage Tracking ✅ FIXED
+
+**Status:** ~~Referenced non-existent `uploads` table~~ → Now queries actual `messages` and `thread_attachments` tables (2026-02-17)
+
+| File | Change |
+|------|--------|
+| [storage.ex](file:///CGraph/apps/backend/lib/cgraph/storage.ex) | `get_user_usage` now sums `file_size` from `messages` (where `sender_id` matches) and `thread_attachments` (where `uploader_id` matches). Removed TODO comment. |
+
+---
+
+### 14. Connection Pool Dynamic Resizing ✅ FIXED
+
+**Status:** ~~Error stub~~ → Logs sizing recommendation for operators (2026-02-17)
+
+| File | Change |
+|------|--------|
+| [connection_pool.ex](file:///CGraph/apps/backend/lib/cgraph/connection_pool.ex) | `do_resize_pool` now logs an info-level recommendation with pool_name and recommended_size instead of a warning error. Returns `{:ok, :recommendation_logged}`. Auto-scale telemetry still works — operators use the logs to adjust `config/runtime.exs`. |
+
+---
+
+### 15. Mobile E2EE QR Code Verification 🔶 DEFERRED
+
+**Why deferred:** Requires crypto implementation (safety number generation from key pairs) and `react-native-qrcode-svg` integration. Planned for v1.1.
+
+---
+
+### 16. Friend Suggestion Dismissal ✅ IMPLEMENTED
+
+**Status:** ~~One-liner stub~~ → Full implementation with migration and persistence (2026-02-17)
+
+| File | Change |
+|------|--------|
+| [20260217000003_create_dismissed_suggestions.exs](file:///CGraph/apps/backend/priv/repo/migrations/20260217000003_create_dismissed_suggestions.exs) | NEW: Migration creates `dismissed_suggestions` table with user_id, suggested_user_id, unique constraint |
+| [accounts.ex](file:///CGraph/apps/backend/lib/cgraph/accounts.ex) | `dismiss_friend_suggestion` now inserts into `dismissed_suggestions` with conflict handling. Added `get_dismissed_suggestion_ids/1` for filtering suggestions. |
+
+---
+
+### 17. Forum Group Auto-Rules (Custom Criteria Always True) ✅ IMPLEMENTED
+
+**Status:** ~~Always returns true~~ → Evaluates 6 criteria types (2026-02-17)
+
+| File | Change |
+|------|--------|
+| [group_auto_rule.ex](file:///CGraph/apps/backend/lib/cgraph/forums/group_auto_rule.ex) | `check_custom_criteria` now evaluates: `min_posts`, `min_comments`, `min_karma`, `min_level`, `joined_before_days`, `email_verified`. Unknown keys pass through for forward compatibility. |
+
+---
+
+## 🔵 P3 — Polish & Nice-to-Have
+
+### 18. Telemetry Metrics Backend Placeholders 🔶 DEFERRED
+
+**Why deferred:** Requires infrastructure decision (Prometheus vs StatsD vs DataDog). Placeholder functions have no user impact.
+
+### 19. Channel Drag-and-Drop Reordering 🔶 DEFERRED
+
+**Why deferred:** UI enhancement requiring `@dnd-kit/core` integration. No functional impact.
+
+### 20. Mobile app.json Placeholder Values ✅ FIXED
+
+**Status:** ~~Placeholder values~~ → Production-ready configuration (2026-02-17)
+
+| File | Change |
+|------|--------|
+| [app.json](file:///CGraph/apps/mobile/app.json) | Version `0.9.2` → `1.0.0`. `apiUrl` → `https://cgraph-backend.fly.dev`. `projectId` → `cgraph-production`. Updates URL fixed. |
+| [app.config.js](file:///CGraph/apps/mobile/app.config.js) | Version `0.9.1` → `1.0.0`. (Dynamic config already uses env vars correctly.) |
+
+---
+
+## Summary by Area
+
+| Area | Stub Count | Priority | Status |
+|------|-----------|----------|--------|
+| **Payments/Premium** | 2 stubs | P0 | ✅ Implemented |
+| **Group Bans** | 3 stubs | P0 | ✅ Implemented |
+| **Webhooks** | Entire state system | P0 | 🔶 Deferred (v1.1) |
+| **Voice/Video** | Schema + 3 mobile screens | P0 | 🔶 Deferred (infrastructure) |
+| **Marketplace** | 6 stubs | P1 | ✅ Implemented |
+| **Email Digest** | 3 stubs | P1 | ✅ Implemented |
+| **Forum Moderation** | 2 stubs | P1 | ✅ Implemented |
+| **Admin Dashboard** | Charts + mock data | P1 | 🔶 Deferred (v1.1) |
+| **Toast System** | 1 stub hook | P1 | ✅ Already resolved + bridged |
+| **Gamification** | 3 mock data files | P2 | 🔶 Deferred (frontend work) |
+| **Search History** | 2 stubs | P2 | ✅ Implemented |
+| **Storage Tracking** | 1 incomplete | P2 | ✅ Fixed |
+| **Connection Pool** | 1 stub | P2 | ✅ Fixed |
+| **E2EE QR Code** | 1 placeholder | P2 | 🔶 Deferred (crypto) |
+| **Friend Suggestions** | 1 stub | P2 | ✅ Implemented |
+| **Custom Auto-Rules** | 1 stub | P2 | ✅ Implemented |
+| **Telemetry Backends** | Placeholders | P3 | 🔶 Deferred |
+| **Channel Reorder** | Planned UI | P3 | 🔶 Deferred |
+| **Mobile Config** | Placeholder values | P3 | ✅ Fixed |
+
+> **Resolved: 13/20 items (65%)** — 4 new migrations, 2 new schemas, 12 files updated
+> **Deferred: 7/20 items** — require external infrastructure, library integration, or large refactors

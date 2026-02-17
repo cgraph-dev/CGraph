@@ -240,16 +240,48 @@ defmodule CGraphWeb.PremiumController do
           message: "Subscription pricing not configured. Please contact support."
         })
       else
-        # In production, this would call Stripe.Checkout.Session.create
-        # For now, return a placeholder response
-        conn
-        |> put_status(:ok)
-        |> json(%{
-          success: true,
-          action: "redirect",
-          checkout_url: nil,
-          message: "Payment integration coming soon. Contact support for manual activation."
-        })
+        # Create Stripe checkout session
+        app_url = Application.get_env(:cgraph, :app_url, "https://app.cgraph.org")
+        user = conn.assigns.current_user
+
+        checkout_params = %{
+          mode: "subscription",
+          payment_method_types: ["card"],
+          line_items: [%{price: price_id, quantity: 1}],
+          customer_email: user.email,
+          success_url: "#{app_url}/settings/billing?session_id={CHECKOUT_SESSION_ID}&status=success",
+          cancel_url: "#{app_url}/settings/billing?status=cancelled",
+          metadata: %{
+            user_id: user.id,
+            tier: tier
+          },
+          subscription_data: %{
+            metadata: %{
+              user_id: user.id,
+              tier: tier
+            }
+          }
+        }
+
+        case Stripe.Checkout.Session.create(checkout_params) do
+          {:ok, session} ->
+            conn
+            |> put_status(:ok)
+            |> json(%{
+              success: true,
+              action: "redirect",
+              checkout_url: session.url
+            })
+
+          {:error, %Stripe.Error{message: message}} ->
+            Logger.error("stripe_checkout_failed", error: message, tier: tier, user_id: user.id)
+            conn
+            |> put_status(:service_unavailable)
+            |> json(%{
+              error: "checkout_failed",
+              message: "Could not create checkout session. Please try again."
+            })
+        end
       end
     end
   end

@@ -146,24 +146,25 @@ defmodule CGraph.Workers.EmailDigestWorker do
     |> Kernel.||(0)
   end
 
-  defp calculate_xp_earned(user_id, _since) do
-    # This would query gamification events/history
-    # For now, return a placeholder
-    from(u in User,
-      where: u.id == ^user_id,
-      select: u.xp
+  defp calculate_xp_earned(user_id, since) do
+    from(xt in "xp_transactions",
+      where: xt.user_id == ^user_id,
+      where: xt.inserted_at >= ^since,
+      select: coalesce(sum(xt.amount), 0)
     )
     |> Repo.one()
-    |> case do
-      nil -> 0
-      xp -> div(xp, 10)
-    end
+    |> Kernel.||(0)
   end
 
-  defp count_new_achievements(_user_id, _since) do
-    # Query user_achievements table for achievements unlocked since period_start
-    # Placeholder for now
-    0
+  defp count_new_achievements(user_id, since) do
+    from(ua in "user_achievements",
+      where: ua.user_id == ^user_id,
+      where: ua.unlocked == true,
+      where: ua.unlocked_at >= ^since,
+      select: count(ua.id)
+    )
+    |> Repo.one()
+    |> Kernel.||(0)
   end
 
   defp fetch_trending_posts(_user_id, since, opts) do
@@ -210,10 +211,27 @@ defmodule CGraph.Workers.EmailDigestWorker do
     |> Repo.all()
   end
 
-  defp fetch_new_achievements(_user_id, _since, _opts) do
-    # Query user_achievements table
-    # Placeholder for now
-    []
+  defp fetch_new_achievements(user_id, since, opts) do
+    limit = Keyword.get(opts, :limit, 5)
+
+    from(ua in "user_achievements",
+      join: a in "achievements",
+      on: ua.achievement_id == a.id,
+      where: ua.user_id == ^user_id,
+      where: ua.unlocked == true,
+      where: ua.unlocked_at >= ^since,
+      order_by: [desc: ua.unlocked_at],
+      limit: ^limit,
+      select: %{
+        title: a.title,
+        description: a.description,
+        icon: a.icon,
+        rarity: a.rarity,
+        xp_reward: a.xp_reward,
+        unlocked_at: ua.unlocked_at
+      }
+    )
+    |> Repo.all()
   end
 
   defp send_digest_email(user, digest_data) do

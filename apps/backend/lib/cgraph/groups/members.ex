@@ -7,7 +7,7 @@ defmodule CGraph.Groups.Members do
 
   import Ecto.Query, warn: false
 
-  alias CGraph.Groups.Member
+  alias CGraph.Groups.{GroupBan, Member}
   alias CGraph.Repo
 
   # ============================================================================
@@ -178,44 +178,94 @@ defmodule CGraph.Groups.Members do
   # Bans
   # ============================================================================
 
-  @doc "Ban a member from a group."
+  @doc "Ban a member from a group. Removes membership and creates a ban record."
   @spec ban_member(struct(), struct(), binary() | nil) :: {:ok, map()} | {:error, any()}
   def ban_member(group, user, reason \\ nil) do
     member = get_member_by_user(group, user.id)
 
-    if member do
-      Repo.delete(member)
+    Repo.transaction(fn ->
+      # Remove membership if exists
+      if member, do: Repo.delete(member)
 
-      {:ok, %{
-        group_id: group.id,
+      # Create ban record
+      ban_attrs = %{
         user_id: user.id,
+        group_id: group.id,
+        reason: reason
+      }
+
+      case %GroupBan{}
+           |> GroupBan.changeset(ban_attrs)
+           |> Repo.insert(on_conflict: :replace_all, conflict_target: [:user_id, :group_id]) do
+        {:ok, ban} -> ban
+        {:error, changeset} -> Repo.rollback(changeset)
+      end
+    end)
+  end
+
+  @doc "Ban a member with the banning moderator tracked."
+  @spec ban_member(struct(), struct(), binary() | nil, binary()) :: {:ok, map()} | {:error, any()}
+  def ban_member(group, user, reason, banned_by_id) do
+    member = get_member_by_user(group, user.id)
+
+    Repo.transaction(fn ->
+      if member, do: Repo.delete(member)
+
+      ban_attrs = %{
+        user_id: user.id,
+        group_id: group.id,
         reason: reason,
-        banned_at: DateTime.truncate(DateTime.utc_now(), :second)
-      }}
-    else
-      {:error, :not_found}
-    end
+        banned_by_id: banned_by_id
+      }
+
+      case %GroupBan{}
+           |> GroupBan.changeset(ban_attrs)
+           |> Repo.insert(on_conflict: :replace_all, conflict_target: [:user_id, :group_id]) do
+        {:ok, ban} -> ban
+        {:error, changeset} -> Repo.rollback(changeset)
+      end
+    end)
   end
 
   @doc "Unban a user from a group."
-  @spec unban_user(struct(), binary()) :: {:ok, :unbanned}
-  def unban_user(_group, _user_id) do
-    # TODO: Implement ban table lookup and removal
-    {:ok, :unbanned}
+  @spec unban_user(struct(), binary()) :: {:ok, :unbanned} | {:error, :not_found}
+  def unban_user(group, user_id) do
+    case Repo.get_by(GroupBan, user_id: user_id, group_id: group.id) do
+      nil -> {:error, :not_found}
+      ban ->
+        Repo.delete(ban)
+        {:ok, :unbanned}
+    end
   end
 
-  @doc "List banned users in a group."
+  @doc "List banned users in a group (active bans only)."
   @spec list_bans(struct()) :: list()
-  def list_bans(_group) do
-    # TODO: Implement ban table query
-    []
+  def list_bans(group) do
+    from(b in GroupBan,
+      where: b.group_id == ^group.id,
+      where: is_nil(b.expires_at) or b.expires_at > ^DateTime.utc_now(),
+      preload: [:user, :banned_by],
+      order_by: [desc: b.inserted_at]
+    )
+    |> Repo.all()
   end
 
-  @doc "Get a specific ban."
+  @doc "Get a specific ban record for a user in a group."
   @spec get_ban(struct(), binary()) :: map() | nil
-  def get_ban(_group, _user_id) do
-    # TODO: Implement ban table lookup
-    nil
+  def get_ban(group, user_id) do
+    from(b in GroupBan,
+      where: b.group_id == ^group.id,
+      where: b.user_id == ^user_id,
+      where: is_nil(b.expires_at) or b.expires_at > ^DateTime.utc_now(),
+      preload: [:user, :banned_by]
+    )
+    |> Repo.one()
+  end
+
+  @doc "Check if a user is currently banned from a group."
+  @spec banned?(struct(), binary()) :: boolean()
+  def banned?(group, user_id) do
+    get_ban(group, user_id) != nil
   end
 
   # ============================================================================

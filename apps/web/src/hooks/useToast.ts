@@ -1,14 +1,12 @@
 /**
  * Toast notification hook
  *
+ * Bridges to the Zustand-based toast system in @/components/ui/Toast.
  * Provides a simple interface for showing toast notifications.
- * This is a stub that can be connected to any toast library.
  */
 
 import { useCallback } from 'react';
-import { createLogger } from '@/lib/logger';
-
-const logger = createLogger('useToast');
+import { toast as toastActions } from '@/components/ui/Toast';
 
 export interface ToastOptions {
   type: 'success' | 'error' | 'warning' | 'info';
@@ -21,7 +19,8 @@ export interface UseToastReturn {
 }
 
 /**
- * Hook for showing toast notifications
+ * Hook for showing toast notifications.
+ * Delegates to the Zustand-powered toast store (components/ui/Toast).
  *
  * @example
  * ```tsx
@@ -31,15 +30,7 @@ export interface UseToastReturn {
  */
 export function useToast(): UseToastReturn {
   const showToast = useCallback((options: ToastOptions) => {
-    // This is a simple implementation that uses the browser's alert
-    // In production, replace with your toast library (react-hot-toast, sonner, etc.)
-
-    logger.debug(`[${options.type.toUpperCase()}] ${options.message}`);
-
-    // If there's a toast container in the DOM, dispatch a custom event
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('cgraph-toast', { detail: options }));
-    }
+    toastActions[options.type](options.message);
   }, []);
 
   return { showToast };

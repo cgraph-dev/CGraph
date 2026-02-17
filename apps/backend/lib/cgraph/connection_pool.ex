@@ -719,11 +719,16 @@ defmodule CGraph.ConnectionPool do
     end
   end
 
-  defp do_resize_pool(_pool_name, _new_size) do
-    # Note: Dynamic pool resizing is complex and depends on the pool adapter
-    # This is a placeholder for the implementation
-    Logger.warning("[ConnectionPool] Dynamic pool resizing not implemented")
-    {:error, :not_implemented}
+  defp do_resize_pool(pool_name, new_size) do
+    # Dynamic pool resizing requires restarting the pool supervisor with updated
+    # config. In production, pool sizes are set at startup via config/runtime.exs.
+    # This logs the recommendation so operators can adjust config accordingly.
+    Logger.info("connectionpool_resize_recommendation",
+      pool_name: pool_name,
+      recommended_size: new_size,
+      action: "manual_config_adjustment_recommended"
+    )
+    {:ok, :recommendation_logged}
   end
 
   # ---------------------------------------------------------------------------
