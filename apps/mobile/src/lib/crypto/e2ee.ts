@@ -7,11 +7,25 @@
  * - X25519 for key exchange
  * - AES-256-GCM for message encryption
  *
+ * NOTE: This is a prototype implementation. Phase 2 of crypto consolidation
+ * will replace this with @cgraph/crypto's full protocol (PQXDH + Triple Ratchet).
+ * See packages/crypto/README.md for the consolidation plan.
+ *
  * @module crypto/e2ee
  */
 
 import * as SecureStore from 'expo-secure-store';
 import { Buffer } from 'buffer';
+import type { ServerPrekeyBundle } from '@cgraph/crypto/types-portable';
+import type {
+  ProtocolStore,
+  ProtocolAddress,
+  SessionRecord,
+  IdentityKeyRecord,
+  PreKeyRecord,
+  SignedPreKeyRecord,
+  KyberPreKeyRecord,
+} from '@cgraph/crypto/stores';
 import { createLogger } from '../logger';
 
 const logger = createLogger('E2EE');
@@ -103,28 +117,35 @@ export async function hkdf(
 
 /**
  * Key pair types
+ *
+ * @deprecated Phase 2 will replace with RawKeyPair from @cgraph/crypto/types-portable
  */
 export interface KeyPair {
   publicKey: Uint8Array;
   privateKey: Uint8Array;
 }
 
+/** @deprecated Phase 2 will replace with PortableIdentityKeyPair */
 export interface IdentityKeyPair extends KeyPair {
   keyId: string;
 }
 
+/** @deprecated Phase 2 will replace with PortablePreKey */
 export interface PreKey extends KeyPair {
   keyId: string;
 }
 
+/** @deprecated Phase 2 will replace with PortableSignedPreKey */
 export interface SignedPreKey extends PreKey {
   signature: Uint8Array;
 }
 
+/** @deprecated Phase 2 will replace with PortableOneTimePreKey */
 export type OneTimePreKey = PreKey;
 
 /**
  * Complete key bundle for registration
+ * @deprecated Phase 2 will replace with PortableKeyBundle
  */
 export interface KeyBundle {
   deviceId: string;
@@ -134,17 +155,10 @@ export interface KeyBundle {
 }
 
 /**
- * Prekey bundle received from server for establishing session
+ * Prekey bundle received from server for establishing session.
+ * Now imported from @cgraph/crypto/types-portable — re-exported for compatibility.
  */
-export interface ServerPrekeyBundle {
-  identity_key: string;
-  identity_key_id: string;
-  signed_prekey: string;
-  signed_prekey_signature: string;
-  signed_prekey_id: string;
-  one_time_prekey?: string;
-  one_time_prekey_id?: string;
-}
+export type { ServerPrekeyBundle };
 
 /**
  * Encrypted message envelope
@@ -159,6 +173,7 @@ export interface EncryptedMessage {
 
 /**
  * Session state for ongoing encrypted conversation
+ * @deprecated Phase 2 will replace with PortableSession from @cgraph/crypto/types-portable
  */
 export interface Session {
   recipientId: string;
@@ -168,6 +183,17 @@ export interface Session {
   messageNumber: number;
   createdAt: number;
 }
+
+// Re-export store interfaces for future ProtocolStore implementation
+export type {
+  ProtocolStore,
+  ProtocolAddress,
+  SessionRecord,
+  IdentityKeyRecord,
+  PreKeyRecord,
+  SignedPreKeyRecord,
+  KyberPreKeyRecord,
+};
 
 // Storage keys
 const IDENTITY_KEY_PRIVATE = 'e2ee_identity_private';

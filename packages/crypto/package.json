@@ -10,6 +10,7 @@
     "./utils": "./src/utils.ts",
     "./errors": "./src/errors.ts",
     "./stores": "./src/stores.ts",
+    "./types-portable": "./src/types-portable.ts",
     "./kem": "./src/kem.ts",
     "./x3dh": "./src/x3dh.ts",
     "./pqxdh": "./src/pqxdh.ts",

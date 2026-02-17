@@ -71,7 +71,7 @@ module.exports = ({ config }) => {
     ...config,
     name: getAppName(),
     slug: 'cgraph',
-    version: '1.0.0',
+    version: '0.9.31',
     runtimeVersion: {
       policy: 'appVersion',
     },

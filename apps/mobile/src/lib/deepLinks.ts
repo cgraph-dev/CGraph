@@ -8,15 +8,16 @@
  *
  * | Pattern | Screen | Example |
  * |---------|--------|---------|
- * | `/` | Home | `cgraph://` |
+ * | `/messages` | ConversationList | `cgraph://messages` |
  * | `/conversation/:id` | Conversation | `cgraph://conversation/abc123` |
  * | `/group/:id` | Group | `cgraph://group/xyz789` |
- * | `/user/:id` | User Profile | `cgraph://user/user123` |
+ * | `/user/:id` | UserProfile | `cgraph://user/user123` |
  * | `/settings` | Settings | `cgraph://settings` |
- * | `/thread/:id` | Forum Thread | `cgraph://thread/thread456` |
+ * | `/forum/:id` | Forum | `cgraph://forum/forum456` |
+ * | `/forum/:id/post/:id` | Post | `cgraph://forum/dev/post/42` |
  * | `/invite/:code` | Group Invite | `cgraph://invite/ABC123` |
- * | `/auth/verify` | Email Verify | `cgraph://auth/verify?token=...` |
- * | `/auth/reset` | Password Reset | `cgraph://auth/reset?token=...` |
+ * | `/login` | Login | `cgraph://login` |
+ * | `/register` | Register | `cgraph://register` |
  *
  * ## Universal Links
  *
@@ -28,45 +29,12 @@
  */
 
 import * as Linking from 'expo-linking';
-import { Platform } from 'react-native';
 import type { LinkingOptions } from '@react-navigation/native';
 
-// Root navigation param list type
+// Root navigation param list type (must mirror RootStackParamList from ../types)
 export type RootStackParamList = {
-  // Auth Screens
-  Welcome: undefined;
-  Login: undefined;
-  Register: undefined;
-  ForgotPassword: undefined;
-  EmailVerify: { token: string };
-  PasswordReset: { token: string };
-
-  // Main App Screens
+  Auth: undefined;
   Main: undefined;
-  Home: undefined;
-  Conversations: undefined;
-  ConversationDetail: { conversationId: string };
-  NewConversation: undefined;
-  Groups: undefined;
-  GroupDetail: { groupId: string };
-  GroupSettings: { groupId: string };
-  GroupInvite: { code: string };
-  Profile: undefined;
-  UserProfile: { userId: string };
-  Settings: undefined;
-  EditProfile: undefined;
-  Notifications: undefined;
-
-  // Forum Screens
-  Forum: undefined;
-  ForumCategory: { categoryId: string };
-  ForumThread: { threadId: string };
-  NewThread: { categoryId?: string };
-
-  // Other Screens
-  Search: { query?: string };
-  MediaViewer: { mediaId: string };
-  NotFound: undefined;
 };
 
 /**
@@ -83,54 +51,118 @@ export const DEEP_LINK_PREFIXES = [
 
 /**
  * Linking configuration for React Navigation
+ *
+ * Maps deep link URLs to the actual navigator tree:
+ * Root → Auth | Main (tabs) → nested stacks
  */
 export const linkingConfig: LinkingOptions<RootStackParamList>['config'] = {
   screens: {
-    // Auth Flow
-    Welcome: '',
-    Login: 'login',
-    Register: 'register',
-    ForgotPassword: 'forgot-password',
-    EmailVerify: 'auth/verify',
-    PasswordReset: 'auth/reset',
-
-    // Main App
-    Main: {
+    // ── Auth Flow (unauthenticated) ───────────────────
+    Auth: {
       screens: {
-        Home: 'home',
-        Conversations: 'conversations',
-        ConversationDetail: 'conversation/:conversationId',
-        Groups: 'groups',
-        GroupDetail: 'group/:groupId',
-        Profile: 'profile',
-        Settings: 'settings',
+        Login: 'login',
+        Register: 'register',
+        ForgotPassword: 'forgot-password',
       },
     },
 
-    // Direct routes
-    ConversationDetail: 'conversation/:conversationId',
-    NewConversation: 'conversation/new',
-    GroupDetail: 'group/:groupId',
-    GroupSettings: 'group/:groupId/settings',
-    GroupInvite: 'invite/:code',
-    UserProfile: 'user/:userId',
-    EditProfile: 'profile/edit',
-    Notifications: 'notifications',
+    // ── Main App (authenticated) ──────────────────────
+    Main: {
+      screens: {
+        // Messages tab
+        MessagesTab: {
+          screens: {
+            ConversationList: 'messages',
+            Conversation: 'conversation/:conversationId',
+            NewConversation: 'conversation/new',
+            SavedMessages: 'messages/saved',
+          },
+        },
 
-    // Forum
-    Forum: 'forum',
-    ForumCategory: 'forum/category/:categoryId',
-    ForumThread: 'thread/:threadId',
-    NewThread: 'forum/new',
+        // Friends tab
+        FriendsTab: {
+          screens: {
+            FriendList: 'friends',
+            AddFriend: 'friends/add',
+            FriendRequests: 'friends/requests',
+            UserProfile: 'user/:userId',
+            Leaderboard: 'friends/leaderboard',
+          },
+        },
 
-    // Search
-    Search: 'search',
+        // Notifications tab
+        NotificationsTab: {
+          screens: {
+            NotificationsInbox: 'notifications',
+          },
+        },
 
-    // Media
-    MediaViewer: 'media/:mediaId',
+        // Search tab
+        SearchTab: {
+          screens: {
+            SearchMain: 'search',
+          },
+        },
 
-    // Fallback
-    NotFound: '*',
+        // Groups tab
+        GroupsTab: {
+          screens: {
+            GroupList: 'groups',
+            Group: 'group/:groupId',
+            Channel: 'group/:groupId/channel/:channelId',
+            GroupSettings: 'group/:groupId/settings',
+            GroupRoles: 'group/:groupId/roles',
+            GroupMembers: 'group/:groupId/members',
+            GroupChannels: 'group/:groupId/channels',
+            GroupInvites: 'group/:groupId/invites',
+            GroupModeration: 'group/:groupId/moderation',
+          },
+        },
+
+        // Forums tab
+        ForumsTab: {
+          screens: {
+            ForumList: 'forums',
+            Forum: 'forum/:forumId',
+            Post: 'forum/:forumId/post/:postId',
+            CreatePost: 'forum/:forumId/post/new',
+            CreateForum: 'forums/new',
+            ForumBoard: 'forum/:forumId/board',
+            ForumSettings: 'forum/:forumId/settings',
+            ForumAdmin: 'forum/:forumId/admin',
+            ForumLeaderboard: 'forums/leaderboard',
+            PluginMarketplace: 'forums/plugins',
+          },
+        },
+
+        // Settings tab
+        SettingsTab: {
+          screens: {
+            Settings: 'settings',
+            Profile: 'settings/profile',
+            Account: 'settings/account',
+            Appearance: 'settings/appearance',
+            Notifications: 'settings/notifications',
+            Privacy: 'settings/privacy',
+            Premium: 'premium',
+            CoinShop: 'shop',
+            Referrals: 'referrals',
+            GamificationHub: 'gamification',
+            Achievements: 'gamification/achievements',
+            Quests: 'gamification/quests',
+            Leaderboard: 'leaderboard',
+            PrivacyPolicy: 'legal/privacy',
+            TermsOfService: 'legal/terms',
+            CookiePolicy: 'legal/cookies',
+            GDPR: 'legal/gdpr',
+            Sessions: 'settings/sessions',
+          },
+        },
+      },
+    },
+
+    // Special routes
+    // invite/:code is handled manually in handleDeepLink()
   },
 };
 
@@ -181,6 +213,7 @@ export async function handleDeepLink(
     const path = getDeepLinkPath(url);
     const params = parseDeepLinkParams(url);
 
+    // eslint-disable-next-line no-console
     if (__DEV__) console.log('[DeepLink] Handling:', { url, path, params });
 
     // Handle special cases that need custom logic

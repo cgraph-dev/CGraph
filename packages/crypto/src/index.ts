@@ -60,6 +60,23 @@ export type {
 } from './types';
 
 // ---------------------------------------------------------------------------
+// Portable types (cross-platform, Uint8Array-based)
+// ---------------------------------------------------------------------------
+export type {
+  RawKeyPair,
+  PortableIdentityKeyPair,
+  PortablePreKey,
+  PortableSignedPreKey,
+  PortableOneTimePreKey,
+  PortableKeyBundle,
+  ServerPrekeyBundle,
+  PortableEncryptedMessage,
+  PortableSession,
+  PortableEncryptionResult,
+  PortableHKDFOptions,
+} from './types-portable';
+
+// ---------------------------------------------------------------------------
 // AES-256-GCM
 // ---------------------------------------------------------------------------
 export { encryptAES, decryptAES, generateAESKey } from './aes';

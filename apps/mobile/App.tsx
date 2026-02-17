@@ -6,6 +6,8 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
+import { ActivityIndicator, View } from 'react-native';
+import deepLinks from './src/lib/deepLinks';
 import { E2EEProvider } from './src/lib/crypto/E2EEContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import { queryClient } from './src/lib/queryClient';
@@ -51,7 +53,17 @@ function AppContent() {
     <>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       <SettingsSync />
-      <NavigationContainer>
+      <NavigationContainer
+        linking={{
+          prefixes: deepLinks.prefixes,
+          config: deepLinks.config,
+        }}
+        fallback={
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" color="#10b981" />
+          </View>
+        }
+      >
         <PushNotificationHandler>
           <RootNavigator />
         </PushNotificationHandler>

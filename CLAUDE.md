@@ -1465,3 +1465,32 @@ fixes)
   - Version mismatch: `app.config.js` says 1.0.0, `package.json` says 0.9.31
   - No store metadata (descriptions, screenshots)
 - **Estimated effort to submission**: ~1-2 days once credentials are ready
+
+### Session 29 Part 4 — Mobile Beta + Deep Linking + Crypto Phase 1
+
+**Fixes applied:**
+
+1. **Version mismatch fixed**: `app.config.js` version `1.0.0` → `0.9.31` (matches `package.json`)
+2. **Deep linking wired**: `App.tsx` now passes `linking` prop to `NavigationContainer` with
+   fallback
+3. **Deep link config rewritten**: `src/lib/deepLinks.ts` linking config now matches the actual
+   nested navigator tree (`Auth → Login|Register|ForgotPassword`,
+   `Main → MessagesTab|FriendsTab|...`)
+4. **Crypto Phase 1 started**: Created `packages/crypto/src/types-portable.ts` with cross-platform
+   types using `Uint8Array` (not `CryptoKey`). Added `./types-portable` subpath export. Mobile
+   `e2ee.ts` now imports `ServerPrekeyBundle` from `@cgraph/crypto/types-portable` and re-exports
+   store interfaces (`ProtocolStore`, `ProtocolAddress`, etc.) for Phase 2 implementation.
+5. **Types deprecated**: All mobile-local crypto types annotated `@deprecated` with Phase 2 target
+
+**Test results:**
+
+- Crypto package: 192/192 tests pass (14 test files)
+- Web components: 5/5 test files pass (ErrorBoundary 7/7, Loading, Modal, Toast)
+- Backend: Compiles cleanly (no DB for test runs)
+- Web TypeScript: 0 errors
+- Crypto TypeScript: 0 errors
+
+**ROADMAP status updated:**
+
+- Crypto Consolidation: 📋 Planned → 🔄 In Progress
+- Mobile Beta: 📋 Planned → 🔄 In Progress
