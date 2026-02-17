@@ -5,12 +5,13 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ErrorBoundary from '../components/ErrorBoundary';
 
-// Suppress console.error from ErrorBoundary's componentDidCatch
+// Suppress console.error and console.warn from ErrorBoundary + error tracking
 beforeEach(() => {
   vi.spyOn(console, 'error').mockImplementation(() => {});
+  vi.spyOn(console, 'warn').mockImplementation(() => {});
 });
 
 // A component that throws on render
@@ -75,5 +76,39 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>
     );
     expect(console.error).toHaveBeenCalled();
+  });
+
+  it('"Back to Home" button redirects to root', () => {
+    // Mock window.location
+    const originalHref = window.location.href;
+    Object.defineProperty(window, 'location', {
+      writable: true,
+      value: { ...window.location, href: originalHref },
+    });
+
+    render(
+      <ErrorBoundary>
+        <ThrowingChild error={new Error('crash')} />
+      </ErrorBoundary>
+    );
+    const btn = screen.getByRole('button', { name: /back to home/i });
+    fireEvent.click(btn);
+    expect(window.location.href).toBe('/');
+  });
+
+  it('button has hover styling interaction', () => {
+    render(
+      <ErrorBoundary>
+        <ThrowingChild error={new Error('crash')} />
+      </ErrorBoundary>
+    );
+    const btn = screen.getByRole('button', { name: /back to home/i });
+
+    // Hover should change opacity
+    fireEvent.mouseEnter(btn);
+    expect(btn.style.opacity).toBe('0.85');
+
+    fireEvent.mouseLeave(btn);
+    expect(btn.style.opacity).toBe('1');
   });
 });

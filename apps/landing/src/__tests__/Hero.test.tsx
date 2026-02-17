@@ -109,4 +109,26 @@ describe('Hero', () => {
     const section = screen.getByLabelText(/beyond messaging/i);
     expect(section).toBeInTheDocument();
   });
+
+  it('Get Started Free links to registration', async () => {
+    const { default: Hero } = await importHero();
+    render(
+      <MemoryRouter>
+        <Hero />
+      </MemoryRouter>
+    );
+    const cta = screen.getByText('Get Started Free').closest('a');
+    expect(cta).toHaveAttribute('href', expect.stringContaining('register'));
+  });
+
+  it('Explore Features links to features section', async () => {
+    const { default: Hero } = await importHero();
+    render(
+      <MemoryRouter>
+        <Hero />
+      </MemoryRouter>
+    );
+    const link = screen.getByText('Explore Features').closest('a');
+    expect(link).toHaveAttribute('href', '#features');
+  });
 });

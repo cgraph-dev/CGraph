@@ -74,4 +74,43 @@ describe('Navigation', () => {
     const links = document.querySelectorAll('a');
     expect(links.length).toBeGreaterThan(0);
   });
+
+  it('renders skip-to-content link for accessibility', () => {
+    renderWithRouter();
+    const skipLink = screen.getByText('Skip to content');
+    expect(skipLink).toBeInTheDocument();
+    expect(skipLink).toHaveAttribute('href', '#main-content');
+  });
+
+  it('renders Get Started CTA button', () => {
+    renderWithRouter();
+    expect(screen.getByText('Get Started')).toBeInTheDocument();
+  });
+
+  it('shows landing-specific links when showLandingLinks is true', () => {
+    renderWithRouter({ showLandingLinks: true });
+    expect(screen.getByText('Features')).toBeInTheDocument();
+    expect(screen.getByText('Security')).toBeInTheDocument();
+  });
+
+  it('mobile menu toggle has correct aria attributes', () => {
+    renderWithRouter();
+    const button = screen.getByLabelText(/open menu/i);
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('mobile menu toggle button is clickable', () => {
+    renderWithRouter();
+    const button = screen.getByLabelText(/open menu/i);
+    // Button should be interactive (not disabled)
+    expect(button).toBeEnabled();
+    expect(button.tagName).toBe('BUTTON');
+  });
+
+  it('Get Started CTA links to registration', () => {
+    renderWithRouter();
+    const ctaLink = document.querySelector('a[href*="register"]');
+    expect(ctaLink).toBeInTheDocument();
+  });
 });

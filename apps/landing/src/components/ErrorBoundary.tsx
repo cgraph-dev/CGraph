@@ -9,6 +9,7 @@
  */
 
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { reportBoundaryError } from '../lib/error-tracking';
 
 interface Props {
   children: ReactNode;
@@ -32,8 +33,8 @@ export default class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    // Log to external service in production (Sentry, DataDog, etc.)
     console.error('[ErrorBoundary]', error, info.componentStack);
+    reportBoundaryError(error, info.componentStack ?? undefined);
   }
 
   private handleReload = () => {

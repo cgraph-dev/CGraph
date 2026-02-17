@@ -4,7 +4,13 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import ErrorBoundary from './components/ErrorBoundary';
+import { initWebVitals } from './lib/web-vitals';
+import { initErrorTracking } from './lib/error-tracking';
 import './index.css';
+
+// Initialize observability
+initErrorTracking();
+initWebVitals();
 
 // Lazy load pages for optimal performance
 const LandingPage = lazy(() => import('./pages/LandingPage'));
