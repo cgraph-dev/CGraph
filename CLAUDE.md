@@ -55,8 +55,8 @@ karma-based forum system.
 - **Forums & Groups**: karma, servers with channels
 - **Gamification**: Achievements, leaderboards, XP system, seasonal events
 - **Push Notifications**: Expo (mobile), Web Push API (browser), email digests
-- **Subscription Tiers**: free (1 forum), premium (5 forums), enterprise (unlimited)
-- **Payments**: Stripe integration for subscription management
+- **Subscription Tiers**: free | plus | pro | business | enterprise
+- **Payments**: Stripe integration with real billing API (checkout, portal, webhooks)
 
 ## Operational Maturity
 
@@ -928,6 +928,48 @@ The following areas are scaffolded but not fully implemented:
 - **Web Fly.io deployment**: `fly.web.toml` exists but `Dockerfile.web` is missing
 - **Load testing**: k6 scripts ready but no staging/production runs completed
 - **Grafana dashboards**: JSON definitions exist but not provisioned in production
+
+### Session 29 — Stripe Alignment + Mock Removal + Deployment (v0.9.31)
+
+**Stripe Billing Tier Alignment:**
+
+- Unified subscription tiers across the entire stack to `free | plus | pro | business | enterprise`
+- Backend `user.ex`: Updated `subscription_changeset` validation from
+  `~w(free basic premium enterprise)` to `~w(free plus pro business enterprise)`
+- Backend `stripe_webhook_controller.ex`: Replaced hardcoded placeholder `@tier_mapping` with
+  env-var-based `get_tier_from_env/1` using `:stripe_price_ids` config
+- Frontend `SubscriptionTier` type: Changed from `free | plus | pro | ultimate` to
+  `free | plus | pro | business | enterprise`
+- Updated all consuming components: `featureComparisonConstants.tsx`, `FeatureComparison.tsx`,
+  `SubscriptionCard.tsx`, `subscriptionCard.constants.tsx`, `payment-modal/constants.ts`
+- Premium store: Added `fetchBillingStatus()` action that syncs from `billingService.getStatus()`
+  backend API
+- PremiumPage: Wired to use `usePremiumStore` for state and `billingService.redirectToCheckout()`
+  for Stripe checkout
+
+**Mock Data Removal:**
+
+- Social Hub (`Social.tsx`): Replaced `MOCK_NOTIFICATIONS` and `MOCK_SEARCH_RESULTS` with real
+  `useNotificationStore` and `useSearchStore` via `useMemo` type adapters
+- Deleted `mock-data.ts`, removed barrel export from `social/index.ts`
+
+**Web Deployment Infrastructure:**
+
+- Created `infrastructure/docker/Dockerfile.web`: Multi-stage (node:20-alpine build +
+  nginx:1.27-alpine serve) with `VITE_API_URL`/`VITE_WS_URL` build args
+- Created `infrastructure/docker/nginx-web.conf`: SPA fallback, 1y cache for hashed assets, security
+  headers, gzip, `/health` endpoint
+- Created `apps/web/Dockerfile`: Simplified CI variant
+
+**Dashboard Reconciliation:**
+
+- Verified all 69/69 features implemented, updated `CURRENT_STATE_DASHBOARD.md` and
+  `PROJECT_STATUS.md` to 100%
+
+**Test Coverage:**
+
+- Added 4 tests for `fetchBillingStatus` (success, canceled status, API error handling, loading
+  state); 28/28 tests pass
 
 ### Sessions 25–26 Changes (v0.9.30 — final 7 features, 100% completion)
 

@@ -116,10 +116,10 @@ describe('premiumStore', () => {
 
     it('should overwrite previous subscription when called again', () => {
       usePremiumStore.getState().setSubscription('plus', '2026-03-01T00:00:00Z');
-      usePremiumStore.getState().setSubscription('ultimate', '2026-12-31T23:59:59Z');
+      usePremiumStore.getState().setSubscription('enterprise', '2026-12-31T23:59:59Z');
 
       const s = usePremiumStore.getState();
-      expect(s.currentTier).toBe('ultimate');
+      expect(s.currentTier).toBe('enterprise');
       expect(s.expiresAt).toBe('2026-12-31T23:59:59Z');
     });
   });
@@ -305,9 +305,89 @@ describe('premiumStore', () => {
       usePremiumStore.getState().setSubscription('plus', '2026-06-01T00:00:00Z');
       expect(usePremiumStore.getState().currentTier).toBe('plus');
 
-      usePremiumStore.getState().setSubscription('ultimate', '2027-01-01T00:00:00Z');
-      expect(usePremiumStore.getState().currentTier).toBe('ultimate');
+      usePremiumStore.getState().setSubscription('enterprise', '2027-01-01T00:00:00Z');
+      expect(usePremiumStore.getState().currentTier).toBe('enterprise');
       expect(usePremiumStore.getState().isSubscribed).toBe(true);
+    });
+  });
+
+  // ── fetchBillingStatus ───────────────────────────────────────────────
+
+  describe('fetchBillingStatus', () => {
+    it('should set tier and status from billing API on success', async () => {
+      const mockStatus = {
+        tier: 'pro',
+        status: 'active',
+        currentPeriodEnd: '2027-06-01T00:00:00Z',
+      };
+
+      const { billingService } = await import('@/services/billing');
+      vi.spyOn(billingService, 'getStatus').mockResolvedValueOnce(
+        mockStatus as ReturnType<typeof billingService.getStatus> extends Promise<infer T>
+          ? T
+          : never
+      );
+
+      await usePremiumStore.getState().fetchBillingStatus();
+
+      const state = usePremiumStore.getState();
+      expect(state.isSubscribed).toBe(true);
+      expect(state.currentTier).toBe('pro');
+      expect(state.expiresAt).toBe('2027-06-01T00:00:00Z');
+      expect(state.status).toBe('active');
+      expect(state.isLoading).toBe(false);
+    });
+
+    it('should set isSubscribed false for canceled status', async () => {
+      const mockStatus = {
+        tier: 'plus',
+        status: 'canceled',
+        currentPeriodEnd: '2026-03-01T00:00:00Z',
+      };
+
+      const { billingService } = await import('@/services/billing');
+      vi.spyOn(billingService, 'getStatus').mockResolvedValueOnce(
+        mockStatus as ReturnType<typeof billingService.getStatus> extends Promise<infer T>
+          ? T
+          : never
+      );
+
+      await usePremiumStore.getState().fetchBillingStatus();
+
+      const state = usePremiumStore.getState();
+      expect(state.isSubscribed).toBe(false);
+      expect(state.status).toBe('canceled');
+      expect(state.isLoading).toBe(false);
+    });
+
+    it('should handle API errors gracefully', async () => {
+      const { billingService } = await import('@/services/billing');
+      vi.spyOn(billingService, 'getStatus').mockRejectedValueOnce(new Error('Network error'));
+
+      await usePremiumStore.getState().fetchBillingStatus();
+
+      const state = usePremiumStore.getState();
+      expect(state.isLoading).toBe(false);
+      // State should remain at defaults
+      expect(state.isSubscribed).toBe(false);
+    });
+
+    it('should set isLoading while fetching', async () => {
+      let resolvePromise: (value: unknown) => void;
+      const pendingPromise = new Promise((resolve) => {
+        resolvePromise = resolve;
+      });
+
+      const { billingService } = await import('@/services/billing');
+      vi.spyOn(billingService, 'getStatus').mockReturnValueOnce(pendingPromise as never);
+
+      const fetchPromise = usePremiumStore.getState().fetchBillingStatus();
+      expect(usePremiumStore.getState().isLoading).toBe(true);
+
+      resolvePromise!({ tier: 'free', status: 'none', currentPeriodEnd: null });
+      await fetchPromise;
+
+      expect(usePremiumStore.getState().isLoading).toBe(false);
     });
   });
 });

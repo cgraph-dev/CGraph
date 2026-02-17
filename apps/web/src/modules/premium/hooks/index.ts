@@ -5,3 +5,4 @@
  */
 
 export { useSubscription } from './useSubscription';
+export { useBilling } from './useBilling';

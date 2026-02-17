@@ -3,12 +3,13 @@
  * Main orchestrator for the Social Hub
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UsersIcon, BellIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { useFriendStore } from '@/modules/social/store';
-import { MOCK_NOTIFICATIONS, MOCK_SEARCH_RESULTS } from './mock-data';
+import { useNotificationStore } from '@/modules/social/store';
+import { useSearchStore } from '@/modules/search/store';
 import { FriendsTab } from './FriendsTab';
 import { NotificationsTab } from './NotificationsTab';
 import { DiscoverTab } from './DiscoverTab';
@@ -41,13 +42,79 @@ export function Social() {
   } = useFriendStore();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [notifications, setNotifications] = useState<Notification[]>(MOCK_NOTIFICATIONS);
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+
+  // Wire real notification store
+  const {
+    notifications: storeNotifications,
+    unreadCount,
+    fetchNotifications,
+    markAsRead: markNotificationRead,
+    markAllAsRead: markAllNotificationsRead,
+  } = useNotificationStore();
+
+  // Wire real search store
+  const {
+    users: searchUsers,
+    groups: searchGroups,
+    forums: searchForums,
+    isLoading: _isSearching,
+    search: performSearch,
+    setQuery: setSearchStoreQuery,
+  } = useSearchStore();
 
   useEffect(() => {
     fetchFriends();
     fetchPendingRequests();
-  }, [fetchFriends, fetchPendingRequests]);
+    fetchNotifications();
+  }, [fetchFriends, fetchPendingRequests, fetchNotifications]);
+
+  // Adapt store notifications → UI Notification type
+  const notifications: Notification[] = useMemo(
+    () =>
+      storeNotifications.map((n) => ({
+        id: n.id,
+        type: n.type as Notification['type'],
+        title: n.title,
+        message: n.body,
+        timestamp: new Date(n.createdAt),
+        read: n.isRead,
+        avatarUrl: n.sender?.avatarUrl ?? undefined,
+      })),
+    [storeNotifications]
+  );
+
+  // Adapt store search results → UI SearchResult type
+  const searchResults: SearchResult[] = useMemo(() => {
+    const results: SearchResult[] = [];
+    for (const user of searchUsers) {
+      results.push({
+        id: user.id,
+        type: 'user',
+        name: user.displayName || user.username,
+        description: `@${user.username}`,
+        avatarUrl: user.avatarUrl ?? undefined,
+      });
+    }
+    for (const group of searchGroups) {
+      results.push({
+        id: group.id,
+        type: 'group',
+        name: group.name,
+        description: group.description || '',
+        memberCount: group.memberCount,
+      });
+    }
+    for (const forum of searchForums) {
+      results.push({
+        id: forum.id,
+        type: 'forum',
+        name: forum.name,
+        description: forum.description || '',
+        memberCount: forum.postCount,
+      });
+    }
+    return results;
+  }, [searchUsers, searchGroups, searchForums]);
 
   // Filter friends by search
   const filteredFriends = friends.filter(
@@ -56,34 +123,28 @@ export function Social() {
       friend.displayName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Filter notifications
-  const unreadNotifications = notifications.filter((n) => !n.read);
+  // Handle search via real search store
+  const handleSearch = useCallback(
+    (query: string) => {
+      setSearchQuery(query);
+      setSearchStoreQuery(query);
+      if (query.length >= 2) {
+        performSearch(query);
+      }
+    },
+    [setSearchStoreQuery, performSearch]
+  );
 
-  // Handle search
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    if (query.length > 0) {
-      // Filter mock results by query
-      const filtered = MOCK_SEARCH_RESULTS.filter(
-        (result) =>
-          result.name.toLowerCase().includes(query.toLowerCase()) ||
-          result.description.toLowerCase().includes(query.toLowerCase())
-      );
-      setSearchResults(filtered);
-    } else {
-      setSearchResults([]);
-    }
-  };
+  const handleMarkAsRead = useCallback(
+    (notificationId: string) => {
+      markNotificationRead(notificationId);
+    },
+    [markNotificationRead]
+  );
 
-  const handleMarkAsRead = (notificationId: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
-    );
-  };
-
-  const handleMarkAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-  };
+  const handleMarkAllAsRead = useCallback(() => {
+    markAllNotificationsRead();
+  }, [markAllNotificationsRead]);
 
   const tabs = [
     { id: 'friends' as SocialTab, label: 'Friends', icon: UsersIcon, count: friends.length },
@@ -91,7 +152,7 @@ export function Social() {
       id: 'notifications' as SocialTab,
       label: 'Notifications',
       icon: BellIcon,
-      count: unreadNotifications.length,
+      count: unreadCount,
     },
     { id: 'discover' as SocialTab, label: 'Discover', icon: MagnifyingGlassIcon, count: 0 },
   ];

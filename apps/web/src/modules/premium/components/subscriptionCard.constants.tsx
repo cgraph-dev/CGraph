@@ -13,21 +13,24 @@ export const TIER_ICONS: Record<SubscriptionTier, React.ReactNode> = {
   free: <StarIcon className="h-6 w-6" />,
   plus: <BoltIcon className="h-6 w-6" />,
   pro: <SparklesIcon className="h-6 w-6" />,
-  ultimate: <RocketLaunchIcon className="h-6 w-6" />,
+  business: <RocketLaunchIcon className="h-6 w-6" />,
+  enterprise: <RocketLaunchIcon className="h-6 w-6" />,
 };
 
 export const TIER_COLORS: Record<SubscriptionTier, string> = {
   free: 'gray',
   plus: 'blue',
   pro: 'purple',
-  ultimate: 'amber',
+  business: 'amber',
+  enterprise: 'rose',
 };
 
 export const TIER_GRADIENTS: Record<SubscriptionTier, string> = {
   free: 'from-gray-500 to-gray-600',
   plus: 'from-blue-500 to-cyan-500',
   pro: 'from-purple-500 to-pink-500',
-  ultimate: 'from-amber-500 to-orange-600',
+  business: 'from-amber-500 to-orange-600',
+  enterprise: 'from-rose-500 to-red-600',
 };
 
 export const Crown: React.FC<{ className?: string }> = ({ className }) => (

@@ -89,10 +89,10 @@ audit and web test coverage
 
 ```
 Total Features:     69
-Implemented:        62 (90%)
-Remaining:           7 (10%)
+Implemented:        69 (100%)
+Remaining:           0
 
-████████████████████████░░ 90%
+██████████████████████████ 100%
 ```
 
 ### By Category
@@ -102,34 +102,34 @@ Remaining:           7 (10%)
 | Calendar/Events  | 100%     | ██████████████████████ |
 | Referrals        | 100%     | ██████████████████████ |
 | Moderation       | 100%     | ██████████████████████ | Marketplace moderation + admin API        |
-| Private Messages | 83%      | ██████████████████░░░░ |
-| Announcements    | 83%      | ██████████████████░░░░ |
-| Core Forums      | 80%      | █████████████████░░░░░ |
-| Search           | 75%      | █████████████████░░░░░ | PostgreSQL full-text; Meilisearch planned |
-| Formatting       | 80%      | █████████████████░░░░░ |
-| Reputation       | 75%      | ████████████████░░░░░░ |
-| User System      | 67%      | ██████████████░░░░░░░░ |
+| Private Messages | 100%     | ██████████████████████ |
+| Announcements    | 100%     | ██████████████████████ |
+| Core Forums      | 100%     | ██████████████████████ | Hierarchy, permissions, subscriptions     |
+| Search           | 100%     | ██████████████████████ | PostgreSQL full-text; Meilisearch planned |
+| Formatting       | 100%     | ██████████████████████ | Multi-quote implemented                   |
+| Reputation       | 100%     | ██████████████████████ |
+| User System      | 100%     | ██████████████████████ | Email/push notifs, profile visibility     |
 
 ---
 
 ## 🏗️ Architecture Status
 
-| Component         | Tech Stack           | Status | Notes                                                |
-| ----------------- | -------------------- | ------ | ---------------------------------------------------- |
-| Backend API       | Phoenix 1.8 / Elixir | ✅     | Router split into 8 modules                          |
-| Web App           | React 19 / Vite      | ✅     | Components organized (9/10)                          |
-| Landing App       | React 19 / Vite      | ✅     | 98 tests, Lighthouse CI, visual regression           |
-| Mobile App        | Expo 54 / RN 0.81    | ✅     | 10 real Zustand stores, WebSocket integration        |
-| Real-time         | Phoenix Channels     | ✅     | WebSocket + PubSub sharding                          |
-| Database          | PostgreSQL 16        | ✅     | 94 tables, optimized                                 |
-| Webhooks          | Oban + Finch         | ✅     | HMAC-SHA256 signed, exponential backoff, 5 retries   |
-| WebRTC            | GenServer + ETS      | ✅     | TURN/SFU config, call history DB persistence         |
-| CDN               | Cloudflare           | ✅     | Global edge caching                                  |
-| Hosting (API)     | Fly.io               | ✅     | Primary: Frankfurt (fra); Read replica: IAD          |
-| Hosting (Web)     | Fly.io               | ⚠️     | Configured (fly.web.toml) but Dockerfile.web missing |
-| Hosting (Landing) | Vercel               | ✅     | Edge deployment via Vercel                           |
-| Build             | Turborepo            | ✅     | Remote caching enabled                               |
-| Bundles           | size-limit           | ✅     | 8 budget entries, CI-gated                           |
+| Component         | Tech Stack           | Status | Notes                                              |
+| ----------------- | -------------------- | ------ | -------------------------------------------------- |
+| Backend API       | Phoenix 1.8 / Elixir | ✅     | Router split into 8 modules                        |
+| Web App           | React 19 / Vite      | ✅     | Components organized (9/10)                        |
+| Landing App       | React 19 / Vite      | ✅     | 98 tests, Lighthouse CI, visual regression         |
+| Mobile App        | Expo 54 / RN 0.81    | ✅     | 10 real Zustand stores, WebSocket integration      |
+| Real-time         | Phoenix Channels     | ✅     | WebSocket + PubSub sharding                        |
+| Database          | PostgreSQL 16        | ✅     | 94 tables, optimized                               |
+| Webhooks          | Oban + Finch         | ✅     | HMAC-SHA256 signed, exponential backoff, 5 retries |
+| WebRTC            | GenServer + ETS      | ✅     | TURN/SFU config, call history DB persistence       |
+| CDN               | Cloudflare           | ✅     | Global edge caching                                |
+| Hosting (API)     | Fly.io               | ✅     | Primary: Frankfurt (fra); Read replica: IAD        |
+| Hosting (Web)     | Fly.io               | ✅     | Dockerfile.web + nginx SPA config                  |
+| Hosting (Landing) | Vercel               | ✅     | Edge deployment via Vercel                         |
+| Build             | Turborepo            | ✅     | Remote caching enabled                             |
+| Bundles           | size-limit           | ✅     | 8 budget entries, CI-gated                         |
 
 ### Module Architecture (v0.9.26)
 
@@ -242,11 +242,11 @@ apps/mobile/src/screens/
 
 ### P2 — Medium Priority
 
-| Issue                        | Owner     | ETA     |
-| ---------------------------- | --------- | ------- |
-| Email notifications          | @dev-team | Q1 2026 |
-| Push notifications (browser) | @dev-team | Q1 2026 |
-| Forum hierarchy (subforums)  | @dev-team | Q2 2026 |
+| Issue                   | Owner     | ETA     |
+| ----------------------- | --------- | ------- |
+| ~~Email notifications~~ | @dev-team | ✅ Done |
+| ~~Push notifications~~  | @dev-team | ✅ Done |
+| ~~Forum hierarchy~~     | @dev-team | ✅ Done |
 
 ---
 

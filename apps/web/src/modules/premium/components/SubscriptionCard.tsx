@@ -99,7 +99,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
       )}
 
       {/* Best value badge */}
-      {plan.tier === 'ultimate' && (
+      {plan.tier === 'enterprise' && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}

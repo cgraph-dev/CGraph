@@ -212,11 +212,7 @@ defmodule CGraphWeb.StripeWebhookController do
 
   @tier_mapping %{
     # Map Stripe price IDs to tier names
-    # These should be configured via environment variables in production
-    "price_premium_monthly" => "premium",
-    "price_premium_yearly" => "premium",
-    "price_enterprise_monthly" => "enterprise",
-    "price_enterprise_yearly" => "enterprise"
+    # In production, use env-based mapping via get_tier_from_env/1
   }
 
   defp determine_tier_from_subscription(%{items: %{data: items}}) do
@@ -224,22 +220,23 @@ defmodule CGraphWeb.StripeWebhookController do
     case items do
       [%{price: %{id: price_id}} | _] ->
         tier = Map.get(@tier_mapping, price_id, get_tier_from_env(price_id))
-        {:ok, tier || "premium"}
+        {:ok, tier || "plus"}
 
       _ ->
-        {:ok, "premium"}
+        {:ok, "plus"}
     end
   end
 
-  defp determine_tier_from_subscription(_), do: {:ok, "premium"}
+  defp determine_tier_from_subscription(_), do: {:ok, "plus"}
 
   defp get_tier_from_env(price_id) do
-    premium_price = Application.get_env(:cgraph, :stripe_premium_price_id)
-    enterprise_price = Application.get_env(:cgraph, :stripe_enterprise_price_id)
+    price_ids = Application.get_env(:cgraph, :stripe_price_ids, %{})
 
     cond do
-      price_id == premium_price -> "premium"
-      price_id == enterprise_price -> "enterprise"
+      price_id == Map.get(price_ids, :plus) -> "plus"
+      price_id == Map.get(price_ids, :pro) -> "pro"
+      price_id == Map.get(price_ids, :business) -> "business"
+      price_id == Map.get(price_ids, :enterprise) -> "enterprise"
       true -> nil
     end
   end

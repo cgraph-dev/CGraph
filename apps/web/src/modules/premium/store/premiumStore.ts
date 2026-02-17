@@ -7,6 +7,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { safeLocalStorage } from '@/lib/safeStorage';
+import { billingService } from '@/services/billing';
 import type { SubscriptionTier, PurchaseHistory } from './types';
 
 export interface PremiumState {
@@ -15,6 +16,7 @@ export interface PremiumState {
   currentTier: SubscriptionTier | null;
   subscribedAt: string | null;
   expiresAt: string | null;
+  status: 'active' | 'trialing' | 'past_due' | 'canceled' | 'unpaid' | 'none';
 
   // Coins
   coinBalance: number;
@@ -22,7 +24,11 @@ export interface PremiumState {
   // Purchase history
   purchaseHistory: PurchaseHistory[];
 
+  // Loading
+  isLoading: boolean;
+
   // Actions
+  fetchBillingStatus: () => Promise<void>;
   setSubscription: (tier: SubscriptionTier, expiresAt: string) => void;
   cancelSubscription: () => void;
   addCoins: (amount: number) => void;
@@ -42,8 +48,28 @@ export const usePremiumStore = create<PremiumState>()(
       currentTier: null,
       subscribedAt: null,
       expiresAt: null,
+      status: 'none',
       coinBalance: 0,
       purchaseHistory: [],
+      isLoading: false,
+
+      // Sync from backend billing API
+      fetchBillingStatus: async () => {
+        set({ isLoading: true });
+        try {
+          const billing = await billingService.getStatus();
+          const tier = (billing.tier === 'free' ? null : billing.tier) as SubscriptionTier | null;
+          set({
+            isSubscribed: billing.status === 'active' || billing.status === 'trialing',
+            currentTier: tier,
+            expiresAt: billing.currentPeriodEnd,
+            status: billing.status,
+            isLoading: false,
+          });
+        } catch {
+          set({ isLoading: false });
+        }
+      },
 
       // Actions
       setSubscription: (tier, expiresAt) => {

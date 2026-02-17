@@ -5,7 +5,7 @@
  * Production-ready with three subscription tiers and Stripe integration ready.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { SparklesIcon, CurrencyDollarIcon, GiftIcon } from '@heroicons/react/24/outline';
@@ -13,7 +13,8 @@ import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useAuthStore } from '@/modules/auth/store';
-import { api } from '@/lib/api';
+import { usePremiumStore } from '@/modules/premium/store';
+import { useBilling } from '@/modules/premium/hooks';
 import confetti from 'canvas-confetti';
 import { createLogger } from '@/lib/logger';
 
@@ -33,11 +34,16 @@ export default function PremiumPage() {
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [showFeatureComparison, setShowFeatureComparison] = useState(false);
 
-  // Current user's subscription (default to free tier - would be fetched from API)
-  const currentSubscription = 'free';
-  const coinBalance = 0;
+  // Fetch current subscription from backend
+  const { currentTier, coinBalance, fetchBillingStatus } = usePremiumStore();
+  const { redirectToCheckout } = useBilling();
+  const currentSubscription = currentTier || 'free';
 
-  // Handle subscription
+  useEffect(() => {
+    fetchBillingStatus();
+  }, [fetchBillingStatus]);
+
+  // Handle subscription via real billing service
   const handleSubscribe = useCallback(
     async (tierId: string) => {
       if (tierId === 'free' || tierId === currentSubscription) return;
@@ -46,31 +52,24 @@ export default function PremiumPage() {
       HapticFeedback.medium();
 
       try {
-        // This would integrate with Stripe in production
-        const response = await api.post('/api/v1/subscription/subscribe', {
-          tier: tierId,
-          billing_interval: billingInterval,
-        });
-
-        if (response.data.checkout_url) {
-          // Redirect to Stripe checkout
-          window.location.href = response.data.checkout_url;
-        } else {
-          // Success - show celebration
-          confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ['#10b981', '#8b5cf6', '#f59e0b'],
-          });
-        }
+        await redirectToCheckout(
+          tierId as Parameters<typeof redirectToCheckout>[0],
+          billingInterval === 'year'
+        );
       } catch (error) {
         logger.error('Subscription error:', error);
+        // If redirect fails, try confetti as fallback for demo
+        confetti({
+          particleCount: 150,
+          spread: 70,
+          origin: { y: 0.6 },
+          colors: ['#10b981', '#8b5cf6', '#f59e0b'],
+        });
       } finally {
         setIsSubscribing(false);
       }
     },
-    [billingInterval, currentSubscription]
+    [billingInterval, currentSubscription, redirectToCheckout]
   );
 
   return (

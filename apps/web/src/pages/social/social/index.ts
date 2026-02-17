@@ -9,9 +9,6 @@ export type * from './types';
 // Utils
 export * from './utils';
 
-// Mock Data
-export * from './mock-data';
-
 // Components
 export { FriendsTab } from './FriendsTab';
 export { NotificationsTab } from './NotificationsTab';

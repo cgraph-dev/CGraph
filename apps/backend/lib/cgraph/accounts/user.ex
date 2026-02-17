@@ -446,7 +446,7 @@ defmodule CGraph.Accounts.User do
       :stripe_customer_id,
       :is_premium
     ])
-    |> validate_inclusion(:subscription_tier, ~w(free basic premium enterprise))
+    |> validate_inclusion(:subscription_tier, ~w(free plus pro business enterprise))
   end
 
   defp validate_username(changeset) do
