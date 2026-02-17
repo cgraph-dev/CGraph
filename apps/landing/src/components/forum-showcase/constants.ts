@@ -16,13 +16,13 @@ export const initialCategories: ForumCategory[] = [
   {
     id: 'announcements',
     name: 'Announcements',
-    icon: '📢',
+    icon: 'announcement',
     collapsed: false,
     boards: [
       {
         id: 'news',
         name: 'News & Updates',
-        icon: '📰',
+        icon: 'news',
         description: 'Latest platform updates',
         threads: 42,
         posts: 156,
@@ -31,7 +31,7 @@ export const initialCategories: ForumCategory[] = [
       {
         id: 'events',
         name: 'Events',
-        icon: '🎉',
+        icon: 'event',
         description: 'Community events calendar',
         threads: 18,
         posts: 89,
@@ -42,13 +42,13 @@ export const initialCategories: ForumCategory[] = [
   {
     id: 'community',
     name: 'Community',
-    icon: '👥',
+    icon: 'community',
     collapsed: false,
     boards: [
       {
         id: 'introductions',
         name: 'Introductions',
-        icon: '👋',
+        icon: 'welcome',
         description: 'Say hello to the community',
         threads: 234,
         posts: 1205,
@@ -57,7 +57,7 @@ export const initialCategories: ForumCategory[] = [
       {
         id: 'general',
         name: 'General Discussion',
-        icon: '💬',
+        icon: 'chat',
         description: 'Talk about anything',
         threads: 892,
         posts: 5621,
@@ -66,7 +66,7 @@ export const initialCategories: ForumCategory[] = [
       {
         id: 'showcase',
         name: 'Project Showcase',
-        icon: '🚀',
+        icon: 'rocket',
         description: 'Share your creations',
         threads: 156,
         posts: 743,
@@ -77,13 +77,13 @@ export const initialCategories: ForumCategory[] = [
   {
     id: 'support',
     name: 'Support',
-    icon: '🛠️',
+    icon: 'support',
     collapsed: false,
     boards: [
       {
         id: 'help',
         name: 'Help & Questions',
-        icon: '❓',
+        icon: 'question',
         description: 'Get help from the community',
         threads: 567,
         posts: 2341,
@@ -92,7 +92,7 @@ export const initialCategories: ForumCategory[] = [
       {
         id: 'bugs',
         name: 'Bug Reports',
-        icon: '🐛',
+        icon: 'bug',
         description: 'Report issues',
         threads: 89,
         posts: 412,
@@ -101,7 +101,7 @@ export const initialCategories: ForumCategory[] = [
       {
         id: 'feedback',
         name: 'Feedback',
-        icon: '💡',
+        icon: 'idea',
         description: 'Share your ideas',
         threads: 123,
         posts: 678,
@@ -113,32 +113,32 @@ export const initialCategories: ForumCategory[] = [
 
 export const features: Feature[] = [
   {
-    icon: '🎯',
+    icon: 'target',
     title: 'Drag & Drop',
     description: 'Reorganize boards instantly with intuitive drag and drop',
   },
   {
-    icon: '📁',
+    icon: 'folder',
     title: 'Categories',
     description: 'Group related boards into collapsible categories',
   },
   {
-    icon: '🎨',
+    icon: 'palette',
     title: 'Custom Icons',
     description: 'Personalize each board with custom icons and colors',
   },
   {
-    icon: '📊',
+    icon: 'stats',
     title: 'Live Stats',
     description: 'Real-time thread and post counts per board',
   },
   {
-    icon: '🔐',
+    icon: 'lock',
     title: 'Permissions',
     description: 'Fine-grained access control per board',
   },
   {
-    icon: '⚡',
+    icon: 'bolt',
     title: 'Instant Save',
     description: 'Changes sync automatically across all devices',
   },
@@ -154,9 +154,9 @@ export const threadPrefixes: ThreadPrefix[] = [
 ];
 
 export const tabs: TabItem[] = [
-  { id: 'organize', label: 'Organize Boards', icon: '📋' },
-  { id: 'threads', label: 'Thread Prefixes', icon: '🏷️' },
-  { id: 'moderation', label: 'Moderation', icon: '🛡️' },
+  { id: 'organize', label: 'Organize Boards', icon: 'clipboard' },
+  { id: 'threads', label: 'Thread Prefixes', icon: 'tag' },
+  { id: 'moderation', label: 'Moderation', icon: 'shield' },
 ];
 
 export const sampleThreads: SampleThread[] = [
@@ -188,19 +188,19 @@ export const sampleThreads: SampleThread[] = [
 
 export const moderationActions: ModerationAction[] = [
   {
-    icon: '📌',
+    icon: 'pin',
     title: 'Pin Threads',
     desc: 'Highlight important discussions',
   },
-  { icon: '🔒', title: 'Lock Threads', desc: 'Prevent further replies' },
-  { icon: '🔀', title: 'Move Threads', desc: 'Reorganize between boards' },
+  { icon: 'lock', title: 'Lock Threads', desc: 'Prevent further replies' },
+  { icon: 'move', title: 'Move Threads', desc: 'Reorganize between boards' },
   {
-    icon: '✂️',
+    icon: 'split',
     title: 'Split Threads',
     desc: 'Separate off-topic discussions',
   },
-  { icon: '🔗', title: 'Merge Threads', desc: 'Combine duplicate topics' },
-  { icon: '⚠️', title: 'User Warnings', desc: 'Track rule violations' },
+  { icon: 'link', title: 'Merge Threads', desc: 'Combine duplicate topics' },
+  { icon: 'warning', title: 'User Warnings', desc: 'Track rule violations' },
 ];
 
 export const moderationQueue: QueueItem[] = [

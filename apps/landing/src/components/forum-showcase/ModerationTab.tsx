@@ -5,6 +5,7 @@
 
 import { motion } from 'framer-motion';
 import { moderationActions, moderationQueue } from './constants';
+import { ForumNeonIcon } from './ForumNeonIcon';
 
 export function ModerationTab() {
   return (
@@ -27,7 +28,7 @@ export function ModerationTab() {
             transition={{ delay: i * 0.1 }}
             whileHover={{ borderColor: 'rgba(16, 185, 129, 0.5)' }}
           >
-            <span className="text-2xl">{action.icon}</span>
+            <ForumNeonIcon variant={action.icon} className="h-6 w-6" />
             <div>
               <h4 className="font-medium text-white">{action.title}</h4>
               <p className="text-sm text-gray-400">{action.desc}</p>

@@ -5,6 +5,7 @@
 
 import { motion } from 'framer-motion';
 import { features } from './constants';
+import { ForumNeonIcon } from './ForumNeonIcon';
 import { LandingButton } from '../marketing/ui/LandingButton';
 import { WEB_APP_URL } from '@/constants';
 
@@ -28,7 +29,7 @@ export function FeaturesSidebar() {
             viewport={{ once: true }}
             transition={{ delay: i * 0.1 }}
           >
-            <span className="text-2xl">{feature.icon}</span>
+            <ForumNeonIcon variant={feature.icon} className="h-6 w-6" />
             <div>
               <h4 className="font-medium text-white">{feature.title}</h4>
               <p className="text-sm text-gray-400">{feature.description}</p>

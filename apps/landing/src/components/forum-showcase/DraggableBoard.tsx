@@ -5,6 +5,7 @@
 
 import { memo } from 'react';
 import { motion, Reorder, useDragControls } from 'framer-motion';
+import { ForumNeonIcon } from './ForumNeonIcon';
 import type { DraggableBoardProps } from './types';
 
 export const DraggableBoard = memo(function DraggableBoard({
@@ -39,10 +40,10 @@ export const DraggableBoard = memo(function DraggableBoard({
       </motion.div>
 
       <div
-        className="flex h-12 w-12 items-center justify-center rounded-lg text-2xl"
+        className="flex h-12 w-12 items-center justify-center rounded-lg"
         style={{ backgroundColor: `${board.color}20` }}
       >
-        {board.icon}
+        <ForumNeonIcon variant={board.icon} className="h-7 w-7" color={board.color} />
       </div>
 
       <div className="min-w-0 flex-1">

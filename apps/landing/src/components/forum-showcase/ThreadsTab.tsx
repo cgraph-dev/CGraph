@@ -5,6 +5,7 @@
 
 import { motion } from 'framer-motion';
 import { threadPrefixes, sampleThreads } from './constants';
+import { ForumNeonIcon } from './ForumNeonIcon';
 
 export function ThreadsTab() {
   return (
@@ -51,9 +52,15 @@ export function ThreadsTab() {
                 {thread.prefix}
               </span>
               <span className="flex-1 truncate text-white">{thread.title}</span>
-              <div className="flex items-center gap-4 text-sm text-gray-500">
-                <span>💬 {thread.replies}</span>
-                <span>👁️ {thread.views}</span>
+              <div className="flex items-center gap-4 text-xs text-gray-500">
+                <div className="flex items-center gap-1">
+                  <ForumNeonIcon variant="chat" className="h-3.5 w-3.5" color="currentColor" />
+                  <span>{thread.replies}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <ForumNeonIcon variant="eye" className="h-3.5 w-3.5" color="currentColor" />
+                  <span>{thread.views}</span>
+                </div>
               </div>
             </motion.div>
           );

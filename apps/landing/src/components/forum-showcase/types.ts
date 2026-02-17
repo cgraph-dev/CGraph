@@ -1,11 +1,9 @@
-/**
- * ForumShowcase - Type Definitions
- */
+import type { ForumIconVariant } from './ForumNeonIcon';
 
 export interface ForumBoard {
   id: string;
   name: string;
-  icon: string;
+  icon: ForumIconVariant;
   description: string;
   threads: number;
   posts: number;
@@ -15,7 +13,7 @@ export interface ForumBoard {
 export interface ForumCategory {
   id: string;
   name: string;
-  icon: string;
+  icon: ForumIconVariant;
   boards: ForumBoard[];
   collapsed: boolean;
 }
@@ -39,7 +37,7 @@ export interface ThreadPrefix {
 }
 
 export interface Feature {
-  icon: string;
+  icon: ForumIconVariant;
   title: string;
   description: string;
 }
@@ -52,7 +50,7 @@ export interface SampleThread {
 }
 
 export interface ModerationAction {
-  icon: string;
+  icon: ForumIconVariant;
   title: string;
   desc: string;
 }
@@ -65,7 +63,7 @@ export interface QueueItem {
 export interface TabItem {
   id: 'organize' | 'threads' | 'moderation';
   label: string;
-  icon: string;
+  icon: ForumIconVariant;
 }
 
 export type ActiveTab = 'organize' | 'threads' | 'moderation';

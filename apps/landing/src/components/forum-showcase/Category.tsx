@@ -6,6 +6,7 @@
 import { memo } from 'react';
 import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { DraggableBoard } from './DraggableBoard';
+import { ForumNeonIcon } from './ForumNeonIcon';
 import type { CategoryProps } from './types';
 
 export const Category = memo(function Category({
@@ -23,7 +24,7 @@ export const Category = memo(function Category({
         className="flex w-full items-center gap-3 p-4 transition-colors hover:bg-gray-800/50"
         onClick={onToggle}
       >
-        <span className="text-2xl">{category.icon}</span>
+        <ForumNeonIcon variant={category.icon} className="h-6 w-6" />
         <span className="flex-1 text-left font-semibold text-white">{category.name}</span>
         <span className="text-sm text-gray-500">{category.boards.length} boards</span>
         <motion.svg

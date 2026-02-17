@@ -12,6 +12,7 @@ import { ModerationTab } from './ModerationTab';
 import { FeaturesSidebar } from './FeaturesSidebar';
 import { AnimatedBorder } from '../customization-demo/effects';
 import type { ForumCategory, ForumBoard, ActiveTab } from './types';
+import { ForumNeonIcon } from './ForumNeonIcon';
 
 import { GradientText } from '../marketing/ui/GradientText';
 
@@ -87,7 +88,7 @@ export function ForumShowcase() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <span>{tab.icon}</span>
+              <ForumNeonIcon variant={tab.icon} className="h-5 w-5" />
               <span>{tab.label}</span>
             </motion.button>
           ))}
