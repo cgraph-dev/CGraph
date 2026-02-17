@@ -482,12 +482,9 @@ defmodule CGraph.Search do
 
   @doc """
   Record a search query for analytics.
+  Delegates to `CGraph.Accounts.Search`.
   """
-  def record_search(_user, _query, _result_count) do
-    # This would insert into a search_history table
-    # For analytics and improving search
-    :ok
-  end
+  defdelegate record_search(user, query, result_count), to: CGraph.Accounts.Search
 
   # Private helpers
 

@@ -257,7 +257,7 @@ module.exports = ({ config }) => {
       wsUrl: getWsUrl(),
       environment: IS_DEV ? 'development' : IS_PREVIEW ? 'preview' : 'production',
       eas: {
-        projectId: process.env.EAS_PROJECT_ID || 'your-project-id',
+        projectId: process.env.EAS_PROJECT_ID || 'cgraph-production',
       },
     },
     updates: {
