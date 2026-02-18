@@ -111,10 +111,17 @@ jobs:
             echo "⚠️ Web coverage not available" >> $GITHUB_STEP_SUMMARY
           fi
 
+          # Landing coverage
+          if [ -f apps/landing/coverage/coverage-summary.json ]; then
+            LAND_LINES=$(jq -r '.total.lines.pct' apps/landing/coverage/coverage-summary.json 2>/dev/null || echo "N/A")
+            LAND_BRANCH=$(jq -r '.total.branches.pct' apps/landing/coverage/coverage-summary.json 2>/dev/null || echo "N/A")
+            echo "| Landing | ${LAND_LINES}% | ${LAND_BRANCH}% | 50% |" >> $GITHUB_STEP_SUMMARY
+          fi
+
           # Backend coverage
           if [ -d apps/backend/cover ]; then
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Backend coverage available in artifacts" >> $GITHUB_STEP_SUMMARY
+            echo "Backend coverage available in artifacts (target: 75%)" >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: Upload Web Coverage
@@ -160,16 +167,37 @@ jobs:
               const branches = webCoverage.total.branches.pct;
               const functions = webCoverage.total.functions.pct;
               
-              const getEmoji = (pct) => pct >= 60 ? '✅' : pct >= 40 ? '⚠️' : '❌';
+              const getEmoji = (pct, target) => pct >= target ? '✅' : pct >= target * 0.8 ? '⚠️' : '❌';
               
+              body += '### Web App\n\n';
               body += '| Metric | Coverage | Target | Status |\n';
               body += '|--------|----------|--------|--------|\n';
-              body += `| Lines | ${lines.toFixed(1)}% | 60% | ${getEmoji(lines)} |\n`;
-              body += `| Branches | ${branches.toFixed(1)}% | 60% | ${getEmoji(branches)} |\n`;
-              body += `| Functions | ${functions.toFixed(1)}% | 60% | ${getEmoji(functions)} |\n`;
+              body += `| Lines | ${lines.toFixed(1)}% | 60% | ${getEmoji(lines, 60)} |\n`;
+              body += `| Branches | ${branches.toFixed(1)}% | 60% | ${getEmoji(branches, 60)} |\n`;
+              body += `| Functions | ${functions.toFixed(1)}% | 60% | ${getEmoji(functions, 60)} |\n`;
             } catch (e) {
-              body += '⚠️ Coverage data not available\n';
+              body += '⚠️ Web coverage data not available\n';
             }
+
+            try {
+              const landCoverage = JSON.parse(
+                fs.readFileSync('apps/landing/coverage/coverage-summary.json', 'utf8')
+              );
+              const lines = landCoverage.total.lines.pct;
+              const branches = landCoverage.total.branches.pct;
+              
+              const getEmoji = (pct, target) => pct >= target ? '✅' : pct >= target * 0.8 ? '⚠️' : '❌';
+              
+              body += '\n### Landing App\n\n';
+              body += '| Metric | Coverage | Target | Status |\n';
+              body += '|--------|----------|--------|--------|\n';
+              body += `| Lines | ${lines.toFixed(1)}% | 50% | ${getEmoji(lines, 50)} |\n`;
+              body += `| Branches | ${branches.toFixed(1)}% | 50% | ${getEmoji(branches, 50)} |\n`;
+            } catch (e) {
+              // Landing coverage may not be available
+            }
+
+            body += '\n### Backend\n\nBackend target: 75% (Elixir mix test --cover)\n';
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -204,9 +232,47 @@ jobs:
 
       - name: Check Coverage Thresholds
         run: |
-          echo "Running tests with coverage thresholds..."
+          echo "=== Checking Web App Coverage Thresholds ==="
           pnpm run test --filter=@cgraph/web -- --run --coverage || {
-            echo "❌ Coverage below thresholds!"
+            echo "❌ Web coverage below thresholds!"
             echo "Required: 60% lines, 60% branches, 60% functions"
             exit 1
           }
+
+          echo ""
+          echo "=== Checking Landing App Coverage Thresholds ==="
+          pnpm run test --filter=@cgraph/landing -- --run --coverage || {
+            echo "❌ Landing coverage below thresholds!"
+            exit 1
+          }
+
+      - name: Check Backend Coverage Thresholds
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+
+      - name: Backend Coverage Gate
+        working-directory: apps/backend
+        env:
+          MIX_ENV: test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cgraph_test
+        run: |
+          mix deps.get
+          mix test --cover --export-coverage default 2>&1 | tee /tmp/mix_test_output.txt
+
+          # Extract coverage percentage from mix test output
+          # mix test --cover prints "Coverage: XX.X%"
+          COVERAGE=$(grep -oP 'Coverage:\s+\K[\d.]+' /tmp/mix_test_output.txt || echo "0")
+          echo "Backend coverage: ${COVERAGE}%"
+
+          # Enforce 75% minimum for backend
+          if [ "$(echo "$COVERAGE < 75" | bc -l 2>/dev/null || echo 1)" = "1" ]; then
+            # bc not available, use awk
+            PASS=$(echo "$COVERAGE" | awk '{print ($1 >= 75) ? "yes" : "no"}')
+            if [ "$PASS" = "no" ]; then
+              echo "❌ Backend coverage ${COVERAGE}% is below 75% threshold!"
+              exit 1
+            fi
+          fi
+          echo "✅ Backend coverage ${COVERAGE}% meets 75% threshold"
