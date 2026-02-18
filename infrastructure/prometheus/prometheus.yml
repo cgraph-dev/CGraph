@@ -7,16 +7,17 @@ global:
   external_labels:
     monitor: 'cgraph-dev'
 
-# Alertmanager configuration (optional)
-# alerting:
-#   alertmanagers:
-#     - static_configs:
-#         - targets:
-#           - alertmanager:9093
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
 
 # SLO recording rules and alert definitions
 rule_files:
   - 'rules/cgraph-slo-rules.yml'
+  - 'rules/cgraph-alerting-rules.yml'
 
 scrape_configs:
   # Prometheus self-monitoring

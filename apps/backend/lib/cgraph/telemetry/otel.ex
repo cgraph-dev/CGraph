@@ -40,6 +40,7 @@ defmodule CGraph.Telemetry.OpenTelemetry do
   """
 
   require Logger
+  require OpenTelemetry.Tracer, as: Tracer
 
   @doc """
   Setup OpenTelemetry instrumentation.
@@ -50,24 +51,25 @@ defmodule CGraph.Telemetry.OpenTelemetry do
   def setup do
     Logger.info("[OpenTelemetry] Setting up distributed tracing...")
 
-    # Auto-instrument Phoenix endpoints
-    setup_phoenix_instrumentation()
+    # Auto-instrument Phoenix endpoints (creates spans for every HTTP request)
+    OpentelemetryPhoenix.setup(adapter: :cowboy2)
 
-    # Auto-instrument Ecto queries
-    setup_ecto_instrumentation()
+    # Auto-instrument Ecto queries (creates spans for every DB query)
+    OpentelemetryEcto.setup([:cgraph, :repo])
 
-    # Auto-instrument Oban jobs
-    setup_oban_instrumentation()
+    # Auto-instrument Oban jobs (creates spans for every background job)
+    OpentelemetryOban.setup()
 
-    # Register custom span processors for business events
-    setup_custom_spans()
+    # Attach custom telemetry handlers for slow query warnings + business metrics
+    setup_slow_query_alerts()
+    setup_business_event_spans()
 
     Logger.info("[OpenTelemetry] Tracing configured successfully")
     :ok
   end
 
   @doc """
-  Create a custom span for an operation.
+  Create a custom span for an operation using the real OpenTelemetry SDK.
 
   ## Examples
 
@@ -79,36 +81,24 @@ defmodule CGraph.Telemetry.OpenTelemetry do
       end)
   """
   def with_span(name, attributes \\ %{}, fun) when is_function(fun, 0) do
-    start_time = System.monotonic_time(:microsecond)
+    otel_attrs = Enum.map(attributes, fn {k, v} -> {String.to_atom(k), to_string(v)} end)
 
-    try do
-      result = fun.()
+    Tracer.with_span name, %{attributes: otel_attrs} do
+      try do
+        result = fun.()
+        Tracer.set_status(:ok, "")
+        result
+      rescue
+        error ->
+          Tracer.set_status(:error, Exception.message(error))
 
-      duration_us = System.monotonic_time(:microsecond) - start_time
+          Tracer.set_attributes([
+            {:"error.type", inspect(error.__struct__)},
+            {:"error.message", Exception.message(error)}
+          ])
 
-      :telemetry.execute(
-        [:cgraph, :otel, :span],
-        %{duration: duration_us},
-        %{name: name, attributes: attributes, status: :ok}
-      )
-
-      result
-    rescue
-      error ->
-        duration_us = System.monotonic_time(:microsecond) - start_time
-
-        :telemetry.execute(
-          [:cgraph, :otel, :span],
-          %{duration: duration_us},
-          %{
-            name: name,
-            attributes: Map.put(attributes, "error.type", inspect(error.__struct__)),
-            status: :error,
-            error: error
-          }
-        )
-
-        reraise error, __STACKTRACE__
+          reraise error, __STACKTRACE__
+      end
     end
   end
 
@@ -144,74 +134,19 @@ defmodule CGraph.Telemetry.OpenTelemetry do
   end
 
   # ---------------------------------------------------------------------------
-  # Auto-Instrumentation Setup
+  # Slow Query Alerting (supplements OTel Ecto auto-instrumentation)
   # ---------------------------------------------------------------------------
 
-  defp setup_phoenix_instrumentation do
-    :telemetry.attach_many(
-      "otel-phoenix",
-      [
-        [:phoenix, :endpoint, :start],
-        [:phoenix, :endpoint, :stop],
-        [:phoenix, :endpoint, :exception],
-        [:phoenix, :router_dispatch, :start],
-        [:phoenix, :router_dispatch, :stop]
-      ],
-      &handle_phoenix_event/4,
-      nil
-    )
-  end
-
-  defp setup_ecto_instrumentation do
+  defp setup_slow_query_alerts do
     :telemetry.attach(
-      "otel-ecto",
+      "otel-slow-query-alert",
       [:cgraph, :repo, :query],
-      &handle_ecto_event/4,
+      &handle_slow_query/4,
       nil
     )
   end
 
-  defp setup_oban_instrumentation do
-    :telemetry.attach_many(
-      "otel-oban",
-      [
-        [:oban, :job, :start],
-        [:oban, :job, :stop],
-        [:oban, :job, :exception]
-      ],
-      &handle_oban_event/4,
-      nil
-    )
-  end
-
-  defp setup_custom_spans do
-    :telemetry.attach(
-      "otel-custom-spans",
-      [:cgraph, :otel, :span],
-      &handle_custom_span/4,
-      nil
-    )
-  end
-
-  # ---------------------------------------------------------------------------
-  # Event Handlers
-  # ---------------------------------------------------------------------------
-
-  defp handle_phoenix_event([:phoenix, :endpoint, :stop], measurements, metadata, _config) do
-    duration_ms = System.convert_time_unit(measurements.duration, :native, :millisecond)
-
-    Logger.debug(
-      "[OTel] Phoenix request",
-      method: metadata[:conn] && metadata[:conn].method,
-      path: metadata[:conn] && metadata[:conn].request_path,
-      status: metadata[:conn] && metadata[:conn].status,
-      duration_ms: duration_ms
-    )
-  end
-
-  defp handle_phoenix_event(_event, _measurements, _metadata, _config), do: :ok
-
-  defp handle_ecto_event([:cgraph, :repo, :query], measurements, metadata, _config) do
+  defp handle_slow_query([:cgraph, :repo, :query], measurements, metadata, _config) do
     duration_ms = System.convert_time_unit(measurements.total_time, :native, :millisecond)
 
     if duration_ms > 100 do
@@ -219,24 +154,27 @@ defmodule CGraph.Telemetry.OpenTelemetry do
         "[OTel] Slow query detected",
         source: metadata.source,
         query_time_ms: duration_ms,
-        queue_time_ms: measurements.queue_time && System.convert_time_unit(measurements.queue_time, :native, :millisecond)
+        queue_time_ms:
+          measurements.queue_time &&
+            System.convert_time_unit(measurements.queue_time, :native, :millisecond)
       )
     end
   end
 
-  defp handle_oban_event([:oban, :job, :stop], measurements, metadata, _config) do
-    duration_ms = System.convert_time_unit(measurements.duration, :native, :millisecond)
+  # ---------------------------------------------------------------------------
+  # Business Event Spans (Oban failures, custom span events)
+  # ---------------------------------------------------------------------------
 
-    Logger.debug(
-      "[OTel] Oban job completed",
-      worker: metadata.job.worker,
-      queue: metadata.job.queue,
-      duration_ms: duration_ms,
-      attempt: metadata.job.attempt
+  defp setup_business_event_spans do
+    :telemetry.attach(
+      "otel-oban-failure-alert",
+      [:oban, :job, :exception],
+      &handle_oban_failure/4,
+      nil
     )
   end
 
-  defp handle_oban_event([:oban, :job, :exception], _measurements, metadata, _config) do
+  defp handle_oban_failure([:oban, :job, :exception], _measurements, metadata, _config) do
     Logger.error(
       "[OTel] Oban job failed",
       worker: metadata.job.worker,
@@ -244,28 +182,5 @@ defmodule CGraph.Telemetry.OpenTelemetry do
       attempt: metadata.job.attempt,
       error: inspect(metadata.reason)
     )
-  end
-
-  defp handle_oban_event(_event, _measurements, _metadata, _config), do: :ok
-
-  defp handle_custom_span([:cgraph, :otel, :span], measurements, metadata, _config) do
-    duration_ms = div(measurements.duration, 1000)
-
-    case metadata.status do
-      :ok ->
-        Logger.debug(
-          "[OTel] Span #{metadata.name}",
-          duration_ms: duration_ms,
-          attributes: inspect(metadata.attributes)
-        )
-
-      :error ->
-        Logger.warning(
-          "[OTel] Span #{metadata.name} failed",
-          duration_ms: duration_ms,
-          error: inspect(Map.get(metadata, :error)),
-          attributes: inspect(metadata.attributes)
-        )
-    end
   end
 end

@@ -1,0 +1,109 @@
+# CGraph Alertmanager Configuration
+# Routes Prometheus alerts to Slack and PagerDuty
+#
+# Setup:
+#   1. Set SLACK_WEBHOOK_URL env var (or replace placeholder below)
+#   2. Set PAGERDUTY_SERVICE_KEY env var for P1/P2 alerts
+#   3. Deploy via docker-compose.observability.yml
+#
+# Routing logic:
+#   - P1 (critical): PagerDuty + Slack #incidents
+#   - P2 (warning):  Slack #incidents
+#   - P3 (info):     Slack #monitoring
+
+global:
+  resolve_timeout: 5m
+  slack_api_url: '${SLACK_WEBHOOK_URL:-https://hooks.slack.com/services/REPLACE/WITH/WEBHOOK}'
+
+# Inhibition rules — suppress lower-severity alerts when higher-severity fires
+inhibit_rules:
+  - source_matchers:
+      - severity = "critical"
+    target_matchers:
+      - severity = "warning"
+    equal: ['alertname', 'service']
+
+  - source_matchers:
+      - severity = "critical"
+    target_matchers:
+      - severity = "info"
+    equal: ['alertname', 'service']
+
+# Routing tree
+route:
+  receiver: slack-monitoring
+  group_by: ['alertname', 'severity', 'service']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+
+  routes:
+    # P1 Critical — PagerDuty + Slack
+    - receiver: pagerduty-critical
+      matchers:
+        - severity = "critical"
+      group_wait: 10s
+      repeat_interval: 1h
+      continue: true
+
+    - receiver: slack-incidents
+      matchers:
+        - severity = "critical"
+      group_wait: 10s
+      repeat_interval: 1h
+
+    # P2 Warning — Slack #incidents
+    - receiver: slack-incidents
+      matchers:
+        - severity = "warning"
+      group_wait: 1m
+      repeat_interval: 4h
+
+    # P3 Info — Slack #monitoring (default)
+    - receiver: slack-monitoring
+      matchers:
+        - severity = "info"
+
+receivers:
+  # PagerDuty for critical incidents
+  - name: pagerduty-critical
+    pagerduty_configs:
+      - service_key: '${PAGERDUTY_SERVICE_KEY:-REPLACE_WITH_SERVICE_KEY}'
+        severity: critical
+        description: '{{ .GroupLabels.alertname }}: {{ .Annotations.summary }}'
+        details:
+          severity: '{{ .GroupLabels.severity }}'
+          service: '{{ .GroupLabels.service }}'
+          runbook: '{{ .Annotations.runbook_url }}'
+          description: '{{ .Annotations.description }}'
+
+  # Slack #incidents channel for critical + warning
+  - name: slack-incidents
+    slack_configs:
+      - channel: '#incidents'
+        send_resolved: true
+        title: '{{ if eq .Status "firing" }}🔥{{ else }}✅{{ end }} [{{ .GroupLabels.severity | toUpper }}] {{ .GroupLabels.alertname }}'
+        text: |-
+          *Summary:* {{ .Annotations.summary }}
+          *Description:* {{ .Annotations.description }}
+          *Severity:* {{ .GroupLabels.severity }}
+          *Runbook:* {{ .Annotations.runbook_url }}
+          *Started:* {{ .StartsAt.Format "2006-01-02 15:04:05 UTC" }}
+          {{ if eq .Status "resolved" }}*Resolved:* {{ .EndsAt.Format "2006-01-02 15:04:05 UTC" }}{{ end }}
+        actions:
+          - type: button
+            text: 'Runbook 📖'
+            url: '{{ .Annotations.runbook_url }}'
+          - type: button
+            text: 'Grafana 📊'
+            url: 'http://localhost:3001/d/cgraph-slo/slo-overview'
+
+  # Slack #monitoring channel for info-level
+  - name: slack-monitoring
+    slack_configs:
+      - channel: '#monitoring'
+        send_resolved: true
+        title: 'ℹ️ {{ .GroupLabels.alertname }}'
+        text: |-
+          {{ .Annotations.summary }}
+          {{ .Annotations.description }}

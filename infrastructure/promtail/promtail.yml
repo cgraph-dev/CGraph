@@ -1,0 +1,65 @@
+# Promtail Configuration
+# Ships container logs to Grafana Loki
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+  log_level: warn
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+    batchwait: 1s
+    batchsize: 1048576
+    tenant_id: cgraph
+
+scrape_configs:
+  # Docker container logs
+  - job_name: docker
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: docker
+          __path__: /var/lib/docker/containers/*/*-json.log
+    pipeline_stages:
+      - docker: {}
+      - json:
+          expressions:
+            output: log
+            stream: stream
+            timestamp: time
+      # Extract structured fields from CGraph JSON logs
+      - json:
+          expressions:
+            level: level
+            service: service
+            trace_id: trace_id
+            span_id: span_id
+            request_id: request_id
+            user_id: user_id
+          source: output
+      - labels:
+          level:
+          service:
+          trace_id:
+      - timestamp:
+          source: timestamp
+          format: RFC3339Nano
+
+  # System logs (optional)
+  - job_name: system
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: syslog
+          __path__: /var/log/syslog
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<timestamp>\S+ \S+) (?P<hostname>\S+) (?P<process>\S+): (?P<message>.*)$'
+      - labels:
+          hostname:
+          process:

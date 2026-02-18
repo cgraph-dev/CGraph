@@ -2,10 +2,14 @@
 # Usage: docker compose -f infrastructure/docker-compose.observability.yml up -d
 #
 # Provides:
-#   - Prometheus (metrics collection + SLO rules)     → http://localhost:9090
-#   - Grafana    (dashboards + alerting)               → http://localhost:3001
-#   - Redis Exporter (Redis metrics)                   → :9121
-#   - Postgres Exporter (PostgreSQL metrics)            → :9187
+#   - Prometheus    (metrics collection + SLO rules)     → http://localhost:9090
+#   - Grafana       (dashboards + alerting)              → http://localhost:3001
+#   - Alertmanager  (alert routing: Slack + PagerDuty)   → http://localhost:9093
+#   - Tempo         (distributed tracing backend)        → :4317 (gRPC), :4318 (HTTP)
+#   - Loki          (log aggregation)                    → http://localhost:3100
+#   - Promtail      (log shipper → Loki)
+#   - Redis Exporter  (Redis metrics)                    → :9121
+#   - Postgres Exporter (PostgreSQL metrics)             → :9187
 #
 # Prerequisites:
 #   - Backend running on host port 4000 (or update BACKEND_HOST)
@@ -48,6 +52,25 @@ services:
       timeout: 5s
       retries: 3
 
+  # ─── Alertmanager ─────────────────────────────────────────────
+  alertmanager:
+    <<: *common
+    image: prom/alertmanager:v0.27.0
+    container_name: cgraph-alertmanager
+    ports:
+      - '9093:9093'
+    volumes:
+      - ../infrastructure/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:9093/-/healthy']
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
   # ─── Grafana ──────────────────────────────────────────────────
   grafana:
     <<: *common
@@ -72,6 +95,59 @@ services:
       interval: 15s
       timeout: 5s
       retries: 3
+
+  # ─── Tempo (Distributed Tracing) ─────────────────────────────
+  tempo:
+    <<: *common
+    image: grafana/tempo:2.5.0
+    container_name: cgraph-tempo
+    ports:
+      - '3200:3200'   # Tempo query frontend
+      - '4317:4317'   # OTLP gRPC receiver
+      - '4318:4318'   # OTLP HTTP receiver
+    volumes:
+      - ../infrastructure/tempo/tempo.yml:/etc/tempo/tempo.yml:ro
+      - tempo_data:/var/tempo
+    command:
+      - '-config.file=/etc/tempo/tempo.yml'
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:3200/ready']
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  # ─── Loki (Log Aggregation) ──────────────────────────────────
+  loki:
+    <<: *common
+    image: grafana/loki:3.1.0
+    container_name: cgraph-loki
+    ports:
+      - '3100:3100'
+    volumes:
+      - ../infrastructure/loki/loki.yml:/etc/loki/loki.yml:ro
+      - loki_data:/loki
+    command:
+      - '-config.file=/etc/loki/loki.yml'
+    healthcheck:
+      test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:3100/ready']
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  # ─── Promtail (Log Shipper → Loki) ──────────────────────────
+  promtail:
+    <<: *common
+    image: grafana/promtail:3.1.0
+    container_name: cgraph-promtail
+    volumes:
+      - ../infrastructure/promtail/promtail.yml:/etc/promtail/promtail.yml:ro
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command:
+      - '-config.file=/etc/promtail/promtail.yml'
+    depends_on:
+      loki:
+        condition: service_healthy
 
   # ─── Redis Exporter ───────────────────────────────────────────
   redis-exporter:
@@ -101,4 +177,8 @@ volumes:
   prometheus_data:
     driver: local
   grafana_data:
+    driver: local
+  tempo_data:
+    driver: local
+  loki_data:
     driver: local
