@@ -94,6 +94,14 @@ audit and web test coverage
 | 2026-02-18 | Vercel --no-frozen-lockfile      | High     | ✅ Fixed |
 | 2026-02-18 | No CSP meta tag in web HTML      | High     | ✅ Fixed |
 | 2026-02-18 | 6 unsupervised spawn/1 calls     | Medium   | ✅ Fixed |
+| 2026-02-18 | Stripe config at compile time    | Critical | ✅ Fixed |
+| 2026-02-18 | RESEND_API_KEY not validated     | Critical | ✅ Fixed |
+| 2026-02-18 | Atom table exhaustion telemetry  | Critical | ✅ Fixed |
+| 2026-02-18 | Weak PRNG in recovery codes      | High     | ✅ Fixed |
+| 2026-02-18 | Weak PRNG in wallet generation   | High     | ✅ Fixed |
+| 2026-02-18 | localStorage.setItem('token')    | High     | ✅ Fixed |
+| 2026-02-18 | RSS feed placeholder URL         | High     | ✅ Fixed |
+| 2026-02-18 | Mobile chat store no try/catch   | High     | ✅ Fixed |
 | 2026-02-17 | Audit events lost on restart     | Critical | ✅ Fixed |
 | 2026-02-17 | Subscription tier misalignment   | Critical | ✅ Fixed |
 | 2026-02-17 | Stripe config key mismatch       | Critical | ✅ Fixed |

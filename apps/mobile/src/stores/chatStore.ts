@@ -291,40 +291,60 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   sendMessage: async (conversationId: string, content: string, replyToId?: string) => {
-    const payload: Record<string, unknown> = { content };
-    if (replyToId) payload.reply_to_id = replyToId;
+    try {
+      const payload: Record<string, unknown> = { content };
+      if (replyToId) payload.reply_to_id = replyToId;
 
-    const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, payload);
-    const rawMessage = response.data?.message || response.data?.data || response.data;
-    if (rawMessage) {
-      const message = normalizeMessage(rawMessage as Record<string, unknown>);
-      get().addMessage(message);
+      const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, payload);
+      const rawMessage = response.data?.message || response.data?.data || response.data;
+      if (rawMessage) {
+        const message = normalizeMessage(rawMessage as Record<string, unknown>);
+        get().addMessage(message);
+      }
+    } catch {
+      // Network error — caller should handle UI feedback
     }
   },
 
   editMessage: async (conversationId: string, messageId: string, content: string) => {
-    const response = await api.patch(
-      `/api/v1/conversations/${conversationId}/messages/${messageId}`,
-      { content }
-    );
-    const rawMessage = response.data?.message || response.data?.data || response.data;
-    if (rawMessage) {
-      const message = normalizeMessage(rawMessage as Record<string, unknown>);
-      get().updateMessage(message);
+    try {
+      const response = await api.patch(
+        `/api/v1/conversations/${conversationId}/messages/${messageId}`,
+        { content }
+      );
+      const rawMessage = response.data?.message || response.data?.data || response.data;
+      if (rawMessage) {
+        const message = normalizeMessage(rawMessage as Record<string, unknown>);
+        get().updateMessage(message);
+      }
+    } catch {
+      // Network error — caller should handle UI feedback
     }
   },
 
   deleteMessage: async (conversationId: string, messageId: string) => {
-    await api.delete(`/api/v1/conversations/${conversationId}/messages/${messageId}`);
-    get().removeMessage(messageId, conversationId);
+    try {
+      await api.delete(`/api/v1/conversations/${conversationId}/messages/${messageId}`);
+      get().removeMessage(messageId, conversationId);
+    } catch {
+      // Network error — caller should handle UI feedback
+    }
   },
 
   addReaction: async (messageId: string, emoji: string) => {
-    await api.post(`/api/v1/messages/${messageId}/reactions`, { emoji });
+    try {
+      await api.post(`/api/v1/messages/${messageId}/reactions`, { emoji });
+    } catch {
+      // Network error — silent fail for reactions
+    }
   },
 
   removeReaction: async (messageId: string, emoji: string) => {
-    await api.delete(`/api/v1/messages/${messageId}/reactions/${emoji}`);
+    try {
+      await api.delete(`/api/v1/messages/${messageId}/reactions/${emoji}`);
+    } catch {
+      // Network error — silent fail for reactions
+    }
   },
 
   setActiveConversation: (conversationId: string | null) => {

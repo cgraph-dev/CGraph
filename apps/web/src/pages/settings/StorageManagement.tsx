@@ -14,7 +14,6 @@ import {
   DocumentIcon,
   ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline';
-import { useAuthStore } from '@/modules/auth/store/authStore.impl';
 
 interface StorageBreakdown {
   messages: number; // bytes
@@ -91,10 +90,8 @@ export function StorageManagement() {
         const names = await caches.keys();
         await Promise.all(names.map((name) => caches.delete(name)));
       }
-      // Clear localStorage except auth token
-      const token = useAuthStore.getState().token;
+      // Clear localStorage (auth tokens are in sessionStorage, not affected)
       localStorage.clear();
-      if (token) localStorage.setItem('token', token);
 
       setStorage((prev) => ({ ...prev, cache: 0, total: prev.total - prev.cache }));
     } finally {

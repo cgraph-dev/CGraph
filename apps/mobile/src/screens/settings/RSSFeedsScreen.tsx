@@ -41,7 +41,7 @@ type RouteParams = {
 // RSS FEED DATA
 // ============================================================================
 
-const BASE_URL = 'https://example.com'; // Replace with actual base URL
+const BASE_URL = 'https://cgraph-backend.fly.dev'; // Production API base URL
 
 function generateFeeds(forumId?: string, forumName?: string): RSSFeed[] {
   const feeds: RSSFeed[] = [

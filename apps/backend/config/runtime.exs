@@ -163,9 +163,43 @@ if config_env() == :prod do
     String.to_integer(System.get_env("JWT_REFRESH_TOKEN_TTL") || "604800")
 
   # Configure Swoosh for production
+  resend_api_key =
+    System.get_env("RESEND_API_KEY") ||
+      raise """
+      environment variable RESEND_API_KEY is missing.
+      This is required for sending transactional emails (password reset, 2FA, digests).
+      Sign up at https://resend.com and set the API key.
+      """
+
   config :cgraph, CGraph.Mailer,
     adapter: Swoosh.Adapters.Resend,
-    api_key: System.get_env("RESEND_API_KEY")
+    api_key: resend_api_key
+
+  # Stripe configuration for production (MUST be set at runtime, not compile time)
+  stripe_secret =
+    System.get_env("STRIPE_SECRET_KEY") ||
+      raise """
+      environment variable STRIPE_SECRET_KEY is missing.
+      This is required for subscription billing. Set it from your Stripe dashboard.
+      """
+
+  config :stripity_stripe,
+    api_key: stripe_secret,
+    signing_secret: System.get_env("STRIPE_WEBHOOK_SECRET") ||
+      raise("environment variable STRIPE_WEBHOOK_SECRET is missing")
+
+  app_url = System.get_env("APP_URL") || "https://web.cgraph.org"
+
+  config :cgraph, CGraph.Subscriptions,
+    stripe_price_ids: %{
+      plus: System.get_env("STRIPE_PRICE_PLUS"),
+      pro: System.get_env("STRIPE_PRICE_PRO"),
+      business: System.get_env("STRIPE_PRICE_BUSINESS"),
+      enterprise: System.get_env("STRIPE_PRICE_ENTERPRISE")
+    },
+    success_url: app_url <> "/billing/success?session_id={CHECKOUT_SESSION_ID}",
+    cancel_url: app_url <> "/billing/cancel",
+    portal_return_url: app_url <> "/settings/billing"
 
   # Sentry error tracking
   if System.get_env("SENTRY_DSN") do

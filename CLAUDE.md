@@ -1589,3 +1589,31 @@ placeholder credentials (need real Apple/Google creds), docs-website not in pnpm
    presence_channel.ex (1), request_context_plug.ex (1), request_context.ex (1).
 
 **Verification:** Backend 0 compile errors ✅ | Web TS 0 errors ✅ | 0 bare spawn calls remaining ✅
+
+### Session 30 Part 3 — Deep Audit Sweep (February 18, 2026)
+
+**Scope:** Second deep audit pass finding issues missed in Parts 1–2.
+
+**Critical findings fixed (3):**
+
+1. **Stripe config at compile time** (`stripe.exs`) — `System.get_env("STRIPE_SECRET_KEY")` in
+   compile-time config resolves to `nil` in releases. Moved all Stripe config to `runtime.exs` with
+   raise guards. `stripe.exs` now has static dev placeholders only.
+2. **RESEND_API_KEY not validated** (`runtime.exs`) — Missing raise guard meant emails silently fail
+   in prod. Added raise with descriptive error message.
+3. **Atom table exhaustion** (`telemetry.ex`) — `String.to_atom(name)` on telemetry metric names
+   could exhaust BEAM atom table. Changed to `String.to_existing_atom(name)` with rescue.
+
+**High findings fixed (5):**
+
+4. **Weak PRNG in recovery codes** (`wallet_auth.ex`) — Recovery codes used `:rand.uniform`
+   (predictable). Replaced with `:crypto.strong_rand_bytes` (CSPRNG).
+5. **Weak PRNG in wallet/alias generation** (`wallet_auth.ex`) — Same fix: `:rand` → `:crypto`.
+6. **`localStorage.setItem('token')` in StorageManagement** — Cache clear was re-writing token to
+   localStorage after clearing. Removed — auth uses sessionStorage exclusively.
+7. **RSS feed BASE_URL placeholder** (`RSSFeedsScreen.tsx`) — Was `https://example.com`, changed to
+   `https://cgraph-backend.fly.dev`.
+8. **Mobile chatStore missing try/catch** (`chatStore.ts`) — 5 async operations (sendMessage,
+   editMessage, deleteMessage, addReaction, removeReaction) had no error handling. Added try/catch.
+
+**Verification:** Backend 0 compile errors ✅ | Web TS 0 errors ✅ | Crypto 192/192 ✅

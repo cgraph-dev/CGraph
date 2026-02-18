@@ -411,7 +411,7 @@ defmodule CGraph.Telemetry do
 
     # Also record in custom CGraph.Metrics GenServer for the /metrics endpoint
     try do
-      CGraph.Metrics.increment(String.to_atom(name), tags)
+      CGraph.Metrics.increment(String.to_existing_atom(name), tags)
     rescue
       _ -> :ok
     end
@@ -429,7 +429,7 @@ defmodule CGraph.Telemetry do
     )
 
     try do
-      CGraph.Metrics.observe(String.to_atom(name), value, tags)
+      CGraph.Metrics.observe(String.to_existing_atom(name), value, tags)
     rescue
       _ -> :ok
     end
