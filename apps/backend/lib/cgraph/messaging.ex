@@ -265,7 +265,6 @@ defmodule CGraph.Messaging do
   defdelegate get_unread_count(user, conversation), to: MessageOperations
   defdelegate mark_conversation_read(conversation, user), to: MessageOperations
 
-  def mark_message_read(%Message{} = message, user), do: MessageOperations.mark_message_read(message, user)
   def mark_message_read(conversation, user, message_id), do: MessageOperations.mark_messages_read(user, conversation, message_id)
   def mark_as_read(message, user), do: MessageOperations.mark_message_read(message, user)
 

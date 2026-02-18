@@ -400,10 +400,6 @@ defmodule CGraph.Auth.TokenManager do
     DateTime.utc_now() |> DateTime.add(amount * 86_400, :second)
   end
 
-  defp store_refresh_token(token_data), do: Store.store_refresh_token(token_data)
-  defp store_token_family(family_data), do: Store.store_family(family_data)
-  defp get_stored_refresh_token(jti), do: Store.get_refresh_token(jti)
-
   defp verify_token_type(%{"typ" => expected}, expected), do: :ok
   defp verify_token_type(_, _), do: {:error, :invalid_token_type}
 
@@ -429,13 +425,10 @@ defmodule CGraph.Auth.TokenManager do
     end
   end
 
-  defp mark_token_used(jti), do: Store.mark_token_used(jti)
-
   defp revoke_by_jti(jti), do: Store.revoke_by_jti(jti)
 
   defp revoke_family(family_id), do: Store.revoke_family(family_id)
   defp family_revoked?(family_id), do: Store.family_revoked?(family_id)
-  defp token_revoked?(jti), do: Store.token_revoked?(jti)
 
   defp handle_token_reuse(token) do
     case Guardian.decode_and_verify(token) do

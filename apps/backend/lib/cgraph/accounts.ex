@@ -17,38 +17,19 @@ defmodule CGraph.Accounts do
   # Legacy _v2 suffixes removed — these are now the primary API.
   # ============================================================================
 
-  # Users submodule
-  alias CGraph.Accounts.Users, as: UsersModule
-
-  # Authentication submodule
-  alias CGraph.Accounts.Authentication, as: AuthModule
-
-  # Registration submodule
-  alias CGraph.Accounts.Registration, as: RegModule
-
-  # Sessions submodule
-  alias CGraph.Accounts.Sessions, as: SessionsModule
-
-  # Friends submodule
-  alias CGraph.Accounts.Friends, as: FriendsModule
-
-  # Settings submodule
-  alias CGraph.Accounts.Settings, as: SettingsModule
-
-  # Search submodule
-  alias CGraph.Accounts.Search, as: SearchModule
-
-  # Password reset submodule
-  alias CGraph.Accounts.PasswordReset, as: PasswordResetModule
-
-  # Email verification submodule
-  alias CGraph.Accounts.EmailVerification, as: EmailVerificationModule
-
-  # Member directory submodule
-  alias CGraph.Accounts.MemberDirectory, as: MemberDirectoryModule
-
-  # Profile submodule
-  alias CGraph.Accounts.Profile, as: ProfileModule
+  # Submodule aliases — used via defdelegate or direct calls as needed.
+  # Kept as comments for documentation of the module architecture.
+  # alias CGraph.Accounts.Users, as: UsersModule
+  # alias CGraph.Accounts.Authentication, as: AuthModule
+  # alias CGraph.Accounts.Registration, as: RegModule
+  # alias CGraph.Accounts.Sessions, as: SessionsModule
+  # alias CGraph.Accounts.Friends, as: FriendsModule
+  # alias CGraph.Accounts.Settings, as: SettingsModule
+  # alias CGraph.Accounts.Search, as: SearchModule
+  # alias CGraph.Accounts.PasswordReset, as: PasswordResetModule
+  # alias CGraph.Accounts.EmailVerification, as: EmailVerificationModule
+  # alias CGraph.Accounts.MemberDirectory, as: MemberDirectoryModule
+  # alias CGraph.Accounts.Profile, as: ProfileModule
 
   # ============================================================================
   # Stub Functions (planned features, not yet implemented)

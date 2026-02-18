@@ -13,7 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, type ParamListBase } from '@react-navigation/native';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import api from '../../lib/api';
 

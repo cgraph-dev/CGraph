@@ -59,6 +59,12 @@ defmodule CGraphWeb.API.V1.ThreadPostController do
     end
   end
 
+  # Fallback: accept flat params without wrapper keys
+  def create(conn, %{"thread_id" => thread_id} = params) do
+    post_params = Map.drop(params, ["thread_id", "forum_id", "board_id"])
+    create(conn, %{"thread_id" => thread_id, "post" => post_params})
+  end
+
   @doc """
   Update a post.
   PUT /api/v1/threads/:thread_id/posts/:id
@@ -77,6 +83,12 @@ defmodule CGraphWeb.API.V1.ThreadPostController do
       false -> {:error, :forbidden}
       error -> error
     end
+  end
+
+  # Fallback: accept flat params without wrapper key
+  def update(conn, %{"id" => _id} = params) do
+    post_params = Map.drop(params, ["id", "thread_id", "forum_id", "board_id"])
+    update(conn, Map.put(params, "post", post_params))
   end
 
   @doc """
@@ -117,17 +129,7 @@ defmodule CGraphWeb.API.V1.ThreadPostController do
     end
   end
 
-  # Fallback: accept flat params without wrapper keys
-  def create(conn, %{"thread_id" => thread_id} = params) do
-    post_params = Map.drop(params, ["thread_id", "forum_id", "board_id"])
-    create(conn, %{"thread_id" => thread_id, "post" => post_params})
-  end
-
-  def update(conn, %{"id" => _id} = params) do
-    post_params = Map.drop(params, ["id", "thread_id", "forum_id", "board_id"])
-    update(conn, Map.put(params, "post", post_params))
-  end
-
+  # Fallback: accept flat params without explicit value
   def vote(conn, %{"id" => id} = params) do
     value = Map.get(params, "value", Map.get(params, "direction", 1))
     vote(conn, %{"id" => id, "value" => value})

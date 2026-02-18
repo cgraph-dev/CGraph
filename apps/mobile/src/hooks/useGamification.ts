@@ -216,7 +216,7 @@ export function useGamification(): UseGamificationReturn {
     } catch (error: unknown) {
       setState((prev) => ({
         ...prev,
-        error: error.response?.data?.message || 'Failed to claim streak',
+        error: (error as any)?.response?.data?.message || 'Failed to claim streak',
       }));
       return null;
     }
@@ -233,7 +233,7 @@ export function useGamification(): UseGamificationReturn {
       } catch (error: unknown) {
         setState((prev) => ({
           ...prev,
-          error: error.response?.data?.message || 'Failed to accept quest',
+          error: (error as any)?.response?.data?.message || 'Failed to accept quest',
         }));
         return null;
       }
@@ -253,7 +253,7 @@ export function useGamification(): UseGamificationReturn {
       } catch (error: unknown) {
         setState((prev) => ({
           ...prev,
-          error: error.response?.data?.message || 'Failed to claim rewards',
+          error: (error as any)?.response?.data?.message || 'Failed to claim rewards',
         }));
         return false;
       }

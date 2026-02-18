@@ -65,7 +65,7 @@ defmodule CGraph.Forums.Threads do
   @doc """
   Creates a new thread with initial post.
   """
-  def create_thread(forum, user, attrs) do
+  def create_thread(_forum, user, attrs) do
     Repo.transaction(fn ->
       # Get or determine the board_id
       board_id = attrs["board_id"] || attrs[:board_id]

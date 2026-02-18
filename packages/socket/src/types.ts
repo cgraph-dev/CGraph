@@ -62,4 +62,4 @@ export type ConnectionState = 'connecting' | 'open' | 'closing' | 'closed';
 // Message handler types
 export type MessageHandler<T = unknown> = (payload: T) => void;
 export type ErrorHandler = (error: unknown) => void;
-export type CloseHandler = (event: CloseEvent) => void;
+export type CloseHandler = (event: { code: number; reason: string }) => void;

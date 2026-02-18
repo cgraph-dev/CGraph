@@ -6,8 +6,6 @@ defmodule CGraph.Accounts.WalletAuthentication do
   for Web3 wallet login flows.
   """
 
-  import Ecto.Query
-
   alias CGraph.Accounts.User
   alias CGraph.Accounts.WalletChallenge
   alias CGraph.Repo

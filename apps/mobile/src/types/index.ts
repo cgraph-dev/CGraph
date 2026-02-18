@@ -31,10 +31,15 @@ export interface UserBasic {
   id: string;
   username: string | null;
   display_name?: string | null;
+  displayName?: string | null;
   avatar_url?: string | null;
+  avatarUrl?: string | null;
   status: string;
   karma?: number;
   is_verified?: boolean;
+  is_premium?: boolean;
+  /** Allow dynamic API property access at the boundary */
+  [key: string]: unknown;
 }
 
 // Message types

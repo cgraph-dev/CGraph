@@ -14,7 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, type ParamListBase } from '@react-navigation/native';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import api from '../../lib/api';
 
@@ -223,7 +223,7 @@ export default function MemberListScreen() {
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 
   // Transform API response
-  const transformApiMembers = (data: unknown[]): Member[] => {
+  const transformApiMembers = (data: Record<string, any>[]): Member[] => {
     return data.map((m) => ({
       id: m.id,
       username: m.username || 'Unknown',
@@ -335,7 +335,7 @@ export default function MemberListScreen() {
   // Navigate to member profile
   const handleMemberPress = (member: Member) => {
     // Navigate to profile screen
-    if (__DEV__) console.log('Navigate to profile:', member.id);
+    if (__DEV__) console.warn('Navigate to profile:', member.id);
   };
 
   // Toggle sort

@@ -12,7 +12,12 @@ export { default as VerifyEmailScreen } from '../../screens/auth/VerifyEmailScre
 export { default as OnboardingScreen } from '../../screens/auth/OnboardingScreen';
 
 // Hooks — re-exported from features/auth during migration
-export { useBiometricAuth, use2FA } from '../../features/auth/hooks';
+export { useBiometricAuth, useTwoFactor as use2FA } from '../../features/auth/hooks';
 
 // Store
-export { useAuthStore, useAuthUser, useIsAuthenticated, useAuthLoading } from '../../stores/authStore';
+export {
+  useAuthStore,
+  useAuthUser,
+  useIsAuthenticated,
+  useAuthLoading,
+} from '../../stores/authStore';

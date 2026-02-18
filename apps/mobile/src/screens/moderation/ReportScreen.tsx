@@ -22,6 +22,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import api from '@/lib/api';
 import { useTheme } from '@/contexts/ThemeContext';
+import type { ThemeColors } from '@/stores/themeStore';
 
 // Report categories
 const REPORT_CATEGORIES = [

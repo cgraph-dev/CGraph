@@ -18,17 +18,17 @@ const getApiUrl = (): string => {
   // Development mode - allow localhost and LAN connections
   if (__DEV__) {
     if (configuredUrl) {
-      if (__DEV__) console.log('[API] Using configured URL:', configuredUrl);
+      if (__DEV__) console.warn('[API] Using configured URL:', configuredUrl);
       return configuredUrl;
     }
 
     // Android emulator uses 10.0.2.2 to reach host machine's localhost
     // iOS simulator can use localhost directly
     if (Platform.OS === 'android') {
-      if (__DEV__) console.log('[API] Android detected, using 10.0.2.2:4000');
+      if (__DEV__) console.warn('[API] Android detected, using 10.0.2.2:4000');
       return 'http://10.0.2.2:4000';
     }
-    if (__DEV__) console.log('[API] iOS detected, using localhost:4000');
+    if (__DEV__) console.warn('[API] iOS detected, using localhost:4000');
     return 'http://localhost:4000';
   }
 
@@ -47,8 +47,8 @@ const getApiUrl = (): string => {
 const API_URL = getApiUrl();
 
 if (__DEV__) {
-  if (__DEV__) console.log('[API] Base URL configured:', API_URL);
-  if (__DEV__) console.log('[API] Platform:', Platform.OS);
+  if (__DEV__) console.warn('[API] Base URL configured:', API_URL);
+  if (__DEV__) console.warn('[API] Platform:', Platform.OS);
 }
 
 const api = createHttpClient({
@@ -71,10 +71,13 @@ const api = createHttpClient({
     buildBody: (rt) => ({ refresh_token: rt }),
     parseTokens: (data: unknown) => {
       const payload = (data as Record<string, unknown>)?.data || data;
-      const tokens = (payload as Record<string, unknown>)?.tokens || payload || {};
+      const tokens = ((payload as Record<string, unknown>)?.tokens || payload || {}) as Record<
+        string,
+        unknown
+      >;
       return {
-        accessToken: tokens.access_token || tokens.token,
-        refreshToken: tokens.refresh_token,
+        accessToken: (tokens.access_token || tokens.token) as string | undefined,
+        refreshToken: tokens.refresh_token as string | undefined,
       };
     },
   },

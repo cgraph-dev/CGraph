@@ -15,7 +15,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert, Share } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, Share, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -41,7 +41,7 @@ import {
   EffectsTab,
   AnimationsTab,
   AccessibilityTab,
-} from './UICustomizationScreen/components';
+} from './UICustomizationScreen/components/index';
 
 // Import extracted styles
 import { styles } from './UICustomizationScreen/styles';

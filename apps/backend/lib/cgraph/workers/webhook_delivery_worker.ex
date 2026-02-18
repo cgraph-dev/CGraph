@@ -19,7 +19,6 @@ defmodule CGraph.Workers.WebhookDeliveryWorker do
     priority: 1
 
   require Logger
-  import Ecto.Query
 
   alias CGraph.Repo
   alias CGraph.Webhooks.{Delivery, Endpoint}

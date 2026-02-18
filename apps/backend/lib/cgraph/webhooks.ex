@@ -214,7 +214,7 @@ defmodule CGraph.Webhooks do
   Creates a delivery record per matching endpoint and enqueues an Oban job
   for each. Returns `{:ok, event_id}`.
   """
-  def dispatch(event_type, payload, opts \\ []) when event_type in @valid_events do
+  def dispatch(event_type, payload, _opts \\ []) when event_type in @valid_events do
     event_id = generate_event_id()
 
     # Find matching active endpoints from DB

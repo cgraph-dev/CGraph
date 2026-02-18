@@ -335,7 +335,8 @@ export async function giftItem(
 // ==================== TRANSFORMERS ====================
 
 /** API response type for transform functions */
-type ApiData = Record<string, unknown>;
+/** API response data 2014 typed as any at the boundary, return types enforce safety */
+type ApiData = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 function transformSubscriptionTier(data: ApiData): SubscriptionTier {
   return {

@@ -324,7 +324,7 @@ class PaymentService {
           platform: Platform.OS,
         });
 
-        const { checkout_url, success: _success, coins_added: _coinsAdded } = response.data;
+        const { checkout_url, success, coins_added: _coinsAdded } = response.data;
 
         if (checkout_url) {
           const supported = await Linking.canOpenURL(checkout_url);

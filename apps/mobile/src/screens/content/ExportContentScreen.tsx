@@ -14,7 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp, type ParamListBase } from '@react-navigation/native';
 import * as WebBrowser from 'expo-web-browser';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import api from '../../lib/api';

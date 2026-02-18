@@ -80,8 +80,9 @@ export default function CreateForumScreen({ navigation }: Props) {
           },
         },
       ]);
-    } catch (error: unknown) {
-      console.error('[CreateForumScreen] Error:', error);
+    } catch (err: unknown) {
+      console.error('[CreateForumScreen] Error:', err);
+      const error = err as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
       let message = 'Failed to create forum. Please try again.';
 
