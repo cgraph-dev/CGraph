@@ -5,12 +5,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  ShieldCheckIcon,
-  PlusIcon,
-  TrashIcon,
-  PencilIcon,
-} from '@heroicons/react/24/outline';
+import { ShieldCheckIcon, PlusIcon, TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
+import { useAuthStore } from '@/modules/auth/store/authStore.impl';
 
 interface AutomodRule {
   id: string;
@@ -22,7 +18,11 @@ interface AutomodRule {
 }
 
 const RULE_TYPES = [
-  { value: 'word_filter', label: 'Word Filter', desc: 'Block messages containing specific words (regex)' },
+  {
+    value: 'word_filter',
+    label: 'Word Filter',
+    desc: 'Block messages containing specific words (regex)',
+  },
   { value: 'link_filter', label: 'Link Filter', desc: 'Block messages with specific domains' },
   { value: 'spam_detection', label: 'Spam Detection', desc: 'Rate limit rapid messages' },
   { value: 'caps_filter', label: 'Caps Filter', desc: 'Filter excessive capitalization' },
@@ -45,7 +45,7 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
     setLoading(true);
     try {
       const res = await fetch(`/api/v1/groups/${groupId}/automod`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
       });
       if (res.ok) {
         const data = await res.json();
@@ -58,7 +58,9 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
     }
   }, [groupId]);
 
-  useEffect(() => { fetchRules(); }, [fetchRules]);
+  useEffect(() => {
+    fetchRules();
+  }, [fetchRules]);
 
   const handleSave = async () => {
     const method = editingRule.id ? 'PUT' : 'POST';
@@ -71,7 +73,7 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
         method,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${useAuthStore.getState().token}`,
         },
         body: JSON.stringify(editingRule),
       });
@@ -89,7 +91,7 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
     try {
       await fetch(`/api/v1/groups/${groupId}/automod/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
       });
       setRules((prev) => prev.filter((r) => r.id !== id));
     } catch {
@@ -103,12 +105,12 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${useAuthStore.getState().token}`,
         },
         body: JSON.stringify({ is_enabled: !rule.is_enabled }),
       });
       setRules((prev) =>
-        prev.map((r) => (r.id === rule.id ? { ...r, is_enabled: !r.is_enabled } : r)),
+        prev.map((r) => (r.id === rule.id ? { ...r, is_enabled: !r.is_enabled } : r))
       );
     } catch {
       // noop
@@ -126,7 +128,10 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
           <h3 className="text-lg font-semibold text-white">AutoMod Rules</h3>
         </div>
         <button
-          onClick={() => { setEditingRule({ rule_type: 'word_filter', action: 'delete', is_enabled: true }); setShowEditor(true); }}
+          onClick={() => {
+            setEditingRule({ rule_type: 'word_filter', action: 'delete', is_enabled: true });
+            setShowEditor(true);
+          }}
           className="flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-primary-500"
         >
           <PlusIcon className="h-4 w-4" />
@@ -153,20 +158,34 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
               <div className="grid grid-cols-2 gap-3">
                 <select
                   value={editingRule.rule_type || 'word_filter'}
-                  onChange={(e) => setEditingRule({ ...editingRule, rule_type: e.target.value as AutomodRule['rule_type'] })}
+                  onChange={(e) =>
+                    setEditingRule({
+                      ...editingRule,
+                      rule_type: e.target.value as AutomodRule['rule_type'],
+                    })
+                  }
                   className="rounded-lg border border-white/10 bg-dark-800 px-3 py-2 text-sm text-white focus:border-primary-500 focus:outline-none"
                 >
                   {RULE_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>{t.label}</option>
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
                   ))}
                 </select>
                 <select
                   value={editingRule.action || 'delete'}
-                  onChange={(e) => setEditingRule({ ...editingRule, action: e.target.value as AutomodRule['action'] })}
+                  onChange={(e) =>
+                    setEditingRule({
+                      ...editingRule,
+                      action: e.target.value as AutomodRule['action'],
+                    })
+                  }
                   className="rounded-lg border border-white/10 bg-dark-800 px-3 py-2 text-sm text-white focus:border-primary-500 focus:outline-none"
                 >
                   {ACTIONS.map((a) => (
-                    <option key={a.value} value={a.value}>{a.label}</option>
+                    <option key={a.value} value={a.value}>
+                      {a.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -175,11 +194,14 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
                 onChange={(e) => setEditingRule({ ...editingRule, pattern: e.target.value })}
                 placeholder="Pattern (regex for word filter, domains for link filter)"
                 rows={3}
-                className="w-full rounded-lg border border-white/10 bg-dark-800 px-3 py-2 text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none font-mono"
+                className="w-full rounded-lg border border-white/10 bg-dark-800 px-3 py-2 font-mono text-sm text-white placeholder-white/30 focus:border-primary-500 focus:outline-none"
               />
               <div className="flex justify-end gap-2">
                 <button
-                  onClick={() => { setShowEditor(false); setEditingRule({}); }}
+                  onClick={() => {
+                    setShowEditor(false);
+                    setEditingRule({});
+                  }}
                   className="rounded-lg px-4 py-1.5 text-sm text-white/40 hover:bg-white/5"
                 >
                   Cancel
@@ -213,7 +235,9 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
             <div
               key={rule.id}
               className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-colors ${
-                rule.is_enabled ? 'border-white/10 bg-dark-700/50' : 'border-white/5 bg-dark-800/50 opacity-50'
+                rule.is_enabled
+                  ? 'border-white/10 bg-dark-700/50'
+                  : 'border-white/5 bg-dark-800/50 opacity-50'
               }`}
             >
               <div className="min-w-0 flex-1">
@@ -238,7 +262,10 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
                   {rule.is_enabled ? 'On' : 'Off'}
                 </button>
                 <button
-                  onClick={() => { setEditingRule(rule); setShowEditor(true); }}
+                  onClick={() => {
+                    setEditingRule(rule);
+                    setShowEditor(true);
+                  }}
                   className="rounded-lg p-1.5 text-white/30 hover:bg-white/10 hover:text-white"
                 >
                   <PencilIcon className="h-4 w-4" />

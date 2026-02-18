@@ -10,7 +10,7 @@
  * Protocol version 4 — matches Signal's Double Ratchet Revision 4.
  *
  * @module @cgraph/crypto
- * @version 0.9.28
+ * @version 0.9.31
  */
 
 // ---------------------------------------------------------------------------

@@ -12,6 +12,7 @@ import {
   TrashIcon,
   ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline';
+import { useAuthStore } from '@/modules/auth/store/authStore.impl';
 
 interface SavedMessage {
   id: string;
@@ -35,7 +36,7 @@ export function SavedMessages() {
       const params = new URLSearchParams();
       if (search) params.set('search', search);
       const res = await fetch(`/api/v1/saved-messages?${params}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
       });
       if (res.ok) {
         const data = await res.json();
@@ -56,7 +57,7 @@ export function SavedMessages() {
     try {
       await fetch(`/api/v1/saved-messages/${id}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
       });
       setMessages((prev) => prev.filter((m) => m.id !== id));
     } catch {
@@ -79,7 +80,7 @@ export function SavedMessages() {
         transition={springs.gentle}
         className="mb-6"
       >
-        <div className="flex items-center gap-3 mb-2">
+        <div className="mb-2 flex items-center gap-3">
           <BookmarkIcon className="h-7 w-7 text-primary-400" />
           <h1 className="text-2xl font-bold text-white">Saved Messages</h1>
         </div>
@@ -119,7 +120,9 @@ export function SavedMessages() {
         <motion.div
           initial="initial"
           animate="animate"
-          variants={{ animate: { transition: { staggerChildren: staggerConfigs.fast.staggerChildren } } }}
+          variants={{
+            animate: { transition: { staggerChildren: staggerConfigs.fast.staggerChildren } },
+          }}
           className="space-y-3"
         >
           <AnimatePresence>
@@ -135,7 +138,11 @@ export function SavedMessages() {
                   {/* Avatar */}
                   <div className="h-9 w-9 flex-shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-primary-500 to-purple-600">
                     {msg.sender_avatar ? (
-                      <img src={msg.sender_avatar} alt={msg.sender_name} className="h-full w-full object-cover" />
+                      <img
+                        src={msg.sender_avatar}
+                        alt={msg.sender_name}
+                        className="h-full w-full object-cover"
+                      />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-sm font-bold text-white">
                         {msg.sender_name.charAt(0).toUpperCase()}
@@ -153,11 +160,13 @@ export function SavedMessages() {
                           {msg.conversation_name}
                         </span>
                       )}
-                      <span className="ml-auto text-xs text-white/20">{formatDate(msg.saved_at)}</span>
+                      <span className="ml-auto text-xs text-white/20">
+                        {formatDate(msg.saved_at)}
+                      </span>
                     </div>
                     <p className="mt-1 whitespace-pre-wrap text-sm text-white/70">{msg.content}</p>
                     {msg.note && (
-                      <p className="mt-1.5 rounded-lg bg-primary-500/10 px-2.5 py-1 text-xs text-primary-300 italic">
+                      <p className="mt-1.5 rounded-lg bg-primary-500/10 px-2.5 py-1 text-xs italic text-primary-300">
                         Note: {msg.note}
                       </p>
                     )}

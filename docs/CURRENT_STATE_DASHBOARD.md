@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.31** | Generated: February 17, 2026
+> **Version: 0.9.31** | Generated: February 18, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
@@ -15,7 +15,7 @@ Real-time overview of project health, architecture status, and operational state
 | **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                                      |
 | **Architecture**  | OK     | 9/10  | Router split (7 domain modules), component categorization, remote caching           |
 | **Tests**         | OK     | 8/10  | 1,633 backend tests passing; web coverage ~20%; landing 98 tests (63 unit + 35 E2E) |
-| **Security**      | WARN   | 7/10  | E2EE implemented; recovery codes hashed; no external audit yet                      |
+| **Security**      | WARN   | 8/10  | E2EE implemented; CSP hardened (no unsafe-eval); HSTS enabled; no ext audit yet     |
 | **Documentation** | OK     | 8/10  | Architecture + API + testing docs up to date; CLAUDE.md comprehensive               |
 | **Observability** | WARN   | 8/10  | Prometheus + SLO rules defined; Grafana dashboards not yet deployed live            |
 | **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing (singleflight)              |
@@ -64,10 +64,11 @@ audit and web test coverage
 | ----------------------------- | ------ | ------------------------------------------------- |
 | E2EE (PQXDH + Triple Ratchet) | ✅     | Post-quantum hybrid; no external audit yet        |
 | TLS 1.3                       | ✅     | Enforced on all connections                       |
-| CSP Headers                   | ✅     | Strict policy on landing + web app                |
+| CSP Headers                   | ✅     | Strict policy; no unsafe-eval; HSTS enabled       |
 | Rate Limiting                 | ✅     | Redis-backed, per-user and per-IP                 |
 | Trusted Proxy                 | ✅     | Cloudflare CIDR enforcement                       |
 | 2FA                           | ✅     | TOTP with hashed recovery codes (separate schema) |
+| Auth Token Security           | ✅     | sessionStorage-only; no localStorage token leaks  |
 | Secret Scanning               | ✅     | Gitleaks in CI                                    |
 | Dependency Audit              | ✅     | pnpm audit + mix audit in CI                      |
 | **External Pen Test**         | ❌     | **Not yet conducted — HIGH PRIORITY**             |
@@ -75,17 +76,26 @@ audit and web test coverage
 
 ### Recent Security Fixes
 
-| Date       | Issue                           | Severity | Status   |
-| ---------- | ------------------------------- | -------- | -------- |
-| 2026-02-17 | Audit events lost on restart    | Critical | ✅ Fixed |
-| 2026-02-17 | Subscription tier misalignment  | Critical | ✅ Fixed |
-| 2026-02-17 | Stripe config key mismatch      | Critical | ✅ Fixed |
-| 2026-02-17 | TypeScript errors (53→0 in web) | High     | ✅ Fixed |
-| 2026-01-26 | E2EE plaintext fallback         | Critical | ✅ Fixed |
-| 2026-01-27 | Presence privacy leak           | Critical | ✅ Fixed |
-| 2026-01-27 | Stripe webhook config           | High     | ✅ Fixed |
-| 2026-01-27 | IP spoofing (X-Forwarded-For)   | High     | ✅ Fixed |
-| 2026-01-27 | MIME type spoofing              | Medium   | ✅ Fixed |
+| Date       | Issue                            | Severity | Status   |
+| ---------- | -------------------------------- | -------- | -------- |
+| 2026-02-18 | CSP allowed unsafe-eval + OpenAI | Critical | ✅ Fixed |
+| 2026-02-18 | Auth tokens in localStorage (15) | Critical | ✅ Fixed |
+| 2026-02-18 | Crypto package not private       | Critical | ✅ Fixed |
+| 2026-02-18 | Permissions-Policy blocks calls  | High     | ✅ Fixed |
+| 2026-02-18 | Audit data loss on shutdown      | High     | ✅ Fixed |
+| 2026-02-18 | IPv6 IP formatting corrupted     | High     | ✅ Fixed |
+| 2026-02-18 | 9 stale version strings          | Medium   | ✅ Fixed |
+| 2026-02-18 | Mobile no root ErrorBoundary     | High     | ✅ Fixed |
+| 2026-02-18 | AsyncStorage in devDependencies  | High     | ✅ Fixed |
+| 2026-02-17 | Audit events lost on restart     | Critical | ✅ Fixed |
+| 2026-02-17 | Subscription tier misalignment   | Critical | ✅ Fixed |
+| 2026-02-17 | Stripe config key mismatch       | Critical | ✅ Fixed |
+| 2026-02-17 | TypeScript errors (53→0 in web)  | High     | ✅ Fixed |
+| 2026-01-26 | E2EE plaintext fallback          | Critical | ✅ Fixed |
+| 2026-01-27 | Presence privacy leak            | Critical | ✅ Fixed |
+| 2026-01-27 | Stripe webhook config            | High     | ✅ Fixed |
+| 2026-01-27 | IP spoofing (X-Forwarded-For)    | High     | ✅ Fixed |
+| 2026-01-27 | MIME type spoofing               | Medium   | ✅ Fixed |
 
 ---
 
@@ -256,28 +266,29 @@ apps/mobile/src/screens/
 
 ## 📅 Release Timeline
 
-| Version | Date       | Highlights                                                                                                                                                                                                                                                                                                                                                              |
-| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0.9.31  | 2026-02-17 | **Mobile data layer + version sync + Stripe tier alignment**: Replaced 4 stub facades with 6 real Zustand stores. WebSocket integration. 40+ files version-synced. Unified subscription tiers (`free \| plus \| pro \| business \| enterprise`) across 30+ files in backend, web, mobile, and shared packages. Stripe billing fully wired (checkout, portal, webhooks). |
-| 0.9.29  | 2026-02-17 | **Platform gap completion + review**: Webhooks DB (Ecto context + Oban worker), WebRTC call history persistence, admin dashboard API wiring (4 panels), gamification API-sourced counts. Review fixes: Oban `:webhooks` queue config, test_helper cleanup, `UsersManagement` sort/type bugs, dead `PLACEHOLDER_EVENTS` removal                                          |
-| 0.9.28+ | 2026-02-17 | **Landing quality push**: 16 test files (98 tests), web-vitals monitoring, error tracking, Lighthouse CI budgets, visual regression, Playwright E2E                                                                                                                                                                                                                     |
-| 0.9.26+ | 2026-02-16 | **Test suite fully green**: 635 pre-existing failures resolved, 17 root causes fixed, route architecture corrected, CookieAuth + RequireAuth plugs, tokens table migration                                                                                                                                                                                              |
-| 0.9.26  | 2026-02-15 | **Architecture refactor**: Router split (8 modules), component org (6 dirs), remote caching, bundle monitoring, dead code removal                                                                                                                                                                                                                                       |
-| 0.9.24+ | 2026-02-15 | **Compliance pass**: 8 backend modules split (<500 lines), 5 React splits (<300 lines), 56 @spec annotations, soft delete audit                                                                                                                                                                                                                                         |
-| 0.9.24  | 2026-02-15 | **Backend tests green**: 1,633 tests, 0 failures — 13 source bugs fixed, 114 files changed                                                                                                                                                                                                                                                                              |
-| 0.9.23  | 2026-02-14 | **Credo zero**: 64→0 issues, 56 alias fixes, 8 TODOs implemented                                                                                                                                                                                                                                                                                                        |
-| 0.9.22  | 2026-02-13 | **Refactoring**: 0 Credo warnings/refactoring, context structs, pattern matching                                                                                                                                                                                                                                                                                        |
-| 0.9.21  | 2026-02-13 | **Credo cleanup**: 1,277→83 issues, 14 routes wired, alias ordering, atom safety                                                                                                                                                                                                                                                                                        |
-| 0.9.20  | 2026-02-13 | **Compile cleanup**: 90→0 warnings, Elixir 1.19 bitwise fix, 30+ files cleaned                                                                                                                                                                                                                                                                                          |
-| 0.9.19  | 2026-02-14 | **163 backend tests**, 70 context tests, 4 controllers wired, observability stack                                                                                                                                                                                                                                                                                       |
-| 0.9.18  | 2026-02-14 | **100% controller coverage**, MeiliSearch pipeline, chaos testing                                                                                                                                                                                                                                                                                                       |
-| 0.9.12  | 2026-02-03 | **Reanimated v4 migration** (222→0 TS errors)                                                                                                                                                                                                                                                                                                                           |
-| 0.9.11  | 2026-02-02 | Architecture transformation, module system                                                                                                                                                                                                                                                                                                                              |
-| 0.9.10  | 2026-02-01 | E2EE test suite, store facades, 893 tests                                                                                                                                                                                                                                                                                                                               |
-| 0.9.9   | 2026-01-31 | Type safety improvements, production logging                                                                                                                                                                                                                                                                                                                            |
-| 0.9.8   | 2026-01-30 | Code simplification, component extraction                                                                                                                                                                                                                                                                                                                               |
-| 0.9.7   | 2026-01-27 | Enterprise landing page, dual-app arch                                                                                                                                                                                                                                                                                                                                  |
-| 1.0.0   | TBD        | First stable release (post-audit)                                                                                                                                                                                                                                                                                                                                       |
+| Version | Date       | Highlights                                                                                                                                                                                                                                                                                                                                                                                      |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.9.31  | 2026-02-18 | **Security hardening audit**: CSP hardened (removed unsafe-eval, OpenAI connect-src), HSTS added, Permissions-Policy allows camera/mic for calls, 15 localStorage token reads → sessionStorage auth store, crypto package marked private, audit GenServer terminate/2 flush, IPv6 format_ip fix, root ErrorBoundary on mobile, AsyncStorage → dependencies, 9 version strings aligned to 0.9.31 |
+| 0.9.31  | 2026-02-17 | **Mobile data layer + version sync + Stripe tier alignment**: Replaced 4 stub facades with 6 real Zustand stores. WebSocket integration. 40+ files version-synced. Unified subscription tiers (`free \| plus \| pro \| business \| enterprise`) across 30+ files in backend, web, mobile, and shared packages. Stripe billing fully wired (checkout, portal, webhooks).                         |
+| 0.9.29  | 2026-02-17 | **Platform gap completion + review**: Webhooks DB (Ecto context + Oban worker), WebRTC call history persistence, admin dashboard API wiring (4 panels), gamification API-sourced counts. Review fixes: Oban `:webhooks` queue config, test_helper cleanup, `UsersManagement` sort/type bugs, dead `PLACEHOLDER_EVENTS` removal                                                                  |
+| 0.9.28+ | 2026-02-17 | **Landing quality push**: 16 test files (98 tests), web-vitals monitoring, error tracking, Lighthouse CI budgets, visual regression, Playwright E2E                                                                                                                                                                                                                                             |
+| 0.9.26+ | 2026-02-16 | **Test suite fully green**: 635 pre-existing failures resolved, 17 root causes fixed, route architecture corrected, CookieAuth + RequireAuth plugs, tokens table migration                                                                                                                                                                                                                      |
+| 0.9.26  | 2026-02-15 | **Architecture refactor**: Router split (8 modules), component org (6 dirs), remote caching, bundle monitoring, dead code removal                                                                                                                                                                                                                                                               |
+| 0.9.24+ | 2026-02-15 | **Compliance pass**: 8 backend modules split (<500 lines), 5 React splits (<300 lines), 56 @spec annotations, soft delete audit                                                                                                                                                                                                                                                                 |
+| 0.9.24  | 2026-02-15 | **Backend tests green**: 1,633 tests, 0 failures — 13 source bugs fixed, 114 files changed                                                                                                                                                                                                                                                                                                      |
+| 0.9.23  | 2026-02-14 | **Credo zero**: 64→0 issues, 56 alias fixes, 8 TODOs implemented                                                                                                                                                                                                                                                                                                                                |
+| 0.9.22  | 2026-02-13 | **Refactoring**: 0 Credo warnings/refactoring, context structs, pattern matching                                                                                                                                                                                                                                                                                                                |
+| 0.9.21  | 2026-02-13 | **Credo cleanup**: 1,277→83 issues, 14 routes wired, alias ordering, atom safety                                                                                                                                                                                                                                                                                                                |
+| 0.9.20  | 2026-02-13 | **Compile cleanup**: 90→0 warnings, Elixir 1.19 bitwise fix, 30+ files cleaned                                                                                                                                                                                                                                                                                                                  |
+| 0.9.19  | 2026-02-14 | **163 backend tests**, 70 context tests, 4 controllers wired, observability stack                                                                                                                                                                                                                                                                                                               |
+| 0.9.18  | 2026-02-14 | **100% controller coverage**, MeiliSearch pipeline, chaos testing                                                                                                                                                                                                                                                                                                                               |
+| 0.9.12  | 2026-02-03 | **Reanimated v4 migration** (222→0 TS errors)                                                                                                                                                                                                                                                                                                                                                   |
+| 0.9.11  | 2026-02-02 | Architecture transformation, module system                                                                                                                                                                                                                                                                                                                                                      |
+| 0.9.10  | 2026-02-01 | E2EE test suite, store facades, 893 tests                                                                                                                                                                                                                                                                                                                                                       |
+| 0.9.9   | 2026-01-31 | Type safety improvements, production logging                                                                                                                                                                                                                                                                                                                                                    |
+| 0.9.8   | 2026-01-30 | Code simplification, component extraction                                                                                                                                                                                                                                                                                                                                                       |
+| 0.9.7   | 2026-01-27 | Enterprise landing page, dual-app arch                                                                                                                                                                                                                                                                                                                                                          |
+| 1.0.0   | TBD        | First stable release (post-audit)                                                                                                                                                                                                                                                                                                                                                               |
 
 ---
 
@@ -298,4 +309,4 @@ apps/mobile/src/screens/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.31 • Updated: February 17, 2026</sub>
+<sub>**CGraph Dashboard** • Version 0.9.31 • Updated: February 18, 2026</sub>

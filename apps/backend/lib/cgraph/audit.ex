@@ -291,6 +291,16 @@ defmodule CGraph.Audit do
     {:noreply, state}
   end
 
+  @impl true
+  def terminate(_reason, state) do
+    # Flush any remaining buffered entries on shutdown to prevent data loss
+    if state.buffer != [] do
+      do_flush(state)
+    end
+
+    :ok
+  end
+
   defp schedule_flush do
     Process.send_after(self(), :flush, @buffer_flush_interval)
   end
@@ -477,10 +487,16 @@ defmodule CGraph.Audit do
   # Context Extraction Helpers
   # ---------------------------------------------------------------------------
 
-  defp format_ip(ip) when is_tuple(ip) do
+  defp format_ip(ip) when is_tuple(ip) and tuple_size(ip) == 4 do
     ip
     |> Tuple.to_list()
     |> Enum.join(".")
+  end
+  defp format_ip(ip) when is_tuple(ip) and tuple_size(ip) == 8 do
+    ip
+    |> Tuple.to_list()
+    |> Enum.map(&Integer.to_string(&1, 16))
+    |> Enum.join(":")
   end
   defp format_ip(ip), do: to_string(ip)
 

@@ -1525,3 +1525,39 @@ fixes)
 
 **Full verification suite:** Crypto 192/192 ✅ | Web 5/5 files ✅ | Backend 0 errors ✅ | TS 0
 errors ✅
+
+### Session 30 — Security Hardening Audit (February 18, 2026)
+
+**Scope:** Full-stack audit across backend, web, mobile, and monorepo config for bad implementations
+and misconfigurations. 4 parallel sub-agent audits covering ~100 checkpoints.
+
+**Critical findings fixed (3):**
+
+1. **CSP allowed `unsafe-eval` + OpenAI connect-src** (`vercel.json`) — Removed `unsafe-eval` from
+   `script-src`, removed `api.openai.com` from `connect-src`. Added HSTS header.
+2. **15 auth token reads from `localStorage`** (8 web files) — All replaced with
+   `useAuthStore.getState().token` (sessionStorage-backed). Eliminates dual-storage security risk.
+3. **`@cgraph/crypto` package not marked `private: true`** — Accidental publish could leak E2EE
+   source to public npm. Fixed.
+
+**High findings fixed (6):**
+
+4. **Permissions-Policy blocked camera/microphone** → `camera=(self), microphone=(self)`
+5. **Audit GenServer no `terminate/2`** — Added buffer flush on shutdown
+6. **IPv6 `format_ip/1` corruption** — Added `tuple_size(ip) == 8` guard with hex `:` formatting
+7. **Mobile no root ErrorBoundary** — Wrapped `<AppContent />` in `<ErrorBoundary>`
+8. **`AsyncStorage` in devDependencies** — Moved to `dependencies`
+9. **Mobile `app.json` diverged** — Version, encryption flag, splash color, versionCode aligned
+
+**Medium findings fixed (3):**
+
+10. **Gamification socket URL** — Fallback `api.cgraph.io` → `cgraph-backend.fly.dev`
+11. **9 stale version strings** — All aligned to 0.9.31
+12. **`erl_crash.dump` gitignore** — Added to backend `.gitignore`
+
+**Verification:** Crypto 192/192 ✅ | Web 75/75 ✅ | Backend 0 errors ✅ | TS 0 errors ✅
+
+**Known remaining items (non-blocking):** Guardian JWT fallback in config.exs (runtime.exs
+overrides), Oban queue drift, spawn/1 for post-startup tasks, retention cleanup commented out,
+Three.js in devDeps (Vite bundles anyway), low coverage thresholds, deprecated packages in
+workspace, Node 22/20 version split between CI and deploy.

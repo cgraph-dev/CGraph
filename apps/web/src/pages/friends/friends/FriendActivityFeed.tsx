@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { entranceVariants, staggerConfigs } from '@/lib/animation-presets/presets';
 import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
+import { useAuthStore } from '@/modules/auth/store/authStore.impl';
 
 interface FriendActivity {
   user_id: string;
@@ -45,7 +46,7 @@ export function FriendActivityFeed() {
     setLoading(true);
     try {
       const res = await fetch('/api/v1/friends/activity', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
       });
       if (res.ok) {
         const data = await res.json();
@@ -83,9 +84,7 @@ export function FriendActivityFeed() {
 
   if (activities.length === 0) {
     return (
-      <div className="py-6 text-center text-sm text-white/30">
-        No friend activity right now
-      </div>
+      <div className="py-6 text-center text-sm text-white/30">No friend activity right now</div>
     );
   }
 
@@ -93,7 +92,9 @@ export function FriendActivityFeed() {
     <motion.div
       initial="initial"
       animate="animate"
-      variants={{ animate: { transition: { staggerChildren: staggerConfigs.fast.staggerChildren } } }}
+      variants={{
+        animate: { transition: { staggerChildren: staggerConfigs.fast.staggerChildren } },
+      }}
       className="space-y-1"
     >
       <h4 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-white/30">
@@ -129,9 +130,7 @@ export function FriendActivityFeed() {
               {ACTIVITY_LABELS[activity.activity_type]} {activity.activity_name}
             </p>
           </div>
-          <span className="text-[10px] text-white/20">
-            {formatDuration(activity.started_at)}
-          </span>
+          <span className="text-[10px] text-white/20">{formatDuration(activity.started_at)}</span>
         </motion.div>
       ))}
     </motion.div>

@@ -8,6 +8,7 @@ import * as Font from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import deepLinks from './src/lib/deepLinks';
+import { ErrorBoundary } from './src/components/error/ErrorBoundary';
 import { E2EEProvider } from './src/lib/crypto/E2EEContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import { queryClient } from './src/lib/queryClient';
@@ -110,9 +111,11 @@ export default function App() {
     <GestureHandlerRootView style={styles.root} onLayout={onLayoutRootView}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <E2EEProvider>
-            <AppContent />
-          </E2EEProvider>
+          <ErrorBoundary name="Root" showRetry>
+            <E2EEProvider>
+              <AppContent />
+            </E2EEProvider>
+          </ErrorBoundary>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

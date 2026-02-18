@@ -7,6 +7,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { entranceVariants, springs, staggerConfigs } from '@/lib/animation-presets/presets';
 import { LinkIcon, XMarkIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { useAuthStore } from '@/modules/auth/store/authStore.impl';
 
 interface ConnectedAccount {
   id: string;
@@ -31,7 +32,7 @@ export function ConnectedAccounts() {
     setLoading(true);
     try {
       const res = await fetch('/api/v1/me/connected-accounts', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
       });
       if (res.ok) {
         const data = await res.json();
@@ -44,7 +45,9 @@ export function ConnectedAccounts() {
     }
   }, []);
 
-  useEffect(() => { fetchAccounts(); }, [fetchAccounts]);
+  useEffect(() => {
+    fetchAccounts();
+  }, [fetchAccounts]);
 
   const handleLink = (provider: string) => {
     // Redirect to OAuth flow
@@ -59,7 +62,7 @@ export function ConnectedAccounts() {
     try {
       await fetch(`/api/v1/me/connected-accounts/${accountId}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
       });
       setAccounts((prev) => prev.filter((a) => a.id !== accountId));
     } catch {
@@ -78,7 +81,7 @@ export function ConnectedAccounts() {
         transition={springs.gentle}
         className="mb-6"
       >
-        <div className="flex items-center gap-3 mb-2">
+        <div className="mb-2 flex items-center gap-3">
           <LinkIcon className="h-6 w-6 text-primary-400" />
           <h2 className="text-xl font-bold text-white">Connected Accounts</h2>
         </div>
@@ -90,7 +93,9 @@ export function ConnectedAccounts() {
       <motion.div
         initial="initial"
         animate="animate"
-        variants={{ animate: { transition: { staggerChildren: staggerConfigs.fast.staggerChildren } } }}
+        variants={{
+          animate: { transition: { staggerChildren: staggerConfigs.fast.staggerChildren } },
+        }}
         className="space-y-3"
       >
         {PROVIDERS.map((provider) => {

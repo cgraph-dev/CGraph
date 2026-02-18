@@ -6,11 +6,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { entranceVariants, staggerConfigs } from '@/lib/animation-presets/presets';
-import {
-  ShieldExclamationIcon,
-  CheckCircleIcon,
-  XCircleIcon,
-} from '@heroicons/react/24/outline';
+import { ShieldExclamationIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { useAuthStore } from '@/modules/auth/store/authStore.impl';
 
 interface Appeal {
   id: string;
@@ -41,7 +38,7 @@ export function AppealsQueue({ groupId }: { groupId: string }) {
       const params = new URLSearchParams();
       if (filter !== 'all') params.set('status', filter);
       const res = await fetch(`/api/v1/groups/${groupId}/appeals?${params}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
       });
       if (res.ok) {
         const data = await res.json();
@@ -64,15 +61,17 @@ export function AppealsQueue({ groupId }: { groupId: string }) {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${useAuthStore.getState().token}`,
         },
         body: JSON.stringify({ decision, reason: reviewReason }),
       });
       if (res.ok) {
         setAppeals((prev) =>
           prev.map((a) =>
-            a.id === appealId ? { ...a, status: decision, reviewed_at: new Date().toISOString() } : a,
-          ),
+            a.id === appealId
+              ? { ...a, status: decision, reviewed_at: new Date().toISOString() }
+              : a
+          )
         );
         setReviewingId(null);
         setReviewReason('');
@@ -83,7 +82,12 @@ export function AppealsQueue({ groupId }: { groupId: string }) {
   };
 
   const formatDate = (s: string) =>
-    new Date(s).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    new Date(s).toLocaleDateString([], {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
 
   const statusColors: Record<string, string> = {
     pending: 'text-yellow-400 bg-yellow-500/10',
@@ -140,7 +144,9 @@ export function AppealsQueue({ groupId }: { groupId: string }) {
         <motion.div
           initial="initial"
           animate="animate"
-          variants={{ animate: { transition: { staggerChildren: staggerConfigs.fast.staggerChildren } } }}
+          variants={{
+            animate: { transition: { staggerChildren: staggerConfigs.fast.staggerChildren } },
+          }}
           className="space-y-3"
         >
           {appeals.map((appeal) => (
@@ -154,7 +160,11 @@ export function AppealsQueue({ groupId }: { groupId: string }) {
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 overflow-hidden rounded-full bg-gradient-to-br from-primary-500 to-purple-600">
                     {appeal.user_avatar ? (
-                      <img src={appeal.user_avatar} alt={appeal.user_name} className="h-full w-full object-cover" />
+                      <img
+                        src={appeal.user_avatar}
+                        alt={appeal.user_name}
+                        className="h-full w-full object-cover"
+                      />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center font-bold text-white">
                         {appeal.user_name.charAt(0).toUpperCase()}
@@ -164,12 +174,16 @@ export function AppealsQueue({ groupId }: { groupId: string }) {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-white">{appeal.user_name}</span>
-                      <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${statusColors[appeal.status]}`}>
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${statusColors[appeal.status]}`}
+                      >
                         {appeal.status}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-xs text-white/30">
-                      <span>{restrictionLabels[appeal.restriction_type] || appeal.restriction_type}</span>
+                      <span>
+                        {restrictionLabels[appeal.restriction_type] || appeal.restriction_type}
+                      </span>
                       <span>·</span>
                       <span>{formatDate(appeal.created_at)}</span>
                     </div>
@@ -217,7 +231,10 @@ export function AppealsQueue({ groupId }: { groupId: string }) {
                           Deny
                         </button>
                         <button
-                          onClick={() => { setReviewingId(null); setReviewReason(''); }}
+                          onClick={() => {
+                            setReviewingId(null);
+                            setReviewReason('');
+                          }}
                           className="rounded-lg px-3 py-1.5 text-xs text-white/40 hover:bg-white/5"
                         >
                           Cancel

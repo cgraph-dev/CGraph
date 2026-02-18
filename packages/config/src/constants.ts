@@ -4,7 +4,7 @@
 
 // App Info
 export const APP_NAME = 'CGraph';
-export const APP_VERSION = '1.0.0';
+export const APP_VERSION = '0.9.31';
 export const APP_DESCRIPTION = 'The Everything App for Web3 Communities';
 
 // API Versions
@@ -49,19 +49,19 @@ export const RATE_LIMITS = {
   comments: { max: 30, windowSeconds: 60 },
   auth: { max: 5, windowSeconds: 60 },
   upload: { max: 10, windowSeconds: 60 },
-  ai: { max: 60, windowSeconds: 60 },  // AI requests per minute
+  ai: { max: 60, windowSeconds: 60 }, // AI requests per minute
 } as const;
 
 // AI Models Configuration
 /**
  * AI Configuration - Placeholder for Future Features
- * 
+ *
  * Reserved for future AI-powered features:
  * - Forum moderation
  * - Chat experience enhancements
  * - Content suggestions
  * - Smart search
- * 
+ *
  * Provider: Claude (Anthropic) - to be implemented
  * @see docs/architecture/AI_INTEGRATION.md for implementation plan
  */

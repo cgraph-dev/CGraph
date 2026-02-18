@@ -18,11 +18,9 @@
 
 import Constants from 'expo-constants';
 
-const SENTRY_DSN = Constants.expoConfig?.extra?.sentryDsn as
-  | string
-  | undefined;
+const SENTRY_DSN = Constants.expoConfig?.extra?.sentryDsn as string | undefined;
 const ENVIRONMENT = __DEV__ ? 'development' : 'production';
-const RELEASE = Constants.expoConfig?.version || '0.9.4';
+const RELEASE = Constants.expoConfig?.version || '0.9.31';
 
 let isInitialized = false;
 
@@ -68,6 +66,7 @@ export async function initErrorTracking(): Promise<void> {
     });
 
     isInitialized = true;
+    // eslint-disable-next-line no-console
     console.info('[ErrorTracking] Sentry initialized for mobile');
   } catch (error) {
     console.warn('[ErrorTracking] Failed to initialize Sentry:', error);
@@ -77,10 +76,7 @@ export async function initErrorTracking(): Promise<void> {
 /**
  * Capture a custom error with context.
  */
-export function captureError(
-  error: Error | string,
-  context?: Record<string, unknown>
-): void {
+export function captureError(error: Error | string, context?: Record<string, unknown>): void {
   if (!isInitialized) {
     console.error('[ErrorTracking]', error, context);
     return;
@@ -123,10 +119,12 @@ export function addBreadcrumb(
 /**
  * Set user context for error tracking.
  */
-export function setUser(user: {
-  id: string;
-  username?: string;
-} | null): void {
+export function setUser(
+  user: {
+    id: string;
+    username?: string;
+  } | null
+): void {
   if (!isInitialized) return;
 
   import('@sentry/react-native').then((Sentry) => {

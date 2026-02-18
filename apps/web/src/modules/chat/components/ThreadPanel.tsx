@@ -6,11 +6,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { entranceVariants, springs } from '@/lib/animation-presets/presets';
-import {
-  XMarkIcon,
-  PaperAirplaneIcon,
-  ChatBubbleLeftRightIcon,
-} from '@heroicons/react/24/outline';
+import { XMarkIcon, PaperAirplaneIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/modules/auth/store';
 
 interface ThreadMessage {
@@ -44,7 +40,7 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, conversationId }: 
     setLoading(true);
     try {
       const res = await fetch(`/api/v1/messages/${parentMessage.id}/thread`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        headers: { Authorization: `Bearer ${useAuthStore.getState().token}` },
       });
       if (res.ok) {
         const data = await res.json();
@@ -78,7 +74,7 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, conversationId }: 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${useAuthStore.getState().token}`,
         },
         body: JSON.stringify({
           content: replyText.trim(),
@@ -215,9 +211,7 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, conversationId }: 
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-baseline gap-2">
-                        <span className="text-sm font-medium text-white">
-                          {reply.sender_name}
-                        </span>
+                        <span className="text-sm font-medium text-white">{reply.sender_name}</span>
                         <span className="text-xs text-white/30">
                           {formatTime(reply.inserted_at)}
                         </span>

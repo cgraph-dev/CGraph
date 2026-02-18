@@ -14,6 +14,7 @@ import {
   DocumentIcon,
   ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline';
+import { useAuthStore } from '@/modules/auth/store/authStore.impl';
 
 interface StorageBreakdown {
   messages: number; // bytes
@@ -44,7 +45,12 @@ type AutoDownloadOption = 'always' | 'wifi' | 'never';
 
 export function StorageManagement() {
   const [storage, setStorage] = useState<StorageBreakdown>({
-    messages: 0, images: 0, videos: 0, documents: 0, cache: 0, total: 0,
+    messages: 0,
+    images: 0,
+    videos: 0,
+    documents: 0,
+    cache: 0,
+    total: 0,
   });
   const [clearing, setClearing] = useState(false);
   const [autoDownload, setAutoDownload] = useState<{
@@ -86,7 +92,7 @@ export function StorageManagement() {
         await Promise.all(names.map((name) => caches.delete(name)));
       }
       // Clear localStorage except auth token
-      const token = localStorage.getItem('token');
+      const token = useAuthStore.getState().token;
       localStorage.clear();
       if (token) localStorage.setItem('token', token);
 
@@ -107,13 +113,11 @@ export function StorageManagement() {
         transition={springs.gentle}
         className="mb-6"
       >
-        <div className="flex items-center gap-3 mb-2">
+        <div className="mb-2 flex items-center gap-3">
           <CircleStackIcon className="h-6 w-6 text-primary-400" />
           <h2 className="text-xl font-bold text-white">Storage & Data</h2>
         </div>
-        <p className="text-sm text-white/40">
-          Total usage: {formatBytes(storage.total)}
-        </p>
+        <p className="text-sm text-white/40">Total usage: {formatBytes(storage.total)}</p>
       </motion.div>
 
       {/* Usage breakdown */}
@@ -126,7 +130,7 @@ export function StorageManagement() {
             <div key={cat.key} className="flex items-center gap-3">
               <cat.icon className="h-5 w-5 text-white/40" />
               <div className="min-w-[80px] text-sm text-white/60">{cat.label}</div>
-              <div className="relative flex-1 h-3 rounded-full bg-dark-700 overflow-hidden">
+              <div className="relative h-3 flex-1 overflow-hidden rounded-full bg-dark-700">
                 <motion.div
                   className={`absolute inset-y-0 left-0 rounded-full ${cat.color}`}
                   initial={{ width: 0 }}
@@ -170,7 +174,10 @@ export function StorageManagement() {
               <select
                 value={autoDownload[type]}
                 onChange={(e) =>
-                  setAutoDownload((prev) => ({ ...prev, [type]: e.target.value as AutoDownloadOption }))
+                  setAutoDownload((prev) => ({
+                    ...prev,
+                    [type]: e.target.value as AutoDownloadOption,
+                  }))
                 }
                 className="rounded-lg border border-white/10 bg-dark-800 px-3 py-1.5 text-sm text-white focus:border-primary-500 focus:outline-none"
               >

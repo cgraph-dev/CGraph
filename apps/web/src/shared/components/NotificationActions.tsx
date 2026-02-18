@@ -10,6 +10,7 @@ import {
   ChatBubbleLeftIcon,
   UserPlusIcon,
 } from '@heroicons/react/24/outline';
+import { useAuthStore } from '@/modules/auth/store/authStore.impl';
 
 interface NotificationActionsProps {
   type: 'friend_request' | 'message' | 'group_invite' | 'mention';
@@ -36,7 +37,7 @@ export function NotificationActions({
         method,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${useAuthStore.getState().token}`,
         },
         body: body ? JSON.stringify(body) : undefined,
       });

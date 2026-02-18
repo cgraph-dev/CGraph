@@ -37,7 +37,7 @@ persistQueryClient({
   queryClient,
   persister,
   maxAge: ONE_DAY_MS,
-  buster: 'v0.9.0-mobile',
+  buster: 'v0.9.31-mobile',
 });
 
 onlineManager.setEventListener((setOnline) => {

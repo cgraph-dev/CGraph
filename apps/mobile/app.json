@@ -2,7 +2,7 @@
   "expo": {
     "name": "CGraph",
     "slug": "cgraph",
-    "version": "1.0.0",
+    "version": "0.9.31",
     "runtimeVersion": {
       "policy": "appVersion"
     },
@@ -14,15 +14,15 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#6366f1"
+      "backgroundColor": "#10b981"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": ["assets/**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.cgraph.app",
       "buildNumber": "4",
       "config": {
-        "usesNonExemptEncryption": true
+        "usesNonExemptEncryption": false
       },
       "infoPlist": {
         "UIBackgroundModes": ["remote-notification", "fetch"],
@@ -31,7 +31,7 @@
         "NSPhotoLibraryAddUsageDescription": "CGraph needs permission to save images to your photo library.",
         "NSMicrophoneUsageDescription": "CGraph needs microphone access for voice messages and calls.",
         "NSFaceIDUsageDescription": "CGraph uses Face ID to protect your account and secure messages.",
-        "ITSAppUsesNonExemptEncryption": true,
+        "ITSAppUsesNonExemptEncryption": false,
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": false,
           "NSExceptionDomains": {
@@ -66,10 +66,10 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#6366f1"
+        "backgroundColor": "#10b981"
       },
       "package": "org.cgraph.app",
-      "versionCode": 2,
+      "versionCode": 3,
       "permissions": [
         "CAMERA",
         "READ_MEDIA_IMAGES",

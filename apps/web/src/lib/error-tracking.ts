@@ -18,7 +18,7 @@
 
 const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN as string | undefined;
 const ENVIRONMENT = import.meta.env.MODE || 'development';
-const RELEASE = import.meta.env.VITE_APP_VERSION || '0.9.4';
+const RELEASE = import.meta.env.VITE_APP_VERSION || '0.9.31';
 
 // Track initialization state
 let isInitialized = false;
@@ -80,6 +80,7 @@ export async function initErrorTracking(): Promise<void> {
     });
 
     isInitialized = true;
+    // eslint-disable-next-line no-console
     console.info('[ErrorTracking] Sentry initialized');
   } catch (error) {
     console.warn('[ErrorTracking] Failed to initialize Sentry:', error);
@@ -118,7 +119,7 @@ export function captureMessage(
   extra?: Record<string, unknown>
 ): void {
   if (!isInitialized) {
-    console.log('[ErrorTracking]', `[${level}]`, message, extra);
+    console.warn('[ErrorTracking]', `[${level}]`, message, extra);
     return;
   }
 

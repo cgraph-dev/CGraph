@@ -81,7 +81,7 @@ persistQueryClient({
   queryClient,
   persister: localStoragePersister,
   maxAge: 1000 * 60 * 60 * 24,
-  buster: 'v0.9.6-web', // Updated to match current version
+  buster: 'v0.9.31-web', // Must match package.json version for cache invalidation
 });
 
 // Track online/offline status for offline-first behavior

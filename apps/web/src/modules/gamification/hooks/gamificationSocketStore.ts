@@ -17,7 +17,7 @@ import type { GamificationSocketStore, GamificationState } from './gamification-
 
 const logger = createLogger('GamificationSocket');
 
-const SOCKET_URL = import.meta.env.VITE_WS_URL || 'wss://api.cgraph.io/socket';
+const SOCKET_URL = import.meta.env.VITE_WS_URL || 'wss://cgraph-backend.fly.dev/socket';
 
 const CHANNEL_EVENTS = [
   'initial_state',
