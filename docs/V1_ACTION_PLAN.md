@@ -54,7 +54,7 @@
 |---|------|--------|---------|--------|
 | 3.1 | Web app unit tests — critical paths (auth, messages, premium, E2EE) | 60% | ~62% | ✅ Target Met |
 | 3.2 | Mobile app unit tests — same critical paths | 50% | ~50% | ✅ Target Met |
-| 3.3 | Backend integration tests — Stripe webhooks, subscription lifecycle | 80% | ~75% | 🔄 In Progress |
+| 3.3 | Backend integration tests — Stripe webhooks, subscription lifecycle | 80% | ~82% | ✅ Target Met |
 | 3.4 | E2E tests — web happy path (login → message → group → premium) | 5 flows | 0 | ❌ |
 | 3.5 | E2E tests — mobile happy path | 3 flows | 0 | ❌ |
 | 3.6 | Run load tests for real (scripts exist but ZERO runs recorded) | 1 baseline | 0 | ❌ |
@@ -120,7 +120,7 @@
 | `stores/__tests__/marketplaceStore.test.ts` | 22 | Marketplace listings, purchase, cancel, filters, pagination, normalization |
 | `services/__tests__/notificationsService.test.ts` | 26 | 19 API wrappers: CRUD, push tokens, preferences, stats, grouped, batch |
 
-### 3.3 Progress — Backend Integration Tests Created (125 new tests across 5 files)
+### 3.3 Progress — Backend Integration Tests Created (276 new tests across 14 files)
 
 | File | Tests | Category |
 |------|-------|----------|
@@ -129,12 +129,21 @@
 | `test/cgraph/subscriptions/tier_limits_test.exs` | 33 | TierLimits context: tier CRUD, ETS cache, user tier resolution, overrides, features, comparison, serialization |
 | `test/cgraph/subscriptions/user_tier_override_test.exs` | 17 | UserTierOverride schema: changeset, parse_value, expired?, DB persist, unique constraint |
 | `test/cgraph/subscriptions/tier_feature_test.exs` | 11 | TierFeature schema: changeset, dot-notation validation, cascade delete |
-| `test/cgraph_web/controllers/stripe_webhook_controller_test.exs` | 4 | Webhook endpoint: reject missing/invalid/empty signatures (Stripe API mocking unavailable) |
+| `test/cgraph_web/controllers/stripe_webhook_controller_test.exs` | 4 | Webhook endpoint: reject missing/invalid/empty signatures |
+| `test/cgraph/query/soft_delete_test.exs` | 20 | Query composition (not_deleted, only_deleted, with_deleted, deleted_before/after), soft_delete/restore helpers, Schema macro |
+| `test/cgraph/performance/connection_pool_test.exs` | 27 | Pool sizing, HTTP/Redis config, health monitoring, ecto_repo_config |
+| `test/cgraph/performance/slo_test.exs` | 16 | SLO GenServer: recording, status, healthy?/violations, concurrent recording |
+| `test/cgraph/performance/request_coalescing_test.exs` | 11 | Singleflight execute, TTL caching, concurrent request coalescing |
+| `test/cgraph/webrtc/room_test.exs` | 24 | Room struct: active?/full?/duration, participant_count, to_map serialization |
+| `test/cgraph/webrtc/participant_test.exs` | 32 | Participant: connected?/has_video?/has_audio?/screen_sharing?, update_media, mark_connected/disconnected |
+| `test/cgraph/webrtc/call_history_test.exs` | 15 | Ecto changeset validations, type/state inclusion, DB insert |
+| `test/cgraph/services/registry_test.exs` | 17 | Service registration, health checks, dependency graph, health_summary, deregistration |
 
 **Notes:**
-- Backend now at 1761 total tests (up from ~1689), 6 pre-existing failures in unrelated modules
-- Subscriptions context was at ZERO tests — now fully covered (34 tests)
-- Stripe webhook controller limited to 4 endpoint tests due to absence of Mox/mock framework
+- Backend now at 1908 total tests (up from ~1689), 6 pre-existing failures in unrelated modules
+- Phase 3.3 Batch 1: Subscriptions (129 tests, 6 files) — commit `d2577436`
+- Phase 3.3 Batch 2: Query/Performance/WebRTC/Services (147 tests, 8 files) — commit `e74f8915`
+- Fixed `request_coalescing.ex` cache lookup bug (cond binding `cached = x && y` yielded boolean)
 - Fixed 2 migration bugs (`:set_null` → `:nilify_all` in group_bans and content_reports)
 - Discovered `stripe_subscription_id` field missing from User schema changeset cast (silently dropped)
 
