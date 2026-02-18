@@ -385,7 +385,7 @@ defmodule CGraphWeb.API.V1.RssController do
         <item>
           <title>#{escape_xml(item.title)}</title>
           <link>#{escape_xml(item.link)}</link>
-          <description><![CDATA[#{item.description}]]></description>
+          <description><![CDATA[#{cdata_escape(item.description)}]]></description>
           <dc:creator>#{escape_xml(item.author)}</dc:creator>
           <pubDate>#{format_rss_date(item.pub_date)}</pubDate>
           <guid isPermaLink="false">#{escape_xml(item.guid)}</guid>
@@ -426,7 +426,7 @@ defmodule CGraphWeb.API.V1.RssController do
         <author>
           <name>#{escape_xml(item.author)}</name>
         </author>
-        <content type="html"><![CDATA[#{item.description}]]></content>
+        <content type="html"><![CDATA[#{cdata_escape(item.description)}]]></content>
     #{categories_xml}
       </entry>
     """
@@ -464,4 +464,11 @@ defmodule CGraphWeb.API.V1.RssController do
     |> String.replace("'", "&apos;")
   end
   defp escape_xml(other), do: escape_xml(to_string(other))
+
+  # CDATA escaping — prevent premature close of CDATA sections
+  defp cdata_escape(nil), do: ""
+  defp cdata_escape(text) when is_binary(text) do
+    String.replace(text, "]]>", "]]]]><![CDATA[>")
+  end
+  defp cdata_escape(other), do: cdata_escape(to_string(other))
 end

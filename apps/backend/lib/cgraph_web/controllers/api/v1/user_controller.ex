@@ -54,6 +54,10 @@ defmodule CGraphWeb.API.V1.UserController do
 
     case Accounts.change_username(user, username) do
       {:ok, updated_user} -> render(conn, :show, user: updated_user)
+      {:error, :cooldown_active} ->
+        conn
+        |> put_status(:too_many_requests)
+        |> json(%{error: %{message: "Username can only be changed once every 30 days"}})
       {:error, %Ecto.Changeset{} = changeset} -> respond_changeset_error(conn, changeset)
     end
   end

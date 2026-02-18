@@ -70,10 +70,16 @@ defmodule CGraph.Storage.Local do
       Path.join(base_path, url_or_key)
     end
 
-    case File.rm(path) do
-      :ok -> :ok
-      {:error, :enoent} -> :ok  # Already deleted
-      {:error, reason} -> {:error, reason}
+    # Prevent path traversal — resolved path must be within base_path
+    resolved = Path.expand(path)
+    unless String.starts_with?(resolved, Path.expand(base_path)) do
+      {:error, :path_traversal}
+    else
+      case File.rm(resolved) do
+        :ok -> :ok
+        {:error, :enoent} -> :ok  # Already deleted
+        {:error, reason} -> {:error, reason}
+      end
     end
   end
 

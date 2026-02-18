@@ -196,7 +196,11 @@ defmodule CGraph.Search do
 
   defp build_message_filters(user_id, conversation_id, opts) do
     base = "user_id = #{user_id}"
-    filters = if conversation_id, do: "#{base} AND conversation_id = #{conversation_id}", else: base
+    filters = if conversation_id && valid_uuid?(conversation_id) do
+      "#{base} AND conversation_id = #{conversation_id}"
+    else
+      base
+    end
 
     before_date = Keyword.get(opts, :before)
     after_date = Keyword.get(opts, :after)
@@ -206,6 +210,9 @@ defmodule CGraph.Search do
 
     filters
   end
+
+  defp valid_uuid?(id) when is_binary(id), do: Regex.match?(~r/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, id)
+  defp valid_uuid?(_), do: false
 
   defp fetch_messages_by_ids([]), do: []
   defp fetch_messages_by_ids(message_ids) do

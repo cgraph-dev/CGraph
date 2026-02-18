@@ -161,10 +161,14 @@ defmodule CGraph.Accounts.UserManagement do
   @doc "Change a user's username (rate-limited: once per 30 days)."
   @spec change_username(User.t(), String.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def change_username(user, new_username) do
-    user
-    |> User.username_changeset(%{username: new_username})
-    |> Ecto.Changeset.put_change(:username_changed_at, DateTime.truncate(DateTime.utc_now(), :second))
-    |> Repo.update()
+    if can_change_username?(user) do
+      user
+      |> User.username_changeset(%{username: new_username})
+      |> Ecto.Changeset.put_change(:username_changed_at, DateTime.truncate(DateTime.utc_now(), :second))
+      |> Repo.update()
+    else
+      {:error, :cooldown_active}
+    end
   end
 
   @doc "Check if a user can change their username."

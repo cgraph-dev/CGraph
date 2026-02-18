@@ -252,12 +252,14 @@ defmodule CGraph.Application do
       reconnect_after_ms: 5000
     }})
 
-    # 3. Drain Oban queues (finish in-progress jobs, don't start new ones)
+    # 3. Pause Oban queues (stop fetching new jobs, let in-flight finish)
     try do
-      Logger.info("[Application] Shutting down Oban gracefully...")
-      Oban.shutdown()
+      Logger.info("[Application] Pausing Oban queues for graceful shutdown...")
+      for queue <- [:default, :notifications, :mailers] do
+        Oban.pause_queue(queue: queue)
+      end
     rescue
-      e -> Logger.warning("application_oban_shutdown_failed", error: inspect(e))
+      e -> Logger.warning("application_oban_pause_failed", error: inspect(e))
     end
 
     # 4. Wait for in-flight requests to complete (max 25s, leaving 5s buffer)

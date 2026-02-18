@@ -796,29 +796,40 @@ defmodule CGraph.DataExport do
       "<item>#{format_xml_value(item)}</item>"
     end)
   end
-  defp format_xml_value(value) when is_map(value), do: Jason.encode!(value)
-  defp format_xml_value(value), do: to_string(value)
+  defp format_xml_value(value) when is_map(value), do: xml_escape(Jason.encode!(value))
+  defp format_xml_value(value), do: xml_escape(to_string(value))
+
+  defp xml_escape(text) when is_binary(text) do
+    text
+    |> String.replace("&", "&amp;")
+    |> String.replace("<", "&lt;")
+    |> String.replace(">", "&gt;")
+    |> String.replace("\"", "&quot;")
+  end
+  defp xml_escape(text), do: xml_escape(to_string(text))
 
   # ---------------------------------------------------------------------------
   # Private Functions - Security
   # ---------------------------------------------------------------------------
 
   defp encrypt_content(content, password) do
-    key = if password do
-      derive_key_from_password(password)
+    {key, salt_prefix} = if password do
+      {key, salt} = derive_key_from_password(password)
+      {key, <<2::8, salt::binary>>}
     else
-      get_master_key()
+      {get_master_key(), <<1::8>>}
     end
 
     iv = :crypto.strong_rand_bytes(12)
     {ciphertext, tag} = :crypto.crypto_one_time_aead(:aes_256_gcm, key, iv, content, "", true)
 
-    <<1::8, iv::binary, tag::binary, ciphertext::binary>>
+    <<salt_prefix::binary, iv::binary, tag::binary, ciphertext::binary>>
   end
 
   defp derive_key_from_password(password) do
-    salt = Application.get_env(:cgraph, :password_salt, "cgraph_export_salt")
-    :crypto.pbkdf2_hmac(:sha256, password, salt, 100_000, 32)
+    salt = :crypto.strong_rand_bytes(16)
+    key = :crypto.pbkdf2_hmac(:sha256, password, salt, 100_000, 32)
+    {key, salt}
   end
 
   defp get_master_key do
