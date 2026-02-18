@@ -139,9 +139,8 @@ defmodule CGraphWeb.API.V1.ForumController do
 
   Any authenticated user can create forums, subject to their subscription tier limits:
   - Free: 1 forum
-  - Starter ($5/mo): 3 forums
-  - Pro ($15/mo): 10 forums
-  - Business ($50/mo): Unlimited
+  - Premium ($9.99/mo): 10 forums
+  - Enterprise: Unlimited
   """
   def create(conn, params) do
     user = conn.assigns.current_user

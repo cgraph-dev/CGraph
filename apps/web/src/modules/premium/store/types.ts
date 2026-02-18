@@ -2,7 +2,7 @@
  * Premium Types
  */
 
-export type SubscriptionTier = 'free' | 'plus' | 'pro' | 'business' | 'enterprise';
+export type SubscriptionTier = 'free' | 'premium' | 'enterprise';
 
 export interface CoinPackage {
   id: string;

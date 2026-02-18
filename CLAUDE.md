@@ -55,7 +55,7 @@ karma-based forum system.
 - **Forums & Groups**: karma, servers with channels
 - **Gamification**: Achievements, leaderboards, XP system, seasonal events
 - **Push Notifications**: Expo (mobile), Web Push API (browser), email digests
-- **Subscription Tiers**: free | plus | pro | business | enterprise
+- **Subscription Tiers**: free | premium | enterprise
 - **Payments**: Stripe integration with real billing API (checkout, portal, webhooks)
 
 ## Operational Maturity
@@ -860,7 +860,7 @@ Required:
 
 Copy `.env.example` to `.env` in `apps/backend/` and configure database credentials and secrets.
 
-## Current Status (v0.9.30)
+## Current Status (v0.9.31)
 
 **Updated:** February 17, 2026
 
@@ -934,13 +934,11 @@ The following areas are scaffolded but not fully implemented:
 
 **Stripe Billing Tier Alignment:**
 
-- Unified subscription tiers across the entire stack to `free | plus | pro | business | enterprise`
-- Backend `user.ex`: Updated `subscription_changeset` validation from
-  `~w(free basic premium enterprise)` to `~w(free plus pro business enterprise)`
+- Unified subscription tiers across the entire stack to `free | premium | enterprise`
+- Backend `user.ex`: Updated `subscription_changeset` validation to `~w(free premium enterprise)`
 - Backend `stripe_webhook_controller.ex`: Replaced hardcoded placeholder `@tier_mapping` with
   env-var-based `get_tier_from_env/1` using `:stripe_price_ids` config
-- Frontend `SubscriptionTier` type: Changed from `free | plus | pro | ultimate` to
-  `free | plus | pro | business | enterprise`
+- Frontend `SubscriptionTier` type: Aligned to `free | premium | enterprise`
 - Updated all consuming components: `featureComparisonConstants.tsx`, `FeatureComparison.tsx`,
   `SubscriptionCard.tsx`, `subscriptionCard.constants.tsx`, `payment-modal/constants.ts`
 - Premium store: Added `fetchBillingStatus()` action that syncs from `billingService.getStatus()`
@@ -994,16 +992,14 @@ Comprehensive review found 14+ issues (3 critical, 6 high, 5 medium) where old t
 
 **Tier Reference (canonical — all layers must match):**
 
-| Tier         | Backend key    | Stripe env var            | Price     | XP mult | Group limit |
-| ------------ | -------------- | ------------------------- | --------- | ------- | ----------- |
-| `free`       | `"free"`       | N/A                       | $0        | 1.0x    | 5           |
-| `plus`       | `"plus"`       | `STRIPE_PRICE_PLUS`       | $4.99/mo  | 1.5x    | 10          |
-| `pro`        | `"pro"`        | `STRIPE_PRICE_PRO`        | $9.99/mo  | 2.0x    | 50          |
-| `business`   | `"business"`   | `STRIPE_PRICE_BUSINESS`   | $19.99/mo | 2.5x    | 100         |
-| `enterprise` | `"enterprise"` | `STRIPE_PRICE_ENTERPRISE` | Custom    | 3.0x    | ∞           |
+| Tier         | Backend key    | Stripe env var            | Price  | XP mult | Group limit |
+| ------------ | -------------- | ------------------------- | ------ | ------- | ----------- |
+| `free`       | `"free"`       | N/A                       | $0     | 1.0x    | 5           |
+| `premium`    | `"premium"`    | `STRIPE_PRICE_PREMIUM`    | $9.99  | 2.0x    | 50          |
+| `enterprise` | `"enterprise"` | `STRIPE_PRICE_ENTERPRISE` | Custom | 3.0x    | ∞           |
 
-**IMPORTANT**: Never use old names (`premium`, `premium_plus`, `starter`, `ultimate`, `elite`,
-`basic`). The only valid tiers are: `free | plus | pro | business | enterprise`.
+**IMPORTANT**: The only valid tiers are: `free | premium | enterprise`. Never use old names
+(`plus`, `pro`, `business`, `starter`, `ultimate`, `elite`, `basic`, `premium_plus`).
 
 ### Sessions 25–26 Changes (v0.9.30 — final 7 features, 100% completion)
 
@@ -1060,8 +1056,8 @@ Replaced all 4 mobile stub facades with real Zustand stores backed by API calls 
 
 Audited all 13 shared packages. 9 were dead (zero imports from any app):
 
-- **Removed from deps**: `@cgraph/api-client`, `@cgraph/config`, `@cgraph/core`, `@cgraph/crypto`,
-  `@cgraph/hooks`, `@cgraph/landing-components`, `@cgraph/state`, `@cgraph/test-utils`, `@cgraph/ui`
+- **Removed from deps**: `@cgraph/api-client`, `@cgraph/config`, `@cgraph/core`,
+  `@cgraph/hooks`, `@cgraph/landing-components` (DEPRECATED), `@cgraph/state`, `@cgraph/test-utils`, `@cgraph/ui`
 - **Cleaned**: web + mobile `package.json` (dependencies removed), web + mobile `tsconfig.json`
   (path aliases removed), web `lib/packages/index.ts` (orphaned re-exports removed)
 - **Kept**: `@cgraph/animation-constants`, `@cgraph/shared-types`, `@cgraph/socket`, `@cgraph/utils`
@@ -1346,9 +1342,8 @@ See `docs/PROJECT_STATUS.md` for full details.
 
 - **Payment Processing**: Stripe Checkout for subscriptions
 - **Webhooks**: `/api/webhooks/stripe` endpoint
-- **Subscription Tiers**: free | plus | pro | business | enterprise (prices configured in Stripe)
-- **Env vars**: `STRIPE_PRICE_PLUS`, `STRIPE_PRICE_PRO`, `STRIPE_PRICE_BUSINESS`,
-  `STRIPE_PRICE_ENTERPRISE`
+- **Subscription Tiers**: free | premium | enterprise (prices configured in Stripe)
+- **Env vars**: `STRIPE_PRICE_PREMIUM`, `STRIPE_PRICE_ENTERPRISE`
 - **Config key**: `config :cgraph, CGraph.Subscriptions, stripe_price_ids: %{...}`
 
 ### Key Configuration Files

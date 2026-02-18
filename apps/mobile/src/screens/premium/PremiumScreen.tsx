@@ -33,7 +33,7 @@ import paymentService, { PRODUCT_IDS, SubscriptionStatus } from '../../lib/payme
  */
 
 interface PremiumTier {
-  id: 'free' | 'plus' | 'pro';
+  id: 'free' | 'premium';
   name: string;
   price: {
     monthly: number;
@@ -70,11 +70,11 @@ const PREMIUM_TIERS: PremiumTier[] = [
     ],
   },
   {
-    id: 'plus',
-    name: 'Plus',
+    id: 'premium',
+    name: 'Premium',
     price: {
-      monthly: 4.99,
-      yearly: 47.9, // 20% discount
+      monthly: 9.99,
+      yearly: 95.9, // 20% discount
     },
     popular: true,
     gradient: ['#8b5cf6', '#7c3aed'],
@@ -87,27 +87,6 @@ const PREMIUM_TIERS: PremiumTier[] = [
       { text: '10+ animated effects', included: true },
       { text: '50 custom themes', included: true },
       { text: 'Priority support', included: true },
-      { text: 'Basic analytics', included: true },
-      { text: 'API access', included: false },
-    ],
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: {
-      monthly: 9.99,
-      yearly: 95.9, // 20% discount
-    },
-    gradient: ['#f59e0b', '#d97706'],
-    features: [
-      { text: 'Unlimited messages', included: true },
-      { text: 'Unlimited groups', included: true },
-      { text: 'End-to-end encryption', included: true },
-      { text: '1 GB file uploads', included: true },
-      { text: 'All premium features', included: true },
-      { text: 'Custom avatar borders', included: true },
-      { text: 'Unlimited themes', included: true },
-      { text: '24/7 VIP support', included: true },
       { text: 'Advanced analytics', included: true },
       { text: 'Full API access', included: true },
     ],
@@ -121,7 +100,7 @@ const PremiumScreen: React.FC = () => {
   const { user: _user } = useAuth();
   const { colors } = useTheme();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('yearly');
-  const [selectedTier, setSelectedTier] = useState<PremiumTier['id']>('plus');
+  const [selectedTier, setSelectedTier] = useState<PremiumTier['id']>('premium');
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
   const [_isLoading, setIsLoading] = useState(true);
   const [_isPurchasing, setIsPurchasing] = useState(false);
@@ -181,7 +160,7 @@ const PremiumScreen: React.FC = () => {
             try {
               // Get the correct product ID based on tier and billing cycle
               const productId =
-                tier.id === 'plus'
+                tier.id === 'premium'
                   ? billingCycle === 'yearly'
                     ? PRODUCT_IDS.PREMIUM_YEARLY
                     : PRODUCT_IDS.PREMIUM_MONTHLY
@@ -210,9 +189,10 @@ const PremiumScreen: React.FC = () => {
                 }
               }
             } catch (error: unknown) {
-              console.error('[PremiumScreen] Purchase error:', error);
+              const err = error as any;
+              console.error('[PremiumScreen] Purchase error:', err);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-              Alert.alert('Purchase Failed', error.message || 'Unable to complete purchase.');
+              Alert.alert('Purchase Failed', err?.message || 'Unable to complete purchase.');
             } finally {
               setIsPurchasing(false);
             }
@@ -248,9 +228,10 @@ const PremiumScreen: React.FC = () => {
                 Alert.alert('No Purchases', 'No previous purchases found to restore.');
               }
             } catch (error: unknown) {
-              console.error('[PremiumScreen] Restore error:', error);
+              const err = error as any;
+              console.error('[PremiumScreen] Restore error:', err);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-              Alert.alert('Restore Failed', error.message || 'Unable to restore purchases.');
+              Alert.alert('Restore Failed', err?.message || 'Unable to restore purchases.');
             } finally {
               setIsPurchasing(false);
             }
@@ -415,7 +396,7 @@ const PremiumScreen: React.FC = () => {
                   >
                     <Ionicons
                       name={
-                        tier.id === 'free' ? 'people' : tier.id === 'plus' ? 'diamond' : 'rocket'
+                        tier.id === 'free' ? 'people' : 'diamond'
                       }
                       size={28}
                       color="#fff"

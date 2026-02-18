@@ -201,9 +201,7 @@ if config_env() == :prod do
 
   config :cgraph, CGraph.Subscriptions,
     stripe_price_ids: %{
-      plus: System.get_env("STRIPE_PRICE_PLUS"),
-      pro: System.get_env("STRIPE_PRICE_PRO"),
-      business: System.get_env("STRIPE_PRICE_BUSINESS"),
+      premium: System.get_env("STRIPE_PRICE_PREMIUM"),
       enterprise: System.get_env("STRIPE_PRICE_ENTERPRISE")
     },
     success_url: app_url <> "/billing/success?session_id={CHECKOUT_SESSION_ID}",

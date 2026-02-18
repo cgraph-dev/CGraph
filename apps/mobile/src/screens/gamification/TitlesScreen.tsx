@@ -456,7 +456,7 @@ export default function TitlesScreen() {
             }}
           >
             <Ionicons
-              name={tab.icon as unknown}
+              name={tab.icon as string}
               size={18}
               color={activeTab === tab.id ? '#8b5cf6' : '#6b7280'}
             />

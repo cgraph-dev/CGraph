@@ -116,11 +116,12 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchReturn {
         // Save to search history
         await searchService.saveSearchToHistory(query).catch(() => {});
       } catch (error: unknown) {
-        if (error.name !== 'AbortError') {
+        const err = error as any;
+        if (err.name !== 'AbortError') {
           setState((prev) => ({
             ...prev,
             isSearching: false,
-            error: error instanceof Error ? error.message : 'Search failed',
+            error: err instanceof Error ? err.message : 'Search failed',
           }));
         }
       }

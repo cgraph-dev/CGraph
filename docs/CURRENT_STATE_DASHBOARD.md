@@ -14,15 +14,15 @@ Real-time overview of project health, architecture status, and operational state
 | **TypeScript**    | OK     | 10/10 | 0 errors across all packages                                                        |
 | **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                                      |
 | **Architecture**  | OK     | 9/10  | Router split (7 domain modules), component categorization, remote caching           |
-| **Tests**         | OK     | 8/10  | 1,633 backend tests passing; web coverage ~20%; landing 98 tests (63 unit + 35 E2E) |
-| **Security**      | WARN   | 9/10  | E2EE implemented; CSP hardened (meta + headers); HSTS enabled; no ext audit yet     |
-| **Documentation** | OK     | 8/10  | Architecture + API + testing docs up to date; CLAUDE.md comprehensive               |
-| **Observability** | WARN   | 8/10  | Prometheus + SLO rules defined; Grafana dashboards not yet deployed live            |
+| **Tests**         | WARN   | 5/10  | 1,633 backend tests passing; web coverage **~20%** (target 70%); mobile ~25%; 5 shared packages at 0% |
+| **Security**      | OK     | 8/10  | Web+mobile E2EE use real ECDH X3DH; 3-layer rate limiting; Guardian JWT with rotation+blacklist; comprehensive CSP/HSTS/security headers; no external audit yet |
+| **Documentation** | WARN   | 6/10  | 10+ contradictions across docs (tier names, scores, counts); needs reconciliation   |
+| **Observability** | WARN   | 5/10  | Prometheus + SLO rules defined; Grafana not deployed; load tests never run; alerts fire into void |
 | **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing (singleflight)              |
 | **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags                                       |
 
-**Composite Score: 9.1/10** — Strong production foundation with remaining gaps in external security
-audit and web test coverage
+**Composite Score: 7.4/10** — Strong architecture, security, and backend. Biggest gaps remain in test coverage,
+operational tooling deployment, and documentation accuracy.
 
 > **Implementation Registry**: See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file-level
 > inventory of all operational systems, their locations, and remaining gaps.
@@ -289,11 +289,13 @@ apps/mobile/src/screens/
 
 | Issue                        | Owner     | ETA     |
 | ---------------------------- | --------- | ------- |
-| External E2EE security audit | @security | Q1 2026 |
-| External penetration test    | @security | Q1 2026 |
-| Run coverage report (80%+)   | @dev-team | Q1 2026 |
-| Record load test baselines   | @dev-team | ✅ Done |
-| Deploy Grafana dashboards    | @infra    | Q1 2026 |
+| External E2EE security audit | @security | Q1 2026 — **OVERDUE** |
+| External penetration test    | @security | Q1 2026 — **OVERDUE** |
+| Mobile E2EE rewrite (XOR→real crypto) | @dev-team | Weeks 2-4 |
+| Web test coverage 20%→50%    | @dev-team | Weeks 3-10 |
+| Run load tests (scripts ready, 0 runs) | @dev-team | Weeks 4-5 |
+| Deploy Grafana dashboards    | @infra    | Weeks 4-6 |
+| Configure Alertmanager (alerts go nowhere) | @infra | Weeks 4-6 |
 
 ### P2 — Medium Priority
 
@@ -312,7 +314,7 @@ apps/mobile/src/screens/
 | 0.9.31  | 2026-02-18 | **Security hardening pass 6-7**: binary_to_term [:safe] in redis_pool (RCE fix), 8 bare Task.async → Task.Supervisor across 4 modules, raise → {:stop} in Snowflake init, @impl true on data_export callbacks, GenServer.call timeouts, innerHTML XSS fix in PDF export, mobile localhost **DEV** guard, CORS runtime env check, FCM error handling, path traversal fixes in event_exporter + data_export |
 | 0.9.31  | 2026-02-18 | **Security hardening pass 5**: MeiliSearch filter injection, RSS CDATA injection, XML export escaping, username cooldown bypass, static PBKDF2 salt, path traversal in storage delete, Oban.shutdown → Oban.pause_queue                                                                                                                                                                                   |
 | 0.9.31  | 2026-02-18 | **Security hardening audit**: CSP hardened (removed unsafe-eval, OpenAI connect-src), HSTS added, Permissions-Policy allows camera/mic for calls, 15 localStorage token reads → sessionStorage auth store, crypto package marked private, audit GenServer terminate/2 flush, IPv6 format_ip fix, root ErrorBoundary on mobile, AsyncStorage → dependencies, 9 version strings aligned to 0.9.31           |
-| 0.9.31  | 2026-02-17 | **Mobile data layer + version sync + Stripe tier alignment**: Replaced 4 stub facades with 6 real Zustand stores. WebSocket integration. 40+ files version-synced. Unified subscription tiers (`free \| plus \| pro \| business \| enterprise`) across 30+ files in backend, web, mobile, and shared packages. Stripe billing fully wired (checkout, portal, webhooks).                                   |
+| 0.9.31  | 2026-02-17 | **Mobile data layer + version sync + Stripe tier alignment**: Replaced 4 stub facades with 6 real Zustand stores. WebSocket integration. 40+ files version-synced. Unified subscription tiers (`free \| premium \| enterprise`) across 30+ files in backend, web, mobile, and shared packages. Stripe billing fully wired (checkout, portal, webhooks).                                   |
 | 0.9.29  | 2026-02-17 | **Platform gap completion + review**: Webhooks DB (Ecto context + Oban worker), WebRTC call history persistence, admin dashboard API wiring (4 panels), gamification API-sourced counts. Review fixes: Oban `:webhooks` queue config, test_helper cleanup, `UsersManagement` sort/type bugs, dead `PLACEHOLDER_EVENTS` removal                                                                            |
 | 0.9.28+ | 2026-02-17 | **Landing quality push**: 16 test files (98 tests), web-vitals monitoring, error tracking, Lighthouse CI budgets, visual regression, Playwright E2E                                                                                                                                                                                                                                                       |
 | 0.9.26+ | 2026-02-16 | **Test suite fully green**: 635 pre-existing failures resolved, 17 root causes fixed, route architecture corrected, CookieAuth + RequireAuth plugs, tokens table migration                                                                                                                                                                                                                                |

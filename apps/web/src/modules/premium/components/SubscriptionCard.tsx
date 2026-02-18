@@ -86,7 +86,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
       className={`relative ${className}`}
     >
       {/* Popular badge */}
-      {plan.tier === 'pro' && (
+      {plan.tier === 'premium' && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -112,8 +112,8 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
       )}
 
       <GlassCard
-        variant={variant === 'featured' || plan.tier === 'pro' ? 'holographic' : 'frosted'}
-        className={`relative overflow-hidden p-6 ${plan.tier === 'pro' ? 'ring-2 ring-purple-500/50' : ''} ${isCurrentPlan ? 'ring-2 ring-primary-500' : ''} `}
+        variant={variant === 'featured' || plan.tier === 'premium' ? 'holographic' : 'frosted'}
+        className={`relative overflow-hidden p-6 ${plan.tier === 'premium' ? 'ring-2 ring-purple-500/50' : ''} ${isCurrentPlan ? 'ring-2 ring-primary-500' : ''} `}
       >
         {/* Animated background */}
         <AnimatePresence>

@@ -314,7 +314,7 @@ const imported = ThemeRegistry.importTheme(jsonString);
 ## Premium Themes
 
 ```typescript
-const userIsPremium = user?.subscription?.tier === 'pro' || user?.subscription?.tier === 'business';
+const userIsPremium = user?.subscription?.tier === 'premium' || user?.subscription?.tier === 'enterprise';
 
 if (theme.isPremium && !userIsPremium) {
   // Show upgrade prompt

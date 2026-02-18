@@ -36,7 +36,7 @@ export interface Purchase {
 
 export interface SubscriptionStatus {
   isActive: boolean;
-  tier: 'free' | 'plus' | 'pro' | 'business' | 'enterprise';
+  tier: 'free' | 'premium' | 'enterprise';
   expiresAt: string | null;
   willRenew: boolean;
   provider: 'stripe' | 'apple' | 'google' | null;
@@ -289,7 +289,7 @@ class PaymentService {
 
       if (product.type === 'subscription') {
         // Map store product IDs to internal tier names
-        const tier = productId.includes('premium_plus') ? 'pro' : 'plus';
+        const tier = productId.includes('premium_plus') ? 'enterprise' : 'premium';
         const billingInterval = productId.includes('yearly') ? 'year' : 'month';
 
         const response = await api.post('/api/v1/premium/subscribe', {
@@ -384,7 +384,7 @@ class PaymentService {
       if (status.isActive && status.tier !== 'free') {
         // User has an active subscription
         const productId =
-          status.tier === 'pro' ? PRODUCT_IDS.PREMIUM_PLUS_MONTHLY : PRODUCT_IDS.PREMIUM_MONTHLY;
+          status.tier === 'enterprise' ? PRODUCT_IDS.PREMIUM_PLUS_MONTHLY : PRODUCT_IDS.PREMIUM_MONTHLY;
 
         return [
           {

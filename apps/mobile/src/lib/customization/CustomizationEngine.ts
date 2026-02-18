@@ -464,7 +464,8 @@ export class CustomizationEngine {
       const validateColorShade = (shade: unknown, name: string) => {
         const requiredKeys = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900'];
         requiredKeys.forEach((key) => {
-          if (!shade[key] || !chroma.valid(shade[key])) {
+          const s = shade as Record<string, any>;
+          if (!s[key] || !chroma.valid(s[key])) {
             errors.push(`Invalid color in ${name}.${key}`);
           }
         });

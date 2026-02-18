@@ -54,7 +54,7 @@ export interface DemoState {
   // Avatar customization
   avatarBorder: AvatarBorderType;
   avatarBorderColor: ThemePreset;
-  selectedBorderTheme?: 'free' | 'starter' | 'pro' | 'legendary' | 'mythic';
+  selectedBorderTheme?: 'free' | 'premium' | 'enterprise' | 'legendary' | 'mythic';
   selectedBorderId?: string;
   selectedProfileThemeId?: string;
   // Chat customization

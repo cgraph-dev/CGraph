@@ -106,7 +106,7 @@ export function StripeProvider({ children }: StripeProviderProps) {
 /**
  * Subscription plan types
  */
-export type PlanId = 'free' | 'plus' | 'pro' | 'business' | 'enterprise';
+export type PlanId = 'free' | 'premium' | 'enterprise';
 
 export interface Plan {
   id: PlanId;
@@ -138,53 +138,23 @@ export const PLANS: Plan[] = [
     ],
   },
   {
-    id: 'plus',
-    name: 'Plus',
-    price: 5,
-    priceYearly: 50,
-    description: 'For active communicators',
+    id: 'premium',
+    name: 'Premium',
+    price: 9.99,
+    priceYearly: 99,
+    description: 'Unlock all essential features',
     features: [
       'Unlimited group chats',
-      'Unlimited direct messages',
-      '1,000 messages per day',
-      'File sharing up to 50MB',
+      'Unlimited messages',
+      'File sharing up to 500MB',
       'Voice & video calls',
+      'Custom themes & emoji packs',
+      'Screen sharing',
+      'Advanced analytics',
       'Priority support',
     ],
     highlighted: true,
     badge: 'Popular',
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: 15,
-    priceYearly: 150,
-    description: 'For power users',
-    features: [
-      'Everything in Plus',
-      'Unlimited messages',
-      'File sharing up to 500MB',
-      'Screen sharing',
-      'Custom emoji packs',
-      'Advanced analytics',
-      '24/7 support',
-    ],
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    price: 30,
-    priceYearly: 300,
-    description: 'For teams and organizations',
-    features: [
-      'Everything in Pro',
-      'Unlimited file storage',
-      'Admin dashboard',
-      'User management',
-      'Audit logs',
-      'SSO integration',
-      'Dedicated support',
-    ],
   },
   {
     id: 'enterprise',
@@ -193,7 +163,7 @@ export const PLANS: Plan[] = [
     priceYearly: -1,
     description: 'Custom solutions for large organizations',
     features: [
-      'Everything in Business',
+      'Everything in Premium',
       'Custom integrations',
       'SLA guarantees',
       'Dedicated infrastructure',

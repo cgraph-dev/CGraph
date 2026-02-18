@@ -154,13 +154,11 @@ curl -H "Authorization: Bearer YOUR_TOKEN" https://cgraph-backend.fly.dev/api/v1
 
 ## Pricing
 
-| Plan           | Price      | Features                                              |
-| -------------- | ---------- | ----------------------------------------------------- |
-| **Free**       | $0/forever | Unlimited messaging, 5 forums/groups, basic features  |
-| **Starter**    | $4.99/mo   | 10 forums/groups, custom themes, file sharing (50MB)  |
-| **Pro**        | $9.99/mo   | 50 forums/groups, HD video calls, 200MB uploads       |
-| **Business**   | $19.99/mo  | Unlimited forums/groups, API access, analytics, 1GB   |
-| **Enterprise** | Custom     | SSO/SAML, dedicated support, SLA, custom integrations |
+| Plan           | Price      | Features                                                       |
+| -------------- | ---------- | -------------------------------------------------------------- |
+| **Free**       | $0/forever | Unlimited messaging, 5 forums/groups, basic features           |
+| **Premium**    | $9.99/mo   | 100 forums/groups, custom themes, HD video, 500MB uploads      |
+| **Enterprise** | Custom     | Unlimited everything, SSO/SAML, SLA, dedicated support, API    |
 
 Visit [cgraph.org/pricing](https://cgraph.org/pricing) for full details.
 

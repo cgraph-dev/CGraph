@@ -12,8 +12,8 @@
 
 export type BorderTheme =
   | 'free'           // Free tier borders
-  | 'starter'        // Starter subscription
-  | 'pro'           // Pro subscription
+  | 'premium'       // Premium subscription
+  | 'enterprise'    // Enterprise subscription
   | 'legendary'     // Achievement-locked
   | 'mythic'        // Special events/Top 100
   | '8bit'          // Retro gaming aesthetic
@@ -36,8 +36,7 @@ export type BorderTheme =
   | 'minimal'       // Minimalist design
   | 'gaming'        // Gaming themed
   | 'seasonal'      // Seasonal events
-  | 'achievement'   // Achievement rewards
-  | 'premium';      // Premium tier
+  | 'achievement';  // Achievement rewards
 
 // ==================== BORDER TYPES ====================
 
@@ -48,7 +47,7 @@ export type AvatarBorderType =
   | 'simple-glow'
   | 'gentle-pulse'
 
-  // Starter subscription (8)
+  // Premium subscription (8)
   | 'rotating-ring'
   | 'dual-ring'
   | 'gradient-wave'
@@ -58,7 +57,7 @@ export type AvatarBorderType =
   | 'ripple'
   | 'heartbeat'
 
-  // Pro subscription (12)
+  // Enterprise subscription (12)
   | 'fire-inferno'
   | 'ice-frost'
   | 'storm-electric'
@@ -343,12 +342,12 @@ export const THEME_COLORS: Record<BorderTheme, { primary: string; secondary: str
     secondary: '#6b7280',
     accent: '#d1d5db',
   },
-  starter: {
+  premium: {
     primary: '#10b981',
     secondary: '#059669',
     accent: '#34d399',
   },
-  pro: {
+  enterprise: {
     primary: '#8b5cf6',
     secondary: '#7c3aed',
     accent: '#a78bfa',
@@ -467,11 +466,6 @@ export const THEME_COLORS: Record<BorderTheme, { primary: string; secondary: str
     primary: '#fbbf24',
     secondary: '#f59e0b',
     accent: '#d97706',
-  },
-  premium: {
-    primary: '#fcd34d',
-    secondary: '#c084fc',
-    accent: '#f472b6',
   },
 };
 

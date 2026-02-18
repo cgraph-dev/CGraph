@@ -242,7 +242,7 @@ export default function ForumBoardScreen({ navigation, route }: Props) {
     <View style={[styles.boardHeader, { backgroundColor: colors.surface }]}>
       <View style={styles.boardInfo}>
         <View style={[styles.boardIcon, { backgroundColor: colors.primary }]}>
-          <Ionicons name={(board?.icon as unknown) || 'chatbubbles'} size={24} color="#fff" />
+          <Ionicons name={(board?.icon as string) || 'chatbubbles'} size={24} color="#fff" />
         </View>
         <View style={styles.boardDetails}>
           <Text style={[styles.boardName, { color: colors.text }]}>{board?.name}</Text>

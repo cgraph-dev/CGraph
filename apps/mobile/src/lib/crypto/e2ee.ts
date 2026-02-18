@@ -2,14 +2,14 @@
  * End-to-End Encryption (E2EE) Implementation for Mobile
  *
  * Implements Signal Protocol-inspired encryption:
- * - X3DH (Extended Triple Diffie-Hellman) for key agreement
- * - Ed25519 for identity keys and signatures
- * - X25519 for key exchange
+ * - X3DH (Extended Triple Diffie-Hellman) for key agreement using P-256 ECDH
+ * - ECDSA P-256 / SHA-256 for identity key signatures
  * - AES-256-GCM for message encryption
+ * - HKDF-SHA-256 for key derivation
  *
- * NOTE: This is a prototype implementation. Phase 2 of crypto consolidation
- * will replace this with @cgraph/crypto's full protocol (PQXDH + Triple Ratchet).
- * See packages/crypto/README.md for the consolidation plan.
+ * Phase 2 of crypto consolidation will migrate to @cgraph/crypto's full
+ * protocol (PQXDH + Triple Ratchet) for post-quantum security and forward
+ * secrecy. See packages/crypto/README.md for the consolidation plan.
  *
  * @module crypto/e2ee
  */
@@ -115,6 +115,64 @@ export async function hkdf(
   throw new Error('HKDF not available');
 }
 
+// =============================================================================
+// KEY IMPORT HELPERS — P-256 keys can be imported for ECDH or ECDSA usage
+// =============================================================================
+
+/** Import a PKCS8 private key for ECDH key agreement */
+async function importPrivateKeyForECDH(pkcs8: Uint8Array): Promise<CryptoKey> {
+  return global.crypto.subtle.importKey(
+    'pkcs8',
+    pkcs8.buffer,
+    { name: 'ECDH', namedCurve: 'P-256' },
+    false,
+    ['deriveBits']
+  );
+}
+
+/** Import a PKCS8 private key for ECDSA signing */
+async function importPrivateKeyForECDSA(pkcs8: Uint8Array): Promise<CryptoKey> {
+  return global.crypto.subtle.importKey(
+    'pkcs8',
+    pkcs8.buffer,
+    { name: 'ECDSA', namedCurve: 'P-256' },
+    false,
+    ['sign']
+  );
+}
+
+/** Import a raw public key for ECDH key agreement */
+async function importPublicKeyForECDH(raw: Uint8Array): Promise<CryptoKey> {
+  return global.crypto.subtle.importKey(
+    'raw',
+    raw.buffer,
+    { name: 'ECDH', namedCurve: 'P-256' },
+    true,
+    []
+  );
+}
+
+/** Import a raw public key for ECDSA signature verification */
+async function importPublicKeyForECDSA(raw: Uint8Array): Promise<CryptoKey> {
+  return global.crypto.subtle.importKey(
+    'raw',
+    raw.buffer,
+    { name: 'ECDSA', namedCurve: 'P-256' },
+    true,
+    ['verify']
+  );
+}
+
+/** Perform ECDH key agreement using P-256, returns 32-byte shared secret */
+async function ecdhDerive(privateKey: CryptoKey, publicKey: CryptoKey): Promise<Uint8Array> {
+  const bits = await global.crypto.subtle.deriveBits(
+    { name: 'ECDH', public: publicKey },
+    privateKey,
+    256
+  );
+  return new Uint8Array(bits);
+}
+
 /**
  * Key pair types
  *
@@ -166,6 +224,7 @@ export type { ServerPrekeyBundle };
 export interface EncryptedMessage {
   ciphertext: string;
   ephemeralPublicKey: string;
+  senderIdentityKey: string;
   recipientIdentityKeyId: string;
   oneTimePreKeyId?: string;
   nonce: string;
@@ -212,8 +271,9 @@ function generateKeyId(): string {
 }
 
 /**
- * Generate Ed25519-like identity key pair (using X25519 for demo)
- * In production, use actual Ed25519 from libsodium or noble-ed25519
+ * Generate P-256 ECDH identity key pair
+ * Used for both key agreement (ECDH) and signing (ECDSA) — P-256 private keys
+ * can be re-imported for either usage via SubtleCrypto.
  */
 export async function generateIdentityKeyPair(): Promise<IdentityKeyPair> {
   // Generate key pair using SubtleCrypto
@@ -256,42 +316,35 @@ export async function generatePreKeyPair(): Promise<PreKey> {
 }
 
 /**
- * Sign a message with identity key
- * In production, use Ed25519 signing
+ * Sign a message with ECDSA P-256 / SHA-256
+ * Uses the identity key's PKCS8 private key for proper digital signatures.
  */
-export async function sign(privateKey: Uint8Array, message: Uint8Array): Promise<Uint8Array> {
-  // For demo, use HMAC-SHA256 as "signature"
-  // In production, use Ed25519
-  const key = await global.crypto.subtle.importKey(
-    'raw',
-    privateKey.slice(0, 32),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
+export async function sign(privateKeyPkcs8: Uint8Array, message: Uint8Array): Promise<Uint8Array> {
+  const key = await importPrivateKeyForECDSA(privateKeyPkcs8);
+  const signature = await global.crypto.subtle.sign(
+    { name: 'ECDSA', hash: 'SHA-256' },
+    key,
+    message
   );
-
-  const signature = await global.crypto.subtle.sign('HMAC', key, message);
   return new Uint8Array(signature);
 }
 
 /**
- * Verify a signature
+ * Verify an ECDSA P-256 / SHA-256 signature
  */
 export async function verify(
-  publicKey: Uint8Array,
+  publicKeyRaw: Uint8Array,
   message: Uint8Array,
   signature: Uint8Array
 ): Promise<boolean> {
   try {
-    const key = await global.crypto.subtle.importKey(
-      'raw',
-      publicKey.slice(0, 32),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['verify']
+    const key = await importPublicKeyForECDSA(publicKeyRaw);
+    return await global.crypto.subtle.verify(
+      { name: 'ECDSA', hash: 'SHA-256' },
+      key,
+      signature,
+      message
     );
-
-    return await global.crypto.subtle.verify('HMAC', key, signature, message);
   } catch {
     return false;
   }
@@ -398,52 +451,126 @@ export function formatKeysForRegistration(bundle: KeyBundle): Record<string, unk
 }
 
 /**
- * Perform X3DH key agreement
- * Establishes shared secret with recipient using their prekey bundle
+ * Perform X3DH key agreement (initiator / sender side)
+ *
+ * Computes:
+ *   DH1 = ECDH(IK_A, SPK_B)
+ *   DH2 = ECDH(EK_A, IK_B)
+ *   DH3 = ECDH(EK_A, SPK_B)
+ *   SK  = HKDF(DH1 || DH2 || DH3)
+ *
+ * Also verifies the recipient's signed prekey signature to prevent MITM.
  */
 export async function x3dhInitiate(
   identityKeyPair: IdentityKeyPair,
   recipientBundle: ServerPrekeyBundle
 ): Promise<{ sharedSecret: Uint8Array; ephemeralPublic: Uint8Array }> {
-  // Generate ephemeral key pair
+  // Generate ephemeral ECDH key pair
   const ephemeralKey = await generatePreKeyPair();
 
-  // Decode recipient's public keys
-  const recipientIdentityKey = Buffer.from(recipientBundle.identity_key, 'base64');
-  const recipientSignedPrekey = Buffer.from(recipientBundle.signed_prekey, 'base64');
+  // Decode recipient's public keys from base64 wire format
+  const recipientIdentityKey = new Uint8Array(Buffer.from(recipientBundle.identity_key, 'base64'));
+  const recipientSignedPrekey = new Uint8Array(
+    Buffer.from(recipientBundle.signed_prekey, 'base64')
+  );
 
-  // Compute shared secrets (simplified - in production use actual ECDH)
-  // DH1 = DH(IK_A, SPK_B)
-  // DH2 = DH(EK_A, IK_B)
-  // DH3 = DH(EK_A, SPK_B)
-  // DH4 = DH(EK_A, OPK_B) if available
-
-  // For demo, combine keys with XOR (NOT secure - use actual ECDH in production)
-  const combined = new Uint8Array(32);
-  for (let i = 0; i < 32; i++) {
-    combined[i] =
-      (identityKeyPair.privateKey[i] || 0) ^
-      (recipientIdentityKey[i] || 0) ^
-      (recipientSignedPrekey[i] || 0) ^
-      (ephemeralKey.privateKey[i] || 0);
+  // Verify signed prekey signature (critical for preventing MITM attacks)
+  if (recipientBundle.signed_prekey_signature) {
+    const sigBytes = new Uint8Array(
+      Buffer.from(recipientBundle.signed_prekey_signature, 'base64')
+    );
+    // Use signing_key if available, otherwise verify with identity key
+    const verifyKeyRaw = recipientBundle.signing_key
+      ? new Uint8Array(Buffer.from(recipientBundle.signing_key, 'base64'))
+      : recipientIdentityKey;
+    const isValid = await verify(verifyKeyRaw, recipientSignedPrekey, sigBytes);
+    if (!isValid) {
+      throw new Error('Signed prekey signature verification failed — possible MITM attack');
+    }
   }
 
-  // Derive shared secret using HKDF
-  const salt = new Uint8Array(32); // Zero salt
+  // Import keys as ECDH CryptoKeys for deriveBits
+  const ourIdentityPrivate = await importPrivateKeyForECDH(identityKeyPair.privateKey);
+  const ephemeralPrivate = await importPrivateKeyForECDH(ephemeralKey.privateKey);
+  const bobIdentityPub = await importPublicKeyForECDH(recipientIdentityKey);
+  const bobSignedPreKeyPub = await importPublicKeyForECDH(recipientSignedPrekey);
+
+  // X3DH: compute three ECDH shared secrets
+  const dh1 = await ecdhDerive(ourIdentityPrivate, bobSignedPreKeyPub); // DH(IK_A, SPK_B)
+  const dh2 = await ecdhDerive(ephemeralPrivate, bobIdentityPub); // DH(EK_A, IK_B)
+  const dh3 = await ecdhDerive(ephemeralPrivate, bobSignedPreKeyPub); // DH(EK_A, SPK_B)
+
+  // TODO: DH4 = ECDH(EK_A, OPK_B) when one-time prekey private storage is implemented
+  // Currently one-time prekey privates are lost after generateKeyBundle() — tracked as tech debt
+
+  // Concatenate DH results
+  const dhConcat = new Uint8Array(dh1.length + dh2.length + dh3.length);
+  dhConcat.set(dh1, 0);
+  dhConcat.set(dh2, dh1.length);
+  dhConcat.set(dh3, dh1.length + dh2.length);
+
+  // KDF — zero salt per X3DH spec
+  const salt = new Uint8Array(32);
   const info = textEncoder.encode('CGraph E2EE v1');
-
-  let sharedSecret: Uint8Array;
-  try {
-    sharedSecret = await hkdf(combined, salt, info, 32);
-  } catch {
-    // Fallback: use the combined directly (not recommended)
-    sharedSecret = await sha256(combined);
-  }
+  const sharedSecret = await hkdf(dhConcat, salt, info, 32);
 
   return {
     sharedSecret,
     ephemeralPublic: ephemeralKey.publicKey,
   };
+}
+
+/**
+ * Perform X3DH key agreement (responder / receiver side)
+ *
+ * Mirrors the initiator's DH computations:
+ *   DH1 = ECDH(SPK_B, IK_A)
+ *   DH2 = ECDH(IK_B, EK_A)
+ *   DH3 = ECDH(SPK_B, EK_A)
+ *   SK  = HKDF(DH1 || DH2 || DH3)
+ *
+ * @param identityKeyPair       - Bob's identity key pair (from SecureStore)
+ * @param signedPreKeyPkcs8     - Bob's signed prekey private (PKCS8, from SecureStore)
+ * @param senderIdentityKeyRaw  - Alice's identity public key (raw, from message envelope)
+ * @param senderEphemeralKeyRaw - Alice's ephemeral public key (raw, from message envelope)
+ */
+export async function x3dhRespond(
+  identityKeyPair: IdentityKeyPair,
+  signedPreKeyPkcs8: Uint8Array,
+  senderIdentityKeyRaw: Uint8Array,
+  senderEphemeralKeyRaw: Uint8Array
+): Promise<{ sharedSecret: Uint8Array }> {
+  // Import keys for ECDH
+  const ourIdentityPrivate = await importPrivateKeyForECDH(identityKeyPair.privateKey);
+  const ourSignedPreKeyPrivate = await importPrivateKeyForECDH(signedPreKeyPkcs8);
+  const aliceIdentityPub = await importPublicKeyForECDH(senderIdentityKeyRaw);
+  const aliceEphemeralPub = await importPublicKeyForECDH(senderEphemeralKeyRaw);
+
+  // X3DH responder mirrors: DH1 = DH(SPK_B, IK_A), DH2 = DH(IK_B, EK_A), DH3 = DH(SPK_B, EK_A)
+  const dh1 = await ecdhDerive(ourSignedPreKeyPrivate, aliceIdentityPub);
+  const dh2 = await ecdhDerive(ourIdentityPrivate, aliceEphemeralPub);
+  const dh3 = await ecdhDerive(ourSignedPreKeyPrivate, aliceEphemeralPub);
+
+  // Same concatenation and HKDF as initiator
+  const dhConcat = new Uint8Array(dh1.length + dh2.length + dh3.length);
+  dhConcat.set(dh1, 0);
+  dhConcat.set(dh2, dh1.length);
+  dhConcat.set(dh3, dh1.length + dh2.length);
+
+  const salt = new Uint8Array(32);
+  const info = textEncoder.encode('CGraph E2EE v1');
+  const sharedSecret = await hkdf(dhConcat, salt, info, 32);
+
+  return { sharedSecret };
+}
+
+/**
+ * Load signed prekey private key from secure storage
+ */
+export async function loadSignedPreKeyPrivate(): Promise<Uint8Array | null> {
+  const pkcs8B64 = await SecureStore.getItemAsync(SIGNED_PREKEY_PRIVATE);
+  if (!pkcs8B64) return null;
+  return new Uint8Array(Buffer.from(pkcs8B64, 'base64'));
 }
 
 /**
@@ -524,6 +651,7 @@ export async function encryptForRecipient(
   return {
     ciphertext: Buffer.from(ciphertext).toString('base64'),
     ephemeralPublicKey: Buffer.from(ephemeralPublic).toString('base64'),
+    senderIdentityKey: Buffer.from(identityKey.publicKey).toString('base64'),
     recipientIdentityKeyId: recipientBundle.identity_key_id,
     oneTimePreKeyId: recipientBundle.one_time_prekey_id,
     nonce: Buffer.from(nonce).toString('base64'),
@@ -645,9 +773,11 @@ export default {
   generateKeyBundle,
   storeKeyBundle,
   loadIdentityKeyPair,
+  loadSignedPreKeyPrivate,
   formatKeysForRegistration,
   encryptForRecipient,
   decryptMessage,
+  x3dhRespond,
   generateSafetyNumber,
   fingerprint,
   isE2EESetUp,

@@ -135,7 +135,7 @@ defmodule CGraphWeb.API.V1.LeaderboardController do
       level: user.level,
       value: value,
       is_online: true,
-      is_premium: user.subscription_tier in ["plus", "pro", "business", "enterprise"],
+      is_premium: user.subscription_tier in ["premium", "enterprise"],
       is_verified: user.is_verified
     }
   end

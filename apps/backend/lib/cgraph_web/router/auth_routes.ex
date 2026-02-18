@@ -68,15 +68,20 @@ defmodule CGraphWeb.Router.AuthRoutes do
         delete "/unlink", WalletAuthController, :unlink_wallet
       end
 
-      # Authenticated auth actions (logout, email verification, 2FA)
+      # Authenticated auth actions (logout, email verification)
       scope "/api/v1", CGraphWeb.API.V1 do
         pipe_through [:api, :api_auth]
 
         # Authentication - logout and email verification require auth
         post "/auth/logout", AuthController, :logout
         post "/auth/resend-verification", AuthController, :resend_verification
+      end
 
-        # Two-factor authentication
+      # Two-factor authentication — strict rate limiting (20 req/60s)
+      # 2FA endpoints are brute-force targets (6-digit TOTP = 1M combinations)
+      scope "/api/v1", CGraphWeb.API.V1 do
+        pipe_through [:api_auth_strict, :api_auth]
+
         get "/auth/2fa/status", TwoFactorController, :status
         post "/auth/2fa/setup", TwoFactorController, :setup
         post "/auth/2fa/enable", TwoFactorController, :enable

@@ -107,13 +107,16 @@ docs(readme): update installation instructions
 
 #### Test Coverage Requirements
 
-| Package        | Minimum Coverage |
-| -------------- | ---------------- |
-| packages/core  | 80%              |
-| packages/utils | 90%              |
-| apps/backend   | 75%              |
-| apps/web       | 70%              |
-| apps/mobile    | 60%              |
+> **Note**: These are *target* minimums. Current coverage is below these
+> thresholds in most packages. PRs should not decrease coverage.
+
+| Package        | Target Coverage | Current (approx) |
+| -------------- | --------------- | ----------------- |
+| packages/core  | 80%             | ~70%              |
+| packages/utils | 90%             | ~80%              |
+| apps/backend   | 75%             | ~70%              |
+| apps/web       | 70%             | ~20%              |
+| apps/mobile    | 60%             | ~25%              |
 
 ## Code Conventions
 

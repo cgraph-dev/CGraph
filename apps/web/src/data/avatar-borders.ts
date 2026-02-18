@@ -67,19 +67,19 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     tags: ['pulse', 'animated'],
   },
 
-  // ==================== STARTER TIER (8) ====================
+  // ==================== PREMIUM TIER (8) ====================
   {
     id: 'rotating-ring',
     type: 'rotating-ring',
     name: 'Rotating Ring',
     description: 'Single gradient rotation',
-    theme: 'starter',
+    theme: 'premium',
     rarity: 'common',
     unlockType: 'subscription',
     unlockRequirement: {
       type: 'subscription',
-      value: 'starter',
-      description: 'Requires Starter subscription',
+      value: 'premium',
+      description: 'Requires Premium subscription',
     },
     primaryColor: '#10b981',
     secondaryColor: '#059669',
@@ -92,13 +92,13 @@ export const AVATAR_BORDERS: AvatarBorderConfig[] = [
     type: 'dual-ring',
     name: 'Dual Ring',
     description: 'Two counter-rotating rings',
-    theme: 'starter',
+    theme: 'premium',
     rarity: 'uncommon',
     unlockType: 'subscription',
     unlockRequirement: {
       type: 'subscription',
-      value: 'starter',
-      description: 'Requires Starter subscription',
+      value: 'premium',
+      description: 'Requires Premium subscription',
     },
     primaryColor: '#8b5cf6',
     secondaryColor: '#7c3aed',

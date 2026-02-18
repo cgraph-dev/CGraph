@@ -17,22 +17,18 @@ import Animated, {
 import { Ionicons } from '@expo/vector-icons';
 
 interface PremiumBadgeProps {
-  tier: 'plus' | 'pro' | 'business' | 'enterprise';
+  tier: 'premium' | 'enterprise';
   size?: 'sm' | 'md' | 'lg';
   animated?: boolean;
 }
 
 const TIER_COLORS = {
-  plus: ['#60A5FA', '#3B82F6'] as const,
-  pro: ['#A78BFA', '#8B5CF6'] as const,
-  business: ['#F472B6', '#EC4899'] as const,
+  premium: ['#A78BFA', '#8B5CF6'] as const,
   enterprise: ['#FCD34D', '#F59E0B'] as const,
 };
 
 const TIER_ICONS = {
-  plus: 'star',
-  pro: 'diamond',
-  business: 'briefcase',
+  premium: 'diamond',
   enterprise: 'crown',
 };
 

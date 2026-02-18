@@ -44,7 +44,7 @@ export const ProfileThemeCard = memo(function ProfileThemeCard({
       case 'elite':
         return 'ELITE';
       case 'premium':
-        return 'PRO';
+        return 'PREMIUM';
       default:
         return 'FREE';
     }

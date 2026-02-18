@@ -154,7 +154,7 @@ function ForumItem({ forum, isActive, onDragStart, isDragging }: ForumItemProps)
 
       <View style={[styles.forumIcon, { backgroundColor: (forum.color || '#10b981') + '30' }]}>
         <Ionicons
-          name={(forum.icon as unknown) || 'chatbubbles'}
+          name={(forum.icon as string) || 'chatbubbles'}
           size={20}
           color={forum.color || '#10b981'}
         />

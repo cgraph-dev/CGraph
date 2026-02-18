@@ -19,12 +19,12 @@ export const PROMO_CODES: Record<string, number> = {
 
 export const SUBSCRIPTION_TIER_MAP: Record<
   string,
-  'free' | 'plus' | 'pro' | 'business' | 'enterprise'
+  'free' | 'premium' | 'enterprise'
 > = {
-  basic: 'plus',
-  plus: 'plus',
-  pro: 'pro',
-  premium: 'pro',
-  business: 'business',
+  basic: 'premium',
+  plus: 'premium',
+  pro: 'premium',
+  premium: 'premium',
+  business: 'enterprise',
   enterprise: 'enterprise',
 };

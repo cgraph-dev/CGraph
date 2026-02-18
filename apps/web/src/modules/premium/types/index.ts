@@ -10,7 +10,7 @@
 /**
  * Subscription tier
  */
-export type SubscriptionTier = 'free' | 'plus' | 'pro' | 'business' | 'enterprise';
+export type SubscriptionTier = 'free' | 'premium' | 'enterprise';
 
 /**
  * Billing cycle

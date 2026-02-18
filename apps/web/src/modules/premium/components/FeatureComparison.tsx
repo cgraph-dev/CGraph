@@ -43,7 +43,7 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
   plans,
   categories = DEFAULT_CATEGORIES,
   currentTier,
-  highlightedTier = 'pro',
+  highlightedTier = 'premium',
   onSelectPlan,
   showPricing = true,
   billingInterval = 'monthly',
@@ -53,7 +53,7 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [tooltipFeature, setTooltipFeature] = useState<string | null>(null);
 
-  const tiers: SubscriptionTier[] = ['free', 'plus', 'pro', 'business', 'enterprise'];
+  const tiers: SubscriptionTier[] = ['free', 'premium', 'enterprise'];
 
   const getPlanPrice = (tier: SubscriptionTier) => {
     const plan = plans.find((p) => p.tier === tier);

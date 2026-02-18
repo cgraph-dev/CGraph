@@ -73,7 +73,7 @@ export function usePaymentModal(
           expiresAt.getFullYear() + (item.billingInterval === 'yearly' ? 1 : 0)
         );
         expiresAt.setMonth(expiresAt.getMonth() + (item.billingInterval === 'monthly' ? 1 : 0));
-        const tier = SUBSCRIPTION_TIER_MAP[item.id] || 'pro';
+        const tier = SUBSCRIPTION_TIER_MAP[item.id] || 'premium';
         setSubscription(tier, expiresAt.toISOString());
       } else if (item.type === 'coins') {
         addCoins(item.quantity || 0);

@@ -19,13 +19,13 @@ defmodule CGraph.Repo.Migrations.AddSecondaryGroups do
       add :id, :binary_id, primary_key: true
       add :member_id, references(:forum_members, type: :binary_id, on_delete: :delete_all), null: false
       add :user_group_id, references(:forum_user_groups, type: :binary_id, on_delete: :delete_all), null: false
-      
+
       # Optional expiration (for temporary group membership)
       add :expires_at, :utc_datetime
-      
+
       # Who granted this secondary group
       add :granted_by_id, references(:users, type: :binary_id, on_delete: :nilify_all)
-      
+
       # Reason for group assignment
       add :reason, :string
 
@@ -45,10 +45,10 @@ defmodule CGraph.Repo.Migrations.AddSecondaryGroups do
       add :user_group_id, references(:forum_user_groups, type: :binary_id, on_delete: :delete_all), null: false
       add :name, :string, null: false
       add :description, :string
-      
+
       # Rule type: "milestone", "custom", "subscription", "time_based"
       add :rule_type, :string, null: false
-      
+
       # Whether this is enabled
       add :is_active, :boolean, default: true
 
@@ -58,7 +58,7 @@ defmodule CGraph.Repo.Migrations.AddSecondaryGroups do
       # {"min_reputation": 50}
       # {"min_threads": 10}
       # {"member_since_days": 365}
-      # {"subscription_tier": "pro"}
+      # {"subscription_tier": "premium"}
       add :criteria, :map, default: %{}
 
       # Priority for evaluation order (lower = evaluated first)
@@ -131,29 +131,29 @@ defmodule CGraph.Repo.Migrations.AddSecondaryGroups do
         FROM forum_members m
         JOIN forum_user_groups g ON g.id = m.user_group_id
         WHERE m.id = p_member_id
-        
+
         UNION ALL
-        
+
         -- Secondary groups
         SELECT g.id, g.permission_priority
         FROM member_secondary_groups msg
         JOIN forum_user_groups g ON g.id = msg.user_group_id
         WHERE msg.member_id = p_member_id
         AND (msg.expires_at IS NULL OR msg.expires_at > NOW())
-        
+
         ORDER BY permission_priority DESC
       )
       LOOP
         -- Check this group's permission
         EXECUTE format('SELECT %I FROM forum_user_groups WHERE id = $1', p_permission)
         INTO v_group_perm USING v_group.id;
-        
+
         -- If permission is granted by any group, result is true
         IF v_group_perm = TRUE THEN
           v_result := TRUE;
         END IF;
       END LOOP;
-      
+
       RETURN v_result;
     END;
     $$ LANGUAGE plpgsql;

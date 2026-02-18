@@ -198,9 +198,7 @@ defmodule CGraph.Gamification do
     end
   end
 
-  defp get_xp_multiplier(%User{subscription_tier: "plus"}), do: Decimal.new("1.5")
-  defp get_xp_multiplier(%User{subscription_tier: "pro"}), do: Decimal.new("2.0")
-  defp get_xp_multiplier(%User{subscription_tier: "business"}), do: Decimal.new("2.5")
+  defp get_xp_multiplier(%User{subscription_tier: "premium"}), do: Decimal.new("2.0")
   defp get_xp_multiplier(%User{subscription_tier: "enterprise"}), do: Decimal.new("3.0")
   defp get_xp_multiplier(_user), do: Decimal.new("1.0")
 

@@ -94,10 +94,11 @@ export function KeyVerificationScreen() {
         error: null,
       });
     } catch (err: unknown) {
+      const error = err as any;
       setState((s) => ({
         ...s,
         loading: false,
-        error: err.response?.data?.message || 'Failed to load safety number',
+        error: error?.response?.data?.message || 'Failed to load safety number',
       }));
     }
   };
@@ -116,7 +117,8 @@ export function KeyVerificationScreen() {
               setState((s) => ({ ...s, isVerified: true }));
               Alert.alert('Success', `${username} is now verified!`);
             } catch (err: unknown) {
-              Alert.alert('Error', err.response?.data?.message || 'Failed to mark as verified');
+              const error = err as any;
+              Alert.alert('Error', error?.response?.data?.message || 'Failed to mark as verified');
             }
           },
         },

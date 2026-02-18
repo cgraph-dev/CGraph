@@ -20,7 +20,7 @@ defmodule CGraphWeb.Api.PaymentController do
   Creates a Stripe Checkout session for subscription.
 
   ## Parameters
-    - `tier`: "plus", "pro", "business", or "enterprise"
+    - `tier`: "premium" or "enterprise"
     - `yearly`: boolean (optional, default: false)
 
   ## Response
@@ -28,7 +28,7 @@ defmodule CGraphWeb.Api.PaymentController do
   """
   def create_checkout(conn, params) do
     user = Guardian.Plug.current_resource(conn)
-    tier = Map.get(params, "tier", "plus")
+    tier = Map.get(params, "tier", "premium")
     yearly = Map.get(params, "yearly", false)
 
     case Subscriptions.create_checkout_session(user, tier, yearly: yearly) do
@@ -109,10 +109,10 @@ defmodule CGraphWeb.Api.PaymentController do
         ]
       },
       %{
-        id: "plus",
-        name: "Plus",
-        price: 900,
-        price_yearly: 9000,
+        id: "premium",
+        name: "Premium",
+        price: 999,
+        price_yearly: 9900,
         currency: "usd",
         interval: "month",
         features: [

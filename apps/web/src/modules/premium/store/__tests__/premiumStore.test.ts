@@ -98,17 +98,17 @@ describe('premiumStore', () => {
   describe('setSubscription', () => {
     it('should set subscription details correctly', () => {
       const expiresAt = '2026-03-01T00:00:00Z';
-      usePremiumStore.getState().setSubscription('pro', expiresAt);
+      usePremiumStore.getState().setSubscription('premium', expiresAt);
 
       const s = usePremiumStore.getState();
       expect(s.isSubscribed).toBe(true);
-      expect(s.currentTier).toBe('pro');
+      expect(s.currentTier).toBe('premium');
       expect(s.expiresAt).toBe(expiresAt);
       expect(s.subscribedAt).not.toBeNull();
     });
 
     it('should set subscribedAt to a valid ISO timestamp', () => {
-      usePremiumStore.getState().setSubscription('plus', '2026-06-01T00:00:00Z');
+      usePremiumStore.getState().setSubscription('premium', '2026-06-01T00:00:00Z');
 
       const s = usePremiumStore.getState();
       expect(s.subscribedAt).toBeTruthy();
@@ -117,7 +117,7 @@ describe('premiumStore', () => {
     });
 
     it('should overwrite previous subscription when called again', () => {
-      usePremiumStore.getState().setSubscription('plus', '2026-03-01T00:00:00Z');
+      usePremiumStore.getState().setSubscription('premium', '2026-03-01T00:00:00Z');
       usePremiumStore.getState().setSubscription('enterprise', '2026-12-31T23:59:59Z');
 
       const s = usePremiumStore.getState();
@@ -130,7 +130,7 @@ describe('premiumStore', () => {
 
   describe('cancelSubscription', () => {
     it('should clear all subscription fields', () => {
-      usePremiumStore.getState().setSubscription('pro', '2026-06-01T00:00:00Z');
+      usePremiumStore.getState().setSubscription('premium', '2026-06-01T00:00:00Z');
       usePremiumStore.getState().cancelSubscription();
 
       const s = usePremiumStore.getState();
@@ -142,7 +142,7 @@ describe('premiumStore', () => {
 
     it('should not affect coin balance or purchase history', () => {
       usePremiumStore.setState({ coinBalance: 500, purchaseHistory: [mockPurchase] });
-      usePremiumStore.getState().setSubscription('pro', '2026-06-01T00:00:00Z');
+      usePremiumStore.getState().setSubscription('premium', '2026-06-01T00:00:00Z');
       usePremiumStore.getState().cancelSubscription();
 
       const s = usePremiumStore.getState();
@@ -282,7 +282,7 @@ describe('premiumStore', () => {
   describe('combined workflows', () => {
     it('should handle a full subscribe → add coins → spend → cancel flow', () => {
       const store = usePremiumStore.getState();
-      store.setSubscription('pro', '2026-12-31T23:59:59Z');
+      store.setSubscription('premium', '2026-12-31T23:59:59Z');
 
       expect(usePremiumStore.getState().isSubscribed).toBe(true);
 
@@ -304,8 +304,8 @@ describe('premiumStore', () => {
     });
 
     it('should handle tier upgrade by calling setSubscription again', () => {
-      usePremiumStore.getState().setSubscription('plus', '2026-06-01T00:00:00Z');
-      expect(usePremiumStore.getState().currentTier).toBe('plus');
+      usePremiumStore.getState().setSubscription('premium', '2026-06-01T00:00:00Z');
+      expect(usePremiumStore.getState().currentTier).toBe('premium');
 
       usePremiumStore.getState().setSubscription('enterprise', '2027-01-01T00:00:00Z');
       expect(usePremiumStore.getState().currentTier).toBe('enterprise');
@@ -318,7 +318,7 @@ describe('premiumStore', () => {
   describe('fetchBillingStatus', () => {
     it('should set tier and status from billing API on success', async () => {
       const mockStatus = {
-        tier: 'pro',
+        tier: 'premium',
         status: 'active',
         currentPeriodEnd: '2027-06-01T00:00:00Z',
       };
@@ -334,7 +334,7 @@ describe('premiumStore', () => {
 
       const state = usePremiumStore.getState();
       expect(state.isSubscribed).toBe(true);
-      expect(state.currentTier).toBe('pro');
+      expect(state.currentTier).toBe('premium');
       expect(state.expiresAt).toBe('2027-06-01T00:00:00Z');
       expect(state.status).toBe('active');
       expect(state.isLoading).toBe(false);
@@ -342,7 +342,7 @@ describe('premiumStore', () => {
 
     it('should set isSubscribed false for canceled status', async () => {
       const mockStatus = {
-        tier: 'plus',
+        tier: 'premium',
         status: 'canceled',
         currentPeriodEnd: '2026-03-01T00:00:00Z',
       };

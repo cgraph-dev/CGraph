@@ -220,23 +220,21 @@ defmodule CGraphWeb.StripeWebhookController do
     case items do
       [%{price: %{id: price_id}} | _] ->
         tier = Map.get(@tier_mapping, price_id, get_tier_from_env(price_id))
-        {:ok, tier || "plus"}
+        {:ok, tier || "premium"}
 
       _ ->
-        {:ok, "plus"}
+        {:ok, "premium"}
     end
   end
 
-  defp determine_tier_from_subscription(_), do: {:ok, "plus"}
+  defp determine_tier_from_subscription(_), do: {:ok, "premium"}
 
   defp get_tier_from_env(price_id) do
     subs_config = Application.get_env(:cgraph, CGraph.Subscriptions, [])
     price_ids = Keyword.get(subs_config, :stripe_price_ids, %{})
 
     cond do
-      price_id == Map.get(price_ids, :plus) -> "plus"
-      price_id == Map.get(price_ids, :pro) -> "pro"
-      price_id == Map.get(price_ids, :business) -> "business"
+      price_id == Map.get(price_ids, :premium) -> "premium"
       price_id == Map.get(price_ids, :enterprise) -> "enterprise"
       true -> nil
     end

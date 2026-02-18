@@ -34,7 +34,7 @@ export default function AppThemeSettings() {
   };
 
   const userIsPremium =
-    user?.subscription?.tier === 'pro' || (user?.subscription?.tier as string) === 'business';
+    user?.subscription?.tier === 'premium' || (user?.subscription?.tier as string) === 'enterprise';
 
   return (
     <div className="mx-auto max-w-7xl p-6">

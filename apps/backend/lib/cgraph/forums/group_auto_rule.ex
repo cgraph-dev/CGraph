@@ -16,7 +16,7 @@ defmodule CGraph.Forums.GroupAutoRule do
   ```json
   {"min_posts": 100, "min_reputation": 50}
   {"member_since_days": 365}
-  {"subscription_tier": "pro"}
+  {"subscription_tier": "premium"}
   ```
   """
   use Ecto.Schema
@@ -152,7 +152,7 @@ defmodule CGraph.Forums.GroupAutoRule do
     end
   end
 
-  @tier_hierarchy %{"free" => 0, "plus" => 1, "pro" => 2, "business" => 3, "enterprise" => 4}
+  @tier_hierarchy %{"free" => 0, "premium" => 1, "enterprise" => 2}
 
   defp check_subscription_criteria(criteria, member) do
     case Map.get(criteria, "subscription_tier") do

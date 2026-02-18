@@ -360,7 +360,7 @@ export default function ForumAdminScreen({ navigation, route }: Props) {
             }}
           >
             <Ionicons
-              name={tab.icon as unknown}
+              name={tab.icon as string}
               size={20}
               color={activeTab === tab.key ? colors.primary : colors.textSecondary}
             />

@@ -11,7 +11,7 @@ defmodule CGraph.Subscriptions do
   ## Usage
 
       # Create a checkout session
-      {:ok, url} = Subscriptions.create_checkout_session(user, "plus")
+      {:ok, url} = Subscriptions.create_checkout_session(user, "premium")
 
       # Activate a subscription (called from webhook)
       {:ok, user} = Subscriptions.activate_subscription(user, params)
@@ -255,27 +255,11 @@ defmodule CGraph.Subscriptions do
   # Helpers
   # ===========================================================================
 
-  defp get_price_id("plus", opts) do
+  defp get_price_id("premium", opts) do
     if Keyword.get(opts, :yearly, false) do
-      Application.get_env(:cgraph, :stripe_plus_yearly_price_id, @premium_price_id)
+      Application.get_env(:cgraph, :stripe_premium_yearly_price_id, @premium_price_id)
     else
-      Application.get_env(:cgraph, :stripe_plus_price_id, @premium_price_id)
-    end
-  end
-
-  defp get_price_id("pro", opts) do
-    if Keyword.get(opts, :yearly, false) do
-      Application.get_env(:cgraph, :stripe_pro_yearly_price_id, @premium_price_id)
-    else
-      Application.get_env(:cgraph, :stripe_pro_price_id, @premium_price_id)
-    end
-  end
-
-  defp get_price_id("business", opts) do
-    if Keyword.get(opts, :yearly, false) do
-      Application.get_env(:cgraph, :stripe_business_yearly_price_id, @enterprise_price_id)
-    else
-      Application.get_env(:cgraph, :stripe_business_price_id, @enterprise_price_id)
+      Application.get_env(:cgraph, :stripe_premium_price_id, @premium_price_id)
     end
   end
 

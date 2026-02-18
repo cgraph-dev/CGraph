@@ -29,7 +29,7 @@ const logger = createLogger('PremiumPage');
 export default function PremiumPage() {
   const navigate = useNavigate();
   useAuthStore(); // Ensure user is authenticated
-  const [selectedTier, setSelectedTier] = useState<string>('plus');
+  const [selectedTier, setSelectedTier] = useState<string>('premium');
   const [billingInterval, setBillingInterval] = useState<BillingInterval>('month');
   const [isSubscribing, setIsSubscribing] = useState(false);
   const [showFeatureComparison, setShowFeatureComparison] = useState(false);

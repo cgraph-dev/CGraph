@@ -81,7 +81,8 @@ export function ReportScreen() {
       );
     },
     onError: (error: unknown) => {
-      const message = error?.response?.data?.error || 'Failed to submit report. Please try again.';
+      const err = error as any;
+      const message = err?.response?.data?.error || 'Failed to submit report. Please try again.';
       Alert.alert('Error', message);
     },
   });
@@ -135,7 +136,7 @@ export function ReportScreen() {
                 >
                   <View style={styles.categoryIcon}>
                     <Ionicons
-                      name={category.icon as unknown}
+                      name={category.icon as string}
                       size={20}
                       color={
                         selectedCategory === category.value ? colors.primary : colors.textSecondary

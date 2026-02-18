@@ -52,7 +52,7 @@ export interface User {
 
   // Subscription/Premium info
   subscription?: {
-    tier?: 'free' | 'plus' | 'pro' | 'premium';
+    tier?: 'free' | 'premium' | 'enterprise';
     status?: 'active' | 'inactive' | 'cancelled';
     expiresAt?: string;
   } | null;

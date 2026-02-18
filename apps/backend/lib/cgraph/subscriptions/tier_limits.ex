@@ -16,7 +16,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   ## Usage
 
       # Get a tier
-      {:ok, tier} = TierLimits.get_tier("pro")
+      {:ok, tier} = TierLimits.get_tier("premium")
 
       # Check limits
       TierLimits.can_create_forum?(user)

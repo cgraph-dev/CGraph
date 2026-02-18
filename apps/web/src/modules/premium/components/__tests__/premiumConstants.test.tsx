@@ -11,7 +11,7 @@ import { DEFAULT_PACKAGES } from '../coinShopData';
 
 // ── Types reference ────────────────────────────────────────────────────
 
-const ALL_TIERS = ['free', 'plus', 'pro', 'business', 'enterprise'] as const;
+const ALL_TIERS = ['free', 'premium', 'enterprise'] as const;
 
 // ── Tests ──────────────────────────────────────────────────────────────
 
@@ -40,9 +40,8 @@ describe('subscriptionCard.constants', () => {
 
     it('maps tiers to expected colors', () => {
       expect(TIER_COLORS.free).toBe('gray');
-      expect(TIER_COLORS.plus).toBe('blue');
-      expect(TIER_COLORS.pro).toBe('purple');
-      expect(TIER_COLORS.ultimate).toBe('amber');
+      expect(TIER_COLORS.premium).toBe('purple');
+      expect(TIER_COLORS.enterprise).toBe('rose');
     });
   });
 
@@ -122,16 +121,15 @@ describe('featureComparisonConstants', () => {
     it('ultimate tier has best values', () => {
       const core = DEFAULT_CATEGORIES.find((c) => c.name === 'Core Features')!;
       const groups = core.features.find((f) => f.name === 'Groups')!;
-      expect(groups.values.ultimate).toBe('Unlimited');
+      expect(groups.values.enterprise).toBe('Unlimited');
     });
 
     it('Personal Manager is only available on ultimate', () => {
       const support = DEFAULT_CATEGORIES.find((c) => c.name === 'Support & Extras')!;
       const manager = support.features.find((f) => f.name === 'Personal Manager')!;
       expect(manager.values.free).toBe(false);
-      expect(manager.values.plus).toBe(false);
-      expect(manager.values.pro).toBe(false);
-      expect(manager.values.ultimate).toBe(true);
+      expect(manager.values.premium).toBe(false);
+      expect(manager.values.enterprise).toBe(true);
     });
   });
 });

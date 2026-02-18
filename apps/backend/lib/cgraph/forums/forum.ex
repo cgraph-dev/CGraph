@@ -156,7 +156,7 @@ defmodule CGraph.Forums.Forum do
     |> validate_length(:description, max: 500)
     |> validate_length(:tagline, max: 150)
     |> validate_inclusion(:default_sort, ["hot", "new", "top", "controversial", "rising"])
-    |> validate_inclusion(:tier, ["free", "plus", "pro", "business", "enterprise"])
+    |> validate_inclusion(:tier, ["free", "premium", "enterprise"])
     |> validate_inclusion(:category, [
       "gaming", "technology", "science", "sports", "entertainment",
       "music", "art", "education", "business", "politics", "news",

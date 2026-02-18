@@ -4,14 +4,14 @@
  * Premium tier definitions and FAQ content.
  */
 
-import { StarIcon, BoltIcon, RocketLaunchIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { StarIcon, RocketLaunchIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import type { PremiumTier, FAQItem } from './types';
 
 /**
  * Premium subscription tier configurations
  *
  * Tier IDs must match `SubscriptionTier` in store/types.ts and `PlanId` in lib/stripe.tsx:
- * free | plus | pro | business | enterprise
+ * free | premium | enterprise
  */
 export const PREMIUM_TIERS: PremiumTier[] = [
   {
@@ -39,76 +39,28 @@ export const PREMIUM_TIERS: PremiumTier[] = [
     ],
   },
   {
-    id: 'plus',
-    name: 'Plus',
-    price: 4.99,
+    id: 'premium',
+    name: 'Premium',
+    price: 9.99,
     interval: 'month',
     description: 'Unlock all essential features',
     popular: true,
-    icon: <BoltIcon className="h-6 w-6" />,
-    color: 'primary',
-    gradient: 'from-blue-500 to-cyan-500',
+    icon: <SparklesIcon className="h-6 w-6" />,
+    color: 'purple',
+    gradient: 'from-purple-500 to-pink-500',
     features: [
-      { name: 'Up to 25 groups', included: true },
+      { name: 'Up to 100 groups', included: true },
       { name: 'Custom themes', included: true },
       { name: 'Animated emojis', included: true },
       { name: 'Priority support', included: true },
       { name: 'Ad-free experience', included: true },
       { name: 'Custom badges', included: true },
-      { name: '25MB file uploads', included: true },
-      { name: '1 year message history', included: true },
+      { name: '50MB file uploads', included: true },
+      { name: 'Unlimited message history', included: true },
       { name: 'Voice effects', included: true },
-      { name: 'Advanced read receipts', included: true },
-      { name: 'AI message suggestions', included: false },
-      { name: 'Real-time translation', included: false },
-    ],
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: 9.99,
-    interval: 'month',
-    description: 'Power features for power users',
-    icon: <SparklesIcon className="h-6 w-6" />,
-    color: 'purple',
-    gradient: 'from-purple-500 to-pink-500',
-    features: [
-      { name: 'Everything in Plus', included: true },
       { name: 'AI message suggestions', included: true },
       { name: 'Real-time translation', included: true, detail: '100+ languages' },
-      { name: 'Advanced analytics', included: true },
-      { name: 'Custom server themes', included: true },
       { name: 'Animated profile', included: true },
-      { name: 'Exclusive badges', included: true },
-      { name: '50MB file uploads', included: true },
-      { name: 'Cloud backup', included: true },
-      { name: 'Early feature access', included: true },
-      { name: 'Team management', included: false },
-      { name: 'Custom integrations', included: false },
-    ],
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    price: 19.99,
-    interval: 'month',
-    description: 'For teams and organizations',
-    icon: <RocketLaunchIcon className="h-6 w-6" />,
-    color: 'yellow',
-    gradient: 'from-amber-500 to-orange-600',
-    features: [
-      { name: 'Everything in Pro', included: true },
-      { name: 'Team management', included: true },
-      { name: 'SSO integration', included: true },
-      { name: 'Advanced analytics', included: true },
-      { name: 'Custom branding', included: true },
-      { name: '75MB file uploads', included: true },
-      { name: 'Unlimited message history', included: true },
-      { name: 'Dedicated support', included: true },
-      { name: 'Custom profile banner', included: true },
-      { name: '2.5x XP boost', included: true },
-      { name: 'On-premise option', included: false },
-      { name: 'Dedicated account manager', included: false },
     ],
   },
   {
@@ -121,7 +73,7 @@ export const PREMIUM_TIERS: PremiumTier[] = [
     color: 'rose',
     gradient: 'from-rose-500 to-red-600',
     features: [
-      { name: 'Everything in Business', included: true },
+      { name: 'Everything in Premium', included: true },
       { name: 'Dedicated account manager', included: true },
       { name: 'Custom integrations', included: true },
       { name: 'SLA guarantee', included: true },

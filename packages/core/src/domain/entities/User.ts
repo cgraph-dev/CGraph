@@ -26,7 +26,7 @@ export interface UserEntity {
 
 export type UserStatus = 'online' | 'idle' | 'dnd' | 'offline' | 'invisible';
 
-export type PremiumTier = 'plus' | 'pro' | 'business' | 'enterprise';
+export type PremiumTier = 'premium' | 'enterprise';
 
 export interface UserSettings {
   theme: 'light' | 'dark' | 'system';

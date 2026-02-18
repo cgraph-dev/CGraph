@@ -122,7 +122,7 @@ defmodule CGraph.Gamification.LeaderboardSystem do
         id: u.id, username: u.username, display_name: u.display_name,
         avatar_url: u.avatar_url, level: u.level, value: field(u, ^vf),
         inserted_at: u.inserted_at,
-        is_premium: u.subscription_tier in ["plus", "pro", "business", "enterprise"],
+        is_premium: u.subscription_tier in ["premium", "enterprise"],
         is_verified: u.is_verified
       }
 
@@ -155,7 +155,7 @@ defmodule CGraph.Gamification.LeaderboardSystem do
         id: u.id, username: u.username, display_name: u.display_name,
         avatar_url: u.avatar_url, level: u.level, value: coalesce(fc.count, 0),
         inserted_at: u.inserted_at,
-        is_premium: u.subscription_tier in ["plus", "pro", "business", "enterprise"],
+        is_premium: u.subscription_tier in ["premium", "enterprise"],
         is_verified: u.is_verified
       }
 

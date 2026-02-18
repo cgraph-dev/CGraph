@@ -71,9 +71,7 @@ defmodule CGraphWeb.CoinsController do
 
     # Premium users get 20% bonus coins
     bonus_multiplier = case user.subscription_tier do
-      "plus" -> 1.1
-      "pro" -> 1.2
-      "business" -> 1.25
+      "premium" -> 1.2
       "enterprise" -> 1.3
       _ -> 1.0
     end

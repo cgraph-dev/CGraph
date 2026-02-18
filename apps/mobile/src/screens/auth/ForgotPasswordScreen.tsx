@@ -111,7 +111,8 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
       await api.post('/api/v1/auth/forgot-password', { email });
       setSent(true);
     } catch (error: unknown) {
-      Alert.alert('Error', error.response?.data?.message || 'Could not send reset email');
+      const err = error as any;
+      Alert.alert('Error', err?.response?.data?.message || 'Could not send reset email');
     } finally {
       setIsLoading(false);
     }

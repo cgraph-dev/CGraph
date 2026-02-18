@@ -1,8 +1,9 @@
 # CGraph Project Status
 
-> **Version: 0.9.31** | Last Updated: February 17, 2026
-
-This document consolidates the project status, feature tracking, and development roadmap.
+> **Version: 0.9.31** | Last Updated: Session 30
+>
+> **⚠️ Scores below were re-calibrated in Session 30 to reflect reality.
+> See [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md) for actual gaps.**
 
 ---
 
@@ -46,26 +47,26 @@ This document consolidates the project status, feature tracking, and development
 | Test failures         | 635     | **0**       | ✅ All resolved          |
 | Facade test coverage  | 0       | **132**     | ✅ 7 test files          |
 | Backend test files    | 127     | **163**     | ✅ +36 (83 ctrl, 70 ctx) |
-| Web test files        | 0       | **171**     | ✅ Full coverage         |
-| Mobile test files     | 0       | **15**      | ✅ Core screens          |
+| Web test files        | 0       | **171**     | ⚠️ Files exist but ~20% line coverage |
+| Mobile test files     | 0       | **15**      | ⚠️ Files exist but ~25% line coverage |
 | Build chunks          | ~150    | **168**     | ✅ Optimized             |
 | TypeScript errors     | 0       | **0**       | ✅ Clean                 |
 
 ### Overall Health Score
 
-**9.0/10** (up from 7.3/10)
+**7.2/10** (re-calibrated from inflated 9.0/10 — see V1_ACTION_PLAN.md)
 
-| Category             | Score | Target |
-| -------------------- | ----- | ------ |
-| Security             | 7/10  | 9/10   |
-| Code Quality         | 9/10  | 9/10   |
-| Feature Completeness | 10/10 | 9/10   |
-| Test Coverage        | 7/10  | 8/10   |
-| Maintainability      | 9/10  | 9/10   |
-| Production Readiness | 8/10  | 10/10  |
-| Observability        | 8/10  | 10/10  |
-| Resilience           | 10/10 | 10/10  |
-| Architecture (new)   | 9/10  | 9/10   |
+| Category             | Score | Target | Notes |
+| -------------------- | ----- | ------ | ----- |
+| Security             | 6/10  | 9/10   | Mobile E2EE is XOR stub, rate limiting gaps |
+| Code Quality         | 8/10  | 9/10   | 100+ `any` casts remain |
+| Feature Completeness | 8/10  | 9/10   | Many features are stubs/TODOs |
+| Test Coverage        | 5/10  | 8/10   | Web ~20%, Mobile ~25%, Backend ~70% |
+| Maintainability      | 8/10  | 9/10   | |
+| Production Readiness | 6/10  | 10/10  | Load tests never run, no SLO tracking |
+| Observability        | 5/10  | 10/10  | Grafana config exists, not connected |
+| Resilience           | 5/10  | 10/10  | No chaos testing, no backup verification |
+| Architecture         | 8/10  | 9/10   | Solid structure, some oversized contexts |
 
 See `docs/REMEDIATION_STATUS_2026_01_31.md` for full details.
 

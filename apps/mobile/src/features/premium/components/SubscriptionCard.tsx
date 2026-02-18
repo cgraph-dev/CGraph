@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 
 interface SubscriptionCardProps {
-  tier: 'plus' | 'pro' | 'business' | 'enterprise';
+  tier: 'premium' | 'enterprise';
   name: string;
   priceMonthly: number;
   priceYearly: number;
@@ -22,9 +22,8 @@ interface SubscriptionCardProps {
 }
 
 const TIER_COLORS = {
-  starter: { bg: ['#1E3A5F', '#0F172A'] as const, accent: '#3B82F6' },
-  pro: { bg: ['#3B1F5B', '#1F1035'] as const, accent: '#8B5CF6' },
-  ultimate: { bg: ['#4A3728', '#1F1610'] as const, accent: '#F59E0B' },
+  premium: { bg: ['#3B1F5B', '#1F1035'] as const, accent: '#8B5CF6' },
+  enterprise: { bg: ['#4A3728', '#1F1610'] as const, accent: '#F59E0B' },
 };
 
 export default function SubscriptionCard({

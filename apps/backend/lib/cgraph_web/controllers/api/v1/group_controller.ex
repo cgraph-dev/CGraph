@@ -66,9 +66,7 @@ defmodule CGraphWeb.API.V1.GroupController do
   # Check user's subscription tier and group count limits
   # Tier limits:
   # - free: 5 groups
-  # - starter: 10 groups
-  # - pro: 50 groups
-  # - business: 100 groups
+  # - premium: 50 groups
   # - enterprise: unlimited
   defp authorize_group_creation(user) do
     user_tier = Map.get(user, :subscription_tier) || "free"
@@ -76,9 +74,7 @@ defmodule CGraphWeb.API.V1.GroupController do
 
     max_groups = case user_tier do
       "enterprise" -> :infinity
-      "business" -> 100
-      "pro" -> 50
-      "plus" -> 10
+      "premium" -> 50
       _ -> 5  # free tier
     end
 

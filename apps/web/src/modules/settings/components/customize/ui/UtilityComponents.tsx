@@ -52,7 +52,7 @@ export const ToggleRow = memo(function ToggleRow({
 });
 
 export const PremiumBadge = memo(function PremiumBadge({
-  tier = 'pro',
+  tier = 'premium',
   className = '',
 }: PremiumBadgeProps) {
   const { label, bg, text } = premiumConfig[tier];

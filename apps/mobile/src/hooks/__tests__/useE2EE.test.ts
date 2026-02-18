@@ -288,6 +288,7 @@ describe('useE2EE', () => {
       (e2ee.encryptForRecipient as jest.Mock).mockResolvedValue({
         ciphertext: 'encrypted',
         ephemeralPublicKey: 'ephemeral',
+        senderIdentityKey: 'sender-key',
         recipientIdentityKeyId: 'key-id',
         nonce: 'nonce',
       });

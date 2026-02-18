@@ -242,7 +242,7 @@ export default function ErrorState({
           variant === 'minimal' && styles.iconContainerMinimal,
         ]}
       >
-        <IconComponent name={preset.icon as unknown} size={iconSize} color={preset.color} />
+        <IconComponent name={preset.icon as string} size={iconSize} color={preset.color} />
       </Animated.View>
     );
   };

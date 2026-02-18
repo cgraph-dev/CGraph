@@ -88,6 +88,6 @@ export interface ToggleRowProps {
 }
 
 export interface PremiumBadgeProps {
-  tier?: 'free' | 'pro' | 'elite';
+  tier?: 'free' | 'premium' | 'enterprise';
   className?: string;
 }

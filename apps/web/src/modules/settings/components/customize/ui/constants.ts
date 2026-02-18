@@ -56,6 +56,6 @@ export const sizeOptions = [
 
 export const premiumConfig = {
   free: { label: 'FREE', bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
-  pro: { label: 'PRO', bg: 'bg-purple-500/20', text: 'text-purple-400' },
-  elite: { label: 'ELITE', bg: 'bg-pink-500/20', text: 'text-pink-400' },
+  premium: { label: 'PREMIUM', bg: 'bg-purple-500/20', text: 'text-purple-400' },
+  enterprise: { label: 'ENTERPRISE', bg: 'bg-pink-500/20', text: 'text-pink-400' },
 };

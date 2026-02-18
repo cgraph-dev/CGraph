@@ -8,15 +8,13 @@ defmodule CGraph.Subscriptions.TierLimit do
   ## Tiers
 
   - `free` - Basic access with limited features
-  - `starter` - Growing communities with more capacity
-  - `pro` - Power users with advanced features and AI
-  - `business` - Organizations with priority support
+  - `premium` - Full access with all features and priority support
   - `enterprise` - Custom limits and dedicated support
 
   ## Usage
 
       # Get a tier's limits
-      tier = TierLimits.get_tier("pro")
+      tier = TierLimits.get_tier("premium")
 
       # Check if user can perform action
       TierLimits.can_create_forum?(user)

@@ -196,7 +196,7 @@ export const MessageActionsMenu = memo(function MessageActionsMenu({
           ]}
         >
           <View style={[styles.actionIconWrap, { backgroundColor: `${item.color}18` }]}>
-            <Ionicons name={item.icon as unknown} size={20} color={item.color} />
+            <Ionicons name={item.icon as string} size={20} color={item.color} />
           </View>
           <Text style={[styles.actionLabel, { color: item.danger ? item.color : colors.text }]}>
             {item.label}

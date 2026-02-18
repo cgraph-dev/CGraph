@@ -39,7 +39,7 @@ export interface AccountInfo {
   twoFactorEnabled: boolean;
   createdAt: string;
   lastLoginAt: string;
-  subscriptionTier: 'free' | 'plus' | 'pro' | 'business' | 'enterprise';
+  subscriptionTier: 'free' | 'premium' | 'enterprise';
   subscriptionExpiresAt: string | null;
 }
 

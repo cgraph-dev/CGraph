@@ -66,7 +66,7 @@ export interface UserProfile {
   customStatus: string | null;
   isVerified: boolean;
   isPremium: boolean;
-  premiumTier: 'free' | 'plus' | 'pro' | 'business' | 'enterprise';
+  premiumTier: 'free' | 'premium' | 'enterprise';
   friendshipStatus: 'none' | 'friends' | 'pending_sent' | 'pending_received' | 'blocked';
   mutualFriendsCount: number;
   mutualGroupsCount: number;

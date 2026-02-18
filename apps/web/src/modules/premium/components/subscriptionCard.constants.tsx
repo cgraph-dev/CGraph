@@ -6,30 +6,24 @@
  */
 
 import React from 'react';
-import { StarIcon, BoltIcon, SparklesIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
+import { StarIcon, SparklesIcon, RocketLaunchIcon } from '@heroicons/react/24/outline';
 import type { SubscriptionTier } from '@/modules/premium/store/types';
 
 export const TIER_ICONS: Record<SubscriptionTier, React.ReactNode> = {
   free: <StarIcon className="h-6 w-6" />,
-  plus: <BoltIcon className="h-6 w-6" />,
-  pro: <SparklesIcon className="h-6 w-6" />,
-  business: <RocketLaunchIcon className="h-6 w-6" />,
+  premium: <SparklesIcon className="h-6 w-6" />,
   enterprise: <RocketLaunchIcon className="h-6 w-6" />,
 };
 
 export const TIER_COLORS: Record<SubscriptionTier, string> = {
   free: 'gray',
-  plus: 'blue',
-  pro: 'purple',
-  business: 'amber',
+  premium: 'purple',
   enterprise: 'rose',
 };
 
 export const TIER_GRADIENTS: Record<SubscriptionTier, string> = {
   free: 'from-gray-500 to-gray-600',
-  plus: 'from-blue-500 to-cyan-500',
-  pro: 'from-purple-500 to-pink-500',
-  business: 'from-amber-500 to-orange-600',
+  premium: 'from-purple-500 to-pink-500',
   enterprise: 'from-rose-500 to-red-600',
 };
 

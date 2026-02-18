@@ -21,6 +21,8 @@ import e2ee, {
   formatKeysForRegistration,
   encryptForRecipient,
   loadIdentityKeyPair,
+  loadSignedPreKeyPrivate,
+  x3dhRespond,
   getDeviceId,
   clearE2EEData,
   generateSafetyNumber,
@@ -178,16 +180,28 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
       throw new Error('Identity key not found');
     }
 
-    const ephemeralPublic = Buffer.from(encryptedMessage.ephemeralPublicKey, 'base64');
+    // Load signed prekey private for X3DH responder side
+    const signedPreKeyPkcs8 = await loadSignedPreKeyPrivate();
+    if (!signedPreKeyPkcs8) {
+      throw new Error('Signed prekey not found — cannot derive shared secret');
+    }
+
+    const senderIdentityKey = new Uint8Array(
+      Buffer.from(encryptedMessage.senderIdentityKey, 'base64')
+    );
+    const ephemeralPublic = new Uint8Array(
+      Buffer.from(encryptedMessage.ephemeralPublicKey, 'base64')
+    );
     const nonce = Buffer.from(encryptedMessage.nonce, 'base64');
     const ciphertext = Buffer.from(encryptedMessage.ciphertext, 'base64');
 
-    const combined = new Uint8Array(32);
-    for (let i = 0; i < 32; i++) {
-      combined[i] = (identityKey.privateKey[i] || 0) ^ (ephemeralPublic[i] || 0);
-    }
-
-    const sharedSecret = await e2ee.sha256(combined);
+    // Perform X3DH key agreement (responder side) — mirrors initiator's ECDH
+    const { sharedSecret } = await x3dhRespond(
+      identityKey,
+      signedPreKeyPkcs8,
+      senderIdentityKey,
+      ephemeralPublic,
+    );
 
     return await e2ee.decryptMessage(
       new Uint8Array(ciphertext),

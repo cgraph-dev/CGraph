@@ -418,7 +418,7 @@ export default function AchievementsScreen() {
               }}
             >
               <Ionicons
-                name={item.icon as unknown}
+                name={item.icon as string}
                 size={16}
                 color={selectedCategory === item.id ? '#fff' : '#6b7280'}
               />
