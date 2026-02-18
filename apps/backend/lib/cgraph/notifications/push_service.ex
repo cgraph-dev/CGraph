@@ -291,10 +291,10 @@ defmodule CGraph.Notifications.PushService do
 
     # Send to each platform concurrently
     tasks = [
-      Task.async(fn -> send_to_apns(Map.get(grouped, "apns", []), notification, silent) end),
-      Task.async(fn -> send_to_fcm(Map.get(grouped, "fcm", []), notification, silent) end),
-      Task.async(fn -> send_to_expo(Map.get(grouped, "expo", []), notification, silent) end),
-      Task.async(fn -> send_to_web(Map.get(grouped, "web", []), notification) end)
+      Task.Supervisor.async(CGraph.TaskSupervisor, fn -> send_to_apns(Map.get(grouped, "apns", []), notification, silent) end),
+      Task.Supervisor.async(CGraph.TaskSupervisor, fn -> send_to_fcm(Map.get(grouped, "fcm", []), notification, silent) end),
+      Task.Supervisor.async(CGraph.TaskSupervisor, fn -> send_to_expo(Map.get(grouped, "expo", []), notification, silent) end),
+      Task.Supervisor.async(CGraph.TaskSupervisor, fn -> send_to_web(Map.get(grouped, "web", []), notification) end)
     ]
 
     results = Task.await_many(tasks, 30_000)

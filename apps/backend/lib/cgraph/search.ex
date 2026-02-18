@@ -400,16 +400,16 @@ defmodule CGraph.Search do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     current_user = Keyword.get(opts, :current_user)
 
-    # Search in parallel
+    # Search in parallel using supervised tasks
     tasks = [
-      Task.async(fn -> search_users(query, limit: 5, current_user: current_user) end),
-      Task.async(fn -> search_posts(query, limit: 5) end),
-      Task.async(fn -> search_groups(query, limit: 5) end)
+      Task.Supervisor.async(CGraph.TaskSupervisor, fn -> search_users(query, limit: 5, current_user: current_user) end),
+      Task.Supervisor.async(CGraph.TaskSupervisor, fn -> search_posts(query, limit: 5) end),
+      Task.Supervisor.async(CGraph.TaskSupervisor, fn -> search_groups(query, limit: 5) end)
     ]
 
     # Add message search if user is provided
     tasks = if current_user do
-      tasks ++ [Task.async(fn -> search_messages(current_user, query, limit: 5) end)]
+      tasks ++ [Task.Supervisor.async(CGraph.TaskSupervisor, fn -> search_messages(current_user, query, limit: 5) end)]
     else
       tasks
     end

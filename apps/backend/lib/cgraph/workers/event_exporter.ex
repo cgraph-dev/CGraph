@@ -71,11 +71,19 @@ defmodule CGraph.Workers.EventExporter do
   end
 
   defp write_export(event_id, format, data) do
-    filename = "event_#{event_id}_#{System.system_time(:second)}.#{format}"
+    safe_id = String.replace(to_string(event_id), ~r/[^a-zA-Z0-9_-]/, "")
+    safe_format = String.replace(to_string(format), ~r/[^a-z]/, "")
+    filename = "event_#{safe_id}_#{System.system_time(:second)}.#{safe_format}"
     dir = Path.join([System.tmp_dir!(), "exports"])
     File.mkdir_p!(dir)
     path = Path.join(dir, filename)
-    File.write!(path, data)
-    {:ok, path}
+
+    # Validate path stays within export directory
+    unless String.starts_with?(Path.expand(path), Path.expand(dir)) do
+      {:error, :path_traversal}
+    else
+      File.write!(path, data)
+      {:ok, path}
+    end
   end
 end

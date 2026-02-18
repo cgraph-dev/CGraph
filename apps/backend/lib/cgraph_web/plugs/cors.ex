@@ -6,10 +6,9 @@ defmodule CGraphWeb.Plugs.Cors do
   allowing dynamic configuration via Fly.io secrets.
   """
   import Plug.Conn
+  require Logger
 
   @behaviour Plug
-
-  @is_prod Mix.env() == :prod
 
   @impl true
   def init(opts), do: opts
@@ -17,10 +16,6 @@ defmodule CGraphWeb.Plugs.Cors do
   @impl true
   def call(conn, _opts) do
     origin = get_req_header(conn, "origin") |> List.first()
-
-    # Debug logging for CORS issues (use debug level in production)
-    require Logger
-    Logger.debug("cors_request", method: conn.method, origin: inspect(origin), allowed: origin && origin_allowed?(origin))
 
     if origin && origin_allowed?(origin) do
       conn
@@ -52,26 +47,15 @@ defmodule CGraphWeb.Plugs.Cors do
   defp handle_preflight(conn), do: conn
 
   defp origin_allowed?(origin) do
-    require Logger
     allowed_origins = get_cors_origins()
-
-    Logger.debug("cors_origin_check", origin: inspect(origin), allowed_origins: inspect(allowed_origins))
 
     case allowed_origins do
       "*" -> true
       origins when is_list(origins) ->
-        result = Enum.any?(origins, fn
-          %Regex{} = regex ->
-            match = Regex.match?(regex, origin)
-            Logger.debug("cors_regex_match", match: match)
-            match
-          allowed when is_binary(allowed) ->
-            match = allowed == origin
-            if match, do: Logger.debug("cors_exact_match", allowed: allowed)
-            match
+        Enum.any?(origins, fn
+          %Regex{} = regex -> Regex.match?(regex, origin)
+          allowed when is_binary(allowed) -> allowed == origin
         end)
-        Logger.debug("cors_result", result: result)
-        result
       _ -> false
     end
   end
@@ -79,7 +63,7 @@ defmodule CGraphWeb.Plugs.Cors do
   defp get_cors_origins do
     case System.get_env("CORS_ORIGINS") do
       nil ->
-        if @is_prod do
+        if Application.get_env(:cgraph, :env, :dev) == :prod do
           [
             # Production domains
             "https://cgraph.org",

@@ -139,6 +139,7 @@ if config_env() == :prod do
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :cgraph, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
+  config :cgraph, :env, :prod
 
   config :cgraph, CGraphWeb.Endpoint,
     server: true,

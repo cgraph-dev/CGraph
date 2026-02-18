@@ -147,7 +147,7 @@ defmodule CGraph.Performance.RequestCoalescing do
       # No cache, no in-flight — start execution
       true ->
         parent = self()
-        task = Task.async(fn ->
+        task = Task.Supervisor.async_nolink(CGraph.TaskSupervisor, fn ->
           try do
             result = fun.()
             send(parent, {:flight_complete, key, {:ok, result}, ttl})

@@ -18,10 +18,11 @@
 export function htmlToPlainText(html: string): string {
   // Create a temporary element to parse HTML
   const temp = document.createElement('div');
-  temp.innerHTML = html;
+  // Strip all HTML tags to text-only before DOM insertion to prevent script execution
+  temp.textContent = html.replace(/<[^>]*>/g, ' ');
 
   // Get text content and clean up whitespace
-  const text = temp.textContent || temp.innerText || '';
+  const text = temp.textContent || '';
 
   return text
     .replace(/\s+/g, ' ') // Normalize whitespace

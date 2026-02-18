@@ -176,7 +176,7 @@ defmodule CGraph.Notifications.PushService.FcmClient do
     # FCM v1 doesn't have native multicast - we send individually but in parallel
     # For true multicast, we'd use the legacy API
     tasks = Enum.map(tokens, fn token ->
-      Task.async(fn ->
+      Task.Supervisor.async(CGraph.TaskSupervisor, fn ->
         message = build_message(%{"token" => token}, payload)
         do_http_send(message, state, false)
       end)
@@ -461,7 +461,7 @@ defmodule CGraph.Notifications.PushService.FcmClient do
       account = config[:service_account] ->
         account
       true ->
-        raise "FCM service account not configured"
+        {:error, :fcm_not_configured}
     end
   end
 

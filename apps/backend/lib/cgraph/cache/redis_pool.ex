@@ -366,7 +366,7 @@ defmodule CGraph.Cache.RedisPool do
       value
     else
       try do
-        value |> Base.decode64!() |> :erlang.binary_to_term()
+        value |> Base.decode64!() |> :erlang.binary_to_term([:safe])
       rescue
         _ -> value
       end

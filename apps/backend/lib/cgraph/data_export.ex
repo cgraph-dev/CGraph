@@ -206,7 +206,7 @@ defmodule CGraph.DataExport do
   """
   @spec export_user_data(String.t(), export_options()) :: {:ok, export()} | {:error, term()}
   def export_user_data(user_id, opts \\ []) do
-    GenServer.call(__MODULE__, {:export_user_data, user_id, opts})
+    GenServer.call(__MODULE__, {:export_user_data, user_id, opts}, 60_000)
   end
 
   @doc """
@@ -233,7 +233,7 @@ defmodule CGraph.DataExport do
   """
   @spec export_query(Ecto.Query.t(), export_options()) :: {:ok, export()} | {:error, term()}
   def export_query(query, opts \\ []) do
-    GenServer.call(__MODULE__, {:export_query, query, opts})
+    GenServer.call(__MODULE__, {:export_query, query, opts}, 60_000)
   end
 
   @doc """
@@ -379,7 +379,7 @@ defmodule CGraph.DataExport do
   """
   @spec cancel_export(export_id()) :: :ok | {:error, term()}
   def cancel_export(export_id) do
-    GenServer.call(__MODULE__, {:cancel_export, export_id})
+    GenServer.call(__MODULE__, {:cancel_export, export_id}, 10_000)
   end
 
   # ---------------------------------------------------------------------------
@@ -435,11 +435,13 @@ defmodule CGraph.DataExport do
     {:reply, result, state}
   end
 
+  @impl true
   def handle_call({:export_query, query, opts}, _from, state) do
     result = do_export_query(query, opts)
     {:reply, result, state}
   end
 
+  @impl true
   def handle_call({:cancel_export, export_id}, _from, state) do
     case get_export(export_id) do
       {:ok, export} when export.status in [:pending, :processing] ->
@@ -462,6 +464,7 @@ defmodule CGraph.DataExport do
     {:noreply, state}
   end
 
+  @impl true
   def handle_info(_msg, state) do
     {:noreply, state}
   end
@@ -639,8 +642,15 @@ defmodule CGraph.DataExport do
       content
     end
 
-    File.write!(file_path, content)
-    file_size = File.stat!(file_path).size
+    # Validate path stays within export directory
+    export_dir = get_config(:export_dir) || Path.join(System.tmp_dir!(), "cgraph_exports")
+    resolved = Path.expand(file_path)
+    unless String.starts_with?(resolved, Path.expand(export_dir)) do
+      raise ArgumentError, "Export path traversal detected"
+    end
+
+    :ok = File.write(file_path, content)
+    %{size: file_size} = File.stat!(file_path)
 
     {file_path, file_size}
   end

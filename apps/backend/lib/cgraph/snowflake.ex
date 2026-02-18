@@ -115,17 +115,21 @@ defmodule CGraph.Snowflake do
     node_id = Keyword.get(opts, :node_id, derive_node_id())
     worker_id = Keyword.get(opts, :worker_id, 0)
 
-    if node_id > @max_node, do: raise("node_id must be 0-#{@max_node}")
-    if worker_id > @max_worker, do: raise("worker_id must be 0-#{@max_worker}")
+    cond do
+      node_id > @max_node ->
+        {:stop, {:invalid_config, "node_id must be 0-#{@max_node}"}}
+      worker_id > @max_worker ->
+        {:stop, {:invalid_config, "worker_id must be 0-#{@max_worker}"}}
+      true ->
+        Logger.info("snowflake_started", node_id: node_id, worker_id: worker_id)
 
-    Logger.info("snowflake_started", node_id: node_id, worker_id: worker_id)
-
-    {:ok, %{
-      node_id: node_id,
-      worker_id: worker_id,
-      sequence: 0,
-      last_timestamp: 0
-    }}
+        {:ok, %{
+          node_id: node_id,
+          worker_id: worker_id,
+          sequence: 0,
+          last_timestamp: 0
+        }}
+    end
   end
 
   @impl true

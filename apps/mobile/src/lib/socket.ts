@@ -10,8 +10,13 @@ const getWsUrl = (): string => {
   if (wsUrl) return wsUrl;
 
   // Fallback: derive from API URL
-  const apiUrl = Constants.expoConfig?.extra?.apiUrl || 'http://localhost:4000';
-  return apiUrl.replace(/^http/, 'ws') + '/socket';
+  const apiUrl = Constants.expoConfig?.extra?.apiUrl;
+  if (!apiUrl && !__DEV__) {
+    throw new Error(
+      'API URL must be configured for production builds (set extra.apiUrl in app.config.js)'
+    );
+  }
+  return (apiUrl || 'http://localhost:4000').replace(/^http/, 'ws') + '/socket';
 };
 
 const WS_URL = getWsUrl();

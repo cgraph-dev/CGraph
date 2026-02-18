@@ -3,6 +3,7 @@ import Config
 # General application configuration
 config :cgraph,
   ecto_repos: [CGraph.Repo],
+  env: Mix.env(),
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
 # Configures the endpoint
