@@ -76,41 +76,55 @@ audit and web test coverage
 
 ### Recent Security Fixes
 
-| Date       | Issue                            | Severity | Status   |
-| ---------- | -------------------------------- | -------- | -------- |
-| 2026-02-18 | CSP allowed unsafe-eval + OpenAI | Critical | ✅ Fixed |
-| 2026-02-18 | Auth tokens in localStorage (15) | Critical | ✅ Fixed |
-| 2026-02-18 | Crypto package not private       | Critical | ✅ Fixed |
-| 2026-02-18 | Permissions-Policy blocks calls  | High     | ✅ Fixed |
-| 2026-02-18 | Audit data loss on shutdown      | High     | ✅ Fixed |
-| 2026-02-18 | IPv6 IP formatting corrupted     | High     | ✅ Fixed |
-| 2026-02-18 | 9 stale version strings          | Medium   | ✅ Fixed |
-| 2026-02-18 | Mobile no root ErrorBoundary     | High     | ✅ Fixed |
-| 2026-02-18 | AsyncStorage in devDependencies  | High     | ✅ Fixed |
-| 2026-02-18 | JWT fallback secret at compile   | Critical | ✅ Fixed |
-| 2026-02-18 | Audit retention cleanup no-op    | Critical | ✅ Fixed |
-| 2026-02-18 | Dockerfile COPY paths broken     | Critical | ✅ Fixed |
-| 2026-02-18 | Oban queue drift (prod missing)  | High     | ✅ Fixed |
-| 2026-02-18 | Vercel --no-frozen-lockfile      | High     | ✅ Fixed |
-| 2026-02-18 | No CSP meta tag in web HTML      | High     | ✅ Fixed |
-| 2026-02-18 | 6 unsupervised spawn/1 calls     | Medium   | ✅ Fixed |
-| 2026-02-18 | Stripe config at compile time    | Critical | ✅ Fixed |
-| 2026-02-18 | RESEND_API_KEY not validated     | Critical | ✅ Fixed |
-| 2026-02-18 | Atom table exhaustion telemetry  | Critical | ✅ Fixed |
-| 2026-02-18 | Weak PRNG in recovery codes      | High     | ✅ Fixed |
-| 2026-02-18 | Weak PRNG in wallet generation   | High     | ✅ Fixed |
-| 2026-02-18 | localStorage.setItem('token')    | High     | ✅ Fixed |
-| 2026-02-18 | RSS feed placeholder URL         | High     | ✅ Fixed |
-| 2026-02-18 | Mobile chat store no try/catch   | High     | ✅ Fixed |
-| 2026-02-17 | Audit events lost on restart     | Critical | ✅ Fixed |
-| 2026-02-17 | Subscription tier misalignment   | Critical | ✅ Fixed |
-| 2026-02-17 | Stripe config key mismatch       | Critical | ✅ Fixed |
-| 2026-02-17 | TypeScript errors (53→0 in web)  | High     | ✅ Fixed |
-| 2026-01-26 | E2EE plaintext fallback          | Critical | ✅ Fixed |
-| 2026-01-27 | Presence privacy leak            | Critical | ✅ Fixed |
-| 2026-01-27 | Stripe webhook config            | High     | ✅ Fixed |
-| 2026-01-27 | IP spoofing (X-Forwarded-For)    | High     | ✅ Fixed |
-| 2026-01-27 | MIME type spoofing               | Medium   | ✅ Fixed |
+| Date       | Issue                             | Severity | Status   |
+| ---------- | --------------------------------- | -------- | -------- |
+| 2026-02-18 | CSP allowed unsafe-eval + OpenAI  | Critical | ✅ Fixed |
+| 2026-02-18 | Auth tokens in localStorage (15)  | Critical | ✅ Fixed |
+| 2026-02-18 | Crypto package not private        | Critical | ✅ Fixed |
+| 2026-02-18 | Permissions-Policy blocks calls   | High     | ✅ Fixed |
+| 2026-02-18 | Audit data loss on shutdown       | High     | ✅ Fixed |
+| 2026-02-18 | IPv6 IP formatting corrupted      | High     | ✅ Fixed |
+| 2026-02-18 | 9 stale version strings           | Medium   | ✅ Fixed |
+| 2026-02-18 | Mobile no root ErrorBoundary      | High     | ✅ Fixed |
+| 2026-02-18 | AsyncStorage in devDependencies   | High     | ✅ Fixed |
+| 2026-02-18 | JWT fallback secret at compile    | Critical | ✅ Fixed |
+| 2026-02-18 | Audit retention cleanup no-op     | Critical | ✅ Fixed |
+| 2026-02-18 | Dockerfile COPY paths broken      | Critical | ✅ Fixed |
+| 2026-02-18 | Oban queue drift (prod missing)   | High     | ✅ Fixed |
+| 2026-02-18 | Vercel --no-frozen-lockfile       | High     | ✅ Fixed |
+| 2026-02-18 | No CSP meta tag in web HTML       | High     | ✅ Fixed |
+| 2026-02-18 | 6 unsupervised spawn/1 calls      | Medium   | ✅ Fixed |
+| 2026-02-18 | Stripe config at compile time     | Critical | ✅ Fixed |
+| 2026-02-18 | RESEND_API_KEY not validated      | Critical | ✅ Fixed |
+| 2026-02-18 | Atom table exhaustion telemetry   | Critical | ✅ Fixed |
+| 2026-02-18 | Weak PRNG in recovery codes       | High     | ✅ Fixed |
+| 2026-02-18 | Weak PRNG in wallet generation    | High     | ✅ Fixed |
+| 2026-02-18 | localStorage.setItem('token')     | High     | ✅ Fixed |
+| 2026-02-18 | RSS feed placeholder URL          | High     | ✅ Fixed |
+| 2026-02-18 | Mobile chat store no try/catch    | High     | ✅ Fixed |
+| 2026-02-18 | Supervisor :one_for_one strategy  | High     | ✅ Fixed |
+| 2026-02-18 | N+1 cache warmup (1000 queries)   | Medium   | ✅ Fixed |
+| 2026-02-18 | Oban.drain_queue in prod shutdown | High     | ✅ Fixed |
+| 2026-02-18 | Unbounded export_pm query         | High     | ✅ Fixed |
+| 2026-02-18 | get_friend_ids 2 queries→UNION    | Medium   | ✅ Fixed |
+| 2026-02-18 | Signing salts hardcoded/static    | Medium   | ✅ Fixed |
+| 2026-02-18 | QR SVG no DOMPurify sanitize      | Medium   | ✅ Fixed |
+| 2026-02-18 | Open redirect in billing URLs     | Medium   | ✅ Fixed |
+| 2026-02-18 | MeiliSearch filter injection      | High     | ✅ Fixed |
+| 2026-02-18 | RSS CDATA ]]> injection           | Medium   | ✅ Fixed |
+| 2026-02-18 | XML export no escaping on values  | Medium   | ✅ Fixed |
+| 2026-02-18 | Username cooldown bypass          | Medium   | ✅ Fixed |
+| 2026-02-18 | Static PBKDF2 salt in export      | Medium   | ✅ Fixed |
+| 2026-02-18 | Path traversal in storage delete  | Medium   | ✅ Fixed |
+| 2026-02-17 | Audit events lost on restart      | Critical | ✅ Fixed |
+| 2026-02-17 | Subscription tier misalignment    | Critical | ✅ Fixed |
+| 2026-02-17 | Stripe config key mismatch        | Critical | ✅ Fixed |
+| 2026-02-17 | TypeScript errors (53→0 in web)   | High     | ✅ Fixed |
+| 2026-01-26 | E2EE plaintext fallback           | Critical | ✅ Fixed |
+| 2026-01-27 | Presence privacy leak             | Critical | ✅ Fixed |
+| 2026-01-27 | Stripe webhook config             | High     | ✅ Fixed |
+| 2026-01-27 | IP spoofing (X-Forwarded-For)     | High     | ✅ Fixed |
+| 2026-01-27 | MIME type spoofing                | Medium   | ✅ Fixed |
 
 ---
 
