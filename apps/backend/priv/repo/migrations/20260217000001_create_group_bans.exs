@@ -7,7 +7,7 @@ defmodule CGraph.Repo.Migrations.CreateGroupBans do
       add :user_id, references(:users, type: :binary_id, on_delete: :delete_all), null: false
       add :group_id, references(:groups, type: :binary_id, on_delete: :delete_all), null: false
       add :reason, :text
-      add :banned_by_id, references(:users, type: :binary_id, on_delete: :set_null)
+      add :banned_by_id, references(:users, type: :binary_id, on_delete: :nilify_all)
       add :expires_at, :utc_datetime
 
       timestamps(type: :utc_datetime)

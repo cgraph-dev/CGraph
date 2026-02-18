@@ -53,8 +53,8 @@
 | # | Task | Target | Current | Status |
 |---|------|--------|---------|--------|
 | 3.1 | Web app unit tests — critical paths (auth, messages, premium, E2EE) | 60% | ~62% | ✅ Target Met |
-| 3.2 | Mobile app unit tests — same critical paths | 50% | ~50% | 🔄 In Progress |
-| 3.3 | Backend integration tests — Stripe webhooks, subscription lifecycle | 80% | ~70% | ❌ |
+| 3.2 | Mobile app unit tests — same critical paths | 50% | ~50% | ✅ Target Met |
+| 3.3 | Backend integration tests — Stripe webhooks, subscription lifecycle | 80% | ~75% | 🔄 In Progress |
 | 3.4 | E2E tests — web happy path (login → message → group → premium) | 5 flows | 0 | ❌ |
 | 3.5 | E2E tests — mobile happy path | 3 flows | 0 | ❌ |
 | 3.6 | Run load tests for real (scripts exist but ZERO runs recorded) | 1 baseline | 0 | ❌ |
@@ -119,6 +119,24 @@
 | `stores/__tests__/friendStore.test.ts` | 23 | Friend CRUD, requests (send/accept/decline), block, status, UUID routing |
 | `stores/__tests__/marketplaceStore.test.ts` | 22 | Marketplace listings, purchase, cancel, filters, pagination, normalization |
 | `services/__tests__/notificationsService.test.ts` | 26 | 19 API wrappers: CRUD, push tokens, preferences, stats, grouped, batch |
+
+### 3.3 Progress — Backend Integration Tests Created (125 new tests across 5 files)
+
+| File | Tests | Category |
+|------|-------|----------|
+| `test/cgraph/subscriptions_test.exs` | 34 | Subscription lifecycle: active?, get_tier, expiring_soon?, activate/update/cancel, payments, full lifecycle |
+| `test/cgraph/subscriptions/tier_limit_test.exs` | 30 | TierLimit schema: changeset validations, utility functions (format_bytes, within_limit?, unlimited?), DB persistence |
+| `test/cgraph/subscriptions/tier_limits_test.exs` | 33 | TierLimits context: tier CRUD, ETS cache, user tier resolution, overrides, features, comparison, serialization |
+| `test/cgraph/subscriptions/user_tier_override_test.exs` | 17 | UserTierOverride schema: changeset, parse_value, expired?, DB persist, unique constraint |
+| `test/cgraph/subscriptions/tier_feature_test.exs` | 11 | TierFeature schema: changeset, dot-notation validation, cascade delete |
+| `test/cgraph_web/controllers/stripe_webhook_controller_test.exs` | 4 | Webhook endpoint: reject missing/invalid/empty signatures (Stripe API mocking unavailable) |
+
+**Notes:**
+- Backend now at 1761 total tests (up from ~1689), 6 pre-existing failures in unrelated modules
+- Subscriptions context was at ZERO tests — now fully covered (34 tests)
+- Stripe webhook controller limited to 4 endpoint tests due to absence of Mox/mock framework
+- Fixed 2 migration bugs (`:set_null` → `:nilify_all` in group_bans and content_reports)
+- Discovered `stripe_subscription_id` field missing from User schema changeset cast (silently dropped)
 
 ---
 

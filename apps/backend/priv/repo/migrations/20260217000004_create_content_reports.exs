@@ -4,7 +4,7 @@ defmodule CGraph.Repo.Migrations.CreateContentReports do
   def change do
     create table(:content_reports, primary_key: false) do
       add :id, :binary_id, primary_key: true
-      add :reporter_id, references(:users, type: :binary_id, on_delete: :set_null)
+      add :reporter_id, references(:users, type: :binary_id, on_delete: :nilify_all)
       add :forum_id, references(:forums, type: :binary_id, on_delete: :delete_all), null: false
 
       # Polymorphic target: post, comment, or user
@@ -15,7 +15,7 @@ defmodule CGraph.Repo.Migrations.CreateContentReports do
       add :description, :text
       add :status, :string, null: false, default: "pending"
 
-      add :reviewed_by_id, references(:users, type: :binary_id, on_delete: :set_null)
+      add :reviewed_by_id, references(:users, type: :binary_id, on_delete: :nilify_all)
       add :reviewed_at, :utc_datetime
       add :resolution_note, :text
 
