@@ -147,7 +147,15 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
       port: port
     ],
-    secret_key_base: secret_key_base
+    secret_key_base: secret_key_base,
+    live_view: [
+      signing_salt: System.get_env("LIVE_VIEW_SIGNING_SALT") || :crypto.strong_rand_bytes(16) |> Base.encode64()
+    ]
+
+  # Override session signing_salt in production
+  # Falls back to a per-boot random value if env var not set
+  config :cgraph, :session_signing_salt,
+    System.get_env("SESSION_SIGNING_SALT") || :crypto.strong_rand_bytes(16) |> Base.encode64()
 
   # Guardian JWT configuration
   config :cgraph, CGraph.Guardian,

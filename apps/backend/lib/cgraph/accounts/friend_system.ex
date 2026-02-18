@@ -234,10 +234,10 @@ defmodule CGraph.Accounts.FriendSystem do
     end
   end
 
-  # Private helper: get all accepted friend IDs for a user
+  # Get all accepted friend IDs for a user (single query with UNION)
   def get_friend_ids(user) do
-    sent = Repo.all(from f in Friendship, where: f.user_id == ^user.id and f.status == :accepted, select: f.friend_id)
-    received = Repo.all(from f in Friendship, where: f.friend_id == ^user.id and f.status == :accepted, select: f.user_id)
-    sent ++ received
+    sent_query = from(f in Friendship, where: f.user_id == ^user.id and f.status == :accepted, select: f.friend_id)
+    received_query = from(f in Friendship, where: f.friend_id == ^user.id and f.status == :accepted, select: f.user_id)
+    Repo.all(union_all(sent_query, ^received_query))
   end
 end

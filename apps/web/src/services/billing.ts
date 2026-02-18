@@ -7,6 +7,7 @@
  */
 
 import { api } from '../lib/api';
+import { safeRedirect } from '../lib/security';
 import type { PlanId } from '../lib/stripe';
 
 /**
@@ -107,7 +108,7 @@ export const billingService = {
    */
   async redirectToCheckout(planId: PlanId, yearly = false): Promise<void> {
     const session = await this.createCheckout(planId, yearly);
-    window.location.href = session.url;
+    safeRedirect(session.url);
   },
 
   /**
@@ -115,7 +116,7 @@ export const billingService = {
    */
   async redirectToPortal(): Promise<void> {
     const session = await this.createPortal();
-    window.location.href = session.url;
+    safeRedirect(session.url);
   },
 };
 

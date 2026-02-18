@@ -107,7 +107,7 @@ defmodule CGraph.Application do
 
     Logger.info("application_starting", child_count: length(children))
 
-    opts = [strategy: :one_for_one, name: CGraph.Supervisor]
+    opts = [strategy: :rest_for_one, name: CGraph.Supervisor]
 
     case Supervisor.start_link(children, opts) do
       {:ok, pid} ->
@@ -203,18 +203,15 @@ defmodule CGraph.Application do
     try do
       import Ecto.Query
 
-      # Pre-load top 1000 most recently active users
+      # Pre-load top 1000 most recently active users (single query, no N+1)
       users = CGraph.Accounts.User
         |> where([u], not is_nil(u.last_login_at))
         |> order_by([u], desc: u.last_login_at)
         |> limit(1000)
-        |> select([u], %{id: u.id, username: u.username})
         |> CGraph.Repo.all()
 
       items = Enum.map(users, fn user ->
-        {"user:#{user.id}:basic", fn ->
-          CGraph.Repo.get(CGraph.Accounts.User, user.id)
-        end}
+        {"user:#{user.id}:basic", fn -> user end}
       end)
 
       if items != [] do
@@ -257,12 +254,10 @@ defmodule CGraph.Application do
 
     # 3. Drain Oban queues (finish in-progress jobs, don't start new ones)
     try do
-      Logger.info("[Application] Draining Oban queues...")
-      Oban.drain_queue(queue: :default, with_safety: true)
-      Oban.drain_queue(queue: :notifications, with_safety: true)
-      Oban.drain_queue(queue: :mailers, with_safety: true)
+      Logger.info("[Application] Shutting down Oban gracefully...")
+      Oban.shutdown()
     rescue
-      e -> Logger.warning("application_oban_drain_failed", error: inspect(e))
+      e -> Logger.warning("application_oban_shutdown_failed", error: inspect(e))
     end
 
     # 4. Wait for in-flight requests to complete (max 25s, leaving 5s buffer)

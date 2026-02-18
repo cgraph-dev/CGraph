@@ -306,12 +306,17 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
     %{total_received: total_received, unread_count: unread_count, total_sent: total_sent, drafts_count: drafts_count}
   end
 
-  @doc "Export all private messages for a user."
-  def export_pm(user_id, _opts \\ []) do
+  @doc "Export private messages for a user with pagination (max 500 per page)."
+  def export_pm(user_id, opts \\ []) do
+    limit = min(Keyword.get(opts, :limit, 500), 500)
+    offset = Keyword.get(opts, :offset, 0)
+
     messages =
       from(m in PrivateMessage,
         where: m.sender_id == ^user_id or m.recipient_id == ^user_id,
         order_by: [desc: m.inserted_at],
+        limit: ^limit,
+        offset: ^offset,
         preload: [:sender, :recipient, :folder])
       |> Repo.all()
 

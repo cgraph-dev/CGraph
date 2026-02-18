@@ -11,7 +11,7 @@ defmodule CGraphWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_cgraph_key",
-    signing_salt: "cgraph_auth",
+    signing_salt: Application.compile_env(:cgraph, :session_signing_salt, "cgraph_auth_dev"),
     same_site: "Lax",
     secure: Mix.env() == :prod
   ]

@@ -50,7 +50,8 @@ export function useCoinShop() {
         });
 
         if (response.data.checkout_url) {
-          window.location.href = response.data.checkout_url;
+          const { safeRedirect } = await import('@/lib/security');
+          safeRedirect(response.data.checkout_url);
         } else {
           // Success
           const newBalance = coinBalance + bundle.coins + bundle.bonusCoins;

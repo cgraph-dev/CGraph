@@ -7,6 +7,7 @@ export {
   sanitizeInput,
   sanitizeUrl,
   isTrustedDomain,
+  safeRedirect,
   getCsrfToken,
   addCsrfHeader,
   secureFetch,

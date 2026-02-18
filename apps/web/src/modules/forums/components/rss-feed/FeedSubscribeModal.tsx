@@ -6,6 +6,7 @@
 
 import { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import DOMPurify from 'dompurify';
 import { XMarkIcon, QrCodeIcon, RssIcon } from '@heroicons/react/24/outline';
 import { FeedUrlDisplay } from './FeedUrlDisplay';
 import { FeedReaderButtons } from './FeedReaderButtons';
@@ -102,7 +103,11 @@ export const FeedSubscribeModal = memo(function FeedSubscribeModal({
               >
                 <div
                   className="rounded-lg bg-white p-4"
-                  dangerouslySetInnerHTML={{ __html: qrCodeSVG }}
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(qrCodeSVG, {
+                      USE_PROFILES: { svg: true, svgFilters: true },
+                    }),
+                  }}
                 />
               </motion.div>
             )}

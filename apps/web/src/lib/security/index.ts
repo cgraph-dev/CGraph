@@ -16,6 +16,7 @@ export {
   sanitizeInput,
   sanitizeUrl,
   isTrustedDomain,
+  safeRedirect,
   getCsrfToken,
   addCsrfHeader,
   secureFetch,
@@ -43,7 +44,7 @@ export type { PasswordStrength, SecurityHeadersCheck } from './validation';
 export { sanitizeCss, isSafeCss } from './css-sanitization';
 
 // Aggregate namespace object
-import { escapeHtml, sanitizeInput, sanitizeUrl, isTrustedDomain } from './xss-csrf';
+import { escapeHtml, sanitizeInput, sanitizeUrl, isTrustedDomain, safeRedirect } from './xss-csrf';
 import { getCsrfToken, addCsrfHeader, secureFetch } from './xss-csrf';
 import { secureStore, secureRetrieve, secureRemove, secureClear } from './xss-csrf';
 import { checkPasswordStrength } from './validation';
@@ -59,6 +60,7 @@ export const security = {
   sanitizeInput,
   sanitizeUrl,
   isTrustedDomain,
+  safeRedirect,
 
   // CSS Sanitization
   sanitizeCss,

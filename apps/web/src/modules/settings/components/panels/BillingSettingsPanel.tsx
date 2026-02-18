@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/modules/auth/store';
 import { api } from '@/lib/api';
+import { safeRedirect } from '@/lib/security';
 import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';
 
@@ -15,7 +16,7 @@ export function BillingSettingsPanel() {
       // Redirect to Stripe checkout or show upgrade modal
       const response = await api.post('/api/v1/billing/checkout');
       if (response.data?.checkout_url) {
-        window.location.href = response.data.checkout_url;
+        safeRedirect(response.data.checkout_url);
       } else {
         toast.info('Premium upgrade coming soon!');
       }

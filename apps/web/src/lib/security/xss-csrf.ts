@@ -65,6 +65,27 @@ export function sanitizeUrl(url: string): string {
   return '#';
 }
 
+/** Trusted domains for billing/checkout redirects */
+const TRUSTED_REDIRECT_DOMAINS = [
+  'checkout.stripe.com',
+  'billing.stripe.com',
+  'cgraph.org',
+  'cgraph-backend.fly.dev',
+];
+
+/**
+ * Safely redirect to an external URL, validating it belongs to a trusted domain.
+ * Prevents open-redirect attacks from server-supplied URLs.
+ *
+ * @throws Error if URL is not from a trusted domain
+ */
+export function safeRedirect(url: string): void {
+  if (!isTrustedDomain(url, TRUSTED_REDIRECT_DOMAINS)) {
+    throw new Error(`Redirect blocked: untrusted domain in URL "${url}"`);
+  }
+  window.location.href = url;
+}
+
 /**
  * Check if URL is from a trusted domain
  */
