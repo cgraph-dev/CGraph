@@ -64,8 +64,10 @@ WORKDIR /app
 COPY --from=builder --chown=cgraph:cgraph /app/_build/prod/rel/cgraph ./
 
 # Copy PgBouncer configuration for sidecar mode
-COPY --chown=cgraph:cgraph ../../infrastructure/pgbouncer/pgbouncer.ini /etc/pgbouncer/pgbouncer.ini
-COPY --chown=cgraph:cgraph ../../infrastructure/pgbouncer/start.sh /usr/local/bin/start-pgbouncer.sh
+# NOTE: Build context must be repo root: docker build -f apps/backend/Dockerfile .
+COPY --chown=cgraph:cgraph infrastructure/pgbouncer/pgbouncer.ini /etc/pgbouncer/pgbouncer.ini
+COPY --chown=cgraph:cgraph infrastructure/pgbouncer/start.sh /usr/local/bin/start-pgbouncer.sh
+RUN chmod +x /usr/local/bin/start-pgbouncer.sh
 
 # Set user
 USER cgraph

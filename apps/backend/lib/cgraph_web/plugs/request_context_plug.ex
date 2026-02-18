@@ -101,7 +101,7 @@ defmodule CGraphWeb.Plugs.RequestContext do
 
       # Cleanup context after response is sent
       # Note: This runs in the same process, so we can clean up here
-      spawn(fn -> RequestContext.cleanup() end)
+      Task.Supervisor.start_child(CGraph.TaskSupervisor, fn -> RequestContext.cleanup() end)
 
       conn
     end)

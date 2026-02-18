@@ -133,8 +133,8 @@ defmodule CGraph.Application do
   defp init_tier_limits_cache do
     require Logger
     # Initialize tier limits ETS cache for fast lookups
-    # This is done in a spawn to not block startup if DB isn't ready yet
-    spawn(fn ->
+    # This is done async to not block startup if DB isn't ready yet
+    Task.Supervisor.start_child(CGraph.TaskSupervisor, fn ->
       Process.sleep(1000)  # Wait for Repo to fully initialize
       try do
         TierLimits.init_cache()
@@ -148,8 +148,8 @@ defmodule CGraph.Application do
   defp warm_up_caches do
     require Logger
     # Warm up critical caches on startup to avoid thundering herd
-    # Runs in a separate process to not block application startup
-    spawn(fn ->
+    # Runs in a supervised task to not block application startup
+    Task.Supervisor.start_child(CGraph.TaskSupervisor, fn ->
       Process.sleep(2000)  # Wait for all services to initialize
 
       try do
@@ -171,7 +171,7 @@ defmodule CGraph.Application do
     require Logger
     # Configure Meilisearch indexes on startup (async, non-blocking)
     # Waits for Finch to be available, then creates/updates index settings
-    spawn(fn ->
+    Task.Supervisor.start_child(CGraph.TaskSupervisor, fn ->
       Process.sleep(3000)  # Wait for Finch and other services to initialize
 
       try do

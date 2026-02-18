@@ -492,11 +492,13 @@ defmodule CGraph.RequestContext do
   def spawn_with_context(fun) do
     context = get()
 
-    spawn(fn ->
+    {:ok, pid} = Task.Supervisor.start_child(CGraph.TaskSupervisor, fn ->
       if context, do: put_context(context)
       if context, do: update_logger_metadata(context)
       fun.()
     end)
+
+    pid
   end
 
   @doc """

@@ -15,7 +15,7 @@ Real-time overview of project health, architecture status, and operational state
 | **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                                      |
 | **Architecture**  | OK     | 9/10  | Router split (7 domain modules), component categorization, remote caching           |
 | **Tests**         | OK     | 8/10  | 1,633 backend tests passing; web coverage ~20%; landing 98 tests (63 unit + 35 E2E) |
-| **Security**      | WARN   | 8/10  | E2EE implemented; CSP hardened (no unsafe-eval); HSTS enabled; no ext audit yet     |
+| **Security**      | WARN   | 9/10  | E2EE implemented; CSP hardened (meta + headers); HSTS enabled; no ext audit yet     |
 | **Documentation** | OK     | 8/10  | Architecture + API + testing docs up to date; CLAUDE.md comprehensive               |
 | **Observability** | WARN   | 8/10  | Prometheus + SLO rules defined; Grafana dashboards not yet deployed live            |
 | **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing (singleflight)              |
@@ -87,6 +87,13 @@ audit and web test coverage
 | 2026-02-18 | 9 stale version strings          | Medium   | ✅ Fixed |
 | 2026-02-18 | Mobile no root ErrorBoundary     | High     | ✅ Fixed |
 | 2026-02-18 | AsyncStorage in devDependencies  | High     | ✅ Fixed |
+| 2026-02-18 | JWT fallback secret at compile   | Critical | ✅ Fixed |
+| 2026-02-18 | Audit retention cleanup no-op    | Critical | ✅ Fixed |
+| 2026-02-18 | Dockerfile COPY paths broken     | Critical | ✅ Fixed |
+| 2026-02-18 | Oban queue drift (prod missing)  | High     | ✅ Fixed |
+| 2026-02-18 | Vercel --no-frozen-lockfile      | High     | ✅ Fixed |
+| 2026-02-18 | No CSP meta tag in web HTML      | High     | ✅ Fixed |
+| 2026-02-18 | 6 unsupervised spawn/1 calls     | Medium   | ✅ Fixed |
 | 2026-02-17 | Audit events lost on restart     | Critical | ✅ Fixed |
 | 2026-02-17 | Subscription tier misalignment   | Critical | ✅ Fixed |
 | 2026-02-17 | Stripe config key mismatch       | Critical | ✅ Fixed |

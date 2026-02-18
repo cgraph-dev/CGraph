@@ -1557,7 +1557,35 @@ and misconfigurations. 4 parallel sub-agent audits covering ~100 checkpoints.
 
 **Verification:** Crypto 192/192 ✅ | Web 75/75 ✅ | Backend 0 errors ✅ | TS 0 errors ✅
 
-**Known remaining items (non-blocking):** Guardian JWT fallback in config.exs (runtime.exs
-overrides), Oban queue drift, spawn/1 for post-startup tasks, retention cleanup commented out,
-Three.js in devDeps (Vite bundles anyway), low coverage thresholds, deprecated packages in
-workspace, Node 22/20 version split between CI and deploy.
+**Known remaining items (non-blocking):** Three.js in devDeps (Vite bundles anyway), low coverage
+thresholds, deprecated packages in workspace, Node 22/20 version split between CI and deploy, EAS
+placeholder credentials (need real Apple/Google creds), docs-website not in pnpm workspace.
+
+### Session 30 Part 2 — Configuration Hardening (February 18, 2026)
+
+**Scope:** Fix all remaining Critical/High issues from Session 30 audit.
+
+**Critical findings fixed (3):**
+
+1. **Guardian JWT fallback secret baked at compile time** (`config.exs`) — Changed from
+   `System.get_env("JWT_SECRET", "dev-jwt-key-override-in-production")` to static
+   `"dev-only-not-for-production"`. Runtime.exs raises in prod if JWT_SECRET unset.
+2. **Audit retention cleanup completely stubbed** (`audit.ex`) — Uncommented `Repo.delete_all`,
+   added try/rescue, proper logging of deleted count per category.
+3. **Dockerfile COPY paths reference `../../infrastructure/`** — Fixed to `infrastructure/` relative
+   to repo root build context. Added `chmod +x` on start script.
+
+**High findings fixed (4):**
+
+4. **Oban queue drift** (`prod.exs`) — Added missing `events: 10`, `cleanup: 5`,
+   `notification_retry: 10` queues to prod config.
+5. **`--no-frozen-lockfile` in both vercel.json** — Changed to `--frozen-lockfile` for reproducible
+   builds.
+6. **No CSP meta tag in web `index.html`** — Added `<meta http-equiv="Content-Security-Policy">` for
+   defense-in-depth (also enforced via Vercel headers).
+7. **6 unsupervised `spawn/1` calls** — Added `{Task.Supervisor, name: CGraph.TaskSupervisor}` to
+   WorkerSupervisor, replaced all 6 bare `spawn(fn ->` calls with
+   `Task.Supervisor.start_child(CGraph.TaskSupervisor, fn ->` in application.ex (3),
+   presence_channel.ex (1), request_context_plug.ex (1), request_context.ex (1).
+
+**Verification:** Backend 0 compile errors ✅ | Web TS 0 errors ✅ | 0 bare spawn calls remaining ✅

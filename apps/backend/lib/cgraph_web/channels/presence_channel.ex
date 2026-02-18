@@ -259,7 +259,7 @@ defmodule CGraphWeb.PresenceChannel do
   end
 
   defp schedule_offline_check(user_id) do
-    spawn(fn ->
+    Task.Supervisor.start_child(CGraph.TaskSupervisor, fn ->
       Process.sleep(@offline_grace_period_ms)
       broadcast_offline_if_disconnected(user_id)
     end)

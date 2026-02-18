@@ -73,12 +73,15 @@ config :cgraph, Oban,
     {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(30)}
   ],
   queues: [
-    default: 30,          # Increased for 10K users
-    mailers: 20,          # Handle email bursts
-    notifications: 60,    # High priority for real-time
-    critical: 10,         # Urgent tasks
-    search: 15,           # Search indexing
-    webhooks: 20          # Webhook delivery processing
+    default: 30,              # Increased for 10K users
+    mailers: 20,              # Handle email bursts
+    notifications: 60,        # High priority for real-time
+    events: 10,               # Event processing
+    cleanup: 5,               # Retention + cleanup jobs
+    notification_retry: 10,   # Failed notification retries
+    critical: 10,             # Urgent tasks
+    search: 15,               # Search indexing
+    webhooks: 20              # Webhook delivery processing
   ]
 
 # Rate limiting settings for production (balanced for 10K users)

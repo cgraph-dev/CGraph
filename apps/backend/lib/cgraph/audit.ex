@@ -470,16 +470,35 @@ defmodule CGraph.Audit do
     Enum.each(@retention_periods, fn {category, days} ->
       cutoff = Date.add(now, -days)
 
-      # In production, would delete old entries
       Logger.info("Audit retention cleanup",
         category: category,
         cutoff: cutoff
       )
 
-      # Repo.delete_all(
-      #   from a in AuditLog,
-      #   where: a.category == ^category and a.inserted_at < ^cutoff
-      # )
+      try do
+        import Ecto.Query
+
+        {deleted, _} =
+          CGraph.Repo.delete_all(
+            from(a in CGraph.Accounts.AuditLog,
+              where: a.category == ^to_string(category) and a.inserted_at < ^cutoff
+            )
+          )
+
+        if deleted > 0 do
+          Logger.info("Audit retention deleted entries",
+            category: category,
+            deleted_count: deleted,
+            cutoff: cutoff
+          )
+        end
+      rescue
+        e ->
+          Logger.error("Audit retention cleanup failed",
+            category: category,
+            error: inspect(e)
+          )
+      end
     end)
   end
 

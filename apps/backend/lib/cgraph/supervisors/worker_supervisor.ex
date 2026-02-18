@@ -9,6 +9,10 @@ defmodule CGraph.WorkerSupervisor do
   @impl true
   def init(_init_arg) do
     children = [
+      # Task supervisor for fire-and-forget async work
+      # Used by: application startup tasks, presence, request context cleanup
+      {Task.Supervisor, name: CGraph.TaskSupervisor},
+
       # Start Oban for background jobs
       {Oban, oban_config()},
 

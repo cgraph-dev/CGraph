@@ -86,9 +86,11 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 # Guardian configuration
+# NOTE: In production, runtime.exs raises if JWT_SECRET is unset.
+# The fallback here is ONLY for dev/test and is intentionally invalid for prod.
 config :cgraph, CGraph.Guardian,
   issuer: "cgraph",
-  secret_key: System.get_env("JWT_SECRET", "dev-jwt-key-override-in-production")
+  secret_key: "dev-only-not-for-production"
 
 # Oban configuration
 config :cgraph, Oban,
