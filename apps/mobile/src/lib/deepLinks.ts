@@ -15,9 +15,12 @@
  * | `/settings` | Settings | `cgraph://settings` |
  * | `/forum/:id` | Forum | `cgraph://forum/forum456` |
  * | `/forum/:id/post/:id` | Post | `cgraph://forum/dev/post/42` |
- * | `/invite/:code` | Group Invite | `cgraph://invite/ABC123` |
  * | `/login` | Login | `cgraph://login` |
  * | `/register` | Register | `cgraph://register` |
+ * | `/premium` | Premium | `cgraph://premium` |
+ * | `/gamification` | GamificationHub | `cgraph://gamification` |
+ * | `/admin` | AdminDashboard | `cgraph://admin` |
+ * | `/legal/privacy` | PrivacyPolicy | `cgraph://legal/privacy` |
  *
  * ## Universal Links
  *
@@ -142,20 +145,43 @@ export const linkingConfig: LinkingOptions<RootStackParamList>['config'] = {
             Profile: 'settings/profile',
             Account: 'settings/account',
             Appearance: 'settings/appearance',
+            UICustomization: 'settings/ui-customization',
+            ChatBubbles: 'settings/chat-bubbles',
+            AvatarSettings: 'settings/avatar',
             Notifications: 'settings/notifications',
+            EmailNotifications: 'settings/email-notifications',
             Privacy: 'settings/privacy',
+            ProfileVisibility: 'settings/profile-visibility',
             Premium: 'premium',
             CoinShop: 'shop',
+            Calendar: 'calendar',
             Referrals: 'referrals',
             GamificationHub: 'gamification',
             Achievements: 'gamification/achievements',
             Quests: 'gamification/quests',
             Leaderboard: 'leaderboard',
+            Titles: 'gamification/titles',
+            BadgeSelection: 'gamification/badges',
+            TitleSelection: 'gamification/title-select',
+            Customize: 'settings/customize',
+            IdentityCustomization: 'settings/customize/identity',
+            EffectsCustomization: 'settings/customize/effects',
+            ProgressionCustomization: 'settings/customize/progression',
+            HolographicDemo: 'settings/holographic-demo',
+            RSSFeeds: 'settings/rss-feeds',
+            CustomEmoji: 'settings/custom-emoji',
+            MemberList: 'settings/members',
+            WhosOnline: 'settings/online',
+            E2EEVerification: 'settings/e2ee-verification',
+            KeyVerification: 'settings/key-verification',
+            AdminDashboard: 'admin',
+            ForumReorder: 'admin/forum-reorder',
+            ExportContent: 'settings/export',
+            Sessions: 'settings/sessions',
             PrivacyPolicy: 'legal/privacy',
             TermsOfService: 'legal/terms',
             CookiePolicy: 'legal/cookies',
             GDPR: 'legal/gdpr',
-            Sessions: 'settings/sessions',
           },
         },
       },
@@ -219,22 +245,16 @@ export async function handleDeepLink(
     // Handle special cases that need custom logic
     if (path.startsWith('invite/')) {
       const code = path.replace('invite/', '');
-      // Could validate invite code before navigating
-      navigation.navigate('GroupInvite', { code });
+      // Group invites navigate into the Groups tab's invite acceptance flow
+      // TODO: Add a dedicated GroupInviteAccept screen when invite flow is built
+      navigation.navigate('Main', {
+        screen: 'GroupsTab',
+        params: { screen: 'GroupInvites', params: { code } },
+      } as object);
       return true;
     }
 
-    if (path === 'auth/verify' && params.token) {
-      navigation.navigate('EmailVerify', { token: params.token });
-      return true;
-    }
-
-    if (path === 'auth/reset' && params.token) {
-      navigation.navigate('PasswordReset', { token: params.token });
-      return true;
-    }
-
-    // Let React Navigation handle the rest
+    // Let React Navigation handle the rest via linkingConfig
     return false;
   } catch (error) {
     console.error('[DeepLink] Error handling link:', error);

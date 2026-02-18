@@ -6,7 +6,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import deepLinks from './src/lib/deepLinks';
 import { E2EEProvider } from './src/lib/crypto/E2EEContext';
 import RootNavigator from './src/navigation/RootNavigator';
@@ -59,7 +59,7 @@ function AppContent() {
           config: deepLinks.config,
         }}
         fallback={
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <View style={styles.linkingFallback}>
             <ActivityIndicator size="large" color="#10b981" />
           </View>
         }
@@ -107,7 +107,7 @@ export default function App() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
+    <GestureHandlerRootView style={styles.root} onLayout={onLayoutRootView}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <E2EEProvider>
@@ -118,3 +118,15 @@ export default function App() {
     </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+  },
+  linkingFallback: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#0a0a0a',
+  },
+});
