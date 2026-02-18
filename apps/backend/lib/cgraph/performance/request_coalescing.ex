@@ -127,7 +127,7 @@ defmodule CGraph.Performance.RequestCoalescing do
 
     cond do
       # Check TTL cache first
-      cached = state.cache[key] && state.cache[key].expires_at > now ->
+      (cached = state.cache[key]) != nil && cached.expires_at > now ->
         {:reply, {:ok, cached.value},
          %{state | total_calls: state.total_calls + 1, cache_hits: state.cache_hits + 1}}
 
