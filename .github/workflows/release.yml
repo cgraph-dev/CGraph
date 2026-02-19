@@ -32,6 +32,7 @@ jobs:
   validate:
     name: Validate Release
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     outputs:
       version: ${{ steps.version.outputs.version }}
       is_prerelease: ${{ steps.version.outputs.is_prerelease }}
@@ -71,6 +72,7 @@ jobs:
   build:
     name: Build All Platforms
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: validate
     steps:
       - uses: actions/checkout@v4
@@ -110,6 +112,7 @@ jobs:
   docker:
     name: Build Docker Images
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [validate, build]
     steps:
       - uses: actions/checkout@v4
@@ -152,6 +155,7 @@ jobs:
   changelog:
     name: Generate Changelog
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: validate
     outputs:
       changelog: ${{ steps.changelog.outputs.changelog }}
@@ -175,6 +179,7 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [validate, build, docker, changelog]
     steps:
       - uses: actions/checkout@v4
@@ -208,6 +213,7 @@ jobs:
   notify:
     name: Notify Release
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [validate, release]
     if: success()
     steps:
@@ -219,9 +225,9 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
           webhook: ${{ env.DISCORD_WEBHOOK }}
-          title: "🚀 CGraph v${{ needs.validate.outputs.version }} Released"
+          title: '🚀 CGraph v${{ needs.validate.outputs.version }} Released'
           description: |
             A new version of CGraph has been released!
-            
+
             View the release: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.validate.outputs.version }}
           color: 0x6366f1

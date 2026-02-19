@@ -81,7 +81,16 @@ defmodule CGraph.Telemetry.OpenTelemetry do
       end)
   """
   def with_span(name, attributes \\ %{}, fun) when is_function(fun, 0) do
-    otel_attrs = Enum.map(attributes, fn {k, v} -> {String.to_atom(k), to_string(v)} end)
+    # SECURITY: Use String.to_existing_atom to prevent atom exhaustion from external input.
+    # OTel attribute keys should be predefined atoms; unknown keys are kept as strings.
+    otel_attrs = Enum.map(attributes, fn {k, v} ->
+      atom_key = try do
+        String.to_existing_atom(k)
+      rescue
+        ArgumentError -> k
+      end
+      {atom_key, to_string(v)}
+    end)
 
     Tracer.with_span name, %{attributes: otel_attrs} do
       try do

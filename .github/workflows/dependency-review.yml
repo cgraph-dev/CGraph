@@ -12,6 +12,7 @@ jobs:
   dependency-review:
     name: Dependency Review
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -28,6 +29,7 @@ jobs:
   elixir-deps:
     name: Elixir Dependency Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -63,6 +65,7 @@ jobs:
   node-deps:
     name: Node.js Dependency Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -82,7 +85,6 @@ jobs:
 
       - name: Security audit
         run: pnpm audit --audit-level=high
-        continue-on-error: true
 
       - name: Check for outdated packages
         run: pnpm outdated || true

@@ -110,16 +110,16 @@
 
 ## 5. CI/CD Security Pipeline
 
-| Tool             | Purpose                          | Status                |
-| ---------------- | -------------------------------- | --------------------- |
-| Gitleaks         | Secret detection                 | ✅ Active             |
-| pnpm audit       | Dependency vulnerabilities       | ✅ Active             |
-| Sobelow          | Elixir security analysis         | ✅ Active             |
-| Grype            | Container vulnerability scanning | ✅ Active             |
-| Syft             | SBOM generation                  | ✅ Active             |
-| License checker  | OSS license compliance           | ✅ Active             |
-| Semgrep          | SAST (code patterns)             | ❌ Not yet integrated |
-| DAST (OWASP ZAP) | Dynamic testing                  | ❌ Not yet integrated |
+| Tool             | Purpose                          | Status                                                                                                     |
+| ---------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Gitleaks         | Secret detection                 | ✅ Active                                                                                                  |
+| pnpm audit       | Dependency vulnerabilities       | ✅ Active                                                                                                  |
+| Sobelow          | Elixir security analysis         | ✅ Active                                                                                                  |
+| Grype            | Container vulnerability scanning | ✅ Active                                                                                                  |
+| Syft             | SBOM generation                  | ✅ Active                                                                                                  |
+| License checker  | OSS license compliance           | ✅ Active                                                                                                  |
+| Semgrep          | SAST (code patterns)             | ✅ Active — .github/workflows/semgrep.yml configured with 8 rulesets, SARIF output, and quick-scan for PRs |
+| DAST (OWASP ZAP) | Dynamic testing                  | ❌ Not yet integrated                                                                                      |
 
 ---
 

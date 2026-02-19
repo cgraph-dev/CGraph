@@ -74,11 +74,10 @@ export default defineConfig({
     // SECURITY: 'hidden' generates .map files for error tracking services (Sentry, Datadog)
     // without exposing sourceMappingURL comments in production bundles.
     // Set VITE_ENABLE_SOURCEMAPS=true for full inline sourcemaps during debugging.
-    sourcemap: process.env.VITE_ENABLE_SOURCEMAPS === 'true' || 'hidden',
-    // Suppress chunk size warnings — large chunks are expected for the
-    // encrypted messaging app (crypto libs, Three.js demos, markdown renderer).
-    // Actual bundle analysis uses rollup-plugin-visualizer output.
-    chunkSizeWarningLimit: 3000,
+    sourcemap: process.env.VITE_ENABLE_SOURCEMAPS === 'true' ? true : 'hidden',
+    // Chunk size warnings — flag chunks larger than 1MB for review.
+    // Crypto libs and Three.js are expected to be large.
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         // Use function for more granular control over chunking

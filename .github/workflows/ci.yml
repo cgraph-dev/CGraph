@@ -29,6 +29,7 @@ jobs:
   pr-size:
     name: PR Size Check
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
@@ -59,6 +60,7 @@ jobs:
   lint:
     name: Lint & Format
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -88,6 +90,7 @@ jobs:
   typecheck:
     name: TypeScript Check
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -114,6 +117,7 @@ jobs:
   backend-test:
     name: Backend Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:16
@@ -199,6 +203,7 @@ jobs:
   frontend-test:
     name: Frontend Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -235,6 +240,7 @@ jobs:
   mobile-test:
     name: Mobile Lint / Typecheck / Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -274,6 +280,7 @@ jobs:
   docker-build:
     name: Build Images (backend/web)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [lint, typecheck]
     steps:
       - uses: actions/checkout@v4
@@ -294,6 +301,7 @@ jobs:
   coverage-report:
     name: Coverage Summary
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [backend-test, frontend-test, mobile-test]
     if: always()
     steps:
@@ -347,6 +355,7 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [lint, typecheck]
     steps:
       - uses: actions/checkout@v4
@@ -354,6 +363,8 @@ jobs:
       - name: Secrets scan (gitleaks)
         uses: gitleaks/gitleaks-action@v2
         with:
+          # --no-git scans only the current file snapshot (not full git history).
+          # TODO: Add a scheduled workflow to scan full git history periodically.
           args: detect --source . --no-git --exit-code 1
 
       - name: Lint Dockerfile (backend)
@@ -432,6 +443,7 @@ jobs:
   quality-gate:
     name: Quality Gate
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs:
       - lint
       - typecheck

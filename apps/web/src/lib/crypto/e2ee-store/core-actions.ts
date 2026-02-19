@@ -37,7 +37,7 @@ export const createInitialize = (set: Set, get: Get) => async (): Promise<void> 
     set({ isLoading: true, error: null });
 
     const isSetUp = await isE2EESetUp();
-    const deviceId = getDeviceId();
+    const deviceId = await getDeviceId();
 
     let fp: string | null = null;
     if (isSetUp) {

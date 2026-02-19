@@ -4,7 +4,8 @@ import Config
 config :cgraph,
   ecto_repos: [CGraph.Repo],
   env: Mix.env(),
-  generators: [timestamp_type: :utc_datetime, binary_id: true]
+  generators: [timestamp_type: :utc_datetime, binary_id: true],
+  session_signing_salt: "cgraph_session_v1"
 
 # Configures the endpoint
 config :cgraph, CGraphWeb.Endpoint,
@@ -96,7 +97,14 @@ config :cgraph, Oban,
     events: 5,
     cleanup: 3,
     notification_retry: 5,
-    webhooks: 10
+    webhooks: 10,
+    exports: 3,
+    external_api: 5,
+    dead_letter: 3,
+    maintenance: 3,
+    backups: 2,
+    push_notifications: 10,
+    email_notifications: 5
   ]
 
 # Swoosh mailer configuration

@@ -154,11 +154,11 @@ curl -H "Authorization: Bearer YOUR_TOKEN" https://cgraph-backend.fly.dev/api/v1
 
 ## Pricing
 
-| Plan           | Price      | Features                                                       |
-| -------------- | ---------- | -------------------------------------------------------------- |
-| **Free**       | $0/forever | Unlimited messaging, 5 forums/groups, basic features           |
-| **Premium**    | $9.99/mo   | 100 forums/groups, custom themes, HD video, 500MB uploads      |
-| **Enterprise** | Custom     | Unlimited everything, SSO/SAML, SLA, dedicated support, API    |
+| Plan           | Price      | Features                                                    |
+| -------------- | ---------- | ----------------------------------------------------------- |
+| **Free**       | $0/forever | Unlimited messaging, 5 forums/groups, basic features        |
+| **Premium**    | $9.99/mo   | 100 forums/groups, custom themes, HD video, 500MB uploads   |
+| **Enterprise** | Custom     | Unlimited everything, SSO/SAML, SLA, dedicated support, API |
 
 Visit [cgraph.org/pricing](https://cgraph.org/pricing) for full details.
 
@@ -166,15 +166,15 @@ Visit [cgraph.org/pricing](https://cgraph.org/pricing) for full details.
 
 ## Tech Stack
 
-| Layer      | Technology                                         |
-| ---------- | -------------------------------------------------- |
-| Backend    | Elixir 1.17+ / Phoenix 1.8 / PostgreSQL 16         |
-| Web        | React 19 / Vite / TailwindCSS / Zustand            |
-| Mobile     | React Native 0.81 / Expo SDK 54                    |
-| Real-time  | Phoenix Channels (WebSocket)                       |
-| Encryption | PQXDH + Triple Ratchet / AES-256-GCM / ML-KEM-768  |
-| Payments   | Stripe (subscriptions, webhooks)                   |
-| Hosting    | Fly.io (backend) / Vercel (web) / Cloudflare (CDN) |
+| Layer      | Technology                                                                      |
+| ---------- | ------------------------------------------------------------------------------- |
+| Backend    | Elixir 1.17+ / Phoenix 1.8 / PostgreSQL 16                                      |
+| Web        | React 19 / Vite / TailwindCSS / Zustand                                         |
+| Mobile     | React Native 0.81 / Expo SDK 54                                                 |
+| Real-time  | Phoenix Channels (WebSocket)                                                    |
+| Encryption | PQXDH + Triple Ratchet / AES-256-GCM / ML-KEM-768                               |
+| Payments   | Stripe (subscriptions, webhooks)                                                |
+| Hosting    | Fly.io (backend) / Cloudflare Pages (web) / Vercel (landing) / Cloudflare (CDN) |
 
 ---
 
@@ -221,11 +221,11 @@ CGraph splits the marketing site and the actual app into two separate builds:
 
 ### Deployment
 
-| App     | URL            | Vercel Project Root | Purpose           |
-| ------- | -------------- | ------------------- | ----------------- |
-| Landing | cgraph.org     | `apps/landing`      | Marketing, SEO    |
-| Web App | app.cgraph.org | `apps/web`          | Authenticated app |
-| Backend | api.cgraph.org | `apps/backend`      | API (Fly.io)      |
+| App     | URL            | Deploy Platform               | Purpose           |
+| ------- | -------------- | ----------------------------- | ----------------- |
+| Landing | cgraph.org     | Vercel (`apps/landing`)       | Marketing, SEO    |
+| Web App | app.cgraph.org | Cloudflare Pages (`apps/web`) | Authenticated app |
+| Backend | api.cgraph.org | Fly.io (`apps/backend`)       | API               |
 
 See [CLAUDE.md](CLAUDE.md) for detailed architecture documentation.
 

@@ -1,0 +1,12 @@
+node_modules/
+.git/
+.github/
+.env*
+*.md
+test/
+test-results/
+coverage/
+dist/
+.turbo/
+.vscode/
+e2e/

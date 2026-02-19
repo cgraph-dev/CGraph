@@ -25,8 +25,11 @@ defmodule CGraph.Subscriptions do
   alias CGraph.Repo
   require Logger
 
-  @premium_price_id Application.compile_env(:cgraph, :stripe_premium_price_id, "price_premium_monthly")
-  @enterprise_price_id Application.compile_env(:cgraph, :stripe_enterprise_price_id, "price_enterprise_monthly")
+  # NOTE: Price IDs are read at RUNTIME from config, not compile-time.
+  # Set via runtime.exs: config :cgraph, CGraph.Subscriptions, stripe_price_ids: %{...}
+  # Compile-time defaults are placeholder-only for dev/test.
+  @default_premium_price_id "price_premium_monthly"
+  @default_enterprise_price_id "price_enterprise_monthly"
 
   # ===========================================================================
   # Checkout Session
@@ -256,22 +259,35 @@ defmodule CGraph.Subscriptions do
   # ===========================================================================
 
   defp get_price_id("premium", opts) do
+    price_ids = get_stripe_price_ids()
     if Keyword.get(opts, :yearly, false) do
-      Application.get_env(:cgraph, :stripe_premium_yearly_price_id, @premium_price_id)
+      Application.get_env(:cgraph, :stripe_premium_yearly_price_id, price_ids[:premium] || @default_premium_price_id)
     else
-      Application.get_env(:cgraph, :stripe_premium_price_id, @premium_price_id)
+      price_ids[:premium] || @default_premium_price_id
     end
   end
 
   defp get_price_id("enterprise", opts) do
+    price_ids = get_stripe_price_ids()
     if Keyword.get(opts, :yearly, false) do
-      Application.get_env(:cgraph, :stripe_enterprise_yearly_price_id, @enterprise_price_id)
+      Application.get_env(:cgraph, :stripe_enterprise_yearly_price_id, price_ids[:enterprise] || @default_enterprise_price_id)
     else
-      Application.get_env(:cgraph, :stripe_enterprise_price_id, @enterprise_price_id)
+      price_ids[:enterprise] || @default_enterprise_price_id
     end
   end
 
-  defp get_price_id(_, _), do: @premium_price_id
+  defp get_price_id(_, _) do
+    price_ids = get_stripe_price_ids()
+    price_ids[:premium] || @default_premium_price_id
+  end
+
+  # Read stripe price IDs from runtime config (set in runtime.exs)
+  defp get_stripe_price_ids do
+    case Application.get_env(:cgraph, CGraph.Subscriptions) do
+      nil -> %{}
+      config -> config[:stripe_price_ids] || %{}
+    end
+  end
 
   defp unix_to_datetime(nil), do: nil
   defp unix_to_datetime(unix) when is_integer(unix), do: DateTime.from_unix!(unix)

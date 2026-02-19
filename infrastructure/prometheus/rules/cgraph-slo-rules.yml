@@ -40,6 +40,15 @@ groups:
             sum(rate(http_requests_total[30d]))
           )
 
+      # 6-hour availability window (used by medium burn-rate alert)
+      - record: cgraph:api_availability:ratio_6h
+        expr: >
+          1 - (
+            sum(rate(http_requests_total{status=~"5.."}[6h]))
+            /
+            sum(rate(http_requests_total[6h]))
+          )
+
       # --- Error Budget (how much budget remains this month) ---
       - record: cgraph:api_error_budget:remaining
         expr: >
@@ -113,12 +122,12 @@ groups:
           severity: critical
           team: backend
         annotations:
-          summary: "CGraph API error budget burning critically fast"
+          summary: 'CGraph API error budget burning critically fast'
           description: >
             API error budget is being consumed at {{ $value }}x the normal rate.
             At this rate, the entire monthly error budget will be exhausted in
             {{ printf "%.1f" (div 720 $value) }} hours.
-          runbook: "https://docs.cgraph.org/runbooks/high-error-rate"
+          runbook: 'https://docs.cgraph.org/runbooks/high-error-rate'
 
       # WARNING: Slow burn — 1x burn rate sustained over 6h
       - alert: CGraphHighErrorBudgetBurn_Warning
@@ -129,7 +138,7 @@ groups:
           severity: warning
           team: backend
         annotations:
-          summary: "CGraph API error budget being consumed"
+          summary: 'CGraph API error budget being consumed'
           description: >
             API error budget burn rate is {{ $value }}x normal.
             Budget remaining: {{ printf "%.1f" (mul (query "cgraph:api_error_budget:remaining") 100) }}%
@@ -142,7 +151,7 @@ groups:
           severity: critical
           team: backend
         annotations:
-          summary: "CGraph API error budget nearly exhausted (<10% remaining)"
+          summary: 'CGraph API error budget nearly exhausted (<10% remaining)'
           description: >
             Only {{ printf "%.1f" (mul $value 100) }}% of the monthly error budget remains.
             Consider freezing deployments until the budget resets.
@@ -155,8 +164,8 @@ groups:
           severity: warning
           team: backend
         annotations:
-          summary: "Message delivery p99 latency exceeds 1s SLO"
-          description: "Current p99: {{ $value }}s (target: <1s)"
+          summary: 'Message delivery p99 latency exceeds 1s SLO'
+          description: 'Current p99: {{ $value }}s (target: <1s)'
 
       # WARNING: Forum feed latency SLO breach
       - alert: CGraphForumFeedLatencySLOBreach
@@ -166,8 +175,8 @@ groups:
           severity: warning
           team: backend
         annotations:
-          summary: "Forum feed p99 latency exceeds 200ms SLO"
-          description: "Current p99: {{ printf \"%.0f\" (mul $value 1000) }}ms (target: <200ms)"
+          summary: 'Forum feed p99 latency exceeds 200ms SLO'
+          description: 'Current p99: {{ printf "%.0f" (mul $value 1000) }}ms (target: <200ms)'
 
       # WARNING: Search latency SLO breach
       - alert: CGraphSearchLatencySLOBreach
@@ -177,5 +186,5 @@ groups:
           severity: warning
           team: backend
         annotations:
-          summary: "Search p99 latency exceeds 500ms SLO"
-          description: "Current p99: {{ printf \"%.0f\" (mul $value 1000) }}ms (target: <500ms)"
+          summary: 'Search p99 latency exceeds 500ms SLO'
+          description: 'Current p99: {{ printf "%.0f" (mul $value 1000) }}ms (target: <500ms)'

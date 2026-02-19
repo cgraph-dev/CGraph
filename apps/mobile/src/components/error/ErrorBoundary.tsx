@@ -8,19 +8,12 @@
  */
 
 import React, { Component, ReactNode, ErrorInfo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { createLogger } from '../../lib/logger';
-import { captureError, addBreadcrumb } from '../../lib/errorTracking';
+import { captureError, addBreadcrumb } from '../../lib/error-tracking';
 
 const logger = createLogger('ErrorBoundary');
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -111,7 +104,13 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   render(): ReactNode {
     const { hasError, error, errorInfo } = this.state;
-    const { children, fallback, name = 'Screen', showDetails = __DEV__, showRetry = true } = this.props;
+    const {
+      children,
+      fallback,
+      name = 'Screen',
+      showDetails = __DEV__,
+      showRetry = true,
+    } = this.props;
 
     if (hasError) {
       // Custom fallback provided

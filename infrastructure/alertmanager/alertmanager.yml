@@ -5,6 +5,9 @@
 #   1. Set SLACK_WEBHOOK_URL env var (or replace placeholder below)
 #   2. Set PAGERDUTY_SERVICE_KEY env var for P1/P2 alerts
 #   3. Deploy via docker-compose.observability.yml
+#   4. IMPORTANT: Alertmanager does NOT support shell-style ${VAR:-default} syntax.
+#      Use envsubst or Docker entrypoint substitution before deploying:
+#      envsubst < alertmanager.yml.tmpl > alertmanager.yml
 #
 # Routing logic:
 #   - P1 (critical): PagerDuty + Slack #incidents
@@ -13,7 +16,9 @@
 
 global:
   resolve_timeout: 5m
-  slack_api_url: '${SLACK_WEBHOOK_URL:-https://hooks.slack.com/services/REPLACE/WITH/WEBHOOK}'
+  # IMPORTANT: Replace this with your actual Slack webhook URL before deploying.
+  # This file is a TEMPLATE — run envsubst or set this value directly.
+  slack_api_url: 'https://hooks.slack.com/services/REPLACE_WITH_ACTUAL_WEBHOOK'
 
 # Inhibition rules — suppress lower-severity alerts when higher-severity fires
 inhibit_rules:

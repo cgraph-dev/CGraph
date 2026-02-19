@@ -95,7 +95,7 @@ export default tseslint.config(
 
       // General
       'no-unused-vars': 'off',
-      'no-console': ['warn', { allow: ['warn', 'error', 'info', 'debug'] }],
+      'no-console': ['error', { allow: ['warn', 'error'] }],
     },
     settings: {
       react: {
@@ -103,18 +103,23 @@ export default tseslint.config(
       },
     },
   },
-  // Override: Allow console in lib folder (logger, errorTracking, etc.)
+  // Override: Allow console in logger and error tracking modules only
   {
-    files: ['**/lib/**/*.ts', '**/lib/**/*.tsx'],
+    files: [
+      '**/lib/logger.ts',
+      '**/lib/logger/**/*.ts',
+      '**/lib/error-tracking.ts',
+      '**/lib/errorTracking.ts',
+    ],
     rules: {
-      'no-console': 'off',
+      'no-console': ['warn', { allow: ['warn', 'error', 'info', 'debug'] }],
     },
   },
   // Override: Allow console in stories, test pages, main.tsx, and middleware
   {
     files: ['**/*.stories.tsx', '**/pages/test/**/*.tsx', '**/main.tsx', '**/stores/middleware.ts'],
     rules: {
-      'no-console': 'off',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
   },
   // Override: Disable react-refresh for stores, hooks, contexts, providers (non-component exports)

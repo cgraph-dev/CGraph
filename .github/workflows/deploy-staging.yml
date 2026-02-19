@@ -12,6 +12,10 @@ permissions:
   contents: read
   deployments: write
 
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
 jobs:
   # ============================================
   # Deploy Backend to Staging
@@ -19,6 +23,7 @@ jobs:
   deploy-backend-staging:
     name: Deploy Backend (Staging)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     environment: staging
     steps:
       - uses: actions/checkout@v4
@@ -30,12 +35,11 @@ jobs:
         working-directory: apps/backend
         run: |
           # Deploy to staging app — separate from production
+          # SECURITY: DATABASE_URL and SECRET_KEY_BASE must be pre-configured
+          # via `fly secrets set` on the staging app, NOT passed as build env vars.
           flyctl deploy --remote-only \
             --app cgraph-backend-staging \
             --wait-timeout 120
-        env:
-          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
-          SECRET_KEY_BASE: ${{ secrets.STAGING_SECRET_KEY_BASE }}
 
       - name: Health check
         run: |
@@ -55,6 +59,7 @@ jobs:
   deploy-web-staging:
     name: Deploy Web (Staging)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     environment: staging
     steps:
       - uses: actions/checkout@v4
@@ -94,6 +99,7 @@ jobs:
   smoke-test:
     name: Staging Smoke Test
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [deploy-backend-staging, deploy-web-staging]
     steps:
       - uses: actions/checkout@v4

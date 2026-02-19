@@ -80,8 +80,22 @@ export async function fingerprint(publicKey: ArrayBuffer): Promise<string> {
 
 /**
  * Session management
+ *
+ * Tries encrypted SecureStorage first, falls back to localStorage.
  */
-export function loadSessions(): Map<string, Session> {
+export async function loadSessions(): Promise<Map<string, Session>> {
+  // Try encrypted storage first
+  try {
+    const { default: SecureStorage } = await import('../secureStorage');
+    if (SecureStorage.isReady()) {
+      const { loadSessions: secureLoad } = await import('../e2ee-secure/sessions');
+      return await secureLoad();
+    }
+  } catch {
+    // SecureStorage not available
+  }
+
+  // Legacy localStorage path
   const stored = localStorage.getItem(SESSIONS);
   if (!stored) return new Map();
 
@@ -93,8 +107,23 @@ export function loadSessions(): Map<string, Session> {
   }
 }
 
-export function saveSession(recipientId: string, session: Session): void {
-  const sessions = loadSessions();
+export async function saveSession(recipientId: string, session: Session): Promise<void> {
+  // Try encrypted storage first
+  try {
+    const { default: SecureStorage } = await import('../secureStorage');
+    if (SecureStorage.isReady()) {
+      const { saveSession: secureSave } = await import('../e2ee-secure/sessions');
+      await secureSave(recipientId, session);
+      // Clear legacy data if it exists
+      localStorage.removeItem(SESSIONS);
+      return;
+    }
+  } catch {
+    // SecureStorage not available
+  }
+
+  // Legacy localStorage path
+  const sessions = await loadSessions();
   sessions.set(recipientId, session);
 
   const obj: Record<string, Session> = {};
@@ -105,7 +134,7 @@ export function saveSession(recipientId: string, session: Session): void {
   localStorage.setItem(SESSIONS, JSON.stringify(obj));
 }
 
-export function getSession(recipientId: string): Session | null {
-  const sessions = loadSessions();
+export async function getSession(recipientId: string): Promise<Session | null> {
+  const sessions = await loadSessions();
   return sessions.get(recipientId) || null;
 }

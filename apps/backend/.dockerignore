@@ -1,0 +1,12 @@
+_build/
+deps/
+.git/
+.github/
+.env*
+*.md
+test/
+.formatter.exs
+.credo.exs
+erl_crash.dump
+cover/
+doc/

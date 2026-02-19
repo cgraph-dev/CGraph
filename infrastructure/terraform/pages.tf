@@ -16,13 +16,13 @@ resource "cloudflare_pages_project" "web" {
   deployment_configs {
     production {
       environment_variables = {
-        NODE_VERSION = "20"
+        NODE_VERSION = "22"
         PNPM_VERSION = "10"
       }
     }
     preview {
       environment_variables = {
-        NODE_VERSION = "20"
+        NODE_VERSION = "22"
         PNPM_VERSION = "10"
       }
     }

@@ -8,12 +8,14 @@ defmodule CGraphWeb.Endpoint do
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
+  # NOTE: The signing_salt is a key derivation namespace, NOT a secret.
+  # Actual cookie signing security comes from secret_key_base (set at runtime in runtime.exs).
+  # This is the standard Phoenix pattern — signing_salt can safely be compiled in.
   @session_options [
     store: :cookie,
     key: "_cgraph_key",
-    signing_salt: Application.compile_env(:cgraph, :session_signing_salt, "cgraph_auth_dev"),
-    same_site: "Lax",
-    secure: Mix.env() == :prod
+    signing_salt: Application.compile_env(:cgraph, :session_signing_salt, "cgraph_session_v1"),
+    same_site: "Lax"
   ]
 
   # Max request body size (bytes). Override with MAX_BODY_BYTES env.

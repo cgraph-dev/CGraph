@@ -350,9 +350,12 @@ if config_env() == :prod do
     enabled: redis_url != nil,
     redis_pool: :rate_limiter_pool
 
-  # Also disable the plug-level rate limiter if Redis isn't available
+  # SECURITY: Rate limiting falls back to local Cachex when Redis is unavailable.
+  # Distributed rate limiting is disabled, but per-instance limits remain active.
   unless redis_url do
-    config :cgraph, CGraph.RateLimiter, enabled: false
+    IO.puts("[WARNING] REDIS_URL not set — rate limiting using local Cachex only. " <>
+            "Distributed rate limiting disabled. Set REDIS_URL for production.")
+    config :cgraph, CGraph.RateLimiter, enabled: true, backend: :local
   end
 
   # Sampled Presence for Large Channels

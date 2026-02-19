@@ -27,7 +27,7 @@
     <!-- Content Security Policy (defense-in-depth: also set via Vercel headers) -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://cgraph-backend.fly.dev wss://cgraph-backend.fly.dev https://*.ingest.sentry.io https://vitals.vercel-insights.com; font-src 'self' data: https://fonts.gstatic.com; frame-ancestors 'none'"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://cgraph-backend.fly.dev wss://cgraph-backend.fly.dev https://*.ingest.sentry.io https://vitals.vercel-insights.com; font-src 'self' data: https://fonts.gstatic.com; frame-ancestors 'none'"
     />
 
     <!-- Open Graph / Facebook -->
@@ -76,8 +76,6 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-
-    <title>CGraph</title>
 
     <!-- Critical CSS - Inlined for faster LCP on landing page -->
     <style id="critical-css">

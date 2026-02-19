@@ -21,6 +21,7 @@ jobs:
   backend-benchmark:
     name: Backend Performance
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:16
@@ -93,6 +94,7 @@ jobs:
   frontend-bundle:
     name: Frontend Bundle Size
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -117,12 +119,12 @@ jobs:
         run: |
           echo "## 📦 Bundle Size Analysis" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # Calculate total bundle size
           TOTAL_SIZE=$(du -sh apps/web/dist | cut -f1)
           echo "**Total bundle size:** $TOTAL_SIZE" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           # List largest files
           echo "### Largest assets:" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
@@ -133,9 +135,9 @@ jobs:
         run: |
           MAX_SIZE_KB=2048  # 2MB limit for initial bundle
           JS_SIZE=$(find apps/web/dist -name "*.js" -exec du -k {} + | awk '{total += $1} END {print total}')
-          
+
           echo "JavaScript bundle size: ${JS_SIZE}KB (limit: ${MAX_SIZE_KB}KB)"
-          
+
           if [ "$JS_SIZE" -gt "$MAX_SIZE_KB" ]; then
             echo "::warning::JavaScript bundle size ($JS_SIZE KB) exceeds limit ($MAX_SIZE_KB KB)"
           fi
@@ -146,6 +148,7 @@ jobs:
   lighthouse:
     name: Lighthouse Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -180,10 +183,10 @@ jobs:
           script: |
             const fs = require('fs');
             const results = JSON.parse(fs.readFileSync('.lighthouseci/manifest.json', 'utf8'));
-            
+
             let comment = '## 🔦 Lighthouse Results\n\n';
             comment += '| Category | Score |\n|----------|-------|\n';
-            
+
             const latest = results[results.length - 1];
             if (latest && latest.summary) {
               Object.entries(latest.summary).forEach(([key, value]) => {
@@ -192,7 +195,7 @@ jobs:
                 comment += `| ${key} | ${emoji} ${score} |\n`;
               });
             }
-            
+
             github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,

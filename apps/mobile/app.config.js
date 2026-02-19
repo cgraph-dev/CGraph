@@ -256,6 +256,7 @@ module.exports = ({ config }) => {
       apiUrl: getApiUrl(),
       wsUrl: getWsUrl(),
       environment: IS_DEV ? 'development' : IS_PREVIEW ? 'preview' : 'production',
+      sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN || '',
       eas: {
         projectId: process.env.EAS_PROJECT_ID || 'cgraph-production',
       },
@@ -263,7 +264,7 @@ module.exports = ({ config }) => {
     updates: {
       enabled: !IS_DEV,
       fallbackToCacheTimeout: 0,
-      url: `https://u.expo.dev/${process.env.EAS_PROJECT_ID || 'your-project-id'}`,
+      url: `https://u.expo.dev/${process.env.EAS_PROJECT_ID || 'cgraph-production'}`,
     },
     experiments: {
       typedRoutes: true,

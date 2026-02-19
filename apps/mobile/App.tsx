@@ -1,3 +1,6 @@
+// Polyfill crypto.getRandomValues for Hermes (MUST be first import)
+import 'react-native-get-random-values';
+
 import React, { useEffect, useCallback } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

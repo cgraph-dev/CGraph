@@ -74,7 +74,7 @@ vercel rollback --project=web
 cd apps/backend
 
 # 1. Deploy to staging first
-fly deploy --config fly.staging.toml
+fly deploy --app cgraph-backend-staging
 
 # 2. Run smoke tests
 mix run priv/scripts/smoke_test.exs

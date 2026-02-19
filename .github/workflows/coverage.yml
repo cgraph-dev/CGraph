@@ -24,6 +24,7 @@ jobs:
   coverage:
     name: Coverage Analysis
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:16
@@ -212,6 +213,7 @@ jobs:
   coverage-gate:
     name: Coverage Gate
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: coverage
     services:
       postgres:

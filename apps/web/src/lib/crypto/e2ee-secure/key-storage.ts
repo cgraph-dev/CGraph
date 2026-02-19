@@ -16,7 +16,7 @@ import type { KeyBundle, IdentityKeyPair } from '../e2ee';
 /** Signed pre-key data loaded from secure storage */
 export interface LoadedSignedPreKey {
   keyPair: { publicKey: CryptoKey; privateKey: CryptoKey };
-  keyId: number;
+  keyId: string;
   signature: ArrayBuffer;
 }
 

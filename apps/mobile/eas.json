@@ -33,9 +33,9 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "your-apple-id@email.com",
-        "ascAppId": "YOUR_APP_STORE_CONNECT_APP_ID",
-        "appleTeamId": "YOUR_APPLE_TEAM_ID"
+        "appleId": "CONFIGURE_VIA_EAS_CLI_OR_ENV",
+        "ascAppId": "CONFIGURE_VIA_EAS_CLI_OR_ENV",
+        "appleTeamId": "CONFIGURE_VIA_EAS_CLI_OR_ENV"
       },
       "android": {
         "serviceAccountKeyPath": "./google-service-account.json",

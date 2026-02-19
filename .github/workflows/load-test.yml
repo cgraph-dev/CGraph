@@ -33,6 +33,7 @@ jobs:
   smoke-test:
     name: Smoke Test (10 VUs, 60s)
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     if: github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.test_type == 'smoke')
 
     steps:
@@ -86,6 +87,7 @@ jobs:
   load-test:
     name: Load Test (100 VUs, 5min)
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.test_type == 'load')
 
     steps:
@@ -152,6 +154,7 @@ jobs:
   stress-test:
     name: Stress Test (500 VUs, 10min)
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.test_type == 'stress'
 
     steps:

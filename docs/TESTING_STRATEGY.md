@@ -37,8 +37,8 @@ Comprehensive testing approach across all CGraph applications.
 | App         | Current | Target | Priority Areas          |
 | ----------- | ------- | ------ | ----------------------- |
 | **Backend** | ~80%    | 80%    | Auth, E2EE, permissions |
-| **Web**     | ~30%    | 70%    | Critical flows, hooks   |
-| **Mobile**  | ~25%    | 60%    | Core features           |
+| **Web**     | ~62%    | 70%    | Critical flows, hooks   |
+| **Mobile**  | ~50%    | 60%    | Core features           |
 | **Landing** | ~70%    | 80%    | Components, E2E, visual |
 
 > **Backend**: 163 test files, 83/83 controllers covered (100%), 70 context/module tests, chaos

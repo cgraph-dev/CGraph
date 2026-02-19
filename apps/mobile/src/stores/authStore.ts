@@ -81,14 +81,22 @@ const INITIAL_STATE: AuthState = {
 // Socket helpers (lazy import to avoid circular deps)
 // ---------------------------------------------------------------------------
 
-let socketManagerModule: { default: { connect: () => Promise<void>; disconnect: () => void; setAppState: (state: 'foreground' | 'background') => void } } | null = null;
+let socketManagerModule: {
+  default: {
+    connect: () => Promise<void>;
+    disconnect: () => void;
+    setAppState: (state: 'foreground' | 'background') => void;
+  };
+} | null = null;
 
 async function getSocketManager() {
   if (!socketManagerModule) {
     try {
       socketManagerModule = await import('../lib/socket');
     } catch {
-      socketManagerModule = { default: { connect: async () => {}, disconnect: () => {}, setAppState: () => {} } };
+      socketManagerModule = {
+        default: { connect: async () => {}, disconnect: () => {}, setAppState: () => {} },
+      };
     }
   }
   return socketManagerModule!.default;
@@ -222,6 +230,28 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     await clearStorage();
     delete api.defaults.headers.common['Authorization'];
 
+    // SECURITY: Reset ALL stores to prevent data leakage between user sessions
+    try {
+      const { useChatStore } = await import('./chatStore');
+      const { useFriendStore } = await import('./friendStore');
+      const { useNotificationStore } = await import('./notificationStore');
+      const { useGroupStore } = await import('./groupStore');
+      const { useGamificationStore } = await import('./gamificationStore');
+      const { useMarketplaceStore } = await import('./marketplaceStore');
+      const { useCustomizationStore } = await import('./customizationStore');
+
+      // Reset stores that have initial states
+      useChatStore.setState(useChatStore.getInitialState?.() ?? {});
+      useFriendStore.setState(useFriendStore.getInitialState?.() ?? {});
+      useNotificationStore.setState(useNotificationStore.getInitialState?.() ?? {});
+      useGroupStore.setState(useGroupStore.getInitialState?.() ?? {});
+      useGamificationStore.setState(useGamificationStore.getInitialState?.() ?? {});
+      useMarketplaceStore.setState(useMarketplaceStore.getInitialState?.() ?? {});
+      useCustomizationStore.setState(useCustomizationStore.getInitialState?.() ?? {});
+    } catch {
+      // Store reset failure shouldn't block logout
+    }
+
     set({ ...INITIAL_STATE, isLoading: false });
   },
 
@@ -265,9 +295,13 @@ function setupAppStateListener() {
     }
 
     if (nextState === 'active' && previousState.match(/inactive|background/)) {
-      getSocketManager().then((sm) => sm.setAppState('foreground')).catch(() => {});
+      getSocketManager()
+        .then((sm) => sm.setAppState('foreground'))
+        .catch(() => {});
     } else if (nextState.match(/inactive|background/) && previousState === 'active') {
-      getSocketManager().then((sm) => sm.setAppState('background')).catch(() => {});
+      getSocketManager()
+        .then((sm) => sm.setAppState('background'))
+        .catch(() => {});
     }
 
     previousState = nextState;
@@ -286,6 +320,9 @@ async function saveAuth(token: string, refreshToken: string, user: User): Promis
     SecureStore.setItemAsync(STORAGE_KEYS.REFRESH_TOKEN, refreshToken),
     SecureStore.setItemAsync(STORAGE_KEYS.USER, JSON.stringify(user)),
   ]);
+  // Note: httpClient interceptor also reads token from SecureStore per-request.
+  // This default header ensures the token is available immediately after login
+  // without waiting for the next interceptor cycle.
   api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 }
 

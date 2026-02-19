@@ -25,11 +25,6 @@ resource "cloudflare_ruleset" "response_headers" {
         value     = "DENY"
       }
       headers {
-        name      = "X-XSS-Protection"
-        operation = "set"
-        value     = "1; mode=block"
-      }
-      headers {
         name      = "Referrer-Policy"
         operation = "set"
         value     = "strict-origin-when-cross-origin"

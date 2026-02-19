@@ -64,6 +64,8 @@ config :cgraph, Oban,
   plugins: [
     {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},  # 7 days
     {Oban.Plugins.Cron, crontab: [
+      # Process scheduled messages every minute
+      {"* * * * *", CGraph.Workers.ScheduledMessageWorker},
       # Daily cleanup jobs
       {"0 3 * * *", CGraph.Workers.CleanupWorker},
       # Send email digests daily at 8 AM UTC
@@ -81,7 +83,14 @@ config :cgraph, Oban,
     notification_retry: 10,   # Failed notification retries
     critical: 10,             # Urgent tasks
     search: 15,               # Search indexing
-    webhooks: 20              # Webhook delivery processing
+    webhooks: 20,             # Webhook delivery processing
+    exports: 5,               # Data export jobs
+    external_api: 10,         # External API integration
+    dead_letter: 5,           # Failed job reprocessing
+    maintenance: 5,           # Maintenance tasks
+    backups: 3,               # Database backups
+    push_notifications: 20,   # Push notification delivery
+    email_notifications: 10   # Email notification delivery
   ]
 
 # Rate limiting settings for production (balanced for 10K users)

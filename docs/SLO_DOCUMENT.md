@@ -158,8 +158,10 @@ Alerts are defined in `infrastructure/prometheus/rules/cgraph-slo-rules.yml`.
 
 ## Dashboards
 
-- **Grafana SLO Dashboard**: `infrastructure/grafana/dashboards/slo-overview.json`
-- **Error Budget Dashboard**: `infrastructure/grafana/dashboards/error-budget.json`
+- **Grafana SLO Dashboard**: `infrastructure/grafana/provisioning/dashboards/json/cgraph-slo.json`
+- **Error Budget Dashboard**:
+  `infrastructure/grafana/provisioning/dashboards/json/cgraph-backend.json` (includes error budget
+  panels)
 
 ## Review Cadence
 

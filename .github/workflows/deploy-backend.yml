@@ -1,26 +1,19 @@
-name: Deploy Backend to Fly.io
+name: Deploy Backend to Fly.io (Manual)
 
+# IMPORTANT: Primary deployment is via deploy.yml (triggered by CI).
+# This workflow is for manual/emergency deployments only.
 on:
-  workflow_run:
-    workflows: ['CI']
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
 
 jobs:
-  ci-gate:
-    name: CI Gate
-    runs-on: ubuntu-latest
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
-    steps:
-      - run: echo "CI passed — deploying backend"
-
   deploy:
-    name: Deploy Backend
+    name: Deploy Backend (Manual)
     runs-on: ubuntu-latest
-    needs: [ci-gate]
+    environment: production
+    timeout-minutes: 15
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
 

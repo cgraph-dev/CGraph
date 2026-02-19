@@ -51,7 +51,10 @@ export default function Modal({
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
             <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-              <View style={[styles.content, { backgroundColor: colors.surface }, contentStyle]}>
+              <View
+                style={[styles.content, { backgroundColor: colors.surface }, contentStyle]}
+                accessibilityViewIsModal={true}
+              >
                 {(title || showCloseButton) && (
                   <View style={styles.header}>
                     {title && <Text style={[styles.title, { color: colors.text }]}>{title}</Text>}

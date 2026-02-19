@@ -75,8 +75,34 @@ export async function generateKeyBundle(
 
 /**
  * Store key bundle in localStorage (encrypted with device key in production)
+ *
+ * @deprecated Use e2ee-secure/key-storage.ts for encrypted IndexedDB storage.
+ * This legacy path stores private keys in plaintext localStorage.
+ * New installations should use SecureStorage; this is kept only for
+ * migration compatibility.
  */
 export async function storeKeyBundle(bundle: KeyBundle): Promise<void> {
+  // Attempt to use SecureStorage (encrypted IndexedDB) if available
+  try {
+    const { default: SecureStorage } = await import('../secureStorage');
+    if (SecureStorage.isReady()) {
+      const { storeKeyBundle: secureStore } = await import('../e2ee-secure/key-storage');
+      await secureStore(bundle);
+      // Migrate: clear any legacy plaintext keys from localStorage
+      localStorage.removeItem(IDENTITY_KEY);
+      localStorage.removeItem(SIGNED_PREKEY);
+      return;
+    }
+  } catch {
+    // SecureStorage not available — fall through to legacy path with warning
+  }
+
+  console.warn(
+    '[E2EE] WARNING: Storing keys in plaintext localStorage. ' +
+      'Initialize SecureStorage for encrypted key storage.'
+  );
+
+  // Legacy plaintext path (kept for backwards compatibility only)
   // Export keys to storable format
   const identityPublic = await exportPublicKey(bundle.identityKey.keyPair.publicKey);
   const identityPrivate = await exportPrivateKey(bundle.identityKey.keyPair.privateKey);
@@ -107,8 +133,32 @@ export async function storeKeyBundle(bundle: KeyBundle): Promise<void> {
 
 /**
  * Load identity key pair from storage
+ *
+ * Tries encrypted SecureStorage first, falls back to plaintext localStorage.
+ * If keys are found in localStorage while SecureStorage is ready, they are
+ * migrated to encrypted storage and removed from localStorage.
  */
 export async function loadIdentityKeyPair(): Promise<IdentityKeyPair | null> {
+  // Try encrypted storage first
+  try {
+    const { default: SecureStorage } = await import('../secureStorage');
+    if (SecureStorage.isReady()) {
+      const { loadIdentityKeyPair: secureLoad } = await import('../e2ee-secure/key-storage');
+      const secureResult = await secureLoad();
+      if (secureResult) return secureResult;
+
+      // Check for legacy keys to migrate
+      const legacyStored = localStorage.getItem(IDENTITY_KEY);
+      if (legacyStored) {
+        // Load from legacy, then store will migrate on next storeKeyBundle call
+        console.warn('[E2EE] Found legacy plaintext keys — will migrate on next key operation');
+      }
+    }
+  } catch {
+    // SecureStorage not available — fall through to legacy
+  }
+
+  // Legacy localStorage path
   const stored = localStorage.getItem(IDENTITY_KEY);
   if (!stored) return null;
 
@@ -150,8 +200,23 @@ export async function loadIdentityKeyPair(): Promise<IdentityKeyPair | null> {
 
 /**
  * Load signed prekey from storage
+ *
+ * Tries encrypted SecureStorage first, falls back to legacy localStorage.
  */
 export async function loadSignedPreKey(): Promise<SignedPreKey | null> {
+  // Try encrypted storage first
+  try {
+    const { default: SecureStorage } = await import('../secureStorage');
+    if (SecureStorage.isReady()) {
+      const { loadSignedPreKey: secureLoad } = await import('../e2ee-secure/key-storage');
+      const secureResult = await secureLoad();
+      if (secureResult) return secureResult;
+    }
+  } catch {
+    // SecureStorage not available
+  }
+
+  // Legacy localStorage path
   const stored = localStorage.getItem(SIGNED_PREKEY);
   if (!stored) return null;
 
@@ -172,8 +237,20 @@ export async function loadSignedPreKey(): Promise<SignedPreKey | null> {
 
 /**
  * Get device ID
+ *
+ * Tries SecureStorage first, then falls back to localStorage.
  */
-export function getDeviceId(): string | null {
+export async function getDeviceId(): Promise<string | null> {
+  try {
+    const { default: SecureStorage } = await import('../secureStorage');
+    if (SecureStorage.isReady()) {
+      const { getDeviceId: secureGet } = await import('../e2ee-secure/key-storage');
+      const secureResult = await secureGet();
+      if (secureResult) return secureResult;
+    }
+  } catch {
+    // SecureStorage not available
+  }
   return localStorage.getItem(DEVICE_ID);
 }
 
@@ -217,9 +294,18 @@ export async function formatKeysForRegistration(
 }
 
 /**
- * Clear all E2EE data
+ * Clear all E2EE data from both encrypted and legacy storage
  */
-export function clearE2EEData(): void {
+export async function clearE2EEData(): Promise<void> {
+  // Clear encrypted storage
+  try {
+    const { clearE2EEData: secureClear } = await import('../e2ee-secure/sessions');
+    await secureClear();
+  } catch {
+    // SecureStorage not available
+  }
+
+  // Also clear legacy localStorage
   const SESSIONS = `${STORAGE_PREFIX}sessions`;
   localStorage.removeItem(IDENTITY_KEY);
   localStorage.removeItem(SIGNED_PREKEY);
