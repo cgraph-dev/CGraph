@@ -18,6 +18,8 @@ interface IconButtonProps {
   style?: ViewStyle;
   /** Icon color override */
   color?: string;
+  /** Accessibility label (required for icon-only buttons) */
+  accessibilityLabel?: string;
 }
 
 const SIZES = {
@@ -34,6 +36,7 @@ export default function IconButton({
   disabled = false,
   style,
   color,
+  accessibilityLabel,
 }: IconButtonProps) {
   const { colors } = useTheme();
   const sizeConfig = SIZES[size];
@@ -71,6 +74,9 @@ export default function IconButton({
       onPress={onPress}
       disabled={disabled}
       activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? icon.replace(/-/g, ' ')}
+      accessibilityState={{ disabled }}
       style={[
         styles.button,
         {

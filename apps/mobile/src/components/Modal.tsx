@@ -46,42 +46,23 @@ export default function Modal({
   const { colors } = useTheme();
 
   return (
-    <RNModal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <RNModal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={closeOnBackdrop ? onClose : undefined}>
         <View style={styles.overlay}>
           <TouchableWithoutFeedback>
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            >
-              <View
-                style={[
-                  styles.content,
-                  { backgroundColor: colors.surface },
-                  contentStyle,
-                ]}
-              >
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+              <View style={[styles.content, { backgroundColor: colors.surface }, contentStyle]}>
                 {(title || showCloseButton) && (
                   <View style={styles.header}>
-                    {title && (
-                      <Text style={[styles.title, { color: colors.text }]}>
-                        {title}
-                      </Text>
-                    )}
+                    {title && <Text style={[styles.title, { color: colors.text }]}>{title}</Text>}
                     {showCloseButton && (
                       <TouchableOpacity
                         onPress={onClose}
                         style={styles.closeButton}
+                        accessibilityRole="button"
+                        accessibilityLabel="Close dialog"
                       >
-                        <Ionicons
-                          name="close"
-                          size={24}
-                          color={colors.textSecondary}
-                        />
+                        <Ionicons name="close" size={24} color={colors.textSecondary} />
                       </TouchableOpacity>
                     )}
                   </View>
@@ -126,9 +107,7 @@ export function ConfirmDialog({
   return (
     <Modal visible={visible} onClose={onClose} showCloseButton={false}>
       <Text style={[styles.confirmTitle, { color: colors.text }]}>{title}</Text>
-      <Text style={[styles.confirmMessage, { color: colors.textSecondary }]}>
-        {message}
-      </Text>
+      <Text style={[styles.confirmMessage, { color: colors.textSecondary }]}>{message}</Text>
       <View style={styles.confirmButtons}>
         <Button
           variant="secondary"

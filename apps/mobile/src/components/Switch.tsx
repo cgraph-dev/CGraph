@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  Switch as RNSwitch,
-  StyleSheet,
-  StyleProp,
-  ViewStyle,
-} from 'react-native';
+import { View, Text, Switch as RNSwitch, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 
 type SwitchProps = {
@@ -32,25 +25,21 @@ export default function Switch({
     <View style={[styles.container, style]}>
       <View style={styles.textContainer}>
         {label && (
-          <Text
-            style={[
-              styles.label,
-              { color: disabled ? colors.textSecondary : colors.text },
-            ]}
-          >
+          <Text style={[styles.label, { color: disabled ? colors.textSecondary : colors.text }]}>
             {label}
           </Text>
         )}
         {description && (
-          <Text style={[styles.description, { color: colors.textSecondary }]}>
-            {description}
-          </Text>
+          <Text style={[styles.description, { color: colors.textSecondary }]}>{description}</Text>
         )}
       </View>
       <RNSwitch
         value={value}
         onValueChange={onValueChange}
         disabled={disabled}
+        accessibilityLabel={label}
+        accessibilityRole="switch"
+        accessibilityState={{ checked: value, disabled }}
         trackColor={{
           false: colors.surfaceSecondary,
           true: colors.primary + '80',

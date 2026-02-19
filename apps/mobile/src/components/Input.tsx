@@ -44,17 +44,11 @@ export default function Input({
   const { colors } = useTheme();
   const [isFocused, setIsFocused] = React.useState(false);
 
-  const borderColor = error
-    ? '#ef4444'
-    : isFocused
-    ? colors.primary
-    : colors.border;
+  const borderColor = error ? '#ef4444' : isFocused ? colors.primary : colors.border;
 
   return (
     <View style={[styles.container, containerStyle]}>
-      {label && (
-        <Text style={[styles.label, { color: colors.text }]}>{label}</Text>
-      )}
+      {label && <Text style={[styles.label, { color: colors.text }]}>{label}</Text>}
       <View
         style={[
           styles.inputContainer,
@@ -74,6 +68,9 @@ export default function Input({
         )}
         <TextInput
           {...props}
+          accessibilityLabel={label || props.placeholder}
+          accessibilityHint={error ? `Error: ${error}` : helperText}
+          accessibilityState={{ disabled: !props.editable }}
           style={[
             styles.input,
             { color: colors.text },
@@ -102,12 +99,7 @@ export default function Input({
         )}
       </View>
       {(error || helperText) && (
-        <Text
-          style={[
-            styles.helperText,
-            { color: error ? '#ef4444' : colors.textSecondary },
-          ]}
-        >
+        <Text style={[styles.helperText, { color: error ? '#ef4444' : colors.textSecondary }]}>
           {error || helperText}
         </Text>
       )}

@@ -13,18 +13,18 @@ Real-time overview of project health, architecture status, and operational state
 | **Build**         | OK     | 10/10 | All apps building successfully                                                                                                                                                                                              |
 | **TypeScript**    | OK     | 10/10 | 0 errors across all packages; 0 `any` types in production code                                                                                                                                                              |
 | **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config with 46 ts-eslint rules; `no-explicit-any` enforced as **error** across all projects                                                                                                         |
-| **Architecture**  | OK     | 9/10  | Router split (7 domain modules), component categorization, remote caching                                                                                                                                                   |
-| **Tests**         | OK     | 8/10  | 1,908 backend (0 failures, ~82%); web 60% floor (549 new); mobile ~50% (327 new); 12 E2E flows; CI coverage hard-fail; load tests not yet run                                                                               |
+| **Architecture**  | OK     | 9/10  | Router split (7 domain modules), component categorization, remote caching; mobile a11y annotations on all shared components                                                                                                 |
+| **Tests**         | OK     | 9/10  | 1,908 backend (0 failures, ~82%); web 60% floor (549 new); mobile ~50% (327 new); 12 E2E flows; CI coverage hard-fail; chaos test CI workflow added; load tests have CI workflow (needs staging)                            |
 | **Security**      | OK     | 8/10  | Real ECDH X3DH; `@cgraph/crypto` ML-KEM-768 library done but NOT in production path; 3-layer rate limiting (fail-closed); Guardian JWT; CSP hardened; E2EE key validation added; external pen test + E2EE audit **overdue** |
 | **Documentation** | OK     | 8/10  | V1_ACTION_PLAN honest; postmortem template added; RTO/RPO documented; security audit Q1 2026 overdue                                                                                                                        |
 | **Observability** | WARN   | 6/10  | Full stack **configs exist** (Prometheus+Grafana+Alertmanager+Tempo+Loki) but **NOT deployed to production**; Alertmanager has placeholder secrets; OTel SDK real                                                           |
 | **Resilience**    | OK     | 9/10  | CB + DLQ + Backpressure + Snowflake + RequestCoalescing + API client retry/circuit breaker; rate limiter **fail-closed**; account lockout **fail-closed**                                                                   |
-| **CI/CD**         | OK     | 10/10 | 14 GH Actions; coverage hard-fail enforced; Grype blocks high+ vulns; canary deploys; PR size checks; load tests not yet run                                                                                                |
+| **CI/CD**         | OK     | 10/10 | 17 GH Actions; coverage hard-fail; Grype blocks high+ vulns; canary deploys; PR size checks; staging deploy workflow; chaos test workflow; load test workflow                                                               |
 
-**Composite Score: 8.9/10** — Strong engineering foundation with all V1 targets met. Key remaining
+**Composite Score: 9.1/10** — Strong engineering foundation with all V1 targets met. Key remaining
 gaps: `@cgraph/crypto` not wired into production E2EE path, observability stack not deployed to
-production, external security audit overdue (Q1 2026), zero load test runs. 27 misconfigurations + 7
-medium + 7 low issues resolved.
+production, external security audit overdue (Q1 2026). All Critical/High/Medium/Low audit issues
+resolved. Staging + chaos + load test CI workflows created (pending staging infra provisioning).
 
 > **Implementation Registry**: See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file-level
 > inventory of all operational systems, their locations, and remaining gaps.

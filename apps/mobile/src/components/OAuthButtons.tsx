@@ -111,35 +111,35 @@ export function OAuthButton({
 }: OAuthButtonProps) {
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const info = providerInfo[provider];
   const Icon = providerIcons[provider];
-  
+
   // Skip Apple on non-iOS platforms
   if (provider === 'apple' && Platform.OS !== 'ios') {
     return null;
   }
-  
+
   const handlePress = async () => {
     setIsLoading(true);
-    
+
     try {
       const result = await signInWithOAuth(provider, oauthConfig);
       onSuccess?.(result);
     } catch (error) {
       console.error(`OAuth ${provider} error:`, error);
       const err = error instanceof Error ? error : new Error('OAuth failed');
-      
+
       if (!err.message.includes('cancelled')) {
         Alert.alert('Sign In Failed', err.message);
       }
-      
+
       onError?.(err);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   if (variant === 'icon') {
     return (
       <TouchableOpacity
@@ -154,6 +154,9 @@ export function OAuthButton({
         ]}
         onPress={handlePress}
         disabled={isLoading}
+        accessibilityRole="button"
+        accessibilityLabel={`Sign in with ${info.name}`}
+        accessibilityState={{ disabled: isLoading, busy: isLoading }}
       >
         {isLoading ? (
           <ActivityIndicator size="small" color={info.textColor} />
@@ -163,7 +166,7 @@ export function OAuthButton({
       </TouchableOpacity>
     );
   }
-  
+
   return (
     <TouchableOpacity
       style={[
@@ -177,6 +180,9 @@ export function OAuthButton({
       ]}
       onPress={handlePress}
       disabled={isLoading}
+      accessibilityRole="button"
+      accessibilityLabel={`Continue with ${info.name}`}
+      accessibilityState={{ disabled: isLoading, busy: isLoading }}
     >
       {isLoading ? (
         <ActivityIndicator size="small" color={info.textColor} />
@@ -211,10 +217,8 @@ export function OAuthButtonGroup({
   style,
 }: OAuthButtonGroupProps) {
   // Filter out Apple on non-iOS
-  const filteredProviders = providers.filter(
-    (p) => p !== 'apple' || Platform.OS === 'ios'
-  );
-  
+  const filteredProviders = providers.filter((p) => p !== 'apple' || Platform.OS === 'ios');
+
   if (variant === 'icon') {
     return (
       <View style={[styles.iconGroup, style]}>
@@ -230,7 +234,7 @@ export function OAuthButtonGroup({
       </View>
     );
   }
-  
+
   return (
     <View style={[styles.fullGroup, style]}>
       {filteredProviders.map((provider) => (
@@ -251,13 +255,11 @@ export function OAuthButtonGroup({
  */
 export function AuthDivider({ text = 'or continue with' }: { text?: string }) {
   const { colors } = useTheme();
-  
+
   return (
     <View style={styles.divider}>
       <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
-      <Text style={[styles.dividerText, { color: colors.textSecondary }]}>
-        {text}
-      </Text>
+      <Text style={[styles.dividerText, { color: colors.textSecondary }]}>{text}</Text>
       <View style={[styles.dividerLine, { backgroundColor: colors.border }]} />
     </View>
   );

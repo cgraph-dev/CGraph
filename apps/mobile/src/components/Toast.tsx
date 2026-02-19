@@ -1,11 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import {
-  Text,
-  Animated,
-  StyleSheet,
-  TouchableOpacity,
-  ViewStyle,
-} from 'react-native';
+import { Text, Animated, StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -103,12 +97,20 @@ export default function Toast({
         },
         style,
       ]}
+      accessibilityRole="alert"
+      accessibilityLiveRegion="polite"
+      accessibilityLabel={`${type}: ${message}`}
     >
       <Ionicons name={ICONS[type]} size={24} color={COLORS[type]} />
       <Text style={[styles.message, { color: colors.text }]} numberOfLines={2}>
         {message}
       </Text>
-      <TouchableOpacity onPress={onClose} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+      <TouchableOpacity
+        onPress={onClose}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        accessibilityRole="button"
+        accessibilityLabel="Dismiss notification"
+      >
         <Ionicons name="close" size={20} color={colors.textSecondary} />
       </TouchableOpacity>
     </Animated.View>

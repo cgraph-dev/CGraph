@@ -1,0 +1,121 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches: [develop, staging]
+  workflow_dispatch:
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  # ============================================
+  # Deploy Backend to Staging
+  # ============================================
+  deploy-backend-staging:
+    name: Deploy Backend (Staging)
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Fly CLI
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy to Fly.io Staging
+        working-directory: apps/backend
+        run: |
+          # Deploy to staging app — separate from production
+          flyctl deploy --remote-only \
+            --app cgraph-backend-staging \
+            --wait-timeout 120
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+          SECRET_KEY_BASE: ${{ secrets.STAGING_SECRET_KEY_BASE }}
+
+      - name: Health check
+        run: |
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://cgraph-backend-staging.fly.dev/api/health" \
+            --max-time 15)
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::Staging health check failed (HTTP $STATUS)"
+            exit 1
+          fi
+          echo "Staging backend healthy"
+
+  # ============================================
+  # Deploy Web to Staging (Cloudflare Preview)
+  # ============================================
+  deploy-web-staging:
+    name: Deploy Web (Staging)
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '10'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build web app
+        run: pnpm --filter @cgraph/web build
+        env:
+          VITE_API_URL: https://cgraph-backend-staging.fly.dev
+          VITE_WS_URL: wss://cgraph-backend-staging.fly.dev/socket/websocket
+
+      - name: Deploy to Cloudflare Pages (preview)
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: cgraph-web
+          directory: apps/web/dist
+          branch: staging
+
+  # ============================================
+  # Run Smoke Tests Against Staging
+  # ============================================
+  smoke-test:
+    name: Staging Smoke Test
+    runs-on: ubuntu-latest
+    needs: [deploy-backend-staging, deploy-web-staging]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install k6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg \
+            --keyserver hkp://keyserver.ubuntu.com:80 \
+            --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" \
+            | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update && sudo apt-get install k6
+
+      - name: Run smoke test against staging
+        run: |
+          k6 run infrastructure/load-tests/k6/smoke.js \
+            --env BASE_URL=https://cgraph-backend-staging.fly.dev
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-smoke-results-${{ github.run_id }}
+          path: results/
