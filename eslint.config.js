@@ -150,7 +150,7 @@ export default [
       'packages/**/*.{ts,tsx}',
     ],
     rules: {
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
     },
   },
 ];

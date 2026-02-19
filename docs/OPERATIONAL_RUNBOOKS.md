@@ -210,6 +210,80 @@ fly secrets set MAINTENANCE_MODE=true
 - Schedule blameless review meeting
 - Track action items
 
+### Post-Mortem Template
+
+Use this template (create in `docs/postmortems/YYYY-MM-DD-<incident-slug>.md`):
+
+```markdown
+# Post-Mortem: [Incident Title]
+
+**Date**: YYYY-MM-DD **Duration**: HH:MM – HH:MM UTC (X hours Y minutes) **Severity**: P1 / P2 / P3
+**Author**: [Name] **Status**: Draft / Reviewed / Finalized
+
+## Summary
+
+One-paragraph description of the incident and its impact.
+
+## Impact
+
+- **Users affected**: N / percentage
+- **Revenue impact**: $X / none
+- **Data loss**: Yes (describe) / No
+- **SLO budget consumed**: X%
+
+## Timeline (UTC)
+
+| Time  | Event                   |
+| ----- | ----------------------- |
+| HH:MM | First alert fired       |
+| HH:MM | On-call acknowledged    |
+| HH:MM | Root cause identified   |
+| HH:MM | Fix deployed            |
+| HH:MM | Service fully recovered |
+
+## Root Cause
+
+Detailed technical explanation of what went wrong.
+
+## Detection
+
+How was the incident detected? Alert name, dashboard, user report?
+
+**Time to detect (TTD)**: X minutes
+
+## Resolution
+
+Step-by-step description of what was done to resolve the incident.
+
+**Time to resolve (TTR)**: X minutes
+
+## Lessons Learned
+
+### What went well
+
+- Item
+
+### What went poorly
+
+- Item
+
+### Where we got lucky
+
+- Item
+
+## Action Items
+
+| Action                  | Owner  | Priority | Due Date   | Status |
+| ----------------------- | ------ | -------- | ---------- | ------ |
+| [Preventive action]     | [Name] | P1       | YYYY-MM-DD | Open   |
+| [Detection improvement] | [Name] | P2       | YYYY-MM-DD | Open   |
+| [Process improvement]   | [Name] | P3       | YYYY-MM-DD | Open   |
+
+## References
+
+- Relevant PRs, issues, dashboards, alerts, logs queries
+```
+
 ---
 
 ### High Error Rate Alert

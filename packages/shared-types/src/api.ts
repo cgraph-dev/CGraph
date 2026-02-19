@@ -10,9 +10,12 @@ export interface ApiResponse<T> {
 }
 
 export interface ApiError {
-  error: string;
+  /** Flat error string (legacy) or structured error envelope */
+  error: string | { code: string; message: string; details?: unknown };
   errors?: Record<string, string[]>;
   code?: string;
+  message?: string;
+  retry_after?: number;
 }
 
 export interface PaginationMeta {

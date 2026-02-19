@@ -65,24 +65,32 @@ defmodule CGraphWeb.API.V1.E2EEController do
   def register_keys(conn, params) do
     user = conn.assigns.current_user
 
-    keys = %{
-      identity_key: params["identity_key"],
-      device_id: params["device_id"],
-      signed_prekey: params["signed_prekey"],
-      prekey_signature: params["prekey_signature"],
-      prekey_id: params["prekey_id"],
-      one_time_prekeys: parse_prekey_list(params["one_time_prekeys"])
-    }
+    with :ok <- validate_base64_key(params["identity_key"], "identity_key", 32),
+         :ok <- validate_base64_key(params["signed_prekey"], "signed_prekey", 32),
+         :ok <- validate_base64_key(params["prekey_signature"], "prekey_signature", 64),
+         :ok <- validate_device_id(params["device_id"]) do
+      keys = %{
+        identity_key: params["identity_key"],
+        device_id: params["device_id"],
+        signed_prekey: params["signed_prekey"],
+        prekey_signature: params["prekey_signature"],
+        prekey_id: params["prekey_id"],
+        one_time_prekeys: parse_prekey_list(params["one_time_prekeys"])
+      }
 
-    case E2EE.register_keys(user.id, keys) do
-      {:ok, result} ->
-        json(conn, %{data: result})
+      case E2EE.register_keys(user.id, keys) do
+        {:ok, result} ->
+          json(conn, %{data: result})
 
-      {:error, :invalid_key_format} ->
-        {:error, :unprocessable_entity, "Invalid key format"}
+        {:error, :invalid_key_format} ->
+          {:error, :unprocessable_entity, "Invalid key format"}
 
-      {:error, reason} ->
-        {:error, :internal_server_error, "Failed to register keys: #{inspect(reason)}"}
+        {:error, reason} ->
+          {:error, :internal_server_error, "Failed to register keys: #{inspect(reason)}"}
+      end
+    else
+      {:error, field, message} ->
+        {:error, :unprocessable_entity, "Invalid #{field}: #{message}"}
     end
   end
 
@@ -360,6 +368,34 @@ defmodule CGraphWeb.API.V1.E2EEController do
         conn
     end
   end
+
+  # Key validation helpers — enforce base64 format and expected byte lengths
+  defp validate_base64_key(nil, field, _expected_bytes),
+    do: {:error, field, "is required"}
+
+  defp validate_base64_key(value, field, expected_bytes) when is_binary(value) do
+    case Base.decode64(value) do
+      {:ok, decoded} when byte_size(decoded) == expected_bytes -> :ok
+      {:ok, decoded} ->
+        {:error, field,
+         "decoded to #{byte_size(decoded)} bytes, expected #{expected_bytes}"}
+      :error ->
+        {:error, field, "is not valid base64"}
+    end
+  end
+
+  defp validate_base64_key(_, field, _expected_bytes),
+    do: {:error, field, "must be a string"}
+
+  defp validate_device_id(nil), do: {:error, "device_id", "is required"}
+
+  defp validate_device_id(device_id) when is_binary(device_id) do
+    if String.length(device_id) in 1..255,
+      do: :ok,
+      else: {:error, "device_id", "must be 1-255 characters"}
+  end
+
+  defp validate_device_id(_), do: {:error, "device_id", "must be a string"}
 
   defp parse_prekey_list(nil), do: []
   defp parse_prekey_list(prekeys) when is_list(prekeys) do

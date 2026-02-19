@@ -175,3 +175,30 @@ Alerts are defined in `infrastructure/prometheus/rules/cgraph-slo-rules.yml`.
 - [Google SRE Book — SLOs](https://sre.google/sre-book/service-level-objectives/)
 - [Google SRE Workbook — Alerting on SLOs](https://sre.google/workbook/alerting-on-slos/)
 - Prometheus rules: `infrastructure/prometheus/rules/cgraph-slo-rules.yml`
+
+---
+
+## Disaster Recovery — RTO/RPO Targets
+
+| Component         | RPO (Recovery Point Objective) | RTO (Recovery Time Objective) | Strategy                                               |
+| ----------------- | ------------------------------ | ----------------------------- | ------------------------------------------------------ |
+| PostgreSQL        | **1 hour**                     | **4 hours**                   | WAL archiving + daily snapshots (Fly.io managed)       |
+| Redis/Cachex      | **N/A** (ephemeral)            | **15 minutes**                | Warm restart; cache rebuilds from DB on miss           |
+| File uploads (S3) | **0** (durability: 11 9s)      | **< 1 hour**                  | S3 cross-region replication                            |
+| Application tier  | **N/A** (stateless)            | **5 minutes**                 | Fly.io multi-region; auto-restart on health check fail |
+| Secrets/Config    | **0** (version controlled)     | **15 minutes**                | Fly.io secrets + Git-stored non-secret configs         |
+
+### Recovery Procedures
+
+1. **Database restore**: `fly postgres restore --app cgraph-db --target-time <ISO8601>`
+2. **Full redeploy**: `fly deploy --app cgraph-backend --strategy canary`
+3. **Cache warm-up**: Automatic on first request; no manual intervention needed
+4. **DNS failover**: Cloudflare auto-failover configured with 30s health checks
+
+### Testing Schedule
+
+| Test                     | Frequency  | Last Tested | Owner    |
+| ------------------------ | ---------- | ----------- | -------- |
+| Database restore drill   | Quarterly  | Not yet     | Backend  |
+| Canary deploy rollback   | Monthly    | Not yet     | Platform |
+| Full failover simulation | Biannually | Not yet     | SRE      |

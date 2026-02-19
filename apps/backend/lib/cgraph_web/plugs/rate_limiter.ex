@@ -71,9 +71,11 @@ defmodule CGraphWeb.Plugs.RateLimiter do
         retry_after = ttl || window_ms
         {:error, :rate_limited, retry_after}
 
-      {:error, _} ->
-        # If cache fails, allow request
-        {:ok, limit}
+      {:error, reason} ->
+        # Fail-closed: reject request when cache is unavailable (security best practice)
+        require Logger
+        Logger.error("Rate limiter cache unavailable: #{inspect(reason)}")
+        {:error, :rate_limited, 60_000}
     end
   end
 

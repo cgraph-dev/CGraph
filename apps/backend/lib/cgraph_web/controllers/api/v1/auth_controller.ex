@@ -78,15 +78,15 @@ defmodule CGraphWeb.API.V1.AuthController do
     AccountLockout.check_locked(lockout_key)
   catch
     :exit, {:noproc, _} ->
-      # AccountLockout GenServer not running, proceed without lockout checking
+      # Fail-closed: block login when lockout service is unavailable (security best practice)
       require Logger
-      Logger.warning("AccountLockout GenServer not running, skipping lockout check")
-      :ok
+      Logger.error("AccountLockout GenServer not running, blocking login for safety")
+      {:locked, 60}
     :exit, {:timeout, _} ->
-      # Timeout, proceed without lockout checking
+      # Fail-closed: block login on timeout
       require Logger
-      Logger.warning("AccountLockout timeout, skipping lockout check")
-      :ok
+      Logger.error("AccountLockout timeout, blocking login for safety")
+      {:locked, 60}
   end
 
   defp respond_locked(conn, remaining) do
@@ -124,7 +124,11 @@ defmodule CGraphWeb.API.V1.AuthController do
   defp safe_clear_attempts(lockout_key) do
     AccountLockout.clear_attempts(lockout_key)
   catch
-    :exit, _ -> :ok
+    :exit, reason ->
+      # Log but don't block login — clearing is best-effort after successful auth
+      require Logger
+      Logger.warning("AccountLockout unavailable for clearing attempts: #{inspect(reason)}")
+      :ok
   end
 
   defp respond_no_password(conn) do
@@ -147,7 +151,11 @@ defmodule CGraphWeb.API.V1.AuthController do
   defp safe_record_failed_attempt(lockout_key, ip_address) do
     AccountLockout.record_failed_attempt(lockout_key, ip_address: ip_address)
   catch
-    :exit, _ -> :ok
+    :exit, reason ->
+      # Fail-closed: treat as locked when unable to record attempt
+      require Logger
+      Logger.error("AccountLockout unavailable for recording attempt: #{inspect(reason)}")
+      {:locked, 60}
   end
 
   defp respond_account_locked(conn, duration) do
