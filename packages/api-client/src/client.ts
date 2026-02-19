@@ -32,13 +32,7 @@ export interface ApiResponse<T> {
 }
 
 /** Paginated response with cursor metadata. */
-export interface PaginatedResponse<T> {
-  readonly data: T[];
-  readonly meta: {
-    readonly cursor: string | null;
-    readonly has_more: boolean;
-  };
-}
+export type PaginatedResponse<T> = ApiResponse<T[]>;
 
 /** API error envelope — matches Rule 15 error shape. */
 export interface ApiError {

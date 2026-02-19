@@ -12,12 +12,8 @@ export function delay(ms: number): Promise<void> {
 /** Flush all pending micro-tasks (resolved promises). */
 export function flushPromises(): Promise<void> {
   return new Promise((resolve) => {
-    // Use setImmediate in Node ≥ 18, setTimeout(0) as fallback
-    if (typeof setImmediate === 'function') {
-      setImmediate(resolve);
-    } else {
-      setTimeout(resolve, 0);
-    }
+    // setTimeout(0) defers to next tick — works in all JS environments
+    setTimeout(resolve, 0);
   });
 }
 
@@ -27,7 +23,7 @@ export function flushPromises(): Promise<void> {
  */
 export async function waitFor(
   predicate: () => boolean | Promise<boolean>,
-  { timeout = 2000, interval = 50 } = {},
+  { timeout = 2000, interval = 50 } = {}
 ): Promise<void> {
   const start = Date.now();
   while (Date.now() - start < timeout) {

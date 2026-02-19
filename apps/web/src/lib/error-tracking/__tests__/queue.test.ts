@@ -6,7 +6,7 @@
  * user context management, and backend submission.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // ── Mock dependencies ────────────────────────────────────────────────────
 const { mockApiPost, mockStripPii, mockStripPiiFromString, mockGetBreadcrumbs, mockConfig } =
@@ -14,7 +14,7 @@ const { mockApiPost, mockStripPii, mockStripPiiFromString, mockGetBreadcrumbs, m
     mockApiPost: vi.fn().mockResolvedValue({}),
     mockStripPii: vi.fn((obj: unknown) => obj),
     mockStripPiiFromString: vi.fn((s: string) => s),
-    mockGetBreadcrumbs: vi.fn(() => []),
+    mockGetBreadcrumbs: vi.fn((): unknown[] => []),
     mockConfig: {
       enabled: true,
       debug: false,
@@ -76,7 +76,7 @@ describe('Error Queue', () => {
         expect(mockApiPost).toHaveBeenCalled();
       });
 
-      const payload = mockApiPost.mock.calls[0][1];
+      const payload = mockApiPost.mock.calls[0]![1];
       expect(payload.user_id).toBe('user-42');
     });
 
@@ -90,7 +90,7 @@ describe('Error Queue', () => {
         expect(mockApiPost).toHaveBeenCalled();
       });
 
-      const payload = mockApiPost.mock.calls[0][1];
+      const payload = mockApiPost.mock.calls[0]![1];
       expect(payload.user_id).toBeUndefined();
     });
   });
@@ -132,7 +132,7 @@ describe('Error Queue', () => {
         expect(mockApiPost).toHaveBeenCalled();
       });
 
-      const payload = mockApiPost.mock.calls[0][1];
+      const payload = mockApiPost.mock.calls[0]![1];
       expect(payload.breadcrumbs).toEqual(mockCrumbs);
     });
 
@@ -143,7 +143,7 @@ describe('Error Queue', () => {
         expect(mockApiPost).toHaveBeenCalled();
       });
 
-      const payload = mockApiPost.mock.calls[0][1];
+      const payload = mockApiPost.mock.calls[0]![1];
       expect(payload).toHaveProperty('url');
       expect(payload).toHaveProperty('user_agent');
     });
@@ -160,7 +160,7 @@ describe('Error Queue', () => {
         expect(mockApiPost).toHaveBeenCalled();
       });
 
-      const payload = mockApiPost.mock.calls[0][1];
+      const payload = mockApiPost.mock.calls[0]![1];
       expect(payload.component).toBe('Billing');
       expect(payload.action).toBe('checkout');
       expect(payload.level).toBe('warning');
@@ -174,7 +174,7 @@ describe('Error Queue', () => {
         expect(mockApiPost).toHaveBeenCalled();
       });
 
-      const payload = mockApiPost.mock.calls[0][1];
+      const payload = mockApiPost.mock.calls[0]![1];
       expect(payload.level).toBe('error');
     });
 

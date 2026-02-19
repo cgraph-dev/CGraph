@@ -66,7 +66,10 @@ describe('ListenerManager', () => {
     it('should update the AudioListener position', () => {
       manager.setListenerPosition({ x: 10, y: 20, z: 30 });
 
-      const listener = ctx.listener as unknown as Record<string, { setValueAtTime: ReturnType<typeof vi.fn> }>;
+      const listener = ctx.listener as unknown as Record<
+        string,
+        { setValueAtTime: ReturnType<typeof vi.fn> }
+      >;
       expect(listener.positionX.setValueAtTime).toHaveBeenCalledWith(10, 0);
       expect(listener.positionY.setValueAtTime).toHaveBeenCalledWith(20, 0);
       expect(listener.positionZ.setValueAtTime).toHaveBeenCalledWith(30, 0);
@@ -77,15 +80,18 @@ describe('ListenerManager', () => {
     it('should compute correct forward vector for yaw=0, pitch=0 (facing -Z)', () => {
       manager.setListenerOrientation({ yaw: 0, pitch: 0, roll: 0 });
 
-      const listener = ctx.listener as unknown as Record<string, { setValueAtTime: ReturnType<typeof vi.fn> }>;
+      const listener = ctx.listener as unknown as Record<
+        string,
+        { setValueAtTime: ReturnType<typeof vi.fn> }
+      >;
 
       // At yaw=0, pitch=0:
       // forwardX = sin(0) * cos(0) = 0
       // forwardY = sin(0) = 0
       // forwardZ = -cos(0) * cos(0) = -1
-      const forwardXCall = listener.forwardX.setValueAtTime.mock.calls[0];
-      const forwardYCall = listener.forwardY.setValueAtTime.mock.calls[0];
-      const forwardZCall = listener.forwardZ.setValueAtTime.mock.calls[0];
+      const forwardXCall = listener.forwardX!.setValueAtTime.mock.calls[0];
+      const forwardYCall = listener.forwardY!.setValueAtTime.mock.calls[0];
+      const forwardZCall = listener.forwardZ!.setValueAtTime.mock.calls[0];
 
       expect(forwardXCall![0]).toBeCloseTo(0, 5);
       expect(forwardYCall![0]).toBeCloseTo(0, 5);
@@ -95,15 +101,18 @@ describe('ListenerManager', () => {
     it('should compute correct forward vector for yaw=PI/2 (facing +X)', () => {
       manager.setListenerOrientation({ yaw: Math.PI / 2, pitch: 0, roll: 0 });
 
-      const listener = ctx.listener as unknown as Record<string, { setValueAtTime: ReturnType<typeof vi.fn> }>;
+      const listener = ctx.listener as unknown as Record<
+        string,
+        { setValueAtTime: ReturnType<typeof vi.fn> }
+      >;
 
       // At yaw=PI/2, pitch=0:
       // forwardX = sin(PI/2) * cos(0) = 1
       // forwardY = sin(0) = 0
       // forwardZ = -cos(PI/2) * cos(0) ≈ 0
-      const forwardXCall = listener.forwardX.setValueAtTime.mock.calls[0];
-      const forwardYCall = listener.forwardY.setValueAtTime.mock.calls[0];
-      const forwardZCall = listener.forwardZ.setValueAtTime.mock.calls[0];
+      const forwardXCall = listener.forwardX!.setValueAtTime.mock.calls[0];
+      const forwardYCall = listener.forwardY!.setValueAtTime.mock.calls[0];
+      const forwardZCall = listener.forwardZ!.setValueAtTime.mock.calls[0];
 
       expect(forwardXCall![0]).toBeCloseTo(1, 5);
       expect(forwardYCall![0]).toBeCloseTo(0, 5);
@@ -113,14 +122,17 @@ describe('ListenerManager', () => {
     it('should compute correct forward vector for pitch=PI/4 (looking up 45°)', () => {
       manager.setListenerOrientation({ yaw: 0, pitch: Math.PI / 4, roll: 0 });
 
-      const listener = ctx.listener as unknown as Record<string, { setValueAtTime: ReturnType<typeof vi.fn> }>;
+      const listener = ctx.listener as unknown as Record<
+        string,
+        { setValueAtTime: ReturnType<typeof vi.fn> }
+      >;
 
       // At yaw=0, pitch=PI/4:
       // forwardX = sin(0) * cos(PI/4) = 0
       // forwardY = sin(PI/4) ≈ 0.707
       // forwardZ = -cos(0) * cos(PI/4) ≈ -0.707
-      const forwardYCall = listener.forwardY.setValueAtTime.mock.calls[0];
-      const forwardZCall = listener.forwardZ.setValueAtTime.mock.calls[0];
+      const forwardYCall = listener.forwardY!.setValueAtTime.mock.calls[0];
+      const forwardZCall = listener.forwardZ!.setValueAtTime.mock.calls[0];
 
       expect(forwardYCall![0]).toBeCloseTo(Math.SQRT1_2, 5);
       expect(forwardZCall![0]).toBeCloseTo(-Math.SQRT1_2, 5);
@@ -129,7 +141,10 @@ describe('ListenerManager', () => {
     it('should handle combined yaw and pitch', () => {
       manager.setListenerOrientation({ yaw: Math.PI, pitch: 0, roll: 0 });
 
-      const listener = ctx.listener as unknown as Record<string, { setValueAtTime: ReturnType<typeof vi.fn> }>;
+      const listener = ctx.listener as unknown as Record<
+        string,
+        { setValueAtTime: ReturnType<typeof vi.fn> }
+      >;
 
       // At yaw=PI, pitch=0:
       // forwardX = sin(PI) * cos(0) ≈ 0

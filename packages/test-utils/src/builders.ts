@@ -15,7 +15,6 @@ import type {
   UserBasic,
   UserStatus,
   Conversation,
-  ConversationParticipant,
   Message,
   MessageMetadata,
   Reaction,
@@ -75,6 +74,7 @@ export function buildUser(overrides: Partial<User> = {}): User {
     avatarUrl: null,
     walletAddress: null,
     bio: null,
+    pronouns: null,
     status: 'online' as UserStatus,
     statusMessage: null,
     emailVerifiedAt: ts(),
@@ -121,9 +121,7 @@ export function buildMessage(overrides: Partial<Message> = {}): Message {
   };
 }
 
-export function buildConversation(
-  overrides: Partial<Conversation> = {},
-): Conversation {
+export function buildConversation(overrides: Partial<Conversation> = {}): Conversation {
   const id = overrides.id ?? nextId();
   return {
     id,
@@ -229,9 +227,7 @@ export function buildFriend(overrides: Partial<Friend> = {}): Friend {
   };
 }
 
-export function buildFriendRequest(
-  overrides: Partial<FriendRequest> = {},
-): FriendRequest {
+export function buildFriendRequest(overrides: Partial<FriendRequest> = {}): FriendRequest {
   const id = overrides.id ?? nextId();
   return {
     id,

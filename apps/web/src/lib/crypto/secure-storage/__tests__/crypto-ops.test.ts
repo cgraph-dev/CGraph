@@ -8,7 +8,7 @@
  * NOTE: initDB and getDeviceSalt require IndexedDB which isn't
  * available in jsdom, so we test the crypto functions only.
  */
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import { randomBytes, deriveKey, encryptData, decryptData } from '../crypto-ops';
 
 describe('randomBytes', () => {

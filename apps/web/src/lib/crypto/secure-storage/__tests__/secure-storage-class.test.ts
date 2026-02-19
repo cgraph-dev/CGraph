@@ -34,43 +34,50 @@ vi.mock('@/lib/logger', () => ({
 // ---------------------------------------------------------------------------
 // Fake IndexedDB transaction / object store
 // ---------------------------------------------------------------------------
+/** Create a fake IDBRequest that auto-fires onsuccess when assigned. */
+function fakeIDBRequest<T>(result?: T) {
+  let _onsuccess: (() => void) | null = null;
+  let _onerror: (() => void) | null = null;
+  return {
+    result: result ?? null,
+    get onsuccess(): (() => void) | null {
+      return _onsuccess;
+    },
+    set onsuccess(cb: (() => void) | null) {
+      _onsuccess = cb;
+      cb?.();
+    },
+    get onerror(): (() => void) | null {
+      return _onerror;
+    },
+    set onerror(cb: (() => void) | null) {
+      _onerror = cb;
+    },
+  };
+}
+
 function createFakeStore(data: Map<string, unknown> = new Map()) {
   return {
     put: vi.fn((item: { id: string }) => {
       data.set(item.id, item);
-      return { onerror: null, onsuccess: null, set onerror(_: unknown) {}, set onsuccess(cb: () => void) { cb?.(); } };
+      return fakeIDBRequest();
     }),
     get: vi.fn((key: string) => {
-      const result = data.get(key) ?? null;
-      return {
-        result,
-        onerror: null,
-        set onerror(_: unknown) {},
-        set onsuccess(cb: () => void) { cb?.(); },
-        get onsuccess() { return null; },
-      };
+      return fakeIDBRequest(data.get(key) ?? null);
     }),
     delete: vi.fn((key: string) => {
       data.delete(key);
-      return { set onerror(_: unknown) {}, set onsuccess(cb: () => void) { cb?.(); } };
+      return fakeIDBRequest();
     }),
     clear: vi.fn(() => {
       data.clear();
-      return { set onerror(_: unknown) {}, set onsuccess(cb: () => void) { cb?.(); } };
+      return fakeIDBRequest();
     }),
     getAllKeys: vi.fn(() => {
-      return {
-        result: Array.from(data.keys()),
-        set onerror(_: unknown) {},
-        set onsuccess(cb: () => void) { cb?.(); },
-      };
+      return fakeIDBRequest(Array.from(data.keys()));
     }),
     index: vi.fn(() => ({
-      openCursor: vi.fn(() => ({
-        result: null,
-        set onerror(_: unknown) {},
-        set onsuccess(cb: () => void) { cb?.(); },
-      })),
+      openCursor: vi.fn(() => fakeIDBRequest(null)),
     })),
   };
 }

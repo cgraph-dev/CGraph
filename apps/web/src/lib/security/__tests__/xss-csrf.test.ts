@@ -268,7 +268,7 @@ describe('secureFetch', () => {
 
     await secureFetch('/api/data', { method: 'GET' });
 
-    const passedHeaders = mockFetch.mock.calls[0][1].headers as Headers;
+    const passedHeaders = mockFetch.mock.calls[0]![1]!.headers as Headers;
     expect(passedHeaders.has('X-CSRF-Token')).toBe(false);
   });
 
@@ -283,7 +283,7 @@ describe('secureFetch', () => {
 
     await secureFetch('/api/data', { method: 'POST' });
 
-    const passedHeaders = mockFetch.mock.calls[0][1].headers as Headers;
+    const passedHeaders = mockFetch.mock.calls[0]![1]!.headers as Headers;
     expect(passedHeaders.get('X-CSRF-Token')).toBe('csrf-post-token');
   });
 
@@ -293,7 +293,7 @@ describe('secureFetch', () => {
 
     await secureFetch('/api/data');
 
-    expect(mockFetch.mock.calls[0][1].credentials).toBe('same-origin');
+    expect(mockFetch.mock.calls[0]![1]!.credentials).toBe('same-origin');
   });
 });
 

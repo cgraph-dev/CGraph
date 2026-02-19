@@ -4,9 +4,9 @@
  * Encrypt and decrypt using a real Double Ratchet chain state
  * with real Web Crypto primitives.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { encryptRatchetMessage, decryptRatchetMessage } from '../messageEncryption';
-import { generateDHKeyPair, kdfRK } from '../keyDerivation';
+import { generateDHKeyPair } from '../keyDerivation';
 import { initializeAlice, initializeBob } from '../ratchetOps';
 import type { RatchetState, RatchetConfig } from '../types';
 
@@ -187,9 +187,9 @@ describe('encrypt + decrypt roundtrip', () => {
     const bobState = makeState({ sessionId: 's-mac' });
     await initializeBob(bobState, sharedSecret, bobKP, noopLog);
 
-    await expect(
-      decryptRatchetMessage(bobState, config, encrypted, noopLog)
-    ).rejects.toThrow('Message authentication failed');
+    await expect(decryptRatchetMessage(bobState, config, encrypted, noopLog)).rejects.toThrow(
+      'Message authentication failed'
+    );
   });
 });
 

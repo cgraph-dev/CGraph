@@ -66,7 +66,7 @@ function setLegacyKeys(keys: Partial<Record<string, string>> = {}) {
   };
 
   Object.entries({ ...defaults, ...keys }).forEach(([key, value]) => {
-    localStorage.setItem(key, value);
+    localStorage.setItem(key, value!);
   });
 }
 
@@ -213,10 +213,10 @@ describe('migrateToSecureStorage', () => {
       // Mock SecureStorage.getItem to return the same value (verification passes)
       mockSecureStorage.getItem.mockImplementation(async (key: string) => {
         const mapping: Record<string, string> = {
-          'e2ee_identity_key': 'mock-identity-key-data',
-          'e2ee_signed_prekey': 'mock-signed-prekey-data',
-          'e2ee_device_id': 'device-123',
-          'e2ee_sessions': '{"session1": "data"}',
+          e2ee_identity_key: 'mock-identity-key-data',
+          e2ee_signed_prekey: 'mock-signed-prekey-data',
+          e2ee_device_id: 'device-123',
+          e2ee_sessions: '{"session1": "data"}',
         };
         return mapping[key] ?? null;
       });
