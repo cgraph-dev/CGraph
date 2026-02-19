@@ -1,4 +1,10 @@
 {
+  "noConversationsFound": "No conversations found",
+  "noMessagesYet": "No messages yet",
+  "startNewConversation": "Start a new conversation to get started",
+  "yourMessages": "Your Messages",
+  "selectConversation": "Select a conversation or start a new one to begin messaging",
+  "endToEndEncrypted": "End-to-end encrypted",
   "conversations": {
     "title": "Messages",
     "new": "New conversation",

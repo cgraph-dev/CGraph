@@ -21,8 +21,9 @@ Real-time overview of project health, architecture status, and operational state
 | **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing + API client retry/circuit breaker |
 | **CI/CD**         | OK     | 10/10 | 13 GH Actions (incl. backup), CI-gated canary, feature flags, coverage gates        |
 
-**Composite Score: 9.5/10** — World-class across all dimensions. V1 targets exceeded. All test failures
-resolved. i18n foundation in place. TypeDoc CI pipeline created.
+**Composite Score: 9.6/10** — World-class across all dimensions. V1 targets exceeded. All test failures
+resolved. i18n integrated into components. QueryBoundary + createAsyncSlice patterns established.
+Store architecture documented.
 
 > **Implementation Registry**: See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file-level
 > inventory of all operational systems, their locations, and remaining gaps.

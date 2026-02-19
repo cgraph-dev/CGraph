@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api, getErrorMessage } from '@/lib/api';
 import { LogoIcon } from '@/components/logo';
 
 export default function ForgotPassword() {
+  const { t } = useTranslation('auth');
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -41,7 +43,7 @@ export default function ForgotPassword() {
         <div className="text-center lg:hidden">
           <a href="https://www.cgraph.org" className="inline-flex items-center gap-3">
             <LogoIcon size={40} color="gradient" showGlow={false} />
-            <span className="text-2xl font-bold text-white">CGraph</span>
+            <span className="text-2xl font-bold text-white">{t('common:app_name')}</span>
           </a>
         </div>
 
@@ -62,20 +64,20 @@ export default function ForgotPassword() {
               />
             </svg>
           </div>
-          <h2 className="text-3xl font-bold text-white">Check your email</h2>
+          <h2 className="text-3xl font-bold text-white">{t('forgot_password.check_email')}</h2>
           <p className="mt-2 text-gray-400">
-            We've sent a password reset link to <span className="text-white">{email}</span>
+            {t('forgot_password.reset_link_sent')} <span className="text-white">{email}</span>
           </p>
         </div>
 
         <div className="space-y-4">
           <p className="text-sm text-gray-400">
-            Didn't receive the email? Check your spam folder, or{' '}
+            {t('forgot_password.didnt_receive')}{' '}
             <button
               onClick={() => setIsSuccess(false)}
               className="text-primary-400 transition-colors hover:text-primary-300"
             >
-              try another email address
+              {t('forgot_password.try_another')}
             </button>
           </p>
 
@@ -83,7 +85,7 @@ export default function ForgotPassword() {
             to="/login"
             className="block w-full rounded-lg border border-dark-600 bg-dark-800 px-4 py-3 text-center font-medium text-white transition-colors hover:bg-dark-700"
           >
-            Back to login
+            {t('forgot_password.back_to_login')}
           </Link>
         </div>
       </div>
@@ -96,14 +98,14 @@ export default function ForgotPassword() {
       <div className="text-center lg:hidden">
         <a href="https://www.cgraph.org" className="inline-flex items-center gap-3">
           <LogoIcon size={40} color="gradient" showGlow={false} />
-          <span className="text-2xl font-bold text-white">CGraph</span>
+          <span className="text-2xl font-bold text-white">{t('common:app_name')}</span>
         </a>
       </div>
 
       {/* Header */}
       <div className="text-center lg:text-left">
-        <h2 className="text-3xl font-bold text-white">Forgot password?</h2>
-        <p className="mt-2 text-gray-400">No worries, we'll send you reset instructions.</p>
+        <h2 className="text-3xl font-bold text-white">{t('forgot_password.title')}</h2>
+        <p className="mt-2 text-gray-400">{t('forgot_password.subtitle')}</p>
       </div>
 
       {/* Error Alert */}
@@ -117,7 +119,7 @@ export default function ForgotPassword() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-300">
-            Email address
+            {t('forgot_password.email')}
           </label>
           <input
             id="email"
@@ -142,7 +144,7 @@ export default function ForgotPassword() {
               Sending...
             </>
           ) : (
-            'Reset password'
+            t('forgot_password.submit')
           )}
         </button>
       </form>

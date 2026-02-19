@@ -57,5 +57,26 @@
     "high_contrast": "High contrast mode",
     "keyboard_shortcuts": "Keyboard shortcuts",
     "font_scaling": "Font scaling"
+  },
+  "delete_account": {
+    "title": "Delete Account",
+    "danger_zone": "Danger Zone",
+    "permanent_warning": "Deleting your account is permanent and cannot be undone after the grace period. All your data, messages, and activity will be permanently removed.",
+    "consequence1": "Your profile and all personal data will be deleted",
+    "consequence2": "Your messages will be anonymized",
+    "consequence3": "Groups you own will need a new owner or be deleted",
+    "grace_period": "30-day grace period — log in to cancel",
+    "want_to_delete": "I want to delete my account",
+    "confirm_password": "Confirm your password",
+    "enter_password": "Enter your password",
+    "to_confirm": "to confirm",
+    "deleting": "Deleting...",
+    "delete_my_account": "Delete My Account"
+  },
+  "data_export": {
+    "title": "Data Export",
+    "description": "Download a copy of your data",
+    "request_export": "Request Export",
+    "processing": "Processing..."
   }
 }

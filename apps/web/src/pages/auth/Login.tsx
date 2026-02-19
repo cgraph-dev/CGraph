@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { OAuthButtonGroup } from '@/modules/auth/components/OAuthButtons';
 import {
   TextScramble,
@@ -44,6 +45,7 @@ const headerVariants = {
 export default function Login() {
   const navigate = useNavigate();
   const reduced = prefersReducedMotion();
+  const { t } = useTranslation('auth');
 
   const {
     email,
@@ -74,18 +76,18 @@ export default function Login() {
           >
             <LogoIcon size={40} color="gradient" showGlow={false} />
           </motion.div>
-          <span className="matrix-glow text-2xl font-bold text-white">CGraph</span>
+          <span className="matrix-glow text-2xl font-bold text-white">{t('common:app_name')}</span>
         </a>
       </motion.div>
 
       {/* Header with cyberpunk text effect */}
       <motion.div variants={reduced ? {} : headerVariants} className="text-center lg:text-left">
         <h2 className="text-3xl font-bold text-white">
-          <GlitchText text="Welcome back" className="matrix-glow" />
+          <GlitchText text={t('login.title')} className="matrix-glow" />
         </h2>
         <p className="mt-2 text-gray-400">
           <TextScramble
-            text="Sign in to your account to continue"
+            text={t('login.subtitle')}
             delay={1000}
             scrambleSpeed={80}
           />
@@ -123,11 +125,11 @@ export default function Login() {
           {isLoading ? (
             <>
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-              <span className="animate-pulse">Signing in...</span>
+              <span className="animate-pulse">{t('login.signing_in')}</span>
             </>
           ) : (
             <>
-              <span>Sign in</span>
+              <span>{t('login.submit')}</span>
               <svg
                 className="h-4 w-4 transition-transform group-hover:translate-x-1"
                 fill="none"
@@ -153,7 +155,7 @@ export default function Login() {
         </div>
         <div className="relative flex justify-center text-sm">
           <span className="bg-transparent px-4 text-gray-500 backdrop-blur-sm">
-            Or continue with
+            {t('login.or_continue_with')}
           </span>
         </div>
       </motion.div>
@@ -205,14 +207,14 @@ export default function Login() {
           />
           <path d="M11 20.2L20.498 25.8363V16.09L11 20.2Z" fill="white" fillOpacity="0.602" />
         </motion.svg>
-        <span>Connect Wallet</span>
+        <span>{t('login.connect_wallet')}</span>
       </motion.button>
 
       {/* Sign Up Link with matrix styling */}
       <motion.p variants={reduced ? {} : itemVariants} className="text-center text-gray-400">
-        Don't have an account?{' '}
+        {t('login.no_account')}{' '}
         <Link to="/register" className="matrix-link font-medium">
-          Sign up
+          {t('login.sign_up')}
         </Link>
       </motion.p>
     </motion.div>

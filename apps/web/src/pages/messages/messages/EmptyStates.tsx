@@ -5,6 +5,7 @@
  */
 
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { UserIcon, SparklesIcon, ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline';
 import type { EmptyStateProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
@@ -13,6 +14,7 @@ import { springs } from '@/lib/animation-presets/presets';
  * Empty conversation list state
  */
 export function EmptyConversationList({ searchQuery }: EmptyStateProps) {
+  const { t } = useTranslation('messages');
   return (
     <motion.div
       className="px-4 py-12 text-center"
@@ -31,9 +33,9 @@ export function EmptyConversationList({ searchQuery }: EmptyStateProps) {
         />
       </div>
       <p className="bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-lg font-semibold text-transparent">
-        {searchQuery ? 'No conversations found' : 'No messages yet'}
+        {searchQuery ? t('noConversationsFound') : t('noMessagesYet')}
       </p>
-      <p className="mt-2 text-sm text-gray-500">Start a new conversation to get started</p>
+      <p className="mt-2 text-sm text-gray-500">{t('startNewConversation')}</p>
     </motion.div>
   );
 }
@@ -42,6 +44,7 @@ export function EmptyConversationList({ searchQuery }: EmptyStateProps) {
  * No conversation selected state
  */
 export function NoConversationSelected() {
+  const { t } = useTranslation('messages');
   return (
     <motion.div
       className="relative flex flex-1 items-center justify-center overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950"
@@ -102,11 +105,11 @@ export function NoConversationSelected() {
         </div>
 
         <h3 className="mb-3 flex items-center justify-center gap-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
-          Your Messages
+          {t('yourMessages')}
           <SparklesIcon className="h-6 w-6 animate-pulse text-primary-400" />
         </h3>
         <p className="max-w-md text-lg text-gray-400">
-          Select a conversation or start a new one to begin messaging
+          {t('selectConversation')}
         </p>
 
         <motion.div
@@ -115,7 +118,7 @@ export function NoConversationSelected() {
           transition={{ duration: 2, repeat: Infinity }}
         >
           <div className="h-2 w-2 animate-pulse rounded-full bg-primary-500" />
-          End-to-end encrypted
+          {t('endToEndEncrypted')}
         </motion.div>
       </motion.div>
     </motion.div>

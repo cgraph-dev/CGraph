@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { springs } from '@/lib/animation-presets/presets';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 export default function NotFound() {
+  const { t } = useTranslation('common');
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 p-4">
       {/* Ambient particles */}
@@ -81,11 +83,10 @@ export default function NotFound() {
             transition={{ delay: 0.4 }}
           >
             <h2 className="mb-4 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
-              Page Not Found
+              {t('errors.pageNotFound')}
             </h2>
             <p className="mx-auto mb-8 max-w-md text-gray-400">
-              The page you're looking for doesn't exist or has been moved. Let's get you back on
-              track.
+              {t('errors.pageNotFoundDescription')}
             </p>
           </motion.div>
 
@@ -119,7 +120,7 @@ export default function NotFound() {
                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
                   />
                 </svg>
-                <span className="relative z-10">Go Home</span>
+                <span className="relative z-10">{t('errors.goHome')}</span>
               </motion.button>
             </Link>
           </motion.div>

@@ -1,6 +1,7 @@
 // Feedback components - Loading, errors, empty states, toasts, progress
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as RouteErrorBoundary } from './RouteErrorBoundary';
+export { QueryBoundary } from './QueryBoundary';
 export { LoadingSpinner } from './LoadingSpinner';
 export {
   LoadingOverlay,

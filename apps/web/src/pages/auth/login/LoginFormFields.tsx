@@ -6,6 +6,7 @@
 
 import { motion, type Variants } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { PasswordToggleButton } from '@/pages/auth/register/PasswordToggleButton';
 
 interface LoginFormFieldsProps {
@@ -29,11 +30,12 @@ export function LoginFormFields({
   itemVariants,
   reduced,
 }: LoginFormFieldsProps) {
+  const { t } = useTranslation('auth');
   return (
     <>
       <motion.div variants={itemVariants}>
         <label htmlFor="identifier" className="mb-2 block text-sm font-medium text-gray-300">
-          Email or Username
+          {t('login.email_or_username')}
         </label>
         <motion.input
           id="identifier"
@@ -43,14 +45,14 @@ export function LoginFormFields({
           required
           autoComplete="username"
           className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
-          placeholder="you@example.com or username"
+          placeholder={t('login.email_placeholder')}
           whileFocus={reduced ? {} : { scale: 1.01 }}
         />
       </motion.div>
 
       <motion.div variants={itemVariants}>
         <label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-300">
-          Password
+          {t('login.password')}
         </label>
         <div className="relative">
           <motion.input
@@ -78,11 +80,11 @@ export function LoginFormFields({
             className="h-4 w-4 rounded border-dark-600 bg-dark-700 text-primary-500 transition-all checked:border-primary-600 checked:bg-primary-600 focus:ring-primary-500/50 focus:ring-offset-0"
           />
           <span className="text-sm text-gray-400 transition-colors group-hover:text-gray-300">
-            Remember me
+            {t('login.remember_me')}
           </span>
         </label>
         <Link to="/forgot-password" className="matrix-link text-sm">
-          Forgot password?
+          {t('forgot_password.title')}
         </Link>
       </motion.div>
     </>
