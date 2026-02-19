@@ -294,12 +294,13 @@ jobs:
           echo "Backend: cover/backend"
           echo "Web: cover/web"
           echo "Mobile: cover/mobile"
-          # Enforce minimum 60% coverage (aligned with coverage.yml and QUALITY_GATES.md)
+          # Enforce minimum 60% coverage — hard fail (aligned with coverage.yml and QUALITY_GATES.md)
           if [ -f cover/web/coverage-summary.json ]; then
             WEB_PCT=$(cat cover/web/coverage-summary.json | jq -r '.total.lines.pct // 0')
             echo "Web coverage: ${WEB_PCT}%"
             if (( $(echo "$WEB_PCT < 60" | bc -l) )); then
-              echo "::warning::Web coverage ${WEB_PCT}% is below 60% threshold"
+              echo "::error::Web coverage ${WEB_PCT}% is below 60% threshold"
+              exit 1
             fi
           fi
 
@@ -380,8 +381,8 @@ jobs:
         with:
           sbom: sbom.spdx.json
           fail-build: true
-          severity-cutoff: critical
-        # Block deploys for critical vulnerabilities
+          severity-cutoff: high
+        # Block deploys for high+ severity vulnerabilities
 
       - name: Upload security artifacts
         uses: actions/upload-artifact@v4

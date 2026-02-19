@@ -35,7 +35,7 @@
 | 2.2 | Rate limiting — **already 3-layer** (Plug+GenServer+Redis). Moved 2FA to `:strict` pipeline. | P0 | ✅ Done |
 | 2.3 | CSRF — **already correct** (browser pipeline has it, API uses Bearer tokens = N/A) | P1 | ✅ Already Done |
 | 2.4 | Input validation — **Ecto changesets used pervasively**, parameterized queries only | P1 | ✅ Already Done |
-| 2.5 | Security audit checklist — doc exists at 190 lines, ~60% items checked, remaining are process tasks | P1 | ⚠️ Partial |
+| 2.5 | Security audit checklist — doc exists at 190 lines, ~60% items checked, remaining are process tasks | P1 | ⚠️ Partial — **Q1 2026 audit target OVERDUE; 9 actions not started** |
 | 2.6 | Session management — **Guardian JWT**, refresh rotation, token blacklist (Redis+Bloom), device binding | P1 | ✅ Already Done |
 | 2.7 | CSP headers — **SecurityHeaders plug** with HSTS, CSP, X-Frame, CORP, COEP, Permissions-Policy | P2 | ✅ Already Done |
 | 2.8 | Dependency vuln — Renovate + Sobelow + Grype + Gitleaks + pnpm audit. Missing: mix_audit, Semgrep | P2 | ✅ Already Done |
@@ -201,9 +201,15 @@ Enhanced `.github/workflows/coverage.yml` with multi-app coverage enforcement:
 
 ---
 
-## Phase 4: Operations — Know When You're On Fire ✅ TARGETS MET
+## Phase 4: Operations — Know When You're On Fire ⚠️ CONFIGS COMPLETE, DEPLOY PENDING
 
 **Goal**: Observability, alerting, and runbooks that actually work.
+
+> **⚠️ Honest Status**: All observability configs are designed and tested locally. However, the
+> production observability stack is **not deployed**: Alertmanager has placeholder webhook URLs
+> (`REPLACE/WITH/WEBHOOK`), Grafana dashboards exist as JSON but aren't served from a production
+> instance, and monitoring alerts go nowhere. Remaining: (1) deploy Grafana/Prometheus/Alertmanager
+> to production, (2) configure real PagerDuty/Slack webhook URLs, (3) verify end-to-end alert flow.
 
 | # | Task | Status |
 |---|------|--------|
@@ -376,7 +382,7 @@ Created `packages/api-client/src/resilience.ts` — production-grade resilience 
 
 | # | Task | Status |
 |---|------|--------|
-| 6.1 | Post-quantum E2EE: Ship to production (crypto package is A+, but not integrated in production) | ✅ Crypto Package Done |
+| 6.1 | Post-quantum E2EE: Ship to production (crypto package is A+, but not integrated in production) | ⚠️ Library Done, Production Integration Pending |
 | 6.2 | Real-time collaboration: Operational Transform or CRDT for shared documents | ❌ Future Feature |
 | 6.3 | AI features: Message summarization, smart replies (architecture exists, no models connected) | ❌ Future Feature |
 | 6.4 | Offline-first mobile: SQLite local DB with sync conflict resolution | ❌ Future Feature |
@@ -386,13 +392,21 @@ Created `packages/api-client/src/resilience.ts` — production-grade resilience 
 | 6.8 | Documentation site: Auto-generated API docs from TypeSpec/OpenAPI | ✅ Done |
 
 ### 6.1 Audit — Post-Quantum E2EE
-**Result: Crypto package is world-class.** `@cgraph/crypto` (v0.9.31) implements:
+**Result: Crypto package is world-class, but NOT shipped in production.**
+
+`@cgraph/crypto` (v0.9.31) implements:
 - ML-KEM-768 (NIST standard) for post-quantum key encapsulation
 - PQXDH key agreement (P-256 ECDH + ML-KEM-768 hybrid)
 - Triple Ratchet (EC Double Ratchet ∥ SPQR) for forward secrecy
 - SCKA (ML-KEM Braid) for group key agreement
 - 14 test files including adversarial and stress tests
-- **Gap**: Backend key distribution endpoints need production wiring
+
+**⚠️ CRITICAL: Production Integration Gap**
+- `@cgraph/crypto` is **not imported** by `apps/web/src/` — zero imports found
+- `apps/mobile/src/lib/crypto/e2ee.ts` imports only types; actual crypto uses its own classical ECDH/AES-GCM
+- Web app has a separate, older E2EE implementation at `apps/web/src/lib/crypto/` (classical X3DH only)
+- Both platforms lack post-quantum protection in the actual message path
+- **Remaining**: Backend key distribution endpoints + web/mobile migration to `@cgraph/crypto`
 
 ### 6.5 Progress — Accessibility
 - Created `apps/web/e2e/accessibility.spec.ts` — axe-playwright WCAG 2.1 AA testing
@@ -445,16 +459,16 @@ Created `packages/api-client/src/resilience.ts` — production-grade resilience 
 
 | Metric | Current | V1 Target | World-Class |
 |--------|---------|-----------|-------------|
-| Composite Score | 9.7/10 | 8.5/10 | 9.5/10 |
-| Web Test Coverage | ~50% (CI floor) | 60% | 80% |
+| Composite Score | 8.4/10 | 8.5/10 | 9.5/10 |
+| Web Test Coverage | 60% (CI hard-fail) | 60% | 80% |
 | Mobile Test Coverage | ~50% | 50% | 70% |
 | Backend Test Coverage | ~82% | 80% | 90% |
 | E2E Test Flows | 12 (5 web + 7 mobile) | 8 | 20+ |
 | Load Test Runs | Runner ready | 1 baseline | Monthly |
 | Backend Test Failures | 0 | 0 | 0 |
 | P99 Latency | Unknown | <500ms | <200ms |
-| Security Audit Items Passed | ~90% | 90% | 100% |
-| Doc Accuracy | ~95% | 95% | 100% |
+| Security Audit Items Passed | ~80% (crypto not in prod, external audit overdue) | 90% | 100% |
+| Doc Accuracy | ~90% (observability deploy status corrected) | 95% | 100% |
 | Uptime SLO | Configured | 99.5% | 99.9% |
 
 ---

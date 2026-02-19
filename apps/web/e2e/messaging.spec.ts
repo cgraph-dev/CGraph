@@ -37,12 +37,10 @@ test.describe('Messaging', () => {
         await searchInput.fill('test');
         await page.waitForTimeout(500); // Debounce delay
 
-        // Search should be applied (URL or filtered list)
-        const url = page.url();
-        const hasSearchParam = url.includes('search=') || url.includes('q=');
-
-        // Either URL has search param or list is filtered
-        expect(true).toBeTruthy(); // Passes if no error thrown
+        // Verify the search input accepted the value
+        await expect(searchInput).toHaveValue('test');
+      } else {
+        test.skip();
       }
     });
   });
@@ -66,6 +64,8 @@ test.describe('Messaging', () => {
           .or(page.getByPlaceholder(/type.*message/i));
 
         await expect(messageInput).toBeVisible();
+      } else {
+        test.skip();
       }
     });
   });
@@ -88,7 +88,10 @@ test.describe('Messaging', () => {
           .catch(() => false);
         const hasPage = page.url().includes('/new');
 
-        expect(hasDialog || hasPage).toBeTruthy();
+        // At least one navigation outcome must occur
+        expect(hasDialog || hasPage).toBe(true);
+      } else {
+        test.skip();
       }
     });
   });

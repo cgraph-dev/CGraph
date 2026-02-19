@@ -164,9 +164,11 @@ defmodule CGraphWeb.Plugs.SecurityHeaders do
   end
 
   defp build_csp(:browser, :standard, report_uri) do
+    # SECURITY: unsafe-inline and unsafe-eval removed — they nullify XSS protection.
+    # If third-party scripts are needed, use nonce-based CSP instead.
     directives = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "script-src 'self'",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: https: blob:",
       "font-src 'self' https:",

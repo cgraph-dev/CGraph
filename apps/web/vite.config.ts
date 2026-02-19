@@ -43,13 +43,13 @@ export default defineConfig({
         '**/test/**',
         '**/mocks/**',
       ],
-      // Progressive coverage thresholds
+      // Coverage thresholds — aligned with coverage.yml (60% target)
       // CI floor — prevents regression while coverage grows toward 80%
       thresholds: {
-        statements: 50,
+        statements: 60,
         branches: 50,
-        functions: 35,
-        lines: 50,
+        functions: 50,
+        lines: 60,
       },
     },
   },
