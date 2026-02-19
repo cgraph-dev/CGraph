@@ -30,11 +30,8 @@
       inline style attributes (transform, opacity, pointer-events) at runtime. This cannot be
       replaced with nonces — nonces only cover <style> blocks, not style="" attributes.
 
-      IMPORTANT: This meta tag uses script-src 'self' (strict — no unsafe-inline).
-      The vercel.json production CSP adds 'unsafe-inline' to script-src to allow the
-      early error handler and diagnostic timeout inline scripts below. These scripts
-      are trusted first-party code. To eliminate 'unsafe-inline' in production, migrate
-      them to external .js files and remove the directive from vercel.json.
+      Both meta tag and vercel.json use identical script-src 'self' (no unsafe-inline).
+      All scripts are external files loaded from /public/ (early-errors.js, diagnostic-timeout.js).
       See docs/SECURITY_AUDIT_CHECKLIST.md §4.4 for full risk assessment.
     -->
     <meta
@@ -145,32 +142,7 @@
       }
     </style>
     <!-- Early error capture: catches module eval errors BEFORE React loads -->
-    <script>
-      window.__CGRAPH_ERRORS = [];
-      window.onerror = function(msg, src, line, col, err) {
-        var e = { msg: msg, src: src, line: line, col: col, stack: err && err.stack };
-        window.__CGRAPH_ERRORS.push(e);
-        console.error('[CGraph:early]', msg, src, line, col, err);
-        var loader = document.getElementById('initial-loader');
-        if (loader) {
-          loader.innerHTML =
-            '<div style="text-align:center;max-width:600px;padding:20px">' +
-            '<p style="color:#ef4444;font-size:1.1rem;font-weight:600;margin-bottom:12px">JavaScript Error</p>' +
-            '<pre style="color:#fbbf24;font-size:11px;text-align:left;overflow:auto;max-height:300px;background:#1a1a2e;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-all">' +
-            (err ? (err.stack || err.message || String(err)) : msg) +
-            '\n\nSource: ' + (src || 'unknown') + ':' + line + ':' + col +
-            '</pre>' +
-            '<button onclick="location.reload()" style="background:#7c3aed;color:#fff;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:0.875rem;margin-top:12px">Reload</button>' +
-            '</div>';
-        }
-        return false;
-      };
-      window.addEventListener('unhandledrejection', function(e) {
-        var reason = e.reason;
-        window.__CGRAPH_ERRORS.push({ type: 'unhandledrejection', reason: String(reason), stack: reason && reason.stack });
-        console.error('[CGraph:early] Unhandled rejection:', reason);
-      });
-    </script>
+    <script src="/early-errors.js"></script>
   </head>
   <body class="bg-dark-900 text-white antialiased">
     <div id="root">
@@ -184,33 +156,6 @@
       ></div>
     </div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      // Diagnostic: if React hasn't replaced the initial-loader within 15s, show an error
-      setTimeout(function () {
-        var loader = document.getElementById('initial-loader');
-        if (loader) {
-          var errors = window.__CGRAPH_ERRORS || [];
-          var errorDetail = '';
-          if (errors.length > 0) {
-            errorDetail = '<pre style="color:#fbbf24;font-size:11px;text-align:left;overflow:auto;max-height:200px;background:#1a1a2e;padding:12px;border-radius:8px;white-space:pre-wrap;word-break:break-all">';
-            errors.forEach(function(e) {
-              errorDetail += (e.stack || e.msg || e.reason || 'Unknown error') + '\n---\n';
-            });
-            errorDetail += '</pre>';
-          }
-          loader.innerHTML =
-            '<div style="text-align:center;max-width:600px;padding:20px">' +
-            '<p style="color:#ef4444;font-size:1.1rem;font-weight:600;margin-bottom:12px">Failed to load application</p>' +
-            '<p style="color:#9ca3af;font-size:0.875rem;margin-bottom:16px">' +
-            (errors.length > 0
-              ? errors.length + ' JavaScript error(s) detected:'
-              : 'The app took too long to start. This may be due to a network issue or a JavaScript error. Check Console (F12) for details.') +
-            '</p>' +
-            errorDetail +
-            '<button onclick="location.reload()" style="background:#7c3aed;color:#fff;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:0.875rem;margin-top:12px">Reload Page</button>' +
-            '</div>';
-        }
-      }, 15000);
-    </script>
+    <script src="/diagnostic-timeout.js"></script>
   </body>
 </html>

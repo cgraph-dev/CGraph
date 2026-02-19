@@ -34,7 +34,7 @@ import type { ECKeyPair } from '@cgraph/crypto/x3dh';
 import type { RatchetSession, SecureMessage } from './types';
 import { saveSessionToStorage, deleteSessionFromStorage, getAllSessions } from './storage';
 import { computeResponderSharedSecret } from './session-x3dh';
-import { buildSecureMessage, toRatchetMessage } from './message-ops';
+import { buildSecureMessage, toRatchetMessage, generateMessageId } from './message-ops';
 
 // =============================================================================
 // SESSION MANAGER
@@ -359,7 +359,7 @@ class SessionManager {
         senderId: ourUserId,
         recipientId,
         sessionId: session.sessionId,
-        messageId: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`,
+        messageId: generateMessageId(),
         timestamp: Date.now(),
         protocolVersion: CryptoProtocol.PQXDH_V1,
         tripleRatchetVersion: serialized.header.version,
@@ -456,6 +456,13 @@ class SessionManager {
     }
 
     let plaintext: Uint8Array;
+
+    if (session.protocol.protocol === CryptoProtocol.PQXDH_V1 && !message.pqRatchetHeader) {
+      throw new Error(
+        `PQ session with ${message.senderId} received message without PQ ratchet header — ` +
+          'possible protocol downgrade attack or sender version mismatch'
+      );
+    }
 
     if (session.protocol.protocol === CryptoProtocol.PQXDH_V1 && message.pqRatchetHeader) {
       // PQ Triple Ratchet decryption

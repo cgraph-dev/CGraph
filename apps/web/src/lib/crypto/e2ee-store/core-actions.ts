@@ -121,7 +121,7 @@ export const createResetE2EE = (set: Set, get: Get) => async (): Promise<void> =
       }
     }
 
-    clearE2EEData();
+    await clearE2EEData();
     await sessionManager.destroyAllSessions();
 
     set({
