@@ -82,6 +82,7 @@ defmodule CGraphWeb.Plugs.SecurityHeaders do
   @impl true
   def call(conn, opts) do
     conn
+    |> generate_csp_nonce(opts)
     |> apply_hsts(opts)
     |> apply_csp(opts)
     |> apply_xss_protection()
@@ -92,6 +93,16 @@ defmodule CGraphWeb.Plugs.SecurityHeaders do
     |> apply_cross_origin_policies()
     |> emit_telemetry(opts)
   end
+
+  # CSP Nonce Generation — 128-bit base64url nonce per request
+  # Available in templates via @conn.assigns[:csp_nonce] for <style nonce="..."> elements.
+  # Libraries that use `get-nonce` (Radix UI, react-style-singleton) read from
+  # <meta property="csp-nonce" content="..."> which the SPA injects at boot.
+  defp generate_csp_nonce(conn, %{mode: :browser}) do
+    nonce = :crypto.strong_rand_bytes(16) |> Base.url_encode64(padding: false)
+    assign(conn, :csp_nonce, nonce)
+  end
+  defp generate_csp_nonce(conn, _opts), do: conn
 
   # HSTS - HTTP Strict Transport Security
   defp apply_hsts(conn, %{hsts_enabled: true, hsts_max_age: max_age, hsts_preload: preload}) do
@@ -139,6 +150,11 @@ defmodule CGraphWeb.Plugs.SecurityHeaders do
   end
 
   defp build_csp(:browser, :strict, report_uri) do
+    # NOTE: style-src still requires 'unsafe-inline' because Framer Motion,
+    # GSAP, and Radix UI set inline style attributes on DOM elements.
+    # CSP nonces only cover <style> elements, not style="..." attributes.
+    # When these libraries adopt CSS-class-based approaches, 'unsafe-inline'
+    # can be removed. Until then, this is the industry-standard tradeoff.
     directives = [
       "default-src 'self'",
       "script-src 'self'",
@@ -164,8 +180,11 @@ defmodule CGraphWeb.Plugs.SecurityHeaders do
   end
 
   defp build_csp(:browser, :standard, report_uri) do
-    # SECURITY: unsafe-inline and unsafe-eval removed — they nullify XSS protection.
-    # If third-party scripts are needed, use nonce-based CSP instead.
+    # SECURITY: unsafe-eval removed — it nullifies XSS protection.
+    # style-src 'unsafe-inline' is required by Framer Motion, GSAP, and Radix UI
+    # which set inline style attributes on DOM elements. Nonces cannot help here
+    # because CSP nonces only apply to <style>/<script> elements, not style="...".
+    # See: https://github.com/w3c/webappsec-csp/issues/212
     directives = [
       "default-src 'self'",
       "script-src 'self'",

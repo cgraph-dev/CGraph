@@ -1,0 +1,10 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Example tfvars — copy to production.tfvars and fill in real values
+# ──────────────────────────────────────────────────────────────────────────────
+
+cloudflare_account_id = "REPLACE_ME"
+zone_name             = "cgraph.org"
+environment           = "production"
+fly_backend_hostname  = "cgraph-backend.fly.dev"
+
+# API token: set via TF_VAR_cloudflare_api_token env var (never commit)

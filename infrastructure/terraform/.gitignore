@@ -1,0 +1,17 @@
+# Terraform backend state, override files, and provider lock
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+crash.log
+crash.*.log
+.terraformrc
+terraform.rc
+
+# Sensitive variable files
+*.auto.tfvars
+terraform.tfvars
