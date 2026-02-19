@@ -85,6 +85,9 @@ export interface SecureMessage {
   /** Protocol version. Present in V2+ messages; absent = classical. */
   protocolVersion?: CryptoProtocol;
 
+  /** Triple Ratchet wire version (TRIPLE_RATCHET_VERSION = 4). Separate from protocolVersion. */
+  tripleRatchetVersion?: number;
+
   /** PQ ratchet header — present only for PQXDH_V1+ messages */
   pqRatchetHeader?: {
     epoch: number;

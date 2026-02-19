@@ -24,6 +24,12 @@ export enum CryptoProtocol {
   PQXDH_V1 = 3,
 }
 
+/**
+ * Current @cgraph/crypto version used when creating sessions.
+ * Single source of truth — avoids hardcoded version strings.
+ */
+export const CRYPTO_LIB_VERSION = '0.9.31';
+
 /** Per-session protocol metadata persisted alongside engine state */
 export interface SessionProtocolMeta {
   protocol: CryptoProtocol;
@@ -53,5 +59,5 @@ export interface PQPreKeyBundle {
  * Both the KEM public key and its signature must be present.
  */
 export function bundleSupportsPQ(bundle: PQPreKeyBundle): boolean {
-  return !!(bundle.kyber_prekey && bundle.kyber_prekey_signature && bundle.kyber_prekey_id);
+  return !!(bundle.kyber_prekey && bundle.kyber_prekey_signature && bundle.kyber_prekey_id != null);
 }

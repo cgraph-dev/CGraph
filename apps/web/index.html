@@ -29,12 +29,17 @@
       NOTE: style-src 'unsafe-inline' is required by Framer Motion and Radix UI which inject
       inline style attributes (transform, opacity, pointer-events) at runtime. This cannot be
       replaced with nonces — nonces only cover <style> blocks, not style="" attributes.
-      XSS mitigation relies on script-src 'self' (no unsafe-inline/unsafe-eval).
+
+      IMPORTANT: This meta tag uses script-src 'self' (strict — no unsafe-inline).
+      The vercel.json production CSP adds 'unsafe-inline' to script-src to allow the
+      early error handler and diagnostic timeout inline scripts below. These scripts
+      are trusted first-party code. To eliminate 'unsafe-inline' in production, migrate
+      them to external .js files and remove the directive from vercel.json.
       See docs/SECURITY_AUDIT_CHECKLIST.md §4.4 for full risk assessment.
     -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://cgraph-backend.fly.dev wss://cgraph-backend.fly.dev https://*.ingest.sentry.io https://vitals.vercel-insights.com; font-src 'self' data: https://fonts.gstatic.com; frame-ancestors 'none'"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://cgraph-backend.fly.dev wss://cgraph-backend.fly.dev https://*.ingest.sentry.io https://vitals.vercel-insights.com; font-src 'self' data: https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
     />
 
     <!-- Open Graph / Facebook -->

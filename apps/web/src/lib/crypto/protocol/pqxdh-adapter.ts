@@ -199,7 +199,7 @@ export function serializePQMessage(msg: TripleRatchetMessage): {
   return {
     header: {
       ec: {
-        dh: arrayBufferToBase64(msg.header.ec.dh.buffer as ArrayBuffer),
+        dh: arrayBufferToBase64(new Uint8Array(msg.header.ec.dh).buffer),
         pn: msg.header.ec.pn,
         n: msg.header.ec.n,
         sessionId: msg.header.ec.sessionId,
@@ -213,21 +213,21 @@ export function serializePQMessage(msg: TripleRatchetMessage): {
           epoch: msg.header.pq.scka.epoch,
           ...(msg.header.pq.scka.kemPublicKey && {
             kemPublicKey: arrayBufferToBase64(
-              msg.header.pq.scka.kemPublicKey.buffer as ArrayBuffer
+              new Uint8Array(msg.header.pq.scka.kemPublicKey).buffer
             ),
           }),
           ...(msg.header.pq.scka.kemCipherText && {
             kemCipherText: arrayBufferToBase64(
-              msg.header.pq.scka.kemCipherText.buffer as ArrayBuffer
+              new Uint8Array(msg.header.pq.scka.kemCipherText).buffer
             ),
           }),
         },
       },
       version: msg.header.version,
     },
-    ciphertext: arrayBufferToBase64(msg.ciphertext.buffer as ArrayBuffer),
-    nonce: arrayBufferToBase64(msg.nonce.buffer as ArrayBuffer),
-    mac: arrayBufferToBase64(msg.mac.buffer as ArrayBuffer),
+    ciphertext: arrayBufferToBase64(new Uint8Array(msg.ciphertext).buffer),
+    nonce: arrayBufferToBase64(new Uint8Array(msg.nonce).buffer),
+    mac: arrayBufferToBase64(new Uint8Array(msg.mac).buffer),
   };
 }
 
@@ -284,7 +284,7 @@ export async function generateKEMPreKey(signingKeyPair: ECKeyPair): Promise<{
   kyberPreKeySignature: Uint8Array;
 }> {
   const kemKeyPair = kemKeygen();
-  const kyberPreKeyId = Math.floor(Math.random() * 2 ** 31);
+  const kyberPreKeyId = crypto.getRandomValues(new Uint32Array(1))[0]!;
 
   // Sign the KEM public key with our ECDSA identity signing key
   const { sign } = await import('@cgraph/crypto/x3dh');

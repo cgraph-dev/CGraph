@@ -19,6 +19,7 @@ import {
 import { e2eeLogger as logger } from '../../logger';
 import {
   CryptoProtocol,
+  CRYPTO_LIB_VERSION,
   bundleSupportsPQ,
   createPQXDHSession,
   serializePQMessage,
@@ -26,6 +27,8 @@ import {
   type PQPreKeyBundle,
 } from '../protocol';
 import type { TripleRatchetEngine, TripleRatchetStats } from '@cgraph/crypto/tripleRatchet';
+// acceptPQXDHSession will be used when KEM key persistence is implemented (see _acceptPQSession TODO)
+// import { acceptPQXDHSession } from '../protocol';
 import type { ECKeyPair } from '@cgraph/crypto/x3dh';
 
 import type { RatchetSession, SecureMessage } from './types';
@@ -78,10 +81,7 @@ class SessionManager {
         let engine: DoubleRatchetEngine | TripleRatchetEngine;
 
         if (protocol.protocol === CryptoProtocol.PQXDH_V1) {
-          // PQ session — import into TripleRatchetEngine
-          // Lazy import to avoid loading @cgraph/crypto ML-KEM when not needed
-          await import('@cgraph/crypto/tripleRatchet');
-          // TripleRatchetEngine doesn't have a fromState/importState yet — skip for now.
+          // PQ session — TripleRatchetEngine doesn't have a fromState/importState yet.
           // PQ sessions will be re-established on next message if state is unavailable.
           logger.warn(
             `PQ session for ${serialized.recipientId} cannot be restored (serialization not yet supported) — will re-establish`
@@ -189,7 +189,7 @@ class SessionManager {
       createdAt: Date.now(),
       lastActivity: Date.now(),
       messageCount: 0,
-      protocol: { protocol: CryptoProtocol.CLASSICAL_V1, cryptoVersion: '0.9.31' },
+      protocol: { protocol: CryptoProtocol.CLASSICAL_V1, cryptoVersion: CRYPTO_LIB_VERSION },
     };
 
     this.sessions.set(recipientId, session);
@@ -232,7 +232,7 @@ class SessionManager {
       createdAt: Date.now(),
       lastActivity: Date.now(),
       messageCount: 0,
-      protocol: { protocol: CryptoProtocol.PQXDH_V1, cryptoVersion: '0.9.31' },
+      protocol: { protocol: CryptoProtocol.PQXDH_V1, cryptoVersion: CRYPTO_LIB_VERSION },
     };
 
     this.sessions.set(recipientId, session);
@@ -268,7 +268,7 @@ class SessionManager {
       createdAt: Date.now(),
       lastActivity: Date.now(),
       messageCount: 0,
-      protocol: { protocol: CryptoProtocol.CLASSICAL_V1, cryptoVersion: '0.9.31' },
+      protocol: { protocol: CryptoProtocol.CLASSICAL_V1, cryptoVersion: CRYPTO_LIB_VERSION },
     };
 
     this.sessions.set(senderId, session);
@@ -277,6 +277,48 @@ class SessionManager {
     logger.log(`Accepted session ${session.sessionId} from ${senderId}`);
 
     return session;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Post-Quantum session acceptance (Bob / Responder — PQXDH)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Accept a PQXDH session as the responder (Bob).
+   *
+   * Derives the Triple Ratchet shared secret from the sender's PQ initial
+   * message, then initializes a TripleRatchetEngine as Bob.
+   *
+   * NOTE: KEM secret key persistence is not yet implemented. Until KEM secret
+   * keys are stored/loaded from the key store, Bob-side PQ session acceptance
+   * will fail with a clear error. The feature flag (`useTripleRatchet`) must be
+   * enabled first to generate and store KEM prekeys. See: docs/ROADMAP.md
+   */
+  private async _acceptPQSession(
+    _message: SecureMessage,
+    _senderIdentityKey: ArrayBuffer
+  ): Promise<RatchetSession> {
+    const pqInit = _message.pqInitialMessage;
+    logger.log(`[PQXDH] Accepting post-quantum session from ${_message.senderId}`);
+
+    // TODO(pq-keys): Implement KEM secret key persistence.
+    // Currently, KEM secret keys are generated at bundle creation time
+    // but are not persisted — Bob cannot accept PQ sessions until this
+    // is implemented. For now, throw an actionable error.
+    //
+    // When KEM key persistence is ready, this method will:
+    // 1. Load our identity key pair + signed prekey pair
+    // 2. Load the KEM secret key by kyberPreKeyId
+    // 3. Call acceptPQXDHSession() from ../protocol
+    // 4. Create a RatchetSession with CryptoProtocol.PQXDH_V1
+    //
+    // The feature flag (useTripleRatchet) must be enabled to generate
+    // and store KEM prekeys. See: packages/crypto and docs/ROADMAP.md
+    throw new Error(
+      `[PQXDH] KEM secret key persistence not yet implemented (kyberPreKeyId: ${pqInit?.kyberPreKeyId}). ` +
+        'Cannot accept PQ session — the sender should fall back to classical protocol. ' +
+        'See: packages/crypto and docs/ROADMAP.md for KEM key storage roadmap.'
+    );
   }
 
   /**
@@ -320,6 +362,7 @@ class SessionManager {
         messageId: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`,
         timestamp: Date.now(),
         protocolVersion: CryptoProtocol.PQXDH_V1,
+        tripleRatchetVersion: serialized.header.version,
         ratchetMessage: {
           header: serialized.header.ec,
           ciphertext: serialized.ciphertext,
@@ -333,9 +376,9 @@ class SessionManager {
         const pqData = this.pendingPQXDH.get(recipientId);
         if (pqData) {
           message.pqInitialMessage = {
-            identityKey: arrayBufferToBase64(pqData.identityKey.buffer as ArrayBuffer),
-            ephemeralKey: arrayBufferToBase64(pqData.ephemeralKey.buffer as ArrayBuffer),
-            kemCipherText: arrayBufferToBase64(pqData.kemCipherText.buffer as ArrayBuffer),
+            identityKey: arrayBufferToBase64(new Uint8Array(pqData.identityKey).buffer),
+            ephemeralKey: arrayBufferToBase64(new Uint8Array(pqData.ephemeralKey).buffer),
+            kemCipherText: arrayBufferToBase64(new Uint8Array(pqData.kemCipherText).buffer),
             signedPreKeyId: pqData.signedPreKeyId,
             kyberPreKeyId: pqData.kyberPreKeyId,
             ...(pqData.oneTimePreKeyId !== undefined && {
@@ -388,6 +431,7 @@ class SessionManager {
   async decryptMessage(message: SecureMessage, senderIdentityKey?: ArrayBuffer): Promise<string> {
     let session = this.sessions.get(message.senderId);
 
+    // Accept classical (X3DH) initial message
     if (!session && message.initialMessage) {
       if (!senderIdentityKey) {
         throw new Error('Sender identity key required for initial message');
@@ -397,6 +441,14 @@ class SessionManager {
         message.initialMessage,
         senderIdentityKey
       );
+    }
+
+    // Accept post-quantum (PQXDH) initial message
+    if (!session && message.pqInitialMessage) {
+      if (!senderIdentityKey) {
+        throw new Error('Sender identity key required for PQ initial message');
+      }
+      session = await this._acceptPQSession(message, senderIdentityKey);
     }
 
     if (!session) {
@@ -412,7 +464,7 @@ class SessionManager {
         header: {
           ec: message.ratchetMessage.header,
           pq: message.pqRatchetHeader,
-          version: message.protocolVersion ?? 4,
+          version: message.tripleRatchetVersion ?? 4,
         },
         ciphertext: message.ratchetMessage.ciphertext,
         nonce: message.ratchetMessage.nonce,

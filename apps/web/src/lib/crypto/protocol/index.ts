@@ -23,7 +23,7 @@
  */
 
 // Types
-export { CryptoProtocol, bundleSupportsPQ } from './types';
+export { CryptoProtocol, CRYPTO_LIB_VERSION, bundleSupportsPQ } from './types';
 export type { SessionProtocolMeta, PQPreKeyBundle } from './types';
 
 // PQXDH adapter

@@ -34,13 +34,25 @@ export async function computeResponderSharedSecret(
     throw new Error('Keys not found');
   }
 
+  // If the initiator used a one-time prekey (DH4), we need the OPK private key
+  // to compute the matching shared secret. OPK private keys are not yet persisted
+  // by the client — fail fast with a clear error rather than silently computing
+  // the wrong secret (96 bytes ≠ 128 bytes → HKDF output diverges).
+  if (initialMessage.usedOneTimePreKey) {
+    throw new Error(
+      'X3DH one-time prekey was used by initiator but OPK private keys are not persisted. ' +
+        'Session establishment cannot proceed — shared secrets would diverge. ' +
+        'See: docs/ROADMAP.md for OPK private key persistence roadmap.'
+    );
+  }
+
   // Recreate X3DH shared secret (receiver side)
   const ephemeralKey = await importPublicKey(
     base64ToArrayBuffer(initialMessage.ephemeralPublicKey)
   );
   const senderIdentity = await importPublicKey(senderIdentityKey);
 
-  // Compute DH results
+  // Compute DH results (3-DH variant, no one-time prekey)
   const dh1 = await deriveSharedSecret(signedPreKey.keyPair.privateKey, senderIdentity);
   const dh2 = await deriveSharedSecret(identityKey.keyPair.privateKey, ephemeralKey);
   const dh3 = await deriveSharedSecret(signedPreKey.keyPair.privateKey, ephemeralKey);
