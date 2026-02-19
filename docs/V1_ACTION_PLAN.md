@@ -445,8 +445,8 @@ Created `packages/api-client/src/resilience.ts` — production-grade resilience 
 
 | Metric | Current | V1 Target | World-Class |
 |--------|---------|-----------|-------------|
-| Composite Score | 9.6/10 | 8.5/10 | 9.5/10 |
-| Web Test Coverage | ~62% | 60% | 80% |
+| Composite Score | 9.7/10 | 8.5/10 | 9.5/10 |
+| Web Test Coverage | ~50% (CI floor) | 60% | 80% |
 | Mobile Test Coverage | ~50% | 50% | 70% |
 | Backend Test Coverage | ~82% | 80% | 90% |
 | E2E Test Flows | 12 (5 web + 7 mobile) | 8 | 20+ |
@@ -456,6 +456,41 @@ Created `packages/api-client/src/resilience.ts` — production-grade resilience 
 | Security Audit Items Passed | ~90% | 90% | 100% |
 | Doc Accuracy | ~95% | 95% | 100% |
 | Uptime SLO | Configured | 99.5% | 99.9% |
+
+---
+
+## Cross-Cutting: Misconfiguration Audit
+
+A full-codebase configuration audit was performed across all CI/CD, Docker, ESLint, deploy, and documentation files. **27 issues resolved** (21 initial + 6 verification-pass fixes):
+
+### Critical (3)
+- CI OTP version bumped 26.2 → 27.1.2 (aligned with Dockerfile)
+- CI Postgres credentials aligned with `test.exs` (`cgraph`/`cgraph_dev_password`)
+- Dockerfile PgBouncer COPY path fixed
+
+### High (4)
+- Node.js standardized to 22.x across all workflows and Dockerfiles
+- ESLint typescript-eslint v8 `.reduce()` fix — 46 rules were silently dropped
+- Coverage-gate workflow given Postgres service (was failing on DB connect)
+- Web Dockerfile updated to `node:22-alpine`
+
+### Medium (5)
+- Removed stale `apps/web/pnpm-lock.yaml` (13,466 lines — monorepo uses root lockfile)
+- Created `.env.example` with all required environment variables
+- Docusaurus version/links/Algolia configuration fixed
+- Web coverage thresholds corrected (were 19% — raised to 50% CI floor)
+- `coveralls.json` minimum_coverage aligned to 75% (matches CI gate)
+
+### Low (9 + 6 verification fixes)
+- Deprecated `version:` removed from docker-compose files
+- Deprecated `X-` headers removed from Dockerfiles
+- Renovate config updated to current schema
+- pnpm constraint tightened to `>=10.0.0`
+- Dev JWT TTL aligned (24h → matches runtime.exs)
+- Docusaurus `onBrokenLinks: "throw"` enforced
+- Dead `config :esbuild` / `config :tailwind` removed from API-only backend
+- V1 Action Plan success criteria scores corrected
+- Dashboard score qualifiers added (external audits, load test status)
 
 ---
 

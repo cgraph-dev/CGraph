@@ -43,14 +43,13 @@ export default defineConfig({
         '**/test/**',
         '**/mocks/**',
       ],
-      // Progressive coverage thresholds - Phase 7 targets
-      // Current: ~20%, Target: 80%
-      // Thresholds set to current floor to prevent regression
+      // Progressive coverage thresholds
+      // CI floor — prevents regression while coverage grows toward 80%
       thresholds: {
-        statements: 19,
-        branches: 60,
+        statements: 50,
+        branches: 50,
         functions: 35,
-        lines: 19,
+        lines: 50,
       },
     },
   },

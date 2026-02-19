@@ -14,8 +14,8 @@ Real-time overview of project health, architecture status, and operational state
 | **TypeScript**    | OK     | 10/10 | 0 errors across all packages; 0 `any` types in production code                      |
 | **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config with 46 ts-eslint rules properly applied          |
 | **Architecture**  | OK     | 9/10  | Router split (7 domain modules), component categorization, remote caching           |
-| **Tests**         | OK     | 9/10  | 1,908 backend tests, 0 failures (~82%); web ~62% (549 new); mobile ~50% (327 new); 12 E2E flows; CI coverage gates |
-| **Security**      | OK     | 9/10  | Real ECDH X3DH + post-quantum ML-KEM-768; 3-layer rate limiting; Guardian JWT; comprehensive CSP/HSTS; no external audit yet |
+| **Tests**         | OK     | 9/10  | 1,908 backend tests, 0 failures (~82%); web ~50% (549 new); mobile ~50% (327 new); 12 E2E flows; CI coverage gates; load tests not yet run |
+| **Security**      | OK     | 9/10  | Real ECDH X3DH + post-quantum ML-KEM-768; 3-layer rate limiting; Guardian JWT; comprehensive CSP/HSTS; no external pen test or E2EE formal audit yet |
 | **Documentation** | OK     | 8/10  | V1_ACTION_PLAN tracking all phases; contradictions resolved; docs-website scaffolded |
 | **Observability** | OK     | 9/10  | Full stack: Prometheus + Grafana + Alertmanager + Tempo + Loki; OTel real SDK; SLO dashboards + alerting rules; chaos tests |
 | **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing + API client retry/circuit breaker |
