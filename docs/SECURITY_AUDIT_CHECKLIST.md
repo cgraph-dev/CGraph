@@ -27,7 +27,7 @@
 | Prekey Management                       | `apps/backend/lib/cgraph/cache/unified.ex` (prekey bundle caching)                | ✅ Implemented |
 | Device Verification (Safety Numbers)    | `apps/web/src/modules/chat/components/e2ee/` + `apps/web/src/pages/security/`     | ✅ Implemented |
 | Key Backup / Recovery                   | Not yet implemented                                                               | ❌ Gap         |
-| Forward Secrecy (Mobile)                | Mobile lacks Double Ratchet                                                       | ⚠️ Gap         |
+| Forward Secrecy (Mobile)                | Mobile classical ECDH/AES-GCM; PQ scaffolding done, full ratchet Phase 2          | ⚠️ Partial     |
 
 ### 2.2 Application Security (Pentest Scope)
 
@@ -75,7 +75,8 @@
 - [x] Content-Security-Policy headers (`security_headers.ex`)
 - [x] CORS configuration
 - [x] Rate limiting (Hammer)
-- [ ] Semgrep SAST integration in CI
+- [x] Semgrep SAST integration in CI (`.github/workflows/semgrep.yml` — 8 rulesets, SARIF,
+      quick-scan on PRs)
 
 ### 4.3 Audit Logging
 
@@ -173,12 +174,12 @@
 
 ## 8. Known Gaps to Disclose to Auditors
 
-1. **Mobile E2EE gap**: Mobile app lacks Double Ratchet / forward secrecy (uses simplified
-   encryption)
+1. **Mobile E2EE gap**: Mobile has classical X3DH + AES-GCM. PQ scaffolding in place (protocol
+   negotiation, KEM storage, bundle detection). Full Triple Ratchet deferred pending RN WASM.
 2. **Sealed sender not implemented**: Metadata protection is limited
 3. **Key transparency logs**: No transparency mechanism for key changes
 4. **Anomaly detection**: Not implemented — planned for post-audit
-5. **SIEM integration**: No external log shipping yet
+5. **SIEM integration**: Log stack configured (Loki+Promtail), not deployed to production
 
 ---
 
@@ -189,12 +190,12 @@
 | 1   | Select and engage audit firms     | P0       | 1 week      | ❌ Not started |
 | 2   | Provision staging environment     | P0       | 2 days      | ❌ Not started |
 | 3   | Add auth lifecycle audit events   | P1       | 1 day       | ❌ Not started |
-| 4   | Integrate Semgrep in CI           | P1       | 0.5 day     | ❌ Not started |
-| 5   | Enable audit retention cleanup    | P2       | 0.5 day     | ❌ Not started |
+| 4   | Integrate Semgrep in CI           | P1       | 0.5 day     | ✅ Done        |
+| 5   | Enable audit retention cleanup    | P2       | 0.5 day     | ✅ Done        |
 | 6   | Conduct incident response drill   | P2       | 1 day       | ❌ Not started |
 | 7   | Create auditor access credentials | P1       | 0.5 day     | ❌ Not started |
-| 8   | Review and update API docs        | P2       | 1 day       | ❌ Not started |
-| 9   | Ship Semgrep results baseline     | P2       | 0.5 day     | ❌ Not started |
+| 8   | Review and update API docs        | P2       | 1 day       | ⚠️ Partial     |
+| 9   | Ship Semgrep results baseline     | P2       | 0.5 day     | ✅ Done        |
 
 ---
 
@@ -202,5 +203,7 @@
 
 | Date       | Change                                                             |
 | ---------- | ------------------------------------------------------------------ |
+| 2026-02-20 | PQ deployment complete — backend KEM endpoints, web full stack     |
+| 2026-02-20 | Semgrep CI active, audit retention live, mobile PQ scaffolding     |
 | 2026-02-17 | Initial checklist created                                          |
 | 2026-02-17 | Audit persistence enabled for security events (was in-memory only) |

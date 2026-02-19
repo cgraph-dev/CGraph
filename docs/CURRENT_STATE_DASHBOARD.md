@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.31** | Generated: February 19, 2026
+> **Version: 0.9.31** | Generated: February 20, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
@@ -8,28 +8,25 @@ Real-time overview of project health, architecture status, and operational state
 
 ## Overall Health
 
-| Dimension         | Status | Score  | Notes                                                                                                                                                                                                                                                                                                                                                                                                      |
-| ----------------- | ------ | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Build**         | OK     | 10/10  | All apps building successfully                                                                                                                                                                                                                                                                                                                                                                             |
-| **TypeScript**    | OK     | 10/10  | 0 errors across all packages; 0 `any` types in production code                                                                                                                                                                                                                                                                                                                                             |
-| **Lint**          | OK     | 10/10  | 0 errors, ESLint 9 flat config with 46 ts-eslint rules; `no-explicit-any` enforced as **error** across all projects                                                                                                                                                                                                                                                                                        |
-| **Architecture**  | OK     | 9/10   | Router split (7 domain modules), component categorization, remote caching; mobile a11y annotations on all shared components; Cloudflare IaC (Terraform)                                                                                                                                                                                                                                                    |
-| **Tests**         | OK     | 9/10   | 1,908 backend (0 failures, ~82%); web 60% floor (549 new); mobile ~50% (327 new); 12 E2E flows; CI coverage hard-fail; chaos test CI workflow added; load tests have CI workflow (needs staging)                                                                                                                                                                                                           |
-| **Security**      | OK     | 8.5/10 | Real ECDH X3DH; `@cgraph/crypto` ML-KEM-768 library done but NOT in production path; 3-layer rate limiting (fail-closed with local Cachex fallback); Guardian JWT; CSP hardened (unsafe-inline removed from script-src) + nonce infrastructure; E2EE key storage migrated to encrypted IndexedDB (SecureStorage); session signing salt moved to runtime config; external pen test + E2EE audit **overdue** |
-| **Documentation** | OK     | 8.5/10 | V1_ACTION_PLAN honest (observability marked deploy-pending); all doc paths verified; coverage numbers updated; Semgrep status corrected; web hosting corrected to Cloudflare Pages; security audit Q1 2026 overdue                                                                                                                                                                                         |
-| **Observability** | WARN   | 6/10   | Full stack **configs exist** (Prometheus+Grafana+Alertmanager+Tempo+Loki) but **NOT deployed to production**; Alertmanager template requires envsubst; missing ratio_6h recording rule FIXED; OTel SDK real                                                                                                                                                                                                |
-| **Resilience**    | OK     | 9/10   | CB + DLQ + Backpressure + Snowflake + RequestCoalescing + API client retry/circuit breaker; rate limiter **fail-closed**; account lockout **fail-closed**                                                                                                                                                                                                                                                  |
-| **CI/CD**         | OK     | 8.5/10 | 16 GH Actions; coverage hard-fail; Grype blocks high+ vulns; canary deploys; PR size checks; staging deploy workflow; chaos test workflow; load test workflow (deploy-backend now manual-only; observability stack not yet deployed to production)                                                                                                                                                         |
+| Dimension         | Status | Score  | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ----------------- | ------ | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Build**         | OK     | 10/10  | All apps building successfully                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **TypeScript**    | OK     | 10/10  | 0 errors across all packages; 0 `any` types in production code                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **Lint**          | OK     | 10/10  | 0 errors, ESLint 9 flat config with 46 ts-eslint rules; `no-explicit-any` enforced as **error** across all projects                                                                                                                                                                                                                                                                                                                                                           |
+| **Architecture**  | OK     | 9/10   | Router split (7 domain modules), component categorization, remote caching; mobile a11y annotations on all shared components; Cloudflare IaC (Terraform)                                                                                                                                                                                                                                                                                                                       |
+| **Tests**         | OK     | 9/10   | 1,908 backend (0 failures, ~82%); web 60% floor (549 new); mobile ~50% (327 new); 12 E2E flows; CI coverage hard-fail; chaos test CI workflow added; load tests have CI workflow (needs staging)                                                                                                                                                                                                                                                                              |
+| **Security**      | OK     | 9/10   | Real ECDH X3DH + PQXDH (ML-KEM-768) in production E2EE path (feature-flagged); `@cgraph/crypto` Triple Ratchet fully wired (session persist, KEM key storage, backend endpoints); 3-layer rate limiting (fail-closed with local Cachex fallback); Guardian JWT; CSP hardened (unsafe-inline removed from script-src) + nonce infrastructure; E2EE key storage migrated to encrypted IndexedDB (SecureStorage); Semgrep SAST in CI; external pen test + E2EE audit **overdue** |
+| **Documentation** | OK     | 9/10   | V1_ACTION_PLAN honest (observability marked deploy-pending, PQ deployment complete); all doc paths verified; coverage numbers updated; Semgrep active in CI; web hosting corrected to Cloudflare Pages; security audit Q1 2026 overdue                                                                                                                                                                                                                                        |
+| **Observability** | WARN   | 6/10   | Full stack **configs exist** (Prometheus+Grafana+Alertmanager+Tempo+Loki) but **NOT deployed to production**; Alertmanager template requires envsubst; missing ratio_6h recording rule FIXED; OTel SDK real                                                                                                                                                                                                                                                                   |
+| **Resilience**    | OK     | 9/10   | CB + DLQ + Backpressure + Snowflake + RequestCoalescing + API client retry/circuit breaker; rate limiter **fail-closed**; account lockout **fail-closed**                                                                                                                                                                                                                                                                                                                     |
+| **CI/CD**         | OK     | 8.5/10 | 16 GH Actions; coverage hard-fail; Grype blocks high+ vulns; canary deploys; PR size checks; staging deploy workflow; chaos test workflow; load test workflow (deploy-backend now manual-only; observability stack not yet deployed to production)                                                                                                                                                                                                                            |
 
-**Composite Score: 8.9/10** — Strong engineering foundation with all V1 targets met. Key remaining
-gaps: `@cgraph/crypto` not wired into production E2EE path, observability stack not deployed to
-production, external security audit overdue (Q1 2026). Two full audit sweeps completed (93 findings
-total) — all Critical/High/Medium/Low issues resolved. Second audit hardened: session signing salt
-(runtime), E2EE key storage (SecureStorage/encrypted IndexedDB), CSP (removed unsafe-inline from
-script-src), rate limiter (fail-closed with local fallback), Oban queues (14 declared), CI timeouts
-(39 jobs), Docker hygiene, 7 documentation corrections. Cloudflare Terraform IaC codified. CSP nonce
-infrastructure added (style-src 'unsafe-inline' still required due to Framer Motion/Radix UI inline
-style attributes). Staging + chaos + load test CI workflows created.
+**Composite Score: 9.1/10** — Strong engineering foundation with all V1 targets met. Key remaining
+gaps: observability stack not deployed to production, external security audit overdue (Q1 2026). PQ
+E2EE fully wired into production (web: PQXDH + Triple Ratchet + KEM persistence + backend endpoints;
+mobile: PQ scaffolding with classical fallback). k6 load test tooling validated (pending staging
+environment). Two full audit sweeps completed (93 findings total) — all resolved. Security score
+boosted from 8.5→9/10 after PQ production deployment + Semgrep CI integration.
 
 > **Implementation Registry**: See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file-level
 > inventory of all operational systems, their locations, and remaining gaps.
@@ -67,19 +64,19 @@ style attributes). Staging + chaos + load test CI workflows created.
 
 ### Security Controls
 
-| Control                       | Status | Notes                                                                                                                      |
-| ----------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------- |
-| E2EE (PQXDH + Triple Ratchet) | ✅     | Post-quantum hybrid; no external audit yet                                                                                 |
-| TLS 1.3                       | ✅     | Enforced on all connections                                                                                                |
-| CSP Headers                   | ✅     | Strict policy; no unsafe-eval; nonce infra ready; HSTS enabled; style-src unsafe-inline required by Framer Motion/Radix UI |
-| Rate Limiting                 | ✅     | Redis-backed, per-user and per-IP                                                                                          |
-| Trusted Proxy                 | ✅     | Cloudflare CIDR enforcement                                                                                                |
-| 2FA                           | ✅     | TOTP with hashed recovery codes (separate schema)                                                                          |
-| Auth Token Security           | ✅     | sessionStorage-only; no localStorage token leaks                                                                           |
-| Secret Scanning               | ✅     | Gitleaks in CI                                                                                                             |
-| Dependency Audit              | ✅     | pnpm audit + mix audit in CI                                                                                               |
-| **External Pen Test**         | ❌     | **Not yet conducted — HIGH PRIORITY**                                                                                      |
-| **E2EE Formal Audit**         | ❌     | **Not yet conducted — HIGH PRIORITY**                                                                                      |
+| Control                       | Status | Notes                                                                                                                                                        |
+| ----------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| E2EE (PQXDH + Triple Ratchet) | ✅     | Post-quantum hybrid **in production path** (feature-flagged); full stack: web integration, backend KEM endpoints, session persistence, mobile PQ scaffolding |
+| TLS 1.3                       | ✅     | Enforced on all connections                                                                                                                                  |
+| CSP Headers                   | ✅     | Strict policy; no unsafe-eval; nonce infra ready; HSTS enabled; style-src unsafe-inline required by Framer Motion/Radix UI                                   |
+| Rate Limiting                 | ✅     | Redis-backed, per-user and per-IP                                                                                                                            |
+| Trusted Proxy                 | ✅     | Cloudflare CIDR enforcement                                                                                                                                  |
+| 2FA                           | ✅     | TOTP with hashed recovery codes (separate schema)                                                                                                            |
+| Auth Token Security           | ✅     | sessionStorage-only; no localStorage token leaks                                                                                                             |
+| Secret Scanning               | ✅     | Gitleaks in CI                                                                                                                                               |
+| Dependency Audit              | ✅     | pnpm audit + mix audit in CI                                                                                                                                 |
+| **External Pen Test**         | ❌     | **Not yet conducted — HIGH PRIORITY**                                                                                                                        |
+| **E2EE Formal Audit**         | ❌     | **Not yet conducted — HIGH PRIORITY**                                                                                                                        |
 
 ### Recent Security Fixes
 
@@ -294,14 +291,12 @@ apps/mobile/src/screens/
 
 ### P1 — High Priority
 
-| Issue                                      | Owner     | ETA                   |
-| ------------------------------------------ | --------- | --------------------- |
-| External E2EE security audit               | @security | Q1 2026 — **OVERDUE** |
-| External penetration test                  | @security | Q1 2026 — **OVERDUE** |
-| Mobile E2EE rewrite (XOR→real crypto)      | @dev-team | Weeks 2-4             |
-| Run load tests (scripts ready, 0 runs)     | @dev-team | Weeks 4-5             |
-| Deploy Grafana dashboards                  | @infra    | Weeks 4-6             |
-| Configure Alertmanager (alerts go nowhere) | @infra    | Weeks 4-6             |
+| Issue                                    | Owner     | ETA                   |
+| ---------------------------------------- | --------- | --------------------- |
+| External E2EE security audit             | @security | Q1 2026 — **OVERDUE** |
+| External penetration test                | @security | Q1 2026 — **OVERDUE** |
+| Deploy observability stack to production | @infra    | Weeks 4-6             |
+| Run k6 load tests against staging        | @dev-team | After staging deploy  |
 
 ### P2 — Medium Priority
 
@@ -361,4 +356,4 @@ apps/mobile/src/screens/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.31 • Updated: February 19, 2026</sub>
+<sub>**CGraph Dashboard** • Version 0.9.31 • Updated: February 20, 2026</sub>

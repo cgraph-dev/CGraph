@@ -537,19 +537,19 @@ infrastructure modules (circuit_breaker, metrics, telemetry) serve cross-cutting
 
 ## Success Criteria
 
-| Metric                      | Current                                                                | V1 Target  | World-Class |
-| --------------------------- | ---------------------------------------------------------------------- | ---------- | ----------- |
-| Composite Score             | 8.4/10                                                                 | 8.5/10     | 9.5/10      |
-| Web Test Coverage           | 60% (CI hard-fail)                                                     | 60%        | 80%         |
-| Mobile Test Coverage        | ~50%                                                                   | 50%        | 70%         |
-| Backend Test Coverage       | ~82%                                                                   | 80%        | 90%         |
-| E2E Test Flows              | 12 (5 web + 7 mobile)                                                  | 8          | 20+         |
-| Load Test Runs              | Runner ready                                                           | 1 baseline | Monthly     |
-| Backend Test Failures       | 0                                                                      | 0          | 0           |
-| P99 Latency                 | Unknown                                                                | <500ms     | <200ms      |
-| Security Audit Items Passed | ~95% (PQ fully deployed, mobile PQ Phase 2 + external audit remaining) | 90%        | 100%        |
-| Doc Accuracy                | ~90% (observability deploy status corrected)                           | 95%        | 100%        |
-| Uptime SLO                  | Configured                                                             | 99.5%      | 99.9%       |
+| Metric                      | Current                                                             | V1 Target  | World-Class |
+| --------------------------- | ------------------------------------------------------------------- | ---------- | ----------- |
+| Composite Score             | 9.1/10                                                              | 8.5/10     | 9.5/10      |
+| Web Test Coverage           | 60% (CI hard-fail)                                                  | 60%        | 80%         |
+| Mobile Test Coverage        | ~50%                                                                | 50%        | 70%         |
+| Backend Test Coverage       | ~82%                                                                | 80%        | 90%         |
+| E2E Test Flows              | 12 (5 web + 7 mobile)                                               | 8          | 20+         |
+| Load Test Runs              | Tooling validated (k6 v1.6.1); pending staging                      | 1 baseline | Monthly     |
+| Backend Test Failures       | 0                                                                   | 0          | 0           |
+| P99 Latency                 | Unknown (awaiting staging load test)                                | <500ms     | <200ms      |
+| Security Audit Items Passed | ~95% (PQ fully deployed, external audit + mobile full PQ remaining) | 90%        | 100%        |
+| Doc Accuracy                | ~95% (dashboard + plan updated, observability status honest)        | 95%        | 100%        |
+| Uptime SLO                  | Configured                                                          | 99.5%      | 99.9%       |
 
 ---
 
