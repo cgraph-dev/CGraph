@@ -16,6 +16,10 @@
 export { createApiClient } from './client';
 export type { ApiClient, ApiClientConfig, ApiError, PaginatedResponse, ApiResponse } from './client';
 
+// Resilience layer
+export { withResilience, CircuitBreaker, CircuitOpenError, RequestTimeoutError } from './resilience';
+export type { ResilienceConfig, RetryConfig, CircuitBreakerConfig, CircuitState } from './resilience';
+
 // Endpoint modules (re-exported via client instance)
 export type { AuthEndpoints } from './endpoints/auth';
 export type { MessagesEndpoints } from './endpoints/messages';

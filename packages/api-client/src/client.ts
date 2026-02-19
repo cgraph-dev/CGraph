@@ -17,6 +17,8 @@ import { createFriendsEndpoints } from './endpoints/friends';
 import type { FriendsEndpoints } from './endpoints/friends';
 import { createGamificationEndpoints } from './endpoints/gamification';
 import type { GamificationEndpoints } from './endpoints/gamification';
+import { withResilience } from './resilience';
+import type { ResilienceConfig } from './resilience';
 
 // --- Types ---
 
@@ -61,6 +63,8 @@ export interface ApiClientConfig {
   readonly getToken?: () => string | null;
   /** Optional custom fetch implementation (for React Native / testing). */
   readonly fetchImpl?: typeof fetch;
+  /** Resilience configuration (retry, circuit breaker, timeout). */
+  readonly resilience?: ResilienceConfig;
 }
 
 /** The unified API client surface. */
@@ -104,7 +108,12 @@ class ApiClientError extends Error {
 /** Creates a typed API client instance. */
 export function createApiClient(config: ApiClientConfig): ApiClient {
   let token: string | null = null;
-  const fetchFn = config.fetchImpl ?? fetch;
+  const baseFetch = config.fetchImpl ?? fetch;
+
+  // Wrap fetch with retry, circuit breaker, and timeout
+  const fetchFn = config.resilience !== undefined
+    ? withResilience(baseFetch, config.resilience)
+    : baseFetch;
 
   function getAuthToken(): string | null {
     if (config.getToken) {
