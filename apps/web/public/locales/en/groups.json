@@ -1,0 +1,59 @@
+{
+  "groups": {
+    "title": "Groups",
+    "create": "Create group",
+    "join": "Join group",
+    "leave": "Leave group",
+    "search": "Search groups...",
+    "empty": "No groups yet",
+    "empty_description": "Create or join a group to get started",
+    "members": "{{count}} member",
+    "members_plural": "{{count}} members",
+    "online": "{{count}} online",
+    "settings": "Group settings",
+    "invite": "Invite people",
+    "roles": {
+      "owner": "Owner",
+      "admin": "Admin",
+      "moderator": "Moderator",
+      "member": "Member"
+    }
+  },
+  "forums": {
+    "title": "Forums",
+    "create_post": "New post",
+    "create_thread": "New thread",
+    "search": "Search forums...",
+    "empty": "No posts yet",
+    "empty_description": "Be the first to start a discussion",
+    "replies": "{{count}} reply",
+    "replies_plural": "{{count}} replies",
+    "views": "{{count}} view",
+    "views_plural": "{{count}} views",
+    "pinned": "Pinned",
+    "locked": "Locked",
+    "sort": {
+      "newest": "Newest",
+      "oldest": "Oldest",
+      "most_replied": "Most replied",
+      "most_viewed": "Most viewed"
+    }
+  },
+  "channels": {
+    "text": "Text channel",
+    "voice": "Voice channel",
+    "announcement": "Announcement channel",
+    "create": "Create channel",
+    "edit": "Edit channel",
+    "delete": "Delete channel"
+  },
+  "moderation": {
+    "ban": "Ban member",
+    "kick": "Kick member",
+    "mute": "Mute member",
+    "warn": "Warn member",
+    "reason": "Reason",
+    "duration": "Duration",
+    "permanent": "Permanent"
+  }
+}

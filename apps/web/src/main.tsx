@@ -20,6 +20,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { ThemeProviderEnhanced } from './contexts/ThemeContextEnhanced';
 import { NotificationProvider } from './providers/NotificationProvider';
 import { logger } from './lib/logger';
+import './i18n'; // i18n initialization (must be before App)
 import './index.css';
 
 debugLog('All imports completed');

@@ -1,0 +1,61 @@
+{
+  "conversations": {
+    "title": "Messages",
+    "new": "New conversation",
+    "search": "Search conversations...",
+    "empty": "No conversations yet",
+    "empty_description": "Start a new conversation to get chatting",
+    "unread": "{{count}} unread",
+    "muted": "Muted",
+    "pinned": "Pinned",
+    "archived": "Archived"
+  },
+  "composer": {
+    "placeholder": "Type a message...",
+    "send": "Send",
+    "attach": "Attach file",
+    "emoji": "Add emoji",
+    "gif": "Send GIF",
+    "voice": "Record voice message",
+    "reply_to": "Replying to {{name}}",
+    "editing": "Editing message",
+    "encrypted": "End-to-end encrypted"
+  },
+  "message": {
+    "edited": "edited",
+    "deleted": "This message was deleted",
+    "reply": "Reply",
+    "edit": "Edit",
+    "delete": "Delete",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "react": "React",
+    "forward": "Forward",
+    "copy": "Copy text",
+    "report": "Report",
+    "thread": "Start thread",
+    "read_by": "Read by {{count}}",
+    "delivered": "Delivered",
+    "sending": "Sending...",
+    "failed": "Failed to send",
+    "retry": "Tap to retry"
+  },
+  "typing": {
+    "one": "{{name}} is typing...",
+    "two": "{{name1}} and {{name2}} are typing...",
+    "many": "{{count}} people are typing..."
+  },
+  "call": {
+    "incoming": "Incoming call from {{name}}",
+    "outgoing": "Calling {{name}}...",
+    "accept": "Accept",
+    "decline": "Decline",
+    "end": "End call",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "video_on": "Turn on camera",
+    "video_off": "Turn off camera",
+    "screen_share": "Share screen",
+    "duration": "{{duration}}"
+  }
+}

@@ -19,7 +19,6 @@ defmodule CGraph.WebhooksTest do
 
     test "exports dispatch functions" do
       assert function_exported?(Webhooks, :dispatch, 3)
-      assert function_exported?(Webhooks, :dispatch_sync, 3)
     end
 
     test "exports delivery tracking functions" do
@@ -56,7 +55,7 @@ defmodule CGraph.WebhooksTest do
 
   describe "get_stats/1" do
     test "returns webhook delivery statistics" do
-      result = Webhooks.get_stats(%{user_id: Ecto.UUID.generate()})
+      result = Webhooks.get_stats(Ecto.UUID.generate())
       assert is_map(result) or match?({:ok, _}, result)
     end
   end

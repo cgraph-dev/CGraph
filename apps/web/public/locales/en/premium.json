@@ -1,0 +1,52 @@
+{
+  "plans": {
+    "title": "Premium Plans",
+    "subtitle": "Unlock the full CGraph experience",
+    "free": {
+      "name": "Free",
+      "description": "Everything you need to get started",
+      "price": "Free"
+    },
+    "premium": {
+      "name": "Premium",
+      "description": "For power users who want more",
+      "price": "{{price}}/month",
+      "annual_price": "{{price}}/year",
+      "save": "Save {{percent}}%"
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "description": "For teams and organizations",
+      "price": "Contact sales"
+    }
+  },
+  "features": {
+    "title": "Compare plans",
+    "unlimited_messages": "Unlimited messages",
+    "file_upload": "File upload ({{size}})",
+    "voice_calls": "Voice & video calls",
+    "custom_themes": "Custom themes",
+    "priority_support": "Priority support",
+    "api_access": "API access",
+    "custom_bots": "Custom bots",
+    "analytics": "Advanced analytics"
+  },
+  "subscription": {
+    "current_plan": "Current plan",
+    "upgrade": "Upgrade",
+    "downgrade": "Downgrade",
+    "cancel": "Cancel subscription",
+    "renews": "Renews on {{date}}",
+    "expires": "Expires on {{date}}",
+    "manage_billing": "Manage billing"
+  },
+  "shop": {
+    "title": "Coin Shop",
+    "coins": "{{count}} coins",
+    "balance": "Your balance: {{count}} coins",
+    "buy": "Buy",
+    "gift": "Gift",
+    "claim_daily": "Claim daily reward",
+    "claimed": "Already claimed today"
+  }
+}

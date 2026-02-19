@@ -35,8 +35,8 @@ services:
     ports:
       - '9090:9090'
     volumes:
-      - ../infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ../infrastructure/prometheus/rules:/etc/prometheus/rules:ro
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/rules:/etc/prometheus/rules:ro
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -60,7 +60,7 @@ services:
     ports:
       - '9093:9093'
     volumes:
-      - ../infrastructure/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
     command:
       - '--config.file=/etc/alertmanager/alertmanager.yml'
       - '--storage.path=/alertmanager'
@@ -84,8 +84,8 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/json/cgraph-backend.json
     volumes:
-      - ../infrastructure/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
-      - ../infrastructure/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
       - grafana_data:/var/lib/grafana
     depends_on:
       prometheus:
@@ -106,7 +106,7 @@ services:
       - '4317:4317'   # OTLP gRPC receiver
       - '4318:4318'   # OTLP HTTP receiver
     volumes:
-      - ../infrastructure/tempo/tempo.yml:/etc/tempo/tempo.yml:ro
+      - ./tempo/tempo.yml:/etc/tempo/tempo.yml:ro
       - tempo_data:/var/tempo
     command:
       - '-config.file=/etc/tempo/tempo.yml'
@@ -124,7 +124,7 @@ services:
     ports:
       - '3100:3100'
     volumes:
-      - ../infrastructure/loki/loki.yml:/etc/loki/loki.yml:ro
+      - ./loki/loki.yml:/etc/loki/loki.yml:ro
       - loki_data:/loki
     command:
       - '-config.file=/etc/loki/loki.yml'
@@ -140,7 +140,7 @@ services:
     image: grafana/promtail:3.1.0
     container_name: cgraph-promtail
     volumes:
-      - ../infrastructure/promtail/promtail.yml:/etc/promtail/promtail.yml:ro
+      - ./promtail/promtail.yml:/etc/promtail/promtail.yml:ro
       - /var/log:/var/log:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
     command:

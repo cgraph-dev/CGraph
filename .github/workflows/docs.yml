@@ -1,0 +1,53 @@
+name: Generate API Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/*/src/**'
+      - 'apps/web/src/lib/**'
+      - 'apps/web/src/stores/**'
+      - 'docs-website/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-docs:
+    name: TypeDoc API Reference
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate TypeDoc API reference
+        working-directory: docs-website
+        run: pnpm docs:api
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --quiet docs-website/api-reference/ 2>/dev/null && echo "changed=false" >> "$GITHUB_OUTPUT" || echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Commit generated docs
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs-website/api-reference/
+          git commit -m "docs: auto-generate TypeDoc API reference [skip ci]"
+          git push

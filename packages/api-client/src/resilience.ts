@@ -245,15 +245,17 @@ export function withResilience(
         }
 
         // Check for retryable HTTP status
-        if (retryConfig && attempt < retryConfig.maxRetries) {
-          if ((retryConfig.retryableStatuses as readonly number[]).includes(response.status)) {
-            lastError = new Error(`HTTP ${response.status}`);
-            const retryDelay = retryConfig.jitter ? addJitter(delay) : delay;
-            config?.onRetry?.(attempt + 1, lastError, retryDelay);
-            await sleep(retryDelay);
-            delay = Math.min(delay * retryConfig.factor, retryConfig.maxDelay);
-            continue;
-          }
+        if (
+          retryConfig &&
+          attempt < retryConfig.maxRetries &&
+          (retryConfig.retryableStatuses as readonly number[]).includes(response.status)
+        ) {
+          lastError = new Error(`HTTP ${response.status}`);
+          const retryDelay = retryConfig.jitter ? addJitter(delay) : delay;
+          config?.onRetry?.(attempt + 1, lastError, retryDelay);
+          await sleep(retryDelay);
+          delay = Math.min(delay * retryConfig.factor, retryConfig.maxDelay);
+          continue;
         }
 
         // Success — record and return

@@ -1,0 +1,61 @@
+{
+  "title": "Settings",
+  "sections": {
+    "account": "Account",
+    "appearance": "Appearance",
+    "notifications": "Notifications",
+    "privacy": "Privacy & Security",
+    "language": "Language",
+    "accessibility": "Accessibility",
+    "advanced": "Advanced",
+    "about": "About"
+  },
+  "account": {
+    "username": "Username",
+    "email": "Email",
+    "display_name": "Display name",
+    "bio": "Bio",
+    "avatar": "Profile picture",
+    "change_password": "Change password",
+    "two_factor": "Two-factor authentication",
+    "delete_account": "Delete account",
+    "export_data": "Export my data"
+  },
+  "appearance": {
+    "theme": "Theme",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "theme_system": "System",
+    "font_size": "Font size",
+    "compact_mode": "Compact mode",
+    "animations": "Animations",
+    "reduced_motion": "Reduce motion"
+  },
+  "notifications": {
+    "push": "Push notifications",
+    "email": "Email notifications",
+    "sound": "Notification sound",
+    "desktop": "Desktop notifications",
+    "dnd": "Do not disturb",
+    "mentions_only": "Mentions only"
+  },
+  "privacy": {
+    "online_status": "Show online status",
+    "read_receipts": "Read receipts",
+    "typing_indicator": "Typing indicator",
+    "profile_visibility": "Profile visibility",
+    "blocked_users": "Blocked users",
+    "data_collection": "Data collection"
+  },
+  "language": {
+    "title": "Language",
+    "select": "Select language",
+    "rtl_support": "Right-to-left support"
+  },
+  "accessibility": {
+    "screen_reader": "Screen reader optimizations",
+    "high_contrast": "High contrast mode",
+    "keyboard_shortcuts": "Keyboard shortcuts",
+    "font_scaling": "Font scaling"
+  }
+}

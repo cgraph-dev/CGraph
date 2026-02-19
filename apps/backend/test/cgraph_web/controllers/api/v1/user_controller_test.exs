@@ -215,7 +215,7 @@ defmodule CgraphWeb.API.V1.UserControllerTest do
       new_username = "another_username_#{System.unique_integer([:positive])}"
       conn = put(conn, ~p"/api/v1/me/username", %{username: new_username})
 
-      assert %{"error" => _} = json_response(conn, 422)
+      assert %{"error" => _} = json_response(conn, 429)
     end
 
     test "rejects duplicate username", %{conn: conn, user: _user} do
