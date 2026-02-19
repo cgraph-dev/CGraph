@@ -169,3 +169,156 @@ export async function isE2EESetUp(): Promise<boolean> {
   const identity = await loadIdentityKeyPair();
   return identity !== null;
 }
+
+// =============================================================================
+// KEM PREKEY PERSISTENCE (ML-KEM-768 secret keys)
+// =============================================================================
+
+/**
+ * Store a KEM (ML-KEM-768) prekey secret key in encrypted storage.
+ *
+ * The secret key (2400 bytes) is stored as base64 in a JSON map keyed
+ * by kyberPreKeyId. This allows Bob to load the corresponding secret
+ * key when receiving a PQXDH initial message.
+ *
+ * @security CRITICAL — KEM secret keys enable PQ session acceptance.
+ */
+export async function storeKEMPreKey(kyberPreKeyId: number, secretKey: Uint8Array): Promise<void> {
+  if (!SecureStorage.isReady()) {
+    throw new Error('SecureStorage not initialized');
+  }
+
+  const { arrayBufferToBase64 } = await import('../e2ee');
+
+  // Load existing KEM prekeys map
+  const existing = await SecureStorage.getItem(SECURE_KEYS.KEM_PREKEYS);
+  const kemMap: Record<string, string> = existing ? JSON.parse(existing) : {};
+
+  // Store the new secret key
+  kemMap[String(kyberPreKeyId)] = arrayBufferToBase64(new Uint8Array(secretKey).buffer);
+
+  await SecureStorage.setItem(SECURE_KEYS.KEM_PREKEYS, JSON.stringify(kemMap));
+}
+
+/**
+ * Load a KEM secret key by its prekey ID.
+ *
+ * @returns The 2400-byte ML-KEM-768 secret key, or null if not found.
+ */
+export async function loadKEMPreKey(kyberPreKeyId: number): Promise<Uint8Array | null> {
+  if (!SecureStorage.isReady()) {
+    return null;
+  }
+
+  const stored = await SecureStorage.getItem(SECURE_KEYS.KEM_PREKEYS);
+  if (!stored) return null;
+
+  try {
+    const { base64ToArrayBuffer } = await import('../e2ee');
+    const kemMap: Record<string, string> = JSON.parse(stored);
+    const secretKeyB64 = kemMap[String(kyberPreKeyId)];
+    if (!secretKeyB64) return null;
+
+    return new Uint8Array(base64ToArrayBuffer(secretKeyB64));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Remove a consumed KEM prekey from storage.
+ * Called after a PQ session is accepted (key used once).
+ */
+export async function removeKEMPreKey(kyberPreKeyId: number): Promise<void> {
+  if (!SecureStorage.isReady()) return;
+
+  const stored = await SecureStorage.getItem(SECURE_KEYS.KEM_PREKEYS);
+  if (!stored) return;
+
+  try {
+    const kemMap: Record<string, string> = JSON.parse(stored);
+    delete kemMap[String(kyberPreKeyId)];
+    await SecureStorage.setItem(SECURE_KEYS.KEM_PREKEYS, JSON.stringify(kemMap));
+  } catch {
+    // Silently ignore — key may already be removed
+  }
+}
+
+// =============================================================================
+// ONE-TIME PREKEY PRIVATE KEY PERSISTENCE
+// =============================================================================
+
+/**
+ * Store one-time prekey private keys in encrypted storage.
+ *
+ * OPK private keys must be persisted so the responder (Bob) can
+ * derive the shared secret when the initiator used one of our OPKs.
+ *
+ * @param prekeys - Array of { keyId, privateKey } pairs
+ * @security CRITICAL — OPK private keys enable enhanced forward secrecy.
+ */
+export async function storeOPKPrivateKeys(
+  prekeys: Array<{ keyId: string; privateKey: CryptoKey }>
+): Promise<void> {
+  if (!SecureStorage.isReady()) {
+    throw new Error('SecureStorage not initialized');
+  }
+
+  const { exportPrivateKey, arrayBufferToBase64 } = await import('../e2ee');
+
+  // Load existing OPK map
+  const existing = await SecureStorage.getItem(SECURE_KEYS.OPK_PRIVATE_KEYS);
+  const opkMap: Record<string, string> = existing ? JSON.parse(existing) : {};
+
+  // Store each private key
+  for (const { keyId, privateKey } of prekeys) {
+    const exported = await exportPrivateKey(privateKey);
+    opkMap[keyId] = arrayBufferToBase64(exported);
+  }
+
+  await SecureStorage.setItem(SECURE_KEYS.OPK_PRIVATE_KEYS, JSON.stringify(opkMap));
+}
+
+/**
+ * Load a one-time prekey private key by its key ID.
+ *
+ * @returns The CryptoKey private key, or null if not found.
+ */
+export async function loadOPKPrivateKey(keyId: string): Promise<CryptoKey | null> {
+  if (!SecureStorage.isReady()) {
+    return null;
+  }
+
+  const stored = await SecureStorage.getItem(SECURE_KEYS.OPK_PRIVATE_KEYS);
+  if (!stored) return null;
+
+  try {
+    const { importPrivateKey, base64ToArrayBuffer } = await import('../e2ee');
+    const opkMap: Record<string, string> = JSON.parse(stored);
+    const privateKeyB64 = opkMap[keyId];
+    if (!privateKeyB64) return null;
+
+    return await importPrivateKey(base64ToArrayBuffer(privateKeyB64));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Remove a consumed OPK private key from storage.
+ * Called after the key has been used in a session.
+ */
+export async function removeOPKPrivateKey(keyId: string): Promise<void> {
+  if (!SecureStorage.isReady()) return;
+
+  const stored = await SecureStorage.getItem(SECURE_KEYS.OPK_PRIVATE_KEYS);
+  if (!stored) return;
+
+  try {
+    const opkMap: Record<string, string> = JSON.parse(stored);
+    delete opkMap[keyId];
+    await SecureStorage.setItem(SECURE_KEYS.OPK_PRIVATE_KEYS, JSON.stringify(opkMap));
+  } catch {
+    // Silently ignore — key may already be removed
+  }
+}

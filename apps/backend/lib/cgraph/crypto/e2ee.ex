@@ -243,6 +243,50 @@ defmodule CGraph.Crypto.E2EE do
     end
   end
 
+  defmodule KyberPrekey do
+    @moduledoc """
+    ML-KEM-768 prekey for post-quantum key exchange (PQXDH).
+
+    The Kyber prekey is an ML-KEM-768 key pair, with the public key stored
+    on the server and the secret key stored only on the client device.
+    The public key is signed by the identity signing key (ECDSA).
+
+    ## Key Sizes
+    - public_key: 1184 bytes (ML-KEM-768 encapsulation key)
+    - signature: variable (ECDSA P-256/SHA-256 signature)
+
+    Clients that publish a Kyber prekey enable other clients to use PQXDH
+    key agreement for post-quantum forward secrecy.
+    """
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    @primary_key {:id, :binary_id, autogenerate: true}
+    @foreign_key_type :binary_id
+    @timestamps_opts [type: :utc_datetime_usec]
+
+    schema "e2ee_kyber_prekeys" do
+      field :public_key, :binary
+      field :signature, :binary
+      field :key_id, :integer
+      field :is_current, :boolean, default: true
+      field :used_at, :utc_datetime
+      field :used_by_id, :binary_id
+
+      belongs_to :user, User
+
+      timestamps()
+    end
+
+    def changeset(key, attrs) do
+      key
+      |> cast(attrs, [:public_key, :signature, :key_id, :user_id, :is_current, :used_at, :used_by_id])
+      |> validate_required([:public_key, :signature, :key_id, :user_id])
+      |> unique_constraint([:user_id, :key_id])
+      |> foreign_key_constraint(:user_id)
+    end
+  end
+
   # ============================================================================
   # Key Generation (Client-side helpers for testing)
   # ============================================================================
@@ -429,11 +473,13 @@ defmodule CGraph.Crypto.E2EE do
 
       with {:ok, identity_key} <- upsert_identity_key(user_id, keys),
            {:ok, signed_prekey} <- upsert_signed_prekey(user_id, identity_key, keys),
-           {:ok, count} <- upload_one_time_prekeys(user_id, prekeys_tuples) do
+           {:ok, count} <- upload_one_time_prekeys(user_id, prekeys_tuples),
+           {:ok, kyber_result} <- upsert_kyber_prekey(user_id, keys) do
         %{
           identity_key_id: identity_key.key_id,
           signed_prekey_id: if(signed_prekey, do: signed_prekey.key_id, else: nil),
-          one_time_prekey_count: count
+          one_time_prekey_count: count,
+          kyber_prekey_id: kyber_result
         }
       else
         {:error, reason} -> Repo.rollback(reason)
@@ -469,11 +515,21 @@ defmodule CGraph.Crypto.E2EE do
         }
 
         # Add one-time prekey if available
-        case one_time_prekey do
+        bundle = case one_time_prekey do
           nil -> bundle
           otpk -> Map.merge(bundle, %{
             one_time_prekey: Base.encode64(otpk.public_key),
             one_time_prekey_id: otpk.key_id
+          })
+        end
+
+        # Add Kyber (ML-KEM-768) prekey if available (enables PQXDH)
+        case get_current_kyber_prekey(user_id) do
+          nil -> bundle
+          kyber -> Map.merge(bundle, %{
+            kyber_prekey: Base.encode64(kyber.public_key),
+            kyber_prekey_id: kyber.key_id,
+            kyber_prekey_signature: Base.encode64(kyber.signature)
           })
         end
       else
@@ -672,6 +728,12 @@ defmodule CGraph.Crypto.E2EE do
         )
         |> Repo.delete_all()
 
+        # Delete Kyber prekeys
+        from(p in KyberPrekey,
+          where: p.user_id == ^user_id
+        )
+        |> Repo.delete_all()
+
         # Delete the identity key
         Repo.delete(key)
 
@@ -855,5 +917,62 @@ defmodule CGraph.Crypto.E2EE do
     :crypto.hash(:sha256, public_key)
     |> Base.encode16(case: :lower)
     |> String.slice(0, 16)
+  end
+
+  # ============================================================================
+  # Kyber (ML-KEM-768) Prekey Management
+  # ============================================================================
+
+  @doc false
+  defp upsert_kyber_prekey(_user_id, keys) do
+    kyber_prekey_b64 = keys["kyber_prekey"] || keys[:kyber_prekey]
+    kyber_sig_b64 = keys["kyber_prekey_signature"] || keys[:kyber_prekey_signature]
+    kyber_key_id = keys["kyber_prekey_id"] || keys[:kyber_prekey_id]
+
+    # Optional — not all clients support PQ yet
+    if kyber_prekey_b64 && kyber_sig_b64 && kyber_key_id do
+      case {Base.decode64(kyber_prekey_b64), Base.decode64(kyber_sig_b64)} do
+        {{:ok, public_key}, {:ok, signature}} ->
+          # Expire current kyber prekeys for this user
+          from(k in KyberPrekey,
+            where: k.user_id == ^_user_id,
+            where: k.is_current == true
+          )
+          |> Repo.update_all(set: [is_current: false])
+
+          attrs = %{
+            user_id: _user_id,
+            public_key: public_key,
+            signature: signature,
+            key_id: kyber_key_id,
+            is_current: true
+          }
+
+          case %KyberPrekey{} |> KyberPrekey.changeset(attrs) |> Repo.insert() do
+            {:ok, kyber} -> {:ok, kyber.key_id}
+            {:error, changeset} ->
+              Logger.warning("Failed to insert Kyber prekey: #{inspect(changeset.errors)}")
+              {:ok, nil}
+          end
+
+        _ ->
+          Logger.warning("Invalid Kyber prekey base64 format")
+          {:ok, nil}
+      end
+    else
+      # No Kyber prekey provided — normal for clients not yet supporting PQ
+      {:ok, nil}
+    end
+  end
+
+  defp get_current_kyber_prekey(user_id) do
+    from(k in KyberPrekey,
+      where: k.user_id == ^user_id,
+      where: k.is_current == true,
+      where: is_nil(k.used_at),
+      order_by: [desc: k.inserted_at],
+      limit: 1
+    )
+    |> Repo.one()
   end
 end

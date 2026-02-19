@@ -27,6 +27,8 @@ import e2ee, {
   clearE2EEData,
   generateSafetyNumber,
   fingerprint,
+  bundleSupportsPQ,
+  loadKEMPreKey,
 } from '../e2ee';
 import { Buffer } from 'buffer';
 
@@ -119,7 +121,18 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
       const bundle: KeyBundle = await generateKeyBundle(deviceId, 100);
       await storeKeyBundle(bundle);
 
-      const registrationData = formatKeysForRegistration(bundle);
+      // Include KEM prekey in registration if one exists (Phase 2: auto-generate)
+      const kemPreKey = await loadKEMPreKey();
+      const registrationData = formatKeysForRegistration(
+        bundle,
+        kemPreKey
+          ? {
+              keyId: kemPreKey.keyId,
+              publicKey: kemPreKey.publicKey,
+              signature: kemPreKey.signature,
+            }
+          : undefined
+      );
       await api.post('/api/v1/e2ee/keys', registrationData);
 
       set({ isInitialized: true });
@@ -169,7 +182,7 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
 
   decryptMessage: async (
     _senderId: string,
-    encryptedMessage: EncryptedMessage,
+    encryptedMessage: EncryptedMessage
   ): Promise<string> => {
     if (!get().isInitialized) {
       throw new Error('E2EE not initialized');
@@ -200,13 +213,13 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
       identityKey,
       signedPreKeyPkcs8,
       senderIdentityKey,
-      ephemeralPublic,
+      ephemeralPublic
     );
 
     return await e2ee.decryptMessage(
       new Uint8Array(ciphertext),
       new Uint8Array(nonce),
-      sharedSecret,
+      sharedSecret
     );
   },
 
@@ -260,7 +273,7 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
       identityKey.publicKey,
       ourUserId,
       new Uint8Array(theirIdentityKey),
-      userId,
+      userId
     );
   },
 

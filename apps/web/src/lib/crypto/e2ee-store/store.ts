@@ -50,7 +50,7 @@ export const useE2EEStore = create<E2EEState>()((set, get) => ({
 
   // Core actions
   initialize: createInitialize(set, get),
-  setupE2EE: createSetupE2EE(set),
+  setupE2EE: createSetupE2EE(set, get),
   resetE2EE: createResetE2EE(set, get),
   getRecipientBundle: createGetRecipientBundle(set, get),
   handleKeyRevoked: createHandleKeyRevoked(set, get),

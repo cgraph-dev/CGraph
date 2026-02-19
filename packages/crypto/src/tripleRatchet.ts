@@ -503,6 +503,116 @@ export class TripleRatchetEngine {
     return this.spqr.getPublicKey();
   }
 
+  // ===========================================================================
+  // STATE SERIALIZATION
+  // ===========================================================================
+
+  /**
+   * Export the entire Triple Ratchet state for persistence.
+   *
+   * Composes sub-engine states (EC Double Ratchet + SPQR) plus session
+   * metadata into a single JSON string. All Uint8Arrays are serialized
+   * as number[] for JSON compatibility.
+   *
+   * @returns JSON string of the serialized state
+   */
+  async exportState(): Promise<string> {
+    // EC Double Ratchet already serializes to JSON string
+    const ecState = await this.ecRatchet.exportState();
+
+    // SPQR → SPQRState (contains SCKAState with Uint8Arrays)
+    const spqrState = this.spqr.exportState();
+
+    // Serialize SPQR state to JSON-safe format
+    const serializedSpqr = {
+      scka: {
+        ourKeyPair: spqrState.scka.ourKeyPair
+          ? {
+              publicKey: Array.from(spqrState.scka.ourKeyPair.publicKey),
+              secretKey: Array.from(spqrState.scka.ourKeyPair.secretKey),
+            }
+          : null,
+        theirPublicKey: spqrState.scka.theirPublicKey
+          ? Array.from(spqrState.scka.theirPublicKey)
+          : null,
+        rootKey: Array.from(spqrState.scka.rootKey),
+        CKs: Array.from(spqrState.scka.CKs),
+        CKr: Array.from(spqrState.scka.CKr),
+        epoch: spqrState.scka.epoch,
+        direction: spqrState.scka.direction,
+        hasPendingPeerKey: spqrState.scka.hasPendingPeerKey,
+        needsSendPublicKey: spqrState.scka.needsSendPublicKey,
+      },
+      Ns: spqrState.Ns,
+      Nr: spqrState.Nr,
+      skippedKeys: Array.from(spqrState.skippedKeys.entries()).map(([k, v]) => [k, Array.from(v)]),
+      maxSkip: spqrState.maxSkip,
+    };
+
+    return JSON.stringify({
+      ecRatchetState: ecState,
+      spqrState: serializedSpqr,
+      sessionId: this.sessionId,
+      messageCount: this.messageCount,
+      createdAt: this.createdAt,
+      version: TRIPLE_RATCHET_VERSION,
+    });
+  }
+
+  /**
+   * Import a Triple Ratchet state from a serialized JSON string.
+   *
+   * Reconstructs the EC Double Ratchet and SPQR sub-engines from
+   * their serialized states, restoring a fully functional engine.
+   *
+   * @param stateJson - JSON string from `exportState()`
+   * @returns Restored TripleRatchetEngine
+   */
+  static async importState(stateJson: string): Promise<TripleRatchetEngine> {
+    const imported = JSON.parse(stateJson);
+
+    // Restore EC Double Ratchet
+    const ecRatchet = new DoubleRatchetEngine({ enablePostQuantum: false, enableAuditLog: false });
+    await ecRatchet.importState(imported.ecRatchetState);
+
+    // Restore SPQR state from serialized format
+    const s = imported.spqrState;
+    const spqrState: import('./spqr').SPQRState = {
+      scka: {
+        ourKeyPair: s.scka.ourKeyPair
+          ? {
+              publicKey: new Uint8Array(s.scka.ourKeyPair.publicKey),
+              secretKey: new Uint8Array(s.scka.ourKeyPair.secretKey),
+            }
+          : null,
+        theirPublicKey: s.scka.theirPublicKey ? new Uint8Array(s.scka.theirPublicKey) : null,
+        rootKey: new Uint8Array(s.scka.rootKey),
+        CKs: new Uint8Array(s.scka.CKs),
+        CKr: new Uint8Array(s.scka.CKr),
+        epoch: s.scka.epoch,
+        direction: s.scka.direction,
+        hasPendingPeerKey: s.scka.hasPendingPeerKey,
+        needsSendPublicKey: s.scka.needsSendPublicKey,
+      },
+      Ns: s.Ns,
+      Nr: s.Nr,
+      skippedKeys: new Map(
+        (s.skippedKeys as [string, number[]][]).map(([k, v]) => [k, new Uint8Array(v)])
+      ),
+      maxSkip: s.maxSkip,
+    };
+
+    const spqr = SPQREngine.fromState(spqrState);
+
+    // Reconstruct the engine
+    const engine = new TripleRatchetEngine(ecRatchet, spqr);
+    engine.sessionId = imported.sessionId;
+    engine.messageCount = imported.messageCount;
+    engine.createdAt = imported.createdAt;
+
+    return engine;
+  }
+
   /** Securely destroy all key material */
   destroy(): void {
     this.ecRatchet.destroy();

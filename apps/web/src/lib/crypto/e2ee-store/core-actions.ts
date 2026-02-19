@@ -22,6 +22,8 @@ import {
   fingerprint,
   type KeyBundle,
 } from '../e2ee';
+import { storeKEMPreKey, storeOPKPrivateKeys } from '../e2ee-secure/key-storage';
+import { generateKEMPreKey } from '../protocol';
 import { sessionManager } from '../sessionManager';
 import type { E2EEState, BundleCacheEntry } from './types';
 import { BUNDLE_CACHE_TTL } from './types';
@@ -74,7 +76,7 @@ export const createInitialize = (set: Set, get: Get) => async (): Promise<void> 
 /**
  * Set up E2EE for this device.
  */
-export const createSetupE2EE = (set: Set) => async (): Promise<void> => {
+export const createSetupE2EE = (set: Set, _get: Get) => async (): Promise<void> => {
   try {
     set({ isLoading: true, error: null });
 
@@ -82,8 +84,49 @@ export const createSetupE2EE = (set: Set) => async (): Promise<void> => {
     const bundle: KeyBundle = await generateKeyBundle(deviceId, 100);
     await storeKeyBundle(bundle);
 
+    // Persist OPK private keys for responder-side X3DH/PQXDH
+    const opkEntries = bundle.oneTimePreKeys.map((pk) => ({
+      keyId: String(pk.keyId),
+      privateKey: pk.keyPair.privateKey,
+    }));
+    await storeOPKPrivateKeys(opkEntries);
+
     const registrationData = await formatKeysForRegistration(bundle);
-    await api.post('/api/v1/e2ee/keys', registrationData);
+
+    // Generate and store KEM prekey for post-quantum sessions
+    // Even if Triple Ratchet is currently disabled, we publish KEM keys
+    // so other clients can opportunistically use PQXDH when they enable it.
+    let kemRegistrationData: Record<string, unknown> = {};
+    try {
+      const { exportPublicKey: expPub, arrayBufferToBase64: ab64 } = await import('../e2ee');
+      const identityKey = await loadIdentityKeyPair();
+      if (identityKey?.signingKeyPair) {
+        const signingECKeyPair: import('@cgraph/crypto/x3dh').ECKeyPair = {
+          publicKey: identityKey.signingKeyPair.publicKey,
+          privateKey: identityKey.signingKeyPair.privateKey,
+          rawPublicKey: new Uint8Array(await expPub(identityKey.signingKeyPair.publicKey)),
+        };
+
+        const { kemKeyPair, kyberPreKeyId, kyberPreKeySignature } =
+          await generateKEMPreKey(signingECKeyPair);
+
+        // Store KEM secret key locally (critical for Bob-side PQ acceptance)
+        await storeKEMPreKey(kyberPreKeyId, kemKeyPair.secretKey);
+
+        // Include KEM public key in server registration
+        kemRegistrationData = {
+          kyber_prekey: ab64(new Uint8Array(kemKeyPair.publicKey).buffer),
+          kyber_prekey_id: kyberPreKeyId,
+          kyber_prekey_signature: ab64(new Uint8Array(kyberPreKeySignature).buffer),
+        };
+        logger.log(`Generated KEM prekey (id: ${kyberPreKeyId}) for PQ session support`);
+      }
+    } catch (kemErr) {
+      // Non-fatal: PQ key generation failure should not block classical E2EE setup
+      logger.error('Failed to generate KEM prekey (PQ sessions unavailable):', kemErr);
+    }
+
+    await api.post('/api/v1/e2ee/keys', { ...registrationData, ...kemRegistrationData });
 
     const publicKey = await exportPublicKey(bundle.identityKey.keyPair.publicKey);
     const fp = await fingerprint(publicKey);

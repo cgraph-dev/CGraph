@@ -261,6 +261,76 @@ const IDENTITY_KEY_ID = 'e2ee_identity_key_id';
 const DEVICE_ID = 'e2ee_device_id';
 const SIGNED_PREKEY_PRIVATE = 'e2ee_signed_prekey_private';
 const SESSIONS_KEY = 'e2ee_sessions';
+const KEM_PREKEY_SECRET = 'e2ee_kem_prekey_secret';
+const KEM_PREKEY_PUBLIC = 'e2ee_kem_prekey_public';
+const KEM_PREKEY_ID = 'e2ee_kem_prekey_id';
+const KEM_PREKEY_SIGNATURE = 'e2ee_kem_prekey_signature';
+
+// =============================================================================
+// Protocol Version Constants
+// =============================================================================
+
+/** Protocol versions for negotiation with web/backend */
+export enum CryptoProtocol {
+  /** Classical X3DH + AES-GCM (current mobile default) */
+  CLASSICAL_V1 = 1,
+  /** Classical X3DH + Double Ratchet (web default) */
+  CLASSICAL_V2 = 2,
+  /** PQXDH + Triple Ratchet (web PQ sessions — mobile Phase 2) */
+  PQXDH_V1 = 3,
+}
+
+/** Check if a server prekey bundle includes KEM prekeys (PQ-capable peer) */
+export function bundleSupportsPQ(bundle: ServerPrekeyBundle): boolean {
+  return !!(bundle && 'kyber_prekey' in bundle && (bundle as Record<string, unknown>).kyber_prekey);
+}
+
+// =============================================================================
+// KEM Prekey Storage — scaffolding for Phase 2 PQ support
+// =============================================================================
+
+/** Store a KEM prekey pair in expo-secure-store */
+export async function storeKEMPreKey(
+  keyId: number,
+  publicKey: Uint8Array,
+  secretKey: Uint8Array,
+  signature: Uint8Array
+): Promise<void> {
+  await SecureStore.setItemAsync(KEM_PREKEY_ID, String(keyId));
+  await SecureStore.setItemAsync(KEM_PREKEY_PUBLIC, Buffer.from(publicKey).toString('base64'));
+  await SecureStore.setItemAsync(KEM_PREKEY_SECRET, Buffer.from(secretKey).toString('base64'));
+  await SecureStore.setItemAsync(KEM_PREKEY_SIGNATURE, Buffer.from(signature).toString('base64'));
+}
+
+/** Load stored KEM prekey data for server registration */
+export async function loadKEMPreKey(): Promise<{
+  keyId: number;
+  publicKey: Uint8Array;
+  secretKey: Uint8Array;
+  signature: Uint8Array;
+} | null> {
+  const idStr = await SecureStore.getItemAsync(KEM_PREKEY_ID);
+  const pubB64 = await SecureStore.getItemAsync(KEM_PREKEY_PUBLIC);
+  const secB64 = await SecureStore.getItemAsync(KEM_PREKEY_SECRET);
+  const sigB64 = await SecureStore.getItemAsync(KEM_PREKEY_SIGNATURE);
+
+  if (!idStr || !pubB64 || !secB64 || !sigB64) return null;
+
+  return {
+    keyId: parseInt(idStr, 10),
+    publicKey: new Uint8Array(Buffer.from(pubB64, 'base64')),
+    secretKey: new Uint8Array(Buffer.from(secB64, 'base64')),
+    signature: new Uint8Array(Buffer.from(sigB64, 'base64')),
+  };
+}
+
+/** Clear stored KEM prekey data */
+export async function clearKEMPreKey(): Promise<void> {
+  await SecureStore.deleteItemAsync(KEM_PREKEY_ID);
+  await SecureStore.deleteItemAsync(KEM_PREKEY_PUBLIC);
+  await SecureStore.deleteItemAsync(KEM_PREKEY_SECRET);
+  await SecureStore.deleteItemAsync(KEM_PREKEY_SIGNATURE);
+}
 
 /**
  * Generate a random key ID (fingerprint)
@@ -431,10 +501,14 @@ export async function getDeviceId(): Promise<string | null> {
 }
 
 /**
- * Format key bundle for server registration
+ * Format key bundle for server registration.
+ * Includes KEM prekey fields if available (PQ-ready registration).
  */
-export function formatKeysForRegistration(bundle: KeyBundle): Record<string, unknown> {
-  return {
+export function formatKeysForRegistration(
+  bundle: KeyBundle,
+  kemPreKey?: { keyId: number; publicKey: Uint8Array; signature: Uint8Array }
+): Record<string, unknown> {
+  const payload: Record<string, unknown> = {
     identity_key: Buffer.from(bundle.identityKey.publicKey).toString('base64'),
     key_id: bundle.identityKey.keyId,
     device_id: bundle.deviceId,
@@ -448,6 +522,15 @@ export function formatKeysForRegistration(bundle: KeyBundle): Record<string, unk
       key_id: pk.keyId,
     })),
   };
+
+  // Include KEM prekey if available (PQ support)
+  if (kemPreKey) {
+    payload.kyber_prekey = Buffer.from(kemPreKey.publicKey).toString('base64');
+    payload.kyber_prekey_id = kemPreKey.keyId;
+    payload.kyber_prekey_signature = Buffer.from(kemPreKey.signature).toString('base64');
+  }
+
+  return payload;
 }
 
 /**
@@ -476,9 +559,7 @@ export async function x3dhInitiate(
 
   // Verify signed prekey signature (critical for preventing MITM attacks)
   if (recipientBundle.signed_prekey_signature) {
-    const sigBytes = new Uint8Array(
-      Buffer.from(recipientBundle.signed_prekey_signature, 'base64')
-    );
+    const sigBytes = new Uint8Array(Buffer.from(recipientBundle.signed_prekey_signature, 'base64'));
     // Use signing_key if available, otherwise verify with identity key
     const verifyKeyRaw = recipientBundle.signing_key
       ? new Uint8Array(Buffer.from(recipientBundle.signing_key, 'base64'))
@@ -759,6 +840,8 @@ export async function clearE2EEData(): Promise<void> {
   await SecureStore.deleteItemAsync(DEVICE_ID);
   await SecureStore.deleteItemAsync(SIGNED_PREKEY_PRIVATE);
   await SecureStore.deleteItemAsync(SESSIONS_KEY);
+  // Clear PQ KEM prekey data
+  await clearKEMPreKey();
 }
 
 /**
@@ -787,4 +870,10 @@ export default {
   getDeviceId,
   sha256,
   generatePreKeyPair,
+  // PQ scaffolding
+  storeKEMPreKey,
+  loadKEMPreKey,
+  clearKEMPreKey,
+  bundleSupportsPQ,
+  CryptoProtocol,
 };

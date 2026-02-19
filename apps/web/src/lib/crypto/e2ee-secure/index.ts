@@ -18,6 +18,12 @@ export {
   loadSignedPreKey,
   getDeviceId,
   isE2EESetUp,
+  storeKEMPreKey,
+  loadKEMPreKey,
+  removeKEMPreKey,
+  storeOPKPrivateKeys,
+  loadOPKPrivateKey,
+  removeOPKPrivateKey,
 } from './key-storage';
 export type { LoadedSignedPreKey } from './key-storage';
 

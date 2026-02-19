@@ -9,6 +9,10 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { RatchetSession, SecureMessage, SerializedSession } from '../sessionManager';
+import { CryptoProtocol } from '../protocol';
+
+/** Helper: default classical protocol metadata for test sessions */
+const classicalProtocol = { protocol: CryptoProtocol.CLASSICAL_V1, cryptoVersion: 'test' } as const;
 
 // Mock IndexedDB
 const mockSessionStore: Map<string, SerializedSession> = new Map();
@@ -299,6 +303,7 @@ describe('RatchetSession Structure', () => {
       createdAt: Date.now(),
       lastActivity: Date.now(),
       messageCount: 0,
+      protocol: classicalProtocol,
     };
 
     expect(session.recipientId).toBeDefined();
@@ -319,6 +324,7 @@ describe('RatchetSession Structure', () => {
       createdAt: Date.now(),
       lastActivity: Date.now(),
       messageCount: 5,
+      protocol: classicalProtocol,
     };
 
     expect(session.messageCount).toBe(5);
@@ -333,6 +339,7 @@ describe('RatchetSession Structure', () => {
       createdAt: Date.now(),
       lastActivity: Date.now(),
       messageCount: 0,
+      protocol: classicalProtocol,
     };
 
     const bobSession: RatchetSession = {
@@ -343,6 +350,7 @@ describe('RatchetSession Structure', () => {
       createdAt: Date.now(),
       lastActivity: Date.now(),
       messageCount: 0,
+      protocol: classicalProtocol,
     };
 
     expect(aliceSession.isInitiator).toBe(true);
@@ -560,6 +568,7 @@ describe('Timestamp Handling', () => {
       createdAt: Date.now() - 3600000, // 1 hour ago
       lastActivity: Date.now(),
       messageCount: 10,
+      protocol: classicalProtocol,
     };
 
     expect(session.lastActivity).toBeGreaterThan(session.createdAt);

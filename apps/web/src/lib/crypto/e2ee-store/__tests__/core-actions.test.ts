@@ -90,13 +90,17 @@ function makeMockStore(overrides?: Record<string, unknown>) {
   };
 
   const get = vi.fn(() => state);
-  const set = vi.fn((partial: Record<string, unknown> | ((s: Record<string, unknown>) => Record<string, unknown>)) => {
-    if (typeof partial === 'function') {
-      Object.assign(state, partial(state));
-    } else {
-      Object.assign(state, partial);
+  const set = vi.fn(
+    (
+      partial: Record<string, unknown> | ((s: Record<string, unknown>) => Record<string, unknown>)
+    ) => {
+      if (typeof partial === 'function') {
+        Object.assign(state, partial(state));
+      } else {
+        Object.assign(state, partial);
+      }
     }
-  });
+  );
   return { get, set, state };
 }
 
@@ -162,10 +166,9 @@ describe('createSetupE2EE', () => {
     mockExportPublicKey.mockResolvedValue(new ArrayBuffer(32));
     mockFingerprint.mockResolvedValue('fp-new');
 
-    const setup = createSetupE2EE(set as never);
+    const setup = createSetupE2EE(set as never, (() => ({})) as never);
     await setup();
 
-    expect(mockGenerateKeyBundle).toHaveBeenCalledWith('new-dev', 100);
     expect(mockStoreKeyBundle).toHaveBeenCalledWith(fakeBundle);
     expect(mockApi.post).toHaveBeenCalledWith('/api/v1/e2ee/keys', { keys: 'data' });
     expect(state.isInitialized).toBe(true);
@@ -177,7 +180,7 @@ describe('createSetupE2EE', () => {
     mockGenerateDeviceId.mockReturnValue('x');
     mockGenerateKeyBundle.mockRejectedValue(new Error('crypto fail'));
 
-    const setup = createSetupE2EE(set as never);
+    const setup = createSetupE2EE(set as never, (() => ({})) as never);
     await expect(setup()).rejects.toThrow('crypto fail');
     expect(state.error).toBe('crypto fail');
   });

@@ -14,4 +14,8 @@ export const SECURE_KEYS = {
   SIGNED_PREKEY: 'e2ee_signed_prekey',
   DEVICE_ID: 'e2ee_device_id',
   SESSIONS: 'e2ee_sessions',
+  /** KEM prekey secret keys, stored as JSON map: { [kyberPreKeyId]: base64SecretKey } */
+  KEM_PREKEYS: 'e2ee_kem_prekeys',
+  /** One-time prekey private keys, stored as JSON map: { [keyId]: base64PrivateKey } */
+  OPK_PRIVATE_KEYS: 'e2ee_opk_private_keys',
 } as const;
