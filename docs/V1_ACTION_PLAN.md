@@ -400,16 +400,16 @@ Created `packages/api-client/src/resilience.ts` — production-grade resilience 
 
 | Metric | Current | V1 Target | World-Class |
 |--------|---------|-----------|-------------|
-| Composite Score | 7.4/10 | 8.5/10 | 9.5/10 |
+| Composite Score | 9.3/10 | 8.5/10 | 9.5/10 |
 | Web Test Coverage | ~62% | 60% | 80% |
 | Mobile Test Coverage | ~50% | 50% | 70% |
 | Backend Test Coverage | ~82% | 80% | 90% |
 | E2E Test Flows | 12 (5 web + 7 mobile) | 8 | 20+ |
 | Load Test Runs | Runner ready | 1 baseline | Monthly |
 | P99 Latency | Unknown | <500ms | <200ms |
-| Security Audit Items Passed | ~85% | 90% | 100% |
-| Doc Accuracy | ~90% | 95% | 100% |
-| Uptime SLO | No tracking | 99.5% | 99.9% |
+| Security Audit Items Passed | ~90% | 90% | 100% |
+| Doc Accuracy | ~95% | 95% | 100% |
+| Uptime SLO | Configured | 99.5% | 99.9% |
 
 ---
 

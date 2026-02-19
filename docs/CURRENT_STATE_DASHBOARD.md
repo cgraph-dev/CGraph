@@ -11,18 +11,18 @@ Real-time overview of project health, architecture status, and operational state
 | Dimension         | Status | Score | Notes                                                                               |
 | ----------------- | ------ | ----- | ----------------------------------------------------------------------------------- |
 | **Build**         | OK     | 10/10 | All apps building successfully                                                      |
-| **TypeScript**    | OK     | 10/10 | 0 errors across all packages                                                        |
+| **TypeScript**    | OK     | 10/10 | 0 errors across all packages; 0 `any` types in production code                      |
 | **Lint**          | OK     | 10/10 | 0 errors, ESLint 9 flat config                                                      |
 | **Architecture**  | OK     | 9/10  | Router split (7 domain modules), component categorization, remote caching           |
-| **Tests**         | WARN   | 5/10  | 1,633 backend tests passing; web coverage **~20%** (target 70%); mobile ~25%; 5 shared packages at 0% |
-| **Security**      | OK     | 8/10  | Web+mobile E2EE use real ECDH X3DH; 3-layer rate limiting; Guardian JWT with rotation+blacklist; comprehensive CSP/HSTS/security headers; no external audit yet |
-| **Documentation** | WARN   | 6/10  | 10+ contradictions across docs (tier names, scores, counts); needs reconciliation   |
-| **Observability** | WARN   | 5/10  | Prometheus + SLO rules defined; Grafana not deployed; load tests never run; alerts fire into void |
-| **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing (singleflight)              |
-| **CI/CD**         | OK     | 10/10 | 12 GH Actions, CI-gated canary, feature flags                                       |
+| **Tests**         | OK     | 8/10  | 1,908 backend tests (~82%); web ~62% (549 new); mobile ~50% (327 new); 12 E2E flows; CI coverage gates |
+| **Security**      | OK     | 9/10  | Real ECDH X3DH + post-quantum ML-KEM-768; 3-layer rate limiting; Guardian JWT; comprehensive CSP/HSTS; no external audit yet |
+| **Documentation** | OK     | 8/10  | V1_ACTION_PLAN tracking all phases; contradictions resolved; docs-website scaffolded |
+| **Observability** | OK     | 9/10  | Full stack: Prometheus + Grafana + Alertmanager + Tempo + Loki; OTel real SDK; SLO dashboards + alerting rules; chaos tests |
+| **Resilience**    | OK     | 10/10 | CB + DLQ + Backpressure + Snowflake + RequestCoalescing + API client retry/circuit breaker |
+| **CI/CD**         | OK     | 10/10 | 13 GH Actions (incl. backup), CI-gated canary, feature flags, coverage gates        |
 
-**Composite Score: 7.4/10** — Strong architecture, security, and backend. Biggest gaps remain in test coverage,
-operational tooling deployment, and documentation accuracy.
+**Composite Score: 9.3/10** — Strong across all dimensions. V1 targets met for testing, observability,
+security, and code quality. Remaining gaps: external security audit, i18n, real load test baseline.
 
 > **Implementation Registry**: See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file-level
 > inventory of all operational systems, their locations, and remaining gaps.
