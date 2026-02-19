@@ -9,6 +9,8 @@
  */
 
 import type { DoubleRatchetEngine } from '../doubleRatchet';
+import type { TripleRatchetEngine } from '@cgraph/crypto/tripleRatchet';
+import { CryptoProtocol, type SessionProtocolMeta } from '../protocol';
 
 // =============================================================================
 // TYPES
@@ -17,11 +19,14 @@ import type { DoubleRatchetEngine } from '../doubleRatchet';
 export interface RatchetSession {
   recipientId: string;
   sessionId: string;
-  engine: DoubleRatchetEngine;
+  /** Classical sessions use DoubleRatchetEngine; PQ sessions use TripleRatchetEngine */
+  engine: DoubleRatchetEngine | TripleRatchetEngine;
   isInitiator: boolean;
   createdAt: number;
   lastActivity: number;
   messageCount: number;
+  /** Protocol version for this session. Defaults to CLASSICAL_V1 for legacy sessions. */
+  protocol: SessionProtocolMeta;
 }
 
 export interface SerializedSession {
@@ -32,6 +37,8 @@ export interface SerializedSession {
   lastActivity: number;
   messageCount: number;
   engineState: string;
+  /** Protocol version. Absent = CLASSICAL_V1 (legacy). */
+  protocol?: SessionProtocolMeta;
 }
 
 export interface SecureMessage {
@@ -62,5 +69,30 @@ export interface SecureMessage {
     ephemeralPublicKey: string;
     usedOneTimePreKey: boolean;
     oneTimePreKeyId?: string;
+  };
+
+  // For PQXDH initial messages (when protocol >= PQXDH_V1)
+  pqInitialMessage?: {
+    identityKey: string;
+    ephemeralKey: string;
+    kemCipherText: string;
+    signedPreKeyId: number;
+    kyberPreKeyId: number;
+    oneTimePreKeyId?: number;
+    version: number;
+  };
+
+  /** Protocol version. Present in V2+ messages; absent = classical. */
+  protocolVersion?: CryptoProtocol;
+
+  /** PQ ratchet header — present only for PQXDH_V1+ messages */
+  pqRatchetHeader?: {
+    epoch: number;
+    n: number;
+    scka: {
+      epoch: number;
+      kemPublicKey?: string;
+      kemCipherText?: string;
+    };
   };
 }

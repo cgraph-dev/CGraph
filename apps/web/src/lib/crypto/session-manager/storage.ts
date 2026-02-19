@@ -51,6 +51,14 @@ export async function openDatabase(): Promise<IDBDatabase> {
 
 export async function saveSessionToStorage(session: RatchetSession): Promise<void> {
   const db = await openDatabase();
+
+  // Only classical sessions can be serialized today — PQ engine serialization
+  // is not yet supported, so we save protocol metadata but skip engine state.
+  let engineState = '';
+  if ('exportState' in session.engine && typeof session.engine.exportState === 'function') {
+    engineState = await session.engine.exportState();
+  }
+
   const serialized: SerializedSession = {
     recipientId: session.recipientId,
     sessionId: session.sessionId,
@@ -58,7 +66,8 @@ export async function saveSessionToStorage(session: RatchetSession): Promise<voi
     createdAt: session.createdAt,
     lastActivity: session.lastActivity,
     messageCount: session.messageCount,
-    engineState: await session.engine.exportState(),
+    engineState,
+    protocol: session.protocol,
   };
 
   return new Promise((resolve, reject) => {

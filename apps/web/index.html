@@ -24,7 +24,14 @@
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#0f172a" />
 
-    <!-- Content Security Policy (defense-in-depth: also set via Vercel headers) -->
+    <!--
+      Content Security Policy (defense-in-depth: also set via Vercel headers)
+      NOTE: style-src 'unsafe-inline' is required by Framer Motion and Radix UI which inject
+      inline style attributes (transform, opacity, pointer-events) at runtime. This cannot be
+      replaced with nonces — nonces only cover <style> blocks, not style="" attributes.
+      XSS mitigation relies on script-src 'self' (no unsafe-inline/unsafe-eval).
+      See docs/SECURITY_AUDIT_CHECKLIST.md §4.4 for full risk assessment.
+    -->
     <meta
       http-equiv="Content-Security-Policy"
       content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; connect-src 'self' https://cgraph-backend.fly.dev wss://cgraph-backend.fly.dev https://*.ingest.sentry.io https://vitals.vercel-insights.com; font-src 'self' data: https://fonts.gstatic.com; frame-ancestors 'none'"

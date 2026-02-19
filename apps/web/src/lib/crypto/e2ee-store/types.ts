@@ -9,6 +9,7 @@
 import type { EncryptedMessage, ServerPrekeyBundle } from '../e2ee';
 import type { SecureMessage } from '../sessionManager';
 import type { sessionManager } from '../sessionManager';
+import type { CryptoProtocol } from '../protocol';
 
 /**
  * Cache entry for a recipient's prekey bundle.
@@ -30,6 +31,8 @@ export interface E2EEState {
   fingerprint: string | null;
   prekeyCount: number;
   useDoubleRatchet: boolean;
+  /** When true, new sessions use PQXDH + Triple Ratchet (@cgraph/crypto) if recipient supports it */
+  useTripleRatchet: boolean;
 
   // Prekey bundle cache
   bundleCache: Map<string, BundleCacheEntry>;
@@ -56,6 +59,9 @@ export interface E2EEState {
     recipientId: string
   ) => ReturnType<typeof sessionManager.getSessionStats>;
 
+  /** Get the protocol version for a specific session */
+  getSessionProtocol: (recipientId: string) => CryptoProtocol | null;
+
   // Key management
   uploadMorePrekeys: (count?: number) => Promise<number>;
   getPrekeyCount: () => Promise<number>;
@@ -67,6 +73,8 @@ export interface E2EEState {
 
   // Settings
   setUseDoubleRatchet: (enabled: boolean) => void;
+  /** Toggle PQXDH + Triple Ratchet for new sessions. Requires recipient KEM prekey support. */
+  setUseTripleRatchet: (enabled: boolean) => void;
   clearError: () => void;
 }
 

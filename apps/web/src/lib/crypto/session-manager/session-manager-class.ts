@@ -2,6 +2,9 @@
  * Session Manager Class — bridges X3DH key agreement with the Double Ratchet
  * for forward secrecy, break-in recovery, and out-of-order message handling.
  *
+ * V2: Also supports PQXDH + Triple Ratchet sessions via @cgraph/crypto.
+ * Protocol version is negotiated per-session based on recipient capabilities.
+ *
  * @module lib/crypto/session-manager/session-manager-class
  */
 
@@ -14,6 +17,16 @@ import {
   type ServerPrekeyBundle,
 } from '../e2ee';
 import { e2eeLogger as logger } from '../../logger';
+import {
+  CryptoProtocol,
+  bundleSupportsPQ,
+  createPQXDHSession,
+  serializePQMessage,
+  deserializePQMessage,
+  type PQPreKeyBundle,
+} from '../protocol';
+import type { TripleRatchetEngine, TripleRatchetStats } from '@cgraph/crypto/tripleRatchet';
+import type { ECKeyPair } from '@cgraph/crypto/x3dh';
 
 import type { RatchetSession, SecureMessage } from './types';
 import { saveSessionToStorage, deleteSessionFromStorage, getAllSessions } from './storage';
@@ -24,6 +37,9 @@ import { buildSecureMessage, toRatchetMessage } from './message-ops';
 // SESSION MANAGER
 // =============================================================================
 
+/** Default protocol metadata for legacy sessions loaded from storage */
+const LEGACY_PROTOCOL = { protocol: CryptoProtocol.CLASSICAL_V1, cryptoVersion: '0.0.0' };
+
 class SessionManager {
   private sessions: Map<string, RatchetSession> = new Map();
   private pendingX3DH: Map<
@@ -33,6 +49,21 @@ class SessionManager {
       ephemeralPublic: ArrayBuffer;
     }
   > = new Map();
+  /** Pending PQXDH initial messages (before first encrypt) */
+  private pendingPQXDH: Map<string, import('../protocol').PQSessionResult['initialMessage']> =
+    new Map();
+
+  /** Feature flag: when true, new sessions use PQXDH + Triple Ratchet if recipient supports it */
+  private _useTripleRatchet = false;
+
+  setUseTripleRatchet(enabled: boolean): void {
+    this._useTripleRatchet = enabled;
+    logger.log(`Triple Ratchet (PQXDH) ${enabled ? 'enabled' : 'disabled'} for new sessions`);
+  }
+
+  get useTripleRatchet(): boolean {
+    return this._useTripleRatchet;
+  }
 
   /**
    * Initialize session manager and load persisted sessions
@@ -43,8 +74,24 @@ class SessionManager {
     const storedSessions = await getAllSessions();
     for (const serialized of storedSessions) {
       try {
-        const engine = new DoubleRatchetEngine();
-        await engine.importState(serialized.engineState);
+        const protocol = serialized.protocol ?? LEGACY_PROTOCOL;
+        let engine: DoubleRatchetEngine | TripleRatchetEngine;
+
+        if (protocol.protocol === CryptoProtocol.PQXDH_V1) {
+          // PQ session — import into TripleRatchetEngine
+          // Lazy import to avoid loading @cgraph/crypto ML-KEM when not needed
+          await import('@cgraph/crypto/tripleRatchet');
+          // TripleRatchetEngine doesn't have a fromState/importState yet — skip for now.
+          // PQ sessions will be re-established on next message if state is unavailable.
+          logger.warn(
+            `PQ session for ${serialized.recipientId} cannot be restored (serialization not yet supported) — will re-establish`
+          );
+          continue;
+        } else {
+          // Classical session
+          engine = new DoubleRatchetEngine();
+          await engine.importState(serialized.engineState);
+        }
 
         this.sessions.set(serialized.recipientId, {
           recipientId: serialized.recipientId,
@@ -54,6 +101,7 @@ class SessionManager {
           createdAt: serialized.createdAt,
           lastActivity: serialized.lastActivity,
           messageCount: serialized.messageCount,
+          protocol,
         });
       } catch (err) {
         logger.error(`Failed to load session for ${serialized.recipientId}:`, err);
@@ -73,14 +121,28 @@ class SessionManager {
   /**
    * Get session statistics
    */
-  getSessionStats(recipientId: string): ReturnType<DoubleRatchetEngine['getStats']> | null {
+  getSessionStats(
+    recipientId: string
+  ): ReturnType<DoubleRatchetEngine['getStats']> | TripleRatchetStats | null {
     const session = this.sessions.get(recipientId);
-    return session?.engine.getStats() ?? null;
+    if (!session) return null;
+    return session.engine.getStats();
   }
 
   /**
-   * Create a new session as the initiator (Alice)
-   * Uses X3DH to establish initial shared secret, then initializes Double Ratchet
+   * Get the protocol version for an active session
+   */
+  getSessionProtocol(recipientId: string): CryptoProtocol | null {
+    return this.sessions.get(recipientId)?.protocol.protocol ?? null;
+  }
+
+  /**
+   * Create a new session as the initiator (Alice).
+   *
+   * Negotiates protocol version:
+   * - If `useTripleRatchet` is enabled AND recipient advertises KEM prekeys
+   *   → PQXDH + Triple Ratchet (post-quantum forward secrecy)
+   * - Otherwise → classical X3DH + Double Ratchet
    */
   async createSession(
     _ourUserId: string,
@@ -94,16 +156,29 @@ class SessionManager {
       throw new Error('Identity key not found');
     }
 
-    // Perform X3DH key agreement
-    const { sharedSecret, ephemeralPublic } = await x3dhInitiate(identityKey, recipientBundle);
+    // Check if we should use PQXDH + Triple Ratchet
+    const pqBundle = recipientBundle as PQPreKeyBundle;
+    if (this._useTripleRatchet && bundleSupportsPQ(pqBundle)) {
+      return this._createPQSession(recipientId, identityKey, pqBundle);
+    }
 
-    // Store X3DH result for initial message
+    return this._createClassicalSession(recipientId, identityKey, recipientBundle);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Classical session (X3DH → Double Ratchet)
+  // ---------------------------------------------------------------------------
+
+  private async _createClassicalSession(
+    recipientId: string,
+    identityKey: Awaited<ReturnType<typeof loadIdentityKeyPair>>,
+    recipientBundle: ServerPrekeyBundle
+  ): Promise<RatchetSession> {
+    const { sharedSecret, ephemeralPublic } = await x3dhInitiate(identityKey!, recipientBundle);
     this.pendingX3DH.set(recipientId, { sharedSecret, ephemeralPublic });
 
-    // Initialize Double Ratchet as Alice (initiator)
     const engine = new DoubleRatchetEngine();
     const recipientDHKey = base64ToArrayBuffer(recipientBundle.signed_prekey);
-
     await engine.initializeAlice(new Uint8Array(sharedSecret), new Uint8Array(recipientDHKey));
 
     const session: RatchetSession = {
@@ -114,19 +189,61 @@ class SessionManager {
       createdAt: Date.now(),
       lastActivity: Date.now(),
       messageCount: 0,
+      protocol: { protocol: CryptoProtocol.CLASSICAL_V1, cryptoVersion: '0.9.31' },
     };
 
     this.sessions.set(recipientId, session);
     await saveSessionToStorage(session);
+    logger.log(`[Classical] Created session ${session.sessionId} with ${recipientId}`);
+    return session;
+  }
 
-    logger.log(`Created session ${session.sessionId} with ${recipientId}`);
+  // ---------------------------------------------------------------------------
+  // Post-Quantum session (PQXDH → Triple Ratchet)
+  // ---------------------------------------------------------------------------
 
+  private async _createPQSession(
+    recipientId: string,
+    identityKey: NonNullable<Awaited<ReturnType<typeof loadIdentityKeyPair>>>,
+    recipientBundle: PQPreKeyBundle
+  ): Promise<RatchetSession> {
+    logger.log(`[PQXDH] Creating post-quantum session with ${recipientId}`);
+
+    // Build an ECKeyPair from the Web Crypto IdentityKeyPair
+    const { exportPublicKey } = await import('../e2ee');
+    const rawPublicKey = new Uint8Array(await exportPublicKey(identityKey.keyPair.publicKey));
+    const ourECKeyPair: ECKeyPair = {
+      publicKey: identityKey.keyPair.publicKey,
+      privateKey: identityKey.keyPair.privateKey,
+      rawPublicKey,
+    };
+
+    const result = await createPQXDHSession(ourECKeyPair, recipientBundle);
+
+    // Store PQ initial message for inclusion in first outgoing message
+    this.pendingPQXDH.set(recipientId, result.initialMessage);
+
+    const stats = result.engine.getStats();
+    const session: RatchetSession = {
+      recipientId,
+      sessionId: stats.sessionId,
+      engine: result.engine,
+      isInitiator: true,
+      createdAt: Date.now(),
+      lastActivity: Date.now(),
+      messageCount: 0,
+      protocol: { protocol: CryptoProtocol.PQXDH_V1, cryptoVersion: '0.9.31' },
+    };
+
+    this.sessions.set(recipientId, session);
+    await saveSessionToStorage(session);
+    logger.log(`[PQXDH] Created Triple Ratchet session ${stats.sessionId} with ${recipientId}`);
     return session;
   }
 
   /**
-   * Accept a session as the responder (Bob)
-   * Called when receiving the first message from an initiator
+   * Accept a session as the responder (Bob).
+   * Called when receiving the first message from an initiator.
    */
   async acceptSession(
     senderId: string,
@@ -151,6 +268,7 @@ class SessionManager {
       createdAt: Date.now(),
       lastActivity: Date.now(),
       messageCount: 0,
+      protocol: { protocol: CryptoProtocol.CLASSICAL_V1, cryptoVersion: '0.9.31' },
     };
 
     this.sessions.set(senderId, session);
@@ -162,7 +280,11 @@ class SessionManager {
   }
 
   /**
-   * Encrypt a message for a recipient
+   * Encrypt a message for a recipient.
+   *
+   * Automatically uses the correct protocol based on the session type:
+   * - Classical sessions → DoubleRatchetEngine.encryptMessage
+   * - PQ sessions → TripleRatchetEngine.encrypt
    */
   async encryptMessage(
     ourUserId: string,
@@ -170,7 +292,6 @@ class SessionManager {
     plaintext: string,
     recipientBundle?: ServerPrekeyBundle
   ): Promise<SecureMessage> {
-    // Get or create session
     let session = this.sessions.get(recipientId);
     let isInitialMessage = false;
 
@@ -182,48 +303,91 @@ class SessionManager {
       isInitialMessage = true;
     }
 
-    // Encrypt with Double Ratchet
     const encoder = new TextEncoder();
     const plaintextBytes = encoder.encode(plaintext);
+    let message: SecureMessage;
 
-    const ratchetMessage = await session.engine.encryptMessage(plaintextBytes);
+    if (session.protocol.protocol === CryptoProtocol.PQXDH_V1) {
+      // Post-quantum Triple Ratchet path
+      const trEngine = session.engine as TripleRatchetEngine;
+      const trMessage = await trEngine.encrypt(plaintextBytes);
+      const serialized = serializePQMessage(trMessage);
 
-    // Update session state
+      message = {
+        senderId: ourUserId,
+        recipientId,
+        sessionId: session.sessionId,
+        messageId: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`,
+        timestamp: Date.now(),
+        protocolVersion: CryptoProtocol.PQXDH_V1,
+        ratchetMessage: {
+          header: serialized.header.ec,
+          ciphertext: serialized.ciphertext,
+          nonce: serialized.nonce,
+          mac: serialized.mac,
+        },
+        pqRatchetHeader: serialized.header.pq,
+      };
+
+      if (isInitialMessage) {
+        const pqData = this.pendingPQXDH.get(recipientId);
+        if (pqData) {
+          message.pqInitialMessage = {
+            identityKey: arrayBufferToBase64(pqData.identityKey.buffer as ArrayBuffer),
+            ephemeralKey: arrayBufferToBase64(pqData.ephemeralKey.buffer as ArrayBuffer),
+            kemCipherText: arrayBufferToBase64(pqData.kemCipherText.buffer as ArrayBuffer),
+            signedPreKeyId: pqData.signedPreKeyId,
+            kyberPreKeyId: pqData.kyberPreKeyId,
+            ...(pqData.oneTimePreKeyId !== undefined && {
+              oneTimePreKeyId: pqData.oneTimePreKeyId,
+            }),
+            version: pqData.version,
+          };
+          this.pendingPQXDH.delete(recipientId);
+        }
+      }
+    } else {
+      // Classical Double Ratchet path
+      const drEngine = session.engine as DoubleRatchetEngine;
+      const ratchetMessage = await drEngine.encryptMessage(plaintextBytes);
+
+      message = buildSecureMessage({
+        ourUserId,
+        recipientId,
+        sessionId: session.sessionId,
+        ratchetMessage,
+      });
+
+      if (isInitialMessage) {
+        const x3dhData = this.pendingX3DH.get(recipientId);
+        if (x3dhData) {
+          message.initialMessage = {
+            ephemeralPublicKey: arrayBufferToBase64(x3dhData.ephemeralPublic),
+            usedOneTimePreKey: !!recipientBundle?.one_time_prekey,
+            oneTimePreKeyId: recipientBundle?.one_time_prekey_id,
+          };
+          this.pendingX3DH.delete(recipientId);
+        }
+      }
+    }
+
     session.messageCount++;
     session.lastActivity = Date.now();
     await saveSessionToStorage(session);
-
-    // Build secure message via helper
-    const message = buildSecureMessage({
-      ourUserId,
-      recipientId,
-      sessionId: session.sessionId,
-      ratchetMessage,
-    });
-
-    // Include X3DH data for initial message
-    if (isInitialMessage) {
-      const x3dhData = this.pendingX3DH.get(recipientId);
-      if (x3dhData) {
-        message.initialMessage = {
-          ephemeralPublicKey: arrayBufferToBase64(x3dhData.ephemeralPublic),
-          usedOneTimePreKey: !!recipientBundle?.one_time_prekey,
-          oneTimePreKeyId: recipientBundle?.one_time_prekey_id,
-        };
-        this.pendingX3DH.delete(recipientId);
-      }
-    }
 
     return message;
   }
 
   /**
-   * Decrypt a received message
+   * Decrypt a received message.
+   *
+   * Protocol is detected from the message's `protocolVersion` field:
+   * - Absent or CLASSICAL_V1 → DoubleRatchetEngine
+   * - PQXDH_V1 → TripleRatchetEngine
    */
   async decryptMessage(message: SecureMessage, senderIdentityKey?: ArrayBuffer): Promise<string> {
     let session = this.sessions.get(message.senderId);
 
-    // If this is an initial message, establish the session
     if (!session && message.initialMessage) {
       if (!senderIdentityKey) {
         throw new Error('Sender identity key required for initial message');
@@ -239,23 +403,38 @@ class SessionManager {
       throw new Error(`No session found for ${message.senderId}`);
     }
 
-    // Reconstruct ratchet message and decrypt
-    const ratchetMessage = toRatchetMessage(message);
-    const decrypted = await session.engine.decryptMessage(ratchetMessage);
+    let plaintext: Uint8Array;
 
-    // Update session state
+    if (session.protocol.protocol === CryptoProtocol.PQXDH_V1 && message.pqRatchetHeader) {
+      // PQ Triple Ratchet decryption
+      const trEngine = session.engine as TripleRatchetEngine;
+      const trMessage = deserializePQMessage({
+        header: {
+          ec: message.ratchetMessage.header,
+          pq: message.pqRatchetHeader,
+          version: message.protocolVersion ?? 4,
+        },
+        ciphertext: message.ratchetMessage.ciphertext,
+        nonce: message.ratchetMessage.nonce,
+        mac: message.ratchetMessage.mac,
+      });
+      const decrypted = await trEngine.decrypt(trMessage);
+      plaintext = decrypted.plaintext;
+    } else {
+      // Classical Double Ratchet decryption
+      const drEngine = session.engine as DoubleRatchetEngine;
+      const ratchetMessage = toRatchetMessage(message);
+      const decrypted = await drEngine.decryptMessage(ratchetMessage);
+      plaintext = decrypted.plaintext;
+    }
+
     session.messageCount++;
     session.lastActivity = Date.now();
     await saveSessionToStorage(session);
 
-    // Decode plaintext
-    const decoder = new TextDecoder();
-    return decoder.decode(decrypted.plaintext);
+    return new TextDecoder().decode(plaintext);
   }
 
-  /**
-   * Destroy a session (e.g., when conversation is deleted)
-   */
   async destroySession(recipientId: string): Promise<void> {
     const session = this.sessions.get(recipientId);
     if (session) {
@@ -266,9 +445,6 @@ class SessionManager {
     }
   }
 
-  /**
-   * Destroy all sessions (e.g., on logout)
-   */
   async destroyAllSessions(): Promise<void> {
     for (const [, session] of this.sessions) {
       session.engine.destroy();
@@ -276,12 +452,10 @@ class SessionManager {
     }
     this.sessions.clear();
     this.pendingX3DH.clear();
+    this.pendingPQXDH.clear();
     logger.log('Destroyed all ratchet sessions');
   }
 
-  /**
-   * Get all active session IDs
-   */
   getActiveSessions(): string[] {
     return Array.from(this.sessions.keys());
   }

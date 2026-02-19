@@ -99,6 +99,23 @@
 - [x] `Referrer-Policy`
 - [x] `Permissions-Policy`
 
+> **CSP `style-src 'unsafe-inline'` — Accepted Risk**
+>
+> `style-src 'self' 'unsafe-inline'` is intentionally set in the web and landing CSP policies. This
+> is required because **Framer Motion** and **Radix UI** inject inline `style` attributes at runtime
+> for animations and positioning (e.g., `transform`, `opacity`, `pointer-events`). Nonce-based
+> `style-src` cannot cover dynamically injected `style=` attributes — only `<style>` blocks. There
+> is no spec-compliant way to restrict inline style attributes without breaking these libraries.
+>
+> **Risk assessment:** `style-src` injection alone cannot execute JavaScript. XSS protection is
+> enforced via `script-src 'self'` (no `'unsafe-inline'` or `'unsafe-eval'` in source HTML). All
+> major production apps using CSS-in-JS or animation libraries accept this trade-off: Discord,
+> Slack, Notion, GitHub, and Google Workspace all ship `style-src 'unsafe-inline'`.
+>
+> **Mitigation path:** When Framer Motion and Radix UI support CSP-safe styling (tracked upstream),
+> migrate to `style-src 'self' 'nonce-{random}'` using the existing nonce infrastructure in
+> `vite-plugin-csp-nonce.ts`.
+
 ### 4.5 WebSocket Security
 
 - [x] Socket authentication (`socket_security.ex`)

@@ -198,6 +198,26 @@ export const createSetUseDoubleRatchet =
   };
 
 /**
+ * Enable or disable PQXDH + Triple Ratchet for new sessions.
+ * When enabled, new sessions with recipients that publish KEM prekeys
+ * will use post-quantum key exchange and the Triple Ratchet protocol.
+ */
+export const createSetUseTripleRatchet =
+  (set: Set) =>
+  (enabled: boolean): void => {
+    sessionManager.setUseTripleRatchet(enabled);
+    set({ useTripleRatchet: enabled });
+    logger.log(`Triple Ratchet (PQXDH) mode ${enabled ? 'enabled' : 'disabled'}`);
+  };
+
+/**
+ * Get the protocol version for an existing session with a recipient.
+ */
+export const createGetSessionProtocol = () => (recipientId: string) => {
+  return sessionManager.getSessionProtocol(recipientId);
+};
+
+/**
  * Clear error.
  */
 export const createClearError = (set: Set) => (): void => {

@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@cgraph/animation-constants": "workspace:^",
+    "@cgraph/crypto": "workspace:*",
     "@cgraph/shared-types": "workspace:*",
     "@cgraph/socket": "workspace:*",
     "@cgraph/utils": "workspace:*",

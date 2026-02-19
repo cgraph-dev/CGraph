@@ -16,6 +16,8 @@ import {
   createGetRecipientBundle,
   createHandleKeyRevoked,
   createSetUseDoubleRatchet,
+  createSetUseTripleRatchet,
+  createGetSessionProtocol,
   createClearError,
 } from './core-actions';
 
@@ -44,6 +46,7 @@ export const useE2EEStore = create<E2EEState>()((set, get) => ({
   prekeyCount: 0,
   bundleCache: new Map(),
   useDoubleRatchet: true,
+  useTripleRatchet: false,
 
   // Core actions
   initialize: createInitialize(set, get),
@@ -52,6 +55,8 @@ export const useE2EEStore = create<E2EEState>()((set, get) => ({
   getRecipientBundle: createGetRecipientBundle(set, get),
   handleKeyRevoked: createHandleKeyRevoked(set, get),
   setUseDoubleRatchet: createSetUseDoubleRatchet(set),
+  setUseTripleRatchet: createSetUseTripleRatchet(set),
+  getSessionProtocol: createGetSessionProtocol(),
   clearError: createClearError(set),
 
   // Legacy encryption
