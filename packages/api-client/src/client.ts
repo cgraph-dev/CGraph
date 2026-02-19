@@ -95,13 +95,15 @@ class ApiClientError extends Error {
   readonly code: string;
   readonly status: number;
   readonly details?: unknown;
+  readonly requestId?: string;
 
-  constructor(status: number, error: ApiError['error']) {
+  constructor(status: number, error: ApiError['error'], requestId?: string) {
     super(error.message);
     this.name = 'ApiClientError';
     this.code = error.code;
     this.status = status;
     this.details = error.details;
+    this.requestId = requestId;
   }
 }
 
@@ -111,9 +113,8 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
   const baseFetch = config.fetchImpl ?? fetch;
 
   // Wrap fetch with retry, circuit breaker, and timeout
-  const fetchFn = config.resilience !== undefined
-    ? withResilience(baseFetch, config.resilience)
-    : baseFetch;
+  const fetchFn =
+    config.resilience !== undefined ? withResilience(baseFetch, config.resilience) : baseFetch;
 
   function getAuthToken(): string | null {
     if (config.getToken) {
@@ -125,7 +126,7 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
   async function request<T>(
     method: string,
     path: string,
-    options?: RequestOptions,
+    options?: RequestOptions
   ): Promise<ApiResponse<T>> {
     const url = new URL(path, config.baseUrl);
 
@@ -162,19 +163,33 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
 
     const body: unknown = await response.json();
 
+    // Extract request ID for correlation between frontend errors and backend logs
+    const requestId = response.headers.get('x-request-id') ?? undefined;
+
     if (!response.ok) {
       const errorBody = body as { error?: ApiError['error'] };
-      throw new ApiClientError(response.status, errorBody.error ?? {
-        code: 'unknown_error',
-        message: `HTTP ${response.status}`,
-      });
+      throw new ApiClientError(
+        response.status,
+        errorBody.error ?? {
+          code: 'unknown_error',
+          message: `HTTP ${response.status}`,
+        },
+        requestId
+      );
     }
 
-    return body as ApiResponse<T>;
+    const result = body as ApiResponse<T>;
+    if (requestId && result.meta) {
+      (result.meta as Record<string, unknown>).requestId = requestId;
+    }
+    return result;
   }
 
   /** GET helper. */
-  async function get<T>(path: string, params?: Record<string, string | number | boolean | undefined>): Promise<ApiResponse<T>> {
+  async function get<T>(
+    path: string,
+    params?: Record<string, string | number | boolean | undefined>
+  ): Promise<ApiResponse<T>> {
     return request<T>('GET', path, { params });
   }
 
@@ -207,14 +222,19 @@ export function createApiClient(config: ApiClientConfig): ApiClient {
     groups: createGroupsEndpoints(http),
     friends: createFriendsEndpoints(http),
     gamification: createGamificationEndpoints(http),
-    setToken(t: string | null) { token = t; },
+    setToken(t: string | null) {
+      token = t;
+    },
     request,
   };
 }
 
 /** HTTP helpers type passed to endpoint factories. */
 export type HttpHelpers = {
-  get<T>(path: string, params?: Record<string, string | number | boolean | undefined>): Promise<ApiResponse<T>>;
+  get<T>(
+    path: string,
+    params?: Record<string, string | number | boolean | undefined>
+  ): Promise<ApiResponse<T>>;
   post<T>(path: string, body?: unknown): Promise<ApiResponse<T>>;
   put<T>(path: string, body?: unknown): Promise<ApiResponse<T>>;
   patch<T>(path: string, body?: unknown): Promise<ApiResponse<T>>;

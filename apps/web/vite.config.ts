@@ -71,9 +71,10 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    // SECURITY: Sourcemaps disabled in production to protect proprietary code
-    // Set VITE_ENABLE_SOURCEMAPS=true for debugging if needed
-    sourcemap: process.env.VITE_ENABLE_SOURCEMAPS === 'true',
+    // SECURITY: 'hidden' generates .map files for error tracking services (Sentry, Datadog)
+    // without exposing sourceMappingURL comments in production bundles.
+    // Set VITE_ENABLE_SOURCEMAPS=true for full inline sourcemaps during debugging.
+    sourcemap: process.env.VITE_ENABLE_SOURCEMAPS === 'true' || 'hidden',
     // Suppress chunk size warnings — large chunks are expected for the
     // encrypted messaging app (crypto libs, Three.js demos, markdown renderer).
     // Actual bundle analysis uses rollup-plugin-visualizer output.

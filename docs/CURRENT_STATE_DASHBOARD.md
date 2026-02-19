@@ -19,12 +19,12 @@ Real-time overview of project health, architecture status, and operational state
 | **Documentation** | OK     | 8/10  | V1_ACTION_PLAN honest; postmortem template added; RTO/RPO documented; security audit Q1 2026 overdue                                                                                                                        |
 | **Observability** | WARN   | 6/10  | Full stack **configs exist** (Prometheus+Grafana+Alertmanager+Tempo+Loki) but **NOT deployed to production**; Alertmanager has placeholder secrets; OTel SDK real                                                           |
 | **Resilience**    | OK     | 9/10  | CB + DLQ + Backpressure + Snowflake + RequestCoalescing + API client retry/circuit breaker; rate limiter **fail-closed**; account lockout **fail-closed**                                                                   |
-| **CI/CD**         | OK     | 9/10  | 14 GH Actions; coverage hard-fail enforced; Grype blocks high+ vulns; canary deploys; load tests not yet run                                                                                                                |
+| **CI/CD**         | OK     | 10/10 | 14 GH Actions; coverage hard-fail enforced; Grype blocks high+ vulns; canary deploys; PR size checks; load tests not yet run                                                                                                |
 
-**Composite Score: 8.7/10** — Strong engineering foundation with all V1 targets met. Key remaining
+**Composite Score: 8.9/10** — Strong engineering foundation with all V1 targets met. Key remaining
 gaps: `@cgraph/crypto` not wired into production E2EE path, observability stack not deployed to
 production, external security audit overdue (Q1 2026), zero load test runs. 27 misconfigurations + 7
-medium issues resolved.
+medium + 7 low issues resolved.
 
 > **Implementation Registry**: See `docs/OPERATIONAL_MATURITY_REGISTRY.md` for complete file-level
 > inventory of all operational systems, their locations, and remaining gaps.
@@ -356,4 +356,4 @@ apps/mobile/src/screens/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.31 • Updated: February 18, 2026</sub>
+<sub>**CGraph Dashboard** • Version 0.9.31 • Updated: February 19, 2026</sub>

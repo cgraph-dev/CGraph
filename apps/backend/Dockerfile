@@ -5,11 +5,11 @@
 FROM hexpm/elixir:1.17.3-erlang-27.1.2-alpine-3.20.3 AS builder
 
 # Install build dependencies
+# Note: npm/nodejs intentionally excluded — Phoenix uses Elixir-native
+# esbuild/tailwind wrappers, no Node.js toolchain needed at build time.
 RUN apk add --no-cache \
     build-base \
-    git \
-    npm \
-    nodejs
+    git
 
 # Set build environment
 ENV MIX_ENV=prod

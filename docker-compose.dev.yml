@@ -12,6 +12,8 @@
 services:
   postgres:
     image: postgres:16-alpine
+    mem_limit: 512m
+    cpus: '1.0'
     environment:
       POSTGRES_USER: cgraph
       POSTGRES_PASSWORD: cgraph_dev_password
@@ -28,6 +30,11 @@ services:
 
   redis:
     image: redis:7-alpine
+    mem_limit: 256m
+    cpus: '0.5'
+    environment:
+      # Limit Redis memory to match container limit
+      REDIS_ARGS: '--maxmemory 200mb --maxmemory-policy allkeys-lru'
     ports:
       - '6379:6379'
     volumes:
@@ -40,6 +47,8 @@ services:
 
   meilisearch:
     image: getmeili/meilisearch:v1.12
+    mem_limit: 1536m
+    cpus: '2.0'
     environment:
       MEILI_MASTER_KEY: 'devMasterKey123'
       MEILI_ENV: 'development'

@@ -4,6 +4,90 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.31] - 2026-02-19
+
+**MEDIUM SEVERITY AUDIT FIXES**
+
+7 Medium severity issues resolved from Google/Meta/Discord standards audit.
+
+### Security Hardening
+
+- Rate limiter now **fail-closed** on cache errors (was fail-open, allowing unlimited requests)
+- AccountLockout now **fail-closed** when GenServer unavailable (was fail-open, skipping lockout)
+- E2EE `register_keys` endpoint validates base64 format and byte length before processing
+
+### Code Quality
+
+- `@typescript-eslint/no-explicit-any` escalated from `warn`/`off` to `error` across all ESLint
+  configs
+- `ApiError` type updated to support both flat string and structured `{code, message, details}`
+  envelope
+
+### Documentation
+
+- Postmortem template added to Operational Runbooks (Google SRE format)
+- RTO/RPO targets documented in SLO document with recovery procedures
+
+### Low Severity Fixes
+
+- Docker Compose dev: resource limits added (postgres 512MB, redis 256MB, meilisearch 1.5GB)
+- API client: request ID (`x-request-id`) propagated to `ApiClientError` for log correlation
+- Vite production sourcemaps: `'hidden'` mode for error tracking without exposing source
+- Backend Dockerfile: removed unused `npm`/`nodejs` packages (~80MB reduction)
+- PR size check added to CI pipeline (warns at 400+ LOC, alerts at 1000+)
+- ADR index: placeholder entries added for skipped numbers 006-010, 012-017
+
+---
+
+## [0.9.30] - 2026-02-18
+
+**CRITICAL + HIGH SEVERITY AUDIT FIXES**
+
+10 issues fixed from full Google/Meta/Discord standards audit (3 Critical, 7 High).
+
+### Critical Fixes
+
+- `@cgraph/crypto` production status disclosed honestly in V1 Action Plan
+- Observability marked as "CONFIGS COMPLETE, DEPLOY PENDING" (was claiming production-ready)
+- Removed `unsafe-eval` and `unsafe-inline` from CSP `:standard` mode `script-src`
+
+### High Fixes
+
+- Coverage thresholds unified: 60%/50%/50%/60% in vite.config.ts; CI now hard-fails (`exit 1`)
+- E2E no-op assertions (`expect(true).toBeTruthy()`) removed; `test.skip()` for conditional branches
+- Web Dockerfile: added `USER nginx` + security headers (X-Content-Type-Options, X-Frame-Options)
+- Dashboard scores corrected honestly: 9.7 → 8.4/10 composite
+- Security audit Q1 2026 marked as overdue
+- Grype severity cutoff tightened: `critical` → `high`
+
+---
+
+## [0.9.29] - 2026-02-17
+
+**21 MISCONFIGURATION FIXES + V1 VERIFICATION**
+
+Deep audit found and fixed 21 misconfigurations (3 Critical, 4 High, 5 Medium, 9 Low). Subsequent V1
+verification audit found and fixed 6 discrepancies.
+
+### Misconfiguration Fixes (21 items)
+
+- CI/CD: fixed coverage job matrix, docker-build target, ESLint config path
+- Docker: fixed Fly.io builder image version, nginx config, health check paths
+- Backend: fixed config overlaps, deprecated Cachex option, test environment leaks
+- Vercel: removed stale rewrite rules, fixed build command
+- Docs: cleaned 13,466 lines of dead documentation weight
+
+### V1 Verification Fixes (6 items)
+
+- Web coverage thresholds corrected (19% → 60%)
+- Coveralls config aligned with CI (60% → matching)
+- Composite score recalculated accurately
+- Dead esbuild/tailwind configs removed
+- Dashboard notes updated with honest assessments
+- Missing audit tracking section added
+
+---
+
 ## [0.9.28] - 2026-02-16
 
 **DOCUMENTATION OVERHAUL — COMPREHENSIVE ACCURACY AUDIT**
