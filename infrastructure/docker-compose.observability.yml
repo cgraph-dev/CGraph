@@ -16,8 +16,6 @@
 #   - Redis accessible (or update REDIS_ADDR)
 #   - PostgreSQL accessible (or update DATA_SOURCE_NAME)
 
-version: '3.8'
-
 x-common: &common
   restart: unless-stopped
   logging:

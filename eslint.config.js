@@ -112,7 +112,9 @@ export default [
     },
     rules: {
       ...js.configs.recommended.rules,
-      ...tseslint.configs.recommended.rules,
+      // typescript-eslint v8 flat config: recommended is an array of config objects,
+      // not a single object. Extract and merge rules from all entries.
+      ...tseslint.configs.recommended.reduce((acc, cfg) => ({ ...acc, ...(cfg.rules || {}) }), {}),
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',

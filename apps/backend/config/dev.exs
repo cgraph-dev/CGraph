@@ -66,9 +66,10 @@ config :phoenix_live_view, :debug_heex_annotations, true
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
 
-# JWT settings for development
-config :cgraph, :jwt_access_token_ttl, 7200
-config :cgraph, :jwt_refresh_token_ttl, 2_592_000
+# JWT settings for development (match production defaults for consistency)
+# Access token: 15 minutes (900s), Refresh token: 7 days (604800s)
+config :cgraph, :jwt_access_token_ttl, 900
+config :cgraph, :jwt_refresh_token_ttl, 604_800
 
 # Meilisearch configuration for development
 # Start MeiliSearch locally: docker compose -f docker-compose.dev.yml up meilisearch

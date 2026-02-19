@@ -13,8 +13,8 @@ const config = {
   organizationName: 'cgraph-dev',
   projectName: 'CGraph',
 
-  onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'log',
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'warn',
 
   i18n: {
     defaultLocale: 'en',
@@ -66,7 +66,7 @@ const config = {
           lastVersion: 'current',
           versions: {
             current: {
-              label: '0.9.28',
+              label: '0.9.31',
               path: '',
             },
           },
@@ -191,7 +191,7 @@ const config = {
               },
               {
                 label: 'Contributing',
-                to: '/docs/guides/CONTRIBUTING',
+              href: 'https://github.com/cgraph-dev/CGraph/blob/main/CONTRIBUTING.md',
               },
             ],
           },
@@ -226,14 +226,16 @@ const config = {
         additionalLanguages: ['elixir', 'bash', 'json', 'yaml', 'typescript'],
       },
 
-      // Algolia search — placeholder credentials, replace before deploying docs site
-      algolia: {
-        appId: 'YOUR_APP_ID', // TODO: Replace with real Algolia App ID
-        apiKey: 'YOUR_SEARCH_API_KEY', // TODO: Replace with real Algolia Search API Key
-        indexName: 'cgraph',
-        contextualSearch: true,
-        searchPagePath: 'search',
-      },
+      // Algolia search — disabled until real credentials are configured
+      // To enable: set ALGOLIA_APP_ID and ALGOLIA_API_KEY environment variables
+      // and uncomment the algolia block below
+      // algolia: {
+      //   appId: process.env.ALGOLIA_APP_ID,
+      //   apiKey: process.env.ALGOLIA_API_KEY,
+      //   indexName: 'cgraph',
+      //   contextualSearch: true,
+      //   searchPagePath: 'search',
+      // },
 
       // Color mode
       colorMode: {

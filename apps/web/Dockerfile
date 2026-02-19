@@ -1,8 +1,9 @@
 # CGraph Web — CI Dockerfile
 # Build context: apps/web/
-# For full production builds use infrastructure/docker/Dockerfile.web instead.
+# NOTE: This is a standalone CI build image. Production deploys use Cloudflare Pages
+# which builds from the full monorepo context with workspace packages available.
 
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
