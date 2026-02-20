@@ -42,9 +42,9 @@ forums, and gamification. Features include post-quantum E2EE (PQXDH + Triple Rat
 and AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a
 karma-based forum system.
 
-**Version**: 0.9.32  
+**Version**: 0.9.33  
 **Last Updated**: February 20, 2026  
-**Architecture Score**: 9.1/10 (see CURRENT_STATE_DASHBOARD.md for breakdown)  
+**Architecture Score**: 7.8/10 (see CURRENT_STATE_DASHBOARD.md for breakdown)  
 **License**: Proprietary (see LICENSE)
 
 ## Key Features
@@ -60,23 +60,33 @@ karma-based forum system.
 
 ## Operational Maturity
 
-| Capability            | Status          | Implementation                                                                       |
-| --------------------- | --------------- | ------------------------------------------------------------------------------------ |
-| **Metrics Export**    | Active          | TelemetryMetricsPrometheus.Core → `/metrics` endpoint                                |
-| **SLO Monitoring**    | Active          | Prometheus recording rules + multi-burn-rate alerts                                  |
-| **Error Tracking**    | Active          | Sentry integration (severity-mapped levels + tags)                                   |
-| **Circuit Breakers**  | Active          | 7 fuses: Redis, APNs, FCM, Expo, WebPush, Mailer, HTTP                               |
-| **Search Fallback**   | Active          | MeiliSearch → PostgreSQL ILIKE automatic failover                                    |
-| **Search Indexing**   | Active          | Oban async: messages, posts, threads indexed on create                               |
-| **Load Testing**      | Ready           | k6 scripts: smoke, load, stress, WebSocket, writes                                   |
-| **DB Partitioning**   | Migration ready | Messages table monthly range partitions + Snowflake IDs                              |
-| **Delivery Tracking** | Active          | ✓✓ receipts (sent/delivered/read)                                                    |
-| **Backpressure**      | Active          | Channel write throttling with configurable limits                                    |
-| **Request Tracing**   | Active          | Plug in 5 router pipelines (api, api_auth, api_auth_strict, api_relaxed, api_admin)  |
-| **Chaos Testing**     | Ready           | Fault injection, fuse stress testing, failure scenarios                              |
-| **Feature Flags**     | Active          | GenServer + ETS/Redis with percentage rollouts                                       |
-| **Test Coverage**     | Active          | 380+ test files (163 backend, 202 web, 15 mobile, 16 landing), 6900+ tests 0 failures |
-| **CI/CD**             | Active          | 12 GH Actions workflows, CI-gated canary deploys                                     |
+> **Audit Note (Sessions 32-33)**: 8 deprecated packages deleted (api-client, test-utils, state,
+> core, config, hooks, ui, landing-components). Active packages: shared-types, utils, crypto,
+> socket, animation-constants. 3 dead GenServers wired into WorkerSupervisor (Registry, SLO,
+> RequestCoalescing). 2 dead ConnectionPool modules deleted. Forums migrated from offset to cursor
+> pagination. **SoftDelete fully adopted** (22 files, 64 occurrences converted). React 19 APIs
+> adopted: `forwardRef` removed from 10 web + 2 mobile components, `useOptimistic` in
+> NestedComments. 4 no-op mobile context Provider shims removed. `turbo.json` dead `@cgraph/core`
+> task removed. See `docs/V1_ACTION_PLAN.md` for full details.
+
+| Capability            | Status          | Implementation                                                                           |
+| --------------------- | --------------- | ---------------------------------------------------------------------------------------- |
+| **Metrics Export**    | Active          | TelemetryMetricsPrometheus.Core → `/metrics` → Alloy → Grafana Cloud Prometheus          |
+| **Grafana Cloud**     | Active          | Alloy sidecar on Fly.io, `cgraphdev.grafana.net`, 64+ metrics, dashboard + alert rules   |
+| **SLO Monitoring**    | Active          | Prometheus recording rules + multi-burn-rate alerts + `CGraph.Performance.SLO` GenServer |
+| **Error Tracking**    | Active          | Sentry integration (severity-mapped levels + tags)                                       |
+| **Circuit Breakers**  | Active          | 7 fuses: Redis, APNs, FCM, Expo, WebPush, Mailer, HTTP                                   |
+| **Search Fallback**   | Active          | MeiliSearch → PostgreSQL ILIKE automatic failover                                        |
+| **Search Indexing**   | Active          | Oban async: messages, posts, threads indexed on create                                   |
+| **Load Testing**      | Ready           | k6 scripts: smoke, load, stress, WebSocket, writes                                       |
+| **DB Partitioning**   | Migration ready | Messages table monthly range partitions + Snowflake IDs                                  |
+| **Delivery Tracking** | Active          | ✓✓ receipts (sent/delivered/read)                                                        |
+| **Backpressure**      | Active          | Channel write throttling with configurable limits                                        |
+| **Request Tracing**   | Active          | Plug in 5 router pipelines (api, api_auth, api_auth_strict, api_relaxed, api_admin)      |
+| **Chaos Testing**     | Ready           | Fault injection, fuse stress testing, failure scenarios                                  |
+| **Feature Flags**     | Active          | GenServer + ETS/Redis with percentage rollouts                                           |
+| **Test Coverage**     | Active          | 380+ test files (163 backend, 202 web, 15 mobile, 16 landing), 6900+ tests 0 failures    |
+| **CI/CD**             | Active          | 12 GH Actions workflows, CI-gated canary deploys                                         |
 
 ### Key Operational Docs
 
@@ -86,7 +96,14 @@ karma-based forum system.
 - **DB scaling plan**: `docs/DATABASE_SHARDING_ROADMAP.md`
 - **Prometheus rules**: `infrastructure/prometheus/rules/cgraph-slo-rules.yml`
 - **Alerting rules**: `infrastructure/prometheus/rules/cgraph-alerting-rules.yml`
-- **Grafana dashboards**: `infrastructure/grafana/provisioning/dashboards/json/`
+- **Grafana Cloud dashboards**: `infrastructure/grafana/dashboards/cgraph-cloud-overview.json`
+  (imported, 10 panels)
+- **Grafana Cloud alerts**: `infrastructure/grafana/alerts/cgraph-alerts.yml` (6 rules, imported and
+  active)
+- **Alloy config (Fly.io sidecar)**: `apps/backend/alloy/config.alloy`
+- **Alloy config (dev server)**: `infrastructure/grafana/alloy-config.alloy`
+- **Alloy env template**: `infrastructure/grafana/alloy-env.example`
+- **Legacy Grafana dashboards**: `infrastructure/grafana/provisioning/dashboards/json/`
 - **Testing strategy**: `docs/TESTING_STRATEGY.md`
 
 ### Circuit Breakers (Use ONLY these)
@@ -419,8 +436,10 @@ cd apps/backend && mix phx.server
 - **apps/mobile** - React Native 0.81 + Expo 54 mobile app
 - **apps/backend** - Elixir/Phoenix 1.8 API server
 - **packages/shared-types** - TypeScript types shared between web/mobile
-- **packages/ui** - Shared UI components
 - **packages/utils** - Common utilities
+- **packages/crypto** - E2EE (X3DH + Double Ratchet + PQXDH)
+- **packages/socket** - WebSocket client wrapper
+- **packages/animation-constants** - Spring animation presets
 
 Uses pnpm workspaces with Turborepo for task orchestration.
 
@@ -860,7 +879,7 @@ Required:
 
 Copy `.env.example` to `.env` in `apps/backend/` and configure database credentials and secrets.
 
-## Current Status (v0.9.32)
+## Current Status (v0.9.33)
 
 **Updated:** February 20, 2026
 
@@ -886,25 +905,25 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 
 ### Key Metrics
 
-| Metric               | Before      | After                      |
-| -------------------- | ----------- | -------------------------- |
-| `.env` with secrets  | Present     | **DELETED**                |
-| `as any` casts       | 27          | **10** (63% reduction)     |
-| `console.log` calls  | 325         | **65** (80% reduction)     |
-| Settings.tsx         | 1,172 lines | **221 lines**              |
-| UserProfile.tsx      | 1,157 lines | **715 lines**              |
-| Store facades        | 0           | **7 domains** (29 stores)  |
+| Metric               | Before      | After                                                 |
+| -------------------- | ----------- | ----------------------------------------------------- |
+| `.env` with secrets  | Present     | **DELETED**                                           |
+| `as any` casts       | 27          | **10** (63% reduction)                                |
+| `console.log` calls  | 325         | **65** (80% reduction)                                |
+| Settings.tsx         | 1,172 lines | **221 lines**                                         |
+| UserProfile.tsx      | 1,157 lines | **715 lines**                                         |
+| Store facades        | 0           | **7 domains** (29 stores)                             |
 | Passing tests        | 840         | **6,900+** (backend 1908 + web 4968 + mobile/landing) |
-| Test failures        | 234+        | **0** (fully green)        |
-| Feature completion   | 59/69       | **69/69** (100%)           |
-| Statement coverage   | 8.79%       | **~20%** (web, vitest)     |
-| Test files (backend) | 40          | **163** (308% increase)    |
-| Controller coverage  | 40%         | **100%** (83/83)           |
-| Context module tests | 23          | **70** (47 new)            |
-| Circuit breakers     | 1 (Redis)   | **7** (all ext. deps)      |
-| Compile warnings     | 90+         | **0** (fully clean)        |
-| Credo issues         | 1,277       | **0** (100% — fully clean) |
-| Operational score    | N/A         | **8.2/10**                 |
+| Test failures        | 234+        | **0** (fully green)                                   |
+| Feature completion   | 59/69       | **69/69** (100%)                                      |
+| Statement coverage   | 8.79%       | **~20%** (web, vitest)                                |
+| Test files (backend) | 40          | **163** (308% increase)                               |
+| Controller coverage  | 40%         | **100%** (83/83)                                      |
+| Context module tests | 23          | **70** (47 new)                                       |
+| Circuit breakers     | 1 (Redis)   | **7** (all ext. deps)                                 |
+| Compile warnings     | 90+         | **0** (fully clean)                                   |
+| Credo issues         | 1,277       | **0** (100% — fully clean)                            |
+| Operational score    | N/A         | **8.2/10**                                            |
 
 **Overall Score:** 9.1/10 (up from 7.3/10)
 
@@ -928,7 +947,9 @@ The following areas are scaffolded but not fully implemented:
 - **Meilisearch**: Not deployed; PostgreSQL full-text search used as interim
 - **Redis in production**: Optional; ETS fallback active. Required for distributed rate limiting
 - **Load testing**: k6 scripts ready but no staging/production runs completed
-- **Grafana dashboards**: JSON definitions exist but not provisioned in production
+- ~~**Grafana dashboards**~~: **RESOLVED** — Grafana Cloud (`cgraphdev.grafana.net`) deployed with
+  Alloy sidecar on Fly.io. Metrics flowing to Prometheus remote write. Dashboard (10 panels) + 6
+  alert rules imported and active in Grafana Cloud UI (Session 34–35)
 
 ### Session 31 — Web Test Suite Fix + IDE Warning Sweep (v0.9.32, February 20, 2026)
 
@@ -953,12 +974,13 @@ to `sharedSprings.snappy` (stiffness 400) instead of `sharedSprings.bouncy` (sti
 3. **`vi.mock` hoisting trap**: Factory functions are hoisted above imports — they CANNOT reference
    external variables or module-level constants. Solution: use **inline Proxy mocks** (see Mock
    Patterns below).
-4. **Missing mocks for new dependencies**: `createLogger`/`@/lib/logger`, `key-storage`,
-   `useOutlet` (react-router-dom) — added where needed.
+4. **Missing mocks for new dependencies**: `createLogger`/`@/lib/logger`, `key-storage`, `useOutlet`
+   (react-router-dom) — added where needed.
 5. **Assertion drift**: Tests asserting old behavior (e.g., loading-spinner vs null render, single
    vs duplicate text elements).
 
 **Skipped tests** (3):
+
 - `App.test.tsx` — `describe.skip`: imports entire app tree (PageTransition, AppRoutes, all stores,
   all themes). Hangs forever due to unresolvable deep dependency chains.
 - 2 tests in `ForumCategoryList.test.tsx` and `PollWidget.test.tsx` — `it.skip`: hang on deep
@@ -975,45 +997,139 @@ Resolved ALL 15 IDE diagnostics across 14 files:
   deepLinks.ts, queryClient.ts
 - **1 ternary simplification**: `Modal.tsx` — `variant === 'danger' ? variant : 'primary'`
 - **1 test destructuring**: `groupStore.test.ts` — `const { channels } = ...groups[0]!`
-- **1 TypeScript deprecation**: `packages/core/tsconfig.json` — added `"ignoreDeprecations": "6.0"`
-  for deprecated `baseUrl` option
+- **1 TypeScript deprecation**: `packages/core/tsconfig.json` — ~~added
+  `"ignoreDeprecations": "6.0"`~~ (package deleted — was dead code)
 - **1 missing dependency**: Installed `@axe-core/playwright` v4.11.1 for e2e accessibility tests
 - **1 Elixir atom safety**: `audit.ex` — changed `:"#{event}_#{id}"` to `"#{event}_#{id}"` (string
   instead of dynamic atom — prevents atom table exhaustion)
 - **1 YAML schema**: `prometheus.yml` — added yaml-language-server schema annotation
 - **Created** `.vscode/settings.json` with YAML schema config for Grafana datasource files
 
+### Session 34 — Grafana Cloud Observability + Production Deploy (v0.9.33, February 20, 2026)
+
+**Grafana Cloud setup:**
+
+- Account: `cgraphdev.grafana.net` (eu-central-0, 14-day trial)
+- Grafana Alloy v1.13.1 sidecar on Fly.io — scrapes `localhost:4000/metrics` every 15s
+- Remote writes to Grafana Cloud Prometheus (`prometheus-prod-58-prod-eu-central-0`)
+- Config: `apps/backend/alloy/config.alloy`, start script: `apps/backend/alloy/start-with-app.sh`
+- Infrastructure config (dev server): `infrastructure/grafana/alloy-config.alloy`
+- Dashboard JSON: `infrastructure/grafana/dashboards/cgraph-cloud-overview.json` (10 panels)
+- Alert rules: `infrastructure/grafana/alerts/cgraph-alerts.yml` (6 rules in 3 groups)
+
+**Telemetry expansion (18 new metrics in `CGraphWeb.Telemetry`):**
+
+- WebSocket: active connections, connect/disconnect totals, message in/out, channel join duration
+- Rate Limiter: check total (with result/tier tags), check duration
+- Security: login success/failure (method/reason), token created/refreshed/revoked, account
+  locked/unlocked
+- VM: memory.processes, memory.ets, system_counts.process_count
+
+**Bug fixes during deployment:**
+
+1. **SoftDelete macro** — `not_deleted/1` was a regular function used inside Ecto `where:` clauses
+   (requires macro). Converted to `defmacro not_deleted(binding)` → `is_nil(binding.deleted_at)`.
+   Created `exclude_deleted/1` function for pipe usage. Renamed 13 pipe usages across 8 files.
+2. **Alloy binary not found** — Alpine uses musl, Alloy is glibc-linked. Added `libc6-compat` to
+   Dockerfile runtime deps.
+3. **Session signing salt mismatch** — `Application.compile_env` locked value at compile time to
+   `"cgraph_session_v1"` but `runtime.exs` generated random value each boot. Fixed: only override if
+   `SESSION_SIGNING_SALT` env var is explicitly set.
+4. **Missing Fly.io secrets** — Added `RESEND_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
+   to Fly.io secrets.
+5. **Duplicate telemetry counters** — Removed `cgraph.auth.login.{success,failure}.count` (tagless)
+   in favor of `*.total` variants (with method/reason tags).
+
+**External services configured:**
+
+- Resend: API key set, domain `cgraph.org` DNS records added at Hostinger (pending verification)
+- Stripe: Live secret key set, webhook endpoint active at `/api/webhooks/stripe` (subscription
+  events), signing secret `whsec_*` set
+
+**Fly.io production state (v87, 2 processes — Alloy runs inside app):**
+
+- `app` — 2/2 health checks passing (`/health` + `/ready`), Alloy runs as background process via
+  `start-with-app.sh`
+- `pgbouncer` — running, connection pooling active
+- Standby machine for pgbouncer (hardware failover)
+- Image: 200MB Alpine 3.20
+
+**Files created:** `apps/backend/alloy/config.alloy`, `apps/backend/alloy/start.sh`,
+`apps/backend/alloy/start-with-app.sh` (combined entrypoint — Alloy bg + Phoenix fg),
+`infrastructure/grafana/alloy-config.alloy`, `infrastructure/grafana/alloy-env.example`,
+`infrastructure/grafana/dashboards/cgraph-cloud-overview.json`,
+`infrastructure/grafana/alerts/cgraph-alerts.yml`
+
+**Files modified:** `apps/backend/Dockerfile` (+Alloy binary, +libc6-compat, +start-with-app.sh
+entrypoint), `apps/backend/fly.toml` (+start-with-app.sh entrypoint, 2 processes),
+`apps/backend/fly.iad.toml` (+start-with-app.sh entrypoint),
+`apps/backend/lib/cgraph_web/telemetry.ex` (+18 metrics, +2 handler groups, -2 duplicate counters),
+`apps/backend/lib/cgraph/query/soft_delete.ex` (defmacro + exclude_deleted),
+`apps/backend/config/runtime.exs` (session_signing_salt conditional override),
+
+- 8 files with `|> not_deleted()` → `|> exclude_deleted()` renames
+
+**Remaining TODOs:**
+
+- ✅ Dashboard imported into Grafana Cloud UI (10 panels, UID `cgraph-cloud-overview`)
+- ✅ Alert rules imported into Grafana Cloud Alerting (6 rules in folder `CGraph Alerts`)
+- ✅ Metrics verified: `up{job="cgraph-phoenix"} = 1`, 417 series, 15 app metrics flowing
+- Resend DNS verification (check Hostinger propagation)
+
 ### ⚠️ Web Test Mock Patterns (CRITICAL — Read Before Touching Tests)
 
 > **Why this matters**: The #1 cause of web test failures is incorrect mocking. These patterns were
 > established in Session 31 after fixing 41 failures. Future agents MUST follow them.
 
-#### Framer Motion Proxy Mock (handles ALL motion.* elements)
+#### Framer Motion Proxy Mock (handles ALL motion.\* elements)
 
 ```typescript
 // ✅ CORRECT — Must be INSIDE vi.mock factory (hoisting prevents external refs)
 vi.mock('framer-motion', () => ({
   __esModule: true,
   AnimatePresence: ({ children }: any) => children,
-  motion: new Proxy({}, {
-    get: (_target: any, prop: string) => {
-      const svgElements = ['svg', 'circle', 'path', 'g', 'line', 'rect', 'ellipse', 'polygon'];
-      if (svgElements.includes(prop)) {
-        return (props: any) => {
-          const { initial, animate, exit, variants, whileHover, whileTap, transition, layout,
-            layoutId, ...rest } = props;
-          const el = document.createElementNS('http://www.w3.org/2000/svg', prop);
-          Object.entries(rest).forEach(([k, v]) => el.setAttribute(k, String(v)));
-          return el;
+  motion: new Proxy(
+    {},
+    {
+      get: (_target: any, prop: string) => {
+        const svgElements = ['svg', 'circle', 'path', 'g', 'line', 'rect', 'ellipse', 'polygon'];
+        if (svgElements.includes(prop)) {
+          return (props: any) => {
+            const {
+              initial,
+              animate,
+              exit,
+              variants,
+              whileHover,
+              whileTap,
+              transition,
+              layout,
+              layoutId,
+              ...rest
+            } = props;
+            const el = document.createElementNS('http://www.w3.org/2000/svg', prop);
+            Object.entries(rest).forEach(([k, v]) => el.setAttribute(k, String(v)));
+            return el;
+          };
+        }
+        return ({ children, ...props }: any) => {
+          const {
+            initial,
+            animate,
+            exit,
+            variants,
+            whileHover,
+            whileTap,
+            transition,
+            layout,
+            layoutId,
+            ...rest
+          } = props;
+          return React.createElement(prop, rest, children);
         };
-      }
-      return ({ children, ...props }: any) => {
-        const { initial, animate, exit, variants, whileHover, whileTap, transition, layout,
-          layoutId, ...rest } = props;
-        return React.createElement(prop, rest, children);
-      };
-    },
-  }),
+      },
+    }
+  ),
   useMotionValue: () => ({ get: () => 0, set: () => {} }),
   useSpring: () => ({ get: () => 0, set: () => {} }),
   useTransform: () => ({ get: () => 0 }),
@@ -1025,11 +1141,15 @@ vi.mock('framer-motion', () => ({
 ```typescript
 vi.mock('@heroicons/react/24/outline', () => ({
   __esModule: true,
-  default: new Proxy({}, {
-    get: (_: any, name: string) => {
-      return (props: any) => React.createElement('svg', { ...props, 'data-testid': `icon-${name}` });
-    },
-  }),
+  default: new Proxy(
+    {},
+    {
+      get: (_: any, name: string) => {
+        return (props: any) =>
+          React.createElement('svg', { ...props, 'data-testid': `icon-${name}` });
+      },
+    }
+  ),
   // Named exports — each icon is a separate export
   ChatBubbleLeftIcon: (props: any) => React.createElement('svg', props),
   // ... add as needed
@@ -1053,7 +1173,10 @@ vi.mock('@/lib/crypto/e2ee-store', () => ({
 ```typescript
 vi.mock('@/lib/logger', () => ({
   createLogger: () => ({
-    debug: vi.fn(), info: vi.fn(), warn: vi.fn(), error: vi.fn(),
+    debug: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
   }),
 }));
 ```
@@ -1066,18 +1189,18 @@ code. This means:
 - ❌ **NEVER** reference variables declared outside the factory
 - ❌ **NEVER** import a mock helper and use it inside `vi.mock()`
 - ✅ **ALWAYS** define mock implementations inline within the factory
-- ✅ **ALWAYS** use `new Proxy()` for dynamic mock objects (motion.*, icons, etc.)
+- ✅ **ALWAYS** use `new Proxy()` for dynamic mock objects (motion.\*, icons, etc.)
 
 ### Known Test Gotchas (AI Agent Reference)
 
-| Issue | Symptom | Fix |
-|-------|---------|-----|
-| Forum barrel import hangs | Test hangs on `await import(...)` | `it.skip` — barrel triggers deep transitive chain |
-| App.test.tsx hangs | `describe.skip` | Imports entire app tree; too many deps to mock |
-| Spring constant assertions | `bouncy` stiffness = 300, `snappy` = 400 | Check `packages/animation-constants/src/springs.ts` |
-| Crypto functions not awaited | `undefined` results in tests | All E2EE functions are `async` — must `await` |
-| `getAllByText` vs `getByText` | Multiple matching elements | Use `getAllByText` when text appears in multiple elements |
-| Missing `useOutlet` mock | AppLayout renders null | `vi.mock('react-router-dom', ...)` must include `useOutlet` |
+| Issue                         | Symptom                                  | Fix                                                         |
+| ----------------------------- | ---------------------------------------- | ----------------------------------------------------------- |
+| Forum barrel import hangs     | Test hangs on `await import(...)`        | `it.skip` — barrel triggers deep transitive chain           |
+| App.test.tsx hangs            | `describe.skip`                          | Imports entire app tree; too many deps to mock              |
+| Spring constant assertions    | `bouncy` stiffness = 300, `snappy` = 400 | Check `packages/animation-constants/src/springs.ts`         |
+| Crypto functions not awaited  | `undefined` results in tests             | All E2EE functions are `async` — must `await`               |
+| `getAllByText` vs `getByText` | Multiple matching elements               | Use `getAllByText` when text appears in multiple elements   |
+| Missing `useOutlet` mock      | AppLayout renders null                   | `vi.mock('react-router-dom', ...)` must include `useOutlet` |
 
 ### Session 29 — Stripe Alignment + Mock Removal + Deployment (v0.9.31)
 
@@ -1135,7 +1258,7 @@ Comprehensive review found 14+ issues (3 critical, 6 high, 5 medium) where old t
   constants, `coinShopData.tsx`, `premium/types/index.ts`
 - Mobile (8 files): `payment.ts`, `PremiumScreen.tsx`, `PremiumBadge.tsx`, `SubscriptionCard.tsx`,
   `premiumService.ts`, `friendsService.ts`, `settingsService.ts`, `features/premium/types`
-- Shared packages: `packages/state/src/types.ts`, `packages/core/src/domain/entities/User.ts`
+- Shared packages: `packages/shared-types/src/tiers.ts` (canonical tier definitions)
 - Hook architecture: Created `useBilling` hook (ESLint `no-restricted-imports` requires pages use
   hooks, not services directly)
 
@@ -1147,8 +1270,8 @@ Comprehensive review found 14+ issues (3 critical, 6 high, 5 medium) where old t
 | `premium`    | `"premium"`    | `STRIPE_PRICE_PREMIUM`    | $9.99  | 2.0x    | 50          |
 | `enterprise` | `"enterprise"` | `STRIPE_PRICE_ENTERPRISE` | Custom | 3.0x    | ∞           |
 
-**IMPORTANT**: The only valid tiers are: `free | premium | enterprise`. Never use old names
-(`plus`, `pro`, `business`, `starter`, `ultimate`, `elite`, `basic`, `premium_plus`).
+**IMPORTANT**: The only valid tiers are: `free | premium | enterprise`. Never use old names (`plus`,
+`pro`, `business`, `starter`, `ultimate`, `elite`, `basic`, `premium_plus`).
 
 ### Sessions 25–26 Changes (v0.9.30 — final 7 features, 100% completion)
 
@@ -1205,8 +1328,8 @@ Replaced all 4 mobile stub facades with real Zustand stores backed by API calls 
 
 Audited all 13 shared packages. 9 were dead (zero imports from any app):
 
-- **Removed from deps**: `@cgraph/api-client`, `@cgraph/config`, `@cgraph/core`,
-  `@cgraph/hooks`, `@cgraph/landing-components` (DEPRECATED), `@cgraph/state`, `@cgraph/test-utils`, `@cgraph/ui`
+- **Removed from deps**: `@cgraph/api-client`, `@cgraph/config`, `@cgraph/core`, `@cgraph/hooks`,
+  `@cgraph/landing-components` (DEPRECATED), `@cgraph/state`, `@cgraph/test-utils`, `@cgraph/ui`
 - **Cleaned**: web + mobile `package.json` (dependencies removed), web + mobile `tsconfig.json`
   (path aliases removed), web `lib/packages/index.ts` (orphaned re-exports removed)
 - **Kept**: `@cgraph/animation-constants`, `@cgraph/shared-types`, `@cgraph/socket`, `@cgraph/utils`
