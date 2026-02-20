@@ -87,7 +87,7 @@ describe('ConversationHeader', () => {
 
   it('renders conversation name', () => {
     render(<ConversationHeader {...defaultProps} />);
-    expect(screen.getByText('Test Chat')).toBeTruthy();
+    expect(screen.getAllByText('Test Chat').length).toBeGreaterThan(0);
   });
 
   it('renders with all required props', () => {
@@ -97,6 +97,6 @@ describe('ConversationHeader', () => {
 
   it('renders with different conversation name', () => {
     render(<ConversationHeader {...defaultProps} conversationName="Group Chat" />);
-    expect(screen.getByText('Group Chat')).toBeTruthy();
+    expect(screen.getAllByText('Group Chat').length).toBeGreaterThan(0);
   });
 });

@@ -44,7 +44,16 @@ const {
 }));
 
 vi.mock('@/lib/api', () => ({ api: mockApi }));
-vi.mock('../../../logger', () => ({ e2eeLogger: mockLogger }));
+vi.mock('../../../logger', () => ({
+  e2eeLogger: mockLogger,
+  createLogger: () => mockLogger,
+  logger: mockLogger,
+}));
+vi.mock('@/lib/logger', () => ({
+  e2eeLogger: mockLogger,
+  createLogger: () => mockLogger,
+  logger: mockLogger,
+}));
 vi.mock('../../e2ee', () => ({
   isE2EESetUp: mockIsE2EESetUp,
   generateKeyBundle: mockGenerateKeyBundle,
@@ -58,6 +67,10 @@ vi.mock('../../e2ee', () => ({
   fingerprint: mockFingerprint,
 }));
 vi.mock('../../sessionManager', () => ({ sessionManager: mockSessionManager }));
+vi.mock('../../e2ee-secure/key-storage', () => ({
+  storeKEMPreKey: vi.fn().mockResolvedValue(undefined),
+  storeOPKPrivateKeys: vi.fn().mockResolvedValue(undefined),
+}));
 
 // ---------------------------------------------------------------------------
 // Import after mocks
@@ -157,7 +170,14 @@ describe('createSetupE2EE', () => {
 
   it('generates bundle, stores keys, and registers with server', async () => {
     const { set, state } = makeMockStore();
-    const fakeBundle = { identityKey: { keyPair: { publicKey: {} } }, deviceId: 'new-dev' };
+    const fakeBundle = {
+      identityKey: { keyPair: { publicKey: {} } },
+      deviceId: 'new-dev',
+      oneTimePreKeys: [
+        { keyId: 1, keyPair: { publicKey: {}, privateKey: {} } },
+      ],
+      signedPreKey: { keyPair: { publicKey: {}, privateKey: {} }, signature: new ArrayBuffer(64) },
+    };
     mockGenerateDeviceId.mockReturnValue('new-dev');
     mockGenerateKeyBundle.mockResolvedValue(fakeBundle);
     mockStoreKeyBundle.mockResolvedValue(undefined);

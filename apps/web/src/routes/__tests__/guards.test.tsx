@@ -129,11 +129,12 @@ describe('Route Guards', () => {
       expect(screen.getByTestId('navigate')).toHaveAttribute('data-to', '/user/user-42');
     });
 
-    it('shows loading spinner when authenticated but user has no id', () => {
+    it('renders nothing when authenticated but user has no id', () => {
       authState.isAuthenticated = true;
       authState.user = null;
-      render(<ProfileRedirectRoute />);
-      expect(screen.getByTestId('loading-spinner')).toBeInTheDocument();
+      const { container } = render(<ProfileRedirectRoute />);
+      // Component returns null while waiting for user data
+      expect(container.innerHTML).toBe('');
     });
   });
 });

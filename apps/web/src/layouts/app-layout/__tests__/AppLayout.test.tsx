@@ -19,6 +19,7 @@ vi.mock('react-router-dom', () => ({
   useNavigate: vi.fn(() => vi.fn()),
   useLocation: vi.fn(() => ({ pathname: '/' })),
   useParams: vi.fn(() => ({})),
+  useOutlet: vi.fn(() => <div data-testid="outlet" />),
   Link: ({ children, to, ...rest }: any) => (
     <a href={to} {...rest}>
       {children}
@@ -47,14 +48,36 @@ vi.mock('react-router-dom', () => ({
   Outlet: () => <div data-testid="outlet" />,
 }));
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...rest }: any) => <div {...rest}>{children}</div>,
-    button: ({ children, ...rest }: any) => <button {...rest}>{children}</button>,
-    span: ({ children, ...rest }: any) => <span {...rest}>{children}</span>,
-  },
-  AnimatePresence: ({ children }: any) => <>{children}</>,
-}));
+vi.mock('framer-motion', () => {
+  const handler = {
+    get(_target: any, prop: string) {
+      if (prop === '__esModule') return true;
+      return ({ children, ...rest }: any) => {
+        const safe = Object.fromEntries(
+          Object.entries(rest).filter(
+            ([k]) =>
+              ![
+                'initial', 'animate', 'exit', 'transition', 'variants',
+                'whileHover', 'whileTap', 'whileFocus', 'whileInView',
+                'layout', 'layoutId', 'drag', 'dragConstraints',
+              ].includes(k)
+          )
+        );
+        const Tag = ['svg', 'circle', 'path', 'g', 'line', 'rect', 'ellipse', 'polygon'].includes(prop)
+          ? prop
+          : 'div';
+        return <Tag {...safe}>{children}</Tag>;
+      };
+    },
+  };
+  return {
+    motion: new Proxy({}, handler),
+    AnimatePresence: ({ children }: any) => <>{children}</>,
+    useMotionValue: (init: any) => ({ get: () => init, set: () => {}, onChange: () => () => {} }),
+    useSpring: (init: any) => ({ get: () => (typeof init === 'object' ? 0 : init), set: () => {}, onChange: () => () => {} }),
+    useTransform: () => ({ get: () => 0, set: () => {}, onChange: () => () => {} }),
+  };
+});
 
 vi.mock('@/shared/components/ui', () => ({
   GlassCard: ({ children, className }: any) => (
@@ -69,7 +92,7 @@ vi.mock('@/components/shaders/ShaderBackground', () => ({
   default: () => <div data-testid="shader-background" />,
 }));
 
-vi.mock('@/components/AnimatedLogo', () => ({
+vi.mock('@/components/navigation/AnimatedLogo', () => ({
   default: () => <div data-testid="animated-logo" />,
 }));
 

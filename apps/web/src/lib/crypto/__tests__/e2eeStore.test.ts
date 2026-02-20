@@ -113,14 +113,20 @@ vi.mock('../sessionManager', () => ({
 }));
 
 // Mock logger
-vi.mock('../../logger', () => ({
-  e2eeLogger: {
-    log: vi.fn(),
-    error: vi.fn(),
-    warn: vi.fn(),
-    debug: vi.fn(),
-  },
-}));
+const _mockLoggerFactory = () => ({
+  log: vi.fn(),
+  error: vi.fn(),
+  warn: vi.fn(),
+  debug: vi.fn(),
+});
+vi.mock('../../logger', () => {
+  const ml = { log: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() };
+  return { e2eeLogger: ml, createLogger: () => ml, logger: ml };
+});
+vi.mock('@/lib/logger', () => {
+  const ml = { log: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() };
+  return { e2eeLogger: ml, createLogger: () => ml, logger: ml };
+});
 
 describe('useE2EEStore', () => {
   beforeEach(() => {

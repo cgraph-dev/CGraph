@@ -10,24 +10,71 @@ import type { Message } from '@/modules/chat/store';
 import type { UIPreferences } from '@/pages/messages/conversation/types';
 import { DEFAULT_UI_PREFERENCES } from '@/pages/messages/conversation/types';
 
-// Mock stores
-vi.mock('@/modules/customization/store/useCustomizationStore', () => ({
-  useCustomizationStore: vi.fn((selector) => {
-    const state = {
-      chatBubbleStyle: 'neon',
-      chatBubbleColor: 'emerald',
-      bubbleBorderRadius: 'lg',
-      messageEffect: 'none',
-      equippedTitle: { id: 'title-1', name: 'Legend', color: '#fbbf24' },
-    };
-    return selector(state);
+// Mock framer-motion to prevent layout animation infinite loops in jsdom
+// Proxy defined inline because vi.mock factories are hoisted above variable declarations
+vi.mock('framer-motion', () => ({
+  motion: new Proxy({} as Record<string, any>, {
+    get: (_target: any, prop: string) =>
+      ({ children, ...props }: any) => {
+        // Strip framer-motion-specific props
+        const { initial, animate, exit, transition, layout, whileHover, whileTap, variants, ...domProps } = props;
+        const El = prop as any;
+        return <El {...domProps}>{children}</El>;
+      },
   }),
+  AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
-vi.mock('@/stores/useAuthStore', () => ({
-  default: {
-    getState: () => ({ user: { id: 'user-1' } }),
-  },
+// Mock stores — paths must match the actual import paths in MessageBubble.tsx
+vi.mock('@/modules/settings/store/customization', () => ({
+  useCustomizationStore: Object.assign(
+    vi.fn((selector: any) => {
+      const state = {
+        chatBubbleStyle: 'neon',
+        chatBubbleColor: 'emerald',
+        bubbleBorderRadius: 'lg',
+        messageEffect: 'none',
+        equippedTitle: { id: 'title-1', name: 'Legend', color: '#fbbf24' },
+      };
+      return selector(state);
+    }),
+    { getState: () => ({ chatBubbleStyle: 'neon', bubbleBorderRadius: 'lg', messageEffect: 'none', equippedTitle: null }) },
+  ),
+}));
+
+vi.mock('@/modules/auth/store', () => ({
+  useAuthStore: Object.assign(
+    vi.fn((selector: any) => {
+      const state = { user: { id: 'user-1' } };
+      return selector ? selector(state) : state;
+    }),
+    { getState: () => ({ user: { id: 'user-1' } }) },
+  ),
+}));
+
+// Mock heavy sub-components to isolate MessageBubble logic
+vi.mock('@/modules/chat/components/MessageReactions', () => ({
+  default: () => <div data-testid="message-reactions" />,
+}));
+vi.mock('@/modules/chat/components/RichMediaEmbed', () => ({
+  default: () => <div data-testid="rich-media-embed" />,
+}));
+vi.mock('@/modules/social/components/UserProfileCard', () => ({
+  default: ({ children }: any) => <div>{children}</div>,
+}));
+vi.mock('@/modules/gamification/components/TitleBadge', () => ({
+  TitleBadge: () => <span data-testid="title-badge" />,
+}));
+vi.mock('@/components/theme/ThemedAvatar', () => ({
+  ThemedAvatar: ({ username }: any) => <div data-testid="avatar">{username}</div>,
+}));
+vi.mock('@/modules/settings/hooks/useCustomizationApplication', () => ({
+  getMessageBubbleClass: () => 'mock-bubble-class',
+  getMessageEffectClass: () => '',
+}));
+vi.mock('@/lib/chat', () => ({
+  aggregateReactions: () => [],
+  handleRemoveReaction: vi.fn(),
 }));
 
 // Minimal message factory with all required fields
@@ -95,7 +142,8 @@ describe('MessageBubble Customization', () => {
 
   it('renders sender username', () => {
     render(<MessageBubble {...defaultProps} />);
-    expect(screen.getByText('alice')).toBeTruthy();
+    // Component renders displayName first, falling back to username
+    expect(screen.getByText('Alice')).toBeTruthy();
   });
 
   it('uses sender bubbleStyle for other user messages', () => {

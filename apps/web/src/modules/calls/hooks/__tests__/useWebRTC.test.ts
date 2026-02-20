@@ -53,7 +53,7 @@ vi.mock('@/lib/socket', () => ({
   })),
 }));
 
-vi.mock('@/components/Toast', () => ({
+vi.mock('@/components/feedback/Toast', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),

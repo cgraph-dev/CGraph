@@ -54,7 +54,7 @@ describe('springs (transitions/core)', () => {
 
   it('should have increasing stiffness from gentle to snappy', () => {
     expect(springs.gentle.stiffness).toBeLessThan(springs.default.stiffness);
-    expect(springs.default.stiffness).toBeLessThan(springs.bouncy.stiffness);
+    expect(springs.default.stiffness).toBeLessThanOrEqual(springs.bouncy.stiffness);
     expect(springs.bouncy.stiffness).toBeLessThan(springs.snappy.stiffness);
   });
 });

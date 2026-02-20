@@ -34,7 +34,7 @@ export const springs = {
   default: { type: 'spring' as const, ...sharedSprings.stiff },
 
   // Bouncy spring for playful interactions
-  bouncy: { type: 'spring' as const, ...sharedSprings.snappy },
+  bouncy: { type: 'spring' as const, ...sharedSprings.bouncy },
 
   // Snappy spring for quick feedback
   snappy: { type: 'spring' as const, ...sharedSprings.snappy },

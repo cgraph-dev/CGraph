@@ -15,6 +15,7 @@ vi.mock('@/lib/api', () => ({
   api: {
     get: vi.fn(),
     post: vi.fn(),
+    put: vi.fn(),
     patch: vi.fn(),
     delete: vi.fn(),
   },
@@ -31,6 +32,7 @@ import { api } from '@/lib/api';
 const mockedApi = {
   get: api.get as MockedFunction<typeof api.get>,
   post: api.post as MockedFunction<typeof api.post>,
+  put: (api as any).put as MockedFunction<(url: string, data?: any) => Promise<any>>,
   patch: api.patch as MockedFunction<typeof api.patch>,
   delete: api.delete as MockedFunction<typeof api.delete>,
 };
@@ -809,7 +811,7 @@ describe('groupStore (modules)', () => {
         channels: [mockChannel, mockChannel2, mockChannel3],
       };
       useGroupStore.setState({ groups: [groupWithChannels] });
-      mockedApi.patch.mockResolvedValue({});
+      mockedApi.put.mockResolvedValue({});
 
       await useGroupStore
         .getState()
@@ -823,11 +825,11 @@ describe('groupStore (modules)', () => {
 
     it('should call the correct API endpoint with channel_ids', async () => {
       useGroupStore.setState({ groups: [mockGroup] });
-      mockedApi.patch.mockResolvedValue({});
+      mockedApi.put.mockResolvedValue({});
 
       await useGroupStore.getState().updateChannelOrder('group-1', ['channel-2', 'channel-1']);
 
-      expect(mockedApi.patch).toHaveBeenCalledWith('/api/v1/groups/group-1/channels/order', {
+      expect(mockedApi.put).toHaveBeenCalledWith('/api/v1/groups/group-1/channels/reorder', {
         channel_ids: ['channel-2', 'channel-1'],
       });
     });

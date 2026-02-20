@@ -10,6 +10,9 @@ vi.mock('framer-motion', () => ({
     input: (props: any) => <input {...props} />,
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
+  useMotionValue: (initial: any) => ({ get: () => initial, set: () => {}, on: () => () => {} }),
+  useSpring: (value: any) => value,
+  useTransform: (value: any) => value,
 }));
 
 vi.mock('@/lib/animations/AnimationEngine', () => ({

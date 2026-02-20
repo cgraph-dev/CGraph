@@ -172,14 +172,14 @@ describe('key-bundle', () => {
 
   // ── getDeviceId ─────────────────────────────────────────────────────
   describe('getDeviceId', () => {
-    it('returns null when not stored', () => {
-      expect(getDeviceId()).toBeNull();
+    it('returns null when not stored', async () => {
+      expect(await getDeviceId()).toBeNull();
     });
 
     it('returns stored device ID', async () => {
       const bundle = await generateKeyBundle('my-device', 1);
       await storeKeyBundle(bundle);
-      expect(getDeviceId()).toBe('my-device');
+      expect(await getDeviceId()).toBe('my-device');
     });
   });
 
@@ -224,9 +224,9 @@ describe('key-bundle', () => {
     it('removes all E2EE keys from storage', async () => {
       const bundle = await generateKeyBundle('d1', 1);
       await storeKeyBundle(bundle);
-      expect(getDeviceId()).toBe('d1');
+      expect(await getDeviceId()).toBe('d1');
 
-      clearE2EEData();
+      await clearE2EEData();
 
       expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('cgraph_e2ee_identity');
       expect(mockLocalStorage.removeItem).toHaveBeenCalledWith('cgraph_e2ee_signed_prekey');

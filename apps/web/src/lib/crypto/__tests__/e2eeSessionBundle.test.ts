@@ -55,52 +55,52 @@ afterEach(() => {
 
 describe('Session Management', () => {
   describe('loadSessions', () => {
-    it('returns empty Map when no sessions stored', () => {
-      const sessions = loadSessions();
+    it('returns empty Map when no sessions stored', async () => {
+      const sessions = await loadSessions();
       expect(sessions).toBeInstanceOf(Map);
       expect(sessions.size).toBe(0);
     });
 
-    it('returns empty Map for invalid JSON', () => {
+    it('returns empty Map for invalid JSON', async () => {
       mockStorage['cgraph_e2ee_sessions'] = '{{invalid';
-      const sessions = loadSessions();
+      const sessions = await loadSessions();
       expect(sessions.size).toBe(0);
     });
 
-    it('loads stored sessions correctly', () => {
+    it('loads stored sessions correctly', async () => {
       const data = {
         'user-1': { rootKey: 'abc', chainKey: 'def' },
         'user-2': { rootKey: 'ghi', chainKey: 'jkl' },
       };
       mockStorage['cgraph_e2ee_sessions'] = JSON.stringify(data);
-      const sessions = loadSessions();
+      const sessions = await loadSessions();
       expect(sessions.size).toBe(2);
       expect(sessions.get('user-1')).toEqual({ rootKey: 'abc', chainKey: 'def' });
     });
   });
 
   describe('saveSession', () => {
-    it('saves a session and persists to storage', () => {
+    it('saves a session and persists to storage', async () => {
       const session = { rootKey: 'rk1', chainKey: 'ck1' } as any;
-      saveSession('recipient-1', session);
+      await saveSession('recipient-1', session);
 
       expect(localStorage.setItem).toHaveBeenCalled();
       const stored = JSON.parse(mockStorage['cgraph_e2ee_sessions']!);
       expect(stored['recipient-1']).toEqual(session);
     });
 
-    it('preserves existing sessions when adding new ones', () => {
-      saveSession('r1', { rootKey: 'a', chainKey: 'b' } as any);
-      saveSession('r2', { rootKey: 'c', chainKey: 'd' } as any);
+    it('preserves existing sessions when adding new ones', async () => {
+      await saveSession('r1', { rootKey: 'a', chainKey: 'b' } as any);
+      await saveSession('r2', { rootKey: 'c', chainKey: 'd' } as any);
 
       const stored = JSON.parse(mockStorage['cgraph_e2ee_sessions']!);
       expect(stored['r1']).toBeDefined();
       expect(stored['r2']).toBeDefined();
     });
 
-    it('overwrites existing session for same recipientId', () => {
-      saveSession('r1', { rootKey: 'a', chainKey: 'b' } as any);
-      saveSession('r1', { rootKey: 'x', chainKey: 'y' } as any);
+    it('overwrites existing session for same recipientId', async () => {
+      await saveSession('r1', { rootKey: 'a', chainKey: 'b' } as any);
+      await saveSession('r1', { rootKey: 'x', chainKey: 'y' } as any);
 
       const stored = JSON.parse(mockStorage['cgraph_e2ee_sessions']!);
       expect(stored['r1'].rootKey).toBe('x');
@@ -108,14 +108,14 @@ describe('Session Management', () => {
   });
 
   describe('getSession', () => {
-    it('returns null when session does not exist', () => {
-      expect(getSession('nonexistent')).toBeNull();
+    it('returns null when session does not exist', async () => {
+      expect(await getSession('nonexistent')).toBeNull();
     });
 
-    it('returns the session when it exists', () => {
+    it('returns the session when it exists', async () => {
       const session = { rootKey: 'rk', chainKey: 'ck' } as any;
-      saveSession('user-A', session);
-      const loaded = getSession('user-A');
+      await saveSession('user-A', session);
+      const loaded = await getSession('user-A');
       expect(loaded).toEqual(session);
     });
   });
@@ -221,7 +221,7 @@ describe('Key Bundle Storage', () => {
     const bundle = await generateKeyBundle('my-device-123', 1);
     await storeKeyBundle(bundle);
 
-    expect(getDeviceId()).toBe('my-device-123');
+    expect(await getDeviceId()).toBe('my-device-123');
   });
 
   it('loadIdentityKeyPair returns null when nothing stored', async () => {
@@ -253,7 +253,7 @@ describe('clearE2EEData', () => {
     await storeKeyBundle(bundle);
     expect(await isE2EESetUp()).toBe(true);
 
-    clearE2EEData();
+    await clearE2EEData();
     expect(localStorage.removeItem).toHaveBeenCalled();
   });
 });

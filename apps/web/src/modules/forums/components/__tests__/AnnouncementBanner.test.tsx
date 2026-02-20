@@ -8,11 +8,38 @@ vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
 
-vi.mock('@heroicons/react/24/outline', () => ({
-  FlagIcon: () => <span data-testid="flag-icon" />,
-  SpeakerWaveIcon: () => <span data-testid="speaker-icon" />,
-  MegaphoneIcon: () => <span data-testid="megaphone-icon" />,
-  XMarkIcon: () => <span data-testid="x-icon" />,
+vi.mock('@heroicons/react/24/outline', () => {
+  return new Proxy({}, {
+    get: (_target, prop) => {
+      if (prop === '__esModule') return true;
+      if (typeof prop === 'string' && prop !== 'default') {
+        return (props: any) => <span data-testid={`icon-${prop}`} {...props} />;
+      }
+      return undefined;
+    },
+  });
+});
+
+vi.mock('@/lib/logger', () => ({
+  createLogger: () => ({
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  }),
+}));
+
+vi.mock('@/modules/forums/store', () => ({
+  useAnnouncementStore: vi.fn(() => ({
+    announcements: [],
+    fetchAnnouncements: vi.fn(),
+  })),
+}));
+
+vi.mock('@/modules/forums/components/AnnouncementItem', () => ({
+  AnnouncementItem: ({ announcement }: any) => (
+    <div data-testid="announcement-item">{announcement?.title}</div>
+  ),
 }));
 
 describe('AnnouncementBanner', () => {

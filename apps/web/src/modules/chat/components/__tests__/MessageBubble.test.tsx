@@ -47,7 +47,7 @@ vi.mock('@/modules/chat/components/FileMessage', () => ({
   FileMessage: () => <div data-testid="file-message">File</div>,
 }));
 
-vi.mock('@/components/VoiceMessagePlayer', () => ({
+vi.mock('@/components/media/VoiceMessagePlayer', () => ({
   VoiceMessagePlayer: () => <div data-testid="voice-player">Voice Player</div>,
 }));
 
