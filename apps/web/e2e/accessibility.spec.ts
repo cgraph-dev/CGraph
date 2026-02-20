@@ -58,7 +58,7 @@ test.describe('Accessibility — Public Pages', () => {
 
       // Allow known minor issues but flag serious/critical
       const serious = results.violations.filter(
-        v => v.impact === 'critical' || v.impact === 'serious'
+        (v) => v.impact === 'critical' || v.impact === 'serious'
       );
       expect(serious, `${page.name} has ${serious.length} serious/critical a11y violations`).toHaveLength(0);
     });
@@ -89,7 +89,7 @@ test.describe('Accessibility — Authenticated Pages', () => {
       }
 
       const serious = results.violations.filter(
-        v => v.impact === 'critical' || v.impact === 'serious'
+        (v) => v.impact === 'critical' || v.impact === 'serious'
       );
       expect(serious, `${page.name} has ${serious.length} serious/critical a11y violations`).toHaveLength(0);
     });
@@ -162,7 +162,7 @@ test.describe('Accessibility — ARIA Landmarks', () => {
     for (let i = 0; i < count; i++) {
       const input = inputs.nth(i);
       const hasLabel = await input.evaluate((el: HTMLInputElement) => {
-        const id = el.id;
+        const { id } = el;
         const hasLabelElement = id ? !!document.querySelector(`label[for="${id}"]`) : false;
         const hasAriaLabel = !!el.getAttribute('aria-label');
         const hasAriaLabelledBy = !!el.getAttribute('aria-labelledby');

@@ -41,8 +41,7 @@ persistQueryClient({
 });
 
 onlineManager.setEventListener((setOnline) => {
-  const unsubscribe = NetInfo.addEventListener((state) => {
+  return NetInfo.addEventListener((state) => {
     setOnline(!!state.isConnected);
   });
-  return unsubscribe;
 });

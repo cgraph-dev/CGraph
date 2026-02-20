@@ -36,7 +36,7 @@ window.onerror = function (msg, src, line, col, err) {
 };
 
 window.addEventListener('unhandledrejection', function (e) {
-  const reason = e.reason;
+  const { reason } = e;
   window.__CGRAPH_ERRORS.push({
     type: 'unhandledrejection',
     reason: String(reason),

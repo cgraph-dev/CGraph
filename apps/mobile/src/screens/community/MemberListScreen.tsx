@@ -259,7 +259,7 @@ export default function MemberListScreen() {
         if (filterOnlineOnly) params.online_only = true;
 
         const response = await api.get('/api/v1/members', { params });
-        const data = response.data;
+        const { data } = response;
 
         const memberList = transformApiMembers(data.members || []);
 

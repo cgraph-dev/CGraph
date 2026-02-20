@@ -109,7 +109,7 @@ export function initErrorTracking(): void {
 
   // Unhandled promise rejections
   window.addEventListener('unhandledrejection', (event) => {
-    const reason = event.reason;
+    const { reason } = event;
     const message = reason instanceof Error ? reason.message : String(reason);
     if (!shouldReport(message)) return;
 

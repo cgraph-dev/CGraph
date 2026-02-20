@@ -306,8 +306,7 @@ export async function openDeepLink(path: string): Promise<void> {
  */
 export async function getInitialDeepLink(): Promise<string | null> {
   try {
-    const url = await Linking.getInitialURL();
-    return url;
+    return await Linking.getInitialURL();
   } catch {
     return null;
   }

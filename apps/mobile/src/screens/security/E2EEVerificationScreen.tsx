@@ -127,7 +127,7 @@ export default function E2EEVerificationScreen() {
       setError(null);
 
       const response = await api.get(`/api/v1/e2ee/safety-number/${userId}`);
-      const data = response.data;
+      const { data } = response;
 
       setSafetyData({
         userId: data.user_id || userId,

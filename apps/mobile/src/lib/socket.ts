@@ -794,7 +794,7 @@ class SocketManager {
     const existingChannel = this.channels.get(topic);
     if (existingChannel) {
       // Channel already exists - check its state before returning
-      const state = existingChannel.state;
+      const { state } = existingChannel;
       if (state === 'joined' || state === 'joining') {
         // Already joined or joining, return existing channel without updating timestamp
         logger.log(`Reusing existing channel ${topic} in state: ${state}`);

@@ -817,7 +817,7 @@ describe('groupStore (modules)', () => {
         .getState()
         .updateChannelOrder('group-1', ['channel-3', 'channel-1', 'channel-2']);
 
-      const channels = useGroupStore.getState().groups[0]!.channels;
+      const { channels } = useGroupStore.getState().groups[0]!;
       expect(channels[0]!.id).toBe('channel-3');
       expect(channels[1]!.id).toBe('channel-1');
       expect(channels[2]!.id).toBe('channel-2');

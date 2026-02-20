@@ -408,7 +408,7 @@ defmodule CGraph.Audit do
     Enum.each(entries, fn entry ->
       if entry.category in [:security, :auth, :admin, :compliance] do
         CGraph.Accounts.AuditLog.log(
-          :"#{entry.category}_#{entry.event_type}",
+          "#{entry.category}_#{entry.event_type}",
           entry.actor_id,
           %{
             resource_type: to_string(entry[:target_type] || entry.category),

@@ -172,7 +172,7 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
   },
 
   subscribe: (event: string, callback: (data: unknown) => void) => {
-    const listeners = get().listeners;
+    const { listeners } = get();
 
     if (!listeners.has(event)) {
       listeners.set(event, new Set());

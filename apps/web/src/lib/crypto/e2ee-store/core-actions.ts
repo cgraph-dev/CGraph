@@ -154,7 +154,7 @@ export const createResetE2EE = (set: Set, get: Get) => async (): Promise<void> =
   try {
     set({ isLoading: true });
 
-    const deviceId = get().deviceId;
+    const { deviceId } = get();
 
     if (deviceId) {
       try {
