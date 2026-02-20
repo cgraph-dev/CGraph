@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.31** | Generated: February 20, 2026
+> **Version: 0.9.32** | Generated: February 20, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
@@ -82,6 +82,7 @@ boosted from 8.5→9/10 after PQ production deployment + Semgrep CI integration.
 
 | Date       | Issue                             | Severity | Status   |
 | ---------- | --------------------------------- | -------- | -------- |
+| 2026-02-20 | Dynamic atom in audit.ex          | Medium   | ✅ Fixed |
 | 2026-02-18 | binary_to_term RCE in redis_pool  | Critical | ✅ Fixed |
 | 2026-02-18 | raise in Snowflake init/1         | High     | ✅ Fixed |
 | 2026-02-18 | Missing @impl true data_export    | High     | ✅ Fixed |
@@ -312,6 +313,7 @@ apps/mobile/src/screens/
 
 | Version | Date       | Highlights                                                                                                                                                                                                                                                                                                                                                                                                             |
 | ------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.9.32  | 2026-02-20 | **IDE warning sweep + code quality**: 15 IDE diagnostics fixed across 14 files — 7 destructuring, 2 inline vars, 1 ternary, 1 TS deprecation, 1 atom safety (Elixir), 1 missing dep (@axe-core/playwright), YAML schema config. All Sourcery/TS/Credo warnings resolved to zero |
 | 0.9.32  | 2026-02-19 | **Web test suite fully green**: 41 failures across 17 files fixed, 1 source bug fixed (transitions/core.ts bouncy→snappy mapping). Suite: 202 files pass, 4968 tests pass, 0 failures, 3 skipped. Root causes: async/await for crypto fns, stale mock paths, incomplete mocks, assertion drift                                                                                                                         |
 | 0.9.31  | 2026-02-18 | **Misconfiguration audit (21 fixes)**: CI OTP 26.2→27.1.2, CI Postgres creds aligned with test.exs, Dockerfile PgBouncer COPY fixed, Node.js standardized to 22.x, ESLint ts-eslint v8 rules fix (46 rules were silently dropped), coverage-gate Postgres service, stale web lockfile removed, .env.example created, Docusaurus version/links/Algolia fixed, deprecated headers/compose removed, Renovate/pnpm updated |
 | 0.9.31  | 2026-02-18 | **Security hardening pass 6-7**: binary_to_term [:safe] in redis_pool (RCE fix), 8 bare Task.async → Task.Supervisor across 4 modules, raise → {:stop} in Snowflake init, @impl true on data_export callbacks, GenServer.call timeouts, innerHTML XSS fix in PDF export, mobile localhost **DEV** guard, CORS runtime env check, FCM error handling, path traversal fixes in event_exporter + data_export              |
@@ -357,4 +359,4 @@ apps/mobile/src/screens/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.31 • Updated: February 20, 2026</sub>
+<sub>**CGraph Dashboard** • Version 0.9.32 • Updated: February 20, 2026</sub>

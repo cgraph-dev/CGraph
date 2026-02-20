@@ -4,6 +4,43 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.32] - 2026-02-20
+
+**SESSION 31: WEB TEST SUITE GREEN + IDE WARNING SWEEP**
+
+### Web Test Suite — 0 Failures (commit `9a1d645a`)
+
+- **41 test failures fixed** across 17 test files, achieving 202 files pass / 4968 tests / 0
+  failures / 3 skipped
+- **Source bug fixed**: `transitions/core.ts` bouncy spring was mapped to `sharedSprings.snappy`
+  (stiffness 400) instead of `sharedSprings.bouncy` (stiffness 300)
+- Root causes: async E2EE functions not awaited, stale mock import paths after architecture refactor,
+  incomplete mocks (createLogger, key-storage, useOutlet), assertion drift
+- Established canonical mock patterns for Framer Motion (inline Proxy), Heroicons (Proxy), E2EE
+  (async), and Logger — documented in CLAUDE.md
+- `App.test.tsx` skipped (hangs loading entire app tree)
+
+### IDE Warning/Error Sweep (commit `d3c41173`)
+
+- **15 IDE diagnostics resolved** across 14 files — zero remaining warnings
+- 7 Sourcery destructuring fixes (`const x = obj.x` → `const { x } = obj`)
+- 2 Sourcery inline variable fixes (return directly instead of intermediate var)
+- 1 ternary simplification (`Modal.tsx`)
+- 1 TypeScript deprecation fix (`packages/core/tsconfig.json` — `ignoreDeprecations: "6.0"`)
+- 1 missing dependency installed (`@axe-core/playwright` v4.11.1)
+- 1 Elixir atom safety fix (`audit.ex` — `:"#{...}"` → `"#{...}"` to prevent atom table exhaustion)
+- 1 YAML schema annotation (`prometheus.yml`)
+- Created `.vscode/settings.json` with YAML schema config
+
+### Documentation
+
+- Updated CLAUDE.md with Session 31 details, mock patterns, test gotchas reference table
+- Updated all doc version headers to 0.9.32
+- Added IDE sweep details to V1_ACTION_PLAN.md (task 3.10)
+- Added release entry + atom safety fix to CURRENT_STATE_DASHBOARD.md
+
+---
+
 ## [0.9.31] - 2026-02-19
 
 **MEDIUM SEVERITY AUDIT FIXES**

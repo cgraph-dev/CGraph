@@ -60,6 +60,7 @@
 | 3.7 | Fix flaky tests (investigate any that fail intermittently)          | 0 flaky    | 0 failures   | ✅ All Fixed    |
 | 3.8 | Add test coverage gates to CI (fail PR if coverage drops)           | Enforce    | 3-app gates  | ✅ Done         |
 | 3.9 | Fix all web test failures (41 failures across 17 files)             | 0 failures | 0 failures   | ✅ Done         |
+| 3.10 | IDE warning/error sweep (Sourcery, TS, Credo, YAML warnings)       | 0 warnings | 0 warnings   | ✅ Done         |
 
 **3.9 Details — Web Test Suite Health (commit 9a1d645a)**:
 - **Before**: 41 test failures across 17 files, 1 source bug, 1 hanging integration test
@@ -208,6 +209,29 @@ Enhanced `.github/workflows/coverage.yml` with multi-app coverage enforcement:
 - **Backend**: 75% minimum via `mix test --cover` (new gate)
 - PR comment shows per-app coverage with pass/fail indicators
 - Gate job fails the PR if any app drops below its threshold
+
+### 3.10 Progress — IDE Warning/Error Sweep (commit `d3c41173`)
+
+Resolved all 15 IDE diagnostics across 14 files in a single sweep:
+
+| File | Issue | Fix |
+|------|-------|-----|
+| `apps/landing/src/lib/error-tracking.ts` | Sourcery: use destructuring | `const { reason } = event` |
+| `apps/mobile/src/screens/security/E2EEVerificationScreen.tsx` | Sourcery: use destructuring | `const { data } = response` |
+| `apps/mobile/src/lib/socket.ts` | Sourcery: use destructuring | `const { state } = existingChannel` |
+| `apps/mobile/src/lib/deepLinks.ts` | Sourcery: inline variable | `return await Linking.getInitialURL()` directly |
+| `apps/web/src/modules/gamification/hooks/gamificationSocketStore.ts` | Sourcery: use destructuring | `const { listeners } = get()` |
+| `apps/mobile/src/lib/queryClient.ts` | Sourcery: inline variable | `return NetInfo.addEventListener(...)` directly |
+| `apps/mobile/src/screens/community/MemberListScreen.tsx` | Sourcery: use destructuring | `const { data } = response` |
+| `apps/web/src/lib/crypto/e2ee-store/core-actions.ts` | Sourcery: use destructuring | `const { deviceId } = get()` |
+| `apps/web/public/early-errors.js` | Sourcery: use destructuring | `const { reason } = e` |
+| `apps/mobile/src/components/Modal.tsx` | Sourcery: simplify ternary | `variant === 'danger' ? variant : 'primary'` |
+| `apps/web/src/modules/groups/store/__tests__/groupStore.test.ts` | Sourcery: use destructuring | `const { channels } = ...groups[0]!` |
+| `packages/core/tsconfig.json` | TypeScript deprecation | Added `"ignoreDeprecations": "6.0"` for `baseUrl` |
+| `apps/web/e2e/accessibility.spec.ts` | Missing module + implicit any | Installed `@axe-core/playwright` v4.11.1 |
+| `apps/backend/lib/cgraph/audit.ex` | Credo: dynamic atom | Changed `:"#{...}"` to `"#{...}"` (atom safety) |
+| `infrastructure/grafana/.../prometheus.yml` | YAML schema error | Added yaml-language-server schema annotation |
+| `.vscode/settings.json` | N/A | **Created** — YAML schema config for Grafana datasource files |
 
 ---
 
