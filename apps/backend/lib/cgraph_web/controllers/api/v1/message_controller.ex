@@ -4,6 +4,7 @@ defmodule CGraphWeb.API.V1.MessageController do
   """
   use CGraphWeb, :controller
 
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
   import CGraphWeb.Helpers.ParamParser
 
   alias CGraph.Crypto.E2EE
@@ -203,7 +204,7 @@ defmodule CGraphWeb.API.V1.MessageController do
 
     with {:ok, conversation} <- Messaging.get_user_conversation(user, conversation_id),
          {:ok, _receipt} <- Messaging.mark_message_read(conversation, user, message_id) do
-      json(conn, %{status: "ok"})
+      render_data(conn, %{status: "ok"})
     end
   end
 
@@ -226,7 +227,7 @@ defmodule CGraphWeb.API.V1.MessageController do
         }
       )
 
-      json(conn, %{status: "ok"})
+      render_data(conn, %{status: "ok"})
     end
   end
 

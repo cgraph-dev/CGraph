@@ -47,7 +47,7 @@ defmodule CGraph.Forums.Core do
     )
 
     {forums, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
-    forums = Enum.map(forums, &add_membership_status(&1, user))
+    forums = batch_add_membership_status(forums, user)
     {forums, page_info}
   end
 
@@ -59,6 +59,33 @@ defmodule CGraph.Forums.Core do
     forum
     |> Map.put(:is_member, forum_member?(user, forum))
     |> Map.put(:is_subscribed, forum_subscribed?(user, forum))
+  end
+
+  # Batch-add membership and subscription status to a list of forums (avoids N+1).
+  defp batch_add_membership_status(forums, nil) do
+    Enum.map(forums, fn forum ->
+      forum |> Map.put(:is_member, false) |> Map.put(:is_subscribed, false)
+    end)
+  end
+  defp batch_add_membership_status(forums, user) do
+    forum_ids = Enum.map(forums, & &1.id)
+
+    member_set =
+      from(m in ForumMember, where: m.user_id == ^user.id and m.forum_id in ^forum_ids, select: m.forum_id)
+      |> Repo.all()
+      |> MapSet.new()
+
+    subscription_set =
+      from(s in Subscription, where: s.user_id == ^user.id and s.forum_id in ^forum_ids, select: s.forum_id)
+      |> Repo.all()
+      |> MapSet.new()
+
+    Enum.map(forums, fn forum ->
+      is_member = forum.owner_id == user.id or MapSet.member?(member_set, forum.id)
+      forum
+      |> Map.put(:is_member, is_member)
+      |> Map.put(:is_subscribed, MapSet.member?(subscription_set, forum.id))
+    end)
   end
 
   @doc "Check if a user is subscribed to a forum."

@@ -15,6 +15,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   - HTTP-only cookie authentication (XSS-safe)
   """
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 
   alias CGraph.Accounts
   alias CGraph.Guardian
@@ -198,8 +199,7 @@ defmodule CGraphWeb.API.V1.AuthController do
             {:error, _reason} ->
               conn
               |> CookieAuth.clear_auth_cookies()
-              |> put_status(:unauthorized)
-              |> json(%{error: "Invalid or expired refresh token"})
+              |> render_error(401, "Invalid or expired refresh token")
           end
       end
     else
@@ -217,7 +217,7 @@ defmodule CGraphWeb.API.V1.AuthController do
       case Accounts.get_or_create_wallet_challenge(wallet_address) do
         {:ok, nonce} ->
           message = "Sign this message to authenticate with CGraph.\n\nNonce: #{nonce}"
-          json(conn, %{message: message, nonce: nonce})
+          render_data(conn, %{message: message, nonce: nonce})
 
         {:error, reason} ->
           conn
@@ -246,13 +246,11 @@ defmodule CGraphWeb.API.V1.AuthController do
     else
       {:error, :invalid_signature} ->
         conn
-        |> put_status(:unauthorized)
-        |> json(%{error: "Invalid signature"})
+        |> render_error(401, "Invalid signature")
 
       {:error, reason} ->
         conn
-        |> put_status(:bad_request)
-        |> json(%{error: reason})
+        |> render_error(400, reason)
     end
   end
 
@@ -264,7 +262,7 @@ defmodule CGraphWeb.API.V1.AuthController do
     with {:ok, %{email: normalized_email}} <- AuthParams.validate_forgot_password(%{"email" => email}) do
       # Always return success to prevent email enumeration
       Accounts.request_password_reset(normalized_email)
-      json(conn, %{message: "If an account exists with this email, you will receive a password reset link."})
+      render_data(conn, %{message: "If an account exists with this email, you will receive a password reset link."})
     else
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
@@ -279,12 +277,10 @@ defmodule CGraphWeb.API.V1.AuthController do
            AuthParams.validate_reset_password(%{"token" => token, "password" => password, "password_confirmation" => confirmation}) do
       case Accounts.reset_password(reset_token, pass, confirm) do
       {:ok, _user} ->
-        json(conn, %{message: "Password has been reset successfully."})
+        render_data(conn, %{message: "Password has been reset successfully."})
 
       {:error, :invalid_token} ->
-        conn
-        |> put_status(:bad_request)
-        |> json(%{error: "Invalid or expired reset token"})
+        render_error(conn, 400, "Invalid or expired reset token")
 
       {:error, changeset} ->
         conn
@@ -316,7 +312,7 @@ defmodule CGraphWeb.API.V1.AuthController do
       nil ->
         conn
         |> CookieAuth.clear_auth_cookies()
-        |> json(%{message: "Logged out successfully"})
+        |> json(%{data: %{message: "Logged out successfully"}})
 
       token ->
         # Get user for audit logging
@@ -331,7 +327,7 @@ defmodule CGraphWeb.API.V1.AuthController do
 
         conn
         |> CookieAuth.clear_auth_cookies()
-        |> json(%{message: "Logged out successfully"})
+        |> json(%{data: %{message: "Logged out successfully"}})
     end
   end
 
@@ -342,22 +338,16 @@ defmodule CGraphWeb.API.V1.AuthController do
   def verify_email(conn, %{"token" => token}) do
     case Accounts.verify_email(token) do
       {:ok, _user} ->
-        json(conn, %{message: "Email verified successfully"})
+        render_data(conn, %{message: "Email verified successfully"})
 
       {:error, :invalid_token} ->
-        conn
-        |> put_status(:bad_request)
-        |> json(%{error: "Invalid verification token"})
+        render_error(conn, 400, "Invalid verification token")
 
       {:error, :expired_token} ->
-        conn
-        |> put_status(:bad_request)
-        |> json(%{error: "Verification token has expired. Please request a new one."})
+        render_error(conn, 400, "Verification token has expired. Please request a new one.")
 
       {:error, _} ->
-        conn
-        |> put_status(:internal_server_error)
-        |> json(%{error: "Failed to verify email"})
+        render_error(conn, 500, "Failed to verify email")
     end
   end
 
@@ -369,24 +359,18 @@ defmodule CGraphWeb.API.V1.AuthController do
   def resend_verification(conn, _params) do
     case Guardian.Plug.current_resource(conn) do
       nil ->
-        conn
-        |> put_status(:unauthorized)
-        |> json(%{error: "Authentication required"})
+        render_error(conn, 401, "Authentication required")
 
       user ->
         case Accounts.resend_verification_email(user) do
           {:ok, _token} ->
-            json(conn, %{message: "Verification email sent"})
+            render_data(conn, %{message: "Verification email sent"})
 
           {:error, :rate_limited} ->
-            conn
-            |> put_status(:too_many_requests)
-            |> json(%{error: "Please wait before requesting another verification email"})
+            render_error(conn, 429, "Please wait before requesting another verification email")
 
           {:error, _} ->
-            conn
-            |> put_status(:internal_server_error)
-            |> json(%{error: "Failed to send verification email"})
+            render_error(conn, 500, "Failed to send verification email")
         end
     end
   end

@@ -16,6 +16,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
   """
 
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 
   alias CGraph.Moderation
   alias CGraph.Moderation.{Appeal, Report}
@@ -65,12 +66,10 @@ defmodule CGraphWeb.API.Admin.ModerationController do
   def show_report(conn, %{"id" => id}) do
     case CGraph.Repo.get(Report, id) |> CGraph.Repo.preload([:reporter, :review_actions]) do
       nil ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{error: "Report not found"})
+        render_error(conn, :not_found, "Report not found")
 
       report ->
-        json(conn, %{data: render_report_detail(report)})
+        render_data(conn, render_report_detail(report))
     end
   end
 
@@ -108,20 +107,16 @@ defmodule CGraphWeb.API.Admin.ModerationController do
 
     case Moderation.review_report(reviewer, id, attrs) do
       {:ok, report} ->
-        json(conn, %{
-          data: render_report(report),
+        render_data(conn, %{
+          report: render_report(report),
           message: "Report reviewed successfully"
         })
 
       {:error, :not_found} ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{error: "Report not found"})
+        render_error(conn, 404, "Report not found")
 
       {:error, :unauthorized} ->
-        conn
-        |> put_status(:forbidden)
-        |> json(%{error: "Insufficient permissions"})
+        render_error(conn, 403, "Insufficient permissions")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
@@ -142,7 +137,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
     limit = to_integer(params["limit"], 50) |> min(100)
     appeals = Moderation.list_appeals(limit: limit)
 
-    json(conn, %{data: Enum.map(appeals, &render_appeal/1)})
+    render_data(conn, Enum.map(appeals, &render_appeal/1))
   end
 
   @doc """
@@ -167,20 +162,16 @@ defmodule CGraphWeb.API.Admin.ModerationController do
 
     case Moderation.review_appeal(reviewer, id, attrs) do
       {:ok, appeal} ->
-        json(conn, %{
-          data: render_appeal(appeal),
+        render_data(conn, %{
+          appeal: render_appeal(appeal),
           message: "Appeal reviewed successfully"
         })
 
       {:error, :not_found} ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{error: "Appeal not found"})
+        render_error(conn, :not_found, "Appeal not found")
 
       {:error, :unauthorized} ->
-        conn
-        |> put_status(:forbidden)
-        |> json(%{error: "Insufficient permissions"})
+        render_error(conn, :forbidden, "Insufficient permissions")
     end
   end
 
@@ -199,7 +190,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
       active_restrictions: Moderation.active_restriction_count()
     }
 
-    json(conn, %{data: stats})
+    render_data(conn, stats)
   end
 
   # ---------------------------------------------------------------------------
@@ -212,9 +203,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
     if user && user.is_admin do
       conn
     else
-      conn
-      |> put_status(:forbidden)
-      |> json(%{error: "Moderator access required"})
+      render_error(conn, :forbidden, "Moderator access required")
       |> halt()
     end
   end

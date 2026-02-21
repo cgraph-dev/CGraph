@@ -7,6 +7,7 @@ defmodule CGraphWeb.API.V1.ConversationController do
   existing conversation (idempotent).
   """
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 
   alias CGraph.Messaging
 
@@ -177,17 +178,13 @@ defmodule CGraphWeb.API.V1.ConversationController do
     if ttl in valid_ttls do
       with {:ok, conversation} <- Messaging.get_user_conversation(user, conversation_id),
            {:ok, updated} <- Messaging.update_conversation_ttl(conversation, ttl) do
-        json(conn, %{
-          data: %{
-            conversation_id: updated.id,
-            message_ttl: updated.message_ttl
-          }
+        render_data(conn, %{
+          conversation_id: updated.id,
+          message_ttl: updated.message_ttl
         })
       end
     else
-      conn
-      |> put_status(:bad_request)
-      |> json(%{error: "Invalid TTL value. Use null, 86400, 604800, or 2592000"})
+      render_error(conn, 400, "Invalid TTL value. Use null, 86400, 604800, or 2592000")
     end
   end
 end

@@ -4,6 +4,7 @@ defmodule CGraphWeb.API.SubscriptionController do
   """
 
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 
   alias CGraph.Forums.SubscriptionService
   alias CGraphWeb.Validation.SubscriptionParams
@@ -18,9 +19,7 @@ defmodule CGraphWeb.API.SubscriptionController do
     user = conn.assigns.current_user
     subscriptions = SubscriptionService.list_subscriptions(user.id)
 
-    json(conn, %{
-      subscriptions: Enum.map(subscriptions, &format_subscription/1)
-    })
+    render_data(conn, Enum.map(subscriptions, &format_subscription/1))
   end
 
   @doc """
@@ -35,7 +34,7 @@ defmodule CGraphWeb.API.SubscriptionController do
          {:ok, subscription} <- do_create_subscription(user.id, validated) do
       conn
       |> put_status(:created)
-      |> json(%{subscription: format_subscription(subscription)})
+      |> render_data(format_subscription(subscription))
     else
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
       {:error, reason} -> {:error, reason}
@@ -57,21 +56,17 @@ defmodule CGraphWeb.API.SubscriptionController do
         with {:ok, attrs_struct} <- SubscriptionParams.validate_update(normalized),
              attrs <- to_update_attrs(attrs_struct),
              {:ok, subscription} <- SubscriptionService.update_subscription(id, attrs) do
-          json(conn, %{subscription: format_subscription(subscription)})
+          render_data(conn, format_subscription(subscription))
         else
           {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
           {:error, reason} -> {:error, reason}
         end
 
       {:error, :unauthorized} ->
-        conn
-        |> put_status(:forbidden)
-        |> json(%{error: "Not authorized to update this subscription"})
+        render_error(conn, :forbidden, "Not authorized to update this subscription")
 
       {:error, :not_found} ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{error: "Subscription not found"})
+        render_error(conn, :not_found, "Subscription not found")
     end
   end
 
@@ -91,20 +86,14 @@ defmodule CGraphWeb.API.SubscriptionController do
             |> send_resp(204, "")
 
           {:error, :not_found} ->
-            conn
-            |> put_status(:not_found)
-            |> json(%{error: "Subscription not found"})
+            render_error(conn, :not_found, "Subscription not found")
         end
 
       {:error, :unauthorized} ->
-        conn
-        |> put_status(:forbidden)
-        |> json(%{error: "Not authorized to delete this subscription"})
+        render_error(conn, :forbidden, "Not authorized to delete this subscription")
 
       {:error, :not_found} ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{error: "Subscription not found"})
+        render_error(conn, :not_found, "Subscription not found")
     end
   end
 
@@ -125,7 +114,7 @@ defmodule CGraphWeb.API.SubscriptionController do
 
       success_count = Enum.count(results, fn {status, _} -> status == :ok end)
 
-      json(conn, %{
+      render_data(conn, %{
         success: true,
         updated_count: success_count,
         total_count: length(subscriptions)
@@ -144,10 +133,10 @@ defmodule CGraphWeb.API.SubscriptionController do
 
     case SubscriptionService.toggle_thread_subscription(user.id, thread_id) do
       {:ok, :deleted} ->
-        json(conn, %{subscribed: false})
+        render_data(conn, %{subscribed: false})
 
       {:ok, subscription} ->
-        json(conn, %{
+        render_data(conn, %{
           subscribed: true,
           subscription: format_subscription(subscription)
         })

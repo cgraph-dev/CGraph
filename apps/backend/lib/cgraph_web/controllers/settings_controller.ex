@@ -1,5 +1,6 @@
 defmodule CGraphWeb.SettingsController do
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 
   alias CGraph.Accounts.Settings
 
@@ -12,9 +13,7 @@ defmodule CGraphWeb.SettingsController do
     user = conn.assigns.current_user
     {:ok, settings} = Settings.get_settings(user)
 
-    json(conn, %{
-      data: serialize_settings(settings)
-    })
+    render_data(conn, serialize_settings(settings))
   end
 
   @doc """
@@ -27,18 +26,13 @@ defmodule CGraphWeb.SettingsController do
 
     case Settings.update_settings(user, params) do
       {:ok, settings} ->
-        json(conn, %{
-          data: serialize_settings(settings),
+        render_data(conn, %{
+          settings: serialize_settings(settings),
           message: "Settings updated successfully"
         })
 
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{
-          error: "Failed to update settings",
-          details: format_errors(changeset)
-        })
+        render_error(conn, 422, "Failed to update settings: #{inspect(format_errors(changeset))}")
     end
   end
 
@@ -66,8 +60,7 @@ defmodule CGraphWeb.SettingsController do
 
     case Settings.update_settings(user, notification_params) do
       {:ok, settings} ->
-        json(conn, %{
-          data: %{
+        render_data(conn, %{
             notifications: %{
               email_notifications: settings.email_notifications,
               push_notifications: settings.push_notifications,
@@ -81,13 +74,10 @@ defmodule CGraphWeb.SettingsController do
               quiet_hours_start: settings.quiet_hours_start,
               quiet_hours_end: settings.quiet_hours_end
             }
-          }
         })
 
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: format_errors(changeset)})
+        render_error(conn, 422, inspect(format_errors(changeset)))
     end
   end
 
@@ -112,8 +102,7 @@ defmodule CGraphWeb.SettingsController do
 
     case Settings.update_settings(user, privacy_params) do
       {:ok, settings} ->
-        json(conn, %{
-          data: %{
+        render_data(conn, %{
             privacy: %{
               show_online_status: settings.show_online_status,
               show_read_receipts: settings.show_read_receipts,
@@ -124,13 +113,10 @@ defmodule CGraphWeb.SettingsController do
               show_in_search: settings.show_in_search,
               allow_group_invites: settings.allow_group_invites
             }
-          }
         })
 
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: format_errors(changeset)})
+        render_error(conn, 422, inspect(format_errors(changeset)))
     end
   end
 
@@ -156,8 +142,7 @@ defmodule CGraphWeb.SettingsController do
 
     case Settings.update_settings(user, appearance_params) do
       {:ok, settings} ->
-        json(conn, %{
-          data: %{
+        render_data(conn, %{
             appearance: %{
               theme: settings.theme,
               compact_mode: settings.compact_mode,
@@ -169,13 +154,10 @@ defmodule CGraphWeb.SettingsController do
               high_contrast: settings.high_contrast,
               screen_reader_optimized: settings.screen_reader_optimized
             }
-          }
         })
 
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: format_errors(changeset)})
+        render_error(conn, 422, inspect(format_errors(changeset)))
     end
   end
 
@@ -196,21 +178,17 @@ defmodule CGraphWeb.SettingsController do
 
     case Settings.update_settings(user, locale_params) do
       {:ok, settings} ->
-        json(conn, %{
-          data: %{
+        render_data(conn, %{
             locale: %{
               language: settings.language,
               timezone: settings.timezone,
               date_format: settings.date_format,
               time_format: settings.time_format
             }
-          }
         })
 
       {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: format_errors(changeset)})
+        render_error(conn, 422, inspect(format_errors(changeset)))
     end
   end
 
@@ -223,8 +201,8 @@ defmodule CGraphWeb.SettingsController do
     user = conn.assigns.current_user
     {:ok, settings} = Settings.reset_to_defaults(user)
 
-    json(conn, %{
-      data: serialize_settings(settings),
+    render_data(conn, %{
+      settings: serialize_settings(settings),
       message: "Settings reset to defaults"
     })
   end

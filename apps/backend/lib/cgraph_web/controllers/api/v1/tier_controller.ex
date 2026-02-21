@@ -14,6 +14,7 @@ defmodule CGraphWeb.API.V1.TierController do
   - Authenticated endpoints: get my limits, get my tier
   """
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_data: 3, render_error: 3]
 
   alias CGraph.Subscriptions.TierLimit
   alias CGraph.Subscriptions.TierLimits
@@ -29,11 +30,8 @@ defmodule CGraphWeb.API.V1.TierController do
   def index(conn, _params) do
     tiers = TierLimits.list_active_tiers()
 
-    json(conn, %{
-      data: Enum.map(tiers, &TierLimits.serialize_tier/1),
-      meta: %{
-        count: length(tiers)
-      }
+    render_data(conn, Enum.map(tiers, &TierLimits.serialize_tier/1), %{
+      count: length(tiers)
     })
   end
 
@@ -49,14 +47,10 @@ defmodule CGraphWeb.API.V1.TierController do
   def show(conn, %{"tier" => tier_name}) do
     case TierLimits.get_tier(tier_name) do
       {:ok, tier} ->
-        json(conn, %{
-          data: TierLimits.serialize_tier(tier, include_limits: true)
-        })
+        render_data(conn, TierLimits.serialize_tier(tier, include_limits: true))
 
       {:error, :tier_not_found} ->
-        conn
-        |> put_status(:not_found)
-        |> json(%{error: %{code: "tier_not_found", message: "Tier not found"}})
+        render_error(conn, :not_found, "Tier not found")
     end
   end
 
@@ -74,13 +68,9 @@ defmodule CGraphWeb.API.V1.TierController do
   def my_tier(conn, _params) do
     case conn.assigns[:current_user] do
       nil ->
-        conn
-        |> put_status(:unauthorized)
-        |> json(%{error: %{code: "unauthorized", message: "Authentication required"}})
+        render_error(conn, :unauthorized, "Authentication required")
       user ->
-        json(conn, %{
-          data: TierLimits.serialize_user_limits(user)
-        })
+        render_data(conn, TierLimits.serialize_user_limits(user))
     end
   end
 
@@ -96,26 +86,20 @@ defmodule CGraphWeb.API.V1.TierController do
   def compare(conn, %{"from" => from_tier, "to" => to_tier}) do
     case TierLimits.compare_tiers(from_tier, to_tier) do
       {:ok, comparison} ->
-        json(conn, %{
-          data: %{
+        render_data(conn, %{
             from: TierLimits.serialize_tier(comparison.from, include_limits: true),
             to: TierLimits.serialize_tier(comparison.to, include_limits: true),
             is_upgrade: comparison.is_upgrade,
             differences: format_differences(comparison.differences)
-          }
         })
 
       {:error, :tier_not_found} ->
-        conn
-        |> put_status(:bad_request)
-        |> json(%{error: %{code: "invalid_tier", message: "One or both tier names are invalid"}})
+        render_error(conn, :bad_request, "One or both tier names are invalid")
     end
   end
 
   def compare(conn, _params) do
-    conn
-    |> put_status(:bad_request)
-    |> json(%{error: %{code: "missing_params", message: "Both 'from' and 'to' parameters are required"}})
+    render_error(conn, :bad_request, "Both 'from' and 'to' parameters are required")
   end
 
   @doc """
@@ -178,11 +162,9 @@ defmodule CGraphWeb.API.V1.TierController do
     end
 
     if result do
-      json(conn, %{data: result})
+      render_data(conn, result)
     else
-      conn
-      |> put_status(:bad_request)
-      |> json(%{error: %{code: "unknown_action", message: "Unknown action: #{action}"}})
+      render_error(conn, :bad_request, "Unknown action: #{action}")
     end
   end
 
@@ -202,11 +184,9 @@ defmodule CGraphWeb.API.V1.TierController do
     user = conn.assigns.current_user
     enabled = TierLimits.has_feature?(user, feature_key)
 
-    json(conn, %{
-      data: %{
+    render_data(conn, %{
         feature: feature_key,
         enabled: enabled
-      }
     })
   end
 

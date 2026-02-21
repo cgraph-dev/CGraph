@@ -9,6 +9,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
   - Managing push preferences
   """
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 
   alias CGraph.Notifications
   alias CGraph.Notifications.PushService.WebPushClient
@@ -26,23 +27,13 @@ defmodule CGraphWeb.API.V1.WebPushController do
   def vapid_key(conn, _params) do
     case WebPushClient.get_vapid_public_key() do
       {:ok, public_key} ->
-        json(conn, %{
-          data: %{
-            vapid_public_key: public_key,
-            # Base64URL encoded, browser-ready format
-            application_server_key: public_key
-          }
+        render_data(conn, %{
+          vapid_public_key: public_key,
+          application_server_key: public_key
         })
 
       {:error, :not_configured} ->
-        conn
-        |> put_status(:service_unavailable)
-        |> json(%{
-          error: %{
-            code: "web_push_not_configured",
-            message: "Web push notifications are not configured on this server"
-          }
-        })
+        render_error(conn, 503, "Web push notifications are not configured on this server")
     end
   end
 
@@ -78,14 +69,12 @@ defmodule CGraphWeb.API.V1.WebPushController do
         {:ok, push_token} ->
           conn
           |> put_status(:created)
-          |> json(%{
-            data: %{
-              id: push_token.id,
-              platform: "web",
-              device_name: Map.get(push_token, :device_name, push_token.device_id),
-              created_at: push_token.inserted_at,
-              message: "Web push subscription registered successfully"
-            }
+          |> render_data(%{
+            id: push_token.id,
+            platform: "web",
+            device_name: Map.get(push_token, :device_name, push_token.device_id),
+            created_at: push_token.inserted_at,
+            message: "Web push subscription registered successfully"
           })
 
         {:error, changeset} ->
@@ -93,26 +82,12 @@ defmodule CGraphWeb.API.V1.WebPushController do
       end
     else
       {:error, reason} ->
-        conn
-        |> put_status(:bad_request)
-        |> json(%{
-          error: %{
-            code: "invalid_subscription",
-            message: "Invalid push subscription: #{inspect(reason)}"
-          }
-        })
+        render_error(conn, 400, "Invalid push subscription: #{inspect(reason)}")
     end
   end
 
   def subscribe(conn, _params) do
-    conn
-    |> put_status(:bad_request)
-    |> json(%{
-      error: %{
-        code: "missing_subscription",
-        message: "Request must include a subscription object"
-      }
-    })
+    render_error(conn, 400, "Request must include a subscription object")
   end
 
   @doc """
@@ -130,9 +105,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
             send_resp(conn, :no_content, "")
 
           {:error, _} ->
-            conn
-            |> put_status(:internal_server_error)
-            |> json(%{error: %{message: "Failed to unsubscribe"}})
+            render_error(conn, 500, "Failed to unsubscribe")
         end
 
       {:error, :not_found} ->
@@ -142,14 +115,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
   end
 
   def unsubscribe(conn, _params) do
-    conn
-    |> put_status(:bad_request)
-    |> json(%{
-      error: %{
-        code: "missing_endpoint",
-        message: "Request must include the subscription endpoint"
-      }
-    })
+    render_error(conn, 400, "Request must include the subscription endpoint")
   end
 
   @doc """
@@ -175,55 +141,25 @@ defmodule CGraphWeb.API.V1.WebPushController do
 
       case WebPushClient.send(subscription, notification) do
         :ok ->
-          json(conn, %{
-            data: %{
-              success: true,
-              message: "Test notification sent successfully"
-            }
+          render_data(conn, %{
+            success: true,
+            message: "Test notification sent successfully"
           })
 
         {:error, :expired} ->
-          conn
-          |> put_status(:gone)
-          |> json(%{
-            error: %{
-              code: "subscription_expired",
-              message: "Push subscription has expired. Please resubscribe."
-            }
-          })
+          render_error(conn, 410, "Push subscription has expired. Please resubscribe.")
 
         {:error, reason} ->
-          conn
-          |> put_status(:bad_gateway)
-          |> json(%{
-            error: %{
-              code: "push_failed",
-              message: "Failed to send test notification: #{inspect(reason)}"
-            }
-          })
+          render_error(conn, 502, "Failed to send test notification: #{inspect(reason)}")
       end
     else
       {:error, reason} ->
-        conn
-        |> put_status(:bad_request)
-        |> json(%{
-          error: %{
-            code: "invalid_subscription",
-            message: "Invalid push subscription: #{inspect(reason)}"
-          }
-        })
+        render_error(conn, 400, "Invalid push subscription: #{inspect(reason)}")
     end
   end
 
   def test(conn, _params) do
-    conn
-    |> put_status(:bad_request)
-    |> json(%{
-      error: %{
-        code: "missing_subscription",
-        message: "Request must include a subscription object for testing"
-      }
-    })
+    render_error(conn, 400, "Request must include a subscription object for testing")
   end
 
   @doc """
@@ -234,19 +170,15 @@ defmodule CGraphWeb.API.V1.WebPushController do
   def status(conn, _params) do
     case WebPushClient.get_vapid_public_key() do
       {:ok, _} ->
-        json(conn, %{
-          data: %{
-            supported: true,
-            configured: true
-          }
+        render_data(conn, %{
+          supported: true,
+          configured: true
         })
 
       {:error, :not_configured} ->
-        json(conn, %{
-          data: %{
-            supported: true,
-            configured: false
-          }
+        render_data(conn, %{
+          supported: true,
+          configured: false
         })
     end
   end

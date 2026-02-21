@@ -6,7 +6,7 @@ defmodule CGraphWeb.API.V1.ThreadController do
   use CGraphWeb, :controller
 
   alias CGraph.Forums
-  import CGraphWeb.ControllerHelpers, only: [extract_pagination_params: 1]
+  import CGraphWeb.ControllerHelpers, only: [extract_pagination_params: 1, render_data: 2]
   import CGraphWeb.Helpers.ParamParser
 
   action_fallback CGraphWeb.FallbackController
@@ -175,9 +175,9 @@ defmodule CGraphWeb.API.V1.ThreadController do
 
     case Forums.vote_thread(user.id, id, value) do
       {:ok, :removed} ->
-        json(conn, %{data: %{voted: false, value: 0}})
+        render_data(conn, %{voted: false, value: 0})
       {:ok, vote} ->
-        json(conn, %{data: %{voted: true, value: vote.value}})
+        render_data(conn, %{voted: true, value: vote.value})
       {:error, _} = error ->
         error
     end

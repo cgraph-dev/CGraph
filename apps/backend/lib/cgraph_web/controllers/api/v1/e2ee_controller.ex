@@ -20,6 +20,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
   """
 
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   alias CGraph.Accounts.Friends
   alias CGraph.Crypto.E2EE
@@ -80,7 +81,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
 
       case E2EE.register_keys(user.id, keys) do
         {:ok, result} ->
-          json(conn, %{data: result})
+          render_data(conn, result)
 
         {:error, :invalid_key_format} ->
           {:error, :unprocessable_entity, "Invalid key format"}
@@ -118,7 +119,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
   def get_prekey_bundle(conn, %{"user_id" => user_id}) do
     case E2EE.get_prekey_bundle(user_id) do
       {:ok, bundle} ->
-        json(conn, %{data: bundle})
+        render_data(conn, bundle)
 
       {:error, :no_identity_key} ->
         {:error, :not_found, "User has not registered E2EE keys"}
@@ -149,11 +150,9 @@ defmodule CGraphWeb.API.V1.E2EEController do
     user = conn.assigns.current_user
     count = E2EE.one_time_prekey_count(user.id)
 
-    json(conn, %{
-      data: %{
-        count: count,
-        should_upload: count < 25
-      }
+    render_data(conn, %{
+      count: count,
+      should_upload: count < 25
     })
   end
 
@@ -179,7 +178,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
     case E2EE.upload_one_time_prekeys(user.id, parsed_prekeys) do
       {:ok, count} ->
         total = E2EE.one_time_prekey_count(user.id)
-        json(conn, %{data: %{uploaded: count, total: total}})
+        render_data(conn, %{uploaded: count, total: total})
 
       {:error, reason} ->
         {:error, :internal_server_error, inspect(reason)}
@@ -213,7 +212,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
 
     case E2EE.list_user_devices(user.id) do
       {:ok, devices} ->
-        json(conn, %{data: devices})
+        render_data(conn, devices)
 
         # unreachable normally, but good for defensive coding?
         # warning said: "typing violation" because success is guaranteed by type
@@ -230,7 +229,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
 
     case E2EE.remove_device(user.id, device_id) do
       {:ok, _} ->
-        json(conn, %{data: %{removed: true, device_id: device_id}})
+        render_data(conn, %{removed: true, device_id: device_id})
 
       {:error, :not_found} ->
         {:error, :not_found, "Device not found"}
@@ -260,7 +259,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
 
     case E2EE.safety_number(user.id, other_user_id) do
       {:ok, number} ->
-        json(conn, %{data: %{safety_number: number}})
+        render_data(conn, %{safety_number: number})
 
       {:error, :no_identity_key} ->
         {:error, :not_found, "One or both users have not registered E2EE keys"}
@@ -280,7 +279,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
 
     case E2EE.verify_identity_key(user.id, key_id) do
       {:ok, key} ->
-        json(conn, %{data: %{key_id: key.key_id, verified: true, verified_at: key.verified_at}})
+        render_data(conn, %{key_id: key.key_id, verified: true, verified_at: key.verified_at})
 
       {:error, :not_found} ->
         {:error, :not_found, "Key not found"}
@@ -316,7 +315,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
         # This is the key fix for the Forward Secrecy vulnerability
         notify_key_revocation(user.id, key.key_id, key.revoked_at)
 
-        json(conn, %{data: %{key_id: key.key_id, revoked: true, revoked_at: key.revoked_at}})
+        render_data(conn, %{key_id: key.key_id, revoked: true, revoked_at: key.revoked_at})
 
       {:error, :not_found} ->
         {:error, :not_found, "Key not found"}

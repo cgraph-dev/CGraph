@@ -12,6 +12,7 @@ defmodule CGraphWeb.API.V1.UserController do
   use CGraphWeb, :controller
 
   import CGraphWeb.Helpers.ParamParser
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   alias CGraph.Accounts
   alias CGraph.Accounts.Friends
@@ -466,7 +467,7 @@ defmodule CGraphWeb.API.V1.UserController do
         equipped_at: updated_user.avatar_border_equipped_at
       }
 
-      json(conn, %{data: border_config})
+      render_data(conn, border_config)
     end
   end
 end

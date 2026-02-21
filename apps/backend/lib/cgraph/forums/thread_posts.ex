@@ -32,9 +32,11 @@ defmodule CGraph.Forums.ThreadPosts do
   Get a thread post by ID.
   """
   def get_thread_post(id) do
-    case Repo.get(ThreadPost, id) do
+    query = from(p in ThreadPost, where: p.id == ^id, preload: [:author, :thread])
+
+    case Repo.one(query) do
       nil -> {:error, :not_found}
-      post -> {:ok, Repo.preload(post, [:author, :thread])}
+      post -> {:ok, post}
     end
   end
 

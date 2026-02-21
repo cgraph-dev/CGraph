@@ -22,6 +22,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
   """
 
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 
   alias CGraph.Gamification.Marketplace
   # MarketplaceListing, MarketplaceTransaction accessed via Marketplace module
@@ -411,7 +412,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
       ip: get_client_ip(conn)
     })
 
-    json(conn, %{
+    render_data(conn, %{
       approved: length(approved),
       failed: length(failed),
       failed_ids: failed
@@ -437,7 +438,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
       ip: get_client_ip(conn)
     })
 
-    json(conn, %{
+    render_data(conn, %{
       rejected: length(rejected),
       failed: length(failed),
       failed_ids: failed
@@ -450,8 +451,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
     case conn.assigns[:current_admin] do
       nil ->
         conn
-        |> put_status(:unauthorized)
-        |> json(%{error: "Admin authentication required"})
+        |> render_error(401, "Admin authentication required")
         |> halt()
 
       admin ->
@@ -459,8 +459,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
           conn
         else
           conn
-          |> put_status(:forbidden)
-          |> json(%{error: "Insufficient permissions"})
+          |> render_error(403, "Insufficient permissions")
           |> halt()
         end
     end
@@ -475,8 +474,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
       :ok -> conn
       {:error, :rate_limited, _info} ->
         conn
-        |> put_status(:too_many_requests)
-        |> json(%{error: "Rate limit exceeded"})
+        |> render_error(429, "Rate limit exceeded")
         |> halt()
     end
   end

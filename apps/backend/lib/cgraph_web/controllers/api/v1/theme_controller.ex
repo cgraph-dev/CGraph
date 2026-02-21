@@ -11,6 +11,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
   """
 
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 
   alias CGraph.Themes
 
@@ -24,7 +25,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
   """
   def show(conn, %{"id" => user_id}) do
     theme = Themes.get_theme(user_id)
-    json(conn, %{theme: theme})
+    render_data(conn, %{theme: theme})
   end
 
   @doc """
@@ -36,25 +37,19 @@ defmodule CGraphWeb.API.V1.ThemeController do
 
     # Users can only update their own theme
     if current_user.id != user_id do
-      conn
-      |> put_status(403)
-      |> json(%{error: "You can only update your own theme"})
+      render_error(conn, 403, "You can only update your own theme")
     else
       theme_params = params["theme"] || params
 
       case Themes.update_theme(user_id, theme_params) do
         {:ok, theme} ->
-          json(conn, %{theme: theme})
+          render_data(conn, %{theme: theme})
 
         {:error, :user_not_found} ->
-          conn
-          |> put_status(404)
-          |> json(%{error: "User not found"})
+          render_error(conn, 404, "User not found")
 
         {:error, reason} ->
-          conn
-          |> put_status(400)
-          |> json(%{error: inspect(reason)})
+          render_error(conn, 400, inspect(reason))
       end
     end
   end
@@ -67,18 +62,14 @@ defmodule CGraphWeb.API.V1.ThemeController do
     current_user = conn.assigns.current_user
 
     if current_user.id != user_id do
-      conn
-      |> put_status(403)
-      |> json(%{error: "You can only reset your own theme"})
+      render_error(conn, 403, "You can only reset your own theme")
     else
       case Themes.reset_theme(user_id) do
         {:ok, theme} ->
-          json(conn, %{theme: theme, reset: true})
+          render_data(conn, %{theme: theme, reset: true})
 
         {:error, reason} ->
-          conn
-          |> put_status(400)
-          |> json(%{error: inspect(reason)})
+          render_error(conn, 400, inspect(reason))
       end
     end
   end
@@ -89,13 +80,11 @@ defmodule CGraphWeb.API.V1.ThemeController do
   """
   def batch(conn, %{"user_ids" => user_ids}) when is_list(user_ids) do
     themes = Themes.get_themes_batch(user_ids)
-    json(conn, %{themes: themes})
+    render_data(conn, %{themes: themes})
   end
 
   def batch(conn, _params) do
-    conn
-    |> put_status(400)
-    |> json(%{error: "user_ids must be a list"})
+    render_error(conn, 400, "user_ids must be a list")
   end
 
   @doc """
@@ -103,7 +92,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
   Get the default theme configuration.
   """
   def default(conn, _params) do
-    json(conn, %{theme: Themes.default_theme()})
+    render_data(conn, %{theme: Themes.default_theme()})
   end
 
   @doc """
@@ -111,7 +100,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
   Get all available theme presets and options.
   """
   def presets(conn, _params) do
-    json(conn, %{
+    render_data(conn, %{
       colorPresets: [
         "emerald", "purple", "cyan", "orange", "pink",
         "gold", "crimson", "arctic", "sunset", "midnight",
@@ -154,8 +143,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
     case conn.assigns[:current_user] do
       nil ->
         conn
-        |> put_status(401)
-        |> json(%{error: "Authentication required"})
+        |> render_error(401, "Authentication required")
         |> halt()
 
       _user ->

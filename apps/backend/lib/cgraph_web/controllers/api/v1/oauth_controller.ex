@@ -28,6 +28,7 @@ defmodule CGraphWeb.API.V1.OAuthController do
   """
 
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   require Logger
 
@@ -214,7 +215,7 @@ defmodule CGraphWeb.API.V1.OAuthController do
       }
     end)
 
-    json(conn, %{providers: providers})
+    render_data(conn, %{providers: providers})
   end
 
   @doc """

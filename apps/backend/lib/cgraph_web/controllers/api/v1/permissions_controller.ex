@@ -9,6 +9,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   - Checking user permissions
   """
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   alias CGraph.Forums.{Board, BoardPermission, Forum, ForumPermission, ForumUserGroup, PermissionTemplate}
   alias CGraph.Repo
@@ -36,7 +37,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
         ForumPermission.for_forum_query(forum.id)
         |> Repo.all()
 
-      json(conn, %{data: permissions})
+      render_data(conn, permissions)
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -58,7 +59,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
          :ok <- authorize_admin(user, forum),
          {:ok, permission} <- upsert_forum_permission(forum.id, group_uuid, params) do
 
-      json(conn, %{data: permission})
+      render_data(conn, permission)
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -83,7 +84,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
       )
       |> Repo.delete_all()
 
-      json(conn, %{message: "Permission override removed"})
+      render_data(conn, %{message: "Permission override removed"})
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -110,7 +111,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
         BoardPermission.for_board_query(board.id)
         |> Repo.all()
 
-      json(conn, %{data: permissions})
+      render_data(conn, permissions)
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -132,7 +133,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
          :ok <- authorize_admin(user, board.forum),
          {:ok, permission} <- upsert_board_permission(board.id, group_uuid, params) do
 
-      json(conn, %{data: permission})
+      render_data(conn, permission)
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -157,7 +158,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
       )
       |> Repo.delete_all()
 
-      json(conn, %{message: "Permission override removed"})
+      render_data(conn, %{message: "Permission override removed"})
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -179,7 +180,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
         PermissionTemplate.available_for_forum_query(uuid)
         |> Repo.all()
 
-      json(conn, %{data: templates})
+      render_data(conn, templates)
     else
       :error -> {:error, :bad_request}
     end
@@ -194,7 +195,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
       PermissionTemplate.system_templates_query()
       |> Repo.all()
 
-    json(conn, %{data: templates})
+    render_data(conn, templates)
   end
 
   @doc """
@@ -217,7 +218,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
         {:ok, template} ->
           conn
           |> put_status(:created)
-          |> json(%{data: template})
+          |> render_data(template)
 
         {:error, changeset} ->
           {:error, changeset}
@@ -242,7 +243,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
          :ok <- authorize_template_deletion(user, template) do
 
       Repo.delete!(template)
-      json(conn, %{message: "Template deleted"})
+      render_data(conn, %{message: "Template deleted"})
     else
       true -> {:error, :forbidden}  # Can't delete system template
       :error -> {:error, :bad_request}
@@ -278,7 +279,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
 
       {:ok, permission} = upsert_board_permission(board.id, group_uuid, attrs)
 
-      json(conn, %{data: permission, template_applied: template.name})
+      render_data(conn, %{permission: permission, template_applied: template.name})
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -304,7 +305,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
 
       has_permission = BoardPermission.can?(perm_atom, user, board, Repo)
 
-      json(conn, %{
+      render_data(conn, %{
         permission: permission,
         allowed: has_permission,
         board_id: board_id
@@ -336,7 +337,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
 
       permissions = BoardPermission.effective_permissions(user, board, Repo)
 
-      json(conn, %{
+      render_data(conn, %{
         board_id: board_id,
         permissions: permissions,
         is_authenticated: not is_nil(user)

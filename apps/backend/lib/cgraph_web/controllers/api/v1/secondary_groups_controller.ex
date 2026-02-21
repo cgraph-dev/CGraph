@@ -9,6 +9,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   - Setting display group preference
   """
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   alias CGraph.Forums.{Forum, ForumMember, ForumUserGroup, GroupAutoRule, MemberSecondaryGroup}
   alias CGraph.Repo
@@ -36,8 +37,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
         MemberSecondaryGroup.for_member_query(member.id)
         |> Repo.all()
 
-      json(conn, %{
-        data: %{
+      render_data(conn, %{
           primary_group: member.user_group,
           display_group_id: member.display_group_id,
           secondary_groups: Enum.map(secondary_groups, fn msg ->
@@ -49,7 +49,6 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
               added_at: msg.inserted_at
             }
           end)
-        }
       })
     else
       :error -> {:error, :bad_request}
@@ -76,13 +75,11 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
       # Get stacked permissions
       permissions = MemberSecondaryGroup.stacked_permissions(member, Repo)
 
-      json(conn, %{
-        data: %{
+      render_data(conn, %{
           primary_group: member.user_group,
           display_group_id: member.display_group_id,
           secondary_groups: Enum.map(secondary_groups, & &1.user_group),
           effective_permissions: permissions
-        }
       })
     else
       :error -> {:error, :bad_request}
@@ -117,13 +114,11 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
         {:ok, msg} ->
           conn
           |> put_status(:created)
-          |> json(%{
-            data: %{
+          |> render_data(%{
               id: msg.id,
               group: group,
               expires_at: msg.expires_at,
               reason: msg.reason
-            }
           })
 
         {:error, changeset} ->
@@ -160,7 +155,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
         |> Repo.delete_all()
 
       if deleted_count > 0 do
-        json(conn, %{message: "Secondary group removed"})
+        render_data(conn, %{message: "Secondary group removed"})
       else
         {:error, :not_found}
       end
@@ -192,7 +187,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
       |> case do
         {:ok, updated} ->
           updated = Repo.preload(updated, [:user_group])
-          json(conn, %{data: updated})
+          render_data(conn, updated)
 
         {:error, changeset} ->
           {:error, changeset}
@@ -223,7 +218,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
         GroupAutoRule.for_forum_query(forum.id)
         |> Repo.all()
 
-      json(conn, %{data: rules})
+      render_data(conn, rules)
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -254,7 +249,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
         {:ok, rule} ->
           conn
           |> put_status(:created)
-          |> json(%{data: rule})
+          |> render_data(rule)
 
         {:error, changeset} ->
           {:error, changeset}
@@ -283,7 +278,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
       |> Repo.update()
       |> case do
         {:ok, updated} ->
-          json(conn, %{data: updated})
+          render_data(conn, updated)
 
         {:error, changeset} ->
           {:error, changeset}
@@ -307,7 +302,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
          :ok <- authorize_group_management(user, rule.user_group.forum) do
 
       Repo.delete!(rule)
-      json(conn, %{message: "Rule deleted"})
+      render_data(conn, %{message: "Rule deleted"})
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -340,11 +335,9 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
 
       total_assignments = Enum.sum(Enum.map(results, & &1.assignments))
 
-      json(conn, %{
-        data: %{
+      render_data(conn, %{
           members_processed: length(members),
           total_assignments: total_assignments
-        }
       })
     else
       :error -> {:error, :bad_request}
@@ -359,7 +352,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   """
   def rule_templates(conn, _params) do
     templates = GroupAutoRule.rule_templates()
-    json(conn, %{data: templates})
+    render_data(conn, templates)
   end
 
   # =============================================================================

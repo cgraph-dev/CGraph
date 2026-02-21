@@ -47,10 +47,11 @@ defmodule CGraph.Forums.Posts do
     query = Post
       |> exclude_deleted()
       |> where([p], p.id == ^post_id)
+      |> preload([:author, :category, :forum])
 
     case Repo.one(query) do
       nil -> {:error, :not_found}
-      post -> {:ok, Repo.preload(post, [:author, :category, :forum])}
+      post -> {:ok, post}
     end
   end
 

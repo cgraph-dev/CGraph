@@ -10,6 +10,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
   - Getting ancestors/descendants
   """
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_data: 3]
 
   alias CGraph.Forums.Forum
   alias CGraph.Repo
@@ -43,12 +44,9 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
     forums = Repo.all(query)
     tree = Forum.build_tree(forums)
 
-    json(conn, %{
-      data: tree,
-      meta: %{
-        total_count: length(forums),
-        max_depth: max_depth
-      }
+    render_data(conn, tree, %{
+      total_count: length(forums),
+      max_depth: max_depth
     })
   end
 
@@ -75,12 +73,9 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
       forums = Repo.all(query)
       tree = Forum.build_tree(forums)
 
-      json(conn, %{
-        data: tree,
-        meta: %{
-          root_forum_id: forum.id,
-          total_count: length(forums)
-        }
+      render_data(conn, tree, %{
+        root_forum_id: forum.id,
+        total_count: length(forums)
       })
     else
       :error -> {:error, :bad_request}
@@ -100,7 +95,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
         Forum.sub_forums_query(uuid)
         |> Repo.all()
 
-      json(conn, %{data: children})
+      render_data(conn, children)
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -117,7 +112,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
 
       ancestors = Forum.get_ancestors(forum, Repo)
 
-      json(conn, %{data: ancestors})
+      render_data(conn, ancestors)
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -134,7 +129,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
 
       breadcrumbs = Forum.get_breadcrumbs(forum, Repo)
 
-      json(conn, %{data: breadcrumbs})
+      render_data(conn, breadcrumbs)
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -150,7 +145,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
       Forum.root_forums_query()
       |> Repo.all()
 
-    json(conn, %{data: forums})
+    render_data(conn, forums)
   end
 
   @doc """
@@ -167,7 +162,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
          :ok <- validate_move(forum, parent_uuid),
          {:ok, updated} <- do_move_forum(forum, parent_uuid) do
 
-      json(conn, %{data: updated})
+      render_data(conn, updated)
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -194,7 +189,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
          :ok <- authorize_hierarchy_change(user, forum),
          {:ok, updated} <- do_reorder_forum(forum, new_position) do
 
-      json(conn, %{data: updated})
+      render_data(conn, updated)
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -214,7 +209,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
          :ok <- authorize_hierarchy_change(user, forum),
          {:ok, updated} <- do_update_hierarchy(forum, params) do
 
-      json(conn, %{data: updated})
+      render_data(conn, updated)
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}
@@ -236,7 +231,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
 
       conn
       |> put_status(:created)
-      |> json(%{data: new_forum})
+      |> render_data(new_forum)
     else
       :error -> {:error, :bad_request}
       nil -> {:error, :not_found}

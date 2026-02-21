@@ -11,6 +11,7 @@ defmodule CGraphWeb.API.V1.AnnouncementController do
   - Visibility by user group
   """
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   alias CGraph.Announcements
 
@@ -52,7 +53,7 @@ defmodule CGraphWeb.API.V1.AnnouncementController do
 
     with {:ok, announcement} <- Announcements.get(id),
          {:ok, _} <- Announcements.mark_read(announcement, user) do
-      json(conn, %{success: true, read_at: DateTime.utc_now()})
+      render_data(conn, %{success: true, read_at: DateTime.utc_now()})
     end
   end
 
@@ -64,7 +65,7 @@ defmodule CGraphWeb.API.V1.AnnouncementController do
 
     with {:ok, announcement} <- Announcements.get(id),
          {:ok, _} <- Announcements.dismiss(announcement, user) do
-      json(conn, %{success: true, dismissed_at: DateTime.utc_now()})
+      render_data(conn, %{success: true, dismissed_at: DateTime.utc_now()})
     end
   end
 

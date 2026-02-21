@@ -4,6 +4,7 @@ defmodule CGraphWeb.API.V1.PushTokenController do
   Users register their device tokens for receiving push notifications.
   """
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   alias CGraph.Notifications
 
@@ -118,7 +119,7 @@ defmodule CGraphWeb.API.V1.PushTokenController do
 
     with {:ok, push_token} <- Notifications.get_push_token(user, token_id),
          {:ok, _} <- Notifications.send_test_notification(push_token) do
-      json(conn, %{data: %{message: "Test notification sent"}})
+      render_data(conn, %{message: "Test notification sent"})
     end
   end
 

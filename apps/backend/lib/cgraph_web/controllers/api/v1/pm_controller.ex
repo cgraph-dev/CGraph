@@ -12,6 +12,7 @@ defmodule CGraphWeb.API.V1.PMController do
   """
   use CGraphWeb, :controller
 
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_data: 3]
   import CGraphWeb.Helpers.ParamParser
 
   alias CGraph.Messaging
@@ -168,7 +169,7 @@ defmodule CGraphWeb.API.V1.PMController do
 
     with {:ok, message} <- Messaging.get_private_message(id, user.id),
          {:ok, _} <- Messaging.mark_message_read(message, user.id) do
-      json(conn, %{success: true, read_at: DateTime.utc_now()})
+      render_data(conn, %{success: true, read_at: DateTime.utc_now()})
     end
   end
 
@@ -273,7 +274,7 @@ defmodule CGraphWeb.API.V1.PMController do
   def stats(conn, _params) do
     user = conn.assigns.current_user
     stats = Messaging.get_pm_stats(user.id)
-    json(conn, %{stats: stats})
+    render_data(conn, %{stats: stats})
   end
 
   @doc """
@@ -288,10 +289,10 @@ defmodule CGraphWeb.API.V1.PMController do
     with {:ok, export_data, page_info} <- Messaging.export_pm(user.id, cursor: cursor, limit: limit) do
       case format do
         "json" ->
-          json(conn, %{messages: export_data, meta: %{
+          render_data(conn, %{messages: export_data}, %{
             cursor: page_info.end_cursor,
             has_more: page_info.has_next_page
-          }})
+          })
 
         "csv" ->
           conn
@@ -300,10 +301,10 @@ defmodule CGraphWeb.API.V1.PMController do
           |> send_resp(200, export_data)
 
         _ ->
-          json(conn, %{messages: export_data, meta: %{
+          render_data(conn, %{messages: export_data}, %{
             cursor: page_info.end_cursor,
             has_more: page_info.has_next_page
-          }})
+          })
       end
     end
   end

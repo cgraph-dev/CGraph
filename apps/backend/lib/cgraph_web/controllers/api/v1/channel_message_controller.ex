@@ -3,6 +3,7 @@ defmodule CGraphWeb.API.V1.ChannelMessageController do
   Controller for messages within group channels.
   """
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
   import CGraphWeb.Helpers.ParamParser
 
   alias CGraph.Groups
@@ -82,7 +83,7 @@ defmodule CGraphWeb.API.V1.ChannelMessageController do
         }
       )
 
-      json(conn, %{status: "ok"})
+      render_data(conn, %{status: "ok"})
     end
   end
 end

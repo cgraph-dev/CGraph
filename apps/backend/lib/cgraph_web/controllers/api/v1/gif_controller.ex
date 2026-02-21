@@ -24,6 +24,7 @@ defmodule CGraphWeb.API.V1.GifController do
   """
 
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
   require Logger
 
   alias CGraph.Cache
@@ -78,11 +79,11 @@ defmodule CGraphWeb.API.V1.GifController do
 
     case result do
       {:ok, response} ->
-        json(conn, response)
+        render_data(conn, response)
 
       {:error, reason} ->
         Logger.error("failed_to_fetch_gifs", reason: inspect(reason))
-        json(conn, %{gifs: generate_sample_gifs(query), next: nil})
+        render_data(conn, %{gifs: generate_sample_gifs(query), next: nil})
     end
   end
 
@@ -112,11 +113,11 @@ defmodule CGraphWeb.API.V1.GifController do
 
     case result do
       {:ok, response} ->
-        json(conn, response)
+        render_data(conn, response)
 
       {:error, reason} ->
         Logger.error("failed_to_fetch_trending_gifs", reason: inspect(reason))
-        json(conn, %{gifs: generate_sample_gifs("trending"), next: nil})
+        render_data(conn, %{gifs: generate_sample_gifs("trending"), next: nil})
     end
   end
 

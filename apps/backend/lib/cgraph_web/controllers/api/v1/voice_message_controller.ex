@@ -11,6 +11,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
   """
 
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   alias CGraph.Messaging.VoiceMessage
   alias CGraph.Repo
@@ -135,7 +136,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
 
       voice_message ->
         if can_access?(user, voice_message) do
-          json(conn, %{data: %{waveform: VoiceMessage.waveform(voice_message)}})
+          render_data(conn, %{waveform: VoiceMessage.waveform(voice_message)})
         else
           {:error, :forbidden}
         end

@@ -3,6 +3,7 @@ defmodule CGraphWeb.API.V1.ChannelController do
   Controller for group channels.
   """
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   alias CGraph.Groups
 
@@ -97,7 +98,7 @@ defmodule CGraphWeb.API.V1.ChannelController do
     with {:ok, group} <- Groups.get_user_group(user, group_id),
          :ok <- Groups.authorize(user, group, :manage_channels),
          {:ok, count} <- Groups.reorder_channels(group, channel_ids) do
-      json(conn, %{ok: true, reordered: count})
+      render_data(conn, %{ok: true, reordered: count})
     end
   end
 end

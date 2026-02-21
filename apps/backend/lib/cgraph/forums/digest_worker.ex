@@ -106,8 +106,9 @@ defmodule CGraph.Forums.DigestWorker do
     Logger.info("processed_weekly_digest_subscriptions", subscriptions_count: inspect(length(subscriptions)))
   end
 
-  defp send_digest_email(user_id, subscriptions, frequency) do
-    user = Repo.get(CGraph.Accounts.User, user_id)
+  defp send_digest_email(_user_id, subscriptions, frequency) do
+    # Use the preloaded :user from subscriptions instead of a separate Repo.get (avoids N+1)
+    user = subscriptions |> List.first() |> Map.get(:user)
 
     if user && user.email do
       # Build digest content
@@ -141,9 +142,9 @@ defmodule CGraph.Forums.DigestWorker do
 
       case Mailer.send_email(email_data) do
         {:ok, _} ->
-          Logger.debug("sent_digest_to_user", frequency: frequency, user_id: user_id)
+          Logger.debug("sent_digest_to_user", frequency: frequency, user_id: user.id)
         {:error, reason} ->
-          Logger.error("failed_to_send_digest_to_user", user_id: user_id, reason: inspect(reason))
+          Logger.error("failed_to_send_digest_to_user", user_id: user.id, reason: inspect(reason))
       end
     end
   end

@@ -6,6 +6,7 @@ defmodule CGraphWeb.API.V1.AIController do
   """
 
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 
   alias CGraph.AI
 
@@ -24,17 +25,13 @@ defmodule CGraphWeb.API.V1.AIController do
 
     case AI.summarize(messages, user_id: user.id, tier: tier) do
       {:ok, summary} ->
-        json(conn, %{data: summary})
+        render_data(conn, summary)
 
       {:error, :rate_limited} ->
-        conn
-        |> put_status(429)
-        |> json(%{error: "Rate limit exceeded", message: "AI requests are limited per your tier"})
+        render_error(conn, 429, "Rate limit exceeded")
 
-      {:error, reason} ->
-        conn
-        |> put_status(422)
-        |> json(%{error: "Summarization failed", message: to_string(reason)})
+      {:error, _reason} ->
+        render_error(conn, 422, "Summarization failed")
     end
   end
 
@@ -52,17 +49,13 @@ defmodule CGraphWeb.API.V1.AIController do
 
     case AI.smart_replies(message, user_id: user.id, tier: tier, context: context) do
       {:ok, replies} ->
-        json(conn, %{data: replies})
+        render_data(conn, replies)
 
       {:error, :rate_limited} ->
-        conn
-        |> put_status(429)
-        |> json(%{error: "Rate limit exceeded"})
+        render_error(conn, 429, "Rate limit exceeded")
 
       {:error, reason} ->
-        conn
-        |> put_status(422)
-        |> json(%{error: to_string(reason)})
+        render_error(conn, 422, to_string(reason))
     end
   end
 
@@ -79,17 +72,13 @@ defmodule CGraphWeb.API.V1.AIController do
 
     case AI.moderate(content, user_id: user.id, tier: tier) do
       {:ok, result} ->
-        json(conn, %{data: result})
+        render_data(conn, result)
 
       {:error, :rate_limited} ->
-        conn
-        |> put_status(429)
-        |> json(%{error: "Rate limit exceeded"})
+        render_error(conn, 429, "Rate limit exceeded")
 
       {:error, reason} ->
-        conn
-        |> put_status(422)
-        |> json(%{error: to_string(reason)})
+        render_error(conn, 422, to_string(reason))
     end
   end
 
@@ -106,17 +95,13 @@ defmodule CGraphWeb.API.V1.AIController do
 
     case AI.analyze_sentiment(text, user_id: user.id, tier: tier) do
       {:ok, result} ->
-        json(conn, %{data: result})
+        render_data(conn, result)
 
       {:error, :rate_limited} ->
-        conn
-        |> put_status(429)
-        |> json(%{error: "Rate limit exceeded"})
+        render_error(conn, 429, "Rate limit exceeded")
 
       {:error, reason} ->
-        conn
-        |> put_status(422)
-        |> json(%{error: to_string(reason)})
+        render_error(conn, 422, to_string(reason))
     end
   end
 

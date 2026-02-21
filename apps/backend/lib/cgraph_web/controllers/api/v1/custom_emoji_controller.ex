@@ -10,6 +10,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
   - Admin moderation
   """
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   import Ecto.Query
 
@@ -250,7 +251,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
       }
     ], on_conflict: :nothing)
 
-    json(conn, %{data: %{favorited: true}})
+    render_data(conn, %{favorited: true})
     end
   end
 
@@ -275,7 +276,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
       )
       |> Repo.delete_all()
 
-      json(conn, %{data: %{favorited: false}})
+      render_data(conn, %{favorited: false})
     end
   end
 

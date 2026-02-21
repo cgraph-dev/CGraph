@@ -4,6 +4,7 @@ defmodule CGraphWeb.API.UsernameController do
   """
 
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 
   alias CGraph.Accounts.UsernameService
 
@@ -18,16 +19,16 @@ defmodule CGraphWeb.API.UsernameController do
     if valid_username_format?(username) do
       # Check if taken
       if UsernameService.username_taken?(username) do
-        json(conn, %{available: false, reason: "Username is already taken"})
+        render_data(conn, %{available: false, reason: "Username is already taken"})
       # Check if recently released
       else if UsernameService.username_recently_released?(username) do
-        json(conn, %{available: false, reason: "Username was recently released and is reserved"})
+        render_data(conn, %{available: false, reason: "Username was recently released and is reserved"})
       else
-        json(conn, %{available: true})
+        render_data(conn, %{available: true})
       end
       end
     else
-      json(conn, %{
+      render_data(conn, %{
         available: false,
         reason: "Invalid format. Use 3-32 characters: letters, numbers, _ and - only"
       })
@@ -44,7 +45,7 @@ defmodule CGraphWeb.API.UsernameController do
 
     case UsernameService.change_username(user.id, new_username, premium: is_premium) do
       {:ok, updated_user} ->
-        json(conn, %{
+        render_data(conn, %{
           success: true,
           user: %{
             id: updated_user.id,
@@ -54,41 +55,16 @@ defmodule CGraphWeb.API.UsernameController do
         })
 
       {:error, {:cooldown, days}} ->
-        conn
-        |> put_status(:too_many_requests)
-        |> json(%{
-          success: false,
-          error: "cooldown",
-          message: "You can change your username in #{days} days",
-          days_remaining: days
-        })
+        render_error(conn, :too_many_requests, "You can change your username in #{days} days")
 
       {:error, :username_taken} ->
-        conn
-        |> put_status(:conflict)
-        |> json(%{
-          success: false,
-          error: "taken",
-          message: "Username is already taken"
-        })
+        render_error(conn, :conflict, "Username is already taken")
 
       {:error, :username_recently_released} ->
-        conn
-        |> put_status(:conflict)
-        |> json(%{
-          success: false,
-          error: "reserved",
-          message: "Username was recently released and is reserved for 30 days"
-        })
+        render_error(conn, :conflict, "Username was recently released and is reserved for 30 days")
 
       {:error, changeset} when is_struct(changeset, Ecto.Changeset) ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{
-          success: false,
-          error: "validation",
-          message: "Invalid username format"
-        })
+        render_error(conn, :unprocessable_entity, "Invalid username format")
     end
   end
 
@@ -111,7 +87,7 @@ defmodule CGraphWeb.API.UsernameController do
         }
       end)
 
-    json(conn, %{history: history})
+    render_data(conn, history)
   end
 
   @doc """
@@ -124,14 +100,14 @@ defmodule CGraphWeb.API.UsernameController do
 
     case UsernameService.can_change_username?(user.id, is_premium) do
       {:ok, _} ->
-        json(conn, %{
+        render_data(conn, %{
           can_change: true,
           days_remaining: 0,
           cooldown_days: if(is_premium, do: 7, else: 30)
         })
 
       {:error, {:cooldown, days}} ->
-        json(conn, %{
+        render_data(conn, %{
           can_change: false,
           days_remaining: days,
           cooldown_days: if(is_premium, do: 7, else: 30)

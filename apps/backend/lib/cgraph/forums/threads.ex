@@ -56,9 +56,11 @@ defmodule CGraph.Forums.Threads do
   Gets a single thread.
   """
   def get_thread(id) do
-    case Repo.get(Thread, id) do
+    query = from(t in Thread, where: t.id == ^id, preload: [:author, :board])
+
+    case Repo.one(query) do
       nil -> {:error, :not_found}
-      thread -> {:ok, Repo.preload(thread, [:author, :board])}
+      thread -> {:ok, thread}
     end
   end
 

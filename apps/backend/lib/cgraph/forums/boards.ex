@@ -48,9 +48,11 @@ defmodule CGraph.Forums.Boards do
   Get a board by ID.
   """
   def get_board(id) do
-    case Repo.get(Board, id) do
+    query = from(b in Board, where: b.id == ^id, preload: [:forum])
+
+    case Repo.one(query) do
       nil -> {:error, :not_found}
-      board -> {:ok, Repo.preload(board, [:forum])}
+      board -> {:ok, board}
     end
   end
 
@@ -62,9 +64,9 @@ defmodule CGraph.Forums.Boards do
       |> exclude_deleted()
       |> where([b], b.forum_id == ^forum_id and b.slug == ^slug)
 
-    case Repo.one(query) do
+    case Repo.one(query |> preload([:forum])) do
       nil -> {:error, :not_found}
-      board -> {:ok, Repo.preload(board, [:forum])}
+      board -> {:ok, board}
     end
   end
 

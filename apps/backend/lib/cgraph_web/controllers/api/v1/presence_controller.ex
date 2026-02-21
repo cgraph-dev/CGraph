@@ -10,6 +10,7 @@ defmodule CGraphWeb.API.V1.PresenceController do
   - Location tracking (who's viewing what)
   """
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   alias CGraph.Presence
 
@@ -55,7 +56,7 @@ defmodule CGraphWeb.API.V1.PresenceController do
     }
 
     with {:ok, _} <- Presence.update_presence(user.id, location) do
-      json(conn, %{status: "ok", timestamp: DateTime.utc_now()})
+      render_data(conn, %{status: "ok", timestamp: DateTime.utc_now()})
     end
   end
 
@@ -99,7 +100,7 @@ defmodule CGraphWeb.API.V1.PresenceController do
     user = conn.assigns.current_user
 
     with {:ok, _} <- Presence.update_visibility(user.id, parse_bool(visible, true)) do
-      json(conn, %{status: "ok", visible: parse_bool(visible, true)})
+      render_data(conn, %{status: "ok", visible: parse_bool(visible, true)})
     end
   end
 

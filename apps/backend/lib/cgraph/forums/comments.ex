@@ -44,9 +44,14 @@ defmodule CGraph.Forums.Comments do
   Gets a comment by ID.
   """
   def get_comment(comment_id) do
-    case Repo.get(Comment, comment_id) do
+    query = from(c in Comment,
+      where: c.id == ^comment_id,
+      preload: [:author, :post]
+    )
+
+    case Repo.one(query) do
       nil -> {:error, :not_found}
-      comment -> {:ok, Repo.preload(comment, [:author, :post])}
+      comment -> {:ok, comment}
     end
   end
 

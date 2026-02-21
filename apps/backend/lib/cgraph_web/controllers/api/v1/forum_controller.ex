@@ -12,6 +12,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   use CGraphWeb, :controller
 
   import CGraphWeb.Helpers.ParamParser
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
   alias CGraph.Subscriptions.TierLimits
 
   alias CGraph.Forums
@@ -481,7 +482,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   def vote_eligibility(conn, _params) do
     user = conn.assigns.current_user
     eligibility = Forums.get_vote_eligibility(user)
-    json(conn, %{data: eligibility})
+    render_data(conn, eligibility)
   end
 
   # Private helpers

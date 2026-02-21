@@ -1,5 +1,6 @@
 defmodule CGraphWeb.API.V1.CustomizationController do
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   alias CGraph.Accounts
   alias CGraph.Customizations
@@ -125,7 +126,7 @@ defmodule CGraphWeb.API.V1.CustomizationController do
         border_id -> Accounts.update_user(user, %{avatar_border_id: border_id})
       end
 
-      json(conn, %{data: serialize_customizations(customizations)})
+      render_data(conn, serialize_customizations(customizations))
     end
   end
 
@@ -138,7 +139,7 @@ defmodule CGraphWeb.API.V1.CustomizationController do
 
     with {:ok, _customizations} <- Customizations.delete_user_customizations(user.id),
          {:ok, new_customizations} <- Customizations.create_default_customizations(user.id) do
-      json(conn, %{data: serialize_customizations(new_customizations)})
+      render_data(conn, serialize_customizations(new_customizations))
     end
   end
 

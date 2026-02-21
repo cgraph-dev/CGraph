@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.NotificationController do
   """
   use CGraphWeb, :controller
   import CGraphWeb.Helpers.ParamParser
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 
   alias CGraph.Notifications
 
@@ -81,7 +82,7 @@ defmodule CGraphWeb.API.V1.NotificationController do
 
     {:ok, count} = Notifications.mark_all_as_read(user, type: type)
 
-    json(conn, %{data: %{marked_count: count}})
+    render_data(conn, %{marked_count: count})
   end
 
   @doc """
@@ -107,7 +108,7 @@ defmodule CGraphWeb.API.V1.NotificationController do
 
     {:ok, count} = Notifications.delete_all_notifications(user, type: type)
 
-    json(conn, %{data: %{deleted_count: count}})
+    render_data(conn, %{deleted_count: count})
   end
 
   @doc """
@@ -119,11 +120,9 @@ defmodule CGraphWeb.API.V1.NotificationController do
 
     counts = Notifications.get_unread_counts(user)
 
-    json(conn, %{
-      data: %{
-        total: counts.total,
-        by_type: counts.by_type
-      }
+    render_data(conn, %{
+      total: counts.total,
+      by_type: counts.by_type
     })
   end
 

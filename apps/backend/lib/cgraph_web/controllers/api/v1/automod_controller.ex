@@ -15,6 +15,7 @@ defmodule CGraphWeb.API.V1.AutomodController do
   """
 
   use CGraphWeb, :controller
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
   action_fallback CGraphWeb.FallbackController
 
   alias CGraph.Groups
@@ -25,7 +26,7 @@ defmodule CGraphWeb.API.V1.AutomodController do
   def index(conn, %{"group_id" => group_id}) do
     with :ok <- authorize_automod(conn, group_id) do
       rules = Automod.list_rules(group_id)
-      json(conn, %{data: Enum.map(rules, &serialize_rule/1)})
+      render_data(conn, Enum.map(rules, &serialize_rule/1))
     end
   end
 
@@ -34,7 +35,7 @@ defmodule CGraphWeb.API.V1.AutomodController do
   def show(conn, %{"group_id" => group_id, "id" => id}) do
     with :ok <- authorize_automod(conn, group_id),
          {:ok, rule} <- Automod.get_rule(group_id, id) do
-      json(conn, %{data: serialize_rule(rule)})
+      render_data(conn, serialize_rule(rule))
     end
   end
 
@@ -45,7 +46,7 @@ defmodule CGraphWeb.API.V1.AutomodController do
          {:ok, rule} <- Automod.create_rule(group_id, params) do
       conn
       |> put_status(:created)
-      |> json(%{data: serialize_rule(rule)})
+      |> render_data(serialize_rule(rule))
     end
   end
 
@@ -55,7 +56,7 @@ defmodule CGraphWeb.API.V1.AutomodController do
     with :ok <- authorize_automod(conn, group_id),
          {:ok, rule} <- Automod.get_rule(group_id, id),
          {:ok, updated} <- Automod.update_rule(rule, params) do
-      json(conn, %{data: serialize_rule(updated)})
+      render_data(conn, serialize_rule(updated))
     end
   end
 
@@ -75,7 +76,7 @@ defmodule CGraphWeb.API.V1.AutomodController do
     with :ok <- authorize_automod(conn, group_id),
          {:ok, rule} <- Automod.get_rule(group_id, id),
          {:ok, toggled} <- Automod.toggle_rule(rule) do
-      json(conn, %{data: serialize_rule(toggled)})
+      render_data(conn, serialize_rule(toggled))
     end
   end
 
