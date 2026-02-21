@@ -1,3 +1,16 @@
+# ============================================
+# Staging Deployment Pipeline
+# ============================================
+#
+# Required repository secrets:
+#   FLY_API_TOKEN          - Fly.io deploy token
+#
+# Required environment secrets (staging):
+#   CLOUDFLARE_API_TOKEN   - Cloudflare Pages deploy token
+#   CLOUDFLARE_ACCOUNT_ID  - Cloudflare account identifier
+#
+# Follows: Google SRE staging validation, Discord's preview deploys, Signal's isolation model
+# ============================================
 name: Deploy Staging
 
 on:

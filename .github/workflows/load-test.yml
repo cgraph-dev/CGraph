@@ -1,3 +1,13 @@
+# ============================================
+# Load & Stress Testing Pipeline
+# ============================================
+#
+# Optional repository secrets:
+#   STAGING_URL     - Staging backend URL (default: https://staging.cgraph.org)
+#   STAGING_WS_URL  - Staging WebSocket URL (default: wss://staging.cgraph.org/socket/websocket)
+#
+# Follows: Google SRE load testing practices, Signal's infrastructure validation
+# ============================================
 name: Load Tests
 
 on:
@@ -25,7 +35,11 @@ on:
           - load
           - stress
 
+permissions:
+  contents: read
+
 env:
+  # Default to public staging URLs — override via repository secrets if needed
   BASE_URL: ${{ secrets.STAGING_URL || 'https://staging.cgraph.org' }}
   WS_URL: ${{ secrets.STAGING_WS_URL || 'wss://staging.cgraph.org/socket/websocket' }}
 
