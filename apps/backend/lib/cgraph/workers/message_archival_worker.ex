@@ -31,6 +31,7 @@ defmodule CGraph.Workers.MessageArchivalWorker do
     priority: 3
 
   import Ecto.Query
+  import CGraph.Query.SoftDelete
   require Logger
 
   alias CGraph.Messaging.Message
@@ -72,7 +73,7 @@ defmodule CGraph.Workers.MessageArchivalWorker do
   defp count_archivable(cutoff) do
     from(m in Message,
       where: m.inserted_at < ^cutoff,
-      where: is_nil(m.deleted_at),
+      where: not_deleted(m),
       select: count(m.id)
     )
     |> Repo.one()
@@ -107,7 +108,7 @@ defmodule CGraph.Workers.MessageArchivalWorker do
     messages =
       from(m in Message,
         where: m.inserted_at < ^cutoff,
-        where: is_nil(m.deleted_at),
+        where: not_deleted(m),
         order_by: [asc: m.inserted_at],
         limit: ^batch_size,
         preload: [:sender]

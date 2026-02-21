@@ -1,25 +1,20 @@
 /**
  * Input Component Stories for React Native/Expo
- * 
+ *
  * Showcases the Input component with all states and configurations.
- * 
+ *
  * @since v0.7.31
  */
 import React from 'react';
 import { View } from 'react-native';
 import type { Meta, StoryObj } from '@storybook/react';
 import Input from '../Input';
-import { ThemeProvider } from '../../contexts/ThemeContext';
 
 /**
- * Wrapper to provide theme context
+ * Wrapper providing layout for stories
  */
 const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ gap: 16 }}>
-      {children}
-    </View>
-  </ThemeProvider>
+  <View style={{ gap: 16 }}>{children}</View>
 );
 
 const meta: Meta<typeof Input> = {

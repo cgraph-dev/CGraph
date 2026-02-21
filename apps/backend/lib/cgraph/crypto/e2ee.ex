@@ -219,13 +219,14 @@ defmodule CGraph.Crypto.E2EE do
       field :used_by_id, :binary_id  # User who consumed this key
 
       belongs_to :user, User
+      belongs_to :identity_key, IdentityKey
 
       timestamps()
     end
 
     def changeset(key, attrs) do
       key
-      |> cast(attrs, [:public_key, :key_id, :user_id, :used_at, :used_by_id])
+      |> cast(attrs, [:public_key, :key_id, :user_id, :identity_key_id, :used_at, :used_by_id])
       |> validate_required([:public_key, :key_id, :user_id])
       |> validate_binary_length(:public_key, 32)
       |> unique_constraint([:user_id, :key_id])
@@ -274,16 +275,18 @@ defmodule CGraph.Crypto.E2EE do
       field :used_by_id, :binary_id
 
       belongs_to :user, User
+      belongs_to :identity_key, IdentityKey
 
       timestamps()
     end
 
     def changeset(key, attrs) do
       key
-      |> cast(attrs, [:public_key, :signature, :key_id, :user_id, :is_current, :used_at, :used_by_id])
+      |> cast(attrs, [:public_key, :signature, :key_id, :user_id, :identity_key_id, :is_current, :used_at, :used_by_id])
       |> validate_required([:public_key, :signature, :key_id, :user_id])
       |> unique_constraint([:user_id, :key_id])
       |> foreign_key_constraint(:user_id)
+      |> foreign_key_constraint(:identity_key_id)
     end
   end
 
@@ -473,8 +476,8 @@ defmodule CGraph.Crypto.E2EE do
 
       with {:ok, identity_key} <- upsert_identity_key(user_id, keys),
            {:ok, signed_prekey} <- upsert_signed_prekey(user_id, identity_key, keys),
-           {:ok, count} <- upload_one_time_prekeys(user_id, prekeys_tuples),
-           {:ok, kyber_result} <- upsert_kyber_prekey(user_id, keys) do
+           {:ok, count} <- upload_one_time_prekeys(user_id, prekeys_tuples, identity_key.id),
+           {:ok, kyber_result} <- upsert_kyber_prekey(user_id, keys, identity_key.id) do
         %{
           identity_key_id: identity_key.key_id,
           signed_prekey_id: if(signed_prekey, do: signed_prekey.key_id, else: nil),
@@ -570,14 +573,16 @@ defmodule CGraph.Crypto.E2EE do
 
   Called when the client's prekey count is low.
   """
-  @spec upload_one_time_prekeys(String.t(), list()) :: {:ok, integer()} | {:error, term()}
-  def upload_one_time_prekeys(_user_id, []), do: {:ok, 0}
-  def upload_one_time_prekeys(user_id, prekeys) when is_list(prekeys) do
+  @spec upload_one_time_prekeys(String.t(), list(), String.t() | nil) :: {:ok, integer()} | {:error, term()}
+  def upload_one_time_prekeys(user_id, prekeys, identity_key_id \\ nil)
+  def upload_one_time_prekeys(_user_id, [], _identity_key_id), do: {:ok, 0}
+  def upload_one_time_prekeys(user_id, prekeys, identity_key_id) when is_list(prekeys) do
     entries = Enum.map(prekeys, fn {key_id, public_key_b64} ->
       with {:ok, public_key} <- Base.decode64(public_key_b64) do
         %{
           id: Ecto.UUID.generate(),
           user_id: user_id,
+          identity_key_id: identity_key_id,
           key_id: key_id,
           public_key: public_key,
           inserted_at: DateTime.utc_now(),
@@ -716,9 +721,10 @@ defmodule CGraph.Crypto.E2EE do
         {:error, :not_found}
 
       key ->
-        # Delete associated one-time prekeys
+        # Delete associated one-time prekeys for this device's identity key
         from(p in OneTimePrekey,
-          where: p.user_id == ^user_id
+          where: p.identity_key_id == ^key.id or
+                 (p.user_id == ^user_id and is_nil(p.identity_key_id))
         )
         |> Repo.delete_all()
 
@@ -728,9 +734,10 @@ defmodule CGraph.Crypto.E2EE do
         )
         |> Repo.delete_all()
 
-        # Delete Kyber prekeys
+        # Delete Kyber prekeys for this device's identity key
         from(p in KyberPrekey,
-          where: p.user_id == ^user_id
+          where: p.identity_key_id == ^key.id or
+                 (p.user_id == ^user_id and is_nil(p.identity_key_id))
         )
         |> Repo.delete_all()
 
@@ -924,7 +931,7 @@ defmodule CGraph.Crypto.E2EE do
   # ============================================================================
 
   @doc false
-  defp upsert_kyber_prekey(_user_id, keys) do
+  defp upsert_kyber_prekey(user_id, keys, identity_key_id) do
     kyber_prekey_b64 = keys["kyber_prekey"] || keys[:kyber_prekey]
     kyber_sig_b64 = keys["kyber_prekey_signature"] || keys[:kyber_prekey_signature]
     kyber_key_id = keys["kyber_prekey_id"] || keys[:kyber_prekey_id]
@@ -935,13 +942,14 @@ defmodule CGraph.Crypto.E2EE do
         {{:ok, public_key}, {:ok, signature}} ->
           # Expire current kyber prekeys for this user
           from(k in KyberPrekey,
-            where: k.user_id == ^_user_id,
+            where: k.user_id == ^user_id,
             where: k.is_current == true
           )
           |> Repo.update_all(set: [is_current: false])
 
           attrs = %{
-            user_id: _user_id,
+            user_id: user_id,
+            identity_key_id: identity_key_id,
             public_key: public_key,
             signature: signature,
             key_id: kyber_key_id,

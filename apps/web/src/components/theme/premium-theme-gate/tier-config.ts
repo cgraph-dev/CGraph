@@ -4,7 +4,7 @@ import { SparklesIcon } from '@heroicons/react/24/outline';
 export const tierHierarchy = {
   free: 0,
   premium: 1,
-  elite: 2,
+  enterprise: 2,
 } as const;
 
 export const tierConfig = {
@@ -22,8 +22,8 @@ export const tierConfig = {
     borderColor: 'border-amber-500',
     icon: StarIcon,
   },
-  elite: {
-    label: 'Elite',
+  enterprise: {
+    label: 'Enterprise',
     color: 'text-purple-400',
     bgColor: 'bg-gradient-to-r from-purple-600 to-pink-500',
     borderColor: 'border-purple-500',
@@ -31,4 +31,4 @@ export const tierConfig = {
   },
 } as const;
 
-export type PremiumTier = 'free' | 'premium' | 'elite';
+export type PremiumTier = 'free' | 'premium' | 'enterprise';

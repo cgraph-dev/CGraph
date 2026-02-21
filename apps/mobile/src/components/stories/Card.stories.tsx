@@ -1,25 +1,20 @@
 /**
  * Card Component Stories for React Native/Expo
- * 
+ *
  * Showcases the Card component with various content layouts.
- * 
+ *
  * @since v0.7.31
  */
 import React from 'react';
 import { View, Text } from 'react-native';
 import type { Meta, StoryObj } from '@storybook/react';
 import Card from '../Card';
-import { ThemeProvider } from '../../contexts/ThemeContext';
 
 /**
- * Wrapper to provide theme context
+ * Wrapper providing layout for stories
  */
 const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ gap: 16 }}>
-      {children}
-    </View>
-  </ThemeProvider>
+  <View style={{ gap: 16 }}>{children}</View>
 );
 
 const meta: Meta<typeof Card> = {
@@ -43,9 +38,7 @@ type Story = StoryObj<typeof Card>;
 export const Default: Story = {
   args: {
     children: (
-      <Text style={{ fontSize: 16, color: '#333' }}>
-        This is a simple card with some content.
-      </Text>
+      <Text style={{ fontSize: 16, color: '#333' }}>This is a simple card with some content.</Text>
     ),
   },
 };
@@ -74,11 +67,7 @@ export const WithHeaderAndBody: Story = {
 export const Elevated: Story = {
   args: {
     variant: 'elevated',
-    children: (
-      <Text style={{ fontSize: 16, color: '#333' }}>
-        Elevated card with shadow.
-      </Text>
-    ),
+    children: <Text style={{ fontSize: 16, color: '#333' }}>Elevated card with shadow.</Text>,
   },
 };
 
@@ -88,10 +77,6 @@ export const Elevated: Story = {
 export const Outlined: Story = {
   args: {
     variant: 'outlined',
-    children: (
-      <Text style={{ fontSize: 16, color: '#333' }}>
-        Outlined card with border.
-      </Text>
-    ),
+    children: <Text style={{ fontSize: 16, color: '#333' }}>Outlined card with border.</Text>,
   },
 };

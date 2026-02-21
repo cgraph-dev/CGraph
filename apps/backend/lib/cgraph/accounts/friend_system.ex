@@ -4,7 +4,7 @@ defmodule CGraph.Accounts.FriendSystem do
   """
 
   import Ecto.Query, warn: false
-  alias CGraph.Accounts.{Friendship, User}
+  alias CGraph.Accounts.{DeletedFriendship, Friendship, User}
   alias CGraph.Repo
 
   @doc "List friends with pagination."
@@ -112,7 +112,16 @@ defmodule CGraph.Accounts.FriendSystem do
              (f.user_id == ^target_user.id and f.friend_id == ^user.id),
       where: f.status == :accepted) do
       nil -> {:error, :not_friends}
-      friendship -> Repo.delete(friendship)
+      friendship ->
+        # Record the deletion for sync clients before hard-deleting
+        now = DateTime.utc_now() |> DateTime.truncate(:microsecond)
+        Repo.insert_all(DeletedFriendship, [
+          %{id: Ecto.UUID.generate(), user_id: user.id, friend_id: target_user.id,
+            deleted_at: now, inserted_at: now, updated_at: now},
+          %{id: Ecto.UUID.generate(), user_id: target_user.id, friend_id: user.id,
+            deleted_at: now, inserted_at: now, updated_at: now}
+        ])
+        Repo.delete(friendship)
     end
   end
 

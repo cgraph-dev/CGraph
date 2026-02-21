@@ -14,6 +14,7 @@ defmodule CGraph.Groups do
   """
 
   import Ecto.Query, warn: false
+  import CGraph.Query.SoftDelete
 
   alias CGraph.Groups.{AuditLog, Group, Member}
   alias CGraph.Groups.{Channels, Emojis, Invites, Members, Roles}
@@ -152,7 +153,7 @@ defmodule CGraph.Groups do
   @doc "Count the number of groups owned by a user."
   @spec count_user_groups(binary()) :: non_neg_integer()
   def count_user_groups(user_id) do
-    from(g in Group, where: g.owner_id == ^user_id and is_nil(g.deleted_at))
+    from(g in Group, where: g.owner_id == ^user_id and not_deleted(g))
     |> Repo.aggregate(:count, :id)
   end
 
@@ -426,4 +427,105 @@ defmodule CGraph.Groups do
   end
 
   defp get_channel_message_by_client_id(_, _), do: nil
+
+  # ===========================================================================
+  # Sync Query Functions (WatermelonDB pull)
+  # ===========================================================================
+
+  @doc """
+  List groups the user is a member of, updated since the given timestamp.
+  `since` is a millisecond Unix timestamp or nil for full sync.
+  """
+  def list_user_groups_since(user, since) do
+    user_id = user.id
+
+    query =
+      from g in Group,
+        join: m in Member, on: m.group_id == g.id,
+        where: m.user_id == ^user_id and is_nil(g.deleted_at) and m.is_banned == false,
+        select: g
+
+    query =
+      if since do
+        dt = DateTime.from_unix!(since, :millisecond)
+        from g in query, where: g.updated_at > ^dt
+      else
+        query
+      end
+
+    Repo.all(query)
+  end
+
+  @doc """
+  List IDs of groups the user has left or been removed from since the given timestamp.
+  Uses group deleted_at and membership timestamps.
+  """
+  def list_left_group_ids_since(user, since) do
+    user_id = user.id
+
+    # Groups that were deleted
+    deleted_query =
+      from g in Group,
+        join: m in Member, on: m.group_id == g.id,
+        where: m.user_id == ^user_id and not is_nil(g.deleted_at),
+        select: g.id
+
+    deleted_query =
+      if since do
+        dt = DateTime.from_unix!(since, :millisecond)
+        from g in deleted_query, where: g.deleted_at > ^dt
+      else
+        deleted_query
+      end
+
+    Repo.all(deleted_query)
+  end
+
+  @doc """
+  List channels in user's groups, updated since the given timestamp.
+  """
+  def list_user_channels_since(user, since) do
+    user_id = user.id
+    alias CGraph.Groups.Channel
+
+    query =
+      from ch in Channel,
+        join: m in Member, on: m.group_id == ch.group_id,
+        where: m.user_id == ^user_id and is_nil(ch.deleted_at) and m.is_banned == false,
+        select: ch
+
+    query =
+      if since do
+        dt = DateTime.from_unix!(since, :millisecond)
+        from ch in query, where: ch.updated_at > ^dt
+      else
+        query
+      end
+
+    Repo.all(query)
+  end
+
+  @doc """
+  List IDs of channels that were deleted since the given timestamp.
+  """
+  def list_deleted_channel_ids_since(user, since) do
+    user_id = user.id
+    alias CGraph.Groups.Channel
+
+    query =
+      from ch in Channel,
+        join: m in Member, on: m.group_id == ch.group_id,
+        where: m.user_id == ^user_id and not is_nil(ch.deleted_at),
+        select: ch.id
+
+    query =
+      if since do
+        dt = DateTime.from_unix!(since, :millisecond)
+        from ch in query, where: ch.deleted_at > ^dt
+      else
+        query
+      end
+
+    Repo.all(query)
+  end
 end

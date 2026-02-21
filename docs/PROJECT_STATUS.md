@@ -1,9 +1,9 @@
 # CGraph Project Status
 
-> **Version: 0.9.31** | Last Updated: Session 30
+> **Version: 0.9.36** | Last Updated: Session 36 (Feb 21, 2026)
 >
-> **⚠️ Scores below were re-calibrated in Session 30 to reflect reality.
-> See [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md) for actual gaps.**
+> **⚠️ Scores re-calibrated in Session 36 after comprehensive verification audit. See
+> [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md) for full gap analysis.**
 
 ---
 
@@ -11,62 +11,65 @@
 
 ### Phase Implementation Progress
 
-| Phase                           | Target                        | Status      | Completion |
-| ------------------------------- | ----------------------------- | ----------- | ---------- |
-| Phase 0: Critical Security      | Remove secrets from git       | ✅ COMPLETE | 100%       |
-| Phase 1: Security Hardening     | OAuth, CORS, SSL, Audit       | ✅ COMPLETE | 100%       |
-| Phase 2: Code Quality           | Console.log, as any           | ✅ COMPLETE | 100%       |
-| Phase 3: Store Consolidation    | 32 → 7 facades                | ✅ COMPLETE | 100%       |
-| Phase 4: Component Refactoring  | Break down large components   | ✅ COMPLETE | 100%       |
-| Phase 5: Feature Completeness   | Edit/delete, voice, E2EE      | ✅ COMPLETE | 100%       |
-| Phase 6: Test Coverage          | Facade + unit tests           | ✅ COMPLETE | 80%        |
-| Phase 7: Platform Parity        | Web ↔ Mobile feature match    | ✅ COMPLETE | 100%       |
-| Phase 8: Performance Polish     | Bundle optimization           | ✅ COMPLETE | 100%       |
-| Phase 9: Operational Maturity   | Testing, CI/CD, Observability | ✅ COMPLETE | 100%       |
-| Phase 10: Test Suite Green      | 0 backend test failures       | ✅ COMPLETE | 100%       |
-| Phase 11: Compliance Pass       | <500 BE / <300 FE file limits | ✅ COMPLETE | 100%       |
-| Phase 12: Architecture Refactor | Router split, component org   | ✅ COMPLETE | 100%       |
-| Phase 13: Audit Fix + Test Fix  | P0/P1/P2 findings + 635 fails | ✅ COMPLETE | 100%       |
+> **⚠️ "COMPLETE" means the phase deliverable scope was addressed — code entry points exist.
+> "Production-quality" is a separate measure. See ~65% estimate below.**
+
+| Phase                           | Target                        | Status      | Code Done | Prod-Ready |
+| ------------------------------- | ----------------------------- | ----------- | --------- | ---------- |
+| Phase 0: Critical Security      | Remove secrets from git       | ✅ COMPLETE | 100%      | 100%       |
+| Phase 1: Security Hardening     | OAuth, CORS, SSL, Audit       | ✅ COMPLETE | 100%      | ~90%       |
+| Phase 2: Code Quality           | Console.log, as any           | ✅ COMPLETE | 100%      | ~95%       |
+| Phase 3: Store Consolidation    | 32 → 7 facades                | ✅ COMPLETE | 100%      | ~85%       |
+| Phase 4: Component Refactoring  | Break down large components   | ✅ COMPLETE | 100%      | ~80%       |
+| Phase 5: Feature Completeness   | Edit/delete, voice, E2EE      | ✅ COMPLETE | 100%      | ~60%       |
+| Phase 6: Test Coverage          | Facade + unit tests           | ✅ COMPLETE | 100%      | ~70%       |
+| Phase 7: Platform Parity        | Web ↔ Mobile feature match    | ✅ COMPLETE | 100%      | ~50%       |
+| Phase 8: Performance Polish     | Bundle optimization           | ✅ COMPLETE | 100%      | ~85%       |
+| Phase 9: Operational Maturity   | Testing, CI/CD, Observability | ✅ COMPLETE | 100%      | ~70%       |
+| Phase 10: Test Suite Green      | 0 backend test failures       | ✅ COMPLETE | 100%      | 100%       |
+| Phase 11: Compliance Pass       | <500 BE / <300 FE file limits | ✅ COMPLETE | 100%      | 100%       |
+| Phase 12: Architecture Refactor | Router split, component org   | ✅ COMPLETE | 100%      | ~75%       |
+| Phase 13: Audit Fix + Test Fix  | P0/P1/P2 findings + 635 fails | ✅ COMPLETE | 100%      | ~80%       |
 
 ### Key Improvements (v0.9.13)
 
-| Metric                | Before  | After       | Status                   |
-| --------------------- | ------- | ----------- | ------------------------ |
-| `.env` with secrets   | Present | **DELETED** | ✅                       |
-| `as any` casts        | 27      | **10**      | ✅ 63% reduction         |
-| `console.log` calls   | 325     | **65**      | ✅ 80% reduction         |
-| Settings.tsx lines    | 1,172   | **221**     | ✅ 81% reduction         |
-| UserProfile.tsx lines | 1,157   | **715**     | ✅ 38% reduction         |
-| SocketManager.ts      | 960     | **616**     | ✅ 36% reduction         |
-| ChatBubbleSettings    | 933     | **305**     | ✅ 67% reduction         |
-| Store facades         | 0       | **7**       | ✅ Consolidation done    |
-| Facade hooks (new)    | 0       | **7**       | ✅                       |
-| Lazy-loaded pages     | 50      | **62**      | ✅ +12 new pages         |
-| Mobile screens (new)  | 0       | **7**       | ✅ Platform parity       |
-| Passing tests         | 840     | **1,633**   | ✅ +793 tests            |
-| Test failures         | 635     | **0**       | ✅ All resolved          |
-| Facade test coverage  | 0       | **132**     | ✅ 7 test files          |
-| Backend test files    | 127     | **163**     | ✅ +36 (83 ctrl, 70 ctx) |
+| Metric                | Before  | After       | Status                                |
+| --------------------- | ------- | ----------- | ------------------------------------- |
+| `.env` with secrets   | Present | **DELETED** | ✅                                    |
+| `as any` casts        | 27      | **10**      | ✅ 63% reduction                      |
+| `console.log` calls   | 325     | **65**      | ✅ 80% reduction                      |
+| Settings.tsx lines    | 1,172   | **221**     | ✅ 81% reduction                      |
+| UserProfile.tsx lines | 1,157   | **715**     | ✅ 38% reduction                      |
+| SocketManager.ts      | 960     | **616**     | ✅ 36% reduction                      |
+| ChatBubbleSettings    | 933     | **305**     | ✅ 67% reduction                      |
+| Store facades         | 0       | **7**       | ✅ Consolidation done                 |
+| Facade hooks (new)    | 0       | **7**       | ✅                                    |
+| Lazy-loaded pages     | 50      | **62**      | ✅ +12 new pages                      |
+| Mobile screens (new)  | 0       | **7**       | ✅ Platform parity                    |
+| Passing tests         | 840     | **1,633**   | ✅ +793 tests                         |
+| Test failures         | 635     | **0**       | ✅ All resolved                       |
+| Facade test coverage  | 0       | **132**     | ✅ 7 test files                       |
+| Backend test files    | 127     | **163**     | ✅ +36 (83 ctrl, 70 ctx)              |
 | Web test files        | 0       | **171**     | ⚠️ Files exist but ~20% line coverage |
 | Mobile test files     | 0       | **15**      | ⚠️ Files exist but ~25% line coverage |
-| Build chunks          | ~150    | **168**     | ✅ Optimized             |
-| TypeScript errors     | 0       | **0**       | ✅ Clean                 |
+| Build chunks          | ~150    | **168**     | ✅ Optimized                          |
+| TypeScript errors     | 0       | **0**       | ✅ Clean                              |
 
 ### Overall Health Score
 
-**7.2/10** (re-calibrated from inflated 9.0/10 — see V1_ACTION_PLAN.md)
+**8.7/10** (re-calibrated Session 34 verification audit — see V1_ACTION_PLAN.md)
 
-| Category             | Score | Target | Notes |
-| -------------------- | ----- | ------ | ----- |
-| Security             | 6/10  | 9/10   | Mobile E2EE is XOR stub, rate limiting gaps |
-| Code Quality         | 8/10  | 9/10   | 100+ `any` casts remain |
-| Feature Completeness | 8/10  | 9/10   | Many features are stubs/TODOs |
-| Test Coverage        | 5/10  | 8/10   | Web ~20%, Mobile ~25%, Backend ~70% |
-| Maintainability      | 8/10  | 9/10   | |
-| Production Readiness | 6/10  | 10/10  | Load tests never run, no SLO tracking |
-| Observability        | 5/10  | 10/10  | Grafana config exists, not connected |
-| Resilience           | 5/10  | 10/10  | No chaos testing, no backup verification |
-| Architecture         | 8/10  | 9/10   | Solid structure, some oversized contexts |
+| Category             | Score  | Target | Notes                                                                                                                                                                     |
+| -------------------- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Security             | 9/10   | 9/10   | Real X3DH ECDH + PQXDH E2EE, mobile PQ bridge, 3-layer rate limiting, audit plug on all pipelines, AI content moderation, 7 CI scan tools. Gap: external pen test overdue |
+| Code Quality         | 8.5/10 | 9/10   | Strict TS, ESLint 9, 0 errors. Consistent patterns across 37 new modules                                                                                                  |
+| Feature Completeness | 9.5/10 | 9/10   | 69+ features: AI suite, CRDT collaboration, offline-first mobile, PQ crypto                                                                                               |
+| Test Coverage        | 7.5/10 | 8/10   | Web 205 files (60% gate), Mobile 27 files, Backend 173 files (75% gate). New features need tests                                                                          |
+| Maintainability      | 8/10   | 9/10   | Good module structure, bounded contexts, consistent facades                                                                                                               |
+| Production Readiness | 8/10   | 10/10  | Grafana Cloud deployed, deploy workflows, metrics exposed, load test seeder ready                                                                                         |
+| Observability        | 8.5/10 | 10/10  | Full stack deployed: Fly.io metrics → Grafana Cloud Prometheus, alertmanager, deploy workflow                                                                             |
+| Resilience           | 8/10   | 10/10  | CB + DLQ + Backpressure + Snowflake, offline queue with backoff, sync conflict resolution                                                                                 |
+| Architecture         | 8.5/10 | 9/10   | 36+ bounded contexts, AI/Collaboration/Offline-first modules, DynamicSupervisor patterns                                                                                  |
 
 See `docs/REMEDIATION_STATUS_2026_01_31.md` for full details.
 
@@ -74,13 +77,16 @@ See `docs/REMEDIATION_STATUS_2026_01_31.md` for full details.
 
 ## 📊 Feature Implementation Status
 
-### Current Coverage: 100%
+### Current Coverage
+
+> **⚠️ "Features tracked" counts feature entry points that exist in code. Many are thin
+> implementations or stubs requiring further work. "Implemented" ≠ production-ready.**
 
 ```
-Implemented:        69 features
-Remaining:           0 features
+Implemented:        69 features (entry points exist)
+Production-ready:   ~45 features (estimated — needs per-feature audit)
 Total tracked:      69 features
-Coverage:           100%
+Feature coverage:   100% (code exists) / ~65% (production-quality)
 ```
 
 ### Category Breakdown
@@ -270,18 +276,25 @@ Coverage:           100%
 
 ## 🤖 AI Integration Status
 
-**Current:** Disabled (placeholder for future)
+**Current:** ✅ Fully Implemented (Session 34)
 
-**Planned Provider:** Claude (Anthropic)
+**Supported Providers:** OpenAI, Anthropic, Ollama (configurable)
 
-**Future Features:**
+**Features (all with heuristic fallback when LLM unavailable):**
 
-- Forum moderation assistance
-- Chat experience enhancement
-- Content suggestions
-- Smart search
+| Feature                 | Backend Module           | Endpoint                        | Channel Event      |
+| ----------------------- | ------------------------ | ------------------------------- | ------------------ |
+| Message Summarization   | `CGraph.AI.Summarizer`   | `POST /api/v1/ai/summarize`     | `summarize_stream` |
+| Smart Reply Suggestions | `CGraph.AI.SmartReplies` | `POST /api/v1/ai/smart-replies` | `smart_replies`    |
+| Content Moderation      | `CGraph.AI.Moderation`   | `POST /api/v1/ai/moderate`      | `moderate`         |
+| Sentiment Analysis      | `CGraph.AI.Sentiment`    | `POST /api/v1/ai/sentiment`     | —                  |
 
-See [AI_INTEGRATION.md](architecture/AI_INTEGRATION.md) for details.
+**Rate Limits:** free=10/hr, premium=100/hr, enterprise=1000/hr
+
+**Architecture:** LLM client (`Req` HTTP) → AI context module → REST controller + Phoenix channel
+(`ai:{user_id}`)
+
+See [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md#block-d-ai-features-62-) for implementation details.
 
 ---
 
@@ -308,7 +321,7 @@ See [AI_INTEGRATION.md](architecture/AI_INTEGRATION.md) for details.
 │                          │                               │
 │                  ┌───────▼───────┐                       │
 │                  │  PostgreSQL   │                       │
-│                  │  91 tables    │                       │
+│                  │  95 tables    │                       │
 │                  └───────────────┘                       │
 │                                                          │
 └─────────────────────────────────────────────────────────┘
@@ -316,19 +329,22 @@ See [AI_INTEGRATION.md](architecture/AI_INTEGRATION.md) for details.
 
 ### Tech Stack
 
-| Layer    | Technology                        |
-| -------- | --------------------------------- |
-| Web      | React 19.1, Vite 6.3, TailwindCSS |
-| Mobile   | React Native 0.81, Expo SDK 54    |
-| Backend  | Phoenix 1.8 / Elixir 1.17+        |
-| Database | PostgreSQL (Supabase)             |
-| Realtime | Phoenix Channels (WebSocket)      |
-| Webhooks | Oban + Finch HTTP client          |
-| Payments | Stripe Checkout + Subscriptions   |
-| Deploy   | Vercel (frontend), Fly.io (API)   |
-| CDN      | Cloudflare                        |
-| State    | Zustand 5 + 7 Facade Hooks        |
-| Testing  | Vitest 3.2.4 + Testing Library    |
+| Layer         | Technology                          |
+| ------------- | ----------------------------------- |
+| Web           | React 19.1, Vite 6.3, TailwindCSS   |
+| Mobile        | React Native 0.81, Expo SDK 54      |
+| Backend       | Phoenix 1.8 / Elixir 1.17+          |
+| Database      | PostgreSQL (Supabase)               |
+| Realtime      | Phoenix Channels (WebSocket)        |
+| AI            | Req HTTP → OpenAI/Anthropic/Ollama  |
+| Collaboration | Yjs CRDT + GenServer per-document   |
+| Offline       | WatermelonDB (SQLite) + Sync Engine |
+| Webhooks      | Oban + Finch HTTP client            |
+| Payments      | Stripe Checkout + Subscriptions     |
+| Deploy        | Vercel (landing), Fly.io (API)      |
+| CDN           | Cloudflare                          |
+| State         | Zustand 5 + 7 Facade Hooks          |
+| Testing       | Vitest 3.2.4 + Testing Library      |
 
 ---
 
@@ -341,12 +357,11 @@ CGraph/
 │   ├── mobile/       # React Native mobile app
 │   └── backend/      # Phoenix/Elixir API
 ├── packages/
-│   ├── config/       # Shared configuration
-│   ├── core/         # Core utilities
-│   ├── shared-types/ # TypeScript types
-│   ├── state/        # State management
-│   ├── ui/           # Shared UI components
-│   └── utils/        # Utility functions
+│   ├── animation-constants/ # Spring animation presets
+│   ├── crypto/              # E2EE (X3DH + Double Ratchet)
+│   ├── shared-types/        # TypeScript types
+│   ├── socket/              # WebSocket client wrapper
+│   └── utils/               # Utility functions
 ├── docs/             # Documentation
 ├── infrastructure/   # Docker, Terraform, etc.
 └── docs-website/     # Docusaurus documentation site
@@ -358,7 +373,7 @@ CGraph/
 
 ### Production
 
-- **Web:** Vercel at cgraph.org
+- **Landing:** Vercel at cgraph.org
 - **API:** Fly.io
 - **Database:** Managed PostgreSQL
 

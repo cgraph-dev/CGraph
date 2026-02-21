@@ -8,13 +8,15 @@ defmodule CGraph.Forums.Members do
   import Ecto.Query, warn: false
 
   alias CGraph.Forums.{Ban, Forum, ForumMember, Moderator, Subscription}
+  alias CGraph.Forums.CursorPagination
+  alias CGraph.Pagination
   alias CGraph.Repo
 
   @doc """
   Lists members of a forum.
   """
   def list_members(forum_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
+    cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 50)
     role = Keyword.get(opts, :role)
     search = Keyword.get(opts, :search)
@@ -28,15 +30,11 @@ defmodule CGraph.Forums.Members do
     |> maybe_filter_by_role(role)
     |> maybe_search(search)
     |> order_by([m], desc: m.joined_at)
+    |> CursorPagination.apply_simple_cursor_desc(cursor, :joined_at)
 
-    total = Repo.aggregate(query, :count, :id)
+    {members, has_next} = Pagination.fetch_page(query, per_page)
 
-    members = query
-    |> limit(^per_page)
-    |> offset(^((page - 1) * per_page))
-    |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
+    meta = build_member_meta(members, has_next, per_page)
     {members, meta}
   end
 
@@ -301,5 +299,18 @@ defmodule CGraph.Forums.Members do
   defp decrement_member_count(forum_id) do
     from(f in Forum, where: f.id == ^forum_id)
     |> Repo.update_all(inc: [member_count: -1])
+  end
+
+  defp build_member_meta([], _has_next, per_page) do
+    %{per_page: per_page, has_next_page: false, next_cursor: nil}
+  end
+
+  defp build_member_meta(members, has_next, per_page) do
+    next_cursor = if has_next do
+      last = List.last(members)
+      Pagination.encode_cursor_data(%{v: last.joined_at, id: last.id})
+    end
+
+    %{per_page: per_page, has_next_page: has_next, next_cursor: next_cursor}
   end
 end

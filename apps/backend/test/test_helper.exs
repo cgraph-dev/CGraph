@@ -19,7 +19,6 @@ for mod <- [
   CGraph.FeatureFlags,
   CGraph.Events,
   CGraph.ErrorReporter,
-  CGraph.ConnectionPool,
   CGraph.Idempotency,
   CGraph.Metrics,
   CGraph.Security.TokenBlacklist

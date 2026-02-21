@@ -1,14 +1,13 @@
 /**
- * SettingsContext — BACKWARD-COMPATIBLE SHIM
+ * SettingsContext — Re-export layer from Zustand stores.
  *
- * All state has moved to `stores/settingsStore.ts` (Zustand).
+ * All state lives in `stores/settingsStore.ts` (Zustand).
  * This file re-exports the same API so existing consumers keep working.
  * New code should import directly from `@/stores` or `@/stores/settingsStore`.
  *
  * @deprecated Import from '@/stores' or '@/stores/settingsStore' instead.
  */
 
-import React from 'react';
 import { useSettingsStore } from '../stores/settingsStore';
 
 // Re-export types for backward compatibility
@@ -27,9 +26,7 @@ export type {
   UserSettings,
 } from '../stores/settingsStore';
 
-export {
-  DEFAULT_SETTINGS,
-} from '../stores/settingsStore';
+export { DEFAULT_SETTINGS } from '../stores/settingsStore';
 
 // Keep old default exports for any files importing them
 const DEFAULT_NOTIFICATION_SETTINGS = {
@@ -90,12 +87,3 @@ export function useSettings() {
     clearError,
   };
 }
-
-/**
- * SettingsProvider — no-op wrapper for backward compatibility.
- * The store hydrates itself and syncs via SettingsSync in App.tsx.
- */
-export function SettingsProvider({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
-}
-

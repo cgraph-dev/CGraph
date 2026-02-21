@@ -11,7 +11,7 @@ import React from 'react';
 import { render, waitFor, act, fireEvent } from '@testing-library/react-native';
 import { Text, Pressable } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import { AuthProvider, useAuth } from '../AuthContext';
+import { useAuth } from '../AuthContext';
 import api from '../../lib/api';
 
 // Mock SecureStore
@@ -41,16 +41,8 @@ jest.mock('../../lib/socket', () => ({
 
 // Test component that uses auth context
 const AuthConsumer: React.FC = () => {
-  const {
-    user,
-    token,
-    isAuthenticated,
-    isLoading,
-    login,
-    register,
-    logout,
-    updateUser,
-  } = useAuth();
+  const { user, token, isAuthenticated, isLoading, login, register, logout, updateUser } =
+    useAuth();
 
   return (
     <>
@@ -59,10 +51,7 @@ const AuthConsumer: React.FC = () => {
       <Text testID="user-email">{user?.email || 'no-user'}</Text>
       <Text testID="user-id">{user?.id || 'no-id'}</Text>
       <Text testID="token">{token || 'no-token'}</Text>
-      <Pressable
-        testID="login-button"
-        onPress={() => login('test@example.com', 'password123')}
-      >
+      <Pressable testID="login-button" onPress={() => login('test@example.com', 'password123')}>
         <Text>Login</Text>
       </Pressable>
       <Pressable
@@ -110,11 +99,7 @@ describe('AuthContext', () => {
 
   describe('initial state', () => {
     it('starts with loading state', async () => {
-      const { getByTestId } = render(
-        <AuthProvider>
-          <AuthConsumer />
-        </AuthProvider>
-      );
+      const { getByTestId } = render(<AuthConsumer />);
 
       // Initially loading
       expect(getByTestId('is-loading').props.children).toBe('true');
@@ -125,11 +110,7 @@ describe('AuthContext', () => {
     });
 
     it('starts unauthenticated when no stored token', async () => {
-      const { getByTestId } = render(
-        <AuthProvider>
-          <AuthConsumer />
-        </AuthProvider>
-      );
+      const { getByTestId } = render(<AuthConsumer />);
 
       await waitFor(() => {
         expect(getByTestId('is-authenticated').props.children).toBe('false');
@@ -153,11 +134,7 @@ describe('AuthContext', () => {
         },
       });
 
-      const { getByTestId } = render(
-        <AuthProvider>
-          <AuthConsumer />
-        </AuthProvider>
-      );
+      const { getByTestId } = render(<AuthConsumer />);
 
       await waitFor(() => {
         expect(getByTestId('is-loading').props.children).toBe('false');
@@ -178,15 +155,9 @@ describe('AuthContext', () => {
 
   describe('error handling', () => {
     it('handles SecureStore read errors', async () => {
-      (SecureStore.getItemAsync as jest.Mock).mockRejectedValue(
-        new Error('Storage error')
-      );
+      (SecureStore.getItemAsync as jest.Mock).mockRejectedValue(new Error('Storage error'));
 
-      const { getByTestId } = render(
-        <AuthProvider>
-          <AuthConsumer />
-        </AuthProvider>
-      );
+      const { getByTestId } = render(<AuthConsumer />);
 
       // Should still complete loading and be unauthenticated
       await waitFor(() => {
@@ -194,17 +165,5 @@ describe('AuthContext', () => {
         expect(getByTestId('is-authenticated').props.children).toBe('false');
       });
     });
-  });
-});
-
-describe('useAuth hook', () => {
-  it('throws error when used outside provider', () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-    expect(() => {
-      render(<AuthConsumer />);
-    }).toThrow('useAuth must be used within an AuthProvider');
-
-    consoleSpy.mockRestore();
   });
 });

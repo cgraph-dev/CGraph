@@ -4,6 +4,7 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
   """
 
   import Ecto.Query, warn: false, except: [update: 2]
+  import CGraph.Query.SoftDelete
 
   alias CGraph.Cache
   alias CGraph.Forums.Thread
@@ -46,7 +47,7 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
     base_query =
       from t in Thread,
         where: t.board_id == ^board_id,
-        where: is_nil(t.deleted_at),
+        where: not_deleted(t),
         preload: [:author, :last_post_author]
 
     # Sticky threads always come first
@@ -79,7 +80,7 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
 
     base_query =
       from t in Thread,
-        where: is_nil(t.deleted_at),
+        where: not_deleted(t),
         order_by: [desc: t.last_post_at],
         limit: ^limit,
         preload: [:author, :board, :last_post_author]
@@ -115,7 +116,7 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
 
     base_query =
       from t in Thread,
-        where: is_nil(t.deleted_at),
+        where: not_deleted(t),
         where: t.inserted_at > ^since,
         # Hotness score: views + (replies * 10) + (upvotes * 5)
         order_by: [desc: fragment("? + (? * 10) + (? * 5)", t.view_count, t.reply_count, t.upvote_count)],
@@ -229,7 +230,7 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
 
     base_query =
       from t in Thread,
-        where: is_nil(t.deleted_at),
+        where: not_deleted(t),
         where: ilike(t.title, ^search_query) or ilike(t.content, ^search_query),
         order_by: [desc: t.inserted_at],
         limit: ^limit,

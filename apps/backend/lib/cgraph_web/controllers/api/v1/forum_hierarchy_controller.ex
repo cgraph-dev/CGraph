@@ -15,6 +15,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
   alias CGraph.Repo
 
   import Ecto.Query
+  import CGraph.Query.SoftDelete
 
   action_fallback CGraphWeb.FallbackController
 
@@ -28,7 +29,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
 
     query =
       from f in Forum,
-        where: is_nil(f.deleted_at),
+        where: not_deleted(f),
         where: f.depth <= ^max_depth,
         order_by: [asc: f.depth, asc: f.display_order, asc: f.name]
 
@@ -67,7 +68,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
       query =
         from f in Forum,
           where: like(f.path, ^(forum.path <> "%")),
-          where: is_nil(f.deleted_at),
+          where: not_deleted(f),
           where: f.depth <= ^abs_max_depth,
           order_by: [asc: f.depth, asc: f.display_order, asc: f.name]
 
@@ -305,7 +306,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
     siblings =
       from(f in Forum,
         where: f.parent_forum_id == ^parent_id or (is_nil(f.parent_forum_id) and is_nil(^parent_id)),
-        where: is_nil(f.deleted_at),
+        where: not_deleted(f),
         where: f.id != ^forum.id,
         order_by: [asc: f.display_order, asc: f.name]
       )
@@ -355,7 +356,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
 
   defp get_next_display_order(nil) do
     from(f in Forum,
-      where: is_nil(f.parent_forum_id) and is_nil(f.deleted_at),
+      where: is_nil(f.parent_forum_id) and not_deleted(f),
       select: max(f.display_order)
     )
     |> Repo.one()
@@ -365,7 +366,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
 
   defp get_next_display_order(parent_id) do
     from(f in Forum,
-      where: f.parent_forum_id == ^parent_id and is_nil(f.deleted_at),
+      where: f.parent_forum_id == ^parent_id and not_deleted(f),
       select: max(f.display_order)
     )
     |> Repo.one()

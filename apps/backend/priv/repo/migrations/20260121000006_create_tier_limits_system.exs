@@ -1,12 +1,12 @@
 defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
   @moduledoc """
   Creates a comprehensive tier limits system for subscription tiers.
-  
+
   This migration establishes:
   - tier_limits: Configurable limits per subscription tier
   - tier_features: Feature flags per tier
   - user_tier_overrides: Per-user limit overrides
-  
+
   Designed for extensibility with AI moderation and future features.
   """
   use Ecto.Migration
@@ -17,18 +17,18 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
     # ==========================================================================
     create table(:tier_limits, primary_key: false) do
       add :id, :binary_id, primary_key: true
-      add :tier, :string, null: false  # free, starter, pro, business, enterprise
+      add :tier, :string, null: false  # free, premium, enterprise
       add :display_name, :string, null: false
       add :description, :text
       add :is_active, :boolean, default: true
       add :position, :integer, default: 0  # For ordering in UI
-      
+
       # Pricing (monthly in cents, for display purposes)
       add :price_monthly_cents, :integer, default: 0
       add :price_yearly_cents, :integer, default: 0
       add :stripe_price_id_monthly, :string
       add :stripe_price_id_yearly, :string
-      
+
       # =======================================================================
       # Forum Limits
       # =======================================================================
@@ -38,7 +38,7 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :max_threads_per_day, :integer, default: 10
       add :max_posts_per_day, :integer, default: 100
       add :max_comments_per_hour, :integer, default: 30
-      
+
       # Forum Customization
       add :custom_css_enabled, :boolean, default: false
       add :custom_themes_enabled, :boolean, default: false
@@ -47,7 +47,7 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :custom_domain_enabled, :boolean, default: false
       add :forum_analytics_enabled, :boolean, default: false
       add :advanced_permissions_enabled, :boolean, default: false
-      
+
       # =======================================================================
       # Storage Limits
       # =======================================================================
@@ -59,7 +59,7 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :allowed_file_types, {:array, :string}, default: ["image/jpeg", "image/png", "image/gif", "image/webp"]
       add :video_uploads_enabled, :boolean, default: false
       add :max_video_duration_seconds, :integer, default: 0
-      
+
       # =======================================================================
       # Messaging Limits
       # =======================================================================
@@ -72,14 +72,14 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :video_calls_enabled, :boolean, default: false
       add :max_call_participants, :integer, default: 2
       add :screen_sharing_enabled, :boolean, default: false
-      
+
       # =======================================================================
       # Social Limits
       # =======================================================================
       add :max_friends, :integer  # null = unlimited
       add :max_blocked_users, :integer, default: 100
       add :max_private_messages_per_day, :integer, default: 50
-      
+
       # =======================================================================
       # Gamification Limits
       # =======================================================================
@@ -90,7 +90,7 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :max_daily_trades, :integer, default: 0
       add :cosmetics_enabled, :boolean, default: true
       add :premium_cosmetics_enabled, :boolean, default: false
-      
+
       # =======================================================================
       # AI Features (Future - v1.1+)
       # =======================================================================
@@ -101,7 +101,7 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :ai_suggestions_requests_per_day, :integer, default: 0
       add :ai_search_enabled, :boolean, default: false
       add :ai_custom_model_enabled, :boolean, default: false  # Enterprise: custom fine-tuned models
-      
+
       # =======================================================================
       # Support & Priority
       # =======================================================================
@@ -113,14 +113,14 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :max_webhooks, :integer, default: 0
       add :priority_queue, :boolean, default: false  # Priority processing
       add :early_access, :boolean, default: false  # Access to beta features
-      
+
       # =======================================================================
       # Rate Limits
       # =======================================================================
       add :rate_limit_multiplier, :float, default: 1.0  # Multiplier for all rate limits
       add :concurrent_sessions, :integer, default: 3
       add :max_devices, :integer, default: 5
-      
+
       # =======================================================================
       # Branding
       # =======================================================================
@@ -128,7 +128,7 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :badge_color, :string  # Color for tier badge
       add :profile_frame_enabled, :boolean, default: false
       add :exclusive_themes, {:array, :string}, default: []
-      
+
       timestamps(type: :utc_datetime_usec)
     end
 
@@ -146,7 +146,7 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :enabled, :boolean, default: true
       add :config, :map, default: %{}  # Feature-specific configuration
       add :description, :string
-      
+
       timestamps(type: :utc_datetime_usec)
     end
 
@@ -164,7 +164,7 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :reason, :string  # Why this override was granted
       add :granted_by_id, references(:users, type: :binary_id, on_delete: :nilify_all)
       add :expires_at, :utc_datetime_usec  # null = permanent
-      
+
       timestamps(type: :utc_datetime_usec)
     end
 
@@ -182,7 +182,7 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :content_id, :binary_id, null: false
       add :content_text, :text  # Cached content for AI analysis
       add :content_metadata, :map, default: %{}
-      
+
       # AI Analysis Results
       add :ai_model, :string  # e.g., "claude-3-haiku-20240307"
       add :ai_analysis, :map, default: %{}  # Full AI response
@@ -191,18 +191,18 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :severity, :string  # low, medium, high, critical
       add :suggested_action, :string  # approve, flag, hide, remove, ban
       add :auto_actioned, :boolean, default: false
-      
+
       # Human Review
       add :status, :string, default: "pending"  # pending, approved, rejected, escalated
       add :reviewed_by_id, references(:users, type: :binary_id, on_delete: :nilify_all)
       add :reviewed_at, :utc_datetime_usec
       add :review_notes, :text
       add :final_action, :string
-      
+
       # Tracking
       add :reported_count, :integer, default: 0
       add :false_positive, :boolean  # For AI training feedback
-      
+
       timestamps(type: :utc_datetime_usec)
     end
 
@@ -217,17 +217,17 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
     create table(:ai_moderation_settings, primary_key: false) do
       add :id, :binary_id, primary_key: true
       add :forum_id, references(:forums, type: :binary_id, on_delete: :delete_all), null: false
-      
+
       # Enable/Disable
       add :enabled, :boolean, default: false
       add :auto_moderation_enabled, :boolean, default: false
-      
+
       # Thresholds (0.0 - 1.0)
       add :spam_threshold, :float, default: 0.9
       add :toxicity_threshold, :float, default: 0.85
       add :nsfw_threshold, :float, default: 0.95
       add :low_quality_threshold, :float, default: 0.7
-      
+
       # Auto-actions
       add :auto_remove_spam, :boolean, default: true
       add :auto_remove_spam_threshold, :float, default: 0.95
@@ -235,16 +235,16 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :auto_hide_toxicity_threshold, :float, default: 0.9
       add :auto_flag_nsfw, :boolean, default: true
       add :notify_on_auto_action, :boolean, default: true
-      
+
       # Exemptions
       add :exempt_roles, {:array, :string}, default: ["admin", "moderator"]
       add :exempt_karma_threshold, :integer, default: 1000
-      
+
       # Custom Rules
       add :custom_banned_words, {:array, :string}, default: []
       add :custom_allowed_words, {:array, :string}, default: []
       add :custom_rules, :map, default: %{}
-      
+
       timestamps(type: :utc_datetime_usec)
     end
 
@@ -257,17 +257,17 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
       add :id, :binary_id, primary_key: true
       add :forum_id, references(:forums, type: :binary_id, on_delete: :delete_all)
       add :moderation_queue_id, references(:ai_moderation_queue, type: :binary_id, on_delete: :delete_all)
-      
+
       add :content_text, :text, null: false
       add :content_type, :string, null: false
       add :ai_prediction, :map  # What AI predicted
       add :human_decision, :string, null: false  # What human decided
       add :was_correct, :boolean  # Did AI match human decision?
       add :feedback_notes, :text
-      
+
       add :used_for_training, :boolean, default: false
       add :training_batch_id, :string
-      
+
       timestamps(type: :utc_datetime_usec)
     end
 
@@ -283,7 +283,7 @@ defmodule CGraph.Repo.Migrations.CreateTierLimitsSystem do
 
   defp seed_default_tiers do
     now = DateTime.utc_now() |> DateTime.truncate(:microsecond) |> DateTime.to_iso8601()
-    
+
     """
     INSERT INTO tier_limits (
       id, tier, display_name, description, is_active, position,

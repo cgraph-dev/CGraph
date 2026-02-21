@@ -28,6 +28,7 @@ defmodule CGraph.Search do
 
   import Ecto.Query, warn: false
   require Logger
+  import CGraph.Query.SoftDelete
 
   alias CGraph.Accounts.User
   alias CGraph.Forums.Post
@@ -70,7 +71,7 @@ defmodule CGraph.Search do
   defp fetch_users_by_ids(user_ids, current_user) do
     from(u in User,
       where: u.id in ^user_ids,
-      where: is_nil(u.deleted_at) and is_nil(u.banned_at)
+      where: not_deleted(u) and is_nil(u.banned_at)
     )
     |> maybe_exclude_blocked(current_user)
     |> Repo.all()
@@ -99,7 +100,7 @@ defmodule CGraph.Search do
 
   defp build_user_id_query(user_id_num) do
     from u in User,
-      where: is_nil(u.deleted_at) and is_nil(u.banned_at),
+      where: not_deleted(u) and is_nil(u.banned_at),
       where: u.user_id == ^user_id_num,
       limit: 1
   end
@@ -112,7 +113,7 @@ defmodule CGraph.Search do
     # makes cursor pagination impractical. For PostgreSQL fallback search,
     # result sets are typically small (< 100) so offset risk is minimal.
     from u in User,
-      where: is_nil(u.deleted_at) and is_nil(u.banned_at),
+      where: not_deleted(u) and is_nil(u.banned_at),
       where: ilike(u.username, ^search_term) or
              ilike(u.display_name, ^search_term) or
              ilike(u.bio, ^search_term),
@@ -139,7 +140,7 @@ defmodule CGraph.Search do
   defp count_user_results(false, _users, query) do
     search_term = "%#{sanitize_query(query)}%"
     from(u in User,
-      where: is_nil(u.deleted_at) and is_nil(u.banned_at),
+      where: not_deleted(u) and is_nil(u.banned_at),
       where: ilike(u.username, ^search_term) or
              ilike(u.display_name, ^search_term) or
              ilike(u.bio, ^search_term),

@@ -1,13 +1,13 @@
 # CGraph Architecture Transformation Plan
 
-> **⚠️ ASPIRATIONAL DOCUMENT** — This document describes the *desired* end-state
-> architecture. Most items listed here are NOT yet implemented. Do not reference
-> this document as evidence of current capabilities. See
-> [CURRENT_STATE_DASHBOARD.md](CURRENT_STATE_DASHBOARD.md) for honest status.
+> **⚠️ ASPIRATIONAL DOCUMENT** — This document describes the _desired_ end-state architecture. Most
+> items listed here are NOT yet implemented. Do not reference this document as evidence of current
+> capabilities. See [CURRENT_STATE_DASHBOARD.md](CURRENT_STATE_DASHBOARD.md) for honest status.
 
 ## Mission: Outperform Meta, Google, and CGraph
 
-**Current Score: 4.8/10** | **Target Score: 10/10** | **Philosophy: BUILD, DON'T DELETE**
+**Current Score: 4.8/10 (as of Feb 4, 2026 audit — see SESSION_34+ for updated scores)** | **Target
+Score: 10/10** | **Philosophy: BUILD, DON'T DELETE**
 
 > **We don't delete code because it's hard. We implement it properly and connect it.**
 

@@ -1,25 +1,20 @@
 /**
  * EmptyState Component Stories for React Native/Expo
- * 
+ *
  * Showcases empty state messaging with icons and actions.
- * 
+ *
  * @since v0.7.31
  */
 import React from 'react';
 import { View } from 'react-native';
 import type { Meta, StoryObj } from '@storybook/react';
 import EmptyState from '../EmptyState';
-import { ThemeProvider } from '../../contexts/ThemeContext';
 
 /**
- * Wrapper to provide theme context
+ * Wrapper providing layout for stories
  */
 const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ minHeight: 300, justifyContent: 'center' }}>
-      {children}
-    </View>
-  </ThemeProvider>
+  <View style={{ minHeight: 300, justifyContent: 'center' }}>{children}</View>
 );
 
 const meta: Meta<typeof EmptyState> = {
@@ -67,7 +62,7 @@ export const WithAction: Story = {
     title: 'No friends yet',
     description: 'Add friends to start messaging.',
     actionText: 'Add Friends',
-    onAction: () => console.log('Add friends pressed'),
+    onAction: () => console.warn('Add friends pressed'),
   },
 };
 
@@ -89,8 +84,8 @@ export const ErrorState: Story = {
   args: {
     icon: 'alert-circle-outline',
     title: 'Something went wrong',
-    description: 'We couldn\'t load the content. Please try again.',
+    description: "We couldn't load the content. Please try again.",
     actionText: 'Retry',
-    onAction: () => console.log('Retry pressed'),
+    onAction: () => console.warn('Retry pressed'),
   },
 };

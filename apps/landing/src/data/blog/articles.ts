@@ -779,9 +779,10 @@ const SettingsPage = lazy(() =&gt; import('./modules/settings/pages/SettingsLayo
 
 <ul>
 <li><strong>@cgraph/shared-types</strong> — TypeScript interfaces used by both frontend and the Elixir API client</li>
-<li><strong>@cgraph/ui</strong> — Base UI components (buttons, inputs) with consistent styling</li>
+<li><strong>@cgraph/utils</strong> — Common utility functions shared across apps</li>
+<li><strong>@cgraph/crypto</strong> — E2EE Triple Ratchet / PQXDH encryption library</li>
+<li><strong>@cgraph/socket</strong> — WebSocket client for real-time communication</li>
 <li><strong>@cgraph/animation-constants</strong> — Spring configs and duration values for consistent motion</li>
-<li><strong>@cgraph/config</strong> — Shared environment configuration and feature flags</li>
 </ul>
 
 <p>Two apps, same monorepo. The landing site stays under 200KB, and the full app gets all the room it needs for crypto, state management, and real-time features.</p>

@@ -6,39 +6,37 @@ defmodule CGraph.Forums.Posts do
   """
 
   import Ecto.Query, warn: false
+  import CGraph.Query.SoftDelete
 
   alias CGraph.Forums.{Post, PostVote}
+  alias CGraph.Forums.CursorPagination
+  alias CGraph.Pagination
   alias CGraph.Repo
 
   @doc """
   Lists posts for a forum with pagination and sorting.
   """
   def list_posts(forum, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
+    cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 20)
     sort = Keyword.get(opts, :sort, "hot")
     category_id = Keyword.get(opts, :category_id)
     user = Keyword.get(opts, :user)
 
-    base_query = from(p in Post,
-      where: p.forum_id == ^forum.id,
-      where: is_nil(p.deleted_at),
-      preload: [:author, :category]
-    )
+    base_query = Post
+      |> exclude_deleted()
+      |> where([p], p.forum_id == ^forum.id)
+      |> preload([:author, :category])
 
     query = base_query
     |> maybe_filter_by_category(category_id)
     |> apply_sort(sort)
+    |> CursorPagination.apply_post_cursor(cursor, sort)
 
-    total = Repo.aggregate(query, :count, :id)
+    {posts, has_next} = Pagination.fetch_page(query, per_page)
+    posts = maybe_add_user_votes(posts, user)
 
-    posts = query
-    |> limit(^per_page)
-    |> offset(^((page - 1) * per_page))
-    |> Repo.all()
-    |> maybe_add_user_votes(user)
-
-    meta = %{page: page, per_page: per_page, total: total}
+    meta = CursorPagination.build_cursor_meta(posts, has_next, per_page, sort, :post)
     {posts, meta}
   end
 
@@ -46,7 +44,9 @@ defmodule CGraph.Forums.Posts do
   Gets a post by ID.
   """
   def get_post(post_id) do
-    query = from p in Post, where: p.id == ^post_id and is_nil(p.deleted_at)
+    query = Post
+      |> exclude_deleted()
+      |> where([p], p.id == ^post_id)
 
     case Repo.one(query) do
       nil -> {:error, :not_found}

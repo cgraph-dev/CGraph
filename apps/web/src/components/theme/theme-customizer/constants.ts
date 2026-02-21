@@ -38,8 +38,8 @@ export const AVATAR_BORDER_OPTIONS: AvatarBorderOption[] = [
   { value: 'fire', label: 'Fire', tier: 'premium' },
   { value: 'ice', label: 'Ice', tier: 'premium' },
   { value: 'electric', label: 'Electric', tier: 'premium' },
-  { value: 'legendary', label: 'Legendary', tier: 'elite' },
-  { value: 'mythic', label: 'Mythic', tier: 'elite' },
+  { value: 'legendary', label: 'Legendary', tier: 'enterprise' },
+  { value: 'mythic', label: 'Mythic', tier: 'enterprise' },
 ];
 
 // =============================================================================
@@ -54,7 +54,7 @@ export const BUBBLE_STYLE_OPTIONS: BubbleStyleOption[] = [
   { value: 'modern', label: 'Modern', tier: 'premium' },
   { value: 'retro', label: 'Retro', tier: 'premium' },
   { value: 'bubble', label: 'Bubble', tier: 'premium' },
-  { value: 'glassmorphism', label: 'Glass', tier: 'elite' },
+  { value: 'glassmorphism', label: 'Glass', tier: 'enterprise' },
 ];
 
 // =============================================================================
@@ -75,13 +75,13 @@ export const EFFECT_OPTIONS: EffectOption[] = [
     value: 'cyberpunk',
     label: 'Cyberpunk',
     description: 'Futuristic tech aesthetic',
-    tier: 'elite',
+    tier: 'enterprise',
   },
   {
     value: 'holographic',
     label: 'Holographic',
     description: 'Rainbow light effects',
-    tier: 'elite',
+    tier: 'enterprise',
   },
 ];
 

@@ -1,25 +1,22 @@
 /**
  * Avatar Component Stories for React Native/Expo
- * 
+ *
  * Showcases the Avatar component with all sizes and states.
- * 
+ *
  * @since v0.7.31
  */
 import React from 'react';
 import { View } from 'react-native';
 import type { Meta, StoryObj } from '@storybook/react';
 import Avatar from '../Avatar';
-import { ThemeProvider } from '../../contexts/ThemeContext';
 
 /**
- * Wrapper to provide theme context
+ * Wrapper providing layout for stories
  */
 const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-      {children}
-    </View>
-  </ThemeProvider>
+  <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+    {children}
+  </View>
 );
 
 const meta: Meta<typeof Avatar> = {

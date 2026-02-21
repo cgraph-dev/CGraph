@@ -87,7 +87,7 @@ defmodule CGraphWeb.API.V1.TierController do
   @doc """
   Compares two tiers for upgrade/downgrade UI.
 
-  GET /api/v1/tiers/compare?from=free&to=pro
+  GET /api/v1/tiers/compare?from=free&to=premium
 
   Response:
     - 200: Comparison of limits between tiers

@@ -6,39 +6,37 @@ defmodule CGraph.Forums.Comments do
   """
 
   import Ecto.Query, warn: false
+  import CGraph.Query.SoftDelete
 
   alias CGraph.Forums.{Comment, Post, Vote}
+  alias CGraph.Forums.CursorPagination
+  alias CGraph.Pagination
   alias CGraph.Repo
 
   @doc """
   Lists comments for a post.
   """
   def list_comments(post, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
+    cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 50)
     sort = Keyword.get(opts, :sort, "top")
     user = Keyword.get(opts, :user)
     parent_id = Keyword.get(opts, :parent_id)
 
-    base_query = from(c in Comment,
-      where: c.post_id == ^post.id,
-      where: is_nil(c.deleted_at),
-      preload: [:author]
-    )
+    base_query = Comment
+      |> exclude_deleted()
+      |> where([c], c.post_id == ^post.id)
+      |> preload([:author])
 
     query = base_query
     |> filter_by_parent(parent_id)
     |> apply_sort(sort)
+    |> CursorPagination.apply_comment_cursor(cursor, sort)
 
-    total = Repo.aggregate(query, :count, :id)
+    {comments, has_next} = Pagination.fetch_page(query, per_page)
+    comments = maybe_add_user_votes(comments, user)
 
-    comments = query
-    |> limit(^per_page)
-    |> offset(^((page - 1) * per_page))
-    |> Repo.all()
-    |> maybe_add_user_votes(user)
-
-    meta = %{page: page, per_page: per_page, total: total}
+    meta = CursorPagination.build_cursor_meta(comments, has_next, per_page, sort, :comment)
     {comments, meta}
   end
 

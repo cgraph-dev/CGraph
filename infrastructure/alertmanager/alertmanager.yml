@@ -2,12 +2,10 @@
 # Routes Prometheus alerts to Slack and PagerDuty
 #
 # Setup:
-#   1. Set SLACK_WEBHOOK_URL env var (or replace placeholder below)
-#   2. Set PAGERDUTY_SERVICE_KEY env var for P1/P2 alerts
-#   3. Deploy via docker-compose.observability.yml
-#   4. IMPORTANT: Alertmanager does NOT support shell-style ${VAR:-default} syntax.
-#      Use envsubst or Docker entrypoint substitution before deploying:
-#      envsubst < alertmanager.yml.tmpl > alertmanager.yml
+#   1. Copy infrastructure/.env.observability.example → infrastructure/.env.observability
+#   2. Fill in SLACK_WEBHOOK_URL and PAGERDUTY_SERVICE_KEY with real secrets
+#   3. The docker-compose.observability.yml entrypoint runs envsubst automatically
+#   4. Deploy: docker compose -f infrastructure/docker-compose.observability.yml up -d
 #
 # Routing logic:
 #   - P1 (critical): PagerDuty + Slack #incidents
@@ -16,9 +14,7 @@
 
 global:
   resolve_timeout: 5m
-  # IMPORTANT: Replace this with your actual Slack webhook URL before deploying.
-  # This file is a TEMPLATE — run envsubst or set this value directly.
-  slack_api_url: 'https://hooks.slack.com/services/REPLACE_WITH_ACTUAL_WEBHOOK'
+  slack_api_url: '${SLACK_WEBHOOK_URL}'
 
 # Inhibition rules — suppress lower-severity alerts when higher-severity fires
 inhibit_rules:
@@ -73,7 +69,7 @@ receivers:
   # PagerDuty for critical incidents
   - name: pagerduty-critical
     pagerduty_configs:
-      - service_key: '${PAGERDUTY_SERVICE_KEY:-REPLACE_WITH_SERVICE_KEY}'
+      - service_key: '${PAGERDUTY_SERVICE_KEY}'
         severity: critical
         description: '{{ .GroupLabels.alertname }}: {{ .Annotations.summary }}'
         details:
@@ -101,7 +97,7 @@ receivers:
             url: '{{ .Annotations.runbook_url }}'
           - type: button
             text: 'Grafana 📊'
-            url: 'http://localhost:3001/d/cgraph-slo/slo-overview'
+            url: '${GRAFANA_DASHBOARD_URL:-http://localhost:3001}/d/cgraph-slo/slo-overview'
 
   # Slack #monitoring channel for info-level
   - name: slack-monitoring

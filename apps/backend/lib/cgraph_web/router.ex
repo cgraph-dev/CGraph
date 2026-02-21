@@ -31,6 +31,8 @@ defmodule CGraphWeb.Router do
   import CGraphWeb.Router.ForumRoutes
   import CGraphWeb.Router.GamificationRoutes
   import CGraphWeb.Router.AdminRoutes
+  import CGraphWeb.Router.AIRoutes
+  import CGraphWeb.Router.SyncRoutes
 
   # ============================================================================
   # Pipelines
@@ -73,6 +75,7 @@ defmodule CGraphWeb.Router do
     plug CGraphWeb.Plugs.ApiVersion
     plug CGraphWeb.Plugs.IdempotencyPlug
     plug CGraphWeb.Plugs.SentryContext
+    plug CGraphWeb.Plugs.AuditLogPlug, category: :auth
   end
 
   # Relaxed rate limiting for read-heavy public endpoints
@@ -95,6 +98,7 @@ defmodule CGraphWeb.Router do
     plug CGraphWeb.Plugs.IdempotencyPlug
     plug CGraphWeb.Plugs.SentryContext
     plug CGraphWeb.Plugs.RequireAuth
+    plug CGraphWeb.Plugs.AuditLogPlug, category: :user
   end
 
   # Admin pipeline (requires admin role)
@@ -108,6 +112,7 @@ defmodule CGraphWeb.Router do
     plug CGraphWeb.Plugs.ApiVersion
     plug CGraphWeb.Plugs.IdempotencyPlug
     plug CGraphWeb.Plugs.SentryContext
+    plug CGraphWeb.Plugs.AuditLogPlug, category: :admin
   end
 
   # ============================================================================
@@ -122,4 +127,6 @@ defmodule CGraphWeb.Router do
   forum_routes()
   gamification_routes()
   admin_routes()
+  ai_routes()
+  sync_routes()
 end

@@ -29,7 +29,16 @@ defmodule CGraph.WorkerSupervisor do
       CGraphWeb.Presence,
 
       # Start data export service
-      CGraph.DataExport
+      CGraph.DataExport,
+
+      # Service discovery and health monitoring
+      CGraph.Services.Registry,
+
+      # SLO enforcement (latency/error-rate budgets)
+      CGraph.Performance.SLO,
+
+      # Singleflight request deduplication
+      CGraph.Performance.RequestCoalescing
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

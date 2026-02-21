@@ -7,8 +7,10 @@ defmodule CGraph.Forums.Search do
   """
 
   import Ecto.Query, warn: false
+  alias CGraph.Forums.CursorPagination
   alias CGraph.Forums.Post
-  alias CGraph.Repo
+  alias CGraph.Pagination
+  # alias CGraph.Repo  # unused — queries use ReadRepo
 
   @doc """
   Search posts by title or content.
@@ -22,7 +24,7 @@ defmodule CGraph.Forums.Search do
   - `:sort` - Sort order: "relevance", "new", "top" (default: "relevance")
   """
   def search_posts(query_string, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
+    cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 20)
     forum_id = Keyword.get(opts, :forum_id)
     sort = Keyword.get(opts, :sort, "relevance")
@@ -40,14 +42,18 @@ defmodule CGraph.Forums.Search do
 
     query = apply_sort(query, sort)
 
-    total = Repo.aggregate(query, :count, :id)
+    # For relevance (unordered), add stable ordering for cursor pagination
+    {query, cursor_sort} = if sort in ["new", "top"] do
+      {query, sort}
+    else
+      {from(p in query, order_by: [desc: p.inserted_at]), "new"}
+    end
 
-    posts = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
+    query = CursorPagination.apply_post_cursor(query, cursor, cursor_sort)
 
-    meta = %{page: page, per_page: per_page, total: total}
+    {posts, has_next} = Pagination.fetch_page(query, per_page)
+
+    meta = CursorPagination.build_cursor_meta(posts, has_next, per_page, cursor_sort, :post)
     {posts, meta}
   end
 

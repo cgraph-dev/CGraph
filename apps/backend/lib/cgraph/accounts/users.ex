@@ -6,6 +6,7 @@ defmodule CGraph.Accounts.Users do
   """
 
   import Ecto.Query
+  import CGraph.Query.SoftDelete
   alias CGraph.Accounts.User
   alias CGraph.Repo
 
@@ -101,7 +102,7 @@ defmodule CGraph.Accounts.Users do
   def list_users(opts \\ []) do
     search = Keyword.get(opts, :search)
 
-    query = from(u in User, where: is_nil(u.deleted_at))
+    query = from(u in User, where: not_deleted(u))
 
     query = query |> maybe_search(search)
 
@@ -120,7 +121,7 @@ defmodule CGraph.Accounts.Users do
   """
   def count_users do
     Repo.aggregate(
-      from(u in User, where: is_nil(u.deleted_at)),
+      from(u in User, where: not_deleted(u)),
       :count
     )
   end

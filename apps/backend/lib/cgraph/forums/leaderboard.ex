@@ -6,7 +6,11 @@ defmodule CGraph.Forums.Leaderboard do
   """
 
   import Ecto.Query, warn: false
+  import CGraph.Query.SoftDelete
+
+  alias CGraph.Forums.CursorPagination
   alias CGraph.Forums.Forum
+  alias CGraph.Pagination
   alias CGraph.Repo
 
   @doc """
@@ -18,26 +22,22 @@ defmodule CGraph.Forums.Leaderboard do
   - `:featured_only` - only show featured forums
   """
   def list_forum_leaderboard(opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
+    cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 25)
     sort = Keyword.get(opts, :sort, "hot")
     featured_only = Keyword.get(opts, :featured_only, false)
 
     query = from(f in Forum,
-      where: is_nil(f.deleted_at) and f.is_public == true,
+      where: not_deleted(f) and f.is_public == true,
       preload: [:owner]
     )
     |> maybe_filter_featured(featured_only)
     |> apply_forum_sort(sort)
+    |> CursorPagination.apply_forum_cursor(cursor, sort)
 
-    total = Repo.aggregate(query, :count, :id)
+    {forums, has_next} = Pagination.fetch_page(query, per_page)
 
-    forums = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total, sort: sort}
+    meta = CursorPagination.build_cursor_meta(forums, has_next, per_page, sort, :forum)
     {forums, meta}
   end
 
@@ -46,7 +46,7 @@ defmodule CGraph.Forums.Leaderboard do
   """
   def get_top_forums(limit \\ 10, sort \\ "hot") do
     from(f in Forum,
-      where: is_nil(f.deleted_at) and f.is_public == true,
+      where: not_deleted(f) and f.is_public == true,
       preload: [:owner],
       limit: ^limit
     )

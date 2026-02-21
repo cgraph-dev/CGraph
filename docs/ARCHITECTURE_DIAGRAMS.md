@@ -1,6 +1,6 @@
 # CGraph Architecture Diagrams
 
-> **Version: 0.9.31** | Last Updated: February 16, 2026
+> **Version: 0.9.34** | Last Updated: February 21, 2026
 
 Visual documentation of CGraph's system architecture.
 
@@ -29,10 +29,12 @@ flowchart TB
         PHOENIX["🔥 Phoenix 1.8<br/>Elixir API"]
         CHANNELS["📡 Phoenix Channels<br/>WebSocket"]
         OBAN["⚙️ Oban<br/>Background Jobs"]
+        AI["🤖 AI Service<br/>Chat/Moderate/Summarize"]
+        CRDT["📝 CRDT Collaboration<br/>Yjs + DocumentServer"]
     end
 
     subgraph Data["Data Layer"]
-        PG[("🐘 PostgreSQL 16<br/>91 Tables")]
+        PG[("🐘 PostgreSQL 16<br/>95 Tables")]
         REDIS[("🔴 Redis 7<br/>Cache / PubSub")]
     end
 
@@ -53,6 +55,8 @@ flowchart TB
 
     PHOENIX --> CHANNELS
     PHOENIX --> OBAN
+    PHOENIX --> AI
+    PHOENIX --> CRDT
     PHOENIX --> PG
     PHOENIX --> REDIS
     CHANNELS --> REDIS
@@ -163,8 +167,9 @@ flowchart TB
     subgraph Packages["packages/"]
         TYPES["shared-types/<br/>TypeScript types"]
         UTILS["utils/<br/>Shared utilities"]
-        UI["ui/<br/>Component library"]
-        CONFIG["config/<br/>Shared configs"]
+        CRYPTO["crypto/<br/>PQ E2EE (PQXDH + Triple Ratchet)"]
+        SOCKET["socket/<br/>Phoenix connection"]
+        ANIM["animation-constants/<br/>Spring configs"]
     end
 
     subgraph Infra["infrastructure/"]
@@ -179,11 +184,13 @@ flowchart TB
 
     WEB --> TYPES
     WEB --> UTILS
-    WEB --> UI
+    WEB --> CRYPTO
+    WEB --> SOCKET
     MOBILE --> TYPES
     MOBILE --> UTILS
-    MOBILE --> UI
-    LANDING --> UI
+    MOBILE --> CRYPTO
+    MOBILE --> SOCKET
+    LANDING --> ANIM
 ```
 
 ---
@@ -532,4 +539,134 @@ flowchart LR
 
 ---
 
-<sub>**CGraph Architecture Diagrams** • Version 0.9.31 • Last updated: February 16, 2026</sub>
+## 14. AI Service Architecture (v0.9.34)
+
+```mermaid
+flowchart TB
+    subgraph Clients["Client Layer"]
+        WEB_AI["Web App<br/>aiService.ts"]
+        REST["REST API<br/>/api/v1/ai/*"]
+    end
+
+    subgraph Channels["Phoenix Channels"]
+        AI_CH["ai:{user_id}<br/>Streaming responses"]
+    end
+
+    subgraph AI_Core["AI Context (CGraph.AI)"]
+        CHAT["chat/3<br/>Streaming completion"]
+        SUMMARIZE["summarize/2<br/>Text summarization"]
+        MODERATE["moderate/2<br/>Content moderation"]
+        SENTIMENT["analyze_sentiment/1<br/>Sentiment analysis"]
+    end
+
+    subgraph Support["Support Modules"]
+        RL["RateLimiter<br/>Per-user + tier limits"]
+        MOD["Moderation<br/>LLM + heuristic fallback"]
+        SENT["Sentiment<br/>LLM + keyword fallback"]
+        PROV["Provider<br/>OpenAI / Anthropic / local"]
+    end
+
+    subgraph External["LLM Provider"]
+        LLM["OpenAI / Anthropic API<br/>via Req HTTP"]
+    end
+
+    WEB_AI --> AI_CH
+    REST --> AI_Core
+    AI_CH --> AI_Core
+
+    CHAT --> RL
+    CHAT --> PROV
+    SUMMARIZE --> PROV
+    MODERATE --> MOD
+    SENTIMENT --> SENT
+
+    MOD --> PROV
+    SENT --> PROV
+    PROV --> LLM
+
+    style AI_Core fill:#7c3aed,color:#fff
+    style Support fill:#2563eb,color:#fff
+```
+
+---
+
+## 15. CRDT Collaboration Architecture (v0.9.34)
+
+```mermaid
+flowchart TB
+    subgraph Clients["Collaborating Clients"]
+        C1["Client A<br/>Yjs Doc + PhoenixProvider"]
+        C2["Client B<br/>Yjs Doc + PhoenixProvider"]
+        C3["Client C<br/>Yjs Doc + PhoenixProvider"]
+    end
+
+    subgraph Phoenix["Phoenix Backend"]
+        DOC_CH["document:{id}<br/>DocumentChannel"]
+        DOC_SRV["DocumentServer<br/>GenServer per-document"]
+        REG["DocumentRegistry<br/>Process Registry"]
+        SUP["DocumentSupervisor<br/>DynamicSupervisor"]
+    end
+
+    subgraph Storage["Persistence"]
+        DB[("PostgreSQL<br/>collaboration_documents")]
+    end
+
+    C1 <-->|"Yjs updates<br/>(binary)"| DOC_CH
+    C2 <-->|"Yjs updates<br/>(binary)"| DOC_CH
+    C3 <-->|"Yjs updates<br/>(binary)"| DOC_CH
+
+    DOC_CH --> DOC_SRV
+    DOC_SRV --> REG
+    SUP --> DOC_SRV
+    DOC_SRV --> DB
+
+    style Phoenix fill:#059669,color:#fff
+    style Clients fill:#d97706,color:#fff
+```
+
+> **Pattern:** Each document gets a dedicated GenServer (started on-demand via DynamicSupervisor).
+> The server holds the Yjs document state, merges incoming updates, broadcasts to all connected
+> clients, and periodically persists snapshots to PostgreSQL.
+
+---
+
+## 16. Offline-First Mobile Architecture (v0.9.34)
+
+```mermaid
+flowchart TB
+    subgraph Mobile["Mobile App (Expo/RN)"]
+        UI["React Components<br/>useSync / useOfflineStatus"]
+        WDB["WatermelonDB<br/>SQLite (9 tables)"]
+        SYNC["SyncEngine<br/>Pull/Push/Conflict Resolution"]
+    end
+
+    subgraph Backend["Phoenix Backend"]
+        SYNC_API["/api/v1/sync<br/>SyncController"]
+        CONTEXTS["Business Contexts<br/>Messaging / Accounts / Groups"]
+        DB[("PostgreSQL<br/>Source of Truth")]
+    end
+
+    UI --> WDB
+    UI --> SYNC
+
+    SYNC -->|"Pull: GET /sync/pull?since=ts"| SYNC_API
+    SYNC -->|"Push: POST /sync/push"| SYNC_API
+
+    SYNC_API --> CONTEXTS
+    CONTEXTS --> DB
+
+    SYNC_API -->|"Changes + timestamp"| SYNC
+    SYNC -->|"Apply to local DB"| WDB
+
+    style Mobile fill:#f59e0b,color:#000
+    style Backend fill:#4f46e5,color:#fff
+```
+
+> **Sync Protocol:** Last-write-wins with server timestamps. Mobile pulls all changes since last
+> sync timestamp, applies them to WatermelonDB, then pushes locally created/modified records. The
+> server resolves conflicts using `updated_at` comparison. Nine tables synced: users, conversations,
+> messages, participants, groups, group_members, group_messages, channels, and notifications.
+
+---
+
+<sub>**CGraph Architecture Diagrams** • Version 0.9.34 • Last updated: February 21, 2026</sub>

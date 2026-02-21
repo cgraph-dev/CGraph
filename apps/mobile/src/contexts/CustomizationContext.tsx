@@ -1,15 +1,13 @@
 /**
- * CustomizationContext — BACKWARD-COMPATIBLE SHIM
+ * CustomizationContext — Re-export layer from Zustand stores.
  *
- * The CustomizationProvider has been removed from App.tsx.
- * useCustomization() now reads directly from the Zustand customizationStore.
+ * useCustomization() reads directly from the Zustand customizationStore.
  * This file preserves the same API surface so existing consumers work.
  *
  * @deprecated Import from '@/stores/customizationStore' directly instead.
  */
 
-import React from 'react';
-import useCustomizationStore, { useTheme } from '@/stores/customizationStore';
+import { useTheme } from '@/stores/customizationStore';
 import type { ThemeConfig } from '@/lib/customization/CustomizationEngine';
 
 // ============================================================================
@@ -81,24 +79,3 @@ export function useCustomization(): CustomizationContextValue {
     getTypographySize,
   };
 }
-
-/**
- * CustomizationProvider — no-op wrapper for backward compatibility.
- */
-export function CustomizationProvider({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
-}
-
-// ============================================================================
-// HOC (kept for backward compat)
-// ============================================================================
-
-export function withCustomization<P extends object>(
-  Component: React.ComponentType<P & { customization: CustomizationContextValue }>
-) {
-  return function WithCustomizationComponent(props: P) {
-    const customization = useCustomization();
-    return <Component {...props} customization={customization} />;
-  };
-}
-

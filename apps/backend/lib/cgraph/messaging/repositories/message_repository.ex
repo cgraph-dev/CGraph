@@ -8,6 +8,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
   alias CGraph.Cache
   alias CGraph.Messaging.Message
   alias CGraph.Repo
+  import CGraph.Query.SoftDelete
 
   @cache_ttl :timer.minutes(5)
   @recent_messages_limit 50
@@ -44,7 +45,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
     base_query =
       from m in Message,
         where: m.conversation_id == ^conversation_id,
-        where: is_nil(m.deleted_at),
+        where: not_deleted(m),
         preload: [:sender, :reactions, :attachments]
 
     query =
@@ -138,7 +139,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
 
     from(m in Message,
       where: m.conversation_id == ^conversation_id,
-      where: is_nil(m.deleted_at),
+      where: not_deleted(m),
       where: ilike(m.content, ^search_query),
       order_by: [desc: m.inserted_at],
       limit: ^limit,
@@ -156,7 +157,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
       where: m.conversation_id == ^conversation_id,
       where: m.sender_id != ^user_id,
       where: m.inserted_at > ^last_read_at,
-      where: is_nil(m.deleted_at),
+      where: not_deleted(m),
       select: count(m.id)
     )
     |> Repo.one()

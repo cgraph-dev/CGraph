@@ -72,6 +72,7 @@ defmodule CGraph.Search.Engine do
   """
 
   require Logger
+  import CGraph.Query.SoftDelete
 
   @behaviour CGraph.Search.Backend
 
@@ -399,7 +400,7 @@ defmodule CGraph.Search.Engine do
         CGraph.Repo.all(
           from(u in CGraph.Accounts.User,
             where: ilike(u.username, ^search_term) or ilike(u.display_name, ^search_term),
-            where: is_nil(u.deleted_at) and is_nil(u.banned_at),
+            where: not_deleted(u) and is_nil(u.banned_at),
             limit: ^limit,
             offset: ^offset,
             order_by: [asc: u.username]

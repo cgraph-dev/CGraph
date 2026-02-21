@@ -10,7 +10,10 @@ defmodule CGraph.Repo.Migrations.CreateDeliveryReceipts do
       add :platform, :string
       add :failure_reason, :string
 
-      add :message_id, references(:messages, type: :binary_id, on_delete: :delete_all), null: false
+      # Note: messages table uses composite PK (id, inserted_at) for partitioning.
+      # Postgres doesn't support FK references to partitioned tables with partial key match.
+      # We use a plain column instead of `references()` and enforce integrity at the app layer.
+      add :message_id, :binary_id, null: false
       add :recipient_id, references(:users, type: :binary_id, on_delete: :delete_all), null: false
 
       timestamps(updated_at: false, type: :utc_datetime_usec)

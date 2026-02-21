@@ -61,6 +61,10 @@ defmodule CGraph.Application do
       # 3. Worker Layer (Oban, Presence, WebRTC)
       CGraph.WorkerSupervisor,
 
+      # 4. Collaboration Layer (real-time document editing)
+      {Registry, keys: :unique, name: CGraph.Collaboration.DocumentRegistry},
+      {DynamicSupervisor, name: CGraph.Collaboration.DocumentSupervisor, strategy: :one_for_one},
+
       # Start in-app metrics collector/exporter
       CGraph.Metrics,
 

@@ -14,13 +14,14 @@ build/
 *.beam
 *.ez
 
-# Environment files (keep .env.example)
+# Environment files (keep .env.example and .env.observability.example)
 .env
 .env.local
 .env.*.local
 .env.development.local
 .env.test.local
 .env.production.local
+infrastructure/.env.observability
 
 # IDE and editors
 .idea/

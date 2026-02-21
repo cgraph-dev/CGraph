@@ -43,7 +43,7 @@ export const profileThemesByCategory: Record<string, ProfileThemeConfig[]> = {
       id: '8bit-dream',
       name: 'Dreams',
       icon: '👾',
-      tier: 'elite',
+      tier: 'enterprise',
       background: { type: 'animated', colors: ['#ff006e', '#8338ec', '#3a86ff'] },
       effects: {
         particles: { count: 24, type: 'pixel', behavior: 'cascade' },
@@ -82,7 +82,7 @@ export const profileThemesByCategory: Record<string, ProfileThemeConfig[]> = {
       id: 'jp-wave',
       name: 'Wave',
       icon: '🌊',
-      tier: 'elite',
+      tier: 'enterprise',
       background: { type: 'animated', colors: ['#1e40af', '#3b82f6', '#60a5fa'] },
       effects: {
         particles: { count: 30, type: 'energy', behavior: 'burst' },
@@ -121,7 +121,7 @@ export const profileThemesByCategory: Record<string, ProfileThemeConfig[]> = {
       id: 'cosmic-void',
       name: 'Void',
       icon: '🌌',
-      tier: 'elite',
+      tier: 'enterprise',
       background: { type: 'animated', colors: ['#000000', '#1a0033', '#0d0015'] },
       effects: {
         particles: { count: 25, type: 'stars', behavior: 'float' },
@@ -160,7 +160,7 @@ export const profileThemesByCategory: Record<string, ProfileThemeConfig[]> = {
       id: 'kawaii-magic',
       name: 'Magic',
       icon: '✨',
-      tier: 'elite',
+      tier: 'enterprise',
       background: { type: 'animated', colors: ['#ff69b4', '#9370db', '#87ceeb'] },
       effects: {
         particles: { count: 30, type: 'sparkles', behavior: 'cascade' },
@@ -199,7 +199,7 @@ export const profileThemesByCategory: Record<string, ProfileThemeConfig[]> = {
       id: 'kawaii-rainbow',
       name: 'Rainbow',
       icon: '🦄',
-      tier: 'elite',
+      tier: 'enterprise',
       background: { type: 'animated', colors: ['#ec4899', '#8b5cf6', '#3b82f6'] },
       effects: {
         particles: { count: 36, type: 'stars', behavior: 'burst' },

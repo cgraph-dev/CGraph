@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-expect-error — test file uses partial mocks that don't satisfy full type constraints
 /**
  * Animation Effects Extended Tests
  *
@@ -313,6 +313,6 @@ describe('getTierGlow (extended)', () => {
   it('covers all defined tiers', () => {
     expect(getTierGlow('free')).toBe('#10b981');
     expect(getTierGlow('premium')).toBe('#8b5cf6');
-    expect(getTierGlow('elite')).toBe('#ec4899');
+    expect(getTierGlow('enterprise')).toBe('#ec4899');
   });
 });

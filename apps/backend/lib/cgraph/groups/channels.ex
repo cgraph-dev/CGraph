@@ -7,6 +7,7 @@ defmodule CGraph.Groups.Channels do
   """
 
   import Ecto.Query, warn: false
+  import CGraph.Query.SoftDelete
 
   alias CGraph.Groups.{Channel, ChannelCategory, Member, PermissionOverwrite, PinnedMessage, Role}
   alias CGraph.Messaging.Message
@@ -21,10 +22,10 @@ defmodule CGraph.Groups.Channels do
   def list_channels(group, opts \\ []) do
     category_id = Keyword.get(opts, :category_id)
 
-    query = from c in Channel,
-      where: c.group_id == ^group.id,
-      where: is_nil(c.deleted_at),
-      order_by: [asc: c.position, asc: c.inserted_at]
+    query = Channel
+      |> exclude_deleted()
+      |> where([c], c.group_id == ^group.id)
+      |> order_by([c], asc: c.position, asc: c.inserted_at)
 
     query = if category_id do
       from c in query, where: c.category_id == ^category_id
@@ -101,10 +102,12 @@ defmodule CGraph.Groups.Channels do
   @spec reorder_channels(struct(), [binary()]) :: {:ok, non_neg_integer()} | {:error, atom()}
   def reorder_channels(group, channel_ids) when is_list(channel_ids) do
     # Verify all channels belong to this group
-    existing = from(c in Channel,
-      where: c.group_id == ^group.id and c.id in ^channel_ids and is_nil(c.deleted_at),
-      select: c.id
-    ) |> Repo.all() |> MapSet.new()
+    existing = Channel
+      |> exclude_deleted()
+      |> where([c], c.group_id == ^group.id and c.id in ^channel_ids)
+      |> select([c], c.id)
+      |> Repo.all()
+      |> MapSet.new()
 
     requested = MapSet.new(channel_ids)
 

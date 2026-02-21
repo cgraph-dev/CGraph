@@ -16,7 +16,7 @@ defmodule CGraph.Query.SoftDeleteTest do
 
       results =
         CGraph.Accounts.User
-        |> not_deleted()
+        |> exclude_deleted()
         |> CGraph.Repo.all()
         |> Enum.map(& &1.id)
 
@@ -29,7 +29,7 @@ defmodule CGraph.Query.SoftDeleteTest do
 
       results =
         CGraph.Accounts.User
-        |> not_deleted()
+        |> exclude_deleted()
         |> CGraph.Repo.all()
 
       assert length(results) >= 1
@@ -227,7 +227,7 @@ defmodule CGraph.Query.SoftDeleteTest do
 
       results =
         CGraph.Accounts.User
-        |> not_deleted()
+        |> exclude_deleted()
         |> where([u], u.username == "query_compose_test_unique")
         |> CGraph.Repo.all()
 

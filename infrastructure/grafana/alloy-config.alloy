@@ -1,0 +1,151 @@
+// =============================================================================
+// CGraph — Grafana Alloy Configuration
+// =============================================================================
+// Collects metrics from Phoenix backend and ships to Grafana Cloud.
+// Stack: cgraphdev (eu-central-0)
+//
+// Environment variables (set in /etc/alloy/env or systemd override):
+//   GRAFANA_CLOUD_PROMETHEUS_URL  — remote write endpoint
+//   GRAFANA_CLOUD_PROMETHEUS_USER — numeric user ID
+//   GRAFANA_CLOUD_API_KEY         — API token (cgraph-alloy-prod)
+//   GRAFANA_CLOUD_LOKI_URL        — Loki push endpoint
+//   GRAFANA_CLOUD_LOKI_USER       — numeric user ID
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// 1. Scrape Phoenix /metrics (Prometheus text format)
+// ---------------------------------------------------------------------------
+prometheus.scrape "phoenix" {
+  targets = [{
+    __address__ = "localhost:4000",
+    job         = "cgraph-phoenix",
+    instance    = env("HOSTNAME"),
+  }]
+  metrics_path = "/metrics"
+  scrape_interval = "15s"
+  scrape_timeout  = "10s"
+
+  forward_to = [prometheus.relabel.add_labels.receiver]
+}
+
+// ---------------------------------------------------------------------------
+// 2. Scrape Node Exporter (system metrics) — if running
+// ---------------------------------------------------------------------------
+prometheus.scrape "node" {
+  targets = [{
+    __address__ = "localhost:9100",
+    job         = "cgraph-node",
+    instance    = env("HOSTNAME"),
+  }]
+  scrape_interval = "30s"
+  scrape_timeout  = "10s"
+
+  forward_to = [prometheus.relabel.add_labels.receiver]
+}
+
+// ---------------------------------------------------------------------------
+// 3. Add standard labels
+// ---------------------------------------------------------------------------
+prometheus.relabel "add_labels" {
+  rule {
+    target_label = "environment"
+    replacement  = "production"
+  }
+  rule {
+    target_label = "service"
+    replacement  = "cgraph"
+  }
+
+  forward_to = [prometheus.remote_write.grafana_cloud.receiver]
+}
+
+// ---------------------------------------------------------------------------
+// 4. Remote write to Grafana Cloud Prometheus
+// ---------------------------------------------------------------------------
+prometheus.remote_write "grafana_cloud" {
+  endpoint {
+    url = env("GRAFANA_CLOUD_PROMETHEUS_URL")
+
+    basic_auth {
+      username = env("GRAFANA_CLOUD_PROMETHEUS_USER")
+      password = env("GRAFANA_CLOUD_API_KEY")
+    }
+
+    // Batch and retry settings for reliability
+    queue_config {
+      capacity          = 10000
+      max_shards        = 5
+      max_samples_per_send = 2000
+    }
+  }
+
+  // Write-ahead log for crash recovery
+  wal {
+    truncate_frequency = "2h"
+    max_keepalive_time = "8h"
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 5. Collect local log files and ship to Grafana Cloud Loki
+// ---------------------------------------------------------------------------
+local.file_match "phoenix_logs" {
+  path_targets = [
+    {__path__ = "/var/log/cgraph/*.log", job = "cgraph", component = "phoenix"},
+  ]
+}
+
+loki.source.file "phoenix" {
+  targets    = local.file_match.phoenix_logs.targets
+  forward_to = [loki.process.pipeline.receiver]
+}
+
+// Basic log processing — parse structured JSON logs from Phoenix
+loki.process "pipeline" {
+  stage.json {
+    expressions = {
+      level   = "level",
+      message = "msg",
+      module  = "module",
+    }
+  }
+
+  stage.labels {
+    values = {
+      level  = "",
+      module = "",
+    }
+  }
+
+  stage.static_labels {
+    values = {
+      environment = "production",
+      service     = "cgraph",
+    }
+  }
+
+  forward_to = [loki.write.grafana_cloud.receiver]
+}
+
+loki.write "grafana_cloud" {
+  endpoint {
+    url = env("GRAFANA_CLOUD_LOKI_URL")
+
+    basic_auth {
+      username = env("GRAFANA_CLOUD_LOKI_USER")
+      password = env("GRAFANA_CLOUD_API_KEY")
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 6. Self-monitoring — Alloy internal metrics
+// ---------------------------------------------------------------------------
+prometheus.scrape "alloy_self" {
+  targets = [{
+    __address__ = "localhost:12345",
+    job         = "alloy-self",
+  }]
+  scrape_interval = "60s"
+  forward_to     = [prometheus.remote_write.grafana_cloud.receiver]
+}

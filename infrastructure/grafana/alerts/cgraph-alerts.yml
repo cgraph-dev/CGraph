@@ -1,0 +1,201 @@
+# CGraph Alert Rules for Grafana Cloud
+# Import via Grafana UI: Alerting → Alert rules → Import
+# Or use the Grafana HTTP API: POST /api/v1/provisioning/alert-rules
+
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: CGraph - Availability
+    folder: CGraph Alerts
+    interval: 1m
+    rules:
+      # -----------------------------------------------------------------------
+      # High 5xx Error Rate (> 1% for 5 minutes)
+      # -----------------------------------------------------------------------
+      - uid: cgraph-high-error-rate
+        title: 'High Error Rate (5xx > 1%)'
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: >-
+                sum(rate(phoenix_endpoint_stop_duration_milliseconds_count{job="cgraph-phoenix", status=~"5.."}[5m]))
+              intervalMs: 15000
+              maxDataPoints: 43200
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: >-
+                sum(rate(phoenix_endpoint_stop_duration_milliseconds_count{job="cgraph-phoenix"}[5m]))
+              intervalMs: 15000
+              maxDataPoints: 43200
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: __expr__
+            model:
+              type: math
+              expression: ($A / $B) * 100 > 1
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: 'CGraph 5xx error rate is above 1%'
+          description: 'The 5xx error rate has exceeded 1% for the last 5 minutes. Current value: {{ $values.C }}%'
+        labels:
+          severity: critical
+          service: cgraph
+
+      # -----------------------------------------------------------------------
+      # High P99 Latency (> 500ms for 5 minutes)
+      # -----------------------------------------------------------------------
+      - uid: cgraph-high-latency
+        title: 'High P99 Latency (> 500ms)'
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: >-
+                histogram_quantile(0.99, sum(rate(phoenix_endpoint_stop_duration_milliseconds_bucket{job="cgraph-phoenix"}[5m])) by (le)) > 500
+              intervalMs: 15000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: 'CGraph P99 latency exceeds 500ms'
+          description: 'HTTP P99 latency has been above 500ms for 5 minutes.'
+        labels:
+          severity: warning
+          service: cgraph
+
+  - orgId: 1
+    name: CGraph - Security
+    folder: CGraph Alerts
+    interval: 1m
+    rules:
+      # -----------------------------------------------------------------------
+      # Rate Limit Denials Spike (> 100/min)
+      # -----------------------------------------------------------------------
+      - uid: cgraph-rate-limit-spike
+        title: 'Rate Limit Denials Spike'
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: >-
+                sum(rate(cgraph_rate_limiter_exceeded_total{job="cgraph-phoenix"}[5m])) * 60 > 100
+              intervalMs: 15000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 3m
+        annotations:
+          summary: 'High rate of denied requests'
+          description: 'More than 100 requests/min are being rate-limited. Possible abuse or misconfigured client.'
+        labels:
+          severity: warning
+          service: cgraph
+
+      # -----------------------------------------------------------------------
+      # Account Lockout Spike (> 10 in 5 min)
+      # -----------------------------------------------------------------------
+      - uid: cgraph-lockout-spike
+        title: 'Account Lockout Spike'
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: >-
+                sum(increase(cgraph_auth_account_locked_total{job="cgraph-phoenix"}[5m])) > 10
+              intervalMs: 15000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 1m
+        annotations:
+          summary: 'Multiple account lockouts detected'
+          description: 'More than 10 account lockouts in 5 minutes. Possible brute-force attack.'
+        labels:
+          severity: critical
+          service: cgraph
+
+  - orgId: 1
+    name: CGraph - Infrastructure
+    folder: CGraph Alerts
+    interval: 1m
+    rules:
+      # -----------------------------------------------------------------------
+      # BEAM Memory High (> 3GB)
+      # -----------------------------------------------------------------------
+      - uid: cgraph-beam-memory
+        title: 'BEAM Memory > 3GB'
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: >-
+                vm_memory_total_bytes{job="cgraph-phoenix"} > 3e9
+              intervalMs: 15000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 10m
+        annotations:
+          summary: 'BEAM VM memory usage exceeds 3GB'
+          description: 'The Erlang VM is using more than 3GB of memory. Consider investigating for memory leaks.'
+        labels:
+          severity: warning
+          service: cgraph
+
+      # -----------------------------------------------------------------------
+      # Slow Ecto Queries (P95 > 100ms)
+      # -----------------------------------------------------------------------
+      - uid: cgraph-slow-queries
+        title: 'Slow DB Queries (P95 > 100ms)'
+        condition: A
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: >-
+                histogram_quantile(0.95, sum(rate(cgraph_repo_query_total_time_milliseconds_bucket{job="cgraph-phoenix"}[5m])) by (le)) > 100
+              intervalMs: 15000
+              maxDataPoints: 43200
+        noDataState: OK
+        execErrState: Error
+        for: 5m
+        annotations:
+          summary: 'Database query P95 exceeds 100ms'
+          description: 'Ecto query P95 latency has been above 100ms for 5 minutes. Check for missing indexes or N+1 queries.'
+        labels:
+          severity: warning
+          service: cgraph

@@ -6,6 +6,8 @@ defmodule CGraph.Forums.Boards do
   """
 
   import Ecto.Query, warn: false
+  import CGraph.Query.SoftDelete
+
   alias CGraph.Forums.Board
   alias CGraph.Repo
 
@@ -20,9 +22,10 @@ defmodule CGraph.Forums.Boards do
     include_hidden = Keyword.get(opts, :include_hidden, false)
     parent_id = Keyword.get(opts, :parent_id, nil)
 
-    query = from b in Board,
-      where: b.forum_id == ^forum_id and is_nil(b.deleted_at),
-      order_by: [asc: b.position, asc: b.name]
+    query = Board
+      |> exclude_deleted()
+      |> where([b], b.forum_id == ^forum_id)
+      |> order_by([b], asc: b.position, asc: b.name)
 
     query = if parent_id do
       from b in query, where: b.parent_board_id == ^parent_id
@@ -53,8 +56,9 @@ defmodule CGraph.Forums.Boards do
   Get a board by forum_id and slug.
   """
   def get_board_by_slug(forum_id, slug) do
-    query = from b in Board,
-      where: b.forum_id == ^forum_id and b.slug == ^slug and is_nil(b.deleted_at)
+    query = Board
+      |> exclude_deleted()
+      |> where([b], b.forum_id == ^forum_id and b.slug == ^slug)
 
     case Repo.one(query) do
       nil -> {:error, :not_found}

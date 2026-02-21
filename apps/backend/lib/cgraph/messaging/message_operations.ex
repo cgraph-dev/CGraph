@@ -10,6 +10,7 @@ defmodule CGraph.Messaging.MessageOperations do
 
   alias CGraph.Messaging.{Message, ReadReceipt}
   alias CGraph.Repo
+  import CGraph.Query.SoftDelete
 
   @max_pins_per_user 3
 
@@ -102,7 +103,7 @@ defmodule CGraph.Messaging.MessageOperations do
         where: m.conversation_id == ^conversation.id,
         where: m.schedule_status == "scheduled",
         where: not is_nil(m.scheduled_at),
-        where: is_nil(m.deleted_at),
+        where: not_deleted(m),
         preload: [:sender]
 
     pagination_opts = CGraph.Pagination.parse_params(

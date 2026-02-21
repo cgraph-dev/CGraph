@@ -52,7 +52,16 @@ RUN apk add --no-cache \
     libgcc \
     ca-certificates \
     pgbouncer \
-    gettext
+    gettext \
+    wget \
+    libc6-compat
+
+# Install Grafana Alloy for metrics shipping to Grafana Cloud
+RUN wget -q -O /tmp/alloy.zip "https://github.com/grafana/alloy/releases/download/v1.13.1/alloy-linux-amd64.zip" && \
+    unzip /tmp/alloy.zip -d /tmp && \
+    mv /tmp/alloy-linux-amd64 /usr/local/bin/alloy && \
+    chmod +x /usr/local/bin/alloy && \
+    rm /tmp/alloy.zip
 
 # Create non-root user
 RUN addgroup -g 1000 cgraph && \
@@ -69,6 +78,13 @@ COPY --chown=cgraph:cgraph pgbouncer/pgbouncer.ini /etc/pgbouncer/pgbouncer.ini
 COPY --chown=cgraph:cgraph pgbouncer/start.sh /usr/local/bin/start-pgbouncer.sh
 RUN chmod +x /usr/local/bin/start-pgbouncer.sh
 
+# Copy Grafana Alloy configuration for metrics sidecar
+COPY --chown=cgraph:cgraph alloy/config.alloy /etc/alloy/config.alloy
+COPY --chown=cgraph:cgraph alloy/start.sh /usr/local/bin/start-alloy.sh
+RUN chmod +x /usr/local/bin/start-alloy.sh
+COPY --chown=cgraph:cgraph alloy/start-with-app.sh /usr/local/bin/start-with-app.sh
+RUN chmod +x /usr/local/bin/start-with-app.sh
+
 # Set user
 USER cgraph
 
@@ -79,5 +95,5 @@ EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:4000/health || exit 1
 
-# Start the application
-CMD ["bin/cgraph", "start"]
+# Start the application (with Alloy sidecar if GRAFANA_CLOUD_* secrets are set)
+CMD ["/usr/local/bin/start-with-app.sh"]

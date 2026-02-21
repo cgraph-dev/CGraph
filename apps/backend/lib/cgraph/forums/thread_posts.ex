@@ -4,6 +4,7 @@ defmodule CGraph.Forums.ThreadPosts do
   """
 
   import Ecto.Query, warn: false
+  import CGraph.Query.SoftDelete
 
   alias CGraph.Forums.{Board, Forum, ForumMember, Thread, ThreadPost, ThreadVote, PostVote}
   alias CGraph.Forums.SubscriptionService
@@ -14,7 +15,7 @@ defmodule CGraph.Forums.ThreadPosts do
   """
   def list_thread_posts(thread_id, opts \\ []) do
     query = from p in ThreadPost,
-      where: p.thread_id == ^thread_id and is_nil(p.deleted_at) and p.is_hidden == false,
+      where: p.thread_id == ^thread_id and not_deleted(p) and p.is_hidden == false,
       preload: [:author]
 
     pagination_opts = CGraph.Pagination.parse_params(

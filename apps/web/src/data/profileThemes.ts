@@ -1,17 +1,43 @@
 /**
  * Profile Themes Data
- * 
+ *
  * 18+ animated profile themes organized by category.
  * Each theme has background gradients, particle effects, overlays, and tier badges.
  */
 
-export type ProfileThemeCategory = '8bit' | 'japanese' | 'anime' | 'cyberpunk' | 'gothic' | 'kawaii';
-export type ProfileThemeTier = 'free' | 'premium' | 'elite';
-export type ParticleType = 
-  | 'none' | 'pixel' | 'petal' | 'energy' | 'neon' | 'smoke' 
-  | 'stars' | 'hearts' | 'sparkles' | 'snow' | 'rain' | 'bubbles'
-  | 'fire' | 'lightning' | 'leaves' | 'confetti';
-export type OverlayType = 'none' | 'scanlines' | 'holographic' | 'noise' | 'vignette' | 'grid' | 'rays';
+export type ProfileThemeCategory =
+  | '8bit'
+  | 'japanese'
+  | 'anime'
+  | 'cyberpunk'
+  | 'gothic'
+  | 'kawaii';
+export type ProfileThemeTier = 'free' | 'premium' | 'enterprise';
+export type ParticleType =
+  | 'none'
+  | 'pixel'
+  | 'petal'
+  | 'energy'
+  | 'neon'
+  | 'smoke'
+  | 'stars'
+  | 'hearts'
+  | 'sparkles'
+  | 'snow'
+  | 'rain'
+  | 'bubbles'
+  | 'fire'
+  | 'lightning'
+  | 'leaves'
+  | 'confetti';
+export type OverlayType =
+  | 'none'
+  | 'scanlines'
+  | 'holographic'
+  | 'noise'
+  | 'vignette'
+  | 'grid'
+  | 'rays';
 
 export interface ProfileThemeConfig {
   id: string;
@@ -19,37 +45,37 @@ export interface ProfileThemeConfig {
   category: ProfileThemeCategory;
   tier: ProfileThemeTier;
   description: string;
-  
+
   // Background
   backgroundGradient: string[];
   backgroundAnimation?: 'none' | 'shift' | 'pulse' | 'wave' | 'rotate';
   backgroundAnimationDuration?: number;
-  
+
   // Particles
   particleType: ParticleType;
   particleCount?: number;
   particleColors?: string[];
   particleSpeed?: number;
-  
+
   // Overlay effects
   overlayType: OverlayType;
   overlayOpacity?: number;
-  
+
   // Glow & Lighting
   glowEnabled: boolean;
   glowColor?: string;
   glowIntensity?: number;
-  
+
   // Accent colors for UI elements
   accentPrimary: string;
   accentSecondary: string;
   textColor: string;
-  
+
   // Unlock info
   unlocked: boolean;
   unlockRequirement?: string;
   unlockLevel?: number;
-  
+
   // Preview
   previewImage?: string;
 }
@@ -166,7 +192,7 @@ const THEMES_8BIT: ProfileThemeConfig[] = [
     id: '8bit-dreams',
     name: 'Pixel Dreams',
     category: '8bit',
-    tier: 'elite',
+    tier: 'enterprise',
     description: 'Dreamy vaporwave pixel paradise',
     backgroundGradient: ['#667eea', '#764ba2', '#f093fb'],
     backgroundAnimation: 'wave',
@@ -235,7 +261,7 @@ const THEMES_JAPANESE: ProfileThemeConfig[] = [
     id: 'jp-wave',
     name: 'Great Wave',
     category: 'japanese',
-    tier: 'elite',
+    tier: 'enterprise',
     description: 'Hokusai-inspired crashing ocean waves',
     backgroundGradient: ['#0077be', '#1e90ff', '#87ceeb'],
     backgroundAnimation: 'wave',
@@ -306,7 +332,7 @@ const THEMES_ANIME: ProfileThemeConfig[] = [
     id: 'anime-hero',
     name: 'Ultimate Hero',
     category: 'anime',
-    tier: 'elite',
+    tier: 'enterprise',
     description: 'Maximum power level achieved!',
     backgroundGradient: ['#ff4500', '#ff8c00', '#ffd700'],
     backgroundAnimation: 'pulse',
@@ -380,7 +406,7 @@ const THEMES_CYBERPUNK: ProfileThemeConfig[] = [
     id: 'cyber-pulse',
     name: 'Neural Pulse',
     category: 'cyberpunk',
-    tier: 'elite',
+    tier: 'enterprise',
     description: 'Connected to the global network consciousness',
     backgroundGradient: ['#0f0f1a', '#1a1a3e', '#2a2a5e'],
     backgroundAnimation: 'pulse',
@@ -450,7 +476,7 @@ const THEMES_GOTHIC: ProfileThemeConfig[] = [
     id: 'gothic-void',
     name: 'Abyssal Void',
     category: 'gothic',
-    tier: 'elite',
+    tier: 'enterprise',
     description: 'Stare into the abyss, and it stares back',
     backgroundGradient: ['#000000', '#0a0a1a', '#1a0a2e'],
     backgroundAnimation: 'shift',
@@ -520,7 +546,7 @@ const THEMES_KAWAII: ProfileThemeConfig[] = [
     id: 'kawaii-rainbow',
     name: 'Rainbow Magic',
     category: 'kawaii',
-    tier: 'elite',
+    tier: 'enterprise',
     description: 'All the colors of happiness combined',
     backgroundGradient: ['#ff6b6b', '#feca57', '#48dbfb', '#1dd1a1', '#ff9ff3', '#a29bfe'],
     backgroundAnimation: 'rotate',
@@ -553,19 +579,37 @@ export const ALL_PROFILE_THEMES: ProfileThemeConfig[] = [
 
 // Get themes by category
 export const getThemesByCategory = (category: ProfileThemeCategory): ProfileThemeConfig[] => {
-  return ALL_PROFILE_THEMES.filter(theme => theme.category === category);
+  return ALL_PROFILE_THEMES.filter((theme) => theme.category === category);
 };
 
 // Get theme by ID
 export const getThemeById = (id: string): ProfileThemeConfig | undefined => {
-  return ALL_PROFILE_THEMES.find(theme => theme.id === id);
+  return ALL_PROFILE_THEMES.find((theme) => theme.id === id);
 };
 
 // Tier badge colors
-export const TIER_COLORS: Record<ProfileThemeTier, { bg: string; text: string; border: string; glow: string }> = {
-  free: { bg: 'bg-gray-600/80', text: 'text-gray-200', border: 'border-gray-500', glow: 'rgba(107,114,128,0.3)' },
-  premium: { bg: 'bg-gradient-to-r from-purple-600 to-pink-500', text: 'text-white', border: 'border-purple-400', glow: 'rgba(139,92,246,0.5)' },
-  elite: { bg: 'bg-gradient-to-r from-yellow-500 to-orange-500', text: 'text-white', border: 'border-yellow-400', glow: 'rgba(234,179,8,0.6)' },
+export const TIER_COLORS: Record<
+  ProfileThemeTier,
+  { bg: string; text: string; border: string; glow: string }
+> = {
+  free: {
+    bg: 'bg-gray-600/80',
+    text: 'text-gray-200',
+    border: 'border-gray-500',
+    glow: 'rgba(107,114,128,0.3)',
+  },
+  premium: {
+    bg: 'bg-gradient-to-r from-purple-600 to-pink-500',
+    text: 'text-white',
+    border: 'border-purple-400',
+    glow: 'rgba(139,92,246,0.5)',
+  },
+  enterprise: {
+    bg: 'bg-gradient-to-r from-yellow-500 to-orange-500',
+    text: 'text-white',
+    border: 'border-yellow-400',
+    glow: 'rgba(234,179,8,0.6)',
+  },
 };
 
 // Animation keyframes for profile theme backgrounds
@@ -587,28 +631,119 @@ export const BACKGROUND_ANIMATIONS = {
 };
 
 // Particle animation configs
-export const PARTICLE_CONFIGS: Record<ParticleType, {
-  shape: 'circle' | 'square' | 'triangle' | 'star' | 'heart' | 'custom';
-  size: { min: number; max: number };
-  velocity: { x: { min: number; max: number }; y: { min: number; max: number } };
-  opacity: { min: number; max: number };
-  rotation?: boolean;
-  trail?: boolean;
-}> = {
-  none: { shape: 'circle', size: { min: 0, max: 0 }, velocity: { x: { min: 0, max: 0 }, y: { min: 0, max: 0 } }, opacity: { min: 0, max: 0 } },
-  pixel: { shape: 'square', size: { min: 2, max: 4 }, velocity: { x: { min: -0.5, max: 0.5 }, y: { min: -1, max: -0.5 } }, opacity: { min: 0.5, max: 1 } },
-  petal: { shape: 'custom', size: { min: 8, max: 16 }, velocity: { x: { min: -1, max: 1 }, y: { min: 0.5, max: 1.5 } }, opacity: { min: 0.6, max: 1 }, rotation: true },
-  energy: { shape: 'circle', size: { min: 2, max: 6 }, velocity: { x: { min: -2, max: 2 }, y: { min: -3, max: -1 } }, opacity: { min: 0.3, max: 0.8 }, trail: true },
-  neon: { shape: 'circle', size: { min: 1, max: 3 }, velocity: { x: { min: -0.3, max: 0.3 }, y: { min: -0.5, max: 0.5 } }, opacity: { min: 0.5, max: 1 } },
-  smoke: { shape: 'circle', size: { min: 20, max: 50 }, velocity: { x: { min: -0.2, max: 0.2 }, y: { min: -0.5, max: -0.1 } }, opacity: { min: 0.1, max: 0.3 } },
-  stars: { shape: 'star', size: { min: 3, max: 8 }, velocity: { x: { min: 0, max: 0 }, y: { min: 0, max: 0 } }, opacity: { min: 0.3, max: 1 }, rotation: true },
-  hearts: { shape: 'heart', size: { min: 8, max: 16 }, velocity: { x: { min: -0.5, max: 0.5 }, y: { min: -1, max: -0.3 } }, opacity: { min: 0.5, max: 1 } },
-  sparkles: { shape: 'star', size: { min: 2, max: 6 }, velocity: { x: { min: -1, max: 1 }, y: { min: -1, max: 1 } }, opacity: { min: 0.4, max: 1 } },
-  snow: { shape: 'circle', size: { min: 2, max: 6 }, velocity: { x: { min: -0.3, max: 0.3 }, y: { min: 0.5, max: 1.5 } }, opacity: { min: 0.5, max: 1 } },
-  rain: { shape: 'custom', size: { min: 1, max: 2 }, velocity: { x: { min: -0.1, max: 0.1 }, y: { min: 5, max: 10 } }, opacity: { min: 0.3, max: 0.6 }, trail: true },
-  bubbles: { shape: 'circle', size: { min: 4, max: 12 }, velocity: { x: { min: -0.3, max: 0.3 }, y: { min: -1, max: -0.3 } }, opacity: { min: 0.2, max: 0.5 } },
-  fire: { shape: 'circle', size: { min: 3, max: 10 }, velocity: { x: { min: -0.5, max: 0.5 }, y: { min: -3, max: -1 } }, opacity: { min: 0.5, max: 1 }, trail: true },
-  lightning: { shape: 'custom', size: { min: 1, max: 2 }, velocity: { x: { min: -5, max: 5 }, y: { min: -5, max: 5 } }, opacity: { min: 0.8, max: 1 }, trail: true },
-  leaves: { shape: 'custom', size: { min: 8, max: 16 }, velocity: { x: { min: -1, max: 1 }, y: { min: 0.3, max: 1 } }, opacity: { min: 0.6, max: 1 }, rotation: true },
-  confetti: { shape: 'square', size: { min: 4, max: 8 }, velocity: { x: { min: -2, max: 2 }, y: { min: 1, max: 3 } }, opacity: { min: 0.7, max: 1 }, rotation: true },
+export const PARTICLE_CONFIGS: Record<
+  ParticleType,
+  {
+    shape: 'circle' | 'square' | 'triangle' | 'star' | 'heart' | 'custom';
+    size: { min: number; max: number };
+    velocity: { x: { min: number; max: number }; y: { min: number; max: number } };
+    opacity: { min: number; max: number };
+    rotation?: boolean;
+    trail?: boolean;
+  }
+> = {
+  none: {
+    shape: 'circle',
+    size: { min: 0, max: 0 },
+    velocity: { x: { min: 0, max: 0 }, y: { min: 0, max: 0 } },
+    opacity: { min: 0, max: 0 },
+  },
+  pixel: {
+    shape: 'square',
+    size: { min: 2, max: 4 },
+    velocity: { x: { min: -0.5, max: 0.5 }, y: { min: -1, max: -0.5 } },
+    opacity: { min: 0.5, max: 1 },
+  },
+  petal: {
+    shape: 'custom',
+    size: { min: 8, max: 16 },
+    velocity: { x: { min: -1, max: 1 }, y: { min: 0.5, max: 1.5 } },
+    opacity: { min: 0.6, max: 1 },
+    rotation: true,
+  },
+  energy: {
+    shape: 'circle',
+    size: { min: 2, max: 6 },
+    velocity: { x: { min: -2, max: 2 }, y: { min: -3, max: -1 } },
+    opacity: { min: 0.3, max: 0.8 },
+    trail: true,
+  },
+  neon: {
+    shape: 'circle',
+    size: { min: 1, max: 3 },
+    velocity: { x: { min: -0.3, max: 0.3 }, y: { min: -0.5, max: 0.5 } },
+    opacity: { min: 0.5, max: 1 },
+  },
+  smoke: {
+    shape: 'circle',
+    size: { min: 20, max: 50 },
+    velocity: { x: { min: -0.2, max: 0.2 }, y: { min: -0.5, max: -0.1 } },
+    opacity: { min: 0.1, max: 0.3 },
+  },
+  stars: {
+    shape: 'star',
+    size: { min: 3, max: 8 },
+    velocity: { x: { min: 0, max: 0 }, y: { min: 0, max: 0 } },
+    opacity: { min: 0.3, max: 1 },
+    rotation: true,
+  },
+  hearts: {
+    shape: 'heart',
+    size: { min: 8, max: 16 },
+    velocity: { x: { min: -0.5, max: 0.5 }, y: { min: -1, max: -0.3 } },
+    opacity: { min: 0.5, max: 1 },
+  },
+  sparkles: {
+    shape: 'star',
+    size: { min: 2, max: 6 },
+    velocity: { x: { min: -1, max: 1 }, y: { min: -1, max: 1 } },
+    opacity: { min: 0.4, max: 1 },
+  },
+  snow: {
+    shape: 'circle',
+    size: { min: 2, max: 6 },
+    velocity: { x: { min: -0.3, max: 0.3 }, y: { min: 0.5, max: 1.5 } },
+    opacity: { min: 0.5, max: 1 },
+  },
+  rain: {
+    shape: 'custom',
+    size: { min: 1, max: 2 },
+    velocity: { x: { min: -0.1, max: 0.1 }, y: { min: 5, max: 10 } },
+    opacity: { min: 0.3, max: 0.6 },
+    trail: true,
+  },
+  bubbles: {
+    shape: 'circle',
+    size: { min: 4, max: 12 },
+    velocity: { x: { min: -0.3, max: 0.3 }, y: { min: -1, max: -0.3 } },
+    opacity: { min: 0.2, max: 0.5 },
+  },
+  fire: {
+    shape: 'circle',
+    size: { min: 3, max: 10 },
+    velocity: { x: { min: -0.5, max: 0.5 }, y: { min: -3, max: -1 } },
+    opacity: { min: 0.5, max: 1 },
+    trail: true,
+  },
+  lightning: {
+    shape: 'custom',
+    size: { min: 1, max: 2 },
+    velocity: { x: { min: -5, max: 5 }, y: { min: -5, max: 5 } },
+    opacity: { min: 0.8, max: 1 },
+    trail: true,
+  },
+  leaves: {
+    shape: 'custom',
+    size: { min: 8, max: 16 },
+    velocity: { x: { min: -1, max: 1 }, y: { min: 0.3, max: 1 } },
+    opacity: { min: 0.6, max: 1 },
+    rotation: true,
+  },
+  confetti: {
+    shape: 'square',
+    size: { min: 4, max: 8 },
+    velocity: { x: { min: -2, max: 2 }, y: { min: 1, max: 3 } },
+    opacity: { min: 0.7, max: 1 },
+    rotation: true,
+  },
 };

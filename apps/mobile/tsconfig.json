@@ -25,7 +25,9 @@
       "@cgraph/shared-types": ["../../packages/shared-types/src"],
       "@cgraph/utils": ["../../packages/utils/src"],
       "@cgraph/socket": ["../../packages/socket/src"],
-      "@cgraph/animation-constants": ["../../packages/animation-constants/src"]
+      "@cgraph/animation-constants": ["../../packages/animation-constants/src"],
+      "@cgraph/crypto": ["../../packages/crypto/src"],
+      "@cgraph/crypto/*": ["../../packages/crypto/src/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "*.js", ".expo/types/**/*.ts", "expo-env.d.ts"],

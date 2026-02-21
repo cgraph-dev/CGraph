@@ -1,25 +1,20 @@
 /**
  * Switch Component Stories for React Native/Expo
- * 
+ *
  * Showcases the Switch toggle component.
- * 
+ *
  * @since v0.7.31
  */
 import React, { useState } from 'react';
 import { View, Text } from 'react-native';
 import type { Meta, StoryObj } from '@storybook/react';
 import Switch from '../Switch';
-import { ThemeProvider } from '../../contexts/ThemeContext';
 
 /**
- * Wrapper to provide theme context
+ * Wrapper providing layout for stories
  */
 const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ gap: 16 }}>
-      {children}
-    </View>
-  </ThemeProvider>
+  <View style={{ gap: 16 }}>{children}</View>
 );
 
 const meta: Meta<typeof Switch> = {
@@ -91,9 +86,7 @@ const InteractiveSwitch = () => {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
       <Switch value={enabled} onValueChange={setEnabled} />
-      <Text style={{ fontSize: 16, color: '#333' }}>
-        {enabled ? 'Enabled' : 'Disabled'}
-      </Text>
+      <Text style={{ fontSize: 16, color: '#333' }}>{enabled ? 'Enabled' : 'Disabled'}</Text>
     </View>
   );
 };

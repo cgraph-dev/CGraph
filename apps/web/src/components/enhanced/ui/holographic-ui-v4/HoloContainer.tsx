@@ -3,7 +3,7 @@
  * @version 4.0.0
  */
 
-import { ReactNode, useRef, useEffect, useState, useCallback, forwardRef } from 'react';
+import { ReactNode, useRef, useEffect, useState, useCallback, type Ref } from 'react';
 import {
   motion,
   useMotionValue,
@@ -29,23 +29,21 @@ interface HoloContainerProps extends Omit<MotionProps, 'children'> {
   onClick?: () => void;
 }
 
-export const HoloContainer = forwardRef<HTMLDivElement, HoloContainerProps>(function HoloContainer(
-  {
-    children,
-    preset = 'cyan',
-    intensity = 'medium',
-    enableScanlines = true,
-    enableFlicker = true,
-    enableParallax = true,
-    enable3D = true,
-    enableGlow = true,
-    className,
-    as: Component = 'div',
-    onClick,
-    ...motionProps
-  },
-  ref
-) {
+export function HoloContainer({
+  children,
+  preset = 'cyan',
+  intensity = 'medium',
+  enableScanlines = true,
+  enableFlicker = true,
+  enableParallax = true,
+  enable3D = true,
+  enableGlow = true,
+  className,
+  as: Component = 'div',
+  onClick,
+  ref,
+  ...motionProps
+}: HoloContainerProps & { ref?: Ref<HTMLDivElement> }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isGlitching, setIsGlitching] = useState(false);
   const [flickerOpacity, setFlickerOpacity] = useState(1);
@@ -194,7 +192,7 @@ export const HoloContainer = forwardRef<HTMLDivElement, HoloContainerProps>(func
       <div className="relative z-10">{children}</div>
     </MotionComponent>
   );
-});
+}
 
 // Corner bracket decorations
 function CornerBrackets({ color }: { color: string }) {

@@ -36,6 +36,7 @@ defmodule CGraph.Admin do
 
   require Logger
   import Ecto.Query
+  import CGraph.Query.SoftDelete
 
   alias CGraph.Accounts.User
   alias CGraph.Repo
@@ -83,7 +84,7 @@ defmodule CGraph.Admin do
     query = case status do
       :banned -> from u in query, where: not is_nil(u.banned_at)
       :deleted -> from u in query, where: not is_nil(u.deleted_at)
-      :active -> from u in query, where: is_nil(u.banned_at) and is_nil(u.deleted_at)
+      :active -> from u in query, where: is_nil(u.banned_at) and not_deleted(u)
       _ -> query
     end
 

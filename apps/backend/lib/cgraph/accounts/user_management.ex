@@ -9,6 +9,7 @@ defmodule CGraph.Accounts.UserManagement do
 
   alias CGraph.Accounts.{User, UserSettings}
   alias CGraph.Repo
+  import CGraph.Query.SoftDelete
 
   @doc "Get a user by ID."
   @spec get_user(String.t()) :: {:ok, User.t()} | {:error, :not_found}
@@ -65,7 +66,7 @@ defmodule CGraph.Accounts.UserManagement do
   @spec list_users(keyword()) :: {[User.t()], map()}
   def list_users(opts \\ []) do
     query = from u in User,
-      where: is_nil(u.deleted_at),
+      where: not_deleted(u),
       preload: [:customization]
 
     query = case Keyword.get(opts, :search) do
@@ -84,7 +85,7 @@ defmodule CGraph.Accounts.UserManagement do
   def list_admin_users do
     from(u in User,
       where: u.role in ["admin", "superadmin"],
-      where: is_nil(u.deleted_at),
+      where: not_deleted(u),
       order_by: [asc: u.username],
       preload: [:customization]
     )
@@ -98,7 +99,7 @@ defmodule CGraph.Accounts.UserManagement do
     page = Keyword.get(opts, :page, 1)
 
     query = from(u in User,
-      where: is_nil(u.deleted_at),
+      where: not_deleted(u),
       order_by: [desc: u.karma],
       preload: [:customization]
     )

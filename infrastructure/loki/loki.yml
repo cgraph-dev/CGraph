@@ -28,7 +28,7 @@ query_range:
         max_size_mb: 100
 
 limits_config:
-  retention_period: 168h          # 7-day retention
+  retention_period: 168h # 7-day retention
   reject_old_samples: true
   reject_old_samples_max_age: 168h
   max_query_series: 500
@@ -53,3 +53,4 @@ compactor:
   retention_enabled: true
   delete_request_cancel_period: 10m
   retention_delete_delay: 2h
+  delete_request_store: filesystem

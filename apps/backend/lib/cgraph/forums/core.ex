@@ -6,6 +6,7 @@ defmodule CGraph.Forums.Core do
   """
 
   import Ecto.Query, warn: false
+  import CGraph.Query.SoftDelete
   alias CGraph.Forums.{Comment, ContentReport, Forum, ForumMember, Moderator, Post, Subscription, Thread, ThreadPost}
   alias CGraph.Repo
 
@@ -25,7 +26,7 @@ defmodule CGraph.Forums.Core do
   @doc "List forums accessible to a user."
   def list_forums_for_user(user, opts \\ []) do
     base_query = from f in Forum,
-      where: is_nil(f.deleted_at),
+      where: not_deleted(f),
       preload: [:categories, :owner]
 
     query = case user do
@@ -212,13 +213,13 @@ defmodule CGraph.Forums.Core do
 
   @doc "Count forums owned by a user."
   def count_user_forums(user_id) do
-    Repo.aggregate(from(f in Forum, where: f.owner_id == ^user_id and is_nil(f.deleted_at)), :count, :id)
+    Repo.aggregate(from(f in Forum, where: f.owner_id == ^user_id and not_deleted(f)), :count, :id)
   end
 
   @doc "Count forums a user has joined."
   def count_user_joined_forums(user_id) do
     Repo.aggregate(
-      from(m in ForumMember, where: m.user_id == ^user_id, join: f in Forum, on: f.id == m.forum_id, where: is_nil(f.deleted_at)),
+      from(m in ForumMember, where: m.user_id == ^user_id, join: f in Forum, on: f.id == m.forum_id, where: not_deleted(f)),
       :count, :id
     )
   end

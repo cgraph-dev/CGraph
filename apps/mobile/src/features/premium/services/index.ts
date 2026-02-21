@@ -11,13 +11,13 @@ export const premiumApi = {
   getFeatures: () => `${API_URL}/api/v1/premium/features`,
   subscribe: () => `${API_URL}/api/v1/premium/subscribe`, // POST with { tier } in body
   cancelSubscription: () => `${API_URL}/api/v1/premium/cancel`,
-  
+
   // Coins (separate /coins routes)
   getCoinBalance: () => `${API_URL}/api/v1/coins`,
   getCoinHistory: () => `${API_URL}/api/v1/coins/history`,
   getCoinPackages: () => `${API_URL}/api/v1/coins/packages`,
   getEarnMethods: () => `${API_URL}/api/v1/coins/earn`,
-  
+
   // Shop (separate /shop routes)
   getShopItems: () => `${API_URL}/api/v1/shop`,
   getShopItem: (itemId: string) => `${API_URL}/api/v1/shop/${itemId}`,
@@ -33,21 +33,14 @@ export const TIER_FEATURES = {
     animatedAvatar: false,
     premiumBadge: false,
   },
-  starter: {
-    maxGroups: 25,
-    maxFileSize: 50,
-    customEmoji: true,
-    animatedAvatar: false,
-    premiumBadge: true,
-  },
-  pro: {
-    maxGroups: 100,
+  premium: {
+    maxGroups: 50,
     maxFileSize: 100,
     customEmoji: true,
     animatedAvatar: true,
     premiumBadge: true,
   },
-  ultimate: {
+  enterprise: {
     maxGroups: -1,
     maxFileSize: 500,
     customEmoji: true,

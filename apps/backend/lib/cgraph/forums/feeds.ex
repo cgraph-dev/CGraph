@@ -6,8 +6,10 @@ defmodule CGraph.Forums.Feeds do
   """
 
   import Ecto.Query, warn: false
+  import CGraph.Query.SoftDelete
 
   alias CGraph.Forums.{Forum, Post, Subscription}
+  alias CGraph.Forums.CursorPagination
   alias CGraph.ReadRepo
   alias CGraph.Repo
 
@@ -15,7 +17,7 @@ defmodule CGraph.Forums.Feeds do
   Lists posts from all public forums (public feed).
   """
   def list_public_feed(opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
+    cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 25)
     sort = Keyword.get(opts, :sort, "hot")
     time_range = Keyword.get(opts, :time_range, "all")
@@ -24,25 +26,25 @@ defmodule CGraph.Forums.Feeds do
     query = base_public_feed_query()
     |> maybe_apply_time_filter(sort, time_range)
     |> apply_sort(sort)
+    |> CursorPagination.apply_post_cursor(cursor, sort)
 
-    total = ReadRepo.aggregate(query, :count, :id)
-
-    posts = query
-    |> limit(^per_page)
-    |> offset(^((page - 1) * per_page))
+    results = query
+    |> limit(^(per_page + 1))
     |> ReadRepo.all()
-    |> maybe_add_user_votes(user)
 
-    meta = %{page: page, per_page: per_page, total: total}
+    has_next = length(results) > per_page
+    posts = results |> Enum.take(per_page) |> maybe_add_user_votes(user)
+
+    meta = CursorPagination.build_cursor_meta(posts, has_next, per_page, sort, :post)
     {posts, meta}
   end
 
   @doc """
   Lists posts from user's subscribed forums (home feed).
   """
-  def list_home_feed(nil, _opts), do: {[], %{page: 1, per_page: 25, total: 0}}
+  def list_home_feed(nil, _opts), do: {[], %{per_page: 25, has_next_page: false, next_cursor: nil}}
   def list_home_feed(user, opts) do
-    page = Keyword.get(opts, :page, 1)
+    cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 25)
     sort = Keyword.get(opts, :sort, "hot")
 
@@ -59,20 +61,20 @@ defmodule CGraph.Forums.Feeds do
     else
       query = from(p in Post,
         where: p.forum_id in ^subscribed_forum_ids,
-        where: is_nil(p.deleted_at),
+        where: not_deleted(p),
         preload: [:author, :forum]
       )
       |> apply_sort(sort)
+      |> CursorPagination.apply_post_cursor(cursor, sort)
 
-      total = ReadRepo.aggregate(query, :count, :id)
-
-      posts = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
+      results = query
+      |> limit(^(per_page + 1))
       |> ReadRepo.all()
-      |> maybe_add_user_votes(user)
 
-      meta = %{page: page, per_page: per_page, total: total}
+      has_next = length(results) > per_page
+      posts = results |> Enum.take(per_page) |> maybe_add_user_votes(user)
+
+      meta = CursorPagination.build_cursor_meta(posts, has_next, per_page, sort, :post)
       {posts, meta}
     end
   end
@@ -81,7 +83,7 @@ defmodule CGraph.Forums.Feeds do
   Lists popular posts (trending).
   """
   def list_popular_feed(opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
+    cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 25)
     user = Keyword.get(opts, :user)
 
@@ -91,21 +93,21 @@ defmodule CGraph.Forums.Feeds do
     query = from(p in Post,
       join: f in Forum, on: p.forum_id == f.id,
       where: f.is_public == true,
-      where: is_nil(p.deleted_at),
+      where: not_deleted(p),
       where: p.inserted_at >= ^since,
       order_by: [desc: p.hot_score],
       preload: [:author, :forum]
     )
+    |> CursorPagination.apply_simple_cursor_desc(cursor, :hot_score)
 
-    total = ReadRepo.aggregate(query, :count, :id)
-
-    posts = query
-    |> limit(^per_page)
-    |> offset(^((page - 1) * per_page))
+    results = query
+    |> limit(^(per_page + 1))
     |> ReadRepo.all()
-    |> maybe_add_user_votes(user)
 
-    meta = %{page: page, per_page: per_page, total: total}
+    has_next = length(results) > per_page
+    posts = results |> Enum.take(per_page) |> maybe_add_user_votes(user)
+
+    meta = CursorPagination.build_cursor_meta(posts, has_next, per_page, "hot", :forum)
     {posts, meta}
   end
 
@@ -115,7 +117,7 @@ defmodule CGraph.Forums.Feeds do
     from(p in Post,
       join: f in Forum, on: p.forum_id == f.id,
       where: f.is_public == true,
-      where: is_nil(p.deleted_at),
+      where: not_deleted(p),
       preload: [:author, :forum]
     )
   end

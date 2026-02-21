@@ -1,25 +1,20 @@
 /**
  * StatusBadge Component Stories for React Native/Expo
- * 
+ *
  * Showcases status indicators and badges.
- * 
+ *
  * @since v0.7.31
  */
 import React from 'react';
 import { View } from 'react-native';
 import type { Meta, StoryObj } from '@storybook/react';
 import StatusBadge from '../StatusBadge';
-import { ThemeProvider } from '../../contexts/ThemeContext';
 
 /**
- * Wrapper to provide theme context
+ * Wrapper providing layout for stories
  */
 const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ flexDirection: 'row', gap: 12, flexWrap: 'wrap' }}>
-      {children}
-    </View>
-  </ThemeProvider>
+  <View style={{ flexDirection: 'row', gap: 12, flexWrap: 'wrap' }}>{children}</View>
 );
 
 const meta: Meta<typeof StatusBadge> = {

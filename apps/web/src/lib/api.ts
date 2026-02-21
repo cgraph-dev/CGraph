@@ -1,5 +1,6 @@
 import { AxiosResponse } from 'axios';
 import { createHttpClient, extractApiError, withZod } from '@cgraph/utils';
+import { CircuitBreaker, CircuitOpenError } from '@cgraph/api-client';
 import { ZodSchema } from 'zod';
 import {
   getAccessToken,
@@ -113,4 +114,47 @@ export function getErrorMessage(error: unknown): string {
   return info.message;
 }
 
-export { API_URL };
+// ---------------------------------------------------------------------------
+// Circuit Breaker — fail-fast when backend is unhealthy
+// ---------------------------------------------------------------------------
+
+/**
+ * Shared circuit breaker instance for the API client.
+ * Opens after 5 consecutive failures, resets after 30s.
+ * Prevents thundering-herd on a downed backend.
+ */
+export const apiCircuitBreaker = new CircuitBreaker({
+  failureThreshold: 5,
+  successThreshold: 2,
+  resetTimeout: 30_000,
+});
+
+// Axios response interceptor — feed circuit breaker
+api.interceptors.response.use(
+  (response) => {
+    apiCircuitBreaker.recordSuccess();
+    return response;
+  },
+  (error) => {
+    // Only trip breaker on server errors (5xx) or network failures
+    const status = error?.response?.status;
+    if (!status || status >= 500) {
+      apiCircuitBreaker.recordFailure();
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Axios request interceptor — reject early if circuit is open
+api.interceptors.request.use((config) => {
+  if (!apiCircuitBreaker.isAllowed()) {
+    const err = new CircuitOpenError(
+      'API circuit breaker is open — backend appears unhealthy',
+      apiCircuitBreaker.getStats()
+    );
+    return Promise.reject(err);
+  }
+  return config;
+});
+
+export { API_URL, CircuitOpenError };

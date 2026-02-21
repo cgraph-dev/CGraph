@@ -12,13 +12,35 @@
  * - Sort comments by best, new, old, controversial
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useOptimistic } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { CommentCard } from './CommentCard';
 import { sortComments, getTopLevelComments } from './utils';
 import type { Comment, NestedCommentsProps } from './types';
+
+/**
+ * Recursively update a comment's vote state in a nested comment tree.
+ * Computes the score delta from the previous vote so the displayed score
+ * reflects the change immediately.
+ */
+function applyOptimisticVote(
+  comments: Comment[],
+  commentId: string,
+  value: 1 | -1 | null
+): Comment[] {
+  return comments.map((comment) => {
+    if (comment.id === commentId) {
+      const scoreDelta = (value ?? 0) - (comment.userVote ?? 0);
+      return { ...comment, userVote: value, score: comment.score + scoreDelta };
+    }
+    if (comment.replies.length > 0) {
+      return { ...comment, replies: applyOptimisticVote(comment.replies, commentId, value) };
+    }
+    return comment;
+  });
+}
 
 export default function NestedComments({
   comments,
@@ -32,6 +54,15 @@ export default function NestedComments({
   onMarkBestAnswer,
   maxDepth = 10,
 }: NestedCommentsProps) {
+  // React 19 useOptimistic: immediately reflect vote changes in the UI
+  // before the onVote API call resolves. When `comments` props update with
+  // the real server state, the optimistic overlay is automatically discarded.
+  const [optimisticComments, addOptimisticVote] = useOptimistic(
+    comments,
+    (currentComments: Comment[], vote: { commentId: string; value: 1 | -1 | null }) =>
+      applyOptimisticVote(currentComments, vote.commentId, vote.value)
+  );
+
   const [expandedComments, setExpandedComments] = useState<Set<string>>(new Set());
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [editingComment, setEditingComment] = useState<string | null>(null);
@@ -70,6 +101,12 @@ export default function NestedComments({
     HapticFeedback.success();
   };
 
+  // Wrap onVote: apply optimistic update first, then call the actual API
+  const handleVote = async (commentId: string, value: 1 | -1 | null) => {
+    addOptimisticVote({ commentId, value });
+    await onVote(commentId, value);
+  };
+
   const renderComment = (comment: Comment, depth: number = 0): React.ReactElement => {
     const isCollapsed = expandedComments.has(comment.id);
     const isReplying = replyingTo === comment.id;
@@ -95,7 +132,7 @@ export default function NestedComments({
         onSetEditContent={setEditContent}
         onReply={handleReply}
         onEdit={handleEdit}
-        onVote={onVote}
+        onVote={handleVote}
         onDelete={onDelete}
         onMarkBestAnswer={onMarkBestAnswer}
         sortedComments={sortedCommentsCallback}
@@ -104,7 +141,7 @@ export default function NestedComments({
     );
   };
 
-  const topLevelComments = getTopLevelComments(comments);
+  const topLevelComments = getTopLevelComments(optimisticComments);
 
   return (
     <div className="space-y-2">

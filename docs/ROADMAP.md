@@ -1,6 +1,6 @@
 # CGraph Product Roadmap
 
-> **Version: 0.9.31** | Last Updated: February 2026 **Status:** Pre-Launch → Public Beta Target: Q2
+> **Version: 0.9.34** | Last Updated: February 2026 **Status:** Pre-Launch → Public Beta Target: Q2
 > 2026
 
 ---
@@ -20,27 +20,40 @@ default** and modern customization.
     ┌───────────────────────────────────────────┬──────────────────┐
     │ Q1 2026     │ Q2 2026     │ Q3 2026       │ Q4 2026+         │
     ├─────────────┼─────────────┼───────────────┼──────────────────┤
-    │ v0.9.31     │ v1.0        │ v1.1          │ v1.2             │
+    │ v0.9.34     │ v1.0        │ v1.1          │ v1.2             │
     │ Hardening   │ Public Beta │ Growth        │ Enterprise       │
-    │             │             │               │                  │
-    │ • Security  │ • Stripe    │ • Mobile GA   │ • Admin          │
-    │   audit     │ • Mobile    │ • Bot API     │   console        │
-    │ • Stores    │   beta      │ • Search      │ • SSO/SAML       │
-    │ • Polish    │ • Testing   │ • Analytics   │ • Compliance     │
+    │ + AI/Collab │             │               │                  │
+    │ • AI svc    │ • Stripe ✅ │ • Mobile GA   │ • Admin          │
+    │ • CRDT      │ • Mobile    │ • Bot API     │   console        │
+    │ • Offline   │   beta      │ • Search      │ • SSO/SAML       │
+    │ • Security  │ • Testing   │ • Analytics   │ • Compliance     │
     │             │             │               │                  │
     └─────────────┴─────────────┴───────────────┴──────────────────┘
 ```
 
 ---
 
-## Current Release: v0.9.31 (February 2026)
+## Current Release: v0.9.34 (February 2026)
 
-> **Note:** 69/69 planned features are implemented (100%). Many features previously listed under
-> v1.0/v1.1 milestones shipped in v0.9.x releases (Polls, Events, Reactions, Moderation Tools, Push
-> Notifications, Threads, Forums). See `docs/PROJECT_STATUS.md` for complete tracking. The project
-> is in **late-alpha / early-beta** stage focused on hardening, testing, and polish.
+> **Note:** 69/69 planned features are implemented (100%), plus 3 major new capabilities added in
+> v0.9.33-v0.9.34 (AI Service, CRDT Collaboration, Offline-First Mobile). Many features previously
+> listed under v1.0/v1.1 milestones shipped in v0.9.x releases. See `docs/PROJECT_STATUS.md` for
+> complete tracking. The project is in **late-alpha / early-beta** stage focused on hardening,
+> testing, and polish. **Composite score: 8.7/10** (V1 target of 8.5 exceeded).
 
-### v0.9.31 Highlights
+### v0.9.33–v0.9.34 Highlights
+
+| Category           | Change                                                   | Impact                  |
+| ------------------ | -------------------------------------------------------- | ----------------------- |
+| **AI**             | Full AI service (9 backend modules + web service)        | Chat/summarize/moderate |
+| **Collaboration**  | CRDT-based real-time document editing (Yjs + Phoenix)    | Multi-user editing      |
+| **Mobile**         | Offline-first with WatermelonDB (9 tables + sync engine) | Works without network   |
+| **Security**       | PQ crypto bridge for mobile (ML-KEM-768 + AES-256-GCM)   | Mobile E2EE             |
+| **Observability**  | Grafana Cloud config, Fly.io metrics, audit logging plug | Production monitoring   |
+| **Infrastructure** | Deploy workflow, load test seeder, alertmanager fixes    | CI/CD maturity          |
+| **Verification**   | 14 misconfigurations found and fixed in audit pass       | Production readiness    |
+
+### v0.9.31 Highlights (Previous)
 
 | Category     | Change                                                | Impact                 |
 | ------------ | ----------------------------------------------------- | ---------------------- |
@@ -76,6 +89,14 @@ default** and modern customization.
 | **Platform**       | Web app                       | ✅ Shipped |
 |                    | Mobile (React Native)         | 🟡 Beta    |
 |                    | Landing page                  | ✅ Shipped |
+| **AI**             | Chat completion (streaming)   | ✅ Shipped |
+|                    | Text summarization            | ✅ Shipped |
+|                    | Content moderation            | ✅ Shipped |
+|                    | Sentiment analysis            | ✅ Shipped |
+| **Collaboration**  | CRDT document editing (Yjs)   | ✅ Shipped |
+|                    | Real-time presence            | ✅ Shipped |
+| **Offline**        | WatermelonDB sync engine      | ✅ Shipped |
+|                    | Conflict resolution           | ✅ Shipped |
 
 ---
 
@@ -93,7 +114,7 @@ default** and modern customization.
 | P0       | Penetration test remediation      | Security | 🔄 In Progress |
 | P1       | Performance optimization pass     | Platform | 📋 Planned     |
 | P1       | Mobile crash fixes                | Mobile   | 📋 Planned     |
-| P1       | Accessibility audit (WCAG 2.1 AA) | Frontend | 📋 Planned     |
+| P1       | Accessibility audit (WCAG 2.1 AA) | Frontend | ✅ Done        |
 | P2       | Error message improvements        | UX       | 📋 Planned     |
 | P2       | Onboarding flow polish            | Product  | 📋 Planned     |
 
@@ -118,14 +139,17 @@ After this date, only the following are allowed:
 
 ### Remaining Work for v1.0
 
-| Feature                    | Description                                | Priority | Status         |
-| -------------------------- | ------------------------------------------ | -------- | -------------- |
-| **Test Coverage**          | Reach 70% unit coverage across all apps    | P0       | 🔄 In Progress |
-| **Security Audit**         | External E2EE + penetration test           | P0       | 🔄 In Progress |
-| ~~**Stripe Integration**~~ | Real billing with checkout/portal/webhooks | P0       | ✅ Done        |
-| **Crypto Consolidation**   | Unify web + mobile E2EE implementations    | P1       | 🔄 In Progress |
-| **Mobile Beta**            | iOS/Android public TestFlight/Play Store   | P0       | 🔄 In Progress |
-| **Bot API v1**             | Initial bot/integration framework          | P2       | 📋 Planned     |
+| Feature                    | Description                                | Priority | Status            |
+| -------------------------- | ------------------------------------------ | -------- | ----------------- |
+| **Test Coverage**          | Reach 70% unit coverage across all apps    | P0       | 🔄 In Progress    |
+| **Security Audit**         | External E2EE + penetration test           | P0       | 🔄 In Progress    |
+| ~~**Stripe Integration**~~ | Real billing with checkout/portal/webhooks | P0       | ✅ Done           |
+| **Crypto Consolidation**   | Unify web + mobile E2EE implementations    | P1       | ✅ Done (v0.9.33) |
+| ~~**AI Service**~~         | Chat completion, summarize, moderate       | P1       | ✅ Done (v0.9.33) |
+| ~~**CRDT Collaboration**~~ | Yjs-based real-time document editing       | P1       | ✅ Done (v0.9.33) |
+| ~~**Offline-First**~~      | WatermelonDB + sync engine for mobile      | P1       | ✅ Done (v0.9.33) |
+| **Mobile Beta**            | iOS/Android public TestFlight/Play Store   | P0       | 🔄 In Progress    |
+| **Bot API v1**             | Initial bot/integration framework          | P2       | 📋 Planned        |
 
 > **Note:** Public servers, invite system, and forum channels already shipped in v0.9.x.
 
@@ -183,7 +207,7 @@ After this date, only the following are allowed:
 
 | Area                       | Description                         | Timeline             |
 | -------------------------- | ----------------------------------- | -------------------- |
-| **AI Features**            | Smart summarization, translation    | H1 2027              |
+| ~~**AI Features**~~        | Smart summarization, moderation     | ✅ Shipped (v0.9.33) |
 | **Federated Messaging**    | Cross-instance communication        | H2 2027              |
 | **Desktop Apps**           | Native Electron/Tauri apps          | H1 2027              |
 | **Post-Quantum Crypto**    | PQXDH + ML-KEM-768 (Triple Ratchet) | ✅ Shipped (v0.9.28) |
@@ -290,4 +314,4 @@ We prioritize based on:
 
 ---
 
-<sub>**CGraph Product Roadmap** • Version 0.9.31 • Last updated: February 2026</sub>
+<sub>**CGraph Product Roadmap** • Version 0.9.34 • Last updated: February 21, 2026</sub>

@@ -1,7 +1,7 @@
 defmodule CGraph.MixProject do
   use Mix.Project
 
-  @version "0.9.31"
+  @version "0.9.36"
   # Compatible with Elixir 1.17+ for CI, and 1.19+ for local development
   @elixir_version "~> 1.17"
 
@@ -98,6 +98,7 @@ defmodule CGraph.MixProject do
       # HTTP client (latest stable — Tesla with Finch adapter)
       {:tesla, "~> 1.15"},
       {:hackney, "~> 1.20"},  # Required by ExAws (S3/R2 uploads)
+      {:req, "~> 0.5"},       # Used by AI LLM client
 
       # Circuit breaker for fault tolerance
       {:fuse, "~> 2.5"},
@@ -129,6 +130,7 @@ defmodule CGraph.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:sobelow, "~> 0.14", only: [:dev, :test], runtime: false},
+      {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
       {:ex_machina, "~> 2.8", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
       {:mox, "~> 1.2", only: :test},

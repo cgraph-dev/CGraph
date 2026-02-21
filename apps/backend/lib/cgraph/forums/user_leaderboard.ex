@@ -7,6 +7,8 @@ defmodule CGraph.Forums.UserLeaderboard do
   """
 
   import Ecto.Query, warn: false
+  import CGraph.Query.SoftDelete
+
   alias CGraph.Forums.{Comment, Post}
   alias CGraph.Repo
 
@@ -54,13 +56,13 @@ defmodule CGraph.Forums.UserLeaderboard do
 
   defp build_post_karma_query(forum_id, nil) do
     from p in Post,
-      where: p.forum_id == ^forum_id and is_nil(p.deleted_at),
+      where: p.forum_id == ^forum_id and not_deleted(p),
       group_by: p.author_id,
       select: %{user_id: p.author_id, karma: sum(p.score)}
   end
   defp build_post_karma_query(forum_id, time_filter) do
     from p in Post,
-      where: p.forum_id == ^forum_id and is_nil(p.deleted_at) and p.inserted_at >= ^time_filter,
+      where: p.forum_id == ^forum_id and not_deleted(p) and p.inserted_at >= ^time_filter,
       group_by: p.author_id,
       select: %{user_id: p.author_id, karma: sum(p.score)}
   end
@@ -68,14 +70,14 @@ defmodule CGraph.Forums.UserLeaderboard do
   defp build_comment_karma_query(forum_id, nil) do
     from c in Comment,
       join: p in Post, on: c.post_id == p.id,
-      where: p.forum_id == ^forum_id and is_nil(c.deleted_at),
+      where: p.forum_id == ^forum_id and not_deleted(c),
       group_by: c.author_id,
       select: %{user_id: c.author_id, karma: sum(c.score)}
   end
   defp build_comment_karma_query(forum_id, time_filter) do
     from c in Comment,
       join: p in Post, on: c.post_id == p.id,
-      where: p.forum_id == ^forum_id and is_nil(c.deleted_at) and c.inserted_at >= ^time_filter,
+      where: p.forum_id == ^forum_id and not_deleted(c) and c.inserted_at >= ^time_filter,
       group_by: c.author_id,
       select: %{user_id: c.author_id, karma: sum(c.score)}
   end

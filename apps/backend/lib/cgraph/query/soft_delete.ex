@@ -22,7 +22,7 @@ defmodule CGraph.Query.SoftDelete do
 
       def list_active_messages(conversation_id) do
         Message
-        |> not_deleted()
+        |> exclude_deleted()
         |> where([m], m.conversation_id == ^conversation_id)
         |> Repo.all()
       end
@@ -48,7 +48,7 @@ defmodule CGraph.Query.SoftDelete do
   Combine with tenant scoping:
 
       Message
-      |> not_deleted()
+      |> exclude_deleted()
       |> for_tenant(tenant_id)
       |> Repo.all()
   """
@@ -58,30 +58,57 @@ defmodule CGraph.Query.SoftDelete do
   @type queryable :: Ecto.Queryable.t()
 
   # ============================================================================
+  # Macros — for use inside Ecto where expressions
+  # ============================================================================
+
+  @doc """
+  Macro for use inside Ecto `where` clauses to filter soft-deleted records.
+
+  This allows usage like:
+
+      from m in Message, where: not_deleted(m)
+      from m in Message, where: m.author_id == ^user_id and not_deleted(m)
+
+  For pipe-based queries, use `exclude_deleted/1` instead:
+
+      Message |> exclude_deleted() |> Repo.all()
+  """
+  defmacro not_deleted(binding) do
+    quote do
+      is_nil(unquote(binding).deleted_at)
+    end
+  end
+
+  # ============================================================================
   # Query Functions
   # ============================================================================
 
   @doc """
-  Exclude soft-deleted records from query.
-
-  This is the default behavior for most application queries.
+  Exclude soft-deleted records from query (pipe-friendly version).
 
   ## Examples
 
-      Message |> not_deleted() |> Repo.all()
+      Message |> exclude_deleted() |> Repo.all()
+      # Also available as not_deleted/1 function for backward compat
   """
-  @spec not_deleted(queryable()) :: Ecto.Query.t()
-  def not_deleted(queryable) do
+  @spec exclude_deleted(queryable()) :: Ecto.Query.t()
+  def exclude_deleted(queryable) do
     from(q in queryable, where: is_nil(q.deleted_at))
   end
 
   @doc """
-  Include all records, ignoring soft delete status.
+  Include all records, ignoring soft delete status (best effort).
+
+  Wraps the query so no additional `deleted_at` filter is applied.
+  **Note:** If `exclude_deleted/1` was already applied to the inner query,
+  this cannot remove that existing `WHERE` clause. For reliable "include all"
+  queries, build from the base schema without calling `exclude_deleted/1`.
 
   Use for admin views, data exports, or when you need to see deleted records.
 
   ## Examples
 
+      # Best: build from schema directly
       Message |> with_deleted() |> Repo.all()
   """
   @spec with_deleted(queryable()) :: Ecto.Query.t()
@@ -268,7 +295,10 @@ defmodule CGraph.Query.SoftDelete do
     Check if soft delete is supported for a schema.
     """
     def soft_deletable?(%{__struct__: module}) do
-      :deleted_at in (module.__schema__(:fields) || [])
+      function_exported?(module, :__schema__, 1) and
+        :deleted_at in (module.__schema__(:fields) || [])
+    rescue
+      _ -> false
     end
 
     def soft_deletable?(_), do: false

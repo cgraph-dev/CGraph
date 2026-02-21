@@ -14,8 +14,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { ThemeProvider } from '../contexts/ThemeContext';
-import { AuthProvider as _AuthProvider } from '../contexts/AuthContext';
 import { E2EEProvider } from '../lib/crypto/E2EEContext';
 import type { User as _User } from '../types';
 
@@ -254,9 +252,6 @@ function AllProviders({
   if (!options.skipAuth) {
     wrapped = <MockAuthProvider value={mockAuth}>{wrapped}</MockAuthProvider>;
   }
-
-  // Theme Provider
-  wrapped = <ThemeProvider>{wrapped}</ThemeProvider>;
 
   // Query Client Provider
   wrapped = <QueryClientProvider client={queryClient}>{wrapped}</QueryClientProvider>;

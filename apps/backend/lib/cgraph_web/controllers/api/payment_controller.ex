@@ -72,7 +72,7 @@ defmodule CGraphWeb.Api.PaymentController do
   Gets the current user's billing/subscription status.
 
   ## Response
-    - `tier`: Current tier (free, plus, pro, business, enterprise)
+    - `tier`: Current tier (free, premium, enterprise)
     - `active`: Whether subscription is active
     - `expires_at`: Subscription expiration date (if applicable)
     - `expiring_soon`: Whether subscription expires within 7 days

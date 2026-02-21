@@ -7,30 +7,30 @@ defmodule CGraph.Forums.RSS do
   """
 
   import Ecto.Query, warn: false
+  import CGraph.Query.SoftDelete
   alias CGraph.Forums.{Board, Forum, Thread, ThreadPost}
+  alias CGraph.Forums.CursorPagination
+  alias CGraph.Pagination
   alias CGraph.Repo
 
   @doc """
   List recent threads across an entire forum (all boards) with pagination.
   """
   def list_forum_threads_for_rss(forum_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
+    cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 20)
 
     query = from t in Thread,
       join: b in Board, on: t.board_id == b.id,
-      where: b.forum_id == ^forum_id and is_nil(t.deleted_at),
+      where: b.forum_id == ^forum_id and not_deleted(t),
       order_by: [desc: t.inserted_at],
       preload: [:author, board: :forum]
 
-    total = Repo.aggregate(query, :count, :id)
+    query = CursorPagination.apply_simple_cursor_desc(query, cursor, :inserted_at)
 
-    threads = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
+    {threads, has_next} = Pagination.fetch_page(query, per_page)
 
-    meta = %{page: page, per_page: per_page, total: total}
+    meta = CursorPagination.build_cursor_meta(threads, has_next, per_page, "new", :post)
     {threads, meta}
   end
 
@@ -43,7 +43,7 @@ defmodule CGraph.Forums.RSS do
     from(tp in ThreadPost,
       join: t in Thread, on: tp.thread_id == t.id,
       join: b in Board, on: t.board_id == b.id,
-      where: b.forum_id == ^forum_id and is_nil(tp.deleted_at),
+      where: b.forum_id == ^forum_id and not_deleted(tp),
       order_by: [desc: tp.created_at],
       limit: ^limit_count,
       preload: [:author, thread: [:author, board: :forum]]
@@ -61,7 +61,7 @@ defmodule CGraph.Forums.RSS do
     threads = from(t in Thread,
       join: b in Board, on: t.board_id == b.id,
       join: f in Forum, on: b.forum_id == f.id,
-      where: f.is_public == true and is_nil(t.deleted_at),
+      where: f.is_public == true and not_deleted(t),
       order_by: [desc: t.inserted_at],
       limit: ^limit_count,
       preload: [:author, board: [:forum]]
@@ -72,7 +72,7 @@ defmodule CGraph.Forums.RSS do
       join: t in Thread, on: tp.thread_id == t.id,
       join: b in Board, on: t.board_id == b.id,
       join: f in Forum, on: b.forum_id == f.id,
-      where: f.is_public == true and is_nil(tp.deleted_at),
+      where: f.is_public == true and not_deleted(tp),
       order_by: [desc: tp.created_at],
       limit: ^limit_count,
       preload: [:author, thread: [:author, board: :forum]]
@@ -122,7 +122,7 @@ defmodule CGraph.Forums.RSS do
     from(t in Thread,
       join: b in Board, on: t.board_id == b.id,
       join: f in Forum, on: b.forum_id == f.id,
-      where: t.author_id == ^user_id and f.is_public == true and is_nil(t.deleted_at),
+      where: t.author_id == ^user_id and f.is_public == true and not_deleted(t),
       order_by: [desc: t.inserted_at],
       limit: ^limit_count,
       preload: [:author, board: [:forum]]
@@ -140,7 +140,7 @@ defmodule CGraph.Forums.RSS do
       join: t in Thread, on: tp.thread_id == t.id,
       join: b in Board, on: t.board_id == b.id,
       join: f in Forum, on: b.forum_id == f.id,
-      where: tp.author_id == ^user_id and f.is_public == true and is_nil(tp.deleted_at),
+      where: tp.author_id == ^user_id and f.is_public == true and not_deleted(tp),
       order_by: [desc: tp.created_at],
       limit: ^limit_count,
       preload: [:author, thread: [:author, board: :forum]]

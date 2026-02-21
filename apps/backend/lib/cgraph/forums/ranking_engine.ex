@@ -18,6 +18,7 @@ defmodule CGraph.Forums.RankingEngine do
   """
 
   import Ecto.Query
+  import CGraph.Query.SoftDelete
 
   alias CGraph.Forums.{Forum, ForumVote}
   alias CGraph.Repo
@@ -27,7 +28,7 @@ defmodule CGraph.Forums.RankingEngine do
   Should be run periodically (e.g., every 5-15 minutes).
   """
   def update_all_rankings do
-    forums = Repo.all(from f in Forum, where: is_nil(f.deleted_at))
+    forums = Repo.all(from f in Forum, where: not_deleted(f))
 
     Enum.each(forums, fn forum ->
       update_forum_rankings(forum)
@@ -195,7 +196,7 @@ defmodule CGraph.Forums.RankingEngine do
 
   defp get_top_by(metric, limit) do
     base_query = from f in Forum,
-      where: is_nil(f.deleted_at) and f.is_public == true,
+      where: not_deleted(f) and f.is_public == true,
       limit: ^limit
 
     query = case metric do
@@ -219,7 +220,7 @@ defmodule CGraph.Forums.RankingEngine do
     min_members = 10
 
     top_forums = from(f in Forum,
-      where: is_nil(f.deleted_at) and
+      where: not_deleted(f) and
              f.is_public == true and
              f.score >= ^min_score and
              f.member_count >= ^min_members,

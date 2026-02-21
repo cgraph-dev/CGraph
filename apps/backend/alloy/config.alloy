@@ -1,0 +1,88 @@
+// =============================================================================
+// CGraph — Grafana Alloy Configuration (Fly.io Production)
+// =============================================================================
+// Scrapes Phoenix /metrics on localhost:4000 and ships to Grafana Cloud.
+//
+// Required Fly secrets:
+//   GRAFANA_CLOUD_PROMETHEUS_URL
+//   GRAFANA_CLOUD_PROMETHEUS_USER
+//   GRAFANA_CLOUD_API_KEY
+// =============================================================================
+
+// ---------------------------------------------------------------------------
+// 1. Scrape Phoenix /metrics (Prometheus text format)
+// ---------------------------------------------------------------------------
+prometheus.scrape "phoenix" {
+  targets = [{
+    __address__ = "localhost:4000",
+    job         = "cgraph-phoenix",
+    instance    = env("FLY_ALLOC_ID"),
+  }]
+  metrics_path = "/metrics"
+  scrape_interval = "15s"
+  scrape_timeout  = "10s"
+
+  forward_to = [prometheus.relabel.add_labels.receiver]
+}
+
+// ---------------------------------------------------------------------------
+// 2. Add standard labels (region, environment)
+// ---------------------------------------------------------------------------
+prometheus.relabel "add_labels" {
+  rule {
+    target_label = "environment"
+    replacement  = "production"
+  }
+  rule {
+    target_label = "service"
+    replacement  = "cgraph"
+  }
+  rule {
+    target_label = "fly_region"
+    replacement  = env("FLY_REGION")
+  }
+  rule {
+    target_label = "fly_app"
+    replacement  = env("FLY_APP_NAME")
+  }
+
+  forward_to = [prometheus.remote_write.grafana_cloud.receiver]
+}
+
+// ---------------------------------------------------------------------------
+// 3. Remote write to Grafana Cloud Prometheus
+// ---------------------------------------------------------------------------
+prometheus.remote_write "grafana_cloud" {
+  endpoint {
+    url = env("GRAFANA_CLOUD_PROMETHEUS_URL")
+
+    basic_auth {
+      username = env("GRAFANA_CLOUD_PROMETHEUS_USER")
+      password = env("GRAFANA_CLOUD_API_KEY")
+    }
+
+    queue_config {
+      capacity             = 5000
+      max_shards           = 3
+      max_samples_per_send = 1000
+    }
+  }
+
+  wal {
+    truncate_frequency = "2h"
+    max_keepalive_time = "4h"
+  }
+}
+
+// ---------------------------------------------------------------------------
+// 4. Self-monitoring — Alloy internal metrics
+// ---------------------------------------------------------------------------
+prometheus.scrape "alloy_self" {
+  targets = [{
+    __address__ = "localhost:12345",
+    job         = "alloy-self",
+    instance    = env("FLY_ALLOC_ID"),
+  }]
+  scrape_interval = "60s"
+  forward_to     = [prometheus.remote_write.grafana_cloud.receiver]
+}

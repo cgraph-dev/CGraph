@@ -7,7 +7,10 @@ defmodule CGraph.Forums.UserContent do
   """
 
   import Ecto.Query, warn: false
+  import CGraph.Query.SoftDelete
   alias CGraph.Forums.{Comment, Post}
+  alias CGraph.Forums.CursorPagination
+  alias CGraph.Pagination
   alias CGraph.Repo
 
   @doc """
@@ -20,14 +23,14 @@ defmodule CGraph.Forums.UserContent do
   - `:forum_id` - Filter by specific forum (optional)
   """
   def list_user_posts(user_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
+    cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 20)
     sort = Keyword.get(opts, :sort, :newest)
     forum_id = Keyword.get(opts, :forum_id)
 
     query =
       from p in Post,
-        where: p.author_id == ^user_id and is_nil(p.deleted_at),
+        where: p.author_id == ^user_id and not_deleted(p),
         preload: [:author, :forum]
 
     query =
@@ -38,26 +41,13 @@ defmodule CGraph.Forums.UserContent do
       end
 
     query = apply_user_posts_sort(query, sort)
+    query = apply_user_content_cursor(query, cursor, sort)
 
-    total_count = Repo.aggregate(query, :count, :id)
-    total_pages = max(1, ceil(total_count / per_page))
+    {posts, has_next} = Pagination.fetch_page(query, per_page)
 
-    posts =
-      query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    pagination = %{
-      page: page,
-      per_page: per_page,
-      total_count: total_count,
-      total_pages: total_pages,
-      has_next: page < total_pages,
-      has_prev: page > 1
-    }
-
-    {posts, pagination}
+    cursor_sort = map_user_sort_to_cursor_sort(sort)
+    meta = CursorPagination.build_cursor_meta(posts, has_next, per_page, cursor_sort, :post)
+    {posts, meta}
   end
 
   @doc """
@@ -70,14 +60,14 @@ defmodule CGraph.Forums.UserContent do
   - `:forum_id` - Filter by specific forum (optional)
   """
   def list_user_threads(user_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
+    cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 20)
     sort = Keyword.get(opts, :sort, :newest)
     forum_id = Keyword.get(opts, :forum_id)
 
     query =
       from p in Post,
-        where: p.author_id == ^user_id and is_nil(p.deleted_at),
+        where: p.author_id == ^user_id and not_deleted(p),
         preload: [:author, :forum],
         select_merge: %{
           reply_count: fragment("COALESCE((SELECT COUNT(*) FROM forum_comments WHERE post_id = ?), 0)", p.id)
@@ -91,37 +81,13 @@ defmodule CGraph.Forums.UserContent do
       end
 
     query = apply_user_threads_sort(query, sort)
+    query = apply_user_content_cursor(query, cursor, sort)
 
-    count_query =
-      from p in Post,
-        where: p.author_id == ^user_id and is_nil(p.deleted_at)
+    {threads, has_next} = Pagination.fetch_page(query, per_page)
 
-    count_query =
-      if forum_id do
-        from p in count_query, where: p.forum_id == ^forum_id
-      else
-        count_query
-      end
-
-    total_count = Repo.aggregate(count_query, :count, :id)
-    total_pages = max(1, ceil(total_count / per_page))
-
-    threads =
-      query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    pagination = %{
-      page: page,
-      per_page: per_page,
-      total_count: total_count,
-      total_pages: total_pages,
-      has_next: page < total_pages,
-      has_prev: page > 1
-    }
-
-    {threads, pagination}
+    cursor_sort = map_user_sort_to_cursor_sort(sort)
+    meta = CursorPagination.build_cursor_meta(threads, has_next, per_page, cursor_sort, :post)
+    {threads, meta}
   end
 
   @doc """
@@ -130,28 +96,28 @@ defmodule CGraph.Forums.UserContent do
   def get_user_post_stats(user_id) do
     post_count =
       from(p in Post,
-        where: p.author_id == ^user_id and is_nil(p.deleted_at),
+        where: p.author_id == ^user_id and not_deleted(p),
         select: count(p.id)
       )
       |> Repo.one()
 
     comment_count =
       from(c in Comment,
-        where: c.author_id == ^user_id and is_nil(c.deleted_at),
+        where: c.author_id == ^user_id and not_deleted(c),
         select: count(c.id)
       )
       |> Repo.one()
 
     total_karma =
       from(p in Post,
-        where: p.author_id == ^user_id and is_nil(p.deleted_at),
+        where: p.author_id == ^user_id and not_deleted(p),
         select: coalesce(sum(p.score), 0)
       )
       |> Repo.one()
 
     comment_karma =
       from(c in Comment,
-        where: c.author_id == ^user_id and is_nil(c.deleted_at),
+        where: c.author_id == ^user_id and not_deleted(c),
         select: coalesce(sum(c.score), 0)
       )
       |> Repo.one()
@@ -191,4 +157,18 @@ defmodule CGraph.Forums.UserContent do
     from p in query, order_by: [desc: fragment("COALESCE((SELECT COUNT(*) FROM forum_comments WHERE post_id = ?), 0)", p.id), desc: p.inserted_at]
   end
   defp apply_user_threads_sort(query, _), do: apply_user_threads_sort(query, :newest)
+
+  defp apply_user_content_cursor(query, cursor, :newest),
+    do: CursorPagination.apply_simple_cursor_desc(query, cursor, :inserted_at)
+  defp apply_user_content_cursor(query, cursor, :oldest),
+    do: CursorPagination.apply_simple_cursor_asc(query, cursor, :inserted_at)
+  defp apply_user_content_cursor(query, cursor, :popular),
+    do: CursorPagination.apply_simple_cursor_desc(query, cursor, :score)
+  defp apply_user_content_cursor(query, cursor, _),
+    do: CursorPagination.apply_simple_cursor_desc(query, cursor, :inserted_at)
+
+  defp map_user_sort_to_cursor_sort(:newest), do: "new"
+  defp map_user_sort_to_cursor_sort(:oldest), do: "new"
+  defp map_user_sort_to_cursor_sort(:popular), do: "top"
+  defp map_user_sort_to_cursor_sort(_), do: "new"
 end

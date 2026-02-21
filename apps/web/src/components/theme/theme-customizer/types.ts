@@ -9,7 +9,7 @@ import type {
   AvatarBorderType,
   ChatBubbleStylePreset,
   EffectPreset,
-} from '@/stores/theme';
+} from '@/stores';
 
 // =============================================================================
 // COMPONENT PROPS
@@ -47,7 +47,7 @@ export type TabId = 'colors' | 'avatar' | 'bubbles' | 'effects';
 export interface AvatarBorderOption {
   value: AvatarBorderType;
   label: string;
-  tier: 'free' | 'premium' | 'elite';
+  tier: 'free' | 'premium' | 'enterprise';
 }
 
 /**
@@ -56,7 +56,7 @@ export interface AvatarBorderOption {
 export interface BubbleStyleOption {
   value: ChatBubbleStylePreset;
   label: string;
-  tier: 'free' | 'premium' | 'elite';
+  tier: 'free' | 'premium' | 'enterprise';
 }
 
 /**
@@ -66,7 +66,7 @@ export interface EffectOption {
   value: EffectPreset;
   label: string;
   description: string;
-  tier: 'free' | 'premium' | 'elite';
+  tier: 'free' | 'premium' | 'enterprise';
 }
 
 /**

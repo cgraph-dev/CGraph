@@ -30,7 +30,7 @@ export const ProfileThemeCard = memo(function ProfileThemeCard({
 }: ProfileThemeCardProps) {
   const getTierColor = (tier: string) => {
     switch (tier) {
-      case 'elite':
+      case 'enterprise':
         return '#ec4899';
       case 'premium':
         return '#8b5cf6';
@@ -41,8 +41,8 @@ export const ProfileThemeCard = memo(function ProfileThemeCard({
 
   const getTierLabel = (tier: string) => {
     switch (tier) {
-      case 'elite':
-        return 'ELITE';
+      case 'enterprise':
+        return 'ENTERPRISE';
       case 'premium':
         return 'PREMIUM';
       default:

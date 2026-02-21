@@ -285,13 +285,14 @@ defmodule CGraph.Forums.Forum do
   # =============================================================================
 
   import Ecto.Query
+  import CGraph.Query.SoftDelete
 
   @doc """
   Query for root-level forums only (no parent).
   """
   def root_forums_query do
     from f in __MODULE__,
-      where: is_nil(f.parent_forum_id) and is_nil(f.deleted_at),
+      where: is_nil(f.parent_forum_id) and not_deleted(f),
       order_by: [asc: f.display_order, asc: f.name]
   end
 
@@ -300,7 +301,7 @@ defmodule CGraph.Forums.Forum do
   """
   def sub_forums_query(parent_id) do
     from f in __MODULE__,
-      where: f.parent_forum_id == ^parent_id and is_nil(f.deleted_at),
+      where: f.parent_forum_id == ^parent_id and not_deleted(f),
       order_by: [asc: f.display_order, asc: f.name]
   end
 
@@ -309,7 +310,7 @@ defmodule CGraph.Forums.Forum do
   """
   def at_depth_query(depth) do
     from f in __MODULE__,
-      where: f.depth == ^depth and is_nil(f.deleted_at),
+      where: f.depth == ^depth and not_deleted(f),
       order_by: [asc: f.display_order, asc: f.name]
   end
 
@@ -319,7 +320,7 @@ defmodule CGraph.Forums.Forum do
   def subtree_query(forum_path) do
     pattern = forum_path <> "%"
     from f in __MODULE__,
-      where: like(f.path, ^pattern) and is_nil(f.deleted_at),
+      where: like(f.path, ^pattern) and not_deleted(f),
       order_by: [asc: f.depth, asc: f.display_order, asc: f.name]
   end
 
@@ -328,7 +329,7 @@ defmodule CGraph.Forums.Forum do
   """
   def navigation_query do
     from f in __MODULE__,
-      where: f.show_in_navigation == true and is_nil(f.deleted_at),
+      where: f.show_in_navigation == true and not_deleted(f),
       order_by: [asc: f.depth, asc: f.display_order, asc: f.name]
   end
 

@@ -252,7 +252,7 @@ describe('getTierGlow', () => {
   it('should return correct color for each tier', () => {
     expect(getTierGlow('free')).toBe('#10b981');
     expect(getTierGlow('premium')).toBe('#8b5cf6');
-    expect(getTierGlow('elite')).toBe('#ec4899');
+    expect(getTierGlow('enterprise')).toBe('#ec4899');
   });
 
   it('should fall back to free tier for unknown value', () => {

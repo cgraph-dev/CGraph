@@ -1,9 +1,9 @@
 /**
  * Tier Limits Types
- * 
+ *
  * Shared types for subscription tiers and feature limits.
  * Used by both web and mobile clients.
- * 
+ *
  * Tiers (from FORUM_SOCIAL_NETWORK_INTEGRATION.md):
  * - free: 1 forum, 100MB storage, basic features
  * - premium: 5 forums, 5GB storage, advanced AI moderation
@@ -16,6 +16,11 @@
 
 /**
  * Available subscription tiers (3 tiers as per documentation)
+ *
+ * UI Branding Note: The premium tier is displayed as "PRO" in compact badges
+ * throughout the web and mobile apps (e.g., ThemeCard, OptionButton, PluginCard).
+ * This is an intentional UX decision — "PRO" is punchier at small sizes.
+ * The data model and type system always use 'premium'.
  */
 export type TierName = 'free' | 'premium' | 'enterprise';
 
@@ -36,10 +41,13 @@ export const TIER_ORDER: Record<TierName, number> = {
 /**
  * Tier limits as defined in documentation
  */
-export const TIER_LIMITS: Record<TierName, { maxForums: number | null; maxStorageBytes: number | null }> = {
-  free: { maxForums: 1, maxStorageBytes: 100 * 1024 * 1024 },         // 100MB
+export const TIER_LIMITS: Record<
+  TierName,
+  { maxForums: number | null; maxStorageBytes: number | null }
+> = {
+  free: { maxForums: 1, maxStorageBytes: 100 * 1024 * 1024 }, // 100MB
   premium: { maxForums: 5, maxStorageBytes: 5 * 1024 * 1024 * 1024 }, // 5GB
-  enterprise: { maxForums: null, maxStorageBytes: null },              // Unlimited
+  enterprise: { maxForums: null, maxStorageBytes: null }, // Unlimited
 };
 
 // =============================================================================
@@ -257,7 +265,7 @@ export interface AIModerationQueueItem {
   content_type: ModerableContentType;
   content_id: string;
   content_text: string | null;
-  
+
   // AI analysis
   ai_model: string | null;
   confidence_score: number | null;
@@ -265,13 +273,13 @@ export interface AIModerationQueueItem {
   severity: ModerationSeverity | null;
   suggested_action: ModerationAction | null;
   auto_actioned: boolean;
-  
+
   // Status
   status: ModerationStatus;
   reviewed_by_id: string | null;
   reviewed_at: string | null;
   final_action: ModerationAction | null;
-  
+
   // Timestamps
   inserted_at: string;
   updated_at: string;
@@ -285,13 +293,13 @@ export interface AIModerationSettings {
   forum_id: string;
   enabled: boolean;
   auto_moderation_enabled: boolean;
-  
+
   // Thresholds (0.0 - 1.0)
   spam_threshold: number;
   toxicity_threshold: number;
   nsfw_threshold: number;
   low_quality_threshold: number;
-  
+
   // Auto-actions
   auto_remove_spam: boolean;
   auto_remove_spam_threshold: number;
@@ -299,11 +307,11 @@ export interface AIModerationSettings {
   auto_hide_toxicity_threshold: number;
   auto_flag_nsfw: boolean;
   notify_on_auto_action: boolean;
-  
+
   // Exemptions
   exempt_roles: string[];
   exempt_karma_threshold: number;
-  
+
   // Custom rules
   custom_banned_words: string[];
   custom_allowed_words: string[];
@@ -365,12 +373,12 @@ export function getMonthlyPrice(tier: TierBasic): string {
  */
 export function getYearlyPrice(tier: TierBasic): { price: string; savings: string } {
   if (tier.price_yearly_cents === 0) return { price: 'Free', savings: '' };
-  
+
   const yearlyPrice = tier.price_yearly_cents / 100;
   const monthlyEquivalent = yearlyPrice / 12;
   const monthlyFull = tier.price_monthly_cents / 100;
   const savingsPercent = Math.round((1 - monthlyEquivalent / monthlyFull) * 100);
-  
+
   return {
     price: `$${yearlyPrice.toFixed(2)}/yr`,
     savings: savingsPercent > 0 ? `Save ${savingsPercent}%` : '',

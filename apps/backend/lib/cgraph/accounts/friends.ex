@@ -7,7 +7,7 @@ defmodule CGraph.Accounts.Friends do
 
   import Ecto.Query
 
-  alias CGraph.Accounts.{Friendship, User}
+  alias CGraph.Accounts.{DeletedFriendship, Friendship, User}
   alias CGraph.Notifications
   alias CGraph.Repo
 
@@ -138,6 +138,15 @@ defmodule CGraph.Accounts.Friends do
   """
   def remove_friend(user_id, friend_id) do
     Repo.transaction(fn ->
+      # Record the deletion for sync clients before hard-deleting
+      now = DateTime.utc_now() |> DateTime.truncate(:microsecond)
+      Repo.insert_all(DeletedFriendship, [
+        %{id: Ecto.UUID.generate(), user_id: user_id, friend_id: friend_id,
+          deleted_at: now, inserted_at: now, updated_at: now},
+        %{id: Ecto.UUID.generate(), user_id: friend_id, friend_id: user_id,
+          deleted_at: now, inserted_at: now, updated_at: now}
+      ])
+
       # Delete both directions
       from(f in Friendship,
         where: f.user_id == ^user_id and f.friend_id == ^friend_id,

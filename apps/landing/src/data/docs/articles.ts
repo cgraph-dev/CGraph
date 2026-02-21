@@ -1086,19 +1086,18 @@ export const docArticles: Record<string, DocArticleData> = {
   <li><code>apps/landing</code> — Marketing site (cgraph.org)</li>
   <li><code>apps/mobile</code> — React Native app (Expo SDK 54)</li>
   <li><code>apps/backend</code> — Elixir/Phoenix API server</li>
-  <li><code>packages/*</code> — 12 shared packages (ui, hooks, state, crypto, etc.)</li>
+  <li><code>packages/*</code> — 5 shared packages (shared-types, utils, crypto, socket, animation-constants)</li>
 </ul>
 
 <h3>Shared Packages</h3>
 <table>
   <thead><tr><th>Package</th><th>Purpose</th><th>Used By</th></tr></thead>
   <tbody>
-    <tr><td><strong>@cgraph/ui</strong></td><td>90+ shared UI components</td><td>Web, Mobile</td></tr>
-    <tr><td><strong>@cgraph/hooks</strong></td><td>7 facade hooks</td><td>Web, Mobile</td></tr>
-    <tr><td><strong>@cgraph/state</strong></td><td>Zustand stores</td><td>Web, Mobile</td></tr>
+    <tr><td><strong>@cgraph/shared-types</strong></td><td>TypeScript interfaces shared across apps</td><td>Web, Mobile</td></tr>
+    <tr><td><strong>@cgraph/utils</strong></td><td>Common utility functions</td><td>Web, Mobile</td></tr>
     <tr><td><strong>@cgraph/crypto</strong></td><td>E2EE Triple Ratchet / PQXDH</td><td>Web, Mobile</td></tr>
     <tr><td><strong>@cgraph/socket</strong></td><td>WebSocket client</td><td>Web, Mobile</td></tr>
-    <tr><td><strong>@cgraph/api-client</strong></td><td>API client with types</td><td>Web, Mobile</td></tr>
+    <tr><td><strong>@cgraph/animation-constants</strong></td><td>Spring configs and motion constants</td><td>Web, Mobile</td></tr>
   </tbody>
 </table>
 

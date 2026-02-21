@@ -40,6 +40,7 @@ defmodule CGraph.Search.Indexer do
   alias CGraph.Workers.SearchIndexWorker
 
   require Logger
+  import CGraph.Query.SoftDelete
 
   # ---------------------------------------------------------------------------
   # Async Operations (via Oban)
@@ -138,7 +139,7 @@ defmodule CGraph.Search.Indexer do
 
     CGraph.Repo.transaction(fn ->
       CGraph.Accounts.User
-      |> where([u], is_nil(u.deleted_at))
+      |> where([u], not_deleted(u))
       |> CGraph.Repo.stream(max_rows: batch_size)
       |> Stream.chunk_every(batch_size)
       |> Stream.each(fn batch ->
@@ -200,7 +201,7 @@ defmodule CGraph.Search.Indexer do
     # Only index metadata, not content
     CGraph.Repo.transaction(fn ->
       CGraph.Messaging.Message
-      |> where([m], is_nil(m.deleted_at))
+      |> where([m], not_deleted(m))
       |> CGraph.Repo.stream(max_rows: batch_size)
       |> Stream.chunk_every(batch_size)
       |> Stream.each(fn batch ->

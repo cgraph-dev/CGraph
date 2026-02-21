@@ -139,7 +139,8 @@ jobs:
           echo "JavaScript bundle size: ${JS_SIZE}KB (limit: ${MAX_SIZE_KB}KB)"
 
           if [ "$JS_SIZE" -gt "$MAX_SIZE_KB" ]; then
-            echo "::warning::JavaScript bundle size ($JS_SIZE KB) exceeds limit ($MAX_SIZE_KB KB)"
+            echo "::error::JavaScript bundle size ($JS_SIZE KB) exceeds limit ($MAX_SIZE_KB KB)"
+            exit 1
           fi
 
   # ============================================

@@ -124,9 +124,8 @@ groups:
         annotations:
           summary: 'CGraph API error budget burning critically fast'
           description: >
-            API error budget is being consumed at {{ $value }}x the normal rate.
-            At this rate, the entire monthly error budget will be exhausted in
-            {{ printf "%.1f" (div 720 $value) }} hours.
+            API error budget is being consumed at {{ $value | humanize }}x the normal rate.
+            Immediate investigation required — budget will be exhausted within hours.
           runbook: 'https://docs.cgraph.org/runbooks/high-error-rate'
 
       # WARNING: Slow burn — 1x burn rate sustained over 6h
@@ -140,8 +139,8 @@ groups:
         annotations:
           summary: 'CGraph API error budget being consumed'
           description: >
-            API error budget burn rate is {{ $value }}x normal.
-            Budget remaining: {{ printf "%.1f" (mul (query "cgraph:api_error_budget:remaining") 100) }}%
+            API error budget burn rate is {{ $value | humanize }}x normal.
+            Check error budget dashboard for remaining budget percentage.
 
       # CRITICAL: Error budget nearly exhausted
       - alert: CGraphErrorBudgetExhausted
@@ -153,7 +152,7 @@ groups:
         annotations:
           summary: 'CGraph API error budget nearly exhausted (<10% remaining)'
           description: >
-            Only {{ printf "%.1f" (mul $value 100) }}% of the monthly error budget remains.
+            Only {{ $value | humanizePercentage }} of the monthly error budget remains.
             Consider freezing deployments until the budget resets.
 
       # WARNING: Message delivery latency SLO breach
@@ -176,7 +175,7 @@ groups:
           team: backend
         annotations:
           summary: 'Forum feed p99 latency exceeds 200ms SLO'
-          description: 'Current p99: {{ printf "%.0f" (mul $value 1000) }}ms (target: <200ms)'
+          description: 'Current p99: {{ $value | humanizeDuration }} (target: <200ms)'
 
       # WARNING: Search latency SLO breach
       - alert: CGraphSearchLatencySLOBreach
@@ -187,4 +186,4 @@ groups:
           team: backend
         annotations:
           summary: 'Search p99 latency exceeds 500ms SLO'
-          description: 'Current p99: {{ printf "%.0f" (mul $value 1000) }}ms (target: <500ms)'
+          description: 'Current p99: {{ $value | humanizeDuration }} (target: <500ms)'

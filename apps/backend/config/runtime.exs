@@ -153,10 +153,12 @@ if config_env() == :prod do
       signing_salt: System.get_env("LIVE_VIEW_SIGNING_SALT") || :crypto.strong_rand_bytes(16) |> Base.encode64()
     ]
 
-  # Override session signing_salt in production
-  # Falls back to a per-boot random value if env var not set
-  config :cgraph, :session_signing_salt,
-    System.get_env("SESSION_SIGNING_SALT") || :crypto.strong_rand_bytes(16) |> Base.encode64()
+  # Session signing_salt is a key derivation namespace, NOT a secret.
+  # The compile-time default "cgraph_session_v1" is fine — actual security
+  # comes from secret_key_base. Only override if SESSION_SIGNING_SALT is explicitly set.
+  if salt = System.get_env("SESSION_SIGNING_SALT") do
+    config :cgraph, :session_signing_salt, salt
+  end
 
   # Guardian JWT configuration
   config :cgraph, CGraph.Guardian,
@@ -219,7 +221,11 @@ if config_env() == :prod do
 
   # OpenTelemetry configuration
   otel_endpoint = System.get_env("OTEL_EXPORTER_OTLP_ENDPOINT") || "http://localhost:4318"
-  otel_sample_rate = String.to_float(System.get_env("OTEL_SAMPLE_RATE") || "0.1")
+  otel_sample_rate =
+    case Float.parse(System.get_env("OTEL_SAMPLE_RATE") || "0.1") do
+      {rate, _} -> rate
+      :error -> 0.1
+    end
 
   config :opentelemetry,
     span_processor: :batch,

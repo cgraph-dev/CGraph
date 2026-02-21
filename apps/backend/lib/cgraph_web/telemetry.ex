@@ -134,6 +134,34 @@ defmodule CGraphWeb.Telemetry do
       nil
     )
 
+    # Attach WebSocket/Channel events
+    :telemetry.attach_many(
+      "cgraph-websocket-handlers",
+      [
+        [:cgraph, :websocket, :connect],
+        [:cgraph, :websocket, :disconnect],
+        [:cgraph, :websocket, :message, :in],
+        [:cgraph, :websocket, :message, :out],
+        [:cgraph, :channel, :join]
+      ],
+      &__MODULE__.handle_websocket_event/4,
+      nil
+    )
+
+    # Attach security events
+    :telemetry.attach_many(
+      "cgraph-security-handlers",
+      [
+        [:cgraph, :auth, :token, :created],
+        [:cgraph, :auth, :token, :refreshed],
+        [:cgraph, :auth, :token, :revoked],
+        [:cgraph, :auth, :account, :locked],
+        [:cgraph, :auth, :account, :unlocked]
+      ],
+      &__MODULE__.handle_security_event/4,
+      nil
+    )
+
     Logger.info("CGraphWeb.Telemetry handlers attached")
     :ok
   end
@@ -205,13 +233,8 @@ defmodule CGraphWeb.Telemetry do
         tags: [:channel_type],
         description: "Messages sent"
       ),
-      Telemetry.Metrics.counter("cgraph.auth.login.success.count",
-        description: "Successful logins"
-      ),
-      Telemetry.Metrics.counter("cgraph.auth.login.failure.count",
-        tags: [:reason],
-        description: "Failed login attempts"
-      ),
+      # NOTE: auth login success/failure counters are in the Security Metrics section
+      # below with richer tags (method, reason). Do not duplicate here.
       Telemetry.Metrics.counter("cgraph.rate_limiter.exceeded.count",
         tags: [:tier, :path],
         description: "Rate limit exceeded events"
@@ -222,6 +245,14 @@ defmodule CGraphWeb.Telemetry do
         unit: :byte,
         description: "Total memory used by the VM"
       ),
+      Telemetry.Metrics.last_value("vm.memory.processes",
+        unit: :byte,
+        description: "Memory used by BEAM processes"
+      ),
+      Telemetry.Metrics.last_value("vm.memory.ets",
+        unit: :byte,
+        description: "Memory used by ETS tables"
+      ),
       Telemetry.Metrics.last_value("vm.total_run_queue_lengths.total",
         description: "Total run queue length"
       ),
@@ -230,6 +261,82 @@ defmodule CGraphWeb.Telemetry do
       ),
       Telemetry.Metrics.last_value("vm.total_run_queue_lengths.io",
         description: "IO run queue length"
+      ),
+      Telemetry.Metrics.last_value("vm.system_counts.process_count",
+        description: "Number of BEAM processes"
+      ),
+
+      # -------------------------------------------------------------------
+      # WebSocket / Channel Metrics
+      # -------------------------------------------------------------------
+      Telemetry.Metrics.last_value("cgraph.websocket.connections.active",
+        description: "Active WebSocket connections"
+      ),
+      Telemetry.Metrics.counter("cgraph.websocket.connect.total",
+        description: "Total WebSocket connections established"
+      ),
+      Telemetry.Metrics.counter("cgraph.websocket.disconnect.total",
+        tags: [:reason],
+        description: "Total WebSocket disconnections"
+      ),
+      Telemetry.Metrics.counter("cgraph.websocket.message.in.total",
+        tags: [:event_type],
+        description: "WebSocket messages received"
+      ),
+      Telemetry.Metrics.counter("cgraph.websocket.message.out.total",
+        tags: [:event_type],
+        description: "WebSocket messages sent"
+      ),
+      Telemetry.Metrics.distribution("cgraph.channel.join.duration",
+        unit: {:native, :millisecond},
+        tags: [:channel],
+        description: "Channel join latency",
+        reporter_options: [buckets: [5, 10, 25, 50, 100, 250, 500]]
+      ),
+
+      # -------------------------------------------------------------------
+      # Rate Limiter Metrics
+      # -------------------------------------------------------------------
+      Telemetry.Metrics.counter("cgraph.rate_limiter.check.total",
+        tags: [:tier, :result],
+        description: "Rate limit checks (allowed vs denied)"
+      ),
+      Telemetry.Metrics.distribution("cgraph.rate_limiter.check.duration",
+        unit: {:native, :millisecond},
+        tags: [:tier],
+        description: "Rate limit check latency",
+        reporter_options: [buckets: [0.1, 0.5, 1, 2, 5, 10, 25]]
+      ),
+
+      # -------------------------------------------------------------------
+      # Security Metrics
+      # -------------------------------------------------------------------
+      Telemetry.Metrics.counter("cgraph.auth.login.success.total",
+        tags: [:method],
+        description: "Successful auth attempts by method"
+      ),
+      Telemetry.Metrics.counter("cgraph.auth.login.failure.total",
+        tags: [:method, :reason],
+        description: "Failed auth attempts by method and reason"
+      ),
+      Telemetry.Metrics.counter("cgraph.auth.token.created.total",
+        tags: [:type],
+        description: "Tokens created"
+      ),
+      Telemetry.Metrics.counter("cgraph.auth.token.refreshed.total",
+        description: "Tokens refreshed"
+      ),
+      Telemetry.Metrics.counter("cgraph.auth.token.revoked.total",
+        tags: [:reason],
+        description: "Tokens revoked"
+      ),
+      Telemetry.Metrics.counter("cgraph.auth.account.locked.total",
+        tags: [:reason],
+        description: "Account lockout events"
+      ),
+      Telemetry.Metrics.counter("cgraph.auth.account.unlocked.total",
+        tags: [:method],
+        description: "Account unlock events"
       )
     ]
   end
@@ -357,6 +464,57 @@ defmodule CGraphWeb.Telemetry do
   end
 
   def handle_business_event(_event, _measurements, _metadata, _config), do: :ok
+
+  # ---------------------------------------------------------------------------
+  # WebSocket Event Handlers
+  # ---------------------------------------------------------------------------
+
+  @doc false
+  def handle_websocket_event([:cgraph, :websocket, :connect], _measurements, _metadata, _config) do
+    Logger.debug("WebSocket connected")
+  end
+
+  def handle_websocket_event([:cgraph, :websocket, :disconnect], _measurements, metadata, _config) do
+    Logger.debug("WebSocket disconnected", reason: metadata[:reason] || "normal")
+  end
+
+  def handle_websocket_event([:cgraph, :channel, :join], measurements, metadata, _config) do
+    duration_ms = System.convert_time_unit(
+      measurements[:duration] || 0,
+      :native,
+      :millisecond
+    )
+
+    if duration_ms > 100 do
+      Logger.info("Slow channel join",
+        channel: metadata[:channel],
+        duration_ms: duration_ms
+      )
+    end
+  end
+
+  def handle_websocket_event(_event, _measurements, _metadata, _config), do: :ok
+
+  # ---------------------------------------------------------------------------
+  # Security Event Handlers
+  # ---------------------------------------------------------------------------
+
+  @doc false
+  def handle_security_event([:cgraph, :auth, :account, :locked], _measurements, metadata, _config) do
+    Logger.warning("Account locked",
+      reason: metadata[:reason] || "too_many_attempts"
+    )
+  end
+
+  def handle_security_event([:cgraph, :auth, :account, :unlocked], _measurements, metadata, _config) do
+    Logger.info("Account unlocked", method: metadata[:method] || "timeout")
+  end
+
+  def handle_security_event([:cgraph, :auth, :token, :revoked], _measurements, metadata, _config) do
+    Logger.info("Token revoked", reason: metadata[:reason] || "user_initiated")
+  end
+
+  def handle_security_event(_event, _measurements, _metadata, _config), do: :ok
 
   # ---------------------------------------------------------------------------
   # Utility Functions

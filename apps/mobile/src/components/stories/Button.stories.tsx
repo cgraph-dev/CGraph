@@ -1,25 +1,20 @@
 /**
  * Button Component Stories for React Native/Expo
- * 
+ *
  * Showcases the Button component with all variants, sizes, and states.
- * 
+ *
  * @since v0.7.31
  */
 import React from 'react';
 import { View } from 'react-native';
 import type { Meta, StoryObj } from '@storybook/react';
 import Button from '../Button';
-import { ThemeProvider } from '../../contexts/ThemeContext';
 
 /**
- * Wrapper to provide theme context
+ * Wrapper providing layout for stories
  */
 const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ gap: 12 }}>
-      {children}
-    </View>
-  </ThemeProvider>
+  <View style={{ gap: 12 }}>{children}</View>
 );
 
 const meta: Meta<typeof Button> = {

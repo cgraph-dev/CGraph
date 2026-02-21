@@ -25,6 +25,12 @@ defmodule CGraphWeb.UserSocket do
   channel "forum:*", CGraphWeb.ForumChannel
   channel "thread:*", CGraphWeb.ThreadChannel
 
+  # AI Channel (streaming AI responses)
+  channel "ai:*", CGraphWeb.Channels.AIChannel
+
+  # Collaborative editing (Yjs CRDT sync)
+  channel "document:*", CGraphWeb.Channels.DocumentChannel
+
   @impl true
   def connect(%{"token" => token}, socket, _connect_info) do
     case verify_token(token) do

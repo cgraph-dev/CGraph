@@ -13,6 +13,7 @@ defmodule CGraph.Messaging do
   """
 
   import Ecto.Query, warn: false
+  import CGraph.Query.SoftDelete
 
   alias CGraph.Messaging.{Conversation, ConversationParticipant, DeliveryTracking, Message, Reaction}
   alias CGraph.Messaging.{Conversations, MessageOperations, SavedMessages}
@@ -119,12 +120,11 @@ defmodule CGraph.Messaging do
 
   @doc "Count replies per parent message ID. Returns `%{message_id => count}`."
   def count_thread_replies(parent_message_ids) when is_list(parent_message_ids) do
-    from(m in Message,
-      where: m.reply_to_id in ^parent_message_ids,
-      where: is_nil(m.deleted_at),
-      group_by: m.reply_to_id,
-      select: {m.reply_to_id, count(m.id)}
-    )
+    Message
+    |> exclude_deleted()
+    |> where([m], m.reply_to_id in ^parent_message_ids)
+    |> group_by([m], m.reply_to_id)
+    |> select([m], {m.reply_to_id, count(m.id)})
     |> Repo.all()
     |> Map.new()
   end
@@ -403,4 +403,148 @@ defmodule CGraph.Messaging do
     Map.put(attrs, "expires_at", DateTime.utc_now() |> DateTime.add(ttl, :second))
   end
   defp maybe_set_expires_at(_conversation, attrs), do: attrs
+
+  # ===========================================================================
+  # Sync Query Functions (WatermelonDB pull)
+  # ===========================================================================
+
+  @doc """
+  List conversations the user is part of, updated since the given timestamp.
+  `since` is a millisecond Unix timestamp or nil for full sync.
+  """
+  def list_user_conversations_since(user, since) do
+    user_id = user.id
+
+    query =
+      from c in Conversation,
+        join: cp in ConversationParticipant, on: cp.conversation_id == c.id,
+        where: cp.user_id == ^user_id and is_nil(cp.left_at),
+        select: c
+
+    query =
+      if since do
+        dt = DateTime.from_unix!(since, :millisecond)
+        from c in query, where: c.updated_at > ^dt
+      else
+        query
+      end
+
+    Repo.all(query)
+  end
+
+  @doc """
+  List IDs of conversations the user has left since the given timestamp.
+  """
+  def list_deleted_conversation_ids_since(user, since) do
+    user_id = user.id
+
+    query =
+      from cp in ConversationParticipant,
+        where: cp.user_id == ^user_id and not is_nil(cp.left_at),
+        select: cp.conversation_id
+
+    query =
+      if since do
+        dt = DateTime.from_unix!(since, :millisecond)
+        from cp in query, where: cp.left_at > ^dt
+      else
+        query
+      end
+
+    Repo.all(query)
+  end
+
+  @doc """
+  List messages in user's conversations, updated since the given timestamp.
+  """
+  def list_user_messages_since(user, since) do
+    user_id = user.id
+
+    query =
+      from m in Message,
+        join: cp in ConversationParticipant, on: cp.conversation_id == m.conversation_id,
+        where: cp.user_id == ^user_id and is_nil(cp.left_at) and is_nil(m.deleted_at),
+        select: m
+
+    query =
+      if since do
+        dt = DateTime.from_unix!(since, :millisecond)
+        from m in query, where: m.updated_at > ^dt
+      else
+        query
+      end
+
+    Repo.all(query)
+  end
+
+  @doc """
+  List IDs of messages that were soft-deleted since the given timestamp.
+  """
+  def list_deleted_message_ids_since(user, since) do
+    user_id = user.id
+
+    query =
+      from m in Message,
+        join: cp in ConversationParticipant, on: cp.conversation_id == m.conversation_id,
+        where: cp.user_id == ^user_id and not is_nil(m.deleted_at),
+        select: m.id
+
+    query =
+      if since do
+        dt = DateTime.from_unix!(since, :millisecond)
+        from m in query, where: m.deleted_at > ^dt
+      else
+        query
+      end
+
+    Repo.all(query)
+  end
+
+  @doc """
+  List conversation participants updated since the given timestamp.
+  """
+  def list_participants_since(user, since) do
+    user_id = user.id
+
+    query =
+      from cp in ConversationParticipant,
+        join: my_cp in ConversationParticipant,
+          on: my_cp.conversation_id == cp.conversation_id and my_cp.user_id == ^user_id,
+        where: is_nil(cp.left_at) and is_nil(my_cp.left_at),
+        select: cp
+
+    query =
+      if since do
+        dt = DateTime.from_unix!(since, :millisecond)
+        from cp in query, where: cp.updated_at > ^dt
+      else
+        query
+      end
+
+    Repo.all(query)
+  end
+
+  @doc """
+  List IDs of participants who left conversations since the given timestamp.
+  """
+  def list_removed_participant_ids_since(user, since) do
+    user_id = user.id
+
+    query =
+      from cp in ConversationParticipant,
+        join: my_cp in ConversationParticipant,
+          on: my_cp.conversation_id == cp.conversation_id and my_cp.user_id == ^user_id,
+        where: not is_nil(cp.left_at),
+        select: cp.id
+
+    query =
+      if since do
+        dt = DateTime.from_unix!(since, :millisecond)
+        from cp in query, where: cp.left_at > ^dt
+      else
+        query
+      end
+
+    Repo.all(query)
+  end
 end

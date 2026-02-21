@@ -198,6 +198,54 @@ jobs:
         if: always()
 
   # ============================================
+  # Packages Tests (shared workspace packages)
+  # ============================================
+  packages-test:
+    name: Packages Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test api-client
+        run: pnpm --filter @cgraph/api-client run test -- --run
+
+      - name: Typecheck api-client
+        run: pnpm --filter @cgraph/api-client exec tsc --noEmit
+
+      - name: Test crypto
+        run: pnpm --filter @cgraph/crypto run test -- --run
+
+      - name: Typecheck crypto
+        run: pnpm --filter @cgraph/crypto run typecheck
+
+      - name: Test utils
+        run: pnpm --filter @cgraph/utils run test -- --run
+
+      - name: Typecheck utils
+        run: pnpm --filter @cgraph/utils exec tsc --noEmit
+
+      - name: Test socket
+        run: pnpm --filter @cgraph/socket run test -- --run
+
+      - name: Typecheck socket
+        run: pnpm --filter @cgraph/socket run typecheck
+
+  # ============================================
   # Frontend Tests (React/TypeScript)
   # ============================================
   frontend-test:
@@ -392,6 +440,10 @@ jobs:
         working-directory: apps/backend
         run: mix sobelow --config
 
+      - name: Run mix_audit (Hex vulnerability scan)
+        working-directory: apps/backend
+        run: mix deps.audit
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
@@ -447,6 +499,7 @@ jobs:
     needs:
       - lint
       - typecheck
+      - packages-test
       - backend-test
       - frontend-test
       - mobile-test
@@ -461,6 +514,7 @@ jobs:
           echo "===================================="
           echo "lint:          ${{ needs.lint.result }}"
           echo "typecheck:     ${{ needs.typecheck.result }}"
+          echo "packages-test: ${{ needs.packages-test.result }}"
           echo "backend-test:  ${{ needs.backend-test.result }}"
           echo "frontend-test: ${{ needs.frontend-test.result }}"
           echo "mobile-test:   ${{ needs.mobile-test.result }}"
@@ -472,6 +526,7 @@ jobs:
           # Fail if any required job failed or was cancelled
           if [[ "${{ needs.lint.result }}" == "failure" || \
                 "${{ needs.typecheck.result }}" == "failure" || \
+                "${{ needs.packages-test.result }}" == "failure" || \
                 "${{ needs.backend-test.result }}" == "failure" || \
                 "${{ needs.frontend-test.result }}" == "failure" || \
                 "${{ needs.mobile-test.result }}" == "failure" || \
@@ -483,6 +538,7 @@ jobs:
 
           if [[ "${{ needs.lint.result }}" == "cancelled" || \
                 "${{ needs.typecheck.result }}" == "cancelled" || \
+                "${{ needs.packages-test.result }}" == "cancelled" || \
                 "${{ needs.backend-test.result }}" == "cancelled" || \
                 "${{ needs.frontend-test.result }}" == "cancelled" || \
                 "${{ needs.mobile-test.result }}" == "cancelled" ]]; then

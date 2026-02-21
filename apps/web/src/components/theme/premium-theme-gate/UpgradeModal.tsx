@@ -25,8 +25,8 @@ export function UpgradeModal({ requiredTier, onClose }: UpgradeModalProps) {
       highlighted: requiredTier === 'premium',
     },
     {
-      tier: 'elite' as const,
-      name: 'Elite',
+      tier: 'enterprise' as const,
+      name: 'Enterprise',
       price: '$9.99',
       period: '/month',
       features: [
@@ -38,7 +38,7 @@ export function UpgradeModal({ requiredTier, onClose }: UpgradeModalProps) {
         'Early access to features',
         'Custom CSS support',
       ],
-      highlighted: requiredTier === 'elite',
+      highlighted: requiredTier === 'enterprise',
     },
   ];
 

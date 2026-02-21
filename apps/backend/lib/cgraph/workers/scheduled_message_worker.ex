@@ -26,6 +26,7 @@ defmodule CGraph.Workers.ScheduledMessageWorker do
   alias CGraphWeb.Endpoint
 
   import Ecto.Query
+  import CGraph.Query.SoftDelete
 
   @doc """
   Process scheduled messages that are ready to be sent.
@@ -42,7 +43,7 @@ defmodule CGraph.Workers.ScheduledMessageWorker do
       |> where([m], m.schedule_status == "scheduled")
       |> where([m], not is_nil(m.scheduled_at))
       |> where([m], m.scheduled_at <= ^now)
-      |> where([m], is_nil(m.deleted_at))
+      |> where([m], not_deleted(m))
       |> preload([:sender, conversation: :participants])
       |> limit(100)
       |> Repo.all()

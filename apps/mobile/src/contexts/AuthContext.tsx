@@ -1,14 +1,13 @@
 /**
- * AuthContext — BACKWARD-COMPATIBLE SHIM
+ * AuthContext — Re-export layer from Zustand stores.
  *
- * All state has moved to `stores/authStore.ts` (Zustand).
- * This file re-exports the same API so 18 consumers keep working.
+ * All state lives in `stores/authStore.ts` (Zustand).
+ * This file re-exports the same API so existing consumers keep working.
  * New code should import directly from `@/stores` or `@/stores/authStore`.
  *
  * @deprecated Import from '@/stores' or '@/stores/authStore' instead.
  */
 
-import React from 'react';
 import { useAuthStore } from '../stores/authStore';
 
 /**
@@ -38,12 +37,3 @@ export function useAuth() {
     refreshUser,
   };
 }
-
-/**
- * AuthProvider — no-op wrapper for backward compatibility.
- * The store hydrates itself; no React context is needed.
- */
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
-}
-

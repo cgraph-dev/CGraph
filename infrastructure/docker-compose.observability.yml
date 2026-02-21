@@ -58,11 +58,22 @@ services:
     ports:
       - '9093:9093'
     volumes:
-      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--storage.path=/alertmanager'
-      - '--web.external-url=http://localhost:9093'
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml.tmpl:ro
+    environment:
+      - SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-https://hooks.slack.com/services/PLACEHOLDER}
+      - PAGERDUTY_SERVICE_KEY=${PAGERDUTY_SERVICE_KEY:-placeholder-key}
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        cat /etc/alertmanager/alertmanager.yml.tmpl | \
+          sed "s|\$${SLACK_WEBHOOK_URL}|$$SLACK_WEBHOOK_URL|g" | \
+          sed "s|\$${PAGERDUTY_SERVICE_KEY}|$$PAGERDUTY_SERVICE_KEY|g" \
+          > /tmp/alertmanager.yml && \
+        /bin/alertmanager \
+          --config.file=/tmp/alertmanager.yml \
+          --storage.path=/alertmanager \
+          --web.external-url=http://localhost:9093
     healthcheck:
       test: ['CMD', 'wget', '--quiet', '--tries=1', '--spider', 'http://localhost:9093/-/healthy']
       interval: 15s
@@ -100,9 +111,9 @@ services:
     image: grafana/tempo:2.5.0
     container_name: cgraph-tempo
     ports:
-      - '3200:3200'   # Tempo query frontend
-      - '4317:4317'   # OTLP gRPC receiver
-      - '4318:4318'   # OTLP HTTP receiver
+      - '3200:3200' # Tempo query frontend
+      - '4317:4317' # OTLP gRPC receiver
+      - '4318:4318' # OTLP HTTP receiver
     volumes:
       - ./tempo/tempo.yml:/etc/tempo/tempo.yml:ro
       - tempo_data:/var/tempo

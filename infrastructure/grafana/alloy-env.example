@@ -1,0 +1,17 @@
+# /etc/alloy/env — Environment variables for Grafana Alloy
+# Grafana Cloud stack: cgraphdev (eu-central-0)
+#
+# Get these values from: Grafana Cloud → your stack → Details → Prometheus / Loki sections
+# For Fly.io, set these as secrets: fly secrets set GRAFANA_CLOUD_API_KEY=... etc.
+
+# Prometheus (Metrics)
+GRAFANA_CLOUD_PROMETHEUS_URL=https://prometheus-prod-XX-prod-REGION.grafana.net/api/prom/push
+GRAFANA_CLOUD_PROMETHEUS_USER=YOUR_PROMETHEUS_USER_ID
+GRAFANA_CLOUD_API_KEY=YOUR_GRAFANA_CLOUD_API_KEY
+
+# Loki (Logs)
+GRAFANA_CLOUD_LOKI_URL=https://logs-prod-XXX.grafana.net/loki/api/v1/push
+GRAFANA_CLOUD_LOKI_USER=YOUR_LOKI_USER_ID
+
+# System
+HOSTNAME=cgraph-prod

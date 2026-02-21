@@ -1,0 +1,40 @@
+# Grafana Cloud Remote Write Configuration
+#
+# This file configures Prometheus on Fly.io to remote-write metrics
+# to Grafana Cloud's hosted Prometheus (Mimir) endpoint.
+#
+# Setup:
+#   1. Sign up at https://grafana.com/products/cloud/ (free tier: 10K series)
+#   2. Get your remote write URL, username, and API key from:
+#      Grafana Cloud → My Account → Prometheus → Details
+#   3. Set as Fly.io secrets:
+#      fly secrets set GRAFANA_CLOUD_REMOTE_WRITE_URL=https://prometheus-prod-XX-prod-us-east-0.grafana.net/api/prom/push
+#      fly secrets set GRAFANA_CLOUD_USERNAME=<your_instance_id>
+#      fly secrets set GRAFANA_CLOUD_API_KEY=<your_api_key>
+#
+# The production Prometheus metrics from /metrics are scraped by Fly.io's
+# built-in metrics infrastructure. This config enables long-term storage
+# and Grafana Cloud dashboards.
+
+# Remote write target for Grafana Cloud Mimir
+remote_write:
+  - url: '${GRAFANA_CLOUD_REMOTE_WRITE_URL}'
+    basic_auth:
+      username: '${GRAFANA_CLOUD_USERNAME}'
+      password: '${GRAFANA_CLOUD_API_KEY}'
+    queue_config:
+      capacity: 2500
+      max_shards: 200
+      min_shards: 1
+      max_samples_per_send: 500
+      batch_send_deadline: 5s
+      min_backoff: 30ms
+      max_backoff: 5s
+    write_relabel_configs:
+      # Keep only CGraph-specific and essential system metrics
+      - source_labels: [__name__]
+        regex: 'cgraph_.*|phoenix_.*|ecto_.*|oban_.*|beam_.*|http_.*|erlang_.*|process_.*'
+        action: keep
+    metadata_config:
+      send: true
+      send_interval: 1m

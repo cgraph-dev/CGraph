@@ -15,8 +15,8 @@ import type { PurchaseHistory } from '@/modules/premium/store';
 const mockPurchase: PurchaseHistory = {
   id: 'purchase-1',
   type: 'subscription',
-  productId: 'plan-pro',
-  productName: 'Pro Plan',
+  productId: 'plan-premium',
+  productName: 'Premium Plan',
   amount: 9.99,
   currency: 'USD',
   status: 'completed',

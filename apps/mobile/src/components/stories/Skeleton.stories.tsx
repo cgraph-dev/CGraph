@@ -1,25 +1,20 @@
 /**
  * Skeleton Component Stories for React Native/Expo
- * 
+ *
  * Showcases skeleton loading placeholders.
- * 
+ *
  * @since v0.7.31
  */
 import React from 'react';
 import { View } from 'react-native';
 import type { Meta, StoryObj } from '@storybook/react';
 import Skeleton from '../Skeleton';
-import { ThemeProvider } from '../../contexts/ThemeContext';
 
 /**
- * Wrapper to provide theme context
+ * Wrapper providing layout for stories
  */
 const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ gap: 16 }}>
-      {children}
-    </View>
-  </ThemeProvider>
+  <View style={{ gap: 16 }}>{children}</View>
 );
 
 const meta: Meta<typeof Skeleton> = {

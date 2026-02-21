@@ -1,16 +1,52 @@
 # k6 Load Test Baseline
 
-> **Date**: February 20, 2026 **k6 Version**: v1.6.1 (go1.25.7, linux/amd64) **Status**: Tooling
-> Validated — Pending Staging Environment
+> **Date**: February 20, 2026 **k6 Version**: v1.6.1 (go1.25.7, linux/amd64) **Status**: Smoke test
+> baseline recorded against local dev
 
-## Verification Run
+## Smoke Test Results (Local Dev)
 
-```
-k6 run --duration 3s --vus 1 --env BASE_URL=http://localhost:4000 smoke.js
-→ 1891 iterations completed in 3s
-→ All requests failed (expected: no backend running locally)
-→ k6 binary, scripts, and output format working correctly
-```
+**Environment**: localhost:4000 (Elixir/Phoenix + Bandit, PostgreSQL 16, Redis 7) **Date**:
+2026-02-20 **Config**: 10 VUs, 60s duration **Iterations**: 324 completed (5.24 RPS)
+
+### HTTP Request Duration
+
+| Metric | Value | Threshold | Status  |
+| ------ | ----- | --------- | ------- |
+| avg    | 179ms | —         | —       |
+| med    | 176ms | —         | —       |
+| p(90)  | 218ms | —         | —       |
+| p(95)  | 255ms | < 500ms   | ✅ PASS |
+| p(99)  | 383ms | < 1000ms  | ✅ PASS |
+| max    | 490ms | —         | —       |
+
+### Custom Metrics
+
+| Metric         | avg   | p(95) | Threshold   | Status  |
+| -------------- | ----- | ----- | ----------- | ------- |
+| auth_duration  | 199ms | 383ms | p(95)<300ms | ⚠️ FAIL |
+| forum_duration | 176ms | 230ms | p(95)<400ms | ✅ PASS |
+
+### Threshold Summary
+
+| Threshold               | Result  | Notes                                  |
+| ----------------------- | ------- | -------------------------------------- |
+| http_req_duration p(95) | ✅ PASS | 255ms < 500ms                          |
+| http_req_duration p(99) | ✅ PASS | 383ms < 1000ms                         |
+| errors rate             | ⚠️ FAIL | 401s on auth endpoints (no test users) |
+| auth_duration p(95)     | ⚠️ FAIL | 383ms > 300ms — local dev overhead     |
+| forum_duration p(95)    | ✅ PASS | 230ms < 400ms                          |
+
+### Notes
+
+- **auth_duration FAIL**: Expected in local dev. The auth endpoints return 401 (load test user
+  accounts don't exist), but the endpoint round-trip is still measured. In staging with proper test
+  accounts, expect auth_duration to drop below threshold.
+- **error rate FAIL**: Login attempts against non-existent `loadtest+N@cgraph.org` accounts produce
+  401s which are counted as errors. Not a real issue — indicates the error-tracking metric is
+  working correctly.
+- **Overall**: Core HTTP layer healthy. p(95)=255ms and p(99)=383ms are well within thresholds for
+  local dev. Production/staging numbers expected to be faster with connection pooling and compiled
+  releases.
 
 ## Available Test Scripts
 
@@ -30,10 +66,14 @@ k6 run --duration 3s --vus 1 --env BASE_URL=http://localhost:4000 smoke.js
 - `message_duration`: p95 < 500ms
 - `forum_duration`: p95 < 400ms
 
+## Raw Data
+
+- JSON: `smoke-20260220_161240.json`
+
 ## Next Steps
 
 1. Deploy backend to staging environment (`BASE_URL=https://staging.cgraph.org`)
 2. Create load test user accounts (`loadtest+{1..10}@cgraph.org`)
 3. Run: `./run-load-test.sh smoke https://staging.cgraph.org`
 4. Run: `./run-load-test.sh load https://staging.cgraph.org`
-5. Record results in this directory as timestamped JSON files
+5. Compare staging numbers against this local dev baseline

@@ -1,25 +1,20 @@
 /**
  * LoadingSpinner Component Stories for React Native/Expo
- * 
+ *
  * Showcases loading and spinner states.
- * 
+ *
  * @since v0.7.31
  */
 import React from 'react';
 import { View } from 'react-native';
 import type { Meta, StoryObj } from '@storybook/react';
 import LoadingSpinner from '../LoadingSpinner';
-import { ThemeProvider } from '../../contexts/ThemeContext';
 
 /**
- * Wrapper to provide theme context
+ * Wrapper providing layout for stories
  */
 const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider>
-    <View style={{ alignItems: 'center', justifyContent: 'center', minHeight: 100 }}>
-      {children}
-    </View>
-  </ThemeProvider>
+  <View style={{ alignItems: 'center', justifyContent: 'center', minHeight: 100 }}>{children}</View>
 );
 
 const meta: Meta<typeof LoadingSpinner> = {

@@ -108,7 +108,7 @@ export interface ProfileThemeConfig {
   id: string;
   name: string;
   icon: string;
-  tier: 'free' | 'premium' | 'elite';
+  tier: 'free' | 'premium' | 'enterprise';
   background: {
     type: 'gradient' | 'animated' | 'particle' | 'geometric';
     colors: string[];
