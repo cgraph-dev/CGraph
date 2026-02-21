@@ -559,6 +559,46 @@ pnpm --filter @cgraph/landing lighthouse:ci # Full CI audit with budgets
 
 ---
 
+## React 19 Testing Patterns
+
+With the React 19 migration (v0.9.37), tests should use updated patterns:
+
+### `useOptimistic` Testing
+
+```tsx
+import { renderHook, act } from '@testing-library/react';
+
+test('optimistic update appears immediately', async () => {
+  const { result } = renderHook(() => useOptimisticMessages(initialMessages));
+  act(() => result.current.addOptimistic({ content: 'Sending...' }));
+  expect(result.current.messages).toContainEqual(
+    expect.objectContaining({ content: 'Sending...' })
+  );
+});
+```
+
+### `useFormStatus` Testing
+
+```tsx
+import { render, screen } from '@testing-library/react';
+
+test('submit button disables during submission', () => {
+  render(
+    <form action={serverAction}>
+      <SubmitButton />
+    </form>
+  );
+  // useFormStatus reflects pending state from parent <form action=>
+  expect(screen.getByRole('button')).toBeEnabled();
+});
+```
+
+### `use()` Context Testing
+
+Replace `useContext(Ctx)` with `use(Ctx)` — testing approach remains the same (wrap in provider), but ensure Suspense boundaries exist for async resources passed to `use()`.
+
+---
+
 ## 4. Mobile Testing (React Native)
 
 ### Framework
@@ -746,4 +786,4 @@ describe('ComponentName', () => {
 
 ---
 
-<sub>**CGraph Testing Strategy** • Version 0.9.36</sub>
+<sub>**CGraph Testing Strategy** • Version 0.9.37</sub>

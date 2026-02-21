@@ -1,6 +1,6 @@
 # Security Audit Readiness Checklist
 
-> **Version:** 0.9.36 | **Last Updated:** February 2026 **Purpose:** Pre-audit readiness
+> **Version:** 0.9.37 | **Last Updated:** February 21, 2026 **Purpose:** Pre-audit readiness
 > verification before external E2EE audit and penetration test
 
 ---
@@ -85,6 +85,7 @@
 - [x] Group moderation actions logged to DB
 - [x] **Security events now persisted to DB** (was in-memory only — fixed Feb 2026)
 - [x] Integrity checksums (SHA-256) on audit entries
+- [x] **111 Logger string interpolation violations fixed** — all structured metadata (Tier 1, Feb 2026)
 - [ ] Auth lifecycle events (login_success, logout, password_change)
 - [ ] Admin panel access logging
 - [ ] Billing/payment event logging
@@ -117,7 +118,17 @@
 > migrate to `style-src 'self' 'nonce-{random}'` using the existing nonce infrastructure in
 > `vite-plugin-csp-nonce.ts`.
 
-### 4.5 WebSocket Security
+### 4.5 Client-Side XSS Protection
+
+#### XSS Audit Results (Feb 21, 2026)
+
+All 8 `dangerouslySetInnerHTML` usages audited and confirmed safe:
+- 7 files use `DOMPurify.sanitize()`: ThreadedComment, ContentPreview, AnnouncementItem, post-content, FeedSubscribeModal, SearchResultCard, BBCodeRenderer
+- 1 file uses purpose-built `sanitizeCss()`: ForumThemeProvider
+- DOMPurify ^3.3.1 installed in apps/web
+- **Status: PASS** — No unprotected innerHTML usage found
+
+### 4.6 WebSocket Security
 
 - [x] Socket authentication (`socket_security.ex`)
 - [x] Channel authorization checks
@@ -138,6 +149,8 @@
 | License checker  | OSS license compliance           | ✅ Active                                                                                                  |
 | Semgrep          | SAST (code patterns)             | ✅ Active — .github/workflows/semgrep.yml configured with 8 rulesets, SARIF output, and quick-scan for PRs |
 | DAST (OWASP ZAP) | Dynamic testing                  | ❌ Not yet integrated                                                                                      |
+
+> **CI Permissions Hardening (Feb 21, 2026):** All 17 GitHub Actions workflows have explicit `permissions:` blocks (Tier 1, commit `9d8fb58a`).
 
 ---
 

@@ -1,6 +1,6 @@
 # Quality Gates & CI Requirements
 
-> **Version: 0.9.36** | Last Updated: February 2026
+> **Version: 0.9.37** | Last Updated: February 2026
 
 This document defines the mandatory quality gates that must pass before any code can be merged to
 `main`. All checks are enforced via CI and pre-commit hooks.
@@ -20,7 +20,9 @@ This document defines the mandatory quality gates that must pass before any code
 | Build            | `turbo run build`   | **Block merge**       | @dev-team |
 | Backend Security | `sobelow`           | **Block on high**     | @security |
 | **Coverage**     | `vitest --coverage` | **Warn <60%**         | @dev-team |
+| **Bundle Size**  | Lighthouse CI       | **Hard-fail**         | @dev-team |
 | **Architecture** | ESLint boundaries   | **Warn**              | @dev-team |
+| **CI Perms**     | `permissions:` audit| **Block merge**       | @security |
 
 ---
 
@@ -77,6 +79,16 @@ commit message    → commitlint (conventional commits)
    # Example: fix(web): resolve type errors
    # Subject must be lowercase
    ```
+
+6. **Backend Compilation**
+   ```bash
+   mix compile --warnings-as-errors
+   # Must exit 0 with no warnings
+   ```
+
+7. **CI Permissions**
+   - All GitHub Actions workflows must have explicit `permissions:` blocks (17/17 compliant)
+   - Enforces least-privilege principle for workflow tokens
 
 ### Security Checks (Block on Severity)
 
@@ -165,8 +177,8 @@ See [ARCHITECTURE_ENFORCEMENT.md](ARCHITECTURE_ENFORCEMENT.md) for details.
 | LCP            | < 3.5s   | ✅      | Lighthouse CI (warn)  |
 | CLS            | < 0.1    | ✅      | Lighthouse CI (error) |
 | TBI            | < 300ms  | ✅      | Lighthouse CI (warn)  |
-| JS bundle      | < 500 KB | ✅      | Lighthouse CI (warn)  |
-| CSS bundle     | < 100 KB | ✅      | Lighthouse CI (warn)  |
+| JS bundle      | < 500 KB | ✅      | Lighthouse CI (error) |
+| CSS bundle     | < 100 KB | ✅      | Lighthouse CI (error) |
 
 Run: `pnpm --filter @cgraph/landing lighthouse:ci`  
 Config: `apps/landing/lighthouserc.json`
@@ -219,4 +231,4 @@ Bypasses are audited monthly.
 
 ---
 
-<sub>**CGraph Quality Gates** • Version 0.9.36 • Last updated: February 2026</sub>
+<sub>**CGraph Quality Gates** • Version 0.9.37 • Last updated: February 2026</sub>

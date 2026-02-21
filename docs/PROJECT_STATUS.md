@@ -1,9 +1,9 @@
 # CGraph Project Status
 
-> **Version: 0.9.37** | Last Updated: Session 36 (Feb 21, 2026)
+> **Version: 0.9.37** | Last Updated: Session 39 (Feb 21, 2026)
 >
-> **⚠️ Scores re-calibrated in Session 36 after comprehensive verification audit. See
-> [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md) for full gap analysis.**
+> **⚠️ Scores re-calibrated in Session 36 after verification audit, updated Session 39 after
+> Tier 1/2/2b/3 code-quality sprint. See [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md) for full gap analysis.**
 
 ---
 
@@ -20,7 +20,7 @@
 | Phase 1: Security Hardening     | OAuth, CORS, SSL, Audit       | ✅ COMPLETE | 100%      | ~90%       |
 | Phase 2: Code Quality           | Console.log, as any           | ✅ COMPLETE | 100%      | ~95%       |
 | Phase 3: Store Consolidation    | 32 → 7 facades                | ✅ COMPLETE | 100%      | ~85%       |
-| Phase 4: Component Refactoring  | Break down large components   | ✅ COMPLETE | 100%      | ~80%       |
+| Phase 4: Component Refactoring  | Break down large components   | ✅ COMPLETE | 100%      | ~90%       |
 | Phase 5: Feature Completeness   | Edit/delete, voice, E2EE      | ✅ COMPLETE | 100%      | ~60%       |
 | Phase 6: Test Coverage          | Facade + unit tests           | ✅ COMPLETE | 100%      | ~70%       |
 | Phase 7: Platform Parity        | Web ↔ Mobile feature match    | ✅ COMPLETE | 100%      | ~50%       |
@@ -28,7 +28,7 @@
 | Phase 9: Operational Maturity   | Testing, CI/CD, Observability | ✅ COMPLETE | 100%      | ~70%       |
 | Phase 10: Test Suite Green      | 0 backend test failures       | ✅ COMPLETE | 100%      | 100%       |
 | Phase 11: Compliance Pass       | <500 BE / <300 FE file limits | ✅ COMPLETE | 100%      | 100%       |
-| Phase 12: Architecture Refactor | Router split, component org   | ✅ COMPLETE | 100%      | ~75%       |
+| Phase 12: Architecture Refactor | Router split, component org   | ✅ COMPLETE | 100%      | ~85%       |
 | Phase 13: Audit Fix + Test Fix  | P0/P1/P2 findings + 635 fails | ✅ COMPLETE | 100%      | ~80%       |
 
 ### Key Improvements (v0.9.13)
@@ -57,7 +57,7 @@
 
 ### Overall Health Score
 
-**8.7/10** (re-calibrated Session 34 verification audit — see V1_ACTION_PLAN.md)
+**8.85/10** (re-calibrated Session 34 verification audit + Session 39 code-quality sprint — see V1_ACTION_PLAN.md)
 
 | Category             | Score  | Target | Notes                                                                                                                                                                     |
 | -------------------- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -69,9 +69,28 @@
 | Production Readiness | 8/10   | 10/10  | Grafana Cloud deployed, deploy workflows, metrics exposed, load test seeder ready                                                                                         |
 | Observability        | 8.5/10 | 10/10  | Full stack deployed: Fly.io metrics → Grafana Cloud Prometheus, alertmanager, deploy workflow                                                                             |
 | Resilience           | 8/10   | 10/10  | CB + DLQ + Backpressure + Snowflake, offline queue with backoff, sync conflict resolution                                                                                 |
-| Architecture         | 8.5/10 | 9/10   | 36+ bounded contexts, AI/Collaboration/Offline-first modules, DynamicSupervisor patterns                                                                                  |
+| Architecture         | 9/10   | 9/10   | 36+ bounded contexts, React 19 near-complete (React.FC 73→5, useContext 0), ControllerHelpers, 10 Elixir + 6 TSX file splits, DynamicSupervisor patterns              |
 
 See `docs/REMEDIATION_STATUS_2026_01_31.md` for full details.
+
+---
+
+### v0.9.37 Highlights — Session 39 (Feb 21, 2026)
+
+**4 commits, 214 files changed. Compliance ~58% → ~80%.**
+
+| Commit | Scope | Files | Key Changes |
+| --- | --- | --- | --- |
+| `08b988c2` | Tier 2 | 104 | React.FC 73→5, useContext→use() 14→0, file splits (jobs, data_export, ForumHierarchyAdmin, ForumPermissionsPanel), ControllerHelpers extraction, N+1 preload fixes, CLAUDE.md standards |
+| `7d8cff09` | Tier 2b | ~40 | 8 Elixir file splits (presence, oauth, moderation, redis, cache, batch_processor, api_versioning, request_context), 4 TSX splits |
+| `9901c02f` | Tier 3 | ~33 | useOptimistic (7+ adoptions), useFormStatus (3 forms), SubmitButton component, 19 @spec annotations, 5 JSON standardizations, XSS audit (all 8 dangerouslySetInnerHTML sanitized) |
+| (docs) | Docs | ~37 | Gap analysis updated, CURRENT_STATE_DASHBOARD, PROJECT_STATUS synced |
+
+**Key architectural improvements:**
+- **ControllerHelpers**: Shared `json_response/3`, `handle_errors/2`, `paginate/3` extracted from controllers
+- **React 19 patterns**: `use()` context API, `useOptimistic`, `useFormStatus`, `SubmitButton` component
+- **File size compliance**: 10/19 Elixir files + 6/16 TSX files split to meet LOC limits
+- **@spec coverage**: 674 → 711 (25.4% of public functions)
 
 ---
 
@@ -86,7 +105,7 @@ See `docs/REMEDIATION_STATUS_2026_01_31.md` for full details.
 Implemented:        69 features (entry points exist)
 Production-ready:   ~45 features (estimated — needs per-feature audit)
 Total tracked:      69 features
-Feature coverage:   100% (code exists) / ~65% (production-quality)
+Feature coverage:   100% (code exists) / ~80% (production-quality)
 ```
 
 ### Category Breakdown

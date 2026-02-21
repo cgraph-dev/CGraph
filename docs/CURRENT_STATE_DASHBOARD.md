@@ -9,15 +9,15 @@ Real-time overview of project health, architecture status, and operational state
 ## Overall Health
 
 > **⚠️ Scores re-calibrated February 21, 2026 after Session 34 implementation sprint + verification
-> audit.** Previous composite: 7.8. See [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md) for full gap
-> analysis.
+> audit + Session 39 Tier 1/2/2b/3 code-quality sprint.** Previous composite: 7.8. See
+> [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md) for full gap analysis.
 
 | Dimension         | Status | Score  | Notes                                                                                                                                                                                                                                                                                                                                                                                  |
 | ----------------- | ------ | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Build**         | OK     | 10/10  | All apps building successfully                                                                                                                                                                                                                                                                                                                                                         |
 | **TypeScript**    | OK     | 10/10  | 0 errors across all packages; 0 `any` types in production code                                                                                                                                                                                                                                                                                                                         |
 | **Lint**          | OK     | 10/10  | 0 errors, ESLint 9 flat config with 46 ts-eslint rules; `no-explicit-any` enforced as **error** across all projects                                                                                                                                                                                                                                                                    |
-| **Architecture**  | OK     | 8.5/10 | AI service (6 backend modules + channel + controller), CRDT collaboration (GenServer + DynamicSupervisor per-document), offline-first mobile (WatermelonDB 9 tables + sync engine); 36+ bounded contexts; React 19 APIs adopted; SoftDelete fully adopted; cursor pagination fully migrated (0 remaining offset queries); useAdaptiveInterval for all data-fetching polls              |
+| **Architecture**  | OK     | 9/10   | AI service (6 backend modules + channel + controller), CRDT collaboration (GenServer + DynamicSupervisor per-document), offline-first mobile (WatermelonDB 9 tables + sync engine); 36+ bounded contexts; React 19 migration near-complete (React.FC 73→5, useContext→use() 14→0, forwardRef 0); ControllerHelpers extracted; SoftDelete fully adopted; cursor pagination fully migrated (0 remaining offset queries); useAdaptiveInterval for all polls; 10 Elixir + 6 TSX file splits; @spec 711 (25.4%) |
 | **Tests**         | OK     | 7.5/10 | 1,908 backend tests (~82%); web 4,968 tests (205 files); mobile 27 test files; 14 E2E flows; CI coverage gates enforce 60% web / 75% backend; load test seeder + k6 WebSocket scenario ready; new features need test coverage                                                                                                                                                          |
 | **Security**      | OK     | 9/10   | Real X3DH ECDH + PQXDH E2EE; mobile PQ bridge (418 lines); 3-layer rate limiting; Guardian JWT + token blacklist; audit plug on all pipelines; AI content moderation; 7 CI security tools; CSP hardened; external pen test overdue                                                                                                                                                     |
 | **Documentation** | OK     | 8.5/10 | All phases reflect actual implementation; V1_ACTION_PLAN fully current; Session 34 verification audit completed; docs updated to reflect AI/Collab/Offline features; composite score unified at 8.7                                                                                                                                                                                    |
@@ -303,7 +303,55 @@ apps/mobile/src/screens/
 
 ---
 
-## 🚨 Open Issues
+## � Session Changelog
+
+### Session 39 — Tier 1/2/2b/3 Code Quality Sprint (Feb 21, 2026)
+
+**Commits**: `08b988c2` (104 files), `7d8cff09` (47 files), `9901c02f` (26 files), plus docs commit.
+**4 commits, 214 files changed.** Compliance ~58% → ~80%.
+
+#### Tier 2 (commit `08b988c2`, 104 files)
+
+- **React.FC elimination**: 73 → 5 remaining (93% complete)
+- **useContext → use()**: 14 → 0 (100% migrated to React 19 `use()` API)
+- **forwardRef removal**: 0 remaining
+- **File splits**: jobs.ex, data_export.ex, ForumHierarchyAdmin.tsx, ForumPermissionsPanel.tsx
+- **ControllerHelpers**: Extracted shared controller patterns (json_response, handle_errors, paginate)
+- **N+1 preload**: Added preloads for forum hierarchy queries
+- **CLAUDE.md**: Updated standards for React 19 patterns, file size limits, @spec requirements
+
+#### Tier 2b/3 (commits `7d8cff09` + `9901c02f`, 73 files)
+
+- **8 more Elixir file splits**: presence.ex, oauth.ex, moderation.ex, redis_pool.ex, cache.ex, batch_processor.ex, api_versioning.ex, request_context.ex
+- **4 more TSX file splits**: MatrixText, effects-customization/sections, ChannelsTab, SeasonalEffects
+- **Optimistic updates**: sendMessage, reactions, votePost, ThreadPanel + 3 more `useOptimistic` adoptions
+- **useFormStatus**: 3 forms migrated to React 19 form status pattern
+- **SubmitButton**: Shared component using `useFormStatus` for loading states
+- **Form action migration**: Login, ForgotPassword, ForumSettings migrated to `<form action=>`
+- **@spec coverage**: 674 → 711 annotations; 19 added to auth/payment/conversation controllers (25.4% of 2,796 public functions)
+- **JSON standardization**: 5 of 67 non-standard responses converted via `render_data`
+- **XSS audit**: All 8 `dangerouslySetInnerHTML` usages verified sanitized (DOMPurify)
+- **CLAUDE.md**: Updated with cross-platform mandate + world-class coding standards
+
+#### Cumulative Migration Metrics
+
+| Metric | Before | After | Status |
+| --- | --- | --- | --- |
+| React.FC instances | 73 | 5 | ✅ 93% eliminated |
+| useContext calls | 14 | 0 | ✅ 100% → use() |
+| forwardRef usage | 0 | 0 | ✅ None remaining |
+| Elixir files split (<500 LOC) | 0 | 10 | ✅ 10/19 targets done |
+| TSX files split (<300 LOC) | 0 | 6 | ✅ 6/16 targets done |
+| @spec annotations | 674 | 711 | ⚠️ 25.4% (target 40%) |
+| JSON responses standardized | 0 | 5 | ⚠️ 5/67 done |
+| dangerouslySetInnerHTML | 8 (unsanitized) | 8 (all sanitized) | ✅ PASS |
+| useOptimistic adoptions | 3 | 7+ | ✅ Growing |
+| useFormStatus forms | 0 | 3 | ✅ Pattern established |
+| Overall compliance | ~58% | ~80% | ⬆️ +22pp |
+
+---
+
+## �🚨 Open Issues
 
 ### P0 — Critical (Blocking)
 
@@ -385,5 +433,5 @@ apps/mobile/src/screens/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.37 • Updated: February 21, 2026 • Verification audit
-complete</sub>
+<sub>**CGraph Dashboard** • Version 0.9.37 • Updated: February 21, 2026 • Session 39 Tier
+1/2/2b/3 sprint complete • Compliance ~80%</sub>

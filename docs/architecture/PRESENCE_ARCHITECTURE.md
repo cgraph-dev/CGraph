@@ -35,6 +35,11 @@ presence tracking.
 ```
 Backend (Phoenix)
 ├── Phoenix.Presence (CRDT state management)
+├── Cgraph.Presence (facade — delegates to submodules)
+│   ├── Cgraph.Presence.Tracker    (real-time tracking, track/untrack/list)
+│   ├── Cgraph.Presence.Queries    (presence queries, online users, counts)
+│   ├── Cgraph.Presence.Store      (presence state persistence, last_seen)
+│   └── Cgraph.Presence.Sampled    (HyperLogLog sampling for large channels)
 ├── ConversationChannel (per-conversation presence)
 └── GroupChannel (per-group presence)
 
@@ -319,22 +324,32 @@ end
 - Presence tracked per channel, not globally
 - Metadata can be updated without re-tracking
 
-#### Presence Module
+#### Presence Module (Split in v0.9.37)
+
+In v0.9.37, `presence.ex` was split into 4 focused submodules for maintainability:
+
+```
+lib/cgraph/presence.ex          → Facade (delegates to submodules)
+lib/cgraph/presence/tracker.ex  → Real-time tracking (track/untrack/list)
+lib/cgraph/presence/queries.ex  → Presence queries (online users, counts)
+lib/cgraph/presence/store.ex    → State persistence (last_seen timestamps)
+lib/cgraph/presence/sampled.ex  → HyperLogLog sampling (existing, unchanged)
+```
 
 ```elixir
+# lib/cgraph/presence.ex — Facade module
 defmodule Cgraph.Presence do
   use Phoenix.Presence,
     otp_app: :cgraph,
     pubsub_server: Cgraph.PubSub
 
-  def track_user(topic, user_id, meta \\ %{}) do
-    track(self(), topic, user_id, meta)
-  end
+  # Delegates to submodules
+  defdelegate track_user(topic, user_id, meta \\ %{}), to: Cgraph.Presence.Tracker
+  defdelegate online_users(topic), to: Cgraph.Presence.Queries
+  defdelegate store_last_seen(user_id), to: Cgraph.Presence.Store
 
   def handle_metas(topic, %{joins: joins, leaves: leaves}, presences, state) do
-    # Log join/leave events
-    # Update last_seen for leaving users
-    # Broadcast presence_diff
+    Cgraph.Presence.Store.handle_leaves(leaves)
     {:ok, state}
   end
 end

@@ -147,6 +147,22 @@ karma-based forum system.
 > forwardRef calls (web HoloContainer + mobile MatrixBackground), added `permissions:` blocks to
 > 2 CI workflows (17/17 now compliant). Backend compiles cleanly with `--warnings-as-errors`.
 > Compliance score: ~58% → ~65%.
+>
+> **Session 39 World-Class Compliance (Tier 2/2b/3)**: 214 files changed across 4 commits.
+> **Tier 2** (commit `08b988c2`, 104 files): codemod 59 React.FC → function declarations (73→5),
+> migrated 14 useContext() → use() (React 19), split jobs.ex (1253→247, 7 submodules) + 
+> data_export.ex (1059→234, 6 submodules) + ForumHierarchyAdmin.tsx (536→129, 7 components) +
+> ForumPermissionsPanel.tsx (452→130, 8 components), created CGraphWeb.ControllerHelpers
+> (render_data/render_error), added N+1 preload to boards.ex, updated CLAUDE.md with
+> cross-platform mandate + world-class coding standards.
+> **Tier 2b/3** (commits `7d8cff09` + `9901c02f`, 73 files): split 8 more Elixir files
+> (presence 905→225, oauth 823→190, moderation 816→81, redis 802→481, cache 764→380,
+> batch_processor 717→116, api_versioning 686→243, request_context 656→216), split 4 TSX
+> (MatrixText, sections, ChannelsTab, SeasonalEffects), added 19 @spec to 3 controllers,
+> standardized 5 JSON responses, added optimistic updates (sendMessage, reactions, votePost,
+> ThreadPanel), created shared SubmitButton with useFormStatus, migrated 3 forms to
+> `<form action=>`, XSS audit (all 8 dangerouslySetInnerHTML safe — DOMPurify).
+> Compliance: ~65% → ~80%.
 
 | Capability             | Status          | Implementation                                                                           |
 | ---------------------- | --------------- | ---------------------------------------------------------------------------------------- |
@@ -803,6 +819,11 @@ kebab-case:     File names (user-service.ts, api-utils.ts)
 8. **Explicit return types** - All functions must have return type annotations
 9. **Event-driven writes** - Publish events, process async
 10. **Denormalize counts** - Store vote_count, reply_count as columns
+11. **Use `render_data`/`render_error`** - All controller JSON responses via `CGraphWeb.ControllerHelpers`
+12. **Use `<form action=>`** - Not `<form onSubmit=>` for data mutations (React 19)
+13. **Use `SubmitButton`** - Shared component with `useFormStatus` for form submit buttons
+14. **Add `@spec`** - Every public Elixir function must have a typespec
+15. **Optimistic updates** - Mutation UIs must update immediately, rollback on error
 
 ### The 30-Second Rule
 

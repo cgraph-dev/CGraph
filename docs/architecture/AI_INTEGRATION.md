@@ -1,153 +1,150 @@
-# AI Integration Plan
+# AI Integration
 
-> **Status**: Placeholder - Not Yet Implemented  
-> **Provider**: Claude (Anthropic)  
-> **Last Updated**: January 18, 2026
+> **Status**: Implemented (Session 34)  
+> **Provider**: Configurable — OpenAI, Anthropic, Ollama  
+> **Last Updated**: February 2026
 
 ---
 
 ## Overview
 
-This document outlines the planned AI integration for CGraph using Claude (Anthropic) as the AI provider. AI features are currently disabled and reserved for future implementation.
+CGraph's AI subsystem provides LLM-powered features with automatic heuristic fallback when no LLM provider is configured. The implementation lives under the `CGraph.AI.*` namespace on the backend and `lib/ai/aiService.ts` on the web frontend.
 
-## Planned Features
+## Implemented Features
 
-### 1. Forum Moderation
-- **Description**: AI-powered content moderation for forum posts
-- **Use Cases**:
-  - Detect inappropriate content
-  - Flag spam and low-quality posts
-  - Suggest moderation actions to admins
-- **Priority**: High
-- **Status**: Planned
+### 1. Content Moderation (`CGraph.AI.Moderation`)
+- **Status**: Implemented
+- LLM-powered content safety checks with keyword-based heuristic fallback
+- Detects: spam, harassment, hate speech, violence, sexual content, self-harm, scams
+- Returns structured result: `%{safe, categories, confidence, action}`
+- Actions: `:allow`, `:flag`, `:block`
+- Integrated with the existing moderation system
 
-### 2. Chat Experience Enhancements
-- **Description**: Intelligent suggestions to improve chat interactions
-- **Use Cases**:
-  - Smart reply suggestions
-  - Conversation summarization
-  - Topic detection and categorization
-- **Priority**: Medium
-- **Status**: Planned
+### 2. Smart Replies (`CGraph.AI.SmartReplies`)
+- **Status**: Implemented
+- Generates 3 short reply suggestions per message
+- Categories: greeting, question, thanks, agreement, info, farewell
+- Supports optional conversation context
+- Heuristic fallback produces pattern-matched suggestions
 
-### 3. Content Suggestions
-- **Description**: AI-assisted content creation and improvement
-- **Use Cases**:
-  - Post title suggestions
-  - Grammar and clarity improvements
-  - Related content recommendations
-- **Priority**: Medium
-- **Status**: Planned
+### 3. Conversation Summarization (`CGraph.AI.Summarizer`)
+- **Status**: Implemented
+- Produces structured summaries from message lists
+- Output: `%{brief, detailed, key_points, action_items, decisions}`
+- Heuristic fallback extracts key sentences and word-frequency topics
 
-### 4. Smart Search
-- **Description**: Enhanced search with semantic understanding
-- **Use Cases**:
-  - Natural language queries
-  - Intent-based search results
-  - Cross-forum search relevance
-- **Priority**: Low
-- **Status**: Planned
+### 4. Sentiment Analysis (`CGraph.AI.Sentiment`)
+- **Status**: Implemented
+- Scores text sentiment from -1.0 to 1.0
+- Classifies: `:positive`, `:negative`, `:neutral`, `:mixed`
+- Returns detected emotions and confidence score
 
 ---
 
-## Technical Architecture
+## Architecture
 
-### Provider
-- **Model**: Claude 4 Opus (Anthropic)
-- **Max Tokens**: 200,000
-- **API**: Anthropic Messages API
+### Backend Modules
 
-### Rate Limiting (Planned)
-| Tier       | Requests/Min | Tokens/Day   |
-|------------|--------------|--------------|
-| Free       | 10           | 10,000       |
-| Premium    | 60           | 100,000      |
-| Enterprise | 200          | 1,000,000    |
+| Module                    | Responsibility                                  |
+| ------------------------- | ----------------------------------------------- |
+| `CGraph.AI`               | Context module — public API, rate limiting, config |
+| `CGraph.AI.LLMClient`     | HTTP client for OpenAI/Anthropic/Ollama APIs     |
+| `CGraph.AI.Moderation`    | Content moderation with heuristic fallback        |
+| `CGraph.AI.SmartReplies`  | Smart reply suggestion generation                 |
+| `CGraph.AI.Summarizer`    | Conversation summarization                        |
+| `CGraph.AI.Sentiment`     | Sentiment analysis                                |
 
-### Configuration
+### LLM Client (`CGraph.AI.LLMClient`)
+
+Supports three providers with a unified interface:
+
+- **OpenAI** — `gpt-4o-mini` (default)
+- **Anthropic** — Claude models via Messages API
+- **Ollama** — Local models for development
+
+Features:
+- Streaming via Server-Sent Events
+- Automatic retries with exponential backoff (2 retries, 500ms base)
+- Circuit breaker via Fuse
+- Structured JSON response parsing
+
+### Rate Limiting
+
+Rate limits are enforced per user tier (requests per hour):
+
+| Tier       | Requests/Hour |
+| ---------- | ------------- |
+| Free       | 10            |
+| Premium    | 100           |
+| Enterprise | 1,000         |
+
+### API Endpoints
+
+All endpoints require authentication and are rate-limited per tier.
+
+```
+POST /api/v1/ai/summarize      — Conversation summarization
+POST /api/v1/ai/smart-replies   — Smart reply suggestions
+POST /api/v1/ai/moderate        — Content moderation check
+POST /api/v1/ai/sentiment       — Sentiment analysis
+```
+
+**Controller**: `CGraphWeb.API.V1.AIController`  
+**Routes**: `CGraphWeb.Router.AIRoutes`
+
+### Web Frontend
+
+- `apps/web/src/lib/ai/aiService.ts` — API client with configurable service settings
+
+---
+
+## Configuration
 
 ```elixir
-# Backend (runtime.exs)
+# config/runtime.exs
 config :cgraph, CGraph.AI,
-  enabled: true,
-  model: "claude-4-opus",
-  provider: "anthropic",
-  api_key: System.get_env("ANTHROPIC_API_KEY"),
-  features: %{
-    forum_moderation: true,
-    chat_suggestions: true,
-    content_moderation: true,
-    smart_search: true
-  }
+  provider: :openai,           # :openai | :anthropic | :ollama
+  model: "gpt-4o-mini",
+  api_key: System.get_env("OPENAI_API_KEY"),
+  base_url: "https://api.openai.com/v1",
+  max_tokens: 500,
+  temperature: 0.7,
+  timeout: 30_000
 ```
 
-```typescript
-// Frontend (env.ts)
-ai: {
-  enabled: true,
-  model: 'claude-4-opus',
-  features: {
-    forumModeration: true,
-    chatSuggestions: true,
-    contentModeration: true,
-    smartSearch: true,
-  },
-}
-```
-
----
-
-## Implementation Checklist
-
-### Backend
-- [ ] Create `lib/cgraph/ai/` module structure
-- [ ] Implement Anthropic API client
-- [ ] Add rate limiter (ETS-based)
-- [ ] Add circuit breaker for resilience
-- [ ] Create AI controller with endpoints
-- [ ] Add feature flag checks
-- [ ] Write tests
-
-### Frontend
-- [ ] Create `aiService.ts` for API calls
-- [ ] Create `useAI.ts` React hook
-- [ ] Integrate with chat UI (suggestions)
-- [ ] Integrate with forum UI (moderation indicators)
-- [ ] Add loading states and error handling
-
-### API Endpoints (Planned)
-```
-GET  /api/v1/ai/status     - Check AI service status
-POST /api/v1/ai/moderate   - Content moderation
-POST /api/v1/ai/suggest    - Get suggestions
-POST /api/v1/ai/search     - Smart search
-```
-
----
-
-## Environment Variables (Required for Implementation)
+### Environment Variables
 
 ```bash
-# Required
+# Required (pick one provider)
+OPENAI_API_KEY=sk-...
+# or
 ANTHROPIC_API_KEY=sk-ant-...
 
 # Optional
-AI_ENABLED=true
-AI_MODEL=claude-4-opus
-AI_MAX_TOKENS=200000
+AI_MODEL=gpt-4o-mini
+AI_MAX_TOKENS=500
 AI_TEMPERATURE=0.7
 AI_TIMEOUT_MS=30000
 ```
 
+When no API key is configured, all modules automatically fall back to local heuristic algorithms — no external calls are made.
+
 ---
+
+## Resilience
+
+- **Heuristic fallback**: Every AI module has a keyword/pattern-based fallback that activates when the LLM is unavailable or returns an error
+- **Circuit breaker**: `Fuse` prevents cascading failures if the LLM provider is down
+- **Retries**: Exponential backoff (2 retries, 500ms base) on transient failures
+- **Input truncation**: Content is sliced to safe lengths before sending to the LLM (e.g., 2000 chars for moderation, 1000 for sentiment)
 
 ## Security Considerations
 
-1. **API Key Security**: Store in environment variables, never in code
-2. **Rate Limiting**: Implement per-user rate limits
-3. **Content Filtering**: Pre-filter inputs before sending to AI
-4. **Cost Control**: Monitor token usage, set budget alerts
-5. **Privacy**: Do not send PII to AI services
+1. **API Key Security**: Stored in environment variables, never in code
+2. **Rate Limiting**: Per-user limits enforced by tier via `CGraph.AI`
+3. **Input Sanitization**: Content is truncated before sending to LLM providers
+4. **Privacy**: User PII is not sent to external AI services
+5. **Cost Control**: Token limits and rate caps prevent runaway usage
 
 ---
 

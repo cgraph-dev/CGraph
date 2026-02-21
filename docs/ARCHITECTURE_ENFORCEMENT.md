@@ -1,6 +1,6 @@
 # CGraph Architecture Enforcement
 
-> **Version: 0.9.36** | Last Updated: February 2026
+> **Version: 0.9.37** | Last Updated: February 2026
 
 This document defines the architectural boundaries and how they're enforced.
 
@@ -152,6 +152,48 @@ Components should import from `@/stores/hooks` or use custom hooks from `@/hooks
 
 ---
 
+## Controller Standards (v0.9.37+)
+
+All controllers must use standardized response helpers:
+
+- **`CGraphWeb.ControllerHelpers.render_data/2,3`** for all successful JSON responses
+- **`CGraphWeb.ControllerHelpers.render_error/3`** for all error JSON responses
+
+Direct `json(conn, ...)` calls are prohibited in controllers. This ensures consistent response envelopes across all 83+ API endpoints.
+
+```elixir
+# ✅ Correct
+def show(conn, %{"id" => id}) do
+  item = Context.get!(id)
+  render_data(conn, item)
+end
+
+# ❌ Wrong
+def show(conn, %{"id" => id}) do
+  item = Context.get!(id)
+  json(conn, %{data: item})
+end
+```
+
+---
+
+## React 19 Enforcement (v0.9.37+)
+
+All new and migrated React code must follow React 19 patterns:
+
+| Legacy Pattern | Required Pattern | Reason |
+| --- | --- | --- |
+| `useContext(Ctx)` | `use(Ctx)` | React 19 `use()` API |
+| `React.FC<Props>` | `function Comp(props: Props)` | Function declarations preferred |
+| `<form onSubmit={handler}>` | `<form action={serverAction}>` | Form actions pattern |
+
+Additional React 19 hooks to prefer:
+- **`useOptimistic`** — for optimistic UI updates
+- **`useFormStatus`** — for form submission state
+- **`useActionState`** — for action result tracking
+
+---
+
 ## Migration Path
 
 If you find code violating these boundaries:
@@ -176,4 +218,4 @@ Some exceptions are allowed:
 
 ---
 
-<sub>**CGraph Architecture Enforcement** • Version 0.9.36</sub>
+<sub>**CGraph Architecture Enforcement** • Version 0.9.37</sub>

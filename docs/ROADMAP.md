@@ -41,6 +41,16 @@ default** and modern customization.
 > complete tracking. The project is in **late-alpha / early-beta** stage focused on hardening,
 > testing, and polish. **Composite score: 8.7/10** (V1 target of 8.5 exceeded).
 
+### v0.9.37 Highlights
+
+| Category | Change | Impact |
+| --- | --- | --- |
+| **React 19** | Migration: `useContext`→`use()`, `useOptimistic`, `useFormStatus` | Modern React patterns |
+| **Code Quality** | 16 oversized file splits (including presence.ex → 4 submodules) | Maintainability |
+| **Logging** | Structured logging adoption across backend | Observability |
+| **Controllers** | `ControllerHelpers.render_data/2,3` standardization | Consistent API responses |
+| **Compliance** | World-class compliance sprint: 214 files, 4 commits | 58%→80% compliance score |
+
 ### v0.9.33–v0.9.36 Highlights
 
 | Category           | Change                                                   | Impact                  |

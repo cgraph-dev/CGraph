@@ -1,7 +1,7 @@
 # CGraph Frontend Guide
 
-> Building beautiful, fast, and accessible user interfaces with React. **v0.7.52** — Now featuring
-> Gamification System, Sticker Picker, Title Badges, and enhanced customization.
+> Building beautiful, fast, and accessible user interfaces with React. **v0.9.37** — React 19
+> patterns, optimistic updates, Zustand DevTools, Zod validation, and enhanced customization.
 
 This guide covers the CGraph web application—a React 19 app built with Vite, TypeScript, and
 TailwindCSS. Whether you're fixing a bug or building a new feature, you'll find everything you need
@@ -15,26 +15,27 @@ here.
 2. [Project Structure](#project-structure)
 3. [Getting Started](#getting-started)
 4. [Architecture](#architecture)
-5. [State Management](#state-management)
-6. [Routing](#routing)
-7. [API Integration](#api-integration)
-8. [Real-Time Features](#real-time-features)
-9. [Component Library](#component-library)
-10. [Enhanced UI v3.0](#enhanced-ui-v30)
-11. [Theme Engine v4.0](#theme-engine-v40) ⭐ **v0.7.36**
-12. [Holographic UI v4.0](#holographic-ui-v40) ⭐ **v0.7.36**
-13. [Triple Ratchet Encryption](#triple-ratchet-encryption)
-14. [AI Message Intelligence](#ai-message-intelligence)
-15. [Spatial Audio Engine](#spatial-audio-engine)
-16. [Gamification & Customization](#gamification--customization-system) ⭐ **v0.7.52**
-17. [Demo-First Workflow](#demo-first-workflow)
-18. [Storybook](#storybook)
-19. [Styling Guide](#styling-guide)
-20. [Forms and Validation](#forms-and-validation)
-21. [Testing](#testing)
-22. [Performance](#performance)
-23. [Accessibility](#accessibility)
-24. [Common Patterns](#common-patterns)
+5. [React 19 Patterns](#react-19-patterns) ⭐ **v0.9.37**
+6. [State Management](#state-management)
+7. [Routing](#routing)
+8. [API Integration](#api-integration)
+9. [Real-Time Features](#real-time-features)
+10. [Component Library](#component-library)
+11. [Enhanced UI v3.0](#enhanced-ui-v30)
+12. [Theme Engine v4.0](#theme-engine-v40) ⭐ **v0.7.36**
+13. [Holographic UI v4.0](#holographic-ui-v40) ⭐ **v0.7.36**
+14. [Triple Ratchet Encryption](#triple-ratchet-encryption)
+15. [AI Message Intelligence](#ai-message-intelligence)
+16. [Spatial Audio Engine](#spatial-audio-engine)
+17. [Gamification & Customization](#gamification--customization-system) ⭐ **v0.7.52**
+18. [Demo-First Workflow](#demo-first-workflow)
+19. [Storybook](#storybook)
+20. [Styling Guide](#styling-guide)
+21. [Forms and Validation](#forms-and-validation)
+22. [Testing](#testing)
+23. [Performance](#performance)
+24. [Accessibility](#accessibility)
+25. [Common Patterns](#common-patterns)
 
 ---
 
@@ -233,6 +234,144 @@ pnpm build-storybook # Build static Storybook site
 3. **API Call** → Via axios or socket push
 4. **State Update** → Store/cache updated
 5. **Re-render** → React re-renders affected components
+
+---
+
+## React 19 Patterns
+
+CGraph runs on **React 19.1** and uses its new APIs throughout. These patterns are mandatory in all
+new code.
+
+### Component Declarations
+
+Use **function declarations** instead of `React.FC` or arrow-function components:
+
+```tsx
+// ❌ Banned — React.FC
+const Avatar: React.FC<AvatarProps> = ({ src, size }) => { ... };
+
+// ❌ Banned — arrow const
+const Avatar = ({ src, size }: AvatarProps) => { ... };
+
+// ✅ Required — function declaration
+function Avatar({ src, size }: AvatarProps) {
+  return <img src={src} className={sizeClasses[size]} />;
+}
+```
+
+### ref as Prop (No forwardRef)
+
+`forwardRef` is banned. In React 19 `ref` is a regular prop:
+
+```tsx
+// ❌ Banned — forwardRef
+const Input = forwardRef<HTMLInputElement, InputProps>((props, ref) => {
+  return <input ref={ref} {...props} />;
+});
+
+// ✅ React 19 — ref as prop
+function Input({ ref, ...props }: InputProps & { ref?: React.Ref<HTMLInputElement> }) {
+  return <input ref={ref} {...props} />;
+}
+```
+
+### use() for Context
+
+Replace `useContext()` with the `use()` API:
+
+```tsx
+import { use } from 'react';
+import { ThemeContext } from '@/contexts/ThemeContext';
+
+// ❌ Old
+const theme = useContext(ThemeContext);
+
+// ✅ React 19
+const theme = use(ThemeContext);
+```
+
+`use()` can also be called conditionally, inside loops, or after early returns — unlike
+`useContext()`.
+
+### useOptimistic() for Mutation UIs
+
+Show instant UI feedback while an async action is in flight:
+
+```tsx
+import { useOptimistic } from 'react';
+
+function MessageReactions({ message }: { message: Message }) {
+  const [optimisticReactions, addOptimisticReaction] = useOptimistic(
+    message.reactions,
+    (current, newReaction: Reaction) => [...current, newReaction]
+  );
+
+  async function handleReact(emoji: string) {
+    const optimistic = { emoji, userId: currentUser.id, pending: true };
+    addOptimisticReaction(optimistic);
+    await api.post(`/messages/${message.id}/reactions`, { emoji });
+  }
+
+  return (
+    <div className="flex gap-1">
+      {optimisticReactions.map((r) => (
+        <span key={r.emoji} className={r.pending ? 'opacity-60' : ''}>
+          {r.emoji}
+        </span>
+      ))}
+    </div>
+  );
+}
+```
+
+### useFormStatus() for Submit Buttons
+
+Get pending state from the nearest `<form>` ancestor:
+
+```tsx
+import { useFormStatus } from 'react-dom';
+
+function SubmitButton({ children }: { children: React.ReactNode }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button type="submit" disabled={pending} isLoading={pending}>
+      {children}
+    </Button>
+  );
+}
+```
+
+### Form Actions
+
+Use `<form action={fn}>` instead of `<form onSubmit={handler}>` for data mutations:
+
+```tsx
+// ❌ Old pattern
+<form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+
+// ✅ React 19 — form action
+async function createGroup(formData: FormData) {
+  const name = formData.get('name') as string;
+  await api.post('/groups', { name });
+}
+
+<form action={createGroup}>
+  <Input name="name" required />
+  <SubmitButton>Create Group</SubmitButton>
+</form>
+```
+
+### Pattern Summary
+
+| Pattern | Status | Replacement |
+| --- | --- | --- |
+| `React.FC` | ❌ Banned | Function declarations |
+| `forwardRef` | ❌ Banned | `ref` as regular prop |
+| `useContext()` | ❌ Deprecated | `use()` |
+| `onSubmit={handler}` (mutations) | ⚠️ Avoid | `<form action={fn}>` |
+| `useOptimistic()` | ✅ Preferred | For pending mutation UI |
+| `useFormStatus()` | ✅ Preferred | For submit button state |
 
 ---
 
@@ -539,7 +678,7 @@ const { user, tokens } = await validatedApi.auth.login(email, password);
 
 ## Routing
 
-We use **React Router v6** with nested routes and lazy loading.
+We use **React Router v7** with nested routes and lazy loading.
 
 ### Route Structure
 
@@ -896,7 +1035,7 @@ We build on Radix UI for accessibility and use Tailwind for styling.
 
 ```tsx
 // src/components/ui/Button.tsx
-import { forwardRef, ButtonHTMLAttributes } from 'react';
+import { type ButtonHTMLAttributes } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
@@ -928,64 +1067,60 @@ const buttonVariants = cva(
 interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   isLoading?: boolean;
+  ref?: React.Ref<HTMLButtonElement>;
 }
 
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, isLoading, children, ...props }, ref) => {
-    return (
-      <button
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        disabled={isLoading || props.disabled}
-        {...props}
-      >
-        {isLoading && (
-          <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-        )}
-        {children}
-      </button>
-    );
-  }
-);
-
-Button.displayName = 'Button';
+// React 19: ref is a regular prop — no forwardRef needed
+export function Button({ className, variant, size, isLoading, children, ref, ...props }: ButtonProps) {
+  return (
+    <button
+      className={cn(buttonVariants({ variant, size, className }))}
+      ref={ref}
+      disabled={isLoading || props.disabled}
+      {...props}
+    >
+      {isLoading && (
+        <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+      )}
+      {children}
+    </button>
+  );
+}
 ```
 
 ### Input Component
 
 ```tsx
 // src/components/ui/Input.tsx
-import { forwardRef, InputHTMLAttributes } from 'react';
+import { type InputHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  ref?: React.Ref<HTMLInputElement>;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, ...props }, ref) => {
-    return (
-      <div className="space-y-1">
-        {label && <label className="text-sm font-medium text-gray-300">{label}</label>}
-        <input
-          className={cn(
-            'border-dark-600 bg-dark-800 w-full rounded-lg border px-4 py-2',
-            'text-white placeholder-gray-500',
-            'focus:border-primary-500 focus:ring-primary-500 focus:ring-1 focus:outline-none',
-            error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
-            className
-          )}
-          ref={ref}
-          {...props}
-        />
-        {error && <p className="text-sm text-red-500">{error}</p>}
-      </div>
-    );
-  }
-);
-
-Input.displayName = 'Input';
+// React 19: ref is a regular prop — no forwardRef needed
+export function Input({ className, label, error, ref, ...props }: InputProps) {
+  return (
+    <div className="space-y-1">
+      {label && <label className="text-sm font-medium text-gray-300">{label}</label>}
+      <input
+        className={cn(
+          'border-dark-600 bg-dark-800 w-full rounded-lg border px-4 py-2',
+          'text-white placeholder-gray-500',
+          'focus:border-primary-500 focus:ring-primary-500 focus:ring-1 focus:outline-none',
+          error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
+          className
+        )}
+        ref={ref}
+        {...props}
+      />
+      {error && <p className="text-sm text-red-500">{error}</p>}
+    </div>
+  );
+}
 ```
 
 ### Voice Message Components
@@ -3019,6 +3154,8 @@ useEffect(() => {
 
 ### Optimistic Updates
 
+#### React Query (Server State)
+
 ```tsx
 function useSendMessage() {
   const queryClient = useQueryClient();
@@ -3051,6 +3188,44 @@ function useSendMessage() {
     },
   });
 }
+```
+
+#### Zustand Store (Client State)
+
+The chatStore uses a snapshot-and-rollback pattern for optimistic mutations:
+
+```tsx
+// In chatStore — optimistic reaction toggle
+toggleReaction: async (messageId: string, emoji: string) => {
+  const { messages } = get();
+
+  // 1. Snapshot current state
+  const snapshot = structuredClone(messages);
+
+  // 2. Apply optimistic change immediately
+  set((state) => ({
+    messages: state.messages.map((m) =>
+      m.id === messageId
+        ? { ...m, reactions: toggleReactionInList(m.reactions, emoji, currentUserId) }
+        : m
+    ),
+  }));
+
+  // 3. API call
+  try {
+    await api.post(`/messages/${messageId}/reactions`, { emoji });
+  } catch (error) {
+    // 4. Rollback on error
+    set({ messages: snapshot });
+    toast.error('Failed to react');
+  }
+};
+```
+
+#### React 19 useOptimistic (Component-Level)
+
+For component-scoped optimistic state, prefer `useOptimistic()` — see
+[React 19 Patterns](#react-19-patterns).
 ```
 
 ### Error Boundaries

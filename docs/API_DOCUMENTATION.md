@@ -1,6 +1,6 @@
 # CGraph API Documentation
 
-> **Version: 0.9.36** | Last Updated: February 2026
+> **Version: 0.9.37** | Last Updated: February 2026
 
 Complete reference for the CGraph REST and WebSocket APIs.
 
@@ -43,15 +43,17 @@ Content-Type: application/json
 
 ```json
 {
-  "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "refresh_token": "rt_abc123...",
-  "token_type": "Bearer",
-  "expires_in": 900,
-  "user": {
-    "id": "usr_abc123",
-    "email": "user@example.com",
-    "username": "johndoe",
-    "display_name": "John Doe"
+  "data": {
+    "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refresh_token": "rt_abc123...",
+    "token_type": "Bearer",
+    "expires_in": 900,
+    "user": {
+      "id": "usr_abc123",
+      "email": "user@example.com",
+      "username": "johndoe",
+      "display_name": "John Doe"
+    }
   }
 }
 ```
@@ -91,17 +93,43 @@ X-RateLimit-Reset: 1706400000
 
 ---
 
-## Error Responses
+## Standardized Response Format
 
-All errors follow this format:
+All API responses use the `render_data`/`render_error` helpers from `CGraphWeb.ControllerHelpers`.
+
+### Success
 
 ```json
 {
-  "error": "short_code",
-  "message": "Human-readable description",
-  "details": {}
+  "data": { ... }
 }
 ```
+
+### Success with Pagination Meta
+
+```json
+{
+  "data": [...],
+  "meta": {
+    "has_more": true,
+    "cursor": "encoded-cursor-string"
+  }
+}
+```
+
+### Error
+
+```json
+{
+  "error": "Human-readable error message"
+}
+```
+
+The HTTP status code is set via `Plug.Conn.put_status/2` before rendering.
+
+---
+
+## Error Codes
 
 | Status Code | Error Code         | Description              |
 | ----------- | ------------------ | ------------------------ |
@@ -130,13 +158,15 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "id": "usr_abc123",
-  "email": "user@example.com",
-  "username": "johndoe",
-  "display_name": "John Doe",
-  "avatar_url": "https://cdn.cgraph.org/avatars/abc123.webp",
-  "status": "online",
-  "created_at": "2026-01-15T10:30:00Z"
+  "data": {
+    "id": "usr_abc123",
+    "email": "user@example.com",
+    "username": "johndoe",
+    "display_name": "John Doe",
+    "avatar_url": "https://cdn.cgraph.org/avatars/abc123.webp",
+    "status": "online",
+    "created_at": "2026-01-15T10:30:00Z"
+  }
 }
 ```
 
@@ -185,10 +215,9 @@ Authorization: Bearer <token>
       "created_at": "2026-01-10T08:00:00Z"
     }
   ],
-  "pagination": {
-    "total": 5,
-    "page": 1,
-    "per_page": 25
+  "meta": {
+    "has_more": true,
+    "cursor": "encoded-cursor-string"
   }
 }
 ```
@@ -427,15 +456,17 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "identity_key": "base64_public_key...",
-  "signed_pre_key": {
-    "key_id": 1,
-    "public_key": "base64_public_key...",
-    "signature": "base64_signature..."
-  },
-  "one_time_pre_key": {
-    "key_id": 42,
-    "public_key": "base64_public_key..."
+  "data": {
+    "identity_key": "base64_public_key...",
+    "signed_pre_key": {
+      "key_id": 1,
+      "public_key": "base64_public_key...",
+      "signature": "base64_signature..."
+    },
+    "one_time_pre_key": {
+      "key_id": 42,
+      "public_key": "base64_public_key..."
+    }
   }
 }
 ```
@@ -458,11 +489,13 @@ file: <binary>
 
 ```json
 {
-  "id": "file_abc123",
-  "url": "https://cdn.cgraph.org/files/abc123.pdf",
-  "filename": "document.pdf",
-  "size": 102400,
-  "content_type": "application/pdf"
+  "data": {
+    "id": "file_abc123",
+    "url": "https://cdn.cgraph.org/files/abc123.pdf",
+    "filename": "document.pdf",
+    "size": 102400,
+    "content_type": "application/pdf"
+  }
 }
 ```
 
@@ -555,9 +588,9 @@ Response includes pagination info:
 ```json
 {
   "data": [...],
-  "pagination": {
+  "meta": {
     "has_more": true,
-    "next_cursor": "msg_xyz789"
+    "cursor": "msg_xyz789"
   }
 }
 ```
@@ -605,4 +638,4 @@ const expected = crypto.createHmac('sha256', webhookSecret).update(body).digest(
 
 ---
 
-<sub>**CGraph API Documentation** • Version 0.9.36 • [OpenAPI Spec](/api/openapi.json)</sub>
+<sub>**CGraph API Documentation** • Version 0.9.37 • [OpenAPI Spec](/api/openapi.json)</sub>

@@ -1,6 +1,6 @@
 # Security Review Tracking
 
-> **Version: 0.9.36** | Last Updated: February 21, 2026
+> **Version: 0.9.37** | Last Updated: February 21, 2026
 
 This document tracks all security reviews, audits, and penetration tests for CGraph.
 
@@ -10,7 +10,7 @@ This document tracks all security reviews, audits, and penetration tests for CGr
 
 | Review Type               | Status       | Last Date  | Next Scheduled | Owner     |
 | ------------------------- | ------------ | ---------- | -------------- | --------- |
-| Internal Code Review      | ✅ Ongoing   | 2026-01-30 | Continuous     | @dev-team |
+| Internal Code Review      | ✅ Ongoing   | 2026-02-21 | Continuous     | @dev-team |
 | E2EE Protocol Audit       | ❌ Pending   | Never      | Q1 2026        | @security |
 | External Penetration Test | ❌ Pending   | Never      | Q1 2026        | @security |
 | Dependency Audit          | ✅ Automated | 2026-01-30 | Every PR       | CI        |
@@ -86,6 +86,25 @@ This document tracks all security reviews, audits, and penetration tests for CGr
 ---
 
 ## ✅ Completed Reviews
+
+### Internal Security Audit — February 21, 2026
+
+**Scope:** XSS audit, CI permissions hardening, structured logging  
+**Findings:**
+
+| ID    | Severity | Title                                   | Status   | Fixed Date |
+| ----- | -------- | --------------------------------------- | -------- | ---------- |
+| SA-6  | Medium   | XSS audit — all 8 dangerouslySetInnerHTML usages | ✅ PASS  | 2026-02-21 |
+| SA-7  | Medium   | CI workflow permissions not explicit    | ✅ Fixed | 2026-02-21 |
+| SA-8  | Low      | Logger string interpolation (111 sites) | ✅ Fixed | 2026-02-21 |
+
+**Details:**
+
+- **XSS:** All 8 `dangerouslySetInnerHTML` usages confirmed safe (7 DOMPurify, 1 sanitizeCss). DOMPurify ^3.3.1.
+- **CI Permissions:** All 17 GitHub Actions workflows now have explicit `permissions:` blocks (commit `9d8fb58a`).
+- **Structured Logging:** 111 Logger string interpolation violations converted to structured metadata.
+
+---
 
 ### Internal Security Audit — January 10, 2026
 

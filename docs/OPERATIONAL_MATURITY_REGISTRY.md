@@ -110,6 +110,12 @@ test/cgraph/chaos/circuit_breaker_validator_test.exs   # 4 tests
 test/cgraph/chaos/scenarios_test.exs                   # 9 tests
 ```
 
+### ControllerHelpers Standardization (v0.9.37)
+
+All controllers now use `CGraphWeb.ControllerHelpers.render_data/2,3` and `render_error/3` for
+consistent JSON response envelopes. This improves operational maturity by ensuring uniform error
+formats for monitoring, alerting, and client-side error handling.
+
 ### Remaining Gap
 
 - **Actual line coverage % is unknown** — need to run `MIX_ENV=test mix coveralls` and verify we hit

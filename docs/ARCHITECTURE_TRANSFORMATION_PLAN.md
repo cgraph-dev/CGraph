@@ -22,6 +22,7 @@ Score: 10/10** | **Philosophy: BUILD, DON'T DELETE**
 | `any` types           | 203     | 0        | 🔴 Critical |
 | Files >300 lines      | 47      | 0        | 🔴 Critical |
 | Files >1000 lines     | 20      | 0        | 🔴 Critical |
+| `React.FC` usage      | 73      | 5        | ✅ Nearly done |
 | `console.log` calls   | 276     | 0 (prod) | 🟡 Warning  |
 | `@ts-ignore` comments | 7       | 0        | 🟡 Warning  |
 | `eslint-disable`      | 40      | 0        | 🟡 Warning  |
@@ -56,7 +57,7 @@ These files MUST be split. Meta would reject these in code review.
 | `CoinShopScreen.tsx`              | 1,399     | 300 | Split into 5+ components  |
 | `EffectsCustomization.tsx`        | 1,369     | 300 | Split into 5+ components  |
 | `LandingPage.tsx`                 | 1,316     | 300 | Split into 5+ components  |
-| `jobs.ex` (backend)               | 1,253     | 500 | Split into 3+ modules     |
+| `jobs.ex` (backend)               | 1,253     | 500 | ✅ SPLIT (1253→247)     |
 
 ### Critical Violations: `any` Type Usage
 
@@ -2301,6 +2302,27 @@ Created submodules:
 - `accounts/users.ex`, `accounts/authentication.ex`, `accounts/registration.ex`,
   `accounts/sessions.ex`
 
+### Phase 7: File Splitting — Completed (v0.9.37, Feb 21, 2026)
+
+| File | Before | After | Status |
+| ---- | ------ | ----- | ------ |
+| `jobs.ex` | 1,253 | 247 | ✅ SPLIT |
+| `data_export.ex` | 1,059 | 234 | ✅ SPLIT |
+| `presence.ex` | 905 | 225 | ✅ SPLIT |
+| `oauth.ex` | 823 | 190 | ✅ SPLIT |
+| `moderation.ex` | 816 | 81 | ✅ SPLIT |
+| `redis.ex` | 802 | 481 | ✅ SPLIT |
+| `cache.ex` | 764 | 380 | ✅ SPLIT |
+| `batch_processor.ex` | 717 | 116 | ✅ SPLIT |
+| `api_versioning.ex` | 686 | 243 | ✅ SPLIT |
+| `request_context.ex` | 656 | 216 | ✅ SPLIT |
+| `ForumHierarchyAdmin.tsx` | 536 | 129 | ✅ SPLIT |
+| `ForumPermissionsPanel.tsx` | 452 | 130 | ✅ SPLIT |
+| `MatrixText.tsx` | 422 | 288 | ✅ SPLIT |
+| `effects-customization/sections.tsx` | 405 | 9 | ✅ SPLIT |
+| `ChannelsTab.tsx` | 396 | 209 | ✅ SPLIT |
+| `SeasonalEffects.tsx` | 382 | 197 | ✅ SPLIT |
+
 ---
 
 ## Comparison: CGraph vs Industry Giants
@@ -3985,6 +4007,7 @@ module.exports = {
 | `any` types            | 38      | <20    | ⚠️          |
 | Files >500 lines       | 153     | 0      | ❌ Critical |
 | Files >1000 lines      | 29      | 0      | ❌ Critical |
+| `React.FC` usage       | 73      | 5      | ✅ Nearly done |
 
 ---
 
