@@ -82,28 +82,21 @@ defmodule CGraph.Cache.Distributed do
   use GenServer
   require Logger
 
+  alias __MODULE__.{L1, L2, StampedePrevention}
+
   @type cache_key :: String.t()
   @type cache_value :: term()
   @type ttl :: pos_integer() | :infinity
   @type cache_opts :: [ttl: ttl, namespace: String.t(), compress: boolean()]
 
   @default_ttl :timer.minutes(15)
-  @l1_max_size 10_000
   @l1_ttl :timer.minutes(5)
-  @compression_threshold 1024
-  @lock_timeout 5_000
-  @stale_grace_period :timer.minutes(1)
-
-  # L1 cache entry structure
-  defmodule Entry do
-    @moduledoc false
-    defstruct [:value, :expires_at, :stale_at, :compressed]
-  end
 
   # ---------------------------------------------------------------------------
   # GenServer API
   # ---------------------------------------------------------------------------
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -129,8 +122,8 @@ defmodule CGraph.Cache.Distributed do
 
   @impl true
   def handle_info(:cleanup_l1, state) do
-    cleanup_expired_l1()
-    enforce_l1_size_limit()
+    L1.cleanup_expired()
+    L1.enforce_size_limit()
     Process.send_after(self(), :cleanup_l1, :timer.minutes(1))
     {:noreply, state}
   end
@@ -148,18 +141,18 @@ defmodule CGraph.Cache.Distributed do
   def get(key, opts \\ []) do
     full_key = build_key(key, opts)
 
-    case get_l1(full_key) do
+    case L1.get(full_key) do
       {:ok, value} ->
         increment_stat(:l1_hits)
         value
 
       :miss ->
         increment_stat(:l1_misses)
-        case get_l2(full_key) do
+        case L2.get(full_key) do
           {:ok, value} ->
             increment_stat(:l2_hits)
             # Populate L1 from L2
-            set_l1(full_key, value, l1_ttl(opts))
+            L1.set(full_key, value, @l1_ttl)
             value
 
           :miss ->
@@ -180,10 +173,10 @@ defmodule CGraph.Cache.Distributed do
     ttl = Keyword.get(opts, :ttl, @default_ttl)
 
     # Set in L1
-    set_l1(full_key, value, min(ttl, @l1_ttl))
+    L1.set(full_key, value, min(ttl, @l1_ttl))
 
     # Set in L2
-    set_l2(full_key, value, ttl, opts)
+    L2.set(full_key, value, ttl, opts)
 
     :ok
   end
@@ -210,17 +203,17 @@ defmodule CGraph.Cache.Distributed do
   def fetch(key, fallback, opts \\ []) when is_function(fallback, 0) do
     full_key = build_key(key, opts)
 
-    case get_with_stale(full_key) do
+    case L1.get_with_stale(full_key) do
       {:ok, value, :fresh} ->
         value
 
       {:ok, value, :stale} ->
         # Serve stale, refresh in background
-        maybe_refresh_async(full_key, fallback, opts)
+        StampedePrevention.maybe_refresh_async(full_key, fallback, opts)
         value
 
       :miss ->
-        compute_with_lock(full_key, fallback, opts)
+        StampedePrevention.compute_with_lock(full_key, fallback, opts)
     end
   end
 
@@ -235,7 +228,7 @@ defmodule CGraph.Cache.Distributed do
     :ets.delete(:cache_l1, full_key)
 
     # Delete from L2
-    delete_l2(full_key)
+    L2.delete(full_key)
 
     :ok
   end
@@ -268,7 +261,7 @@ defmodule CGraph.Cache.Distributed do
     )
 
     # Clear L2 entries using SCAN
-    l2_deleted = delete_pattern_l2(pattern)
+    l2_deleted = L2.delete_pattern(pattern)
 
     {:ok, l1_deleted + l2_deleted}
   end
@@ -311,7 +304,7 @@ defmodule CGraph.Cache.Distributed do
     # Check L1 first
     {l1_results, l1_misses} =
       Enum.reduce(keys, {%{}, []}, fn key, {found, missing} ->
-        case get_l1(key) do
+        case L1.get(key) do
           {:ok, value} -> {Map.put(found, key, value), missing}
           :miss -> {found, [key | missing]}
         end
@@ -319,7 +312,7 @@ defmodule CGraph.Cache.Distributed do
 
     # Check L2 for misses
     l2_results = if l1_misses != [] do
-      get_many_l2(l1_misses)
+      L2.get_many(l1_misses)
     else
       %{}
     end
@@ -335,10 +328,10 @@ defmodule CGraph.Cache.Distributed do
     ttl = Keyword.get(opts, :ttl, @default_ttl)
 
     Enum.each(entries, fn {key, value} ->
-      set_l1(key, value, min(ttl, @l1_ttl))
+      L1.set(key, value, min(ttl, @l1_ttl))
     end)
 
-    set_many_l2(entries, ttl)
+    L2.set_many(entries, ttl)
 
     :ok
   end
@@ -386,188 +379,6 @@ defmodule CGraph.Cache.Distributed do
   end
 
   # ---------------------------------------------------------------------------
-  # L1 Cache (ETS)
-  # ---------------------------------------------------------------------------
-
-  defp get_l1(key) do
-    now = System.monotonic_time(:millisecond)
-
-    case :ets.lookup(:cache_l1, key) do
-      [{^key, %Entry{expires_at: exp, value: value, compressed: comp}}] when exp > now ->
-        value = if comp, do: decompress(value), else: value
-        {:ok, value}
-      _ ->
-        :miss
-    end
-  end
-
-  defp get_with_stale(key) do
-    now = System.monotonic_time(:millisecond)
-
-    case :ets.lookup(:cache_l1, key) do
-      [{^key, %Entry{expires_at: exp, stale_at: stale, value: value, compressed: comp}}] ->
-        value = if comp, do: decompress(value), else: value
-        cond do
-          now < exp -> {:ok, value, :fresh}
-          now < stale -> {:ok, value, :stale}
-          true -> :miss
-        end
-      _ ->
-        :miss
-    end
-  end
-
-  defp set_l1(key, value, ttl) do
-    now = System.monotonic_time(:millisecond)
-
-    {value, compressed} = maybe_compress(value)
-
-    entry = %Entry{
-      value: value,
-      expires_at: now + ttl,
-      stale_at: now + ttl + @stale_grace_period,
-      compressed: compressed
-    }
-
-    :ets.insert(:cache_l1, {key, entry})
-  end
-
-  defp l1_ttl(opts) do
-    Keyword.get(opts, :l1_ttl, @l1_ttl)
-  end
-
-  # ---------------------------------------------------------------------------
-  # L2 Cache (Cachex/Redis)
-  # ---------------------------------------------------------------------------
-
-  defp get_l2(key) do
-    case Cachex.get(:cgraph_cache, key) do
-      {:ok, nil} -> :miss
-      {:ok, value} -> {:ok, value}
-      {:error, _} -> :miss
-    end
-  end
-
-  defp set_l2(key, value, ttl, opts) do
-    should_compress = Keyword.get(opts, :compress, byte_size_estimate(value) > @compression_threshold)
-
-    {stored_value, compressed} = if should_compress do
-      {compress(value), true}
-    else
-      {value, false}
-    end
-
-    entry = %{value: stored_value, compressed: compressed}
-
-    Cachex.put(:cgraph_cache, key, entry, ttl: ttl)
-  end
-
-  defp delete_l2(key) do
-    Cachex.del(:cgraph_cache, key)
-  end
-
-  defp delete_pattern_l2(pattern) do
-    # Use Cachex stream to find and delete matching keys
-    count = Cachex.stream!(:cgraph_cache)
-    |> Stream.filter(fn {:entry, key, _, _, _} ->
-      regex = pattern_to_regex(pattern)
-      Regex.match?(regex, to_string(key))
-    end)
-    |> Enum.reduce(0, fn {:entry, key, _, _, _}, acc ->
-      Cachex.del(:cgraph_cache, key)
-      acc + 1
-    end)
-
-    count
-  rescue
-    _ -> 0
-  end
-
-  defp get_many_l2(keys) do
-    keys
-    |> Enum.reduce(%{}, fn key, acc ->
-      case get_l2(key) do
-        {:ok, value} -> Map.put(acc, key, value)
-        :miss -> acc
-      end
-    end)
-  end
-
-  defp set_many_l2(entries, ttl) do
-    Enum.each(entries, fn {key, value} ->
-      set_l2(key, value, ttl, [])
-    end)
-  end
-
-  # ---------------------------------------------------------------------------
-  # Cache Stampede Prevention
-  # ---------------------------------------------------------------------------
-
-  defp compute_with_lock(key, fallback, opts) do
-    use_lock = Keyword.get(opts, :lock, true)
-
-    if use_lock do
-      lock_key = "lock:#{key}"
-
-      case acquire_lock(lock_key) do
-        :ok -> compute_with_held_lock(lock_key, key, fallback, opts)
-        :locked -> compute_after_lock_wait(key, fallback, opts)
-      end
-    else
-      value = fallback.()
-      set(key, value, opts)
-      value
-    end
-  end
-
-  defp compute_with_held_lock(lock_key, key, fallback, opts) do
-    value = fallback.()
-    set(key, value, opts)
-    value
-  after
-    release_lock(lock_key)
-  end
-
-  defp compute_after_lock_wait(key, fallback, opts) do
-    Process.sleep(50)
-    case get(key, opts) do
-      nil -> fallback.()
-      value -> value
-    end
-  end
-
-  defp acquire_lock(lock_key) do
-    now = System.monotonic_time(:millisecond)
-    expires = now + @lock_timeout
-
-    case :ets.insert_new(:cache_locks, {lock_key, expires}) do
-      true -> :ok
-      false ->
-        # Check if lock expired
-        case :ets.lookup(:cache_locks, lock_key) do
-          [{^lock_key, exp}] when exp < now ->
-            :ets.delete(:cache_locks, lock_key)
-            acquire_lock(lock_key)
-          _ ->
-            :locked
-        end
-    end
-  end
-
-  defp release_lock(lock_key) do
-    :ets.delete(:cache_locks, lock_key)
-  end
-
-  defp maybe_refresh_async(key, fallback, opts) do
-    # 10% chance to refresh stale data
-    if :rand.uniform(10) == 1 do
-      Task.Supervisor.start_child(CGraph.TaskSupervisor, fn ->
-        compute_with_lock(key, fallback, opts)
-      end)
-    end
-  end
-
-  # ---------------------------------------------------------------------------
   # Utilities
   # ---------------------------------------------------------------------------
 
@@ -597,70 +408,6 @@ defmodule CGraph.Cache.Distributed do
     |> String.replace("\\?", ".")
     |> then(&Regex.compile!("^#{&1}$"))
   end
-
-  defp maybe_compress(value) do
-    if byte_size_estimate(value) > @compression_threshold do
-      {compress(value), true}
-    else
-      {value, false}
-    end
-  end
-
-  defp compress(value) do
-    value
-    |> :erlang.term_to_binary()
-    |> :zlib.compress()
-  end
-
-  defp decompress(data) do
-    data
-    |> :zlib.uncompress()
-    # Use :safe option to prevent arbitrary atom creation and code execution
-    |> :erlang.binary_to_term([:safe])
-  end
-
-  defp byte_size_estimate(value) do
-    :erlang.external_size(value)
-  end
-
-  defp cleanup_expired_l1 do
-    now = System.monotonic_time(:millisecond)
-
-    :ets.foldl(
-      fn {key, %Entry{stale_at: stale}}, _ ->
-        if stale < now do
-          :ets.delete(:cache_l1, key)
-        end
-      end,
-      nil,
-      :cache_l1
-    )
-  end
-
-  defp enforce_l1_size_limit do
-    size = :ets.info(:cache_l1, :size)
-
-    if size > @l1_max_size do
-      to_evict = div(size, 10)
-      evict_oldest_entries(to_evict)
-    end
-  end
-
-  defp evict_oldest_entries(to_evict) do
-    :ets.foldl(
-      fn {key, _}, count ->
-        maybe_evict_entry(key, count, to_evict)
-      end,
-      0,
-      :cache_l1
-    )
-  end
-
-  defp maybe_evict_entry(key, count, to_evict) when count < to_evict do
-    :ets.delete(:cache_l1, key)
-    count + 1
-  end
-  defp maybe_evict_entry(_key, count, _to_evict), do: count
 
   defp increment_stat(name) do
     :ets.update_counter(:cache_stats, name, 1, {name, 0})

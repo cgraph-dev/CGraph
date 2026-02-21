@@ -38,6 +38,7 @@ defmodule CGraph.Messaging do
   # ============================================================================
 
   @doc "List messages in a conversation using cursor-based pagination."
+  @spec list_messages(struct(), keyword()) :: {[struct()], map()}
   def list_messages(conversation, opts \\ []) do
     alias CGraph.Pagination
 
@@ -76,6 +77,7 @@ defmodule CGraph.Messaging do
   end
 
   @doc "Get a message by conversation + message_id."
+  @spec get_message(struct(), binary()) :: {:ok, struct()} | {:error, :not_found}
   def get_message(conversation, message_id) do
     query = from m in Message,
       where: m.id == ^message_id,
@@ -89,6 +91,7 @@ defmodule CGraph.Messaging do
   end
 
   @doc "List thread replies for a parent message."
+  @spec list_thread_replies(binary(), keyword()) :: {[struct()], map()}
   def list_thread_replies(parent_message_id, opts \\ []) do
     alias CGraph.Pagination
     limit = min(Keyword.get(opts, :limit, 50), 100)
@@ -119,6 +122,7 @@ defmodule CGraph.Messaging do
   end
 
   @doc "Count replies per parent message ID. Returns `%{message_id => count}`."
+  @spec count_thread_replies([binary()]) :: %{binary() => non_neg_integer()}
   def count_thread_replies(parent_message_ids) when is_list(parent_message_ids) do
     Message
     |> exclude_deleted()
@@ -130,6 +134,7 @@ defmodule CGraph.Messaging do
   end
 
   @doc "Create a message in a conversation (with idempotency via client_message_id)."
+  @spec create_message(struct(), struct(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def create_message(user, conversation, attrs) do
     message_attrs = attrs
       |> stringify_keys()
@@ -143,9 +148,11 @@ defmodule CGraph.Messaging do
   end
 
   @doc "Send a message (alias for create_message with conversation first)."
+  @spec send_message(struct(), struct(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def send_message(conversation, user, attrs), do: create_message(user, conversation, attrs)
 
   @doc "Check if a user is a participant in a conversation."
+  @spec user_in_conversation?(binary(), binary()) :: boolean()
   def user_in_conversation?(conversation_id, user_id) do
     query = from cp in ConversationParticipant,
       where: cp.conversation_id == ^conversation_id,
@@ -156,6 +163,7 @@ defmodule CGraph.Messaging do
   end
 
   @doc "Broadcast typing indicator."
+  @spec broadcast_typing(struct(), struct()) :: :ok
   def broadcast_typing(conversation, user) do
     CGraphWeb.Endpoint.broadcast(
       "conversation:#{conversation.id}",
@@ -172,6 +180,7 @@ defmodule CGraph.Messaging do
   defdelegate list_reactions(message, opts \\ []), to: CGraph.Messaging.Reactions
 
   @doc "Add reaction. Returns `{:ok, reaction, nil}` (3-element tuple for callers)."
+  @spec add_reaction(struct(), struct(), String.t()) :: {:ok, struct(), nil} | {:error, :already_exists} | {:error, Ecto.Changeset.t()}
   def add_reaction(user, message, emoji) do
     existing_same = Repo.get_by(Reaction,
       user_id: user.id,
@@ -192,6 +201,7 @@ defmodule CGraph.Messaging do
   end
 
   @doc "Remove reaction."
+  @spec remove_reaction(struct(), struct(), String.t()) :: {:ok, struct()} | {:error, :not_found}
   def remove_reaction(user, message, emoji) do
     query = from r in Reaction,
       where: r.user_id == ^user.id,
@@ -205,6 +215,7 @@ defmodule CGraph.Messaging do
   end
 
   @doc "Broadcast reaction added event."
+  @spec broadcast_reaction_added(struct(), struct(), struct(), struct() | nil) :: :ok
   def broadcast_reaction_added(conversation, message, reaction, user \\ nil) do
     user_data = user || reaction.user
 
@@ -224,6 +235,7 @@ defmodule CGraph.Messaging do
   end
 
   @doc "Broadcast reaction removed event."
+  @spec broadcast_reaction_removed(struct(), struct(), struct(), String.t()) :: :ok
   def broadcast_reaction_removed(conversation, message, user, emoji) do
     CGraphWeb.Endpoint.broadcast(
       "conversation:#{conversation.id}",
@@ -245,9 +257,11 @@ defmodule CGraph.Messaging do
   # ============================================================================
 
   @doc "Create a message from a map (channel messages)."
+  @spec create_message(map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def create_message(attrs) when is_map(attrs), do: MessageOperations.create_message(attrs)
 
   @doc "Get a message by ID."
+  @spec get_message(binary()) :: {:ok, struct()} | {:error, :not_found}
   def get_message(message_id) when is_binary(message_id), do: MessageOperations.get_message(message_id)
 
   defdelegate update_message(message, attrs), to: MessageOperations
@@ -269,8 +283,10 @@ defmodule CGraph.Messaging do
   def mark_as_read(message, user), do: MessageOperations.mark_message_read(message, user)
 
   @doc "Delete a message (soft delete, no auth check)."
+  @spec delete_message(struct()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def delete_message(message) when is_struct(message), do: MessageOperations.delete_message(message)
 
+  @spec delete_message(binary(), binary()) :: {:ok, struct()} | {:error, term()}
   def delete_message(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
     MessageOperations.delete_message(message_id, user_id)
   end
@@ -289,9 +305,12 @@ defmodule CGraph.Messaging do
   defdelegate create_pm_folder(attrs), to: PrivateMessageSystem
   defdelegate get_pm_folder(folder_id, user_id \\ nil), to: PrivateMessageSystem
   defdelegate get_pm_folder_by_name(user_id, name), to: PrivateMessageSystem
+  @spec update_pm_folder(struct(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def update_pm_folder(folder, attrs), do: PrivateMessageSystem.update_pm_folder(folder, attrs)
+  @spec delete_pm_folder(struct()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def delete_pm_folder(folder), do: PrivateMessageSystem.delete_pm_folder(folder)
   defdelegate list_private_messages(user_id, opts), to: PrivateMessageSystem
+  @spec list_private_messages(binary(), binary(), keyword()) :: {[struct()], map()}
   def list_private_messages(user_id, folder_id, opts), do: PrivateMessageSystem.list_private_messages(user_id, folder_id, opts)
   defdelegate get_private_message(message_id, user_id), to: PrivateMessageSystem
   defdelegate send_private_message(attrs), to: PrivateMessageSystem
@@ -321,10 +340,12 @@ defmodule CGraph.Messaging do
   # Ephemeral / Disappearing Messages
   # ============================================================================
 
+  @spec update_conversation_ttl(struct(), integer() | nil) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def update_conversation_ttl(%Conversation{} = conversation, ttl) when is_nil(ttl) or is_integer(ttl) do
     conversation |> Ecto.Changeset.change(message_ttl: ttl) |> Repo.update()
   end
 
+  @spec get_conversation_ttl(binary()) :: {:ok, integer() | nil} | {:error, :not_found}
   def get_conversation_ttl(conversation_id) when is_binary(conversation_id) do
     case Repo.get(Conversation, conversation_id) do
       nil -> {:error, :not_found}
@@ -412,6 +433,7 @@ defmodule CGraph.Messaging do
   List conversations the user is part of, updated since the given timestamp.
   `since` is a millisecond Unix timestamp or nil for full sync.
   """
+  @spec list_user_conversations_since(struct(), integer() | nil) :: [struct()]
   def list_user_conversations_since(user, since) do
     user_id = user.id
 
@@ -435,6 +457,7 @@ defmodule CGraph.Messaging do
   @doc """
   List IDs of conversations the user has left since the given timestamp.
   """
+  @spec list_deleted_conversation_ids_since(struct(), integer() | nil) :: [binary()]
   def list_deleted_conversation_ids_since(user, since) do
     user_id = user.id
 
@@ -457,6 +480,7 @@ defmodule CGraph.Messaging do
   @doc """
   List messages in user's conversations, updated since the given timestamp.
   """
+  @spec list_user_messages_since(struct(), integer() | nil) :: [struct()]
   def list_user_messages_since(user, since) do
     user_id = user.id
 
@@ -480,6 +504,7 @@ defmodule CGraph.Messaging do
   @doc """
   List IDs of messages that were soft-deleted since the given timestamp.
   """
+  @spec list_deleted_message_ids_since(struct(), integer() | nil) :: [binary()]
   def list_deleted_message_ids_since(user, since) do
     user_id = user.id
 
@@ -503,6 +528,7 @@ defmodule CGraph.Messaging do
   @doc """
   List conversation participants updated since the given timestamp.
   """
+  @spec list_participants_since(struct(), integer() | nil) :: [struct()]
   def list_participants_since(user, since) do
     user_id = user.id
 
@@ -527,6 +553,7 @@ defmodule CGraph.Messaging do
   @doc """
   List IDs of participants who left conversations since the given timestamp.
   """
+  @spec list_removed_participant_ids_since(struct(), integer() | nil) :: [binary()]
   def list_removed_participant_ids_since(user, since) do
     user_id = user.id
 

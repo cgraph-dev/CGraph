@@ -36,6 +36,7 @@ defmodule CGraph.Accounts do
   # ============================================================================
 
   @doc "Dismiss a friend suggestion so it won't appear again."
+  @spec dismiss_friend_suggestion(binary(), binary()) :: {:ok, :dismissed}
   def dismiss_friend_suggestion(user_id, suggested_user_id) do
     now = DateTime.truncate(DateTime.utc_now(), :second)
 
@@ -54,6 +55,7 @@ defmodule CGraph.Accounts do
   end
 
   @doc "Get list of dismissed suggestion user IDs for filtering."
+  @spec get_dismissed_suggestion_ids(binary()) :: [binary()]
   def get_dismissed_suggestion_ids(user_id) do
     from(d in "dismissed_suggestions",
       where: d.user_id == type(^user_id, :binary_id),
@@ -63,6 +65,7 @@ defmodule CGraph.Accounts do
   end
 
   @doc "Look up a user by Stripe customer ID. Requires Stripe integration."
+  @spec get_user_by_stripe_customer(String.t()) :: {:ok, struct()} | {:error, :not_found}
   def get_user_by_stripe_customer(stripe_customer_id) do
     Repo.get_by(User, stripe_customer_id: stripe_customer_id)
     |> case do
@@ -72,6 +75,7 @@ defmodule CGraph.Accounts do
   end
 
   @doc "Look up a user by Stripe subscription ID. Requires Stripe integration."
+  @spec get_user_by_stripe_subscription(String.t()) :: {:ok, struct()} | {:error, :not_found}
   def get_user_by_stripe_subscription(stripe_subscription_id) do
     Repo.get_by(User, stripe_subscription_id: stripe_subscription_id)
     |> case do
@@ -81,6 +85,7 @@ defmodule CGraph.Accounts do
   end
 
   @doc "Verify a user's password. Returns true/false."
+  @spec verify_password(struct(), String.t()) :: boolean()
   def verify_password(%User{} = user, password) when is_binary(password) do
     User.valid_password?(user, password)
   end
@@ -94,6 +99,7 @@ defmodule CGraph.Accounts do
 
   Optionally checks password against HaveIBeenPwned database.
   """
+  @spec register_user(map(), keyword()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def register_user(attrs, opts \\ []) do
     check_breach = Keyword.get(opts, :check_breach, true)
 
@@ -131,11 +137,13 @@ defmodule CGraph.Accounts do
   @doc """
   Create a new user (alias for register_user).
   """
+  @spec create_user(map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def create_user(attrs), do: register_user(attrs)
 
   @doc """
   Authenticate a user by email and password.
   """
+  @spec authenticate_user(String.t(), String.t()) :: {:ok, struct()} | {:error, :invalid_credentials}
   def authenticate_user(email, password) do
     user = Repo.get_by(User, email: String.downcase(email))
 
@@ -158,6 +166,7 @@ defmodule CGraph.Accounts do
   Automatically detects if identifier is email (contains @) or username.
   Both email and username lookups are case-insensitive for better UX.
   """
+  @spec authenticate_by_identifier(String.t(), String.t()) :: {:ok, struct()} | {:error, :invalid_credentials | :no_password_set}
   def authenticate_by_identifier(identifier, password) do
     user = if String.contains?(identifier, "@") do
       Repo.get_by(User, email: String.downcase(identifier))
@@ -189,6 +198,7 @@ defmodule CGraph.Accounts do
   Handles formats like "#4829173650" or "4829173650".
   Also supports legacy numeric user_id for backward compatibility.
   """
+  @spec get_user_by_user_id(binary() | integer()) :: {:ok, struct()} | {:error, :not_found}
   def get_user_by_user_id(uid_or_user_id)
 
   def get_user_by_user_id(uid) when is_binary(uid) do
@@ -224,6 +234,7 @@ defmodule CGraph.Accounts do
 
   Accepts either a Plug.Conn or a map with session metadata.
   """
+  @spec create_session(struct(), Plug.Conn.t() | map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def create_session(user, conn_or_attrs) do
     {user_agent, ip_address} = extract_session_metadata(conn_or_attrs)
     token_hash = :crypto.strong_rand_bytes(32) |> Base.encode64()
@@ -271,6 +282,7 @@ defmodule CGraph.Accounts do
   @doc """
   Get user by email.
   """
+  @spec get_user_by_email(String.t()) :: {:ok, struct()} | {:error, :not_found}
   def get_user_by_email(email) do
     case Repo.get_by(User, email: String.downcase(email)) do
       nil -> {:error, :not_found}
@@ -282,6 +294,7 @@ defmodule CGraph.Accounts do
   Get user by OAuth provider and UID.
   Returns the user if found, nil otherwise.
   """
+  @spec get_user_by_oauth(String.t(), String.t()) :: struct() | nil
   def get_user_by_oauth(provider, uid) when is_binary(provider) and is_binary(uid) do
     Repo.get_by(User, oauth_provider: provider, oauth_uid: uid)
   end
@@ -330,6 +343,7 @@ defmodule CGraph.Accounts do
   defdelegate list_sessions(user), to: SessionManagement
   defdelegate list_user_sessions(user), to: SessionManagement
   def revoke_session(%Session{} = session), do: SessionManagement.revoke_session(session)
+  @spec revoke_session(struct(), binary()) :: {:ok, struct()} | {:error, term()}
   def revoke_session(user, session_id), do: SessionManagement.revoke_session(user, session_id)
 
   # ============================================================================
@@ -446,6 +460,7 @@ defmodule CGraph.Accounts do
   Returns users who are in accepted friendships with the given user.
   `since` is a millisecond Unix timestamp or nil for full sync.
   """
+  @spec list_contacts_since(struct(), integer() | nil) :: [struct()]
   def list_contacts_since(user, since) do
     user_id = user.id
 
@@ -471,6 +486,7 @@ defmodule CGraph.Accounts do
   @doc """
   List friendships for the user, updated since the given timestamp.
   """
+  @spec list_friendships_since(struct(), integer() | nil) :: [struct()]
   def list_friendships_since(user, since) do
     user_id = user.id
 
@@ -494,6 +510,7 @@ defmodule CGraph.Accounts do
   List IDs of friendships that were removed (blocked/unfriended) since the given timestamp.
   Combines blocked friendships with the deleted_friendships audit table.
   """
+  @spec list_removed_friendship_ids_since(struct(), integer() | nil) :: [binary()]
   def list_removed_friendship_ids_since(user, since) do
     user_id = user.id
 

@@ -86,6 +86,8 @@ defmodule CGraph.RateLimiter do
   use GenServer
   require Logger
 
+  alias __MODULE__.{Algorithms, AccessControl}
+
   @default_scopes %{
     api: %{limit: 1000, window: 3600, algorithm: :sliding_window},
     api_burst: %{limit: 50, window: 1, algorithm: :token_bucket},
@@ -170,12 +172,7 @@ defmodule CGraph.RateLimiter do
     config = get_scope_config(scope, opts)
     key = build_key(identifier, scope)
 
-    result = case config.algorithm do
-      :token_bucket -> check_token_bucket(key, config)
-      :sliding_window -> check_sliding_window(key, config)
-      :leaky_bucket -> check_leaky_bucket(key, config)
-      :fixed_window -> check_fixed_window(key, config)
-    end
+    result = Algorithms.check(key, config)
 
     emit_telemetry(identifier, scope, config, result)
 
@@ -203,12 +200,7 @@ defmodule CGraph.RateLimiter do
     config = get_scope_config(scope, [])
     key = build_key(identifier, scope)
 
-    case config.algorithm do
-      :token_bucket -> token_bucket_status(key, config)
-      :sliding_window -> sliding_window_status(key, config)
-      :leaky_bucket -> leaky_bucket_status(key, config)
-      :fixed_window -> fixed_window_status(key, config)
-    end
+    Algorithms.status(key, config)
   end
 
   @doc """
@@ -242,52 +234,35 @@ defmodule CGraph.RateLimiter do
   @doc """
   Add to whitelist (never rate limited).
   """
-  def whitelist(identifier) do
-    GenServer.call(__MODULE__, {:whitelist, identifier})
-  end
+  defdelegate whitelist(identifier), to: AccessControl
 
   @doc """
   Remove from whitelist.
   """
-  def unwhitelist(identifier) do
-    GenServer.call(__MODULE__, {:unwhitelist, identifier})
-  end
+  defdelegate unwhitelist(identifier), to: AccessControl
 
   @doc """
   Check if identifier is whitelisted.
   """
-  def whitelisted?(identifier) do
-    case :ets.lookup(@ets_table, {:whitelist, identifier}) do
-      [{_, true}] -> true
-      _ -> false
-    end
-  end
+  defdelegate whitelisted?(identifier), to: AccessControl
 
   @doc """
   Add to blacklist (always rate limited).
   """
   def blacklist(identifier, opts \\ []) do
     duration = Keyword.get(opts, :duration, :infinity)
-    GenServer.call(__MODULE__, {:blacklist, identifier, duration})
+    AccessControl.blacklist(identifier, duration)
   end
 
   @doc """
   Remove from blacklist.
   """
-  def unblacklist(identifier) do
-    GenServer.call(__MODULE__, {:unblacklist, identifier})
-  end
+  defdelegate unblacklist(identifier), to: AccessControl
 
   @doc """
   Check if identifier is blacklisted.
   """
-  def blacklisted?(identifier) do
-    case :ets.lookup(@ets_table, {:blacklist, identifier}) do
-      [{_, until}] when until == :infinity -> true
-      [{_, until}] -> DateTime.compare(DateTime.utc_now(), until) == :lt
-      _ -> false
-    end
-  end
+  defdelegate blacklisted?(identifier), to: AccessControl
 
   @doc """
   Get configuration for a scope.
@@ -301,229 +276,6 @@ defmodule CGraph.RateLimiter do
       algorithm: Keyword.get(opts, :algorithm, base.algorithm),
       burst: Keyword.get(opts, :burst, Map.get(base, :burst, 0)),
       cost: Keyword.get(opts, :cost, 1)
-    }
-  end
-
-  # ---------------------------------------------------------------------------
-  # Token Bucket Algorithm
-  # ---------------------------------------------------------------------------
-
-  defp check_token_bucket(key, config) do
-    now = System.system_time(:millisecond)
-
-    case :ets.lookup(@ets_table, key) do
-      [] ->
-        # Initialize bucket
-        tokens = config.limit - config.cost
-        :ets.insert(@ets_table, {key, tokens, now})
-        :ok
-
-      [{_, tokens, last_update}] ->
-        # Calculate token refill
-        elapsed_ms = now - last_update
-        refill_rate = config.limit / (config.window * 1000)
-        refilled = min(config.limit, tokens + elapsed_ms * refill_rate)
-
-        if refilled >= config.cost do
-          new_tokens = refilled - config.cost
-          :ets.insert(@ets_table, {key, new_tokens, now})
-          :ok
-        else
-          wait_time = ceil((config.cost - refilled) / refill_rate)
-          reset_at = DateTime.add(DateTime.utc_now(), wait_time, :millisecond)
-
-          {:error, :rate_limited, %{
-            limit: config.limit,
-            remaining: max(0, floor(refilled)),
-            reset_at: reset_at,
-            retry_after: ceil(wait_time / 1000)
-          }}
-        end
-    end
-  end
-
-  defp token_bucket_status(key, config) do
-    now = System.system_time(:millisecond)
-
-    case :ets.lookup(@ets_table, key) do
-      [] ->
-        %{tokens: config.limit, limit: config.limit, remaining: config.limit}
-
-      [{_, tokens, last_update}] ->
-        elapsed_ms = now - last_update
-        refill_rate = config.limit / (config.window * 1000)
-        current = min(config.limit, tokens + elapsed_ms * refill_rate)
-
-        %{tokens: floor(current), limit: config.limit, remaining: floor(current)}
-    end
-  end
-
-  # ---------------------------------------------------------------------------
-  # Sliding Window Algorithm
-  # ---------------------------------------------------------------------------
-
-  defp check_sliding_window(key, config) do
-    now = System.system_time(:second)
-    window_start = now - config.window
-
-    # Clean old entries and count current
-    count = case :ets.lookup(@ets_table, key) do
-      [] -> 0
-      [{_, timestamps}] ->
-        valid = Enum.filter(timestamps, &(&1 > window_start))
-        :ets.insert(@ets_table, {key, valid})
-        length(valid)
-    end
-
-    if count < config.limit do
-      # Add new timestamp
-      case :ets.lookup(@ets_table, key) do
-        [] -> :ets.insert(@ets_table, {key, [now]})
-        [{_, timestamps}] -> :ets.insert(@ets_table, {key, [now | timestamps]})
-      end
-      :ok
-    else
-      # Find oldest timestamp in window
-      [{_, timestamps}] = :ets.lookup(@ets_table, key)
-      oldest = Enum.min(timestamps)
-      reset_at = DateTime.from_unix!(oldest + config.window)
-      retry_after = oldest + config.window - now
-
-      {:error, :rate_limited, %{
-        limit: config.limit,
-        remaining: 0,
-        reset_at: reset_at,
-        retry_after: max(1, retry_after)
-      }}
-    end
-  end
-
-  defp sliding_window_status(key, config) do
-    now = System.system_time(:second)
-    window_start = now - config.window
-
-    count = case :ets.lookup(@ets_table, key) do
-      [] -> 0
-      [{_, timestamps}] ->
-        Enum.count(timestamps, &(&1 > window_start))
-    end
-
-    %{
-      count: count,
-      limit: config.limit,
-      remaining: max(0, config.limit - count),
-      window: config.window
-    }
-  end
-
-  # ---------------------------------------------------------------------------
-  # Leaky Bucket Algorithm
-  # ---------------------------------------------------------------------------
-
-  defp check_leaky_bucket(key, config) do
-    now = System.system_time(:millisecond)
-    leak_rate = config.limit / (config.window * 1000)
-
-    case :ets.lookup(@ets_table, key) do
-      [] ->
-        :ets.insert(@ets_table, {key, config.cost, now})
-        :ok
-
-      [{_, level, last_leak}] ->
-        # Calculate leaked amount
-        elapsed = now - last_leak
-        leaked = elapsed * leak_rate
-        new_level = max(0, level - leaked)
-
-        if new_level + config.cost <= config.limit do
-          :ets.insert(@ets_table, {key, new_level + config.cost, now})
-          :ok
-        else
-          # Bucket full, calculate when space will be available
-          overflow = new_level + config.cost - config.limit
-          wait_time = ceil(overflow / leak_rate)
-          reset_at = DateTime.add(DateTime.utc_now(), wait_time, :millisecond)
-
-          {:error, :rate_limited, %{
-            limit: config.limit,
-            remaining: max(0, floor(config.limit - new_level)),
-            reset_at: reset_at,
-            retry_after: ceil(wait_time / 1000)
-          }}
-        end
-    end
-  end
-
-  defp leaky_bucket_status(key, config) do
-    now = System.system_time(:millisecond)
-    leak_rate = config.limit / (config.window * 1000)
-
-    case :ets.lookup(@ets_table, key) do
-      [] ->
-        %{level: 0, limit: config.limit, remaining: config.limit}
-
-      [{_, level, last_leak}] ->
-        elapsed = now - last_leak
-        leaked = elapsed * leak_rate
-        current_level = max(0, level - leaked)
-
-        %{
-          level: floor(current_level),
-          limit: config.limit,
-          remaining: max(0, floor(config.limit - current_level))
-        }
-    end
-  end
-
-  # ---------------------------------------------------------------------------
-  # Fixed Window Algorithm
-  # ---------------------------------------------------------------------------
-
-  defp check_fixed_window(key, config) do
-    now = System.system_time(:second)
-    window_id = div(now, config.window)
-    window_key = {key, window_id}
-
-    case :ets.lookup(@ets_table, window_key) do
-      [] ->
-        :ets.insert(@ets_table, {window_key, config.cost})
-        :ok
-
-      [{_, count}] when count < config.limit ->
-        :ets.update_counter(@ets_table, window_key, {2, config.cost})
-        :ok
-
-      [{_, _count}] ->
-        window_end = (window_id + 1) * config.window
-        reset_at = DateTime.from_unix!(window_end)
-        retry_after = window_end - now
-
-        {:error, :rate_limited, %{
-          limit: config.limit,
-          remaining: 0,
-          reset_at: reset_at,
-          retry_after: max(1, retry_after)
-        }}
-    end
-  end
-
-  defp fixed_window_status(key, config) do
-    now = System.system_time(:second)
-    window_id = div(now, config.window)
-    window_key = {key, window_id}
-
-    count = case :ets.lookup(@ets_table, window_key) do
-      [] -> 0
-      [{_, c}] -> c
-    end
-
-    window_end = (window_id + 1) * config.window
-
-    %{
-      count: count,
-      limit: config.limit,
-      remaining: max(0, config.limit - count),
-      reset_at: DateTime.from_unix!(window_end)
     }
   end
 
@@ -547,39 +299,8 @@ defmodule CGraph.RateLimiter do
   end
 
   @impl true
-  def handle_call({:whitelist, identifier}, _from, state) do
-    :ets.insert(@ets_table, {{:whitelist, identifier}, true})
-    Logger.info("whitelisted_rate_limit_identifier", identifier: identifier)
-    {:reply, :ok, state}
-  end
-
-  @impl true
-  def handle_call({:unwhitelist, identifier}, _from, state) do
-    :ets.delete(@ets_table, {:whitelist, identifier})
-    {:reply, :ok, state}
-  end
-
-  @impl true
-  def handle_call({:blacklist, identifier, duration}, _from, state) do
-    until = case duration do
-      :infinity -> :infinity
-      seconds -> DateTime.add(DateTime.utc_now(), seconds, :second)
-    end
-
-    :ets.insert(@ets_table, {{:blacklist, identifier}, until})
-    Logger.warning("blacklisted_rate_limit_identifier_until", identifier: identifier, until: inspect(until))
-    {:reply, :ok, state}
-  end
-
-  @impl true
-  def handle_call({:unblacklist, identifier}, _from, state) do
-    :ets.delete(@ets_table, {:blacklist, identifier})
-    {:reply, :ok, state}
-  end
-
-  @impl true
   def handle_info(:cleanup, state) do
-    cleanup_expired_entries()
+    AccessControl.cleanup_expired()
     schedule_cleanup()
     {:noreply, state}
   end
@@ -600,21 +321,6 @@ defmodule CGraph.RateLimiter do
   defp schedule_cleanup do
     # Clean up every 5 minutes
     Process.send_after(self(), :cleanup, 300_000)
-  end
-
-  defp cleanup_expired_entries do
-    # Remove expired blacklist entries from ETS
-    :ets.foldl(fn
-      {{:blacklist, _} = key, until}, acc when until != :infinity ->
-        if DateTime.compare(DateTime.utc_now(), until) == :gt do
-          :ets.delete(@ets_table, key)
-        end
-        acc
-
-      _, acc -> acc
-    end, nil, @ets_table)
-
-    Logger.debug("Rate limiter cleanup completed")
   end
 
   # ---------------------------------------------------------------------------

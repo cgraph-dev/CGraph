@@ -28,7 +28,9 @@ defmodule CGraph.Groups do
   defdelegate list_channels(group, opts \\ []), to: Channels
 
   @doc "Get a channel by group + channel_id, or by channel_id alone."
+  @spec get_channel(binary()) :: {:ok, struct()} | {:error, :not_found}
   def get_channel(channel_id) when is_binary(channel_id), do: Channels.get_channel(channel_id)
+  @spec get_channel(struct(), binary()) :: {:ok, struct()} | {:error, :not_found}
   def get_channel(group, channel_id), do: Channels.get_channel(group, channel_id)
   defdelegate create_channel(group, attrs), to: Channels
   defdelegate update_channel(channel, attrs), to: Channels
@@ -105,6 +107,7 @@ defmodule CGraph.Groups do
   defdelegate delete_invite(invite), to: Invites
 
   @doc "Join a group via invite. Accepts (invite, user) or (user, invite)."
+  @spec join_via_invite(struct(), struct()) :: {:ok, struct()} | {:error, term()}
   def join_via_invite(first, second), do: Invites.join_via_invite(first, second)
 
   # ============================================================================
@@ -436,6 +439,7 @@ defmodule CGraph.Groups do
   List groups the user is a member of, updated since the given timestamp.
   `since` is a millisecond Unix timestamp or nil for full sync.
   """
+  @spec list_user_groups_since(struct(), integer() | nil) :: [struct()]
   def list_user_groups_since(user, since) do
     user_id = user.id
 
@@ -460,6 +464,7 @@ defmodule CGraph.Groups do
   List IDs of groups the user has left or been removed from since the given timestamp.
   Uses group deleted_at and membership timestamps.
   """
+  @spec list_left_group_ids_since(struct(), integer() | nil) :: [binary()]
   def list_left_group_ids_since(user, since) do
     user_id = user.id
 
@@ -484,6 +489,7 @@ defmodule CGraph.Groups do
   @doc """
   List channels in user's groups, updated since the given timestamp.
   """
+  @spec list_user_channels_since(struct(), integer() | nil) :: [struct()]
   def list_user_channels_since(user, since) do
     user_id = user.id
     alias CGraph.Groups.Channel
@@ -508,6 +514,7 @@ defmodule CGraph.Groups do
   @doc """
   List IDs of channels that were deleted since the given timestamp.
   """
+  @spec list_deleted_channel_ids_since(struct(), integer() | nil) :: [binary()]
   def list_deleted_channel_ids_since(user, since) do
     user_id = user.id
     alias CGraph.Groups.Channel

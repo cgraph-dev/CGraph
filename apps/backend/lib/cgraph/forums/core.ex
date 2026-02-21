@@ -19,11 +19,13 @@ defmodule CGraph.Forums.Core do
   # ============================================================================
 
   @doc "List all public forums."
+  @spec list_forums(keyword()) :: {[struct()], map()}
   def list_forums(opts \\ []) do
     list_forums_for_user(nil, opts)
   end
 
   @doc "List forums accessible to a user."
+  @spec list_forums_for_user(struct() | nil, keyword()) :: {[struct()], map()}
   def list_forums_for_user(user, opts \\ []) do
     base_query = from f in Forum,
       where: not_deleted(f),
@@ -52,6 +54,7 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Add membership and subscription status to a forum struct."
+  @spec add_membership_status(struct(), struct() | nil) :: struct()
   def add_membership_status(forum, nil) do
     forum |> Map.put(:is_member, false) |> Map.put(:is_subscribed, false)
   end
@@ -89,6 +92,7 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Check if a user is subscribed to a forum."
+  @spec forum_subscribed?(struct() | nil, struct()) :: boolean()
   def forum_subscribed?(nil, _forum), do: false
   def forum_subscribed?(user, forum) do
     from(s in Subscription, where: s.user_id == ^user.id and s.forum_id == ^forum.id, select: count(s.id))
@@ -96,6 +100,7 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Check if a user is a member of a forum."
+  @spec forum_member?(struct() | nil, struct()) :: boolean()
   def forum_member?(nil, _forum), do: false
   def forum_member?(user, forum) do
     if forum.owner_id == user.id do
@@ -107,6 +112,7 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Get a single forum by ID."
+  @spec get_forum(binary()) :: {:ok, struct()} | {:error, :not_found}
   def get_forum(id) do
     query = from f in Forum, where: f.id == ^id, preload: [:categories, :owner]
     case Repo.one(query) do
@@ -116,6 +122,7 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Get a forum by slug."
+  @spec get_forum_by_slug(String.t()) :: {:ok, struct()} | {:error, :not_found}
   def get_forum_by_slug(slug) do
     query = from f in Forum, where: f.slug == ^slug, preload: [:categories, :owner]
     case Repo.one(query) do
@@ -133,6 +140,7 @@ defmodule CGraph.Forums.Core do
   @moderator_actions [:moderate]
 
   @doc "Authorize an action on a forum."
+  @spec authorize_action(struct() | nil, struct(), atom()) :: :ok | {:error, atom()}
   def authorize_action(nil, forum, action) do
     if action == :view && forum.is_public, do: :ok, else: {:error, :unauthorized}
   end
@@ -165,12 +173,14 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Check if a user is a member of a forum by IDs."
+  @spec member?(binary(), binary()) :: boolean()
   def member?(forum_id, user_id) do
     query = from fm in ForumMember, where: fm.forum_id == ^forum_id, where: fm.user_id == ^user_id, limit: 1
     Repo.exists?(query)
   end
 
   @doc "Check if user is a moderator of a forum."
+  @spec moderator?(struct(), struct()) :: boolean()
   def moderator?(forum, user) do
     forum.owner_id == user.id || in_moderators?(forum, user)
   end
@@ -190,15 +200,18 @@ defmodule CGraph.Forums.Core do
   # ============================================================================
 
   @doc "Create a forum."
+  @spec create_forum(struct(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def create_forum(user, attrs) do
     attrs = attrs |> stringify_keys() |> Map.put("owner_id", user.id)
     %Forum{} |> Forum.changeset(attrs) |> Repo.insert()
   end
 
   @doc "Update a forum."
+  @spec update_forum(struct(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def update_forum(forum, attrs), do: forum |> Forum.changeset(attrs) |> Repo.update()
 
   @doc "Delete a forum."
+  @spec delete_forum(struct()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def delete_forum(forum), do: Repo.delete(forum)
 
   defp stringify_keys(map) when is_map(map) do
@@ -213,6 +226,7 @@ defmodule CGraph.Forums.Core do
   # ============================================================================
 
   @doc "Add a moderator to a forum."
+  @spec add_moderator(struct(), struct(), keyword()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def add_moderator(forum, user, opts \\ []) do
     %Moderator{}
     |> Moderator.changeset(%{
@@ -226,6 +240,7 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Remove a moderator from a forum."
+  @spec remove_moderator(struct(), struct()) :: {:ok, struct()} | {:error, :not_found}
   def remove_moderator(forum, user) do
     query = from m in Moderator, where: m.forum_id == ^forum.id, where: m.user_id == ^user.id
     case Repo.one(query) do
@@ -239,11 +254,13 @@ defmodule CGraph.Forums.Core do
   # ============================================================================
 
   @doc "Count forums owned by a user."
+  @spec count_user_forums(binary()) :: non_neg_integer()
   def count_user_forums(user_id) do
     Repo.aggregate(from(f in Forum, where: f.owner_id == ^user_id and not_deleted(f)), :count, :id)
   end
 
   @doc "Count forums a user has joined."
+  @spec count_user_joined_forums(binary()) :: non_neg_integer()
   def count_user_joined_forums(user_id) do
     Repo.aggregate(
       from(m in ForumMember, where: m.user_id == ^user_id, join: f in Forum, on: f.id == m.forum_id, where: not_deleted(f)),
@@ -252,18 +269,21 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Count threads created by user today."
+  @spec count_user_threads_today(binary()) :: non_neg_integer()
   def count_user_threads_today(user_id) do
     today_start = Date.utc_today() |> DateTime.new!(~T[00:00:00], "Etc/UTC")
     Repo.aggregate(from(t in Thread, where: t.user_id == ^user_id and t.inserted_at >= ^today_start), :count, :id)
   end
 
   @doc "Count posts created by user today."
+  @spec count_user_posts_today(binary()) :: non_neg_integer()
   def count_user_posts_today(user_id) do
     today_start = Date.utc_today() |> DateTime.new!(~T[00:00:00], "Etc/UTC")
     Repo.aggregate(from(p in ThreadPost, where: p.user_id == ^user_id and p.inserted_at >= ^today_start), :count, :id)
   end
 
   @doc "Get forum statistics."
+  @spec get_forum_stats(struct()) :: map()
   def get_forum_stats(forum) do
     post_count = Repo.aggregate(from(p in Post, where: p.forum_id == ^forum.id), :count, :id)
     comment_count = Repo.aggregate(
@@ -274,6 +294,7 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Get moderation queue for a forum (pending reports)."
+  @spec get_mod_queue(struct(), keyword()) :: {[struct()], map()}
   def get_mod_queue(forum, opts \\ []) do
     pagination_opts = CGraph.Pagination.parse_params(
       Enum.into(opts, %{}),
@@ -292,6 +313,7 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Report content in a forum (post, comment, or user)."
+  @spec report_content(struct(), struct(), String.t(), binary(), String.t(), String.t() | nil) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def report_content(forum, reporter, target_type, target_id, reason, description \\ nil) do
     attrs = %{
       forum_id: forum.id,
@@ -308,6 +330,7 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Review a content report (resolve or dismiss)."
+  @spec review_report(binary(), struct(), String.t(), String.t() | nil) :: {:ok, struct()} | {:error, :not_found | Ecto.Changeset.t()}
   def review_report(report_id, reviewer, status, note \\ nil) do
     case Repo.get(ContentReport, report_id) do
       nil -> {:error, :not_found}
@@ -328,6 +351,7 @@ defmodule CGraph.Forums.Core do
   # ============================================================================
 
   @doc "Subscribe to forum (also creates membership)."
+  @spec subscribe_to_forum(struct(), struct()) :: {:ok, struct()} | {:error, term()}
   def subscribe_to_forum(user, forum) do
     Repo.transaction(fn ->
       subscription_result = create_subscription(user.id, forum.id)
@@ -338,6 +362,7 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Unsubscribe from forum (also removes membership)."
+  @spec unsubscribe_from_forum(struct(), struct()) :: {:ok, :unsubscribed} | {:error, :cannot_leave_own_forum}
   def unsubscribe_from_forum(user, forum) do
     if forum.owner_id == user.id do
       {:error, :cannot_leave_own_forum}
@@ -347,6 +372,7 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Check if user is subscribed to forum."
+  @spec subscribed?(struct(), struct()) :: boolean()
   def subscribed?(forum, user) do
     query = from s in Subscription, where: s.forum_id == ^forum.id, where: s.user_id == ^user.id
     Repo.exists?(query)
@@ -408,6 +434,7 @@ defmodule CGraph.Forums.Core do
   # ============================================================================
 
   @doc "Get voting eligibility info for a user."
+  @spec get_vote_eligibility(struct()) :: map()
   def get_vote_eligibility(user) do
     account_age_days = DateTime.diff(DateTime.truncate(DateTime.utc_now(), :second), user.inserted_at, :day)
     karma = user.karma || 0
@@ -428,6 +455,7 @@ defmodule CGraph.Forums.Core do
   # ============================================================================
 
   @doc "Increment post views."
+  @spec increment_post_views(struct()) :: {:ok, struct()}
   def increment_post_views(post) do
     from(p in Post, where: p.id == ^post.id)
     |> Repo.update_all(inc: [view_count: 1])
@@ -435,12 +463,14 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Increment thread views."
+  @spec increment_thread_views(binary()) :: {non_neg_integer(), nil | [term()]}
   def increment_thread_views(thread_id) do
     from(t in Thread, where: t.id == ^thread_id)
     |> Repo.update_all(inc: [view_count: 1])
   end
 
   @doc "Check post rate limit for a user."
+  @spec check_post_rate_limit(struct()) :: :ok | {:error, :rate_limited}
   def check_post_rate_limit(user) do
     # Allow 10 posts per 5 minutes
     five_min_ago = DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -300, :second)
@@ -452,6 +482,7 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Check comment rate limit for a user."
+  @spec check_comment_rate_limit(struct(), struct() | nil) :: :ok | {:error, :rate_limited}
   def check_comment_rate_limit(user, _post \\ nil) do
     five_min_ago = DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -300, :second)
     count = Repo.aggregate(
@@ -462,6 +493,7 @@ defmodule CGraph.Forums.Core do
   end
 
   @doc "Notify post author about a new comment."
+  @spec notify_comment(struct()) :: :ok
   def notify_comment(comment) do
     comment = Repo.preload(comment, [:author, post: [:author]])
     post = comment.post

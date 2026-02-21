@@ -79,10 +79,9 @@ defmodule CGraph.WebRTC do
 
   use GenServer
   require Logger
-  import Ecto.Query
 
-  alias CGraph.Repo
-  alias CGraph.WebRTC.{CallHistory, Participant, Room}
+  alias CGraph.WebRTC.{Participant, Room}
+  alias __MODULE__.{Calls, Signaling}
 
   @ets_table :cgraph_webrtc_rooms
   @default_call_timeout 60_000
@@ -226,166 +225,54 @@ defmodule CGraph.WebRTC do
     end, [], @ets_table)
   end
 
-  @doc """
-  Get ICE server configuration for clients.
-  """
-  def get_ice_servers do
-    stun = config(:stun_servers) || [
-      "stun:stun.l.google.com:19302",
-      "stun:stun1.l.google.com:19302"
-    ]
-
-    turn = config(:turn_servers) || []
-
-    stun_configs = Enum.map(stun, fn url ->
-      %{urls: url}
-    end)
-
-    turn_configs = Enum.map(turn, fn server ->
-      %{
-        urls: server[:urls] || server["urls"],
-        username: server[:username] || server["username"],
-        credential: server[:credential] || server["credential"]
-      }
-    end)
-
-    stun_configs ++ turn_configs
-  end
-
-  @doc """
-  Check if SFU mode is enabled.
-  """
-  def sfu_enabled? do
-    config(:sfu_enabled) == true
-  end
-
-  @doc """
-  Get SFU connection URL.
-  """
-  def get_sfu_url do
-    config(:sfu_url)
-  end
-
   # ---------------------------------------------------------------------------
-  # Signaling Helpers (used by WebRTC Channel)
+  # Signaling Helpers (delegated to CGraph.WebRTC.Signaling)
   # ---------------------------------------------------------------------------
 
   @doc """
   Handle incoming ICE candidate from a peer.
   Broadcasts to other participants in the room.
   """
-  def handle_ice_candidate(room_id, from_id, candidate) do
-    case get_room(room_id) do
-      {:ok, room} ->
-        # Broadcast to all other participants
-        other_ids = Map.keys(room.participants) -- [from_id]
-
-        Enum.each(other_ids, fn participant_id ->
-          Phoenix.PubSub.broadcast(
-            CGraph.PubSub,
-            "webrtc:user:#{participant_id}",
-            {:ice_candidate, %{
-              room_id: room_id,
-              from: from_id,
-              candidate: candidate
-            }}
-          )
-        end)
-
-        :ok
-
-      {:error, :not_found} ->
-        {:error, :room_not_found}
-    end
-  end
+  defdelegate handle_ice_candidate(room_id, from_id, candidate), to: Signaling
 
   @doc """
   Handle SDP offer/answer exchange.
   """
-  def handle_sdp(room_id, from_id, to_id, sdp_type, sdp) do
-    case get_room(room_id) do
-      {:ok, room} ->
-        if Map.has_key?(room.participants, to_id) do
-          Phoenix.PubSub.broadcast(
-            CGraph.PubSub,
-            "webrtc:user:#{to_id}",
-            {:sdp, %{
-              room_id: room_id,
-              from: from_id,
-              type: sdp_type,
-              sdp: sdp
-            }}
-          )
-          :ok
-        else
-          {:error, :participant_not_found}
-        end
+  defdelegate handle_sdp(room_id, from_id, to_id, sdp_type, sdp), to: Signaling
 
-      {:error, :not_found} ->
-        {:error, :room_not_found}
-    end
-  end
+  @doc """
+  Get ICE server configuration for clients.
+  """
+  defdelegate get_ice_servers(), to: Signaling
+
+  @doc """
+  Check if SFU mode is enabled.
+  """
+  defdelegate sfu_enabled?(), to: Signaling
+
+  @doc """
+  Get SFU connection URL.
+  """
+  defdelegate get_sfu_url(), to: Signaling
 
   # ---------------------------------------------------------------------------
-  # Call History API
+  # Call History API (delegated to CGraph.WebRTC.Calls)
   # ---------------------------------------------------------------------------
 
   @doc """
   List call history for a user, most recent first, with cursor-based pagination.
   """
-  def list_call_history(user_id, opts \\ []) do
-    query =
-      from(c in CallHistory,
-        where: ^user_id in c.participant_ids or c.creator_id == ^user_id
-      )
-
-    pagination_opts = %{
-      cursor: Keyword.get(opts, :cursor),
-      after_cursor: nil,
-      before_cursor: nil,
-      limit: min(Keyword.get(opts, :limit, 50), 100),
-      sort_field: :ended_at,
-      sort_direction: :desc,
-      include_total: Keyword.get(opts, :include_total, false)
-    }
-
-    {calls, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
-    {:ok, calls, page_info}
-  end
+  def list_call_history(user_id, opts \\ []), do: Calls.list_call_history(user_id, opts)
 
   @doc """
   Get a single call history record by ID.
   """
-  def get_call(call_id) do
-    case Repo.get(CallHistory, call_id) do
-      nil -> {:error, :not_found}
-      call -> {:ok, call}
-    end
-  end
+  defdelegate get_call(call_id), to: Calls
 
   @doc """
   Send ringing notification to callees.
   """
-  def ring(room_id, callee_ids) when is_list(callee_ids) do
-    case get_room(room_id) do
-      {:ok, room} ->
-        Enum.each(callee_ids, fn callee_id ->
-          Phoenix.PubSub.broadcast(
-            CGraph.PubSub,
-            "webrtc:user:#{callee_id}",
-            {:incoming_call, %{
-              room_id: room_id,
-              caller_id: room.creator_id,
-              type: room.type
-            }}
-          )
-        end)
-        :ok
-
-      {:error, _} = error ->
-        error
-    end
-  end
+  defdelegate ring(room_id, callee_ids), to: Signaling
 
   # ---------------------------------------------------------------------------
   # GenServer Callbacks
@@ -446,7 +333,7 @@ defmodule CGraph.WebRTC do
           # Last person left, end the room
           final = %{updated | state: :ended, ended_at: DateTime.utc_now()}
           :ets.delete(@ets_table, room_id)
-          persist_call_history(final, room)
+          Calls.persist_call_history(final, room)
           emit_telemetry(:room_ended, final)
           {:reply, {:ok, :room_ended}, state}
         else
@@ -471,7 +358,7 @@ defmodule CGraph.WebRTC do
         final = %{room | state: :ended, ended_at: DateTime.utc_now()}
         :ets.delete(@ets_table, room_id)
 
-        persist_call_history(final, room)
+        Calls.persist_call_history(final, room)
         broadcast_room_event(room_id, :room_ended, %{})
         emit_telemetry(:room_ended, final)
 
@@ -569,48 +456,6 @@ defmodule CGraph.WebRTC do
 
       _, acc -> acc
     end, nil, @ets_table)
-  end
-
-  defp persist_call_history(%Room{} = final, original_room) do
-    participant_ids =
-      original_room.participants
-      |> Map.keys()
-      |> Enum.uniq()
-
-    duration =
-      if final.started_at && final.ended_at do
-        DateTime.diff(final.ended_at, final.started_at, :second)
-      end
-
-    attrs = %{
-      room_id: final.id,
-      type: to_string(final.type),
-      creator_id: final.creator_id,
-      group_id: final.group_id,
-      state: "ended",
-      participant_ids: participant_ids,
-      max_participants: map_size(original_room.participants),
-      started_at: final.started_at || final.created_at,
-      ended_at: final.ended_at,
-      duration_seconds: duration
-    }
-
-    case Repo.insert(CallHistory.changeset(%CallHistory{}, attrs)) do
-      {:ok, record} ->
-        Logger.info("webrtc_call_persisted", call_id: record.id, room_id: final.id)
-
-      {:error, reason} ->
-        Logger.error("webrtc_call_persist_failed",
-          room_id: final.id,
-          error: inspect(reason)
-        )
-    end
-  rescue
-    e ->
-      Logger.error("webrtc_call_persist_error",
-        room_id: final.id,
-        error: Exception.message(e)
-      )
   end
 
   defp broadcast_room_event(room_id, event, payload) do
