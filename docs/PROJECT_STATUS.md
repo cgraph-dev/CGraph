@@ -1,6 +1,6 @@
 # CGraph Project Status
 
-> **Version: 0.9.36** | Last Updated: Session 36 (Feb 21, 2026)
+> **Version: 0.9.37** | Last Updated: Session 36 (Feb 21, 2026)
 >
 > **⚠️ Scores re-calibrated in Session 36 after comprehensive verification audit. See
 > [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md) for full gap analysis.**

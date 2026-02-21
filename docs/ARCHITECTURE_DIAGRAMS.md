@@ -1,6 +1,6 @@
 # CGraph Architecture Diagrams
 
-> **Version: 0.9.36** | Last Updated: February 21, 2026
+> **Version: 0.9.37** | Last Updated: February 21, 2026
 
 Visual documentation of CGraph's system architecture.
 
