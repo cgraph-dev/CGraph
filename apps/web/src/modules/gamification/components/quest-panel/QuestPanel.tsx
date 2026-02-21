@@ -3,6 +3,7 @@
  * @module modules/gamification/components/quest-panel
  */
 import { useState, useEffect, useCallback } from 'react';
+import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useGamificationStore, Quest } from '@/modules/gamification/store';
 import confetti from 'canvas-confetti';
@@ -28,22 +29,18 @@ export default function QuestPanel({
     fetchQuests();
   }, [fetchQuests]);
 
-  // Update time remaining every minute
-  useEffect(() => {
-    const updateTimes = () => {
-      const times: Record<string, string> = {};
-      activeQuests.forEach((quest) => {
-        if (quest.expiresAt) {
-          times[quest.id] = formatTimeRemaining(quest.expiresAt);
-        }
-      });
-      setTimeRemaining(times);
-    };
-
-    updateTimes();
-    const interval = setInterval(updateTimes, 60000);
-    return () => clearInterval(interval);
+  // Update time remaining every minute (pauses when tab is hidden)
+  const updateTimes = useCallback(() => {
+    const times: Record<string, string> = {};
+    activeQuests.forEach((quest) => {
+      if (quest.expiresAt) {
+        times[quest.id] = formatTimeRemaining(quest.expiresAt);
+      }
+    });
+    setTimeRemaining(times);
   }, [activeQuests]);
+
+  useAdaptiveInterval(updateTimes, 60_000, { immediate: true });
 
   // Handle claiming quest rewards
   const handleClaimReward = useCallback(

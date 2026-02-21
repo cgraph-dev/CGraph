@@ -282,11 +282,16 @@ defmodule CGraphWeb.API.V1.PMController do
   def export(conn, params) do
     user = conn.assigns.current_user
     format = Map.get(params, "format", "json")
+    cursor = Map.get(params, "cursor")
+    limit = Map.get(params, "limit", "500") |> to_string() |> String.to_integer()
 
-    with {:ok, export_data} <- Messaging.export_pm(user.id, format) do
+    with {:ok, export_data, page_info} <- Messaging.export_pm(user.id, cursor: cursor, limit: limit) do
       case format do
         "json" ->
-          json(conn, %{messages: export_data})
+          json(conn, %{messages: export_data, meta: %{
+            cursor: page_info.end_cursor,
+            has_more: page_info.has_next_page
+          }})
 
         "csv" ->
           conn
@@ -295,7 +300,10 @@ defmodule CGraphWeb.API.V1.PMController do
           |> send_resp(200, export_data)
 
         _ ->
-          json(conn, %{messages: export_data})
+          json(conn, %{messages: export_data, meta: %{
+            cursor: page_info.end_cursor,
+            has_more: page_info.has_next_page
+          }})
       end
     end
   end

@@ -331,21 +331,26 @@ defmodule CGraph.WebRTC do
   # ---------------------------------------------------------------------------
 
   @doc """
-  List call history for a user, most recent first.
+  List call history for a user, most recent first, with cursor-based pagination.
   """
   def list_call_history(user_id, opts \\ []) do
-    limit = Keyword.get(opts, :limit, 50)
-    offset = Keyword.get(opts, :offset, 0)
-
     query =
       from(c in CallHistory,
-        where: ^user_id in c.participant_ids or c.creator_id == ^user_id,
-        order_by: [desc: c.ended_at],
-        limit: ^limit,
-        offset: ^offset
+        where: ^user_id in c.participant_ids or c.creator_id == ^user_id
       )
 
-    {:ok, Repo.all(query)}
+    pagination_opts = %{
+      cursor: Keyword.get(opts, :cursor),
+      after_cursor: nil,
+      before_cursor: nil,
+      limit: min(Keyword.get(opts, :limit, 50), 100),
+      sort_field: :ended_at,
+      sort_direction: :desc,
+      include_total: Keyword.get(opts, :include_total, false)
+    }
+
+    {calls, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
+    {:ok, calls, page_info}
   end
 
   @doc """

@@ -3,7 +3,8 @@
  * View metrics, charts, and key performance indicators
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
 import { motion } from 'framer-motion';
 
 import { DashboardChart, MetricCard } from './shared-components';
@@ -57,11 +58,7 @@ export function AnalyticsDashboard() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchData();
-    const interval = setInterval(fetchData, 60_000);
-    return () => clearInterval(interval);
-  }, [fetchData]);
+  useAdaptiveInterval(fetchData, 60_000, { immediate: true });
 
   // Build chart data from live metrics when available
   const dau = metrics?.users.active24h ?? 0;

@@ -1071,6 +1071,53 @@ and unsafe patterns. **14 issues found and fixed.**
 - TypeScript: No new errors from PhoenixProvider changes ✅
 - Migrations: Both new migrations applied cleanly in test + dev ✅
 
+---
+
+## Session 37 — Scaling Infrastructure & Performance (Feb 21, 2026)
+
+**Scope**: Fix verified inaccuracies from deep plan audit, migrate remaining offset pagination to
+cursor-based, virtualize message lists, wire polling intervals to adaptive hook.
+
+### Commit `535c4066` — Fixes from Plan Audit
+
+| #   | File             | Issue                                                                              | Fix                                                                             |
+| --- | ---------------- | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| 1   | `message.ex`     | Comment claimed snowflake_id used as pagination cursor — actually uses inserted_at | Updated comment to reflect CGraph.Pagination reality                            |
+| 2   | `migration …`    | Index comment misleadingly referenced cursor queries                               | Reworded as future optimization intent                                          |
+| 3   | `leaderboard.ex` | 7 raw `Redis.command(["ZADD", …])` calls bypassing typed primitives                | Migrated to `Redis.zadd`, `zrevrange`, `zrevrank`, `zincrby`, `zscore`, `zcard` |
+| 4   | `redis.ex`       | 4 dead `leaderboard_*` helpers (key pattern never matched leaderboard.ex)          | Removed 54 lines of dead code                                                   |
+
+### Offset → Cursor Pagination Migration (3 endpoints)
+
+All remaining offset-based DB queries migrated to `CGraph.Pagination.paginate/2`:
+
+| File                        | Function            | Before                           | After                                                                  |
+| --------------------------- | ------------------- | -------------------------------- | ---------------------------------------------------------------------- |
+| `collaboration.ex`          | `list_documents`    | `limit: ^limit, offset: ^offset` | `Pagination.paginate(query, opts)` — returns `{docs, page_info}`       |
+| `private_message_system.ex` | `export_pm`         | `limit: ^limit, offset: ^offset` | `Pagination.paginate(query, opts)` — returns `{:ok, msgs, page_info}`  |
+| `webrtc.ex`                 | `list_call_history` | `limit: ^limit, offset: ^offset` | `Pagination.paginate(query, opts)` — returns `{:ok, calls, page_info}` |
+| `pm_controller.ex`          | `export` action     | Expected `{:ok, messages}`       | Handles `{:ok, data, page_info}` with cursor meta in JSON              |
+
+**Result**: 0 remaining offset-based pagination in the codebase.
+
+### MessageList.tsx Virtualization
+
+- Rewrote `MessageList.tsx` with `@tanstack/react-virtual` (`useVirtualizer`, `flatRows`,
+  `estimateSize`, `overscan: 10`)
+- **Note**: `MessageList` is dead code (exported but never imported — `ConversationMessages.tsx` is
+  the active virtualized component). Virtualized for completeness.
+
+### setInterval → useAdaptiveInterval Migration (3 call sites)
+
+| File                     | Purpose                   | Interval | Change                                                          |
+| ------------------------ | ------------------------- | -------- | --------------------------------------------------------------- |
+| `daily-rewards/hooks.ts` | Countdown to next claim   | 1s       | `useAdaptiveInterval(updateTime, 1000, { enabled, immediate })` |
+| `QuestPanel.tsx`         | Quest expiry time refresh | 60s      | `useAdaptiveInterval(updateTimes, 60_000, { immediate })`       |
+| `AnalyticsDashboard.tsx` | Admin metrics API polling | 60s      | `useAdaptiveInterval(fetchData, 60_000, { immediate })`         |
+
+**Remaining `setInterval`**: 24 call sites — all legitimate UI timers (call duration counters,
+animation effects, progress bars). No further migration needed.
+
 ### Potential Issues (Not bugs, monitored)
 
 | #   | Area      | Description                                                                              |

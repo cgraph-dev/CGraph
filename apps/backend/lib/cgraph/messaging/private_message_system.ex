@@ -306,21 +306,25 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
     %{total_received: total_received, unread_count: unread_count, total_sent: total_sent, drafts_count: drafts_count}
   end
 
-  @doc "Export private messages for a user with pagination (max 500 per page)."
+  @doc "Export private messages for a user with cursor-based pagination (max 500 per page)."
   def export_pm(user_id, opts \\ []) do
-    limit = min(Keyword.get(opts, :limit, 500), 500)
-    offset = Keyword.get(opts, :offset, 0)
+    query = from(m in PrivateMessage,
+      where: m.sender_id == ^user_id or m.recipient_id == ^user_id,
+      preload: [:sender, :recipient, :folder]
+    )
 
-    messages =
-      from(m in PrivateMessage,
-        where: m.sender_id == ^user_id or m.recipient_id == ^user_id,
-        order_by: [desc: m.inserted_at],
-        limit: ^limit,
-        offset: ^offset,
-        preload: [:sender, :recipient, :folder])
-      |> Repo.all()
+    pagination_opts = %{
+      cursor: Keyword.get(opts, :cursor),
+      after_cursor: nil,
+      before_cursor: nil,
+      limit: min(Keyword.get(opts, :limit, 500), 500),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      include_total: false
+    }
 
-    {:ok, messages}
+    {messages, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
+    {:ok, messages, page_info}
   end
 
   # ==================== PRIVATE HELPERS ====================

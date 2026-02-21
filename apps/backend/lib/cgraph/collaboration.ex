@@ -72,19 +72,25 @@ defmodule CGraph.Collaboration do
   end
 
   @doc """
-  List documents accessible to a user.
+  List documents accessible to a user with cursor-based pagination.
   """
   def list_documents(user_id, opts \\ []) do
-    limit = Keyword.get(opts, :limit, 50)
-    offset = Keyword.get(opts, :offset, 0)
-
-    from(d in Document,
-      where: d.owner_id == ^user_id or ^user_id in d.collaborator_ids,
-      order_by: [desc: d.updated_at],
-      limit: ^limit,
-      offset: ^offset
+    query = from(d in Document,
+      where: d.owner_id == ^user_id or ^user_id in d.collaborator_ids
     )
-    |> Repo.all()
+
+    pagination_opts = %{
+      cursor: Keyword.get(opts, :cursor),
+      after_cursor: nil,
+      before_cursor: nil,
+      limit: min(Keyword.get(opts, :limit, 50), 100),
+      sort_field: :updated_at,
+      sort_direction: :desc,
+      include_total: Keyword.get(opts, :include_total, false)
+    }
+
+    {documents, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
+    {documents, page_info}
   end
 
   # ---------------------------------------------------------------------------

@@ -4,7 +4,8 @@
  * Custom hooks for daily rewards functionality
  */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
 import type { DailyReward } from './types';
 import { DEFAULT_REWARDS } from './constants';
 
@@ -14,29 +15,24 @@ import { DEFAULT_REWARDS } from './constants';
 export function useTimeUntilClaim(nextClaimTime?: Date): string {
   const [timeUntilClaim, setTimeUntilClaim] = useState('');
 
-  useEffect(() => {
+  const updateTime = () => {
     if (!nextClaimTime) return;
+    const now = new Date();
+    const diff = nextClaimTime.getTime() - now.getTime();
 
-    const updateTime = () => {
-      const now = new Date();
-      const diff = nextClaimTime.getTime() - now.getTime();
+    if (diff <= 0) {
+      setTimeUntilClaim('Ready to claim!');
+      return;
+    }
 
-      if (diff <= 0) {
-        setTimeUntilClaim('Ready to claim!');
-        return;
-      }
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+    setTimeUntilClaim(`${hours}h ${minutes}m ${seconds}s`);
+  };
 
-      setTimeUntilClaim(`${hours}h ${minutes}m ${seconds}s`);
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, [nextClaimTime]);
+  useAdaptiveInterval(updateTime, 1000, { enabled: !!nextClaimTime, immediate: true });
 
   return timeUntilClaim;
 }
