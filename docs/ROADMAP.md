@@ -1,6 +1,6 @@
 # CGraph Product Roadmap
 
-> **Version: 0.9.36** | Last Updated: February 2026 **Status:** Pre-Launch → Public Beta Target: Q2
+> **Version: 0.9.37** | Last Updated: February 2026 **Status:** Pre-Launch → Public Beta Target: Q2
 > 2026
 
 ---
@@ -20,7 +20,7 @@ default** and modern customization.
     ┌───────────────────────────────────────────┬──────────────────┐
     │ Q1 2026     │ Q2 2026     │ Q3 2026       │ Q4 2026+         │
     ├─────────────┼─────────────┼───────────────┼──────────────────┤
-    │ v0.9.36     │ v1.0        │ v1.1          │ v1.2             │
+    │ v0.9.37     │ v1.0        │ v1.1          │ v1.2             │
     │ Hardening   │ Public Beta │ Growth        │ Enterprise       │
     │ + AI/Collab │             │               │                  │
     │ • AI svc    │ • Stripe ✅ │ • Mobile GA   │ • Admin          │
@@ -33,7 +33,7 @@ default** and modern customization.
 
 ---
 
-## Current Release: v0.9.36 (February 2026)
+## Current Release: v0.9.37 (February 2026)
 
 > **Note:** 69/69 planned features are implemented (100%), plus 3 major new capabilities added in
 > v0.9.33-v0.9.34 (AI Service, CRDT Collaboration, Offline-First Mobile). Many features previously
@@ -314,4 +314,4 @@ We prioritize based on:
 
 ---
 
-<sub>**CGraph Product Roadmap** • Version 0.9.36 • Last updated: February 21, 2026</sub>
+<sub>**CGraph Product Roadmap** • Version 0.9.37 • Last updated: February 21, 2026</sub>

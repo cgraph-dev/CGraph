@@ -8,11 +8,11 @@
 
 #### Chat • Forums • E2EE • Leveling & achievements • Subscriptions
 
-[![Version](https://img.shields.io/badge/version-0.9.36-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.37-green.svg)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-production-brightgreen.svg)](#)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
-**Current version:** 0.9.36 (February 2026)
+**Current version:** 0.9.37 (February 2026)
 
 [🌐 Website](https://cgraph.org) · [📚 Documentation](https://docs.cgraph.org) ·
 [🔌 API Reference](https://api.cgraph.org/docs)

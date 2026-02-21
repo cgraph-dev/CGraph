@@ -42,7 +42,7 @@ forums, and gamification. Features include post-quantum E2EE (PQXDH + Triple Rat
 and AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a
 karma-based forum system.
 
-**Version**: 0.9.36  
+**Version**: 0.9.37  
 **Last Updated**: February 21, 2026  
 **Architecture Score**: 8.7/10 (see CURRENT_STATE_DASHBOARD.md for breakdown)  
 **License**: Proprietary (see LICENSE)
@@ -891,13 +891,13 @@ Mailer.send_email(%{
 Required:
 
 - Node.js 22+, pnpm 10+
-- Elixir 1.17+, Erlang/OTP 28+
+- Elixir 1.17+, Erlang/OTP 27+
 - PostgreSQL 16+
 - Redis (for caching/rate limiting)
 
 Copy `.env.example` to `.env` in `apps/backend/` and configure database credentials and secrets.
 
-## Current Status (v0.9.36)
+## Current Status (v0.9.37)
 
 **Updated:** February 21, 2026
 

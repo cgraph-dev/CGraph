@@ -1,6 +1,6 @@
 # CGraph Current State Dashboard
 
-> **Version: 0.9.36** | Generated: February 21, 2026
+> **Version: 0.9.37** | Generated: February 21, 2026
 
 Real-time overview of project health, architecture status, and operational state.
 
@@ -332,8 +332,9 @@ apps/mobile/src/screens/
 
 | Version | Date       | Highlights                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 0.9.36  | 2026-02-21 | **Independent verification audit**: 220+ claims from V1_ACTION_PLAN.md verified against actual source code — 95%+ confirmed real. 9 docs version-synced to 0.9.36, `RouteErrorBoundary` added to all auth routes, 27 doc inaccuracies corrected (versions, counts, crypto names, removed `packages/core` and `kubernetes/` refs). No fabricated or placeholder claims found. See V1_ACTION_PLAN.md audit methodology section.                         |
-| 0.9.37  | 2026-02-21 | **CI/CD hardening (Google/Discord/Signal standards)**: All deploy workflows now have `permissions` blocks (least-privilege), runtime secret validation steps (fail-fast on missing secrets), required-secrets documentation headers. Fixed Sourcery warnings in `resilience.ts` (inline vars) and `load.js` (object destructuring). New `docs/guides/CI_CD_SECRETS.md` canonical secrets reference. `docs/archive/SECRETS.md` superseded.             |
+| 0.9.37  | 2026-02-21 | **Comprehensive doc accuracy pass**: Fixed OTP requirement (28→27), reverted Grafana dashboard path bug, corrected 27 doc inaccuracies (versions, workflow count 12→17, controller count 81→83, crypto naming, score 9.1→8.7, removed `packages/core` and `kubernetes/` refs, AI status corrected to Active). All docs version-synced.                                                                                                                |
+| 0.9.36  | 2026-02-21 | **Independent verification audit**: 220+ claims from V1_ACTION_PLAN.md verified against actual source code — 95%+ confirmed real. 9 docs version-synced to 0.9.36, `RouteErrorBoundary` added to all auth routes. No fabricated or placeholder claims found. See V1_ACTION_PLAN.md audit methodology section.                                                                                                                                         |
+| 0.9.36  | 2026-02-21 | **CI/CD hardening (Google/Discord/Signal standards)**: All deploy workflows now have `permissions` blocks (least-privilege), runtime secret validation steps (fail-fast on missing secrets), required-secrets documentation headers. Fixed Sourcery warnings in `resilience.ts` (inline vars) and `load.js` (object destructuring). New `docs/guides/CI_CD_SECRETS.md` canonical secrets reference. `docs/archive/SECRETS.md` superseded.             |
 | 0.9.36  | 2026-02-21 | **Session 36 final bug sweep**: 7 bugs found and fixed — CRITICAL sync push data loss (mobile messages silently dropped), HIGH Anthropic API crash on empty content, P0 moderation fail-open default, P1 awareness handler no-op, MEDIUM prekey deletion scope (migration + schema), MEDIUM unfriend sync detection (new audit table), LOW participant data leak. 2 new migrations, 1 new schema, 11 files modified. 0 warnings, 0 new test failures. |
 | 0.9.35  | 2026-02-21 | **Session 35 deep audit**: 13 bugs found and fixed (4 P0, 6 P1, 3 P2), 13 sync query functions implemented, moderation heuristics expanded to 7 categories, all docs updated.                                                                                                                                                                                                                                                                         |
 | 0.9.34  | 2026-02-21 | **Session 34 verification audit**: 14 misconfigurations found and fixed across AI channel (socket assigns), collaboration (Registry/Supervisor name mismatch), sync controller (create_message arity), AI config merge order, user tier field name, atom safety in moderation/sentiment, audit plug timing, load test seed function, frontend duplicate push, PhoenixProvider cleanup. All docs updated to reflect 8.7 composite score.               |
@@ -384,5 +385,5 @@ apps/mobile/src/screens/
 
 ---
 
-<sub>**CGraph Dashboard** • Version 0.9.36 • Updated: February 21, 2026 • Verification audit
+<sub>**CGraph Dashboard** • Version 0.9.37 • Updated: February 21, 2026 • Verification audit
 complete</sub>

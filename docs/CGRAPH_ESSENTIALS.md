@@ -1,6 +1,6 @@
 # CGraph Essentials
 
-> **Version: 0.9.36** | The 20 rules that matter most
+> **Version: 0.9.37** | The 20 rules that matter most
 
 This is the **minimal enforceable subset** of our coding standards. Every PR must follow these
 rules. For the full 8,400-line standards doc, see
@@ -351,4 +351,4 @@ For comprehensive guidelines (8,400+ lines), see:
 
 ---
 
-<sub>**CGraph Essentials** • Version 0.9.36 • Last updated: February 21, 2026</sub>
+<sub>**CGraph Essentials** • Version 0.9.37 • Last updated: February 21, 2026</sub>

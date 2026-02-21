@@ -668,4 +668,4 @@ flowchart TB
 
 ---
 
-<sub>**CGraph Architecture Diagrams** • Version 0.9.34 • Last updated: February 21, 2026</sub>
+<sub>**CGraph Architecture Diagrams** • Version 0.9.37 • Last updated: February 21, 2026</sub>
