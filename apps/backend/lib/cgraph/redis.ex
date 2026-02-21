@@ -488,60 +488,6 @@ defmodule CGraph.Redis do
   """
   def zincrby(key, increment, member), do: command(["ZINCRBY", key, increment, member])
 
-  # ── Leaderboard Helpers ──────────────────────────────────
-  @leaderboard_prefix "leaderboard"
-
-  @doc """
-  Update a user's leaderboard score.
-
-  ## Examples
-
-      iex> CGraph.Redis.leaderboard_update("xp", "global", user_id, 1500)
-      iex> CGraph.Redis.leaderboard_update("xp", "weekly", user_id, 250)
-  """
-  def leaderboard_update(metric, scope, user_id, score) do
-    key = "#{@leaderboard_prefix}:#{metric}:#{scope}"
-    zadd(key, score, user_id)
-  end
-
-  @doc """
-  Get top N users from a leaderboard.
-  Returns [{user_id, score}, ...] sorted by score descending.
-
-  ## Examples
-
-      iex> CGraph.Redis.leaderboard_top("xp", "global", 100)
-      {:ok, [{"user-123", "1500"}, {"user-456", "1200"}, ...]}
-  """
-  def leaderboard_top(metric, scope, limit) do
-    key = "#{@leaderboard_prefix}:#{metric}:#{scope}"
-    case zrevrange(key, 0, limit - 1, withscores: true) do
-      {:ok, results} ->
-        pairs = results
-        |> Enum.chunk_every(2)
-        |> Enum.map(fn [member, score] -> {member, score} end)
-        {:ok, pairs}
-      error -> error
-    end
-  end
-
-  @doc """
-  Get a user's rank on a leaderboard (0-indexed, 0 = #1).
-  """
-  def leaderboard_rank(metric, scope, user_id) do
-    key = "#{@leaderboard_prefix}:#{metric}:#{scope}"
-    zrevrank(key, user_id)
-  end
-
-  @doc """
-  Increment a user's leaderboard score by delta.
-  Useful for XP gains.
-  """
-  def leaderboard_increment(metric, scope, user_id, delta) do
-    key = "#{@leaderboard_prefix}:#{metric}:#{scope}"
-    zincrby(key, delta, user_id)
-  end
-
   # ---------------------------------------------------------------------------
   # GenServer Implementation
   # ---------------------------------------------------------------------------

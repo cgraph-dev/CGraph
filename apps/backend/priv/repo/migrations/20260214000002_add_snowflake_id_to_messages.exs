@@ -9,8 +9,8 @@ defmodule CGraph.Repo.Migrations.AddSnowflakeIdToMessages do
       add :snowflake_id, :bigint
     end
 
-    # Index for cursor-based pagination: WHERE snowflake_id > ? ORDER BY snowflake_id
-    # This replaces composite (inserted_at, id) indexes for message listing
+    # Index for future cursor-based pagination optimization: WHERE snowflake_id > ?
+    # Currently cursor pagination uses inserted_at; these indexes prepare for migration
     create index(:messages, [:snowflake_id],
       where: "snowflake_id IS NOT NULL",
       name: :messages_snowflake_id_idx)

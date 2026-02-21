@@ -28,8 +28,8 @@ defmodule CGraph.Messaging.Message do
 
   schema "messages" do
     # Snowflake ID for guaranteed chronological ordering.
-    # Used as the primary cursor for pagination (WHERE snowflake_id > ?)
-    # while preserving UUID primary key for foreign key compatibility.
+    # Monotonic ordering ID — cursor pagination currently uses inserted_at
+    # via CGraph.Pagination. Future optimization: switch sort_field to snowflake_id.
     field :snowflake_id, :integer
 
     field :content, :string

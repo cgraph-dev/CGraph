@@ -36,7 +36,7 @@ defmodule CGraph.Gamification.Leaderboard do
       cats
       |> Enum.map(fn cat ->
         score = get_score_for_category(user, cat)
-        ["ZADD", key(cat), to_string(score), user_id]
+        ["ZADD", key(cat), score, user_id]
       end)
 
     # Also cache minimal user data for rendering leaderboard entries
@@ -60,7 +60,7 @@ defmodule CGraph.Gamification.Leaderboard do
   Used when we don't have the full user struct (e.g., atomic karma updates).
   """
   def update_score(user_id, category, score) when category in @categories do
-    case Redis.command(["ZADD", key(category), to_string(score), user_id]) do
+    case Redis.zadd(key(category), score, user_id) do
       {:ok, _} -> :ok
       {:error, _} -> :error
     end
@@ -71,7 +71,7 @@ defmodule CGraph.Gamification.Leaderboard do
   Useful for atomic score changes like karma +1/-1.
   """
   def increment_score(user_id, category, delta) when category in @categories do
-    case Redis.command(["ZINCRBY", key(category), to_string(delta), user_id]) do
+    case Redis.zincrby(key(category), delta, user_id) do
       {:ok, _} -> :ok
       {:error, _} -> :error
     end
@@ -87,7 +87,7 @@ defmodule CGraph.Gamification.Leaderboard do
   """
   def get_top(category, limit \\ 100, offset \\ 0) when category in @categories do
     # ZREVRANGE returns highest-score-first
-    case Redis.command(["ZREVRANGE", key(category), to_string(offset), to_string(offset + limit - 1), "WITHSCORES"]) do
+    case Redis.zrevrange(key(category), offset, offset + limit - 1, withscores: true) do
       {:ok, nil} ->
         {:fallback, []}
 
@@ -106,7 +106,7 @@ defmodule CGraph.Gamification.Leaderboard do
   Get a specific user's rank in a category. O(log N).
   """
   def get_rank(user_id, category) when category in @categories do
-    case Redis.command(["ZREVRANK", key(category), user_id]) do
+    case Redis.zrevrank(key(category), user_id) do
       {:ok, nil} -> {:ok, nil}
       {:ok, rank} -> {:ok, rank + 1}  # 0-indexed → 1-indexed
       {:error, _} -> {:error, :unavailable}
@@ -117,7 +117,7 @@ defmodule CGraph.Gamification.Leaderboard do
   Get a user's score in a category. O(1).
   """
   def get_score(user_id, category) when category in @categories do
-    case Redis.command(["ZSCORE", key(category), user_id]) do
+    case Redis.zscore(key(category), user_id) do
       {:ok, nil} -> {:ok, 0}
       {:ok, score} -> {:ok, parse_score(score)}
       {:error, _} -> {:error, :unavailable}
@@ -128,7 +128,7 @@ defmodule CGraph.Gamification.Leaderboard do
   Get total number of users in a leaderboard. O(1).
   """
   def count(category) when category in @categories do
-    case Redis.command(["ZCARD", key(category)]) do
+    case Redis.zcard(key(category)) do
       {:ok, count} -> {:ok, count}
       {:error, _} -> {:error, :unavailable}
     end
