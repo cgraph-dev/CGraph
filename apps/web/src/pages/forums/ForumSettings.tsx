@@ -7,6 +7,7 @@ import {
   ContentSection,
   DangerZone,
 } from '@/pages/forums/forum-settings/SettingsSections';
+import { SubmitButton } from '@/components/ui/SubmitButton';
 
 export default function ForumSettings() {
   const {
@@ -21,7 +22,6 @@ export default function ForumSettings() {
     setIsPublic,
     isNsfw,
     setIsNsfw,
-    isSaving,
     showDeleteConfirm,
     setShowDeleteConfirm,
     deleteConfirmText,
@@ -81,7 +81,7 @@ export default function ForumSettings() {
         )}
 
         {/* Settings Form */}
-        <form onSubmit={handleSave} className="space-y-8">
+        <form action={handleSave} className="space-y-8">
           <GeneralSection
             name={name}
             setName={setName}
@@ -93,13 +93,9 @@ export default function ForumSettings() {
 
           {/* Save Button */}
           <div className="flex justify-end">
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="rounded-lg bg-primary-600 px-6 py-2.5 font-medium text-white transition-colors hover:bg-primary-700 disabled:bg-primary-600/50"
-            >
-              {isSaving ? 'Saving...' : 'Save Changes'}
-            </button>
+            <SubmitButton pendingText="Saving...">
+              Save Changes
+            </SubmitButton>
           </div>
         </form>
 

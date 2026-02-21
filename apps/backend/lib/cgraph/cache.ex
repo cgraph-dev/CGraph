@@ -69,17 +69,29 @@ defmodule CGraph.Cache do
   - `[:cgraph, :cache, :delete]` - Cache deletes
   - `[:cgraph, :cache, :hit]` - Cache hits
   - `[:cgraph, :cache, :miss]` - Cache misses
+
+  ## Submodules
+
+  Implementation is split across focused submodules:
+
+  - `CGraph.Cache.L1` — ETS (process-local) tier
+  - `CGraph.Cache.L2` — Cachex (shared) tier
+  - `CGraph.Cache.L3` — Redis (distributed) tier
+  - `CGraph.Cache.Tiered` — multi-tier read/write orchestration
+  - `CGraph.Cache.Stampede` — lock-based stampede prevention
+  - `CGraph.Cache.Tags` — tag-based group invalidation
+  - `CGraph.Cache.Telemetry` — telemetry event emission
   """
 
   require Logger
+
+  alias CGraph.Cache.{L1, L2, L3, Tiered, Stampede, Tags, Telemetry}
 
   @type key :: String.t() | atom()
   @type value :: term()
   @type ttl :: pos_integer() | :infinity
   @type tier :: :l1 | :l2 | :l3 | :all
 
-  @cachex_name :cgraph_cache
-  @l1_table :cgraph_l1_cache
   @default_ttl :timer.minutes(5)
 
   # ---------------------------------------------------------------------------
@@ -120,24 +132,27 @@ defmodule CGraph.Cache do
   - `:promote` - Whether to promote to higher tiers (default: true)
   """
   def get(key, opts \\ []) do
-    opts = cond do
-      is_map(opts) -> Map.to_list(opts)
-      is_list(opts) -> opts
-      true -> []
-    end
+    opts =
+      cond do
+        is_map(opts) -> Map.to_list(opts)
+        is_list(opts) -> opts
+        true -> []
+      end
+
     tier = Keyword.get(opts, :tier, :all)
     promote = Keyword.get(opts, :promote, true)
 
     start_time = System.monotonic_time(:microsecond)
 
-    result = case tier do
-      :l1 -> get_l1(key)
-      :l2 -> get_l2(key)
-      :l3 -> get_l3(key)
-      :all -> get_all_tiers(key, promote)
-    end
+    result =
+      case tier do
+        :l1 -> L1.get(key)
+        :l2 -> L2.get(key)
+        :l3 -> L3.get(key)
+        :all -> Tiered.get_all(key, promote)
+      end
 
-    emit_get_telemetry(key, result, start_time)
+    Telemetry.emit_get(key, result, start_time)
 
     result
   end
@@ -159,19 +174,19 @@ defmodule CGraph.Cache do
 
     start_time = System.monotonic_time(:microsecond)
 
-    result = case tier do
-      :l1 -> set_l1(key, value, ttl)
-      :l2 -> set_l2(key, value, ttl)
-      :l3 -> set_l3(key, value, ttl)
-      :all -> set_all_tiers(key, value, ttl)
-    end
+    result =
+      case tier do
+        :l1 -> L1.set(key, value, ttl)
+        :l2 -> L2.set(key, value, ttl)
+        :l3 -> L3.set(key, value, ttl)
+        :all -> Tiered.set_all(key, value, ttl)
+      end
 
-    # Store tag associations
     if tags != [] do
-      store_tags(key, tags)
+      Tags.store(key, tags)
     end
 
-    emit_set_telemetry(key, start_time)
+    Telemetry.emit_set(key, start_time)
 
     result
   end
@@ -180,11 +195,11 @@ defmodule CGraph.Cache do
   Delete a key from all cache tiers.
   """
   def delete(key) do
-    delete_l1(key)
-    delete_l2(key)
-    delete_l3(key)
+    L1.delete(key)
+    L2.delete(key)
+    L3.delete(key)
 
-    emit_delete_telemetry(key)
+    Telemetry.emit_delete(key)
 
     :ok
   end
@@ -195,12 +210,10 @@ defmodule CGraph.Cache do
   Pattern supports `*` wildcard.
   """
   def delete_pattern(pattern) do
-    # L2 - Use Cachex stream
-    keys = get_matching_keys(pattern)
+    keys = L2.get_matching_keys(pattern)
     Enum.each(keys, &delete/1)
 
-    # L3 - Redis pattern delete
-    delete_redis_pattern(pattern)
+    L3.delete_pattern(pattern)
 
     :ok
   end
@@ -209,12 +222,14 @@ defmodule CGraph.Cache do
   Delete all keys with a specific tag.
   """
   def delete_by_tag(tag) do
-    case get_tag_keys(tag) do
+    case Tags.get_keys(tag) do
       {:ok, keys} ->
         Enum.each(keys, &delete/1)
-        delete_tag(tag)
+        Tags.delete(tag)
         {:ok, length(keys)}
-      error -> error
+
+      error ->
+        error
     end
   end
 
@@ -241,25 +256,25 @@ defmodule CGraph.Cache do
       end, ttl: :timer.hours(1))
   """
   def fetch(key, compute_fn, opts \\ []) when is_function(compute_fn, 0) do
-    opts = cond do
-      is_map(opts) -> Map.to_list(opts)
-      is_integer(opts) -> [ttl: opts]
-      is_list(opts) -> opts
-      true -> []
-    end
+    opts =
+      cond do
+        is_map(opts) -> Map.to_list(opts)
+        is_integer(opts) -> [ttl: opts]
+        is_list(opts) -> opts
+        true -> []
+      end
+
     case get(key) do
       {:ok, value} ->
         value
 
       {:error, _reason} ->
-        # Default to lock-based stampede protection (opt-OUT with lock: false)
-        # Handles both :not_found (cache miss) and Redis/Cachex errors gracefully
         use_lock = Keyword.get(opts, :lock, true)
 
         if use_lock do
-          fetch_with_lock(key, compute_fn, opts)
+          Stampede.fetch_with_lock(key, compute_fn, opts)
         else
-          compute_and_cache(key, compute_fn, opts)
+          Stampede.compute_and_cache(key, compute_fn, opts)
         end
     end
   end
@@ -281,28 +296,28 @@ defmodule CGraph.Cache do
   """
   def fetch_many(keys, compute_fn, opts \\ []) when is_list(keys) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
-    # First, try to get all from cache
-    cached = keys
-    |> Enum.map(fn key -> {key, get(key)} end)
-    |> Enum.filter(fn {_, result} -> match?({:ok, _}, result) end)
-    |> Enum.map(fn {key, {:ok, value}} -> {key, value} end)
-    |> Map.new()
 
-    # Find missing keys
+    cached =
+      keys
+      |> Enum.map(fn key -> {key, get(key)} end)
+      |> Enum.filter(fn {_, result} -> match?({:ok, _}, result) end)
+      |> Enum.map(fn {key, {:ok, value}} -> {key, value} end)
+      |> Map.new()
+
     missing_keys = keys -- Map.keys(cached)
 
-    # Compute missing values
-    computed = if missing_keys != [] do
-      missing_keys
-      |> Enum.map(fn key ->
-        value = compute_fn.(key)
-        set(key, value, opts)
-        {key, value}
-      end)
-      |> Map.new()
-    else
-      %{}
-    end
+    computed =
+      if missing_keys != [] do
+        missing_keys
+        |> Enum.map(fn key ->
+          value = compute_fn.(key)
+          set(key, value, opts)
+          {key, value}
+        end)
+        |> Map.new()
+      else
+        %{}
+      end
 
     Map.merge(cached, computed)
   end
@@ -337,14 +352,8 @@ defmodule CGraph.Cache do
   Clear all caches.
   """
   def clear_all do
-    # L1
-    if :ets.whereis(@l1_table) != :undefined do
-      :ets.delete_all_objects(@l1_table)
-    end
-
-    # L2
-    Cachex.clear(@cachex_name)
-
+    L1.clear()
+    L2.clear()
     # L3 would need selective deletion
 
     Logger.warning("All caches cleared")
@@ -355,15 +364,10 @@ defmodule CGraph.Cache do
   Get cache statistics.
   """
   def stats do
-    l2_stats = case Cachex.stats(@cachex_name) do
-      {:ok, stats} -> stats
-      _ -> %{}
-    end
-
     %{
-      l1: l1_stats(),
-      l2: l2_stats,
-      l3: redis_stats()
+      l1: L1.stats(),
+      l2: L2.stats(),
+      l3: L3.stats()
     }
   end
 
@@ -371,394 +375,6 @@ defmodule CGraph.Cache do
   Get cache size across tiers.
   """
   def size do
-    l1_size = if :ets.whereis(@l1_table) != :undefined do
-      :ets.info(@l1_table, :size)
-    else
-      0
-    end
-
-    l2_size = case Cachex.size(@cachex_name) do
-      {:ok, size} -> size
-      _ -> 0
-    end
-
-    %{l1: l1_size, l2: l2_size}
-  end
-
-  # ---------------------------------------------------------------------------
-  # L1 Cache (Process-local ETS)
-  # ---------------------------------------------------------------------------
-
-  defp get_l1(key) do
-    table = ensure_l1_table()
-
-    case :ets.lookup(table, key) do
-      [{^key, value, expiry}] ->
-        if expiry == :infinity or expiry > System.monotonic_time(:millisecond) do
-          {:ok, value}
-        else
-          :ets.delete(table, key)
-          {:error, :not_found}
-        end
-      [] ->
-        {:error, :not_found}
-    end
-  end
-
-  defp set_l1(key, value, ttl) do
-    table = ensure_l1_table()
-
-    expiry = if ttl == :infinity do
-      :infinity
-    else
-      System.monotonic_time(:millisecond) + ttl
-    end
-
-    :ets.insert(table, {key, value, expiry})
-    :ok
-  end
-
-  defp delete_l1(key) do
-    table = ensure_l1_table()
-    :ets.delete(table, key)
-    :ok
-  end
-
-  defp ensure_l1_table do
-    case :ets.whereis(@l1_table) do
-      :undefined ->
-        :ets.new(@l1_table, [:set, :public, :named_table, read_concurrency: true])
-      table ->
-        table
-    end
-  end
-
-  defp l1_stats do
-    if :ets.whereis(@l1_table) != :undefined do
-      %{
-        size: :ets.info(@l1_table, :size),
-        memory_bytes: :ets.info(@l1_table, :memory) * :erlang.system_info(:wordsize)
-      }
-    else
-      %{size: 0, memory_bytes: 0}
-    end
-  end
-
-  # ---------------------------------------------------------------------------
-  # L2 Cache (Cachex)
-  # ---------------------------------------------------------------------------
-
-  defp get_l2(key) do
-    case Cachex.get(@cachex_name, key) do
-      {:ok, nil} -> {:error, :not_found}
-      {:ok, value} -> {:ok, value}
-      {:error, _} = error -> error
-    end
-  end
-
-  defp set_l2(key, value, ttl) do
-    opts = if ttl == :infinity, do: [], else: [ttl: ttl]
-
-    case Cachex.put(@cachex_name, key, value, opts) do
-      {:ok, true} -> :ok
-      {:error, _} = error -> error
-    end
-  end
-
-  defp delete_l2(key) do
-    Cachex.del(@cachex_name, key)
-    :ok
-  end
-
-  # ---------------------------------------------------------------------------
-  # L3 Cache (Redis)
-  # ---------------------------------------------------------------------------
-
-  defp get_l3(key) do
-    redis_key = "cache:#{key}"
-
-    case CGraph.Redis.command(["GET", redis_key]) do
-      {:ok, nil} -> {:error, :not_found}
-      {:ok, data} ->
-        # Use :safe option to prevent arbitrary atom creation and code execution
-        {:ok, :erlang.binary_to_term(data, [:safe])}
-      {:error, _} = error -> error
-    end
-  rescue
-    _ -> {:error, :redis_unavailable}
-  end
-
-  defp set_l3(key, value, ttl) do
-    redis_key = "cache:#{key}"
-    data = :erlang.term_to_binary(value)
-
-    cmd = if ttl == :infinity do
-      ["SET", redis_key, data]
-    else
-      ["SETEX", redis_key, div(ttl, 1000), data]
-    end
-
-    case CGraph.Redis.command(cmd) do
-      {:ok, _} -> :ok
-      {:error, _} = error -> error
-    end
-  rescue
-    _ -> {:error, :redis_unavailable}
-  end
-
-  defp delete_l3(key) do
-    redis_key = "cache:#{key}"
-    CGraph.Redis.command(["DEL", redis_key])
-    :ok
-  rescue
-    _ -> :ok
-  end
-
-  defp delete_redis_pattern(pattern) do
-    redis_pattern = "cache:#{pattern}"
-
-    # Use SCAN + pipelined DEL instead of KEYS (KEYS blocks all Redis clients at scale)
-    # See: https://redis.io/commands/scan — O(1) per iteration vs O(N) for KEYS
-    {:ok, _count} = CGraph.Redis.scan_and_delete(redis_pattern)
-    :ok
-  rescue
-    _ -> :ok
-  end
-
-  defp redis_stats do
-    case CGraph.Redis.command(["INFO", "memory"]) do
-      {:ok, info} -> parse_redis_info(info)
-      _ -> %{}
-    end
-  rescue
-    _ -> %{}
-  end
-
-  defp parse_redis_info(info) when is_binary(info) do
-    info
-    |> String.split("\r\n")
-    |> Enum.filter(&String.contains?(&1, ":"))
-    |> Enum.map(fn line ->
-      [key, value] = String.split(line, ":", parts: 2)
-      {key, value}
-    end)
-    |> Map.new()
-  end
-  defp parse_redis_info(_), do: %{}
-
-  # ---------------------------------------------------------------------------
-  # Multi-Tier Operations
-  # ---------------------------------------------------------------------------
-
-  defp get_all_tiers(key, promote) do
-    # Try tiers in order: L1 -> L2 -> L3
-    try_tier(:l1, key, promote)
-  end
-
-  defp try_tier(:l1, key, promote) do
-    case get_l1(key) do
-      {:ok, value} ->
-        emit_hit(:l1)
-        {:ok, value}
-      {:error, :not_found} ->
-        try_tier(:l2, key, promote)
-    end
-  end
-
-  defp try_tier(:l2, key, promote) do
-    case get_l2(key) do
-      {:ok, value} ->
-        emit_hit(:l2)
-        if promote, do: set_l1(key, value, @default_ttl)
-        {:ok, value}
-      {:error, :not_found} ->
-        try_tier(:l3, key, promote)
-    end
-  end
-
-  defp try_tier(:l3, key, promote) do
-    case get_l3(key) do
-      {:ok, value} ->
-        emit_hit(:l3)
-        if promote do
-          set_l2(key, value, @default_ttl)
-          set_l1(key, value, @default_ttl)
-        end
-        {:ok, value}
-      error ->
-        emit_miss()
-        error
-    end
-  end
-
-  defp set_all_tiers(key, value, ttl) do
-    set_l1(key, value, ttl)
-    set_l2(key, value, ttl)
-    set_l3(key, value, ttl)
-    :ok
-  end
-
-  # ---------------------------------------------------------------------------
-  # Helper Functions
-  # ---------------------------------------------------------------------------
-
-  defp fetch_with_lock(key, compute_fn, opts) do
-    lock_key = "lock:#{key}"
-    fetch_with_lock(key, compute_fn, opts, lock_key, 0)
-  end
-
-  # Retry with exponential backoff (up to 5 attempts)
-  defp fetch_with_lock(key, compute_fn, opts, _lock_key, attempt) when attempt >= 5 do
-    # Max retries exhausted — compute without lock to avoid deadlock
-    compute_and_cache(key, compute_fn, opts)
-  end
-
-  defp fetch_with_lock(key, compute_fn, opts, lock_key, attempt) do
-    case acquire_lock(lock_key) do
-      :ok ->
-        try do
-          # Double-check if value was cached while waiting
-          case get(key) do
-            {:ok, value} -> value
-            _ -> compute_and_cache(key, compute_fn, opts)
-          end
-        after
-          release_lock(lock_key)
-        end
-
-      :locked ->
-        # Exponential backoff: 25ms, 50ms, 100ms, 200ms, 400ms
-        backoff_ms = 25 * :math.pow(2, attempt) |> trunc()
-        Process.sleep(backoff_ms)
-
-        case get(key) do
-          {:ok, value} ->
-            value
-
-          _ ->
-            fetch_with_lock(key, compute_fn, opts, lock_key, attempt + 1)
-        end
-    end
-  end
-
-  defp compute_and_cache(key, compute_fn, opts) do
-    value = compute_fn.()
-    set(key, value, opts)
-    value
-  end
-
-  defp acquire_lock(lock_key) do
-    case CGraph.Redis.command(["SET", lock_key, "1", "NX", "EX", "5"]) do
-      {:ok, "OK"} -> :ok
-      _ -> :locked
-    end
-  rescue
-    _ -> :ok  # Proceed without lock if Redis unavailable
-  end
-
-  defp release_lock(lock_key) do
-    CGraph.Redis.command(["DEL", lock_key])
-  rescue
-    _ -> :ok
-  end
-
-  defp get_matching_keys(pattern) do
-    # Convert pattern to regex
-    regex = pattern
-    |> String.replace("*", ".*")
-    |> Regex.compile!()
-
-    # Get keys from L2 cache that match
-    case Cachex.stream(@cachex_name, of: :key) do
-      {:ok, stream} ->
-        stream
-        |> Enum.filter(fn key ->
-          is_binary(key) and Regex.match?(regex, key)
-        end)
-        |> Enum.to_list()
-      _ -> []
-    end
-  end
-
-  # ---------------------------------------------------------------------------
-  # Tag Management
-  # ---------------------------------------------------------------------------
-
-  defp store_tags(key, tags) do
-    Enum.each(tags, fn tag ->
-      tag_key = tag_storage_key(tag)
-
-      case get_l2(tag_key) do
-        {:ok, keys} -> set_l2(tag_key, [key | keys], :infinity)
-        _ -> set_l2(tag_key, [key], :infinity)
-      end
-    end)
-  end
-
-  defp get_tag_keys(tag) do
-    tag_key = tag_storage_key(tag)
-
-    case get_l2(tag_key) do
-      {:ok, keys} -> {:ok, keys}
-      _ -> {:ok, []}
-    end
-  end
-
-  defp delete_tag(tag) do
-    tag_key = tag_storage_key(tag)
-    delete_l2(tag_key)
-  end
-
-  defp tag_storage_key(tag) when is_atom(tag), do: "__tag:#{tag}"
-  defp tag_storage_key({type, id}), do: "__tag:#{type}:#{id}"
-  defp tag_storage_key(tag), do: "__tag:#{inspect(tag)}"
-
-  # ---------------------------------------------------------------------------
-  # Telemetry
-  # ---------------------------------------------------------------------------
-
-  defp emit_get_telemetry(key, result, start_time) do
-    duration = System.monotonic_time(:microsecond) - start_time
-    status = if match?({:ok, _}, result), do: :hit, else: :miss
-
-    :telemetry.execute(
-      [:cgraph, :cache, :get],
-      %{duration: duration},
-      %{key: key, status: status}
-    )
-  end
-
-  defp emit_set_telemetry(key, start_time) do
-    duration = System.monotonic_time(:microsecond) - start_time
-
-    :telemetry.execute(
-      [:cgraph, :cache, :set],
-      %{duration: duration},
-      %{key: key}
-    )
-  end
-
-  defp emit_delete_telemetry(key) do
-    :telemetry.execute(
-      [:cgraph, :cache, :delete],
-      %{count: 1},
-      %{key: key}
-    )
-  end
-
-  defp emit_hit(tier) do
-    :telemetry.execute(
-      [:cgraph, :cache, :hit],
-      %{count: 1},
-      %{tier: tier}
-    )
-  end
-
-  defp emit_miss do
-    :telemetry.execute(
-      [:cgraph, :cache, :miss],
-      %{count: 1},
-      %{}
-    )
+    %{l1: L1.size(), l2: L2.size()}
   end
 end

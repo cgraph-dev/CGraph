@@ -28,6 +28,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   Register a new user with email and password.
   Sets HTTP-only cookies for web clients.
   """
+  @spec register(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def register(conn, %{"user" => user_params}) do
       with {:ok, attrs} <- AuthParams.validate_register(user_params),
         {:ok, user} <- Accounts.register_user(attrs),
@@ -46,6 +47,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   Accepts either email or username in the "identifier" field.
   Implements account lockout protection to prevent brute force attacks.
   """
+  @spec login(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def login(conn, params)
 
   def login(conn, %{"email" => email, "password" => password}) do
@@ -175,6 +177,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   Refresh access token using refresh token.
   Accepts token from body or HTTP-only cookie.
   """
+  @spec refresh(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def refresh(conn, params) do
     with {:ok, %{refresh_token: body_token}} <- AuthParams.validate_refresh(params) do
       refresh_token = body_token || CookieAuth.get_refresh_token(conn)
@@ -208,6 +211,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   Request a wallet authentication challenge.
   Returns a nonce to sign with the wallet.
   """
+  @spec wallet_challenge(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def wallet_challenge(conn, %{"wallet_address" => address}) do
     with {:ok, %{wallet_address: wallet_address}} <- AuthParams.validate_wallet_challenge(%{"wallet_address" => address}) do
       case Accounts.get_or_create_wallet_challenge(wallet_address) do
@@ -229,6 +233,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   Verify wallet signature and authenticate.
   Sets HTTP-only cookies for web clients.
   """
+  @spec wallet_verify(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def wallet_verify(conn, %{"wallet_address" => address, "signature" => signature}) do
     with {:ok, %{wallet_address: wallet_address, signature: sig}} <-
            AuthParams.validate_wallet_verify(%{"wallet_address" => address, "signature" => signature}),
@@ -254,6 +259,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   @doc """
   Request password reset email.
   """
+  @spec forgot_password(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def forgot_password(conn, %{"email" => email}) do
     with {:ok, %{email: normalized_email}} <- AuthParams.validate_forgot_password(%{"email" => email}) do
       # Always return success to prevent email enumeration
@@ -267,6 +273,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   @doc """
   Reset password with token.
   """
+  @spec reset_password(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def reset_password(conn, %{"token" => token, "password" => password, "password_confirmation" => confirmation}) do
     with {:ok, %{token: reset_token, password: pass, password_confirmation: confirm}} <-
            AuthParams.validate_reset_password(%{"token" => token, "password" => password, "password_confirmation" => confirmation}) do
@@ -297,6 +304,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   is added to the blacklist to prevent reuse.
   Also clears HTTP-only auth cookies.
   """
+  @spec logout(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def logout(conn, _params) do
     # Get the token from Authorization header or cookie
     token = case get_req_header(conn, "authorization") do
@@ -330,6 +338,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   @doc """
   Verify email with token.
   """
+  @spec verify_email(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def verify_email(conn, %{"token" => token}) do
     case Accounts.verify_email(token) do
       {:ok, _user} ->
@@ -356,6 +365,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   Resend verification email.
   Requires authentication.
   """
+  @spec resend_verification(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def resend_verification(conn, _params) do
     case Guardian.Plug.current_resource(conn) do
       nil ->

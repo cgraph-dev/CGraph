@@ -201,8 +201,31 @@ export function createPostActions(set: StoreApi<ForumHostingState>['setState']) 
     },
 
     votePost: async (postId: string, value: 1 | -1) => {
-      await api.post(`/api/v1/posts/${postId}/vote`, { value });
-      // Optimistic update would go here
+      // Capture previous state for rollback via functional set
+      let previousPosts: ForumHostingState['posts'] | undefined;
+      set((state) => {
+        previousPosts = state.posts;
+        return {
+          posts: state.posts.map((p) => {
+            if (p.id !== postId) return p;
+            let { upvotes, downvotes } = p;
+            if (value === 1) upvotes++;
+            if (value === -1) downvotes++;
+            return { ...p, upvotes, downvotes, score: upvotes - downvotes };
+          }),
+        };
+      });
+
+      try {
+        await api.post(`/api/v1/posts/${postId}/vote`, { value });
+      } catch (error) {
+        // Rollback on error
+        if (previousPosts) {
+          set({ posts: previousPosts });
+        }
+        logger.error('Failed to vote on post:', error);
+        throw error;
+      }
     },
   };
 }

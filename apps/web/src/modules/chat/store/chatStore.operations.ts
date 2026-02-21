@@ -10,6 +10,7 @@
 import { api } from '@/lib/api';
 import { ensureObject, normalizeMessage } from '@/lib/apiUtils';
 import { findConversationForMessage, updateMessageReactions } from './chatStore.utils';
+import { useAuthStore } from '@/modules/auth/store';
 import type { Message, Conversation, Reaction, ChatState } from './chatStore.types';
 
 type Set = (
@@ -55,11 +56,56 @@ export function createOperationsActions(set: Set, get: Get) {
     },
 
     addReaction: async (messageId: string, emoji: string) => {
-      await api.post(`/api/v1/messages/${messageId}/reactions`, { emoji });
+      // Optimistic update: add reaction to state before API call
+      const currentUser = useAuthStore.getState().user;
+      const userId = currentUser?.id || '';
+      const username = currentUser?.username || 'User';
+      const previousMessages = { ...get().messages };
+
+      set((state) => {
+        const updatedMessages = updateMessageReactions(state.messages, messageId, (reactions) => {
+          const alreadyExists = reactions.some((r) => r.emoji === emoji && r.userId === userId);
+          if (alreadyExists) return reactions;
+          const newReaction: Reaction = {
+            id: `${messageId}-${emoji}-${userId}`,
+            emoji,
+            userId,
+            user: { id: userId, username },
+          };
+          return [...reactions, newReaction];
+        });
+        return { messages: { ...state.messages, ...updatedMessages } };
+      });
+
+      try {
+        await api.post(`/api/v1/messages/${messageId}/reactions`, { emoji });
+      } catch (error: unknown) {
+        // Rollback on error
+        set({ messages: previousMessages });
+        throw error;
+      }
     },
 
     removeReaction: async (messageId: string, emoji: string) => {
-      await api.delete(`/api/v1/messages/${messageId}/reactions/${emoji}`);
+      // Optimistic update: remove reaction from state before API call
+      const currentUser = useAuthStore.getState().user;
+      const userId = currentUser?.id || '';
+      const previousMessages = { ...get().messages };
+
+      set((state) => {
+        const updatedMessages = updateMessageReactions(state.messages, messageId, (reactions) =>
+          reactions.filter((r) => !(r.emoji === emoji && r.userId === userId))
+        );
+        return { messages: { ...state.messages, ...updatedMessages } };
+      });
+
+      try {
+        await api.delete(`/api/v1/messages/${messageId}/reactions/${emoji}`);
+      } catch (error: unknown) {
+        // Rollback on error
+        set({ messages: previousMessages });
+        throw error;
+      }
     },
 
     setActiveConversation: (conversationId: string | null) => {

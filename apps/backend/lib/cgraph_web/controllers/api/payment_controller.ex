@@ -11,6 +11,8 @@ defmodule CGraphWeb.Api.PaymentController do
 
   use CGraphWeb, :controller
 
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
+
   alias CGraph.Guardian
   alias CGraph.Subscriptions
 
@@ -26,6 +28,7 @@ defmodule CGraphWeb.Api.PaymentController do
   ## Response
     - `checkout_url`: URL to redirect user to Stripe Checkout
   """
+  @spec create_checkout(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create_checkout(conn, params) do
     user = Guardian.Plug.current_resource(conn)
     tier = Map.get(params, "tier", "premium")
@@ -33,7 +36,7 @@ defmodule CGraphWeb.Api.PaymentController do
 
     case Subscriptions.create_checkout_session(user, tier, yearly: yearly) do
       {:ok, url} ->
-        json(conn, %{checkout_url: url})
+        render_data(conn, %{checkout_url: url})
 
       {:error, message} ->
         conn
@@ -49,12 +52,13 @@ defmodule CGraphWeb.Api.PaymentController do
   ## Response
     - `portal_url`: URL to redirect user to Stripe Customer Portal
   """
+  @spec create_portal(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create_portal(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
 
     case Subscriptions.create_portal_session(user) do
       {:ok, url} ->
-        json(conn, %{portal_url: url})
+        render_data(conn, %{portal_url: url})
 
       {:error, :no_customer} ->
         conn
@@ -77,10 +81,11 @@ defmodule CGraphWeb.Api.PaymentController do
     - `expires_at`: Subscription expiration date (if applicable)
     - `expiring_soon`: Whether subscription expires within 7 days
   """
+  @spec billing_status(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def billing_status(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
 
-    json(conn, %{
+    render_data(conn, %{
       tier: Subscriptions.get_tier(user),
       active: Subscriptions.active?(user),
       expires_at: user.subscription_expires_at,
@@ -92,6 +97,7 @@ defmodule CGraphWeb.Api.PaymentController do
   @doc """
   Gets available subscription plans.
   """
+  @spec plans(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def plans(conn, _params) do
     plans = [
       %{
@@ -146,6 +152,6 @@ defmodule CGraphWeb.Api.PaymentController do
       }
     ]
 
-    json(conn, %{plans: plans})
+    render_data(conn, %{plans: plans})
   end
 end

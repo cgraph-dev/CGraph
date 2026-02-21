@@ -2,11 +2,12 @@
  * EnhancedMessageBubble - individual message display with reactions
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useOptimistic } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaceSmileIcon } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 import { useChatStore } from '@/modules/chat/store';
+import type { Reaction } from '@/modules/chat/store/chatStore.types';
 import { useAuthStore } from '@/modules/auth/store';
 import { AnimatedMessageWrapper } from '@/modules/chat/components/AnimatedMessageWrapper';
 import { springs } from '@/lib/animation-presets/presets';
@@ -40,6 +41,22 @@ export function EnhancedMessageBubble({
   const { user } = useAuthStore();
   const [isReacting, setIsReacting] = useState(false);
 
+  // React 19 useOptimistic: show new reactions immediately before the API responds.
+  // When the parent re-renders with updated message.reactions from the store,
+  // the optimistic overlay is automatically discarded.
+  const [optimisticReactions, addOptimisticReaction] = useOptimistic(
+    message.reactions,
+    (state: Reaction[], newReaction: { emoji: string; userId: string; username: string }) => [
+      ...state,
+      {
+        id: `optimistic-${Date.now()}`,
+        emoji: newReaction.emoji,
+        userId: newReaction.userId,
+        user: { id: newReaction.userId, username: newReaction.username },
+      },
+    ]
+  );
+
   const formatMessageTime = (dateStr: string | undefined | null): string => {
     if (!dateStr) return '';
     try {
@@ -55,6 +72,8 @@ export function EnhancedMessageBubble({
     if (isReacting) return;
     setIsReacting(true);
     HapticFeedback.medium();
+    // Optimistic: show the reaction immediately
+    addOptimisticReaction({ emoji, userId: user?.id ?? '', username: user?.username ?? '' });
     try {
       await addReaction(message.id, emoji);
       setShowReactionPicker(false);
@@ -219,7 +238,7 @@ export function EnhancedMessageBubble({
 
           {/* Reactions */}
           <AnimatePresence>
-            {message.reactions.length > 0 && (
+            {optimisticReactions.length > 0 && (
               <motion.div
                 className="mt-2 flex flex-wrap gap-1.5"
                 initial={{ opacity: 0, y: -10 }}
@@ -228,7 +247,7 @@ export function EnhancedMessageBubble({
                 layout
               >
                 {Object.entries(
-                  message.reactions.reduce<Record<string, { count: number; hasReacted: boolean }>>(
+                  optimisticReactions.reduce<Record<string, { count: number; hasReacted: boolean }>>(
                     (acc, r) => {
                       const entry = (acc[r.emoji] ??= { count: 0, hasReacted: false });
                       entry.count++;

@@ -1,82 +1,30 @@
 defmodule CGraph.Redis do
   @moduledoc """
-  Redis client wrapper with connection pooling and resilience.
+  Redis client wrapper with connection pooling, circuit breaker, and resilience.
 
-  ## Overview
+  ## Submodules
 
-  Provides a high-level interface to Redis with:
+  - `CGraph.Redis.KeyValue`  – GET, SET, DEL, EXISTS, EXPIRE, TTL, counters
+  - `CGraph.Redis.Hash`      – HGET, HSET, HGETALL, HDEL
+  - `CGraph.Redis.List`      – LPUSH, RPUSH, LRANGE, LLEN
+  - `CGraph.Redis.Set`       – SADD, SMEMBERS, SISMEMBER, SREM
+  - `CGraph.Redis.SortedSet` – ZADD, ZRANGE, ZRANK, ZSCORE, ZREVRANGE, etc.
+  - `CGraph.Redis.Scan`      – SCAN-based key iteration and batch delete
+  - `CGraph.Redis.Helpers`   – Shared value encoding utilities
 
-  - **Connection Pooling**: Managed pool of Redix connections
-  - **Circuit Breaker**: Automatic failover during outages
-  - **Pipelines**: Efficient batch operations
-  - **PubSub**: Real-time messaging support
-
-  ## Architecture
-
-  ```
-  ┌─────────────────────────────────────────────────────────────────┐
-  │                       REDIS CLIENT                              │
-  ├─────────────────────────────────────────────────────────────────┤
-  │                                                                  │
-  │   Application                                                   │
-  │        │                                                        │
-  │        ▼                                                        │
-  │   ┌─────────────────────────────────────────────────────────┐  │
-  │   │                    CGraph.Redis                          │  │
-  │   │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │  │
-  │   │  │   Command   │  │   Pipeline  │  │   PubSub    │     │  │
-  │   │  │     API     │  │     API     │  │    API      │     │  │
-  │   │  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘     │  │
-  │   │         │                │                │            │  │
-  │   │         └────────────────┼────────────────┘            │  │
-  │   │                          ▼                              │  │
-  │   │                   ┌─────────────┐                      │  │
-  │   │                   │Circuit Break│                      │  │
-  │   │                   └──────┬──────┘                      │  │
-  │   │                          ▼                              │  │
-  │   │                   ┌─────────────┐                      │  │
-  │   │                   │ Conn Pool   │                      │  │
-  │   │                   └──────┬──────┘                      │  │
-  │   └──────────────────────────┼─────────────────────────────┘  │
-  │                              │                                  │
-  │                              ▼                                  │
-  │                         Redis Server                            │
-  │                                                                  │
-  └─────────────────────────────────────────────────────────────────┘
-  ```
+  All submodule functions are re-exported via `defdelegate`.
 
   ## Configuration
 
       config :cgraph, CGraph.Redis,
-        host: "localhost",
-        port: 6379,
-        password: nil,
-        database: 0,
-        pool_size: 10,
-        ssl: false
-
-  ## Usage
-
-      # Simple commands
-      {:ok, "OK"} = Redis.command(["SET", "key", "value"])
-      {:ok, "value"} = Redis.command(["GET", "key"])
-
-      # Pipeline for efficiency
-      results = Redis.pipeline([
-        ["GET", "key1"],
-        ["GET", "key2"],
-        ["INCR", "counter"]
-      ])
-
-      # PubSub
-      Redis.subscribe("channel:updates", self())
-      Redis.publish("channel:updates", "message")
+        host: "localhost", port: 6379, password: nil,
+        database: 0, pool_size: 10, ssl: false
 
   ## Telemetry
 
-  - `[:cgraph, :redis, :command]` - Command execution
-  - `[:cgraph, :redis, :pipeline]` - Pipeline execution
-  - `[:cgraph, :redis, :error]` - Command errors
+  - `[:cgraph, :redis, :command]` – Command execution
+  - `[:cgraph, :redis, :pipeline]` – Pipeline execution
+  - `[:cgraph, :redis, :error]` – Command errors
   """
 
   use GenServer
@@ -90,7 +38,7 @@ defmodule CGraph.Redis do
   @fuse_reset_timeout 30_000
 
   # ---------------------------------------------------------------------------
-  # Public API
+  # Public API – Core
   # ---------------------------------------------------------------------------
 
   @doc """
@@ -272,221 +220,76 @@ defmodule CGraph.Redis do
   end
 
   # ---------------------------------------------------------------------------
-  # Key-Value Convenience Methods
+  # Delegated – Key-Value
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Get a value.
-  """
-  def get(key) do
-    command(["GET", key])
-  end
-
-  @doc """
-  Set a value with optional TTL.
-  """
-  def set(key, value, opts \\ []) do
-    ttl = Keyword.get(opts, :ttl)
-    nx = Keyword.get(opts, :nx, false)  # Only set if not exists
-    xx = Keyword.get(opts, :xx, false)  # Only set if exists
-
-    args = ["SET", key, encode_value(value)]
-
-    args = if ttl, do: args ++ ["EX", ttl], else: args
-    args = if nx, do: args ++ ["NX"], else: args
-    args = if xx, do: args ++ ["XX"], else: args
-
-    command(args)
-  end
-
-  @doc """
-  Delete one or more keys.
-  """
-  def del(keys) when is_list(keys), do: command(["DEL" | keys])
-  def del(key), do: del([key])
-
-  @doc """
-  Check if a key exists.
-  """
-  def exists?(key) do
-    case command(["EXISTS", key]) do
-      {:ok, 1} -> true
-      _ -> false
-    end
-  end
-
-  @doc """
-  Set expiration on a key.
-  """
-  def expire(key, seconds) do
-    command(["EXPIRE", key, seconds])
-  end
-
-  @doc """
-  Get remaining TTL of a key.
-  """
-  def ttl(key) do
-    command(["TTL", key])
-  end
-
-  @doc """
-  Increment a counter.
-  """
-  def incr(key), do: command(["INCR", key])
-  def incrby(key, amount), do: command(["INCRBY", key, amount])
-  def decr(key), do: command(["DECR", key])
+  defdelegate get(key), to: CGraph.Redis.KeyValue
+  defdelegate set(key, value), to: CGraph.Redis.KeyValue
+  defdelegate set(key, value, opts), to: CGraph.Redis.KeyValue
+  defdelegate del(key_or_keys), to: CGraph.Redis.KeyValue
+  defdelegate exists?(key), to: CGraph.Redis.KeyValue
+  defdelegate expire(key, seconds), to: CGraph.Redis.KeyValue
+  defdelegate ttl(key), to: CGraph.Redis.KeyValue
+  defdelegate incr(key), to: CGraph.Redis.KeyValue
+  defdelegate incrby(key, amount), to: CGraph.Redis.KeyValue
+  defdelegate decr(key), to: CGraph.Redis.KeyValue
 
   # ---------------------------------------------------------------------------
-  # Hash Operations
+  # Delegated – Hash
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Get a hash field.
-  """
-  def hget(key, field), do: command(["HGET", key, field])
-
-  @doc """
-  Set a hash field.
-  """
-  def hset(key, field, value), do: command(["HSET", key, field, encode_value(value)])
-
-  @doc """
-  Get all hash fields and values.
-  """
-  def hgetall(key) do
-    case command(["HGETALL", key]) do
-      {:ok, list} when is_list(list) -> {:ok, list_to_map(list)}
-      result -> result
-    end
-  end
-
-  @doc """
-  Delete hash fields.
-  """
-  def hdel(key, fields) when is_list(fields), do: command(["HDEL", key | fields])
-  def hdel(key, field), do: hdel(key, [field])
+  defdelegate hget(key, field), to: CGraph.Redis.Hash
+  defdelegate hset(key, field, value), to: CGraph.Redis.Hash
+  defdelegate hgetall(key), to: CGraph.Redis.Hash
+  defdelegate hdel(key, field_or_fields), to: CGraph.Redis.Hash
 
   # ---------------------------------------------------------------------------
-  # List Operations
+  # Delegated – List
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Push to the left of a list.
-  """
-  def lpush(key, values) when is_list(values), do: command(["LPUSH", key | values])
-  def lpush(key, value), do: lpush(key, [value])
-
-  @doc """
-  Push to the right of a list.
-  """
-  def rpush(key, values) when is_list(values), do: command(["RPUSH", key | values])
-  def rpush(key, value), do: rpush(key, [value])
-
-  @doc """
-  Get a range from a list.
-  """
-  def lrange(key, start, stop), do: command(["LRANGE", key, start, stop])
-
-  @doc """
-  Get list length.
-  """
-  def llen(key), do: command(["LLEN", key])
+  defdelegate lpush(key, value_or_values), to: CGraph.Redis.List
+  defdelegate rpush(key, value_or_values), to: CGraph.Redis.List
+  defdelegate lrange(key, start, stop), to: CGraph.Redis.List
+  defdelegate llen(key), to: CGraph.Redis.List
 
   # ---------------------------------------------------------------------------
-  # Set Operations
+  # Delegated – Set
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Add members to a set.
-  """
-  def sadd(key, members) when is_list(members), do: command(["SADD", key | members])
-  def sadd(key, member), do: sadd(key, [member])
-
-  @doc """
-  Get all set members.
-  """
-  def smembers(key), do: command(["SMEMBERS", key])
-
-  @doc """
-  Check if a member is in a set.
-  """
-  def sismember?(key, member) do
-    case command(["SISMEMBER", key, member]) do
-      {:ok, 1} -> true
-      _ -> false
-    end
-  end
-
-  @doc """
-  Remove members from a set.
-  """
-  def srem(key, members) when is_list(members), do: command(["SREM", key | members])
-  def srem(key, member), do: srem(key, [member])
+  defdelegate sadd(key, member_or_members), to: CGraph.Redis.Set
+  defdelegate smembers(key), to: CGraph.Redis.Set
+  defdelegate sismember?(key, member), to: CGraph.Redis.Set
+  defdelegate srem(key, member_or_members), to: CGraph.Redis.Set
 
   # ---------------------------------------------------------------------------
-  # Sorted Set Operations
+  # Delegated – Sorted Set
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Add members to a sorted set.
-  """
-  def zadd(key, score_members) when is_list(score_members) do
-    args = Enum.flat_map(score_members, fn {score, member} ->
-      [score, member]
-    end)
-    command(["ZADD", key | args])
-  end
-  def zadd(key, score, member), do: zadd(key, [{score, member}])
+  defdelegate zadd(key, score_members), to: CGraph.Redis.SortedSet
+  defdelegate zadd(key, score, member), to: CGraph.Redis.SortedSet
+  defdelegate zrange(key, start, stop), to: CGraph.Redis.SortedSet
+  defdelegate zrange(key, start, stop, opts), to: CGraph.Redis.SortedSet
+  defdelegate zrank(key, member), to: CGraph.Redis.SortedSet
+  defdelegate zscore(key, member), to: CGraph.Redis.SortedSet
+  defdelegate zrevrange(key, start, stop), to: CGraph.Redis.SortedSet
+  defdelegate zrevrange(key, start, stop, opts), to: CGraph.Redis.SortedSet
+  defdelegate zrevrank(key, member), to: CGraph.Redis.SortedSet
+  defdelegate zrem(key, member_or_members), to: CGraph.Redis.SortedSet
+  defdelegate zcard(key), to: CGraph.Redis.SortedSet
+  defdelegate zincrby(key, increment, member), to: CGraph.Redis.SortedSet
 
-  @doc """
-  Get range from sorted set by rank.
-  """
-  def zrange(key, start, stop, opts \\ []) do
-    args = ["ZRANGE", key, start, stop]
-    args = if Keyword.get(opts, :withscores), do: args ++ ["WITHSCORES"], else: args
-    command(args)
-  end
+  # ---------------------------------------------------------------------------
+  # Delegated – Scan
+  # ---------------------------------------------------------------------------
 
-  @doc """
-  Get rank of a member in sorted set.
-  """
-  def zrank(key, member), do: command(["ZRANK", key, member])
-
-  @doc """
-  Get score of a member in sorted set.
-  """
-  def zscore(key, member), do: command(["ZSCORE", key, member])
-
-  @doc """
-  Get reverse range from sorted set (highest scores first).
-  """
-  def zrevrange(key, start, stop, opts \\ []) do
-    args = ["ZREVRANGE", key, start, stop]
-    args = if Keyword.get(opts, :withscores), do: args ++ ["WITHSCORES"], else: args
-    command(args)
-  end
-
-  @doc """
-  Get reverse rank (0 = highest score).
-  """
-  def zrevrank(key, member), do: command(["ZREVRANK", key, member])
-
-  @doc """
-  Remove members from sorted set.
-  """
-  def zrem(key, members) when is_list(members), do: command(["ZREM", key | members])
-  def zrem(key, member), do: zrem(key, [member])
-
-  @doc """
-  Get cardinality (number of members) of sorted set.
-  """
-  def zcard(key), do: command(["ZCARD", key])
-
-  @doc """
-  Increment score of a member in sorted set.
-  Returns the new score.
-  """
-  def zincrby(key, increment, member), do: command(["ZINCRBY", key, increment, member])
+  defdelegate scan_keys(pattern), to: CGraph.Redis.Scan
+  defdelegate scan_keys(pattern, opts), to: CGraph.Redis.Scan
+  defdelegate scan_and_delete(pattern), to: CGraph.Redis.Scan
+  defdelegate scan_and_delete(pattern, opts), to: CGraph.Redis.Scan
+  defdelegate scan_and_process(pattern, process_fn), to: CGraph.Redis.Scan
+  defdelegate scan_and_process(pattern, process_fn, opts), to: CGraph.Redis.Scan
+  defdelegate pipeline_delete(keys), to: CGraph.Redis.Scan
+  defdelegate pipeline_delete(keys, batch_size), to: CGraph.Redis.Scan
 
   # ---------------------------------------------------------------------------
   # GenServer Implementation
@@ -613,24 +416,11 @@ defmodule CGraph.Redis do
   end
 
   # ---------------------------------------------------------------------------
-  # Encoding/Decoding
+  # Encoding/Decoding (used only by this module)
   # ---------------------------------------------------------------------------
-
-  defp encode_value(value) when is_binary(value), do: value
-  defp encode_value(value) when is_integer(value), do: Integer.to_string(value)
-  defp encode_value(value) when is_float(value), do: Float.to_string(value)
-  defp encode_value(value) when is_atom(value), do: Atom.to_string(value)
-  defp encode_value(value), do: :erlang.term_to_binary(value) |> Base.encode64()
 
   defp encode_message(message) when is_binary(message), do: message
   defp encode_message(message), do: Jason.encode!(message)
-
-  defp list_to_map(list) do
-    list
-    |> Enum.chunk_every(2)
-    |> Enum.map(fn [k, v] -> {k, v} end)
-    |> Map.new()
-  end
 
   defp parse_info(info) do
     info
@@ -687,116 +477,5 @@ defmodule CGraph.Redis do
       %{duration: duration, command_count: length(commands)},
       %{status: status}
     )
-  end
-
-  # ---------------------------------------------------------------------------
-  # SCAN-based Helpers (safe alternatives to KEYS command)
-  # ---------------------------------------------------------------------------
-
-  @doc """
-  Scan keys matching a pattern using SCAN (non-blocking).
-
-  Returns a stream of matching keys. Use instead of KEYS which blocks Redis.
-
-  ## Options
-  - `:count` - Hint for items per SCAN iteration (default: 100)
-
-  ## Example
-
-      Redis.scan_keys("user:*:sessions") |> Enum.to_list()
-  """
-  def scan_keys(pattern, opts \\ []) do
-    count = Keyword.get(opts, :count, 100)
-
-    Stream.unfold("0", fn
-      :done ->
-        nil
-
-      cursor ->
-        case command(["SCAN", cursor, "MATCH", pattern, "COUNT", to_string(count)]) do
-          {:ok, [next_cursor, keys]} ->
-            next = if next_cursor == "0", do: :done, else: next_cursor
-            {keys, next}
-
-          _ ->
-            nil
-        end
-    end)
-    |> Stream.flat_map(& &1)
-  end
-
-  @doc """
-  Scan and delete all keys matching a pattern.
-
-  Uses SCAN + pipelined DEL in batches of 100 keys.
-  Safe for production (non-blocking).
-
-  Returns the count of deleted keys.
-
-  ## Example
-
-      {:ok, 42} = Redis.scan_and_delete("cache:user:*")
-  """
-  def scan_and_delete(pattern, opts \\ []) do
-    batch_size = Keyword.get(opts, :batch_size, 100)
-
-    deleted_count =
-      scan_keys(pattern, opts)
-      |> Stream.chunk_every(batch_size)
-      |> Enum.reduce(0, fn batch, acc ->
-        case pipeline(Enum.map(batch, fn key -> ["DEL", key] end)) do
-          {:ok, results} ->
-            batch_deleted = results |> Enum.filter(&match?({:ok, 1}, &1)) |> length()
-            acc + batch_deleted
-
-          _ ->
-            acc
-        end
-      end)
-
-    {:ok, deleted_count}
-  end
-
-  @doc """
-  Scan keys and apply a function to each batch.
-
-  ## Example
-
-      Redis.scan_and_process("session:*", fn keys ->
-        Enum.each(keys, &process_session/1)
-      end)
-  """
-  def scan_and_process(pattern, process_fn, opts \\ []) when is_function(process_fn, 1) do
-    batch_size = Keyword.get(opts, :batch_size, 100)
-
-    scan_keys(pattern, opts)
-    |> Stream.chunk_every(batch_size)
-    |> Enum.each(process_fn)
-
-    :ok
-  end
-
-  @doc """
-  Pipeline DEL for a list of keys in batches.
-
-  More efficient than individual DEL commands. Reduces round-trips.
-
-  ## Example
-
-      Redis.pipeline_delete(["key1", "key2", ..., "key200"])
-  """
-  def pipeline_delete(keys, batch_size \\ 100) when is_list(keys) do
-    keys
-    |> Enum.chunk_every(batch_size)
-    |> Enum.reduce(0, fn batch, acc ->
-      case pipeline(Enum.map(batch, fn key -> ["DEL", key] end)) do
-        {:ok, results} ->
-          batch_deleted = results |> Enum.filter(&match?({:ok, 1}, &1)) |> length()
-          acc + batch_deleted
-
-        _ ->
-          acc
-      end
-    end)
   end
 end

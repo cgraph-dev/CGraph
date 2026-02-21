@@ -69,6 +69,23 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, conversationId }: 
   const handleSendReply = async () => {
     if (!replyText.trim() || !parentMessage) return;
 
+    const currentUser = useAuthStore.getState().user;
+    const trimmedContent = replyText.trim();
+
+    // Optimistic update: add reply to local state before API call
+    const optimisticReply: ThreadMessage = {
+      id: `optimistic-${Date.now()}`,
+      content: trimmedContent,
+      sender_id: currentUser?.id || '',
+      sender_name: currentUser?.username || currentUser?.displayName || 'You',
+      sender_avatar: currentUser?.avatarUrl ?? undefined,
+      inserted_at: new Date().toISOString(),
+      reply_to_id: parentMessage.id,
+    };
+    setReplies((prev) => [...prev, optimisticReply]);
+    setReplyText('');
+    inputRef.current?.focus();
+
     try {
       const res = await fetch(`/api/v1/conversations/${conversationId}/messages`, {
         method: 'POST',
@@ -77,19 +94,24 @@ export function ThreadPanel({ isOpen, onClose, parentMessage, conversationId }: 
           Authorization: `Bearer ${useAuthStore.getState().token}`,
         },
         body: JSON.stringify({
-          content: replyText.trim(),
+          content: trimmedContent,
           reply_to_id: parentMessage.id,
         }),
       });
 
       if (res.ok) {
         const data = await res.json();
-        setReplies((prev) => [...prev, data.data]);
-        setReplyText('');
-        inputRef.current?.focus();
+        // Replace the optimistic reply with the real server response
+        setReplies((prev) =>
+          prev.map((r) => (r.id === optimisticReply.id ? data.data : r))
+        );
+      } else {
+        // Rollback: remove the optimistic reply on failure
+        setReplies((prev) => prev.filter((r) => r.id !== optimisticReply.id));
       }
     } catch {
-      // silently fail
+      // Rollback: remove the optimistic reply on error
+      setReplies((prev) => prev.filter((r) => r.id !== optimisticReply.id));
     }
   };
 

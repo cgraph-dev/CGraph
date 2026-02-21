@@ -16,7 +16,6 @@ export function useForumSettings() {
   const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState(true);
   const [isNsfw, setIsNsfw] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -43,11 +42,9 @@ export function useForumSettings() {
     }
   }, [forum, isOwner, navigate, forumSlug]);
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async () => {
     if (!forum) return;
 
-    setIsSaving(true);
     setError(null);
     setSuccess(null);
 
@@ -57,8 +54,6 @@ export function useForumSettings() {
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to save settings';
       setError(errorMessage);
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -86,7 +81,6 @@ export function useForumSettings() {
     setIsPublic,
     isNsfw,
     setIsNsfw,
-    isSaving,
     showDeleteConfirm,
     setShowDeleteConfirm,
     deleteConfirmText,

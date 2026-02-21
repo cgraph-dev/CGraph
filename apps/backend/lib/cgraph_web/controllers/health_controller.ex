@@ -18,6 +18,8 @@ defmodule CGraphWeb.HealthController do
   """
   use CGraphWeb, :controller
 
+  import CGraphWeb.ControllerHelpers, only: [render_data: 2]
+
   alias CGraph.Repo
   alias CGraph.Repo.Healthcheck
   alias CGraph.Search.Engine
@@ -29,7 +31,7 @@ defmodule CGraphWeb.HealthController do
   Used by Kubernetes/Docker for liveness probes.
   """
   def index(conn, _params) do
-    json(conn, %{
+    render_data(conn, %{
       status: "ok",
       service: "cgraph-api",
       version: Application.spec(:cgraph, :vsn) |> to_string(),

@@ -19,6 +19,7 @@ defmodule CGraphWeb.API.V1.ConversationController do
   - page: Page number (default: 1)
   - per_page: Items per page (default: 20, max: 100)
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     user = conn.assigns.current_user
     page = Map.get(params, "page", "1") |> parse_integer(1)
@@ -50,6 +51,7 @@ defmodule CGraphWeb.API.V1.ConversationController do
   Get a specific conversation by ID.
   Returns 403 if user is not a participant, 404 if not found.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -69,6 +71,7 @@ defmodule CGraphWeb.API.V1.ConversationController do
   - message: Optional initial message content
   - name: Optional group name (for multi-participant conversations)
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"participant_ids" => participant_ids} = params) when is_list(participant_ids) do
     user = conn.assigns.current_user
     message_content = Map.get(params, "message")
@@ -146,6 +149,7 @@ defmodule CGraphWeb.API.V1.ConversationController do
   This marks all messages up to the latest as read for the current user,
   resetting the unread count to 0.
   """
+  @spec mark_read(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def mark_read(conn, %{"conversation_id" => conversation_id}) do
     user = conn.assigns.current_user
 
@@ -163,6 +167,7 @@ defmodule CGraphWeb.API.V1.ConversationController do
   Body: { "ttl": 86400 }  (seconds, null = off)
   Valid values: null, 86400 (24h), 604800 (7d), 2592000 (30d)
   """
+  @spec update_ttl(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_ttl(conn, %{"conversation_id" => conversation_id} = params) do
     user = conn.assigns.current_user
     ttl = params["ttl"]

@@ -30,8 +30,7 @@ export function useLoginForm() {
     return () => clearTimeout(timer);
   }, [error, clearError]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     clearError();
 
     try {

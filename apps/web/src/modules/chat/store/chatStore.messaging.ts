@@ -119,11 +119,48 @@ export function createMessagingActions(_set: Set, get: Get) {
         payload.metadata = metadata;
       }
 
-      const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, payload);
-      const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
-      if (rawMessage) {
-        const message = normalizeMessage(rawMessage) as unknown as Message;
-        get().addMessage(message);
+      // Optimistic update: add message to state before API call
+      const currentUser = useAuthStore.getState().user;
+      const optimisticMessage: Message = {
+        id: clientMessageId,
+        conversationId,
+        senderId: currentUser?.id || '',
+        content,
+        encryptedContent: null,
+        isEncrypted: false,
+        messageType: (contentType as Message['messageType']) || 'text',
+        replyToId: replyToId || null,
+        replyTo: null,
+        isPinned: false,
+        isEdited: false,
+        deletedAt: null,
+        metadata: (metadata || {}) as Message['metadata'],
+        reactions: [],
+        sender: {
+          id: currentUser?.id || '',
+          username: currentUser?.username || '',
+          displayName: currentUser?.displayName || null,
+          avatarUrl: currentUser?.avatarUrl || null,
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      get().addMessage(optimisticMessage);
+
+      try {
+        const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, payload);
+        const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
+        if (rawMessage) {
+          const message = normalizeMessage(rawMessage) as unknown as Message;
+          // Replace the optimistic message with the real server response
+          get().removeMessage(clientMessageId, conversationId);
+          get().addMessage(message);
+        }
+      } catch (error: unknown) {
+        // Rollback: remove the optimistic message on failure
+        get().removeMessage(clientMessageId, conversationId);
+        logger.error('Failed to send message:', error);
+        throw error;
       }
     },
 

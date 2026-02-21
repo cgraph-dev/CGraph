@@ -11,6 +11,7 @@ import { AuthErrorAlert } from '@/pages/auth/register/AuthErrorAlert';
 import { useLoginForm } from '@/pages/auth/login/useLoginForm';
 import { LoginFormFields } from '@/pages/auth/login/LoginFormFields';
 import { LogoIcon } from '@/components/logo';
+import { SubmitButton } from '@/components/ui/SubmitButton';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('Login');
@@ -98,7 +99,7 @@ export default function Login() {
       <AuthErrorAlert error={error} />
 
       {/* Login Form with staggered animations */}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form action={handleSubmit} className="space-y-6">
         <LoginFormFields
           email={email}
           setEmail={setEmail}
@@ -110,42 +111,28 @@ export default function Login() {
           reduced={reduced}
         />
 
-        <motion.button
-          type="submit"
-          disabled={isLoading}
-          variants={reduced ? {} : itemVariants}
-          whileHover={
-            reduced || isLoading
-              ? {}
-              : { scale: 1.02, boxShadow: '0 0 30px rgba(139, 92, 246, 0.4)' }
-          }
-          whileTap={reduced || isLoading ? {} : { scale: 0.98 }}
-          className="matrix-button flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium text-white transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isLoading ? (
-            <>
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-              <span className="animate-pulse">{t('login.signing_in')}</span>
-            </>
-          ) : (
-            <>
-              <span>{t('login.submit')}</span>
-              <svg
-                className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M14 5l7 7m0 0l-7 7m7-7H3"
-                />
-              </svg>
-            </>
-          )}
-        </motion.button>
+        <motion.div variants={reduced ? {} : itemVariants}>
+          <SubmitButton
+            pendingText={t('login.signing_in')}
+            className="matrix-button w-full py-3"
+            disabled={isLoading}
+          >
+            <span>{t('login.submit')}</span>
+            <svg
+              className="h-4 w-4 transition-transform group-hover:translate-x-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              />
+            </svg>
+          </SubmitButton>
+        </motion.div>
       </form>
 
       {/* Divider with matrix styling */}

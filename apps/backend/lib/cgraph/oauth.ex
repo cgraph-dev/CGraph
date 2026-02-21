@@ -2,10 +2,13 @@ defmodule CGraph.OAuth do
   @moduledoc """
   OAuth 2.0 authentication module supporting Google, Apple, Facebook, and TikTok.
 
-  This module handles:
-  - Authorization URL generation for OAuth flows
-  - Token exchange and user info retrieval
-  - User creation/linking based on OAuth provider data
+  This module provides the public API for OAuth flows. Implementation is
+  delegated to submodules:
+
+  - `CGraph.OAuth.Config` - Provider configuration, validation, URL building
+  - `CGraph.OAuth.Providers` - Token exchange and user info fetching
+  - `CGraph.OAuth.Apple` - Apple Sign In JWT/JWKS verification
+  - `CGraph.OAuth.UserManager` - User creation, linking, and unlinking
 
   ## Supported Providers
 
@@ -27,33 +30,35 @@ defmodule CGraph.OAuth do
         # ... other providers
   """
 
-  alias CGraph.{Accounts, Repo}
-  alias CGraph.Accounts.User
   alias CGraph.Guardian
+  alias CGraph.OAuth.{Apple, Config, Providers, UserManager}
 
   require Logger
 
   @type provider :: :google | :apple | :facebook | :tiktok
   @type oauth_result :: {:ok, map()} | {:error, term()}
 
-  # Provider-specific OIDC/OAuth configurations
-  @google_authorize_url "https://accounts.google.com/o/oauth2/v2/auth"
-  @google_token_url "https://oauth2.googleapis.com/token"
-  @google_userinfo_url "https://www.googleapis.com/oauth2/v3/userinfo"
+  # ============================================================================
+  # Delegated API
+  # ============================================================================
 
-  @apple_authorize_url "https://appleid.apple.com/auth/authorize"
-  @apple_token_url "https://appleid.apple.com/auth/token"
+  defdelegate list_providers, to: Config
+  defdelegate provider_configured?(provider), to: Config
+  defdelegate configured_providers, to: Config
+  defdelegate get_provider_config(provider), to: Config
+  defdelegate link_account(user, provider, provider_uid, provider_data), to: UserManager
+  defdelegate unlink_account(user, provider), to: UserManager
 
-  @facebook_authorize_url "https://www.facebook.com/v18.0/dialog/oauth"
-  @facebook_token_url "https://graph.facebook.com/v18.0/oauth/access_token"
-  @facebook_userinfo_url "https://graph.facebook.com/v18.0/me"
+  @doc """
+  Verify an Apple ID token using Apple's JWKS.
 
-  @tiktok_authorize_url "https://www.tiktok.com/v2/auth/authorize"
-  @tiktok_token_url "https://open.tiktokapis.com/v2/oauth/token/"
-  @tiktok_userinfo_url "https://open.tiktokapis.com/v2/user/info/"
+  See `CGraph.OAuth.Apple.verify_token/2` for details.
+  """
+  @spec verify_apple_token(String.t(), Keyword.t()) :: {:ok, map()} | {:error, term()}
+  defdelegate verify_apple_token(id_token, config), to: Apple, as: :verify_token
 
   # ============================================================================
-  # Public API
+  # Orchestrator Functions
   # ============================================================================
 
   @doc """
@@ -78,10 +83,10 @@ defmodule CGraph.OAuth do
   """
   @spec authorize_url(provider(), String.t()) :: {:ok, String.t()} | {:error, term()}
   def authorize_url(provider, state) when provider in [:google, :apple, :facebook, :tiktok] do
-    config = get_provider_config(provider)
+    config = Config.get_provider_config(provider)
 
-    if config_valid?(provider, config) do
-      url = build_authorize_url(provider, config, state)
+    if Config.config_valid?(provider, config) do
+      url = Config.build_authorize_url(provider, config, state)
       {:ok, url}
     else
       {:error, :provider_not_configured}
@@ -112,11 +117,11 @@ defmodule CGraph.OAuth do
   """
   @spec callback(provider(), String.t(), String.t()) :: oauth_result()
   def callback(provider, code, _state) when provider in [:google, :apple, :facebook, :tiktok] do
-    config = get_provider_config(provider)
+    config = Config.get_provider_config(provider)
 
-    with {:ok, tokens} <- exchange_code_for_tokens(provider, config, code),
-         {:ok, user_info} <- fetch_user_info(provider, config, tokens),
-         {:ok, user} <- find_or_create_user(provider, user_info),
+    with {:ok, tokens} <- Providers.exchange_code_for_tokens(provider, config, code),
+         {:ok, user_info} <- Providers.fetch_user_info(provider, config, tokens),
+         {:ok, user} <- UserManager.find_or_create_user(provider, user_info),
          {:ok, jwt_tokens} <- Guardian.generate_tokens(user) do
 
       Logger.info("OAuth login successful", provider: provider, user_id: user.id)
@@ -156,15 +161,15 @@ defmodule CGraph.OAuth do
 
   def mobile_callback(provider, access_token, id_token)
       when provider in [:google, :apple, :facebook, :tiktok] do
-    config = get_provider_config(provider)
+    config = Config.get_provider_config(provider)
 
     tokens = %{
       "access_token" => access_token,
       "id_token" => id_token
     }
 
-    with {:ok, user_info} <- fetch_user_info(provider, config, tokens),
-         {:ok, user} <- find_or_create_user(provider, user_info),
+    with {:ok, user_info} <- Providers.fetch_user_info(provider, config, tokens),
+         {:ok, user} <- UserManager.find_or_create_user(provider, user_info),
          {:ok, jwt_tokens} <- Guardian.generate_tokens(user) do
 
       Logger.info("Mobile OAuth login successful", provider: provider, user_id: user.id)
@@ -182,642 +187,4 @@ defmodule CGraph.OAuth do
 
   def mobile_callback(provider, _access_token, _id_token),
     do: {:error, {:invalid_provider, provider}}
-
-  @doc """
-  Link an OAuth account to an existing user.
-
-  ## Parameters
-
-  - `user` - The existing user
-  - `provider` - The OAuth provider
-  - `provider_uid` - The unique ID from the provider
-  - `provider_data` - Additional data from the provider
-  """
-  @spec link_account(User.t(), provider(), String.t(), map()) :: {:ok, User.t()} | {:error, term()}
-  def link_account(%User{} = user, provider, provider_uid, provider_data) do
-    attrs = %{
-      oauth_provider: to_string(provider),
-      oauth_uid: provider_uid,
-      oauth_data: Map.merge(user.oauth_data || %{}, %{
-        to_string(provider) => %{
-          uid: provider_uid,
-          data: provider_data,
-          linked_at: DateTime.utc_now() |> DateTime.to_iso8601()
-        }
-      })
-    }
-
-    user
-    |> User.oauth_changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Unlink an OAuth account from an existing user.
-
-  Only allows unlinking if the user has another authentication method.
-  """
-  @spec unlink_account(User.t(), provider()) :: {:ok, User.t()} | {:error, term()}
-  def unlink_account(%User{} = user, provider) do
-    provider_key = to_string(provider)
-
-    # Check if user has another auth method
-    has_password = user.password_hash != nil
-    has_other_oauth = user.oauth_data && Map.keys(user.oauth_data) -- [provider_key] != []
-    has_wallet = user.wallet_address != nil
-
-    if has_password or has_other_oauth or has_wallet do
-      new_oauth_data = Map.delete(user.oauth_data || %{}, provider_key)
-
-      attrs = if user.oauth_provider == provider_key do
-        # If this was the primary OAuth provider, clear it
-        %{oauth_provider: nil, oauth_uid: nil, oauth_data: new_oauth_data}
-      else
-        %{oauth_data: new_oauth_data}
-      end
-
-      user
-      |> User.oauth_changeset(attrs)
-      |> Repo.update()
-    else
-      {:error, :cannot_unlink_only_auth_method}
-    end
-  end
-
-  @doc """
-  List all supported OAuth providers.
-  """
-  @spec list_providers() :: [provider()]
-  def list_providers, do: [:google, :apple, :facebook, :tiktok]
-
-  @doc """
-  Check if a provider is configured and ready to use.
-  """
-  @spec provider_configured?(provider()) :: boolean()
-  def provider_configured?(provider) do
-    config = get_provider_config(provider)
-    config_valid?(provider, config)
-  end
-
-  @doc """
-  Get configured providers (useful for showing available login options).
-  """
-  @spec configured_providers() :: [provider()]
-  def configured_providers do
-    list_providers()
-    |> Enum.filter(&provider_configured?/1)
-  end
-
-  # ============================================================================
-  # Private Functions - Authorization URL Building
-  # ============================================================================
-
-  @doc """
-  Get the configuration for an OAuth provider.
-
-  ## Parameters
-
-  - `provider` - The OAuth provider atom
-
-  ## Returns
-
-  The provider configuration keyword list.
-  """
-  @spec get_provider_config(provider()) :: Keyword.t()
-  def get_provider_config(provider) do
-    Application.get_env(:cgraph, :oauth, [])
-    |> Keyword.get(provider, [])
-  end
-
-  @doc """
-  Verify an Apple ID token using Apple's JWKS.
-
-  This function validates the token's signature and claims
-  to ensure the token was issued by Apple for your application.
-
-  ## Parameters
-
-  - `id_token` - The Apple ID token (JWT)
-  - `config` - The Apple OAuth configuration
-
-  ## Returns
-
-  - `{:ok, claims}` - The verified token claims
-  - `{:error, reason}` - If verification failed
-  """
-  @spec verify_apple_token(String.t(), Keyword.t()) :: {:ok, map()} | {:error, term()}
-  def verify_apple_token(id_token, config) do
-    verify_apple_id_token(id_token, config)
-  end
-
-  defp config_valid?(:google, config) do
-    config[:client_id] not in [nil, ""] and
-    config[:client_secret] not in [nil, ""]
-  end
-
-  defp config_valid?(:apple, config) do
-    config[:client_id] not in [nil, ""] and
-    config[:team_id] not in [nil, ""] and
-    config[:key_id] not in [nil, ""]
-  end
-
-  defp config_valid?(:facebook, config) do
-    config[:client_id] not in [nil, ""] and
-    config[:client_secret] not in [nil, ""]
-  end
-
-  defp config_valid?(:tiktok, config) do
-    config[:client_key] not in [nil, ""] and
-    config[:client_secret] not in [nil, ""]
-  end
-
-  defp build_authorize_url(:google, config, state) do
-    params = %{
-      client_id: config[:client_id],
-      redirect_uri: config[:redirect_uri],
-      response_type: "code",
-      scope: "openid email profile",
-      state: state,
-      access_type: "offline",
-      prompt: "consent"
-    }
-
-    @google_authorize_url <> "?" <> URI.encode_query(params)
-  end
-
-  defp build_authorize_url(:apple, config, state) do
-    params = %{
-      client_id: config[:client_id],
-      redirect_uri: config[:redirect_uri],
-      response_type: "code id_token",
-      scope: "name email",
-      state: state,
-      response_mode: "form_post"
-    }
-
-    @apple_authorize_url <> "?" <> URI.encode_query(params)
-  end
-
-  defp build_authorize_url(:facebook, config, state) do
-    params = %{
-      client_id: config[:client_id],
-      redirect_uri: config[:redirect_uri],
-      response_type: "code",
-      scope: "email,public_profile",
-      state: state
-    }
-
-    @facebook_authorize_url <> "?" <> URI.encode_query(params)
-  end
-
-  defp build_authorize_url(:tiktok, config, state) do
-    params = %{
-      client_key: config[:client_key],
-      redirect_uri: config[:redirect_uri],
-      response_type: "code",
-      scope: "user.info.basic",
-      state: state
-    }
-
-    @tiktok_authorize_url <> "?" <> URI.encode_query(params)
-  end
-
-  # ============================================================================
-  # Private Functions - Token Exchange
-  # ============================================================================
-
-  defp exchange_code_for_tokens(:google, config, code) do
-    body = %{
-      code: code,
-      client_id: config[:client_id],
-      client_secret: config[:client_secret],
-      redirect_uri: config[:redirect_uri],
-      grant_type: "authorization_code"
-    }
-
-    post_request(@google_token_url, body)
-  end
-
-  defp exchange_code_for_tokens(:apple, config, code) do
-    client_secret = generate_apple_client_secret(config)
-
-    body = %{
-      code: code,
-      client_id: config[:client_id],
-      client_secret: client_secret,
-      redirect_uri: config[:redirect_uri],
-      grant_type: "authorization_code"
-    }
-
-    post_request(@apple_token_url, body)
-  end
-
-  defp exchange_code_for_tokens(:facebook, config, code) do
-    body = %{
-      code: code,
-      client_id: config[:client_id],
-      client_secret: config[:client_secret],
-      redirect_uri: config[:redirect_uri]
-    }
-
-    post_request(@facebook_token_url, body)
-  end
-
-  defp exchange_code_for_tokens(:tiktok, config, code) do
-    body = %{
-      code: code,
-      client_key: config[:client_key],
-      client_secret: config[:client_secret],
-      grant_type: "authorization_code"
-    }
-
-    post_request(@tiktok_token_url, body)
-  end
-
-  # ============================================================================
-  # Private Functions - User Info Fetching
-  # ============================================================================
-
-  defp fetch_user_info(:google, _config, %{"access_token" => access_token}) do
-    headers = [{"Authorization", "Bearer #{access_token}"}]
-
-    case get_request(@google_userinfo_url, headers) do
-      {:ok, data} ->
-        {:ok, %{
-          provider: :google,
-          uid: data["sub"],
-          email: data["email"],
-          email_verified: data["email_verified"],
-          name: data["name"],
-          picture: data["picture"],
-          raw: data
-        }}
-      error -> error
-    end
-  end
-
-  defp fetch_user_info(:apple, config, %{"id_token" => id_token}) when id_token != nil do
-    # Apple ID tokens must be verified using Apple's public keys (JWKS)
-    # This prevents token forgery attacks
-    case verify_apple_id_token(id_token, config) do
-      {:ok, claims} ->
-        {:ok, %{
-          provider: :apple,
-          uid: claims["sub"],
-          email: claims["email"],
-          email_verified: claims["email_verified"] == "true" or claims["email_verified"] == true,
-          name: nil, # Apple only provides name on first login via form_post
-          picture: nil,
-          raw: claims
-        }}
-      {:error, reason} ->
-        Logger.warning("Apple ID token verification failed", reason: inspect(reason))
-        {:error, :invalid_id_token}
-    end
-  end
-
-  defp fetch_user_info(:apple, _config, _tokens) do
-    {:error, :missing_id_token}
-  end
-
-  defp fetch_user_info(:facebook, _config, %{"access_token" => access_token}) do
-    url = "#{@facebook_userinfo_url}?fields=id,name,email,picture&access_token=#{access_token}"
-
-    case get_request(url, []) do
-      {:ok, data} ->
-        {:ok, %{
-          provider: :facebook,
-          uid: data["id"],
-          email: data["email"],
-          email_verified: true, # Facebook verifies emails
-          name: data["name"],
-          picture: get_in(data, ["picture", "data", "url"]),
-          raw: data
-        }}
-      error -> error
-    end
-  end
-
-  defp fetch_user_info(:tiktok, _config, %{"access_token" => access_token}) do
-    headers = [
-      {"Authorization", "Bearer #{access_token}"},
-      {"Content-Type", "application/json"}
-    ]
-
-    url = "#{@tiktok_userinfo_url}?fields=open_id,avatar_url,display_name,union_id"
-
-    case get_request(url, headers) do
-      {:ok, %{"data" => %{"user" => user}}} ->
-        {:ok, %{
-          provider: :tiktok,
-          uid: user["open_id"],
-          email: nil, # TikTok doesn't provide email in basic scope
-          email_verified: false,
-          name: user["display_name"],
-          picture: user["avatar_url"],
-          raw: user
-        }}
-      {:ok, data} ->
-        Logger.warning("Unexpected TikTok response format", data: data)
-        {:error, :invalid_response}
-      error -> error
-    end
-  end
-
-  # ============================================================================
-  # Private Functions - User Management
-  # ============================================================================
-
-  defp find_or_create_user(provider, user_info) do
-    provider_str = to_string(provider)
-    uid = user_info.uid
-
-    case Accounts.get_user_by_oauth(provider_str, uid) do
-      %User{} = user -> update_oauth_data(user, user_info)
-      nil -> find_or_create_by_email(user_info)
-    end
-  end
-
-  defp find_or_create_by_email(%{email: nil} = user_info), do: create_oauth_user(user_info)
-  defp find_or_create_by_email(%{email_verified: false} = user_info), do: create_oauth_user(user_info)
-  defp find_or_create_by_email(user_info) do
-    case Accounts.get_user_by_email(user_info.email) do
-      {:ok, user} -> link_oauth_to_user(user, user_info)
-      {:error, :not_found} -> create_oauth_user(user_info)
-    end
-  end
-
-  defp update_oauth_data(user, user_info) do
-    provider_str = to_string(user_info.provider)
-
-    oauth_data = Map.merge(user.oauth_data || %{}, %{
-      provider_str => %{
-        "uid" => user_info.uid,
-        "last_login" => DateTime.utc_now() |> DateTime.to_iso8601(),
-        "name" => user_info.name,
-        "picture" => user_info.picture
-      }
-    })
-
-    user
-    |> User.oauth_changeset(%{
-      oauth_data: oauth_data,
-      # Update avatar if not set
-      avatar_url: user.avatar_url || user_info.picture
-    })
-    |> Repo.update()
-  end
-
-  defp link_oauth_to_user(user, user_info) do
-    provider_str = to_string(user_info.provider)
-
-    oauth_data = Map.merge(user.oauth_data || %{}, %{
-      provider_str => %{
-        "uid" => user_info.uid,
-        "linked_at" => DateTime.utc_now() |> DateTime.to_iso8601(),
-        "name" => user_info.name,
-        "picture" => user_info.picture
-      }
-    })
-
-    attrs = %{
-      oauth_provider: user.oauth_provider || provider_str,
-      oauth_uid: user.oauth_uid || user_info.uid,
-      oauth_data: oauth_data
-    }
-
-    user
-    |> User.oauth_changeset(attrs)
-    |> Repo.update()
-  end
-
-  defp create_oauth_user(user_info) do
-    provider_str = to_string(user_info.provider)
-
-    # Generate a unique username from the name or provider
-    base_username = if user_info.name do
-      user_info.name
-      |> String.downcase()
-      |> String.replace(~r/[^a-z0-9]/, "")
-      |> String.slice(0, 15)
-    else
-      "#{provider_str}user"
-    end
-
-    username = generate_unique_username(base_username)
-
-    oauth_data = %{
-      provider_str => %{
-        "uid" => user_info.uid,
-        "created_at" => DateTime.utc_now() |> DateTime.to_iso8601(),
-        "name" => user_info.name,
-        "picture" => user_info.picture
-      }
-    }
-
-    attrs = %{
-      email: user_info.email,
-      username: username,
-      display_name: user_info.name,
-      avatar_url: user_info.picture,
-      auth_type: :oauth,
-      oauth_provider: provider_str,
-      oauth_uid: user_info.uid,
-      oauth_data: oauth_data,
-      email_verified_at: if(user_info.email_verified, do: DateTime.utc_now())
-    }
-
-    %User{}
-    |> User.oauth_registration_changeset(attrs)
-    |> Repo.insert()
-  end
-
-  defp generate_unique_username(base, attempt \\ 0) do
-    username = if attempt == 0 do
-      base
-    else
-      "#{base}#{:rand.uniform(9999)}"
-    end
-
-    case Accounts.get_user_by_username(username) do
-      {:error, :not_found} -> username
-      {:ok, _user} when attempt < 10 -> generate_unique_username(base, attempt + 1)
-      {:ok, _user} -> "#{base}#{System.unique_integer([:positive])}"
-    end
-  end
-
-  # ============================================================================
-  # Private Functions - HTTP & JWT Helpers
-  # ============================================================================
-
-  defp post_request(url, body) do
-    headers = [{"Content-Type", "application/x-www-form-urlencoded"}]
-    encoded_body = URI.encode_query(body)
-
-    case :httpc.request(:post, {url, headers, ~c"application/x-www-form-urlencoded", encoded_body}, [], []) do
-      {:ok, {{_, 200, _}, _, response_body}} ->
-        {:ok, Jason.decode!(to_string(response_body))}
-      {:ok, {{_, status, _}, _, response_body}} ->
-        Logger.error("OAuth token request failed", status: status, body: to_string(response_body))
-        {:error, {:http_error, status, to_string(response_body)}}
-      {:error, reason} ->
-        Logger.error("OAuth HTTP request failed", reason: inspect(reason))
-        {:error, {:request_failed, reason}}
-    end
-  end
-
-  defp get_request(url, extra_headers) do
-    headers = extra_headers |> Enum.map(fn {k, v} -> {String.to_charlist(k), String.to_charlist(v)} end)
-
-    case :httpc.request(:get, {url, headers}, [], []) do
-      {:ok, {{_, 200, _}, _, response_body}} ->
-        {:ok, Jason.decode!(to_string(response_body))}
-      {:ok, {{_, status, _}, _, response_body}} ->
-        Logger.error("OAuth user info request failed", status: status, body: to_string(response_body))
-        {:error, {:http_error, status, to_string(response_body)}}
-      {:error, reason} ->
-        Logger.error("OAuth HTTP request failed", reason: inspect(reason))
-        {:error, {:request_failed, reason}}
-    end
-  end
-
-  # Apple ID Token Verification
-  # Fetches Apple's JWKS and verifies the ID token signature
-  @apple_jwks_url "https://appleid.apple.com/auth/keys"
-  @apple_issuer "https://appleid.apple.com"
-
-  defp verify_apple_id_token(id_token, config) do
-    with {:ok, jwks} <- fetch_apple_jwks(),
-         {:ok, claims} <- verify_jwt_with_jwks(id_token, jwks),
-         :ok <- validate_apple_claims(claims, config) do
-      {:ok, claims}
-    end
-  end
-
-  defp fetch_apple_jwks do
-    cache_key = "apple_jwks"
-
-    case get_cached_jwks(cache_key) do
-      {:ok, nil} -> fetch_and_cache_jwks(cache_key)
-      {:ok, jwks} when not is_nil(jwks) -> {:ok, jwks}
-      {:error, _} -> fetch_jwks_directly()
-    end
-  end
-
-  defp get_cached_jwks(cache_key) do
-    Cachex.get(:oauth_cache, cache_key)
-  catch
-    :exit, _ -> {:ok, nil}
-  end
-
-  defp fetch_and_cache_jwks(cache_key) do
-    case fetch_jwks_from_apple() do
-      {:ok, jwks} ->
-        try do
-          Cachex.put(:oauth_cache, cache_key, jwks, ttl: :timer.hours(24))
-        catch
-          :exit, _ -> :ok
-        end
-        {:ok, jwks}
-      error -> error
-    end
-  end
-
-  defp fetch_jwks_directly do
-    fetch_jwks_from_apple()
-  end
-
-  defp fetch_jwks_from_apple do
-    case Finch.build(:get, @apple_jwks_url) |> Finch.request(CGraph.Finch, receive_timeout: 10_000) do
-      {:ok, %Finch.Response{status: 200, body: body}} ->
-        {:ok, Jason.decode!(body)}
-      {:ok, %Finch.Response{status: status}} ->
-        {:error, {:jwks_fetch_failed, status}}
-      {:error, reason} ->
-        {:error, {:jwks_fetch_failed, reason}}
-    end
-  end
-
-  defp verify_jwt_with_jwks(token, %{"keys" => keys}) do
-    # Extract the key ID from JWT header to find matching key
-    with [header_b64 | _] <- String.split(token, "."),
-         {:ok, header_json} <- Base.url_decode64(header_b64, padding: false),
-         {:ok, header} <- Jason.decode(header_json),
-         kid when is_binary(kid) <- header["kid"] do
-
-      find_and_verify_key(keys, kid, header["alg"], token)
-    else
-      _ -> {:error, :invalid_token_format}
-    end
-  end
-
-  defp find_and_verify_key(keys, kid, alg, token) do
-    case Enum.find(keys, fn key -> key["kid"] == kid end) do
-      nil ->
-        {:error, :key_not_found}
-      key ->
-        verify_token_with_key(key, alg, token)
-    end
-  end
-
-  defp verify_token_with_key(key, alg, token) do
-    jwk = JOSE.JWK.from_map(key)
-
-    case JOSE.JWT.verify_strict(jwk, [alg], token) do
-      {true, %JOSE.JWT{fields: claims}, _} -> {:ok, claims}
-      {false, _, _} -> {:error, :signature_invalid}
-    end
-  end
-
-  defp validate_apple_claims(claims, config) do
-    now = System.system_time(:second)
-    client_id = config[:client_id]
-
-    cond do
-      claims["iss"] != @apple_issuer ->
-        {:error, :invalid_issuer}
-      claims["aud"] != client_id ->
-        {:error, :invalid_audience}
-      claims["exp"] && claims["exp"] < now ->
-        {:error, :token_expired}
-      claims["iat"] && claims["iat"] > now + 300 ->
-        # Allow 5 minutes clock skew
-        {:error, :token_not_yet_valid}
-      true ->
-        :ok
-    end
-  end
-
-  defp generate_apple_client_secret(config) do
-    # Apple requires a JWT signed with your private key as the client_secret
-    # This JWT is valid for up to 6 months
-    now = System.system_time(:second)
-
-    claims = %{
-      "iss" => config[:team_id],
-      "iat" => now,
-      "exp" => now + 86_400 * 180, # 180 days
-      "aud" => "https://appleid.apple.com",
-      "sub" => config[:client_id]
-    }
-
-    # Note: This requires the private key to be in PEM format
-    case config[:private_key] do
-      key when is_binary(key) and key != "" ->
-        # Use JOSE to sign the JWT with ES256
-        signer = JOSE.JWK.from_pem(key)
-
-        header = %{
-          "alg" => "ES256",
-          "kid" => config[:key_id]
-        }
-
-        {_, jwt} = JOSE.JWT.sign(signer, header, claims) |> JOSE.JWS.compact()
-        jwt
-
-      _ ->
-        Logger.error("Apple private key not configured")
-        ""
-    end
-  end
 end

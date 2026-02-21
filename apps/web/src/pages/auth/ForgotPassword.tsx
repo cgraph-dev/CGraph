@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api, getErrorMessage } from '@/lib/api';
 import { LogoIcon } from '@/components/logo';
+import { SubmitButton } from '@/components/ui/SubmitButton';
 
 export default function ForgotPassword() {
   const { t } = useTranslation('auth');
   const [email, setEmail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,18 +21,14 @@ export default function ForgotPassword() {
     return () => clearTimeout(timer);
   }, [error]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const forgotPasswordAction = async () => {
     setError(null);
-    setIsLoading(true);
 
     try {
       await api.post('/api/v1/auth/forgot-password', { email });
       setIsSuccess(true);
     } catch (err) {
       setError(getErrorMessage(err));
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -116,7 +112,7 @@ export default function ForgotPassword() {
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form action={forgotPasswordAction} className="space-y-6">
         <div>
           <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-300">
             {t('forgot_password.email')}
@@ -133,20 +129,9 @@ export default function ForgotPassword() {
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-3 font-medium text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {isLoading ? (
-            <>
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              Sending...
-            </>
-          ) : (
-            t('forgot_password.submit')
-          )}
-        </button>
+        <SubmitButton pendingText="Sending...">
+          {t('forgot_password.submit')}
+        </SubmitButton>
       </form>
 
       {/* Back to Login */}
