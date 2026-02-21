@@ -9,7 +9,7 @@ import { springs } from '@/lib/animation-presets/presets';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import {
   createContext,
-  useContext,
+  use,
   useState,
   useCallback,
   type ReactNode,
@@ -34,7 +34,7 @@ const ProfilePhotoViewerContext =
   createContext<ProfilePhotoViewerContextValue | null>(null);
 
 export function useProfilePhotoViewer() {
-  const ctx = useContext(ProfilePhotoViewerContext);
+  const ctx = use(ProfilePhotoViewerContext);
   if (!ctx) {
     throw new Error(
       'useProfilePhotoViewer must be used within ProfilePhotoViewerProvider',

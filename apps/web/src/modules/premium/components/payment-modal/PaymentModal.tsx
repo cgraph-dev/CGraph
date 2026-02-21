@@ -13,13 +13,13 @@ import { OrderDetailsStep } from './OrderDetailsStep';
 import { PaymentStep } from './PaymentStep';
 import { ProcessingStep, SuccessStep, ErrorStep } from './ResultSteps';
 
-export const PaymentModal: React.FC<PaymentModalProps> = ({
+export function PaymentModal({
   isOpen,
   onClose,
   item,
   onSuccess,
   onError,
-}) => {
+}: PaymentModalProps): React.ReactElement {
   const {
     step,
     paymentMethod,

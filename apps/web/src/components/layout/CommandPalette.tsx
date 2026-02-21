@@ -32,11 +32,11 @@ export interface CommandPaletteProps {
   className?: string;
 }
 
-export const CommandPalette: React.FC<CommandPaletteProps> = ({
+export function CommandPalette({
   isOpen,
   onClose,
   className = '',
-}) => {
+}: CommandPaletteProps): React.ReactElement {
   const navigate = useNavigate();
   const { logout } = useAuthStore();
   const inputRef = useRef<HTMLInputElement>(null);

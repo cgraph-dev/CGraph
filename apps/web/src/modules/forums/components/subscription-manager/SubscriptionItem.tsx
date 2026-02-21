@@ -48,11 +48,11 @@ interface SubscriptionItemProps {
   onDelete: (id: string) => void;
 }
 
-export const SubscriptionItem: React.FC<SubscriptionItemProps> = ({
+export function SubscriptionItem({
   subscription,
   onUpdate,
   onDelete,
-}) => {
+}: SubscriptionItemProps): React.ReactElement {
   return (
     <div className="bg-card hover:bg-accent/50 flex items-center justify-between rounded-lg border p-3 transition-colors">
       <div className="flex min-w-0 flex-1 items-center gap-3">

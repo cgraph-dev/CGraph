@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo } from 'react';
+import { createContext, use, useMemo } from 'react';
 import type { ThemeContextValue } from './types';
 
 export const ThemeContextEnhanced = createContext<ThemeContextValue | undefined>(undefined);
@@ -8,7 +8,7 @@ export const ThemeContextEnhanced = createContext<ThemeContextValue | undefined>
  * Must be used within a ThemeProviderEnhanced.
  */
 export function useThemeEnhanced(): ThemeContextValue {
-  const context = useContext(ThemeContextEnhanced);
+  const context = use(ThemeContextEnhanced);
 
   if (context === undefined) {
     throw new Error('useThemeEnhanced must be used within a ThemeProviderEnhanced');

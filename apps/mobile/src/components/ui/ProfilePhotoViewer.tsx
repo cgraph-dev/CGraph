@@ -2,7 +2,7 @@
  * ProfilePhotoViewer - Fullscreen avatar viewer with zoom animation (Mobile)
  * Tap any avatar to expand to fullscreen with Reanimated morph + pinch-to-zoom
  */
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, use, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -48,7 +48,7 @@ interface ProfilePhotoViewerContextValue {
 const Ctx = createContext<ProfilePhotoViewerContextValue | null>(null);
 
 export function useProfilePhotoViewer() {
-  const ctx = useContext(Ctx);
+  const ctx = use(Ctx);
   if (!ctx) {
     throw new Error(
       'useProfilePhotoViewer must be used within ProfilePhotoViewerProvider',

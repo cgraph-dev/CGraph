@@ -35,6 +35,63 @@ See `docs/PrivateFolder/ENGINEERING_STANDARDS.md` Part 8-9 for implementation de
 > **Platform B** uses the same stack as CGraph (Elixir/Phoenix). Their patterns are directly
 > applicable.
 
+## Cross-Platform Mandate (MANDATORY)
+
+> **CGraph is a cross-platform application. Every feature on web MUST work on mobile and vice versa.**
+
+| Rule | Description |
+| ---- | ----------- |
+| **Feature Parity** | Any feature implemented on web MUST have a mobile equivalent. File a tracking issue if mobile implementation is deferred. |
+| **Shared Code First** | Business logic, types, API clients, and utilities MUST live in `packages/` — never duplicate between `apps/web` and `apps/mobile`. |
+| **API Contract** | Both web and mobile consume the same backend API. No platform-specific endpoints unless absolutely necessary (e.g., push token registration). |
+| **Shared Types** | All API response types live in `packages/shared-types/`. Both platforms import from there — no local type redefinitions. |
+| **Shared Hooks** | Cross-platform React hooks (data fetching, state, utilities) belong in `packages/hooks/` or `packages/utils/`. |
+| **UI Adapters** | Platform-specific UI is acceptable (React DOM vs React Native), but the underlying logic and state must be shared. |
+| **Testing Parity** | Critical flows must be tested on BOTH platforms. Shared packages must have platform-agnostic tests. |
+| **Offline Support** | Both web (IndexedDB) and mobile (WatermelonDB) must handle offline gracefully with sync-on-reconnect. |
+
+## World-Class Coding Standards (MANDATORY)
+
+> **All code — new and existing — MUST follow Google, Meta, Discord, and Signal engineering standards.**
+> This is non-negotiable. Code that doesn't meet these standards must be refactored.
+
+### Google Standards
+- **SRE**: SLO/SLI/error budgets for every service. 99.9% availability minimum.
+- **TypeScript Style Guide**: Strict naming conventions (see Code Quality Standards below).
+- **Structured Logging**: NEVER string interpolation in logs. Always structured metadata.
+- **Code Review**: Every PR reviewed. No self-merges. CI must pass before merge.
+- **Testing**: Unit + integration + E2E. Coverage gates enforced in CI.
+- **Error Handling**: Explicit error handling everywhere. No silent failures. No `catch {}`.
+
+### Meta Standards
+- **Performance Budgets**: Every component has a render budget. No unnecessary re-renders.
+- **TAO Caching**: Multi-tier cache (ETS → Cachex → Redis → DB). Cache invalidation on writes.
+- **Request Coalescing**: Batch concurrent identical requests into one.
+- **Code Splitting**: Lazy-load routes and heavy components. No monolithic bundles.
+- **Incremental Adoption**: Large refactors done incrementally with backward compatibility.
+
+### Discord Standards (Elixir/Phoenix — Same Stack)
+- **Gateway Sharding**: Design for horizontal scaling from day one.
+- **Lazy Presence**: Only track presence for visible users, not all connected.
+- **Rust NIFs**: Performance-critical code (crypto, compression) in Rust NIFs.
+- **Session Resumption**: WebSocket reconnect without message loss.
+- **Minimal Payloads**: Send IDs over WebSocket, let clients fetch full data. Never broadcast full objects.
+- **Cursor Pagination**: NEVER offset. Always cursor-based with `has_more` + `cursor`.
+
+### Signal Standards
+- **Zero-Trust Security**: Assume every input is malicious. Validate everything server-side.
+- **E2EE by Default**: All private messages encrypted end-to-end. Server never sees plaintext.
+- **Minimal Data Collection**: Don't store what you don't need. Encrypt what you must store.
+- **Type Safety**: No `any`, no `as` type assertions. Use type guards and branded types.
+- **Deterministic Builds**: Reproducible builds with locked dependencies.
+- **Security Audit Trail**: Every sensitive operation logged with actor, action, target, timestamp.
+
+### Enforcement Rules
+1. **New code**: Must pass ALL standards before merge. No exceptions.
+2. **Existing code**: Refactor to comply whenever a file is touched ("Boy Scout Rule").
+3. **CI Gates**: TypeScript strict mode, `mix compile --warnings-as-errors`, ESLint zero-warning, test coverage minimums.
+4. **Review Checklist**: Every PR checked against these standards before approval.
+
 ## Project Overview
 
 CGraph is a **proprietary** enterprise messaging platform combining real-time chat, community
@@ -82,6 +139,14 @@ karma-based forum system.
 > awareness not applied, Anthropic streaming stub, dead module refs, interval leak. Implemented 13
 > WatermelonDB sync query functions (6 Messaging, 3 Accounts, 4 Groups). Backend: 0 errors, 0
 > warnings. Honest score: 8.2 → 8.5.
+>
+> **Session 38 World-Class Compliance (Tier 1)**: Created comprehensive gap analysis
+> (`docs/WORLD_CLASS_GAP_ANALYSIS.md`) auditing all 15 mandatory rules + 106 wave tasks. Tier 1
+> implementation (commit `9d8fb58a`, 63 files): migrated 7 offset→cursor pagination queries,
+> fixed 111 Logger string interpolation→structured metadata across 49 files, removed 2 remaining
+> forwardRef calls (web HoloContainer + mobile MatrixBackground), added `permissions:` blocks to
+> 2 CI workflows (17/17 now compliant). Backend compiles cleanly with `--warnings-as-errors`.
+> Compliance score: ~58% → ~65%.
 
 | Capability             | Status          | Implementation                                                                           |
 | ---------------------- | --------------- | ---------------------------------------------------------------------------------------- |

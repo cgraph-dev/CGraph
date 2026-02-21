@@ -138,4 +138,45 @@ defmodule CGraphWeb.ControllerHelpers do
     escaped = escape_like_pattern(query)
     "%#{escaped}%"
   end
+
+  @doc """
+  Renders a standardized JSON response with `data:` envelope.
+
+  All API responses MUST use this format for consistency:
+  - Success: `%{data: payload}`
+  - Success with pagination: `%{data: payload, meta: %{cursor: ..., has_more: ...}}`
+  - Error: `%{error: message}` (use `render_error/3` instead)
+
+  ## Examples
+
+      iex> render_data(conn, %{user: user})
+      # => json(conn, %{data: %{user: user}})
+
+      iex> render_data(conn, items, %{cursor: "abc", has_more: true})
+      # => json(conn, %{data: items, meta: %{cursor: "abc", has_more: true}})
+  """
+  @spec render_data(Plug.Conn.t(), term()) :: Plug.Conn.t()
+  def render_data(conn, payload) do
+    Phoenix.Controller.json(conn, %{data: payload})
+  end
+
+  @spec render_data(Plug.Conn.t(), term(), map()) :: Plug.Conn.t()
+  def render_data(conn, payload, meta) when is_map(meta) do
+    Phoenix.Controller.json(conn, %{data: payload, meta: meta})
+  end
+
+  @doc """
+  Renders a standardized JSON error response.
+
+  ## Examples
+
+      iex> render_error(conn, 404, "not_found")
+      # => conn |> put_status(404) |> json(%{error: "not_found"})
+  """
+  @spec render_error(Plug.Conn.t(), integer(), String.t()) :: Plug.Conn.t()
+  def render_error(conn, status_code, message) do
+    conn
+    |> Plug.Conn.put_status(status_code)
+    |> Phoenix.Controller.json(%{error: message})
+  end
 end

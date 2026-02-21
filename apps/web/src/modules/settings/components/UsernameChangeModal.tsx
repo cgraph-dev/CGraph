@@ -30,14 +30,14 @@ interface UsernameChangeModalProps {
   onSuccess?: (newUsername: string) => void;
 }
 
-export const UsernameChangeModal: React.FC<UsernameChangeModalProps> = ({
+export function UsernameChangeModal({
   isOpen,
   onClose,
   currentUsername,
   lastChangeDate,
   isPremium = false,
   onSuccess,
-}) => {
+}: UsernameChangeModalProps): React.ReactElement {
   const {
     newUsername,
     setNewUsername,

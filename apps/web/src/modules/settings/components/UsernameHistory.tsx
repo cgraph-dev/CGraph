@@ -18,12 +18,12 @@ const formatDate = (date: Date) => {
   });
 };
 
-export const UsernameHistorySection: React.FC<UsernameHistoryProps> = ({
+export function UsernameHistorySection({
   showHistory,
   onToggle,
   history,
   loading,
-}) => {
+}: UsernameHistoryProps): React.ReactElement {
   return (
     <>
       <Button

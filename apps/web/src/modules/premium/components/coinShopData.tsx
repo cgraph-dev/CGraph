@@ -64,7 +64,8 @@ export const DEFAULT_PACKAGES: CoinPackage[] = [
 ];
 
 /** Reusable coin SVG icon */
-export const CoinIcon: React.FC<{ className?: string }> = ({ className }) => (
+export function CoinIcon({ className }: { className?: string }): React.ReactElement {
+  return (
   <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
     <circle cx="12" cy="12" r="10" fill="url(#coinGradient)" />
     <circle cx="12" cy="12" r="7" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
@@ -79,3 +80,4 @@ export const CoinIcon: React.FC<{ className?: string }> = ({ className }) => (
     </defs>
   </svg>
 );
+}

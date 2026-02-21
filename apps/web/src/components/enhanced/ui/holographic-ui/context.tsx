@@ -3,7 +3,7 @@
  * @module components/enhanced/ui/holographic-ui/context
  */
 
-import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
+import { createContext, use, useState, useCallback, useMemo, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { HoloTheme, HoloConfig, HoloProviderProps } from './types';
 import { HOLO_PRESETS } from './presets';
@@ -25,7 +25,7 @@ export const HoloContext = createContext<HoloContextValue | null>(null);
  * @throws Error if used outside HoloProvider
  */
 export function useHolo(): HoloContextValue {
-  const context = useContext(HoloContext);
+  const context = use(HoloContext);
   if (!context) {
     throw new Error('useHolo must be used within a HoloProvider');
   }

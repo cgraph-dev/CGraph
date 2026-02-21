@@ -4,7 +4,7 @@
  * Tabbed navigation for switching between content panels.
  */
 
-import { ReactNode, createContext, useContext, useState } from 'react';
+import { ReactNode, createContext, use, useState } from 'react';
 
 interface TabsContextValue {
   value: string;
@@ -73,7 +73,7 @@ export interface TabsTriggerProps {
 }
 
 export function TabsTrigger({ children, value, className = '', disabled = false }: TabsTriggerProps) {
-  const ctx = useContext(TabsContext);
+  const ctx = use(TabsContext);
   if (!ctx) throw new Error('TabsTrigger must be used within Tabs');
 
   const isSelected = ctx.value === value;
@@ -108,7 +108,7 @@ export interface TabsContentProps {
 }
 
 export function TabsContent({ children, value, className = '' }: TabsContentProps) {
-  const ctx = useContext(TabsContext);
+  const ctx = use(TabsContext);
   if (!ctx) throw new Error('TabsContent must be used within Tabs');
 
   if (ctx.value !== value) return null;

@@ -2,7 +2,7 @@
  * ChatEffectsProvider - Context provider for chat effects settings
  */
 
-import { memo, createContext, useContext, useMemo } from 'react';
+import { memo, createContext, use, useMemo } from 'react';
 import { useChatEffectSettings } from '@/modules/chat/store';
 import type { MessageEffect, MessageEffectConfig } from '@/modules/chat/store';
 import type { ChatEffectsProviderProps } from './types';
@@ -16,7 +16,7 @@ interface ChatEffectsContextValue {
 const ChatEffectsContext = createContext<ChatEffectsContextValue | null>(null);
 
 export const useChatEffects = () => {
-  const context = useContext(ChatEffectsContext);
+  const context = use(ChatEffectsContext);
   if (!context) {
     throw new Error('useChatEffects must be used within ChatEffectsProvider');
   }

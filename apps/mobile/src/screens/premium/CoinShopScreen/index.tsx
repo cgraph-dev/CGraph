@@ -36,7 +36,7 @@ import {
  *
  * @version 2.0.0 - Revolutionary Edition
  */
-const CoinShopScreen: React.FC = () => {
+function CoinShopScreen(): React.ReactElement {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { colors } = useTheme();
   const {

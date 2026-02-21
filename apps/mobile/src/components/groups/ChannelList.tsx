@@ -55,14 +55,14 @@ const CHANNEL_ICONS: Record<Channel['type'], keyof typeof MaterialCommunityIcons
   stage: 'access-point',
 };
 
-export const ChannelList: React.FC<ChannelListProps> = ({
+export function ChannelList({
   channels,
   categories = [],
   activeChannelId,
   showVoiceMembers = true,
   onChannelPress,
   onCategoryToggle,
-}) => {
+}: ChannelListProps): React.ReactElement | null {
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
 
   const handleCategoryToggle = useCallback((categoryId: string) => {

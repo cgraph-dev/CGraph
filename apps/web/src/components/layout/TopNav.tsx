@@ -37,7 +37,7 @@ interface BreadcrumbItem {
   path?: string;
 }
 
-export const TopNav: React.FC<TopNavProps> = ({
+export function TopNav({
   variant = 'default',
   showSearch = true,
   showBreadcrumbs = true,
@@ -46,7 +46,7 @@ export const TopNav: React.FC<TopNavProps> = ({
   onMenuToggle,
   isMobileMenuOpen = false,
   className = '',
-}) => {
+}: TopNavProps): React.ReactElement {
   const navigate = useNavigate();
   const location = useLocation();
   const isDarkMode = true;

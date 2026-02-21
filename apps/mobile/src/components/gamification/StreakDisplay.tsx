@@ -39,7 +39,7 @@ const MILESTONE_REWARDS = [
   { days: 365, label: '1 Year', coins: 10000 },
 ];
 
-export const StreakDisplay: React.FC<StreakDisplayProps> = ({
+export function StreakDisplay({
   currentStreak,
   longestStreak,
   todayCompleted,
@@ -47,7 +47,7 @@ export const StreakDisplay: React.FC<StreakDisplayProps> = ({
   nextMilestone,
   variant = 'default',
   onClaim,
-}) => {
+}: StreakDisplayProps): React.ReactElement {
   const fireAnim = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
 

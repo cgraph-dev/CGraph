@@ -19,7 +19,7 @@ type FloatingBannerProps = Pick<
   | 'onDismiss'
 >;
 
-export const FloatingBanner: React.FC<FloatingBannerProps> = ({
+export function FloatingBanner({
   title,
   dismissible,
   showPrice,
@@ -28,7 +28,8 @@ export const FloatingBanner: React.FC<FloatingBannerProps> = ({
   activeFeatureIndex,
   onUpgrade,
   onDismiss,
-}) => (
+}: FloatingBannerProps): React.ReactElement {
+  return (
   <AnimatePresence>
     <motion.div
       initial={{ opacity: 0, y: 50, scale: 0.9 }}
@@ -86,3 +87,4 @@ export const FloatingBanner: React.FC<FloatingBannerProps> = ({
     </motion.div>
   </AnimatePresence>
 );
+}

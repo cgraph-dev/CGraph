@@ -264,11 +264,13 @@ export function withErrorBoundary<P extends object>(
   const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
   const name = boundaryName || displayName;
 
-  const WithErrorBoundary: React.FC<P> = (props) => (
+  function WithErrorBoundary(props: P): React.ReactElement {
+    return (
     <ErrorBoundary name={name}>
       <WrappedComponent {...props} />
     </ErrorBoundary>
   );
+  }
 
   WithErrorBoundary.displayName = `withErrorBoundary(${displayName})`;
   return WithErrorBoundary;

@@ -21,7 +21,7 @@ export interface CoinPackageCardProps {
   onPurchase: (pkg: CoinPackage) => void;
 }
 
-export const CoinPackageCard: React.FC<CoinPackageCardProps> = ({
+export function CoinPackageCard({
   pkg,
   index,
   isSelected,
@@ -30,7 +30,8 @@ export const CoinPackageCard: React.FC<CoinPackageCardProps> = ({
   coinValue,
   onSelect,
   onPurchase,
-}) => (
+}: CoinPackageCardProps): React.ReactElement {
+  return (
   <motion.div
     key={pkg.id}
     initial={{ opacity: 0, y: 20 }}
@@ -115,3 +116,4 @@ export const CoinPackageCard: React.FC<CoinPackageCardProps> = ({
     </motion.div>
   </motion.div>
 );
+}

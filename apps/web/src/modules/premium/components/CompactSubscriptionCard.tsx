@@ -15,12 +15,10 @@ import {
 } from '@/modules/premium/components/subscriptionCard.constants';
 import type { SubscriptionCardProps } from '@/modules/premium/components/SubscriptionCard';
 
-export const CompactSubscriptionCard: React.FC<
-  Pick<
-    SubscriptionCardProps,
-    'plan' | 'isCurrentPlan' | 'billingInterval' | 'onSelect' | 'className'
-  >
-> = ({ plan, isCurrentPlan = false, billingInterval = 'monthly', onSelect, className = '' }) => {
+export function CompactSubscriptionCard({ plan, isCurrentPlan = false, billingInterval = 'monthly', onSelect, className = '' }: Pick<
+  SubscriptionCardProps,
+  'plan' | 'isCurrentPlan' | 'billingInterval' | 'onSelect' | 'className'
+>): React.ReactElement {
   const tierGradient = TIER_GRADIENTS[plan.tier];
 
   const price =
@@ -67,6 +65,6 @@ export const CompactSubscriptionCard: React.FC<
       </GlassCard>
     </motion.div>
   );
-};
+}
 
 export default CompactSubscriptionCard;

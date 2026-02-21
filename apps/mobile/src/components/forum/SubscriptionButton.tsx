@@ -21,13 +21,13 @@ interface SubscriptionButtonProps {
   showLabel?: boolean;
 }
 
-export const SubscriptionButton: React.FC<SubscriptionButtonProps> = ({
+export function SubscriptionButton({
   type,
   isSubscribed,
   onToggle,
   compact = false,
   showLabel = true,
-}) => {
+}: SubscriptionButtonProps): React.ReactElement | null {
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = React.useState(false);
 

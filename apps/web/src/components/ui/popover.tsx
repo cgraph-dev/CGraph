@@ -4,7 +4,7 @@
  * Floating panel for contextual content.
  */
 
-import React, { ReactNode, createContext, useContext, useState } from 'react';
+import React, { ReactNode, createContext, use, useState } from 'react';
 
 interface PopoverContextValue {
   isOpen: boolean;
@@ -41,7 +41,7 @@ export interface PopoverTriggerProps {
 }
 
 export function PopoverTrigger({ children, asChild }: PopoverTriggerProps) {
-  const ctx = useContext(PopoverContext);
+  const ctx = use(PopoverContext);
   
   const handleClick = () => {
     ctx?.setIsOpen(!ctx.isOpen);
@@ -70,7 +70,7 @@ export function PopoverContent({
   align = 'center',
   sideOffset = 4 
 }: PopoverContentProps) {
-  const ctx = useContext(PopoverContext);
+  const ctx = use(PopoverContext);
   
   if (!ctx?.isOpen) return null;
   

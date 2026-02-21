@@ -16,7 +16,8 @@ const LOGO_TEXT_SIZES: Record<LogoSize, string> = {
   lg: 'text-3xl',
 };
 
-export const AuthLogo: React.FC<{ size: LogoSize }> = ({ size }) => (
+export function AuthLogo({ size }: { size: LogoSize }): React.ReactElement {
+  return (
   <a href="https://www.cgraph.org" className="group inline-flex items-center gap-3">
     <motion.div whileHover={{ scale: 1.1, rotate: 5 }}>
       <LogoIcon size={LOGO_SIZES[size]} color="gradient" showGlow animated={false} />
@@ -24,3 +25,4 @@ export const AuthLogo: React.FC<{ size: LogoSize }> = ({ size }) => (
     <span className={`font-bold text-white ${LOGO_TEXT_SIZES[size]}`}>CGraph</span>
   </a>
 );
+}

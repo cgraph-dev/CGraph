@@ -45,11 +45,11 @@ interface NavItem {
   badge?: number;
 }
 
-export const MobileNav: React.FC<MobileNavProps> = ({
+export function MobileNav({
   variant = 'default',
   showLabels = true,
   className = '',
-}) => {
+}: MobileNavProps): React.ReactElement {
   const location = useLocation();
   const { unreadCount } = useNotificationStore();
   const { conversations } = useChatStore();

@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export const GridBackground: React.FC = () => (
+export function GridBackground(): React.ReactElement | null {
+  return (
   <div className="pointer-events-none absolute inset-0 overflow-hidden">
     <div
       className="absolute inset-0 opacity-5"
@@ -15,8 +16,10 @@ export const GridBackground: React.FC = () => (
     />
   </div>
 );
+}
 
-export const GradientBackground: React.FC = () => (
+export function GradientBackground(): React.ReactElement | null {
+  return (
   <div className="pointer-events-none absolute inset-0 overflow-hidden">
     <motion.div
       animate={{
@@ -31,8 +34,10 @@ export const GradientBackground: React.FC = () => (
     />
   </div>
 );
+}
 
-export const ParticlesBackground: React.FC = () => (
+export function ParticlesBackground(): React.ReactElement | null {
+  return (
   <div className="pointer-events-none absolute inset-0 overflow-hidden">
     {[...Array(20)].map((_, i) => (
       <motion.div
@@ -57,10 +62,11 @@ export const ParticlesBackground: React.FC = () => (
     ))}
   </div>
 );
+}
 
 export type BackgroundEffect = 'gradient' | 'particles' | 'grid' | 'none';
 
-export const AuthBackground: React.FC<{ effect: BackgroundEffect }> = ({ effect }) => {
+export function AuthBackground({ effect }: { effect: BackgroundEffect }): React.ReactElement | null {
   switch (effect) {
     case 'gradient':
       return <GradientBackground />;

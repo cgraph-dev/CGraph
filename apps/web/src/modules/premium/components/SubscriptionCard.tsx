@@ -33,7 +33,7 @@ export interface SubscriptionCardProps {
   className?: string;
 }
 
-export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
+export function SubscriptionCard({
   plan,
   isCurrentPlan = false,
   variant = 'default',
@@ -43,7 +43,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   showFeatures = true,
   maxFeatures = 8,
   className = '',
-}) => {
+}: SubscriptionCardProps): React.ReactElement {
   const [isHovered, setIsHovered] = useState(false);
 
   const price =

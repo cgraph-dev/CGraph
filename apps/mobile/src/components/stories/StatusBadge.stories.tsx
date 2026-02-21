@@ -13,9 +13,11 @@ import StatusBadge from '../StatusBadge';
 /**
  * Wrapper providing layout for stories
  */
-const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+function ThemeWrapper({ children }: { children: React.ReactNode }): React.ReactElement {
+  return (
   <View style={{ flexDirection: 'row', gap: 12, flexWrap: 'wrap' }}>{children}</View>
 );
+}
 
 const meta: Meta<typeof StatusBadge> = {
   title: 'Components/StatusBadge',

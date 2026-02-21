@@ -36,7 +36,7 @@ export interface QuickAction {
   badge?: number;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({
+export function Sidebar({
   variant = 'default',
   defaultCollapsed = false,
   showGroups = true,
@@ -44,7 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   showUserStatus = true,
   onGroupSelect,
   className = '',
-}) => {
+}: SidebarProps): React.ReactElement {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { groups } = useGroupStore();

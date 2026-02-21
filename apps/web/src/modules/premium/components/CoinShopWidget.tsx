@@ -19,14 +19,14 @@ export interface CoinShopWidgetProps {
   className?: string;
 }
 
-export const CoinShopWidget: React.FC<CoinShopWidgetProps> = ({
+export function CoinShopWidget({
   variant = 'default',
   packages = DEFAULT_PACKAGES,
   onPurchase,
   showBalance = true,
   maxPackages,
   className = '',
-}) => {
+}: CoinShopWidgetProps): React.ReactElement {
   const {
     coinBalance,
     selectedPackage,

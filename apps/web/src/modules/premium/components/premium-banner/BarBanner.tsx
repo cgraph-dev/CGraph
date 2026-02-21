@@ -18,7 +18,7 @@ type BarBannerProps = Pick<
   | 'onDismiss'
 >;
 
-export const BarBanner: React.FC<BarBannerProps> = ({
+export function BarBanner({
   title,
   description,
   ctaText,
@@ -29,7 +29,8 @@ export const BarBanner: React.FC<BarBannerProps> = ({
   className,
   onUpgrade,
   onDismiss,
-}) => (
+}: BarBannerProps): React.ReactElement {
+  return (
   <motion.div
     initial={{ y: -100, opacity: 0 }}
     animate={{ y: 0, opacity: 1 }}
@@ -70,3 +71,4 @@ export const BarBanner: React.FC<BarBannerProps> = ({
     </div>
   </motion.div>
 );
+}

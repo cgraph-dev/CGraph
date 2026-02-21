@@ -13,9 +13,11 @@ import LoadingSpinner from '../LoadingSpinner';
 /**
  * Wrapper providing layout for stories
  */
-const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+function ThemeWrapper({ children }: { children: React.ReactNode }): React.ReactElement {
+  return (
   <View style={{ alignItems: 'center', justifyContent: 'center', minHeight: 100 }}>{children}</View>
 );
+}
 
 const meta: Meta<typeof LoadingSpinner> = {
   title: 'Components/LoadingSpinner',

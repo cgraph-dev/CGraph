@@ -39,7 +39,7 @@ export interface FeatureComparisonProps {
   className?: string;
 }
 
-export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
+export function FeatureComparison({
   plans,
   categories = DEFAULT_CATEGORIES,
   currentTier,
@@ -48,7 +48,7 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
   showPricing = true,
   billingInterval = 'monthly',
   className = '',
-}) => {
+}: FeatureComparisonProps): React.ReactElement {
   const [hoveredTier, setHoveredTier] = useState<SubscriptionTier | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [tooltipFeature, setTooltipFeature] = useState<string | null>(null);

@@ -13,9 +13,11 @@ import Card from '../Card';
 /**
  * Wrapper providing layout for stories
  */
-const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+function ThemeWrapper({ children }: { children: React.ReactNode }): React.ReactElement {
+  return (
   <View style={{ gap: 16 }}>{children}</View>
 );
+}
 
 const meta: Meta<typeof Card> = {
   title: 'Components/Card',

@@ -5,7 +5,8 @@ import type { BannerVariantProps } from './types';
 
 type MinimalBannerProps = Pick<BannerVariantProps, 'className' | 'onUpgrade'>;
 
-export const MinimalBanner: React.FC<MinimalBannerProps> = ({ className, onUpgrade }) => (
+export function MinimalBanner({ className, onUpgrade }: MinimalBannerProps): React.ReactElement {
+  return (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
@@ -23,3 +24,4 @@ export const MinimalBanner: React.FC<MinimalBannerProps> = ({ className, onUpgra
     </button>
   </motion.div>
 );
+}

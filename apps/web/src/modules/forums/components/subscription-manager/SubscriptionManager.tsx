@@ -21,7 +21,7 @@ import { useSubscriptions } from './useSubscriptions';
 import { SubscriptionItem } from './SubscriptionItem';
 import type { SubscriptionType, NotificationMode, SubscriptionManagerProps } from './types';
 
-export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ className }) => {
+export function SubscriptionManager({ className }: SubscriptionManagerProps): React.ReactElement {
   const {
     subscriptions,
     isLoading,

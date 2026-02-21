@@ -30,10 +30,11 @@ export interface AuthCardProps {
   className?: string;
 }
 
-const AnimatedFooter: React.FC<{ children: React.ReactNode; className?: string }> = ({
+function AnimatedFooter({
   children,
   className = 'mt-8',
-}) => (
+}: { children: React.ReactNode; className?: string }): React.ReactElement {
+  return (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
@@ -43,22 +44,11 @@ const AnimatedFooter: React.FC<{ children: React.ReactNode; className?: string }
     {children}
   </motion.div>
 );
+}
 
 /* ── Split variant ────────────────────────────────────────────── */
 
-const SplitVariant: React.FC<
-  Pick<
-    AuthCardProps,
-    | 'children'
-    | 'showLogo'
-    | 'logoSize'
-    | 'title'
-    | 'subtitle'
-    | 'footer'
-    | 'backgroundEffect'
-    | 'className'
-  >
-> = ({
+function SplitVariant({
   children,
   showLogo,
   logoSize = 'md',
@@ -67,7 +57,18 @@ const SplitVariant: React.FC<
   footer,
   backgroundEffect = 'gradient',
   className = '',
-}) => (
+}: Pick<
+  AuthCardProps,
+  | 'children'
+  | 'showLogo'
+  | 'logoSize'
+  | 'title'
+  | 'subtitle'
+  | 'footer'
+  | 'backgroundEffect'
+  | 'className'
+>): React.ReactElement {
+  return (
   <div className={`flex min-h-screen ${className}`}>
     {/* Left side – branding */}
     <motion.div
@@ -118,16 +119,12 @@ const SplitVariant: React.FC<
       </div>
     </motion.div>
   </div>
-);
+  );
+}
 
 /* ── Compact variant ──────────────────────────────────────────── */
 
-const CompactVariant: React.FC<
-  Pick<
-    AuthCardProps,
-    'children' | 'showLogo' | 'title' | 'subtitle' | 'footer' | 'backgroundEffect' | 'className'
-  >
-> = ({
+function CompactVariant({
   children,
   showLogo,
   title,
@@ -135,7 +132,11 @@ const CompactVariant: React.FC<
   footer,
   backgroundEffect = 'gradient',
   className = '',
-}) => (
+}: Pick<
+  AuthCardProps,
+  'children' | 'showLogo' | 'title' | 'subtitle' | 'footer' | 'backgroundEffect' | 'className'
+>): React.ReactElement {
+  return (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -160,23 +161,12 @@ const CompactVariant: React.FC<
       </div>
     </GlassCard>
   </motion.div>
-);
+  );
+}
 
 /* ── Default variant ──────────────────────────────────────────── */
 
-const DefaultVariant: React.FC<
-  Pick<
-    AuthCardProps,
-    | 'children'
-    | 'showLogo'
-    | 'logoSize'
-    | 'title'
-    | 'subtitle'
-    | 'footer'
-    | 'backgroundEffect'
-    | 'className'
-  >
-> = ({
+function DefaultVariant({
   children,
   showLogo,
   logoSize = 'md',
@@ -185,7 +175,18 @@ const DefaultVariant: React.FC<
   footer,
   backgroundEffect = 'gradient',
   className = '',
-}) => (
+}: Pick<
+  AuthCardProps,
+  | 'children'
+  | 'showLogo'
+  | 'logoSize'
+  | 'title'
+  | 'subtitle'
+  | 'footer'
+  | 'backgroundEffect'
+  | 'className'
+>): React.ReactElement {
+  return (
   <motion.div
     initial={{ opacity: 0, y: 20, scale: 0.95 }}
     animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -221,11 +222,12 @@ const DefaultVariant: React.FC<
       </div>
     </GlassCard>
   </motion.div>
-);
+  );
+}
 
 /* ── Main component ───────────────────────────────────────────── */
 
-export const AuthCard: React.FC<AuthCardProps> = (props) => {
+export function AuthCard(props: AuthCardProps): React.ReactElement {
   const { variant = 'default' } = props;
 
   if (variant === 'split') return <SplitVariant {...props} />;

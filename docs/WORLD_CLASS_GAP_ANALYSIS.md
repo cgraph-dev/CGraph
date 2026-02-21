@@ -10,8 +10,8 @@
 
 | Category             | Current | Target | Gap                                  |
 | -------------------- | ------- | ------ | ------------------------------------ |
-| Rule Compliance      | ~50%    | 100%   | 50% — 11 of 15 rules have violations |
-| Wave Task Completion | ~8%     | 100%   | 92% — ~8 of 106 tasks done           |
+| Rule Compliance      | ~60%    | 100%   | 40% — 9 of 15 rules have violations  |
+| Wave Task Completion | ~12%    | 100%   | 88% — ~13 of 106 tasks done          |
 | Composite Score      | 8.7/10  | 9.5/10 | 0.8 pts                              |
 
 ### Critical Gaps (Blocks World-Class)
@@ -20,9 +20,9 @@
 2. **73 React.FC usages** (Rule 2 requires function declarations)
 3. **949 type assertions** (`as X`) (Rule 11 requires type guards)
 4. **1,115 useMemo/useCallback** occurrences (Rule 12 — React 19 Compiler handles this)
-5. **7 remaining offset pagination** queries (Rule 10 — NEVER offset)
+5. ~~7 remaining offset pagination~~ **FIXED** (Tier 1 — all migrated to cursor)
 6. **6 missing shared packages** (Rule 5 — state, hooks, ui, config, core, test-utils)
-7. **~98 undone wave tasks** out of 106 total
+7. **~93 undone wave tasks** out of 106 total
 
 ---
 
@@ -54,9 +54,9 @@ blast radius, do in a dedicated PR with comprehensive import updates
 
 | Metric                                 | Count   | Status                                     |
 | -------------------------------------- | ------- | ------------------------------------------ |
-| `React.FC` / `React.FunctionComponent` | 73      | FAIL — should use function declarations    |
-| `forwardRef` usage                     | 2       | FAIL — should use `ref` as prop (React 19) |
-| Helpers inside components              | Unknown | Needs manual audit                         |
+| `React.FC` / `React.FunctionComponent` | 73      | FAIL — should use function declarations        |
+| `forwardRef` usage                     | **0**   | **PASS** — fixed in Tier 1 (commit `9d8fb58a`) |
+| Helpers inside components              | Unknown | Needs manual audit                             |
 
 **Files with React.FC** (sample — 30+):
 
@@ -72,7 +72,7 @@ blast radius, do in a dedicated PR with comprehensive import updates
 - [ ] **2.1** Create codemod: `React.FC<Props>` →
       `function Component(props: Props): React.ReactElement`
 - [ ] **2.2** Run codemod on all 73 occurrences
-- [ ] **2.3** Replace 2 `forwardRef` calls with `ref` prop pattern
+- [x] **2.3** ~~Replace 2 `forwardRef` calls with `ref` prop pattern~~ **DONE** (Tier 1)
 - [ ] **2.4** Add ESLint rule to ban `React.FC` (`@typescript-eslint/ban-types` or custom)
 - [ ] **2.5** Audit for helper functions inside components (move to module level)
 
@@ -178,14 +178,14 @@ blast radius, do in a dedicated PR with comprehensive import updates
 | ---------------------------- | ----- | ------------------------------------ |
 | Public functions             | 2,738 | —                                    |
 | Functions with `@spec`       | 674   | **24.6%** — FAIL (target: 100%)      |
-| Logger string interpolation  | 111   | FAIL — should be structured metadata |
+| Logger string interpolation  | **0** | **PASS** — fixed in Tier 1 (commit `9d8fb58a`) |
 | Modules missing `@moduledoc` | 2     | NEAR PASS                            |
 
 **Action Items**:
 
 - [ ] **7.1** Add `@spec` to remaining ~2,064 public functions (prioritize controllers + contexts)
-- [ ] **7.2** Fix 111 Logger string interpolation → structured metadata
-  - `Logger.info("User #{id} action")` → `Logger.info("user_action", user_id: id)`
+- [x] **7.2** ~~Fix 111 Logger string interpolation → structured metadata~~ **DONE** (Tier 1)
+  - All 111 violations converted to structured metadata format
 - [ ] **7.3** Add `@moduledoc` to 2 remaining modules
 - [ ] **7.4** Enable `mix credo --strict` rule for missing `@spec` annotations
 - [ ] **7.5** Enable `mix credo --strict` rule for Logger interpolation
@@ -278,7 +278,7 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 | Metric                         | Status | Details                                                                                                                   |
 | ------------------------------ | ------ | ------------------------------------------------------------------------------------------------------------------------- |
-| Offset pagination              | FAIL   | **7 remaining** in `calendar.ex`, `messages.ex`, `conversations.ex`, `search.ex` (×2), `member_directory.ex`, `forums.ex` |
+| Offset pagination              | **PASS** | **0 remaining** — all 7 migrated to cursor in Tier 1 (commit `9d8fb58a`) |
 | N+1 query patterns             | FAIL   | 10+ `Repo.all`/`Repo.get` without preloads in forums modules                                                              |
 | Redis KEYS command             | PASS   | 0 violations                                                                                                              |
 | Virtualized lists (web)        | PASS   | `@tanstack/react-virtual` in ConversationMessages                                                                         |
@@ -288,14 +288,8 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 **Action Items**:
 
-- [ ] **10.1** Migrate 7 remaining offset queries to `CGraph.Pagination.paginate/2`:
-  - `calendar.ex:83` — `offset(^offset)`
-  - `messages.ex:42` — `offset(^((page - 1) * per_page))`
-  - `conversations.ex:42` — `offset(^((page - 1) * per_page))`
-  - `search.ex:62` — `offset(^((page - 1) * per_page))`
-  - `search.ex:99` — `offset(^((page - 1) * per_page))`
-  - `member_directory.ex:42` — `offset(^offset)`
-  - `forums.ex:142` — `offset(^((page - 1) * per_page))`
+- [x] **10.1** ~~Migrate 7 remaining offset queries to `CGraph.Pagination.paginate/2`~~ **DONE** (Tier 1)
+  - All 7 queries converted: calendar.ex, messages.ex, conversations.ex, search.ex (×2), member_directory.ex, forums.ex
 - [ ] **10.2** Add `preload()` to 10+ N+1 query patterns in forums modules
 - [ ] **10.3** Replace 3 mobile ScrollView with FlatList where lists can grow
 - [ ] **10.4** Run `EXPLAIN ANALYZE` on top 20 queries, add missing indexes
@@ -337,7 +331,7 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 | `useActionState()` adoption | 0                  | FAIL — not used anywhere              |
 | `useMemo`/`useCallback`     | 1,115 in 270 files | FAIL — React 19 Compiler handles this |
 | `React.FC`                  | 73                 | FAIL — already counted in Rule 2      |
-| `forwardRef`                | 4                  | FAIL — already counted in Rule 2      |
+| `forwardRef`                | **0**              | **PASS** — fixed in Tier 1            |
 
 **Action Items**:
 
@@ -362,7 +356,7 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 | Metric               | Status | Notes                                                |
 | -------------------- | ------ | ---------------------------------------------------- |
 | GitHub workflows     | 17     | PASS                                                 |
-| Permissions blocks   | 15/17  | FAIL — `backup.yml` and `deploy-backend.yml` missing |
+| Permissions blocks   | **17/17** | **PASS** — fixed in Tier 1 (commit `9d8fb58a`) |
 | Coverage enforcement | EXISTS | PASS — CI gates at 60% web / 75% backend             |
 | Bundle size check    | EXISTS | PASS — performance.yml, 2MB limit                    |
 | Canary deploys       | EXISTS | PASS — Fly.io canary strategy                        |
@@ -371,8 +365,8 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 **Action Items**:
 
-- [ ] **13.1** Add `permissions:` block to `backup.yml`
-- [ ] **13.2** Add `permissions:` block to `deploy-backend.yml`
+- [x] **13.1** ~~Add `permissions:` block to `backup.yml`~~ **DONE** (Tier 1)
+- [x] **13.2** ~~Add `permissions:` block to `deploy-backend.yml`~~ **DONE** (Tier 1)
 - [ ] **13.3** Raise web coverage gate from 60% → 70% (incremental ratchet)
 - [ ] **13.4** Add ESLint rules for: no React.FC, no forwardRef, no useContext, kebab-case files
 
@@ -383,7 +377,7 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 | Metric             | Status  | Notes                                     |
 | ------------------ | ------- | ----------------------------------------- |
 | Telemetry events   | 89      | PASS                                      |
-| Structured logging | PARTIAL | 111 interpolation violations (see Rule 7) |
+| Structured logging | **PASS** | 0 interpolation violations — fixed in Tier 1 |
 | Sentry (backend)   | EXISTS  | PASS                                      |
 | OpenTelemetry      | EXISTS  | PASS — 5 OTel packages in mix.exs         |
 | Grafana dashboards | EXISTS  | PASS                                      |
@@ -391,7 +385,7 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 **Action Items**:
 
-- [ ] **14.1** Fix 111 Logger interpolation violations (same as Rule 7.2)
+- [x] **14.1** ~~Fix 111 Logger interpolation violations (same as Rule 7.2)~~ **DONE** (Tier 1)
 - [ ] **14.2** Add telemetry events to any new endpoints
 - [ ] **14.3** Ensure all controllers emit latency metrics
 
@@ -403,7 +397,7 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 | ------------------------------- | ------ | ----------------------------------------------------- |
 | Consistent JSON response shapes | FAIL   | ~67 `json(conn, ...)` calls NOT using `data:` wrapper |
 | Rate limit headers              | PASS   | `rate_limiter_v2.ex` adds headers                     |
-| Cursor-based pagination         | FAIL   | 7 remaining offset queries                            |
+| Cursor-based pagination         | **PASS** | 0 remaining — all migrated in Tier 1 |
 | API versioning                  | PASS   | `/api/v1/` namespace                                  |
 
 **Action Items**:
@@ -429,7 +423,7 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 | 0.4  | Create Shared API Client Layer         | PARTIAL     | `packages/api-client/` exists but web still uses raw fetch   |
 | 0.5  | Establish Shared Animation Constants   | PARTIAL     | `packages/animation-constants/` exists but not fully adopted |
 | 0.6  | Create Shared Test Utilities Package   | NOT DONE    | `packages/test-utils/` doesn't exist                         |
-| 0.7  | Harden CI/CD Pipeline                  | MOSTLY DONE | 17 workflows, coverage gates, but 2 missing permissions      |
+| 0.7  | Harden CI/CD Pipeline                  | **DONE**    | 17 workflows, coverage gates, all permissions present        |
 
 ### Wave 1: Fix Broken Customizations (10 tasks — UNKNOWN)
 
@@ -469,7 +463,7 @@ loading skeletons, sidebar physics, search animations, presence animations, sett
 | 4.3  | Redis Sorted Sets for Leaderboards | **DONE** (Session 37)         |
 | 4.4  | Activate Meilisearch               | NOT DONE                      |
 | 4.5  | Message Archival Strategy          | NOT DONE                      |
-| 4.6  | Migrate ALL Offset Pagination      | PARTIAL (3 done, 7 remaining) |
+| 4.6  | Migrate ALL Offset Pagination      | **DONE** (Tier 1 — all 10 migrated) |
 | 4.7  | Frontend Scaling Optimizations     | PARTIAL                       |
 
 ### Wave 5: Code Quality (5 tasks — 0 DONE)
@@ -605,20 +599,20 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | Dimension                   | Current               | After Tier 1-2 | World-Class Target  |
 | --------------------------- | --------------------- | -------------- | ------------------- |
 | File Naming (Rule 1)        | 0% (1,230 violations) | 0%             | 100% (0 violations) |
-| Component Patterns (Rule 2) | 90% (73 React.FC)     | 100%           | 100%                |
-| State Management (Rule 3)   | 95%                   | 100%           | 100%                |
-| Cross-Platform (Rule 5)     | 55% (6/12 packages)   | 55%            | 100% (12/12)        |
-| Documentation (Rule 6)      | 75%                   | 80%            | 100%                |
-| Backend Standards (Rule 7)  | 25% (@spec)           | 35%            | 100%                |
-| File Size (Rule 8)          | 65% (35 violations)   | 80%            | 100%                |
-| Testing (Rule 9)            | 18% ratio             | 25%            | 100%                |
-| Performance (Rule 10)       | 85% (7 offsets)       | 100%           | 100%                |
-| Security (Rule 11)          | 50% (949 assertions)  | 60%            | 100%                |
-| React 19 (Rule 12)          | 30%                   | 70%            | 100%                |
-| CI/CD (Rule 13)             | 90%                   | 100%           | 100%                |
-| Observability (Rule 14)     | 85%                   | 100%           | 100%                |
-| API Contract (Rule 15)      | 60%                   | 80%            | 100%                |
-| **Overall**                 | **~58%**              | **~72%**       | **100%**            |
+| Component Patterns (Rule 2) | 93% (73 React.FC, 0 fwdRef) | 100%           | 100%                |
+| State Management (Rule 3)   | 95%                        | 100%           | 100%                |
+| Cross-Platform (Rule 5)     | 55% (6/12 packages)        | 55%            | 100% (12/12)        |
+| Documentation (Rule 6)      | 75%                        | 80%            | 100%                |
+| Backend Standards (Rule 7)  | 35% (Logger fixed)         | 45%            | 100%                |
+| File Size (Rule 8)          | 65% (35 violations)        | 80%            | 100%                |
+| Testing (Rule 9)            | 18% ratio                  | 25%            | 100%                |
+| Performance (Rule 10)       | **100%** (0 offsets)       | 100%           | 100%                |
+| Security (Rule 11)          | 50% (949 assertions)       | 60%            | 100%                |
+| React 19 (Rule 12)          | 35%                        | 70%            | 100%                |
+| CI/CD (Rule 13)             | **100%** (17/17)           | 100%           | 100%                |
+| Observability (Rule 14)     | **100%** (0 violations)    | 100%           | 100%                |
+| API Contract (Rule 15)      | 70% (offset fixed)         | 85%            | 100%                |
+| **Overall**                 | **~65%**                   | **~75%**       | **100%**            |
 
 ---
 
@@ -634,7 +628,4 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | Tier 6: Wave Tasks          | 400h+     | 10+ weeks     | P3       |
 | **Total**                   | **~980h** | **~25 weeks** |          |
 
-> **Bottom Line**: The codebase has strong infrastructure (CI, observability, security, E2EE) but
-> significant gaps in code standards enforcement (naming, types, tests, React 19 patterns). Tier 1-2
-> fixes (~84 hours) will jump compliance from ~55% to ~70%. Full world-class requires sustained
-> investment in type safety, testing, and documentation over ~25 developer-weeks.
+> **Tier 1 COMPLETED** (commit `9d8fb58a`, 63 files): 7 offset→cursor, 111 Logger fixes, 2 forwardRef removals, 2 CI permissions. Compliance jumped from ~58% to ~65%. Tier 2 targets: 73 React.FC, 14 useContext→use(), file splits, JSON standardization. Full world-class requires sustained investment in type safety, testing, and documentation over ~25 developer-weeks.

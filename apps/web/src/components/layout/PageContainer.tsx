@@ -25,7 +25,7 @@ export interface PageContainerProps {
   className?: string;
 }
 
-export const PageContainer: React.FC<PageContainerProps> = ({
+export function PageContainer({
   children,
   title,
   subtitle,
@@ -36,7 +36,7 @@ export const PageContainer: React.FC<PageContainerProps> = ({
   padding = 'md',
   animate = true,
   className = '',
-}) => {
+}: PageContainerProps): React.ReactElement {
   const maxWidthClasses = {
     sm: 'max-w-sm',
     md: 'max-w-md',

@@ -115,7 +115,7 @@ export function ProfilerWrapper({
   onRender,
   enabled = process.env.NODE_ENV === 'development',
   maxMetrics = 100,
-}: ProfilerWrapperProps): React.ReactElement {
+}: ProfilerWrapperProps): React.ReactElement | null {
   const metricsRef = useRef<RenderMetric[]>([]);
 
   const handleRender: ProfilerOnRenderCallback = useCallback(
@@ -194,11 +194,13 @@ export function withProfiler<P extends object>(
 ): React.FC<P> {
   const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
 
-  const WithProfiler: React.FC<P> = (props) => (
+  function WithProfiler(props: P): React.ReactElement | null {
+    return (
     <ProfilerWrapper id={id} {...options}>
       <WrappedComponent {...props} />
     </ProfilerWrapper>
   );
+  }
 
   WithProfiler.displayName = `withProfiler(${displayName})`;
 

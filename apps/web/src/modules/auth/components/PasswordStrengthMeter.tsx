@@ -42,13 +42,13 @@ const STRENGTH_LEVELS = [
   { label: 'Very Strong', color: 'bg-emerald-500', textColor: 'text-emerald-400', min: 5 },
 ];
 
-export const PasswordStrengthMeter: React.FC<PasswordStrengthMeterProps> = ({
+export function PasswordStrengthMeter({
   password,
   variant = 'detailed',
   showRequirements = true,
   minLength = 8,
   className = '',
-}) => {
+}: PasswordStrengthMeterProps): React.ReactElement | null {
   const requirements = useMemo(() => {
     return DEFAULT_REQUIREMENTS.map((r) =>
       r.label === 'At least 8 characters'

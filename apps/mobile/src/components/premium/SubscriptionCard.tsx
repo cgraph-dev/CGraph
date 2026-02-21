@@ -36,13 +36,13 @@ export interface SubscriptionCardProps {
   onSubscribe?: (tierId: string) => void;
 }
 
-export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
+export function SubscriptionCard({
   tier,
   currentTier,
   yearly = false,
   variant = 'default',
   onSubscribe,
-}) => {
+}: SubscriptionCardProps): React.ReactElement {
   const isCurrentPlan = currentTier === tier.id;
   const displayPrice = yearly && tier.yearlyPrice ? tier.yearlyPrice / 12 : tier.price;
   const savings =

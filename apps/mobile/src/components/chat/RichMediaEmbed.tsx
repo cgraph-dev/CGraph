@@ -61,12 +61,12 @@ const IMAGE_REGEX = /\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i;
 const VIDEO_REGEX = /\.(mp4|webm|ogg|mov)(\?.*)?$/i;
 const AUDIO_REGEX = /\.(mp3|wav|ogg|m4a)(\?.*)?$/i;
 
-const RichMediaEmbed: React.FC<RichMediaEmbedProps> = memo(({
+const RichMediaEmbed = memo(function RichMediaEmbed({
   content,
   isOwnMessage = false,
   onLoad,
   maxEmbeds = 3,
-}) => {
+}: RichMediaEmbedProps): React.ReactElement | null {
   const [embeds, setEmbeds] = useState<LinkMetadata[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [lightboxMedia, setLightboxMedia] = useState<{
@@ -262,7 +262,7 @@ interface ImageEmbedProps {
   onExpand: () => void;
 }
 
-const ImageEmbed: React.FC<ImageEmbedProps> = memo(({ embed, onExpand }) => {
+const ImageEmbed = memo(function ImageEmbed({ embed, onExpand }: ImageEmbedProps): React.ReactElement | null {
   const [isLoaded, setIsLoaded] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
@@ -322,7 +322,7 @@ interface VideoEmbedProps {
   onExpand: () => void;
 }
 
-const VideoEmbed: React.FC<VideoEmbedProps> = memo(({ embed, onExpand }) => {
+const VideoEmbed = memo(function VideoEmbed({ embed, onExpand }: VideoEmbedProps): React.ReactElement | null {
   const isYouTube = embed.videoUrl?.includes('youtube');
 
   return (
@@ -388,7 +388,7 @@ interface AudioEmbedProps {
   embed: LinkMetadata;
 }
 
-const AudioEmbed: React.FC<AudioEmbedProps> = memo(({ embed }) => {
+const AudioEmbed = memo(function AudioEmbed({ embed }: AudioEmbedProps): React.ReactElement | null {
   const audioUrl = embed.audioUrl || embed.url;
   const player = useAudioPlayer(audioUrl);
   const status = useAudioPlayerStatus(player);
@@ -475,7 +475,7 @@ interface LinkPreviewProps {
   embed: LinkMetadata;
 }
 
-const LinkPreview: React.FC<LinkPreviewProps> = memo(({ embed }) => {
+const LinkPreview = memo(function LinkPreview({ embed }: LinkPreviewProps): React.ReactElement | null {
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     Linking.openURL(embed.url);
@@ -549,7 +549,7 @@ interface LightboxVideoProps {
   url: string;
 }
 
-const LightboxVideo: React.FC<LightboxVideoProps> = ({ url }) => {
+function LightboxVideo({ url }: LightboxVideoProps): React.ReactElement | null {
   const player = useVideoPlayer(url, (player) => {
     player.loop = false;
     player.play();

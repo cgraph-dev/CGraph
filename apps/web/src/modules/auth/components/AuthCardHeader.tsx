@@ -10,12 +10,12 @@ export interface AuthCardHeaderProps {
   animated?: boolean;
 }
 
-export const AuthCardHeader: React.FC<AuthCardHeaderProps> = ({
+export function AuthCardHeader({
   title,
   subtitle,
   className = 'mb-8 text-center',
   animated = true,
-}) => {
+}: AuthCardHeaderProps): React.ReactElement | null {
   if (!title && !subtitle) return null;
 
   const TitleTag = animated ? motion.h2 : 'h2';

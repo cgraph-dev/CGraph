@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { use } from 'react';
 import {
   NotificationContext,
   type NotificationContextType,
@@ -12,7 +12,7 @@ import {
  * @throws Error if used outside NotificationProvider
  */
 export function useNotification(): NotificationContextType {
-  const context = useContext(NotificationContext);
+  const context = use(NotificationContext);
   if (!context) {
     throw new Error('useNotification must be used within NotificationProvider');
   }

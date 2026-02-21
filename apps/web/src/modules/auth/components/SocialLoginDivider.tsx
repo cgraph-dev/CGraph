@@ -17,11 +17,11 @@ export interface SocialLoginDividerProps {
   className?: string;
 }
 
-export const SocialLoginDivider: React.FC<SocialLoginDividerProps> = ({
+export function SocialLoginDivider({
   text = 'or continue with',
   variant = 'default',
   className = '',
-}) => {
+}: SocialLoginDividerProps): React.ReactElement {
   if (variant === 'gradient') {
     return (
       <div className={`relative flex items-center justify-center py-4 ${className}`}>

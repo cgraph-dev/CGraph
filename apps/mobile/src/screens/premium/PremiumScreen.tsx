@@ -95,7 +95,7 @@ const PREMIUM_TIERS: PremiumTier[] = [
 
 type BillingCycle = 'monthly' | 'yearly';
 
-const PremiumScreen: React.FC = () => {
+function PremiumScreen(): React.ReactElement | null {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const { user: _user } = useAuth();
   const { colors } = useTheme();

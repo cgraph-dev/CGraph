@@ -29,7 +29,7 @@ export interface AuthButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
   iconPosition?: 'left' | 'right';
 }
 
-export const AuthButton: React.FC<AuthButtonProps> = ({
+export function AuthButton({
   children,
   variant = 'primary',
   size = 'md',
@@ -46,7 +46,7 @@ export const AuthButton: React.FC<AuthButtonProps> = ({
   onClick,
   disabled,
   ...props
-}) => {
+}: AuthButtonProps): React.ReactElement {
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     HapticFeedback.medium();
     onClick?.(e);

@@ -39,7 +39,9 @@ defmodule CGraph.Forums.Boards do
       from b in query, where: b.is_hidden == false
     end
 
-    Repo.all(query)
+    query
+    |> preload([:sub_boards])
+    |> Repo.all()
   end
 
   @doc """

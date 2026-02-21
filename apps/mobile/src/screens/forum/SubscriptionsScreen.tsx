@@ -32,7 +32,7 @@ interface Subscription {
   createdAt: Date;
 }
 
-export const SubscriptionsScreen: React.FC = () => {
+export function SubscriptionsScreen(): React.ReactElement {
   const navigation = useNavigation();
   const { colors } = useTheme();
   

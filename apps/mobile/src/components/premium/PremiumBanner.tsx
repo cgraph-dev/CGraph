@@ -33,7 +33,7 @@ export interface PremiumBannerProps {
   onDismiss?: () => void;
 }
 
-export const PremiumBanner: React.FC<PremiumBannerProps> = ({
+export function PremiumBanner({
   title = 'Upgrade to Premium',
   description = 'Unlock all features and get the best experience',
   features = ['Unlimited access', 'No ads', 'Exclusive themes'],
@@ -41,7 +41,7 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
   dismissible = false,
   onUpgrade,
   onDismiss,
-}) => {
+}: PremiumBannerProps): React.ReactElement {
   const shimmerAnim = useRef(new Animated.Value(0)).current;
   const floatAnim = useRef(new Animated.Value(0)).current;
 

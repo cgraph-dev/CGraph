@@ -30,7 +30,7 @@ import { FloatingBanner } from './FloatingBanner';
 import { HeroBanner } from './HeroBanner';
 import { CardBanner } from './CardBanner';
 
-export const PremiumBanner: React.FC<PremiumBannerProps> = ({
+export function PremiumBanner({
   variant = 'card',
   title = DEFAULT_TITLE,
   description = DEFAULT_DESCRIPTION,
@@ -43,7 +43,7 @@ export const PremiumBanner: React.FC<PremiumBannerProps> = ({
   price = DEFAULT_PRICE,
   originalPrice,
   className = '',
-}) => {
+}: PremiumBannerProps): React.ReactElement | null {
   const { isSubscribed } = usePremiumStore();
   const [isDismissed, setIsDismissed] = useState(false);
   const [activeFeatureIndex, setActiveFeatureIndex] = useState(0);

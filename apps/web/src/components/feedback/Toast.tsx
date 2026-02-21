@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
+import React, { createContext, use, useState, useCallback, useRef, useEffect } from 'react';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -21,7 +21,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
  * Hook to access toast functionality throughout the app.
  */
 export function useToast() {
-  const context = useContext(ToastContext);
+  const context = use(ToastContext);
   if (!context) {
     throw new Error('useToast must be used within a ToastProvider');
   }

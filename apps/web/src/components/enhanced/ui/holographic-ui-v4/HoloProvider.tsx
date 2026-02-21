@@ -10,7 +10,7 @@ import {
   useMemo,
   useEffect,
   createContext,
-  useContext,
+  use,
 } from 'react';
 import { HoloTheme, HoloConfig, HOLO_PRESETS, DEFAULT_CONFIG } from './types';
 
@@ -23,7 +23,7 @@ interface HoloContextValue {
 const HoloContext = createContext<HoloContextValue | null>(null);
 
 export function useHolo(): HoloContextValue {
-  const context = useContext(HoloContext);
+  const context = use(HoloContext);
   if (!context) {
     throw new Error('useHolo must be used within a HoloProvider');
   }

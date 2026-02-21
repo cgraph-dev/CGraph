@@ -32,12 +32,12 @@ interface UsernameHistory {
 const COOLDOWN_DAYS_STANDARD = 30;
 const COOLDOWN_DAYS_PREMIUM = 7;
 
-export const UsernameChangeScreen: React.FC<Props> = ({
+export function UsernameChangeScreen({
   currentUsername,
   lastChangeDate,
   isPremium = false,
   onSuccess,
-}) => {
+}: Props): React.ReactElement {
   const navigation = useNavigation();
   const { colors } = useTheme();
   

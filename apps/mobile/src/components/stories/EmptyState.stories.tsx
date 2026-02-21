@@ -13,9 +13,11 @@ import EmptyState from '../EmptyState';
 /**
  * Wrapper providing layout for stories
  */
-const ThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+function ThemeWrapper({ children }: { children: React.ReactNode }): React.ReactElement {
+  return (
   <View style={{ minHeight: 300, justifyContent: 'center' }}>{children}</View>
 );
+}
 
 const meta: Meta<typeof EmptyState> = {
   title: 'Components/EmptyState',

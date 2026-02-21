@@ -20,7 +20,7 @@ type CardBannerProps = Pick<
   | 'onDismiss'
 >;
 
-export const CardBanner: React.FC<CardBannerProps> = ({
+export function CardBanner({
   title,
   description,
   features,
@@ -32,7 +32,8 @@ export const CardBanner: React.FC<CardBannerProps> = ({
   className,
   onUpgrade,
   onDismiss,
-}) => (
+}: CardBannerProps): React.ReactElement {
+  return (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={className}>
     <GlassCard variant="holographic" className="relative overflow-hidden p-6">
       {dismissible && (
@@ -98,3 +99,4 @@ export const CardBanner: React.FC<CardBannerProps> = ({
     </GlassCard>
   </motion.div>
 );
+}

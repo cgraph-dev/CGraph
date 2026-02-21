@@ -41,7 +41,7 @@ interface SubscriptionSettings {
   includeReplies: boolean;
 }
 
-export const SubscriptionButton: React.FC<SubscriptionButtonProps> = ({
+export function SubscriptionButton({
   type,
   isSubscribed,
   notificationMode = 'instant',
@@ -53,7 +53,7 @@ export const SubscriptionButton: React.FC<SubscriptionButtonProps> = ({
   className,
   variant = 'outline',
   size = 'md',
-}) => {
+}: SubscriptionButtonProps): React.ReactElement {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(false);
   const [settings, setSettings] = React.useState<SubscriptionSettings>({

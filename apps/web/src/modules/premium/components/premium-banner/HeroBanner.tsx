@@ -20,7 +20,7 @@ type HeroBannerProps = Pick<
   | 'onDismiss'
 >;
 
-export const HeroBanner: React.FC<HeroBannerProps> = ({
+export function HeroBanner({
   title,
   description,
   ctaText,
@@ -32,7 +32,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
   activeFeatureIndex,
   onUpgrade,
   onDismiss,
-}) => (
+}: HeroBannerProps): React.ReactElement {
+  return (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -148,3 +149,4 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
     </div>
   </motion.div>
 );
+}

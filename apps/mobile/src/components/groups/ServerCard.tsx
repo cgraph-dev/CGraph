@@ -42,12 +42,12 @@ export interface ServerCardProps {
   onJoin?: () => void;
 }
 
-export const ServerCard: React.FC<ServerCardProps> = ({
+export function ServerCard({
   server,
   variant = 'default',
   onPress,
   onJoin,
-}) => {
+}: ServerCardProps): React.ReactElement {
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onPress?.();

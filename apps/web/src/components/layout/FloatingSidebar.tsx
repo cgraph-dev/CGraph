@@ -28,7 +28,7 @@ interface FloatingSidebarProps extends Omit<SidebarProps, 'variant'> {
   quickActions: QuickAction[];
 }
 
-export const FloatingSidebar: React.FC<FloatingSidebarProps> = ({
+export function FloatingSidebar({
   defaultCollapsed = false,
   showGroups = true,
   showQuickActions = true,
@@ -39,7 +39,7 @@ export const FloatingSidebar: React.FC<FloatingSidebarProps> = ({
   user,
   isSubscribed,
   quickActions,
-}) => {
+}: FloatingSidebarProps): React.ReactElement {
   const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
