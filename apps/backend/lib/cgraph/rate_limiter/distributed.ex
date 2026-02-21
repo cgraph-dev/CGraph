@@ -325,7 +325,7 @@ defmodule CGraph.RateLimiter.Distributed do
         result
 
       {:error, reason} when require_redis ->
-        Logger.warning("Rate limiter Redis error (required): #{inspect(reason)}")
+        Logger.warning("rate_limiter_redis_error_required", reason: inspect(reason))
         {:error, :redis_unavailable}
 
       {:error, reason} ->

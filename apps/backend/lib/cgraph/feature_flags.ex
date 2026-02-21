@@ -496,7 +496,7 @@ defmodule CGraph.FeatureFlags do
     ArgumentError ->
       # Log unknown flag names for monitoring
       require Logger
-      Logger.warning("Unknown feature flag name requested: #{inspect(name)}")
+      Logger.warning("unknown_feature_flag_name_requested", name: inspect(name))
       # Return as string to avoid atom creation, callers should handle this
       name
   end

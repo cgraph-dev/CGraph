@@ -588,7 +588,7 @@ defmodule CGraph.HealthCheck do
     })
 
     if new_status != :healthy do
-      Logger.warning("Health status changed: #{old_status} -> #{new_status}")
+      Logger.warning("health_status_changed", old_status: old_status, new_status: new_status)
     end
   end
 end

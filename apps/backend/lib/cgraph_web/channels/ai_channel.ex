@@ -151,7 +151,7 @@ defmodule CGraphWeb.Channels.AIChannel do
     end
   rescue
     error ->
-      Logger.error("AI stream error: #{inspect(error)}")
+      Logger.error("ai_stream_error", error: inspect(error))
       push(socket, "ai:error", %{error: "streaming_failed"})
   end
 

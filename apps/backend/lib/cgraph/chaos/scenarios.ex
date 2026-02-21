@@ -35,7 +35,7 @@ defmodule CGraph.Chaos.Scenarios do
   Adds 2-5 second latency to database operations.
   """
   def database_slow(delay_ms \\ 3_000) do
-    Logger.warning("[Chaos Scenario] Database SLOW — #{delay_ms}ms latency")
+    Logger.warning("chaos_scenario_database_slow_ms_latency", delay_ms: delay_ms)
     FaultInjector.inject_latency(:database, delay_ms)
     :ok
   end
@@ -97,7 +97,7 @@ defmodule CGraph.Chaos.Scenarios do
   Services fail every other request — tests retry logic.
   """
   def intermittent_failures(component, count \\ 5) do
-    Logger.warning("[Chaos Scenario] Intermittent failures for #{component} (#{count} failures)")
+    Logger.warning("chaos_scenario_intermittent_failures_for_failures", component: component, count: count)
     FaultInjector.inject_error(component, :timeout, count: count)
     :ok
   end
@@ -107,7 +107,7 @@ defmodule CGraph.Chaos.Scenarios do
   Tests timeout handling and user experience under slow conditions.
   """
   def high_latency(delay_ms \\ 5_000) do
-    Logger.warning("[Chaos Scenario] HIGH LATENCY — #{delay_ms}ms on all services")
+    Logger.warning("chaos_scenario_high_latency_ms_on_all_services", delay_ms: delay_ms)
     for svc <- [:redis, :database, :apns, :fcm, :expo, :meilisearch, :mailer] do
       FaultInjector.inject_latency(svc, delay_ms)
     end

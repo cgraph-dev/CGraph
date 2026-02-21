@@ -218,7 +218,7 @@ defmodule CGraph.Performance.SLO do
           %{name: name, definition: entry.definition}
         )
 
-        Logger.warning("SLO violation: #{name} — p99=#{status.latency_p99}ms, error_rate=#{status.error_rate}%")
+        Logger.warning("slo_violation_p99_ms_errorrate", name: name, status_latency_p99: status.latency_p99, status_error_rate: status.error_rate)
       end
     end
 

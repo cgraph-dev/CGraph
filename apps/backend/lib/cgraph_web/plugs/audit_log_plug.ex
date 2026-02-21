@@ -96,7 +96,7 @@ defmodule CGraphWeb.Plugs.AuditLogPlug do
       )
     rescue
       error ->
-        Logger.error("AuditLogPlug failed: #{inspect(error)}")
+        Logger.error("auditlogplug_failed", error: inspect(error))
     end
   end
 

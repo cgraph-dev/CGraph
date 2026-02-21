@@ -5,6 +5,9 @@ name: Deploy Backend to Fly.io (Manual)
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Deploy Backend (Manual)

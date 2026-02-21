@@ -140,7 +140,7 @@ defmodule CGraphWeb.API.V1.GifController do
           Jason.decode(body)
 
         {:ok, %Finch.Response{status: status}} ->
-          Logger.warning("Tenor API returned status #{status}")
+          Logger.warning("tenor_api_returned_status", status: status)
           {:error, :api_error}
 
         {:error, reason} ->

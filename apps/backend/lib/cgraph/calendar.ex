@@ -25,9 +25,6 @@ defmodule CGraph.Calendar do
   def list_events(user, opts \\ []) do
     user_id = extract_user_id(user)
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 50)
-    offset = (page - 1) * per_page
 
     year = Keyword.get(opts, :year)
     month = Keyword.get(opts, :month)
@@ -75,22 +72,19 @@ defmodule CGraph.Calendar do
         base_query
       end
 
-    total_count = Repo.aggregate(base_query, :count, :id)
-
-    events =
-      base_query
-      |> limit(^per_page)
-      |> offset(^offset)
-      |> Repo.all()
-
-    pagination = %{
-      page: page,
-      per_page: per_page,
-      total_count: total_count,
-      total_pages: ceil(total_count / per_page)
+    pagination_opts = %{
+      cursor: Keyword.get(opts, :cursor),
+      after_cursor: Keyword.get(opts, :after),
+      before_cursor: Keyword.get(opts, :before),
+      limit: Keyword.get(opts, :per_page, 50),
+      sort_field: :start_date,
+      sort_direction: :asc,
+      include_total: true
     }
 
-    {events, pagination}
+    {events, page_info} = CGraph.Pagination.paginate(base_query, pagination_opts)
+
+    {events, page_info}
   end
 
   @doc """

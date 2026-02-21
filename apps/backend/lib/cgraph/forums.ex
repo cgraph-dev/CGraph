@@ -135,15 +135,20 @@ defmodule CGraph.Forums do
       meta = CGraph.Forums.CursorPagination.build_cursor_meta(comments_raw, has_next, per_page, sort, :comment)
       {comments, meta}
     else
-      page = Keyword.get(opts, :page, 1)
-      total = Repo.aggregate(query, :count, :id)
-      comments = query
-        |> limit(^per_page)
-        |> offset(^((page - 1) * per_page))
-        |> Repo.all()
-        |> load_replies(user_id)
-        |> maybe_add_comment_votes(user_id)
-      {comments, %{page: page, per_page: per_page, total: total}}
+      # First page — no cursor yet, use cursor pagination from the start
+      pagination_opts = %{
+        cursor: nil,
+        after_cursor: nil,
+        before_cursor: nil,
+        limit: per_page,
+        sort_field: :inserted_at,
+        sort_direction: if(sort == "newest", do: :desc, else: :asc),
+        include_total: true
+      }
+
+      {comments_raw, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
+      comments = comments_raw |> load_replies(user_id) |> maybe_add_comment_votes(user_id)
+      {comments, page_info}
     end
   end
 

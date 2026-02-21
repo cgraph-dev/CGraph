@@ -443,7 +443,7 @@ defmodule CGraph.Services.Registry do
       end
     rescue
       e ->
-        Logger.warning("Health check failed for #{name}: #{inspect(e)}")
+        Logger.warning("health_check_failed_for", name: name, e: inspect(e))
 
         updated_service = update_service_state(service, :unhealthy, inspect(e))
         services = Map.put(state.services, name, updated_service)
@@ -566,7 +566,7 @@ defmodule CGraph.Services.Registry do
 
     # Log significant state changes
     if to == :unhealthy do
-      Logger.warning("Service #{name} became unhealthy (was: #{from})")
+      Logger.warning("service_became_unhealthy_was", name: name, from: from)
     else if from == :unhealthy do
       Logger.info("service_recovered_now", name: name, to: to)
     end

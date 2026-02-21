@@ -90,11 +90,11 @@ defmodule CGraph.AI.LLMClient do
           {:error, :rate_limited}
 
         {:ok, %{status: status, body: body}} ->
-          Logger.warning("OpenAI API error: #{status} - #{inspect(body)}")
+          Logger.warning("openai_api_error", status: status, body: inspect(body))
           {:error, "API error: #{status}"}
 
         {:error, error} ->
-          Logger.error("OpenAI request failed: #{inspect(error)}")
+          Logger.error("openai_request_failed", error: inspect(error))
           {:error, :request_failed}
       end
     end)
@@ -188,11 +188,11 @@ defmodule CGraph.AI.LLMClient do
           {:error, :rate_limited}
 
         {:ok, %{status: status, body: body}} ->
-          Logger.warning("Anthropic API error: #{status} - #{inspect(body)}")
+          Logger.warning("anthropic_api_error", status: status, body: inspect(body))
           {:error, "API error: #{status}"}
 
         {:error, error} ->
-          Logger.error("Anthropic request failed: #{inspect(error)}")
+          Logger.error("anthropic_request_failed", error: inspect(error))
           {:error, :request_failed}
       end
     end)

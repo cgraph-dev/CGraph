@@ -180,7 +180,7 @@ defmodule CGraph.Application do
 
       try do
         backend = Engine.get_backend()
-        Logger.info("[Application] Search backend: #{backend}")
+        Logger.info("application_search_backend", backend: backend)
 
         if backend == :meilisearch do
           case Engine.healthy?() do
@@ -190,7 +190,7 @@ defmodule CGraph.Application do
               Logger.info("[Application] Meilisearch indexes configured successfully")
 
             false ->
-              Logger.warning("[Application] Meilisearch is not reachable at #{Application.get_env(:cgraph, Engine, [])[:meilisearch_url] || "http://localhost:7700"} — search will use PostgreSQL fallback")
+              Logger.warning("application_meilisearch_is_not_reachable_at_search", detail_0: Application.get_env(:cgraph, Engine, [])[:meilisearch_url] || "http://localhost:7700")
           end
         else
           Logger.info("[Application] Search using PostgreSQL backend (MEILISEARCH_URL not set)")

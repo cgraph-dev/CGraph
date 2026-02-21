@@ -679,7 +679,7 @@ defmodule CGraph.Security.AccountLockout do
       ip_address: ip
     })
 
-    Logger.warning("Account locked: #{identifier} after #{attempts} failed attempts")
+    Logger.warning("account_locked_after_failed_attempts", identifier: identifier, attempts: attempts)
   rescue
     _ -> :ok
   end

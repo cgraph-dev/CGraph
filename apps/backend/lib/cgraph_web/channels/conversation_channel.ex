@@ -347,7 +347,7 @@ defmodule CGraphWeb.ConversationChannel do
   # Catch-all for unhandled events — prevents FunctionClauseError crashes
   def handle_in(event, _payload, socket) do
     require Logger
-    Logger.warning("Unhandled conversation channel event: #{event}")
+    Logger.warning("unhandled_conversation_channel_event", event: event)
     {:reply, {:error, %{reason: "unhandled_event"}}, socket}
   end
 

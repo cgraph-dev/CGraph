@@ -15,9 +15,6 @@ defmodule CGraph.Accounts.MemberDirectory do
   List members with filtering and pagination.
   """
   def list_members(opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    offset = (page - 1) * per_page
     sort_by = Keyword.get(opts, :sort_by, :username)
     sort_order = Keyword.get(opts, :sort_order, :asc)
     search = Keyword.get(opts, :search)
@@ -34,23 +31,19 @@ defmodule CGraph.Accounts.MemberDirectory do
     base_query = apply_online_filter(base_query, online_only)
     base_query = apply_member_sort(base_query, sort_by, sort_order)
 
-    total_count = ReadRepo.aggregate(base_query, :count, :id)
-
-    members =
-      base_query
-      |> limit(^per_page)
-      |> offset(^offset)
-      |> ReadRepo.all()
-      |> Enum.map(&enrich_member/1)
-
-    pagination = %{
-      page: page,
-      per_page: per_page,
-      total_count: total_count,
-      total_pages: ceil(total_count / per_page)
+    pagination_opts = %{
+      cursor: Keyword.get(opts, :cursor),
+      after_cursor: Keyword.get(opts, :after),
+      before_cursor: Keyword.get(opts, :before),
+      limit: Keyword.get(opts, :per_page, 20),
+      sort_field: sort_by,
+      sort_direction: sort_order,
+      include_total: true
     }
 
-    {members, pagination}
+    {members, page_info} = CGraph.Pagination.paginate(base_query, pagination_opts)
+
+    {Enum.map(members, &enrich_member/1), page_info}
   end
 
   @doc """

@@ -127,7 +127,7 @@ defmodule CGraphWeb.API.V1.AuthController do
     :exit, reason ->
       # Log but don't block login — clearing is best-effort after successful auth
       require Logger
-      Logger.warning("AccountLockout unavailable for clearing attempts: #{inspect(reason)}")
+      Logger.warning("accountlockout_unavailable_for_clearing_attempts", reason: inspect(reason))
       :ok
   end
 
@@ -154,7 +154,7 @@ defmodule CGraphWeb.API.V1.AuthController do
     :exit, reason ->
       # Fail-closed: treat as locked when unable to record attempt
       require Logger
-      Logger.error("AccountLockout unavailable for recording attempt: #{inspect(reason)}")
+      Logger.error("accountlockout_unavailable_for_recording_attempt", reason: inspect(reason))
       {:locked, 60}
   end
 

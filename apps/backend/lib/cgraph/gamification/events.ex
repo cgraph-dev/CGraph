@@ -118,7 +118,7 @@ defmodule CGraph.Gamification.Events do
         Logger.info("events_created_event", event_id: event.id, event_name: event.name)
         {:ok, event}
       {:error, changeset} ->
-        Logger.warning("[Events] Failed to create event: #{inspect(changeset.errors)}")
+        Logger.warning("events_failed_to_create_event", changeset_errors: inspect(changeset.errors))
         {:error, changeset}
     end
   end

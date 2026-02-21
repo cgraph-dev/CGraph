@@ -249,7 +249,7 @@ defmodule CGraphWeb.UserChannel do
     rescue
       error ->
         require Logger
-        Logger.warning("Session resumption failed: #{inspect(error)}")
+        Logger.warning("session_resumption_failed", error: inspect(error))
         push(socket, "resume_complete", %{
           replayed_count: 0,
           new_session_id: socket.assigns[:session_id],
@@ -335,7 +335,7 @@ defmodule CGraphWeb.UserChannel do
     rescue
       error ->
         require Logger
-        Logger.warning("Presence authorization check failed: #{inspect(error)}")
+        Logger.warning("presence_authorization_check_failed", error: inspect(error))
         false
     end
   end

@@ -27,24 +27,23 @@ defmodule CGraph.Messaging.Messages do
   """
   @spec list_messages(Conversation.t(), keyword()) :: {list(Message.t()), map()}
   def list_messages(conversation, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 50)
-
     query = from m in Message,
       where: m.conversation_id == ^conversation.id,
-      order_by: [desc: m.inserted_at],
       preload: [:sender, reactions: :user]
 
-    total = Repo.aggregate(query, :count, :id)
+    pagination_opts = %{
+      cursor: Keyword.get(opts, :cursor),
+      after_cursor: Keyword.get(opts, :after),
+      before_cursor: Keyword.get(opts, :before),
+      limit: Keyword.get(opts, :per_page, 50),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      include_total: true
+    }
 
-    messages = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-      |> Enum.reverse()
+    {messages, page_info} = CGraph.Pagination.paginate(query, pagination_opts)
 
-    meta = %{page: page, per_page: per_page, total: total}
-    {messages, meta}
+    {Enum.reverse(messages), page_info}
   end
 
   @doc """

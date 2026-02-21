@@ -37,7 +37,7 @@ defmodule CGraphWeb.Plugs.RequireAdmin do
         deny_access(conn, "Authentication required")
 
       user.is_admin != true ->
-        Logger.warning("Non-admin user #{user.id} attempted admin access to #{conn.request_path}")
+        Logger.warning("non_admin_user_attempted_admin_access_to", user_id: user.id, conn_request_path: conn.request_path)
         deny_access(conn, "Admin access required")
 
       true ->

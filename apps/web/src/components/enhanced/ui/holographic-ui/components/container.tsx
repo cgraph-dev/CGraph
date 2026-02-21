@@ -3,7 +3,7 @@
  * @module components/enhanced/ui/holographic-ui/components/container
  */
 
-import { useRef, useEffect, useState, useCallback, forwardRef } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import type { HoloContainerProps } from '../types';
@@ -38,23 +38,21 @@ function CornerBrackets({ color }: { color: string }) {
 // HOLO CONTAINER
 // =============================================================================
 
-export const HoloContainer = forwardRef<HTMLDivElement, HoloContainerProps>(function HoloContainer(
-  {
-    children,
-    preset = 'cyan',
-    intensity = 'medium',
-    enableScanlines = true,
-    enableFlicker = true,
-    enableParallax = true,
-    enable3D = true,
-    enableGlow = true,
-    className,
-    as: Component = 'div',
-    onClick,
-    ...motionProps
-  },
-  ref
-) {
+export function HoloContainer({
+  children,
+  preset = 'cyan',
+  intensity = 'medium',
+  enableScanlines = true,
+  enableFlicker = true,
+  enableParallax = true,
+  enable3D = true,
+  enableGlow = true,
+  className,
+  as: Component = 'div',
+  onClick,
+  ref,
+  ...motionProps
+}: HoloContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isGlitching, setIsGlitching] = useState(false);
   const [flickerOpacity, setFlickerOpacity] = useState(1);
@@ -203,6 +201,6 @@ export const HoloContainer = forwardRef<HTMLDivElement, HoloContainerProps>(func
       <div className="relative z-10">{children}</div>
     </MotionComponent>
   );
-});
+}
 
 export { CornerBrackets };

@@ -83,7 +83,7 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
         {:ok, conn}
       {:ok, _locked_at} ->
         ttl = get_ttl(lockout_key)
-        Logger.warning("[2FA] User #{conn.assigns.current_user.id} is locked out for 2FA")
+        Logger.warning("2fa_user_is_locked_out_for_2fa", conn_assigns_current_user_id: conn.assigns.current_user.id)
         {:error, rate_limit_response(conn, ttl, "Too many failed attempts. Try again later.")}
       {:error, _} ->
         # Redis error - fail open but log
@@ -100,7 +100,7 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
         count = String.to_integer(count_str)
         if count >= @lockout_threshold do
           ttl = get_ttl(lockout_count_key)
-          Logger.warning("[2FA] User #{conn.assigns.current_user.id} in extended lockout")
+          Logger.warning("2fa_user_in_extended_lockout", conn_assigns_current_user_id: conn.assigns.current_user.id)
           {:error, rate_limit_response(conn, ttl, "Account temporarily locked due to repeated failed attempts.")}
         else
           {:ok, conn}
@@ -120,7 +120,7 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
 
   defp validate_attempts(conn, attempts) when attempts >= @max_attempts do
     user_id = conn.assigns.current_user.id
-    Logger.warning("[2FA] User #{user_id} hit 2FA rate limit (#{attempts} attempts)")
+    Logger.warning("2fa_user_hit_2fa_rate_limit_attempts", user_id: user_id, attempts: attempts)
     {:error, rate_limit_response(conn, @lockout_seconds, "Too many verification attempts.")}
   end
   defp validate_attempts(conn, _attempts), do: {:ok, conn}
@@ -183,7 +183,7 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
 
         # Check if we should trigger lockout
         if count >= @max_attempts do
-          Logger.warning("[2FA] Triggering lockout for user #{user_id} after #{count} attempts")
+          Logger.warning("2fa_triggering_lockout_for_user_after_attempts", user_id: user_id, count: count)
 
           # Set lockout
           safe_redis_command(["SETEX", lockout_key, @lockout_seconds, DateTime.to_iso8601(DateTime.utc_now())])
@@ -196,7 +196,7 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
               end
 
               if lockout_count >= @lockout_threshold do
-                Logger.warning("[2FA] Triggering extended lockout for user #{user_id}")
+                Logger.warning("2fa_triggering_extended_lockout_for_user", user_id: user_id)
                 # Extend the lockout to 24 hours
                 lockout_timestamp = DateTime.to_iso8601(DateTime.utc_now())
                 safe_redis_command(["SETEX", lockout_key, @extended_lockout_seconds, lockout_timestamp])

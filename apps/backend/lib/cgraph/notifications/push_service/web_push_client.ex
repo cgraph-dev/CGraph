@@ -186,7 +186,7 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
       handle_response(response, endpoint, keys, message, opts, retry_count)
     else
       {:error, reason} = error ->
-        Logger.warning("Web push send failed: #{inspect(reason)}")
+        Logger.warning("web_push_send_failed", reason: inspect(reason))
         error
     end
   end
@@ -240,7 +240,7 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
   end
 
   defp handle_response(%{status_code: status, body: body}, _endpoint, _keys, _message, _opts, _retry) do
-    Logger.warning("Web push failed with status #{status}: #{inspect(body)}")
+    Logger.warning("web_push_failed_with_status", status: status, body: inspect(body))
     {:error, {:unexpected_status, status}}
   end
 

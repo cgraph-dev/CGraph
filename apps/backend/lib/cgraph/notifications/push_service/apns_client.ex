@@ -208,7 +208,7 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
 
   defp handle_apns_error(400, _headers, body, _ctx, state) do
     error = parse_error_response(body)
-    Logger.warning("APNs bad request: #{inspect(error)}")
+    Logger.warning("apns_bad_request", error: inspect(error))
     state = update_stats(state, :failed, error)
     {{:error, error}, state}
   end

@@ -490,7 +490,7 @@ defmodule CGraph.Security.TokenBlacklist do
       {:ok, true} -> :ok
       {:ok, false} -> :ok
       error ->
-        Logger.warning("Failed to store in Cachex: #{inspect(error)}")
+        Logger.warning("failed_to_store_in_cachex", error: inspect(error))
         :ok  # Non-fatal, continue with other tiers
     end
   end
@@ -509,7 +509,7 @@ defmodule CGraph.Security.TokenBlacklist do
       case Redix.command(:redix, ["SETEX", redis_key, ttl_seconds, encoded_data]) do
         {:ok, _} -> :ok
         {:error, reason} ->
-          Logger.warning("Failed to store in Redis: #{inspect(reason)}")
+          Logger.warning("failed_to_store_in_redis", reason: inspect(reason))
           :ok  # Non-fatal for revocation
       end
     catch

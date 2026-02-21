@@ -473,7 +473,7 @@ defmodule CGraph.ErrorReporter do
         module.report(event, opts)
       rescue
         e ->
-          Logger.warning("Error adapter #{module} failed: #{inspect(e)}")
+          Logger.warning("error_adapter_failed", module: module, e: inspect(e))
       end
     end)
   end
@@ -517,7 +517,8 @@ defmodule CGraph.ErrorReporter.Adapters.Logger do
         )
 
       :message ->
-        Logger.log(level, "[ErrorReporter] #{event.message}",
+        Logger.log(level, "error_reporter_message",
+          message: event.message,
           severity: event.severity,
           context: event.context
         )

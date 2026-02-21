@@ -49,20 +49,20 @@ defmodule CGraph.Chaos.CircuitBreakerValidator do
 
     case result do
       {:tripped, n} ->
-        Logger.info("[Chaos] Fuse #{fuse_name} tripped after #{n} failures")
+        Logger.info("chaos_fuse_tripped", fuse_name: fuse_name, failures: n)
         {:tripped, n}
 
       {:still_ok, n} ->
-        Logger.warning("[Chaos] Fuse #{fuse_name} did NOT trip after #{n} failures")
+        Logger.warning("chaos_fuse_not_tripped", fuse_name: fuse_name, failures: n)
         {:still_ok, n}
 
       {:not_found, _} ->
-        Logger.error("[Chaos] Fuse #{fuse_name} not found")
+        Logger.error("chaos_fuse_not_found", fuse_name: fuse_name)
         :not_found
     end
   rescue
     e ->
-      Logger.error("[Chaos] Error stressing fuse #{fuse_name}: #{inspect(e)}")
+      Logger.error("chaos_fuse_stress_error", fuse_name: fuse_name, error: inspect(e))
       {:error, e}
   end
 
@@ -76,16 +76,16 @@ defmodule CGraph.Chaos.CircuitBreakerValidator do
     # Ensure fuse is blown first
     case validate_fuse(fuse_name) do
       :blown ->
-        Logger.info("[Chaos] Waiting #{wait_ms}ms for #{fuse_name} recovery...")
+        Logger.info("chaos_fuse_recovery_waiting", fuse_name: fuse_name, wait_ms: wait_ms)
         Process.sleep(wait_ms)
 
         case validate_fuse(fuse_name) do
           :ok ->
-            Logger.info("[Chaos] Fuse #{fuse_name} recovered")
+            Logger.info("chaos_fuse_recovered", fuse_name: fuse_name)
             :recovered
 
           :blown ->
-            Logger.warning("[Chaos] Fuse #{fuse_name} still blown after #{wait_ms}ms")
+            Logger.warning("chaos_fuse_still_blown", fuse_name: fuse_name, wait_ms: wait_ms)
             :still_blown
 
           :not_found ->
@@ -93,7 +93,7 @@ defmodule CGraph.Chaos.CircuitBreakerValidator do
         end
 
       :ok ->
-        Logger.info("[Chaos] Fuse #{fuse_name} is already healthy, no recovery needed")
+        Logger.info("chaos_fuse_already_healthy", fuse_name: fuse_name)
         :already_ok
 
       :not_found ->
@@ -106,7 +106,7 @@ defmodule CGraph.Chaos.CircuitBreakerValidator do
   """
   def reset_fuse(fuse_name) do
     :fuse.reset(fuse_name)
-    Logger.info("[Chaos] Fuse #{fuse_name} manually reset")
+    Logger.info("chaos_fuse_manually_reset", fuse_name: fuse_name)
     :ok
   rescue
     _ -> {:error, :reset_failed}

@@ -218,7 +218,7 @@ defmodule CGraph.Moderation do
   defp calculate_priority(_), do: :normal
 
   defp handle_critical_report(report) do
-    Logger.warning("CRITICAL REPORT: #{report.category} - #{report.id}")
+    Logger.warning("critical_report", report_category: report.category, report_id: report.id)
 
     # For CSAM and other critical content, immediately quarantine and escalate
     if report.category == :csam do
@@ -229,7 +229,7 @@ defmodule CGraph.Moderation do
       # Note: Actual NCMEC submission requires CyberTipline API integration
       # This creates the structured report data for manual or automated submission
       incident_data = generate_ncmec_incident_report(report)
-      Logger.critical("NCMEC_INCIDENT_PREPARED: #{inspect(incident_data)}")
+      Logger.critical("ncmec_incident_prepared", incident_data: inspect(incident_data))
 
       # Step 3: Alert on-call staff via priority notification channel
       alert_oncall_staff(report, :critical)
@@ -253,7 +253,7 @@ defmodule CGraph.Moderation do
       :profile ->
         CGraph.Accounts.flag_profile_for_review(report.target_id)
       _ ->
-        Logger.warning("Unknown content type for quarantine: #{report.target_type}")
+        Logger.warning("unknown_content_type_for_quarantine", report_target_type: report.target_type)
     end
   rescue
     e ->
@@ -502,7 +502,7 @@ defmodule CGraph.Moderation do
           reason: :moderation_removal
         )
       _ ->
-        Logger.warning("Unknown content type for removal: #{report.target_type}")
+        Logger.warning("unknown_content_type_for_removal", report_target_type: report.target_type)
         {:ok, :no_action}
     end
 

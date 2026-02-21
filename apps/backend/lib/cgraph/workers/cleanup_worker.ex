@@ -42,7 +42,7 @@ defmodule CGraph.Workers.CleanupWorker do
     :ok
   rescue
     e ->
-      Logger.warning("[CleanupWorker] Token cleanup failed: #{inspect(e)}")
+      Logger.warning("cleanupworker_token_cleanup_failed", e: inspect(e))
       :ok  # Non-fatal, continue
   end
 
@@ -83,7 +83,7 @@ defmodule CGraph.Workers.CleanupWorker do
     :ok
   rescue
     e ->
-      Logger.warning("[CleanupWorker] Orphaned attachment cleanup failed: #{inspect(e)}")
+      Logger.warning("cleanupworker_orphaned_attachment_cleanup_failed", e: inspect(e))
       :ok  # Non-fatal, continue
   end
 
@@ -167,7 +167,7 @@ defmodule CGraph.Workers.CleanupWorker do
     :ok
   rescue
     e ->
-      Logger.warning("[CleanupWorker] Notification cleanup failed: #{inspect(e)}")
+      Logger.warning("cleanupworker_notification_cleanup_failed", e: inspect(e))
       :ok  # Non-fatal, continue
   end
 end

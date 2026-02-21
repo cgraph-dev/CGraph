@@ -216,7 +216,7 @@ defmodule CGraph.Subscriptions do
   Records a failed payment attempt.
   """
   def record_payment_failure(%User{} = user, params) do
-    Logger.warning("Payment failed for user #{user.id}, attempt #{params.attempt_count}")
+    Logger.warning("payment_failed_for_user_attempt", user_id: user.id, params_attempt_count: params.attempt_count)
 
     # Could trigger notification email here
     # CGraph.Notifications.send_payment_failed_email(user, params)

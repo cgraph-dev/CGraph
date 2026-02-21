@@ -420,7 +420,7 @@ defmodule CGraph.Auth.TokenManager do
     if stored_token.device_fingerprint == current_fingerprint do
       :ok
     else
-      Logger.warning("Device fingerprint mismatch for token #{stored_token.jti}")
+      Logger.warning("device_fingerprint_mismatch_for_token", stored_token_jti: stored_token.jti)
       {:error, :device_mismatch}
     end
   end

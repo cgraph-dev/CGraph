@@ -215,7 +215,7 @@ defmodule CGraph.Messaging.VoiceMessage do
       |> Repo.insert()
     else
       {:error, reason} ->
-        Logger.warning("Voice message processing failed: #{inspect(reason)}")
+        Logger.warning("voice_message_processing_failed", reason: inspect(reason))
         {:error, reason}
     end
   end
@@ -306,12 +306,12 @@ defmodule CGraph.Messaging.VoiceMessage do
         :ok
       else
         require Logger
-        Logger.warning("Unsupported mime type: #{content_type}")
+        Logger.warning("unsupported_mime_type", content_type: content_type)
         {:error, :unsupported_format}
       end
     else
       require Logger
-      Logger.warning("Upload file does not exist: #{path}")
+      Logger.warning("upload_file_does_not_exist", path: path)
       {:error, :invalid_upload}
     end
   end
@@ -326,7 +326,7 @@ defmodule CGraph.Messaging.VoiceMessage do
 
   def validate_upload(upload) do
     require Logger
-    Logger.warning("Invalid upload structure: #{inspect(upload)}")
+    Logger.warning("invalid_upload_structure", upload: inspect(upload))
     {:error, :invalid_upload}
   end
 
@@ -416,7 +416,7 @@ defmodule CGraph.Messaging.VoiceMessage do
         parse_ffprobe_output(output)
 
       {error, _} ->
-        Logger.warning("ffprobe failed: #{error}")
+        Logger.warning("ffprobe_failed", error: error)
         # Return defaults if ffprobe fails
         {:ok, %{
           duration: 0.0,
@@ -545,7 +545,7 @@ defmodule CGraph.Messaging.VoiceMessage do
         {:ok, output_path, output_url}
 
       {error, _} ->
-        Logger.warning("Transcoding failed: #{error}")
+        Logger.warning("transcoding_failed", error: error)
         # Fall back to original
         {:ok, stored.path, stored.url}
     end

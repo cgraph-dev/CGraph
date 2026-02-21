@@ -30,8 +30,6 @@ defmodule CGraph.Messaging.Search do
   """
   @spec search_messages(map(), String.t(), keyword()) :: {list(Message.t()), map()}
   def search_messages(user, query, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
     conversation_id = Keyword.get(opts, :conversation_id)
     sender_id = Keyword.get(opts, :sender_id)
     message_type = Keyword.get(opts, :type)
@@ -46,7 +44,6 @@ defmodule CGraph.Messaging.Search do
     db_query = from m in Message,
       where: m.conversation_id in ^user_conversation_ids,
       where: ilike(m.content, ^search_term),
-      order_by: [desc: m.inserted_at],
       preload: [:sender, :conversation]
 
     # Apply optional filters
@@ -55,15 +52,17 @@ defmodule CGraph.Messaging.Search do
     db_query = apply_type_filter(db_query, message_type)
     db_query = apply_date_filters(db_query, date_from, date_to)
 
-    total = Repo.aggregate(db_query, :count, :id)
+    pagination_opts = %{
+      cursor: Keyword.get(opts, :cursor),
+      after_cursor: Keyword.get(opts, :after),
+      before_cursor: Keyword.get(opts, :before),
+      limit: Keyword.get(opts, :per_page, 20),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      include_total: true
+    }
 
-    messages = db_query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {messages, meta}
+    CGraph.Pagination.paginate(db_query, pagination_opts)
   end
 
   @doc """
@@ -71,8 +70,6 @@ defmodule CGraph.Messaging.Search do
   """
   @spec search_attachments(map(), keyword()) :: {list(Message.t()), map()}
   def search_attachments(user, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
     conversation_id = Keyword.get(opts, :conversation_id)
     attachment_type = Keyword.get(opts, :type) # 'image', 'video', 'file', 'audio'
 
@@ -81,7 +78,6 @@ defmodule CGraph.Messaging.Search do
     db_query = from m in Message,
       where: m.conversation_id in ^user_conversation_ids,
       where: m.type in ["image", "video", "file", "audio"],
-      order_by: [desc: m.inserted_at],
       preload: [:sender]
 
     db_query = apply_conversation_filter(db_query, conversation_id)
@@ -92,15 +88,17 @@ defmodule CGraph.Messaging.Search do
       db_query
     end
 
-    total = Repo.aggregate(db_query, :count, :id)
+    pagination_opts = %{
+      cursor: Keyword.get(opts, :cursor),
+      after_cursor: Keyword.get(opts, :after),
+      before_cursor: Keyword.get(opts, :before),
+      limit: Keyword.get(opts, :per_page, 20),
+      sort_field: :inserted_at,
+      sort_direction: :desc,
+      include_total: true
+    }
 
-    messages = db_query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {messages, meta}
+    CGraph.Pagination.paginate(db_query, pagination_opts)
   end
 
   @doc """

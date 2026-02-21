@@ -74,7 +74,7 @@ defmodule CGraphWeb.Plugs.RateLimiter do
       {:error, reason} ->
         # Fail-closed: reject request when cache is unavailable (security best practice)
         require Logger
-        Logger.error("Rate limiter cache unavailable: #{inspect(reason)}")
+        Logger.error("rate_limiter_cache_unavailable", reason: inspect(reason))
         {:error, :rate_limited, 60_000}
     end
   end

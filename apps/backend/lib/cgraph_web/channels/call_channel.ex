@@ -117,7 +117,7 @@ defmodule CGraphWeb.CallChannel do
         {:error, %{reason: "room_full"}}
 
       {:error, reason} ->
-        Logger.warning("Failed to join call room #{room_id}: #{inspect(reason)}")
+        Logger.warning("failed_to_join_call_room", room_id: room_id, reason: inspect(reason))
         {:error, %{reason: "join_failed"}}
     end
   end
@@ -326,7 +326,7 @@ defmodule CGraphWeb.CallChannel do
   # Catch-all for unknown events
   @impl true
   def handle_in(event, _params, socket) do
-    Logger.warning("CallChannel received unknown event: #{event}")
+    Logger.warning("callchannel_received_unknown_event", event: event)
     {:reply, {:error, %{reason: "unknown_event"}}, socket}
   end
 

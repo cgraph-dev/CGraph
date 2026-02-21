@@ -71,11 +71,11 @@ defmodule CGraph.Notifications.PushService.ExpoClient do
 
       {:ok, %{"data" => [%{"status" => "error", "message" => msg, "details" => details}]}} ->
         error = parse_error_details(details)
-        Logger.warning("Expo push failed: #{msg}")
+        Logger.warning("expo_push_failed", msg: msg)
         {:error, error}
 
       {:ok, %{"data" => [%{"status" => "error", "message" => msg}]}} ->
-        Logger.warning("Expo push failed: #{msg}")
+        Logger.warning("expo_push_failed", msg: msg)
         {:error, :send_failed}
 
       {:error, reason} ->
@@ -170,13 +170,13 @@ defmodule CGraph.Notifications.PushService.ExpoClient do
       {:ok, 429, _headers, _body} ->
         # Rate limited - back off and retry
         delay = :math.pow(2, retry_count) * 1000 |> round()
-        Logger.warning("Expo rate limited - backing off #{delay}ms")
+        Logger.warning("expo_rate_limited_backing_off_ms", delay: delay)
         Process.sleep(delay)
         do_send_batch(messages, retry_count + 1)
 
       {:ok, status, _headers, _body} when status >= 500 ->
         # Server error - retry
-        Logger.warning("Expo server error #{status} - retrying")
+        Logger.warning("expo_server_error_retrying", status: status)
         Process.sleep(500 * (retry_count + 1))
         do_send_batch(messages, retry_count + 1)
 

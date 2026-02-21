@@ -65,6 +65,7 @@ export type HoloPreset = 'cyan' | 'matrix' | 'purple' | 'gold' | 'midnight';
 
 export interface HoloContainerProps extends Omit<MotionProps, 'children'> {
   children: ReactNode;
+  ref?: React.Ref<HTMLDivElement>;
   config?: Partial<HoloConfig>;
   colorTheme?: HoloColorTheme;
   preset?: HoloPreset;

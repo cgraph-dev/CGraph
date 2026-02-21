@@ -324,7 +324,7 @@ defmodule CGraph.Uploads do
         if allowed_unknown_type?(base_type) do
           :ok
         else
-          Logger.warning("Upload rejected: unknown MIME type #{base_type}")
+          Logger.warning("upload_rejected_unknown_mime_type", base_type: base_type)
           {:error, :invalid_file_type}
         end
 
@@ -350,7 +350,7 @@ defmodule CGraph.Uploads do
               if matches_any_signature?(bytes, signatures, content_type) do
                 :ok
               else
-                Logger.warning("Upload rejected: #{content_type} magic bytes mismatch")
+                Logger.warning("upload_rejected_magic_bytes_mismatch", content_type: content_type)
                 {:error, :invalid_file_type}
               end
           end

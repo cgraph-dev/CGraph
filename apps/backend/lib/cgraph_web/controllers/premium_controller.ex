@@ -200,7 +200,7 @@ defmodule CGraphWeb.PremiumController do
 
   defp handle_demo_subscription(conn, user, tier) do
     require Logger
-    Logger.warning("[SECURITY] Premium demo mode used for user #{user.id} - tier: #{tier}")
+    Logger.warning("security_premium_demo_mode_used_for_user_tier", user_id: user.id, tier: tier)
 
     expires_at = DateTime.add(DateTime.utc_now(), 30 * 24 * 60 * 60, :second)
 

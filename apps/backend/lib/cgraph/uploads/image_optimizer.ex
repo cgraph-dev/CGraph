@@ -147,12 +147,12 @@ defmodule CGraph.Uploads.ImageOptimizer do
     case System.cmd("convert", args, stderr_to_stdout: true) do
       {_, 0} -> :ok
       {error, _} ->
-        Logger.warning("Image resize failed: #{error}")
+        Logger.warning("image_resize_failed", error: error)
         :error
     end
   rescue
     e ->
-      Logger.warning("Image resize error: #{inspect(e)}")
+      Logger.warning("image_resize_error", e: inspect(e))
       :error
   end
 
@@ -169,12 +169,12 @@ defmodule CGraph.Uploads.ImageOptimizer do
     case System.cmd("convert", args, stderr_to_stdout: true) do
       {_, 0} -> :ok
       {error, _} ->
-        Logger.warning("Image optimization failed: #{error}")
+        Logger.warning("image_optimization_failed", error: error)
         :error
     end
   rescue
     e ->
-      Logger.warning("Image optimization error: #{inspect(e)}")
+      Logger.warning("image_optimization_error", e: inspect(e))
       :error
   end
 end

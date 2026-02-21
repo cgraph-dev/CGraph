@@ -254,7 +254,7 @@ defmodule CGraph.Cache.Unified do
         Logger.info("cache_warmed_namespace_entries", namespace: namespace, entries_count: inspect(length(entries)))
       rescue
         e ->
-          Logger.warning("Cache warming failed: namespace=#{namespace} error=#{inspect(e)}")
+          Logger.warning("cache_warming_failed_namespace_error", namespace: namespace, e: inspect(e))
       end
     end)
     :ok

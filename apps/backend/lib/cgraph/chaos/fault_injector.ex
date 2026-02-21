@@ -20,7 +20,7 @@ defmodule CGraph.Chaos.FaultInjector do
   """
   def inject_latency(component, delay_ms) when is_atom(component) and is_integer(delay_ms) do
     Process.put({:chaos_latency, component}, delay_ms)
-    Logger.warning("[Chaos] Injecting #{delay_ms}ms latency into #{component}")
+    Logger.warning("chaos_injecting_ms_latency_into", delay_ms: delay_ms, component: component)
     :ok
   end
 
@@ -41,7 +41,7 @@ defmodule CGraph.Chaos.FaultInjector do
   def maybe_apply_latency(component) do
     case check_latency(component) do
       {:delay, ms} ->
-        Logger.debug("[Chaos] Applying #{ms}ms delay for #{component}")
+        Logger.debug("chaos_applying_ms_delay_for", ms: ms, component: component)
         Process.sleep(ms)
       :none ->
         :ok
@@ -60,7 +60,7 @@ defmodule CGraph.Chaos.FaultInjector do
   def inject_error(component, reason, opts \\ []) do
     count = Keyword.get(opts, :count, :infinity)
     Process.put({:chaos_error, component}, {reason, count})
-    Logger.warning("[Chaos] Injecting error #{inspect(reason)} into #{component} (count: #{inspect(count)})")
+    Logger.warning("chaos_injecting_error_into_count", reason: inspect(reason), component: component, count: inspect(count))
     :ok
   end
 
@@ -90,7 +90,7 @@ defmodule CGraph.Chaos.FaultInjector do
   """
   def inject_partition(component) do
     Process.put({:chaos_partition, component}, true)
-    Logger.warning("[Chaos] Simulating network partition for #{component}")
+    Logger.warning("chaos_simulating_network_partition_for", component: component)
     :ok
   end
 
@@ -99,7 +99,7 @@ defmodule CGraph.Chaos.FaultInjector do
   """
   def heal_partition(component) do
     Process.delete({:chaos_partition, component})
-    Logger.info("[Chaos] Healed network partition for #{component}")
+    Logger.info("chaos_healed_network_partition_for", component: component)
     :ok
   end
 
@@ -115,7 +115,7 @@ defmodule CGraph.Chaos.FaultInjector do
   """
   def inject_resource_exhaustion(component) do
     Process.put({:chaos_exhaustion, component}, true)
-    Logger.warning("[Chaos] Simulating resource exhaustion for #{component}")
+    Logger.warning("chaos_simulating_resource_exhaustion_for", component: component)
     :ok
   end
 

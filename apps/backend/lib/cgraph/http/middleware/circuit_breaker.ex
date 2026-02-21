@@ -64,7 +64,7 @@ defmodule CGraph.HTTP.Middleware.CircuitBreaker do
           {:error, reason} = error ->
             # Request failed - record failure
             :fuse.melt(fuse_name)
-            Logger.warning("HTTP request failed, melting fuse #{fuse_name}: #{inspect(reason)}")
+            Logger.warning("http_request_failed_melting_fuse", fuse_name: fuse_name, reason: inspect(reason))
             error
         end
 
@@ -102,7 +102,7 @@ defmodule CGraph.HTTP.Middleware.CircuitBreaker do
       %{fuse: fuse_name, url: env.url, method: env.method}
     )
 
-    Logger.warning("Circuit breaker #{fuse_name} is open, rejecting request to #{env.url}")
+    Logger.warning("circuit_breaker_is_open_rejecting_request_to", fuse_name: fuse_name, env_url: env.url)
   end
 
   defp config(key) do

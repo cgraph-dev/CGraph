@@ -43,7 +43,7 @@ defmodule CGraph.Workers.CriticalAlertDispatcher do
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) do
-    Logger.warning("CRITICAL_ALERT_DISPATCH: #{inspect(args)}")
+    Logger.warning("criticalalertdispatch", args: inspect(args))
 
     with :ok <- send_admin_emails(args),
          :ok <- send_push_notifications(args),
@@ -113,7 +113,7 @@ defmodule CGraph.Workers.CriticalAlertDispatcher do
     :ok
   rescue
     e ->
-      Logger.warning("Failed to send push notifications: #{inspect(e)}")
+      Logger.warning("failed_to_send_push_notifications", e: inspect(e))
       :ok  # Non-critical failure, continue with other channels
   end
 
@@ -132,7 +132,7 @@ defmodule CGraph.Workers.CriticalAlertDispatcher do
         case :httpc.request(:post, {to_charlist(url), [], ~c"application/json", payload}, [], []) do
           {:ok, _} -> :ok
           {:error, reason} ->
-            Logger.warning("Webhook delivery failed: #{inspect(reason)}")
+            Logger.warning("webhook_delivery_failed", reason: inspect(reason))
             :ok  # Non-critical, don't fail the job
         end
     end

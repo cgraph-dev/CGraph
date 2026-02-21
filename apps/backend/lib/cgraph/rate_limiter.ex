@@ -567,7 +567,7 @@ defmodule CGraph.RateLimiter do
     end
 
     :ets.insert(@ets_table, {{:blacklist, identifier}, until})
-    Logger.warning("Blacklisted rate limit identifier: #{identifier} until #{inspect(until)}")
+    Logger.warning("blacklisted_rate_limit_identifier_until", identifier: identifier, until: inspect(until))
     {:reply, :ok, state}
   end
 

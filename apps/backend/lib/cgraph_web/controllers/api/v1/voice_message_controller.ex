@@ -71,7 +71,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
         {:error, :payload_too_large, "Voice message too long (max 5 minutes)"}
 
       {:error, :invalid_upload} ->
-        Logger.warning("Invalid upload structure: #{inspect(upload)}")
+        Logger.warning("invalid_upload_structure", upload: inspect(upload))
         {:error, :bad_request, "Invalid upload structure. Expected multipart file upload."}
 
       {:error, reason} ->

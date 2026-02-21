@@ -34,7 +34,7 @@ defmodule CGraph.Workers.WebhookDeliveryWorker do
       execute_delivery(endpoint, delivery)
     else
       {:error, :delivery_not_found} ->
-        Logger.warning("Webhook delivery #{delivery_id} not found, discarding")
+        Logger.warning("webhook_delivery_not_found_discarding", delivery_id: delivery_id)
         :ok
 
       {:error, :endpoint_not_found} ->

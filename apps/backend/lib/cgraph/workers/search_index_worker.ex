@@ -22,7 +22,7 @@ defmodule CGraph.Workers.SearchIndexWorker do
       :ok -> :ok
       {:ok, :postgres_is_source_of_truth} -> :ok
       {:error, reason} ->
-        Logger.warning("Search index failed for #{index}: #{inspect(reason)}")
+        Logger.warning("search_index_failed_for", index: index, reason: inspect(reason))
         {:error, reason}
     end
   end
@@ -34,7 +34,7 @@ defmodule CGraph.Workers.SearchIndexWorker do
       :ok -> :ok
       {:ok, :postgres_is_source_of_truth} -> :ok
       {:error, reason} ->
-        Logger.warning("Search bulk index failed for #{index}: #{inspect(reason)}")
+        Logger.warning("search_bulk_index_failed_for", index: index, reason: inspect(reason))
         {:error, reason}
     end
   end
@@ -46,13 +46,13 @@ defmodule CGraph.Workers.SearchIndexWorker do
       :ok -> :ok
       {:ok, :postgres_is_source_of_truth} -> :ok
       {:error, reason} ->
-        Logger.warning("Search delete failed for #{index}/#{id}: #{inspect(reason)}")
+        Logger.warning("search_delete_failed_for", index: index, id: id, reason: inspect(reason))
         {:error, reason}
     end
   end
 
   def perform(%Oban.Job{args: args}) do
-    Logger.warning("Unknown search index operation: #{inspect(args)}")
+    Logger.warning("unknown_search_index_operation", args: inspect(args))
     :ok
   end
 end

@@ -112,11 +112,11 @@ defmodule CGraph.Workers.SendPushNotification do
       end
     else
       {:error, :user_not_found} ->
-        Logger.warning("Push notification skipped: user #{user_id} not found")
+        Logger.warning("push_notification_skipped_user_not_found", user_id: user_id)
         :ok  # Don't retry
 
       {:error, :notification_not_found} ->
-        Logger.warning("Push notification skipped: notification #{notification_id} not found")
+        Logger.warning("push_notification_skipped_notification_not_found", notification_id: notification_id)
         :ok  # Don't retry
 
       {:error, reason} ->
@@ -297,6 +297,6 @@ defmodule CGraph.Workers.SendPushNotification do
   rescue
     # Don't fail the job if status update fails
     e ->
-      Logger.warning("Failed to update delivery status: #{inspect(e)}")
+      Logger.warning("failed_to_update_delivery_status", e: inspect(e))
   end
 end

@@ -234,7 +234,7 @@ defmodule CGraphWeb.Plugs.RateLimitPlug do
   # ---------------------------------------------------------------------------
 
   defp deny_rate_limited(conn, info, opts) do
-    Logger.warning("Rate limited: scope=#{opts.scope} remaining=#{info.remaining} retry_after=#{info.retry_after}")
+    Logger.warning("rate_limited_scope_remaining_retryafter", opts_scope: opts.scope, info_remaining: info.remaining, info_retry_after: info.retry_after)
 
     conn
     |> put_resp_content_type("application/json")

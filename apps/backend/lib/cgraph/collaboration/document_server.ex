@@ -86,7 +86,7 @@ defmodule CGraph.Collaboration.DocumentServer do
     schedule_compaction()
     schedule_inactivity_check()
 
-    Logger.debug("DocumentServer started for #{document_id}")
+    Logger.debug("documentserver_started_for", document_id: document_id)
 
     {:ok, state}
   end
@@ -181,7 +181,7 @@ defmodule CGraph.Collaboration.DocumentServer do
     if MapSet.size(state.connected_clients) == 0 do
       elapsed = System.monotonic_time(:millisecond) - state.last_activity
       if elapsed > @inactivity_timeout do
-        Logger.info("DocumentServer shutting down for inactivity: #{state.document_id}")
+        Logger.info("documentserver_shutting_down_for_inactivity", state_document_id: state.document_id)
         # Final flush before shutdown
         flush_to_db(state)
         {:stop, :normal, state}
@@ -225,7 +225,7 @@ defmodule CGraph.Collaboration.DocumentServer do
   defp load_from_db(state) do
     case Repo.get(Document, state.document_id) do
       nil ->
-        Logger.warning("Document not found: #{state.document_id}")
+        Logger.warning("document_not_found", state_document_id: state.document_id)
         state
 
       doc ->
@@ -259,7 +259,7 @@ defmodule CGraph.Collaboration.DocumentServer do
     end
   rescue
     error ->
-      Logger.error("Failed to flush document #{state.document_id}: #{inspect(error)}")
+      Logger.error("failed_to_flush_document", state_document_id: state.document_id, error: inspect(error))
       state
   end
 
@@ -270,7 +270,7 @@ defmodule CGraph.Collaboration.DocumentServer do
     #   1. A Yjs NIF (Rust y-crdt via Rustler)
     #   2. A sidecar JS worker running Yjs merge
     # Until then, clients reconcile via Yjs CRDT merge on pull.
-    Logger.debug("Compaction check for #{state.document_id}: #{state.update_count} updates, #{byte_size(state.yjs_state)} bytes")
+    Logger.debug("compaction_check_for_updates_bytes", state_document_id: state.document_id, state_update_count: state.update_count, detail_2: byte_size(state.yjs_state))
     state
   end
 

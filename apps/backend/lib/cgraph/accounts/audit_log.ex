@@ -116,11 +116,11 @@ defmodule CGraph.Accounts.AuditLog do
   rescue
     # Handle case where audit_logs table doesn't exist yet
     error in Ecto.QueryError ->
-      Logger.warning("[AuditLog] Database table not available: #{inspect(error)}")
+      Logger.warning("auditlog_database_table_not_available", error: inspect(error))
       {:ok, %{action: to_string(action), actor_id: actor_id, metadata: metadata}}
 
     error in DBConnection.ConnectionError ->
-      Logger.warning("[AuditLog] Database connection error: #{inspect(error)}")
+      Logger.warning("auditlog_database_connection_error", error: inspect(error))
       {:ok, %{action: to_string(action), actor_id: actor_id, metadata: metadata}}
   end
 

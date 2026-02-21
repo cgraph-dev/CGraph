@@ -219,7 +219,7 @@ defmodule CGraph.Security.PasswordBreachCheck do
         {:ok, result}
 
       {:error, reason} ->
-        Logger.warning("HIBP API error: #{inspect(reason)}")
+        Logger.warning("hibp_api_error", reason: inspect(reason))
         {:error, reason}
     end
   end
@@ -319,7 +319,7 @@ defmodule CGraph.Security.PasswordBreachCheck do
 
   defp log_breach_detected(_password, count, user_id) do
     # Note: Never log the actual password!
-    Logger.warning("Breached password detected: found in #{count} breaches, user_id: #{inspect(user_id)}")
+    Logger.warning("breached_password_detected_found_in_breaches_useri", count: count, user_id: inspect(user_id))
 
     if user_id do
       CGraph.Audit.log(:security, :breached_password_used, %{

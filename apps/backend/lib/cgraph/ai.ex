@@ -108,7 +108,7 @@ defmodule CGraph.AI do
   rescue
     e ->
       # Fail closed on unknown errors — log and deny
-      Logger.warning("Rate limiter error: #{inspect(e)}")
+      Logger.warning("rate_limiter_error", e: inspect(e))
       {:error, :rate_limit_unavailable}
   end
 

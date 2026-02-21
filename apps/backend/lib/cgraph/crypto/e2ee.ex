@@ -784,7 +784,7 @@ defmodule CGraph.Crypto.E2EE do
     {:ok, existing}
   end
   defp update_identity_key_if_changed(existing, _public_key, attrs) do
-    Logger.warning("Identity key changed for user #{attrs.user_id} device #{attrs.device_id}")
+    Logger.warning("identity_key_changed_for_user_device", attrs_user_id: attrs.user_id, attrs_device_id: attrs.device_id)
 
     existing
     |> IdentityKey.changeset(Map.put(attrs, :is_verified, false))
@@ -959,7 +959,7 @@ defmodule CGraph.Crypto.E2EE do
           case %KyberPrekey{} |> KyberPrekey.changeset(attrs) |> Repo.insert() do
             {:ok, kyber} -> {:ok, kyber.key_id}
             {:error, changeset} ->
-              Logger.warning("Failed to insert Kyber prekey: #{inspect(changeset.errors)}")
+              Logger.warning("failed_to_insert_kyber_prekey", changeset_errors: inspect(changeset.errors))
               {:ok, nil}
           end
 
