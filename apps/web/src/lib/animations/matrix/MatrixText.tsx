@@ -20,68 +20,12 @@
  */
 
 import { memo, useEffect, useState, useCallback, useRef } from 'react';
+import { CHARSETS, getRandomChar, encryptText } from './MatrixText.utils';
+import type { MatrixTextProps } from './MatrixText.utils';
 
-// =============================================================================
-// TYPES
-// =============================================================================
-
-export interface MatrixTextProps {
-  /** The text to display and animate */
-  text: string;
-  /** CSS class names */
-  className?: string;
-  /** Duration of encryption/decryption animation in ms */
-  animationDuration?: number;
-  /** Delay before animation starts in ms */
-  startDelay?: number;
-  /** Whether to loop the animation */
-  loop?: boolean;
-  /** Delay between loop cycles in ms */
-  loopDelay?: number;
-  /** Character set for encrypted text */
-  charset?: 'katakana' | 'binary' | 'hex' | 'symbols' | 'mixed';
-  /** Animation direction */
-  direction?: 'encrypt' | 'decrypt' | 'both';
-  /** Callback when animation completes */
-  onComplete?: () => void;
-  /** Glow color for text */
-  glowColor?: string;
-  /** Enable glow effect */
-  enableGlow?: boolean;
-}
-
-// =============================================================================
-// CHARACTER SETS
-// =============================================================================
-
-const CHARSETS = {
-  katakana: 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン',
-  binary: '01',
-  hex: '0123456789ABCDEF',
-  symbols: '!@#$%^&*()[]{}|;:,.<>?/\\~`+-=_',
-  mixed: 'アイウエオ01234567890ABCDEF!@#$%^&*',
-};
-
-// =============================================================================
-// UTILITY FUNCTIONS
-// =============================================================================
-
-/**
- * Get random character from charset
- */
-function getRandomChar(charset: string): string {
-  return charset.charAt(Math.floor(Math.random() * charset.length));
-}
-
-/**
- * Generate encrypted version of text
- */
-function encryptText(text: string, charset: string): string {
-  return text
-    .split('')
-    .map(char => (char === ' ' ? ' ' : getRandomChar(charset)))
-    .join('');
-}
+// Re-export types and presets for barrel consumers
+export type { MatrixTextProps } from './MatrixText.utils';
+export { MatrixLogo, MatrixHeading, MatrixCipherText } from './MatrixTextPresets';
 
 // =============================================================================
 // COMPONENT
@@ -338,84 +282,6 @@ export const MatrixText = memo(function MatrixText({
         );
       })}
     </span>
-  );
-});
-
-// =============================================================================
-// PRESET VARIANTS
-// =============================================================================
-
-/**
- * Logo text with Matrix decryption effect - Enhanced with continuous cipher morph
- */
-export const MatrixLogo = memo(function MatrixLogo({
-  text = 'CGraph',
-  className = 'text-4xl font-bold text-green-400',
-  ...props
-}: Partial<MatrixTextProps>) {
-  return (
-    <MatrixText
-      text={text}
-      className={className}
-      animationDuration={2000}
-      startDelay={300}
-      loop
-      loopDelay={4000}
-      direction="both"
-      charset="katakana"
-      enableGlow
-      glowColor="#39ff14"
-      {...props}
-    />
-  );
-});
-
-/**
- * Subtle text encryption for headings with ambient morph
- */
-export const MatrixHeading = memo(function MatrixHeading({
-  text,
-  className = 'text-2xl font-semibold text-green-300',
-  ...props
-}: MatrixTextProps) {
-  return (
-    <MatrixText
-      text={text}
-      className={className}
-      animationDuration={1200}
-      startDelay={100}
-      loop={false}
-      direction="decrypt"
-      charset="mixed"
-      enableGlow
-      glowColor="#00ff41"
-      {...props}
-    />
-  );
-});
-
-/**
- * Continuous cipher text - never settles, always morphing
- */
-export const MatrixCipherText = memo(function MatrixCipherText({
-  text,
-  className = 'text-lg font-mono text-green-400',
-  ...props
-}: MatrixTextProps) {
-  return (
-    <MatrixText
-      text={text}
-      className={className}
-      animationDuration={1500}
-      startDelay={0}
-      loop
-      loopDelay={2000}
-      direction="both"
-      charset="katakana"
-      enableGlow
-      glowColor="#00ff41"
-      {...props}
-    />
   );
 });
 
