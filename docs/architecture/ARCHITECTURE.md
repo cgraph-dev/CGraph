@@ -1,6 +1,6 @@
 ## CGraph System Architecture
 
-> Last updated: February 2026 | Version 0.9.31  
+> Last updated: February 2026 | Version 0.9.36  
 > Living documentation — HTTP-only cookie auth, PQXDH + Triple Ratchet E2EE, sampled presence at
 > scale, WebRTC voice/video, gamification/premium services
 

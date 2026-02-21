@@ -1,6 +1,6 @@
 # CGraph API Documentation
 
-> **Version: 0.9.31** | Last Updated: January 2026
+> **Version: 0.9.36** | Last Updated: February 2026
 
 Complete reference for the CGraph REST and WebSocket APIs.
 
@@ -605,4 +605,4 @@ const expected = crypto.createHmac('sha256', webhookSecret).update(body).digest(
 
 ---
 
-<sub>**CGraph API Documentation** • Version 0.9.31 • [OpenAPI Spec](/api/openapi.json)</sub>
+<sub>**CGraph API Documentation** • Version 0.9.36 • [OpenAPI Spec](/api/openapi.json)</sub>

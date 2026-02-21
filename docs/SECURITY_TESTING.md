@@ -1,6 +1,6 @@
 # CGraph Security Testing Framework
 
-> **Version: 0.9.31** | Last Updated: January 2026
+> **Version: 0.9.36** | Last Updated: February 2026
 
 Guidelines and patterns for security testing in CGraph.
 
@@ -640,4 +640,4 @@ See [SECURITY.md](../SECURITY.md) for full policy.
 
 ---
 
-<sub>**CGraph Security Testing Framework** • Version 0.9.31</sub>
+<sub>**CGraph Security Testing Framework** • Version 0.9.36</sub>

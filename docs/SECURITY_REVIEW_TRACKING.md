@@ -1,6 +1,6 @@
 # Security Review Tracking
 
-> **Version: 0.9.31** | Last Updated: January 30, 2026
+> **Version: 0.9.36** | Last Updated: February 21, 2026
 
 This document tracks all security reviews, audits, and penetration tests for CGraph.
 
@@ -202,4 +202,4 @@ This document tracks all security reviews, audits, and penetration tests for CGr
 
 ---
 
-<sub>**CGraph Security Review Tracking** • Version 0.9.31 • Last updated: January 30, 2026</sub>
+<sub>**CGraph Security Review Tracking** • Version 0.9.36 • Last updated: February 21, 2026</sub>

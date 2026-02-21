@@ -1,6 +1,6 @@
 # Security Audit Readiness Checklist
 
-> **Version:** 0.9.31 | **Last Updated:** February 2026 **Purpose:** Pre-audit readiness
+> **Version:** 0.9.36 | **Last Updated:** February 2026 **Purpose:** Pre-audit readiness
 > verification before external E2EE audit and penetration test
 
 ---

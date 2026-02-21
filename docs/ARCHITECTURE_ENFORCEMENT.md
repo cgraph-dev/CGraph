@@ -1,6 +1,6 @@
 # CGraph Architecture Enforcement
 
-> **Version: 0.9.31** | Last Updated: January 2026
+> **Version: 0.9.36** | Last Updated: February 2026
 
 This document defines the architectural boundaries and how they're enforced.
 
@@ -176,4 +176,4 @@ Some exceptions are allowed:
 
 ---
 
-<sub>**CGraph Architecture Enforcement** • Version 0.9.31</sub>
+<sub>**CGraph Architecture Enforcement** • Version 0.9.36</sub>

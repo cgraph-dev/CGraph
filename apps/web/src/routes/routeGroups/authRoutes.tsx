@@ -6,6 +6,7 @@
 
 import { Route } from 'react-router-dom';
 import { PublicRoute } from '../guards';
+import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
 import AuthLayout from '@/layouts/AuthLayout';
 import {
   Login,
@@ -25,7 +26,9 @@ export function AuthRoutes() {
         element={
           <PublicRoute>
             <AuthLayout>
-              <Login />
+              <RouteErrorBoundary routeName="Login">
+                <Login />
+              </RouteErrorBoundary>
             </AuthLayout>
           </PublicRoute>
         }
@@ -35,7 +38,9 @@ export function AuthRoutes() {
         element={
           <PublicRoute>
             <AuthLayout>
-              <Register />
+              <RouteErrorBoundary routeName="Register">
+                <Register />
+              </RouteErrorBoundary>
             </AuthLayout>
           </PublicRoute>
         }
@@ -45,14 +50,37 @@ export function AuthRoutes() {
         element={
           <PublicRoute>
             <AuthLayout>
-              <ForgotPassword />
+              <RouteErrorBoundary routeName="Forgot Password">
+                <ForgotPassword />
+              </RouteErrorBoundary>
             </AuthLayout>
           </PublicRoute>
         }
       />
-      <Route path="/auth/oauth/:provider/callback" element={<OAuthCallback />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route
+        path="/auth/oauth/:provider/callback"
+        element={
+          <RouteErrorBoundary routeName="OAuth Callback">
+            <OAuthCallback />
+          </RouteErrorBoundary>
+        }
+      />
+      <Route
+        path="/reset-password"
+        element={
+          <RouteErrorBoundary routeName="Reset Password">
+            <ResetPassword />
+          </RouteErrorBoundary>
+        }
+      />
+      <Route
+        path="/verify-email"
+        element={
+          <RouteErrorBoundary routeName="Verify Email">
+            <VerifyEmail />
+          </RouteErrorBoundary>
+        }
+      />
     </>
   );
 }
