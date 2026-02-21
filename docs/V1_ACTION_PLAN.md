@@ -22,8 +22,8 @@
 >
 > **Gaps found and fixed during audit:**
 >
-> 1. Grafana compose config referenced `cgraph-backend.json` as home dashboard — only
->    `cgraph-cloud-overview.json` exists → **fixed**
+> 1. ~~Grafana compose dashboard path~~ — **not a bug**: `cgraph-backend.json` exists at
+>    `infrastructure/grafana/provisioning/dashboards/json/` (mounted volume); reverted
 > 2. Nine docs had stale v0.9.31 version headers → **updated to v0.9.36**
 > 3. Auth routes lacked `RouteErrorBoundary` (settings + forums had it) → **added**
 > 4. Supabase used as managed PostgreSQL host only (no SDK) → **clarified in docs**

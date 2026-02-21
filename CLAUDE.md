@@ -42,7 +42,7 @@ forums, and gamification. Features include post-quantum E2EE (PQXDH + Triple Rat
 and AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a
 karma-based forum system.
 
-**Version**: 0.9.34  
+**Version**: 0.9.36  
 **Last Updated**: February 21, 2026  
 **Architecture Score**: 8.7/10 (see CURRENT_STATE_DASHBOARD.md for breakdown)  
 **License**: Proprietary (see LICENSE)
@@ -60,9 +60,9 @@ karma-based forum system.
 
 ## Operational Maturity
 
-> **Audit Note (Sessions 32-33)**: 8 deprecated packages deleted (api-client, test-utils, state,
-> core, config, hooks, ui, landing-components). Active packages: shared-types, utils, crypto,
-> socket, animation-constants. 3 dead GenServers wired into WorkerSupervisor (Registry, SLO,
+> **Audit Note (Sessions 32-33)**: 7 deprecated packages deleted (test-utils, state, core, config,
+> hooks, ui, landing-components). Active packages: api-client, shared-types, utils, crypto, socket,
+> animation-constants. 3 dead GenServers wired into WorkerSupervisor (Registry, SLO,
 > RequestCoalescing). 2 dead ConnectionPool modules deleted. Forums migrated from offset to cursor
 > pagination. **SoftDelete fully adopted** (22 files, 64 occurrences converted). React 19 APIs
 > adopted: `forwardRef` removed from 10 web + 2 mobile components, `useOptimistic` in
@@ -100,7 +100,7 @@ karma-based forum system.
 | **Chaos Testing**      | Ready           | Fault injection, fuse stress testing, failure scenarios                                  |
 | **Feature Flags**      | Active          | GenServer + ETS/Redis with percentage rollouts                                           |
 | **Test Coverage**      | Active          | 380+ test files (163 backend, 202 web, 15 mobile, 16 landing), 6900+ tests 0 failures    |
-| **CI/CD**              | Active          | 12 GH Actions workflows, CI-gated canary deploys                                         |
+| **CI/CD**              | Active          | 17 GH Actions workflows, CI-gated canary deploys                                         |
 | **AI Service**         | Active          | Chat completion, summarization, moderation, sentiment (LLM + heuristic fallback)         |
 | **CRDT Collaboration** | Active          | Yjs document editing via Phoenix Channels + per-document GenServer                       |
 | **Offline-First**      | Active          | WatermelonDB (9 tables) + SyncEngine (pull/push/conflict resolution)                     |
@@ -455,7 +455,7 @@ cd apps/backend && mix phx.server
 - **apps/backend** - Elixir/Phoenix 1.8 API server
 - **packages/shared-types** - TypeScript types shared between web/mobile
 - **packages/utils** - Common utilities
-- **packages/crypto** - E2EE (X3DH + Double Ratchet + PQXDH)
+- **packages/crypto** - E2EE (PQXDH + Triple Ratchet with ML-KEM-768)
 - **packages/socket** - WebSocket client wrapper
 - **packages/animation-constants** - Spring animation presets
 
@@ -564,7 +564,7 @@ Core business logic organized by domain:
 - `router.ex` - Main router (126 lines, imports 8 domain route modules)
 - `router/` - Domain route modules (health, auth, public, user, messaging, forum, gamification,
   admin). **Route order matters**: user_routes before public_routes to prevent wildcard shadowing
-- `controllers/` - REST endpoints (81 controllers, 100% test coverage)
+- `controllers/` - REST endpoints (83 controllers, 100% test coverage)
 - `channels/` - Phoenix channels for real-time features
 - `plugs/` - Authentication, rate limiting, CORS, security headers, cookie auth
 
@@ -897,9 +897,9 @@ Required:
 
 Copy `.env.example` to `.env` in `apps/backend/` and configure database credentials and secrets.
 
-## Current Status (v0.9.33)
+## Current Status (v0.9.36)
 
-**Updated:** February 20, 2026
+**Updated:** February 21, 2026
 
 ### Remediation Progress
 
@@ -941,9 +941,9 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Circuit breakers     | 1 (Redis)   | **7** (all ext. deps)                                 |
 | Compile warnings     | 90+         | **0** (fully clean)                                   |
 | Credo issues         | 1,277       | **0** (100% — fully clean)                            |
-| Operational score    | N/A         | **8.2/10**                                            |
+| Operational score    | N/A         | **8.7/10**                                            |
 
-**Overall Score:** 9.1/10 (up from 7.3/10)
+**Overall Score:** 8.7/10 (up from 7.3/10)
 
 ### Known Stubs & Limitations
 
@@ -955,7 +955,8 @@ The following areas are scaffolded but not fully implemented:
 - **Group auto-rules**: `Forums.GroupAutoRule` permission check always returns `true`
 - **Email digests**: `EmailDigestWorker` has full HTML + text templates, cron schedule, and queue
   fix. Standalone route `GET /api/v1/posts/:id` added for cross-referencing.
-- **AI integration**: Explicitly disabled; placeholder architecture doc exists
+- **AI integration**: Active — 9 backend modules, web service, Phoenix channel (`ai:{user_id}`);
+  heuristic fallback when LLM unavailable
 - ~~**Social Hub mock data**~~: **RESOLVED** — Wired to real `useNotificationStore` +
   `useSearchStore`; `mock-data.ts` deleted (Session 29)
 - ~~**Premium billing**~~: **RESOLVED** — `premiumStore` has `fetchBillingStatus()` calling backend;

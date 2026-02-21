@@ -13,14 +13,14 @@ CATEGORY                    STATUS      SCORE   REMAINING WORK
 ──────────────────────────  ──────────  ──────  ──────────────────────────────
 1. Testing Coverage         ✅ DONE     9/10    All controllers + contexts covered
 2. CI/CD Pipeline           ✅ DONE     10/10   None — fully automated
-3. Observability            🟡 PARTIAL  7/10    Grafana JSON exists, not deployed live
+3. Observability            ✅ DONE     8.5/10  Grafana Cloud deployed (cgraphdev.grafana.net)
 4. Load Testing             🟡 PARTIAL  3/10    k6 scripts ready, no runs executed
 5. Database Sharding Plan   ✅ DONE     10/10   None — fully documented
 6. Graceful Degradation     ✅ DONE     10/10   None — all deps covered
 ```
 
-**Overall Operational Maturity: 8.2/10** — Strong foundation with observability and load testing
-gaps.
+**Overall Operational Maturity: 8.7/10** — Strong foundation with Grafana Cloud deployed; load
+testing scripts ready.
 
 ---
 
@@ -123,24 +123,29 @@ test/cgraph/chaos/scenarios_test.exs                   # 9 tests
 ## 2. CI/CD Pipeline
 
 **Target**: Automated test gates, canary deploys, feature flags  
-**Status**: ✅ Fully automated — 12 GitHub Actions workflows
+**Status**: ✅ Fully automated — 17 GitHub Actions workflows
 
 ### Workflow Inventory
 
-| Workflow          | File                                      | Purpose                                       |
-| ----------------- | ----------------------------------------- | --------------------------------------------- |
-| CI                | `.github/workflows/ci.yml`                | Lint + format + typecheck + tests (451 lines) |
-| Coverage          | `.github/workflows/coverage.yml`          | ExCoveralls with 60% threshold                |
-| Deploy Backend    | `.github/workflows/deploy-backend.yml`    | CI-gated → Fly.io canary deploy               |
-| Deploy Web        | `.github/workflows/deploy.yml`            | Vercel deployment                             |
-| CodeQL            | `.github/workflows/codeql.yml`            | GitHub security scanning                      |
-| Dependency Review | `.github/workflows/dependency-review.yml` | PR dependency audit                           |
-| Docs Check        | `.github/workflows/docs-check.yml`        | Documentation validation                      |
-| E2E               | `.github/workflows/e2e.yml`               | End-to-end tests                              |
-| Load Test         | `.github/workflows/load-test.yml`         | k6 load tests                                 |
-| Performance       | `.github/workflows/performance.yml`       | Performance benchmarks                        |
-| Release           | `.github/workflows/release.yml`           | Release automation                            |
-| Semgrep           | `.github/workflows/semgrep.yml`           | Static security analysis                      |
+| Workflow             | File                                         | Purpose                                       |
+| -------------------- | -------------------------------------------- | --------------------------------------------- |
+| CI                   | `.github/workflows/ci.yml`                   | Lint + format + typecheck + tests (451 lines) |
+| Coverage             | `.github/workflows/coverage.yml`             | ExCoveralls with 60% threshold                |
+| Deploy Backend       | `.github/workflows/deploy-backend.yml`       | CI-gated → Fly.io canary deploy               |
+| Deploy Web           | `.github/workflows/deploy.yml`               | Vercel deployment                             |
+| Deploy Staging       | `.github/workflows/deploy-staging.yml`       | Staging environment deployment                |
+| Deploy Observability | `.github/workflows/deploy-observability.yml` | Grafana Cloud + observability stack           |
+| Backup               | `.github/workflows/backup.yml`               | Database backup automation                    |
+| CodeQL               | `.github/workflows/codeql.yml`               | GitHub security scanning                      |
+| Dependency Review    | `.github/workflows/dependency-review.yml`    | PR dependency audit                           |
+| Docs Check           | `.github/workflows/docs-check.yml`           | Documentation validation                      |
+| E2E                  | `.github/workflows/e2e.yml`                  | End-to-end tests                              |
+| Load Test            | `.github/workflows/load-test.yml`            | k6 load tests                                 |
+| Chaos Test           | `.github/workflows/chaos-test.yml`           | Fault injection testing                       |
+| Performance          | `.github/workflows/performance.yml`          | Performance benchmarks                        |
+| Release              | `.github/workflows/release.yml`              | Release automation                            |
+| Semgrep              | `.github/workflows/semgrep.yml`              | Static security analysis                      |
+| Docs                 | `.github/workflows/docs.yml`                 | Documentation site deployment                 |
 
 ### Deploy Pipeline Flow
 
@@ -229,10 +234,11 @@ Search Latency:        99%    under 500ms
 - **Sentry** integration with severity-mapped levels and tags
 - Structured logging via `CGraph.StructuredLogger`
 
-### Remaining Gap
+### Status
 
-- **Grafana dashboards need deployment** — JSON files exist but need to be provisioned into an
-  actual Grafana instance. Currently infrastructure-as-code ready but not live.
+- ✅ **Grafana Cloud deployed** at `cgraphdev.grafana.net` with deploy workflow
+- ✅ Local observability stack: 8-container docker-compose (Prometheus, Grafana, Loki, Tempo,
+  Alertmanager, Promtail, cAdvisor, Node Exporter)
 
 ---
 

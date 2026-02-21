@@ -1,6 +1,6 @@
 # CGraph Architecture Diagrams
 
-> **Version: 0.9.34** | Last Updated: February 21, 2026
+> **Version: 0.9.36** | Last Updated: February 21, 2026
 
 Visual documentation of CGraph's system architecture.
 
@@ -174,7 +174,6 @@ flowchart TB
 
     subgraph Infra["infrastructure/"]
         DOCKER["docker/<br/>Dockerfiles"]
-        K8S["kubernetes/<br/>K8s manifests"]
         TERRAFORM["terraform/<br/>IaC"]
     end
 

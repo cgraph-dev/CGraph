@@ -226,7 +226,7 @@ Feature coverage:   100% (code exists) / ~65% (production-quality)
 
 ## 🗄️ Database Schema
 
-**91 tables + 3 new** supporting all features:
+**95 tables** supporting all features:
 
 ### Core Tables
 
@@ -358,7 +358,7 @@ CGraph/
 │   └── backend/      # Phoenix/Elixir API
 ├── packages/
 │   ├── animation-constants/ # Spring animation presets
-│   ├── crypto/              # E2EE (X3DH + Double Ratchet)
+│   ├── crypto/              # E2EE (PQXDH + Triple Ratchet)
 │   ├── shared-types/        # TypeScript types
 │   ├── socket/              # WebSocket client wrapper
 │   └── utils/               # Utility functions
