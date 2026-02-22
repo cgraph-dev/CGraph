@@ -37,25 +37,27 @@ See `docs/PrivateFolder/ENGINEERING_STANDARDS.md` Part 8-9 for implementation de
 
 ## Cross-Platform Mandate (MANDATORY)
 
-> **CGraph is a cross-platform application. Every feature on web MUST work on mobile and vice versa.**
+> **CGraph is a cross-platform application. Every feature on web MUST work on mobile and vice
+> versa.**
 
-| Rule | Description |
-| ---- | ----------- |
-| **Feature Parity** | Any feature implemented on web MUST have a mobile equivalent. File a tracking issue if mobile implementation is deferred. |
-| **Shared Code First** | Business logic, types, API clients, and utilities MUST live in `packages/` — never duplicate between `apps/web` and `apps/mobile`. |
-| **API Contract** | Both web and mobile consume the same backend API. No platform-specific endpoints unless absolutely necessary (e.g., push token registration). |
-| **Shared Types** | All API response types live in `packages/shared-types/`. Both platforms import from there — no local type redefinitions. |
-| **Shared Hooks** | Cross-platform React hooks (data fetching, state, utilities) belong in `packages/hooks/` or `packages/utils/`. |
-| **UI Adapters** | Platform-specific UI is acceptable (React DOM vs React Native), but the underlying logic and state must be shared. |
-| **Testing Parity** | Critical flows must be tested on BOTH platforms. Shared packages must have platform-agnostic tests. |
-| **Offline Support** | Both web (IndexedDB) and mobile (WatermelonDB) must handle offline gracefully with sync-on-reconnect. |
+| Rule                  | Description                                                                                                                                   |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Feature Parity**    | Any feature implemented on web MUST have a mobile equivalent. File a tracking issue if mobile implementation is deferred.                     |
+| **Shared Code First** | Business logic, types, API clients, and utilities MUST live in `packages/` — never duplicate between `apps/web` and `apps/mobile`.            |
+| **API Contract**      | Both web and mobile consume the same backend API. No platform-specific endpoints unless absolutely necessary (e.g., push token registration). |
+| **Shared Types**      | All API response types live in `packages/shared-types/`. Both platforms import from there — no local type redefinitions.                      |
+| **Shared Hooks**      | Cross-platform React hooks (data fetching, state, utilities) belong in `packages/hooks/` or `packages/utils/`.                                |
+| **UI Adapters**       | Platform-specific UI is acceptable (React DOM vs React Native), but the underlying logic and state must be shared.                            |
+| **Testing Parity**    | Critical flows must be tested on BOTH platforms. Shared packages must have platform-agnostic tests.                                           |
+| **Offline Support**   | Both web (IndexedDB) and mobile (WatermelonDB) must handle offline gracefully with sync-on-reconnect.                                         |
 
 ## World-Class Coding Standards (MANDATORY)
 
-> **All code — new and existing — MUST follow Google, Meta, Discord, and Signal engineering standards.**
-> This is non-negotiable. Code that doesn't meet these standards must be refactored.
+> **All code — new and existing — MUST follow Google, Meta, Discord, and Signal engineering
+> standards.** This is non-negotiable. Code that doesn't meet these standards must be refactored.
 
 ### Google Standards
+
 - **SRE**: SLO/SLI/error budgets for every service. 99.9% availability minimum.
 - **TypeScript Style Guide**: Strict naming conventions (see Code Quality Standards below).
 - **Structured Logging**: NEVER string interpolation in logs. Always structured metadata.
@@ -64,6 +66,7 @@ See `docs/PrivateFolder/ENGINEERING_STANDARDS.md` Part 8-9 for implementation de
 - **Error Handling**: Explicit error handling everywhere. No silent failures. No `catch {}`.
 
 ### Meta Standards
+
 - **Performance Budgets**: Every component has a render budget. No unnecessary re-renders.
 - **TAO Caching**: Multi-tier cache (ETS → Cachex → Redis → DB). Cache invalidation on writes.
 - **Request Coalescing**: Batch concurrent identical requests into one.
@@ -71,14 +74,17 @@ See `docs/PrivateFolder/ENGINEERING_STANDARDS.md` Part 8-9 for implementation de
 - **Incremental Adoption**: Large refactors done incrementally with backward compatibility.
 
 ### Discord Standards (Elixir/Phoenix — Same Stack)
+
 - **Gateway Sharding**: Design for horizontal scaling from day one.
 - **Lazy Presence**: Only track presence for visible users, not all connected.
 - **Rust NIFs**: Performance-critical code (crypto, compression) in Rust NIFs.
 - **Session Resumption**: WebSocket reconnect without message loss.
-- **Minimal Payloads**: Send IDs over WebSocket, let clients fetch full data. Never broadcast full objects.
+- **Minimal Payloads**: Send IDs over WebSocket, let clients fetch full data. Never broadcast full
+  objects.
 - **Cursor Pagination**: NEVER offset. Always cursor-based with `has_more` + `cursor`.
 
 ### Signal Standards
+
 - **Zero-Trust Security**: Assume every input is malicious. Validate everything server-side.
 - **E2EE by Default**: All private messages encrypted end-to-end. Server never sees plaintext.
 - **Minimal Data Collection**: Don't store what you don't need. Encrypt what you must store.
@@ -87,9 +93,11 @@ See `docs/PrivateFolder/ENGINEERING_STANDARDS.md` Part 8-9 for implementation de
 - **Security Audit Trail**: Every sensitive operation logged with actor, action, target, timestamp.
 
 ### Enforcement Rules
+
 1. **New code**: Must pass ALL standards before merge. No exceptions.
 2. **Existing code**: Refactor to comply whenever a file is touched ("Boy Scout Rule").
-3. **CI Gates**: TypeScript strict mode, `mix compile --warnings-as-errors`, ESLint zero-warning, test coverage minimums.
+3. **CI Gates**: TypeScript strict mode, `mix compile --warnings-as-errors`, ESLint zero-warning,
+   test coverage minimums.
 4. **Review Checklist**: Every PR checked against these standards before approval.
 
 ## Project Overview
@@ -142,27 +150,40 @@ karma-based forum system.
 >
 > **Session 38 World-Class Compliance (Tier 1)**: Created comprehensive gap analysis
 > (`docs/WORLD_CLASS_GAP_ANALYSIS.md`) auditing all 15 mandatory rules + 106 wave tasks. Tier 1
-> implementation (commit `9d8fb58a`, 63 files): migrated 7 offset→cursor pagination queries,
-> fixed 111 Logger string interpolation→structured metadata across 49 files, removed 2 remaining
-> forwardRef calls (web HoloContainer + mobile MatrixBackground), added `permissions:` blocks to
-> 2 CI workflows (17/17 now compliant). Backend compiles cleanly with `--warnings-as-errors`.
+> implementation (commit `9d8fb58a`, 63 files): migrated 7 offset→cursor pagination queries, fixed
+> 111 Logger string interpolation→structured metadata across 49 files, removed 2 remaining
+> forwardRef calls (web HoloContainer + mobile MatrixBackground), added `permissions:` blocks to 2
+> CI workflows (17/17 now compliant). Backend compiles cleanly with `--warnings-as-errors`.
 > Compliance score: ~58% → ~65%.
 >
-> **Session 39 World-Class Compliance (Tier 2/2b/3)**: 214 files changed across 4 commits.
-> **Tier 2** (commit `08b988c2`, 104 files): codemod 59 React.FC → function declarations (73→5),
-> migrated 14 useContext() → use() (React 19), split jobs.ex (1253→247, 7 submodules) + 
-> data_export.ex (1059→234, 6 submodules) + ForumHierarchyAdmin.tsx (536→129, 7 components) +
+> **Session 39 World-Class Compliance (Tier 2/2b/3)**: 214 files changed across 4 commits. **Tier
+> 2** (commit `08b988c2`, 104 files): codemod 59 React.FC → function declarations (73→5), migrated
+> 14 useContext() → use() (React 19), split jobs.ex (1253→247, 7 submodules) + data_export.ex
+> (1059→234, 6 submodules) + ForumHierarchyAdmin.tsx (536→129, 7 components) +
 > ForumPermissionsPanel.tsx (452→130, 8 components), created CGraphWeb.ControllerHelpers
-> (render_data/render_error), added N+1 preload to boards.ex, updated CLAUDE.md with
-> cross-platform mandate + world-class coding standards.
-> **Tier 2b/3** (commits `7d8cff09` + `9901c02f`, 73 files): split 8 more Elixir files
-> (presence 905→225, oauth 823→190, moderation 816→81, redis 802→481, cache 764→380,
-> batch_processor 717→116, api_versioning 686→243, request_context 656→216), split 4 TSX
-> (MatrixText, sections, ChannelsTab, SeasonalEffects), added 19 @spec to 3 controllers,
+> (render_data/render_error), added N+1 preload to boards.ex, updated CLAUDE.md with cross-platform
+> mandate + world-class coding standards. **Tier 2b/3** (commits `7d8cff09` + `9901c02f`, 73 files):
+> split 8 more Elixir files (presence 905→225, oauth 823→190, moderation 816→81, redis 802→481,
+> cache 764→380, batch_processor 717→116, api_versioning 686→243, request_context 656→216), split 4
+> TSX (MatrixText, sections, ChannelsTab, SeasonalEffects), added 19 @spec to 3 controllers,
 > standardized 5 JSON responses, added optimistic updates (sendMessage, reactions, votePost,
 > ThreadPanel), created shared SubmitButton with useFormStatus, migrated 3 forms to
-> `<form action=>`, XSS audit (all 8 dangerouslySetInnerHTML safe — DOMPurify).
-> Compliance: ~65% → ~80%.
+> `<form action=>`, XSS audit (all 8 dangerouslySetInnerHTML safe — DOMPurify). Compliance: ~65% →
+> ~80%.
+>
+> **Session 40 World-Class Compliance (Tiers 7-10)**: 2,500+ files changed across 7 commits. **Tier
+> 7** (commit `7fb596e2`, 100 files): created 6 missing shared packages (state, hooks, ui, config,
+> core, test-utils — all 12 now exist), added reset() to 16 stores, removed last 2 React.FC
+> (OAuthButtons, ProfilerWrapper), +217 @spec across 28 files. **Tier 8** (68 files): split 6 TSX +
+> 8 Elixir files (all under limits), deleted 4 mobile context shims, added ESLint
+> no-restricted-syntax guards (ban React.FC, forwardRef, useContext), +45 @spec. **Tier 9** (commit
+> `457f5705`, 1,898 files): renamed 1,507 PascalCase files to kebab-case, updated 2,972 imports
+> across 1,039 files, renamed 2 web directories, fixed 101 circular barrel imports, +126 @spec to
+> channels/controllers/validators. @spec: 52.6% (2,520/4,792). **Tier 10** (commit `2796fbc3`, 281
+> files): strict audit discovered 6 false claims in gap analysis. Fixed: renamed last 3 PascalCase
+> mobile files + 23 PascalCase mobile directories, added reset() to 15 mobile stores, verified all
+> 22 web .impl.ts stores already had reset(), fixed gamificationSocketStore reset fields. Rule 1
+> TRUE PASS (0 files + 0 dirs). Rule 3 TRUE PASS (all stores have reset()). Compliance: ~80% → ~91%.
 
 | Capability             | Status          | Implementation                                                                           |
 | ---------------------- | --------------- | ---------------------------------------------------------------------------------------- |
@@ -819,7 +840,8 @@ kebab-case:     File names (user-service.ts, api-utils.ts)
 8. **Explicit return types** - All functions must have return type annotations
 9. **Event-driven writes** - Publish events, process async
 10. **Denormalize counts** - Store vote_count, reply_count as columns
-11. **Use `render_data`/`render_error`** - All controller JSON responses via `CGraphWeb.ControllerHelpers`
+11. **Use `render_data`/`render_error`** - All controller JSON responses via
+    `CGraphWeb.ControllerHelpers`
 12. **Use `<form action=>`** - Not `<form onSubmit=>` for data mutations (React 19)
 13. **Use `SubmitButton`** - Shared component with `useFormStatus` for form submit buttons
 14. **Add `@spec`** - Every public Elixir function must have a typespec

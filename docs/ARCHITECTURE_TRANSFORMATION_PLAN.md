@@ -17,20 +17,20 @@ Score: 10/10** | **Philosophy: BUILD, DON'T DELETE**
 
 ### Executive Summary
 
-| Metric                | Current | Target   | Status      |
-| --------------------- | ------- | -------- | ----------- |
-| `any` types           | 203     | 0        | 🔴 Critical |
-| Files >300 lines      | 47      | 0        | 🔴 Critical |
-| Files >1000 lines     | 20      | 0        | 🔴 Critical |
+| Metric                | Current | Target   | Status         |
+| --------------------- | ------- | -------- | -------------- |
+| `any` types           | 203     | 0        | 🔴 Critical    |
+| Files >300 lines      | 47      | 0        | 🔴 Critical    |
+| Files >1000 lines     | 20      | 0        | 🔴 Critical    |
 | `React.FC` usage      | 73      | 5        | ✅ Nearly done |
-| `console.log` calls   | 276     | 0 (prod) | 🟡 Warning  |
-| `@ts-ignore` comments | 7       | 0        | 🟡 Warning  |
-| `eslint-disable`      | 40      | 0        | 🟡 Warning  |
-| TODO/FIXME comments   | 41      | 0        | 🟡 Warning  |
-| Test files (web)      | 49      | 200+     | 🔴 Critical |
-| Test files (mobile)   | 15      | 100+     | 🔴 Critical |
-| Backend tests         | 1,327   | 2,000+   | 🟡 Warning  |
-| Store files           | 107     | 30       | 🔴 Critical |
+| `console.log` calls   | 276     | 0 (prod) | 🟡 Warning     |
+| `@ts-ignore` comments | 7       | 0        | 🟡 Warning     |
+| `eslint-disable`      | 40      | 0        | 🟡 Warning     |
+| TODO/FIXME comments   | 41      | 0        | 🟡 Warning     |
+| Test files (web)      | 49      | 200+     | 🔴 Critical    |
+| Test files (mobile)   | 15      | 100+     | 🔴 Critical    |
+| Backend tests         | 1,327   | 2,000+   | 🟡 Warning     |
+| Store files           | 107     | 30       | 🔴 Critical    |
 
 ### Critical Violations: Files Over 1,000 Lines
 
@@ -57,7 +57,7 @@ These files MUST be split. Meta would reject these in code review.
 | `CoinShopScreen.tsx`              | 1,399     | 300 | Split into 5+ components  |
 | `EffectsCustomization.tsx`        | 1,369     | 300 | Split into 5+ components  |
 | `LandingPage.tsx`                 | 1,316     | 300 | Split into 5+ components  |
-| `jobs.ex` (backend)               | 1,253     | 500 | ✅ SPLIT (1253→247)     |
+| `jobs.ex` (backend)               | 1,253     | 500 | ✅ SPLIT (1253→247)       |
 
 ### Critical Violations: `any` Type Usage
 
@@ -2304,24 +2304,24 @@ Created submodules:
 
 ### Phase 7: File Splitting — Completed (v0.9.37, Feb 21, 2026)
 
-| File | Before | After | Status |
-| ---- | ------ | ----- | ------ |
-| `jobs.ex` | 1,253 | 247 | ✅ SPLIT |
-| `data_export.ex` | 1,059 | 234 | ✅ SPLIT |
-| `presence.ex` | 905 | 225 | ✅ SPLIT |
-| `oauth.ex` | 823 | 190 | ✅ SPLIT |
-| `moderation.ex` | 816 | 81 | ✅ SPLIT |
-| `redis.ex` | 802 | 481 | ✅ SPLIT |
-| `cache.ex` | 764 | 380 | ✅ SPLIT |
-| `batch_processor.ex` | 717 | 116 | ✅ SPLIT |
-| `api_versioning.ex` | 686 | 243 | ✅ SPLIT |
-| `request_context.ex` | 656 | 216 | ✅ SPLIT |
-| `ForumHierarchyAdmin.tsx` | 536 | 129 | ✅ SPLIT |
-| `ForumPermissionsPanel.tsx` | 452 | 130 | ✅ SPLIT |
-| `MatrixText.tsx` | 422 | 288 | ✅ SPLIT |
-| `effects-customization/sections.tsx` | 405 | 9 | ✅ SPLIT |
-| `ChannelsTab.tsx` | 396 | 209 | ✅ SPLIT |
-| `SeasonalEffects.tsx` | 382 | 197 | ✅ SPLIT |
+| File                                 | Before | After | Status   |
+| ------------------------------------ | ------ | ----- | -------- |
+| `jobs.ex`                            | 1,253  | 247   | ✅ SPLIT |
+| `data_export.ex`                     | 1,059  | 234   | ✅ SPLIT |
+| `presence.ex`                        | 905    | 225   | ✅ SPLIT |
+| `oauth.ex`                           | 823    | 190   | ✅ SPLIT |
+| `moderation.ex`                      | 816    | 81    | ✅ SPLIT |
+| `redis.ex`                           | 802    | 481   | ✅ SPLIT |
+| `cache.ex`                           | 764    | 380   | ✅ SPLIT |
+| `batch_processor.ex`                 | 717    | 116   | ✅ SPLIT |
+| `api_versioning.ex`                  | 686    | 243   | ✅ SPLIT |
+| `request_context.ex`                 | 656    | 216   | ✅ SPLIT |
+| `ForumHierarchyAdmin.tsx`            | 536    | 129   | ✅ SPLIT |
+| `ForumPermissionsPanel.tsx`          | 452    | 130   | ✅ SPLIT |
+| `MatrixText.tsx`                     | 422    | 288   | ✅ SPLIT |
+| `effects-customization/sections.tsx` | 405    | 9     | ✅ SPLIT |
+| `ChannelsTab.tsx`                    | 396    | 209   | ✅ SPLIT |
+| `SeasonalEffects.tsx`                | 382    | 197   | ✅ SPLIT |
 
 ---
 
@@ -3065,7 +3065,7 @@ chmod +x scripts/cleanup-phase0.sh
 ### Naming Conventions
 
 - Folders: kebab-case (chat-messages, not chatMessages)
-- Components: PascalCase.tsx
+- Components: kebab-case.tsx (user-profile.tsx, not UserProfile.tsx)
 - Hooks: use{Name}.ts
 - Stores: {domain}Store.ts
 - Utils: {name}.ts (camelCase)
@@ -3999,14 +3999,14 @@ module.exports = {
 
 ### Quality Metrics
 
-| Metric                 | Current | Target | Status      |
-| ---------------------- | ------- | ------ | ----------- |
-| TypeScript strict      | Yes     | Yes    | ✅          |
-| ESLint errors          | 0       | 0      | ✅          |
-| Console.log statements | 49      | <10    | ⚠️          |
-| `any` types            | 38      | <20    | ⚠️          |
-| Files >500 lines       | 153     | 0      | ❌ Critical |
-| Files >1000 lines      | 29      | 0      | ❌ Critical |
+| Metric                 | Current | Target | Status         |
+| ---------------------- | ------- | ------ | -------------- |
+| TypeScript strict      | Yes     | Yes    | ✅             |
+| ESLint errors          | 0       | 0      | ✅             |
+| Console.log statements | 49      | <10    | ⚠️             |
+| `any` types            | 38      | <20    | ⚠️             |
+| Files >500 lines       | 153     | 0      | ❌ Critical    |
+| Files >1000 lines      | 29      | 0      | ❌ Critical    |
 | `React.FC` usage       | 73      | 5      | ✅ Nearly done |
 
 ---

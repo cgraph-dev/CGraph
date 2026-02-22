@@ -75,6 +75,7 @@ defmodule CGraph.Forums.CustomEmoji do
   @doc """
   Changeset for creating a new custom emoji.
   """
+  @spec create_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def create_changeset(emoji, attrs) do
     emoji
     |> cast(attrs, [
@@ -96,6 +97,7 @@ defmodule CGraph.Forums.CustomEmoji do
   @doc """
   Changeset for updating an existing emoji.
   """
+  @spec update_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def update_changeset(emoji, attrs) do
     emoji
     |> cast(attrs, [
@@ -110,6 +112,7 @@ defmodule CGraph.Forums.CustomEmoji do
   @doc """
   Changeset for approving an emoji.
   """
+  @spec approve_changeset(%__MODULE__{}, binary()) :: Ecto.Changeset.t()
   def approve_changeset(emoji, approver_id) do
     emoji
     |> change(%{
@@ -124,6 +127,7 @@ defmodule CGraph.Forums.CustomEmoji do
   @doc """
   Changeset for rejecting an emoji.
   """
+  @spec reject_changeset(%__MODULE__{}, String.t()) :: Ecto.Changeset.t()
   def reject_changeset(emoji, reason) do
     emoji
     |> change(%{
@@ -138,6 +142,7 @@ defmodule CGraph.Forums.CustomEmoji do
   @doc """
   Increment usage count and update last_used_at.
   """
+  @spec increment_usage(binary()) :: {non_neg_integer(), nil}
   def increment_usage(emoji_id) do
     from(e in __MODULE__, where: e.id == ^emoji_id)
     |> Repo.update_all(
@@ -190,6 +195,7 @@ defmodule CGraph.Forums.CustomEmoji do
   @doc """
   Get all active global emojis.
   """
+  @spec global_query() :: Ecto.Query.t()
   def global_query do
     from e in __MODULE__,
       where: is_nil(e.forum_id) and e.is_active == true,
@@ -199,6 +205,7 @@ defmodule CGraph.Forums.CustomEmoji do
   @doc """
   Get emojis available for a specific forum (global + forum-specific).
   """
+  @spec available_for_forum_query(binary()) :: Ecto.Query.t()
   def available_for_forum_query(forum_id) do
     from e in __MODULE__,
       where: (is_nil(e.forum_id) or e.forum_id == ^forum_id) and e.is_active == true,
@@ -208,6 +215,7 @@ defmodule CGraph.Forums.CustomEmoji do
   @doc """
   Get emojis by category.
   """
+  @spec by_category_query(binary()) :: Ecto.Query.t()
   def by_category_query(category_id) do
     from e in __MODULE__,
       where: e.category_id == ^category_id and e.is_active == true,
@@ -217,6 +225,7 @@ defmodule CGraph.Forums.CustomEmoji do
   @doc """
   Search emojis by shortcode or name.
   """
+  @spec search_query(String.t()) :: Ecto.Query.t()
   def search_query(search_term) do
     search_pattern = "%#{search_term}%"
 
@@ -232,6 +241,7 @@ defmodule CGraph.Forums.CustomEmoji do
   @doc """
   Get most used emojis.
   """
+  @spec popular_query(pos_integer()) :: Ecto.Query.t()
   def popular_query(limit \\ 20) do
     from e in __MODULE__,
       where: e.is_active == true,
@@ -242,6 +252,7 @@ defmodule CGraph.Forums.CustomEmoji do
   @doc """
   Get pending emojis awaiting moderation.
   """
+  @spec pending_query() :: Ecto.Query.t()
   def pending_query do
     from e in __MODULE__,
       where: is_nil(e.approved_at) and is_nil(e.rejected_at),

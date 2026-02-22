@@ -55,6 +55,7 @@ defmodule CGraph.Forums.ForumPermission do
   @doc """
   List of all permission fields.
   """
+  @spec permission_fields() :: [atom()]
   def permission_fields do
     [
       :can_view, :can_view_boards, :can_create_threads, :can_reply,
@@ -65,6 +66,7 @@ defmodule CGraph.Forums.ForumPermission do
   @doc """
   Create or update forum permissions.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(permission, attrs) do
     permission
     |> cast(attrs, [:forum_id, :user_group_id, :applies_to] ++ permission_fields())
@@ -89,6 +91,7 @@ defmodule CGraph.Forums.ForumPermission do
   Check if a user has a specific permission on a forum.
   Returns true/false.
   """
+  @spec can?(atom(), struct() | nil, struct(), module()) :: boolean()
   def can?(permission, user, forum, repo) when is_atom(permission) do
     effective = get_effective_permission(permission, user, forum, repo)
     effective == true
@@ -98,6 +101,7 @@ defmodule CGraph.Forums.ForumPermission do
   Get the effective value of a permission for a user on a forum.
   Handles permission inheritance from parent forums.
   """
+  @spec get_effective_permission(atom(), struct() | nil, struct(), module()) :: boolean()
   def get_effective_permission(permission, nil, forum, repo) do
     # Anonymous user - check guest permissions
     get_guest_permission(permission, forum, repo)
@@ -141,6 +145,7 @@ defmodule CGraph.Forums.ForumPermission do
   Get all effective permissions for a user on a forum.
   Returns a map of permission => boolean.
   """
+  @spec effective_permissions(struct() | nil, struct(), module()) :: %{atom() => boolean()}
   def effective_permissions(user, forum, repo) do
     permission_fields()
     |> Enum.map(fn field ->
@@ -156,6 +161,7 @@ defmodule CGraph.Forums.ForumPermission do
   @doc """
   Query for permissions of a specific forum.
   """
+  @spec for_forum_query(binary()) :: Ecto.Query.t()
   def for_forum_query(forum_id) do
     from fp in __MODULE__,
       where: fp.forum_id == ^forum_id,
@@ -165,6 +171,7 @@ defmodule CGraph.Forums.ForumPermission do
   @doc """
   Query for permissions of a specific group across all forums.
   """
+  @spec for_group_query(binary()) :: Ecto.Query.t()
   def for_group_query(group_id) do
     from fp in __MODULE__,
       where: fp.user_group_id == ^group_id,
@@ -174,6 +181,7 @@ defmodule CGraph.Forums.ForumPermission do
   @doc """
   Query for guest permissions on a forum.
   """
+  @spec guest_permissions_query(binary()) :: Ecto.Query.t()
   def guest_permissions_query(forum_id) do
     from fp in __MODULE__,
       where: fp.forum_id == ^forum_id and fp.applies_to == "guest"
@@ -186,6 +194,7 @@ defmodule CGraph.Forums.ForumPermission do
   @doc """
   Apply a permission template to a forum.
   """
+  @spec apply_template(binary(), struct(), binary(), module()) :: {:ok, %__MODULE__{}} | {:error, Ecto.Changeset.t()}
   def apply_template(forum_id, template, group_id, repo) do
     attrs =
       Map.merge(
@@ -217,6 +226,7 @@ defmodule CGraph.Forums.ForumPermission do
   @doc """
   Copy permissions from one forum to another.
   """
+  @spec copy_permissions(binary(), binary(), module()) :: [term()]
   def copy_permissions(from_forum_id, to_forum_id, repo) do
     permissions =
       from(fp in __MODULE__, where: fp.forum_id == ^from_forum_id)

@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
+import checkFile from 'eslint-plugin-check-file';
 
 export default [
   {
@@ -184,6 +185,26 @@ export default [
           selector: 'CallExpression[callee.name="useContext"]',
           message:
             'Do not use useContext(). In React 19, use the use() hook instead: use(MyContext).',
+        },
+      ],
+    },
+  },
+  // Enforce kebab-case filenames for component files (*.tsx)
+  // Hooks, stores, and utils retain camelCase convention
+  {
+    files: ['apps/web/src/**/*.tsx', 'apps/mobile/src/**/*.tsx'],
+    ignores: ['**/App.tsx', '**/__tests__/**'],
+    plugins: {
+      'check-file': checkFile,
+    },
+    rules: {
+      'check-file/filename-naming-convention': [
+        'error',
+        {
+          '**/*.tsx': 'KEBAB_CASE',
+        },
+        {
+          ignoreMiddleExtensions: true,
         },
       ],
     },

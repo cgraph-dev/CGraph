@@ -1,9 +1,9 @@
 # CGraph Project Status
 
-> **Version: 0.9.37** | Last Updated: Session 39 (Feb 21, 2026)
+> **Version: 0.9.38** | Last Updated: Session 40 (Feb 22, 2026)
 >
-> **⚠️ Scores re-calibrated in Session 36 after verification audit, updated Session 39 after
-> Tier 1/2/2b/3 code-quality sprint. See [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md) for full gap analysis.**
+> **⚠️ Scores re-calibrated in Session 36 after verification audit, updated Session 40 after Tiers
+> 1-10 code-quality sprints. See [V1_ACTION_PLAN.md](V1_ACTION_PLAN.md) for full gap analysis.**
 
 ---
 
@@ -57,19 +57,20 @@
 
 ### Overall Health Score
 
-**8.85/10** (re-calibrated Session 34 verification audit + Session 39 code-quality sprint — see V1_ACTION_PLAN.md)
+**8.85/10** (re-calibrated Session 34 verification audit + Session 40 Tiers 7-10 sprint — see
+V1_ACTION_PLAN.md)
 
-| Category             | Score  | Target | Notes                                                                                                                                                                     |
-| -------------------- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Security             | 9/10   | 9/10   | Real X3DH ECDH + PQXDH E2EE, mobile PQ bridge, 3-layer rate limiting, audit plug on all pipelines, AI content moderation, 7 CI scan tools. Gap: external pen test overdue |
-| Code Quality         | 8.5/10 | 9/10   | Strict TS, ESLint 9, 0 errors. Consistent patterns across 37 new modules                                                                                                  |
-| Feature Completeness | 9.5/10 | 9/10   | 69+ features: AI suite, CRDT collaboration, offline-first mobile, PQ crypto                                                                                               |
-| Test Coverage        | 7.5/10 | 8/10   | Web 205 files (60% gate), Mobile 27 files, Backend 173 files (75% gate). New features need tests                                                                          |
-| Maintainability      | 8/10   | 9/10   | Good module structure, bounded contexts, consistent facades                                                                                                               |
-| Production Readiness | 8/10   | 10/10  | Grafana Cloud deployed, deploy workflows, metrics exposed, load test seeder ready                                                                                         |
-| Observability        | 8.5/10 | 10/10  | Full stack deployed: Fly.io metrics → Grafana Cloud Prometheus, alertmanager, deploy workflow                                                                             |
-| Resilience           | 8/10   | 10/10  | CB + DLQ + Backpressure + Snowflake, offline queue with backoff, sync conflict resolution                                                                                 |
-| Architecture         | 9/10   | 9/10   | 36+ bounded contexts, React 19 near-complete (React.FC 73→5, useContext 0), ControllerHelpers, 10 Elixir + 6 TSX file splits, DynamicSupervisor patterns              |
+| Category             | Score  | Target | Notes                                                                                                                                                                                                               |
+| -------------------- | ------ | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Security             | 9/10   | 9/10   | Real X3DH ECDH + PQXDH E2EE, mobile PQ bridge, 3-layer rate limiting, audit plug on all pipelines, AI content moderation, 7 CI scan tools. Gap: external pen test overdue                                           |
+| Code Quality         | 8.5/10 | 9/10   | Strict TS, ESLint 9, 0 errors. Consistent patterns across 37 new modules                                                                                                                                            |
+| Feature Completeness | 9.5/10 | 9/10   | 69+ features: AI suite, CRDT collaboration, offline-first mobile, PQ crypto                                                                                                                                         |
+| Test Coverage        | 7.5/10 | 8/10   | Web 205 files (60% gate), Mobile 27 files, Backend 173 files (75% gate). New features need tests                                                                                                                    |
+| Maintainability      | 8/10   | 9/10   | Good module structure, bounded contexts, consistent facades                                                                                                                                                         |
+| Production Readiness | 8/10   | 10/10  | Grafana Cloud deployed, deploy workflows, metrics exposed, load test seeder ready                                                                                                                                   |
+| Observability        | 8.5/10 | 10/10  | Full stack deployed: Fly.io metrics → Grafana Cloud Prometheus, alertmanager, deploy workflow                                                                                                                       |
+| Resilience           | 8/10   | 10/10  | CB + DLQ + Backpressure + Snowflake, offline queue with backoff, sync conflict resolution                                                                                                                           |
+| Architecture         | 9.5/10 | 9/10   | 36+ bounded contexts, React 19 complete (React.FC 0, useContext 0, forwardRef 0), all files kebab-case, all stores have reset(), ControllerHelpers, 18 Elixir + 10 TSX file splits, 12 shared packages, @spec 52.6% |
 
 See `docs/REMEDIATION_STATUS_2026_01_31.md` for full details.
 
@@ -79,18 +80,44 @@ See `docs/REMEDIATION_STATUS_2026_01_31.md` for full details.
 
 **4 commits, 214 files changed. Compliance ~58% → ~80%.**
 
-| Commit | Scope | Files | Key Changes |
-| --- | --- | --- | --- |
-| `08b988c2` | Tier 2 | 104 | React.FC 73→5, useContext→use() 14→0, file splits (jobs, data_export, ForumHierarchyAdmin, ForumPermissionsPanel), ControllerHelpers extraction, N+1 preload fixes, CLAUDE.md standards |
-| `7d8cff09` | Tier 2b | ~40 | 8 Elixir file splits (presence, oauth, moderation, redis, cache, batch_processor, api_versioning, request_context), 4 TSX splits |
-| `9901c02f` | Tier 3 | ~33 | useOptimistic (7+ adoptions), useFormStatus (3 forms), SubmitButton component, 19 @spec annotations, 5 JSON standardizations, XSS audit (all 8 dangerouslySetInnerHTML sanitized) |
-| (docs) | Docs | ~37 | Gap analysis updated, CURRENT_STATE_DASHBOARD, PROJECT_STATUS synced |
+| Commit     | Scope   | Files | Key Changes                                                                                                                                                                             |
+| ---------- | ------- | ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `08b988c2` | Tier 2  | 104   | React.FC 73→5, useContext→use() 14→0, file splits (jobs, data_export, ForumHierarchyAdmin, ForumPermissionsPanel), ControllerHelpers extraction, N+1 preload fixes, CLAUDE.md standards |
+| `7d8cff09` | Tier 2b | ~40   | 8 Elixir file splits (presence, oauth, moderation, redis, cache, batch_processor, api_versioning, request_context), 4 TSX splits                                                        |
+| `9901c02f` | Tier 3  | ~33   | useOptimistic (7+ adoptions), useFormStatus (3 forms), SubmitButton component, 19 @spec annotations, 5 JSON standardizations, XSS audit (all 8 dangerouslySetInnerHTML sanitized)       |
+| (docs)     | Docs    | ~37   | Gap analysis updated, CURRENT_STATE_DASHBOARD, PROJECT_STATUS synced                                                                                                                    |
 
 **Key architectural improvements:**
-- **ControllerHelpers**: Shared `json_response/3`, `handle_errors/2`, `paginate/3` extracted from controllers
-- **React 19 patterns**: `use()` context API, `useOptimistic`, `useFormStatus`, `SubmitButton` component
+
+- **ControllerHelpers**: Shared `json_response/3`, `handle_errors/2`, `paginate/3` extracted from
+  controllers
+- **React 19 patterns**: `use()` context API, `useOptimistic`, `useFormStatus`, `SubmitButton`
+  component
 - **File size compliance**: 10/19 Elixir files + 6/16 TSX files split to meet LOC limits
 - **@spec coverage**: 674 → 711 (25.4% of public functions)
+
+---
+
+### v0.9.38 Highlights — Session 40 (Feb 22, 2026)
+
+**7 commits, 2,500+ files changed. Compliance ~80% → ~91%.**
+
+| Tier    | Scope             | Files | Key Changes                                                                                               |
+| ------- | ----------------- | ----- | --------------------------------------------------------------------------------------------------------- |
+| Tier 7  | Packages + stores | 100   | 6 shared packages created, reset() added to 16 stores, last 2 React.FC removed, +217 @spec                |
+| Tier 8  | Splits + cleanup  | 68    | 6 TSX + 8 Elixir splits (all under limits), 4 mobile context shims deleted, ESLint guards, +45 @spec      |
+| Tier 9  | Kebab-case rename | 1,898 | 1,507 PascalCase files renamed, 2,972 imports updated, 101 circular imports fixed, +126 @spec             |
+| Tier 10 | Audit corrections | 281   | 3 last PascalCase files + 23 directories renamed, reset() added to 15 mobile stores, 6 false claims fixed |
+
+**Key architectural improvements:**
+
+- **File naming**: 100% kebab-case compliance (1,510 files + 25 directories renamed)
+- **State management**: All 36 Zustand stores have reset() methods
+- **Shared packages**: All 12 packages exist (state, hooks, ui, config, core, test-utils created)
+- **React 19**: 0 React.FC, 0 forwardRef, 0 useContext — ESLint guards prevent regression
+- **@spec coverage**: 711 → 2,520 (52.6% of 4,792 public functions)
+- **JSON standardization**: 55+ controllers standardized (3 intentional exceptions)
+- **Gap analysis**: Honest audit uncovered 6 false claims, all fixed
 
 ---
 

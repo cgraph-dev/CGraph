@@ -244,11 +244,11 @@ const { data: users } = useQuery(['users'], userService.getAll);
 #### 16. Consistent file naming
 
 ```
-components/   → PascalCase.tsx    (UserAvatar.tsx)
+components/   → kebab-case.tsx    (user-avatar.tsx)
 hooks/        → camelCase.ts      (useAuth.ts)
 stores/       → camelCase.ts      (userStore.ts)
 utils/lib/    → camelCase.ts      (formatDate.ts)
-types/        → PascalCase.ts     (User.ts)
+types/        → kebab-case.ts     (user.ts)
 ```
 
 #### 17. Barrel exports for public APIs only

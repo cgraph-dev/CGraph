@@ -42,6 +42,7 @@ defmodule CGraphWeb.CosmeticsController do
   GET /api/v1/avatar-borders
   List all available avatar borders, optionally filtered by theme or rarity.
   """
+  @spec list_borders(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_borders(conn, params) do
     theme = params["theme"]
     rarity = params["rarity"]
@@ -68,6 +69,7 @@ defmodule CGraphWeb.CosmeticsController do
   GET /api/v1/avatar-borders/unlocked
   Get the current user's unlocked avatar borders.
   """
+  @spec unlocked_borders(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unlocked_borders(conn, _params) do
     user = conn.assigns.current_user
 
@@ -90,6 +92,7 @@ defmodule CGraphWeb.CosmeticsController do
   POST /api/v1/avatar-borders/:id/equip
   Equip an avatar border.
   """
+  @spec equip_border(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def equip_border(conn, %{"id" => border_id}) do
     user = conn.assigns.current_user
 
@@ -162,6 +165,7 @@ defmodule CGraphWeb.CosmeticsController do
   POST /api/v1/avatar-borders/:id/purchase
   Purchase an avatar border with coins or gems.
   """
+  @spec purchase_border(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def purchase_border(conn, %{"id" => border_id} = params) do
     user = conn.assigns.current_user
     currency = params["currency"] || "coins"
@@ -191,6 +195,7 @@ defmodule CGraphWeb.CosmeticsController do
   GET /api/v1/profile-themes
   List all available profile themes.
   """
+  @spec list_profile_themes(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_profile_themes(conn, params) do
     preset = params["preset"]
     rarity = params["rarity"]
@@ -217,6 +222,7 @@ defmodule CGraphWeb.CosmeticsController do
   GET /api/v1/profile-themes/active
   Get user's active profile theme with customizations.
   """
+  @spec active_profile_theme(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def active_profile_theme(conn, _params) do
     user = conn.assigns.current_user
 
@@ -240,6 +246,7 @@ defmodule CGraphWeb.CosmeticsController do
   POST /api/v1/profile-themes/:id/activate
   Activate a profile theme.
   """
+  @spec activate_profile_theme(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def activate_profile_theme(conn, %{"id" => theme_id}) do
     user = conn.assigns.current_user
 
@@ -275,6 +282,7 @@ defmodule CGraphWeb.CosmeticsController do
   PUT /api/v1/profile-themes/:id/customize
   Save custom overrides for a profile theme.
   """
+  @spec customize_profile_theme(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def customize_profile_theme(conn, %{"id" => theme_id} = params) do
     user = conn.assigns.current_user
 
@@ -308,6 +316,7 @@ defmodule CGraphWeb.CosmeticsController do
   GET /api/v1/chat-effects
   Get user's chat effect settings and unlocked effects.
   """
+  @spec get_chat_effects(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def get_chat_effects(conn, _params) do
     user = conn.assigns.current_user
 
@@ -330,6 +339,7 @@ defmodule CGraphWeb.CosmeticsController do
   POST /api/v1/chat-effects/sync
   Sync user's chat effect preferences from client.
   """
+  @spec sync_chat_effects(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def sync_chat_effects(conn, params) do
     _user = conn.assigns.current_user
 
@@ -356,6 +366,7 @@ defmodule CGraphWeb.CosmeticsController do
   POST /api/v1/chat-effects/:id/activate
   Activate a chat effect.
   """
+  @spec activate_chat_effect(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def activate_chat_effect(conn, %{"id" => effect_id}) do
     user = conn.assigns.current_user
 

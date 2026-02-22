@@ -121,14 +121,14 @@ docs(readme): update installation instructions
 
 ### File Naming
 
-| Type       | Convention            | Example                |
-| ---------- | --------------------- | ---------------------- |
-| Components | PascalCase            | `UserProfile.tsx`      |
-| Hooks      | camelCase with `use`  | `useAuth.ts`           |
-| Utilities  | camelCase             | `formatDate.ts`        |
-| Types      | PascalCase + `.types` | `User.types.ts`        |
-| Tests      | Same name + `.test`   | `UserProfile.test.tsx` |
-| Styles     | Same name + `.module` | `Button.module.css`    |
+| Type       | Convention            | Example                 |
+| ---------- | --------------------- | ----------------------- |
+| Components | kebab-case            | `user-profile.tsx`      |
+| Hooks      | camelCase with `use`  | `useAuth.ts`            |
+| Utilities  | camelCase             | `formatDate.ts`         |
+| Types      | kebab-case + `.types` | `user.types.ts`         |
+| Tests      | Same name + `.test`   | `user-profile.test.tsx` |
+| Styles     | Same name + `.module` | `button.module.css`     |
 
 ### Import Order
 

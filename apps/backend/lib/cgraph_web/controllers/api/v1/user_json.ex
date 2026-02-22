@@ -4,6 +4,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
   """
   alias CGraph.Accounts.User
 
+  @spec index(map()) :: map()
   def index(%{users: users, meta: meta}) do
     %{
       data: Enum.map(users, &user_data/1),
@@ -11,6 +12,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
     }
   end
 
+  @spec show(map()) :: map()
   def show(%{user: user, is_friend: is_friend, friend_request_sent: friend_request_sent, friend_request_received: friend_request_received}) do
     %{data: user_data(user)
       |> Map.put(:is_friend, is_friend || false)
@@ -23,10 +25,11 @@ defmodule CGraphWeb.API.V1.UserJSON do
     %{data: user_data(user)}
   end
 
+  @spec profile(map()) :: map()
   def profile(%{user: user}) do
-    %{data: public_profile(user)}
   end
 
+  @spec private_profile(map()) :: map()
   def private_profile(%{user: user, is_friend: is_friend, friend_request_sent: friend_request_sent, friend_request_received: friend_request_received}) do
     %{data: hidden_profile(user)
       |> Map.put(:is_friend, is_friend || false)
@@ -39,6 +42,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
     %{data: hidden_profile(user)}
   end
 
+  @spec leaderboard(map()) :: map()
   def leaderboard(%{users: users, meta: meta}) do
     %{
       data: Enum.with_index(users, 1) |> Enum.map(fn {user, rank} -> leaderboard_entry(user, rank) end),
@@ -46,6 +50,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
     }
   end
 
+  @spec sessions(map()) :: map()
   def sessions(%{sessions: sessions, current_token: current_token}) do
     %{
       data: Enum.map(sessions, fn session ->
@@ -74,6 +79,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
   @doc """
   Format user data for JSON responses.
   """
+  @spec user_data(User.t() | nil | Ecto.Association.NotLoaded.t()) :: map() | nil
   def user_data(%User{} = user) do
     %{
       id: user.id,

@@ -12,6 +12,7 @@ defmodule CGraph.Forums.Threads do
   @doc """
   Lists threads for a forum or board.
   """
+  @spec list_threads(struct() | binary(), keyword()) :: CGraph.Pagination.paginated_result()
   def list_threads(forum_or_board, opts \\ []) do
     base_query = case forum_or_board do
       %{__struct__: CGraph.Forums.Forum} = forum ->
@@ -55,6 +56,7 @@ defmodule CGraph.Forums.Threads do
   @doc """
   Gets a single thread.
   """
+  @spec get_thread(binary()) :: {:ok, Thread.t()} | {:error, :not_found}
   def get_thread(id) do
     query = from(t in Thread, where: t.id == ^id, preload: [:author, :board])
 
@@ -67,6 +69,7 @@ defmodule CGraph.Forums.Threads do
   @doc """
   Creates a new thread with initial post.
   """
+  @spec create_thread(struct(), struct(), map()) :: {:ok, Thread.t()} | {:error, term()}
   def create_thread(_forum, user, attrs) do
     Repo.transaction(fn ->
       # Get or determine the board_id
@@ -109,6 +112,7 @@ defmodule CGraph.Forums.Threads do
   @doc """
   Updates a thread.
   """
+  @spec update_thread(Thread.t(), map()) :: {:ok, Thread.t()} | {:error, Ecto.Changeset.t()}
   def update_thread(thread, attrs) do
     thread
     |> Thread.changeset(attrs)
@@ -118,6 +122,7 @@ defmodule CGraph.Forums.Threads do
   @doc """
   Pins a thread.
   """
+  @spec pin_thread(Thread.t()) :: {:ok, Thread.t()} | {:error, Ecto.Changeset.t()}
   def pin_thread(thread) do
     update_thread(thread, %{is_pinned: true})
   end
@@ -125,6 +130,7 @@ defmodule CGraph.Forums.Threads do
   @doc """
   Unpins a thread.
   """
+  @spec unpin_thread(Thread.t()) :: {:ok, Thread.t()} | {:error, Ecto.Changeset.t()}
   def unpin_thread(thread) do
     update_thread(thread, %{is_pinned: false})
   end
@@ -132,6 +138,7 @@ defmodule CGraph.Forums.Threads do
   @doc """
   Locks a thread.
   """
+  @spec lock_thread(Thread.t()) :: {:ok, Thread.t()} | {:error, Ecto.Changeset.t()}
   def lock_thread(thread) do
     update_thread(thread, %{is_locked: true})
   end
@@ -139,6 +146,7 @@ defmodule CGraph.Forums.Threads do
   @doc """
   Unlocks a thread.
   """
+  @spec unlock_thread(Thread.t()) :: {:ok, Thread.t()} | {:error, Ecto.Changeset.t()}
   def unlock_thread(thread) do
     update_thread(thread, %{is_locked: false})
   end
@@ -146,6 +154,7 @@ defmodule CGraph.Forums.Threads do
   @doc """
   Increments view count.
   """
+  @spec increment_views(Thread.t()) :: :ok
   def increment_views(thread) do
     from(t in Thread, where: t.id == ^thread.id)
     |> Repo.update_all(inc: [view_count: 1])
@@ -157,6 +166,7 @@ defmodule CGraph.Forums.Threads do
   @doc """
   Lists posts in a thread.
   """
+  @spec list_posts(Thread.t(), keyword()) :: CGraph.Pagination.paginated_result()
   def list_posts(thread, opts \\ []) do
     query = from(p in ThreadPost,
       where: p.thread_id == ^thread.id,
@@ -176,6 +186,7 @@ defmodule CGraph.Forums.Threads do
   @doc """
   Creates a post in a thread.
   """
+  @spec create_post(Thread.t(), struct(), map()) :: {:ok, ThreadPost.t()} | {:error, Ecto.Changeset.t()}
   def create_post(thread, user, attrs) do
     %ThreadPost{}
     |> ThreadPost.changeset(%{

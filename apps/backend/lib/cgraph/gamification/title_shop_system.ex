@@ -11,6 +11,7 @@ defmodule CGraph.Gamification.TitleShopSystem do
   # ==================== TITLES ====================
 
   @doc "List all available titles."
+  @spec list_titles() :: [Title.t()]
   def list_titles do
     Title
     |> order_by([t], [t.sort_order, t.name])
@@ -18,6 +19,7 @@ defmodule CGraph.Gamification.TitleShopSystem do
   end
 
   @doc "Get a user's unlocked titles."
+  @spec list_user_titles(binary()) :: [UserTitle.t()]
   def list_user_titles(user_id) do
     from(ut in UserTitle,
       where: ut.user_id == ^user_id,
@@ -28,6 +30,7 @@ defmodule CGraph.Gamification.TitleShopSystem do
   end
 
   @doc "Unlock a title for a user by slug."
+  @spec unlock_title_by_slug(User.t(), String.t()) :: {:ok, UserTitle.t()} | {:error, atom()}
   def unlock_title_by_slug(%User{} = user, title_slug) do
     case Repo.get_by(Title, slug: title_slug) do
       nil -> {:error, :title_not_found}
@@ -43,6 +46,7 @@ defmodule CGraph.Gamification.TitleShopSystem do
   end
 
   @doc "Unlock a title by ID."
+  @spec unlock_title(binary(), binary()) :: {:ok, UserTitle.t()} | {:error, atom()}
   def unlock_title(user_id, title_id) do
     case Repo.get(Title, title_id) do
       nil -> {:error, :title_not_found}
@@ -54,6 +58,7 @@ defmodule CGraph.Gamification.TitleShopSystem do
   end
 
   @doc "Check and unlock titles earned at a given level."
+  @spec check_level_titles(User.t(), non_neg_integer()) :: list()
   def check_level_titles(user, new_level) do
     level_titles = from(t in Title, where: t.unlock_type == "level") |> Repo.all()
 
@@ -64,6 +69,7 @@ defmodule CGraph.Gamification.TitleShopSystem do
   end
 
   @doc "Equip a title for a user."
+  @spec equip_title(binary(), binary()) :: {:ok, User.t()} | {:error, atom()}
   def equip_title(user_id, title_id) do
     user = Repo.get!(User, user_id)
 
@@ -77,6 +83,7 @@ defmodule CGraph.Gamification.TitleShopSystem do
   end
 
   @doc "Purchase a title with coins."
+  @spec purchase_title(User.t(), binary()) :: {:ok, User.t()} | {:error, atom()}
   def purchase_title(%User{} = user, title_id) do
     case Repo.get(Title, title_id) do
       nil -> {:error, :not_found}
@@ -99,6 +106,7 @@ defmodule CGraph.Gamification.TitleShopSystem do
   # ==================== SHOP ====================
 
   @doc "List all available shop items, optionally filtered by category."
+  @spec list_shop_items(keyword()) :: [ShopItem.t()]
   def list_shop_items(opts \\ []) do
     category = Keyword.get(opts, :category)
 
@@ -111,9 +119,11 @@ defmodule CGraph.Gamification.TitleShopSystem do
   end
 
   @doc "Get a shop item by ID."
+  @spec get_shop_item(binary()) :: ShopItem.t() | nil
   def get_shop_item(id), do: Repo.get(ShopItem, id)
 
   @doc "Purchase a shop item."
+  @spec purchase_shop_item(User.t(), binary(), pos_integer()) :: {:ok, User.t()} | {:error, atom()}
   def purchase_shop_item(%User{} = user, item_id, quantity \\ 1) do
     case Repo.get(ShopItem, item_id) do
       nil -> {:error, :not_found}
@@ -148,6 +158,7 @@ defmodule CGraph.Gamification.TitleShopSystem do
   end
 
   @doc "Get a user's purchased items."
+  @spec list_user_purchases(binary(), keyword()) :: [UserPurchase.t()]
   def list_user_purchases(user_id, opts \\ []) do
     category = Keyword.get(opts, :category)
 

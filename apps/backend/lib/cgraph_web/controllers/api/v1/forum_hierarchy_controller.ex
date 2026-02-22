@@ -24,6 +24,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
   GET /api/v1/forums/tree
   Get the complete forum tree structure.
   """
+  @spec tree(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def tree(conn, params) do
     max_depth = Map.get(params, "max_depth", "10") |> String.to_integer()
     include_hidden = Map.get(params, "include_hidden", "false") == "true"
@@ -54,6 +55,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
   GET /api/v1/forums/:id/subtree
   Get the subtree for a specific forum.
   """
+  @spec subtree(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def subtree(conn, %{"id" => id} = params) do
     max_depth = Map.get(params, "max_depth", "10") |> String.to_integer()
 
@@ -87,6 +89,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
   GET /api/v1/forums/:id/children
   Get direct children of a forum.
   """
+  @spec children(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def children(conn, %{"id" => id}) do
     with {:ok, uuid} <- Ecto.UUID.cast(id),
          %Forum{} = _forum <- Repo.get(Forum, uuid) do
@@ -106,6 +109,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
   GET /api/v1/forums/:id/ancestors
   Get all ancestors of a forum (for breadcrumbs).
   """
+  @spec ancestors(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def ancestors(conn, %{"id" => id}) do
     with {:ok, uuid} <- Ecto.UUID.cast(id),
          %Forum{} = forum <- Repo.get(Forum, uuid) do
@@ -123,6 +127,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
   GET /api/v1/forums/:id/breadcrumbs
   Get breadcrumb trail for a forum.
   """
+  @spec breadcrumbs(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def breadcrumbs(conn, %{"id" => id}) do
     with {:ok, uuid} <- Ecto.UUID.cast(id),
          %Forum{} = forum <- Repo.get(Forum, uuid) do
@@ -140,6 +145,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
   GET /api/v1/forums/roots
   Get all root-level forums.
   """
+  @spec roots(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def roots(conn, _params) do
     forums =
       Forum.root_forums_query()
@@ -152,6 +158,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
   PUT /api/v1/forums/:id/move
   Move a forum to a new parent.
   """
+  @spec move(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def move(conn, %{"id" => id, "parent_forum_id" => parent_id}) do
     user = conn.assigns.current_user
 
@@ -180,6 +187,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
   PUT /api/v1/forums/:id/reorder
   Reorder a forum within its current parent.
   """
+  @spec reorder(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def reorder(conn, %{"id" => id, "position" => position}) do
     user = conn.assigns.current_user
     new_position = String.to_integer(position)
@@ -201,6 +209,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
   PUT /api/v1/forums/:id/hierarchy
   Update hierarchy settings for a forum.
   """
+  @spec update_hierarchy(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_hierarchy(conn, %{"id" => id} = params) do
     user = conn.assigns.current_user
 
@@ -221,6 +230,7 @@ defmodule CGraphWeb.API.V1.ForumHierarchyController do
   POST /api/v1/forums/:id/create_subforum
   Create a new sub-forum under the given parent.
   """
+  @spec create_subforum(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create_subforum(conn, %{"id" => parent_id} = params) do
     user = conn.assigns.current_user
 

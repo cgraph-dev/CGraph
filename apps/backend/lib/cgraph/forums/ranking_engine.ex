@@ -27,6 +27,7 @@ defmodule CGraph.Forums.RankingEngine do
   Recalculate all ranking scores for all forums.
   Should be run periodically (e.g., every 5-15 minutes).
   """
+  @spec update_all_rankings() :: {:ok, non_neg_integer()}
   def update_all_rankings do
     forums = Repo.all(from f in Forum, where: not_deleted(f))
 
@@ -40,6 +41,7 @@ defmodule CGraph.Forums.RankingEngine do
   @doc """
   Update rankings for a single forum.
   """
+  @spec update_forum_rankings(Forum.t()) :: {non_neg_integer(), nil}
   def update_forum_rankings(forum) do
     hot_score = calculate_hot_score(forum)
     trending_score = calculate_trending_score(forum)
@@ -61,6 +63,7 @@ defmodule CGraph.Forums.RankingEngine do
   A forum with 0 votes created now scores higher than one with 100 votes
   created 6 months ago.
   """
+  @spec calculate_hot_score(Forum.t()) :: float()
   def calculate_hot_score(forum) do
     score = forum.score || 0
     sign = if score >= 0, do: 1, else: -1
@@ -78,6 +81,7 @@ defmodule CGraph.Forums.RankingEngine do
   Measures how fast a forum is gaining votes recently.
   Uses votes from the last 24-48 hours divided by age.
   """
+  @spec calculate_rising_score(Forum.t()) :: float()
   def calculate_rising_score(forum) do
     # Count votes in the last 24 hours
     yesterday = DateTime.add(DateTime.utc_now(), -24, :hour)
@@ -111,6 +115,7 @@ defmodule CGraph.Forums.RankingEngine do
   - Vote velocity (momentum)
   - Total reputation (stability)
   """
+  @spec calculate_trending_score(Forum.t()) :: float()
   def calculate_trending_score(forum) do
     weekly_component = (forum.weekly_score || 0) * 2
     velocity = calculate_rising_score(forum) * 10
@@ -125,6 +130,7 @@ defmodule CGraph.Forums.RankingEngine do
 
   Controversy = (upvotes + downvotes) / max(|upvotes - downvotes|, 1)
   """
+  @spec calculate_controversy_score(Forum.t()) :: number()
   def calculate_controversy_score(forum) do
     upvotes = forum.upvotes || 0
     downvotes = forum.downvotes || 0
@@ -142,6 +148,7 @@ defmodule CGraph.Forums.RankingEngine do
   @doc """
   Reset weekly scores. Should be called weekly (e.g., Monday 00:00 UTC).
   """
+  @spec reset_weekly_scores() :: {:ok, :reset}
   def reset_weekly_scores do
     from(f in Forum)
     |> Repo.update_all(set: [weekly_score: 0])
@@ -155,6 +162,7 @@ defmodule CGraph.Forums.RankingEngine do
 
   Used for comment ranking.
   """
+  @spec calculate_wilson_score(non_neg_integer(), non_neg_integer()) :: float()
   def calculate_wilson_score(upvotes, downvotes) do
     n = upvotes + downvotes
 
@@ -173,6 +181,7 @@ defmodule CGraph.Forums.RankingEngine do
   Get featured forum candidates.
   Returns top forums by various metrics for admin review.
   """
+  @spec get_featured_candidates(pos_integer()) :: map()
   def get_featured_candidates(limit \\ 10) do
     # Get top by different metrics
     top_hot = get_top_by(:hot, limit)
@@ -214,6 +223,7 @@ defmodule CGraph.Forums.RankingEngine do
   Auto-feature top forums based on criteria.
   Features forums in top 3 by hot score with minimum thresholds.
   """
+  @spec auto_feature_top_forums() :: {:ok, non_neg_integer()}
   def auto_feature_top_forums do
     # Minimum requirements to be featured
     min_score = 50

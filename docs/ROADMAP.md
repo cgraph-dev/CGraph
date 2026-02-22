@@ -43,13 +43,13 @@ default** and modern customization.
 
 ### v0.9.37 Highlights
 
-| Category | Change | Impact |
-| --- | --- | --- |
-| **React 19** | Migration: `useContext`→`use()`, `useOptimistic`, `useFormStatus` | Modern React patterns |
-| **Code Quality** | 16 oversized file splits (including presence.ex → 4 submodules) | Maintainability |
-| **Logging** | Structured logging adoption across backend | Observability |
-| **Controllers** | `ControllerHelpers.render_data/2,3` standardization | Consistent API responses |
-| **Compliance** | World-class compliance sprint: 214 files, 4 commits | 58%→80% compliance score |
+| Category         | Change                                                            | Impact                   |
+| ---------------- | ----------------------------------------------------------------- | ------------------------ |
+| **React 19**     | Migration: `useContext`→`use()`, `useOptimistic`, `useFormStatus` | Modern React patterns    |
+| **Code Quality** | 16 oversized file splits (including presence.ex → 4 submodules)   | Maintainability          |
+| **Logging**      | Structured logging adoption across backend                        | Observability            |
+| **Controllers**  | `ControllerHelpers.render_data/2,3` standardization               | Consistent API responses |
+| **Compliance**   | World-class compliance sprint: 2,500+ files across Tiers 1-10     | 58%→91% compliance score |
 
 ### v0.9.33–v0.9.36 Highlights
 

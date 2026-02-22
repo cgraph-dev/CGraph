@@ -54,6 +54,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
   - risk_level: low, medium, high, critical
   - page, per_page: pagination
   """
+  @spec flagged_listings(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def flagged_listings(conn, params) do
     page = get_page(params)
     per_page = get_per_page(params)
@@ -78,6 +79,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
   @doc """
   Get details of a specific listing for moderation.
   """
+  @spec show_listing(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show_listing(conn, %{"id" => id}) do
     with {:ok, listing} <- Marketplace.get_listing_with_moderation_data(id) do
       # Include related data for moderation context
@@ -95,6 +97,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
   @doc """
   Approve a flagged listing.
   """
+  @spec approve_listing(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def approve_listing(conn, %{"id" => id, "note" => note}) do
     admin = conn.assigns.current_admin
 
@@ -117,6 +120,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
   @doc """
   Reject a listing with reason.
   """
+  @spec reject_listing(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def reject_listing(conn, %{"id" => id, "reason" => reason, "note" => note}) do
     admin = conn.assigns.current_admin
 
@@ -147,6 +151,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
   @doc """
   Remove a listing (soft delete with reason).
   """
+  @spec remove_listing(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def remove_listing(conn, %{"id" => id, "reason" => reason}) do
     admin = conn.assigns.current_admin
 
@@ -183,6 +188,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
   @doc """
   List disputed or flagged transactions.
   """
+  @spec disputed_transactions(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def disputed_transactions(conn, params) do
     page = get_page(params)
     per_page = get_per_page(params)
@@ -205,6 +211,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
   @doc """
   Get transaction details with full audit trail.
   """
+  @spec show_transaction(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show_transaction(conn, %{"id" => id}) do
     with {:ok, transaction} <- Marketplace.get_transaction_with_audit(id) do
       render(conn, :transaction_detail, transaction: transaction)
@@ -216,6 +223,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
 
   Actions: refund_buyer, release_to_seller, split_refund
   """
+  @spec resolve_transaction(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def resolve_transaction(conn, %{"id" => id, "action" => action, "note" => note}) do
     admin = conn.assigns.current_admin
 
@@ -252,6 +260,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
   @doc """
   Get user's marketplace activity and violations.
   """
+  @spec user_profile(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def user_profile(conn, %{"user_id" => user_id}) do
     with {:ok, profile} <- Marketplace.get_user_marketplace_profile(user_id) do
       render(conn, :user_profile, profile: profile)
@@ -261,6 +270,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
   @doc """
   Ban user from marketplace.
   """
+  @spec ban_user(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def ban_user(conn, %{"user_id" => user_id, "reason" => reason, "duration" => duration}) do
     admin = conn.assigns.current_admin
 
@@ -293,6 +303,7 @@ defmodule CGraphWeb.Admin.MarketplaceController do
   @doc """
   Unban user from marketplace.
   """
+  @spec unban_user(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unban_user(conn, %{"user_id" => user_id, "reason" => reason}) do
     admin = conn.assigns.current_admin
 

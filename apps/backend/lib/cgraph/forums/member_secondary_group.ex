@@ -43,6 +43,7 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
   @doc """
   Changeset for adding a secondary group.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(membership, attrs) do
     membership
     |> cast(attrs, [:member_id, :user_group_id, :expires_at, :reason, :granted_by_id])
@@ -73,6 +74,7 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
   @doc """
   Query for all secondary groups of a member.
   """
+  @spec for_member_query(binary()) :: Ecto.Query.t()
   def for_member_query(member_id) do
     from msg in __MODULE__,
       where: msg.member_id == ^member_id,
@@ -83,6 +85,7 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
   @doc """
   Query for all members in a secondary group.
   """
+  @spec for_group_query(binary()) :: Ecto.Query.t()
   def for_group_query(group_id) do
     from msg in __MODULE__,
       where: msg.user_group_id == ^group_id,
@@ -93,6 +96,7 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
   @doc """
   Query for expired secondary group memberships.
   """
+  @spec expired_query() :: Ecto.Query.t()
   def expired_query do
     from msg in __MODULE__,
       where: not is_nil(msg.expires_at) and msg.expires_at < ^DateTime.utc_now()
@@ -101,6 +105,7 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
   @doc """
   Query to check if member has a specific secondary group.
   """
+  @spec has_group_query(binary(), binary()) :: Ecto.Query.t()
   def has_group_query(member_id, group_id) do
     from msg in __MODULE__,
       where: msg.member_id == ^member_id and msg.user_group_id == ^group_id,
@@ -114,6 +119,7 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
   @doc """
   Add a secondary group to a member.
   """
+  @spec add_group(binary(), binary(), keyword()) :: Ecto.Changeset.t()
   def add_group(member_id, group_id, opts \\ []) do
     attrs = %{
       member_id: member_id,
@@ -130,6 +136,7 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
   @doc """
   Remove a secondary group from a member.
   """
+  @spec remove_group_query(binary(), binary()) :: Ecto.Query.t()
   def remove_group_query(member_id, group_id) do
     from msg in __MODULE__,
       where: msg.member_id == ^member_id and msg.user_group_id == ^group_id
@@ -138,6 +145,7 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
   @doc """
   Extend the expiration of a secondary group membership.
   """
+  @spec extend_changeset(%__MODULE__{}, DateTime.t() | nil) :: Ecto.Changeset.t()
   def extend_changeset(membership, new_expires_at) do
     membership
     |> cast(%{expires_at: new_expires_at}, [:expires_at])
@@ -147,6 +155,7 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
   @doc """
   Get all group IDs for a member (primary + secondary).
   """
+  @spec all_group_ids(struct(), module()) :: [binary()]
   def all_group_ids(member, repo) do
     secondary_ids =
       for_member_query(member.id)
@@ -162,6 +171,7 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
   Check if any permission is granted across all member groups.
   Uses OR logic - if any group grants, permission is granted.
   """
+  @spec has_permission?(struct(), atom(), module()) :: boolean()
   def has_permission?(member, permission, repo) do
     group_ids = all_group_ids(member, repo)
 
@@ -177,6 +187,7 @@ defmodule CGraph.Forums.MemberSecondaryGroup do
   Get stacked permissions from all groups.
   Returns a map of permission => boolean.
   """
+  @spec stacked_permissions(struct(), module()) :: %{atom() => boolean()}
   def stacked_permissions(member, repo) do
     group_ids = all_group_ids(member, repo)
 

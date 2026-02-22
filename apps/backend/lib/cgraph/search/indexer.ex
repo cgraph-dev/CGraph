@@ -50,6 +50,7 @@ defmodule CGraph.Search.Indexer do
   Queue a document for indexing.
   Returns immediately, indexing happens in background.
   """
+  @spec index_async(atom(), struct()) :: {:ok, Oban.Job.t()} | {:error, term()}
   def index_async(index_name, document) do
     %{
       "operation" => "index",
@@ -63,6 +64,7 @@ defmodule CGraph.Search.Indexer do
   @doc """
   Queue multiple documents for bulk indexing.
   """
+  @spec bulk_index_async(atom(), [struct()]) :: {:ok, Oban.Job.t()} | {:error, term()}
   def bulk_index_async(index_name, documents) do
     prepared = Enum.map(documents, &prepare_document(index_name, &1))
 
@@ -78,6 +80,7 @@ defmodule CGraph.Search.Indexer do
   @doc """
   Queue a document for deletion.
   """
+  @spec delete_async(atom(), binary()) :: {:ok, Oban.Job.t()} | {:error, term()}
   def delete_async(index_name, document_id) do
     %{
       "operation" => "delete",
@@ -95,6 +98,7 @@ defmodule CGraph.Search.Indexer do
   @doc """
   Index a document synchronously.
   """
+  @spec index_sync(atom(), struct()) :: :ok | {:error, term()}
   def index_sync(index_name, document) do
     prepared = prepare_document(index_name, document)
     Engine.index(index_name, prepared)
@@ -103,6 +107,7 @@ defmodule CGraph.Search.Indexer do
   @doc """
   Delete a document synchronously.
   """
+  @spec delete_sync(atom(), binary()) :: :ok | {:error, term()}
   def delete_sync(index_name, document_id) do
     Engine.delete(index_name, document_id)
   end
@@ -120,6 +125,7 @@ defmodule CGraph.Search.Indexer do
   - `:batch_size` - Documents per batch (default: 1000)
   - `:delay_ms` - Delay between batches (default: 100)
   """
+  @spec reindex_all(atom(), keyword()) :: :ok | {:error, atom()}
   def reindex_all(index_name, opts \\ []) do
     batch_size = Keyword.get(opts, :batch_size, 1000)
 
