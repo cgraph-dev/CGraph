@@ -15,6 +15,7 @@ import type {
   BubbleStyleConfig,
   TypingIndicator,
   TypingIndicatorConfig,
+  UnlockedEffect,
   ChatEffectsState,
 } from './chatEffects.types';
 
@@ -28,45 +29,38 @@ import {
   TYPING_INDICATORS_LIST,
 } from './chatEffects.presets';
 
+// ==================== INITIAL STATE ====================
+
+const chatEffectsInitialState = {
+  activeMessageEffect: { effect: 'fade-in' as const, intensity: 'low' as const, duration: 400 },
+  activeBubbleStyle: BUBBLE_STYLE_PRESETS.default as BubbleStyleConfig & { style: BubbleStyle },
+  activeEmojiPack: 'default' as const,
+  activeTypingIndicator: TYPING_INDICATOR_PRESETS.dots as TypingIndicatorConfig & {
+    style: TypingIndicator;
+  },
+  activeReactionConfig: { animation: 'pop' as const, scale: 1.2, duration: 300, sound: true },
+  soundEffects: SOUND_EFFECT_LIBRARY,
+  masterVolume: 0.7,
+  soundsEnabled: true,
+  unlockedEffects: [] as UnlockedEffect[],
+  reduceMotion: false,
+  showEffectsInCompactMode: false,
+  autoPlayEffects: true,
+  previewEffect: null as MessageEffect | null,
+  previewBubble: null as BubbleStyle | null,
+  lastSyncedAt: null as string | null,
+  isSyncing: false,
+  messageEffects: MESSAGE_EFFECTS_LIST,
+  bubbleStyles: BUBBLE_STYLES_LIST,
+  typingIndicators: TYPING_INDICATORS_LIST,
+};
+
 // ==================== STORE IMPLEMENTATION ====================
 
 export const useChatEffectsStore = create<ChatEffectsState>()(
   persist(
     (set, get) => ({
-      // Default active effects
-      activeMessageEffect: { effect: 'fade-in', intensity: 'low', duration: 400 },
-      activeBubbleStyle: BUBBLE_STYLE_PRESETS.default as BubbleStyleConfig & { style: BubbleStyle },
-      activeEmojiPack: 'default',
-      activeTypingIndicator: TYPING_INDICATOR_PRESETS.dots as TypingIndicatorConfig & {
-        style: TypingIndicator;
-      },
-      activeReactionConfig: { animation: 'pop', scale: 1.2, duration: 300, sound: true },
-
-      // Sound defaults
-      soundEffects: SOUND_EFFECT_LIBRARY,
-      masterVolume: 0.7,
-      soundsEnabled: true,
-
-      // Empty unlocks
-      unlockedEffects: [],
-
-      // Settings
-      reduceMotion: false,
-      showEffectsInCompactMode: false,
-      autoPlayEffects: true,
-
-      // Preview
-      previewEffect: null,
-      previewBubble: null,
-
-      // Sync
-      lastSyncedAt: null,
-      isSyncing: false,
-
-      // Available effects for CosmeticsSettingsPanel
-      messageEffects: MESSAGE_EFFECTS_LIST,
-      bubbleStyles: BUBBLE_STYLES_LIST,
-      typingIndicators: TYPING_INDICATORS_LIST,
+      ...chatEffectsInitialState,
 
       // Activation actions for CosmeticsSettingsPanel
       activateEffect: (id: MessageEffect) => {
@@ -257,6 +251,9 @@ export const useChatEffectsStore = create<ChatEffectsState>()(
           set({ isSyncing: false });
         }
       },
+
+      // Reset
+      reset: () => set({ ...chatEffectsInitialState }),
     }),
     {
       name: 'cgraph-chat-effects',

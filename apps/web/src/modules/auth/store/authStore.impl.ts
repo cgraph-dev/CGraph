@@ -85,6 +85,15 @@ export const useAuthStore = create<AuthState>()(
         updateUser: createUpdateUserAction(set, get),
         clearError: () => set({ error: null }),
         checkAuth: createCheckAuthAction(set, get),
+        reset: () =>
+          set({
+            user: null,
+            token: null,
+            refreshToken: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
+          }),
       }),
       {
         name: 'cgraph-auth-v2',

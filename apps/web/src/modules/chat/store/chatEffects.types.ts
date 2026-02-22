@@ -234,4 +234,7 @@ export interface ChatEffectsState {
   // Sync actions
   syncWithServer: () => Promise<void>;
   loadFromServer: () => Promise<void>;
+
+  // Reset
+  reset: () => void;
 }

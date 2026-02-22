@@ -81,4 +81,5 @@ export interface AuthState {
   updateUser: (data: Partial<User>) => void;
   clearError: () => void;
   checkAuth: () => Promise<void>;
+  reset: () => void;
 }

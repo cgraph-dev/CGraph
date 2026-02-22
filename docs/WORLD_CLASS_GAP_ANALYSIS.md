@@ -1,6 +1,6 @@
 # CGraph World-Class Gap Analysis
 
-> **Version**: 0.9.37 | **Audit Date**: February 21, 2026 **Standard**: Google/Discord/Meta/Telegram
+> **Version**: 0.9.37 | **Audit Date**: February 22, 2026 **Standard**: Google/Discord/Meta/Telegram
 > | **Target**: 100% plan compliance **Methodology**: Automated codebase scan against all 15
 > mandatory rules + 106 wave tasks
 
@@ -10,19 +10,19 @@
 
 | Category             | Current | Target | Gap                                       |
 | -------------------- | ------- | ------ | ----------------------------------------- |
-| Rule Compliance      | ~75%    | 100%   | 25% — 5 of 15 rules have major violations |
-| Wave Task Completion | ~15%    | 100%   | 85% — ~16 of 106 tasks done               |
-| Composite Score      | 9.0/10  | 9.5/10 | 0.5 pts                                   |
+| Rule Compliance      | ~82%    | 100%   | 18% — 3 of 15 rules have major violations |
+| Wave Task Completion | ~18%    | 100%   | 82% — ~19 of 106 tasks done               |
+| Composite Score      | 9.2/10  | 9.5/10 | 0.3 pts                                   |
 
 ### Critical Gaps (Blocks World-Class)
 
-1. **887 PascalCase filenames** in web (Rule 1 requires kebab-case)
-2. ~~73 React.FC usages~~ **68 → 5** (Tier 2 — remaining 5 are HOC return types/Record refs)
-3. **949 type assertions** (`as X`) (Rule 11 requires type guards)
-4. **1,174 useMemo/useCallback** — React Compiler NOT enabled; keep for now
+1. **1,130 PascalCase filenames** in web + **367 in mobile** (Rule 1 requires kebab-case)
+2. ~~73 React.FC usages~~ **ALL FIXED** — 0 remaining (Tiers 2+7)
+3. **1,013 type assertions** (`as X`) (Rule 11 requires type guards)
+4. **1,112 useMemo/useCallback** — React Compiler NOT enabled; keep for now
 5. ~~7 remaining offset pagination~~ **FIXED** (Tier 1 — all migrated to cursor)
-6. **6 missing shared packages** (Rule 5 — state, hooks, ui, config, core, test-utils)
-7. **~90 undone wave tasks** out of 106 total
+6. ~~6 missing shared packages~~ **ALL CREATED** (Tier 7 — all 12 packages exist)
+7. **~87 undone wave tasks** out of 106 total
 
 ---
 
@@ -32,9 +32,9 @@
 
 | Metric                        | Count     | Status                      |
 | ----------------------------- | --------- | --------------------------- |
-| PascalCase filenames (web)    | 887       | FAIL — should be kebab-case |
-| PascalCase filenames (mobile) | 343       | FAIL — should be kebab-case |
-| **Total files to rename**     | **1,230** |                             |
+| PascalCase filenames (web)    | 1,130     | FAIL — should be kebab-case |
+| PascalCase filenames (mobile) | 367       | FAIL — should be kebab-case |
+| **Total files to rename**     | **1,497** |                             |
 
 **Effort**: ~4h with automated codemod (rename files + update all imports) **Priority**: P2 — Large
 blast radius, do in a dedicated PR with comprehensive import updates
@@ -52,11 +52,11 @@ blast radius, do in a dedicated PR with comprehensive import updates
 
 ### Rule 2: Component Architecture — PARTIAL FAIL
 
-| Metric                                 | Count   | Status                                                                                   |
-| -------------------------------------- | ------- | ---------------------------------------------------------------------------------------- |
-| `React.FC` / `React.FunctionComponent` | **5**   | **NEAR PASS** — 68 fixed in Tier 2 (commit `08b988c2`), 5 remain (HOC types/Record refs) |
-| `forwardRef` usage                     | **0**   | **PASS** — fixed in Tier 1 (commit `9d8fb58a`)                                           |
-| Helpers inside components              | Unknown | Needs manual audit                                                                       |
+| Metric                                 | Count   | Status                                                |
+| -------------------------------------- | ------- | ----------------------------------------------------- |
+| `React.FC` / `React.FunctionComponent` | **0**   | **PASS** — 68 fixed in Tier 2, last 2 fixed in Tier 7 |
+| `forwardRef` usage                     | **0**   | **PASS** — fixed in Tier 1 (commit `9d8fb58a`)        |
+| Helpers inside components              | Unknown | Needs manual audit                                    |
 
 **Files with React.FC** (sample — 30+):
 
@@ -69,9 +69,9 @@ blast radius, do in a dedicated PR with comprehensive import updates
 
 **Action Items**:
 
-- [ ] **2.1** Create codemod: `React.FC<Props>` →
-      `function Component(props: Props): React.ReactElement`
-- [ ] **2.2** Run codemod on all 73 occurrences
+- [x] **2.1** ~~Create codemod: `React.FC<Props>` →
+      `function Component(props: Props): React.ReactElement`~~ **DONE** (Tiers 2+7)
+- [x] **2.2** ~~Run codemod on all 73 occurrences~~ **DONE** — 0 remaining
 - [x] **2.3** ~~Replace 2 `forwardRef` calls with `ref` prop pattern~~ **DONE** (Tier 1)
 - [ ] **2.4** Add ESLint rule to ban `React.FC` (`@typescript-eslint/ban-types` or custom)
 - [ ] **2.5** Audit for helper functions inside components (move to module level)
@@ -95,7 +95,8 @@ blast radius, do in a dedicated PR with comprehensive import updates
 - [x] **3.2** ~~Add MAX constants to ALL store arrays~~ **DONE** (Tier 5)
 - [x] **3.3** ~~Add `.slice(-MAX)` bounds to all unbounded `[...state.X, newItem]` patterns~~
       **DONE** (Tier 5)
-- [ ] **3.4** Add `reset()` action to every store (verify all stores have it)
+- [x] **3.4** ~~Add `reset()` action to every store~~ **DONE** (Tiers 7+8) — all 18 stores have
+      reset()
 - [ ] **3.5** Create mobile `stores/index.ts` facade matching web's 7-domain pattern
 
 ---
@@ -119,37 +120,38 @@ blast radius, do in a dedicated PR with comprehensive import updates
 
 ---
 
-### Rule 5: Cross-Platform Parity — FAIL
+### Rule 5: Cross-Platform Parity — PASS
 
-| Package                         | Plan Says        | Actual      | Status |
-| ------------------------------- | ---------------- | ----------- | ------ |
-| `packages/shared-types/`        | EXISTS           | EXISTS      | PASS   |
-| `packages/utils/`               | EXISTS           | EXISTS      | PASS   |
-| `packages/crypto/`              | EXISTS           | EXISTS      | PASS   |
-| `packages/socket/`              | EXISTS           | EXISTS      | PASS   |
-| `packages/api-client/`          | EXISTS           | EXISTS      | PASS   |
-| `packages/animation-constants/` | EXISTS           | EXISTS      | PASS   |
-| `packages/state/`               | EXISTS           | **MISSING** | FAIL   |
-| `packages/hooks/`               | EXISTS           | **MISSING** | FAIL   |
-| `packages/ui/`                  | EXISTS           | **MISSING** | FAIL   |
-| `packages/config/`              | EXISTS           | **MISSING** | FAIL   |
-| `packages/core/`                | EXISTS           | **MISSING** | FAIL   |
-| `packages/test-utils/`          | Task 0.6 creates | **MISSING** | FAIL   |
+| Package                         | Plan Says        | Actual | Status |
+| ------------------------------- | ---------------- | ------ | ------ |
+| `packages/shared-types/`        | EXISTS           | EXISTS | PASS   |
+| `packages/utils/`               | EXISTS           | EXISTS | PASS   |
+| `packages/crypto/`              | EXISTS           | EXISTS | PASS   |
+| `packages/socket/`              | EXISTS           | EXISTS | PASS   |
+| `packages/api-client/`          | EXISTS           | EXISTS | PASS   |
+| `packages/animation-constants/` | EXISTS           | EXISTS | PASS   |
+| `packages/state/`               | EXISTS           | EXISTS | PASS   |
+| `packages/hooks/`               | EXISTS           | EXISTS | PASS   |
+| `packages/ui/`                  | EXISTS           | EXISTS | PASS   |
+| `packages/config/`              | EXISTS           | EXISTS | PASS   |
+| `packages/core/`                | EXISTS           | EXISTS | PASS   |
+| `packages/test-utils/`          | Task 0.6 creates | EXISTS | PASS   |
 
-**The plan claims 9 shared packages exist — only 6 actually do.** Three packages listed as "EXISTS"
-(`state`, `hooks`, `ui`, `config`, `core`) do NOT exist.
+**All 12 shared packages now exist.** Created in Tier 7 (commit `7fb596e2`).
 
 **Action Items**:
 
-- [ ] **5.1** Create `packages/state/` — shared Zustand store logic (enables mobile/web code
-      sharing)
-- [ ] **5.2** Create `packages/hooks/` — shared React hooks (useDebounce, useLocalStorage, etc.)
-- [ ] **5.3** Create `packages/ui/` — shared UI component primitives
-- [ ] **5.4** Create `packages/config/` — shared configuration constants
-- [ ] **5.5** Create `packages/core/` — core business logic
-- [ ] **5.6** Create `packages/test-utils/` — test builders, MSW handlers, custom matchers (Task
-      0.6)
-- [ ] **5.7** Update plan to reflect actual package inventory honestly
+- [x] **5.1** ~~Create `packages/state/`~~ **DONE** (Tier 7) — createBoundedStore, withReset,
+      withDevtools
+- [x] **5.2** ~~Create `packages/hooks/`~~ **DONE** (Tier 7) — useDebounce, useInterval,
+      useLocalStorage, usePrevious, useToggle
+- [x] **5.3** ~~Create `packages/ui/`~~ **DONE** (Tier 7) — ErrorBoundary, VisuallyHidden, Portal
+- [x] **5.4** ~~Create `packages/config/`~~ **DONE** (Tier 7) — APP_CONFIG, LIMITS, API_CONFIG,
+      FEATURE_FLAGS
+- [x] **5.5** ~~Create `packages/core/`~~ **DONE** (Tier 7) — formatters, validators, assert
+- [x] **5.6** ~~Create `packages/test-utils/`~~ **DONE** (Tier 7) — factories, store-helpers,
+      async-helpers
+- [x] **5.7** ~~Update plan to reflect actual package inventory honestly~~ **DONE**
 
 ---
 
@@ -176,21 +178,22 @@ blast radius, do in a dedicated PR with comprehensive import updates
 
 | Metric                       | Count | Status                                         |
 | ---------------------------- | ----- | ---------------------------------------------- |
-| Public functions             | 3,220 | —                                              |
-| Functions with `@spec`       | 1,582 | **49.1%** — improved (target: 100%)            |
+| Public functions             | 4,745 | —                                              |
+| Functions with `@spec`       | 2,160 | **45.5%** — improved from 1,582 (Tiers 5+6+7)  |
 | Logger string interpolation  | **0** | **PASS** — fixed in Tier 1 (commit `9d8fb58a`) |
 | Modules missing `@moduledoc` | **0** | **PASS** — all controllers have @moduledoc     |
 
 **Action Items**:
 
-- [ ] **7.1** Add `@spec` to remaining ~1,638 public functions (prioritize contexts + services)
+- [ ] **7.1** Add `@spec` to remaining ~2,585 public functions (prioritize contexts + services)
 - [x] **7.2** ~~Fix 111 Logger string interpolation → structured metadata~~ **DONE** (Tier 1)
   - All 111 violations converted to structured metadata format
 - [x] **7.3** ~~Add `@spec` to auth_controller (10), payment_controller (4), conversation_controller
       (5)~~ **DONE** (Tier 2b)
 - [x] **7.4** ~~Add `@moduledoc` to 2 remaining modules~~ **DONE** (Tier 5)
-- [ ] **7.5** Enable `mix credo --strict` rule for missing `@spec` annotations
-- [ ] **7.6** Enable `mix credo --strict` rule for Logger interpolation
+- [x] **7.5** ~~Add 217 @spec across 28 files (contexts + controllers)~~ **DONE** (Tier 7)
+- [ ] **7.6** Enable `mix credo --strict` rule for missing `@spec` annotations
+- [ ] **7.7** Enable `mix credo --strict` rule for Logger interpolation
 
 ---
 
@@ -206,13 +209,13 @@ blast radius, do in a dedicated PR with comprehensive import updates
 | ~~`effects-customization/sections`~~ | ~~405~~ → 9   | **SPLIT** (Tier 3, barrel + 3)   |
 | ~~`ChannelsTab.tsx`~~                | ~~396~~ → 209 | **SPLIT** (Tier 3, 4 files)      |
 | ~~`SeasonalEffects.tsx`~~            | ~~382~~ → 197 | **SPLIT** (Tier 3, 2 files)      |
-| `EmojiTab.tsx`                       | 370           | 70 — remaining                   |
-| `ChannelCategoriesPanel.tsx`         | 355           | 55 — remaining                   |
-| `chat-bubble-settings/tabs.tsx`      | 352           | 52 — remaining                   |
-| `chat-customization/sections.tsx`    | 342           | 42 — remaining                   |
+| `EmojiTab.tsx`                       | ~~370~~ → 224 | **SPLIT** (Tier 4)               |
+| `ChannelCategoriesPanel.tsx`         | ~~355~~ → 214 | **SPLIT** (Tier 4)               |
+| `chat-bubble-settings/tabs.tsx`      | ~~352~~ → 12  | **SPLIT** (Tier 4)               |
+| `chat-customization/sections.tsx`    | ~~342~~ → 11  | **SPLIT** (Tier 4)               |
 | `ChatPanel.tsx`                      | 340           | 40 — remaining                   |
 | `ProfilePanel.tsx`                   | 335           | 35 — remaining                   |
-| `AccountSettings.tsx`                | 333           | 33 — remaining                   |
+| `AccountSettings.tsx`                | 354           | 54 — remaining                   |
 | `GlassCard.tsx`                      | 331           | 31 — remaining                   |
 | `MatrixBackground.tsx`               | 325           | 25 — remaining                   |
 | `AnimatedMessageWrapper.tsx`         | 312           | 12 — remaining                   |
@@ -231,15 +234,28 @@ blast radius, do in a dedicated PR with comprehensive import updates
 | ~~`batch_processor.ex`~~      | ~~717~~ → 116   | **SPLIT** (Tier 3, 3 submodules)  |
 | ~~`api_versioning.ex`~~       | ~~686~~ → 243   | **SPLIT** (Tier 3, 3 submodules)  |
 | ~~`request_context.ex`~~      | ~~656~~ → 216   | **SPLIT** (Tier 3, 2 submodules)  |
-| `e2ee.ex`                     | 986             | 486 — remaining                   |
-| `mailer/templates.ex`         | 894             | 394 — remaining                   |
-| `push_service.ex`             | 778             | 278 — remaining                   |
-| `account_lockout.ex`          | 694             | 194 — remaining                   |
-| `cache/distributed.ex`        | 675             | 175 — remaining                   |
-| `webrtc.ex`                   | 649             | 149 — remaining                   |
-| `rate_limiter/distributed.ex` | 648             | 148 — remaining                   |
-| `rate_limiter.ex`             | 641             | 141 — remaining                   |
-| `token_blacklist.ex`          | 639             | 139 — remaining                   |
+| `e2ee.ex`                     | ~~986~~ → 316   | **SPLIT** (prev. refactors)       |
+| `mailer/templates.ex`         | ~~894~~ → 143   | **SPLIT** (prev. refactors)       |
+| `push_service.ex`             | ~~778~~ → 300   | **SPLIT** (prev. refactors)       |
+| `account_lockout.ex`          | ~~694~~ → 225   | **SPLIT** (prev. refactors)       |
+| `cache/distributed.ex`        | 424             | Under 500 — PASS                  |
+| `webrtc.ex`                   | 506             | 6 — borderline                    |
+| `rate_limiter/distributed.ex` | 316             | Under 500 — PASS                  |
+| `rate_limiter.ex`             | 356             | Under 500 — PASS                  |
+| `token_blacklist.ex`          | ~~639~~ → 305   | **SPLIT** (prev. refactors)       |
+
+**Remaining Elixir files over 500 lines (controllers, not contexts):**
+
+| File                              | Lines | Over By |
+| --------------------------------- | ----- | ------- |
+| `custom_emoji_controller.ex`      | 561   | 61      |
+| `marketplace_controller.ex`       | 547   | 47      |
+| `forum_controller.ex`             | 528   | 28      |
+| `cosmetics_controller.ex`         | 526   | 26      |
+| `forums.ex` (context)             | 512   | 12      |
+| `admin/marketplace_controller.ex` | 510   | 10      |
+| `events_controller.ex`            | 509   | 9       |
+| `webrtc.ex`                       | 506   | 6       |
 
 **Action Items**:
 
@@ -271,8 +287,8 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 **Action Items**:
 
-- [ ] **9.1** Create test infrastructure: `packages/test-utils/` with builders + MSW handlers (Task
-      0.6)
+- [x] **9.1** ~~Create test infrastructure: `packages/test-utils/`~~ **DONE** (Tier 7) — factories,
+      store-helpers, async-helpers
 - [ ] **9.2** Write tests for critical path first: auth (4→20), chat (17→80), settings (5→50)
 - [ ] **9.3** Add test files for remaining modules (target: 3 tests per component minimum)
 - [ ] **9.4** Set up coverage ratchet in CI (never decrease, only increase)
@@ -307,19 +323,19 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 ### Rule 11: Security — PARTIAL FAIL
 
-| Metric                    | Count   | Status                                                  |
-| ------------------------- | ------- | ------------------------------------------------------- |
-| Type assertions (`as X`)  | 949     | FAIL — should use type guards                           |
-| `dangerouslySetInnerHTML` | 8 files | **PASS** — all sanitized with DOMPurify (Tier 2b audit) |
-| CSP headers               | EXISTS  | PASS                                                    |
-| Rate limit headers        | EXISTS  | PASS                                                    |
-| Sentry integration        | EXISTS  | PASS                                                    |
-| `.env` committed          | 0       | PASS                                                    |
-| `eval()` usage            | 0       | PASS                                                    |
+| Metric                    | Count    | Status                                              |
+| ------------------------- | -------- | --------------------------------------------------- |
+| Type assertions (`as X`)  | 1,013    | FAIL — should use type guards                       |
+| `dangerouslySetInnerHTML` | 10 files | **PASS** — all sanitized with DOMPurify/sanitizeCss |
+| CSP headers               | EXISTS   | PASS                                                |
+| Rate limit headers        | EXISTS   | PASS                                                |
+| Sentry integration        | EXISTS   | PASS                                                |
+| `.env` committed          | 0        | PASS                                                |
+| `eval()` usage            | 0        | PASS                                                |
 
 **Action Items**:
 
-- [ ] **11.1** Audit and replace 949 type assertions with type guards (batch: 50 per PR)
+- [ ] **11.1** Audit and replace 1,013 type assertions with type guards (batch: 50 per PR)
   - Priority: API response parsing, store data, event handlers
   - Pattern: `data as User` → `isUser(data) ? data : throw`
 - [x] **11.2** ~~Audit 8 `dangerouslySetInnerHTML` usages for XSS sanitization~~ **DONE** (Tier 2b)
@@ -330,16 +346,16 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 ### Rule 12: React 19 Patterns — FAIL
 
-| Metric                      | Count              | Status                                                                          |
-| --------------------------- | ------------------ | ------------------------------------------------------------------------------- |
-| React version               | 19.x               | PASS                                                                            |
-| `useContext()` (legacy)     | **0**              | **PASS** — all 14 migrated to `use()` (Tier 2, commit `08b988c2`)               |
-| `useOptimistic()` adoption  | **7+**             | **PASS** — NestedComments, EnhancedMessageBubble, chatStore optimistic patterns |
-| `useFormStatus()` adoption  | **3 forms**        | **PARTIAL** — Login, ForgotPassword, ForumSettings migrated (Tier 3)            |
-| `useActionState()` adoption | **3 forms**        | **PARTIAL** — CreateGroupModal, AccountSettings, Register (Tier 5)              |
-| `useMemo`/`useCallback`     | 1,174 in 269 files | N/A — React Compiler NOT enabled; keep for performance                          |
-| `React.FC`                  | **5**              | **NEAR PASS** — 68 fixed (Tier 2), 5 remain (HOC types)                         |
-| `forwardRef`                | **0**              | **PASS** — fixed in Tier 1                                                      |
+| Metric                      | Count               | Status                                                                          |
+| --------------------------- | ------------------- | ------------------------------------------------------------------------------- |
+| React version               | 19.x                | PASS                                                                            |
+| `useContext()` (legacy)     | **0**               | **PASS** — all 14 migrated to `use()` (Tier 2, commit `08b988c2`)               |
+| `useOptimistic()` adoption  | **9+**              | **PASS** — NestedComments, EnhancedMessageBubble, chatStore optimistic patterns |
+| `useFormStatus()` adoption  | **2 forms**         | **PARTIAL** — Login, ForgotPassword, ForumSettings migrated (Tier 3)            |
+| `useActionState()` adoption | **11 forms**        | **PASS** — CreateGroupModal, AccountSettings, Register + 8 more (Tier 5+)       |
+| `useMemo`/`useCallback`     | 1,112 in ~250 files | N/A — React Compiler NOT enabled; keep for performance                          |
+| `React.FC`                  | **0**               | **PASS** — all fixed (Tiers 2+7)                                                |
+| `forwardRef`                | **0**               | **PASS** — fixed in Tier 1                                                      |
 
 **Action Items**:
 
@@ -430,7 +446,7 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 | 0.3  | Complete Web Legacy Migration          | NOT DONE | 246+ files in legacy `components/` folder                    |
 | 0.4  | Create Shared API Client Layer         | PARTIAL  | `packages/api-client/` exists but web still uses raw fetch   |
 | 0.5  | Establish Shared Animation Constants   | PARTIAL  | `packages/animation-constants/` exists but not fully adopted |
-| 0.6  | Create Shared Test Utilities Package   | NOT DONE | `packages/test-utils/` doesn't exist                         |
+| 0.6  | Create Shared Test Utilities Package   | **DONE** | `packages/test-utils/` created in Tier 7                     |
 | 0.7  | Harden CI/CD Pipeline                  | **DONE** | 17 workflows, coverage gates, all permissions present        |
 
 ### Wave 1: Fix Broken Customizations (10 tasks — UNKNOWN)
@@ -476,13 +492,13 @@ loading skeletons, sidebar physics, search animations, presence animations, sett
 
 ### Wave 5: Code Quality (5 tasks — 0 DONE)
 
-| Task | Name                           | Status                                            |
-| ---- | ------------------------------ | ------------------------------------------------- |
-| 5.1  | Standardize Animation Usage    | NOT DONE                                          |
-| 5.2  | Update Memo Comparators        | NOT DONE                                          |
-| 5.3  | Customization Store Hydration  | NEEDS CHECK                                       |
-| 5.4  | Reduced Motion / Accessibility | NEEDS CHECK                                       |
-| 5.5  | File Size Compliance           | PARTIAL (7 oversized files remain of original 35) |
+| Task | Name                           | Status                                                          |
+| ---- | ------------------------------ | --------------------------------------------------------------- |
+| 5.1  | Standardize Animation Usage    | NOT DONE                                                        |
+| 5.2  | Update Memo Comparators        | NOT DONE                                                        |
+| 5.3  | Customization Store Hydration  | NEEDS CHECK                                                     |
+| 5.4  | Reduced Motion / Accessibility | NEEDS CHECK                                                     |
+| 5.5  | File Size Compliance           | PARTIAL (8 Elixir controllers + 6 TSX files remain over limits) |
 
 ### Wave 6: Testing (3 tasks — 0 DONE)
 
@@ -504,14 +520,14 @@ mobile feature parity items.
 
 ### Priority Tier 1: Critical Foundation (Do First — Weeks 1-2)
 
-| #   | Action                                                                   | Effort | Impact                    | Rule   |
-| --- | ------------------------------------------------------------------------ | ------ | ------------------------- | ------ |
-| 1   | Create `packages/test-utils/` (builders, MSW, matchers)                  | 16h    | Unblocks all testing      | 9, 5   |
-| 2   | Migrate 7 remaining offset → cursor pagination                           | 4h     | Performance + correctness | 10, 15 |
-| 3   | Fix 111 Logger string interpolation → structured                         | 4h     | Observability             | 7, 14  |
-| 4   | Add `permissions:` to backup.yml + deploy-backend.yml                    | 0.5h   | CI security               | 13     |
-| 5   | Remove 4 remaining mobile Context providers                              | 4h     | Architecture              | 3, 5   |
-| 6   | Fix plan: mark 3 packages as NOT EXISTS (state, hooks, ui, config, core) | 0.5h   | Accuracy                  | —      |
+| #     | Action                                                                   | Effort  | Impact                    | Rule     |
+| ----- | ------------------------------------------------------------------------ | ------- | ------------------------- | -------- |
+| ~~1~~ | ~~Create `packages/test-utils/`~~ **DONE** (Tier 7)                      | ~~16h~~ | ~~Unblocks testing~~      | ~~9, 5~~ |
+| 2     | Migrate 7 remaining offset → cursor pagination                           | 4h      | Performance + correctness | 10, 15   |
+| 3     | Fix 111 Logger string interpolation → structured                         | 4h      | Observability             | 7, 14    |
+| 4     | Add `permissions:` to backup.yml + deploy-backend.yml                    | 0.5h    | CI security               | 13       |
+| 5     | Remove 4 remaining mobile Context providers                              | 4h      | Architecture              | 3, 5     |
+| 6     | Fix plan: mark 3 packages as NOT EXISTS (state, hooks, ui, config, core) | 0.5h    | Accuracy                  | —        |
 
 ### Priority Tier 2: Major Standards Compliance (Weeks 2-4)
 
@@ -529,15 +545,15 @@ mobile feature parity items.
 
 ### Priority Tier 3: Scale Improvements (Weeks 4-6)
 
-| #   | Action                                                            | Effort | Impact            | Rule |
-| --- | ----------------------------------------------------------------- | ------ | ----------------- | ---- |
-| 16  | Remove unnecessary useMemo/useCallback (270 files)                | 16h    | React 19 Compiler | 12   |
-| 17  | Add useOptimistic to mutation UIs (5 locations)                   | 4h     | UX quality        | 12   |
-| 18  | Add useFormStatus to form buttons (8 forms)                       | 2h     | UX quality        | 12   |
-| 19  | Create 5 missing shared packages (state, hooks, ui, config, core) | 40h    | Architecture      | 5    |
-| 20  | Write 50 critical-path component tests                            | 40h    | Test coverage     | 9    |
-| 21  | Add JSDoc to ~173 module files                                    | 16h    | Documentation     | 6    |
-| 22  | Add `@doc` to 500+ Elixir functions                               | 40h    | Documentation     | 6, 7 |
+| #      | Action                                                                | Effort  | Impact            | Rule |
+| ------ | --------------------------------------------------------------------- | ------- | ----------------- | ---- |
+| 16     | Remove unnecessary useMemo/useCallback (270 files)                    | 16h     | React 19 Compiler | 12   |
+| 17     | Add useOptimistic to mutation UIs (5 locations)                       | 4h      | UX quality        | 12   |
+| 18     | Add useFormStatus to form buttons (8 forms)                           | 2h      | UX quality        | 12   |
+| ~~19~~ | ~~Create 6 missing shared packages~~ **DONE** (Tier 7 — all 12 exist) | ~~40h~~ | Architecture      | 5    |
+| 20     | Write 50 critical-path component tests                                | 40h     | Test coverage     | 9    |
+| 21     | Add JSDoc to ~173 module files                                        | 16h     | Documentation     | 6    |
+| 22     | Add `@doc` to 500+ Elixir functions                                   | 40h     | Documentation     | 6, 7 |
 
 ### Priority Tier 4: File Naming Migration (Week 6-7)
 
@@ -552,8 +568,8 @@ mobile feature parity items.
 
 | #   | Action                                                  | Effort | Impact        | Rule |
 | --- | ------------------------------------------------------- | ------ | ------------- | ---- |
-| 27  | Replace 949 type assertions with type guards (50/PR)    | 80h    | Type safety   | 11   |
-| 28  | Add `@spec` to remaining ~1,864 functions               | 80h    | Backend types | 7    |
+| 27  | Replace 1,013 type assertions with type guards (50/PR)  | 80h    | Type safety   | 11   |
+| 28  | Add `@spec` to remaining ~2,585 functions               | 80h    | Backend types | 7    |
 | 29  | Add remaining component tests (target: 3 per component) | 160h   | Test coverage | 9    |
 
 ### Priority Tier 6: Wave Tasks (Weeks 10+)
@@ -604,23 +620,23 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 
 ## PART 5: CURRENT VS WORLD-CLASS SCORECARD
 
-| Dimension                   | Current                        | After Tier 1-4                 | World-Class Target  |
-| --------------------------- | ------------------------------ | ------------------------------ | ------------------- |
-| File Naming (Rule 1)        | 0% (1,230 violations)          | 0%                             | 100% (0 violations) |
-| Component Patterns (Rule 2) | **99%** (5 React.FC, 0 fwdRef) | **99%**                        | 100%                |
-| State Management (Rule 3)   | 95%                            | 98%                            | 100%                |
-| Cross-Platform (Rule 5)     | 55% (6/12 packages)            | 55%                            | 100% (12/12)        |
-| Documentation (Rule 6)      | 75%                            | 80%                            | 100%                |
-| Backend Standards (Rule 7)  | 35% (Logger fixed)             | **49%** (1,582 specs)          | 100%                |
-| File Size (Rule 8)          | 65% (35 violations)            | **97%** (6 controllers remain) | 100%                |
-| Testing (Rule 9)            | 18% ratio                      | 20%                            | 100%                |
-| Performance (Rule 10)       | **100%** (0 offsets)           | **100%**                       | 100%                |
-| Security (Rule 11)          | 50% (949 assertions)           | 60%                            | 100%                |
-| React 19 (Rule 12)          | 35%                            | **90%**                        | 100%                |
-| CI/CD (Rule 13)             | **100%** (17/17)               | **100%**                       | 100%                |
-| Observability (Rule 14)     | **100%** (0 violations)        | **100%**                       | 100%                |
-| API Contract (Rule 15)      | 70% (offset fixed)             | **100%**                       | 100%                |
-| **Overall**                 | **~65%**                       | **~88%**                       | **100%**            |
+| Dimension                   | Current                          | After Tier 1-4                 | World-Class Target  |
+| --------------------------- | -------------------------------- | ------------------------------ | ------------------- |
+| File Naming (Rule 1)        | 0% (1,497 violations)            | 0%                             | 100% (0 violations) |
+| Component Patterns (Rule 2) | **100%** (0 React.FC, 0 fwdRef)  | **100%**                       | 100%                |
+| State Management (Rule 3)   | 97%                              | 98%                            | 100%                |
+| Cross-Platform (Rule 5)     | **100%** (12/12 packages)        | **100%**                       | 100% (12/12)        |
+| Documentation (Rule 6)      | 75%                              | 80%                            | 100%                |
+| Backend Standards (Rule 7)  | **45.5%** (2,160/4,745 specs)    | **55%**                        | 100%                |
+| File Size (Rule 8)          | **93%** (8 controllers + 6 TSX)  | **97%** (6 controllers remain) | 100%                |
+| Testing (Rule 9)            | 18% ratio                        | 20%                            | 100%                |
+| Performance (Rule 10)       | **100%** (0 offsets)             | **100%**                       | 100%                |
+| Security (Rule 11)          | 50% (1,013 assertions)           | 60%                            | 100%                |
+| React 19 (Rule 12)          | **92%**                          | **95%**                        | 100%                |
+| CI/CD (Rule 13)             | **100%** (17/17)                 | **100%**                       | 100%                |
+| Observability (Rule 14)     | **100%** (0 violations)          | **100%**                       | 100%                |
+| API Contract (Rule 15)      | **100%** (cursor + standardized) | **100%**                       | 100%                |
+| **Overall**                 | **~82%**                         | **~90%**                       | **100%**            |
 
 ---
 
@@ -636,19 +652,7 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | Tier 6: Wave Tasks          | 400h+     | 10+ weeks     | P3       |
 | **Total**                   | **~980h** | **~25 weeks** |          |
 
-> **Tier 1 COMPLETED** (commit `9d8fb58a`, 63 files): 7 offset→cursor, 111 Logger fixes, 2
-> forwardRef removals, 2 CI permissions. **Tier 2 COMPLETED** (commit `08b988c2`, 104 files): 59
-> React.FC→function, 14 useContext→use(), jobs+data_export+ForumHierarchy+ForumPermissions splits,
-> N+1 preload, ControllerHelpers, CLAUDE.md standards. **Tier 2b/3 COMPLETED** (commit `7d8cff09`,
-> 47 files): Split 8 more oversized files (presence, oauth, moderation, redis, cache,
-> batch_processor, api_versioning, request_context, MatrixText, effects-customization, ChannelsTab,
-> SeasonalEffects), 19 @spec, 5 JSON standardizations, optimistic updates (sendMessage, reactions,
-> votePost, ThreadPanel), useFormStatus (SubmitButton + 3 forms), XSS audit (all safe). **Tier 4
-> COMPLETED — Session 40** (73 files): 50 json()→render_data/render_error conversions across 17
-> controllers, 8 file splits (4 Elixir + 4 TSX → 25 smaller modules), 7 N+1 query fixes in forums/.
-> **Tier 5 COMPLETED** (commit `e8b326b3`, 43 files): 3 useActionState form migrations
-> (CreateGroupModal, AccountSettings, Register), 18 MAX array bounds across 13 stores, 267 @spec
-> annotations across 22 controllers, @moduledoc for last 2 controllers. **Tier 6 COMPLETED** (commit
-> pending): 20 oversized Elixir files split into 50+ submodules (all contexts now under 500 lines,
-> only 6 controllers remain at 509-561), 511 more @spec annotations across 38 files (coverage: 33% →
-> 49%, 1,582/3,220). Compliance: ~84% → ~88%.
+> **Tier 7 COMPLETED** (100 files, 1,640 insertions): 6 missing shared packages created (state,
+> hooks, ui, config, core, test-utils — all 12 now exist), reset() added to 16 stores, last 2
+> React.FC removed (OAuthButtons, ProfilerWrapper), 217 @spec annotations across 28 Elixir files.
+> Coverage: 2,160/4,745 (45.5%). React.FC: 0. forwardRef: 0. useContext: 0. All 12 packages: DONE.
