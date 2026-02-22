@@ -84,7 +84,10 @@ const TikTokIcon = ({ size = 20, color = '#FFFFFF' }: { size?: number; color?: s
   </Svg>
 );
 
-const providerIcons: Record<OAuthProvider, React.FC<{ size?: number; color?: string }>> = {
+const providerIcons: Record<
+  OAuthProvider,
+  (props: { size?: number; color?: string }) => React.ReactElement
+> = {
   google: GoogleIcon,
   apple: AppleIcon,
   facebook: FacebookIcon,

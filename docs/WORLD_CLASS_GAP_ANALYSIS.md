@@ -10,19 +10,19 @@
 
 | Category             | Current | Target | Gap                                       |
 | -------------------- | ------- | ------ | ----------------------------------------- |
-| Rule Compliance      | ~82%    | 100%   | 18% — 3 of 15 rules have major violations |
-| Wave Task Completion | ~18%    | 100%   | 82% — ~19 of 106 tasks done               |
-| Composite Score      | 9.2/10  | 9.5/10 | 0.3 pts                                   |
+| Rule Compliance      | ~88%    | 100%   | 12% — 2 of 15 rules have major violations |
+| Wave Task Completion | ~20%    | 100%   | 80% — ~21 of 106 tasks done               |
+| Composite Score      | 9.3/10  | 9.5/10 | 0.2 pts                                   |
 
 ### Critical Gaps (Blocks World-Class)
 
-1. **1,130 PascalCase filenames** in web + **367 in mobile** (Rule 1 requires kebab-case)
-2. ~~73 React.FC usages~~ **ALL FIXED** — 0 remaining (Tiers 2+7)
-3. **1,013 type assertions** (`as X`) (Rule 11 requires type guards)
+1. **1,148 PascalCase filenames** in web + **361 in mobile** (Rule 1 requires kebab-case)
+2. ~~73 React.FC usages~~ **ALL FIXED** — 0 remaining (Tiers 2+7+8)
+3. **960 type assertions** (`as X`) (Rule 11 requires type guards)
 4. **1,112 useMemo/useCallback** — React Compiler NOT enabled; keep for now
 5. ~~7 remaining offset pagination~~ **FIXED** (Tier 1 — all migrated to cursor)
 6. ~~6 missing shared packages~~ **ALL CREATED** (Tier 7 — all 12 packages exist)
-7. **~87 undone wave tasks** out of 106 total
+7. ~~4 mobile context shim files~~ **DELETED** (Tier 8 — 0 remaining)
 
 ---
 
@@ -80,18 +80,17 @@ blast radius, do in a dedicated PR with comprehensive import updates
 
 ### Rule 3: State Management — PASS
 
-| Metric                  | Status   | Notes                                                                      |
-| ----------------------- | -------- | -------------------------------------------------------------------------- |
-| Web Zustand stores      | PASS     | 29+ stores, module-based                                                   |
-| Mobile Zustand stores   | PASS     | 11 stores — full Zustand migration complete                                |
-| Mobile Context shims    | CLEANUP  | 4 `@deprecated` re-export files in `contexts/` (no real Context API usage) |
-| Store MAX constants     | **PASS** | 20+ MAX constants, all stores bounded                                      |
-| Unbounded array spreads | **PASS** | All 18 spreads bounded with MAX + .slice() (Tier 5)                        |
+| Metric                  | Status   | Notes                                               |
+| ----------------------- | -------- | --------------------------------------------------- |
+| Web Zustand stores      | PASS     | 29+ stores, module-based                            |
+| Mobile Zustand stores   | PASS     | 11 stores — full Zustand migration complete         |
+| Mobile Context shims    | **PASS** | 0 remaining — all 4 deleted in Tier 8               |
+| Store MAX constants     | **PASS** | 20+ MAX constants, all stores bounded               |
+| Unbounded array spreads | **PASS** | All 18 spreads bounded with MAX + .slice() (Tier 5) |
 
 **Action Items**:
 
-- [ ] **3.1** Delete 4 deprecated mobile context shim files in `contexts/` + update imports to use
-      stores directly
+- [x] **3.1** ~~Delete 4 deprecated mobile context shim files~~ **DONE** (Tier 8) — 0 remaining
 - [x] **3.2** ~~Add MAX constants to ALL store arrays~~ **DONE** (Tier 5)
 - [x] **3.3** ~~Add `.slice(-MAX)` bounds to all unbounded `[...state.X, newItem]` patterns~~
       **DONE** (Tier 5)
@@ -197,7 +196,7 @@ blast radius, do in a dedicated PR with comprehensive import updates
 
 ---
 
-### Rule 8: File Size & Complexity Limits — FAIL
+### Rule 8: File Size & Complexity Limits — PASS
 
 #### TSX Components Over 300 Lines (16 files)
 
@@ -620,23 +619,23 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 
 ## PART 5: CURRENT VS WORLD-CLASS SCORECARD
 
-| Dimension                   | Current                          | After Tier 1-4                 | World-Class Target  |
-| --------------------------- | -------------------------------- | ------------------------------ | ------------------- |
-| File Naming (Rule 1)        | 0% (1,497 violations)            | 0%                             | 100% (0 violations) |
-| Component Patterns (Rule 2) | **100%** (0 React.FC, 0 fwdRef)  | **100%**                       | 100%                |
-| State Management (Rule 3)   | 97%                              | 98%                            | 100%                |
-| Cross-Platform (Rule 5)     | **100%** (12/12 packages)        | **100%**                       | 100% (12/12)        |
-| Documentation (Rule 6)      | 75%                              | 80%                            | 100%                |
-| Backend Standards (Rule 7)  | **45.5%** (2,160/4,745 specs)    | **55%**                        | 100%                |
-| File Size (Rule 8)          | **93%** (8 controllers + 6 TSX)  | **97%** (6 controllers remain) | 100%                |
-| Testing (Rule 9)            | 18% ratio                        | 20%                            | 100%                |
-| Performance (Rule 10)       | **100%** (0 offsets)             | **100%**                       | 100%                |
-| Security (Rule 11)          | 50% (1,013 assertions)           | 60%                            | 100%                |
-| React 19 (Rule 12)          | **92%**                          | **95%**                        | 100%                |
-| CI/CD (Rule 13)             | **100%** (17/17)                 | **100%**                       | 100%                |
-| Observability (Rule 14)     | **100%** (0 violations)          | **100%**                       | 100%                |
-| API Contract (Rule 15)      | **100%** (cursor + standardized) | **100%**                       | 100%                |
-| **Overall**                 | **~82%**                         | **~90%**                       | **100%**            |
+| Dimension                   | Current                          | After Tier 1-4 | World-Class Target  |
+| --------------------------- | -------------------------------- | -------------- | ------------------- |
+| File Naming (Rule 1)        | 0% (1,497 violations)            | 0%             | 100% (0 violations) |
+| Component Patterns (Rule 2) | **100%** (0 React.FC, 0 fwdRef)  | **100%**       | 100%                |
+| State Management (Rule 3)   | **100%** (0 contexts, all reset) | **100%**       | 100%                |
+| Cross-Platform (Rule 5)     | **100%** (12/12 packages)        | **100%**       | 100% (12/12)        |
+| Documentation (Rule 6)      | 75%                              | 80%            | 100%                |
+| Backend Standards (Rule 7)  | **47.1%** (2,253/4,792 specs)    | **55%**        | 100%                |
+| File Size (Rule 8)          | **100%** (0 over limits)         | **100%**       | 100%                |
+| Testing (Rule 9)            | 18% ratio                        | 20%            | 100%                |
+| Performance (Rule 10)       | **100%** (0 offsets)             | **100%**       | 100%                |
+| Security (Rule 11)          | 52% (960 assertions)             | 60%            | 100%                |
+| React 19 (Rule 12)          | **95%**                          | **95%**        | 100%                |
+| CI/CD (Rule 13)             | **100%** (17/17)                 | **100%**       | 100%                |
+| Observability (Rule 14)     | **100%** (0 violations)          | **100%**       | 100%                |
+| API Contract (Rule 15)      | **100%** (cursor + standardized) | **100%**       | 100%                |
+| **Overall**                 | **~88%**                         | **~93%**       | **100%**            |
 
 ---
 
@@ -655,4 +654,7 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 > **Tier 7 COMPLETED** (100 files, 1,640 insertions): 6 missing shared packages created (state,
 > hooks, ui, config, core, test-utils — all 12 now exist), reset() added to 16 stores, last 2
 > React.FC removed (OAuthButtons, ProfilerWrapper), 217 @spec annotations across 28 Elixir files.
-> Coverage: 2,160/4,745 (45.5%). React.FC: 0. forwardRef: 0. useContext: 0. All 12 packages: DONE.
+> **Tier 8 COMPLETED** (68 files, 2,239 insertions): Split 6 oversized TSX + 8 oversized Elixir
+> files (all now under limits), deleted 4 mobile context shims, added ESLint guards (ban React.FC,
+> forwardRef, useContext), fixed last 3 mobile React.FC, 45 more @spec. Final: 0 files over size
+> limits, 0 React.FC, 0 forwardRef, 0 useContext, 0 mobile contexts, 2,253/4,792 @spec (47.1%).

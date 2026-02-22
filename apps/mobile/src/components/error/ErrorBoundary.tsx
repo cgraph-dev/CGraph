@@ -260,16 +260,16 @@ export function ComponentErrorBoundary({
 export function withErrorBoundary<P extends object>(
   WrappedComponent: React.ComponentType<P>,
   boundaryName?: string
-): React.FC<P> {
+): (props: P) => React.ReactElement {
   const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
   const name = boundaryName || displayName;
 
   function WithErrorBoundary(props: P): React.ReactElement {
     return (
-    <ErrorBoundary name={name}>
-      <WrappedComponent {...props} />
-    </ErrorBoundary>
-  );
+      <ErrorBoundary name={name}>
+        <WrappedComponent {...props} />
+      </ErrorBoundary>
+    );
   }
 
   WithErrorBoundary.displayName = `withErrorBoundary(${displayName})`;
