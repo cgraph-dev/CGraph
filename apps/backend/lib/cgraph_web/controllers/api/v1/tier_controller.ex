@@ -27,6 +27,7 @@ defmodule CGraphWeb.API.V1.TierController do
   Response:
     - 200: List of tiers with basic info
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, _params) do
     tiers = TierLimits.list_active_tiers()
 
@@ -44,6 +45,7 @@ defmodule CGraphWeb.API.V1.TierController do
     - 200: Tier details with limits
     - 404: Tier not found
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"tier" => tier_name}) do
     case TierLimits.get_tier(tier_name) do
       {:ok, tier} ->
@@ -65,6 +67,7 @@ defmodule CGraphWeb.API.V1.TierController do
     - 200: User's tier, limits, and any overrides
     - 401: Unauthorized
   """
+  @spec my_tier(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def my_tier(conn, _params) do
     case conn.assigns[:current_user] do
       nil ->
@@ -83,6 +86,7 @@ defmodule CGraphWeb.API.V1.TierController do
     - 200: Comparison of limits between tiers
     - 400: Invalid tier names
   """
+  @spec compare(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def compare(conn, %{"from" => from_tier, "to" => to_tier}) do
     case TierLimits.compare_tiers(from_tier, to_tier) do
       {:ok, comparison} ->
@@ -98,6 +102,7 @@ defmodule CGraphWeb.API.V1.TierController do
     end
   end
 
+  @spec compare(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def compare(conn, _params) do
     render_error(conn, :bad_request, "Both 'from' and 'to' parameters are required")
   end
@@ -117,6 +122,7 @@ defmodule CGraphWeb.API.V1.TierController do
   Response:
     - 200: { allowed: true/false, limit: X, current: Y }
   """
+  @spec check_action(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def check_action(conn, %{"action" => action}) do
     user = conn.assigns.current_user
 
@@ -180,6 +186,7 @@ defmodule CGraphWeb.API.V1.TierController do
   Response:
     - 200: { enabled: true/false }
   """
+  @spec check_feature(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def check_feature(conn, %{"feature" => feature_key}) do
     user = conn.assigns.current_user
     enabled = TierLimits.has_feature?(user, feature_key)

@@ -59,8 +59,9 @@ export function createCategoryActions(set: SetState, get: GetState) {
           order: get().categories.length,
         };
 
+        const MAX_CATEGORIES = 100;
         set((state) => ({
-          categories: [...state.categories, category],
+          categories: [...state.categories, category].slice(-MAX_CATEGORIES),
         }));
         return category;
       } catch (error) {

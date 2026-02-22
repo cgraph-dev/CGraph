@@ -54,6 +54,7 @@ defmodule CGraphWeb.API.V1.AdminController do
 
   Returns user counts, message stats, system health, and job status.
   """
+  @spec metrics(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def metrics(conn, _params) do
     admin_id = conn.assigns.current_user.id
 
@@ -72,6 +73,7 @@ defmodule CGraphWeb.API.V1.AdminController do
 
   Returns current snapshot of system performance.
   """
+  @spec realtime(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def realtime(conn, _params) do
     stats = Admin.get_realtime_stats()
 
@@ -96,6 +98,7 @@ defmodule CGraphWeb.API.V1.AdminController do
   - `page` - Page number (default: 1)
   - `per_page` - Items per page (default: 50, max: 100)
   """
+  @spec list_users(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_users(conn, params) do
     opts = [
       search: params["search"],
@@ -116,6 +119,7 @@ defmodule CGraphWeb.API.V1.AdminController do
   @doc """
   Get detailed user information.
   """
+  @spec show_user(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show_user(conn, %{"id" => user_id}) do
     with {:ok, details} <- Admin.get_user_details(user_id) do
       conn
@@ -137,6 +141,7 @@ defmodule CGraphWeb.API.V1.AdminController do
   }
   ```
   """
+  @spec ban_user(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def ban_user(conn, %{"id" => user_id} = params) do
     admin_id = conn.assigns.current_user.id
 
@@ -164,6 +169,7 @@ defmodule CGraphWeb.API.V1.AdminController do
   }
   ```
   """
+  @spec unban_user(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unban_user(conn, %{"id" => user_id} = params) do
     admin_id = conn.assigns.current_user.id
 
@@ -179,6 +185,7 @@ defmodule CGraphWeb.API.V1.AdminController do
   @doc """
   Verify a user (add verified badge).
   """
+  @spec verify_user(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def verify_user(conn, %{"id" => user_id}) do
     admin_id = conn.assigns.current_user.id
 
@@ -202,6 +209,7 @@ defmodule CGraphWeb.API.V1.AdminController do
   - `type` - Filter: message, post, comment, user
   - `page`, `per_page` - Pagination
   """
+  @spec list_reports(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_reports(conn, params) do
     opts = [
       status: params["status"],
@@ -229,6 +237,7 @@ defmodule CGraphWeb.API.V1.AdminController do
   }
   ```
   """
+  @spec resolve_report(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def resolve_report(conn, %{"id" => report_id} = params) do
     admin_id = conn.assigns.current_user.id
     action = String.to_existing_atom(params["action"] || "dismiss")
@@ -256,6 +265,7 @@ defmodule CGraphWeb.API.V1.AdminController do
   - `from`, `to` - Date range (ISO 8601)
   - `page`, `per_page` - Pagination
   """
+  @spec list_audit_log(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_audit_log(conn, params) do
     admin_id = conn.assigns.current_user.id
 
@@ -285,6 +295,7 @@ defmodule CGraphWeb.API.V1.AdminController do
   @doc """
   Get current system configuration.
   """
+  @spec get_config(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def get_config(conn, _params) do
     config = Admin.get_config()
 
@@ -305,6 +316,7 @@ defmodule CGraphWeb.API.V1.AdminController do
   }
   ```
   """
+  @spec update_config(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_config(conn, %{"key" => key, "value" => value}) do
     admin_id = conn.assigns.current_user.id
 
@@ -326,6 +338,7 @@ defmodule CGraphWeb.API.V1.AdminController do
   }
   ```
   """
+  @spec enable_maintenance(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def enable_maintenance(conn, params) do
     admin_id = conn.assigns.current_user.id
     message = params["message"] || "System maintenance in progress"
@@ -340,6 +353,7 @@ defmodule CGraphWeb.API.V1.AdminController do
   @doc """
   Disable maintenance mode.
   """
+  @spec disable_maintenance(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def disable_maintenance(conn, _params) do
     admin_id = conn.assigns.current_user.id
 
@@ -357,6 +371,7 @@ defmodule CGraphWeb.API.V1.AdminController do
   @doc """
   Export user data (GDPR).
   """
+  @spec export_user_data(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def export_user_data(conn, %{"id" => user_id}) do
     admin_id = conn.assigns.current_user.id
 
@@ -372,6 +387,7 @@ defmodule CGraphWeb.API.V1.AdminController do
 
   Requires confirmation parameter: "DELETE_{user_id}"
   """
+  @spec delete_user_data(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_user_data(conn, %{"id" => user_id, "confirmation" => confirmation}) do
     admin_id = conn.assigns.current_user.id
 

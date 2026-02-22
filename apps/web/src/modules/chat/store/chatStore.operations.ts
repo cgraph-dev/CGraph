@@ -263,7 +263,7 @@ export function createOperationsActions(set: Set, get: Get) {
       const conversation = ensureObject<Conversation>(response.data, 'conversation');
       if (conversation) {
         set((state) => ({
-          conversations: [conversation, ...state.conversations],
+          conversations: [conversation, ...state.conversations].slice(0, 200),
         }));
         return conversation;
       }
@@ -277,7 +277,7 @@ export function createOperationsActions(set: Set, get: Get) {
           return state;
         }
         return {
-          conversations: [conversation, ...state.conversations],
+          conversations: [conversation, ...state.conversations].slice(0, 200),
         };
       });
     },

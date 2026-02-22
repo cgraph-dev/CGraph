@@ -1,6 +1,8 @@
 /**
  * Registration form fields with password visibility toggles.
  *
+ * Uses uncontrolled inputs with name attributes for React 19 useActionState.
+ *
  * @module pages/auth/register/RegisterFormFields
  */
 
@@ -22,20 +24,10 @@ const itemVariants = {
 };
 
 interface RegisterFormFieldsProps {
-  email: string;
-  setEmail: (v: string) => void;
-  username: string;
-  setUsername: (v: string) => void;
-  password: string;
-  setPassword: (v: string) => void;
-  confirmPassword: string;
-  setConfirmPassword: (v: string) => void;
   showPassword: boolean;
   setShowPassword: (v: boolean) => void;
   showConfirmPassword: boolean;
   setShowConfirmPassword: (v: boolean) => void;
-  agreeToTerms: boolean;
-  setAgreeToTerms: (v: boolean) => void;
   isLoading: boolean;
 }
 
@@ -50,9 +42,8 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
         </label>
         <motion.input
           id="email"
+          name="email"
           type="email"
-          value={props.email}
-          onChange={(e) => props.setEmail(e.target.value)}
           required
           autoComplete="email"
           className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
@@ -67,9 +58,8 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
         </label>
         <motion.input
           id="username"
+          name="username"
           type="text"
-          value={props.username}
-          onChange={(e) => props.setUsername(e.target.value)}
           required
           autoComplete="username"
           minLength={3}
@@ -91,9 +81,8 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
         <div className="relative">
           <motion.input
             id="password"
+            name="password"
             type={props.showPassword ? 'text' : 'password'}
-            value={props.password}
-            onChange={(e) => props.setPassword(e.target.value)}
             required
             minLength={8}
             autoComplete="new-password"
@@ -116,9 +105,8 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
         <div className="relative">
           <motion.input
             id="confirmPassword"
+            name="confirmPassword"
             type={props.showConfirmPassword ? 'text' : 'password'}
-            value={props.confirmPassword}
-            onChange={(e) => props.setConfirmPassword(e.target.value)}
             required
             autoComplete="new-password"
             className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
@@ -138,8 +126,7 @@ export function RegisterFormFields(props: RegisterFormFieldsProps) {
       >
         <input
           type="checkbox"
-          checked={props.agreeToTerms}
-          onChange={(e) => props.setAgreeToTerms(e.target.checked)}
+          name="agreeToTerms"
           className="mt-0.5 h-4 w-4 rounded border-dark-600 bg-dark-700 text-primary-500 transition-all checked:border-primary-600 checked:bg-primary-600 focus:ring-primary-500/50 focus:ring-offset-0"
         />
         <span className="text-sm text-gray-400 transition-colors group-hover:text-gray-300">

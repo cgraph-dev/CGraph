@@ -18,6 +18,7 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   List all members of a group.
   GET /api/v1/groups/:group_id/members
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"group_id" => group_id} = params) do
     user = conn.assigns.current_user
 
@@ -41,6 +42,7 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   Get a specific member.
   GET /api/v1/groups/:group_id/members/:id
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"group_id" => group_id, "id" => member_id}) do
     user = conn.assigns.current_user
 
@@ -55,6 +57,7 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   Update a member's roles or nickname.
   PUT /api/v1/groups/:group_id/members/:id
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"group_id" => group_id, "id" => member_id} = params) do
     user = conn.assigns.current_user
     member_params = Map.get(params, "member", %{})
@@ -76,6 +79,7 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   Update the current user's notification preferences for this group.
   PATCH /api/v1/groups/:group_id/members/me/notifications
   """
+  @spec update_notifications(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_notifications(conn, %{"group_id" => group_id} = params) do
     user = conn.assigns.current_user
 
@@ -98,12 +102,14 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   Kick a member from a group.
   POST /api/v1/groups/:group_id/members/:id/kick
   """
+  @spec kick(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def kick(conn, params), do: delete(conn, params)
 
   @doc """
   Kick a member from the group.
   DELETE /api/v1/groups/:group_id/members/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"group_id" => group_id, "id" => member_id} = params) do
     user = conn.assigns.current_user
     reason = Map.get(params, "reason", "")
@@ -127,6 +133,7 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   Ban a member from the group.
   POST /api/v1/groups/:group_id/members/:id/ban
   """
+  @spec ban(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def ban(conn, %{"group_id" => group_id, "id" => member_id} = params) do
     user = conn.assigns.current_user
     reason = Map.get(params, "reason", "")
@@ -152,6 +159,7 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   Unban a user from the group.
   DELETE /api/v1/groups/:group_id/bans/:user_id
   """
+  @spec unban(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unban(conn, %{"group_id" => group_id, "user_id" => user_id}) do
     user = conn.assigns.current_user
 
@@ -170,6 +178,7 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   List banned users.
   GET /api/v1/groups/:group_id/bans
   """
+  @spec list_bans(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_bans(conn, %{"group_id" => group_id}) do
     user = conn.assigns.current_user
 
@@ -184,6 +193,7 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   Mute a member (prevent them from sending messages).
   POST /api/v1/groups/:group_id/members/:id/mute
   """
+  @spec mute(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def mute(conn, %{"group_id" => group_id, "id" => member_id} = params) do
     user = conn.assigns.current_user
     duration = Map.get(params, "duration", 600) # Default 10 minutes
@@ -209,6 +219,7 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   Unmute a member.
   DELETE /api/v1/groups/:group_id/members/:id/mute
   """
+  @spec unmute(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unmute(conn, %{"group_id" => group_id, "id" => member_id}) do
     user = conn.assigns.current_user
 
@@ -228,6 +239,7 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   Assign roles to a member.
   PUT /api/v1/groups/:group_id/members/:id/roles
   """
+  @spec update_roles(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_roles(conn, %{"group_id" => group_id, "id" => member_id, "role_ids" => role_ids}) do
     user = conn.assigns.current_user
 
@@ -248,6 +260,7 @@ defmodule CGraphWeb.API.V1.GroupMemberController do
   Transfer group ownership.
   POST /api/v1/groups/:group_id/transfer
   """
+  @spec transfer_ownership(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def transfer_ownership(conn, %{"group_id" => group_id, "new_owner_id" => new_owner_id}) do
     user = conn.assigns.current_user
 

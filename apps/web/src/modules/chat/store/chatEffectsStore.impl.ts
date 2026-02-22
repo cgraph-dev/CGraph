@@ -167,7 +167,10 @@ export const useChatEffectsStore = create<ChatEffectsState>()(
           if (state.unlockedEffects.some((e) => e.id === effect.id && e.type === effect.type)) {
             return state;
           }
-          return { unlockedEffects: [...state.unlockedEffects, effect] };
+          const MAX_UNLOCKED_EFFECTS = 200;
+          return {
+            unlockedEffects: [...state.unlockedEffects, effect].slice(-MAX_UNLOCKED_EFFECTS),
+          };
         }),
 
       isEffectUnlocked: (id, type) => {

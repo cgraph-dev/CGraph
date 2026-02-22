@@ -16,6 +16,7 @@ defmodule CGraphWeb.API.V1.ChannelMessageController do
   @doc """
   List messages in a channel.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"group_id" => group_id, "channel_id" => channel_id} = params) do
     user = conn.assigns.current_user
 
@@ -39,6 +40,7 @@ defmodule CGraphWeb.API.V1.ChannelMessageController do
   @doc """
   Send a message to a channel.
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"group_id" => group_id, "channel_id" => channel_id} = params) do
     user = conn.assigns.current_user
 
@@ -69,6 +71,7 @@ defmodule CGraphWeb.API.V1.ChannelMessageController do
   @doc """
   Send typing indicator.
   """
+  @spec typing(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def typing(conn, %{"group_id" => group_id, "channel_id" => channel_id}) do
     user = conn.assigns.current_user
 

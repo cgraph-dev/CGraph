@@ -47,8 +47,9 @@ export function createFetchListings(set: SetState, get: GetState) {
 
       if (response.data) {
         const newListings = response.data.listings || [];
+        const MAX_LISTINGS = 500;
         set({
-          listings: reset ? newListings : [...state.listings, ...newListings],
+          listings: reset ? newListings : [...state.listings, ...newListings].slice(-MAX_LISTINGS),
           stats: response.data.stats || state.stats,
           hasMore: response.data.pagination?.hasMore ?? false,
           currentOffset: offset + newListings.length,

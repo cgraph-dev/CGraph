@@ -27,6 +27,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   List all forums visible to the user.
   GET /api/v1/forums
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     user = Map.get(conn.assigns, :current_user)
     page = parse_int(params["page"], 1, min: 1)
@@ -49,6 +50,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   - sort: hot, new, top (default: hot)
   - time_range: hour, day, week, month, year, all (default: day)
   """
+  @spec home_feed(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def home_feed(conn, params) do
     user = conn.assigns.current_user
     page = parse_int(params["page"], 1, min: 1)
@@ -80,6 +82,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   - per_page: Items per page (default: 25, max: 50)
   - time_range: hour, day, week, month, year (default: day)
   """
+  @spec popular_feed(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def popular_feed(conn, params) do
     user = Map.get(conn.assigns, :current_user)
     page = parse_int(params["page"], 1, min: 1)
@@ -105,6 +108,7 @@ defmodule CGraphWeb.API.V1.ForumController do
 
   The :id parameter can be either a UUID or a slug.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => forum_id_or_slug}) do
     user = Map.get(conn.assigns, :current_user)
 
@@ -143,6 +147,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   - Premium ($9.99/mo): 10 forums
   - Enterprise: Unlimited
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, params) do
     user = conn.assigns.current_user
     # Accept params either nested under "forum" key or directly
@@ -169,6 +174,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   Update a forum.
   PUT /api/v1/forums/:id
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"id" => forum_id} = params) do
     user = conn.assigns.current_user
     forum_params = Map.get(params, "forum", %{})
@@ -185,6 +191,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   Delete a forum.
   DELETE /api/v1/forums/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => forum_id}) do
     user = conn.assigns.current_user
 
@@ -199,6 +206,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   Get moderation queue for a forum.
   GET /api/v1/forums/:id/mod_queue
   """
+  @spec mod_queue(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def mod_queue(conn, %{"id" => forum_id} = params) do
     user = conn.assigns.current_user
     page = parse_int(params["page"], 1, min: 1)
@@ -220,6 +228,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   Get forum statistics.
   GET /api/v1/forums/:id/stats
   """
+  @spec stats(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def stats(conn, %{"id" => forum_id}) do
     user = conn.assigns.current_user
 
@@ -234,6 +243,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   Subscribe to forum notifications.
   POST /api/v1/forums/:id/subscribe
   """
+  @spec subscribe(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def subscribe(conn, %{"id" => forum_id}) do
     user = conn.assigns.current_user
 
@@ -248,6 +258,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   Unsubscribe from forum notifications.
   DELETE /api/v1/forums/:id/subscribe
   """
+  @spec unsubscribe(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unsubscribe(conn, %{"id" => forum_id}) do
     user = conn.assigns.current_user
 
@@ -272,6 +283,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   - Vote changes have 60s cooldown
   - Cannot vote on own forums or forums you moderate
   """
+  @spec vote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def vote(conn, %{"id" => forum_id, "value" => value}) when value in [1, -1, "1", "-1"] do
     user = conn.assigns.current_user
     # Safe parsing - only allow 1 or -1, default to 0 (invalid) if parsing fails
@@ -350,6 +362,7 @@ defmodule CGraphWeb.API.V1.ForumController do
     end
   end
 
+  @spec vote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def vote(conn, %{"id" => _forum_id}) do
     conn
     |> put_status(:unprocessable_entity)
@@ -360,6 +373,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   Get user's vote on a forum.
   GET /api/v1/forums/:id/vote
   """
+  @spec get_vote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def get_vote(conn, %{"id" => forum_id}) do
     user = conn.assigns.current_user
 
@@ -375,6 +389,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   Remove vote on a forum.
   DELETE /api/v1/forums/:id/vote
   """
+  @spec remove_vote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def remove_vote(conn, %{"id" => forum_id}) do
     user = conn.assigns.current_user
 
@@ -402,6 +417,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   GET /api/v1/forums/leaderboard
   Query params: sort (hot, top, new, rising, weekly, members), page, per_page
   """
+  @spec leaderboard(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def leaderboard(conn, params) do
     user = conn.assigns[:current_user]
     page = parse_int(params["page"], 1, min: 1)
@@ -437,6 +453,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   Get top forums (quick list).
   GET /api/v1/forums/top
   """
+  @spec top(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def top(conn, params) do
     limit = parse_int(params["limit"], 10, min: 1, max: @max_leaderboard_limit)
     sort = Map.get(params, "sort", "hot")
@@ -454,6 +471,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   - per_page: Items per page (default: 10, max: 50)
   - time_range: all | week | month | year (default: all)
   """
+  @spec contributors(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def contributors(conn, %{"id" => forum_id} = params) do
     page = parse_int(params["page"], 1, min: 1)
     per_page = parse_int(params["per_page"], 10, min: 1, max: @max_per_page)
@@ -479,6 +497,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   Get voting eligibility info for current user.
   GET /api/v1/forums/vote-eligibility
   """
+  @spec vote_eligibility(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def vote_eligibility(conn, _params) do
     user = conn.assigns.current_user
     eligibility = Forums.get_vote_eligibility(user)

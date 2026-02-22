@@ -106,8 +106,9 @@ export const usePremiumStore = create<PremiumState>()(
       },
 
       addPurchase: (purchase) => {
+        const MAX_PURCHASE_HISTORY = 500;
         set((state) => ({
-          purchaseHistory: [purchase, ...state.purchaseHistory],
+          purchaseHistory: [purchase, ...state.purchaseHistory].slice(0, MAX_PURCHASE_HISTORY),
         }));
       },
 

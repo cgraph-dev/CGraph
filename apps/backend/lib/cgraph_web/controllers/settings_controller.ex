@@ -1,4 +1,11 @@
 defmodule CGraphWeb.SettingsController do
+  @moduledoc """
+  Handles server-wide settings retrieval and updates.
+
+  Provides endpoints for authenticated users to view and modify
+  application settings such as notifications, privacy, and display preferences.
+  """
+
   use CGraphWeb, :controller
   import CGraphWeb.ControllerHelpers, only: [render_data: 2, render_error: 3]
 

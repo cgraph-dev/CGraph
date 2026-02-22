@@ -37,6 +37,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
   - search: Search by shortcode/name
   - limit: Max results (default 100)
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     forum_id = Map.get(params, "forum_id")
     category_id = Map.get(params, "category_id")
@@ -58,6 +59,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   GET /api/v1/emojis/:id
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
     with {:ok, emoji} <- get_emoji(id) do
       render(conn, :show, emoji: emoji)
@@ -69,6 +71,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   GET /api/v1/emojis/categories
   """
+  @spec categories(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def categories(conn, params) do
     forum_id = Map.get(params, "forum_id")
 
@@ -89,6 +92,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   GET /api/v1/emojis/search?q=:query
   """
+  @spec search(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def search(conn, %{"q" => query}) when byte_size(query) >= 2 do
     forum_id = Map.get(conn.params, "forum_id")
 
@@ -101,6 +105,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
     render(conn, :index, emojis: emojis)
   end
 
+  @spec search(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def search(conn, _params) do
     render(conn, :index, emojis: [])
   end
@@ -110,6 +115,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   GET /api/v1/emojis/popular
   """
+  @spec popular(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def popular(conn, params) do
     limit = params |> Map.get("limit", "20") |> String.to_integer() |> min(50)
     forum_id = Map.get(params, "forum_id")
@@ -132,6 +138,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   POST /api/v1/emojis
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"emoji" => emoji_params} = params) do
     user = conn.assigns.current_user
 
@@ -145,6 +152,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
     end
   end
 
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, _params) do
     conn
     |> put_status(:bad_request)
@@ -156,6 +164,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   PUT /api/v1/emojis/:id
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"id" => id, "emoji" => emoji_params}) do
     user = conn.assigns.current_user
 
@@ -171,6 +180,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   DELETE /api/v1/emojis/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -186,6 +196,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   POST /api/v1/emojis/:id/use
   """
+  @spec use(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def use(conn, %{"id" => id}) do
     CustomEmoji.increment_usage(id)
     send_resp(conn, :no_content, "")
@@ -196,6 +207,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   GET /api/v1/emojis/favorites
   """
+  @spec favorites(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def favorites(conn, _params) do
     case conn.assigns[:current_user] do
       nil ->
@@ -222,6 +234,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   POST /api/v1/emojis/:id/favorite
   """
+  @spec add_favorite(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def add_favorite(conn, %{"id" => emoji_id}) do
     user = conn.assigns.current_user
 
@@ -260,6 +273,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   DELETE /api/v1/emojis/:id/favorite
   """
+  @spec remove_favorite(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def remove_favorite(conn, %{"id" => emoji_id}) do
     user = conn.assigns.current_user
 
@@ -285,6 +299,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   GET /api/v1/emojis/recent
   """
+  @spec recent(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def recent(conn, params) do
     case conn.assigns[:current_user] do
       nil ->
@@ -319,6 +334,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   GET /api/v1/admin/emojis/pending
   """
+  @spec pending(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def pending(conn, _params) do
     emojis = CustomEmoji.pending_query()
     |> Repo.all()
@@ -332,6 +348,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   POST /api/v1/admin/emojis/:id/approve
   """
+  @spec approve(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def approve(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -347,6 +364,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   POST /api/v1/admin/emojis/:id/reject
   """
+  @spec reject(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def reject(conn, %{"id" => id, "reason" => reason}) do
     with {:ok, emoji} <- get_emoji(id),
          changeset = CustomEmoji.reject_changeset(emoji, reason),
@@ -355,6 +373,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
     end
   end
 
+  @spec reject(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def reject(conn, %{"id" => _id}) do
     conn
     |> put_status(:bad_request)
@@ -370,6 +389,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   POST /api/v1/emojis/categories
   """
+  @spec create_category(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create_category(conn, %{"category" => category_params}) do
     attrs = Map.take(category_params, ["name", "description", "icon", "display_order", "forum_id"])
 
@@ -389,6 +409,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   PUT /api/v1/emojis/categories/:id
   """
+  @spec update_category(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_category(conn, %{"id" => id, "category" => category_params}) do
     with {:ok, category} <- get_category(id),
          changeset = EmojiCategory.update_changeset(category, category_params),
@@ -402,6 +423,7 @@ defmodule CGraphWeb.API.V1.CustomEmojiController do
 
   DELETE /api/v1/emojis/categories/:id
   """
+  @spec delete_category(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_category(conn, %{"id" => id}) do
     with {:ok, category} <- get_category(id),
          false <- category.is_system,

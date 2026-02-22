@@ -43,6 +43,7 @@ defmodule CGraphWeb.API.V1.TwoFactorController do
         "backup_codes": ["XXXX-XXXX", ...]
       }
   """
+  @spec setup(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def setup(conn, _params) do
     user = conn.assigns.current_user
 
@@ -75,6 +76,7 @@ defmodule CGraphWeb.API.V1.TwoFactorController do
   - `secret` - Secret from setup response (base64 encoded)
   - `backup_codes` - Backup codes from setup response
   """
+  @spec enable(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def enable(conn, %{"code" => code, "secret" => secret, "backup_codes" => backup_codes}) do
     user = conn.assigns.current_user
 
@@ -94,6 +96,7 @@ defmodule CGraphWeb.API.V1.TwoFactorController do
     end
   end
 
+  @spec enable(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def enable(conn, _params) do
     conn
     |> put_status(:bad_request)
@@ -109,6 +112,7 @@ defmodule CGraphWeb.API.V1.TwoFactorController do
 
   - `code` - 6-digit TOTP code from authenticator app
   """
+  @spec verify(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def verify(conn, %{"code" => code}) do
     user = conn.assigns.current_user
 
@@ -130,6 +134,7 @@ defmodule CGraphWeb.API.V1.TwoFactorController do
     end
   end
 
+  @spec verify(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def verify(conn, _params) do
     conn
     |> put_status(:bad_request)
@@ -146,6 +151,7 @@ defmodule CGraphWeb.API.V1.TwoFactorController do
 
   - `code` - Valid TOTP code or backup code
   """
+  @spec disable(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def disable(conn, %{"code" => code}) do
     user = conn.assigns.current_user
 
@@ -165,6 +171,7 @@ defmodule CGraphWeb.API.V1.TwoFactorController do
     end
   end
 
+  @spec disable(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def disable(conn, _params) do
     conn
     |> put_status(:bad_request)
@@ -174,6 +181,7 @@ defmodule CGraphWeb.API.V1.TwoFactorController do
   @doc """
   Get 2FA status for the authenticated user.
   """
+  @spec status(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def status(conn, _params) do
     user = conn.assigns.current_user
 
@@ -200,6 +208,7 @@ defmodule CGraphWeb.API.V1.TwoFactorController do
 
   - `code` - Valid TOTP code
   """
+  @spec regenerate_backup_codes(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def regenerate_backup_codes(conn, %{"code" => code}) do
     user = conn.assigns.current_user
 
@@ -224,6 +233,7 @@ defmodule CGraphWeb.API.V1.TwoFactorController do
     end
   end
 
+  @spec regenerate_backup_codes(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def regenerate_backup_codes(conn, _params) do
     conn
     |> put_status(:bad_request)
@@ -239,6 +249,7 @@ defmodule CGraphWeb.API.V1.TwoFactorController do
 
   - `code` - Backup code in format "XXXX-XXXX"
   """
+  @spec use_backup_code(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def use_backup_code(conn, %{"code" => code}) do
     user = conn.assigns.current_user
 
@@ -263,6 +274,7 @@ defmodule CGraphWeb.API.V1.TwoFactorController do
     end
   end
 
+  @spec use_backup_code(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def use_backup_code(conn, _params) do
     conn
     |> put_status(:bad_request)

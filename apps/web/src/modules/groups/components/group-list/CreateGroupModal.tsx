@@ -2,9 +2,10 @@
  * Create Group Modal
  *
  * Modal dialog for creating a new group.
+ * Uses React 19 useActionState for form state management.
  */
 
-import { useState } from 'react';
+import { useState, useActionState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { SparklesIcon } from '@heroicons/react/24/outline';
@@ -16,41 +17,44 @@ import type { CreateGroupModalProps } from './types';
 
 const logger = createLogger('CreateGroupModal');
 
+interface CreateGroupState {
+  error: string | null;
+}
+
 export function CreateGroupModal({ isOpen, onClose, onSubmit }: CreateGroupModalProps) {
   const { createGroup } = useGroupStore();
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
   const [isPublic, setIsPublic] = useState(true);
-  const [isCreating, setIsCreating] = useState(false);
   const navigate = useNavigate();
 
-  const handleCreate = async () => {
-    if (!name.trim()) return;
+  const [state, formAction, isPending] = useActionState(
+    async (_prev: CreateGroupState, formData: FormData): Promise<CreateGroupState> => {
+      const name = (formData.get('name') as string)?.trim();
+      const description = (formData.get('description') as string)?.trim();
 
-    setIsCreating(true);
-    try {
-      if (onSubmit) {
-        await onSubmit({ name: name.trim(), description: description.trim(), isPublic });
-      } else {
-        const group = await createGroup({
-          name: name.trim(),
-          description: description.trim() || undefined,
-          isPublic,
-        });
-        navigate(`/groups/${group.id}`);
+      if (!name) return { error: 'Group name is required' };
+
+      try {
+        if (onSubmit) {
+          await onSubmit({ name, description, isPublic });
+        } else {
+          const group = await createGroup({
+            name,
+            description: description || undefined,
+            isPublic,
+          });
+          navigate(`/groups/${group.id}`);
+        }
+        HapticFeedback.success();
+        onClose();
+        return { error: null };
+      } catch (error) {
+        logger.error('Failed to create group:', error);
+        HapticFeedback.error();
+        return { error: 'Failed to create group. Please try again.' };
       }
-      HapticFeedback.success();
-      onClose();
-      setName('');
-      setDescription('');
-      setIsPublic(true);
-    } catch (error) {
-      logger.error('Failed to create group:', error);
-      HapticFeedback.error();
-    } finally {
-      setIsCreating(false);
-    }
-  };
+    },
+    { error: null }
+  );
 
   return (
     <AnimatePresence>
@@ -84,68 +88,79 @@ export function CreateGroupModal({ isOpen, onClose, onSubmit }: CreateGroupModal
                 </p>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-300">Group Name</label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="My Awesome Group"
-                    className="w-full rounded-xl border border-gray-700 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-medium text-gray-300">
-                    Description (optional)
-                  </label>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="What's your group about?"
-                    rows={3}
-                    className="w-full resize-none rounded-xl border border-gray-700 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between rounded-xl bg-dark-800 p-4">
-                  <div>
-                    <span className="font-medium text-white">Public Group</span>
-                    <p className="text-xs text-gray-400">Anyone can discover and join</p>
+              <form action={formAction}>
+                {state.error && (
+                  <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
+                    {state.error}
                   </div>
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => setIsPublic(!isPublic)}
-                    className={`h-6 w-12 rounded-full transition-colors ${
-                      isPublic ? 'bg-primary-600' : 'bg-dark-600'
-                    }`}
-                  >
-                    <motion.div
-                      animate={{ x: isPublic ? 24 : 0 }}
-                      className="h-6 w-6 rounded-full bg-white shadow-lg"
+                )}
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Group Name
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="My Awesome Group"
+                      required
+                      className="w-full rounded-xl border border-gray-700 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
                     />
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-300">
+                      Description (optional)
+                    </label>
+                    <textarea
+                      name="description"
+                      placeholder="What's your group about?"
+                      rows={3}
+                      className="w-full resize-none rounded-xl border border-gray-700 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between rounded-xl bg-dark-800 p-4">
+                    <div>
+                      <span className="font-medium text-white">Public Group</span>
+                      <p className="text-xs text-gray-400">Anyone can discover and join</p>
+                    </div>
+                    <motion.button
+                      type="button"
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => setIsPublic(!isPublic)}
+                      className={`h-6 w-12 rounded-full transition-colors ${
+                        isPublic ? 'bg-primary-600' : 'bg-dark-600'
+                      }`}
+                    >
+                      <motion.div
+                        animate={{ x: isPublic ? 24 : 0 }}
+                        className="h-6 w-6 rounded-full bg-white shadow-lg"
+                      />
+                    </motion.button>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="flex-1 rounded-xl bg-dark-700 py-3 text-gray-300 transition-colors hover:bg-dark-600"
+                  >
+                    Cancel
+                  </button>
+                  <motion.button
+                    type="submit"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    disabled={isPending}
+                    className="flex-1 rounded-xl bg-primary-600 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {isPending ? 'Creating...' : 'Create Group'}
                   </motion.button>
                 </div>
-              </div>
-
-              <div className="mt-6 flex gap-3">
-                <button
-                  onClick={onClose}
-                  className="flex-1 rounded-xl bg-dark-700 py-3 text-gray-300 transition-colors hover:bg-dark-600"
-                >
-                  Cancel
-                </button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleCreate}
-                  disabled={!name.trim() || isCreating}
-                  className="flex-1 rounded-xl bg-primary-600 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {isCreating ? 'Creating...' : 'Create Group'}
-                </motion.button>
-              </div>
+              </form>
             </GlassCard>
           </motion.div>
         </motion.div>

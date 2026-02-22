@@ -90,6 +90,7 @@ defmodule CGraphWeb.API.V1.ConversationController do
   end
 
   # Fallback for legacy recipient_id param
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"recipient_id" => recipient_id} = params) do
     user = conn.assigns.current_user
     message_content = Map.get(params, "message")

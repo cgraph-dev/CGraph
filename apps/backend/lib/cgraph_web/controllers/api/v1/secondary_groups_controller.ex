@@ -26,6 +26,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   GET /api/v1/forums/:forum_id/members/:member_id/groups
   Get all groups for a member (primary + secondary).
   """
+  @spec member_groups(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def member_groups(conn, %{"forum_id" => forum_id, "member_id" => member_id}) do
     with {:ok, forum_uuid} <- Ecto.UUID.cast(forum_id),
          {:ok, member_uuid} <- Ecto.UUID.cast(member_id),
@@ -60,6 +61,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   GET /api/v1/forums/:forum_id/my-groups
   Get current user's groups in a forum.
   """
+  @spec my_groups(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def my_groups(conn, %{"forum_id" => forum_id}) do
     user = conn.assigns.current_user
 
@@ -91,6 +93,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   POST /api/v1/forums/:forum_id/members/:member_id/secondary-groups
   Add a secondary group to a member.
   """
+  @spec add_secondary_group(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def add_secondary_group(conn, %{"forum_id" => forum_id, "member_id" => member_id} = params) do
     user = conn.assigns.current_user
     group_id = params["user_group_id"]
@@ -136,6 +139,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   DELETE /api/v1/forums/:forum_id/members/:member_id/secondary-groups/:group_id
   Remove a secondary group from a member.
   """
+  @spec remove_secondary_group(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def remove_secondary_group(conn, %{
     "forum_id" => forum_id,
     "member_id" => member_id,
@@ -170,6 +174,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   PUT /api/v1/forums/:forum_id/members/:member_id/display-group
   Set the display group for a member.
   """
+  @spec set_display_group(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def set_display_group(conn, %{"forum_id" => forum_id, "member_id" => member_id} = params) do
     user = conn.assigns.current_user
     display_group_id = params["display_group_id"]
@@ -207,6 +212,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   GET /api/v1/forums/:forum_id/group-rules
   List all auto-assignment rules for a forum.
   """
+  @spec list_rules(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_rules(conn, %{"forum_id" => forum_id}) do
     user = conn.assigns.current_user
 
@@ -230,6 +236,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   POST /api/v1/forums/:forum_id/groups/:group_id/rules
   Create an auto-assignment rule for a group.
   """
+  @spec create_rule(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create_rule(conn, %{"forum_id" => forum_id, "group_id" => group_id} = params) do
     user = conn.assigns.current_user
 
@@ -266,6 +273,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   PUT /api/v1/group-rules/:id
   Update an auto-assignment rule.
   """
+  @spec update_rule(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_rule(conn, %{"id" => id} = params) do
     user = conn.assigns.current_user
 
@@ -294,6 +302,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   DELETE /api/v1/group-rules/:id
   Delete an auto-assignment rule.
   """
+  @spec delete_rule(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_rule(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -314,6 +323,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   POST /api/v1/forums/:forum_id/evaluate-rules
   Manually trigger rule evaluation for all members in a forum.
   """
+  @spec evaluate_rules(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def evaluate_rules(conn, %{"forum_id" => forum_id}) do
     user = conn.assigns.current_user
 
@@ -350,6 +360,7 @@ defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   GET /api/v1/group-rules/templates
   Get built-in rule templates.
   """
+  @spec rule_templates(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def rule_templates(conn, _params) do
     templates = GroupAutoRule.rule_templates()
     render_data(conn, templates)

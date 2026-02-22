@@ -24,6 +24,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
 
   GET /api/v1/web-push/vapid-key
   """
+  @spec vapid_key(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def vapid_key(conn, _params) do
     case WebPushClient.get_vapid_public_key() do
       {:ok, public_key} ->
@@ -47,6 +48,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
 
   POST /api/v1/web-push/subscribe
   """
+  @spec subscribe(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def subscribe(conn, %{"subscription" => subscription} = params) do
     user = conn.assigns.current_user
 
@@ -86,6 +88,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
     end
   end
 
+  @spec subscribe(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def subscribe(conn, _params) do
     render_error(conn, 400, "Request must include a subscription object")
   end
@@ -95,6 +98,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
 
   DELETE /api/v1/web-push/unsubscribe
   """
+  @spec unsubscribe(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unsubscribe(conn, %{"endpoint" => endpoint}) do
     user = conn.assigns.current_user
 
@@ -114,6 +118,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
     end
   end
 
+  @spec unsubscribe(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unsubscribe(conn, _params) do
     render_error(conn, 400, "Request must include the subscription endpoint")
   end
@@ -125,6 +130,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
 
   POST /api/v1/web-push/test
   """
+  @spec test(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def test(conn, %{"subscription" => subscription}) do
     with :ok <- WebPushClient.validate_subscription(subscription) do
       notification = %{
@@ -158,6 +164,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
     end
   end
 
+  @spec test(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def test(conn, _params) do
     render_error(conn, 400, "Request must include a subscription object for testing")
   end
@@ -167,6 +174,7 @@ defmodule CGraphWeb.API.V1.WebPushController do
 
   GET /api/v1/web-push/status
   """
+  @spec status(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def status(conn, _params) do
     case WebPushClient.get_vapid_public_key() do
       {:ok, _} ->

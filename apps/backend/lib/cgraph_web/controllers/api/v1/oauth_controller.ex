@@ -50,6 +50,7 @@ defmodule CGraphWeb.API.V1.OAuthController do
   - `authorization_url` - URL to redirect user to
   - `state` - State parameter to verify on callback
   """
+  @spec authorize(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def authorize(conn, %{"provider" => provider}) do
     state = generate_state()
     provider_atom = String.to_existing_atom(provider)
@@ -91,6 +92,7 @@ defmodule CGraphWeb.API.V1.OAuthController do
   For Apple (form_post):
   - Also accepts POST with form data
   """
+  @spec callback(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def callback(conn, %{"provider" => provider, "code" => code, "state" => state}) do
     stored_state = get_session(conn, :oauth_state)
 
@@ -136,6 +138,7 @@ defmodule CGraphWeb.API.V1.OAuthController do
     end
   end
 
+  @spec callback(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def callback(conn, %{"provider" => provider, "error" => error}) do
     # Handle OAuth errors (user denied, etc.)
     Logger.info("OAuth authorization denied", provider: provider, error: error)
@@ -147,7 +150,7 @@ defmodule CGraphWeb.API.V1.OAuthController do
     |> put_status(:unauthorized)
     |> json(%{error: error_description})
   end
-
+  @spec callback(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def callback(conn, %{"provider" => _provider}) do
     conn
     |> clear_oauth_session()
@@ -165,6 +168,7 @@ defmodule CGraphWeb.API.V1.OAuthController do
   - `id_token` - ID token (required for Apple, optional for others)
   - `user_data` - Additional user data from SDK (name, etc.)
   """
+  @spec mobile(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def mobile(conn, %{"provider" => provider, "access_token" => access_token} = params) do
     provider_atom = String.to_existing_atom(provider)
     id_token = params["id_token"]
@@ -194,6 +198,7 @@ defmodule CGraphWeb.API.V1.OAuthController do
     end
   end
 
+  @spec mobile(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def mobile(conn, %{"provider" => _provider}) do
     conn
     |> put_status(:bad_request)
@@ -205,6 +210,7 @@ defmodule CGraphWeb.API.V1.OAuthController do
 
   GET /api/v1/auth/oauth/providers
   """
+  @spec list_providers(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_providers(conn, _params) do
     providers = OAuth.configured_providers()
     |> Enum.map(fn provider ->
@@ -225,6 +231,7 @@ defmodule CGraphWeb.API.V1.OAuthController do
 
   Requires authentication.
   """
+  @spec link(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def link(conn, %{"provider" => provider, "access_token" => access_token} = params) do
     user = conn.assigns.current_user
     provider_atom = String.to_existing_atom(provider)
@@ -256,6 +263,7 @@ defmodule CGraphWeb.API.V1.OAuthController do
   end
 
   # Fallback: accept token param instead of access_token
+  @spec link(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def link(conn, %{"provider" => _provider} = params) do
     access_token = Map.get(params, "token") || Map.get(params, "code") || ""
     link(conn, Map.put(params, "access_token", access_token))
@@ -268,6 +276,7 @@ defmodule CGraphWeb.API.V1.OAuthController do
 
   Requires authentication.
   """
+  @spec unlink(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unlink(conn, %{"provider" => provider}) do
     user = conn.assigns.current_user
     provider_atom = String.to_existing_atom(provider)

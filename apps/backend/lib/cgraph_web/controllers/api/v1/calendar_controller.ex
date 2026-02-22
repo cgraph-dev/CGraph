@@ -28,6 +28,7 @@ defmodule CGraphWeb.API.V1.CalendarController do
   @doc """
   List events with optional filtering.
   """
+  @spec list_events(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_events(conn, params) do
     user = conn.assigns.current_user
 
@@ -48,6 +49,7 @@ defmodule CGraphWeb.API.V1.CalendarController do
   @doc """
   Get a single event.
   """
+  @spec show_event(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show_event(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -59,6 +61,7 @@ defmodule CGraphWeb.API.V1.CalendarController do
   @doc """
   Create a new event.
   """
+  @spec create_event(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create_event(conn, params) do
     user = conn.assigns.current_user
 
@@ -94,6 +97,7 @@ defmodule CGraphWeb.API.V1.CalendarController do
   @doc """
   Update an event.
   """
+  @spec update_event(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_event(conn, %{"id" => id} = params) do
     user = conn.assigns.current_user
 
@@ -107,6 +111,7 @@ defmodule CGraphWeb.API.V1.CalendarController do
   @doc """
   Delete an event.
   """
+  @spec delete_event(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_event(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -124,6 +129,7 @@ defmodule CGraphWeb.API.V1.CalendarController do
   @doc """
   List event categories.
   """
+  @spec list_categories(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_categories(conn, _params) do
     categories = Calendar.list_categories()
     render(conn, :categories, categories: categories)
@@ -132,6 +138,7 @@ defmodule CGraphWeb.API.V1.CalendarController do
   @doc """
   Create a category (admin only).
   """
+  @spec create_category(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create_category(conn, params) do
     user = conn.assigns.current_user
 
@@ -155,6 +162,7 @@ defmodule CGraphWeb.API.V1.CalendarController do
   @doc """
   Update a category (admin only).
   """
+  @spec update_category(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_category(conn, %{"id" => id} = params) do
     user = conn.assigns.current_user
 
@@ -168,6 +176,7 @@ defmodule CGraphWeb.API.V1.CalendarController do
   @doc """
   Delete a category (admin only).
   """
+  @spec delete_category(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_category(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -185,6 +194,7 @@ defmodule CGraphWeb.API.V1.CalendarController do
   @doc """
   List RSVPs for an event.
   """
+  @spec list_rsvps(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_rsvps(conn, %{"id" => event_id}) do
     user = conn.assigns.current_user
 
@@ -197,6 +207,7 @@ defmodule CGraphWeb.API.V1.CalendarController do
   @doc """
   RSVP to an event.
   """
+  @spec rsvp(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def rsvp(conn, %{"id" => event_id} = params) do
     user = conn.assigns.current_user
 
@@ -217,6 +228,7 @@ defmodule CGraphWeb.API.V1.CalendarController do
   @doc """
   Cancel RSVP.
   """
+  @spec cancel_rsvp(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def cancel_rsvp(conn, %{"id" => event_id}) do
     user = conn.assigns.current_user
 

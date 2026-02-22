@@ -1,81 +1,76 @@
 /**
  * Register form state and validation hook.
  *
+ * Uses React 19 useActionState for form submission + validation.
+ *
  * @module pages/auth/register/useRegisterForm
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useActionState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/modules/auth/store';
 
+interface RegisterFormState {
+  error: string | null;
+}
+
 export function useRegisterForm() {
   const navigate = useNavigate();
-  const { register, isLoading, error, clearError } = useAuthStore();
+  const { register, error, clearError } = useAuthStore();
 
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [agreeToTerms, setAgreeToTerms] = useState(false);
-  const [localError, setLocalError] = useState<string | null>(null);
 
-  const displayError = localError || error;
+  const [formState, formAction, isPending] = useActionState(
+    async (_prev: RegisterFormState, formData: FormData): Promise<RegisterFormState> => {
+      clearError();
+
+      const email = formData.get('email') as string;
+      const username = formData.get('username') as string;
+      const password = formData.get('password') as string;
+      const confirmPassword = formData.get('confirmPassword') as string;
+      const agreeToTerms = formData.get('agreeToTerms') === 'on';
+
+      if (password !== confirmPassword) {
+        return { error: 'Passwords do not match' };
+      }
+      if (password.length < 8) {
+        return { error: 'Password must be at least 8 characters' };
+      }
+      if (!agreeToTerms) {
+        return { error: 'Please agree to the Terms of Service and Privacy Policy' };
+      }
+
+      try {
+        await register(email, username, password);
+        navigate('/messages');
+        return { error: null };
+      } catch {
+        // Error is handled by store
+        return { error: null };
+      }
+    },
+    { error: null }
+  );
+
+  const displayError = formState.error || error;
 
   // Auto-dismiss error after 5 seconds
   useEffect(() => {
     if (!displayError) return;
     const timer = setTimeout(() => {
       clearError();
-      setLocalError(null);
     }, 5000);
     return () => clearTimeout(timer);
   }, [displayError, clearError]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    clearError();
-    setLocalError(null);
-
-    if (password !== confirmPassword) {
-      setLocalError('Passwords do not match');
-      return;
-    }
-    if (password.length < 8) {
-      setLocalError('Password must be at least 8 characters');
-      return;
-    }
-    if (!agreeToTerms) {
-      setLocalError('Please agree to the Terms of Service and Privacy Policy');
-      return;
-    }
-
-    try {
-      await register(email, username, password);
-      navigate('/messages');
-    } catch {
-      // Error is handled by store
-    }
-  };
-
   return {
-    email,
-    setEmail,
-    username,
-    setUsername,
-    password,
-    setPassword,
-    confirmPassword,
-    setConfirmPassword,
     showPassword,
     setShowPassword,
     showConfirmPassword,
     setShowConfirmPassword,
-    agreeToTerms,
-    setAgreeToTerms,
     displayError,
-    isLoading,
-    handleSubmit,
+    isLoading: isPending,
+    formAction,
   };
 }

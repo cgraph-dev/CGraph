@@ -45,8 +45,9 @@ export function createCrudActions(set: Set, get: Get) {
 
         const announcement = mapAnnouncementFromApi(response.data.announcement || response.data);
 
+        const MAX_ANNOUNCEMENTS = 200;
         set((state) => ({
-          announcements: [announcement, ...state.announcements],
+          announcements: [announcement, ...state.announcements].slice(0, MAX_ANNOUNCEMENTS),
         }));
 
         return announcement;

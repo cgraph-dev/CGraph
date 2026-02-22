@@ -94,8 +94,9 @@ export function createEventActions(set: SetState, get: GetState) {
         });
 
         const event = mapEventFromApi(response.data.event || response.data);
+        const MAX_EVENTS = 500;
         set((state) => ({
-          events: [...state.events, event],
+          events: [...state.events, event].slice(-MAX_EVENTS),
         }));
         return event;
       } catch (error) {

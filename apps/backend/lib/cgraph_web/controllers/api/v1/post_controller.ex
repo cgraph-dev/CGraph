@@ -23,6 +23,7 @@ defmodule CGraphWeb.API.V1.PostController do
   List posts in a forum.
   GET /api/v1/forums/:forum_id/posts
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"forum_id" => forum_id} = params) do
     user = Map.get(conn.assigns, :current_user)
     page = parse_int(params["page"], 1, min: 1)
@@ -54,6 +55,7 @@ defmodule CGraphWeb.API.V1.PostController do
   Used by multi-quote and other features that reference posts by ID
   without knowing the parent forum.
   """
+  @spec show_by_id(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show_by_id(conn, %{"id" => post_id}) do
     with {:ok, post} <- Forums.Posts.get_post(post_id) do
       render(conn, :show, post: post)
@@ -64,6 +66,7 @@ defmodule CGraphWeb.API.V1.PostController do
   Get a specific post.
   GET /api/v1/forums/:forum_id/posts/:id
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = Map.get(conn.assigns, :current_user)
 
@@ -87,6 +90,7 @@ defmodule CGraphWeb.API.V1.PostController do
   - content: Post content (required for text posts)
   - type: Post type - text, link, image, poll (default: text)
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"forum_id" => forum_id} = params) do
     user = conn.assigns.current_user
     # Accept params either nested under "post" key or directly
@@ -130,6 +134,7 @@ defmodule CGraphWeb.API.V1.PostController do
   Update a post.
   PUT /api/v1/forums/:forum_id/posts/:id
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"forum_id" => forum_id, "id" => post_id} = params) do
     user = conn.assigns.current_user
     post_params = Map.get(params, "post") || extract_post_params(params)
@@ -146,6 +151,7 @@ defmodule CGraphWeb.API.V1.PostController do
   Delete a post.
   DELETE /api/v1/forums/:forum_id/posts/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
 
@@ -163,6 +169,7 @@ defmodule CGraphWeb.API.V1.PostController do
 
   Accepts `direction` param: "up" or "down"
   """
+  @spec vote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def vote(conn, %{"forum_id" => forum_id, "post_id" => post_id, "direction" => direction}) do
     user = conn.assigns.current_user
     vote_direction = if direction == "up", do: :up, else: :down
@@ -179,6 +186,7 @@ defmodule CGraphWeb.API.V1.PostController do
   Upvote a post.
   POST /api/v1/forums/:forum_id/posts/:id/upvote
   """
+  @spec upvote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def upvote(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
 
@@ -194,6 +202,7 @@ defmodule CGraphWeb.API.V1.PostController do
   Downvote a post.
   POST /api/v1/forums/:forum_id/posts/:id/downvote
   """
+  @spec downvote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def downvote(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
 
@@ -209,6 +218,7 @@ defmodule CGraphWeb.API.V1.PostController do
   Remove vote from a post.
   DELETE /api/v1/forums/:forum_id/posts/:id/vote
   """
+  @spec unvote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unvote(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
 
@@ -223,6 +233,7 @@ defmodule CGraphWeb.API.V1.PostController do
   Pin a post.
   POST /api/v1/forums/:forum_id/posts/:id/pin
   """
+  @spec pin(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def pin(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
 
@@ -238,6 +249,7 @@ defmodule CGraphWeb.API.V1.PostController do
   Unpin a post.
   DELETE /api/v1/forums/:forum_id/posts/:id/pin
   """
+  @spec unpin(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unpin(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
 
@@ -253,6 +265,7 @@ defmodule CGraphWeb.API.V1.PostController do
   Lock a post (prevent new comments).
   POST /api/v1/forums/:forum_id/posts/:id/lock
   """
+  @spec lock(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def lock(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
 
@@ -268,6 +281,7 @@ defmodule CGraphWeb.API.V1.PostController do
   Unlock a post.
   DELETE /api/v1/forums/:forum_id/posts/:id/lock
   """
+  @spec unlock(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unlock(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
 
@@ -283,6 +297,7 @@ defmodule CGraphWeb.API.V1.PostController do
   Report a post.
   POST /api/v1/forums/:forum_id/posts/:id/report
   """
+  @spec report(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def report(conn, %{"forum_id" => forum_id, "id" => post_id} = params) do
     user = conn.assigns.current_user
     reason = Map.get(params, "reason", "")
@@ -300,6 +315,7 @@ defmodule CGraphWeb.API.V1.PostController do
   Get aggregated post feed from all public forums.
   GET /api/v1/posts/feed
   """
+  @spec feed(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def feed(conn, params) do
     user = Map.get(conn.assigns, :current_user)
     page = parse_int(params["page"], 1, min: 1)

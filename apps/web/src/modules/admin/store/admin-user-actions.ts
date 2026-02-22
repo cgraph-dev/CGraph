@@ -51,7 +51,7 @@ export function createUserActions(set: Set, get: Get) {
       set((state) => ({
         selectedUserIds: state.selectedUserIds.includes(id)
           ? state.selectedUserIds
-          : [...state.selectedUserIds, id],
+          : [...state.selectedUserIds, id].slice(-100),
       })),
 
     deselectUser: (id: string) =>

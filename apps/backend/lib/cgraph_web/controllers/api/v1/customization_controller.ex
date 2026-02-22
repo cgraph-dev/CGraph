@@ -1,4 +1,12 @@
 defmodule CGraphWeb.API.V1.CustomizationController do
+  @moduledoc """
+  Manages user profile customizations.
+
+  Provides endpoints for retrieving and updating user customizations
+  including chat bubble styles, profile themes, avatar borders, and other
+  visual personalization options.
+  """
+
   use CGraphWeb, :controller
   import CGraphWeb.ControllerHelpers, only: [render_data: 2]
 

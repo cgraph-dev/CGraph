@@ -176,7 +176,7 @@ export function createModerationActions(set: Set, _get: Get) {
       set((state) => ({
         multiQuoteBuffer: state.multiQuoteBuffer.includes(postId)
           ? state.multiQuoteBuffer
-          : [...state.multiQuoteBuffer, postId],
+          : [...state.multiQuoteBuffer, postId].slice(-20),
       }));
     },
 

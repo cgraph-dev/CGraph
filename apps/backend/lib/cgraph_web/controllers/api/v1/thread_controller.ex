@@ -17,6 +17,7 @@ defmodule CGraphWeb.API.V1.ThreadController do
   List threads in a board.
   GET /api/v1/boards/:board_id/threads
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"board_id" => board_id} = params) do
     pagination = extract_pagination_params(params)
     page = Keyword.get(pagination, :page)
@@ -34,6 +35,7 @@ defmodule CGraphWeb.API.V1.ThreadController do
   Get a single thread.
   GET /api/v1/boards/:board_id/threads/:id
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
     with {:ok, thread} <- Forums.get_thread(id) do
       # Increment view count
@@ -46,6 +48,7 @@ defmodule CGraphWeb.API.V1.ThreadController do
   Get a thread by slug.
   GET /api/v1/boards/:board_id/threads/by-slug/:slug
   """
+  @spec show_by_slug(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show_by_slug(conn, %{"board_id" => board_id, "slug" => slug}) do
     with {:ok, thread} <- Forums.get_thread_by_slug(board_id, slug) do
       Forums.increment_thread_views(thread.id)
@@ -57,6 +60,7 @@ defmodule CGraphWeb.API.V1.ThreadController do
   Create a new thread.
   POST /api/v1/boards/:board_id/threads
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"board_id" => board_id, "thread" => thread_params}) do
     user = conn.assigns.current_user
 
@@ -74,6 +78,7 @@ defmodule CGraphWeb.API.V1.ThreadController do
   end
 
   # Fallback: accept flat params (no "thread" wrapper)
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"board_id" => board_id} = params) do
     thread_params = Map.drop(params, ["board_id", "forum_id"])
     create(conn, %{"board_id" => board_id, "thread" => thread_params})
@@ -83,6 +88,7 @@ defmodule CGraphWeb.API.V1.ThreadController do
   Update a thread.
   PUT /api/v1/boards/:board_id/threads/:id
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"id" => id, "thread" => thread_params}) do
     user = conn.assigns.current_user
 
@@ -99,6 +105,7 @@ defmodule CGraphWeb.API.V1.ThreadController do
   end
 
   # Fallback: accept flat params (no "thread" wrapper)
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"id" => _id} = params) do
     thread_params = Map.drop(params, ["id", "board_id", "forum_id"])
     update(conn, Map.put(params, "thread", thread_params))
@@ -108,6 +115,7 @@ defmodule CGraphWeb.API.V1.ThreadController do
   Delete a thread.
   DELETE /api/v1/boards/:board_id/threads/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -127,6 +135,7 @@ defmodule CGraphWeb.API.V1.ThreadController do
   Pin or unpin a thread.
   POST /api/v1/boards/:board_id/threads/:id/pin
   """
+  @spec pin(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def pin(conn, %{"id" => id, "pinned" => pinned}) do
     user = conn.assigns.current_user
 
@@ -148,6 +157,7 @@ defmodule CGraphWeb.API.V1.ThreadController do
   Lock or unlock a thread.
   POST /api/v1/boards/:board_id/threads/:id/lock
   """
+  @spec lock(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def lock(conn, %{"id" => id, "locked" => locked}) do
     user = conn.assigns.current_user
 
@@ -169,6 +179,7 @@ defmodule CGraphWeb.API.V1.ThreadController do
   Vote on a thread.
   POST /api/v1/boards/:board_id/threads/:id/vote
   """
+  @spec vote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def vote(conn, %{"id" => id, "value" => value}) when value in [1, -1, "1", "-1"] do
     user = conn.assigns.current_user
     value = if is_binary(value), do: parse_int(value, 0, min: -1, max: 1), else: value
@@ -188,6 +199,7 @@ defmodule CGraphWeb.API.V1.ThreadController do
   GET /api/v1/forums/:forum_id/threads
   Used for "Recent Threads" view on forum homepage.
   """
+  @spec forum_threads(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def forum_threads(conn, %{"forum_id" => forum_id} = params) do
     limit = parse_int(params["limit"], 20, min: 1, max: @max_limit)
     sort = Map.get(params, "sort", "latest")

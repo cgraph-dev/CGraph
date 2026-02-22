@@ -17,6 +17,7 @@ defmodule CGraphWeb.API.V1.CommentController do
   List comments on a post.
   GET /api/v1/forums/:forum_id/posts/:post_id/comments
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"forum_id" => forum_id, "post_id" => post_id} = params) do
     user = conn.assigns.current_user
     page = parse_int(params["page"], 1, min: 1)
@@ -44,6 +45,7 @@ defmodule CGraphWeb.API.V1.CommentController do
   Get a specific comment with its replies.
   GET /api/v1/forums/:forum_id/posts/:post_id/comments/:id
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id}) do
     user = conn.assigns.current_user
 
@@ -63,6 +65,7 @@ defmodule CGraphWeb.API.V1.CommentController do
   - content: Comment text (required)
   - parent_id: ID of parent comment for replies (optional)
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"forum_id" => forum_id, "post_id" => post_id} = params) do
     user = conn.assigns.current_user
     # Accept params either nested under "comment" key or directly
@@ -103,6 +106,7 @@ defmodule CGraphWeb.API.V1.CommentController do
   Update a comment.
   PUT /api/v1/forums/:forum_id/posts/:post_id/comments/:id
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id} = params) do
     user = conn.assigns.current_user
     comment_params = Map.get(params, "comment", %{})
@@ -120,6 +124,7 @@ defmodule CGraphWeb.API.V1.CommentController do
   Delete a comment.
   DELETE /api/v1/forums/:forum_id/posts/:post_id/comments/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id}) do
     user = conn.assigns.current_user
 
@@ -138,14 +143,17 @@ defmodule CGraphWeb.API.V1.CommentController do
 
   Accepts a `direction` param of "up" or "down".
   """
+  @spec vote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def vote(conn, %{"direction" => "up"} = params) do
     upvote(conn, normalize_vote_params(params))
   end
 
+  @spec vote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def vote(conn, %{"direction" => "down"} = params) do
     downvote(conn, normalize_vote_params(params))
   end
 
+  @spec vote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def vote(conn, _params) do
     conn
     |> put_status(:unprocessable_entity)
@@ -156,6 +164,7 @@ defmodule CGraphWeb.API.V1.CommentController do
   Upvote a comment.
   POST /api/v1/forums/:forum_id/posts/:post_id/comments/:id/upvote
   """
+  @spec upvote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def upvote(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id}) do
     user = conn.assigns.current_user
 
@@ -172,6 +181,7 @@ defmodule CGraphWeb.API.V1.CommentController do
   Downvote a comment.
   POST /api/v1/forums/:forum_id/posts/:post_id/comments/:id/downvote
   """
+  @spec downvote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def downvote(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id}) do
     user = conn.assigns.current_user
 
@@ -188,6 +198,7 @@ defmodule CGraphWeb.API.V1.CommentController do
   Remove vote from a comment.
   DELETE /api/v1/forums/:forum_id/posts/:post_id/comments/:id/vote
   """
+  @spec unvote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unvote(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id}) do
     user = conn.assigns.current_user
 
@@ -203,6 +214,7 @@ defmodule CGraphWeb.API.V1.CommentController do
   Report a comment.
   POST /api/v1/forums/:forum_id/posts/:post_id/comments/:id/report
   """
+  @spec report(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def report(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id} = params) do
     user = conn.assigns.current_user
     reason = Map.get(params, "reason", "")

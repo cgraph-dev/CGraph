@@ -12,6 +12,7 @@ defmodule CGraphWeb.API.V1.ChannelController do
   @doc """
   List channels in a group.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"group_id" => group_id}) do
     user = conn.assigns.current_user
 
@@ -24,6 +25,7 @@ defmodule CGraphWeb.API.V1.ChannelController do
   @doc """
   Get a specific channel.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"group_id" => group_id, "id" => id}) do
     user = conn.assigns.current_user
 
@@ -36,6 +38,7 @@ defmodule CGraphWeb.API.V1.ChannelController do
   @doc """
   Create a new channel.
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"group_id" => group_id} = params) do
     user = conn.assigns.current_user
 
@@ -61,6 +64,7 @@ defmodule CGraphWeb.API.V1.ChannelController do
   @doc """
   Update a channel.
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"group_id" => group_id, "id" => id} = params) do
     user = conn.assigns.current_user
 
@@ -75,6 +79,7 @@ defmodule CGraphWeb.API.V1.ChannelController do
   @doc """
   Delete a channel.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"group_id" => group_id, "id" => id}) do
     user = conn.assigns.current_user
 
@@ -91,6 +96,7 @@ defmodule CGraphWeb.API.V1.ChannelController do
 
   Accepts `{"channel_ids": ["id1", "id2", ...]}` with the desired order.
   """
+  @spec reorder(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def reorder(conn, %{"group_id" => group_id, "channel_ids" => channel_ids})
       when is_list(channel_ids) do
     user = conn.assigns.current_user

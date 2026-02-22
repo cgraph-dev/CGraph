@@ -26,6 +26,7 @@ defmodule CGraphWeb.API.V1.UserController do
   @doc """
   Get the current authenticated user's profile.
   """
+  @spec me(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def me(conn, _params) do
     user = conn.assigns.current_user
     render(conn, :show, user: user)
@@ -34,6 +35,7 @@ defmodule CGraphWeb.API.V1.UserController do
   @doc """
   Update the current user's profile.
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"user" => user_params}) do
     user = conn.assigns.current_user
 
@@ -42,6 +44,7 @@ defmodule CGraphWeb.API.V1.UserController do
     end
   end
 
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, params) do
     # Handle case where params aren't wrapped in "user" key
     update(conn, %{"user" => params})
@@ -50,6 +53,7 @@ defmodule CGraphWeb.API.V1.UserController do
   @doc """
   Change the current user's username (14-day cooldown).
   """
+  @spec change_username(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def change_username(conn, %{"username" => username}) do
     user = conn.assigns.current_user
 
@@ -88,6 +92,7 @@ defmodule CGraphWeb.API.V1.UserController do
   @doc """
   Delete the current user's account (soft delete with grace period).
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, _params) do
     user = conn.assigns.current_user
 
@@ -104,6 +109,7 @@ defmodule CGraphWeb.API.V1.UserController do
   @doc """
   Upload a new avatar for the current user.
   """
+  @spec upload_avatar(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def upload_avatar(conn, %{"file" => upload}) do
     user = conn.assigns.current_user
 
@@ -116,6 +122,7 @@ defmodule CGraphWeb.API.V1.UserController do
   @doc """
   List all active sessions for the current user.
   """
+  @spec sessions(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def sessions(conn, _params) do
     user = conn.assigns.current_user
     sessions = Accounts.list_user_sessions(user)
@@ -133,6 +140,7 @@ defmodule CGraphWeb.API.V1.UserController do
   @doc """
   Revoke a specific session.
   """
+  @spec revoke_session(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def revoke_session(conn, %{"id" => session_id}) do
     user = conn.assigns.current_user
 
@@ -146,6 +154,7 @@ defmodule CGraphWeb.API.V1.UserController do
   @doc """
   List users with pagination and optional search.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     page = parse_int(params["page"], 1, min: 1)
     per_page = parse_int(params["per_page"], 20, min: 1, max: @max_per_page)
@@ -167,6 +176,7 @@ defmodule CGraphWeb.API.V1.UserController do
   Get a specific user by ID.
   Respects privacy settings - private profiles show limited info to non-friends.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
     current_user = conn.assigns[:current_user]
 
@@ -208,6 +218,7 @@ defmodule CGraphWeb.API.V1.UserController do
   Get a user's public profile by username.
   Respects privacy settings - private profiles show limited info to non-friends.
   """
+  @spec profile(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def profile(conn, %{"username" => username}) do
     current_user = conn.assigns[:current_user]
 
@@ -228,6 +239,7 @@ defmodule CGraphWeb.API.V1.UserController do
   @doc """
   Get top users by karma (leaderboard).
   """
+  @spec leaderboard(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def leaderboard(conn, params) do
     page = parse_int(params["page"], 1, min: 1)
     per_page = parse_int(params["per_page"], 20, min: 1, max: @max_per_page)
@@ -243,6 +255,7 @@ defmodule CGraphWeb.API.V1.UserController do
   @doc """
   Check username availability (delegates to UsernameController).
   """
+  @spec check_username_availability(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def check_username_availability(conn, params) do
     CGraphWeb.API.UsernameController.check_availability(conn, params)
   end
@@ -253,6 +266,7 @@ defmodule CGraphWeb.API.V1.UserController do
   The export will be generated asynchronously and the user will be notified
   when it's ready to download.
   """
+  @spec request_data_export(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def request_data_export(conn, _params) do
     user = conn.assigns.current_user
 
@@ -295,6 +309,7 @@ defmodule CGraphWeb.API.V1.UserController do
   - `status` - user's current status (online, away, busy, etc.)
   - `status_message` - optional custom status message
   """
+  @spec presence(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def presence(conn, %{"id" => user_id}) do
     presence_data = case Presence.user_online?(user_id) do
       true ->
@@ -329,6 +344,7 @@ defmodule CGraphWeb.API.V1.UserController do
   Accepts up to 100 user IDs per request.
   Useful for contact lists and conversation views.
   """
+  @spec bulk_presence(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def bulk_presence(conn, %{"user_ids" => user_ids}) when is_list(user_ids) do
     # Limit to prevent abuse
     limited_ids = Enum.take(user_ids, 100)
@@ -362,6 +378,7 @@ defmodule CGraphWeb.API.V1.UserController do
     |> json(%{data: enriched})
   end
 
+  @spec bulk_presence(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def bulk_presence(conn, _params) do
     conn
     |> put_status(:bad_request)
@@ -380,6 +397,7 @@ defmodule CGraphWeb.API.V1.UserController do
 
   Designed for scale: Cached aggressively, indexed queries, minimal data transfer.
   """
+  @spec get_avatar_border(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def get_avatar_border(conn, %{"id" => user_id}) do
     with {:ok, user} <- Accounts.get_user(user_id) do
       border_config = %{
@@ -404,6 +422,7 @@ defmodule CGraphWeb.API.V1.UserController do
 
   Mirrors GET /users/:id/avatar-border but uses the auth context.
   """
+  @spec get_my_avatar_border(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def get_my_avatar_border(conn, _params) do
     user = conn.assigns.current_user
 
@@ -429,6 +448,7 @@ defmodule CGraphWeb.API.V1.UserController do
   Accepts partial updates - only provided fields are changed.
   Validates all parameters to prevent malicious data at scale.
   """
+  @spec update_avatar_border(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_avatar_border(conn, params) do
     user = conn.assigns.current_user
 

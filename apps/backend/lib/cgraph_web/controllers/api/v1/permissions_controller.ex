@@ -26,6 +26,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   GET /api/v1/forums/:forum_id/permissions
   List all permission overrides for a forum.
   """
+  @spec forum_permissions(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def forum_permissions(conn, %{"forum_id" => forum_id}) do
     user = conn.assigns.current_user
 
@@ -49,6 +50,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   PUT /api/v1/forums/:forum_id/permissions
   Update forum permissions for a user group.
   """
+  @spec update_forum_permissions(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_forum_permissions(conn, %{"forum_id" => forum_id} = params) do
     user = conn.assigns.current_user
     group_id = params["user_group_id"]
@@ -71,6 +73,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   DELETE /api/v1/forums/:forum_id/permissions/:group_id
   Remove forum permission override for a group.
   """
+  @spec delete_forum_permission(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_forum_permission(conn, %{"forum_id" => forum_id, "group_id" => group_id}) do
     user = conn.assigns.current_user
 
@@ -100,6 +103,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   GET /api/v1/boards/:board_id/permissions
   List all permission overrides for a board.
   """
+  @spec board_permissions(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def board_permissions(conn, %{"board_id" => board_id}) do
     user = conn.assigns.current_user
 
@@ -123,6 +127,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   PUT /api/v1/boards/:board_id/permissions
   Update board permissions for a user group.
   """
+  @spec update_board_permissions(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_board_permissions(conn, %{"board_id" => board_id} = params) do
     user = conn.assigns.current_user
     group_id = params["user_group_id"]
@@ -145,6 +150,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   DELETE /api/v1/boards/:board_id/permissions/:group_id
   Remove board permission override for a group.
   """
+  @spec delete_board_permission(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_board_permission(conn, %{"board_id" => board_id, "group_id" => group_id}) do
     user = conn.assigns.current_user
 
@@ -174,6 +180,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   GET /api/v1/forums/:forum_id/permission-templates
   List permission templates available for a forum.
   """
+  @spec list_templates(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_templates(conn, %{"forum_id" => forum_id}) do
     with {:ok, uuid} <- Ecto.UUID.cast(forum_id) do
       templates =
@@ -190,6 +197,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   GET /api/v1/permission-templates
   List all system permission templates.
   """
+  @spec list_system_templates(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_system_templates(conn, _params) do
     templates =
       PermissionTemplate.system_templates_query()
@@ -202,6 +210,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   POST /api/v1/forums/:forum_id/permission-templates
   Create a custom permission template for a forum.
   """
+  @spec create_template(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create_template(conn, %{"forum_id" => forum_id} = params) do
     user = conn.assigns.current_user
 
@@ -234,6 +243,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   DELETE /api/v1/permission-templates/:id
   Delete a custom permission template.
   """
+  @spec delete_template(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_template(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -256,6 +266,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   POST /api/v1/boards/:board_id/apply-template
   Apply a permission template to a board for a specific group.
   """
+  @spec apply_template_to_board(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def apply_template_to_board(conn, %{"board_id" => board_id} = params) do
     user = conn.assigns.current_user
     template_id = params["template_id"]
@@ -295,6 +306,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   GET /api/v1/boards/:board_id/check-permission
   Check if current user has a specific permission on a board.
   """
+  @spec check_board_permission(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def check_board_permission(conn, %{"board_id" => board_id, "permission" => permission}) do
     user = conn.assigns[:current_user]
 
@@ -320,6 +332,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   end
 
   # Fallback: accept action param instead of permission
+  @spec check_board_permission(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def check_board_permission(conn, %{"board_id" => board_id} = params) do
     permission = Map.get(params, "action") || "can_post"
     check_board_permission(conn, %{"board_id" => board_id, "permission" => permission})
@@ -329,6 +342,7 @@ defmodule CGraphWeb.API.V1.PermissionsController do
   GET /api/v1/boards/:board_id/my-permissions
   Get all effective permissions for current user on a board.
   """
+  @spec my_board_permissions(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def my_board_permissions(conn, %{"board_id" => board_id}) do
     user = conn.assigns[:current_user]
 

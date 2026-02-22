@@ -29,6 +29,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   List all PM folders for the current user.
   """
+  @spec list_folders(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_folders(conn, _params) do
     user = conn.assigns.current_user
     folders = Messaging.list_pm_folders(user.id)
@@ -38,6 +39,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Create a new PM folder.
   """
+  @spec create_folder(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create_folder(conn, %{"name" => name} = params) do
     user = conn.assigns.current_user
 
@@ -58,6 +60,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Update a PM folder.
   """
+  @spec update_folder(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_folder(conn, %{"id" => id} = params) do
     user = conn.assigns.current_user
 
@@ -70,6 +73,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Delete a PM folder.
   """
+  @spec delete_folder(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_folder(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -86,6 +90,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   List messages in a folder or all messages.
   """
+  @spec list_messages(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_messages(conn, params) do
     user = conn.assigns.current_user
 
@@ -104,6 +109,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Get a single message.
   """
+  @spec show_message(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show_message(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -117,6 +123,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Send a new private message.
   """
+  @spec send_message(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def send_message(conn, params) do
     user = conn.assigns.current_user
 
@@ -139,6 +146,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Update a message (only allowed for drafts or before read).
   """
+  @spec update_message(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_message(conn, %{"id" => id} = params) do
     user = conn.assigns.current_user
 
@@ -152,6 +160,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Delete a message (soft delete).
   """
+  @spec delete_message(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_message(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -164,6 +173,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Mark a message as read.
   """
+  @spec mark_read(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def mark_read(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -176,6 +186,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Move a message to a different folder.
   """
+  @spec move_to_folder(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def move_to_folder(conn, %{"id" => id, "folder_id" => folder_id}) do
     user = conn.assigns.current_user
 
@@ -194,6 +205,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   List all drafts.
   """
+  @spec list_drafts(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_drafts(conn, params) do
     user = conn.assigns.current_user
 
@@ -209,6 +221,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Save a new draft.
   """
+  @spec save_draft(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def save_draft(conn, params) do
     user = conn.assigns.current_user
 
@@ -229,6 +242,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Update an existing draft.
   """
+  @spec update_draft(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_draft(conn, %{"id" => id} = params) do
     user = conn.assigns.current_user
 
@@ -241,6 +255,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Delete a draft.
   """
+  @spec delete_draft(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_draft(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -253,6 +268,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Send a draft (convert to message).
   """
+  @spec send_draft(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def send_draft(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -271,6 +287,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Get PM statistics for current user.
   """
+  @spec stats(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def stats(conn, _params) do
     user = conn.assigns.current_user
     stats = Messaging.get_pm_stats(user.id)
@@ -280,6 +297,7 @@ defmodule CGraphWeb.API.V1.PMController do
   @doc """
   Export all private messages.
   """
+  @spec export(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def export(conn, params) do
     user = conn.assigns.current_user
     format = Map.get(params, "format", "json")

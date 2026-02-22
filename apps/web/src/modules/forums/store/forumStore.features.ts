@@ -56,7 +56,10 @@ export function createFeatureActions(set: Set, _get: Get) {
           forums: data.forums,
         });
         const prefix = response.data.prefix;
-        set((state) => ({ threadPrefixes: [...state.threadPrefixes, prefix] }));
+        const MAX_THREAD_PREFIXES = 100;
+        set((state) => ({
+          threadPrefixes: [...state.threadPrefixes, prefix].slice(-MAX_THREAD_PREFIXES),
+        }));
         return prefix;
       } catch (error: unknown) {
         logger.error(
@@ -213,6 +216,7 @@ export function createFeatureActions(set: Set, _get: Get) {
         await api.post(`/api/v1/posts/${threadId}/subscribe`, {
           notification_mode: notificationMode,
         });
+        const MAX_SUBSCRIPTIONS = 500;
         set((state) => ({
           subscriptions: [
             ...state.subscriptions,
@@ -224,7 +228,7 @@ export function createFeatureActions(set: Set, _get: Get) {
               notificationMode,
               createdAt: new Date().toISOString(),
             },
-          ],
+          ].slice(-MAX_SUBSCRIPTIONS),
         }));
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'subscribeThread');

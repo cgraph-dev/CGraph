@@ -87,7 +87,8 @@ export const useForumHostingStore = create<ForumHostingState>((set) => ({
       },
     });
     const board = mapBoardFromApi(response.data.data);
-    set((state) => ({ boards: [...state.boards, board] }));
+    const MAX_BOARDS = 200;
+    set((state) => ({ boards: [...state.boards, board].slice(-MAX_BOARDS) }));
     return board;
   },
 

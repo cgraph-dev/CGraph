@@ -24,6 +24,7 @@ defmodule CGraphWeb.API.V1.ProfileController do
   @doc """
   Get current user's profile.
   """
+  @spec me(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def me(conn, _params) do
     user = conn.assigns.current_user
     show(conn, %{"user_id" => user.id})
@@ -32,6 +33,7 @@ defmodule CGraphWeb.API.V1.ProfileController do
   @doc """
   Update current user's profile.
   """
+  @spec update_me(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_me(conn, params) do
     user = conn.assigns.current_user
     update(conn, Map.put(params, "user_id", user.id))
@@ -40,6 +42,7 @@ defmodule CGraphWeb.API.V1.ProfileController do
   @doc """
   Get user profile.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"user_id" => user_id}) do
     current_user = conn.assigns[:current_user]
 
@@ -51,6 +54,7 @@ defmodule CGraphWeb.API.V1.ProfileController do
   @doc """
   Update signature.
   """
+  @spec update_signature(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_signature(conn, %{"user_id" => user_id} = params) do
     user = conn.assigns.current_user
 
@@ -63,6 +67,7 @@ defmodule CGraphWeb.API.V1.ProfileController do
   @doc """
   Update bio.
   """
+  @spec update_bio(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_bio(conn, %{"user_id" => user_id} = params) do
     user = conn.assigns.current_user
 
@@ -75,6 +80,7 @@ defmodule CGraphWeb.API.V1.ProfileController do
   @doc """
   Get user's posts.
   """
+  @spec posts(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def posts(conn, %{"user_id" => user_id} = params) do
     opts = [
       page: parse_int(params["page"], 1),
@@ -89,6 +95,7 @@ defmodule CGraphWeb.API.V1.ProfileController do
   @doc """
   Get user's threads.
   """
+  @spec threads(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def threads(conn, %{"user_id" => user_id} = params) do
     opts = [
       page: parse_int(params["page"], 1),
@@ -103,6 +110,7 @@ defmodule CGraphWeb.API.V1.ProfileController do
   @doc """
   Get user's reputation.
   """
+  @spec reputation(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def reputation(conn, %{"user_id" => user_id} = params) do
     opts = [
       page: parse_int(params["page"], 1),
@@ -121,6 +129,7 @@ defmodule CGraphWeb.API.V1.ProfileController do
   @doc """
   Give reputation to a user.
   """
+  @spec give_reputation(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def give_reputation(conn, %{"user_id" => user_id} = params) do
     user = conn.assigns.current_user
 
@@ -143,6 +152,7 @@ defmodule CGraphWeb.API.V1.ProfileController do
   @doc """
   Get user's activity.
   """
+  @spec activity(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def activity(conn, %{"user_id" => user_id} = params) do
     current_user = conn.assigns[:current_user]
 
@@ -160,6 +170,7 @@ defmodule CGraphWeb.API.V1.ProfileController do
   @doc """
   Update profile fields.
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"user_id" => user_id} = params) do
     user = conn.assigns.current_user
 
@@ -179,6 +190,7 @@ defmodule CGraphWeb.API.V1.ProfileController do
   @doc """
   Get profile visitors.
   """
+  @spec visitors(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def visitors(conn, %{"user_id" => user_id} = params) do
     current_user = conn.assigns.current_user
 

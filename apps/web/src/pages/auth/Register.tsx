@@ -86,22 +86,12 @@ export default function Register() {
       <AuthErrorAlert error={form.displayError} />
 
       {/* Register Form with staggered animations */}
-      <form onSubmit={form.handleSubmit} className="space-y-5">
+      <form action={form.formAction} className="space-y-5">
         <RegisterFormFields
-          email={form.email}
-          setEmail={form.setEmail}
-          username={form.username}
-          setUsername={form.setUsername}
-          password={form.password}
-          setPassword={form.setPassword}
-          confirmPassword={form.confirmPassword}
-          setConfirmPassword={form.setConfirmPassword}
           showPassword={form.showPassword}
           setShowPassword={form.setShowPassword}
           showConfirmPassword={form.showConfirmPassword}
           setShowConfirmPassword={form.setShowConfirmPassword}
-          agreeToTerms={form.agreeToTerms}
-          setAgreeToTerms={form.setAgreeToTerms}
           isLoading={form.isLoading}
         />
       </form>

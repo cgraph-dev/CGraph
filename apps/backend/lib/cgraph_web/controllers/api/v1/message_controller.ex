@@ -18,6 +18,7 @@ defmodule CGraphWeb.API.V1.MessageController do
   @doc """
   List messages in a conversation.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"conversation_id" => conversation_id} = params) do
     user = conn.assigns.current_user
 
@@ -40,6 +41,7 @@ defmodule CGraphWeb.API.V1.MessageController do
   @doc """
   Send a message to a conversation.
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"conversation_id" => conversation_id} = params) do
     user = conn.assigns.current_user
 
@@ -122,6 +124,7 @@ defmodule CGraphWeb.API.V1.MessageController do
   Update (edit) a message.
   Only the sender can edit their own messages.
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"conversation_id" => conversation_id, "id" => message_id} = params) do
     user = conn.assigns.current_user
 
@@ -142,6 +145,7 @@ defmodule CGraphWeb.API.V1.MessageController do
   Delete a message.
   Only the sender can delete their own messages.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"conversation_id" => conversation_id, "id" => message_id}) do
     user = conn.assigns.current_user
 
@@ -161,6 +165,7 @@ defmodule CGraphWeb.API.V1.MessageController do
   @doc """
   Pin a message in the conversation.
   """
+  @spec pin(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def pin(conn, %{"conversation_id" => conversation_id, "message_id" => message_id}) do
     user = conn.assigns.current_user
 
@@ -180,6 +185,7 @@ defmodule CGraphWeb.API.V1.MessageController do
   @doc """
   Unpin a message in the conversation.
   """
+  @spec unpin(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unpin(conn, %{"conversation_id" => conversation_id, "message_id" => message_id}) do
     user = conn.assigns.current_user
 
@@ -199,6 +205,7 @@ defmodule CGraphWeb.API.V1.MessageController do
   @doc """
   Mark a message as read.
   """
+  @spec mark_read(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def mark_read(conn, %{"conversation_id" => conversation_id, "id" => message_id}) do
     user = conn.assigns.current_user
 
@@ -212,6 +219,7 @@ defmodule CGraphWeb.API.V1.MessageController do
   Send typing indicator.
   Verifies user is a participant in the conversation before broadcasting.
   """
+  @spec typing(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def typing(conn, %{"conversation_id" => conversation_id}) do
     user = conn.assigns.current_user
 
@@ -235,6 +243,7 @@ defmodule CGraphWeb.API.V1.MessageController do
   List scheduled messages for a conversation.
   Returns all messages with schedule_status = 'scheduled'.
   """
+  @spec list_scheduled(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_scheduled(conn, %{"conversation_id" => conversation_id} = params) do
     user = conn.assigns.current_user
 
@@ -256,6 +265,7 @@ defmodule CGraphWeb.API.V1.MessageController do
   Reschedule a scheduled message.
   Only the sender can reschedule their own messages.
   """
+  @spec reschedule(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def reschedule(conn, %{"id" => message_id} = params) do
     user = conn.assigns.current_user
 
@@ -271,6 +281,7 @@ defmodule CGraphWeb.API.V1.MessageController do
   Cancel a scheduled message.
   Only the sender can cancel their own messages.
   """
+  @spec cancel_schedule(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def cancel_schedule(conn, %{"id" => message_id}) do
     user = conn.assigns.current_user
 
@@ -286,6 +297,7 @@ defmodule CGraphWeb.API.V1.MessageController do
 
   GET /api/v1/conversations/:conversation_id/messages/:message_id/replies
   """
+  @spec thread_replies(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def thread_replies(conn, %{"conversation_id" => conversation_id, "message_id" => message_id} = params) do
     user = conn.assigns.current_user
 
@@ -312,6 +324,7 @@ defmodule CGraphWeb.API.V1.MessageController do
   POST /api/v1/conversations/:conversation_id/thread-counts
   Body: %{"message_ids" => [id1, id2, ...]}
   """
+  @spec thread_counts(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def thread_counts(conn, %{"conversation_id" => conversation_id} = params) do
     user = conn.assigns.current_user
     message_ids = Map.get(params, "message_ids", []) |> Enum.take(200)

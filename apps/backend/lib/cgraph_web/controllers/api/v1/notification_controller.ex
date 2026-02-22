@@ -17,6 +17,7 @@ defmodule CGraphWeb.API.V1.NotificationController do
   List user's notifications.
   GET /api/v1/notifications
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     user = conn.assigns.current_user
     page = parse_int(params["page"], 1, min: 1)
@@ -38,6 +39,7 @@ defmodule CGraphWeb.API.V1.NotificationController do
   Get a specific notification.
   GET /api/v1/notifications/:id
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => notification_id}) do
     user = conn.assigns.current_user
 
@@ -50,6 +52,7 @@ defmodule CGraphWeb.API.V1.NotificationController do
   Mark a notification as read.
   PUT /api/v1/notifications/:id/read
   """
+  @spec mark_read(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def mark_read(conn, %{"id" => notification_id}) do
     user = conn.assigns.current_user
 
@@ -63,6 +66,7 @@ defmodule CGraphWeb.API.V1.NotificationController do
   Mark a notification as unread.
   DELETE /api/v1/notifications/:id/read
   """
+  @spec mark_unread(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def mark_unread(conn, %{"id" => notification_id}) do
     user = conn.assigns.current_user
 
@@ -76,6 +80,7 @@ defmodule CGraphWeb.API.V1.NotificationController do
   Mark all notifications as read.
   PUT /api/v1/notifications/read_all
   """
+  @spec mark_all_read(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def mark_all_read(conn, params) do
     user = conn.assigns.current_user
     type = Map.get(params, "type") # Optional filter
@@ -89,6 +94,7 @@ defmodule CGraphWeb.API.V1.NotificationController do
   Delete a notification.
   DELETE /api/v1/notifications/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => notification_id}) do
     user = conn.assigns.current_user
 
@@ -102,6 +108,7 @@ defmodule CGraphWeb.API.V1.NotificationController do
   Delete all notifications.
   DELETE /api/v1/notifications
   """
+  @spec delete_all(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_all(conn, params) do
     user = conn.assigns.current_user
     type = Map.get(params, "type")
@@ -115,6 +122,7 @@ defmodule CGraphWeb.API.V1.NotificationController do
   Get unread notification count.
   GET /api/v1/notifications/unread_count
   """
+  @spec unread_count(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unread_count(conn, _params) do
     user = conn.assigns.current_user
 
@@ -130,6 +138,7 @@ defmodule CGraphWeb.API.V1.NotificationController do
   Get notification settings.
   GET /api/v1/notifications/settings
   """
+  @spec settings(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def settings(conn, _params) do
     user = conn.assigns.current_user
 
@@ -141,6 +150,7 @@ defmodule CGraphWeb.API.V1.NotificationController do
   Update notification settings.
   PUT /api/v1/notifications/settings
   """
+  @spec update_settings(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_settings(conn, params) do
     user = conn.assigns.current_user
     settings_params = Map.get(params, "settings", %{})

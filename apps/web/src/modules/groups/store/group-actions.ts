@@ -174,7 +174,7 @@ export function createGroupActions(
       const group = ensureObject<Group>(response.data, 'group');
       if (group) {
         set((state) => ({
-          groups: [group, ...state.groups],
+          groups: [group, ...state.groups].slice(0, 200),
         }));
         return group;
       }
@@ -188,7 +188,7 @@ export function createGroupActions(
         set((state) => ({
           groups: state.groups.some((g) => g.id === group.id)
             ? state.groups
-            : [...state.groups, group],
+            : [...state.groups, group].slice(-200),
           justJoinedGroupName: group.name,
         }));
       }

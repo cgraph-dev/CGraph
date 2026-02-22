@@ -80,7 +80,8 @@ export function createThreadActions(set: StoreApi<ForumHostingState>['setState']
         },
       });
       const thread = mapThreadFromApi(response.data.data);
-      set((state) => ({ threads: [thread, ...state.threads] }));
+      const MAX_THREADS = 500;
+      set((state) => ({ threads: [thread, ...state.threads].slice(0, MAX_THREADS) }));
       return thread;
     },
 
@@ -175,7 +176,8 @@ export function createPostActions(set: StoreApi<ForumHostingState>['setState']) 
         },
       });
       const post = mapPostFromApi(response.data.data);
-      set((state) => ({ posts: [...state.posts, post] }));
+      const MAX_POSTS = 500;
+      set((state) => ({ posts: [...state.posts, post].slice(-MAX_POSTS) }));
       return post;
     },
 
