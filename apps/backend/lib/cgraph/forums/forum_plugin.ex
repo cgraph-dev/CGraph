@@ -56,6 +56,7 @@ defmodule CGraph.Forums.ForumPlugin do
     "forum_header", "forum_footer", "sidebar"
   ]
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(plugin, attrs) do
     plugin
     |> cast(attrs, [
@@ -71,11 +72,13 @@ defmodule CGraph.Forums.ForumPlugin do
     |> foreign_key_constraint(:installed_by_id)
   end
 
+  @spec toggle_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def toggle_changeset(plugin, attrs) do
     plugin
     |> cast(attrs, [:is_active])
   end
 
+  @spec settings_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def settings_changeset(plugin, attrs) do
     plugin
     |> cast(attrs, [:settings])
@@ -95,5 +98,6 @@ defmodule CGraph.Forums.ForumPlugin do
     end
   end
 
+  @spec available_hooks() :: [String.t()]
   def available_hooks, do: @available_hooks
 end

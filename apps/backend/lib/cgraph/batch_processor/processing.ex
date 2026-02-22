@@ -22,6 +22,7 @@ defmodule CGraph.BatchProcessor.Processing do
   @doc """
   Process items synchronously with parallel execution.
   """
+  @spec process(list(), (term() -> term()), keyword()) :: {:ok, map()}
   def process(items, processor, opts \\ []) when is_function(processor, 1) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     batch_id = generate_batch_id()
@@ -59,6 +60,7 @@ defmodule CGraph.BatchProcessor.Processing do
   @doc """
   Process items in batches using a batch processor function.
   """
+  @spec process_batches(list(), (term() -> term()), keyword()) :: {:ok, map()}
   def process_batches(items, processor, opts \\ []) when is_function(processor, 1) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     batch_id = generate_batch_id()
@@ -103,6 +105,7 @@ defmodule CGraph.BatchProcessor.Processing do
   @doc """
   Stream process records from an Ecto query.
   """
+  @spec stream_process(Ecto.Queryable.t(), (term() -> term()), keyword()) :: {:ok, map()} | {:error, term()}
   def stream_process(query, processor, opts \\ []) when is_function(processor, 1) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     batch_id = generate_batch_id()

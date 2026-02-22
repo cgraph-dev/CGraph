@@ -54,6 +54,7 @@ defmodule CGraph.Subscriptions.UserTierOverride do
   @doc """
   Creates a changeset for a user tier override.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(override, attrs) do
     override
     |> cast(attrs, [:user_id, :limit_key, :override_value, :reason, :granted_by_id, :expires_at])
@@ -67,11 +68,13 @@ defmodule CGraph.Subscriptions.UserTierOverride do
   @doc """
   Returns valid limit keys.
   """
+  @spec valid_limit_keys() :: [String.t()]
   def valid_limit_keys, do: @valid_limit_keys
 
   @doc """
   Parses the override value based on the limit key type.
   """
+  @spec parse_value(String.t(), String.t()) :: {:ok, number()} | {:error, String.t()}
   def parse_value(limit_key, value) when limit_key in ~w(rate_limit_multiplier) do
     case Float.parse(value) do
       {float, ""} -> {:ok, float}
@@ -89,6 +92,7 @@ defmodule CGraph.Subscriptions.UserTierOverride do
   @doc """
   Checks if an override has expired.
   """
+  @spec expired?(%__MODULE__{}) :: boolean()
   def expired?(%__MODULE__{expires_at: nil}), do: false
   def expired?(%__MODULE__{expires_at: expires_at}) do
     DateTime.compare(DateTime.utc_now(), expires_at) == :gt

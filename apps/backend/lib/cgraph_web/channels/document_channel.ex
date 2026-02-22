@@ -29,6 +29,7 @@ defmodule CGraphWeb.Channels.DocumentChannel do
   alias CGraph.Collaboration.DocumentServer
 
   @impl true
+  @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("document:" <> document_id, _params, socket) do
     user = socket.assigns.current_user
     user_id = user.id
@@ -70,6 +71,7 @@ defmodule CGraphWeb.Channels.DocumentChannel do
   end
 
   @impl true
+  @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("yjs_update", %{"update" => update_base64}, socket) do
     document_id = socket.assigns.document_id
     user_id = socket.assigns.user_id
@@ -113,6 +115,7 @@ defmodule CGraphWeb.Channels.DocumentChannel do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info({:send_initial_state, state, awareness}, socket) do
     push(socket, "initial_state", %{
       state: Base.encode64(state),
@@ -151,6 +154,7 @@ defmodule CGraphWeb.Channels.DocumentChannel do
   end
 
   @impl true
+  @spec terminate(term(), Phoenix.Socket.t()) :: :ok
   def terminate(_reason, socket) do
     if document_id = socket.assigns[:document_id] do
       user_id = socket.assigns.user_id

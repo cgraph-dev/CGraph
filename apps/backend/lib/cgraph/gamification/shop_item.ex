@@ -33,6 +33,7 @@ defmodule CGraph.Gamification.ShopItem do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(shop_item, attrs) do
     shop_item
     |> cast(attrs, [
@@ -50,10 +51,13 @@ defmodule CGraph.Gamification.ShopItem do
   @doc """
   Returns true if the item is available for purchase.
   """
+  @spec available?(%__MODULE__{}) :: boolean()
   def available?(%__MODULE__{is_active: false}), do: false
   def available?(%__MODULE__{limited_quantity: nil}), do: true
   def available?(%__MODULE__{limited_quantity: qty, sold_count: sold}), do: sold < qty
 
+  @spec categories() :: [String.t()]
   def categories, do: @categories
+  @spec types() :: [String.t()]
   def types, do: @types
 end

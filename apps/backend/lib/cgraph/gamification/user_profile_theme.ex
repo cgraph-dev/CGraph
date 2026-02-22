@@ -29,6 +29,7 @@ defmodule CGraph.Gamification.UserProfileTheme do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(user_theme, attrs) do
     user_theme
     |> cast(attrs, [
@@ -42,15 +43,18 @@ defmodule CGraph.Gamification.UserProfileTheme do
     |> unique_constraint([:user_id, :theme_id])
   end
 
+  @spec activate_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def activate_changeset(user_theme, attrs) do
     user_theme
     |> cast(attrs, [:is_active])
   end
 
+  @spec customize_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def customize_changeset(user_theme, attrs) do
     user_theme
     |> cast(attrs, [:custom_colors, :custom_background, :custom_layout, :custom_effects])
   end
 
+  @spec unlock_sources() :: [String.t()]
   def unlock_sources, do: @unlock_sources
 end

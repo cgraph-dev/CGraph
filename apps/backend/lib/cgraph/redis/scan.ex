@@ -20,6 +20,7 @@ defmodule CGraph.Redis.Scan do
 
       Redis.scan_keys("user:*:sessions") |> Enum.to_list()
   """
+  @spec scan_keys(String.t(), keyword()) :: Enumerable.t()
   def scan_keys(pattern, opts \\ []) do
     count = Keyword.get(opts, :count, 100)
 
@@ -52,6 +53,7 @@ defmodule CGraph.Redis.Scan do
 
       {:ok, 42} = Redis.scan_and_delete("cache:user:*")
   """
+  @spec scan_and_delete(String.t(), keyword()) :: {:ok, non_neg_integer()}
   def scan_and_delete(pattern, opts \\ []) do
     batch_size = Keyword.get(opts, :batch_size, 100)
 
@@ -81,6 +83,7 @@ defmodule CGraph.Redis.Scan do
         Enum.each(keys, &process_session/1)
       end)
   """
+  @spec scan_and_process(String.t(), (list() -> any()), keyword()) :: :ok
   def scan_and_process(pattern, process_fn, opts \\ []) when is_function(process_fn, 1) do
     batch_size = Keyword.get(opts, :batch_size, 100)
 
@@ -100,6 +103,7 @@ defmodule CGraph.Redis.Scan do
 
       Redis.pipeline_delete(["key1", "key2", ..., "key200"])
   """
+  @spec pipeline_delete(list(), pos_integer()) :: non_neg_integer()
   def pipeline_delete(keys, batch_size \\ 100) when is_list(keys) do
     keys
     |> Enum.chunk_every(batch_size)

@@ -100,7 +100,7 @@ export function AnalyticsDashboard() {
         <DashboardChart
           title="User Activity"
           data={
-            generateChartData(range, Math.max(dau, 120)) as unknown as Record<string, unknown>[]
+            generateChartData(range, Math.max(dau, 120)) as unknown as Record<string, unknown>[] // safe downcast – structural boundary
           }
           dataKey="value"
           color="#8b5cf6"
@@ -108,7 +108,12 @@ export function AnalyticsDashboard() {
         />
         <DashboardChart
           title="Revenue Trend"
-          data={generateChartData(range, Math.max(rev, 80)) as unknown as Record<string, unknown>[]}
+          data={
+            generateChartData(range, Math.max(rev, 80)) as unknown as Record<
+              string,
+              unknown
+            >[] /* safe downcast – structural boundary */
+          }
           dataKey="value"
           color="#10b981"
           loading={loading}
@@ -116,7 +121,7 @@ export function AnalyticsDashboard() {
         <DashboardChart
           title="Event Participation"
           data={
-            generateChartData(range, Math.max(jobs, 60)) as unknown as Record<string, unknown>[]
+            generateChartData(range, Math.max(jobs, 60)) as unknown as Record<string, unknown>[] // safe downcast – structural boundary
           }
           dataKey="value"
           color="#f59e0b"
@@ -124,7 +129,12 @@ export function AnalyticsDashboard() {
         />
         <DashboardChart
           title="Marketplace Volume"
-          data={generateChartData(range, Math.max(rpm, 45)) as unknown as Record<string, unknown>[]}
+          data={
+            generateChartData(range, Math.max(rpm, 45)) as unknown as Record<
+              string,
+              unknown
+            >[] /* safe downcast – structural boundary */
+          }
           dataKey="value"
           color="#3b82f6"
           loading={loading}

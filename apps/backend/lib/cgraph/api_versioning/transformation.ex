@@ -14,6 +14,7 @@ defmodule CGraph.ApiVersioning.Transformation do
   @doc """
   Transform data for the API version in the current connection.
   """
+  @spec transform(Plug.Conn.t(), atom(), term()) :: term()
   def transform(conn, resource_type, data) do
     version = Detection.get_version(conn)
     transform_for_version(resource_type, version, data)
@@ -22,6 +23,7 @@ defmodule CGraph.ApiVersioning.Transformation do
   @doc """
   Transform data for a specific version.
   """
+  @spec transform_for_version(atom(), integer(), term()) :: term()
   def transform_for_version(resource_type, version, data) do
     case get_transformer(resource_type, version) do
       {:ok, transformer} ->
@@ -39,6 +41,7 @@ defmodule CGraph.ApiVersioning.Transformation do
   @doc """
   Transform a list of items for the API version.
   """
+  @spec transform_list(Plug.Conn.t(), atom(), list()) :: list()
   def transform_list(conn, resource_type, items) when is_list(items) do
     version = Detection.get_version(conn)
     Enum.map(items, &transform_for_version(resource_type, version, &1))

@@ -65,6 +65,7 @@ defmodule CGraph.Forums.ThreadPost do
   @doc """
   Changeset for creating a new post.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(post, attrs) do
     post
     |> cast(attrs, [
@@ -82,6 +83,7 @@ defmodule CGraph.Forums.ThreadPost do
   @doc """
   Changeset for editing a post.
   """
+  @spec edit_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def edit_changeset(post, attrs) do
     post
     |> cast(attrs, [:content, :content_html, :edit_reason, :edited_by_id])
@@ -96,6 +98,7 @@ defmodule CGraph.Forums.ThreadPost do
   @doc """
   Changeset for moderation actions.
   """
+  @spec moderation_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def moderation_changeset(post, attrs) do
     post
     |> cast(attrs, [:is_hidden, :is_approved])
@@ -104,6 +107,7 @@ defmodule CGraph.Forums.ThreadPost do
   @doc """
   Changeset for updating vote scores.
   """
+  @spec vote_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def vote_changeset(post, attrs) do
     post
     |> cast(attrs, [:score, :upvotes, :downvotes])

@@ -26,6 +26,7 @@ defmodule CGraphWeb.Validation.SubscriptionParams do
   - supported type values
   - normalized boolean flags and notification mode
   """
+  @spec validate_create(map()) :: {:ok, %__MODULE__{}} | {:error, Ecto.Changeset.t()}
   def validate_create(params) do
     %__MODULE__{}
     |> cast(params, [:type, :target_id, :notification_mode, :email_notifications, :push_notifications, :include_replies],
@@ -44,6 +45,7 @@ defmodule CGraphWeb.Validation.SubscriptionParams do
   Validate payload for updating a single subscription. Allows partial updates
   but enforces that provided keys are valid and modes are supported.
   """
+  @spec validate_update(map()) :: {:ok, %__MODULE__{}} | {:error, Ecto.Changeset.t()}
   def validate_update(params) do
     %__MODULE__{}
     |> cast(params, [:notification_mode, :email_notifications, :push_notifications, :include_replies], empty_values: [""])
@@ -56,6 +58,7 @@ defmodule CGraphWeb.Validation.SubscriptionParams do
   Validate payload for bulk update. Shares rules with update but keeps
   `include_replies` optional for now.
   """
+  @spec validate_bulk_update(map()) :: {:ok, %__MODULE__{}} | {:error, Ecto.Changeset.t()}
   def validate_bulk_update(params) do
     %__MODULE__{}
     |> cast(params, [:notification_mode, :email_notifications, :push_notifications, :include_replies], empty_values: [""])

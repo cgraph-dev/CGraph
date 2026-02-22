@@ -106,6 +106,7 @@ defmodule CGraph.Forums.ForumUserGroup do
   @doc """
   Changeset for creating a new user group.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(group, attrs) do
     group
     |> cast(attrs, [
@@ -121,6 +122,7 @@ defmodule CGraph.Forums.ForumUserGroup do
   @doc """
   List of all permission fields.
   """
+  @spec permission_fields() :: [atom()]
   def permission_fields do
     [
       :can_view_boards, :can_view_profiles, :can_view_hidden_boards,
@@ -141,6 +143,7 @@ defmodule CGraph.Forums.ForumUserGroup do
   @doc """
   List of limit fields.
   """
+  @spec limit_fields() :: [atom()]
   def limit_fields do
     [
       :max_attachments_per_post, :max_attachment_size_kb,
@@ -153,6 +156,7 @@ defmodule CGraph.Forums.ForumUserGroup do
   Create default user groups for a new forum.
   Returns a list of group attrs.
   """
+  @spec default_groups() :: [map()]
   def default_groups do
     [
       %{

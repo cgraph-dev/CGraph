@@ -34,6 +34,7 @@ defmodule CGraph.Messaging.ConversationParticipant do
   @doc """
   Create a participant record.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(participant, attrs) do
     participant
     |> cast(attrs, [
@@ -49,6 +50,7 @@ defmodule CGraph.Messaging.ConversationParticipant do
   @doc """
   Mark messages as read up to current time.
   """
+  @spec mark_read_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def mark_read_changeset(participant) do
     participant
     |> change(last_read_at: DateTime.truncate(DateTime.utc_now(), :second))
@@ -58,6 +60,7 @@ defmodule CGraph.Messaging.ConversationParticipant do
   @doc """
   Increment unread count.
   """
+  @spec increment_unread_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def increment_unread_changeset(participant) do
     change(participant, unread_count: participant.unread_count + 1)
   end
@@ -65,6 +68,7 @@ defmodule CGraph.Messaging.ConversationParticipant do
   @doc """
   Toggle mute status.
   """
+  @spec mute_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def mute_changeset(participant, attrs) do
     participant
     |> cast(attrs, [:is_muted, :muted_until])

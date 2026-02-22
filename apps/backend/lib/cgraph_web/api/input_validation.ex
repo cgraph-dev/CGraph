@@ -236,6 +236,7 @@ defmodule CGraphWeb.API.InputValidation do
 
   Useful for displaying a single error message per field in forms.
   """
+  @spec validate_first_error(map(), schema(), keyword()) :: {:ok, map()} | {:error, map()}
   def validate_first_error(params, schema, opts \\ []) do
     case validate(params, schema, opts) do
       {:ok, result} -> {:ok, result}

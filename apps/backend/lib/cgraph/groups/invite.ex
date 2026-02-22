@@ -27,6 +27,7 @@ defmodule CGraph.Groups.Invite do
   @doc """
   Create a new invite.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(invite, attrs) do
     invite
     |> cast(attrs, [:max_uses, :expires_at, :is_temporary, :group_id, :channel_id, :created_by_id])
@@ -43,6 +44,7 @@ defmodule CGraph.Groups.Invite do
   @doc """
   Increment usage count.
   """
+  @spec use_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def use_changeset(invite) do
     change(invite, uses: invite.uses + 1)
   end
@@ -50,6 +52,7 @@ defmodule CGraph.Groups.Invite do
   @doc """
   Revoke an invite.
   """
+  @spec revoke_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def revoke_changeset(invite) do
     change(invite, is_revoked: true)
   end
@@ -57,6 +60,7 @@ defmodule CGraph.Groups.Invite do
   @doc """
   Check if invite is valid (not expired, not revoked, uses not exceeded).
   """
+  @spec valid?(%__MODULE__{}) :: boolean()
   def valid?(%__MODULE__{is_revoked: true}), do: false
   def valid?(%__MODULE__{max_uses: max, uses: uses}) when is_integer(max) and uses >= max, do: false
   def valid?(%__MODULE__{expires_at: nil}), do: true

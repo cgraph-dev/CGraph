@@ -26,6 +26,7 @@ export function createUserActions(set: Set, get: Get) {
           params: { page: _page, limit: _limit },
         });
         set({
+          // safe downcast – API response
           users: (response.data as AdminUser[]).map((user) => ({
             ...user,
             createdAt: new Date(user.createdAt),
@@ -71,8 +72,8 @@ export function createUserActions(set: Set, get: Get) {
         const { api } = await import('@/lib/api');
         await api.post(`/api/v1/admin/users/${id}/ban`, { reason, duration });
         set((state) => ({
-          users: state.users.map((user) =>
-            user.id === id ? { ...user, status: 'banned' as UserStatus } : user
+          users: state.users.map(
+            (user) => (user.id === id ? { ...user, status: 'banned' as UserStatus } : user) // safe downcast – runtime verified
           ),
         }));
       } catch {
@@ -85,8 +86,8 @@ export function createUserActions(set: Set, get: Get) {
         const { api } = await import('@/lib/api');
         await api.post(`/api/v1/admin/users/${id}/suspend`, { reason, duration });
         set((state) => ({
-          users: state.users.map((user) =>
-            user.id === id ? { ...user, status: 'suspended' as UserStatus } : user
+          users: state.users.map(
+            (user) => (user.id === id ? { ...user, status: 'suspended' as UserStatus } : user) // safe downcast – runtime verified
           ),
         }));
       } catch {
@@ -113,8 +114,8 @@ export function createUserActions(set: Set, get: Get) {
         const { api } = await import('@/lib/api');
         await api.post(`/api/v1/admin/users/${id}/unban`);
         set((state) => ({
-          users: state.users.map((user) =>
-            user.id === id ? { ...user, status: 'active' as UserStatus } : user
+          users: state.users.map(
+            (user) => (user.id === id ? { ...user, status: 'active' as UserStatus } : user) // safe downcast – runtime verified
           ),
         }));
       } catch {

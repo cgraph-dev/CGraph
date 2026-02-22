@@ -48,7 +48,10 @@ export function UISettingsPanel({
               <select
                 value={uiPreferences.glassEffect}
                 onChange={(e) =>
-                  updatePreference('glassEffect', e.target.value as UIPreferences['glassEffect'])
+                  updatePreference(
+                    'glassEffect',
+                    e.target.value as UIPreferences['glassEffect'] /* safe downcast – event value */
+                  )
                 }
                 className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
               >
@@ -68,7 +71,8 @@ export function UISettingsPanel({
                 onChange={(e) =>
                   updatePreference(
                     'voiceVisualizerTheme',
-                    e.target.value as UIPreferences['voiceVisualizerTheme']
+                    e.target
+                      .value as UIPreferences['voiceVisualizerTheme'] /* safe downcast – event value */
                   )
                 }
                 className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
@@ -88,7 +92,10 @@ export function UISettingsPanel({
               <select
                 value={uiPreferences.animationIntensity}
                 onChange={(e) =>
-                  updatePreference('animationIntensity', e.target.value as AnimationIntensity)
+                  updatePreference(
+                    'animationIntensity',
+                    e.target.value as AnimationIntensity /* safe downcast – event value */
+                  )
                 }
                 className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
               >
@@ -108,7 +115,8 @@ export function UISettingsPanel({
                 onChange={(e) =>
                   updatePreference(
                     'messageEntranceAnimation',
-                    e.target.value as UIPreferences['messageEntranceAnimation']
+                    e.target
+                      .value as UIPreferences['messageEntranceAnimation'] /* safe downcast – event value */
                   )
                 }
                 className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"

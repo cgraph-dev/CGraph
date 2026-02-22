@@ -32,6 +32,7 @@ defmodule CGraph.Forums.EmojiCategory do
   @doc """
   Changeset for creating a new category.
   """
+  @spec create_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def create_changeset(category, attrs) do
     category
     |> cast(attrs, [:name, :description, :display_order, :icon, :forum_id])
@@ -47,6 +48,7 @@ defmodule CGraph.Forums.EmojiCategory do
   @doc """
   Changeset for updating a category.
   """
+  @spec update_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def update_changeset(category, attrs) do
     if category.is_system do
       category
@@ -63,6 +65,7 @@ defmodule CGraph.Forums.EmojiCategory do
   @doc """
   Get all global categories.
   """
+  @spec global_query() :: Ecto.Query.t()
   def global_query do
     from c in __MODULE__,
       where: is_nil(c.forum_id) and c.is_active == true,
@@ -72,6 +75,7 @@ defmodule CGraph.Forums.EmojiCategory do
   @doc """
   Get categories available for a forum (global + forum-specific).
   """
+  @spec available_for_forum_query(String.t()) :: Ecto.Query.t()
   def available_for_forum_query(forum_id) do
     from c in __MODULE__,
       where: (is_nil(c.forum_id) or c.forum_id == ^forum_id) and c.is_active == true,

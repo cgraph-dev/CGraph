@@ -17,6 +17,7 @@ defmodule CGraph.ApiVersioning.Detection do
   @doc """
   Extract the API version from a Plug connection.
   """
+  @spec get_version(Plug.Conn.t()) :: integer()
   def get_version(conn) do
     case conn.private[:api_version] do
       nil -> detect_version(conn)
@@ -27,6 +28,7 @@ defmodule CGraph.ApiVersioning.Detection do
   @doc """
   Set the API version on a connection.
   """
+  @spec put_version(Plug.Conn.t(), integer()) :: Plug.Conn.t()
   def put_version(conn, version) do
     Plug.Conn.put_private(conn, :api_version, version)
   end
@@ -34,6 +36,7 @@ defmodule CGraph.ApiVersioning.Detection do
   @doc """
   Check if a specific API version is supported.
   """
+  @spec version_supported?(integer()) :: boolean()
   def version_supported?(version) do
     min = get_config(:minimum_version)
     current = get_config(:current_version)
@@ -45,6 +48,7 @@ defmodule CGraph.ApiVersioning.Detection do
 
   Parses Accept header to find the highest mutually supported version.
   """
+  @spec negotiate_version(Plug.Conn.t()) :: integer()
   def negotiate_version(conn) do
     accept_header = Plug.Conn.get_req_header(conn, "accept") |> List.first() || ""
 

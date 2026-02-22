@@ -13,14 +13,17 @@ defmodule CGraph.Encryption.EncryptedMap do
   use Ecto.Type
 
   @impl true
+  @spec type() :: atom()
   def type, do: :binary
 
   @impl true
+  @spec cast(term()) :: {:ok, map() | nil} | :error
   def cast(value) when is_map(value), do: {:ok, value}
   def cast(nil), do: {:ok, nil}
   def cast(_), do: :error
 
   @impl true
+  @spec load(term()) :: {:ok, map() | nil} | :error
   def load(nil), do: {:ok, nil}
 
   def load(data) when is_binary(data) do
@@ -35,6 +38,7 @@ defmodule CGraph.Encryption.EncryptedMap do
   end
 
   @impl true
+  @spec dump(term()) :: {:ok, binary() | nil} | :error
   def dump(nil), do: {:ok, nil}
 
   def dump(value) when is_map(value) do
@@ -51,5 +55,6 @@ defmodule CGraph.Encryption.EncryptedMap do
   def dump(_), do: :error
 
   @impl true
+  @spec equal?(term(), term()) :: boolean()
   def equal?(a, b), do: a == b
 end

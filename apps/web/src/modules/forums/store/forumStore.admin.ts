@@ -51,7 +51,7 @@ export function createAdminActions(set: Set, _get: Get) {
           type: data.type,
           permissions: data.permissions,
         });
-        const group = response.data.user_group as UserGroup;
+        const group = response.data.user_group as UserGroup; // safe downcast – API response
         set((state) => ({ userGroups: [...state.userGroups, group] }));
         return group;
       } catch (error: unknown) {
@@ -68,7 +68,7 @@ export function createAdminActions(set: Set, _get: Get) {
           color: data.color,
           permissions: data.permissions,
         });
-        const group = response.data.user_group as UserGroup;
+        const group = response.data.user_group as UserGroup; // safe downcast – API response
         set((state) => ({
           userGroups: state.userGroups.map((g) => (g.id === groupId ? group : g)),
         }));
@@ -97,7 +97,7 @@ export function createAdminActions(set: Set, _get: Get) {
           warning_type_id: warningTypeId,
           reason,
         });
-        return response.data.warning as UserWarning;
+        return response.data.warning as UserWarning; // safe downcast – API response
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'warnUser');
         throw error;
@@ -128,7 +128,7 @@ export function createAdminActions(set: Set, _get: Get) {
           expires_at: data.expiresAt,
           notes: data.notes,
         });
-        return response.data.ban as Ban;
+        return response.data.ban as Ban; // safe downcast – API response
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'banUser');
         throw error;
@@ -209,7 +209,10 @@ export function createAdminActions(set: Set, _get: Get) {
         const MAX_REPORTS = 200;
         set((state) => {
           const updated = [...state.reports, report];
-          return { reports: updated.length > MAX_REPORTS ? updated.slice(updated.length - MAX_REPORTS) : updated };
+          return {
+            reports:
+              updated.length > MAX_REPORTS ? updated.slice(updated.length - MAX_REPORTS) : updated,
+          };
         });
         return report;
       }

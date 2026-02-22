@@ -31,6 +31,7 @@ defmodule CGraph.Accounts.Session do
   @doc """
   Changeset for creating a new session.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(session, attrs) do
     session
     |> cast(attrs, [
@@ -45,6 +46,7 @@ defmodule CGraph.Accounts.Session do
   @doc """
   Update last active timestamp.
   """
+  @spec touch_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def touch_changeset(session) do
     change(session, last_active_at: DateTime.utc_now())
   end
@@ -52,6 +54,7 @@ defmodule CGraph.Accounts.Session do
   @doc """
   Revoke a session.
   """
+  @spec revoke_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def revoke_changeset(session) do
     change(session, revoked_at: DateTime.utc_now())
   end
@@ -59,6 +62,7 @@ defmodule CGraph.Accounts.Session do
   @doc """
   Check if session is valid (not expired or revoked).
   """
+  @spec valid?(%__MODULE__{}) :: boolean()
   def valid?(%__MODULE__{revoked_at: nil, expires_at: expires_at}) do
     DateTime.compare(expires_at, DateTime.utc_now()) == :gt
   end

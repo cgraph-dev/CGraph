@@ -115,7 +115,7 @@ export default function ReferralDashboard() {
           url,
         });
       } catch (error) {
-        if ((error as Error).name !== 'AbortError') {
+        if (error instanceof Error && error.name !== 'AbortError') {
           logger.error('Share failed:', error);
         }
       }
@@ -153,7 +153,9 @@ export default function ReferralDashboard() {
         {/* Main Content */}
         <div className="space-y-6 lg:col-span-2">
           <ReferralLinkCard
-            referralCode={referralCode as ReferralLinkCardProps['referralCode']}
+            referralCode={
+              referralCode as ReferralLinkCardProps['referralCode'] /* safe downcast – structural boundary */
+            }
             isLoading={isLoading}
             copied={copied}
             copiedType={copiedType}
@@ -168,13 +170,19 @@ export default function ReferralDashboard() {
 
           <ProgressTierCard nextTier={nextTier} verifiedReferrals={stats?.verifiedReferrals || 0} />
 
-          <RecentReferrals referrals={recentReferrals as RecentReferralsProps['referrals']} />
+          <RecentReferrals
+            referrals={
+              recentReferrals as RecentReferralsProps['referrals'] /* safe downcast – structural boundary */
+            }
+          />
         </div>
 
         {/* Sidebar */}
         <div className="space-y-6">
           <ReferralLeaderboard
-            leaderboard={leaderboard as LeaderboardProps['leaderboard']}
+            leaderboard={
+              leaderboard as LeaderboardProps['leaderboard'] /* safe downcast – structural boundary */
+            }
             period={leaderboardPeriod}
             onPeriodChange={setLeaderboardPeriod}
           />

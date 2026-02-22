@@ -10,17 +10,20 @@ defmodule CGraph.Redis.Set do
   @doc """
   Add members to a set.
   """
+  @spec sadd(String.t(), list() | term()) :: {:ok, integer()} | {:error, term()}
   def sadd(key, members) when is_list(members), do: Redis.command(["SADD", key | members])
   def sadd(key, member), do: sadd(key, [member])
 
   @doc """
   Get all set members.
   """
+  @spec smembers(String.t()) :: {:ok, list()} | {:error, term()}
   def smembers(key), do: Redis.command(["SMEMBERS", key])
 
   @doc """
   Check if a member is in a set.
   """
+  @spec sismember?(String.t(), term()) :: boolean()
   def sismember?(key, member) do
     case Redis.command(["SISMEMBER", key, member]) do
       {:ok, 1} -> true
@@ -31,6 +34,7 @@ defmodule CGraph.Redis.Set do
   @doc """
   Remove members from a set.
   """
+  @spec srem(String.t(), list() | term()) :: {:ok, integer()} | {:error, term()}
   def srem(key, members) when is_list(members), do: Redis.command(["SREM", key | members])
   def srem(key, member), do: srem(key, [member])
 end

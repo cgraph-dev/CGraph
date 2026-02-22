@@ -30,6 +30,7 @@ defmodule CGraph.Storage.S3 do
   require Logger
 
   @impl true
+  @spec store(String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def store(source_path, filename, opts \\ []) do
     context = Keyword.get(opts, :context, "files")
     content_type = Keyword.get(opts, :content_type, MIME.from_path(filename))
@@ -78,6 +79,7 @@ defmodule CGraph.Storage.S3 do
   end
 
   @impl true
+  @spec delete(String.t()) :: :ok | {:error, term()}
   def delete(url_or_key) do
     config = config()
     bucket = Keyword.fetch!(config, :bucket)
@@ -95,6 +97,7 @@ defmodule CGraph.Storage.S3 do
   end
 
   @impl true
+  @spec signed_url(String.t(), keyword()) :: {:ok, String.t()}
   def signed_url(key, opts \\ []) do
     config = config()
     bucket = Keyword.fetch!(config, :bucket)
@@ -113,6 +116,7 @@ defmodule CGraph.Storage.S3 do
   end
 
   @impl true
+  @spec exists?(String.t()) :: boolean()
   def exists?(key) do
     config = config()
     bucket = Keyword.fetch!(config, :bucket)

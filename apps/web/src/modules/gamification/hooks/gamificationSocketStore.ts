@@ -13,6 +13,7 @@ import { create } from 'zustand';
 import { Socket } from 'phoenix';
 import { exponentialBackoffWithJitter } from '@cgraph/socket';
 import { createLogger } from '@/lib/logger';
+import { isRecord } from '@/lib/apiUtils';
 import type { GamificationSocketStore, GamificationState } from './gamification-socket.types';
 
 const logger = createLogger('GamificationSocket');
@@ -51,10 +52,10 @@ function handleInitialState(
 ): GamificationState {
   return {
     ...currentState,
-    xp: (payload.xp as number) ?? currentState.xp,
-    level: (payload.level as number) ?? currentState.level,
-    coins: (payload.coins as number) ?? currentState.coins,
-    streakDays: (payload.streak_days as number) ?? currentState.streakDays,
+    xp: payload.xp != null ? Number(payload.xp) : currentState.xp,
+    level: payload.level != null ? Number(payload.level) : currentState.level,
+    coins: payload.coins != null ? Number(payload.coins) : currentState.coins,
+    streakDays: payload.streak_days != null ? Number(payload.streak_days) : currentState.streakDays,
   };
 }
 
@@ -123,22 +124,22 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
         // Flush queued messages
         const queue = get().messageQueue;
         queue.forEach(({ event, payload }) => {
-          channel.push(event, payload as Record<string, unknown>);
+          channel.push(event, payload as Record<string, unknown>); // safe downcast – structural boundary
         });
         set({ messageQueue: [] });
       })
       .receive('error', (err: unknown) => {
-        const error = err as Record<string, unknown>;
+        const error: Record<string, unknown> = isRecord(err) ? err : {};
         logger.error('Join failed:', error);
         set((state) => ({
-          state: { ...state.state, lastError: (error.reason as string) || 'Join failed' },
+          state: { ...state.state, lastError: error.reason ? String(error.reason) : 'Join failed' },
         }));
       });
 
     // Set up event listeners
     CHANNEL_EVENTS.forEach((event) => {
       channel.on(event, (p: unknown) => {
-        const payload = p as Record<string, unknown>;
+        const payload: Record<string, unknown> = isRecord(p) ? p : {};
 
         if (event === 'initial_state') {
           set((state) => ({
@@ -206,13 +207,14 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
       channel
         .push('get_state', {})
         .receive('ok', (res: unknown) => {
-          const response = res as Record<string, unknown>;
+          const response: Record<string, unknown> = isRecord(res) ? res : {};
           const newState = {
             ...state,
-            xp: (response.xp as number) ?? state.xp,
-            level: (response.level as number) ?? state.level,
-            coins: (response.coins as number) ?? state.coins,
-            streakDays: (response.streak_days as number) ?? state.streakDays,
+            xp: response.xp != null ? Number(response.xp) : state.xp,
+            level: response.level != null ? Number(response.level) : state.level,
+            coins: response.coins != null ? Number(response.coins) : state.coins,
+            streakDays:
+              response.streak_days != null ? Number(response.streak_days) : state.streakDays,
           };
           set({ state: newState });
           resolve(newState);
@@ -228,11 +230,12 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
       channel.push('heartbeat', {});
     }
   },
-  reset: () => set({
-    socket: null,
-    channel: null,
-    state: { ...DEFAULT_STATE },
-    listeners: new Map(),
-    messageQueue: [],
-  }),
+  reset: () =>
+    set({
+      socket: null,
+      channel: null,
+      state: { ...DEFAULT_STATE },
+      listeners: new Map(),
+      messageQueue: [],
+    }),
 }));

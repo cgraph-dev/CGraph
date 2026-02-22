@@ -14,6 +14,7 @@ defmodule CGraph.BatchProcessor.AsyncJobs do
 
   Returns immediately with a job ID that can be used to check progress.
   """
+  @spec start_async(list(), (term() -> term()), keyword()) :: {:ok, String.t()}
   def start_async(items, processor, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     batch_id = Processing.generate_batch_id()
@@ -44,6 +45,7 @@ defmodule CGraph.BatchProcessor.AsyncJobs do
   @doc """
   Get the status of an async batch job.
   """
+  @spec get_status(String.t()) :: {:ok, map()} | {:error, :not_found}
   def get_status(batch_id) do
     case :ets.lookup(@jobs_table, batch_id) do
       [{^batch_id, job}] ->
@@ -58,6 +60,7 @@ defmodule CGraph.BatchProcessor.AsyncJobs do
   @doc """
   Cancel an async batch job.
   """
+  @spec cancel(String.t()) :: :ok | {:error, :not_running | :not_found}
   def cancel(batch_id) do
     case :ets.lookup(@jobs_table, batch_id) do
       [{^batch_id, job}] when job.status == :running ->
@@ -75,6 +78,7 @@ defmodule CGraph.BatchProcessor.AsyncJobs do
   @doc """
   List all batch jobs.
   """
+  @spec list_jobs(keyword()) :: [map()]
   def list_jobs(opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     status_filter = Keyword.get(opts, :status)
