@@ -24,6 +24,7 @@ defmodule CGraph.Jobs.WorkflowEngine do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec validate_workflow(map()) :: :ok | {:error, atom()}
   def validate_workflow(workflow) do
     cond do
       not is_map(workflow) ->
@@ -44,6 +45,7 @@ defmodule CGraph.Jobs.WorkflowEngine do
   end
 
   @doc false
+  @spec normalize_steps([map()]) :: [map()]
   def normalize_steps(steps) do
     steps
     |> Enum.with_index(1)
@@ -63,11 +65,13 @@ defmodule CGraph.Jobs.WorkflowEngine do
   end
 
   @doc false
+  @spec generate_workflow_id() :: String.t()
   def generate_workflow_id do
     "wf_" <> Base.encode16(:crypto.strong_rand_bytes(12), case: :lower)
   end
 
   @doc false
+  @spec calculate_duration(map()) :: integer()
   def calculate_duration(%{started_at: started, completed_at: nil}) do
     DateTime.diff(DateTime.utc_now(), started, :millisecond)
   end
@@ -80,6 +84,7 @@ defmodule CGraph.Jobs.WorkflowEngine do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec start_ready_steps(map()) :: {map(), list()}
   def start_ready_steps(workflow_state) do
     completed_ids = get_completed_step_ids(workflow_state.steps)
     ready_steps = find_ready_steps(workflow_state, completed_ids)
@@ -92,6 +97,7 @@ defmodule CGraph.Jobs.WorkflowEngine do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec process_step_completion(String.t(), String.t(), term()) :: term()
   def process_step_completion(workflow_id, step_id, result) do
     case :ets.lookup(@workflow_table, workflow_id) do
       [{^workflow_id, workflow_state}] ->
@@ -105,6 +111,7 @@ defmodule CGraph.Jobs.WorkflowEngine do
   end
 
   @doc false
+  @spec process_step_failure(String.t(), String.t(), term()) :: :ok
   def process_step_failure(workflow_id, step_id, error) do
     case :ets.lookup(@workflow_table, workflow_id) do
       [{^workflow_id, workflow_state}] ->

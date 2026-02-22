@@ -28,6 +28,7 @@ defmodule CGraphWeb.EventsController do
   GET /api/v1/events
   List all active and upcoming seasonal events.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     include_ended = params["include_ended"] == "true"
 
@@ -62,6 +63,7 @@ defmodule CGraphWeb.EventsController do
   GET /api/v1/events/:id
   Get detailed event information.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => event_id}) do
     case Repo.get(SeasonalEvent, event_id) do
       nil -> {:error, :not_found}
@@ -76,6 +78,7 @@ defmodule CGraphWeb.EventsController do
   GET /api/v1/events/:id/progress
   Get user's progress in an event.
   """
+  @spec progress(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def progress(conn, %{"id" => event_id}) do
     user = conn.assigns.current_user
 
@@ -111,6 +114,7 @@ defmodule CGraphWeb.EventsController do
   POST /api/v1/events/:id/join
   Join a seasonal event.
   """
+  @spec join(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def join(conn, %{"id" => event_id}) do
     user = conn.assigns.current_user
 
@@ -163,6 +167,7 @@ defmodule CGraphWeb.EventsController do
   POST /api/v1/events/:id/claim-reward
   Claim an event milestone or participation reward.
   """
+  @spec claim_reward(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def claim_reward(conn, %{"id" => event_id, "reward_id" => reward_id}) do
     user = conn.assigns.current_user
 
@@ -196,6 +201,7 @@ defmodule CGraphWeb.EventsController do
   GET /api/v1/events/:id/leaderboard
   Get event leaderboard.
   """
+  @spec leaderboard(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def leaderboard(conn, %{"id" => event_id} = params) do
     limit = min(String.to_integer(params["limit"] || "50"), 100)
     cursor = params["cursor"]
@@ -264,6 +270,7 @@ defmodule CGraphWeb.EventsController do
   POST /api/v1/events/:id/battle-pass/purchase
   Purchase the battle pass for an event.
   """
+  @spec purchase_battle_pass(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def purchase_battle_pass(conn, %{"id" => event_id}) do
     user = conn.assigns.current_user
 

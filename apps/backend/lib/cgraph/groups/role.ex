@@ -78,6 +78,7 @@ defmodule CGraph.Groups.Role do
   @doc """
   Create a new role.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(role, attrs) do
     role
     |> cast(attrs, [:name, :color, :position, :permissions, :is_mentionable, :is_hoisted, :group_id])
@@ -91,6 +92,7 @@ defmodule CGraph.Groups.Role do
   @doc """
   Create the default @everyone role for a group.
   """
+  @spec default_changeset(Ecto.UUID.t()) :: Ecto.Changeset.t()
   def default_changeset(group_id) do
     %__MODULE__{}
     |> change(
@@ -105,6 +107,7 @@ defmodule CGraph.Groups.Role do
   @doc """
   Check if a role has a specific permission.
   """
+  @spec has_permission?(%__MODULE__{}, atom()) :: boolean()
   def has_permission?(%__MODULE__{permissions: perms}, permission_name) when is_atom(permission_name) do
     case Map.get(@permissions, permission_name) do
       nil -> false
@@ -115,6 +118,7 @@ defmodule CGraph.Groups.Role do
   @doc """
   Add a permission to a role.
   """
+  @spec add_permission(%__MODULE__{}, atom()) :: %__MODULE__{}
   def add_permission(role, permission_name) when is_atom(permission_name) do
     case Map.get(@permissions, permission_name) do
       nil -> role
@@ -125,6 +129,7 @@ defmodule CGraph.Groups.Role do
   @doc """
   Remove a permission from a role.
   """
+  @spec remove_permission(%__MODULE__{}, atom()) :: %__MODULE__{}
   def remove_permission(role, permission_name) when is_atom(permission_name) do
     case Map.get(@permissions, permission_name) do
       nil -> role
@@ -135,10 +140,12 @@ defmodule CGraph.Groups.Role do
   @doc """
   Get the permission map.
   """
+  @spec permissions_map() :: %{atom() => integer()}
   def permissions_map, do: @permissions
 
   @doc """
   Get default permissions value.
   """
+  @spec default_permissions() :: integer()
   def default_permissions, do: @default_permissions
 end

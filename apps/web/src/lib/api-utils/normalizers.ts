@@ -8,6 +8,21 @@
 // API base URL for resolving relative media paths
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
+/** Type guard for Record<string, unknown> */
+function isRecord(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null;
+}
+
+/** Safely extract a string from an unknown value */
+function asString(v: unknown): string | undefined {
+  return typeof v === 'string' ? v : undefined;
+}
+
+/** Safely extract a number from an unknown value */
+function asNumber(v: unknown): number | undefined {
+  return typeof v === 'number' ? v : undefined;
+}
+
 /**
  * Resolves a potentially relative URL to an absolute URL.
  *
@@ -69,21 +84,21 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
   }
 
   const senderId = raw.senderId ?? raw.sender_id ?? null;
-  const sender = normalizeSender(raw.sender as Record<string, unknown> | null);
+  const sender = normalizeSender(isRecord(raw.sender) ? raw.sender : null);
   const contentType = raw.contentType ?? raw.content_type ?? 'text';
 
   // Build metadata - for voice/audio/file messages, extract from multiple possible sources
   // Priority: existing metadata.url > attachment.url > fileUrl/file_url
-  let metadata = (raw.metadata as Record<string, unknown>) || {};
-  const attachment = raw.attachment as Record<string, unknown> | null;
+  let metadata = isRecord(raw.metadata) ? raw.metadata : {};
+  const attachment = isRecord(raw.attachment) ? raw.attachment : null;
 
   // If metadata already has a URL, ensure it's resolved to absolute
   if (metadata.url) {
     metadata = {
       ...metadata,
-      url: resolveMediaUrl(metadata.url as string),
+      url: resolveMediaUrl(asString(metadata.url)),
       thumbnailUrl: metadata.thumbnailUrl
-        ? resolveMediaUrl(metadata.thumbnailUrl as string)
+        ? resolveMediaUrl(asString(metadata.thumbnailUrl))
         : undefined,
     };
   }
@@ -91,10 +106,10 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
   // For voice/audio messages, ensure metadata has the required fields
   if ((contentType === 'voice' || contentType === 'audio') && !metadata.url) {
     // Check attachment object first (from message_json.ex serialization)
-    const attachmentUrl = attachment?.url as string | undefined;
-    const attachmentFilename = attachment?.filename as string | undefined;
-    const attachmentSize = attachment?.size as number | undefined;
-    const attachmentMimeType = attachment?.mime_type as string | undefined;
+    const attachmentUrl = asString(attachment?.url);
+    const attachmentFilename = asString(attachment?.filename);
+    const attachmentSize = asNumber(attachment?.size);
+    const attachmentMimeType = asString(attachment?.mime_type);
 
     // Fallback to root-level file fields
     const fileUrl = attachmentUrl ?? raw.fileUrl ?? raw.file_url;
@@ -105,10 +120,10 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
     if (fileUrl) {
       metadata = {
         ...metadata,
-        url: resolveMediaUrl(fileUrl as string),
-        filename: fileName as string,
-        size: fileSize as number,
-        mimeType: fileMimeType as string,
+        url: resolveMediaUrl(asString(fileUrl)),
+        filename: asString(fileName),
+        size: asNumber(fileSize),
+        mimeType: asString(fileMimeType),
         duration: metadata.duration,
         waveform: metadata.waveform,
       };
@@ -118,10 +133,10 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
   // For file/image messages, ensure metadata has the required fields
   if ((contentType === 'file' || contentType === 'image') && !metadata.url) {
     // Check attachment object first (from message_json.ex serialization)
-    const attachmentUrl = attachment?.url as string | undefined;
-    const attachmentFilename = attachment?.filename as string | undefined;
-    const attachmentSize = attachment?.size as number | undefined;
-    const attachmentThumbnail = attachment?.thumbnail_url as string | undefined;
+    const attachmentUrl = asString(attachment?.url);
+    const attachmentFilename = asString(attachment?.filename);
+    const attachmentSize = asNumber(attachment?.size);
+    const attachmentThumbnail = asString(attachment?.thumbnail_url);
 
     // Fallback to root-level file fields
     const fileUrl = attachmentUrl ?? raw.fileUrl ?? raw.file_url;
@@ -132,10 +147,10 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
     if (fileUrl) {
       metadata = {
         ...metadata,
-        url: resolveMediaUrl(fileUrl as string),
-        filename: fileName as string,
-        size: fileSize as number,
-        thumbnailUrl: resolveMediaUrl(thumbnailUrl as string),
+        url: resolveMediaUrl(asString(fileUrl)),
+        filename: asString(fileName),
+        size: asNumber(fileSize),
+        thumbnailUrl: resolveMediaUrl(asString(thumbnailUrl)),
       };
     }
   }
@@ -190,7 +205,7 @@ export function normalizeParticipant(raw: Record<string, unknown>): Record<strin
     return raw;
   }
 
-  const userObj = raw.user as Record<string, unknown> | null;
+  const userObj = isRecord(raw.user) ? raw.user : null;
   const userId = raw.userId ?? raw.user_id ?? userObj?.id ?? raw.id;
 
   return {
@@ -223,7 +238,9 @@ export function normalizeConversation(raw: Record<string, unknown>): Record<stri
     return raw;
   }
 
-  const participants = raw.participants as Record<string, unknown>[] | null;
+  const participants = Array.isArray(raw.participants)
+    ? (raw.participants as Record<string, unknown>[]) // safe: elements validated by normalizeParticipant
+    : null;
   const lastMessage = raw.lastMessage ?? raw.last_message;
 
   return {
@@ -234,7 +251,7 @@ export function normalizeConversation(raw: Record<string, unknown>): Record<stri
     participants: Array.isArray(participants)
       ? participants.map((p) => normalizeParticipant(p))
       : [],
-    lastMessage: lastMessage ? normalizeMessage(lastMessage as Record<string, unknown>) : null,
+    lastMessage: isRecord(lastMessage) ? normalizeMessage(lastMessage) : null,
     lastMessageAt: raw.lastMessageAt ?? raw.last_message_at ?? null,
     unreadCount: raw.unreadCount ?? raw.unread_count ?? 0,
     muted: raw.muted ?? false,
@@ -252,5 +269,5 @@ export function normalizeConversations(conversations: unknown[]): Record<string,
   if (!Array.isArray(conversations)) {
     return [];
   }
-  return conversations.map((c) => normalizeConversation(c as Record<string, unknown>));
+  return conversations.map((c) => normalizeConversation(c as Record<string, unknown>)); // safe: normalizeConversation validates input
 }

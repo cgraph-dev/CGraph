@@ -7,6 +7,7 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   # CODE
   # ========================================
 
+  @spec code(map()) :: map()
   def code(%{code: code}) do
     %{data: code_data(code)}
   end
@@ -26,6 +27,7 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   # VALIDATION
   # ========================================
 
+  @spec validation(map()) :: map()
   def validation(%{valid: valid, referrer: referrer}) do
     %{
       data: %{
@@ -58,6 +60,7 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   # REFERRALS
   # ========================================
 
+  @spec referrals(map()) :: map()
   def referrals(%{referrals: referrals, pagination: pagination}) do
     %{
       data: for(ref <- referrals, do: referral_data(ref)),
@@ -65,6 +68,7 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
     }
   end
 
+  @spec referral(map()) :: map()
   def referral(%{referral: referral}) do
     %{data: referral_data(referral)}
   end
@@ -98,6 +102,7 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   # STATS
   # ========================================
 
+  @spec stats(map()) :: map()
   def stats(%{stats: stats}) do
     %{
       data: %{
@@ -118,6 +123,7 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   # LEADERBOARD
   # ========================================
 
+  @spec leaderboard(map()) :: map()
   def leaderboard(%{leaderboard: leaderboard}) do
     %{
       data: for({entry, index} <- Enum.with_index(leaderboard, 1), do: leaderboard_entry(entry, index))
@@ -142,10 +148,12 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   # REWARDS
   # ========================================
 
+  @spec reward_tiers(map()) :: map()
   def reward_tiers(%{tiers: tiers}) do
     %{data: for(tier <- tiers, do: tier_data(tier))}
   end
 
+  @spec reward(map()) :: map()
   def reward(%{reward: reward}) do
     %{data: reward_data(reward)}
   end

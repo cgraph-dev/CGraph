@@ -13,6 +13,7 @@ defmodule CGraphWeb.QuestController do
   GET /api/v1/quests
   List all available quests.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     quest_type = params["type"]
     quests = Gamification.list_available_quests(type: quest_type)
@@ -26,6 +27,7 @@ defmodule CGraphWeb.QuestController do
   GET /api/v1/quests/active
   Get user's active quests with progress.
   """
+  @spec active(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def active(conn, params) do
     user = conn.assigns.current_user
     include_completed = params["include_completed"] == "true"
@@ -41,6 +43,7 @@ defmodule CGraphWeb.QuestController do
   GET /api/v1/quests/:id
   Get a specific quest.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => quest_id}) do
     user = conn.assigns.current_user
 
@@ -62,6 +65,7 @@ defmodule CGraphWeb.QuestController do
   POST /api/v1/quests/:id/accept
   Accept a quest.
   """
+  @spec accept(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def accept(conn, %{"id" => quest_id}) do
     user = conn.assigns.current_user
 
@@ -88,6 +92,7 @@ defmodule CGraphWeb.QuestController do
   POST /api/v1/quests/:id/claim
   Claim rewards for a completed quest.
   """
+  @spec claim(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def claim(conn, %{"id" => user_quest_id}) do
     user = conn.assigns.current_user
 
@@ -121,6 +126,7 @@ defmodule CGraphWeb.QuestController do
   GET /api/v1/quests/daily
   Get today's daily quests.
   """
+  @spec daily(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def daily(conn, _params) do
     user = conn.assigns.current_user
     daily_quests = Gamification.list_available_quests(type: "daily")
@@ -152,6 +158,7 @@ defmodule CGraphWeb.QuestController do
   GET /api/v1/quests/weekly
   Get this week's weekly quests.
   """
+  @spec weekly(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def weekly(conn, _params) do
     user = conn.assigns.current_user
     weekly_quests = Gamification.list_available_quests(type: "weekly")

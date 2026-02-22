@@ -55,6 +55,7 @@ defmodule CGraph.Forums.GroupAutoRule do
   @doc """
   Changeset for creating/updating an auto rule.
   """
+  @spec changeset(%__MODULE__{} | Ecto.Changeset.t(), map()) :: Ecto.Changeset.t()
   def changeset(rule, attrs) do
     rule
     |> cast(attrs, [
@@ -83,6 +84,7 @@ defmodule CGraph.Forums.GroupAutoRule do
   @doc """
   Query for active rules for a group.
   """
+  @spec for_group_query(Ecto.UUID.t()) :: Ecto.Query.t()
   def for_group_query(group_id) do
     from r in __MODULE__,
       where: r.user_group_id == ^group_id and r.is_active == true,
@@ -92,6 +94,7 @@ defmodule CGraph.Forums.GroupAutoRule do
   @doc """
   Query for all active rules in a forum.
   """
+  @spec for_forum_query(Ecto.UUID.t()) :: Ecto.Query.t()
   def for_forum_query(forum_id) do
     from r in __MODULE__,
       join: g in CGraph.Forums.ForumUserGroup, on: g.id == r.user_group_id,
@@ -103,6 +106,7 @@ defmodule CGraph.Forums.GroupAutoRule do
   @doc """
   Query for rules of a specific type.
   """
+  @spec by_type_query(String.t()) :: Ecto.Query.t()
   def by_type_query(rule_type) do
     from r in __MODULE__,
       where: r.rule_type == ^rule_type and r.is_active == true,
@@ -117,6 +121,7 @@ defmodule CGraph.Forums.GroupAutoRule do
   Check if a member meets the criteria for a rule.
   Returns true if all criteria are met.
   """
+  @spec meets_criteria?(%__MODULE__{}, map()) :: boolean()
   def meets_criteria?(rule, member) do
     case rule.rule_type do
       "milestone" -> check_milestone_criteria(rule.criteria, member)
@@ -206,6 +211,7 @@ defmodule CGraph.Forums.GroupAutoRule do
   @doc """
   Evaluate all rules for a member and return groups to assign.
   """
+  @spec evaluate_rules(map(), [%__MODULE__{}]) :: [map()]
   def evaluate_rules(member, rules) do
     rules
     |> Enum.filter(&meets_criteria?(&1, member))
@@ -223,6 +229,7 @@ defmodule CGraph.Forums.GroupAutoRule do
   Apply automatic group assignments for a member.
   Returns {:ok, assigned_groups} or {:error, reason}.
   """
+  @spec apply_auto_assignments(map(), module()) :: {:ok, list()}
   def apply_auto_assignments(member, repo) do
     # Get the forum for this member
     member = repo.preload(member, [:forum])
@@ -277,6 +284,7 @@ defmodule CGraph.Forums.GroupAutoRule do
   @doc """
   Get built-in rule templates.
   """
+  @spec rule_templates() :: [map()]
   def rule_templates do
     [
       %{

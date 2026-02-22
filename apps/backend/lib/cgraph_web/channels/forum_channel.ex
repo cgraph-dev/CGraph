@@ -127,6 +127,7 @@ defmodule CGraphWeb.ForumChannel do
   @doc """
   Broadcast when a new thread is created in the forum.
   """
+  @spec broadcast_new_thread(String.t(), map()) :: :ok | {:error, term()}
   def broadcast_new_thread(forum_id, thread) do
     CGraphWeb.Endpoint.broadcast("forum:#{forum_id}", "new_thread", %{
       thread: %{
@@ -147,6 +148,7 @@ defmodule CGraphWeb.ForumChannel do
   @doc """
   Broadcast when a thread is pinned or unpinned.
   """
+  @spec broadcast_thread_pinned(String.t(), String.t(), boolean()) :: :ok | {:error, term()}
   def broadcast_thread_pinned(forum_id, thread_id, is_pinned) do
     CGraphWeb.Endpoint.broadcast("forum:#{forum_id}", "thread_pinned", %{
       thread_id: thread_id,
@@ -157,6 +159,7 @@ defmodule CGraphWeb.ForumChannel do
   @doc """
   Broadcast when a thread is locked or unlocked.
   """
+  @spec broadcast_thread_locked(String.t(), String.t(), boolean()) :: :ok | {:error, term()}
   def broadcast_thread_locked(forum_id, thread_id, is_locked) do
     CGraphWeb.Endpoint.broadcast("forum:#{forum_id}", "thread_locked", %{
       thread_id: thread_id,
@@ -167,6 +170,7 @@ defmodule CGraphWeb.ForumChannel do
   @doc """
   Broadcast when a thread is deleted.
   """
+  @spec broadcast_thread_deleted(String.t(), String.t()) :: :ok | {:error, term()}
   def broadcast_thread_deleted(forum_id, thread_id) do
     CGraphWeb.Endpoint.broadcast("forum:#{forum_id}", "thread_deleted", %{
       thread_id: thread_id
@@ -176,6 +180,7 @@ defmodule CGraphWeb.ForumChannel do
   @doc """
   Broadcast when a new member joins the forum.
   """
+  @spec broadcast_member_joined(String.t(), map()) :: :ok | {:error, term()}
   def broadcast_member_joined(forum_id, user) do
     CGraphWeb.Endpoint.broadcast("forum:#{forum_id}", "member_joined", %{
       user: %{
@@ -190,6 +195,7 @@ defmodule CGraphWeb.ForumChannel do
   @doc """
   Broadcast when a member leaves the forum.
   """
+  @spec broadcast_member_left(String.t(), String.t()) :: :ok | {:error, term()}
   def broadcast_member_left(forum_id, user_id) do
     CGraphWeb.Endpoint.broadcast("forum:#{forum_id}", "member_left", %{
       user_id: user_id
@@ -199,6 +205,7 @@ defmodule CGraphWeb.ForumChannel do
   @doc """
   Broadcast updated forum stats.
   """
+  @spec broadcast_stats_update(String.t(), map()) :: :ok | {:error, term()}
   def broadcast_stats_update(forum_id, stats) do
     CGraphWeb.Endpoint.broadcast("forum:#{forum_id}", "stats_update", %{
       member_count: stats.member_count,

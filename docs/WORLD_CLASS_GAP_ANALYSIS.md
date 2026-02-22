@@ -1,6 +1,6 @@
 # CGraph World-Class Gap Analysis
 
-> **Version**: 0.9.40 | **Audit Date**: February 22, 2026 **Standard**: Google/Discord/Meta/Telegram
+> **Version**: 0.9.41 | **Audit Date**: February 22, 2026 **Standard**: Google/Discord/Meta/Telegram
 > | **Target**: 100% plan compliance **Methodology**: Automated codebase scan against all 15
 > mandatory rules + 106 wave tasks
 
@@ -655,11 +655,11 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | State Management (Rule 3)   | **100%** (all stores have reset)  | **100%**       | 100%                |
 | Cross-Platform (Rule 5)     | **100%** (12/12 packages)         | **100%**       | 100% (12/12)        |
 | Documentation (Rule 6)      | 75%                               | 80%            | 100%                |
-| Backend Standards (Rule 7)  | **56.4%** (2,701/4,792 specs)     | **60%**        | 100%                |
+| Backend Standards (Rule 7)  | **63.4%** (3,038/4,792 specs)     | **70%**        | 100%                |
 | File Size (Rule 8)          | **~90%** (8 Elixir + 6 TSX over)  | **95%**        | 100%                |
 | Testing (Rule 9)            | 18% ratio                         | 20%            | 100%                |
 | Performance (Rule 10)       | **100%** (0 offsets)              | **100%**       | 100%                |
-| Security (Rule 11)          | 55% (~939 assertions, ESLint ban) | 70%            | 100%                |
+| Security (Rule 11)          | 58% (~915 assertions, ESLint ban) | 70%            | 100%                |
 | React 19 (Rule 12)          | **95%**                           | **95%**        | 100%                |
 | CI/CD (Rule 13)             | **100%** (17/17)                  | **100%**       | 100%                |
 | Observability (Rule 14)     | **100%** (0 violations)           | **100%**       | 100%                |
@@ -703,4 +703,11 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 > lines). @spec: 2,701/4,792 (56.4%). **Session 43** (2026-02-22): Split 3 oversized mobile screens
 > (custom-emoji-screen 888→5 files, onboarding-screen 817→4 files, titles-screen 804→5 files), added
 > 116 @spec annotations across 14 modules (controllers, contexts, GenServer), fixed 5 type
-> assertions. @spec: 2,817/4,792 (58.8%).
+> assertions. @spec: 2,817/4,792 (58.8%). **Session 44** (2026-02-22): Added 221 @spec annotations
+> across 25 Elixir modules (lockout_logic, chaos/scenarios, cache/l1, cookie_auth, JSON views, jobs,
+> leaderboard, chat_effect, 6 forum modules, validation params, controllers, channels,
+> presence/tracker, token_management, workflow_engine, role, accounts). Fixed ~24 type assertions
+> across 8 TypeScript files (response-extractors, normalizers, forumStore.core,
+> forumHosting-mappers, profile-mappers, calendar-events, referral-actions, gamification-queries) —
+> replaced unsafe `as` casts with runtime type guards (isRecord, asString, asNumber helpers). @spec:
+> 3,038/4,792 (63.4%).

@@ -29,6 +29,7 @@ defmodule CGraph.Gamification.Leaderboard do
       sync_scores(user)
       sync_scores(user, [:xp, :level])
   """
+  @spec sync_scores(map(), [atom() | String.t()] | nil) :: :ok | :error
   def sync_scores(%{id: user_id} = user, categories \\ nil) do
     cats = categories || @categories
 
@@ -59,6 +60,7 @@ defmodule CGraph.Gamification.Leaderboard do
   Update a single category score for a user by ID.
   Used when we don't have the full user struct (e.g., atomic karma updates).
   """
+  @spec update_score(Ecto.UUID.t(), String.t(), number()) :: :ok | :error
   def update_score(user_id, category, score) when category in @categories do
     case Redis.zadd(key(category), score, user_id) do
       {:ok, _} -> :ok
@@ -70,6 +72,7 @@ defmodule CGraph.Gamification.Leaderboard do
   Increment a user's score in a category by a delta.
   Useful for atomic score changes like karma +1/-1.
   """
+  @spec increment_score(Ecto.UUID.t(), String.t(), number()) :: :ok | :error
   def increment_score(user_id, category, delta) when category in @categories do
     case Redis.zincrby(key(category), delta, user_id) do
       {:ok, _} -> :ok
@@ -85,6 +88,7 @@ defmodule CGraph.Gamification.Leaderboard do
 
   Falls back to database query if Redis is unavailable.
   """
+  @spec get_top(String.t(), non_neg_integer(), non_neg_integer()) :: {:ok, [map()]} | {:fallback, []}
   def get_top(category, limit \\ 100, offset \\ 0) when category in @categories do
     # ZREVRANGE returns highest-score-first
     case Redis.zrevrange(key(category), offset, offset + limit - 1, withscores: true) do
@@ -105,6 +109,7 @@ defmodule CGraph.Gamification.Leaderboard do
   @doc """
   Get a specific user's rank in a category. O(log N).
   """
+  @spec get_rank(Ecto.UUID.t(), String.t()) :: {:ok, pos_integer() | nil} | {:error, :unavailable}
   def get_rank(user_id, category) when category in @categories do
     case Redis.zrevrank(key(category), user_id) do
       {:ok, nil} -> {:ok, nil}
@@ -116,6 +121,7 @@ defmodule CGraph.Gamification.Leaderboard do
   @doc """
   Get a user's score in a category. O(1).
   """
+  @spec get_score(Ecto.UUID.t(), String.t()) :: {:ok, integer()} | {:error, :unavailable}
   def get_score(user_id, category) when category in @categories do
     case Redis.zscore(key(category), user_id) do
       {:ok, nil} -> {:ok, 0}
@@ -127,6 +133,7 @@ defmodule CGraph.Gamification.Leaderboard do
   @doc """
   Get total number of users in a leaderboard. O(1).
   """
+  @spec count(String.t()) :: {:ok, non_neg_integer()} | {:error, :unavailable}
   def count(category) when category in @categories do
     case Redis.zcard(key(category)) do
       {:ok, count} -> {:ok, count}
@@ -141,6 +148,7 @@ defmodule CGraph.Gamification.Leaderboard do
   Called on startup or periodically to ensure consistency.
   Processes in batches to avoid memory spikes.
   """
+  @spec warm_from_db(String.t(), pos_integer()) :: :ok
   def warm_from_db(category \\ "xp", batch_size \\ 1000) do
     import Ecto.Query
     alias CGraph.Accounts.User

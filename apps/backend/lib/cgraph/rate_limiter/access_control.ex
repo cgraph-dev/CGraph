@@ -14,6 +14,7 @@ defmodule CGraph.RateLimiter.AccessControl do
   @doc """
   Add identifier to whitelist. Whitelisted identifiers bypass rate limiting.
   """
+  @spec whitelist(term()) :: :ok
   def whitelist(identifier) do
     :ets.insert(@ets_table, {{:whitelist, identifier}, true})
     Logger.info("whitelisted_rate_limit_identifier", identifier: identifier)
@@ -23,6 +24,7 @@ defmodule CGraph.RateLimiter.AccessControl do
   @doc """
   Remove identifier from whitelist.
   """
+  @spec unwhitelist(term()) :: :ok
   def unwhitelist(identifier) do
     :ets.delete(@ets_table, {:whitelist, identifier})
     :ok
@@ -31,6 +33,7 @@ defmodule CGraph.RateLimiter.AccessControl do
   @doc """
   Check if identifier is whitelisted.
   """
+  @spec whitelisted?(term()) :: boolean()
   def whitelisted?(identifier) do
     case :ets.lookup(@ets_table, {:whitelist, identifier}) do
       [{_, true}] -> true
@@ -45,6 +48,7 @@ defmodule CGraph.RateLimiter.AccessControl do
 
   - `:duration` - Duration in seconds, or `:infinity` (default)
   """
+  @spec blacklist(term(), :infinity | pos_integer()) :: :ok
   def blacklist(identifier, duration \\ :infinity) do
     until =
       case duration do
@@ -65,6 +69,7 @@ defmodule CGraph.RateLimiter.AccessControl do
   @doc """
   Remove identifier from blacklist.
   """
+  @spec unblacklist(term()) :: :ok
   def unblacklist(identifier) do
     :ets.delete(@ets_table, {:blacklist, identifier})
     :ok
@@ -73,6 +78,7 @@ defmodule CGraph.RateLimiter.AccessControl do
   @doc """
   Check if identifier is blacklisted.
   """
+  @spec blacklisted?(term()) :: boolean()
   def blacklisted?(identifier) do
     case :ets.lookup(@ets_table, {:blacklist, identifier}) do
       [{_, until}] when until == :infinity -> true
@@ -84,6 +90,7 @@ defmodule CGraph.RateLimiter.AccessControl do
   @doc """
   Clean up expired blacklist entries from ETS.
   """
+  @spec cleanup_expired() :: nil
   def cleanup_expired do
     :ets.foldl(
       fn

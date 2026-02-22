@@ -313,7 +313,8 @@ defmodule CGraphWeb.EventsChannel do
   rescue
     _ -> %{joined: false, event_points: 0, battle_pass_tier: 0}
   end
-  @spec get_event_leaderboard(String.t(), pos_integer(), String.t() | nil) :: {list(), map()}  defp get_event_leaderboard(event_id, limit, cursor \\ nil) do
+  @spec get_event_leaderboard(String.t(), pos_integer(), String.t() | nil) :: {list(), map()}
+  defp get_event_leaderboard(event_id, limit, cursor \\ nil) do
     case Gamification.get_event_leaderboard(event_id, limit, cursor) do
       {entries, page_info} when is_list(entries) -> {entries, page_info}
       entries when is_list(entries) -> {entries, %{has_next_page: false, end_cursor: nil}}

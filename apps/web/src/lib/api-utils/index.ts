@@ -9,6 +9,7 @@ export {
   ensureObject,
   extractPagination,
   extractErrorMessage,
+  isRecord,
 } from './response-extractors';
 export { isNonEmptyString, isValidId } from './type-guards';
 export {

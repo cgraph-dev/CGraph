@@ -33,6 +33,7 @@ defmodule CGraph.Presence.Tracker do
         device: "web"
       })
   """
+  @spec track_user(Phoenix.Socket.t(), String.t(), String.t(), map()) :: {:ok, binary()} | {:error, term()}
   def track_user(socket, user_id, room_id, meta \\ %{}) do
     now = DateTime.utc_now()
 
@@ -69,6 +70,7 @@ defmodule CGraph.Presence.Tracker do
   @doc """
   Track user without socket (for server-side tracking).
   """
+  @spec track_user_serverside(pid(), String.t(), String.t(), map()) :: {:ok, binary()} | {:error, term()}
   def track_user_serverside(pid, user_id, room_id, meta \\ %{}) do
     now = DateTime.utc_now()
 
@@ -91,6 +93,7 @@ defmodule CGraph.Presence.Tracker do
   @doc """
   Untrack user from a room.
   """
+  @spec untrack_user(Phoenix.Socket.t(), String.t(), String.t()) :: :ok
   def untrack_user(socket, user_id, room_id) do
     Presence.untrack(socket, Presence.room_topic(room_id), user_id)
   end
@@ -104,6 +107,7 @@ defmodule CGraph.Presence.Tracker do
 
   Auto-expires after 5 seconds if not refreshed.
   """
+  @spec update_typing(Phoenix.Socket.t() | pid(), String.t(), String.t(), boolean()) :: {:ok, binary()} | {:error, term()}
   def update_typing(socket, user_id, room_id, is_typing) do
     topic = Presence.room_topic(room_id)
     pid = if is_pid(socket), do: socket, else: socket.channel_pid
@@ -127,6 +131,7 @@ defmodule CGraph.Presence.Tracker do
 
   Valid statuses: online, away, busy, invisible, offline
   """
+  @spec update_status(Phoenix.Socket.t() | pid(), String.t(), String.t(), String.t()) :: {:ok, binary()} | {:error, term()}
   def update_status(socket, user_id, room_id, status) when status in @valid_statuses do
     topic = Presence.room_topic(room_id)
     pid = if is_pid(socket), do: socket, else: socket.channel_pid
@@ -157,6 +162,7 @@ defmodule CGraph.Presence.Tracker do
   @doc """
   Record heartbeat to keep user active.
   """
+  @spec heartbeat(Phoenix.Socket.t() | pid(), String.t(), String.t()) :: {:ok, binary()} | {:error, term()}
   def heartbeat(socket, user_id, room_id) do
     topic = Presence.room_topic(room_id)
     pid = if is_pid(socket), do: socket, else: socket.channel_pid
@@ -174,6 +180,7 @@ defmodule CGraph.Presence.Tracker do
   @doc """
   Set custom status message.
   """
+  @spec set_status_message(Phoenix.Socket.t() | pid(), String.t(), String.t(), String.t()) :: {:ok, binary()} | {:error, term()}
   def set_status_message(socket, user_id, room_id, message) when is_binary(message) do
     # Limit message length
     safe_message = String.slice(message, 0, 100)

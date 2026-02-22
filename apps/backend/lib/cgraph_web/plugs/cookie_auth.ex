@@ -24,6 +24,7 @@ defmodule CGraphWeb.Plugs.CookieAuth do
   Cookie configuration for access tokens.
   Short-lived (15 minutes default).
   """
+  @spec access_cookie_opts() :: keyword()
   def access_cookie_opts do
     base_opts() ++ [
       max_age: 60 * 15  # 15 minutes
@@ -34,6 +35,7 @@ defmodule CGraphWeb.Plugs.CookieAuth do
   Cookie configuration for refresh tokens.
   Longer-lived (7 days default).
   """
+  @spec refresh_cookie_opts() :: keyword()
   def refresh_cookie_opts do
     base_opts() ++ [
       max_age: 60 * 60 * 24 * 7,  # 7 days
@@ -56,6 +58,7 @@ defmodule CGraphWeb.Plugs.CookieAuth do
   @doc """
   Set authentication cookies on successful login.
   """
+  @spec set_auth_cookies(Plug.Conn.t(), String.t(), String.t()) :: Plug.Conn.t()
   def set_auth_cookies(conn, access_token, refresh_token) do
     conn
     |> put_resp_cookie(@access_cookie, access_token, access_cookie_opts())
@@ -65,6 +68,7 @@ defmodule CGraphWeb.Plugs.CookieAuth do
   @doc """
   Clear authentication cookies on logout.
   """
+  @spec clear_auth_cookies(Plug.Conn.t()) :: Plug.Conn.t()
   def clear_auth_cookies(conn) do
     conn
     |> delete_resp_cookie(@access_cookie, access_cookie_opts())
@@ -75,6 +79,7 @@ defmodule CGraphWeb.Plugs.CookieAuth do
   Extract access token from cookie.
   Returns nil if not present.
   """
+  @spec get_access_token(Plug.Conn.t()) :: String.t() | nil
   def get_access_token(conn) do
     conn = fetch_cookies(conn)
     conn.cookies[@access_cookie]
@@ -84,6 +89,7 @@ defmodule CGraphWeb.Plugs.CookieAuth do
   Extract refresh token from cookie.
   Returns nil if not present.
   """
+  @spec get_refresh_token(Plug.Conn.t()) :: String.t() | nil
   def get_refresh_token(conn) do
     conn = fetch_cookies(conn)
     conn.cookies[@refresh_cookie]
@@ -93,8 +99,10 @@ defmodule CGraphWeb.Plugs.CookieAuth do
   Plug behavior: extracts JWT from cookie if no Authorization header present.
   This allows both cookie and Bearer token authentication.
   """
+  @spec init(keyword()) :: keyword()
   def init(opts), do: opts
 
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, _opts) do
     case get_req_header(conn, "authorization") do
       ["Bearer " <> _token] ->

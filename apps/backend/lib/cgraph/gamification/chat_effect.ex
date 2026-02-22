@@ -52,6 +52,7 @@ defmodule CGraph.Gamification.ChatEffect do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{} | Ecto.Changeset.t(), map()) :: Ecto.Changeset.t()
   def changeset(effect, attrs) do
     effect
     |> cast(attrs, [
@@ -88,10 +89,16 @@ defmodule CGraph.Gamification.ChatEffect do
     end
   end
 
+  @spec rarities() :: [String.t()]
   def rarities, do: @rarities
+  @spec effect_types() :: [String.t()]
   def effect_types, do: @effect_types
+  @spec message_effects() :: [String.t()]
   def message_effects, do: @message_effects
+  @spec bubble_styles() :: [String.t()]
   def bubble_styles, do: @bubble_styles
+  @spec typing_indicators() :: [String.t()]
   def typing_indicators, do: @typing_indicators
+  @spec unlock_types() :: [String.t()]
   def unlock_types, do: @unlock_types
 end

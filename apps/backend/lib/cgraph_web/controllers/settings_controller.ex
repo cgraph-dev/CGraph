@@ -16,6 +16,7 @@ defmodule CGraphWeb.SettingsController do
 
   Returns the current user's settings.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, _params) do
     user = conn.assigns.current_user
     {:ok, settings} = Settings.get_settings(user)
@@ -28,6 +29,7 @@ defmodule CGraphWeb.SettingsController do
 
   Updates user settings. Accepts any subset of settings to update.
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, params) do
     user = conn.assigns.current_user
 
@@ -48,6 +50,7 @@ defmodule CGraphWeb.SettingsController do
 
   Updates notification-specific settings.
   """
+  @spec update_notifications(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_notifications(conn, params) do
     user = conn.assigns.current_user
 
@@ -93,6 +96,7 @@ defmodule CGraphWeb.SettingsController do
 
   Updates privacy-specific settings.
   """
+  @spec update_privacy(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_privacy(conn, params) do
     user = conn.assigns.current_user
 
@@ -132,6 +136,7 @@ defmodule CGraphWeb.SettingsController do
 
   Updates appearance settings.
   """
+  @spec update_appearance(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_appearance(conn, params) do
     user = conn.assigns.current_user
 
@@ -173,6 +178,7 @@ defmodule CGraphWeb.SettingsController do
 
   Updates language and locale settings.
   """
+  @spec update_locale(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_locale(conn, params) do
     user = conn.assigns.current_user
 
@@ -204,6 +210,7 @@ defmodule CGraphWeb.SettingsController do
 
   Resets all settings to their default values.
   """
+  @spec reset(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def reset(conn, _params) do
     user = conn.assigns.current_user
     {:ok, settings} = Settings.reset_to_defaults(user)

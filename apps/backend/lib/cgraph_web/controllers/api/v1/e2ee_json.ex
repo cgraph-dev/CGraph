@@ -10,6 +10,7 @@ defmodule CGraphWeb.API.V1.E2EEJSON do
   @doc """
   Render key registration result.
   """
+  @spec keys(map()) :: map()
   def keys(%{result: result}) do
     %{
       data: %{
@@ -25,6 +26,7 @@ defmodule CGraphWeb.API.V1.E2EEJSON do
 
   This contains the public keys needed for X3DH key exchange.
   """
+  @spec bundle(map()) :: map()
   def bundle(%{bundle: bundle}) do
     %{
       data: %{
@@ -43,6 +45,7 @@ defmodule CGraphWeb.API.V1.E2EEJSON do
   @doc """
   Render prekey count status.
   """
+  @spec prekey_count(map()) :: map()
   def prekey_count(%{count: count}) do
     %{
       data: %{
@@ -56,6 +59,7 @@ defmodule CGraphWeb.API.V1.E2EEJSON do
   @doc """
   Render prekey upload result.
   """
+  @spec upload_result(map()) :: map()
   def upload_result(%{uploaded: uploaded, total: total}) do
     %{
       data: %{
@@ -73,6 +77,7 @@ defmodule CGraphWeb.API.V1.E2EEJSON do
   and should be compared out-of-band (phone call, in person)
   to verify key authenticity.
   """
+  @spec safety_number(map()) :: map()
   def safety_number(%{number: number, verified: verified}) do
     %{
       data: %{
@@ -86,6 +91,7 @@ defmodule CGraphWeb.API.V1.E2EEJSON do
   @doc """
   Render key verification status.
   """
+  @spec verification(map()) :: map()
   def verification(%{key_id: key_id, verified: verified, verified_at: verified_at}) do
     %{
       data: %{
@@ -99,6 +105,7 @@ defmodule CGraphWeb.API.V1.E2EEJSON do
   @doc """
   Render identity key details.
   """
+  @spec identity_key(map()) :: map()
   def identity_key(%{identity_key: key}) do
     %{
       data: %{
@@ -114,6 +121,7 @@ defmodule CGraphWeb.API.V1.E2EEJSON do
   @doc """
   Render all devices with E2EE keys.
   """
+  @spec devices(map()) :: map()
   def devices(%{devices: devices}) do
     %{
       data: Enum.map(devices, fn device ->

@@ -9,6 +9,7 @@
 
 import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
+import { isRecord } from '@/lib/apiUtils';
 import type { QuestType, GamificationState } from './gamificationStore.types';
 
 const logger = createLogger('Gamification');
@@ -58,28 +59,30 @@ export function createFetchGamificationData(set: StoreSet, _get: StoreGet) {
           titleReward: a.title_reward,
         })),
         activeQuests: quests.map((q: Record<string, unknown>) => {
-          const questData = (q.quest || {}) as Record<string, unknown>;
+          const questData: Record<string, unknown> = isRecord(q.quest) ? q.quest : {};
+          const objWrapper = isRecord(questData.objectives) ? questData.objectives : {};
+          const rawObjs = Array.isArray(objWrapper.objectives) ? objWrapper.objectives : [];
+          const progress: Record<string, number> = isRecord(q.progress)
+            ? (q.progress as Record<string, number>) // safe downcast: verified object
+            : {};
           return {
             id: q.id as string,
             title: (questData.title || q.title) as string,
             description: (questData.description || q.description) as string,
             type: (questData.type || q.type) as string,
             xpReward: (questData.xp_reward || q.xp_reward || 0) as number,
-            objectives: (
-              ((questData.objectives as Record<string, unknown>)?.objectives || []) as Record<
-                string,
-                unknown
-              >[]
-            ).map((obj) => ({
-              id: obj.id as string,
-              description: obj.description as string,
-              type: obj.type as string,
-              targetValue: obj.target as number,
-              currentValue: (q.progress as Record<string, number>)?.[obj.id as string] || 0,
-              completed:
-                ((q.progress as Record<string, number>)?.[obj.id as string] || 0) >=
-                (obj.target as number),
-            })),
+            objectives: rawObjs.map((raw: unknown) => {
+              const obj: Record<string, unknown> = isRecord(raw) ? raw : {};
+              const objId = String(obj.id ?? '');
+              return {
+                id: objId,
+                description: String(obj.description ?? ''),
+                type: String(obj.type ?? ''),
+                targetValue: Number(obj.target) || 0,
+                currentValue: progress[objId] || 0,
+                completed: (progress[objId] || 0) >= (Number(obj.target) || 0),
+              };
+            }),
             expiresAt: q.expires_at as string,
             completed: (q.completed || false) as boolean,
             completedAt: q.completed_at as string | undefined,
@@ -158,20 +161,20 @@ export function createFetchQuests(set: StoreSet, _get: StoreGet) {
 
       set({
         activeQuests: allActive.map((q: Record<string, unknown>) => {
-          const quest = (q.quest || q) as Record<string, unknown>;
-          const rawObjectives = (quest.objectives as { objectives?: unknown[] })?.objectives || [];
+          const quest: Record<string, unknown> = isRecord(q.quest) ? q.quest : q;
+          const rawObjectives = (quest.objectives as { objectives?: unknown[] })?.objectives || []; // safe downcast
           return {
             id: (q.id || quest.id) as string,
             title: quest.title as string,
             description: quest.description as string,
-            type: (quest.type as QuestType) || 'daily',
+            type: (quest.type as QuestType) || 'daily', // safe downcast
             xpReward: (quest.xp_reward as number) || 0,
             objectives: rawObjectives.map((obj: unknown) => {
-              const o = obj as Record<string, unknown>;
+              const o: Record<string, unknown> = isRecord(obj) ? obj : {};
               return {
                 id: (o.id as string) || '',
                 description: (o.description as string) || '',
-                type: (o.type as 'count' | 'visit' | 'interact' | 'collect') || 'count',
+                type: (o.type as 'count' | 'visit' | 'interact' | 'collect') || 'count', // safe downcast
                 targetValue: (o.target_value as number) || (o.targetValue as number) || 1,
                 currentValue: (o.current_value as number) || (o.currentValue as number) || 0,
                 completed: (o.completed as boolean) || false,

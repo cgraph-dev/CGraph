@@ -14,30 +14,57 @@ type Set = (
 ) => void;
 type Get = () => ForumState;
 
+/** Data-only (non-action) fields of ForumState, used for initialization and reset. */
+type ForumDataState = Pick<
+  ForumState,
+  | 'forums'
+  | 'posts'
+  | 'currentPost'
+  | 'currentForum'
+  | 'comments'
+  | 'subscribedForums'
+  | 'leaderboard'
+  | 'leaderboardMeta'
+  | 'topForums'
+  | 'isLoadingForums'
+  | 'isLoadingPosts'
+  | 'isLoadingComments'
+  | 'isLoadingLeaderboard'
+  | 'hasMorePosts'
+  | 'sortBy'
+  | 'timeRange'
+  | 'threadPrefixes'
+  | 'subscriptions'
+  | 'userGroups'
+  | 'moderationQueue'
+  | 'reports'
+  | 'multiQuoteBuffer'
+>;
+
 /** Initial state values for the forum store. */
-export const forumInitialState = {
-  forums: [] as Forum[],
-  posts: [] as Post[],
-  currentPost: null as Post | null,
-  currentForum: null as Forum | null,
-  comments: {} as Record<string, Comment[]>,
-  subscribedForums: [] as Forum[],
-  leaderboard: [] as Forum[],
-  leaderboardMeta: null as ForumState['leaderboardMeta'],
-  topForums: [] as Forum[],
+export const forumInitialState: ForumDataState = {
+  forums: [],
+  posts: [],
+  currentPost: null,
+  currentForum: null,
+  comments: {},
+  subscribedForums: [],
+  leaderboard: [],
+  leaderboardMeta: null,
+  topForums: [],
   isLoadingForums: false,
   isLoadingPosts: false,
   isLoadingComments: false,
   isLoadingLeaderboard: false,
   hasMorePosts: true,
-  sortBy: 'hot' as const,
-  timeRange: 'day' as const,
-  threadPrefixes: [] as ForumState['threadPrefixes'],
-  subscriptions: [] as ForumState['subscriptions'],
-  userGroups: [] as ForumState['userGroups'],
-  moderationQueue: [] as ForumState['moderationQueue'],
-  reports: [] as ForumState['reports'],
-  multiQuoteBuffer: [] as string[],
+  sortBy: 'hot',
+  timeRange: 'day',
+  threadPrefixes: [],
+  subscriptions: [],
+  userGroups: [],
+  moderationQueue: [],
+  reports: [],
+  multiQuoteBuffer: [],
 };
 
 /** Create core CRUD + voting actions for the forum store. */
@@ -169,7 +196,15 @@ export function createCoreActions(set: Set, get: Get) {
             return { comments: { ...state.comments, [postId]: postComments } };
           }
           const updated = [comment, ...postComments];
-          return { comments: { ...state.comments, [postId]: updated.length > MAX_COMMENTS_PER_POST ? updated.slice(0, MAX_COMMENTS_PER_POST) : updated } };
+          return {
+            comments: {
+              ...state.comments,
+              [postId]:
+                updated.length > MAX_COMMENTS_PER_POST
+                  ? updated.slice(0, MAX_COMMENTS_PER_POST)
+                  : updated,
+            },
+          };
         });
         return comment;
       }

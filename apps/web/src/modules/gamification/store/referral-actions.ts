@@ -1,6 +1,6 @@
 import type { StateCreator } from 'zustand';
 import { api } from '@/lib/api';
-import { ensureArray } from '@/lib/apiUtils';
+import { ensureArray, isRecord } from '@/lib/apiUtils';
 import { createLogger } from '@/lib/logger';
 import type {
   Referral,
@@ -23,8 +23,12 @@ const logger = createLogger('ReferralStore');
 // ========================================
 
 export function mapReferralFromApi(data: Record<string, unknown>): Referral {
-  const referrerReward = data.referrer_reward as Record<string, unknown> | undefined;
-  const referredReward = data.referred_reward as Record<string, unknown> | undefined;
+  const referrerReward: Record<string, unknown> | undefined = isRecord(data.referrer_reward)
+    ? data.referrer_reward
+    : undefined;
+  const referredReward: Record<string, unknown> | undefined = isRecord(data.referred_reward)
+    ? data.referred_reward
+    : undefined;
 
   return {
     id: data.id as string,
@@ -33,13 +37,13 @@ export function mapReferralFromApi(data: Record<string, unknown>): Referral {
     referredId: data.referred_id as string,
     referredUsername: (data.referred_username as string) || 'Unknown',
     referredAvatarUrl: (data.referred_avatar_url as string) || null,
-    status: (data.status as ReferralStatus) || 'pending',
+    status: (data.status as ReferralStatus) || 'pending', // safe downcast
     code: (data.code as string) || '',
     source: data.source as string | undefined,
     referrerReward: referrerReward
       ? {
           id: referrerReward.id as string,
-          type: (referrerReward.type as ReferralReward['type']) || 'xp',
+          type: (referrerReward.type as ReferralReward['type']) || 'xp', // safe downcast
           amount: (referrerReward.amount as number) || 0,
           description: (referrerReward.description as string) || '',
           claimed: (referrerReward.claimed as boolean) || false,
@@ -49,7 +53,7 @@ export function mapReferralFromApi(data: Record<string, unknown>): Referral {
     referredReward: referredReward
       ? {
           id: referredReward.id as string,
-          type: (referredReward.type as ReferralReward['type']) || 'xp',
+          type: (referredReward.type as ReferralReward['type']) || 'xp', // safe downcast
           amount: (referredReward.amount as number) || 0,
           description: (referredReward.description as string) || '',
           claimed: (referredReward.claimed as boolean) || false,

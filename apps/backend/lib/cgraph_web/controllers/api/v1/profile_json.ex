@@ -7,6 +7,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
   # PROFILE
   # ========================================
 
+  @spec profile(map()) :: map()
   def profile(%{profile: profile}) do
     %{data: profile_data(profile)}
   end
@@ -87,6 +88,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
   # POSTS
   # ========================================
 
+  @spec posts(map()) :: map()
   def posts(%{posts: posts, pagination: pagination}) do
     %{
       data: for(post <- posts, do: post_data(post)),
@@ -112,6 +114,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
   # THREADS
   # ========================================
 
+  @spec threads(map()) :: map()
   def threads(%{threads: threads, pagination: pagination}) do
     %{
       data: for(thread <- threads, do: thread_data(thread)),
@@ -138,6 +141,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
   # REPUTATION
   # ========================================
 
+  @spec reputation(map()) :: map()
   def reputation(%{entries: entries, pagination: pagination, summary: summary}) do
     %{
       data: %{
@@ -148,6 +152,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
     }
   end
 
+  @spec reputation_entry(map()) :: map()
   def reputation_entry(%{entry: entry}) do
     %{data: reputation_entry_data(entry)}
   end
@@ -200,6 +205,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
   # ACTIVITY
   # ========================================
 
+  @spec activity(map()) :: map()
   def activity(%{activity: activity, pagination: pagination}) do
     %{
       data: for(item <- activity, do: activity_item_data(item)),
@@ -223,6 +229,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
   # VISITORS
   # ========================================
 
+  @spec visitors(map()) :: map()
   def visitors(%{visitors: visitors, pagination: pagination}) do
     %{
       data: for(visitor <- visitors, do: visitor_data(visitor)),

@@ -18,6 +18,7 @@ defmodule CGraphWeb.Validation.AuthParams do
     field :token, :string
   end
 
+  @spec validate_register(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_register(params) do
     %__MODULE__{}
     |> cast(params, [:email, :username, :password, :password_confirmation], empty_values: [""])
@@ -29,6 +30,7 @@ defmodule CGraphWeb.Validation.AuthParams do
     |> result_from_changeset()
   end
 
+  @spec validate_login(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_login(params) do
     %__MODULE__{}
     |> cast(params, [:identifier, :password], empty_values: [""])
@@ -37,12 +39,14 @@ defmodule CGraphWeb.Validation.AuthParams do
     |> result_from_changeset()
   end
 
+  @spec validate_refresh(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_refresh(params) do
     %__MODULE__{}
     |> cast(params, [:refresh_token], empty_values: [""])
     |> result_from_changeset()
   end
 
+  @spec validate_wallet_challenge(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_wallet_challenge(params) do
     %__MODULE__{}
     |> cast(params, [:wallet_address], empty_values: [""])
@@ -50,6 +54,7 @@ defmodule CGraphWeb.Validation.AuthParams do
     |> result_from_changeset()
   end
 
+  @spec validate_wallet_verify(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_wallet_verify(params) do
     %__MODULE__{}
     |> cast(params, [:wallet_address, :signature], empty_values: [""])
@@ -57,6 +62,7 @@ defmodule CGraphWeb.Validation.AuthParams do
     |> result_from_changeset()
   end
 
+  @spec validate_forgot_password(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_forgot_password(params) do
     %__MODULE__{}
     |> cast(params, [:email], empty_values: [""])
@@ -66,6 +72,7 @@ defmodule CGraphWeb.Validation.AuthParams do
     |> result_from_changeset()
   end
 
+  @spec validate_reset_password(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_reset_password(params) do
     %__MODULE__{}
     |> cast(params, [:token, :password, :password_confirmation], empty_values: [""])

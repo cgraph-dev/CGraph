@@ -74,6 +74,7 @@ defmodule CGraph.Forums.BoardPermission do
   @doc """
   List of all permission fields.
   """
+  @spec permission_fields() :: [atom()]
   def permission_fields do
     [
       :can_view, :can_view_threads, :can_create_threads, :can_reply,
@@ -86,6 +87,7 @@ defmodule CGraph.Forums.BoardPermission do
   @doc """
   Create or update board permissions.
   """
+  @spec changeset(%__MODULE__{} | Ecto.Changeset.t(), map()) :: Ecto.Changeset.t()
   def changeset(permission, attrs) do
     permission
     |> cast(attrs, [:board_id, :user_group_id, :applies_to] ++ permission_fields())
@@ -110,6 +112,7 @@ defmodule CGraph.Forums.BoardPermission do
   Check if a user has a specific permission on a board.
   Returns true/false.
   """
+  @spec can?(atom(), map(), map(), module()) :: boolean()
   def can?(permission, user, board, repo) when is_atom(permission) do
     effective = get_effective_permission(permission, user, board, repo)
     effective == true
@@ -119,6 +122,7 @@ defmodule CGraph.Forums.BoardPermission do
   Get the effective value of a permission for a user on a board.
   Returns true, false, or nil (if not set).
   """
+  @spec get_effective_permission(atom(), map() | nil, map(), module()) :: boolean() | nil
   def get_effective_permission(permission, nil, board, repo) do
     # Anonymous user - check guest permissions
     get_guest_permission(permission, board, repo)
@@ -168,6 +172,7 @@ defmodule CGraph.Forums.BoardPermission do
   Get all effective permissions for a user on a board.
   Returns a map of permission => boolean.
   """
+  @spec effective_permissions(map() | nil, map(), module()) :: %{atom() => boolean() | nil}
   def effective_permissions(user, board, repo) do
     permission_fields()
     |> Enum.map(fn field ->
@@ -183,6 +188,7 @@ defmodule CGraph.Forums.BoardPermission do
   @doc """
   Query for permissions of a specific board.
   """
+  @spec for_board_query(Ecto.UUID.t()) :: Ecto.Query.t()
   def for_board_query(board_id) do
     from bp in __MODULE__,
       where: bp.board_id == ^board_id,
@@ -192,6 +198,7 @@ defmodule CGraph.Forums.BoardPermission do
   @doc """
   Query for permissions of a specific group across all boards.
   """
+  @spec for_group_query(Ecto.UUID.t()) :: Ecto.Query.t()
   def for_group_query(group_id) do
     from bp in __MODULE__,
       where: bp.user_group_id == ^group_id,
@@ -201,6 +208,7 @@ defmodule CGraph.Forums.BoardPermission do
   @doc """
   Query for guest permissions.
   """
+  @spec guest_permissions_query(Ecto.UUID.t()) :: Ecto.Query.t()
   def guest_permissions_query(board_id) do
     from bp in __MODULE__,
       where: bp.board_id == ^board_id and bp.applies_to == "guest"

@@ -15,6 +15,7 @@ export {
   ensureObject,
   extractPagination,
   extractErrorMessage,
+  isRecord,
   isNonEmptyString,
   isValidId,
   getParticipantUserId,

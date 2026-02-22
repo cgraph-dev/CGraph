@@ -1,11 +1,14 @@
-import { ensureArray } from '@/lib/apiUtils';
+import { ensureArray, isRecord } from '@/lib/apiUtils';
 import type { UserBadge, ExtendedProfile } from './profileStore.types';
 
 /**
  * Maps a raw API response object to an ExtendedProfile.
  */
 export function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfile {
-  const user = (data.user || data) as Record<string, unknown>;
+  const user: Record<string, unknown> = isRecord(data.user) ? data.user : data;
+  const currentTitleObj: Record<string, unknown> | null = isRecord(user.current_title)
+    ? user.current_title
+    : null;
   return {
     id: user.id as string,
     username: user.username as string,
@@ -40,16 +43,12 @@ export function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfil
 
     customFields: ensureArray(user.custom_fields, 'custom_fields'),
 
-    currentTitle: user.current_title
+    currentTitle: currentTitleObj
       ? {
-          id: (user.current_title as Record<string, unknown>).id as string,
-          name: (user.current_title as Record<string, unknown>).name as string,
-          color: (user.current_title as Record<string, unknown>).color as string,
-          type:
-            ((user.current_title as Record<string, unknown>).type as
-              | 'system'
-              | 'custom'
-              | 'earned') || 'system',
+          id: String(currentTitleObj.id ?? ''),
+          name: String(currentTitleObj.name ?? ''),
+          color: String(currentTitleObj.color ?? ''),
+          type: (currentTitleObj.type as 'system' | 'custom' | 'earned') || 'system', // safe downcast
         }
       : null,
 
@@ -59,7 +58,7 @@ export function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfil
       id: t.id as string,
       name: t.name as string,
       color: (t.color as string) || '#ffffff',
-      type: (t.type as 'system' | 'custom' | 'earned') || 'system',
+      type: (t.type as 'system' | 'custom' | 'earned') || 'system', // safe downcast
     })),
 
     badges: (ensureArray(user.badges, 'badges') as Record<string, unknown>[]).map((b) => ({
@@ -68,7 +67,7 @@ export function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfil
       description: (b.description as string) || '',
       iconUrl: (b.icon_url as string) || '',
       color: (b.color as string) || '#6366f1',
-      rarity: (b.rarity as UserBadge['rarity']) || 'common',
+      rarity: (b.rarity as UserBadge['rarity']) || 'common', // safe downcast
       earnedAt: (b.earned_at as string) || new Date().toISOString(),
       isEquipped: (b.is_equipped as boolean) || false,
     })),
@@ -81,7 +80,7 @@ export function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfil
       description: (b.description as string) || '',
       iconUrl: (b.icon_url as string) || '',
       color: (b.color as string) || '#6366f1',
-      rarity: (b.rarity as UserBadge['rarity']) || 'common',
+      rarity: (b.rarity as UserBadge['rarity']) || 'common', // safe downcast
       earnedAt: (b.earned_at as string) || new Date().toISOString(),
       isEquipped: true as const,
     })),
@@ -111,11 +110,11 @@ export function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfil
     lastPostAt: (user.last_post_at as string) || null,
 
     isOnline: (user.is_online as boolean) || user.status === 'online',
-    status: (user.status as ExtendedProfile['status']) || 'offline',
+    status: (user.status as ExtendedProfile['status']) || 'offline', // safe downcast
     statusMessage: (user.status_message as string) || (user.custom_status as string) || null,
 
     isFriend: (user.is_friend as boolean) || false,
     isBlocked: (user.is_blocked as boolean) || false,
-    friendshipStatus: (user.friendship_status as ExtendedProfile['friendshipStatus']) || 'none',
+    friendshipStatus: (user.friendship_status as ExtendedProfile['friendshipStatus']) || 'none', // safe downcast
   };
 }

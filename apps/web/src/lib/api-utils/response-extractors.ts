@@ -14,6 +14,10 @@ function isBoolean(v: unknown): v is boolean {
   return typeof v === 'boolean';
 }
 
+export function isRecord(v: unknown): v is Record<string, unknown> {
+  return typeof v === 'object' && v !== null;
+}
+
 /**
  * Extract a typed value from multiple possible keys.
  * Returns the first valid value found, or the fallback.
@@ -57,23 +61,23 @@ export function ensureArray<T>(data: unknown, key?: string): T[] {
 
   // Handle direct array
   if (Array.isArray(data)) {
-    return data as T[];
+    return data as T[]; // safe: Array.isArray verified; T is caller's responsibility
   }
 
   // Handle object with keys
-  if (typeof data === 'object') {
-    const obj = data as Record<string, unknown>;
+  if (isRecord(data)) {
+    const obj = data;
 
     // Try the specified key first
     if (key && Array.isArray(obj[key])) {
-      return obj[key] as T[];
+      return obj[key] as T[]; // safe: Array.isArray verified; T is caller's responsibility
     }
 
     // Try common wrapper keys
     const commonKeys = ['data', 'items', 'results', 'list', 'records'];
     for (const k of commonKeys) {
       if (Array.isArray(obj[k])) {
-        return obj[k] as T[];
+        return obj[k] as T[]; // safe: Array.isArray verified; T is caller's responsibility
       }
     }
   }
@@ -105,23 +109,23 @@ export function ensureObject<T extends object>(data: unknown, key?: string): T |
   }
 
   // Handle direct object (not array)
-  if (typeof data === 'object' && !Array.isArray(data)) {
-    const obj = data as Record<string, unknown>;
+  if (isRecord(data) && !Array.isArray(data)) {
+    const obj = data;
 
     // Try the specified key first
     if (key && obj[key] && typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
-      return obj[key] as T;
+      return obj[key] as T; // safe: object verified; T is caller's responsibility
     }
 
     // Try 'data' wrapper
     if (obj.data && typeof obj.data === 'object' && !Array.isArray(obj.data)) {
-      return obj.data as T;
+      return obj.data as T; // safe: object verified; T is caller's responsibility
     }
 
     // Return as-is if it looks like the target object (has properties beyond just 'data')
     const keys = Object.keys(obj);
     if (keys.length > 0 && !keys.every((k) => ['data', 'meta', 'status', 'message'].includes(k))) {
-      return obj as unknown as T;
+      return obj as unknown as T; // safe: structural heuristic; T is caller's responsibility
     }
   }
 
@@ -149,12 +153,13 @@ export function extractPagination(data: unknown): {
     hasMore: false,
   };
 
-  if (data == null || typeof data !== 'object') {
+  if (!isRecord(data)) {
     return defaults;
   }
 
-  const obj = data as Record<string, unknown>;
-  const meta = (obj.meta || obj.pagination || obj) as Record<string, unknown>;
+  const obj = data;
+  const rawMeta = obj.meta || obj.pagination || obj;
+  const meta = isRecord(rawMeta) ? rawMeta : obj;
 
   return {
     page: extractValue(meta, ['page'], isNumber, defaults.page),
@@ -177,25 +182,29 @@ export function extractErrorMessage(
   }
 
   // Handle axios-style errors
-  if (typeof error === 'object') {
-    const err = error as Record<string, unknown>;
+  if (isRecord(error)) {
+    const err = error;
 
     // Try response.data.error
-    if (err.response && typeof err.response === 'object') {
-      const response = err.response as Record<string, unknown>;
-      if (response.data && typeof response.data === 'object') {
-        const data = response.data as Record<string, unknown>;
+    if (isRecord(err.response)) {
+      const response = err.response;
+      if (isRecord(response.data)) {
+        const data = response.data;
         if (typeof data.error === 'string') return data.error;
         // Handle error object with message property: {"error": {"message": "...", "code": "..."}}
-        if (data.error && typeof data.error === 'object') {
-          const errorObj = data.error as Record<string, unknown>;
+        if (isRecord(data.error)) {
+          const errorObj = data.error;
           if (typeof errorObj.message === 'string') return errorObj.message;
         }
         if (typeof data.message === 'string') return data.message;
         if (Array.isArray(data.errors) && data.errors.length > 0) {
           return data.errors
             .map((e: unknown) =>
-              typeof e === 'string' ? e : (e as Record<string, unknown>)?.message || ''
+              typeof e === 'string'
+                ? e
+                : isRecord(e) && typeof e.message === 'string'
+                  ? e.message
+                  : ''
             )
             .filter(Boolean)
             .join(', ');

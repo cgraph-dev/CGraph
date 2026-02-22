@@ -59,6 +59,7 @@ defmodule CGraph.Forums.PostIcon do
   @doc """
   Changeset for creating or updating a post icon.
   """
+  @spec changeset(t() | Ecto.Changeset.t(), map()) :: Ecto.Changeset.t()
   def changeset(post_icon, attrs) do
     post_icon
     |> cast(attrs, [:name, :icon_url, :emoji, :display_order, :is_active, :forum_id, :board_ids])
@@ -72,6 +73,7 @@ defmodule CGraph.Forums.PostIcon do
   Returns all active icons available for a forum.
   This includes global icons (forum_id = nil) and forum-specific icons.
   """
+  @spec available_for_forum(Ecto.UUID.t()) :: [t()]
   def available_for_forum(forum_id) do
     from(pi in __MODULE__,
       where: pi.is_active == true,
@@ -87,6 +89,7 @@ defmodule CGraph.Forums.PostIcon do
   - Have no board restrictions (empty board_ids)
   - Include this board in their board_ids
   """
+  @spec available_for_board(Ecto.UUID.t(), Ecto.UUID.t()) :: [t()]
   def available_for_board(forum_id, board_id) do
     from(pi in __MODULE__,
       where: pi.is_active == true,
@@ -100,6 +103,7 @@ defmodule CGraph.Forums.PostIcon do
   @doc """
   Returns only global icons (not forum-specific).
   """
+  @spec global_icons() :: [t()]
   def global_icons do
     from(pi in __MODULE__,
       where: pi.is_active == true and is_nil(pi.forum_id),
@@ -111,6 +115,7 @@ defmodule CGraph.Forums.PostIcon do
   @doc """
   Returns icons for a specific forum only (excluding global).
   """
+  @spec forum_specific_icons(Ecto.UUID.t()) :: [t()]
   def forum_specific_icons(forum_id) do
     from(pi in __MODULE__,
       where: pi.is_active == true and pi.forum_id == ^forum_id,
@@ -122,6 +127,7 @@ defmodule CGraph.Forums.PostIcon do
   @doc """
   Increments the usage count for an icon.
   """
+  @spec increment_usage(Ecto.UUID.t()) :: {non_neg_integer(), nil | [term()]}
   def increment_usage(icon_id) do
     from(pi in __MODULE__, where: pi.id == ^icon_id)
     |> Repo.update_all(inc: [usage_count: 1])
@@ -130,6 +136,7 @@ defmodule CGraph.Forums.PostIcon do
   @doc """
   Gets an icon by ID.
   """
+  @spec get(Ecto.UUID.t()) :: t() | nil
   def get(id) do
     Repo.get(__MODULE__, id)
   end
@@ -137,6 +144,7 @@ defmodule CGraph.Forums.PostIcon do
   @doc """
   Gets an icon by ID, returns {:ok, icon} or {:error, :not_found}.
   """
+  @spec fetch(Ecto.UUID.t()) :: {:ok, t()} | {:error, :not_found}
   def fetch(id) do
     case Repo.get(__MODULE__, id) do
       nil -> {:error, :not_found}

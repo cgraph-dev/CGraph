@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.SearchJSON do
 
   alias CGraphWeb.API.V1.{GroupJSON, MessageJSON, PostJSON, UserJSON}
 
+  @spec index(map()) :: map()
   def index(%{results: results, query: query}) do
     %{
       data: %{
@@ -17,6 +18,7 @@ defmodule CGraphWeb.API.V1.SearchJSON do
     }
   end
 
+  @spec users(map()) :: map()
   def users(%{users: users, meta: meta}) do
     %{
       data: render_users(users),
@@ -24,6 +26,7 @@ defmodule CGraphWeb.API.V1.SearchJSON do
     }
   end
 
+  @spec messages(map()) :: map()
   def messages(%{messages: messages, meta: meta}) do
     %{
       data: render_messages(messages),
@@ -31,6 +34,7 @@ defmodule CGraphWeb.API.V1.SearchJSON do
     }
   end
 
+  @spec posts(map()) :: map()
   def posts(%{posts: posts, meta: meta}) do
     %{
       data: render_posts(posts),
@@ -38,6 +42,7 @@ defmodule CGraphWeb.API.V1.SearchJSON do
     }
   end
 
+  @spec groups(map()) :: map()
   def groups(%{groups: groups, meta: meta}) do
     %{
       data: render_groups(groups),
@@ -45,10 +50,12 @@ defmodule CGraphWeb.API.V1.SearchJSON do
     }
   end
 
+  @spec suggestions(map()) :: map()
   def suggestions(%{suggestions: suggestions}) do
     %{data: suggestions}
   end
 
+  @spec recent(map()) :: map()
   def recent(%{searches: searches}) do
     %{
       data: Enum.map(searches, fn s ->

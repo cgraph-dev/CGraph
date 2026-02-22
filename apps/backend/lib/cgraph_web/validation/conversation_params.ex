@@ -50,6 +50,7 @@ defmodule CGraphWeb.Validation.ConversationParams do
   @doc """
   Validate parameters for creating a DM conversation.
   """
+  @spec validate_create_dm(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_create_dm(params) do
     %__MODULE__{}
     |> cast(params, [:recipient_id, :initial_message], empty_values: [""])
@@ -61,6 +62,7 @@ defmodule CGraphWeb.Validation.ConversationParams do
   @doc """
   Validate parameters for creating a group.
   """
+  @spec validate_create_group(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_create_group(params) do
     %__MODULE__{}
     |> cast(params, [:name, :description, :icon_url, :is_encrypted, :is_public, :member_ids], empty_values: [""])
@@ -76,6 +78,7 @@ defmodule CGraphWeb.Validation.ConversationParams do
   @doc """
   Validate parameters for updating a group.
   """
+  @spec validate_update_group(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_update_group(params) do
     %__MODULE__{}
     |> cast(params, [:name, :description, :topic, :icon_url, :is_public], empty_values: [""])
@@ -90,6 +93,7 @@ defmodule CGraphWeb.Validation.ConversationParams do
   @doc """
   Validate parameters for adding members to a group.
   """
+  @spec validate_add_members(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_add_members(params) do
     %__MODULE__{}
     |> cast(params, [:member_ids], empty_values: [""])
@@ -101,6 +105,7 @@ defmodule CGraphWeb.Validation.ConversationParams do
   @doc """
   Validate parameters for updating member role.
   """
+  @spec validate_update_member_role(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_update_member_role(params) do
     %__MODULE__{}
     |> cast(params, [:role], empty_values: [""])
@@ -112,6 +117,7 @@ defmodule CGraphWeb.Validation.ConversationParams do
   @doc """
   Validate participant settings (mute, archive, pin).
   """
+  @spec validate_participant_settings(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_participant_settings(params) do
     %__MODULE__{}
     |> cast(params, [:is_muted, :muted_until, :is_archived, :is_pinned, :nickname], empty_values: [""])
@@ -123,6 +129,7 @@ defmodule CGraphWeb.Validation.ConversationParams do
   @doc """
   Validate typing indicator params.
   """
+  @spec validate_typing(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_typing(params) do
     # Use embedded schema for typing validation
     %__MODULE__{}

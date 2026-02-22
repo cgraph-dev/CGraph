@@ -181,10 +181,12 @@ defmodule CGraph.Jobs do
   # ---------------------------------------------------------------------------
 
   @doc "Enqueue a job for background processing. See `CGraph.Jobs.Scheduling.enqueue/3`."
+  @spec enqueue(worker(), job_args(), job_options()) :: {:ok, Oban.Job.t()} | {:error, term()}
   def enqueue(worker, args, opts \\ []),
     do: CGraph.Jobs.Scheduling.enqueue(worker, args, opts)
 
   @doc "Enqueue a job and wait for completion. See `CGraph.Jobs.Scheduling.enqueue_and_wait/3`."
+  @spec enqueue_and_wait(worker(), job_args(), job_options()) :: {:ok, term()} | {:error, term()}
   def enqueue_and_wait(worker, args, opts \\ []),
     do: CGraph.Jobs.Scheduling.enqueue_and_wait(worker, args, opts)
 
@@ -210,6 +212,7 @@ defmodule CGraph.Jobs do
   # ---------------------------------------------------------------------------
 
   @doc "Update job progress. See `CGraph.Jobs.Progress.update_progress/3`."
+  @spec update_progress(job_id(), non_neg_integer(), String.t()) :: :ok | {:error, term()}
   def update_progress(job_id, percentage, message \\ ""),
     do: CGraph.Jobs.Progress.update_progress(job_id, percentage, message)
 
@@ -225,6 +228,7 @@ defmodule CGraph.Jobs do
   defdelegate retry_job(job_id), to: CGraph.Jobs.Management
 
   @doc "Retry all failed jobs matching criteria. See `CGraph.Jobs.Management.retry_failed_jobs/1`."
+  @spec retry_failed_jobs(keyword()) :: {:ok, non_neg_integer()} | {:error, term()}
   def retry_failed_jobs(opts \\ []),
     do: CGraph.Jobs.Management.retry_failed_jobs(opts)
 
@@ -236,12 +240,15 @@ defmodule CGraph.Jobs do
   # ---------------------------------------------------------------------------
 
   @doc "Get job statistics. See `CGraph.Jobs.Stats.get_stats/1`."
+  @spec get_stats(keyword()) :: {:ok, map()} | {:error, term()}
   def get_stats(opts \\ []), do: CGraph.Jobs.Stats.get_stats(opts)
 
   @doc "Get error statistics. See `CGraph.Jobs.Stats.get_error_stats/1`."
+  @spec get_error_stats(keyword()) :: {:ok, map()} | {:error, term()}
   def get_error_stats(opts \\ []), do: CGraph.Jobs.Stats.get_error_stats(opts)
 
   @doc "Get worker performance stats. See `CGraph.Jobs.Stats.get_worker_performance/1`."
+  @spec get_worker_performance(keyword()) :: {:ok, map()} | {:error, term()}
   def get_worker_performance(opts \\ []),
     do: CGraph.Jobs.Stats.get_worker_performance(opts)
 end

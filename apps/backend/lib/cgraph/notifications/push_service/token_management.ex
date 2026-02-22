@@ -12,6 +12,7 @@ defmodule CGraph.Notifications.PushService.TokenManagement do
   # Token Queries
   # ============================================================================
 
+  @spec get_user_tokens(Ecto.UUID.t(), keyword()) :: [PushToken.t()]
   def get_user_tokens(user_id, opts) do
     platforms = Keyword.get(opts, :platforms)
     exclude_device_ids = Keyword.get(opts, :exclude_device_ids, [])
@@ -35,6 +36,7 @@ defmodule CGraph.Notifications.PushService.TokenManagement do
     Repo.all(query)
   end
 
+  @spec get_tokens_for_users([Ecto.UUID.t()], keyword()) :: [PushToken.t()]
   def get_tokens_for_users(user_ids, opts) do
     platforms = Keyword.get(opts, :platforms)
 
@@ -55,6 +57,7 @@ defmodule CGraph.Notifications.PushService.TokenManagement do
   # Token Registration
   # ============================================================================
 
+  @spec do_register_token(Ecto.UUID.t(), String.t(), String.t(), String.t()) :: {:ok, PushToken.t()} | {:error, Ecto.Changeset.t()}
   def do_register_token(user_id, token, platform, device_id) do
     # First, deactivate any existing tokens with this device_id for this user
     from(pt in PushToken,
@@ -90,6 +93,7 @@ defmodule CGraph.Notifications.PushService.TokenManagement do
     end
   end
 
+  @spec do_unregister_token(String.t()) :: :ok
   def do_unregister_token(token) do
     from(pt in PushToken, where: pt.token == ^token)
     |> Repo.update_all(set: [is_active: false, updated_at: DateTime.utc_now()])
@@ -97,6 +101,7 @@ defmodule CGraph.Notifications.PushService.TokenManagement do
     :ok
   end
 
+  @spec cleanup_invalid_tokens([String.t()]) :: :ok
   def cleanup_invalid_tokens(invalid_tokens) do
     from(pt in PushToken, where: pt.token in ^invalid_tokens)
     |> Repo.update_all(set: [is_active: false, updated_at: DateTime.utc_now()])
@@ -108,6 +113,7 @@ defmodule CGraph.Notifications.PushService.TokenManagement do
   # Member Queries
   # ============================================================================
 
+  @spec get_conversation_member_ids(Ecto.UUID.t(), Ecto.UUID.t()) :: [Ecto.UUID.t()]
   def get_conversation_member_ids(conversation_id, exclude_id) do
     from(cp in "conversation_participants",
       where: cp.conversation_id == ^conversation_id and cp.user_id != ^exclude_id,
@@ -118,6 +124,7 @@ defmodule CGraph.Notifications.PushService.TokenManagement do
     _ -> []
   end
 
+  @spec get_group_member_ids(Ecto.UUID.t(), Ecto.UUID.t()) :: [Ecto.UUID.t()]
   def get_group_member_ids(group_id, exclude_id) do
     from(gm in "group_members",
       where: gm.group_id == ^group_id and gm.user_id != ^exclude_id,

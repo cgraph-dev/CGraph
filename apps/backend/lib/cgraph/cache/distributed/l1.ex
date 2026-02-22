@@ -23,6 +23,7 @@ defmodule CGraph.Cache.Distributed.L1 do
 
   Returns `{:ok, value}` or `:miss`.
   """
+  @spec get(term()) :: {:ok, term()} | :miss
   def get(key) do
     now = System.monotonic_time(:millisecond)
 
@@ -41,6 +42,7 @@ defmodule CGraph.Cache.Distributed.L1 do
 
   Returns `{:ok, value, :fresh}`, `{:ok, value, :stale}`, or `:miss`.
   """
+  @spec get_with_stale(term()) :: {:ok, term(), :fresh | :stale} | :miss
   def get_with_stale(key) do
     now = System.monotonic_time(:millisecond)
 
@@ -62,6 +64,7 @@ defmodule CGraph.Cache.Distributed.L1 do
   @doc """
   Set a value in the L1 ETS cache with the given TTL.
   """
+  @spec set(term(), term(), non_neg_integer()) :: true
   def set(key, value, ttl) do
     now = System.monotonic_time(:millisecond)
 
@@ -80,6 +83,7 @@ defmodule CGraph.Cache.Distributed.L1 do
   @doc """
   Remove expired entries from L1 cache.
   """
+  @spec cleanup_expired() :: nil
   def cleanup_expired do
     now = System.monotonic_time(:millisecond)
 
@@ -97,6 +101,7 @@ defmodule CGraph.Cache.Distributed.L1 do
   @doc """
   Enforce the L1 max size by evicting oldest entries.
   """
+  @spec enforce_size_limit() :: non_neg_integer() | nil
   def enforce_size_limit do
     size = :ets.info(:cache_l1, :size)
 
@@ -111,6 +116,7 @@ defmodule CGraph.Cache.Distributed.L1 do
   @doc """
   Compress a term using zlib.
   """
+  @spec compress(term()) :: binary()
   def compress(value) do
     value
     |> :erlang.term_to_binary()
@@ -120,6 +126,7 @@ defmodule CGraph.Cache.Distributed.L1 do
   @doc """
   Decompress zlib-compressed data back to a term.
   """
+  @spec decompress(binary()) :: term()
   def decompress(data) do
     data
     |> :zlib.uncompress()
@@ -130,6 +137,7 @@ defmodule CGraph.Cache.Distributed.L1 do
   @doc """
   Estimate the byte size of a term.
   """
+  @spec byte_size_estimate(term()) :: non_neg_integer()
   def byte_size_estimate(value) do
     :erlang.external_size(value)
   end
@@ -137,6 +145,7 @@ defmodule CGraph.Cache.Distributed.L1 do
   @doc """
   Return the compression threshold.
   """
+  @spec compression_threshold() :: non_neg_integer()
   def compression_threshold, do: @compression_threshold
 
   # Private helpers

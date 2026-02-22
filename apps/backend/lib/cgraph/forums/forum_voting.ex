@@ -27,6 +27,7 @@ defmodule CGraph.Forums.ForumVoting do
 
   Returns {:ok, :upvoted | :downvoted | :removed} or {:error, reason}
   """
+  @spec vote_forum(map(), Ecto.UUID.t(), 1 | -1) :: {:ok, :upvoted | :downvoted | :removed} | {:error, term()}
   def vote_forum(user, forum_id, value) when value in [1, -1] do
     with :ok <- validate_vote_eligibility(user, value),
          :ok <- validate_not_self_vote(user, forum_id),
@@ -38,6 +39,7 @@ defmodule CGraph.Forums.ForumVoting do
   @doc """
   Get user's vote on a forum.
   """
+  @spec get_user_forum_vote(Ecto.UUID.t(), Ecto.UUID.t()) :: %ForumVote{} | nil
   def get_user_forum_vote(user_id, forum_id) do
     Repo.one(
       from v in ForumVote,
@@ -48,6 +50,7 @@ defmodule CGraph.Forums.ForumVoting do
   @doc """
   Get forum with user's vote status.
   """
+  @spec get_forum_with_vote(Ecto.UUID.t(), Ecto.UUID.t() | nil) :: {:ok, map()} | {:error, :not_found}
   def get_forum_with_vote(forum_id, user_id) do
     case Repo.get(Forum, forum_id) |> Repo.preload([:categories, :owner]) do
       nil -> {:error, :not_found}
@@ -61,6 +64,7 @@ defmodule CGraph.Forums.ForumVoting do
   @doc """
   Get voting eligibility info for a user.
   """
+  @spec get_vote_eligibility(map()) :: map()
   def get_vote_eligibility(user) do
     account_age_days = DateTime.diff(DateTime.utc_now(), user.inserted_at, :day)
     karma = user.karma || 0
@@ -79,6 +83,7 @@ defmodule CGraph.Forums.ForumVoting do
   @doc """
   Calculate hot score.
   """
+  @spec update_forum_hot_score(Ecto.UUID.t()) :: {non_neg_integer(), nil | [term()]}
   def update_forum_hot_score(forum_id) do
     forum = Repo.get!(Forum, forum_id)
 
@@ -96,6 +101,7 @@ defmodule CGraph.Forums.ForumVoting do
   @doc """
   Reset weekly scores (run via scheduler).
   """
+  @spec reset_weekly_scores() :: {non_neg_integer(), nil | [term()]}
   def reset_weekly_scores do
     from(f in Forum)
     |> Repo.update_all(set: [weekly_score: 0])
@@ -104,6 +110,7 @@ defmodule CGraph.Forums.ForumVoting do
   @doc """
   Set a forum as featured.
   """
+  @spec set_forum_featured(Ecto.UUID.t(), boolean()) :: {non_neg_integer(), nil | [term()]}
   def set_forum_featured(forum_id, featured) when is_boolean(featured) do
     from(f in Forum, where: f.id == ^forum_id)
     |> Repo.update_all(set: [featured: featured])

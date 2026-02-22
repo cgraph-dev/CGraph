@@ -3,7 +3,7 @@
  */
 import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
-import { ensureArray } from '@/lib/apiUtils';
+import { ensureArray, isRecord } from '@/lib/apiUtils';
 
 import type {
   CalendarEvent,
@@ -159,9 +159,9 @@ export function createEventActions(set: SetState, get: GetState) {
 // ========================================
 
 export function mapEventFromApi(data: Record<string, unknown>): CalendarEvent {
-  const author = (data.author as Record<string, unknown>) || {};
-  const category = (data.category as Record<string, unknown>) || {};
-  const eventType = (data.event_type as EventType) || 'single';
+  const author: Record<string, unknown> = isRecord(data.author) ? data.author : {};
+  const category: Record<string, unknown> = isRecord(data.category) ? data.category : {};
+  const eventType = (data.event_type as EventType) || 'single'; // safe downcast
 
   return {
     id: data.id as string,
@@ -174,12 +174,12 @@ export function mapEventFromApi(data: Record<string, unknown>): CalendarEvent {
     type: eventType,
     eventType: eventType,
     isRecurring: (data.is_recurring as boolean) || false,
-    recurrencePattern: data.recurrence_pattern as RecurrencePattern | undefined,
+    recurrencePattern: data.recurrence_pattern as RecurrencePattern | undefined, // safe downcast
     recurrenceEndDate: (data.recurrence_end_date as string) || null,
     recurrenceCount: data.recurrence_count as number | undefined,
     recurrence: data.recurrence_pattern
       ? {
-          pattern: data.recurrence_pattern as RecurrencePattern,
+          pattern: data.recurrence_pattern as RecurrencePattern, // safe downcast
           interval: (data.recurrence_interval as number) || 1,
           endDate: (data.recurrence_end_date as string) || null,
           count: data.recurrence_count as number | undefined,
@@ -193,13 +193,13 @@ export function mapEventFromApi(data: Record<string, unknown>): CalendarEvent {
     authorId: (data.author_id as string) || (author.id as string) || '',
     authorUsername: (author.username as string) || 'Unknown',
     authorAvatarUrl: (author.avatar_url as string) || null,
-    visibility: (data.visibility as EventVisibility) || 'public',
+    visibility: (data.visibility as EventVisibility) || 'public', // safe downcast
     forumId: (data.forum_id as string) || null,
     rsvpEnabled: (data.rsvp_enabled as boolean) || false,
     rsvpDeadline: (data.rsvp_deadline as string) || null,
     maxAttendees: (data.max_attendees as number) || null,
     attendeeCount: (data.attendee_count as number) || 0,
-    myRsvp: data.my_rsvp as RSVPStatus | undefined,
+    myRsvp: data.my_rsvp as RSVPStatus | undefined, // safe downcast
     createdAt: (data.created_at as string) || new Date().toISOString(),
     updatedAt: (data.updated_at as string) || new Date().toISOString(),
   };

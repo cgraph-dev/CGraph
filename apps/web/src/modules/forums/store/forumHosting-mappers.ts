@@ -7,116 +7,139 @@ import type {
 } from './forumHostingStore.types';
 
 // =============================================================================
+// Safe extraction helpers for untyped API response data
+// =============================================================================
+
+function str(val: unknown): string {
+  return typeof val === 'string' ? val : '';
+}
+
+function strOrNull(val: unknown): string | null {
+  return typeof val === 'string' ? val : null;
+}
+
+function num(val: unknown): number {
+  return typeof val === 'number' ? val : 0;
+}
+
+function bool(val: unknown): boolean {
+  return val === true;
+}
+
+/** Narrow unknown to Record — necessary cast after runtime object check. */
+function record(val: unknown): Record<string, unknown> {
+  return typeof val === 'object' && val !== null ? (val as Record<string, unknown>) : {};
+}
+
+// =============================================================================
 // API Response Mappers
 // =============================================================================
 
 export function mapBoardFromApi(data: Record<string, unknown>): Board {
   return {
-    id: data.id as string,
-    forumId: data.forum_id as string,
-    parentBoardId: (data.parent_board_id as string) || null,
-    parentId: (data.parent_board_id as string) || null,
-    name: data.name as string,
-    slug: data.slug as string,
-    description: (data.description as string) || null,
-    icon: (data.icon as string) || null,
-    position: (data.position as number) || 0,
-    isLocked: (data.is_locked as boolean) || false,
-    isHidden: (data.is_hidden as boolean) || false,
-    threadCount: (data.thread_count as number) || 0,
-    postCount: (data.post_count as number) || 0,
-    lastPostAt: (data.last_post_at as string) || null,
-    lastPostTitle: (data.last_post_title as string) || null,
-    lastPostAuthor: (data.last_post_author as string) || null,
-    insertedAt: data.inserted_at as string,
-    updatedAt: data.updated_at as string,
+    id: str(data.id),
+    forumId: str(data.forum_id),
+    parentBoardId: strOrNull(data.parent_board_id),
+    parentId: strOrNull(data.parent_board_id),
+    name: str(data.name),
+    slug: str(data.slug),
+    description: strOrNull(data.description),
+    icon: strOrNull(data.icon),
+    position: num(data.position),
+    isLocked: bool(data.is_locked),
+    isHidden: bool(data.is_hidden),
+    threadCount: num(data.thread_count),
+    postCount: num(data.post_count),
+    lastPostAt: strOrNull(data.last_post_at),
+    lastPostTitle: strOrNull(data.last_post_title),
+    lastPostAuthor: strOrNull(data.last_post_author),
+    insertedAt: str(data.inserted_at),
+    updatedAt: str(data.updated_at),
   };
 }
 
 export function mapAuthorFromApi(data: Record<string, unknown>): ThreadAuthor {
   return {
-    id: data.id as string,
-    username: data.username as string,
-    displayName: (data.display_name as string) || (data.username as string),
-    avatarUrl: (data.avatar_url as string) || null,
+    id: str(data.id),
+    username: str(data.username),
+    displayName: str(data.display_name) || str(data.username),
+    avatarUrl: strOrNull(data.avatar_url),
   };
 }
 
 export function mapThreadFromApi(data: Record<string, unknown>): Thread {
-  const insertedAt = data.inserted_at as string;
-  const lastPostAt = (data.last_post_at as string) || null;
-  const lastPoster = data.last_poster
-    ? mapAuthorFromApi(data.last_poster as Record<string, unknown>)
-    : null;
+  const insertedAt = str(data.inserted_at);
+  const lastPostAt = strOrNull(data.last_post_at);
+  const lastPoster = data.last_poster ? mapAuthorFromApi(record(data.last_poster)) : null;
 
   return {
-    id: data.id as string,
-    boardId: data.board_id as string,
-    authorId: data.author_id as string,
-    title: data.title as string,
-    slug: data.slug as string,
-    content: (data.content as string) || null,
-    contentHtml: (data.content_html as string) || null,
-    threadType: (data.thread_type as Thread['threadType']) || 'normal',
-    isLocked: (data.is_locked as boolean) || false,
-    isPinned: (data.is_pinned as boolean) || false,
-    isHidden: (data.is_hidden as boolean) || false,
-    prefix: (data.prefix as string) || null,
-    prefixColor: (data.prefix_color as string) || null,
-    viewCount: (data.view_count as number) || 0,
-    replyCount: (data.reply_count as number) || 0,
-    score: (data.score as number) || 0,
-    upvotes: (data.upvotes as number) || 0,
-    downvotes: (data.downvotes as number) || 0,
+    id: str(data.id),
+    boardId: str(data.board_id),
+    authorId: str(data.author_id),
+    title: str(data.title),
+    slug: str(data.slug),
+    content: strOrNull(data.content),
+    contentHtml: strOrNull(data.content_html),
+    threadType: (data.thread_type as Thread['threadType']) || 'normal', // safe downcast — API enum
+    isLocked: bool(data.is_locked),
+    isPinned: bool(data.is_pinned),
+    isHidden: bool(data.is_hidden),
+    prefix: strOrNull(data.prefix),
+    prefixColor: strOrNull(data.prefix_color),
+    viewCount: num(data.view_count),
+    replyCount: num(data.reply_count),
+    score: num(data.score),
+    upvotes: num(data.upvotes),
+    downvotes: num(data.downvotes),
     lastPostAt: lastPostAt,
     lastReplyAt: lastPostAt,
     lastReplyBy: lastPoster?.username || null,
-    author: data.author ? mapAuthorFromApi(data.author as Record<string, unknown>) : null,
+    author: data.author ? mapAuthorFromApi(record(data.author)) : null,
     lastPoster: lastPoster,
     createdAt: insertedAt,
     insertedAt: insertedAt,
-    updatedAt: data.updated_at as string,
+    updatedAt: str(data.updated_at),
   };
 }
 
 export function mapPostFromApi(data: Record<string, unknown>): ThreadPost {
   return {
-    id: data.id as string,
-    threadId: data.thread_id as string,
-    authorId: data.author_id as string,
-    content: data.content as string,
-    contentHtml: (data.content_html as string) || null,
-    isEdited: (data.is_edited as boolean) || false,
-    editCount: (data.edit_count as number) || 0,
-    editReason: (data.edit_reason as string) || null,
-    editedAt: (data.edited_at as string) || null,
-    isHidden: (data.is_hidden as boolean) || false,
-    score: (data.score as number) || 0,
-    upvotes: (data.upvotes as number) || 0,
-    downvotes: (data.downvotes as number) || 0,
-    position: (data.position as number) || 0,
-    replyToId: (data.reply_to_id as string) || null,
-    author: data.author ? mapAuthorFromApi(data.author as Record<string, unknown>) : null,
-    insertedAt: data.inserted_at as string,
-    updatedAt: data.updated_at as string,
+    id: str(data.id),
+    threadId: str(data.thread_id),
+    authorId: str(data.author_id),
+    content: str(data.content),
+    contentHtml: strOrNull(data.content_html),
+    isEdited: bool(data.is_edited),
+    editCount: num(data.edit_count),
+    editReason: strOrNull(data.edit_reason),
+    editedAt: strOrNull(data.edited_at),
+    isHidden: bool(data.is_hidden),
+    score: num(data.score),
+    upvotes: num(data.upvotes),
+    downvotes: num(data.downvotes),
+    position: num(data.position),
+    replyToId: strOrNull(data.reply_to_id),
+    author: data.author ? mapAuthorFromApi(record(data.author)) : null,
+    insertedAt: str(data.inserted_at),
+    updatedAt: str(data.updated_at),
   };
 }
 
 export function mapMemberFromApi(data: Record<string, unknown>): ForumMember {
   return {
-    id: data.id as string,
-    forumId: data.forum_id as string,
-    userId: data.user_id as string,
-    displayName: (data.display_name as string) || (data.username as string) || null,
-    title: (data.title as string) || null,
-    signature: (data.signature as string) || null,
-    avatarUrl: (data.avatar_url as string) || null,
-    postCount: (data.post_count as number) || 0,
-    threadCount: (data.thread_count as number) || 0,
-    reputation: (data.reputation as number) || 0,
-    role: (data.role as ForumMember['role']) || 'member',
-    isBanned: (data.is_banned as boolean) || false,
-    joinedAt: (data.joined_at as string) || (data.inserted_at as string) || null,
-    lastVisitAt: (data.last_visit_at as string) || null,
+    id: str(data.id),
+    forumId: str(data.forum_id),
+    userId: str(data.user_id),
+    displayName: str(data.display_name) || str(data.username) || null,
+    title: strOrNull(data.title),
+    signature: strOrNull(data.signature),
+    avatarUrl: strOrNull(data.avatar_url),
+    postCount: num(data.post_count),
+    threadCount: num(data.thread_count),
+    reputation: num(data.reputation),
+    role: (data.role as ForumMember['role']) || 'member', // safe downcast — API enum
+    isBanned: bool(data.is_banned),
+    joinedAt: str(data.joined_at) || str(data.inserted_at) || null,
+    lastVisitAt: strOrNull(data.last_visit_at),
   };
 }

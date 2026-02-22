@@ -10,6 +10,7 @@ defmodule CGraph.Security.AccountLockout.LockoutLogic do
   # Lock Checks
   # ============================================================================
 
+  @spec do_check_locked(String.t(), map(), boolean()) :: :ok | {:locked, integer()}
   def do_check_locked(identifier, _config, redis_available) do
     key = Storage.lockout_key(identifier)
 
@@ -20,6 +21,7 @@ defmodule CGraph.Security.AccountLockout.LockoutLogic do
     end
   end
 
+  @spec do_check_ip_locked(String.t(), map()) :: :ok | {:locked, integer()}
   def do_check_ip_locked(ip, config) do
     if ip in config.whitelist_ips do
       :ok
@@ -32,6 +34,7 @@ defmodule CGraph.Security.AccountLockout.LockoutLogic do
   # Record Failure
   # ============================================================================
 
+  @spec do_record_failure(String.t(), String.t() | nil, keyword(), map()) :: :ok | {:locked, integer()}
   def do_record_failure(identifier, ip, opts, config) do
     attempts_key = Storage.attempts_key(identifier)
     lockout_key = Storage.lockout_key(identifier)
@@ -80,12 +83,14 @@ defmodule CGraph.Security.AccountLockout.LockoutLogic do
   # Clear / Unlock
   # ============================================================================
 
+  @spec do_clear_attempts(String.t()) :: :ok
   def do_clear_attempts(identifier) do
     attempts_key = Storage.attempts_key(identifier)
     Storage.delete_from_redis(attempts_key)
     :ok
   end
 
+  @spec do_admin_unlock(String.t(), String.t()) :: :ok
   def do_admin_unlock(identifier, admin_id) do
     lockout_key = Storage.lockout_key(identifier)
     attempts_key = Storage.attempts_key(identifier)
@@ -113,6 +118,7 @@ defmodule CGraph.Security.AccountLockout.LockoutLogic do
   # Info
   # ============================================================================
 
+  @spec do_get_info(String.t()) :: map()
   def do_get_info(identifier) do
     lockout_key = Storage.lockout_key(identifier)
     attempts_key = Storage.attempts_key(identifier)
@@ -152,12 +158,14 @@ defmodule CGraph.Security.AccountLockout.LockoutLogic do
   # Helpers
   # ============================================================================
 
+  @spec normalize_identifier(String.t()) :: String.t()
   def normalize_identifier(identifier) do
     identifier
     |> String.downcase()
     |> String.trim()
   end
 
+  @spec calculate_lockout_duration(non_neg_integer(), map()) :: non_neg_integer()
   def calculate_lockout_duration(lock_count, config) do
     base = config.lockout_duration
     multiplier = config.progressive_multiplier
@@ -168,6 +176,7 @@ defmodule CGraph.Security.AccountLockout.LockoutLogic do
     min(duration, max_duration)
   end
 
+  @spec parse_lockout_data(binary() | nil) :: map() | nil
   def parse_lockout_data(nil), do: nil
   def parse_lockout_data(data) when is_binary(data) do
     case Jason.decode(data) do
