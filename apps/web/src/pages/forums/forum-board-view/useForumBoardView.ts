@@ -47,6 +47,7 @@ export function useForumBoardView() {
     if (forumSlug) {
       loadForum();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forumSlug]);
 
   // Load members when tab is selected or search/sort changes
@@ -54,6 +55,7 @@ export function useForumBoardView() {
     if (activeTab === 'members' && forum) {
       fetchMembers(forum.id, { sort: memberSort, search: memberSearch || undefined });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, forum?.id, memberSort, memberSearch]);
 
   const loadForum = async () => {
@@ -62,7 +64,7 @@ export function useForumBoardView() {
     setIsLoadingForum(true);
     try {
       const forumData = await fetchForum(forumSlug);
-      setForum(forumData as Forum);
+      setForum(forumData);
       await Promise.all([fetchBoards(forumData.id), fetchRecentThreads(forumData.id)]);
     } catch (error) {
       logger.error('Failed to load forum:', error);
@@ -87,7 +89,7 @@ export function useForumBoardView() {
     await voteForum(forum.id, value);
     // Refetch forum to get updated scores
     const updated = await fetchForum(forumSlug!);
-    setForum(updated as Forum);
+    setForum(updated);
   };
 
   const isOwner = !!(forum && user && forum.ownerId === user.id);

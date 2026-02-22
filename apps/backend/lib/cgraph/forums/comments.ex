@@ -16,6 +16,7 @@ defmodule CGraph.Forums.Comments do
   @doc """
   Lists comments for a post.
   """
+  @spec list_comments(Post.t(), keyword()) :: {[Comment.t()], map()}
   def list_comments(post, opts \\ []) do
     cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 50)
@@ -43,6 +44,7 @@ defmodule CGraph.Forums.Comments do
   @doc """
   Gets a comment by ID.
   """
+  @spec get_comment(String.t()) :: {:ok, Comment.t()} | {:error, :not_found}
   def get_comment(comment_id) do
     query = from(c in Comment,
       where: c.id == ^comment_id,
@@ -58,6 +60,7 @@ defmodule CGraph.Forums.Comments do
   @doc """
   Creates a comment on a post.
   """
+  @spec create_comment(Post.t(), map(), map()) :: {:ok, Comment.t()} | {:error, Ecto.Changeset.t()}
   def create_comment(post, user, attrs) do
     attrs = attrs |> stringify_keys() |> Map.merge(%{
       "post_id" => post.id,
@@ -79,6 +82,7 @@ defmodule CGraph.Forums.Comments do
   @doc """
   Updates a comment.
   """
+  @spec update_comment(Comment.t(), map()) :: {:ok, Comment.t()} | {:error, Ecto.Changeset.t()}
   def update_comment(comment, attrs) do
     comment
     |> Comment.edit_changeset(attrs)
@@ -88,6 +92,7 @@ defmodule CGraph.Forums.Comments do
   @doc """
   Deletes a comment (soft delete).
   """
+  @spec delete_comment(Comment.t()) :: {:ok, Comment.t()} | {:error, Ecto.Changeset.t()}
   def delete_comment(comment) do
     comment
     |> Ecto.Changeset.change(%{
@@ -106,6 +111,7 @@ defmodule CGraph.Forums.Comments do
   @doc """
   Hides a comment (moderation action).
   """
+  @spec hide_comment(String.t(), term()) :: :ok
   def hide_comment(comment_id, _reason) do
     from(c in Comment, where: c.id == ^comment_id)
     |> Repo.update_all(set: [
@@ -117,6 +123,7 @@ defmodule CGraph.Forums.Comments do
   @doc """
   Soft deletes a comment.
   """
+  @spec soft_delete_comment(String.t(), keyword()) :: :ok
   def soft_delete_comment(comment_id, opts \\ []) do
     _reason = Keyword.get(opts, :reason, "Removed by moderator")
 
@@ -130,6 +137,7 @@ defmodule CGraph.Forums.Comments do
   @doc """
   Votes on a comment.
   """
+  @spec vote(map(), Comment.t(), atom() | String.t()) :: {:ok, :ok} | {:error, term()}
   def vote(user, comment, vote_type) when vote_type in [:up, :down, "up", "down"] do
     vote_value = if vote_type in [:up, "up"], do: 1, else: -1
 
@@ -170,6 +178,7 @@ defmodule CGraph.Forums.Comments do
   @doc """
   Removes a vote from a comment.
   """
+  @spec remove_vote(map(), Comment.t()) :: :ok | {:error, :not_found}
   def remove_vote(user, comment) do
     case Repo.get_by(Vote, user_id: user.id, comment_id: comment.id) do
       nil -> {:error, :not_found}

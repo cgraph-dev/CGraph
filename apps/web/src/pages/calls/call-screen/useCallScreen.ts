@@ -159,7 +159,14 @@ export function useCallScreen() {
     list.push({
       userId: user?.id || 'local',
       stream: localStream,
-      user: user as CallUser | null,
+      user: user
+        ? {
+            id: user.id,
+            username: user.username ?? '',
+            displayName: user.displayName ?? '',
+            avatarUrl: user.avatarUrl,
+          }
+        : null,
       isLocal: true,
     });
 

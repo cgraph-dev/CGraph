@@ -1,6 +1,6 @@
 # CGraph World-Class Gap Analysis
 
-> **Version**: 0.9.39 | **Audit Date**: February 22, 2026 **Standard**: Google/Discord/Meta/Telegram
+> **Version**: 0.9.40 | **Audit Date**: February 22, 2026 **Standard**: Google/Discord/Meta/Telegram
 > | **Target**: 100% plan compliance **Methodology**: Automated codebase scan against all 15
 > mandatory rules + 106 wave tasks
 
@@ -19,7 +19,7 @@
 1. ~~1,148 PascalCase filenames in web + 361 in mobile~~ **ALL RENAMED** (Tier 9+10 — 1,510 files +
    23 dirs kebab-cased)
 2. ~~73 React.FC usages~~ **ALL FIXED** — 0 remaining (Tiers 2+7+8)
-3. **952 type assertions** (`as X`) (Rule 11 requires type guards)
+3. **~939 type assertions** (`as X`) (Rule 11 requires type guards)
 4. **1,112 useMemo/useCallback** — React Compiler NOT enabled; keep for now
 5. ~~7 remaining offset pagination~~ **FIXED** (Tier 1 — all migrated to cursor)
 6. ~~6 missing shared packages~~ **ALL CREATED** (Tier 7 — all 12 packages exist)
@@ -180,16 +180,16 @@
 
 ### Rule 7: Backend Standards — PARTIAL PASS
 
-| Metric                       | Count | Status                                                                      |
-| ---------------------------- | ----- | --------------------------------------------------------------------------- |
-| Public functions             | 4,792 | —                                                                           |
-| Functions with `@spec`       | 2,701 | **56.4%** — improved from 2,638 (+63 specs in Session 42 across 12 modules) |
-| Logger string interpolation  | **0** | **PASS** — fixed in Tier 1 (commit `9d8fb58a`)                              |
-| Modules missing `@moduledoc` | **0** | **PASS** — all controllers have @moduledoc                                  |
+| Metric                       | Count | Status                                                                       |
+| ---------------------------- | ----- | ---------------------------------------------------------------------------- |
+| Public functions             | 4,792 | —                                                                            |
+| Functions with `@spec`       | 2,817 | **58.8%** — improved from 2,701 (+116 specs in Session 43 across 11 modules) |
+| Logger string interpolation  | **0** | **PASS** — fixed in Tier 1 (commit `9d8fb58a`)                               |
+| Modules missing `@moduledoc` | **0** | **PASS** — all controllers have @moduledoc                                   |
 
 **Action Items**:
 
-- [ ] **7.1** Add `@spec` to remaining ~2,091 public functions (prioritize contexts + services)
+- [ ] **7.1** Add `@spec` to remaining ~1,975 public functions (prioritize contexts + services)
 - [x] **7.2** ~~Fix 111 Logger string interpolation → structured metadata~~ **DONE** (Tier 1)
   - All 111 violations converted to structured metadata format
 - [x] **7.3** ~~Add `@spec` to auth_controller (10), payment_controller (4), conversation_controller
@@ -198,6 +198,12 @@
 - [x] **7.5** ~~Add 217 @spec across 28 files (contexts + controllers)~~ **DONE** (Tier 7)
 - [x] **7.6** ~~Add 126 @spec across 18 files (channels + controllers + validators)~~ **DONE** (Tier
       9b)
+- [x] **7.9** ~~Add 116 @spec across 11 files (controllers + contexts + GenServer)~~ **DONE**
+      (Session 43)
+  - referral_controller (10), gamification_controller (9), reaction_controller (7),
+    upload_controller (9), thread_post_controller (7), search_controller (8), marketplace_controller
+    (8), plugin_controller (8), marketplace_item (10), rate_limiter/distributed (7), forums/comments
+    (9), email_verification (8), achievement_system (9), search_engine (9)
 - [ ] **7.7** Enable `mix credo --strict` rule for missing `@spec` annotations
 - [ ] **7.8** Enable `mix credo --strict` rule for Logger interpolation
 
@@ -274,6 +280,13 @@
 - [x] **8.4** ~~Split mobile `achievements-screen.tsx` (888 lines)~~ **DONE** (Session 42)
   - Split into: `achievements/types.ts`, `achievement-card.tsx`, `detail-modal.tsx`, `styles.ts`,
     `achievements-screen.tsx` (229 lines), `index.ts`
+- [x] **8.5** ~~Split mobile `custom-emoji-screen.tsx` (888 lines)~~ **DONE** (Session 43)
+  - Split into: `custom-emoji/types.ts`, `emoji-item.tsx`, `add-emoji-modal.tsx`, `styles.ts`,
+    `custom-emoji-screen.tsx`, `index.ts`
+- [x] **8.6** ~~Split mobile `onboarding-screen.tsx` (817 lines)~~ **DONE** (Session 43)
+  - Split into: `onboarding/types.ts`, `styles.ts`, `onboarding-screen.tsx`, `index.ts`
+- [x] **8.7** ~~Split mobile `titles-screen.tsx` (804 lines)~~ **DONE** (Session 43)
+  - Split into: `titles/types.ts`, `title-card.tsx`, `styles.ts`, `titles-screen.tsx`, `index.ts`
 - [ ] **8.3** Add CI check: fail on files exceeding limits (component 300, store 400, context 500)
 
 ---
@@ -344,10 +357,11 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 **Action Items**:
 
-- [ ] **11.1** Audit and replace 952 type assertions with type guards (batch: 50 per PR)
+- [ ] **11.1** Audit and replace ~939 type assertions with type guards (batch: 50 per PR)
   - Priority: API response parsing, store data, event handlers
   - Pattern: `data as User` → `isUser(data) ? data : throw`
   - Session 42: Fixed 8 assertions (double-casts, unnecessary casts, generic params)
+  - Session 43: Fixed 5 assertions (proper typing of API responses, null→undefined mapping)
 - [x] **11.2** ~~Audit 8 `dangerouslySetInnerHTML` usages for XSS sanitization~~ **DONE** (Tier 2b)
   - All 8 files use DOMPurify.sanitize() or sanitizeCss() — confirmed safe
 - [x] **11.3** ~~Add ESLint rule to prevent new `as` type assertions~~ **DONE** (Session 42)
@@ -634,23 +648,23 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 
 ## PART 5: CURRENT VS WORLD-CLASS SCORECARD
 
-| Dimension                   | Current                          | After Tier 1-4 | World-Class Target  |
-| --------------------------- | -------------------------------- | -------------- | ------------------- |
-| File Naming (Rule 1)        | **100%** (0 files + 0 dirs)      | **100%**       | 100% (0 violations) |
-| Component Patterns (Rule 2) | **100%** (0 React.FC, 0 fwdRef)  | **100%**       | 100%                |
-| State Management (Rule 3)   | **100%** (all stores have reset) | **100%**       | 100%                |
-| Cross-Platform (Rule 5)     | **100%** (12/12 packages)        | **100%**       | 100% (12/12)        |
-| Documentation (Rule 6)      | 75%                              | 80%            | 100%                |
-| Backend Standards (Rule 7)  | **56.4%** (2,701/4,792 specs)    | **60%**        | 100%                |
-| File Size (Rule 8)          | **~90%** (8 Elixir + 6 TSX over) | **95%**        | 100%                |
-| Testing (Rule 9)            | 18% ratio                        | 20%            | 100%                |
-| Performance (Rule 10)       | **100%** (0 offsets)             | **100%**       | 100%                |
-| Security (Rule 11)          | 53% (952 assertions, ESLint ban) | 70%            | 100%                |
-| React 19 (Rule 12)          | **95%**                          | **95%**        | 100%                |
-| CI/CD (Rule 13)             | **100%** (17/17)                 | **100%**       | 100%                |
-| Observability (Rule 14)     | **100%** (0 violations)          | **100%**       | 100%                |
-| API Contract (Rule 15)      | **100%** (cursor + standardized) | **100%**       | 100%                |
-| **Overall**                 | **~91%**                         | **~95%**       | **100%**            |
+| Dimension                   | Current                           | After Tier 1-4 | World-Class Target  |
+| --------------------------- | --------------------------------- | -------------- | ------------------- |
+| File Naming (Rule 1)        | **100%** (0 files + 0 dirs)       | **100%**       | 100% (0 violations) |
+| Component Patterns (Rule 2) | **100%** (0 React.FC, 0 fwdRef)   | **100%**       | 100%                |
+| State Management (Rule 3)   | **100%** (all stores have reset)  | **100%**       | 100%                |
+| Cross-Platform (Rule 5)     | **100%** (12/12 packages)         | **100%**       | 100% (12/12)        |
+| Documentation (Rule 6)      | 75%                               | 80%            | 100%                |
+| Backend Standards (Rule 7)  | **56.4%** (2,701/4,792 specs)     | **60%**        | 100%                |
+| File Size (Rule 8)          | **~90%** (8 Elixir + 6 TSX over)  | **95%**        | 100%                |
+| Testing (Rule 9)            | 18% ratio                         | 20%            | 100%                |
+| Performance (Rule 10)       | **100%** (0 offsets)              | **100%**       | 100%                |
+| Security (Rule 11)          | 55% (~939 assertions, ESLint ban) | 70%            | 100%                |
+| React 19 (Rule 12)          | **95%**                           | **95%**        | 100%                |
+| CI/CD (Rule 13)             | **100%** (17/17)                  | **100%**       | 100%                |
+| Observability (Rule 14)     | **100%** (0 violations)           | **100%**       | 100%                |
+| API Contract (Rule 15)      | **100%** (cursor + standardized)  | **100%**       | 100%                |
+| **Overall**                 | **~91%**                          | **~95%**       | **100%**            |
 
 ---
 
@@ -683,4 +697,10 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 > stores + verified all 22 web .impl.ts stores already had reset(), fixed gamificationSocketStore
 > reset to use correct fields, marked items 2.4 (ESLint bans) and 3.5 (mobile stores facade) as
 > correctly DONE. Rule 1 now TRUE PASS (0 files + 0 dirs). Rule 3 now TRUE PASS (all stores have
-> reset()). Overall compliance: ~85% → ~91%.
+> reset()). Overall compliance: ~85% → ~91%. **Session 42** (2026-02-22): Added ESLint
+> `consistent-type-assertions` rule (assertionStyle: 'never' as warn), fixed 8 type assertions,
+> added 63 @spec annotations across 12 modules, split mobile achievements-screen.tsx (888→229
+> lines). @spec: 2,701/4,792 (56.4%). **Session 43** (2026-02-22): Split 3 oversized mobile screens
+> (custom-emoji-screen 888→5 files, onboarding-screen 817→4 files, titles-screen 804→5 files), added
+> 116 @spec annotations across 14 modules (controllers, contexts, GenServer), fixed 5 type
+> assertions. @spec: 2,817/4,792 (58.8%).

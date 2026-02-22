@@ -15,6 +15,7 @@ defmodule CGraphWeb.API.V1.ThreadPostController do
   List posts in a thread.
   GET /api/v1/threads/:thread_id/posts
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"thread_id" => thread_id} = params) do
     pagination = extract_pagination_params(params)
 
@@ -28,6 +29,7 @@ defmodule CGraphWeb.API.V1.ThreadPostController do
   Get a single post.
   GET /api/v1/threads/:thread_id/posts/:id
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
     with {:ok, post} <- Forums.get_thread_post(id) do
       render(conn, :show, post: post)
@@ -38,6 +40,7 @@ defmodule CGraphWeb.API.V1.ThreadPostController do
   Create a new post (reply).
   POST /api/v1/threads/:thread_id/posts
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"thread_id" => thread_id, "post" => post_params}) do
     user = conn.assigns.current_user
 
@@ -69,6 +72,7 @@ defmodule CGraphWeb.API.V1.ThreadPostController do
   Update a post.
   PUT /api/v1/threads/:thread_id/posts/:id
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"id" => id, "post" => post_params}) do
     user = conn.assigns.current_user
 
@@ -95,6 +99,7 @@ defmodule CGraphWeb.API.V1.ThreadPostController do
   Delete a post.
   DELETE /api/v1/threads/:thread_id/posts/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -115,6 +120,7 @@ defmodule CGraphWeb.API.V1.ThreadPostController do
   Vote on a post.
   POST /api/v1/threads/:thread_id/posts/:id/vote
   """
+  @spec vote(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def vote(conn, %{"id" => id, "value" => value}) when value in [1, -1, "1", "-1"] do
     user = conn.assigns.current_user
     value = if is_binary(value), do: parse_int(value, 0, min: -1, max: 1), else: value

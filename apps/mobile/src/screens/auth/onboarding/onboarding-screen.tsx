@@ -1,5 +1,5 @@
 /**
- * Onboarding Screen - Mobile
+ * Onboarding Screen - Main Component
  *
  * First-time user experience with:
  * - Welcome screens with animations
@@ -18,8 +18,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  Dimensions,
   Image,
   ScrollView,
   Switch,
@@ -30,56 +28,17 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../contexts/theme-context';
-import { useAuth } from '../../contexts/AuthContext';
-import { AuthStackParamList } from '../../types';
-import { MatrixAuthBackground } from '../../components/matrix';
-import api from '../../lib/api';
+import { useTheme } from '../../../contexts/theme-context';
+import { useAuth } from '../../../contexts/AuthContext';
+import { MatrixAuthBackground } from '../../../components/matrix';
+import api from '../../../lib/api';
+import type { OnboardingProps, NotificationSettings } from './types';
+import { SCREEN_WIDTH, STEPS, FEATURES } from './types';
+import { styles } from './styles';
 
-// =============================================================================
-// TYPES
-// =============================================================================
-
-type Props = {
-  navigation: NativeStackNavigationProp<AuthStackParamList, 'Onboarding'>;
-};
-
-interface NotificationSettings {
-  messages: boolean;
-  mentions: boolean;
-  friendRequests: boolean;
-}
-
-// =============================================================================
-// CONSTANTS
-// =============================================================================
-
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-const STEPS = [
-  { id: 1, title: 'Welcome', icon: '👋' },
-  { id: 2, title: 'Profile', icon: '👤' },
-  { id: 3, title: 'Notifications', icon: '🔔' },
-  { id: 4, title: 'Ready', icon: '🚀' },
-];
-
-const FEATURES = [
-  { icon: '💬', title: 'Encrypted Chat', desc: 'End-to-end encryption' },
-  { icon: '👥', title: 'Groups', desc: 'Create communities' },
-  { icon: '📋', title: 'Forums', desc: 'Forum-style discussions' },
-  { icon: '🏆', title: 'Gamification', desc: 'Earn XP & achievements' },
-  { icon: '📞', title: 'Calls', desc: 'Voice & video calling' },
-  { icon: '🎨', title: 'Themes', desc: 'Customize your look' },
-];
-
-// =============================================================================
-// COMPONENT
-// =============================================================================
-
-export default function OnboardingScreen({ navigation }: Props) {
+export default function OnboardingScreen({ navigation }: OnboardingProps) {
   const { colors } = useTheme();
   const { user } = useAuth();
 
@@ -181,7 +140,6 @@ export default function OnboardingScreen({ navigation }: Props) {
       // Complete onboarding
       setIsLoading(true);
       try {
-        // Upload avatar if changed
         if (avatarUri && avatarUri !== user?.avatar_url) {
           const formData = new FormData();
           formData.append('avatar', {
@@ -194,16 +152,12 @@ export default function OnboardingScreen({ navigation }: Props) {
           });
         }
 
-        // Update profile via API
         await api.patch('/api/v1/users/profile', {
           display_name: displayName,
           bio,
         });
 
-        // Update notification settings
         await api.patch('/api/v1/users/settings/notifications', notifications);
-
-        // Mark onboarding complete
         await api.post('/api/v1/users/onboarding/complete');
 
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -258,7 +212,7 @@ export default function OnboardingScreen({ navigation }: Props) {
               Let&apos;s set up your profile in a few quick steps
             </Text>
             <View style={styles.welcomeFeatures}>
-              {FEATURES.slice(0, 3).map((feature, index) => (
+              {FEATURES.slice(0, 3).map((feature) => (
                 <View
                   key={feature.title}
                   style={[styles.featureCard, { backgroundColor: colors.surface }]}
@@ -525,292 +479,3 @@ export default function OnboardingScreen({ navigation }: Props) {
     </View>
   );
 }
-
-// =============================================================================
-// STYLES
-// =============================================================================
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  progressContainer: {
-    paddingHorizontal: 24,
-    paddingTop: 16,
-    paddingBottom: 8,
-  },
-  progressTrack: {
-    height: 4,
-    borderRadius: 2,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: 2,
-  },
-  stepsIndicator: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-    paddingHorizontal: 8,
-  },
-  stepDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-  },
-  animatedContent: {
-    flex: 1,
-  },
-  stepContent: {
-    flex: 1,
-    paddingTop: 32,
-  },
-
-  // Welcome step
-  welcomeIconContainer: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  welcomeIconGradient: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  welcomeIcon: {
-    fontSize: 48,
-  },
-  welcomeTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  welcomeSubtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 22,
-  },
-  welcomeFeatures: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  featureCard: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  featureIcon: {
-    fontSize: 28,
-    marginBottom: 8,
-  },
-  featureTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-
-  // Profile step
-  avatarContainer: {
-    alignSelf: 'center',
-    marginBottom: 8,
-  },
-  avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-  },
-  avatarPlaceholder: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarInitial: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  avatarEditBadge: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarEditIcon: {
-    fontSize: 18,
-  },
-  avatarHint: {
-    textAlign: 'center',
-    marginBottom: 24,
-    fontSize: 14,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginBottom: 8,
-  },
-  input: {
-    height: 52,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    borderWidth: 1,
-  },
-  textArea: {
-    height: 100,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    fontSize: 16,
-    borderWidth: 1,
-    textAlignVertical: 'top',
-  },
-  charCount: {
-    textAlign: 'right',
-    marginTop: 4,
-    fontSize: 12,
-  },
-
-  // Notifications step
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  sectionSubtitle: {
-    fontSize: 16,
-    marginBottom: 24,
-  },
-  notificationList: {
-    gap: 12,
-  },
-  notificationItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 16,
-  },
-  notificationInfo: {
-    flex: 1,
-  },
-  notificationTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  notificationDesc: {
-    fontSize: 14,
-  },
-
-  // Ready step
-  readyIconContainer: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  readyIconGradient: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  readyIcon: {
-    fontSize: 48,
-  },
-  readyTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  readySubtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 32,
-  },
-  featuresGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    justifyContent: 'space-between',
-  },
-  featureGridCard: {
-    width: (SCREEN_WIDTH - 60) / 2,
-    padding: 16,
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  featureGridIcon: {
-    fontSize: 28,
-    marginBottom: 8,
-  },
-  featureGridTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  featureGridDesc: {
-    fontSize: 12,
-    textAlign: 'center',
-  },
-
-  // Navigation
-  navigation: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-  },
-  skipButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-  },
-  skipText: {
-    fontSize: 16,
-  },
-  backButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-  },
-  backText: {
-    fontSize: 16,
-  },
-  nextButtonContainer: {
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  nextButton: {
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 140,
-  },
-  nextText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});

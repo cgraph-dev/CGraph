@@ -1,6 +1,6 @@
 /**
  * Settings Screens Index
- * 
+ *
  * Export all settings-related screens
  */
 
@@ -14,4 +14,4 @@ export { default as ProfileVisibilityScreen } from './profile-visibility-screen'
 
 // Content & Feeds
 export { default as RSSFeedsScreen } from './rss-feeds-screen';
-export { default as CustomEmojiScreen } from './custom-emoji-screen';
+export { default as CustomEmojiScreen } from './custom-emoji';

@@ -29,6 +29,7 @@ defmodule CGraphWeb.MarketplaceController do
   GET /api/v1/marketplace
   Browse marketplace listings with filters.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     item_type = params["type"]
     rarity = params["rarity"]
@@ -89,6 +90,7 @@ defmodule CGraphWeb.MarketplaceController do
   GET /api/v1/marketplace/:id
   Get detailed listing information.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => listing_id}) do
     case Repo.get(MarketplaceItem, listing_id) do
       nil ->
@@ -114,6 +116,7 @@ defmodule CGraphWeb.MarketplaceController do
   POST /api/v1/marketplace
   Create a new marketplace listing.
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, params) do
     user = conn.assigns.current_user
 
@@ -171,6 +174,7 @@ defmodule CGraphWeb.MarketplaceController do
   PUT /api/v1/marketplace/:id
   Update listing price.
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"id" => listing_id} = params) do
     user = conn.assigns.current_user
 
@@ -203,6 +207,7 @@ defmodule CGraphWeb.MarketplaceController do
   DELETE /api/v1/marketplace/:id
   Cancel a listing.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => listing_id}) do
     user = conn.assigns.current_user
 
@@ -231,6 +236,7 @@ defmodule CGraphWeb.MarketplaceController do
   POST /api/v1/marketplace/:id/buy
   Purchase a marketplace listing.
   """
+  @spec buy(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def buy(conn, %{"id" => listing_id}) do
     user = conn.assigns.current_user
 
@@ -294,6 +300,7 @@ defmodule CGraphWeb.MarketplaceController do
   GET /api/v1/marketplace/my-listings
   Get user's active listings.
   """
+  @spec my_listings(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def my_listings(conn, params) do
     user = conn.assigns.current_user
     status = params["status"] || "active"
@@ -313,6 +320,7 @@ defmodule CGraphWeb.MarketplaceController do
   GET /api/v1/marketplace/history
   Get user's transaction history (buys and sells).
   """
+  @spec history(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def history(conn, params) do
     user = conn.assigns.current_user
     type = params["type"]  # "buys", "sells", or nil for all

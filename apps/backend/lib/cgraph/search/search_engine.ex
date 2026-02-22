@@ -155,6 +155,7 @@ defmodule CGraph.Search.Engine do
   - `{:ok, %{hits: [...], total: n, processing_time_ms: n}}`
   - `{:error, reason}`
   """
+  @spec search(atom(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   @impl true
   def search(index, query, opts \\ []) do
     start_time = System.monotonic_time(:millisecond)
@@ -188,6 +189,7 @@ defmodule CGraph.Search.Engine do
   @doc """
   Index a single document.
   """
+  @spec index(atom(), map()) :: :ok | {:error, term()}
   @impl true
   def index(index_name, document) do
     bulk_index(index_name, [document])
@@ -196,6 +198,7 @@ defmodule CGraph.Search.Engine do
   @doc """
   Bulk index multiple documents.
   """
+  @spec bulk_index(atom(), [map()]) :: :ok | {:error, term()}
   @impl true
   def bulk_index(index_name, documents) when is_list(documents) do
     case get_backend() do
@@ -217,6 +220,7 @@ defmodule CGraph.Search.Engine do
   @doc """
   Delete a document from the index.
   """
+  @spec delete(atom(), String.t()) :: {:ok, term()} | {:error, term()}
   @impl true
   def delete(index_name, document_id) do
     case get_backend() do
@@ -228,6 +232,7 @@ defmodule CGraph.Search.Engine do
   @doc """
   Bulk delete documents from the index.
   """
+  @spec bulk_delete(atom(), [String.t()]) :: {:ok, term()} | {:error, term()}
   @impl true
   def bulk_delete(index_name, document_ids) when is_list(document_ids) do
     case get_backend() do
@@ -240,6 +245,7 @@ defmodule CGraph.Search.Engine do
   Initialize or update index settings.
   Called on application startup.
   """
+  @spec setup_indexes() :: :ok
   def setup_indexes do
     if get_backend() == :meilisearch do
       Enum.each(@indexes, fn {name, settings} ->
@@ -256,6 +262,7 @@ defmodule CGraph.Search.Engine do
   @doc """
   Check if search engine is healthy.
   """
+  @spec healthy?() :: boolean()
   def healthy? do
     case get_backend() do
       :meilisearch -> MeilisearchAdapter.healthy?()
@@ -266,6 +273,7 @@ defmodule CGraph.Search.Engine do
   @doc """
   Get current backend in use.
   """
+  @spec get_backend() :: atom()
   def get_backend do
     config(:backend) || :postgres
   end
@@ -273,6 +281,7 @@ defmodule CGraph.Search.Engine do
   @doc """
   Get search statistics.
   """
+  @spec stats() :: map()
   def stats do
     case get_backend() do
       :meilisearch -> MeilisearchAdapter.stats()

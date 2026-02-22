@@ -9,7 +9,7 @@ export { default as RegisterScreen } from '../../screens/auth/register-screen';
 export { default as ForgotPasswordScreen } from '../../screens/auth/forgot-password-screen';
 export { default as ResetPasswordScreen } from '../../screens/auth/reset-password-screen';
 export { default as VerifyEmailScreen } from '../../screens/auth/verify-email-screen';
-export { default as OnboardingScreen } from '../../screens/auth/onboarding-screen';
+export { default as OnboardingScreen } from '../../screens/auth/onboarding';
 
 // Hooks — re-exported from features/auth during migration
 export { useBiometricAuth, useTwoFactor as use2FA } from '../../features/auth/hooks';

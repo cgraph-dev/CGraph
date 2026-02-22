@@ -8,6 +8,7 @@ defmodule CGraph.Gamification.AchievementSystem do
   alias CGraph.Repo
 
   @doc "List all achievements, optionally filtered by category."
+  @spec list_achievements(keyword()) :: [Achievement.t()]
   def list_achievements(opts \\ []) do
     category = Keyword.get(opts, :category)
     include_hidden = Keyword.get(opts, :include_hidden, false)
@@ -20,6 +21,7 @@ defmodule CGraph.Gamification.AchievementSystem do
   end
 
   @doc "Get a user's achievement progress."
+  @spec list_user_achievements(String.t(), keyword()) :: [UserAchievement.t()]
   def list_user_achievements(user_id, opts \\ []) do
     include_locked = Keyword.get(opts, :include_locked, true)
 
@@ -34,6 +36,7 @@ defmodule CGraph.Gamification.AchievementSystem do
   end
 
   @doc "Get or create a user achievement record."
+  @spec get_or_create_user_achievement(String.t(), String.t()) :: {:ok, UserAchievement.t()} | {:error, Ecto.Changeset.t()}
   def get_or_create_user_achievement(user_id, achievement_id) do
     case Repo.get_by(UserAchievement, user_id: user_id, achievement_id: achievement_id) do
       nil ->
@@ -45,6 +48,7 @@ defmodule CGraph.Gamification.AchievementSystem do
   end
 
   @doc "Increment achievement progress and unlock if complete."
+  @spec increment_achievement_progress(String.t(), String.t(), non_neg_integer()) :: {:ok, UserAchievement.t()} | {:error, :achievement_not_found}
   def increment_achievement_progress(user_id, achievement_slug, increment \\ 1) do
     case Repo.get_by(Achievement, slug: achievement_slug) do
       nil -> {:error, :achievement_not_found}
@@ -64,6 +68,7 @@ defmodule CGraph.Gamification.AchievementSystem do
   end
 
   @doc "Try to unlock an achievement by ID."
+  @spec try_unlock_achievement(String.t(), String.t()) :: {:ok, UserAchievement.t()} | {:error, :not_found | :already_unlocked | :not_met}
   def try_unlock_achievement(user_id, achievement_id) do
     case Repo.get(Achievement, achievement_id) do
       nil -> {:error, :not_found}
@@ -78,6 +83,7 @@ defmodule CGraph.Gamification.AchievementSystem do
   end
 
   @doc "Directly unlock an achievement by slug."
+  @spec unlock_achievement_by_slug(map(), String.t()) :: {:ok, UserAchievement.t()} | {:error, :achievement_not_found | term()}
   def unlock_achievement_by_slug(user, achievement_slug) do
     case Repo.get_by(Achievement, slug: achievement_slug) do
       nil -> {:error, :achievement_not_found}
@@ -88,6 +94,7 @@ defmodule CGraph.Gamification.AchievementSystem do
   end
 
   @doc "Unlock a user achievement and grant rewards."
+  @spec unlock_user_achievement(UserAchievement.t(), Achievement.t()) :: {:ok, UserAchievement.t()} | {:error, term()}
   def unlock_user_achievement(ua, achievement) do
     alias CGraph.Accounts.User
 
@@ -115,9 +122,11 @@ defmodule CGraph.Gamification.AchievementSystem do
   end
 
   @doc "Check level achievements (called on level up)."
+  @spec check_level_achievements(map(), integer()) :: :ok
   def check_level_achievements(_user, _level), do: :ok
 
   @doc "Check streak achievements."
+  @spec check_streak_achievements(map(), integer()) :: list()
   def check_streak_achievements(user, streak) do
     for {slug, required} <- [{"week_warrior", 7}, {"month_master", 30}, {"year_legend", 365}] do
       if streak >= required, do: unlock_achievement_by_slug(user, slug)

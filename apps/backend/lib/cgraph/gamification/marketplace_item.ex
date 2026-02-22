@@ -55,7 +55,10 @@ defmodule CGraph.Gamification.MarketplaceItem do
     timestamps(type: :utc_datetime)
   end
 
+  @type t :: %__MODULE__{}
+
   @doc false
+  @spec changeset(t() | Ecto.Changeset.t(), map()) :: Ecto.Changeset.t()
   def changeset(item, attrs) do
     item
     |> cast(attrs, [
@@ -96,6 +99,7 @@ defmodule CGraph.Gamification.MarketplaceItem do
   defp validate_max_price(changeset, price, max_price) when price <= max_price, do: changeset
   defp validate_max_price(changeset, _, _), do: add_error(changeset, :price, "must not exceed maximum price")
 
+  @spec purchase_changeset(t(), String.t()) :: Ecto.Changeset.t()
   def purchase_changeset(item, buyer_id) do
     item
     |> cast(%{
@@ -105,11 +109,13 @@ defmodule CGraph.Gamification.MarketplaceItem do
     }, [:listing_status, :buyer_id, :sold_at])
   end
 
+  @spec cancel_changeset(t()) :: Ecto.Changeset.t()
   def cancel_changeset(item) do
     item
     |> cast(%{listing_status: "cancelled"}, [:listing_status])
   end
 
+  @spec update_price_changeset(t(), integer()) :: Ecto.Changeset.t()
   def update_price_changeset(item, new_price) do
     item
     |> cast(%{price: new_price}, [:price])
@@ -117,13 +123,17 @@ defmodule CGraph.Gamification.MarketplaceItem do
     |> validate_price_bounds()
   end
 
+  @spec item_types() :: [String.t()]
   def item_types, do: @item_types
+  @spec listing_statuses() :: [String.t()]
   def listing_statuses, do: @listing_statuses
+  @spec currency_types() :: [String.t()]
   def currency_types, do: @currency_types
 
   @doc """
   Calculate transaction fee for a sale.
   """
+  @spec calculate_fee(t()) :: non_neg_integer()
   def calculate_fee(%__MODULE__{price: price, transaction_fee_percent: fee_percent}) do
     round(price * fee_percent)
   end
@@ -131,6 +141,7 @@ defmodule CGraph.Gamification.MarketplaceItem do
   @doc """
   Calculate seller proceeds after fees.
   """
+  @spec calculate_proceeds(t()) :: integer()
   def calculate_proceeds(%__MODULE__{} = item) do
     item.price - calculate_fee(item)
   end
@@ -138,6 +149,7 @@ defmodule CGraph.Gamification.MarketplaceItem do
   @doc """
   Get recommended price based on rarity.
   """
+  @spec recommended_price_for_rarity(String.t()) :: %{min: integer(), max: integer(), suggested: integer()}
   def recommended_price_for_rarity(rarity) do
     case rarity do
       "common" -> %{min: 100, max: 500, suggested: 250}

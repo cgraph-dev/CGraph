@@ -15,6 +15,7 @@ defmodule CGraphWeb.API.V1.PluginController do
   List available plugins from the marketplace.
   GET /api/v1/plugins/marketplace
   """
+  @spec marketplace(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def marketplace(conn, params) do
     plugins = Forums.list_available_plugins()
 
@@ -49,6 +50,7 @@ defmodule CGraphWeb.API.V1.PluginController do
   Get a specific plugin from marketplace.
   GET /api/v1/plugins/marketplace/:plugin_id
   """
+  @spec marketplace_show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def marketplace_show(conn, %{"plugin_id" => plugin_id}) do
     with {:ok, plugin} <- Forums.get_available_plugin(plugin_id) do
       render(conn, :marketplace_plugin, plugin: plugin)
@@ -59,6 +61,7 @@ defmodule CGraphWeb.API.V1.PluginController do
   List installed plugins for a forum.
   GET /api/v1/forums/:forum_id/plugins
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"forum_id" => forum_id}) do
     with {:ok, forum} <- Forums.get_forum(forum_id) do
       plugins = Forums.list_forum_plugins(forum.id)
@@ -70,6 +73,7 @@ defmodule CGraphWeb.API.V1.PluginController do
   Get a specific installed plugin.
   GET /api/v1/forums/:forum_id/plugins/:id
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"forum_id" => forum_id, "id" => id}) do
     with {:ok, _forum} <- Forums.get_forum(forum_id),
          {:ok, plugin} <- Forums.get_plugin(id) do
@@ -81,6 +85,7 @@ defmodule CGraphWeb.API.V1.PluginController do
   Install a plugin from marketplace.
   POST /api/v1/forums/:forum_id/plugins
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"forum_id" => forum_id} = params) do
     user = conn.assigns.current_user
     plugin_data = Map.get(params, "plugin") || extract_plugin_params(params)
@@ -99,6 +104,7 @@ defmodule CGraphWeb.API.V1.PluginController do
   Toggle a plugin's active status.
   POST /api/v1/forums/:forum_id/plugins/:id/toggle
   """
+  @spec toggle(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def toggle(conn, %{"forum_id" => forum_id, "id" => id}) do
     user = conn.assigns.current_user
 
@@ -114,6 +120,7 @@ defmodule CGraphWeb.API.V1.PluginController do
   Update plugin settings.
   PUT /api/v1/forums/:forum_id/plugins/:id
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"forum_id" => forum_id, "id" => id} = params) do
     user = conn.assigns.current_user
     settings = params["settings"] || %{}
@@ -130,6 +137,7 @@ defmodule CGraphWeb.API.V1.PluginController do
   Uninstall a plugin.
   DELETE /api/v1/forums/:forum_id/plugins/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"forum_id" => forum_id, "id" => id}) do
     user = conn.assigns.current_user
 

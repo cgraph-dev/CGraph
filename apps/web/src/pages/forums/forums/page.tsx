@@ -12,7 +12,6 @@ import { ForumHeader } from './forum-header';
 import { SortControls } from './sort-controls';
 import { PostsList } from './posts-list';
 import { ForumSidebar } from './forum-sidebar';
-import type { ForumSidebarProps } from './types';
 
 /**
  * Ambient particle component for background effects
@@ -182,7 +181,14 @@ export default function Forums() {
               }
             : null
         }
-        forums={forums as ForumSidebarProps['forums']}
+        forums={forums.map((f) => ({
+          id: f.id,
+          name: f.name,
+          slug: f.slug,
+          iconUrl: f.iconUrl ?? undefined,
+          memberCount: f.memberCount,
+          isPublic: f.isPublic,
+        }))}
         isLoadingForums={isLoadingForums}
       />
     </div>

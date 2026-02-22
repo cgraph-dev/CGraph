@@ -16,6 +16,7 @@ defmodule CGraph.Accounts.EmailVerification do
 
   The token is stored in cache with a 24-hour expiry.
   """
+  @spec send_verification_email(User.t()) :: {:ok, String.t()}
   def send_verification_email(user) do
     token = generate_email_verification_token(user)
 
@@ -36,6 +37,7 @@ defmodule CGraph.Accounts.EmailVerification do
   @doc """
   Verify an email using the verification token.
   """
+  @spec verify_email(String.t()) :: {:ok, User.t()} | {:error, atom()}
   def verify_email(token) do
     with {:ok, user_id} <- verify_email_token(token),
          {:ok, user} <- CGraph.Accounts.get_user(user_id),
@@ -48,6 +50,7 @@ defmodule CGraph.Accounts.EmailVerification do
   @doc """
   Mark a user's email as verified.
   """
+  @spec mark_email_verified(User.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def mark_email_verified(user) do
     user
     |> Ecto.Changeset.change(email_verified_at: DateTime.truncate(DateTime.utc_now(), :second))
@@ -57,6 +60,7 @@ defmodule CGraph.Accounts.EmailVerification do
   @doc """
   Check if a user's email is verified.
   """
+  @spec email_verified?(User.t()) :: boolean()
   def email_verified?(%User{email_verified_at: nil}), do: false
   def email_verified?(%User{email_verified_at: _}), do: true
 
@@ -64,6 +68,7 @@ defmodule CGraph.Accounts.EmailVerification do
   Resend verification email if not verified.
   Rate limited to once per 5 minutes.
   """
+  @spec resend_verification_email(User.t()) :: {:ok, String.t()} | {:error, :rate_limited}
   def resend_verification_email(user) do
     cache_key = "email_verification_sent:#{user.id}"
 
@@ -85,6 +90,7 @@ defmodule CGraph.Accounts.EmailVerification do
   @doc """
   Generate an email verification token.
   """
+  @spec generate_email_verification_token(User.t()) :: String.t()
   def generate_email_verification_token(user) do
     token = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
     expires_at = DateTime.truncate(DateTime.utc_now(), :second) |> DateTime.add(86_400, :second)  # 24 hours
@@ -100,6 +106,7 @@ defmodule CGraph.Accounts.EmailVerification do
   @doc """
   Verify an email verification token.
   """
+  @spec verify_email_token(String.t()) :: {:ok, String.t()} | {:error, :invalid_token | :expired_token}
   def verify_email_token(token) do
     case Cachex.get(:cgraph_cache, "email_verification:#{token}") do
       {:ok, nil} ->
@@ -120,6 +127,7 @@ defmodule CGraph.Accounts.EmailVerification do
   @doc """
   Invalidate an email verification token.
   """
+  @spec invalidate_email_token(String.t()) :: {:ok, boolean()}
   def invalidate_email_token(token) do
     Cachex.del(:cgraph_cache, "email_verification:#{token}")
   end

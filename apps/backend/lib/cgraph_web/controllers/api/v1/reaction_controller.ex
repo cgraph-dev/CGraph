@@ -18,6 +18,7 @@ defmodule CGraphWeb.API.V1.ReactionController do
   List reactions on a message.
   GET /api/v1/conversations/:conversation_id/messages/:message_id/reactions
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"conversation_id" => conversation_id, "message_id" => message_id} = params) do
     user = conn.assigns.current_user
     emoji = Map.get(params, "emoji") # Optional filter by specific emoji
@@ -35,6 +36,7 @@ defmodule CGraphWeb.API.V1.ReactionController do
   POST /api/v1/conversations/:conversation_id/messages/:message_id/reactions
   POST /api/v1/messages/:id/reactions
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"conversation_id" => conversation_id, "message_id" => message_id, "emoji" => emoji}) do
     user = conn.assigns.current_user
 
@@ -85,6 +87,7 @@ defmodule CGraphWeb.API.V1.ReactionController do
   DELETE /api/v1/conversations/:conversation_id/messages/:message_id/reactions/:emoji
   DELETE /api/v1/messages/:id/reactions/:emoji
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"conversation_id" => conversation_id, "message_id" => message_id, "emoji" => emoji}) do
     user = conn.assigns.current_user
 
@@ -117,6 +120,7 @@ defmodule CGraphWeb.API.V1.ReactionController do
   List reactions on a channel message.
   GET /api/v1/groups/:group_id/channels/:channel_id/messages/:message_id/reactions
   """
+  @spec channel_index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def channel_index(conn, %{"group_id" => group_id, "channel_id" => channel_id, "message_id" => message_id} = params) do
     user = conn.assigns.current_user
     emoji = Map.get(params, "emoji")
@@ -134,6 +138,7 @@ defmodule CGraphWeb.API.V1.ReactionController do
   Add a reaction to a channel message.
   POST /api/v1/groups/:group_id/channels/:channel_id/messages/:message_id/reactions
   """
+  @spec channel_create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def channel_create(conn, %{
     "group_id" => group_id,
     "channel_id" => channel_id,
@@ -166,6 +171,7 @@ defmodule CGraphWeb.API.V1.ReactionController do
   Remove a reaction from a channel message.
   DELETE /api/v1/groups/:group_id/channels/:channel_id/messages/:message_id/reactions/:emoji
   """
+  @spec channel_delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def channel_delete(conn, %{
     "group_id" => group_id,
     "channel_id" => channel_id,
@@ -190,6 +196,7 @@ defmodule CGraphWeb.API.V1.ReactionController do
   Get users who reacted with a specific emoji.
   GET /api/v1/conversations/:conversation_id/messages/:message_id/reactions/:emoji/users
   """
+  @spec users(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def users(conn, %{"conversation_id" => conversation_id, "message_id" => message_id, "emoji" => emoji} = params) do
     user = conn.assigns.current_user
     limit = parse_int(params["limit"], 50, min: 1, max: @max_limit)

@@ -117,6 +117,7 @@ defmodule CGraph.RateLimiter.Distributed do
   @doc """
   Start the distributed rate limiter.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -134,6 +135,7 @@ defmodule CGraph.RateLimiter.Distributed do
   - `:cost` - Request cost (default: 1)
   - `:require_redis` - Fail if Redis unavailable (default: false)
   """
+  @spec check(rate_limit_identifier(), scope(), keyword()) :: check_result()
   def check(identifier, scope, opts \\ []) do
     if enabled?() do
       do_check(identifier, scope, opts)
@@ -145,6 +147,7 @@ defmodule CGraph.RateLimiter.Distributed do
   @doc """
   Check multiple scopes at once.
   """
+  @spec check_all(rate_limit_identifier(), [scope()], keyword()) :: check_result()
   def check_all(identifier, scopes, opts \\ []) when is_list(scopes) do
     Enum.reduce_while(scopes, :ok, fn scope, _acc ->
       case check(identifier, scope, opts) do
@@ -157,6 +160,7 @@ defmodule CGraph.RateLimiter.Distributed do
   @doc """
   Get current rate limit status without consuming a request.
   """
+  @spec status(rate_limit_identifier(), scope()) :: rate_limit_info()
   def status(identifier, scope) do
     config = get_config(scope)
     key = build_key(identifier, scope, config.algorithm)
@@ -170,6 +174,7 @@ defmodule CGraph.RateLimiter.Distributed do
   @doc """
   Reset rate limit for an identifier.
   """
+  @spec reset(rate_limit_identifier(), scope()) :: :ok
   def reset(identifier, scope) do
     config = get_config(scope)
     key = build_key(identifier, scope, config.algorithm)
@@ -183,6 +188,7 @@ defmodule CGraph.RateLimiter.Distributed do
   @doc """
   Check if distributed rate limiting is enabled.
   """
+  @spec enabled?() :: boolean()
   def enabled? do
     Application.get_env(:cgraph, __MODULE__, [])
     |> Keyword.get(:enabled, true)
@@ -191,6 +197,7 @@ defmodule CGraph.RateLimiter.Distributed do
   @doc """
   Check Redis connection health.
   """
+  @spec redis_healthy?() :: boolean()
   def redis_healthy? do
     case Redis.command(["PING"]) do
       {:ok, "PONG"} -> true

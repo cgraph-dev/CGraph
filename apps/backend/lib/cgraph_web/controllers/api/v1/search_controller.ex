@@ -22,6 +22,7 @@ defmodule CGraphWeb.API.V1.SearchController do
   Global search across all content types.
   GET /api/v1/search
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     user = conn.assigns.current_user
     query = Map.get(params, "q", "")
@@ -42,6 +43,7 @@ defmodule CGraphWeb.API.V1.SearchController do
   Search for users.
   GET /api/v1/search/users
   """
+  @spec users(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def users(conn, params) do
     user = conn.assigns.current_user
     query = Map.get(params, "q", "")
@@ -67,6 +69,7 @@ defmodule CGraphWeb.API.V1.SearchController do
   Search messages in user's conversations.
   GET /api/v1/search/messages
   """
+  @spec messages(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def messages(conn, params) do
     user = conn.assigns.current_user
     query = Map.get(params, "q", "")
@@ -101,6 +104,7 @@ defmodule CGraphWeb.API.V1.SearchController do
   Search posts in forums.
   GET /api/v1/search/posts
   """
+  @spec posts(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def posts(conn, params) do
     user = conn.assigns.current_user
     query = Map.get(params, "q", "")
@@ -134,6 +138,7 @@ defmodule CGraphWeb.API.V1.SearchController do
   Search groups/servers.
   GET /api/v1/search/groups
   """
+  @spec groups(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def groups(conn, params) do
     user = conn.assigns.current_user
     query = Map.get(params, "q", "")
@@ -159,6 +164,7 @@ defmodule CGraphWeb.API.V1.SearchController do
   Get search suggestions/autocomplete.
   GET /api/v1/search/suggestions
   """
+  @spec suggestions(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def suggestions(conn, params) do
     user = conn.assigns.current_user
     query = Map.get(params, "q", "")
@@ -177,6 +183,7 @@ defmodule CGraphWeb.API.V1.SearchController do
   Get recent searches.
   GET /api/v1/search/recent
   """
+  @spec recent(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def recent(conn, _params) do
     user = conn.assigns.current_user
 
@@ -188,6 +195,7 @@ defmodule CGraphWeb.API.V1.SearchController do
   Clear search history.
   DELETE /api/v1/search/recent
   """
+  @spec clear_history(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def clear_history(conn, _params) do
     user = conn.assigns.current_user
 

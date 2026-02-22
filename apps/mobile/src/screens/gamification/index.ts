@@ -10,5 +10,5 @@
 
 export { default as AchievementsScreen } from './achievements';
 export { default as QuestsScreen } from './quests-screen';
-export { default as TitlesScreen } from './titles-screen';
+export { default as TitlesScreen } from './titles';
 export { default as GamificationHubScreen } from './gamification-hub-screen';

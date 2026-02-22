@@ -23,6 +23,7 @@ defmodule CGraphWeb.GamificationController do
   GET /api/v1/gamification/stats
   Get current user's gamification stats.
   """
+  @spec stats(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def stats(conn, _params) do
     user = conn.assigns.current_user
     stats = Gamification.get_user_stats(user.id)
@@ -36,6 +37,7 @@ defmodule CGraphWeb.GamificationController do
   GET /api/v1/gamification/achievements
   List all achievements with user progress.
   """
+  @spec achievements(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def achievements(conn, params) do
     user = conn.assigns.current_user
     category = params["category"]
@@ -68,6 +70,7 @@ defmodule CGraphWeb.GamificationController do
   GET /api/v1/gamification/achievements/:id
   Get a specific achievement with user progress.
   """
+  @spec show_achievement(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show_achievement(conn, %{"id" => achievement_id}) do
     user = conn.assigns.current_user
 
@@ -90,6 +93,7 @@ defmodule CGraphWeb.GamificationController do
   This is typically called when client detects a potential unlock condition.
   The server validates and awards the achievement if criteria are met.
   """
+  @spec unlock_achievement(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unlock_achievement(conn, %{"id" => achievement_id}) do
     user = conn.assigns.current_user
 
@@ -133,6 +137,7 @@ defmodule CGraphWeb.GamificationController do
   GET /api/v1/gamification/streak
   Get current user's streak information.
   """
+  @spec streak_info(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def streak_info(conn, _params) do
     user = conn.assigns.current_user
     today = Date.utc_today()
@@ -161,6 +166,7 @@ defmodule CGraphWeb.GamificationController do
   POST /api/v1/gamification/streak/claim
   Claim daily login streak bonus.
   """
+  @spec claim_streak(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def claim_streak(conn, _params) do
     user = conn.assigns.current_user
 
@@ -186,6 +192,7 @@ defmodule CGraphWeb.GamificationController do
   - `limit` - Max entries to return (1-100, default: 100)
   - `cursor` - Cursor for pagination
   """
+  @spec leaderboard(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def leaderboard(conn, %{"category" => category} = params) do
     limit = parse_int(params["limit"], 100, min: 1, max: @max_leaderboard_limit)
     cursor = params["cursor"]
@@ -208,6 +215,7 @@ defmodule CGraphWeb.GamificationController do
   - `limit` - Max entries to return (1-100, default: 50)
   - `cursor` - Opaque cursor for pagination
   """
+  @spec xp_history(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def xp_history(conn, params) do
     user = conn.assigns.current_user
     query_limit = parse_int(params["limit"], 50, min: 1, max: 100)
@@ -239,6 +247,7 @@ defmodule CGraphWeb.GamificationController do
   GET /api/v1/gamification/level-info
   Get level progression information.
   """
+  @spec level_info(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def level_info(conn, _params) do
     user = conn.assigns.current_user
 

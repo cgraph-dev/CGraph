@@ -37,6 +37,7 @@ defmodule CGraphWeb.API.V1.UploadController do
   Upload a file.
   POST /api/v1/uploads
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"file" => upload} = params) do
     user = conn.assigns.current_user
     context = Map.get(params, "context", "message") # message, avatar, banner, post, etc.
@@ -61,6 +62,7 @@ defmodule CGraphWeb.API.V1.UploadController do
   Upload multiple files.
   POST /api/v1/uploads/batch
   """
+  @spec batch_create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def batch_create(conn, %{"files" => uploads} = params) when is_list(uploads) do
     user = conn.assigns.current_user
     context = Map.get(params, "context", "message")
@@ -93,6 +95,7 @@ defmodule CGraphWeb.API.V1.UploadController do
   Get upload info.
   GET /api/v1/uploads/:id
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => file_id}) do
     user = conn.assigns.current_user
 
@@ -106,6 +109,7 @@ defmodule CGraphWeb.API.V1.UploadController do
   Delete an upload.
   DELETE /api/v1/uploads/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => file_id}) do
     user = conn.assigns.current_user
 
@@ -119,12 +123,14 @@ defmodule CGraphWeb.API.V1.UploadController do
   @doc """
   Alias for presign/2 to match route naming.
   """
+  @spec presigned(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def presigned(conn, params), do: presign(conn, params)
 
   @doc """
   Get a presigned URL for direct upload to cloud storage.
   POST /api/v1/uploads/presign
   """
+  @spec presign(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def presign(conn, params) do
     user = conn.assigns.current_user
     filename = Map.get(params, "filename")
@@ -148,6 +154,7 @@ defmodule CGraphWeb.API.V1.UploadController do
   Confirm a presigned upload completed.
   POST /api/v1/uploads/confirm
   """
+  @spec confirm(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def confirm(conn, %{"upload_id" => upload_id, "key" => key}) do
     user = conn.assigns.current_user
 
@@ -160,6 +167,7 @@ defmodule CGraphWeb.API.V1.UploadController do
   Get user's upload usage stats.
   GET /api/v1/uploads/usage
   """
+  @spec usage(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def usage(conn, _params) do
     user = conn.assigns.current_user
 

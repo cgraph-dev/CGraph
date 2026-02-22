@@ -112,8 +112,8 @@ export function useCallHistory() {
   } = useQuery({
     queryKey: ['call-history'],
     queryFn: async () => {
-      const res = await api.get('/api/v1/calls/history');
-      return res.data.data as CallRecord[];
+      const res = await api.get<{ data: CallRecord[] }>('/api/v1/calls/history');
+      return res.data.data;
     },
     retry: 1,
     staleTime: 30_000,

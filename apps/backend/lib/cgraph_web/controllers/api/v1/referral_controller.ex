@@ -34,6 +34,7 @@ defmodule CGraphWeb.API.V1.ReferralController do
   @doc """
   Get the current user's referral code.
   """
+  @spec get_code(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def get_code(conn, _params) do
     user = conn.assigns.current_user
 
@@ -46,6 +47,7 @@ defmodule CGraphWeb.API.V1.ReferralController do
   Regenerate referral code.
   Rate limited to prevent abuse (max 3 regenerations per day).
   """
+  @spec regenerate_code(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def regenerate_code(conn, _params) do
     user = conn.assigns.current_user
 
@@ -58,6 +60,7 @@ defmodule CGraphWeb.API.V1.ReferralController do
   @doc """
   Validate a referral code (check if valid before signup).
   """
+  @spec validate_code(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def validate_code(conn, %{"code" => code}) do
     with {:ok, sanitized_code} <- parse_referral_code(code),
          {:ok, referrer} <- Referrals.validate_code(sanitized_code) do
@@ -76,6 +79,7 @@ defmodule CGraphWeb.API.V1.ReferralController do
   Apply a referral code during signup.
   Includes self-referral prevention and fraud detection.
   """
+  @spec apply_code(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def apply_code(conn, %{"code" => code}) do
     user = conn.assigns.current_user
 
@@ -102,6 +106,7 @@ defmodule CGraphWeb.API.V1.ReferralController do
   @doc """
   List all referrals made by the current user.
   """
+  @spec list_referrals(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_referrals(conn, params) do
     user = conn.assigns.current_user
 
@@ -118,6 +123,7 @@ defmodule CGraphWeb.API.V1.ReferralController do
   @doc """
   List pending referrals (not yet confirmed).
   """
+  @spec list_pending(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_pending(conn, params) do
     user = conn.assigns.current_user
 
@@ -137,6 +143,7 @@ defmodule CGraphWeb.API.V1.ReferralController do
   @doc """
   Get referral statistics for the current user.
   """
+  @spec stats(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def stats(conn, _params) do
     user = conn.assigns.current_user
     stats = Referrals.get_user_stats(user.id)
@@ -146,6 +153,7 @@ defmodule CGraphWeb.API.V1.ReferralController do
   @doc """
   Get referral leaderboard.
   """
+  @spec leaderboard(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def leaderboard(conn, params) do
     opts = [
       period: params["period"] || "all",
@@ -163,6 +171,7 @@ defmodule CGraphWeb.API.V1.ReferralController do
   @doc """
   List available reward tiers.
   """
+  @spec list_reward_tiers(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_reward_tiers(conn, _params) do
     user = conn.assigns.current_user
     tiers = Referrals.list_reward_tiers(user.id)
@@ -172,6 +181,7 @@ defmodule CGraphWeb.API.V1.ReferralController do
   @doc """
   Claim a reward.
   """
+  @spec claim_reward(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def claim_reward(conn, %{"tier_id" => tier_id}) do
     user = conn.assigns.current_user
 
