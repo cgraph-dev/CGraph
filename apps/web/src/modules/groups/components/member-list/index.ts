@@ -8,10 +8,10 @@
  */
 
 // Main component
-export { MemberList, default } from './MemberList';
+export { MemberList, default } from './member-list';
 
 // Sub-components
-export { MemberItem } from './MemberItem';
+export { MemberItem } from './member-item';
 
 // Types
 export type {

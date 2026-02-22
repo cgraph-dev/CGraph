@@ -27,7 +27,7 @@ export {
   MatrixBackground,
   MatrixAuthBackground,
   MatrixAmbientBackground,
-} from './MatrixBackground';
+} from './matrix-background';
 
 // Themes
 export {
@@ -77,4 +77,4 @@ export type {
 } from './types';
 
 // Default export
-export { MatrixBackground as default } from './MatrixBackground';
+export { MatrixBackground as default } from './matrix-background';

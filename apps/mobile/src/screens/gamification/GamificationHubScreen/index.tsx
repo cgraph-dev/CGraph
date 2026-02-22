@@ -34,7 +34,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ParamListBase } from '@react-navigation/native';
 import { LevelProgress, TitleBadge } from '@/components/gamification';
 import { useGamification } from '@/hooks/useGamification';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 
 import { StatCard, QuickLink, QuestPreviewCard, RecentAchievementCard } from './components';
 

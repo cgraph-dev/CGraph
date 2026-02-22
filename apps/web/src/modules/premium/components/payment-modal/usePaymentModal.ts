@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { usePremiumStore } from '@/modules/premium/store';
 import confetti from 'canvas-confetti';
 import type { PaymentItem, PaymentStep, PaymentMethod, CardFormData } from './types';

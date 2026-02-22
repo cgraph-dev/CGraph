@@ -4,4 +4,4 @@
  * Export all security-related screens
  */
 
-export { default as E2EEVerificationScreen } from './E2EEVerificationScreen';
+export { default as E2EEVerificationScreen } from './e2-ee-verification-screen';

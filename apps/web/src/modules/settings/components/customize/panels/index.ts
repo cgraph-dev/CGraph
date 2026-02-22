@@ -4,7 +4,7 @@
  * Clean exports for all customization panels.
  */
 
-export { ThemePanel } from './ThemePanel';
-export { AvatarPanel } from './AvatarPanel';
-export { ChatPanel } from './ChatPanel';
-export { ProfilePanel } from './ProfilePanel';
+export { ThemePanel } from './theme-panel';
+export { AvatarPanel } from './avatar-panel';
+export { ChatPanel } from './chat-panel';
+export { ProfilePanel } from './profile-panel';

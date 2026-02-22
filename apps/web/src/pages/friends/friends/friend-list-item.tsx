@@ -6,10 +6,10 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import UserProfileCard from '@/modules/social/components/UserProfileCard';
-import { TitleBadge } from '@/modules/gamification/components/TitleBadge';
-import { LastSeenBadge } from '@/shared/components/LastSeenBadge';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
+import UserProfileCard from '@/modules/social/components/user-profile-card';
+import { TitleBadge } from '@/modules/gamification/components/title-badge';
+import { LastSeenBadge } from '@/shared/components/last-seen-badge';
 import {
   ChatBubbleLeftRightIcon,
   EllipsisVerticalIcon,

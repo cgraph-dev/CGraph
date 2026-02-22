@@ -9,7 +9,7 @@
 
 import { useEffect, useRef, useState, useMemo } from 'react';
 import * as Y from 'yjs';
-import { PhoenixProvider, getUserColor, type PhoenixProviderOptions } from './PhoenixProvider';
+import { PhoenixProvider, getUserColor, type PhoenixProviderOptions } from './phoenix-provider';
 import { useSocket } from '@/hooks/useSocket';
 import type { Awareness } from 'y-protocols/awareness';
 

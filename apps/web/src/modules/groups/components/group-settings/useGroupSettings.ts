@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGroupStore } from '@/modules/groups/store';
 import { useAuthStore } from '@/modules/auth/store';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { createLogger } from '@/lib/logger';
 import type { TabId, OverviewFormData } from './types';
 

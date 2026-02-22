@@ -24,7 +24,7 @@ export {
 } from './settings-tabs';
 
 // Modal
-export { ExportImportModal } from './ExportImportModal';
+export { ExportImportModal } from './export-import-modal';
 
 // Main component
-export { default } from './UICustomizationSettings';
+export { default } from './ui-customization-settings';

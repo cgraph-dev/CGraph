@@ -3,17 +3,17 @@
  * @module pages/forums/moderation-queue
  */
 
-export { default } from './ModerationQueue';
-export { default as ModerationQueue } from './ModerationQueue';
+export { default } from './moderation-queue';
+export { default as ModerationQueue } from './moderation-queue';
 
 // Components
-export { QueueItemCard } from './QueueItemCard';
-export { QueueHeader } from './QueueHeader';
-export { QueueFilters } from './QueueFilters';
-export { BulkActionsBar } from './BulkActionsBar';
-export { QueueList } from './QueueList';
-export { RejectModal } from './RejectModal';
-export { AccessRestricted } from './AccessRestricted';
+export { QueueItemCard } from './queue-item-card';
+export { QueueHeader } from './queue-header';
+export { QueueFilters } from './queue-filters';
+export { BulkActionsBar } from './bulk-actions-bar';
+export { QueueList } from './queue-list';
+export { RejectModal } from './reject-modal';
+export { AccessRestricted } from './access-restricted';
 
 // Hooks
 export { useModerationQueue } from './useModerationQueue';

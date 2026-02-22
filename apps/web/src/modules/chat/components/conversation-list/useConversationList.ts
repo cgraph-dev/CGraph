@@ -7,7 +7,7 @@ import { useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useChatStore, type Conversation } from '@/modules/chat/store';
 import { useAuthStore } from '@/modules/auth/store';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { FilterType, UseConversationListReturn } from './types';
 import { getConversationName } from './utils';
 

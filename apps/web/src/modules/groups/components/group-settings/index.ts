@@ -3,20 +3,20 @@
  * @module modules/groups/components/group-settings
  */
 
-export { GroupSettings, default } from './GroupSettings';
+export { GroupSettings, default } from './group-settings';
 
 // Components
-export { SettingsSidebar } from './SettingsSidebar';
-export { OverviewTab } from './OverviewTab';
-export { MembersTab } from './MembersTab';
-export { InvitesTab } from './InvitesTab';
-export { ChannelsTab } from './ChannelsTab';
-export { EmojiTab } from './EmojiTab';
-export { NotificationsTab } from './NotificationsTab';
-export { AuditLogTab } from './AuditLogTab';
-export { DangerTab } from './DangerTab';
-export { ConfirmModal } from './ConfirmModal';
-export { SaveBar } from './SaveBar';
+export { SettingsSidebar } from './settings-sidebar';
+export { OverviewTab } from './overview-tab';
+export { MembersTab } from './members-tab';
+export { InvitesTab } from './invites-tab';
+export { ChannelsTab } from './channels-tab';
+export { EmojiTab } from './emoji-tab';
+export { NotificationsTab } from './notifications-tab';
+export { AuditLogTab } from './audit-log-tab';
+export { DangerTab } from './danger-tab';
+export { ConfirmModal } from './confirm-modal';
+export { SaveBar } from './save-bar';
 
 // Hooks
 export { useGroupSettings } from './useGroupSettings';

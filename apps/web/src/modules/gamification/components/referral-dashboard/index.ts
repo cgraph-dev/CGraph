@@ -5,16 +5,16 @@
  */
 
 // Main component
-export { default, ReferralDashboard } from './ReferralDashboard';
+export { default, ReferralDashboard } from './referral-dashboard';
 
 // Sub-components
-export { ReferralLinkCard } from './ReferralLinkCard';
-export { StatsCards } from './StatsCards';
-export { ProgressTierCard } from './ProgressTierCard';
-export { RecentReferrals } from './RecentReferrals';
-export { ReferralLeaderboard } from './ReferralLeaderboard';
-export { RewardTiers } from './RewardTiers';
-export { HowItWorks } from './HowItWorks';
+export { ReferralLinkCard } from './referral-link-card';
+export { StatsCards } from './stats-cards';
+export { ProgressTierCard } from './progress-tier-card';
+export { RecentReferrals } from './recent-referrals';
+export { ReferralLeaderboard } from './referral-leaderboard';
+export { RewardTiers } from './reward-tiers';
+export { HowItWorks } from './how-it-works';
 
 // Types
 export type {

@@ -8,12 +8,12 @@
  */
 
 // Panel components
-export { DashboardOverview } from './DashboardOverview';
-export { EventsManagement } from './EventsManagement';
-export { MarketplaceModeration } from './MarketplaceModeration';
-export { UsersManagement } from './UsersManagement';
-export { AnalyticsDashboard } from './AnalyticsDashboard';
-export { SystemSettings } from './SystemSettings';
+export { DashboardOverview } from './dashboard-overview';
+export { EventsManagement } from './events-management';
+export { MarketplaceModeration } from './marketplace-moderation';
+export { UsersManagement } from './users-management';
+export { AnalyticsDashboard } from './analytics-dashboard';
+export { SystemSettings } from './system-settings';
 
 // Shared components (for extensibility)
 export {

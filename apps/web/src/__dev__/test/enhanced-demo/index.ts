@@ -5,18 +5,18 @@
  */
 
 // Main component
-export { default } from './EnhancedDemo';
+export { default } from './enhanced-demo';
 
 // Demo sections
-export { HolographicV4Demo } from './HolographicV4Demo';
-export { HolographicDemo } from './HolographicV3Demo';
-export { GlassCardsDemo } from './GlassCardsDemo';
-export { MessagesDemo } from './MessagesDemo';
-export { ReactionsDemo } from './ReactionsDemo';
-export { Matrix3DDemo } from './Matrix3DDemo';
-export { ShadersDemo } from './ShadersDemo';
-export { VoiceDemo } from './VoiceDemo';
-export { ThemeDemo } from './ThemeDemo';
+export { HolographicV4Demo } from './holographic-v4-demo';
+export { HolographicDemo } from './holographic-v3-demo';
+export { GlassCardsDemo } from './glass-cards-demo';
+export { MessagesDemo } from './messages-demo';
+export { ReactionsDemo } from './reactions-demo';
+export { Matrix3DDemo } from './matrix3-d-demo';
+export { ShadersDemo } from './shaders-demo';
+export { VoiceDemo } from './voice-demo';
+export { ThemeDemo } from './theme-demo';
 
 // Types
 export type * from './types';

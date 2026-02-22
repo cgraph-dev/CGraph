@@ -28,8 +28,8 @@ export {
 } from './constants';
 
 // Components
-export { ParticlePreview } from './ParticlePreview';
+export { ParticlePreview } from './particle-preview';
 export { ParticleEffectsSection, BackgroundEffectsSection, AnimationSetsSection } from './sections';
 
 // Main component
-export { default } from './EffectsCustomization';
+export { default } from './effects-customization';

@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { ThemeRegistry } from './ThemeRegistry';
+import { ThemeRegistry } from './theme-registry';
 import type { AppTheme } from './theme-types';
 import { createLogger } from '@/lib/logger';
 

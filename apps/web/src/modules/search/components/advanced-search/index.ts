@@ -9,11 +9,11 @@
  */
 
 // Main component
-export { default as AdvancedSearch, default } from './AdvancedSearch';
+export { default as AdvancedSearch, default } from './advanced-search';
 
 // Sub-components
-export { SearchBar } from './SearchBar';
-export { FilterPanel } from './FilterPanel';
+export { SearchBar } from './search-bar';
+export { FilterPanel } from './filter-panel';
 
 // Types
 export type { AdvancedSearchFilters, AdvancedSearchProps } from './types';

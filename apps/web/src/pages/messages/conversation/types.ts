@@ -4,7 +4,7 @@
  */
 
 import type { Message } from '@/modules/chat/store';
-import type { GifResult } from '@/modules/chat/components/GifPicker';
+import type { GifResult } from '@/modules/chat/components/gif-picker';
 import type { Sticker } from '@/data/stickers';
 
 /**

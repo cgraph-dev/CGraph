@@ -4,10 +4,10 @@
  * Barrel file for the forum search component.
  */
 
-export { ForumSearch, default } from './ForumSearch';
-export { FiltersPanel } from './FiltersPanel';
-export { SearchResultItem } from './SearchResultItem';
-export { SearchResults } from './SearchResults';
+export { ForumSearch, default } from './forum-search';
+export { FiltersPanel } from './filters-panel';
+export { SearchResultItem } from './search-result-item';
+export { SearchResults } from './search-results';
 export { useSearchHistory } from './useSearchHistory';
 export {
   DEFAULT_FILTERS,

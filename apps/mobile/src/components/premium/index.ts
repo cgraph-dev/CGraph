@@ -4,6 +4,6 @@
  * Exports all premium/subscription components for the mobile app.
  */
 
-export { SubscriptionCard, type SubscriptionCardProps, type SubscriptionTier } from './SubscriptionCard';
-export { CoinShopWidget, type CoinShopWidgetProps, type CoinPackage } from './CoinShopWidget';
-export { PremiumBanner, type PremiumBannerProps } from './PremiumBanner';
+export { SubscriptionCard, type SubscriptionCardProps, type SubscriptionTier } from './subscription-card';
+export { CoinShopWidget, type CoinShopWidgetProps, type CoinPackage } from './coin-shop-widget';
+export { PremiumBanner, type PremiumBannerProps } from './premium-banner';

@@ -69,14 +69,14 @@ export {
   type MatrixBackgroundProps,
   type MatrixBackgroundRef,
   type IntensityPreset,
-} from './MatrixBackground';
+} from './matrix-background';
 
 export {
   MatrixText,
   MatrixLogo,
   MatrixHeading,
   type MatrixTextProps,
-} from './MatrixText';
+} from './matrix-text';
 
 // =============================================================================
 // HOOKS
@@ -213,4 +213,4 @@ export type {
 // DEFAULT EXPORT
 // =============================================================================
 
-export { MatrixBackground as default } from './MatrixBackground';
+export { MatrixBackground as default } from './matrix-background';

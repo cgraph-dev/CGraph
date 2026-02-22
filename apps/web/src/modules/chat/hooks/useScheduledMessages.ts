@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { isPast, isToday, isTomorrow, isThisWeek } from 'date-fns';
 import { createLogger } from '@/lib/logger';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { useChatStore, Message } from '@/modules/chat/store';
 import { toast } from '@/shared/components/ui';
 

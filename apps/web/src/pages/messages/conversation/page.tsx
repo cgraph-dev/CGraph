@@ -13,9 +13,9 @@ import { AnimatePresence } from 'framer-motion';
 
 import type { Message } from '@/modules/chat/store';
 import { useConversationPage } from './useConversationPage';
-import { ConversationOverlays } from './ConversationOverlays';
-import { ConversationMessages } from './ConversationMessages';
-import { CallModals, InfoPanel } from './ConversationModals';
+import { ConversationOverlays } from './conversation-overlays';
+import { ConversationMessages } from './conversation-messages';
+import { CallModals, InfoPanel } from './conversation-modals';
 
 import { ConversationHeader } from '@/modules/chat/components';
 import {
@@ -24,16 +24,16 @@ import {
   ReplyPreview,
   AmbientBackground,
 } from '@/modules/chat/components';
-import { ThreadPanel } from '@/modules/chat/components/ThreadPanel';
+import { ThreadPanel } from '@/modules/chat/components/thread-panel';
 import { useThreadStore } from '@/modules/chat/store/threadStore';
 
-import { themeEngine } from '@/lib/ai/ThemeEngine';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { themeEngine } from '@/lib/ai/theme-engine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { formatLastSeen } from '@/lib/chat/messageUtils';
 import {
   FullScreenChatEffect,
   useChatEffect,
-} from '@/modules/chat/components/chat-effects/FullScreenChatEffect';
+} from '@/modules/chat/components/chat-effects/full-screen-chat-effect';
 
 export default function Conversation() {
   // Apply adaptive theme on mount

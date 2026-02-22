@@ -2,7 +2,7 @@
  * Specialized ShaderBackground preset variants
  */
 
-import ShaderBackground from './ShaderBackground';
+import ShaderBackground from './shader-background';
 
 export function MatrixShaderBackground({ className }: { className?: string }) {
   return (

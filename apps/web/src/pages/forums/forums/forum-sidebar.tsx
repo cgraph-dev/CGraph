@@ -7,9 +7,9 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PlusIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { formatTimeAgo } from '@/lib/utils';
-import { LeaderboardSidebar } from '@/modules/forums/components/LeaderboardWidget';
+import { LeaderboardSidebar } from '@/modules/forums/components/leaderboard-widget';
 import type { ForumSidebarProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
 

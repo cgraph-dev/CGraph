@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert } from 'react-native';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { ChatBubbleStyle, defaultStyle, presets, STORAGE_KEY } from '../types';
 import { invalidateBubbleCache } from '@/hooks/useBubbleCustomization';
 

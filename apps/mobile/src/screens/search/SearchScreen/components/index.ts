@@ -11,14 +11,14 @@ export {
   AnimatedResultItem,
   FilterModal,
   defaultFilters,
-} from './SearchComponents';
+} from './search-components';
 
-export type { SearchFilters } from './SearchComponents';
+export type { SearchFilters } from './search-components';
 
 // Result item components
-export { UserResultItem, GroupResultItem, ForumResultItem } from './ResultItems';
+export { UserResultItem, GroupResultItem, ForumResultItem } from './result-items';
 
-export type { SearchUser, SearchGroup, SearchForum } from './ResultItems';
+export type { SearchUser, SearchGroup, SearchForum } from './result-items';
 
 // Discovery section components
 export {
@@ -27,4 +27,4 @@ export {
   TrendingSection,
   QuickActionsSection,
   SearchTips,
-} from './DiscoverySection';
+} from './discovery-section';

@@ -17,11 +17,11 @@ export { default } from './page';
 export { default as ForumPost } from './page';
 
 // ── Sub-components ─────────────────────────────────────────────────────
-export { PostVoteSidebar } from './PostVoteSidebar';
-export { PostContent } from './PostContent';
-export { PostActionBar } from './PostActionBar';
-export { CommentInput } from './CommentInput';
-export { CommentList } from './CommentList';
+export { PostVoteSidebar } from './post-vote-sidebar';
+export { PostContent } from './post-content';
+export { PostActionBar } from './post-action-bar';
+export { CommentInput } from './comment-input';
+export { CommentList } from './comment-list';
 export { CommentItem } from './comment-item';
 export { ReportModal } from './report-modal';
 export { PostSkeleton, BackButton } from './loading';
@@ -30,11 +30,11 @@ export { PostSkeleton, BackButton } from './loading';
 export { useForumPostActions } from './useForumPostActions';
 
 // ── Types ──────────────────────────────────────────────────────────────
-export type { PostVoteSidebarProps } from './PostVoteSidebar';
-export type { PostContentProps } from './PostContent';
-export type { PostActionBarProps } from './PostActionBar';
-export type { CommentInputProps } from './CommentInput';
-export type { CommentListProps } from './CommentList';
+export type { PostVoteSidebarProps } from './post-vote-sidebar';
+export type { PostContentProps } from './post-content';
+export type { PostActionBarProps } from './post-action-bar';
+export type { CommentInputProps } from './comment-input';
+export type { CommentListProps } from './comment-list';
 export type { ForumPostActions } from './useForumPostActions';
 export * from './types';
 export * from './constants';

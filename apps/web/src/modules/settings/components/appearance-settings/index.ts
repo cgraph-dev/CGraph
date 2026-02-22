@@ -8,20 +8,20 @@
  */
 
 // Main component
-export { AppearanceSettingsEnhanced, default } from './AppearanceSettingsEnhanced';
+export { AppearanceSettingsEnhanced, default } from './appearance-settings-enhanced';
 
 // Section components
-export { ThemeSelection } from './ThemeSelection';
-export { DisplayOptions } from './DisplayOptions';
-export { BackgroundEffects } from './BackgroundEffects';
-export { Accessibility } from './Accessibility';
-export { LivePreview } from './LivePreview';
+export { ThemeSelection } from './theme-selection';
+export { DisplayOptions } from './display-options';
+export { BackgroundEffects } from './background-effects';
+export { Accessibility } from './accessibility';
+export { LivePreview } from './live-preview';
 
 // UI components
-export { ThemeCard } from './ThemeCard';
-export { Slider } from './Slider';
-export { Toggle } from './Toggle';
-export { SectionHeader } from './SectionHeader';
+export { ThemeCard } from './theme-card';
+export { Slider } from './slider';
+export { Toggle } from './toggle';
+export { SectionHeader } from './section-header';
 
 // Types
 export type {

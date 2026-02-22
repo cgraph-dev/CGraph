@@ -26,13 +26,13 @@ export {
   HoloTooltip,
   HOLO_PRESETS,
   holoStyles,
-} from './HolographicUIv4';
+} from './holographic-ui-v4/index';
 
 export type {
   HoloTheme,
   HoloConfig,
   HoloPreset,
-} from './HolographicUIv4';
+} from './holographic-ui-v4/index';
 
 // Legacy Holographic UI v3.0 (for backwards compatibility)
 export {
@@ -46,9 +46,9 @@ export {
   HolographicNotification,
   HOLOGRAPHIC_THEMES,
   holographicStyles,
-} from './HolographicUI';
+} from './holographic-ui';
 
 export type {
   HolographicTheme,
   HolographicConfig,
-} from './HolographicUI';
+} from './holographic-ui';

@@ -10,7 +10,7 @@
 
 import gsap from 'gsap';
 
-import type { GestureConfig } from '../AnimationEngine.types';
+import type { GestureConfig } from '../animation-engine.types';
 
 import { SpringPhysics } from './spring-physics';
 import { HapticFeedback } from './haptic-feedback';

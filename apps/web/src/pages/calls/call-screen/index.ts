@@ -10,12 +10,12 @@
  * - Call duration tracking
  */
 
-export { default as CallScreen } from './CallScreen';
-export { VideoTile } from './VideoTile';
-export { CallControl } from './CallControl';
-export { CallHeader } from './CallHeader';
-export { ConnectingState } from './ConnectingState';
-export { CallControls } from './CallControls';
+export { default as CallScreen } from './call-screen';
+export { VideoTile } from './video-tile';
+export { CallControl } from './call-control';
+export { CallHeader } from './call-header';
+export { ConnectingState } from './connecting-state';
+export { CallControls } from './call-controls';
 export { useCallScreen } from './useCallScreen';
 export { CALL_STATES, controlVariants, pulseAnimation } from './constants';
 export type {

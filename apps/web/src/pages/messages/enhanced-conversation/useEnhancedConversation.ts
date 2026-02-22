@@ -8,8 +8,8 @@ import { createLogger } from '@/lib/logger';
 import { useChatStore, Message } from '@/modules/chat/store';
 import { useAuthStore } from '@/modules/auth/store';
 import { socketManager } from '@/lib/socket';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { themeEngine } from '@/lib/ai/ThemeEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { themeEngine } from '@/lib/ai/theme-engine';
 import type { Sticker } from '@/data/stickers';
 
 const logger = createLogger('EnhancedConversation');

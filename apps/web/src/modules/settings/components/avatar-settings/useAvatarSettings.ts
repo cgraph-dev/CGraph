@@ -8,8 +8,8 @@ import { createLogger } from '@/lib/logger';
 import { useAvatarStyle, toast } from '@/shared/components/ui';
 import { useAuthStore } from '@/modules/auth/store';
 import { useProfileStore } from '@/modules/social/store';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useSyncStatus } from '@/modules/settings/components/SyncStatusIndicator';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { useSyncStatus } from '@/modules/settings/components/sync-status-indicator';
 import type { AvatarSettingsFormData, FileUploadState, UseAvatarSettingsReturn } from './types';
 
 const logger = createLogger('AvatarSettings');

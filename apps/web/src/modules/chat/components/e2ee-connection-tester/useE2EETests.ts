@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { TestResult, OverallStatus } from './types';
 import { INITIAL_TESTS, SUCCESS_MESSAGES } from './constants';
 import { createTestRunner } from './cryptoTests';

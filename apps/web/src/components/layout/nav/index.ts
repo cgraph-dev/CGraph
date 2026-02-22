@@ -3,5 +3,5 @@
  * @module components/layout/nav
  */
 
-export { NotificationDropdown } from './NotificationDropdown';
-export { UserDropdown } from './UserDropdown';
+export { NotificationDropdown } from './notification-dropdown';
+export { UserDropdown } from './user-dropdown';

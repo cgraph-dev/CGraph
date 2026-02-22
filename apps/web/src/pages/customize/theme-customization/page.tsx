@@ -1,12 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { useThemeCustomization } from './hooks';
-import { CategoryTabs } from './CategoryTabs';
-import { SearchBar } from './SearchBar';
-import { ThemeDescription } from './ThemeDescription';
-import { ProfileThemePicker } from './ProfileThemePicker';
-import { SaveButton } from './SaveButton';
-import { ThemeCard } from './ThemeCard';
+import { CategoryTabs } from './category-tabs';
+import { SearchBar } from './search-bar';
+import { ThemeDescription } from './theme-description';
+import { ProfileThemePicker } from './profile-theme-picker';
+import { SaveButton } from './save-button';
+import { ThemeCard } from './theme-card';
 
 /**
  * ThemeCustomization Component

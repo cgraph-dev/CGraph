@@ -8,14 +8,14 @@
  */
 
 // Main component
-export { PremiumBanner, default } from './PremiumBanner';
+export { PremiumBanner, default } from './premium-banner';
 
 // Variant sub-components
-export { HeroBanner } from './HeroBanner';
-export { CardBanner } from './CardBanner';
-export { BarBanner } from './BarBanner';
-export { FloatingBanner } from './FloatingBanner';
-export { MinimalBanner } from './MinimalBanner';
+export { HeroBanner } from './hero-banner';
+export { CardBanner } from './card-banner';
+export { BarBanner } from './bar-banner';
+export { FloatingBanner } from './floating-banner';
+export { MinimalBanner } from './minimal-banner';
 
 // Types
 export type { PremiumBannerProps, BannerVariantProps } from './types';

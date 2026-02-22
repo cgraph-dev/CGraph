@@ -1,6 +1,6 @@
-export { default } from './AchievementsPage';
-export { AchievementCard } from './AchievementCard';
-export { AchievementDetailModal } from './AchievementDetailModal';
+export { default } from './achievements-page';
+export { AchievementCard } from './achievement-card';
+export { AchievementDetailModal } from './achievement-detail-modal';
 export { useAchievementStats } from './useAchievementStats';
 export * from './types';
 export * from './constants';

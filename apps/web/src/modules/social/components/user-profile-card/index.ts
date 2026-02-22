@@ -5,11 +5,11 @@
  */
 
 // Main component
-export { default as UserProfileCard } from './UserProfileCard';
+export { default as UserProfileCard } from './user-profile-card';
 
 // Sub-components
-export { MiniProfileCard } from './MiniProfileCard';
-export { FullProfileCard } from './FullProfileCard';
+export { MiniProfileCard } from './mini-profile-card';
+export { FullProfileCard } from './full-profile-card';
 
 // Types
 export type {

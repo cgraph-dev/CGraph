@@ -4,7 +4,7 @@
  * Type definitions for appearance settings components.
  */
 
-import type { Theme } from '@/lib/theme/ThemeEngine';
+import type { Theme } from '@/lib/theme/theme-engine';
 import type { ReactNode } from 'react';
 
 // =============================================================================

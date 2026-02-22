@@ -10,7 +10,7 @@
  */
 
 // Main component
-export { default } from './ShaderBackground';
+export { default } from './shader-background';
 
 // Preset variants
 export { MatrixShaderBackground, CyberShaderBackground, NeuralShaderBackground } from './variants';

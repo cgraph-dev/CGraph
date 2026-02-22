@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ForumCategory, Forum } from '@/modules/forums/store';
 
 /**

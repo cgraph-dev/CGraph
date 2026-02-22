@@ -8,11 +8,11 @@
  */
 
 // Main component
-export { default } from './CreatePost';
+export { default } from './create-post';
 
 // Sub-components
-export { default as PollForm } from './PollForm';
-export { default as PostTypeTabs } from './PostTypeTabs';
+export { default as PollForm } from './poll-form';
+export { default as PostTypeTabs } from './post-type-tabs';
 
 // Hooks
 export { useCreatePost } from './hooks';

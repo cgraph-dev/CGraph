@@ -4,7 +4,7 @@
 
 import { memo } from 'react';
 import type { AvatarBorderConfig } from '@/types/avatar-borders';
-import { AvatarBorderRenderer } from './AvatarBorderRenderer';
+import { AvatarBorderRenderer } from './avatar-border-renderer';
 import type { AvatarBorderRendererProps } from './types';
 
 /** Simple border with just a colored ring */

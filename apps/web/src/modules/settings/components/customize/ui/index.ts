@@ -7,13 +7,13 @@
 export { uiSprings as springs } from './constants';
 
 // Components
-export { AnimatedToggle } from './AnimatedToggle';
-export { ColorPickerGrid } from './ColorPickerGrid';
-export { GradientSlider } from './GradientSlider';
-export { AnimatedTabs } from './AnimatedTabs';
-export { OptionButton } from './OptionButton';
-export { SpeedSelector, SizeSelector } from './Selectors';
-export { SectionHeader, ToggleRow, PremiumBadge } from './UtilityComponents';
+export { AnimatedToggle } from './animated-toggle';
+export { ColorPickerGrid } from './color-picker-grid';
+export { GradientSlider } from './gradient-slider';
+export { AnimatedTabs } from './animated-tabs';
+export { OptionButton } from './option-button';
+export { SpeedSelector, SizeSelector } from './selectors';
+export { SectionHeader, ToggleRow, PremiumBadge } from './utility-components';
 
 // Types
 export type {

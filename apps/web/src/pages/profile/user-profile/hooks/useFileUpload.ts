@@ -6,7 +6,7 @@ import { useCallback, useRef } from 'react';
 import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
 import { toast } from '@/shared/components/ui';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { UserProfileData } from '../types';
 
 const logger = createLogger('useFileUpload');

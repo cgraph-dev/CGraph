@@ -26,7 +26,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/theme-context';
 import api from '../../../lib/api';
 import { ForumsStackParamList } from '../../../types';
 

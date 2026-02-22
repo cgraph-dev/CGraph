@@ -22,7 +22,7 @@ import {
   QueueItem,
   QueueItemType,
   QueuePriority,
-} from '../lib/offline/OfflineQueue';
+} from '../lib/offline/offline-queue';
 import { createLogger } from '../lib/logger';
 
 const logger = createLogger('useOfflineQueue');

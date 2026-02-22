@@ -9,14 +9,14 @@
  */
 
 // Main component
-export { default } from './RichMediaEmbed';
+export { default } from './rich-media-embed';
 
 // Sub-components
-export { default as ImageEmbed } from './ImageEmbed';
-export { default as VideoEmbed } from './VideoEmbed';
-export { default as AudioEmbed } from './AudioEmbed';
-export { default as LinkPreview } from './LinkPreview';
-export { default as Lightbox } from './Lightbox';
+export { default as ImageEmbed } from './image-embed';
+export { default as VideoEmbed } from './video-embed';
+export { default as AudioEmbed } from './audio-embed';
+export { default as LinkPreview } from './link-preview';
+export { default as Lightbox } from './lightbox';
 
 // Hooks
 export { useMediaEmbeds } from './hooks';

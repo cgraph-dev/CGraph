@@ -4,11 +4,11 @@
  * Barrel file for the user stars tier system components.
  */
 
-export { UserStars, default } from './UserStars';
-export { UserStarsBadge } from './UserStarsBadge';
-export { UserStarsTierList } from './UserStarsTierList';
-export { CrownIcon } from './CrownIcon';
-export { StarTooltip } from './StarTooltip';
+export { UserStars, default } from './user-stars';
+export { UserStarsBadge } from './user-stars-badge';
+export { UserStarsTierList } from './user-stars-tier-list';
+export { CrownIcon } from './crown-icon';
+export { StarTooltip } from './star-tooltip';
 export { USER_TIERS, SIZE_CONFIG } from './constants';
 export {
   getTierForPostCount,

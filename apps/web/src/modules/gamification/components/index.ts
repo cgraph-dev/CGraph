@@ -5,31 +5,31 @@
  */
 
 // Core Progress Components
-export { default as LevelProgress } from './LevelProgress';
-export { default as LevelUpModal } from './LevelUpModal';
+export { default as LevelProgress } from './level-progress';
+export { default as LevelUpModal } from './level-up-modal';
 
 // Achievement System
-export { default as AchievementNotification } from './AchievementNotification';
+export { default as AchievementNotification } from './achievement-notification';
 export {
   default as AchievementDisplay,
   AchievementDisplay as AchievementDisplayComponent,
-} from './AchievementDisplay';
+} from './achievement-display';
 
 // Quest System
-export { default as QuestPanel } from './QuestPanel';
+export { default as QuestPanel } from './quest-panel';
 
 // Leaderboard
 export {
   LeaderboardWidget,
   LeaderboardWidget as LeaderboardFullWidget,
-} from './LeaderboardFullWidget';
+} from './leaderboard-full-widget';
 
 // Streaks & Daily Rewards
-export { default as StreakTracker, StreakTracker as StreakTrackerComponent } from './StreakTracker';
-export { default as DailyRewards, DailyRewards as DailyRewardsComponent } from './DailyRewards';
+export { default as StreakTracker, StreakTracker as StreakTrackerComponent } from './streak-tracker';
+export { default as DailyRewards, DailyRewards as DailyRewardsComponent } from './daily-rewards';
 
 // Titles & Badges
-export { TitleBadge, type TitleBadgeProps } from './TitleBadge';
+export { TitleBadge, type TitleBadgeProps } from './title-badge';
 
 // User Stars (Post Count Indicators)
 export {
@@ -42,7 +42,7 @@ export {
   USER_TIERS,
   type UserStarsProps,
   type UserStarsTier,
-} from './UserStars';
+} from './user-stars';
 
 // Re-export types
-export type { AchievementNotificationData } from './AchievementNotification';
+export type { AchievementNotificationData } from './achievement-notification';

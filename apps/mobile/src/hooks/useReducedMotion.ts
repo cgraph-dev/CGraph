@@ -3,7 +3,7 @@
  * Uses Reanimated's built-in useReducedMotion hook
  */
 import { useReducedMotion as useReanimatedReducedMotion } from 'react-native-reanimated';
-import { SPRING_PRESETS } from '@/lib/animations/AnimationLibrary';
+import { SPRING_PRESETS } from '@/lib/animations/animation-library';
 import { useSettingsStore } from '@/stores/settingsStore';
 
 /**

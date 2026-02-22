@@ -15,7 +15,7 @@
 import React from 'react';
 import { View, FlatList, StyleSheet, RefreshControl, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/theme-context';
 import { Header, LoadingSpinner } from '../../../components';
 import { useFriendRequests } from './hooks/useFriendRequests';
 import { RequestCard, EmptyRequestsState, TabsHeader, StatsHeader } from './components';

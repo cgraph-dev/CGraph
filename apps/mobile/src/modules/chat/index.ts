@@ -4,6 +4,6 @@
  */
 
 // Screens
-export { default as ConversationListScreen } from '../../screens/messages/ConversationListScreen';
-export { default as ConversationScreen } from '../../screens/messages/ConversationScreen';
-export { default as NewConversationScreen } from '../../screens/messages/NewConversationScreen';
+export { default as ConversationListScreen } from '../../screens/messages/conversation-list-screen';
+export { default as ConversationScreen } from '../../screens/messages/conversation-screen';
+export { default as NewConversationScreen } from '../../screens/messages/new-conversation-screen';

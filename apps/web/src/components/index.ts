@@ -22,19 +22,19 @@
  */
 
 // === UI Primitives ===
-export { default as Button, IconButton } from './ui/Button';
-export { default as Input, Textarea } from './ui/Input';
-export { default as TextArea } from './ui/TextArea';
-export { default as Select } from './ui/Select';
-export { default as Modal, ConfirmDialog } from './ui/Modal';
-export { default as Tooltip } from './ui/Tooltip';
-export { default as Card, CardHeader, CardTitle, CardContent, CardFooter } from './ui/Card';
+export { default as Button, IconButton } from './ui/button';
+export { default as Input, Textarea } from './ui/input';
+export { default as TextArea } from './ui/text-area';
+export { default as Select } from './ui/select';
+export { default as Modal, ConfirmDialog } from './ui/modal';
+export { default as Tooltip } from './ui/tooltip';
+export { default as Card, CardHeader, CardTitle, CardContent, CardFooter } from './ui/card';
 export {
   default as Skeleton,
   PostCardSkeleton,
   ForumCardSkeleton,
   CommentSkeleton,
-} from './ui/Skeleton';
+} from './ui/skeleton';
 export {
   default as Badge,
   NewBadge,
@@ -47,14 +47,14 @@ export {
   ModeratorBadge,
   MemberBadge,
   CountBadge,
-} from './ui/Badge';
+} from './ui/badge';
 
 // === Feedback ===
-export { default as ErrorBoundary } from './feedback/ErrorBoundary';
-export { LoadingSpinner } from './feedback/LoadingSpinner';
-export { LoadingOverlay } from './feedback/Loading';
-export { default as ToastProvider, useToast, toast } from './feedback/Toast';
-export { default as ProgressBar } from './feedback/ProgressBar';
+export { default as ErrorBoundary } from './feedback/error-boundary';
+export { LoadingSpinner } from './feedback/loading-spinner';
+export { LoadingOverlay } from './feedback/loading';
+export { default as ToastProvider, useToast, toast } from './feedback/toast';
+export { default as ProgressBar } from './feedback/progress-bar';
 export {
   default as EmptyState,
   EmptyMessages,
@@ -63,26 +63,26 @@ export {
   EmptyForums,
   EmptySearchResults,
   EmptyNotifications,
-} from './feedback/EmptyState';
+} from './feedback/empty-state';
 
 // === Media ===
-export { Waveform, generatePlaceholderWaveform } from './media/Waveform';
-export { VoiceMessagePlayer } from './media/VoiceMessagePlayer';
-export { VoiceMessageRecorder } from './media/VoiceMessageRecorder';
-export { default as FileUpload } from './media/FileUpload';
+export { Waveform, generatePlaceholderWaveform } from './media/waveform';
+export { VoiceMessagePlayer } from './media/voice-message-player';
+export { VoiceMessageRecorder } from './media/voice-message-recorder';
+export { default as FileUpload } from './media/file-upload';
 
 // === Content ===
-export { default as MarkdownRenderer } from './content/MarkdownRenderer';
-export { default as MarkdownEditor } from './content/MarkdownEditor';
+export { default as MarkdownRenderer } from './content/markdown-renderer';
+export { default as MarkdownEditor } from './content/markdown-editor';
 
 // === User ===
-export { default as Avatar, AvatarGroup } from './user/Avatar';
+export { default as Avatar, AvatarGroup } from './user/avatar';
 
 // === Navigation ===
-export { default as Tabs, TabPanel } from './navigation/Tabs';
-export { default as Switch } from './navigation/Switch';
-export { default as Dropdown, DropdownItem, DropdownDivider } from './navigation/Dropdown';
-export { default as TagInput } from './navigation/TagInput';
+export { default as Tabs, TabPanel } from './navigation/tabs';
+export { default as Switch } from './navigation/switch';
+export { default as Dropdown, DropdownItem, DropdownDivider } from './navigation/dropdown';
+export { default as TagInput } from './navigation/tag-input';
 
 // === Enhanced Holographic UI System v4 ===
 export {

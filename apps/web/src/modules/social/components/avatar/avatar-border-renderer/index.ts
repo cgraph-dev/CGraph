@@ -25,6 +25,6 @@ export {
 } from './animations';
 
 // Components
-export { Particle } from './Particle';
-export { AvatarBorderRenderer, default } from './AvatarBorderRenderer';
+export { Particle } from './particle';
+export { AvatarBorderRenderer, default } from './avatar-border-renderer';
 export { SimpleBorderAvatar, GlowBorderAvatar } from './presets';

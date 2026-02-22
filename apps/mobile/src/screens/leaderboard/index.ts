@@ -7,4 +7,4 @@
  * @since v0.8.1
  */
 
-export { default as LeaderboardScreen } from './LeaderboardScreen';
+export { default as LeaderboardScreen } from './leaderboard-screen';

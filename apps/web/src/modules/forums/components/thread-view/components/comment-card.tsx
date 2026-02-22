@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { ChevronUpIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';
-import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
+import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { formatTimeAgo } from '@/lib/utils';
 import type { Comment } from '@/modules/forums/store';
 

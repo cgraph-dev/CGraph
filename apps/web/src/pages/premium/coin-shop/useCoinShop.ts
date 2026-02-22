@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import confetti from 'canvas-confetti';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { CoinBundle, ShopItem, DailyBonus } from './types';
 
 const logger = createLogger('CoinShop');

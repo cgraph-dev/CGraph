@@ -2,7 +2,7 @@
  * StickerPicker Types and Data
  */
 
-import { AnimationColors } from '@/lib/animations/AnimationEngine';
+import { AnimationColors } from '@/lib/animations/animation-engine';
 
 export type StickerRarity = 'common' | 'rare' | 'epic' | 'legendary';
 

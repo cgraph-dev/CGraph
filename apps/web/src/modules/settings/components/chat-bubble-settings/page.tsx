@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useChatBubbleStore, CHAT_BUBBLE_PRESETS, type ChatBubbleConfig } from '@/stores/theme';
 import { useChatCustomization } from '@/modules/settings/store/customization';
 import { GlassCard } from '@/shared/components/ui';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import {
   ChatBubbleLeftIcon,
   SparklesIcon,
@@ -20,7 +20,7 @@ import {
 
 import type { TabId, TabConfig, PresetConfig } from './types';
 import { ColorsTab, ShapeTab, EffectsTab, AnimationsTab, LayoutTab } from './tabs';
-import { BackgroundsTab } from './BackgroundsTab';
+import { BackgroundsTab } from './backgrounds-tab';
 
 /**
  * Chat Bubble Customization Settings

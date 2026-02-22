@@ -1,4 +1,4 @@
-import type { Theme, ThemePreferences } from '@/lib/theme/ThemeEngine';
+import type { Theme, ThemePreferences } from '@/lib/theme/theme-engine';
 
 export interface ThemeContextValue {
   /** Current active theme */

@@ -13,8 +13,8 @@ export type {
   SpringConfig,
   GestureConfig,
   SequenceStep,
-} from '../AnimationEngine.types';
-export { ANIMATION_PRESETS } from '../AnimationEngine.types';
+} from '../animation-engine.types';
+export { ANIMATION_PRESETS } from '../animation-engine.types';
 
 // Re-export submodules
 export { SpringPhysics } from './spring-physics';

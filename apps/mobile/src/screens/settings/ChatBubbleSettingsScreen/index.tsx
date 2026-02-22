@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { useChatBubbleStyle } from './hooks/useChatBubbleStyle';
 import { MessagePreview, TabBar, PresetsTab, ColorsTab, ShapeTab, LayoutTab } from './components';
 import type { Props, TabId } from './types';

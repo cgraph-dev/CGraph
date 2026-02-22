@@ -1,1 +1,1 @@
-export { default } from './CallHistoryPage';
+export { default } from './call-history-page';

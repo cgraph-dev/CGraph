@@ -8,14 +8,14 @@
  * - Member statistics cards
  */
 
-export { default as MemberList } from './MemberList';
-export { MemberFiltersPanel } from './MemberFiltersPanel';
-export { MemberTableHeader } from './MemberTableHeader';
-export { MemberRow } from './MemberRow';
-export { MemberTableSkeleton } from './MemberTableSkeleton';
-export { MemberTableEmpty } from './MemberTableEmpty';
-export { Pagination } from './Pagination';
-export { MemberStatsCards } from './MemberStatsCards';
+export { default as MemberList } from './member-list';
+export { MemberFiltersPanel } from './member-filters-panel';
+export { MemberTableHeader } from './member-table-header';
+export { MemberRow } from './member-row';
+export { MemberTableSkeleton } from './member-table-skeleton';
+export { MemberTableEmpty } from './member-table-empty';
+export { Pagination } from './pagination';
+export { MemberStatsCards } from './member-stats-cards';
 export { useMemberList } from './useMemberList';
 export { formatDate, formatRelativeTime } from './utils';
 export type {

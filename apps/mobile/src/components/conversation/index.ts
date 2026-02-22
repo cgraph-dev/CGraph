@@ -9,38 +9,38 @@
  */
 
 // Modals
-export { MessageActionsMenu } from './MessageActionsMenu';
-export { ReactionPickerModal } from './ReactionPickerModal';
-export { AttachmentPreviewModal } from './AttachmentPreviewModal';
-export { ImageViewerModal } from './ImageViewerModal';
-export { VideoPlayerModal } from './VideoPlayerModal';
+export { MessageActionsMenu } from './message-actions-menu';
+export { ReactionPickerModal } from './reaction-picker-modal';
+export { AttachmentPreviewModal } from './attachment-preview-modal';
+export { ImageViewerModal } from './image-viewer-modal';
+export { VideoPlayerModal } from './video-player-modal';
 
 // UI Components
-export { EmptyConversation } from './EmptyConversation';
-export { TypingIndicator } from './TypingIndicator';
-export { MessageInput } from './MessageInput';
-export { AttachmentPicker } from './AttachmentPicker';
+export { EmptyConversation } from './empty-conversation';
+export { TypingIndicator } from './typing-indicator';
+export { MessageInput } from './message-input';
+export { AttachmentPicker } from './attachment-picker';
 
 // Animation Wrappers
-export { AnimatedMessageWrapper } from './AnimatedMessageWrapper';
-export { AnimatedReactionBubble } from './AnimatedReactionBubble';
+export { AnimatedMessageWrapper } from './animated-message-wrapper';
+export { AnimatedReactionBubble } from './animated-reaction-bubble';
 
 // Video Components
-export { VideoPlayerComponent } from './VideoPlayerComponent';
-export { AttachmentVideoPreview } from './AttachmentVideoPreview';
+export { VideoPlayerComponent } from './video-player-component';
+export { AttachmentVideoPreview } from './attachment-video-preview';
 
 // Types - Modals
-export type { MessageActionsMenuProps } from './MessageActionsMenu';
-export type { ReactionPickerModalProps } from './ReactionPickerModal';
-export type { AttachmentPreviewModalProps } from './AttachmentPreviewModal';
-export type { ImageViewerModalProps } from './ImageViewerModal';
-export type { VideoPlayerModalProps } from './VideoPlayerModal';
+export type { MessageActionsMenuProps } from './message-actions-menu';
+export type { ReactionPickerModalProps } from './reaction-picker-modal';
+export type { AttachmentPreviewModalProps } from './attachment-preview-modal';
+export type { ImageViewerModalProps } from './image-viewer-modal';
+export type { VideoPlayerModalProps } from './video-player-modal';
 
 // Types - UI Components
-export type { EmptyConversationProps } from './EmptyConversation';
-export type { TypingIndicatorProps } from './TypingIndicator';
-export type { MessageInputProps } from './MessageInput';
-export type { AttachmentPickerProps, AttachmentType } from './AttachmentPicker';
+export type { EmptyConversationProps } from './empty-conversation';
+export type { TypingIndicatorProps } from './typing-indicator';
+export type { MessageInputProps } from './message-input';
+export type { AttachmentPickerProps, AttachmentType } from './attachment-picker';
 
 // Constants
 export { QUICK_REACTIONS, EMOJI_CATEGORIES, WAVE_EMOJIS, ACTION_COLORS } from './constants';

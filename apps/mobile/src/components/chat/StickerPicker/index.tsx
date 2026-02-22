@@ -17,8 +17,8 @@ import {
   Dimensions,
   StyleSheet,
 } from 'react-native';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import GlassCard from '../../ui/GlassCard';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
+import GlassCard from '../../ui/glass-card';
 
 import { Sticker, StickerPack, StickerPickerProps, STICKER_PACKS, getRarityColor } from './types';
 import { styles } from './styles';

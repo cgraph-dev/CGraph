@@ -19,11 +19,11 @@ export {
   cleanupOfflineQueue,
   getState,
   QueuePriority,
-} from './OfflineQueue';
+} from './offline-queue';
 
 export type {
   QueueItem,
   QueueItemType,
-} from './OfflineQueue';
+} from './offline-queue';
 
-export { default as OfflineQueue } from './OfflineQueue';
+export { default as OfflineQueue } from './offline-queue';

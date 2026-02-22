@@ -22,7 +22,7 @@ export type {
 
 // Tab components
 export { ColorsTab, ShapeTab, EffectsTab, AnimationsTab, LayoutTab } from './tabs';
-export { BackgroundsTab } from './BackgroundsTab';
+export { BackgroundsTab } from './backgrounds-tab';
 
 // Main component (default export)
 export { default } from './page';

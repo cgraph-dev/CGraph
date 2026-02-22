@@ -3,4 +3,4 @@
  * @module modules/premium
  */
 
-export { default as PremiumScreen } from '../../screens/premium/PremiumScreen';
+export { default as PremiumScreen } from '../../screens/premium/premium-screen';

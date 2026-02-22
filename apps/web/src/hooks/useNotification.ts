@@ -2,7 +2,7 @@ import { use } from 'react';
 import {
   NotificationContext,
   type NotificationContextType,
-} from '@/providers/NotificationProvider';
+} from '@/providers/notification-provider';
 
 /**
  * Hook to access the notification system.

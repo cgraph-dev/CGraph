@@ -10,7 +10,7 @@
 
 import gsap from 'gsap';
 
-import type { SpringConfig } from '../AnimationEngine.types';
+import type { SpringConfig } from '../animation-engine.types';
 
 // =============================================================================
 // SPRING PHYSICS (React Native Reanimated Style)

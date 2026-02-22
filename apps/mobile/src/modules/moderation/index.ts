@@ -3,6 +3,6 @@
  * @module modules/moderation
  */
 
-export { default as ModerationQueueScreen } from '../../screens/moderation/ModerationQueueScreen';
-export { default as ReportScreen } from '../../screens/moderation/ReportScreen';
-export { default as ReportDetailScreen } from '../../screens/moderation/ReportDetailScreen';
+export { default as ModerationQueueScreen } from '../../screens/moderation/moderation-queue-screen';
+export { default as ReportScreen } from '../../screens/moderation/report-screen';
+export { default as ReportDetailScreen } from '../../screens/moderation/report-detail-screen';

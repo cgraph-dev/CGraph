@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PlusIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { PostCardSkeleton } from '@/components';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { PostCard } from './post-card';
 import type { PostsListProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';

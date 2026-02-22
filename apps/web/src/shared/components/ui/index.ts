@@ -108,5 +108,5 @@ export {
   GlassCardNeon,
   GlassCardHolographic,
   GlassCardCrystal,
-} from '@/components/ui/GlassCard';
-export { default as AnimatedAvatar, useAvatarStyle } from '@/components/ui/AnimatedAvatar';
+} from '@/components/ui/glass-card';
+export { default as AnimatedAvatar, useAvatarStyle } from '@/components/ui/animated-avatar';

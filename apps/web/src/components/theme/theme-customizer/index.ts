@@ -7,14 +7,14 @@
  */
 
 // Main component
-export { ThemeCustomizer, default } from './ThemeCustomizer';
+export { ThemeCustomizer, default } from './theme-customizer';
 
 // Tab components
-export { ColorTab } from './ColorTab';
-export { AvatarTab } from './AvatarTab';
-export { BubblesTab } from './BubblesTab';
-export { EffectsTab } from './EffectsTab';
-export { LivePreview } from './LivePreview';
+export { ColorTab } from './color-tab';
+export { AvatarTab } from './avatar-tab';
+export { BubblesTab } from './bubbles-tab';
+export { EffectsTab } from './effects-tab';
+export { LivePreview } from './live-preview';
 
 // Constants
 export {

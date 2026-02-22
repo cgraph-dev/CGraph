@@ -15,7 +15,7 @@ import type {
   ConversationParticipant,
   UserBasic,
 } from '../../../types';
-import type { ThemeColors } from '../../../contexts/ThemeContext';
+import type { ThemeColors } from '../../../contexts/theme-context';
 
 // =============================================================================
 // Navigation Types

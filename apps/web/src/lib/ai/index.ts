@@ -17,4 +17,4 @@ export type {
   AIConfig,
 } from './types';
 
-export { AIMessageEngine, aiMessageEngine } from './AIMessageEngine';
+export { AIMessageEngine, aiMessageEngine } from './ai-message-engine';

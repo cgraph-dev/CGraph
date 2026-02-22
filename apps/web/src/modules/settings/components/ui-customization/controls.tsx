@@ -4,7 +4,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { springs } from '@/lib/animation-presets/presets';
 
 // =============================================================================

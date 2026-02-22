@@ -9,7 +9,7 @@
 
 // Main screen component (re-export from parent for backwards compatibility)
 // The main ConversationScreen.tsx stays in parent directory for route compatibility
-export { default } from '../ConversationScreen';
+export { default } from '../conversation-screen';
 
 // Types
 export * from './types';

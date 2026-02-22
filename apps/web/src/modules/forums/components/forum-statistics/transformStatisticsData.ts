@@ -1,4 +1,4 @@
-import type { ForumStats } from '@/modules/forums/components/forum-statistics/ForumStatistics.types';
+import type { ForumStats } from '@/modules/forums/components/forum-statistics/forum-statistics.types';
 
 /**
  * Transforms raw API statistics data into the typed ForumStats shape.

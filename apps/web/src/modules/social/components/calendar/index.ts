@@ -4,17 +4,17 @@
  */
 
 // ── Main component ──────────────────────────────────────────────────
-export { default, default as CalendarView } from './CalendarView';
+export { default, default as CalendarView } from './calendar-view';
 
 // ── Sub-components ──────────────────────────────────────────────────
-export { CalendarHeader } from './CalendarHeader';
-export type { CalendarHeaderProps } from './CalendarHeader';
+export { CalendarHeader } from './calendar-header';
+export type { CalendarHeaderProps } from './calendar-header';
 
-export { CalendarGrid } from './CalendarGrid';
-export type { CalendarGridProps } from './CalendarGrid';
+export { CalendarGrid } from './calendar-grid';
+export type { CalendarGridProps } from './calendar-grid';
 
-export { CalendarSidebar } from './CalendarSidebar';
-export type { CalendarSidebarProps } from './CalendarSidebar';
+export { CalendarSidebar } from './calendar-sidebar';
+export type { CalendarSidebarProps } from './calendar-sidebar';
 
 // ── Utilities ───────────────────────────────────────────────────────
 export { formatTime, getCategoryColor, getEventTypeIcon, isToday } from './calendarUtils';

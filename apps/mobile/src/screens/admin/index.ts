@@ -5,4 +5,4 @@
  */
 
 export { default as AdminDashboardScreen } from './AdminDashboardScreen';
-export { default as ForumReorderScreen } from './ForumReorderScreen';
+export { default as ForumReorderScreen } from './forum-reorder-screen';

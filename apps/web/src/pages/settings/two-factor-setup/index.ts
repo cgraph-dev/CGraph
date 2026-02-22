@@ -3,15 +3,15 @@
  * @module pages/settings/two-factor-setup
  */
 
-export { default } from './TwoFactorSetup';
+export { default } from './two-factor-setup';
 
 // Components
-export { IntroStep } from './IntroStep';
-export { ScanStep } from './ScanStep';
-export { VerifyStep } from './VerifyStep';
-export { BackupStep } from './BackupStep';
-export { CompleteStep } from './CompleteStep';
-export { ProgressIndicator } from './ProgressIndicator';
+export { IntroStep } from './intro-step';
+export { ScanStep } from './scan-step';
+export { VerifyStep } from './verify-step';
+export { BackupStep } from './backup-step';
+export { CompleteStep } from './complete-step';
+export { ProgressIndicator } from './progress-indicator';
 
 // Hooks
 export { useTwoFactorSetup } from './useTwoFactorSetup';

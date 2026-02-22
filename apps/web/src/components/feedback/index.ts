@@ -1,17 +1,17 @@
 // Feedback components - Loading, errors, empty states, toasts, progress
-export { default as ErrorBoundary } from './ErrorBoundary';
-export { default as RouteErrorBoundary } from './RouteErrorBoundary';
-export { QueryBoundary } from './QueryBoundary';
-export { LoadingSpinner } from './LoadingSpinner';
+export { default as ErrorBoundary } from './error-boundary';
+export { default as RouteErrorBoundary } from './route-error-boundary';
+export { QueryBoundary } from './query-boundary';
+export { LoadingSpinner } from './loading-spinner';
 export {
   LoadingOverlay,
   SkeletonText,
   SkeletonAvatar,
   SkeletonMessage,
   SkeletonConversation,
-} from './Loading';
-export { default as ToastProvider, useToast, toast } from './Toast';
-export { default as ProgressBar } from './ProgressBar';
+} from './loading';
+export { default as ToastProvider, useToast, toast } from './toast';
+export { default as ProgressBar } from './progress-bar';
 export {
   default as EmptyState,
   EmptyMessages,
@@ -20,4 +20,4 @@ export {
   EmptyForums,
   EmptySearchResults,
   EmptyNotifications,
-} from './EmptyState';
+} from './empty-state';

@@ -6,7 +6,7 @@
 import { toast } from '@/shared/components/ui';
 import { socketManager } from '@/lib/socket';
 import { createLogger } from '@/lib/logger';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { Message } from '@/modules/chat/store';
 import type { PendingE2EEMessage, UIPreferences } from './types';
 

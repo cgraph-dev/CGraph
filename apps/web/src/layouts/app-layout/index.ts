@@ -8,10 +8,10 @@
  */
 
 // Main component
-export { default } from './AppLayout';
+export { default } from './app-layout';
 
 // Sub-components
-export { default as Sidebar } from './Sidebar';
+export { default as Sidebar } from './sidebar';
 
 // Hooks
 export { useAppLayout } from './hooks';

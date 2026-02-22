@@ -15,7 +15,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { View, FlatList, StyleSheet, RefreshControl, Animated } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/theme-context';
 import api from '../../../lib/api';
 import type { GroupListScreenProps, Group } from './types';
 import { AnimatedHeader, MorphingGroupCard, EmptyGroupState } from './components';

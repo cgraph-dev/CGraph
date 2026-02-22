@@ -11,15 +11,15 @@
 export { default } from './page';
 
 // ── Sub-components ─────────────────────────────────────────────────────
-export { ConversationMessages } from './ConversationMessages';
-export type { ConversationMessagesProps } from './ConversationMessages';
-export { E2EETesterModal, E2EEError, CallModals, InfoPanel } from './ConversationModals';
+export { ConversationMessages } from './conversation-messages';
+export type { ConversationMessagesProps } from './conversation-messages';
+export { E2EETesterModal, E2EEError, CallModals, InfoPanel } from './conversation-modals';
 export type {
   E2EEModalProps,
   E2EEErrorProps,
   CallModalsProps,
   InfoPanelProps,
-} from './ConversationModals';
+} from './conversation-modals';
 
 // ── Types ──────────────────────────────────────────────────────────────
 export type {

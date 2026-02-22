@@ -10,11 +10,11 @@
  * - Mythic: Reality-bending void distortion
  */
 
-export { AnimatedBadge, AnimatedBadge as default } from './AnimatedBadge';
-export { AnimatedBadgeWithTooltip } from './AnimatedBadgeWithTooltip';
-export { OrbitingParticle } from './OrbitingParticle';
-export { RarityEffects } from './RarityEffects';
-export { BadgeTooltip } from './BadgeTooltip';
+export { AnimatedBadge, AnimatedBadge as default } from './animated-badge';
+export { AnimatedBadgeWithTooltip } from './animated-badge-with-tooltip';
+export { OrbitingParticle } from './orbiting-particle';
+export { RarityEffects } from './rarity-effects';
+export { BadgeTooltip } from './badge-tooltip';
 export { RARITY_COLORS, SIZE_CONFIG } from './constants';
 export {
   shimmerAnimation,

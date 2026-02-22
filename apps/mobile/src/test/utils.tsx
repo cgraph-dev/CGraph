@@ -14,7 +14,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import { E2EEProvider } from '../lib/crypto/E2EEContext';
+import { E2EEProvider } from '../lib/crypto/e2-ee-context';
 import type { User as _User } from '../types';
 
 // ============================================================================

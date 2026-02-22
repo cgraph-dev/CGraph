@@ -6,7 +6,7 @@
  */
 
 import { useCallback } from 'react';
-import { toast as toastActions } from '@/components/ui/Toast';
+import { toast as toastActions } from '@/components/ui/toast';
 
 export interface ToastOptions {
   type: 'success' | 'error' | 'warning' | 'info';

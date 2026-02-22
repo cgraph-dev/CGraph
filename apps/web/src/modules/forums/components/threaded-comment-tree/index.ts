@@ -5,13 +5,13 @@
  */
 
 // Main component
-export { default, ThreadedCommentTree } from './ThreadedCommentTree';
+export { default, ThreadedCommentTree } from './threaded-comment-tree';
 
 // Sub-components
-export { ThreadedComment } from './ThreadedComment';
-export { CommentHeader } from './CommentHeader';
-export { CommentActions } from './CommentActions';
-export { ThreadLine } from './ThreadLine';
+export { ThreadedComment } from './threaded-comment';
+export { CommentHeader } from './comment-header';
+export { CommentActions } from './comment-actions';
+export { ThreadLine } from './thread-line';
 
 // Utils
 export { buildCommentTree, countDescendants } from './utils';

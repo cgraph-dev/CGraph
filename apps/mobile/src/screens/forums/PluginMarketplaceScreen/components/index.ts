@@ -2,6 +2,6 @@
  * PluginMarketplaceScreen Components Barrel Export
  */
 
-export { PluginCard } from './PluginCard';
-export { PluginDetailModal } from './PluginDetailModal';
-export { CategoryFilter } from './CategoryFilter';
+export { PluginCard } from './plugin-card';
+export { PluginDetailModal } from './plugin-detail-modal';
+export { CategoryFilter } from './category-filter';

@@ -3,7 +3,7 @@
  */
 
 import { useState, useCallback, useMemo } from 'react';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { usePremiumStore } from '@/modules/premium/store';
 import type { CoinPackage } from '@/modules/premium/store/types';
 

@@ -16,10 +16,10 @@ export type {
 } from '../store/chatStore';
 
 // Re-export types from components
-export type { UIPreferences, MessageBubbleProps } from '../components/MessageBubble';
-export type { MessageInputAreaProps } from '../components/MessageInputArea';
-export type { ReplyPreviewProps } from '../components/ReplyPreview';
-export type { AmbientBackgroundProps } from '../components/AmbientBackground';
-export type { UISettingsPanelProps } from '../components/UISettingsPanel';
-export type { ConversationModalsProps } from '../components/ConversationModals';
-export type { GifResult } from '../components/GifPicker';
+export type { UIPreferences, MessageBubbleProps } from '../components/message-bubble';
+export type { MessageInputAreaProps } from '../components/message-input-area';
+export type { ReplyPreviewProps } from '../components/reply-preview';
+export type { AmbientBackgroundProps } from '../components/ambient-background';
+export type { UISettingsPanelProps } from '../components/ui-settings-panel';
+export type { ConversationModalsProps } from '../components/conversation-modals';
+export type { GifResult } from '../components/gif-picker';

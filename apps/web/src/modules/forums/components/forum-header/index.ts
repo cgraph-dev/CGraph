@@ -5,15 +5,15 @@
  */
 
 // Main component
-export { ForumHeader, default } from './ForumHeader';
+export { ForumHeader, default } from './forum-header';
 
 // Sub-components
-export { VoteButtons } from './VoteButtons';
-export { ForumStats } from './ForumStats';
-export { ForumActions } from './ForumActions';
-export { ForumIcon } from './ForumIcon';
-export { ForumHeaderCompact } from './ForumHeaderCompact';
-export { ForumHeaderHero } from './ForumHeaderHero';
+export { VoteButtons } from './vote-buttons';
+export { ForumStats } from './forum-stats';
+export { ForumActions } from './forum-actions';
+export { ForumIcon } from './forum-icon';
+export { ForumHeaderCompact } from './forum-header-compact';
+export { ForumHeaderHero } from './forum-header-hero';
 
 // Types
 export type {

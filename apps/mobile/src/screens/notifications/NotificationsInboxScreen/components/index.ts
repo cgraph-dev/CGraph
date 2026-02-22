@@ -2,17 +2,17 @@
  * NotificationsInboxScreen Components
  */
 
-export { SwipeableNotificationItem } from './SwipeableNotificationItem';
-export type { SwipeableNotificationItemProps } from './SwipeableNotificationItem';
+export { SwipeableNotificationItem } from './swipeable-notification-item';
+export type { SwipeableNotificationItemProps } from './swipeable-notification-item';
 
-export { NotificationTabs } from './NotificationTabs';
-export type { NotificationTabsProps } from './NotificationTabs';
+export { NotificationTabs } from './notification-tabs';
+export type { NotificationTabsProps } from './notification-tabs';
 
-export { NotificationHeader } from './NotificationHeader';
-export type { NotificationHeaderProps } from './NotificationHeader';
+export { NotificationHeader } from './notification-header';
+export type { NotificationHeaderProps } from './notification-header';
 
-export { EmptyNotifications } from './EmptyNotifications';
-export type { EmptyNotificationsProps } from './EmptyNotifications';
+export { EmptyNotifications } from './empty-notifications';
+export type { EmptyNotificationsProps } from './empty-notifications';
 
-export { LoadingState } from './LoadingState';
-export type { LoadingStateProps } from './LoadingState';
+export { LoadingState } from './loading-state';
+export type { LoadingStateProps } from './loading-state';

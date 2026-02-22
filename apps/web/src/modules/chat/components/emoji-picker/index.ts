@@ -9,12 +9,12 @@
  */
 
 // Main component
-export { EmojiPicker } from './EmojiPicker';
+export { EmojiPicker } from './emoji-picker';
 
 // Sub-components
-export { EmojiSearch } from './EmojiSearch';
-export { CategoryTabs } from './CategoryTabs';
-export { EmojiGrid } from './EmojiGrid';
+export { EmojiSearch } from './emoji-search';
+export { CategoryTabs } from './category-tabs';
+export { EmojiGrid } from './emoji-grid';
 
 // Hooks
 export { useRecentEmojis, useFilteredEmojis } from './useEmojiPicker';

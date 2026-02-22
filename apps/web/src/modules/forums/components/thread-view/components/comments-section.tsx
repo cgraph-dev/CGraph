@@ -7,7 +7,7 @@
 
 import { motion } from 'framer-motion';
 import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
-import { ThreadedCommentTree } from '../../ThreadedCommentTree';
+import { ThreadedCommentTree } from '../../threaded-comment-tree';
 import type { Comment } from '@/modules/forums/store';
 import type { CommentViewMode } from '../types';
 // Import siblings directly to avoid circular dep through barrel

@@ -8,13 +8,13 @@
  */
 
 // Main component
-export { default } from './BlockedUsers';
+export { default } from './blocked-users';
 
 // Sub-components
-export { BlockedUserCard } from './BlockedUserCard';
-export { ConfirmUnblockModal } from './ConfirmUnblockModal';
-export { EmptyState } from './EmptyState';
-export { SearchBar } from './SearchBar';
+export { BlockedUserCard } from './blocked-user-card';
+export { ConfirmUnblockModal } from './confirm-unblock-modal';
+export { EmptyState } from './empty-state';
+export { SearchBar } from './search-bar';
 
 // Hooks
 export { useBlockedUsers } from './hooks';

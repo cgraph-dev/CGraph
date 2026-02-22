@@ -5,13 +5,13 @@
  */
 
 // UI Components
-export * from './CustomizationUI';
+export * from './customization-ui';
 
 // Animated Avatar
-export { AnimatedAvatar, type BorderType } from './AnimatedAvatar';
+export { AnimatedAvatar, type BorderType } from './animated-avatar';
 
 // Live Preview
-export { LivePreviewPanel } from './LivePreviewPanel';
+export { LivePreviewPanel } from './live-preview-panel';
 
 // Panels
 export { ThemePanel, AvatarPanel, ChatPanel, ProfilePanel } from './panels';
@@ -21,4 +21,4 @@ export {
   CustomizationItemCard,
   type CustomizationItem,
   type CustomizationItemCardProps,
-} from './CustomizationItemCard';
+} from './customization-item-card';

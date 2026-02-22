@@ -1,1 +1,1 @@
-export { default } from './RSSFeedsPage';
+export { default } from './rss-feeds-page';

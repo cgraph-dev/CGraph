@@ -4,8 +4,8 @@
  * Barrel export for all extracted components.
  */
 
-export { AnimatedPodium } from './AnimatedPodium';
-export { AnimatedListItem } from './AnimatedListItem';
-export { AnimatedTabBar } from './AnimatedTabBar';
-export { AnimatedPeriodSelector } from './AnimatedPeriodSelector';
-export { EmptyState } from './EmptyState';
+export { AnimatedPodium } from './animated-podium';
+export { AnimatedListItem } from './animated-list-item';
+export { AnimatedTabBar } from './animated-tab-bar';
+export { AnimatedPeriodSelector } from './animated-period-selector';
+export { EmptyState } from './empty-state';

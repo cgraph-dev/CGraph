@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import confetti from 'canvas-confetti';
 
 interface RewardsUnlocked {

@@ -10,8 +10,8 @@
  * - AdvancedSettings: Layout, performance, accessibility, and experimental features
  */
 
-export { ThemeSettings } from './ThemeSettings';
-export { EffectsSettings } from './EffectsSettings';
-export { AnimationsSettings } from './AnimationsSettings';
-export { TypographySettings } from './TypographySettings';
-export { AdvancedSettings } from './AdvancedSettings';
+export { ThemeSettings } from './theme-settings';
+export { EffectsSettings } from './effects-settings';
+export { AnimationsSettings } from './animations-settings';
+export { TypographySettings } from './typography-settings';
+export { AdvancedSettings } from './advanced-settings';

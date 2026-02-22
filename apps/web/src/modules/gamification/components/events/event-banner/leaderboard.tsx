@@ -4,7 +4,7 @@
  */
 
 import { motion } from 'framer-motion';
-import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
+import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { EventLeaderboardProps, LeaderboardEntry } from './types';
 
 /**

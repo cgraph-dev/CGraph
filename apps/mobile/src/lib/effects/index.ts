@@ -12,7 +12,7 @@
 // Blur System
 // ============================================================================
 
-export { default as BlurEngine } from './BlurEngine';
+export { default as BlurEngine } from './blur-engine';
 export type {
   BlurTint,
   BlurStyle,
@@ -21,7 +21,7 @@ export type {
   BlurConfig,
   BlurFallbackColors,
   BlurLayerConfig,
-} from './BlurEngine';
+} from './blur-engine';
 
 export {
   default as BlurViewCross,
@@ -35,14 +35,14 @@ export {
   MidnightGlass,
   OceanGlass,
   EmberGlass,
-} from './BlurViewCross';
-export type { BlurViewCrossProps } from './BlurViewCross';
+} from './blur-view-cross';
+export type { BlurViewCrossProps } from './blur-view-cross';
 
 // ============================================================================
 // Particle System
 // ============================================================================
 
-export { default as ParticleSystem } from './ParticleSystem';
+export { default as ParticleSystem } from './particle-system';
 export {
   ParticleEngine,
   createSparkles,
@@ -52,7 +52,7 @@ export {
   createFireflies,
   createBubbles,
   createStars,
-} from './ParticleSystem';
+} from './particle-system';
 export type {
   ParticleType,
   ParticleConfig,
@@ -61,7 +61,7 @@ export type {
   ParticleBehavior,
   Particle,
   ParticleSystemConfig,
-} from './ParticleSystem';
+} from './particle-system';
 
 export {
   default as ParticleView,
@@ -72,14 +72,14 @@ export {
   FirefliesView,
   BubblesView,
   StarsView,
-} from './ParticleView';
-export type { ParticleViewProps } from './ParticleView';
+} from './particle-view';
+export type { ParticleViewProps } from './particle-view';
 
 // ============================================================================
 // Gradient & Glow System
 // ============================================================================
 
-export { default as GradientEngine } from './GradientEngine';
+export { default as GradientEngine } from './gradient-engine';
 export {
   interpolateColor,
   lightenColor,
@@ -96,7 +96,7 @@ export {
   GRADIENT_PRESETS,
   GLOW_PRESETS,
   SHADOW_PRESETS,
-} from './GradientEngine';
+} from './gradient-engine';
 export type {
   GradientType,
   GradientConfig,
@@ -105,7 +105,7 @@ export type {
   GlowType,
   ShadowConfig,
   ShadowPreset,
-} from './GradientEngine';
+} from './gradient-engine';
 
 export {
   AnimatedGradientView,
@@ -119,19 +119,19 @@ export {
   OceanGradient,
   EmberGradient,
   MatrixGradient,
-} from './AnimatedGradient';
+} from './animated-gradient';
 export type {
   AnimatedGradientProps,
   AnimatedBorderGradientProps,
   GlowViewProps,
   MeshGradientProps,
-} from './AnimatedGradient';
+} from './animated-gradient';
 
 // ============================================================================
 // Shader Effects
 // ============================================================================
 
-export { default as ShaderEffects } from './ShaderEffects';
+export { default as ShaderEffects } from './shader-effects';
 export {
   ScanlineEffect,
   HolographicEffect,
@@ -141,7 +141,7 @@ export {
   VignetteEffect,
   CRTEffect,
   ShaderOverlay,
-} from './ShaderEffects';
+} from './shader-effects';
 export type {
   ShaderType,
   ScanlineConfig,
@@ -159,4 +159,4 @@ export type {
   VignetteEffectProps,
   CRTEffectProps,
   ShaderOverlayProps,
-} from './ShaderEffects';
+} from './shader-effects';

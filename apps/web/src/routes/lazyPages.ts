@@ -10,76 +10,76 @@
 import { lazy } from 'react';
 
 // ── Auth Pages ─────────────────────────────────────────────────────────
-export const Login = lazy(() => import('@/pages/auth/Login'));
-export const Register = lazy(() => import('@/pages/auth/Register'));
-export const ForgotPassword = lazy(() => import('@/pages/auth/ForgotPassword'));
-export const OAuthCallback = lazy(() => import('@/pages/auth/OAuthCallback'));
-export const Onboarding = lazy(() => import('@/pages/auth/Onboarding'));
-export const ResetPassword = lazy(() => import('@/pages/auth/ResetPassword'));
-export const VerifyEmail = lazy(() => import('@/pages/auth/VerifyEmail'));
+export const Login = lazy(() => import('@/pages/auth/login'));
+export const Register = lazy(() => import('@/pages/auth/register'));
+export const ForgotPassword = lazy(() => import('@/pages/auth/forgot-password'));
+export const OAuthCallback = lazy(() => import('@/pages/auth/o-auth-callback'));
+export const Onboarding = lazy(() => import('@/pages/auth/onboarding'));
+export const ResetPassword = lazy(() => import('@/pages/auth/reset-password'));
+export const VerifyEmail = lazy(() => import('@/pages/auth/verify-email'));
 
 // ── Core Messaging ─────────────────────────────────────────────────────
-export const Messages = lazy(() => import('@/pages/messages/Messages'));
-export const Conversation = lazy(() => import('@/pages/messages/Conversation'));
+export const Messages = lazy(() => import('@/pages/messages/messages'));
+export const Conversation = lazy(() => import('@/pages/messages/conversation'));
 
 // ── Groups ─────────────────────────────────────────────────────────────
-export const Groups = lazy(() => import('@/pages/groups/Groups'));
-export const GroupChannel = lazy(() => import('@/pages/groups/GroupChannel'));
+export const Groups = lazy(() => import('@/pages/groups/groups'));
+export const GroupChannel = lazy(() => import('@/pages/groups/group-channel'));
 
 // ── Forums ─────────────────────────────────────────────────────────────
-export const Forums = lazy(() => import('@/pages/forums/Forums'));
-export const ForumPost = lazy(() => import('@/pages/forums/ForumPost'));
-export const ForumLeaderboard = lazy(() => import('@/pages/forums/ForumLeaderboard'));
-export const CreateForum = lazy(() => import('@/pages/forums/CreateForum'));
-export const CreatePost = lazy(() => import('@/pages/forums/CreatePost'));
-export const ForumSettings = lazy(() => import('@/pages/forums/ForumSettings'));
-export const ForumBoardView = lazy(() => import('@/pages/forums/ForumBoardView'));
-export const ForumAdmin = lazy(() => import('@/pages/forums/ForumAdmin'));
-export const PluginMarketplace = lazy(() => import('@/pages/forums/PluginMarketplace'));
-export const ModerationQueue = lazy(() => import('@/pages/forums/ModerationQueue'));
+export const Forums = lazy(() => import('@/pages/forums/forums'));
+export const ForumPost = lazy(() => import('@/pages/forums/forum-post'));
+export const ForumLeaderboard = lazy(() => import('@/pages/forums/forum-leaderboard'));
+export const CreateForum = lazy(() => import('@/pages/forums/create-forum'));
+export const CreatePost = lazy(() => import('@/pages/forums/create-post'));
+export const ForumSettings = lazy(() => import('@/pages/forums/forum-settings'));
+export const ForumBoardView = lazy(() => import('@/pages/forums/forum-board-view'));
+export const ForumAdmin = lazy(() => import('@/pages/forums/forum-admin'));
+export const PluginMarketplace = lazy(() => import('@/pages/forums/plugin-marketplace'));
+export const ModerationQueue = lazy(() => import('@/pages/forums/moderation-queue'));
 
 // ── Settings & Profile ─────────────────────────────────────────────────
-export const Settings = lazy(() => import('@/pages/settings/Settings'));
-export const ThemeCustomization = lazy(() => import('@/pages/settings/ThemeCustomization'));
-export const AppThemeSettings = lazy(() => import('@/pages/settings/AppThemeSettings'));
-export const TitleSelection = lazy(() => import('@/pages/settings/TitleSelection'));
-export const BadgeSelection = lazy(() => import('@/pages/settings/BadgeSelection'));
-export const TwoFactorSetup = lazy(() => import('@/pages/settings/TwoFactorSetup'));
-export const BlockedUsers = lazy(() => import('@/pages/settings/BlockedUsers'));
-export const CustomEmoji = lazy(() => import('@/pages/settings/CustomEmoji'));
-export const RSSFeeds = lazy(() => import('@/pages/settings/RSSFeeds'));
-export const UserProfile = lazy(() => import('@/pages/profile/UserProfile'));
-export const UserLeaderboard = lazy(() => import('@/pages/community/UserLeaderboard'));
+export const Settings = lazy(() => import('@/pages/settings/settings'));
+export const ThemeCustomization = lazy(() => import('@/pages/settings/theme-customization'));
+export const AppThemeSettings = lazy(() => import('@/pages/settings/app-theme-settings'));
+export const TitleSelection = lazy(() => import('@/pages/settings/title-selection'));
+export const BadgeSelection = lazy(() => import('@/pages/settings/badge-selection'));
+export const TwoFactorSetup = lazy(() => import('@/pages/settings/two-factor-setup'));
+export const BlockedUsers = lazy(() => import('@/pages/settings/blocked-users'));
+export const CustomEmoji = lazy(() => import('@/pages/settings/custom-emoji'));
+export const RSSFeeds = lazy(() => import('@/pages/settings/rss-feeds'));
+export const UserProfile = lazy(() => import('@/pages/profile/user-profile'));
+export const UserLeaderboard = lazy(() => import('@/pages/community/user-leaderboard'));
 
 // ── Security ───────────────────────────────────────────────────────────
-export const E2EEVerification = lazy(() => import('@/pages/security/E2EEVerification'));
-export const KeyVerification = lazy(() => import('@/pages/security/KeyVerification'));
+export const E2EEVerification = lazy(() => import('@/pages/security/e2-ee-verification'));
+export const KeyVerification = lazy(() => import('@/pages/security/key-verification'));
 
 // ── Calls ──────────────────────────────────────────────────────────────
-export const CallScreen = lazy(() => import('@/pages/calls/CallScreen'));
-export const CallHistory = lazy(() => import('@/pages/calls/CallHistory'));
+export const CallScreen = lazy(() => import('@/pages/calls/call-screen'));
+export const CallHistory = lazy(() => import('@/pages/calls/call-history'));
 
 // ── Premium & Gamification ─────────────────────────────────────────────
-export const PremiumPage = lazy(() => import('@/pages/premium/PremiumPage'));
-export const CoinShop = lazy(() => import('@/pages/premium/CoinShop'));
+export const PremiumPage = lazy(() => import('@/pages/premium/premium-page'));
+export const CoinShop = lazy(() => import('@/pages/premium/coin-shop'));
 
 // ── Hub Pages ──────────────────────────────────────────────────────────
-export const Customize = lazy(() => import('@/pages/customize/Customize'));
-export const Social = lazy(() => import('@/pages/social/Social'));
+export const Customize = lazy(() => import('@/pages/customize/customize'));
+export const Social = lazy(() => import('@/pages/social/social'));
 
 // ── Members & Community ────────────────────────────────────────────────
-export const MemberList = lazy(() => import('@/pages/members/MemberList'));
-export const WhosOnline = lazy(() => import('@/pages/members/WhosOnline'));
-export const CalendarPage = lazy(() => import('@/pages/calendar/CalendarPage'));
-export const ReferralPage = lazy(() => import('@/pages/referrals/ReferralPage'));
+export const MemberList = lazy(() => import('@/pages/members/member-list'));
+export const WhosOnline = lazy(() => import('@/pages/members/whos-online'));
+export const CalendarPage = lazy(() => import('@/pages/calendar/calendar-page'));
+export const ReferralPage = lazy(() => import('@/pages/referrals/referral-page'));
 
 // ── Admin ──────────────────────────────────────────────────────────────
-export const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
+export const AdminDashboard = lazy(() => import('@/pages/admin/admin-dashboard'));
 
 // ── Static Pages ───────────────────────────────────────────────────────
-export const NotFound = lazy(() => import('@/pages/NotFound'));
+export const NotFound = lazy(() => import('@/pages/not-found'));
 
 // ── Dev/Test Pages ─────────────────────────────────────────────────────
-export const MatrixTest = lazy(() => import('@/__dev__/test/MatrixTest'));
-export const EnhancedDemo = lazy(() => import('@/__dev__/test/EnhancedDemo'));
-export const ThemeApplicationTest = lazy(() => import('@/__dev__/test/ThemeApplicationTest'));
+export const MatrixTest = lazy(() => import('@/__dev__/test/matrix-test'));
+export const EnhancedDemo = lazy(() => import('@/__dev__/test/enhanced-demo'));
+export const ThemeApplicationTest = lazy(() => import('@/__dev__/test/theme-application-test'));

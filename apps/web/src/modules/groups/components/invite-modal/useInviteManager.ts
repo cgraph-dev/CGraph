@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
 

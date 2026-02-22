@@ -2,11 +2,11 @@
  * LeaderboardScreen Components
  */
 
-export { RankChangeIndicator } from './RankChangeIndicator';
-export type { RankChangeIndicatorProps } from './RankChangeIndicator';
+export { RankChangeIndicator } from './rank-change-indicator';
+export type { RankChangeIndicatorProps } from './rank-change-indicator';
 
-export { Podium } from './Podium';
-export type { PodiumProps } from './Podium';
+export { Podium } from './podium';
+export type { PodiumProps } from './podium';
 
-export { EntryRow } from './EntryRow';
-export type { EntryRowProps } from './EntryRow';
+export { EntryRow } from './entry-row';
+export type { EntryRowProps } from './entry-row';

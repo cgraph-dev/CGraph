@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { AchievementRarity } from '@/modules/gamification/store';
 import {
   RARITY_COLORS,

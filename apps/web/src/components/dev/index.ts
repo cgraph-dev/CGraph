@@ -15,4 +15,4 @@ export {
   getProfilerMetrics,
   getProfilerStats,
   clearProfilerMetrics,
-} from './ProfilerWrapper';
+} from './profiler-wrapper';

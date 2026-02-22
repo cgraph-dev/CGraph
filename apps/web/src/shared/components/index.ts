@@ -17,7 +17,7 @@ export * from './layout';
 export * from './feedback';
 
 // Animated state components (Empty, Error)
-export { AnimatedEmptyState, AnimatedErrorState } from './AnimatedEmptyState';
+export { AnimatedEmptyState, AnimatedErrorState } from './animated-empty-state';
 
 // Avatar lightbox (zoom-to-fullscreen)
-export { AvatarLightbox } from './AvatarLightbox';
+export { AvatarLightbox } from './avatar-lightbox';

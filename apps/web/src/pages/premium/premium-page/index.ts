@@ -4,10 +4,10 @@
  * Barrel exports for the premium subscription page.
  */
 
-export { default } from './PremiumPage';
+export { default } from './premium-page';
 export * from './types';
 export * from './constants';
 export * from './utils';
-export * from './PricingCard';
-export * from './FeatureComparisonTable';
-export * from './FAQSection';
+export * from './pricing-card';
+export * from './feature-comparison-table';
+export * from './faq-section';

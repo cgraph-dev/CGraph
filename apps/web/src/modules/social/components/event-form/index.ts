@@ -8,11 +8,11 @@
  */
 
 // Main component
-export { default } from './EventForm';
+export { default } from './event-form';
 
 // Sub-components
-export { default as DateTimeFields } from './DateTimeFields';
-export { default as EventFormFields } from './EventFormFields';
+export { default as DateTimeFields } from './date-time-fields';
+export { default as EventFormFields } from './event-form-fields';
 
 // Hooks
 export { useEventForm, formatDateTimeLocal, formatDateLocal } from './hooks';

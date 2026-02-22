@@ -20,7 +20,7 @@
  */
 
 // Main component
-export { ThreadView, default } from './ThreadView';
+export { ThreadView, default } from './thread-view';
 
 // Types
 export type {

@@ -3,11 +3,11 @@
  */
 
 // Main component
-export { default } from './TitleSelection';
+export { default } from './title-selection';
 
 // Sub-components
-export { TitleCard } from './TitleCard';
-export { TitlePreviewModal } from './TitlePreviewModal';
+export { TitleCard } from './title-card';
+export { TitlePreviewModal } from './title-preview-modal';
 
 // Hook
 export { useTitleSelection } from './useTitleSelection';

@@ -6,24 +6,24 @@
  */
 
 // Subscription components
-export { SubscriptionCard } from './SubscriptionCard';
-export type { SubscriptionCardProps } from './SubscriptionCard';
+export { SubscriptionCard } from './subscription-card';
+export type { SubscriptionCardProps } from './subscription-card';
 
 // Payment flow
-export { PaymentModal } from './PaymentModal';
-export type { PaymentModalProps, PaymentItem } from './PaymentModal';
+export { PaymentModal } from './payment-modal';
+export type { PaymentModalProps, PaymentItem } from './payment-modal';
 
 // Coin shop
-export { CoinShopWidget } from './CoinShopWidget';
-export type { CoinShopWidgetProps } from './CoinShopWidget';
+export { CoinShopWidget } from './coin-shop-widget';
+export type { CoinShopWidgetProps } from './coin-shop-widget';
 
 // Upsell banners
-export { PremiumBanner } from './PremiumBanner';
-export type { PremiumBannerProps } from './PremiumBanner';
+export { PremiumBanner } from './premium-banner';
+export type { PremiumBannerProps } from './premium-banner';
 
 // Feature comparison
-export { FeatureComparison } from './FeatureComparison';
-export type { FeatureComparisonProps, FeatureCategory, FeatureItem } from './FeatureComparison';
+export { FeatureComparison } from './feature-comparison';
+export type { FeatureComparisonProps, FeatureCategory, FeatureItem } from './feature-comparison';
 
 // Default export for convenience
-export { SubscriptionCard as default } from './SubscriptionCard';
+export { SubscriptionCard as default } from './subscription-card';

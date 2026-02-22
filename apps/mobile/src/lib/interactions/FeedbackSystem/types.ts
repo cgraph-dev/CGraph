@@ -4,7 +4,7 @@
 
 import { StyleProp, ViewStyle, PressableProps, DimensionValue } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { SPRING_PRESETS } from '../../animations/AnimationLibrary';
+import { SPRING_PRESETS } from '../../animations/animation-library';
 
 export type PressStyle = 'scale' | 'opacity' | 'glow' | 'shadow' | 'lift' | 'none';
 export type FeedbackIntensity = 'light' | 'medium' | 'heavy';

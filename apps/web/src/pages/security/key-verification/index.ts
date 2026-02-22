@@ -1,1 +1,1 @@
-export { default } from './KeyVerificationPage';
+export { default } from './key-verification-page';

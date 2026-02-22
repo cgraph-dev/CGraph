@@ -17,7 +17,7 @@ import {
   ThemeHistory,
   CustomizationEngine,
   DEFAULT_THEME,
-} from '@/lib/customization/CustomizationEngine';
+} from '@/lib/customization/customization-engine';
 
 // ============================================================================
 // STATE INTERFACE

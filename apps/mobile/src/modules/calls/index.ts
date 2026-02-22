@@ -3,4 +3,4 @@
  * @module modules/calls
  */
 
-export { default as CallScreen } from '../../screens/calls/CallScreen';
+export { default as CallScreen } from '../../screens/calls/call-screen';

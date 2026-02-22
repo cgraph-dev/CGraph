@@ -5,8 +5,8 @@
 
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import UserProfileCard from '@/modules/social/components/UserProfileCard';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
+import UserProfileCard from '@/modules/social/components/user-profile-card';
 import { CheckIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import type { FriendRequestCardProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';

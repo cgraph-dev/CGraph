@@ -27,7 +27,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as MediaLibrary from 'expo-media-library';
 import * as Contacts from 'expo-contacts';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../contexts/theme-context';
 
 import { Asset, SelectedAsset, TabType, AttachmentPickerProps } from './types';
 import { styles } from './styles';

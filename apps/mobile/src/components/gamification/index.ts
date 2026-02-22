@@ -17,20 +17,20 @@
  */
 
 // Achievement system
-export { default as AchievementNotification } from './AchievementNotification';
-export type { Achievement, AchievementRarity } from './AchievementNotification';
+export { default as AchievementNotification } from './achievement-notification';
+export type { Achievement, AchievementRarity } from './achievement-notification';
 
 // Level and XP system
-export { default as LevelProgress } from './LevelProgress';
-export { default as LevelUpModal } from './LevelUpModal';
+export { default as LevelProgress } from './level-progress';
+export { default as LevelUpModal } from './level-up-modal';
 
 // Quest system
-export { default as QuestPanel } from './QuestPanel';
-export type { Quest, QuestType, QuestStatus, QuestReward } from './QuestPanel';
+export { default as QuestPanel } from './quest-panel';
+export type { Quest, QuestType, QuestStatus, QuestReward } from './quest-panel';
 
 // Streak tracking
-export { default as StreakDisplay } from './StreakDisplay';
-export type { StreakDisplayProps } from './StreakDisplay';
+export { default as StreakDisplay } from './streak-display';
+export type { StreakDisplayProps } from './streak-display';
 
 // Titles and badges
-export { default as TitleBadge } from './TitleBadge';
+export { default as TitleBadge } from './title-badge';

@@ -1,7 +1,7 @@
-export { MediaTile } from './MediaTile';
-export { CameraTile } from './CameraTile';
-export { AlbumPicker } from './AlbumPicker';
-export { ContactPicker } from './ContactPicker';
-export { TabBar } from './TabBar';
-export { Header } from './Header';
-export { FallbackView } from './FallbackView';
+export { MediaTile } from './media-tile';
+export { CameraTile } from './camera-tile';
+export { AlbumPicker } from './album-picker';
+export { ContactPicker } from './contact-picker';
+export { TabBar } from './tab-bar';
+export { Header } from './header';
+export { FallbackView } from './fallback-view';

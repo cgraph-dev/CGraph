@@ -11,12 +11,12 @@ export {
   ColorShadePicker,
   PresetSelector,
   haptic,
-} from './SettingsComponents';
+} from './settings-components';
 
-export { LivePreviewCard } from './LivePreviewCard';
+export { LivePreviewCard } from './live-preview-card';
 
 // Tab content components
-export { LayoutTab } from './LayoutTab';
-export { EffectsTab } from './EffectsTab';
-export { AnimationsTab } from './AnimationsTab';
-export { AccessibilityTab } from './AccessibilityTab';
+export { LayoutTab } from './layout-tab';
+export { EffectsTab } from './effects-tab';
+export { AnimationsTab } from './animations-tab';
+export { AccessibilityTab } from './accessibility-tab';

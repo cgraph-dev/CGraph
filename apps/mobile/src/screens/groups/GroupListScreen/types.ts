@@ -4,7 +4,7 @@
 
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { GroupsStackParamList, Group } from '../../../types';
-import { ThemeColors } from '../../../contexts/ThemeContext';
+import { ThemeColors } from '../../../contexts/theme-context';
 
 export type GroupListScreenProps = {
   navigation: NativeStackNavigationProp<GroupsStackParamList, 'GroupList'>;

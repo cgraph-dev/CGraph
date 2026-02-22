@@ -9,12 +9,12 @@
  */
 
 // Main component
-export { PriceHistoryChart, default } from './PriceHistoryChart';
+export { PriceHistoryChart, default } from './price-history-chart';
 
 // Sub-components
-export { ChartHeader } from './ChartHeader';
-export { ChartSVG } from './ChartSVG';
-export { ChartTooltip } from './ChartTooltip';
+export { ChartHeader } from './chart-header';
+export { ChartSVG } from './chart-svg';
+export { ChartTooltip } from './chart-tooltip';
 
 // Hooks
 export { useChartDimensions, useChartInteraction } from './hooks';

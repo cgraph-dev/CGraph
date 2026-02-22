@@ -18,7 +18,7 @@ import type {
   SearchPost,
   SearchMessage,
 } from '@/modules/search/store';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { categories } from './constants';
 import type { IdSearchType } from './types';
 

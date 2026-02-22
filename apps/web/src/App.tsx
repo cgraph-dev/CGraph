@@ -11,9 +11,9 @@
 import { useEffect, useState, Suspense, lazy } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { PageTransition } from '@/shared/components/PageTransition';
-import { AuthInitializer } from '@/routes/AuthInitializer';
-import { AppRoutes } from '@/routes/AppRoutes';
+import { PageTransition } from '@/shared/components/page-transition';
+import { AuthInitializer } from '@/routes/auth-initializer';
+import { AppRoutes } from '@/routes/app-routes';
 import { useGroupStore } from '@/modules/groups/store';
 import { initErrorTracking, reportWebVitals } from '@/lib/error-tracking';
 import '@/themes/theme-globals.css';
@@ -21,30 +21,30 @@ import '@/styles/customization-effects.css';
 
 // Lazy-load non-critical global components to reduce initial bundle
 const IncomingCallHandler = lazy(() =>
-  import('@/modules/calls/components/IncomingCallHandler').then((m) => ({
+  import('@/modules/calls/components/incoming-call-handler').then((m) => ({
     default: m.IncomingCallHandler,
   }))
 );
 const BackgroundEffectRenderer = lazy(() =>
-  import('@/modules/settings/components/BackgroundEffectRenderer').then((m) => ({
+  import('@/modules/settings/components/background-effect-renderer').then((m) => ({
     default: m.BackgroundEffectRenderer,
   }))
 );
 const QuickSwitcher = lazy(() =>
-  import('@/shared/components/QuickSwitcher').then((m) => ({ default: m.QuickSwitcher }))
+  import('@/shared/components/quick-switcher').then((m) => ({ default: m.QuickSwitcher }))
 );
 const KeyboardShortcutsModal = lazy(() =>
-  import('@/shared/components/KeyboardShortcutsModal').then((m) => ({
+  import('@/shared/components/keyboard-shortcuts-modal').then((m) => ({
     default: m.KeyboardShortcutsModal,
   }))
 );
 const GroupJoinCelebration = lazy(() =>
-  import('@/modules/groups/components/GroupJoinCelebration').then((m) => ({
+  import('@/modules/groups/components/group-join-celebration').then((m) => ({
     default: m.GroupJoinCelebration,
   }))
 );
 const PushNotificationPrompt = lazy(() =>
-  import('@/shared/components/PushNotificationPrompt').then((m) => ({
+  import('@/shared/components/push-notification-prompt').then((m) => ({
     default: m.PushNotificationPrompt,
   }))
 );

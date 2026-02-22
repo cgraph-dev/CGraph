@@ -3,9 +3,9 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { Sticker } from '@/data/stickers';
-import type { GifResult } from '@/modules/chat/components/GifPicker';
+import type { GifResult } from '@/modules/chat/components/gif-picker';
 import type { MessagePayload, AttachmentMode, VoiceMessageData, ReplyInfo } from './types';
 
 interface UseMessageInputOptions {

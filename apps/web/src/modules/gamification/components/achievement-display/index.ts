@@ -2,12 +2,12 @@
  * AchievementDisplay module - showcases user achievements with filtering and sorting
  */
 
-export { AchievementDisplay, AchievementDisplay as default } from './AchievementDisplay';
-export { StatsHeader } from './StatsHeader';
-export { FilterBar } from './FilterBar';
-export { AchievementCard } from './AchievementCard';
-export { AchievementListItem } from './AchievementListItem';
-export { AchievementModal } from './AchievementModal';
+export { AchievementDisplay, AchievementDisplay as default } from './achievement-display';
+export { StatsHeader } from './stats-header';
+export { FilterBar } from './filter-bar';
+export { AchievementCard } from './achievement-card';
+export { AchievementListItem } from './achievement-list-item';
+export { AchievementModal } from './achievement-modal';
 export { useAchievementDisplay } from './useAchievementDisplay';
 export {
   RARITY_COLORS,

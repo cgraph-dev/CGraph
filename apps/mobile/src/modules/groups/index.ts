@@ -4,11 +4,11 @@
  */
 
 export { default as GroupListScreen } from '../../screens/groups/GroupListScreen';
-export { default as GroupScreen } from '../../screens/groups/GroupScreen';
-export { default as ChannelScreen } from '../../screens/groups/ChannelScreen';
-export { default as GroupSettingsScreen } from '../../screens/groups/GroupSettingsScreen';
-export { default as GroupMembersScreen } from '../../screens/groups/GroupMembersScreen';
-export { default as GroupChannelsScreen } from '../../screens/groups/GroupChannelsScreen';
-export { default as GroupRolesScreen } from '../../screens/groups/GroupRolesScreen';
-export { default as GroupInvitesScreen } from '../../screens/groups/GroupInvitesScreen';
-export { default as GroupModerationScreen } from '../../screens/groups/GroupModerationScreen';
+export { default as GroupScreen } from '../../screens/groups/group-screen';
+export { default as ChannelScreen } from '../../screens/groups/channel-screen';
+export { default as GroupSettingsScreen } from '../../screens/groups/group-settings-screen';
+export { default as GroupMembersScreen } from '../../screens/groups/group-members-screen';
+export { default as GroupChannelsScreen } from '../../screens/groups/group-channels-screen';
+export { default as GroupRolesScreen } from '../../screens/groups/group-roles-screen';
+export { default as GroupInvitesScreen } from '../../screens/groups/group-invites-screen';
+export { default as GroupModerationScreen } from '../../screens/groups/group-moderation-screen';

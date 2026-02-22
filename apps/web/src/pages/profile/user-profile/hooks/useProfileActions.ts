@@ -12,7 +12,7 @@ import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
 import { toast } from '@/shared/components/ui';
 import { useFriendStore } from '@/modules/social/store';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { UserProfileData, FriendshipStatus } from '@/types/profile.types';
 
 const logger = createLogger('UserProfile');

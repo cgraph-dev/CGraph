@@ -6,9 +6,9 @@
 import { toast } from '@/shared/components/ui';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { Message } from '@/modules/chat/store';
-import type { GifResult } from '@/modules/chat/components/GifPicker';
+import type { GifResult } from '@/modules/chat/components/gif-picker';
 import type { Sticker } from '@/data/stickers';
 import type { UIPreferences, VoiceMessageData } from './types';
 

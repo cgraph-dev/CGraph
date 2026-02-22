@@ -5,4 +5,4 @@ export {
   UploadProgressList,
   AttachmentList,
   formatFileSize,
-} from './AttachmentUploaderParts';
+} from './attachment-uploader-parts';

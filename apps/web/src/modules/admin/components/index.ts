@@ -5,7 +5,7 @@
  */
 
 // Dashboard
-export { default as AdminDashboard } from './AdminDashboard';
+export { default as AdminDashboard } from './admin-dashboard';
 
 // Forum Management
 export {
@@ -13,7 +13,7 @@ export {
   ForumOrderingAdmin as ForumOrderingAdminComponent,
   type ForumItem,
   type ForumOrderingAdminProps,
-} from './ForumOrderingAdmin';
+} from './forum-ordering-admin';
 // Shared UI components
 export {
   StatusBadge,
@@ -29,4 +29,4 @@ export {
   SettingNumber,
   formatUptime,
   ChatBubbleIcon,
-} from './AdminSharedComponents';
+} from './admin-shared-components';

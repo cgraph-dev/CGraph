@@ -3,8 +3,8 @@
  * @module providers/notification-provider
  */
 
-export { NotificationProvider, NotificationContext, default } from './NotificationProvider';
-export { ToastItem } from './ToastItem';
+export { NotificationProvider, NotificationContext, default } from './notification-provider';
+export { ToastItem } from './toast-item';
 
 export type {
   NotificationType,

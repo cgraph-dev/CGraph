@@ -4,7 +4,7 @@
  */
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 
 interface ShareMenuProps {
   isOpen: boolean;

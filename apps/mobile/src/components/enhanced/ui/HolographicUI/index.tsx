@@ -10,7 +10,7 @@
  *   HolographicContainer,
  *   HolographicText,
  *   HolographicButton,
- * } from './HolographicUI';
+ * } from './holographic-ui';
  *
  * <HolographicContainer colorTheme="cyan" intensity="medium">
  *   <HolographicText variant="title">Welcome</HolographicText>

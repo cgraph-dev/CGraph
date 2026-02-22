@@ -5,22 +5,22 @@
  */
 
 // Navigation components
-export { Sidebar } from './Sidebar';
-export type { SidebarProps } from './Sidebar';
+export { Sidebar } from './sidebar';
+export type { SidebarProps } from './sidebar';
 
-export { TopNav } from './TopNav';
-export type { TopNavProps } from './TopNav';
+export { TopNav } from './top-nav';
+export type { TopNavProps } from './top-nav';
 
-export { MobileNav } from './MobileNav';
-export type { MobileNavProps } from './MobileNav';
+export { MobileNav } from './mobile-nav';
+export type { MobileNavProps } from './mobile-nav';
 
 // Container components
-export { PageContainer } from './PageContainer';
-export type { PageContainerProps } from './PageContainer';
+export { PageContainer } from './page-container';
+export type { PageContainerProps } from './page-container';
 
 // Command palette
-export { CommandPalette } from './CommandPalette';
-export type { CommandPaletteProps } from './CommandPalette';
+export { CommandPalette } from './command-palette';
+export type { CommandPaletteProps } from './command-palette';
 
 // Default export
-export { Sidebar as default } from './Sidebar';
+export { Sidebar as default } from './sidebar';

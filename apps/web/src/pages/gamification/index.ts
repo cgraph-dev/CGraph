@@ -7,7 +7,7 @@
  * @since v0.8.3
  */
 
-export { default as GamificationHubPage } from './GamificationHubPage';
-export { default as AchievementsPage } from './AchievementsPage';
-export { default as QuestsPage } from './QuestsPage';
-export { default as TitlesPage } from './TitlesPage';
+export { default as GamificationHubPage } from './gamification-hub-page';
+export { default as AchievementsPage } from './achievements-page';
+export { default as QuestsPage } from './quests-page';
+export { default as TitlesPage } from './titles-page';

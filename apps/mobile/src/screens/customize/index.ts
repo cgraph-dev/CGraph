@@ -1,6 +1,6 @@
-export { default as CustomizeScreen } from './CustomizeScreen';
-export { default as IdentityCustomizationScreen } from './IdentityCustomizationScreen';
-export { default as EffectsCustomizationScreen } from './EffectsCustomizationScreen';
-export { default as ProgressionCustomizationScreen } from './ProgressionCustomizationScreen';
-export { default as BadgeSelectionScreen } from './BadgeSelectionScreen';
-export { default as TitleSelectionScreen } from './TitleSelectionScreen';
+export { default as CustomizeScreen } from './customize-screen';
+export { default as IdentityCustomizationScreen } from './identity-customization-screen';
+export { default as EffectsCustomizationScreen } from './effects-customization-screen';
+export { default as ProgressionCustomizationScreen } from './progression-customization-screen';
+export { default as BadgeSelectionScreen } from './badge-selection-screen';
+export { default as TitleSelectionScreen } from './title-selection-screen';

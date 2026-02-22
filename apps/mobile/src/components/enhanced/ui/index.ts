@@ -27,4 +27,4 @@ export {
   // Utility components
   CornerDecoration,
   Scanlines,
-} from './HolographicUI';
+} from './holographic-ui';

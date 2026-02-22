@@ -1,1 +1,1 @@
-export { default } from './CustomEmojiPage';
+export { default } from './custom-emoji-page';

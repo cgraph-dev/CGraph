@@ -5,7 +5,7 @@
  */
 
 // Theme Registry and API
-export { ThemeRegistry, themeAPI } from './ThemeRegistry';
+export { ThemeRegistry, themeAPI } from './theme-registry';
 
 // Theme Types
 export type {

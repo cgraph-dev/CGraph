@@ -9,10 +9,10 @@
  */
 
 // Main component
-export { default as AnimatedAvatar, default } from './AnimatedAvatar';
+export { default as AnimatedAvatar, default } from './animated-avatar';
 
 // Sub-components
-export { AvatarStylePicker } from './AvatarStylePicker';
+export { AvatarStylePicker } from './avatar-style-picker';
 
 // Store
 export { useAvatarStyle } from './store';

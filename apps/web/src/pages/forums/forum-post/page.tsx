@@ -11,14 +11,14 @@ import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useForumStore } from '@/modules/forums/store';
 import { useAuthStore } from '@/modules/auth/store';
-import EditHistoryModal from '@/modules/forums/components/EditHistoryModal';
+import EditHistoryModal from '@/modules/forums/components/edit-history-modal';
 
 import { useForumPostActions } from './useForumPostActions';
-import { PostVoteSidebar } from './PostVoteSidebar';
-import { PostContent } from './PostContent';
-import { PostActionBar } from './PostActionBar';
-import { CommentInput } from './CommentInput';
-import { CommentList } from './CommentList';
+import { PostVoteSidebar } from './post-vote-sidebar';
+import { PostContent } from './post-content';
+import { PostActionBar } from './post-action-bar';
+import { CommentInput } from './comment-input';
+import { CommentList } from './comment-list';
 import { ReportModal } from './report-modal';
 import { PostSkeleton, BackButton } from './loading';
 

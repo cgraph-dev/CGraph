@@ -2,33 +2,33 @@
 // Complete set of components for forum functionality
 
 // Core Display Components
-export { default as ThreadView, ThreadView as ThreadViewComponent } from './ThreadView';
-export { default as NestedComments } from './NestedComments';
-export { default as ThreadPrefix } from './ThreadPrefix';
-export { default as ThreadRating } from './ThreadRating';
-export { default as ThreadedCommentTree } from './ThreadedCommentTree';
+export { default as ThreadView, ThreadView as ThreadViewComponent } from './thread-view';
+export { default as NestedComments } from './nested-comments';
+export { default as ThreadPrefix } from './thread-prefix';
+export { default as ThreadRating } from './thread-rating';
+export { default as ThreadedCommentTree } from './threaded-comment-tree';
 
 // Search & Navigation
 export {
   default as ForumSearch,
   ForumSearch as ForumSearchComponent,
   type SearchFilters,
-} from './ForumSearch';
+} from './forum-search';
 export {
   default as ForumCategoryList,
   ForumCategoryList as ForumCategoryListComponent,
-} from './ForumCategoryList';
-export { default as ForumHeader, ForumHeader as ForumHeaderComponent } from './ForumHeader';
+} from './forum-category-list';
+export { default as ForumHeader, ForumHeader as ForumHeaderComponent } from './forum-header';
 
 // Content Creation
 export {
   default as PostEditor,
   PostEditor as PostEditorComponent,
   type PostEditorData,
-} from './PostEditor';
-export { QuickReply } from './QuickReply';
-export { default as PollWidget } from './PollWidget';
-export { default as AttachmentUploader } from './AttachmentUploader';
+} from './post-editor';
+export { QuickReply } from './quick-reply';
+export { default as PollWidget } from './poll-widget';
+export { default as AttachmentUploader } from './attachment-uploader';
 export {
   default as PostIconPicker,
   PostIconPicker as PostIconPickerComponent,
@@ -36,17 +36,17 @@ export {
   usePostIcons,
   type PostIcon,
   type PostIconPickerProps,
-} from './PostIconPicker';
+} from './post-icon-picker';
 
 // User Content
-export { default as UserSignature } from './UserSignature';
-export { default as EditHistoryModal } from './EditHistoryModal';
-export { default as ReportModal } from './ReportModal';
-export { default as MultiQuoteIndicator } from './MultiQuoteIndicator';
+export { default as UserSignature } from './user-signature';
+export { default as EditHistoryModal } from './edit-history-modal';
+export { default as ReportModal } from './report-modal';
+export { default as MultiQuoteIndicator } from './multi-quote-indicator';
 
 // Stats & Widgets
-export { default as ForumStatistics } from './ForumStatistics';
-export { default as LeaderboardWidget } from './LeaderboardWidget';
+export { default as ForumStatistics } from './forum-statistics';
+export { default as LeaderboardWidget } from './leaderboard-widget';
 
 // RSS/Syndication
 export {
@@ -57,7 +57,7 @@ export {
   type RSSFeedButtonProps,
   type FeedType,
   type FeedFormat,
-} from './RSSFeedButton';
+} from './rss-feed-button';
 
 // Export/Download
 export {
@@ -68,4 +68,4 @@ export {
   type ThreadPost as PDFThreadPost,
   type PDFExportOptions,
   type ThreadPDFExportProps,
-} from './ThreadPDFExport';
+} from './thread-pdf-export';

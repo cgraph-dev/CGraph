@@ -5,7 +5,7 @@
  * This barrel file preserves the original import path.
  */
 
-export { BubbleStylesSection } from './BubbleStylesSection';
-export { MessageEffectsSection } from './MessageEffectsSection';
-export { ReactionStylesSection } from './ReactionStylesSection';
-export { AdvancedControlsSection } from './AdvancedControlsSection';
+export { BubbleStylesSection } from './bubble-styles-section';
+export { MessageEffectsSection } from './message-effects-section';
+export { ReactionStylesSection } from './reaction-styles-section';
+export { AdvancedControlsSection } from './advanced-controls-section';

@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { AnimatedLogoProps } from './types';
 import { SIZE_MAP, COLOR_PALETTES, SPLASH_TIMINGS } from './constants';
-import { CircuitBoardLogo } from './CircuitBoardLogo';
+import { CircuitBoardLogo } from './circuit-board-logo';
 
 export default function AnimatedLogo({
   size = 'md',

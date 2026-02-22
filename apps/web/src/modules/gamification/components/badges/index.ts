@@ -6,17 +6,17 @@
  * @module gamification/components/badges
  */
 
-export { AnimatedBadge, AnimatedBadgeWithTooltip, RARITY_COLORS } from './AnimatedBadge';
-export type { AnimatedBadgeProps, AnimatedBadgeWithTooltipProps } from './AnimatedBadge';
+export { AnimatedBadge, AnimatedBadgeWithTooltip, RARITY_COLORS } from './animated-badge';
+export type { AnimatedBadgeProps, AnimatedBadgeWithTooltipProps } from './animated-badge';
 
-export { BadgeShowcase } from './BadgeShowcase';
-export type { BadgeShowcaseProps } from './BadgeShowcase';
+export { BadgeShowcase } from './badge-showcase';
+export type { BadgeShowcaseProps } from './badge-showcase';
 
-export { CompactBadgeShowcase } from './CompactBadgeShowcase';
-export type { CompactBadgeShowcaseProps } from './CompactBadgeShowcase';
+export { CompactBadgeShowcase } from './compact-badge-showcase';
+export type { CompactBadgeShowcaseProps } from './compact-badge-showcase';
 
-export { BadgePickerModal } from './BadgePickerModal';
-export type { BadgePickerModalProps } from './BadgePickerModal';
+export { BadgePickerModal } from './badge-picker-modal';
+export type { BadgePickerModalProps } from './badge-picker-modal';
 
-export { BadgeCollection } from './BadgeCollection';
-export type { BadgeCollectionProps } from './BadgeCollection';
+export { BadgeCollection } from './badge-collection';
+export type { BadgeCollectionProps } from './badge-collection';

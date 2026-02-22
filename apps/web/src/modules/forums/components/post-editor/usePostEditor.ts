@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';
 import { AUTOSAVE_INTERVAL, MIN_POLL_OPTIONS } from './constants';
 import type { PostEditorData, PostEditorProps, PollOptionInput } from './types';

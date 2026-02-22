@@ -16,7 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { HapticFeedback, AnimationColors } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback, AnimationColors } from '@/lib/animations/animation-engine';
 import api from '../../../lib/api';
 import type { LeaderboardCategory, TimePeriod, LeaderboardData, LeaderboardEntry } from './types';
 import {

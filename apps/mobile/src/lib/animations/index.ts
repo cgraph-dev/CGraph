@@ -26,13 +26,13 @@ export {
   getStaggerDelay as getStaggerDelayLegacy,
   shouldReduceMotion,
   hexToRgba,
-} from './AnimationEngine';
+} from './animation-engine';
 
 // ============================================================================
 // Animation Library (extended)
 // ============================================================================
 
-export { default as AnimationLibrary } from './AnimationLibrary';
+export { default as AnimationLibrary } from './animation-library';
 export {
   SPRING_PRESETS,
   TIMING_PRESETS,
@@ -45,20 +45,20 @@ export {
   combineAnimations,
   createDelayedAnimation,
   createSequencedAnimations,
-} from './AnimationLibrary';
+} from './animation-library';
 
 export type {
   SpringConfig,
   TimingConfig,
   AnimationValues,
   AnimationPreset,
-} from './AnimationLibrary';
+} from './animation-library';
 
 // ============================================================================
 // Animated Components
 // ============================================================================
 
-export { default as AnimatedComponents } from './AnimatedComponents';
+export { default as AnimatedComponents } from './animated-components';
 export {
   AnimatedView,
   AnimatedText,
@@ -67,7 +67,7 @@ export {
   AnimatedImage,
   AnimatedCounter,
   AnimatedProgress,
-} from './AnimatedComponents';
+} from './animated-components';
 
 export type {
   AnimatedViewProps,
@@ -77,13 +77,13 @@ export type {
   AnimatedImageProps,
   AnimatedCounterProps,
   AnimatedProgressProps,
-} from './AnimatedComponents';
+} from './animated-components';
 
 // ============================================================================
 // Timeline System
 // ============================================================================
 
-export { default as TimelineSystem } from './TimelineSystem';
+export { default as TimelineSystem } from './timeline-system';
 export {
   KeyframeBuilder,
   TimelineBuilder,
@@ -97,7 +97,7 @@ export {
   stopAnimation,
   stopAllAnimations,
   CHOREOGRAPHY_PRESETS,
-} from './TimelineSystem';
+} from './timeline-system';
 
 export type {
   Keyframe,
@@ -105,4 +105,4 @@ export type {
   TimelineStep,
   Timeline,
   ChoreographyConfig,
-} from './TimelineSystem';
+} from './timeline-system';

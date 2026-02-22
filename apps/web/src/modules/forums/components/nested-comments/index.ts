@@ -2,14 +2,14 @@
  * Nested Comments Module
  */
 
-export { default } from './NestedComments';
+export { default } from './nested-comments';
 
 // Components
-export { CommentCard } from './CommentCard';
-export { CommentHeader } from './CommentHeader';
-export { CommentVoteButtons } from './CommentVoteButtons';
-export { ReplyForm, EditForm } from './CommentForms';
-export { BestAnswerBadge } from './BestAnswerBadge';
+export { CommentCard } from './comment-card';
+export { CommentHeader } from './comment-header';
+export { CommentVoteButtons } from './comment-vote-buttons';
+export { ReplyForm, EditForm } from './comment-forms';
+export { BestAnswerBadge } from './best-answer-badge';
 
 // Utils
 export { sortComments, getTopLevelComments } from './utils';

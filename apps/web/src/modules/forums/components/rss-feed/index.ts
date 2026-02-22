@@ -5,12 +5,12 @@
  */
 
 // Components
-export { RSSFeedButton } from './RSSFeedButton';
-export { RSSFeedLink } from './RSSFeedLink';
-export { FeedSubscribeModal } from './FeedSubscribeModal';
-export { FeedUrlDisplay } from './FeedUrlDisplay';
-export { FeedReaderButtons } from './FeedReaderButtons';
-export { FormatSelector } from './FormatSelector';
+export { RSSFeedButton } from './rss-feed-button';
+export { RSSFeedLink } from './rss-feed-link';
+export { FeedSubscribeModal } from './feed-subscribe-modal';
+export { FeedUrlDisplay } from './feed-url-display';
+export { FeedReaderButtons } from './feed-reader-buttons';
+export { FormatSelector } from './format-selector';
 
 // Types
 export type {

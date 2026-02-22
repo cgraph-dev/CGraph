@@ -21,14 +21,14 @@ export type {
 export { ANIMATION_CONFIGS, RARITY_ICONS, STICKER_SIZE_CLASSES } from './constants';
 
 // Components
-export { StickerItem } from './StickerItem';
-export { PackTab } from './PackTab';
-export { StickerSearchBar } from './StickerSearchBar';
-export { StickerGrid } from './StickerGrid';
-export { PackInfoBanner } from './PackInfoBanner';
-export { StickerMessage } from './StickerMessage';
-export { StickerButton } from './StickerButton';
-export { StickerPicker, default } from './StickerPicker';
+export { StickerItem } from './sticker-item';
+export { PackTab } from './pack-tab';
+export { StickerSearchBar } from './sticker-search-bar';
+export { StickerGrid } from './sticker-grid';
+export { PackInfoBanner } from './pack-info-banner';
+export { StickerMessage } from './sticker-message';
+export { StickerButton } from './sticker-button';
+export { StickerPicker, default } from './sticker-picker';
 
 // Hooks
 export { useStickerPicker } from './useStickerPicker';

@@ -2,10 +2,10 @@
  * FeedbackSystem Components Barrel Export
  */
 
-export { PressableFeedback } from './PressableFeedback';
-export { Skeleton, SkeletonGroup } from './Skeleton';
-export { SuccessAnimation } from './SuccessAnimation';
-export { ErrorAnimation } from './ErrorAnimation';
-export { LoadingAnimation } from './LoadingAnimation';
-export { EmptyState } from './EmptyState';
-export { Ripple } from './Ripple';
+export { PressableFeedback } from './pressable-feedback';
+export { Skeleton, SkeletonGroup } from './skeleton';
+export { SuccessAnimation } from './success-animation';
+export { ErrorAnimation } from './error-animation';
+export { LoadingAnimation } from './loading-animation';
+export { EmptyState } from './empty-state';
+export { Ripple } from './ripple';

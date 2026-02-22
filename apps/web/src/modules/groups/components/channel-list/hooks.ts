@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGroupStore } from '@/modules/groups/store';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 
 /**
  * Hook for managing channel list state and logic.

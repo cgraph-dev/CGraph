@@ -3,7 +3,7 @@ import { View, ScrollView, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ParamListBase } from '@react-navigation/native';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/theme-context';
 import { useCoinShop } from './hooks/useCoinShop';
 import {
   FloatingParticles,

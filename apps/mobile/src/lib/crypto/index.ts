@@ -10,4 +10,4 @@ export { default as e2ee } from './e2ee';
 export * from './e2ee';
 
 // React context for E2EE state
-export { E2EEProvider, useE2EE, usePreKeyReplenishment } from './E2EEContext';
+export { E2EEProvider, useE2EE, usePreKeyReplenishment } from './e2-ee-context';

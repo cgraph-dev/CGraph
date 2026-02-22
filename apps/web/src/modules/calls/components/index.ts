@@ -8,7 +8,7 @@
  */
 
 // Call components
-export { default as IncomingCallHandler } from './IncomingCallHandler';
-export { default as IncomingCallModal } from './IncomingCallModal';
-export { VideoCallModal } from './VideoCallModal';
-export { VoiceCallModal } from './VoiceCallModal';
+export { default as IncomingCallHandler } from './incoming-call-handler';
+export { default as IncomingCallModal } from './incoming-call-modal';
+export { VideoCallModal } from './video-call-modal';
+export { VoiceCallModal } from './voice-call-modal';

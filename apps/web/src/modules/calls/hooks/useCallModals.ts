@@ -9,7 +9,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 
 export interface CallModalState {
   showVoiceCallModal: boolean;

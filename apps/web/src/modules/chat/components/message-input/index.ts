@@ -10,12 +10,12 @@
  * - Typing indicator support
  */
 
-export { MessageInput, default } from './MessageInput';
-export { ReplyPreview } from './ReplyPreview';
-export { AttachmentsPreview } from './AttachmentsPreview';
-export { AttachmentMenu } from './AttachmentMenu';
-export { InputToolbar } from './InputToolbar';
-export { MentionAutocomplete } from './MentionAutocomplete';
+export { MessageInput, default } from './message-input';
+export { ReplyPreview } from './reply-preview';
+export { AttachmentsPreview } from './attachments-preview';
+export { AttachmentMenu } from './attachment-menu';
+export { InputToolbar } from './input-toolbar';
+export { MentionAutocomplete } from './mention-autocomplete';
 export { useMessageInput } from './useMessageInput';
 export type {
   MessageInputProps,

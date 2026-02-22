@@ -2,20 +2,20 @@
  * AdminDashboardScreen Components
  */
 
-export { TabBar } from './TabBar';
-export type { TabBarProps } from './TabBar';
+export { TabBar } from './tab-bar';
+export type { TabBarProps } from './tab-bar';
 
-export { StatCard } from './StatCard';
-export type { StatCardProps } from './StatCard';
+export { StatCard } from './stat-card';
+export type { StatCardProps } from './stat-card';
 
-export { OverviewTab } from './OverviewTab';
-export type { OverviewTabProps } from './OverviewTab';
+export { OverviewTab } from './overview-tab';
+export type { OverviewTabProps } from './overview-tab';
 
-export { ReportsTab } from './ReportsTab';
-export type { ReportsTabProps } from './ReportsTab';
+export { ReportsTab } from './reports-tab';
+export type { ReportsTabProps } from './reports-tab';
 
-export { AuditTab } from './AuditTab';
-export type { AuditTabProps } from './AuditTab';
+export { AuditTab } from './audit-tab';
+export type { AuditTabProps } from './audit-tab';
 
-export { SettingsTab } from './SettingsTab';
-export type { SettingsTabProps } from './SettingsTab';
+export { SettingsTab } from './settings-tab';
+export type { SettingsTabProps } from './settings-tab';

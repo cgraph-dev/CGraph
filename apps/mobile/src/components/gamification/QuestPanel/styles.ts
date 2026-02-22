@@ -3,7 +3,7 @@
  */
 
 import { StyleSheet, Dimensions } from 'react-native';
-import { AnimationColors } from '@/lib/animations/AnimationEngine';
+import { AnimationColors } from '@/lib/animations/animation-engine';
 
 export const { width: SCREEN_WIDTH } = Dimensions.get('window');
 

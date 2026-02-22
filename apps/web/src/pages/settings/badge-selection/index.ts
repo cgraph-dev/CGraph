@@ -3,14 +3,14 @@
  */
 
 // Main component
-export { default } from './BadgeSelection';
+export { default } from './badge-selection';
 
 // Sub-components
-export { BadgeCard } from './BadgeCard';
-export { BadgeFilters } from './BadgeFilters';
-export { BadgeGrid } from './BadgeGrid';
-export { BadgePreviewModal } from './BadgePreviewModal';
-export { EquippedBadgesPanel } from './EquippedBadgesPanel';
+export { BadgeCard } from './badge-card';
+export { BadgeFilters } from './badge-filters';
+export { BadgeGrid } from './badge-grid';
+export { BadgePreviewModal } from './badge-preview-modal';
+export { EquippedBadgesPanel } from './equipped-badges-panel';
 
 // Constants
 export * from './constants';

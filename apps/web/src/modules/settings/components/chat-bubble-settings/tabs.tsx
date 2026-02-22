@@ -5,8 +5,8 @@
  * This barrel file preserves the original import path.
  */
 
-export { ColorsTab } from './ColorsTab';
-export { ShapeTab } from './ShapeTab';
-export { EffectsTab } from './EffectsTab';
-export { AnimationsTab } from './AnimationsTab';
-export { LayoutTab } from './LayoutTab';
+export { ColorsTab } from './colors-tab';
+export { ShapeTab } from './shape-tab';
+export { EffectsTab } from './effects-tab';
+export { AnimationsTab } from './animations-tab';
+export { LayoutTab } from './layout-tab';

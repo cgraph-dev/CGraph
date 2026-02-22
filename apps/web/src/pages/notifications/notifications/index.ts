@@ -5,15 +5,15 @@
  */
 
 // Main component
-export { default, Notifications } from './Notifications';
+export { default, Notifications } from './notifications';
 
 // Sub-components
-export { AmbientParticles } from './AmbientParticles';
-export { NotificationHeader } from './NotificationHeader';
-export { NotificationFilterTabs } from './NotificationFilterTabs';
-export { NotificationItem } from './NotificationItem';
-export { EmptyState } from './EmptyState';
-export { LoadMoreButton } from './LoadMoreButton';
+export { AmbientParticles } from './ambient-particles';
+export { NotificationHeader } from './notification-header';
+export { NotificationFilterTabs } from './notification-filter-tabs';
+export { NotificationItem } from './notification-item';
+export { EmptyState } from './empty-state';
+export { LoadMoreButton } from './load-more-button';
 
 // Types
 export type {

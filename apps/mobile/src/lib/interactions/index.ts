@@ -49,14 +49,14 @@ export {
   playHapticPattern,
   useHaptics,
   default as HapticPatterns,
-} from './HapticPatterns';
+} from './haptic-patterns';
 
 export type {
   HapticIntensity,
   HapticPattern,
   HapticConfig,
   PatternStep,
-} from './HapticPatterns';
+} from './haptic-patterns';
 
 // ============================================================================
 // Default Export
@@ -64,7 +64,7 @@ export type {
 
 const Interactions = {
   FeedbackSystem: require('./FeedbackSystem').default,
-  HapticPatterns: require('./HapticPatterns').default,
+  HapticPatterns: require('./haptic-patterns').default,
 };
 
 export default Interactions;

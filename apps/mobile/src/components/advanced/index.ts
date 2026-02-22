@@ -6,7 +6,7 @@
  */
 
 // Import for default export object
-import { SwipeableCard, SwipeToDelete, SwipeToArchive } from './SwipeableCard';
+import { SwipeableCard, SwipeToDelete, SwipeToArchive } from './swipeable-card';
 import {
   MorphingButton,
   LoadingButton,
@@ -17,24 +17,24 @@ import {
   DangerButton,
   GhostButton,
   GradientButton,
-} from './MorphingButton';
-import { Carousel3D, ImageCarousel, CardCarousel } from './Carousel3D';
-import { FluidTabs, SimpleTabs, IconTabs, SegmentedControl } from './FluidTabs';
-import { DynamicModal, BottomSheet, ActionSheet, AlertModal } from './DynamicModal';
-import { PullToRefresh, RefreshableList } from './PullToRefresh';
+} from './morphing-button';
+import { Carousel3D, ImageCarousel, CardCarousel } from './carousel3-d';
+import { FluidTabs, SimpleTabs, IconTabs, SegmentedControl } from './fluid-tabs';
+import { DynamicModal, BottomSheet, ActionSheet, AlertModal } from './dynamic-modal';
+import { PullToRefresh, RefreshableList } from './pull-to-refresh';
 
 // ============================================================================
 // SwipeableCard - Multi-action swipeable cards
 // ============================================================================
 
-export { SwipeableCard, SwipeToDelete, SwipeToArchive } from './SwipeableCard';
+export { SwipeableCard, SwipeToDelete, SwipeToArchive } from './swipeable-card';
 
 export type {
   SwipeableCardProps,
   SwipeAction,
   SwipeToDeleteProps,
   SwipeToArchiveProps,
-} from './SwipeableCard';
+} from './swipeable-card';
 
 // ============================================================================
 // MorphingButton - Shape-shifting buttons with state transitions
@@ -50,7 +50,7 @@ export {
   DangerButton,
   GhostButton,
   GradientButton,
-} from './MorphingButton';
+} from './morphing-button';
 
 export type {
   MorphingButtonProps,
@@ -60,26 +60,26 @@ export type {
   ButtonShape,
   ButtonState,
   ButtonSize,
-} from './MorphingButton';
+} from './morphing-button';
 
 // ============================================================================
 // Carousel3D - Perspective carousel with depth effects
 // ============================================================================
 
-export { Carousel3D, ImageCarousel, CardCarousel } from './Carousel3D';
+export { Carousel3D, ImageCarousel, CardCarousel } from './carousel3-d';
 
 export type {
   Carousel3DProps,
   CarouselLayout,
   ImageCarouselProps,
   CardCarouselProps,
-} from './Carousel3D';
+} from './carousel3-d';
 
 // ============================================================================
 // FluidTabs - Animated tab bar with morphing indicator
 // ============================================================================
 
-export { FluidTabs, SimpleTabs, IconTabs, SegmentedControl } from './FluidTabs';
+export { FluidTabs, SimpleTabs, IconTabs, SegmentedControl } from './fluid-tabs';
 
 export type {
   FluidTabsProps,
@@ -88,13 +88,13 @@ export type {
   SimpleTabsProps,
   IconTabsProps,
   SegmentedControlProps,
-} from './FluidTabs';
+} from './fluid-tabs';
 
 // ============================================================================
 // DynamicModal - Morphing modal with multiple presentations
 // ============================================================================
 
-export { DynamicModal, BottomSheet, ActionSheet, AlertModal } from './DynamicModal';
+export { DynamicModal, BottomSheet, ActionSheet, AlertModal } from './dynamic-modal';
 
 export type {
   DynamicModalProps,
@@ -103,19 +103,19 @@ export type {
   BottomSheetProps,
   ActionSheetProps,
   AlertModalProps,
-} from './DynamicModal';
+} from './dynamic-modal';
 
 // ============================================================================
 // PullToRefresh - Custom pull-to-refresh with physics
 // ============================================================================
 
-export { PullToRefresh, RefreshableList } from './PullToRefresh';
+export { PullToRefresh, RefreshableList } from './pull-to-refresh';
 
 export type {
   PullToRefreshProps,
   RefreshIndicatorStyle,
   RefreshableListProps,
-} from './PullToRefresh';
+} from './pull-to-refresh';
 
 // ============================================================================
 // Default Export

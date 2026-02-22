@@ -9,12 +9,12 @@
  */
 
 // Main component
-export { default } from './QuestPanel';
+export { default } from './quest-panel';
 
 // Sub-components
-export { CompactQuestPanel } from './CompactQuestPanel';
-export { FullQuestPanel } from './FullQuestPanel';
-export { QuestObjectiveItem } from './QuestObjectiveItem';
+export { CompactQuestPanel } from './compact-quest-panel';
+export { FullQuestPanel } from './full-quest-panel';
+export { QuestObjectiveItem } from './quest-objective-item';
 
 // Utilities
 export { formatTimeRemaining, getQuestProgress, isQuestReady, getQuestTypeColor } from './utils';

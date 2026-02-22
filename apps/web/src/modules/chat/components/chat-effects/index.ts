@@ -25,9 +25,9 @@ export {
 } from './constants';
 
 // Components
-export { MessageBubble } from './MessageBubble';
-export { MessageWithEffect } from './MessageWithEffect';
-export { MessageParticles } from './MessageParticles';
-export { TypingIndicator } from './TypingIndicator';
-export { ReactionAnimation } from './ReactionAnimation';
-export { ChatEffectsProvider, useChatEffects } from './ChatEffectsProvider';
+export { MessageBubble } from './message-bubble';
+export { MessageWithEffect } from './message-with-effect';
+export { MessageParticles } from './message-particles';
+export { TypingIndicator } from './typing-indicator';
+export { ReactionAnimation } from './reaction-animation';
+export { ChatEffectsProvider, useChatEffects } from './chat-effects-provider';

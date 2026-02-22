@@ -14,12 +14,12 @@
 export { default } from './page';
 
 // Sub-components
-export { ThemeCard } from './ThemeCard';
-export { SearchBar } from './SearchBar';
-export { CategoryTabs } from './CategoryTabs';
-export { SaveButton } from './SaveButton';
-export { ThemeDescription } from './ThemeDescription';
-export { ProfileThemePicker } from './ProfileThemePicker';
+export { ThemeCard } from './theme-card';
+export { SearchBar } from './search-bar';
+export { CategoryTabs } from './category-tabs';
+export { SaveButton } from './save-button';
+export { ThemeDescription } from './theme-description';
+export { ProfileThemePicker } from './profile-theme-picker';
 
 // Hooks
 export { useThemeCustomization } from './hooks';

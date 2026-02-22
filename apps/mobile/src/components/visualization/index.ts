@@ -5,16 +5,16 @@
  */
 
 // Import for default export object
-import { LineChart, BarChart, PieChart } from './AnimatedChart';
-import { ProgressRing, StackedProgressRing, GaugeRing } from './ProgressRing';
-import { StatCounter, StatGroup, ComparisonStat, Countdown } from './StatCounter';
-import { Heatmap, CalendarHeatmap, MatrixHeatmap } from './Heatmap';
+import { LineChart, BarChart, PieChart } from './animated-chart';
+import { ProgressRing, StackedProgressRing, GaugeRing } from './progress-ring';
+import { StatCounter, StatGroup, ComparisonStat, Countdown } from './stat-counter';
+import { Heatmap, CalendarHeatmap, MatrixHeatmap } from './heatmap';
 
 // ============================================================================
 // Animated Charts
 // ============================================================================
 
-export { LineChart, BarChart, PieChart } from './AnimatedChart';
+export { LineChart, BarChart, PieChart } from './animated-chart';
 
 export type {
   ChartProps,
@@ -22,21 +22,21 @@ export type {
   BarChartProps,
   PieChartProps,
   DataPoint,
-} from './AnimatedChart';
+} from './animated-chart';
 
 // ============================================================================
 // Progress Ring
 // ============================================================================
 
-export { ProgressRing, StackedProgressRing, GaugeRing } from './ProgressRing';
+export { ProgressRing, StackedProgressRing, GaugeRing } from './progress-ring';
 
-export type { ProgressRingProps, StackedProgressRingProps, GaugeRingProps } from './ProgressRing';
+export type { ProgressRingProps, StackedProgressRingProps, GaugeRingProps } from './progress-ring';
 
 // ============================================================================
 // Stat Counter
 // ============================================================================
 
-export { StatCounter, StatGroup, ComparisonStat, Countdown } from './StatCounter';
+export { StatCounter, StatGroup, ComparisonStat, Countdown } from './stat-counter';
 
 export type {
   StatCounterProps,
@@ -44,20 +44,20 @@ export type {
   ComparisonStatProps,
   CountdownProps,
   NumberFormat,
-} from './StatCounter';
+} from './stat-counter';
 
 // ============================================================================
 // Heatmap
 // ============================================================================
 
-export { Heatmap, CalendarHeatmap, MatrixHeatmap } from './Heatmap';
+export { Heatmap, CalendarHeatmap, MatrixHeatmap } from './heatmap';
 
 export type {
   HeatmapProps,
   HeatmapData,
   CalendarHeatmapProps,
   MatrixHeatmapProps,
-} from './Heatmap';
+} from './heatmap';
 
 // ============================================================================
 // Default Export

@@ -5,17 +5,17 @@
  */
 
 // Components
-export { Animated3DCoin } from './Animated3DCoin';
-export { AnimatedCounter } from './AnimatedCounter';
-export { FloatingParticles } from './FloatingParticles';
-export { CountdownTimer } from './CountdownTimer';
-export { BundlesGrid } from './BundlesGrid';
-export { ItemsGrid } from './ItemsGrid';
-export { SpecialOffersSection } from './SpecialOffersSection';
-export { BalanceCard } from './BalanceCard';
-export { CategoryTabs } from './CategoryTabs';
-export { PremiumBannerFull } from './PremiumBanner';
-export { ShopHeader } from './ShopHeader';
+export { Animated3DCoin } from './animated3-d-coin';
+export { AnimatedCounter } from './animated-counter';
+export { FloatingParticles } from './floating-particles';
+export { CountdownTimer } from './countdown-timer';
+export { BundlesGrid } from './bundles-grid';
+export { ItemsGrid } from './items-grid';
+export { SpecialOffersSection } from './special-offers-section';
+export { BalanceCard } from './balance-card';
+export { CategoryTabs } from './category-tabs';
+export { PremiumBannerFull } from './premium-banner';
+export { ShopHeader } from './shop-header';
 
 // Constants and Types
 export {

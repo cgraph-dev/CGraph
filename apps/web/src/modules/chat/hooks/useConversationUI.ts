@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import type { UIPreferences } from '@/modules/chat/components/MessageBubble';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
+import type { UIPreferences } from '@/modules/chat/components/message-bubble';
 
 // ============================================================================
 // Hook for managing conversation UI preferences and panel states

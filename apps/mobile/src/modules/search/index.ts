@@ -3,4 +3,4 @@
  * @module modules/search
  */
 
-export { default as SearchScreen } from '../../screens/search/SearchScreen';
+export { default as SearchScreen } from '../../screens/search/search-screen';

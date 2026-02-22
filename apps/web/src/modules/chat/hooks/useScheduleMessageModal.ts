@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { add, format, isBefore, isAfter, addHours, type Duration } from 'date-fns';
 import { createLogger } from '@/lib/logger';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { toast } from '@/shared/components/ui';
 
 const logger = createLogger('ScheduleMessageModal');

@@ -40,4 +40,4 @@ export {
   setTheme,
   getCurrentTheme,
   subscribeToTheme,
-} from './ThemeEngine';
+} from './theme-engine';

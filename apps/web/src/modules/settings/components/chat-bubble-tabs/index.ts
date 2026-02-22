@@ -3,11 +3,11 @@
  *
  * Re-exports from modularized tab directory.
  */
-export { ColorsTab } from './ColorsTab';
-export { ShapeTab } from './ShapeTab';
-export { EffectsTab } from './EffectsTab';
-export { AnimationsTab } from './AnimationsTab';
-export { LayoutTab } from './LayoutTab';
-export { BackgroundsTab } from './BackgroundsTab';
+export { ColorsTab } from './colors-tab';
+export { ShapeTab } from './shape-tab';
+export { EffectsTab } from './effects-tab';
+export { AnimationsTab } from './animations-tab';
+export { LayoutTab } from './layout-tab';
+export { BackgroundsTab } from './backgrounds-tab';
 export type { TabProps, BackgroundsTabProps } from './types';
 export { CATEGORY_COLORS } from './types';

@@ -8,12 +8,12 @@
  */
 
 // Main component
-export { ChannelList, default } from './ChannelList';
+export { ChannelList, default } from './channel-list';
 
 // Sub-components
-export { ChannelItem } from './ChannelItem';
-export { CategorySection } from './ChannelCategory';
-export { CreateChannelModal } from './CreateChannelModal';
+export { ChannelItem } from './channel-item';
+export { CategorySection } from './channel-category';
+export { CreateChannelModal } from './create-channel-modal';
 
 // Hooks
 export { useChannelListState } from './hooks';

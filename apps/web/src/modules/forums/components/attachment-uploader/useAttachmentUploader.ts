@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { useForumStore, type PostAttachment } from '@/modules/forums/store';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('AttachmentUploader');

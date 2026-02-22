@@ -6,7 +6,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { TrophyIcon, SparklesIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { sortOptions, timeRangeOptions } from './constants';
 import type { SortControlsProps } from './types';
 

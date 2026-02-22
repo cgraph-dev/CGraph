@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import api from '../../../../lib/api';
 import type { CalendarEvent } from '../types';
 import {

@@ -6,7 +6,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createLogger } from '@/lib/logger';
 import { useFriendStore } from '@/modules/social/store';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { api } from '@/lib/api';
 
 const logger = createLogger('ChatInfoPanel');

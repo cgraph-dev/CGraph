@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { HapticFeedback, AnimationColors } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback, AnimationColors } from '@/lib/animations/animation-engine';
 import type { CalendarEvent } from './types';
 import { useCalendar } from './hooks/useCalendar';
 import { CalendarHeader, CalendarGrid, EventsList, EventForm } from './components';

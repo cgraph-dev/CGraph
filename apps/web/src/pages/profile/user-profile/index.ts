@@ -6,14 +6,14 @@
  */
 
 // Main component
-export { UserProfile } from './UserProfile';
+export { UserProfile } from './user-profile';
 
 // Sub-components
-export { ProfileBanner } from './ProfileBanner';
-export { ProfileAvatar } from './ProfileAvatar';
-export { ProfileNameSection } from './ProfileNameSection';
-export { ProfileAbout } from './ProfileAbout';
-export { FriendshipActions } from './FriendshipActions';
+export { ProfileBanner } from './profile-banner';
+export { ProfileAvatar } from './profile-avatar';
+export { ProfileNameSection } from './profile-name-section';
+export { ProfileAbout } from './profile-about';
+export { FriendshipActions } from './friendship-actions';
 
 // Hooks
 export { useProfileData } from './hooks/useProfileData';

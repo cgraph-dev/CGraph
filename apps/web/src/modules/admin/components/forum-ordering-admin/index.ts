@@ -3,14 +3,14 @@
  * @module modules/admin/components/forum-ordering-admin
  */
 
-export { ForumOrderingAdmin, default } from './ForumOrderingAdmin';
+export { ForumOrderingAdmin, default } from './forum-ordering-admin';
 
 // Components
-export { OrderableItem } from './OrderableItem';
-export { OrderingToolbar } from './OrderingToolbar';
-export { LoadingState } from './LoadingState';
-export { EmptyState } from './EmptyState';
-export { HelpText } from './HelpText';
+export { OrderableItem } from './orderable-item';
+export { OrderingToolbar } from './ordering-toolbar';
+export { LoadingState } from './loading-state';
+export { EmptyState } from './empty-state';
+export { HelpText } from './help-text';
 
 // Hooks
 export { useForumOrdering } from './useForumOrdering';

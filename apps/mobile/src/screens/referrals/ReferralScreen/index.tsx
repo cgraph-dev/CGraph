@@ -32,7 +32,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
-import { HapticFeedback, AnimationColors } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback, AnimationColors } from '@/lib/animations/animation-engine';
 import api from '../../../lib/api';
 
 import type { ReferralCode, ReferralStats, Referral, RewardTier, LeaderboardEntry } from './types';

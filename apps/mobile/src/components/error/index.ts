@@ -9,4 +9,4 @@ export {
   ScreenErrorBoundary,
   ComponentErrorBoundary,
   withErrorBoundary,
-} from './ErrorBoundary';
+} from './error-boundary';

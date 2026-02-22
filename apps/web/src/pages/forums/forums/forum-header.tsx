@@ -5,7 +5,7 @@
 
 import { motion } from 'framer-motion';
 import { Cog6ToothIcon } from '@heroicons/react/24/outline';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { ForumHeaderProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';
 

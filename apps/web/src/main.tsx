@@ -15,10 +15,10 @@ import { persistQueryClient } from '@tanstack/react-query-persist-client';
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
 import { Toaster } from 'react-hot-toast';
 import App from './App';
-import ErrorBoundary from './components/ErrorBoundary';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { ThemeProviderEnhanced } from './contexts/ThemeContextEnhanced';
-import { NotificationProvider } from './providers/NotificationProvider';
+import ErrorBoundary from './components/error-boundary';
+import { ThemeProvider } from './contexts/theme-context';
+import { ThemeProviderEnhanced } from './contexts/theme-context-enhanced';
+import { NotificationProvider } from './providers/notification-provider';
 import { logger } from './lib/logger';
 import './i18n'; // i18n initialization (must be before App)
 import './index.css';

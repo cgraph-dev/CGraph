@@ -5,9 +5,9 @@
  */
 
 // Main components
-export { TitleBadge, default } from './TitleBadge';
-export { ProfileTitleDisplay } from './ProfileTitleDisplay';
-export { TitleBadgeTooltip } from './TitleBadgeTooltip';
+export { TitleBadge, default } from './title-badge';
+export { ProfileTitleDisplay } from './profile-title-display';
+export { TitleBadgeTooltip } from './title-badge-tooltip';
 
 // Hooks
 export { useAnimationConfig } from './hooks';

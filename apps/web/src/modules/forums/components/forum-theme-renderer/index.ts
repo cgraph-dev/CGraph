@@ -3,11 +3,11 @@
  * @module modules/forums/components/forum-theme-renderer
  */
 
-export { AnimatedForumTitle } from './AnimatedForumTitle';
-export { RoleBadge } from './RoleBadge';
-export { ForumBanner } from './ForumBanner';
-export { BannerParticles } from './BannerParticles';
-export { ForumThemeProvider, default } from './ForumThemeProvider';
+export { AnimatedForumTitle } from './animated-forum-title';
+export { RoleBadge } from './role-badge';
+export { ForumBanner } from './forum-banner';
+export { BannerParticles } from './banner-particles';
+export { ForumThemeProvider, default } from './forum-theme-provider';
 export { useForumThemeStyles } from './useForumThemeStyles';
 
 export type {

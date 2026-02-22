@@ -3,7 +3,7 @@
  */
 
 import { useState, useMemo } from 'react';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { RARITY_ORDER } from './constants';
 import type {
   Achievement,

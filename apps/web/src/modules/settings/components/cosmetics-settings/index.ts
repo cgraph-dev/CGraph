@@ -8,15 +8,15 @@
  */
 
 // Main component
-export { CosmeticsSettingsPanel, default } from './CosmeticsSettingsPanel';
+export { CosmeticsSettingsPanel, default } from './cosmetics-settings-panel';
 
 // Section components
-export { AvatarBordersSection } from './AvatarBordersSection';
-export { ProfileThemesSection } from './ProfileThemesSection';
-export { ChatEffectsSection } from './ChatEffectsSection';
+export { AvatarBordersSection } from './avatar-borders-section';
+export { ProfileThemesSection } from './profile-themes-section';
+export { ChatEffectsSection } from './chat-effects-section';
 
 // Helper components
-export { TypingPreview } from './TypingPreview';
+export { TypingPreview } from './typing-preview';
 export { GridIcon, ListIcon } from './icons';
 
 // Constants

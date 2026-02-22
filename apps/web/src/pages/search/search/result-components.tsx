@@ -5,8 +5,8 @@
 
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
-import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { ThemedAvatar } from '@/components/theme/themed-avatar';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { springs } from '@/lib/animation-presets/presets';
 import type {
   ResultSectionProps,

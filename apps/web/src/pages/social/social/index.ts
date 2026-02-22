@@ -10,10 +10,10 @@ export type * from './types';
 export * from './utils';
 
 // Components
-export { FriendsTab } from './FriendsTab';
-export { NotificationsTab } from './NotificationsTab';
-export { DiscoverTab } from './DiscoverTab';
-export { Social } from './Social';
+export { FriendsTab } from './friends-tab';
+export { NotificationsTab } from './notifications-tab';
+export { DiscoverTab } from './discover-tab';
+export { Social } from './social';
 
 // Default export for page routing
-export { Social as default } from './Social';
+export { Social as default } from './social';

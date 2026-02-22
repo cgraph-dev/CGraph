@@ -27,9 +27,9 @@ import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/theme-context';
 import { useAuth } from '../../../contexts/AuthContext';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { SettingsStackParamList } from '../../../types';
 
 import { AvatarStyle } from './types';

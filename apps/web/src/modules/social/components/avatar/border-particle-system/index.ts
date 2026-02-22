@@ -8,15 +8,15 @@ export type {
 
 export { PARTICLE_PRESETS } from './presets';
 export { random, lerp, getColorVariant } from './utils';
-export { DOMParticle } from './DOMParticle';
+export { DOMParticle } from './dom-particle';
 export { getAnimationForType } from './animations';
-export { BorderParticleSystem } from './BorderParticleSystem';
+export { BorderParticleSystem } from './border-particle-system';
 export {
   FlameParticles,
   SparkParticles,
   SnowflakeParticles,
   SakuraParticles,
   ElectricParticles,
-} from './PresetWrappers';
+} from './preset-wrappers';
 
-export { BorderParticleSystem as default } from './BorderParticleSystem';
+export { BorderParticleSystem as default } from './border-particle-system';

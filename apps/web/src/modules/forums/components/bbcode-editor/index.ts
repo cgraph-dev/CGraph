@@ -5,14 +5,14 @@
  */
 
 // Main component
-export { default, BBCodeEditor } from './BBCodeEditor';
+export { default, BBCodeEditor } from './bb-code-editor';
 
 // Sub-components
-export { EditorToolbar } from './EditorToolbar';
-export { EditorFooter } from './EditorFooter';
-export { ColorPicker } from './ColorPicker';
-export { SizePicker } from './SizePicker';
-export { SmiliesPicker } from './SmiliesPicker';
+export { EditorToolbar } from './editor-toolbar';
+export { EditorFooter } from './editor-footer';
+export { ColorPicker } from './color-picker';
+export { SizePicker } from './size-picker';
+export { SmiliesPicker } from './smilies-picker';
 
 // Hooks
 export { useTextSelection, useBBCodeInsertion, useDropdownClose } from './hooks';

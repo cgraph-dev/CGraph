@@ -4,4 +4,4 @@
  * Export all content-related screens
  */
 
-export { default as ExportContentScreen } from './ExportContentScreen';
+export { default as ExportContentScreen } from './export-content-screen';

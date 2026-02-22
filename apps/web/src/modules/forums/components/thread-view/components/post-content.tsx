@@ -20,8 +20,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { BookmarkIcon as BookmarkIconSolid } from '@heroicons/react/24/solid';
 import { formatTimeAgo } from '@/lib/utils';
-import { UserStars } from '@/modules/gamification/components/UserStars';
-import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
+import { UserStars } from '@/modules/gamification/components/user-stars';
+import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { Post } from '@/modules/forums/store';
 // Import siblings directly to avoid circular dep through barrel
 import { PrefixBadge } from './prefix-badge';

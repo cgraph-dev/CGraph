@@ -7,12 +7,12 @@
  */
 
 // Main component
-export { ThreadPDFExport, default } from './ThreadPDFExport';
+export { ThreadPDFExport, default } from './thread-pdf-export';
 
 // Sub-components
-export { ExportModal } from './ExportModal';
-export { OptionToggle } from './OptionToggle';
-export { OptionSelect } from './OptionSelect';
+export { ExportModal } from './export-modal';
+export { OptionToggle } from './option-toggle';
+export { OptionSelect } from './option-select';
 
 // Core functionality
 export { generatePDF } from './pdf-generator';

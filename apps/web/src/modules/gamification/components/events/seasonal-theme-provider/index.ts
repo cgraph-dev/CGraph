@@ -8,10 +8,10 @@
  */
 
 // Main component
-export { default } from './SeasonalThemeProvider';
+export { default } from './seasonal-theme-provider';
 
 // Sub-components
-export { Particle } from './Particle';
+export { Particle } from './particle';
 
 // Hooks
 export { useSeasonalTheme, SeasonalThemeContext } from './hooks';

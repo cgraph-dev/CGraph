@@ -8,7 +8,7 @@
  * @since v0.8.3
  */
 
-export { default as AchievementsScreen } from './AchievementsScreen';
-export { default as QuestsScreen } from './QuestsScreen';
-export { default as TitlesScreen } from './TitlesScreen';
+export { default as AchievementsScreen } from './achievements-screen';
+export { default as QuestsScreen } from './quests-screen';
+export { default as TitlesScreen } from './titles-screen';
 export { default as GamificationHubScreen } from './GamificationHubScreen';

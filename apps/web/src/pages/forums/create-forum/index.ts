@@ -8,12 +8,12 @@
  * - Subscription tier info
  */
 
-export { default as CreateForum } from './CreateForum';
-export { StepIndicator } from './StepIndicator';
-export { BasicInfoStep } from './BasicInfoStep';
-export { AppearanceStep } from './AppearanceStep';
-export { SettingsStep } from './SettingsStep';
-export { ConfirmStep } from './ConfirmStep';
+export { default as CreateForum } from './create-forum';
+export { StepIndicator } from './step-indicator';
+export { BasicInfoStep } from './basic-info-step';
+export { AppearanceStep } from './appearance-step';
+export { SettingsStep } from './settings-step';
+export { ConfirmStep } from './confirm-step';
 export { useCreateForum } from './useCreateForum';
 export {
   FORUM_CATEGORIES,

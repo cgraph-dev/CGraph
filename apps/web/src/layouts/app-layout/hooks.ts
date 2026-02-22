@@ -8,7 +8,7 @@ import { useAuthStore } from '@/modules/auth/store';
 import { useChatStore } from '@/modules/chat/store';
 import { useGroupStore } from '@/modules/groups/store';
 import { useNotificationStore } from '@/modules/social/store';
-import { useThemeEnhanced } from '@/contexts/ThemeContextEnhanced';
+import { useThemeEnhanced } from '@/contexts/theme-context-enhanced';
 import { socketManager } from '@/lib/socket';
 
 export function useAppLayout() {

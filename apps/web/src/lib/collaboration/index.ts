@@ -1,4 +1,4 @@
-export { PhoenixProvider, getUserColor } from './PhoenixProvider';
+export { PhoenixProvider, getUserColor } from './phoenix-provider';
 export {
   useCollaborativeEditor,
   type UseCollaborativeEditorOptions,

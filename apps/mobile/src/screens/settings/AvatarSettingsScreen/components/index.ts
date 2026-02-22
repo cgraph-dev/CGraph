@@ -2,6 +2,6 @@
  * AvatarSettingsScreen Components Barrel Export
  */
 
-export { SettingsSection } from './SettingsSection';
-export { OptionGrid } from './OptionGrid';
-export { SliderRow } from './SliderRow';
+export { SettingsSection } from './settings-section';
+export { OptionGrid } from './option-grid';
+export { SliderRow } from './slider-row';

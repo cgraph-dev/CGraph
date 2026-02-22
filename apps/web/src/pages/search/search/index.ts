@@ -7,14 +7,14 @@
 export { Search, Search as default } from './page';
 
 // ── Sub-components ──────────────────────────────────────────────────
-export { SearchHeader } from './SearchHeader';
-export type { SearchHeaderProps } from './SearchHeader';
+export { SearchHeader } from './search-header';
+export type { SearchHeaderProps } from './search-header';
 
-export { IdSearchBar } from './IdSearchBar';
-export type { IdSearchBarProps } from './IdSearchBar';
+export { IdSearchBar } from './id-search-bar';
+export type { IdSearchBarProps } from './id-search-bar';
 
-export { SearchResults } from './SearchResults';
-export type { SearchResultsProps } from './SearchResults';
+export { SearchResults } from './search-results';
+export type { SearchResultsProps } from './search-results';
 
 export {
   ResultSection,

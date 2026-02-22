@@ -33,7 +33,7 @@ export {
   holoStyles,
 } from './ui';
 
-export type { HoloTheme, HoloConfig } from './ui/HolographicUIv4';
+export type { HoloTheme, HoloConfig } from './ui/holographic-ui-v4/index';
 
 // App-level Holographic Provider
 export {
@@ -42,7 +42,7 @@ export {
   performanceHoloConfig,
   accessibleHoloConfig,
   premiumHoloConfig,
-} from './AppHoloProvider';
+} from './app-holo-provider';
 
 // =============================================================================
 // ANIMATION SYSTEM
@@ -54,29 +54,29 @@ export {
   HapticFeedback,
   GestureHandler,
   ANIMATION_PRESETS,
-} from '@/lib/animations/AnimationEngine';
+} from '@/lib/animations/animation-engine';
 export type {
   AnimationConfig,
   SpringConfig,
   GestureConfig,
   SequenceStep,
-} from '@/lib/animations/AnimationEngine';
+} from '@/lib/animations/animation-engine';
 
 // =============================================================================
 // AI SYSTEMS
 // =============================================================================
 
 // Theme Engine
-export { themeEngine, AIThemeEngine } from '@/lib/ai/ThemeEngine';
+export { themeEngine, AIThemeEngine } from '@/lib/ai/theme-engine';
 export type {
   ThemeColors,
   ThemeMetadata,
   AdaptiveTheme,
   UserPreference,
-} from '@/lib/ai/ThemeEngine';
+} from '@/lib/ai/theme-engine';
 
 // AI Message Intelligence (NEW v0.7.35)
-export { AIMessageEngine, aiMessageEngine } from '@/lib/ai/AIMessageEngine';
+export { AIMessageEngine, aiMessageEngine } from '@/lib/ai/ai-message-engine';
 export type {
   SmartReply,
   MessageSummary,
@@ -85,7 +85,7 @@ export type {
   ContentModeration,
   ConversationInsight,
   TopicExtraction,
-} from '@/lib/ai/AIMessageEngine';
+} from '@/lib/ai/ai-message-engine';
 
 // =============================================================================
 // SECURITY & CRYPTOGRAPHY
@@ -111,15 +111,15 @@ export type {
 // =============================================================================
 
 // Advanced Voice Visualizer
-export { default as AdvancedVoiceVisualizer } from '@/modules/chat/components/audio/AdvancedVoiceVisualizer';
-export type { AdvancedVoiceVisualizerProps } from '@/modules/chat/components/audio/AdvancedVoiceVisualizer';
+export { default as AdvancedVoiceVisualizer } from '@/modules/chat/components/audio/advanced-voice-visualizer';
+export type { AdvancedVoiceVisualizerProps } from '@/modules/chat/components/audio/advanced-voice-visualizer';
 
 // Spatial Audio Engine (NEW v0.7.35)
 export {
   SpatialAudioEngine,
   SpatialAudioRoom,
   spatialAudioEngine,
-} from '@/lib/audio/SpatialAudioEngine';
+} from '@/lib/audio/spatial-audio-engine';
 export type {
   Position3D,
   Orientation3D,
@@ -129,7 +129,7 @@ export type {
   VoiceActivityState,
   SpatialAudioConfig,
   AudioAnalysisResult,
-} from '@/lib/audio/SpatialAudioEngine';
+} from '@/lib/audio/spatial-audio-engine';
 
 // =============================================================================
 // UI COMPONENTS
@@ -141,8 +141,8 @@ export {
   GlassCardNeon,
   GlassCardHolographic,
   GlassCardCrystal,
-} from '@/components/ui/GlassCard';
-export type { GlassCardProps } from '@/components/ui/GlassCard';
+} from '@/components/ui/glass-card';
+export type { GlassCardProps } from '@/components/ui/glass-card';
 
 // Holographic UI (NEW v0.7.35)
 export {
@@ -156,30 +156,30 @@ export {
   HolographicNotification,
   HOLOGRAPHIC_THEMES,
   holographicStyles,
-} from '@/components/enhanced/ui/HolographicUI';
-export type { HolographicTheme, HolographicConfig } from '@/components/enhanced/ui/HolographicUI';
+} from '@/components/enhanced/ui/holographic-ui';
+export type { HolographicTheme, HolographicConfig } from '@/components/enhanced/ui/holographic-ui';
 
 // =============================================================================
 // CONVERSATION COMPONENTS
 // =============================================================================
 
-export { AnimatedMessageWrapper } from '@/modules/chat/components/AnimatedMessageWrapper';
-export type { AnimatedMessageWrapperProps } from '@/modules/chat/components/AnimatedMessageWrapper';
+export { AnimatedMessageWrapper } from '@/modules/chat/components/animated-message-wrapper';
+export type { AnimatedMessageWrapperProps } from '@/modules/chat/components/animated-message-wrapper';
 
 export {
   AnimatedReactionBubble,
   ReactionPicker,
-} from '@/modules/chat/components/AnimatedReactionBubble';
+} from '@/modules/chat/components/animated-reaction-bubble';
 export type {
   AnimatedReactionBubbleProps,
   ReactionData,
-} from '@/modules/chat/components/AnimatedReactionBubble';
+} from '@/modules/chat/components/animated-reaction-bubble';
 
 // =============================================================================
 // 3D COMPONENTS — lazy-loaded to avoid pulling Three.js (~600KB) into main bundle
 // Import directly from '@/components/three/Matrix3DEnvironment' with React.lazy()
 // =============================================================================
-export type { Matrix3DEnvironmentProps } from '@/components/three/Matrix3DEnvironment';
+export type { Matrix3DEnvironmentProps } from '@/components/three/matrix3-d-environment';
 
 // =============================================================================
 // SHADER COMPONENTS
@@ -190,11 +190,11 @@ export {
   MatrixShaderBackground,
   CyberShaderBackground,
   NeuralShaderBackground,
-} from '@/components/shaders/ShaderBackground';
-export type { ShaderBackgroundProps } from '@/components/shaders/ShaderBackground';
+} from '@/components/shaders/shader-background';
+export type { ShaderBackgroundProps } from '@/components/shaders/shader-background';
 
 // =============================================================================
 // PAGES
 // =============================================================================
 
-export { default as EnhancedConversation } from '@/pages/messages/EnhancedConversation';
+export { default as EnhancedConversation } from '@/pages/messages/enhanced-conversation';

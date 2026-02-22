@@ -8,14 +8,14 @@
  * - Feature highlights tour
  */
 
-export { default as Onboarding } from './Onboarding';
-export { ProgressBar } from './ProgressBar';
-export { StepHeader } from './StepHeader';
-export { WelcomeStep } from './WelcomeStep';
-export { ProfileStep } from './ProfileStep';
-export { NotificationsStep } from './NotificationsStep';
-export { FeaturesStep } from './FeaturesStep';
-export { NavigationButtons } from './NavigationButtons';
+export { default as Onboarding } from './onboarding';
+export { ProgressBar } from './progress-bar';
+export { StepHeader } from './step-header';
+export { WelcomeStep } from './welcome-step';
+export { ProfileStep } from './profile-step';
+export { NotificationsStep } from './notifications-step';
+export { FeaturesStep } from './features-step';
+export { NavigationButtons } from './navigation-buttons';
 export { useOnboarding } from './useOnboarding';
 export {
   ONBOARDING_STEPS,

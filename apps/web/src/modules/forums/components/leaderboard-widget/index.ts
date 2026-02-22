@@ -1,11 +1,11 @@
 /**
  * leaderboard-widget barrel exports
  */
-export { ForumLeaderboardWidget } from './ForumLeaderboardWidget';
-export { GlobalLeaderboardWidget } from './GlobalLeaderboardWidget';
-export { LeaderboardSidebar } from './LeaderboardSidebar';
-export { default } from './LeaderboardSidebar';
-export { UserRow } from './UserRow';
+export { ForumLeaderboardWidget } from './forum-leaderboard-widget';
+export { GlobalLeaderboardWidget } from './global-leaderboard-widget';
+export { LeaderboardSidebar } from './leaderboard-sidebar';
+export { default } from './leaderboard-sidebar';
+export { UserRow } from './user-row';
 export { formatKarma, getRankIcon, deriveUserDisplayInfo } from './utils';
 
 export type {

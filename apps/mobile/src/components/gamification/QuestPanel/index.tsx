@@ -22,7 +22,7 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, RefreshControl } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
-import { HapticFeedback, AnimationColors } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback, AnimationColors } from '@/lib/animations/animation-engine';
 
 import { QuestPanelProps, Quest, QuestType } from './types';
 import { styles } from './styles';

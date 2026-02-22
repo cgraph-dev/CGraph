@@ -5,24 +5,24 @@
  */
 
 // Import for default export object
-import { ColorPicker } from './ColorPicker';
-import { Slider, RangeSlider, SliderGroup } from './SliderGroup';
+import { ColorPicker } from './color-picker';
+import { Slider, RangeSlider, SliderGroup } from './slider-group';
 
 // ============================================================================
 // Color Picker
 // ============================================================================
 
-export { ColorPicker } from './ColorPicker';
+export { ColorPicker } from './color-picker';
 
-export type { ColorPickerProps } from './ColorPicker';
+export type { ColorPickerProps } from './color-picker';
 
 // ============================================================================
 // Slider Group
 // ============================================================================
 
-export { Slider, RangeSlider, SliderGroup } from './SliderGroup';
+export { Slider, RangeSlider, SliderGroup } from './slider-group';
 
-export type { SliderProps, RangeSliderProps, SliderGroupProps } from './SliderGroup';
+export type { SliderProps, RangeSliderProps, SliderGroupProps } from './slider-group';
 
 // ============================================================================
 // Default Export

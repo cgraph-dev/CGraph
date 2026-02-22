@@ -5,12 +5,12 @@
  */
 
 // Main component
-export { default, default as ThemedBorderCard } from './ThemedBorderCard';
+export { default, default as ThemedBorderCard } from './themed-border-card';
 
 // Sub-components
-export { BorderCardGrid } from './BorderCardGrid';
-export { CornerBrackets } from './CornerBrackets';
-export { ParticleEffects } from './ParticleEffects';
+export { BorderCardGrid } from './border-card-grid';
+export { CornerBrackets } from './corner-brackets';
+export { ParticleEffects } from './particle-effects';
 
 // Animations
 export { getBorderAnimation } from './animations';

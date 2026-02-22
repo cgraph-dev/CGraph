@@ -21,7 +21,7 @@ export {
   usePlatformStyles,
   selectPlatform,
   default as PlatformAdapter,
-} from './PlatformAdapter';
+} from './platform-adapter';
 
 export type {
   PlatformType,
@@ -29,7 +29,7 @@ export type {
   HapticType,
   UnifiedIconConfig,
   BottomSheetConfig,
-} from './PlatformAdapter';
+} from './platform-adapter';
 
 // ============================================================================
 // iOS Features
@@ -40,9 +40,9 @@ export {
   useIOSFeatures,
   useDynamicIsland,
   default as IOSFeatures,
-} from './ios/IOSFeatures';
+} from './ios/ios-features';
 
-export type { IOSCapabilities, DynamicIslandState, SFSymbolConfig } from './ios/IOSFeatures';
+export type { IOSCapabilities, DynamicIslandState, SFSymbolConfig } from './ios/ios-features';
 
 // ============================================================================
 // Android Features
@@ -54,22 +54,22 @@ export {
   useMaterialYouColors,
   usePredictiveBack,
   default as AndroidFeatures,
-} from './android/AndroidFeatures';
+} from './android/android-features';
 
 export type {
   AndroidCapabilities,
   MaterialYouColors,
   NotificationChannelConfig,
-} from './android/AndroidFeatures';
+} from './android/android-features';
 
 // ============================================================================
 // Default Export
 // ============================================================================
 
 const Platform = {
-  PlatformAdapter: require('./PlatformAdapter').default,
-  IOSFeatures: require('./ios/IOSFeatures').default,
-  AndroidFeatures: require('./android/AndroidFeatures').default,
+  PlatformAdapter: require('./platform-adapter').default,
+  IOSFeatures: require('./ios/ios-features').default,
+  AndroidFeatures: require('./android/android-features').default,
 };
 
 export default Platform;

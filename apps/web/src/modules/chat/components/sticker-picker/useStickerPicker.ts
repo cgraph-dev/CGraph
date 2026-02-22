@@ -14,7 +14,7 @@ import {
 } from '@/data/stickers';
 import { useAuthStore } from '@/modules/auth/store';
 import { api } from '@/lib/api';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 
 const logger = createLogger('StickerPicker');
 

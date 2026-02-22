@@ -17,6 +17,6 @@ export {
 } from './constants';
 
 // Components
-export { ChatBubble } from './ChatBubble';
-export { ProfileCardPreview } from './ProfileCardPreview';
-export { LivePreviewPanel, default } from './LivePreviewPanel';
+export { ChatBubble } from './chat-bubble';
+export { ProfileCardPreview } from './profile-card-preview';
+export { LivePreviewPanel, default } from './live-preview-panel';

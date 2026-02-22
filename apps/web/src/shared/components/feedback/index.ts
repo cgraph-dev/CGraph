@@ -8,7 +8,7 @@
  */
 
 // Toast and notifications
-export { ToastContainer, toast, useToastStore } from '@/components/ui/Toast';
+export { ToastContainer, toast, useToastStore } from '@/components/ui/toast';
 
 // Alert components
 export { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

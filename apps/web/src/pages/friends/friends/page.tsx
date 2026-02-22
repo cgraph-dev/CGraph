@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { FriendsHeader, AddFriendForm, FriendsTabBar, FriendsSearchBar } from './header-components';
 import { PendingTab, FriendsListTab, BlockedTab } from './friends-tab-panels';
 import { WelcomePanel } from './welcome-panel';
-import { FriendSuggestions } from './FriendSuggestions';
+import { FriendSuggestions } from './friend-suggestions';
 import { useFriendsPage } from './useFriendsPage';
 
 export default function Friends() {

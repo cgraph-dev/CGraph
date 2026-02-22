@@ -4,9 +4,9 @@
  * Barrel file for the messages page components.
  */
 
-export { default } from './Messages';
-export { ConversationItem } from './ConversationItem';
-export { ConversationSidebar } from './ConversationSidebar';
-export { EmptyConversationList, NoConversationSelected, LoadingSpinner } from './EmptyStates';
+export { default } from './messages';
+export { ConversationItem } from './conversation-item';
+export { ConversationSidebar } from './conversation-sidebar';
+export { EmptyConversationList, NoConversationSelected, LoadingSpinner } from './empty-states';
 export * from './types';
 export * from './utils';

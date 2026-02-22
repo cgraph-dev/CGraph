@@ -23,4 +23,4 @@ export {
 export { UNICODE_CATEGORIES } from './unicode-emojis';
 
 // Main component
-export { CustomEmojiPicker, default } from './CustomEmojiPicker';
+export { CustomEmojiPicker, default } from './custom-emoji-picker';

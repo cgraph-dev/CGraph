@@ -8,7 +8,7 @@
  * @module lib/socket
  */
 
-export { SocketManager } from './SocketManager';
+export { SocketManager } from './socket-manager';
 export { setupForumHandlers, setupThreadHandlers } from './channelHandlers';
 export type { ChannelMaps } from './channelHandlers';
 
@@ -33,7 +33,7 @@ export type {
 
 // ── Singleton & Hook ──────────────────────────────────────────────────
 
-import { SocketManager } from './SocketManager';
+import { SocketManager } from './socket-manager';
 
 let _instance: SocketManager | null = null;
 

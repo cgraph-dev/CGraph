@@ -3,12 +3,12 @@
  * @module pages/groups/components
  */
 
-export { ServerIcon } from './ServerIcon';
-export { ChannelItem } from './ChannelItem';
-export { ServerList } from './ServerList';
-export { ChannelList } from './ChannelList';
-export { ContentArea } from './ContentArea';
-export { LoadingOverlay, AmbientParticles } from './Decorations';
+export { ServerIcon } from './server-icon';
+export { ChannelItem } from './channel-item';
+export { ServerList } from './server-list';
+export { ChannelList } from './channel-list';
+export { ContentArea } from './content-area';
+export { LoadingOverlay, AmbientParticles } from './decorations';
 
 export type {
   ServerIconProps,

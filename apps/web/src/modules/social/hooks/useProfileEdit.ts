@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { toast } from '@/components/feedback/Toast';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
+import { toast } from '@/components/feedback/toast';
 import type { UserProfileData } from '@/types/profile.types';
 
 const logger = createLogger('useProfileActions');

@@ -11,13 +11,13 @@
 export { default } from './page';
 
 // ── Sub-components ─────────────────────────────────────────────────────
-export { CircuitBoardLogo } from './CircuitBoardLogo';
-export { SvgDefs } from './svg/SvgDefs';
-export { CLetterTraces } from './svg/CLetterTraces';
-export { GLetterTraces } from './svg/GLetterTraces';
-export { CircuitNodes } from './svg/CircuitNodes';
-export { CentralHub } from './svg/CentralHub';
-export { DataFlowParticles } from './svg/DataFlowParticles';
+export { CircuitBoardLogo } from './circuit-board-logo';
+export { SvgDefs } from './svg/svg-defs';
+export { CLetterTraces } from './svg/c-letter-traces';
+export { GLetterTraces } from './svg/g-letter-traces';
+export { CircuitNodes } from './svg/circuit-nodes';
+export { CentralHub } from './svg/central-hub';
+export { DataFlowParticles } from './svg/data-flow-particles';
 
 // ── Hooks ──────────────────────────────────────────────────────────────
 export { useSplashAnimation } from './useSplashAnimation';

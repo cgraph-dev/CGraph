@@ -12,8 +12,8 @@
 import gsap from 'gsap';
 import { CustomEase } from 'gsap/CustomEase';
 
-import type { AnimationConfig, SpringConfig, SequenceStep } from '../AnimationEngine.types';
-import { ANIMATION_PRESETS } from '../AnimationEngine.types';
+import type { AnimationConfig, SpringConfig, SequenceStep } from '../animation-engine.types';
+import { ANIMATION_PRESETS } from '../animation-engine.types';
 
 import { SpringPhysics } from './spring-physics';
 import { HapticFeedback } from './haptic-feedback';

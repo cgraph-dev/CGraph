@@ -9,13 +9,13 @@
  * - Owned item tracking
  */
 
-export { default as CoinShop } from './CoinShop';
-export { CoinBundleCard } from './CoinBundleCard';
-export { ShopItemCard } from './ShopItemCard';
-export { CoinBalanceCard } from './CoinBalanceCard';
-export { DailyBonusBanner } from './DailyBonusBanner';
-export { CategoryFilter } from './CategoryFilter';
-export { AmbientParticles } from './AmbientParticles';
+export { default as CoinShop } from './coin-shop';
+export { CoinBundleCard } from './coin-bundle-card';
+export { ShopItemCard } from './shop-item-card';
+export { CoinBalanceCard } from './coin-balance-card';
+export { DailyBonusBanner } from './daily-bonus-banner';
+export { CategoryFilter } from './category-filter';
+export { AmbientParticles } from './ambient-particles';
 export { useCoinShop } from './useCoinShop';
 export { COIN_BUNDLES, SHOP_ITEMS, RARITY_COLORS, CATEGORY_LABELS } from './constants';
 export type {

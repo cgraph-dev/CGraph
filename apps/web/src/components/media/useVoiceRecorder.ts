@@ -6,7 +6,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { createLogger } from '@/lib/logger';
-import { generatePlaceholderWaveform } from './Waveform';
+import { generatePlaceholderWaveform } from './waveform';
 
 const logger = createLogger('useVoiceRecorder');
 

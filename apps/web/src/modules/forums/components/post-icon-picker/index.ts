@@ -3,9 +3,9 @@
  * @module modules/forums/components/post-icon-picker
  */
 
-export { PostIconPicker, default } from './PostIconPicker';
-export { PostIconDisplay } from './PostIconDisplay';
-export { IconButton, IconSearch } from './SubComponents';
+export { PostIconPicker, default } from './post-icon-picker';
+export { PostIconDisplay } from './post-icon-display';
+export { IconButton, IconSearch } from './sub-components';
 export { usePostIcons } from './usePostIcons';
 export { getDefaultIcons } from './constants';
 

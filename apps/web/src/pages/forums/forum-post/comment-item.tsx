@@ -11,8 +11,8 @@ import {
   ArrowDownIcon as ArrowDownIconSolid,
 } from '@heroicons/react/24/solid';
 import { formatTimeAgo } from '@/lib/utils';
-import MarkdownRenderer from '@/components/content/MarkdownRenderer';
-import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
+import MarkdownRenderer from '@/components/content/markdown-renderer';
+import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import type { CommentItemProps } from './types';
 import { MAX_COMMENT_INDENT, COMMENT_INDENT_PER_LEVEL } from './constants';
 

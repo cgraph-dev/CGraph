@@ -5,14 +5,14 @@
  */
 
 // Main component
-export { GroupList } from './GroupList';
-export { GroupList as default } from './GroupList';
+export { GroupList } from './group-list';
+export { GroupList as default } from './group-list';
 
 // Sub-components
-export { GroupIcon } from './GroupIcon';
-export { GroupCard } from './GroupCard';
-export { GroupListItem } from './GroupListItem';
-export { CreateGroupModal } from './CreateGroupModal';
+export { GroupIcon } from './group-icon';
+export { GroupCard } from './group-card';
+export { GroupListItem } from './group-list-item';
+export { CreateGroupModal } from './create-group-modal';
 
 // Types
 export type {

@@ -13,20 +13,20 @@ export {
   useDeviceCapabilities,
   usePerformanceRecommendations,
   default as DeviceProfiler,
-} from './DeviceProfiler';
+} from './device-profiler';
 
 export type {
   DeviceTier,
   DeviceCapabilities,
   PerformanceRecommendations,
-} from './DeviceProfiler';
+} from './device-profiler';
 
 // ============================================================================
 // Default Export
 // ============================================================================
 
 const Performance = {
-  DeviceProfiler: require('./DeviceProfiler').default,
+  DeviceProfiler: require('./device-profiler').default,
 };
 
 export default Performance;

@@ -2,8 +2,8 @@
  * QuestPanel Components Barrel Export
  */
 
-export { CountdownTimer } from './CountdownTimer';
-export { QuestProgressBar } from './QuestProgressBar';
-export { RewardBadge } from './RewardBadge';
-export { QuestCard } from './QuestCard';
-export { QuestSection } from './QuestSection';
+export { CountdownTimer } from './countdown-timer';
+export { QuestProgressBar } from './quest-progress-bar';
+export { RewardBadge } from './reward-badge';
+export { QuestCard } from './quest-card';
+export { QuestSection } from './quest-section';

@@ -8,14 +8,14 @@
  * - Members directory with search and sort
  */
 
-export { ForumBoardView } from './ForumBoardView';
-export { ForumBoardBanner } from './ForumBoardBanner';
-export { BoardsList } from './BoardsList';
-export { BoardRow } from './BoardRow';
-export { ThreadsList } from './ThreadsList';
-export { ThreadRow } from './ThreadRow';
-export { MembersList } from './MembersList';
-export { MemberCard } from './MemberCard';
+export { ForumBoardView } from './forum-board-view';
+export { ForumBoardBanner } from './forum-board-banner';
+export { BoardsList } from './boards-list';
+export { BoardRow } from './board-row';
+export { ThreadsList } from './threads-list';
+export { ThreadRow } from './thread-row';
+export { MembersList } from './members-list';
+export { MemberCard } from './member-card';
 export { useForumBoardView } from './useForumBoardView';
 
 // Types
@@ -36,4 +36,4 @@ export type {
 export { ROLE_COLORS, MEMBER_SORT_OPTIONS, SKELETON_COUNTS } from './constants';
 
 // Default export for lazy loading compatibility
-export { ForumBoardView as default } from './ForumBoardView';
+export { ForumBoardView as default } from './forum-board-view';

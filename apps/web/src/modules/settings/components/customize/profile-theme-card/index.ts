@@ -8,15 +8,15 @@
  */
 
 // Main component
-export { default } from './ProfileThemeCard';
+export { default } from './profile-theme-card';
 
 // Sub-components
-export { ProfileThemeGrid } from './ProfileThemeGrid';
-export { default as PreviewCard } from './PreviewCard';
-export { default as LockOverlay } from './LockOverlay';
-export { default as SelectedIndicator } from './SelectedIndicator';
-export { default as ThemeEffects } from './ThemeEffects';
-export { default as TierBadge } from './TierBadge';
+export { ProfileThemeGrid } from './profile-theme-grid';
+export { default as PreviewCard } from './preview-card';
+export { default as LockOverlay } from './lock-overlay';
+export { default as SelectedIndicator } from './selected-indicator';
+export { default as ThemeEffects } from './theme-effects';
+export { default as TierBadge } from './tier-badge';
 
 // Hooks
 export { useParticles } from './useParticles';

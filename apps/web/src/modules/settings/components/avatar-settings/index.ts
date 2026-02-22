@@ -3,18 +3,18 @@
  * @module modules/settings/components/avatar-settings
  */
 
-export { default } from './AvatarSettings';
+export { default } from './avatar-settings';
 
 // Components
-export { AvatarPreviewCard } from './AvatarPreviewCard';
-export { AvatarUploadCard } from './AvatarUploadCard';
-export { BannerUploadCard } from './BannerUploadCard';
-export { ProfileInfoCard } from './ProfileInfoCard';
-export { BorderStyleCard } from './BorderStyleCard';
-export { BorderWidthCard, BorderColorCard, GlowIntensityCard } from './BorderSettingsCards';
-export { AnimationSpeedCard } from './AnimationSpeedCard';
-export { ShapeCard } from './ShapeCard';
-export { ExportImportCard } from './ExportImportCard';
+export { AvatarPreviewCard } from './avatar-preview-card';
+export { AvatarUploadCard } from './avatar-upload-card';
+export { BannerUploadCard } from './banner-upload-card';
+export { ProfileInfoCard } from './profile-info-card';
+export { BorderStyleCard } from './border-style-card';
+export { BorderWidthCard, BorderColorCard, GlowIntensityCard } from './border-settings-cards';
+export { AnimationSpeedCard } from './animation-speed-card';
+export { ShapeCard } from './shape-card';
+export { ExportImportCard } from './export-import-card';
 
 // Hooks
 export { useAvatarSettings } from './useAvatarSettings';

@@ -26,24 +26,24 @@ export {
 } from './types';
 
 // Provider and hook
-export { HoloProvider, useHolo } from './HoloProvider';
+export { HoloProvider, useHolo } from './holo-provider';
 
 // Core components
-export { HoloContainer } from './HoloContainer';
-export { HoloText } from './HoloText';
-export { HoloButton } from './HoloButton';
-export { HoloCard } from './HoloCard';
-export { HoloAvatar } from './HoloAvatar';
-export { HoloInput } from './HoloInput';
-export { HoloProgress } from './HoloProgress';
+export { HoloContainer } from './holo-container';
+export { HoloText } from './holo-text';
+export { HoloButton } from './holo-button';
+export { HoloCard } from './holo-card';
+export { HoloAvatar } from './holo-avatar';
+export { HoloInput } from './holo-input';
+export { HoloProgress } from './holo-progress';
 
 // Additional components
-export { HoloBadge } from './HoloBadge';
-export { HoloTabs } from './HoloTabs';
-export { HoloDivider } from './HoloDivider';
-export { HoloModal } from './HoloModal';
-export { HoloNotification } from './HoloNotification';
-export { HoloTooltip } from './HoloTooltip';
+export { HoloBadge } from './holo-badge';
+export { HoloTabs } from './holo-tabs';
+export { HoloDivider } from './holo-divider';
+export { HoloModal } from './holo-modal';
+export { HoloNotification } from './holo-notification';
+export { HoloTooltip } from './holo-tooltip';
 
 // CSS keyframes
 export const holoStyles = `

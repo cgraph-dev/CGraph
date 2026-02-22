@@ -10,16 +10,16 @@ export type * from './types';
 export * from './constants';
 
 // Layout Components
-export { MinimalLayout } from './MinimalLayout';
-export { CompactLayout } from './CompactLayout';
-export { DetailedLayout } from './DetailedLayout';
-export { GamingLayout } from './GamingLayout';
-export { SocialLayout } from './SocialLayout';
-export { CreatorLayout } from './CreatorLayout';
+export { MinimalLayout } from './minimal-layout';
+export { CompactLayout } from './compact-layout';
+export { DetailedLayout } from './detailed-layout';
+export { GamingLayout } from './gaming-layout';
+export { SocialLayout } from './social-layout';
+export { CreatorLayout } from './creator-layout';
 
 // Helper Components
-export { StatItem } from './StatItem';
+export { StatItem } from './stat-item';
 
 // Main Component
-export { ProfileCard } from './ProfileCard';
-export { ProfileCard as default } from './ProfileCard';
+export { ProfileCard } from './profile-card';
+export { ProfileCard as default } from './profile-card';

@@ -5,14 +5,14 @@
  */
 
 // Main component
-export { TitlesPage, TitlesPage as default } from './TitlesPage';
+export { TitlesPage, TitlesPage as default } from './titles-page';
 
 // Sub-components
-export { TitleCard } from './TitleCard';
-export { TitlesHeader } from './TitlesHeader';
-export { RarityStats } from './RarityStats';
-export { TabsFilter } from './TabsFilter';
-export { TitlesGrid } from './TitlesGrid';
+export { TitleCard } from './title-card';
+export { TitlesHeader } from './titles-header';
+export { RarityStats } from './rarity-stats';
+export { TabsFilter } from './tabs-filter';
+export { TitlesGrid } from './titles-grid';
 
 // Hooks
 export { useTitlesData } from './hooks';

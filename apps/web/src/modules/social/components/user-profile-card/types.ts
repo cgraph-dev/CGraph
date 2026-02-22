@@ -4,7 +4,7 @@
  * Type definitions for the user profile card module
  */
 
-import type { ProfileCardUser } from '../ProfileCard';
+import type { ProfileCardUser } from '../profile-card';
 
 export type { ProfileCardUser };
 

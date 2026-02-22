@@ -4,5 +4,5 @@
  * Export all premium-related page components.
  */
 
-export { default as PremiumPage } from './PremiumPage';
-export { default as CoinShop } from './CoinShop';
+export { default as PremiumPage } from './premium-page';
+export { default as CoinShop } from './coin-shop';

@@ -1,0 +1,243 @@
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { PlayIcon, PauseIcon, ArrowDownTrayIcon } from '@heroicons/react/24/solid';
+import { Waveform, generatePlaceholderWaveform } from './waveform';
+import { api } from '@/lib/api';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('VoiceMessagePlayer');
+
+interface VoiceMessagePlayerProps {
+  /** Voice message ID */
+  messageId: string;
+  /** Audio source URL */
+  audioUrl: string;
+  /** Duration in seconds */
+  duration: number;
+  /** Preloaded waveform data (optional) */
+  waveformData?: number[];
+  /** Show download button */
+  showDownload?: boolean;
+  /** Additional CSS classes */
+  className?: string;
+}
+
+/**
+ * Audio player component for voice messages.
+ *
+ * Features:
+ * - Play/pause controls
+ * - Waveform visualization with progress
+ * - Click-to-seek on waveform
+ * - Duration display
+ * - Optional download button
+ */
+export function VoiceMessagePlayer({
+  messageId,
+  audioUrl,
+  duration: initialDuration,
+  waveformData,
+  showDownload = false,
+  className = '',
+}: VoiceMessagePlayerProps) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(initialDuration || 0);
+  const [, setIsAudioLoaded] = useState(false);
+  const [waveform, setWaveform] = useState<number[]>(
+    waveformData || generatePlaceholderWaveform(50)
+  );
+  const [isLoading, setIsLoading] = useState(!waveformData);
+
+  // Fetch waveform data if not provided
+  useEffect(() => {
+    if (waveformData) return;
+
+    let cancelled = false;
+
+    const fetchWaveform = async () => {
+      try {
+        const response = await api.get(`/api/v1/voice-messages/${messageId}/waveform`);
+        if (!cancelled && response.data?.waveform) {
+          setWaveform(response.data.waveform);
+        }
+      } catch (error) {
+        logger.warn('Failed to fetch waveform:', error);
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchWaveform();
+    return () => {
+      cancelled = true;
+    };
+  }, [messageId, waveformData]);
+
+  // Update progress during playback
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTimeUpdate = () => {
+      if (audio.duration && !isNaN(audio.duration)) {
+        const newProgress = audio.currentTime / audio.duration;
+        setProgress(newProgress);
+        setCurrentTime(audio.currentTime);
+      }
+    };
+
+    const handleLoadedMetadata = () => {
+      if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
+        setAudioDuration(audio.duration);
+        setIsAudioLoaded(true);
+      }
+    };
+
+    const handleDurationChange = () => {
+      if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
+        setAudioDuration(audio.duration);
+        setIsAudioLoaded(true);
+      }
+    };
+
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setProgress(0);
+      setCurrentTime(0);
+      // Reset audio position to beginning
+      if (audio) {
+        audio.currentTime = 0;
+      }
+    };
+
+    const handlePlay = () => setIsPlaying(true);
+    const handlePause = () => setIsPlaying(false);
+    const handleCanPlay = () => {
+      if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
+        setAudioDuration(audio.duration);
+        setIsAudioLoaded(true);
+      }
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('durationchange', handleDurationChange);
+    audio.addEventListener('canplay', handleCanPlay);
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('play', handlePlay);
+    audio.addEventListener('pause', handlePause);
+
+    // Check if audio is already loaded
+    if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
+      setAudioDuration(audio.duration);
+      setIsAudioLoaded(true);
+    }
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('durationchange', handleDurationChange);
+      audio.removeEventListener('canplay', handleCanPlay);
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('play', handlePlay);
+      audio.removeEventListener('pause', handlePause);
+    };
+  }, []);
+
+  const togglePlayback = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (isPlaying) {
+      audio.pause();
+    } else {
+      audio.play().catch((err) => logger.error('Playback failed', err));
+    }
+  }, [isPlaying]);
+
+  const handleSeek = useCallback(
+    (newProgress: number) => {
+      const audio = audioRef.current;
+      if (!audio) return;
+
+      // Use actual audio duration or fall back to state
+      const duration =
+        audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)
+          ? audio.duration
+          : audioDuration;
+
+      if (duration > 0) {
+        const newTime = newProgress * duration;
+        audio.currentTime = newTime;
+        setProgress(newProgress);
+        setCurrentTime(newTime);
+      }
+    },
+    [audioDuration]
+  );
+
+  const handleDownload = useCallback(() => {
+    const link = document.createElement('a');
+    link.href = audioUrl;
+    link.download = `voice-message-${messageId}.webm`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [audioUrl, messageId]);
+
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div
+      className={`flex items-center gap-3 rounded-lg bg-gray-100 p-3 dark:bg-gray-800 ${className}`}
+    >
+      <audio ref={audioRef} src={audioUrl} preload="metadata" />
+
+      {/* Play/Pause Button */}
+      <button
+        onClick={togglePlayback}
+        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-600"
+        aria-label={isPlaying ? 'Pause' : 'Play'}
+      >
+        {isPlaying ? <PauseIcon className="h-5 w-5" /> : <PlayIcon className="ml-0.5 h-5 w-5" />}
+      </button>
+
+      {/* Waveform and Time */}
+      <div className="min-w-0 flex-1">
+        <Waveform
+          data={waveform}
+          progress={progress}
+          isPlaying={isPlaying}
+          onSeek={handleSeek}
+          height={32}
+          barWidth={2}
+          barGap={1}
+          className={isLoading ? 'opacity-50' : ''}
+        />
+        <div className="mt-1 flex justify-between text-xs text-gray-500 dark:text-gray-400">
+          <span>{formatTime(currentTime)}</span>
+          <span>{formatTime(audioDuration)}</span>
+        </div>
+      </div>
+
+      {/* Download Button */}
+      {showDownload && (
+        <button
+          onClick={handleDownload}
+          className="flex-shrink-0 p-2 text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          aria-label="Download voice message"
+        >
+          <ArrowDownTrayIcon className="h-5 w-5" />
+        </button>
+      )}
+    </div>
+  );
+}

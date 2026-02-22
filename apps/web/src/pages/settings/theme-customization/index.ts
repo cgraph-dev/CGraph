@@ -1,9 +1,9 @@
-export { default } from './ThemeCustomization';
-export { ThemeTab } from './ThemeTab';
-export { AvatarTab } from './AvatarTab';
-export { ChatTab } from './ChatTab';
-export { EffectsTab } from './EffectsTab';
-export { PreviewPanel } from './PreviewPanel';
+export { default } from './theme-customization';
+export { ThemeTab } from './theme-tab';
+export { AvatarTab } from './avatar-tab';
+export { ChatTab } from './chat-tab';
+export { EffectsTab } from './effects-tab';
+export { PreviewPanel } from './preview-panel';
 export { useThemeExport } from './useThemeExport';
 export * from './types';
 export * from './constants';

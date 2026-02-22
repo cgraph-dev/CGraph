@@ -4,7 +4,7 @@
  */
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { UserPlusIcon, UsersIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import type { AddFriendFormProps, FriendsTabBarProps, FriendsSearchBarProps } from './types';
 import { springs } from '@/lib/animation-presets/presets';

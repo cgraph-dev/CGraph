@@ -4,10 +4,10 @@
  * Barrel exports for the reset password component.
  */
 
-export { default } from './ResetPassword';
+export { default } from './reset-password';
 export * from './types';
 export * from './utils';
-export { ValidatingView, ExpiredView, SuccessView } from './StateViews';
-export { PasswordStrengthMeter } from './PasswordStrengthMeter';
-export { PasswordInput } from './PasswordInput';
-export { ResetPasswordForm } from './ResetPasswordForm';
+export { ValidatingView, ExpiredView, SuccessView } from './state-views';
+export { PasswordStrengthMeter } from './password-strength-meter';
+export { PasswordInput } from './password-input';
+export { ResetPasswordForm } from './reset-password-form';

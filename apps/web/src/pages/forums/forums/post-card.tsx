@@ -19,10 +19,10 @@ import {
   ArrowDownIcon as ArrowDownIconSolid,
 } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { formatTimeAgo } from '@/lib/utils';
-import ThreadPrefix from '@/modules/forums/components/ThreadPrefix';
-import ThreadRating from '@/modules/forums/components/ThreadRating';
+import ThreadPrefix from '@/modules/forums/components/thread-prefix';
+import ThreadRating from '@/modules/forums/components/thread-rating';
 import { getVoteScoreClass } from './constants';
 import type { PostCardProps } from './types';
 

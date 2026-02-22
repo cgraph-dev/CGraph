@@ -7,7 +7,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { TITLES, type Title, type TitleRarity } from '@/data/titles';
 import { useAuthStore } from '@/modules/auth/store';
 import type { OwnedTitle, TitleTab, TitleStats } from './types';

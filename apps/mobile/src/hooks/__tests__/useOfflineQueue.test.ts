@@ -6,7 +6,7 @@
 
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 import { useOfflineQueue } from '../useOfflineQueue';
-import * as OfflineQueue from '../../lib/offline/OfflineQueue';
+import * as OfflineQueue from '../../lib/offline/offline-queue';
 
 // Mock the OfflineQueue module
 jest.mock('../../lib/offline/OfflineQueue', () => ({

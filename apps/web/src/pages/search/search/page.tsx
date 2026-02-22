@@ -9,9 +9,9 @@
 
 import { motion } from 'framer-motion';
 import { useSearch } from './useSearch';
-import { SearchHeader } from './SearchHeader';
-import { IdSearchBar } from './IdSearchBar';
-import { SearchResults } from './SearchResults';
+import { SearchHeader } from './search-header';
+import { IdSearchBar } from './id-search-bar';
+import { SearchResults } from './search-results';
 
 /**
  * Main Search page — header, ID quick-search, and categorised results.

@@ -6,8 +6,8 @@
 
 import { Route } from 'react-router-dom';
 import { PublicRoute } from '../guards';
-import { RouteErrorBoundary } from '@/components/feedback/RouteErrorBoundary';
-import AuthLayout from '@/layouts/AuthLayout';
+import { RouteErrorBoundary } from '@/components/feedback/route-error-boundary';
+import AuthLayout from '@/layouts/auth-layout';
 import {
   Login,
   Register,

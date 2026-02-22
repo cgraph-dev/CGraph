@@ -8,10 +8,10 @@
  */
 
 // Main component
-export { LogoIcon } from './LogoIcon';
+export { LogoIcon } from './logo-icon';
 
 // Variant components
-export { LogoWithText, LogoSimple, LogoSquare, LogoLoader } from './LogoVariants';
+export { LogoWithText, LogoSimple, LogoSquare, LogoLoader } from './logo-variants';
 
 // Types
 export type { LogoProps, LogoColorVariant } from './types';
@@ -21,4 +21,4 @@ export { colorPalettes } from './colors';
 export type { LogoColorPalette } from './colors';
 
 // Default export for backward compatibility
-export { LogoIcon as default } from './LogoIcon';
+export { LogoIcon as default } from './logo-icon';

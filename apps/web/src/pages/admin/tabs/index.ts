@@ -1,6 +1,6 @@
 // Admin Dashboard Tab Components - Barrel Export
-export { OverviewTab } from './OverviewTab';
-export { UsersTab } from './UsersTab';
-export { ReportsTab } from './ReportsTab';
-export { AuditTab } from './AuditTab';
-export { SettingsTab } from './SettingsTab';
+export { OverviewTab } from './overview-tab';
+export { UsersTab } from './users-tab';
+export { ReportsTab } from './reports-tab';
+export { AuditTab } from './audit-tab';
+export { SettingsTab } from './settings-tab';

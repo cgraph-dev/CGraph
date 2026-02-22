@@ -17,7 +17,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { View, StyleSheet, FlatList, Animated, RefreshControl, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/theme-context';
 import type { Notification, TabType } from './types';
 import { getMockNotifications } from './types';
 import {

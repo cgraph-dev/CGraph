@@ -3,14 +3,14 @@
  * @module modules/chat/components/conversation-list
  */
 
-export { ConversationList, default } from './ConversationList';
+export { ConversationList, default } from './conversation-list';
 
 // Components
-export { ConversationListHeader } from './ConversationListHeader';
-export { ConversationItem } from './ConversationItem';
-export { ConversationMenu } from './ConversationMenu';
-export { EmptyState } from './EmptyState';
-export { NewChatModal } from './NewChatModal';
+export { ConversationListHeader } from './conversation-list-header';
+export { ConversationItem } from './conversation-item';
+export { ConversationMenu } from './conversation-menu';
+export { EmptyState } from './empty-state';
+export { NewChatModal } from './new-chat-modal';
 
 // Hooks
 export { useConversationList } from './useConversationList';

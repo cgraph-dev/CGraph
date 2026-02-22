@@ -35,7 +35,7 @@ import { DEFAULT_UI_PREFERENCES } from './types';
 import { useMessageActions, useScheduleMessage } from '@/modules/chat/hooks';
 import { useCallModals } from '@/modules/calls/hooks';
 import { groupMessagesByDate } from '@/lib/chat/messageUtils';
-import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/animation-engine';
 
 export function useConversationPage() {
   const { conversationId } = useParams<{ conversationId: string }>();

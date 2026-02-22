@@ -2,15 +2,15 @@
  * Streak Tracker Module
  */
 
-export { default, StreakTracker } from './StreakTracker';
+export { default, StreakTracker } from './streak-tracker';
 
 // Components
-export { FireAnimation } from './FireAnimation';
-export { WeeklyCalendar } from './WeeklyCalendar';
-export { MilestoneProgress } from './MilestoneProgress';
-export { ClaimableMilestones } from './ClaimableMilestones';
-export { MilestonesList } from './MilestonesList';
-export { StreakWidgetVariant, StreakCompactVariant } from './StreakVariants';
+export { FireAnimation } from './fire-animation';
+export { WeeklyCalendar } from './weekly-calendar';
+export { MilestoneProgress } from './milestone-progress';
+export { ClaimableMilestones } from './claimable-milestones';
+export { MilestonesList } from './milestones-list';
+export { StreakWidgetVariant, StreakCompactVariant } from './streak-variants';
 
 // Constants
 export { DEFAULT_MILESTONES, FIRE_COLORS, GLOW_COLOR } from './constants';

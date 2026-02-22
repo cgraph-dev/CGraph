@@ -4,8 +4,8 @@ export {
   ProfileErrorState,
   ProfileInvalidUser,
   AmbientParticles,
-} from './ProfileStates';
-export { ProfileStatsGrid, ProfileSidebar } from './ProfileStats';
-export { EquippedBadgesShowcase, AchievementsShowcase } from './ProfileShowcases';
-export { ProfileCard, type ProfileCardUser, type ProfileCardProps } from './ProfileCard';
-export { default as UserProfileCard } from './UserProfileCard';
+} from './profile-states';
+export { ProfileStatsGrid, ProfileSidebar } from './profile-stats';
+export { EquippedBadgesShowcase, AchievementsShowcase } from './profile-showcases';
+export { ProfileCard, type ProfileCardUser, type ProfileCardProps } from './profile-card';
+export { default as UserProfileCard } from './user-profile-card';

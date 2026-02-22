@@ -4,11 +4,11 @@
  * Barrel exports for daily rewards components
  */
 
-export { DailyRewards } from './DailyRewards';
-export { RewardCard } from './RewardCard';
-export { CompactView } from './CompactView';
-export { RewardDetails } from './RewardDetails';
-export { ClaimSuccessModal } from './ClaimSuccessModal';
+export { DailyRewards } from './daily-rewards';
+export { RewardCard } from './reward-card';
+export { CompactView } from './compact-view';
+export { RewardDetails } from './reward-details';
+export { ClaimSuccessModal } from './claim-success-modal';
 export * from './types';
 export * from './constants';
 export * from './hooks';

@@ -6,19 +6,19 @@
  * @module screens/messages/ConversationScreen/components
  */
 
-export { AnimatedMessageWrapper } from './AnimatedMessageWrapper';
-export { AnimatedReactionBubble } from './AnimatedReactionBubble';
+export { AnimatedMessageWrapper } from './animated-message-wrapper';
+export { AnimatedReactionBubble } from './animated-reaction-bubble';
 export {
   InlineVideoThumbnail,
   VideoPlayerComponent,
   AttachmentVideoPreview,
-} from './VideoComponents';
-export { EmptyConversation } from './EmptyConversation';
-export { MessageActionsMenu } from './MessageActionsMenu';
-export { ReactionPickerModal } from './ReactionPickerModal';
-export { AttachmentPreviewModal } from './AttachmentPreviewModal';
-export { ImageViewerModal } from './ImageViewerModal';
-export { VideoPlayerModal } from './VideoPlayerModal';
-export { PinnedMessagesBar } from './PinnedMessagesBar';
-export { ChatInputArea } from './ChatInputArea';
-export { MessageBubble } from './MessageBubble';
+} from './video-components';
+export { EmptyConversation } from './empty-conversation';
+export { MessageActionsMenu } from './message-actions-menu';
+export { ReactionPickerModal } from './reaction-picker-modal';
+export { AttachmentPreviewModal } from './attachment-preview-modal';
+export { ImageViewerModal } from './image-viewer-modal';
+export { VideoPlayerModal } from './video-player-modal';
+export { PinnedMessagesBar } from './pinned-messages-bar';
+export { ChatInputArea } from './chat-input-area';
+export { MessageBubble } from './message-bubble';

@@ -1,4 +1,4 @@
-export { ForumRow } from './ForumRow';
-export { ForumCategoryCard } from './ForumCategoryCard';
-export { ForumCategoryEmptyState } from './ForumCategoryEmptyState';
+export { ForumRow } from './forum-row';
+export { ForumCategoryCard } from './forum-category-card';
+export { ForumCategoryEmptyState } from './forum-category-empty-state';
 export { useForumCategoryList } from './useForumCategoryList';

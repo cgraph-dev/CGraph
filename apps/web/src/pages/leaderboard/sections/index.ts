@@ -3,15 +3,15 @@
  * @module pages/leaderboard/sections
  */
 
-export { LeaderboardHeader } from './LeaderboardHeader';
-export { CategoryTabs } from './CategoryTabs';
-export { FiltersRow } from './FiltersRow';
-export { UserRankCard } from './UserRankCard';
-export { LeaderboardTableHeader } from './LeaderboardTableHeader';
-export { LoadingState } from './LoadingState';
-export { TopPodium } from './TopPodium';
-export { RankingsList } from './RankingsList';
-export { Pagination } from './Pagination';
+export { LeaderboardHeader } from './leaderboard-header';
+export { CategoryTabs } from './category-tabs';
+export { FiltersRow } from './filters-row';
+export { UserRankCard } from './user-rank-card';
+export { LeaderboardTableHeader } from './leaderboard-table-header';
+export { LoadingState } from './loading-state';
+export { TopPodium } from './top-podium';
+export { RankingsList } from './rankings-list';
+export { Pagination } from './pagination';
 
 // Re-export types
 export type {

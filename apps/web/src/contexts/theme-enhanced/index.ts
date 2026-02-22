@@ -1,5 +1,5 @@
 export type { ThemeContextValue } from './types';
-export { ThemeProviderEnhanced } from './ThemeProviderEnhanced';
+export { ThemeProviderEnhanced } from './theme-provider-enhanced';
 export {
   ThemeContextEnhanced,
   useThemeEnhanced,
