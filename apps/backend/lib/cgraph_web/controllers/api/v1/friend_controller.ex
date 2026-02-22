@@ -18,6 +18,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   List user's friends.
   GET /api/v1/friends
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     user = conn.assigns.current_user
     page = parse_int(params["page"], 1, min: 1)
@@ -37,6 +38,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   Get a specific friendship.
   GET /api/v1/friends/:id
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => friendship_id}) do
     user = conn.assigns.current_user
 
@@ -49,6 +51,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   Get pending friend requests (received).
   GET /api/v1/friends/requests
   """
+  @spec requests(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def requests(conn, params) do
     user = conn.assigns.current_user
     page = parse_int(params["page"], 1, min: 1)
@@ -66,6 +69,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   Get sent friend requests (outgoing).
   GET /api/v1/friends/sent
   """
+  @spec sent(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def sent(conn, params) do
     user = conn.assigns.current_user
     page = parse_int(params["page"], 1, min: 1)
@@ -84,6 +88,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   POST /api/v1/friends
   Accepts user_id (UUID), username, email, or uid (numeric user ID like #0001).
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"user_id" => target_user_id}) do
     user = conn.assigns.current_user
 
@@ -156,6 +161,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   Accept a friend request.
   PUT /api/v1/friends/:id/accept
   """
+  @spec accept(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def accept(conn, %{"id" => friendship_id}) do
     user = conn.assigns.current_user
 
@@ -173,6 +179,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   Decline a friend request.
   PUT /api/v1/friends/:id/decline
   """
+  @spec decline(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def decline(conn, %{"id" => friendship_id}) do
     user = conn.assigns.current_user
 
@@ -187,6 +194,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   Cancel a sent friend request.
   DELETE /api/v1/friends/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => friendship_id}) do
     user = conn.assigns.current_user
 
@@ -200,6 +208,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   Unfriend a user.
   DELETE /api/v1/friends/user/:user_id
   """
+  @spec unfriend(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unfriend(conn, %{"user_id" => target_user_id}) do
     user = conn.assigns.current_user
 
@@ -213,6 +222,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   Block a user.
   POST /api/v1/friends/:id/block
   """
+  @spec block(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def block(conn, %{"id" => target_user_id}) do
     user = conn.assigns.current_user
 
@@ -229,6 +239,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   Unblock a user.
   DELETE /api/v1/friends/:id/block
   """
+  @spec unblock(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unblock(conn, %{"id" => target_user_id}) do
     user = conn.assigns.current_user
 
@@ -242,6 +253,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   List blocked users.
   GET /api/v1/friends/blocked
   """
+  @spec blocked(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def blocked(conn, params) do
     user = conn.assigns.current_user
     page = parse_int(params["page"], 1, min: 1)
@@ -259,6 +271,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   Get mutual friends with another user.
   GET /api/v1/friends/:id/mutual
   """
+  @spec mutual(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def mutual(conn, %{"id" => target_user_id}) do
     user = conn.assigns.current_user
 
@@ -272,6 +285,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   Get online friends.
   GET /api/v1/friends/online
   """
+  @spec online(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def online(conn, _params) do
     user = conn.assigns.current_user
 
@@ -283,6 +297,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   Get pending friend requests (alias for requests).
   GET /api/v1/friends/pending
   """
+  @spec pending(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def pending(conn, params) do
     requests(conn, params)
   end
@@ -291,6 +306,7 @@ defmodule CGraphWeb.API.V1.FriendController do
   Get friend suggestions based on mutual friends and activity.
   GET /api/v1/friends/suggestions
   """
+  @spec suggestions(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def suggestions(conn, params) do
     user = conn.assigns.current_user
     limit = parse_int(params["limit"], 10, min: 1, max: @max_suggestions)

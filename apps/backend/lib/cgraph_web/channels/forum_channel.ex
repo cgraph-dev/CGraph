@@ -15,6 +15,7 @@ defmodule CGraphWeb.ForumChannel do
   alias CGraph.Presence
 
   @impl true
+  @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("forum:" <> forum_id, _params, socket) do
     user = socket.assigns.current_user
 
@@ -41,6 +42,7 @@ defmodule CGraphWeb.ForumChannel do
   end
 
   @impl true
+  @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
     user = socket.assigns.current_user
     _forum_id = socket.assigns.forum_id
@@ -74,6 +76,7 @@ defmodule CGraphWeb.ForumChannel do
   # ============================================================================
 
   @impl true
+  @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("get_online_members", _params, socket) do
     presence_list = Presence.list(socket)
     online_members = Enum.map(presence_list, fn {user_id, %{metas: [meta | _]}} ->

@@ -26,6 +26,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   # ---------------------------------------------------------------------------
 
   @doc "Store refresh token metadata in Redis (primary) and ETS (local cache)."
+  @spec store_refresh_token(map()) :: :ok
   def store_refresh_token(token_data) do
     jti = token_data.jti
     user_id = token_data.user_id
@@ -43,6 +44,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   end
 
   @doc "Retrieve refresh token by JTI. Tries Redis first, falls back to ETS."
+  @spec get_refresh_token(String.t()) :: {:ok, map()} | {:error, :token_not_found}
   def get_refresh_token(jti) do
     case redis_get(key(:rt, jti)) do
       {:ok, data} when is_binary(data) ->
@@ -57,6 +59,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   end
 
   @doc "Mark a refresh token as used (one-time use enforcement)."
+  @spec mark_token_used(String.t()) :: :ok
   def mark_token_used(jti) do
     case get_refresh_token(jti) do
       {:ok, token_data} ->
@@ -78,6 +81,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   # ---------------------------------------------------------------------------
 
   @doc "Store token family data."
+  @spec store_family(map()) :: :ok
   def store_family(family_data) do
     family_id = family_data.family_id
     user_id = family_data.user_id
@@ -91,6 +95,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   end
 
   @doc "Get token family by ID."
+  @spec get_family(String.t()) :: {:ok, map()} | {:error, :not_found}
   def get_family(family_id) do
     case redis_get(key(:fam, family_id)) do
       {:ok, data} when is_binary(data) ->
@@ -105,6 +110,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   end
 
   @doc "Revoke an entire token family (used on token theft detection)."
+  @spec revoke_family(String.t()) :: :ok
   def revoke_family(family_id) do
     case get_family(family_id) do
       {:ok, family_data} ->
@@ -121,6 +127,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   end
 
   @doc "Check if a token family has been revoked."
+  @spec family_revoked?(String.t()) :: boolean()
   def family_revoked?(family_id) do
     case get_family(family_id) do
       {:ok, %{revoked: true}} -> true
@@ -133,6 +140,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   # ---------------------------------------------------------------------------
 
   @doc "Revoke a specific token by JTI."
+  @spec revoke_by_jti(String.t()) :: :ok
   def revoke_by_jti(jti) do
     :ets.insert(:revoked_tokens, {jti, DateTime.utc_now()})
 
@@ -142,6 +150,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   end
 
   @doc "Check if a specific JTI has been revoked."
+  @spec token_revoked?(String.t()) :: boolean()
   def token_revoked?(jti) do
     case redis_get(key(:rev, jti)) do
       {:ok, val} when is_binary(val) -> true
@@ -158,6 +167,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   # ---------------------------------------------------------------------------
 
   @doc "Get all active JTIs for a user."
+  @spec get_user_token_jtis(String.t()) :: list(String.t())
   def get_user_token_jtis(user_id) do
     case redis_cmd_safe(["SMEMBERS", key(:user_tokens, user_id)]) do
       {:ok, jtis} when is_list(jtis) and jtis != [] ->
@@ -170,6 +180,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   end
 
   @doc "Get all family IDs for a user."
+  @spec get_user_family_ids(String.t()) :: list(String.t())
   def get_user_family_ids(user_id) do
     case redis_cmd_safe(["SMEMBERS", key(:user_fams, user_id)]) do
       {:ok, ids} when is_list(ids) and ids != [] ->
@@ -182,6 +193,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   end
 
   @doc "Delete all refresh tokens for a user."
+  @spec delete_user_tokens(String.t()) :: :ok
   def delete_user_tokens(user_id) do
     # ETS cleanup
     :ets.match_delete(:refresh_tokens, {:_, %{user_id: user_id}})
@@ -212,6 +224,7 @@ defmodule CGraph.Auth.TokenManager.Store do
   Redis handles its own expiration via key TTLs, so this only
   cleans the local ETS cache.
   """
+  @spec cleanup_expired() :: nil
   def cleanup_expired do
     now = DateTime.utc_now()
 

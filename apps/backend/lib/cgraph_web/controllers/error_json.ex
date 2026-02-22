@@ -6,6 +6,7 @@ defmodule CGraphWeb.ErrorJSON do
   @default_code "unknown_error"
   @default_message "An unexpected error occurred"
 
+  @spec envelope(String.t() | nil, String.t() | nil, term()) :: map()
   def envelope(code, message, details \\ nil) do
     %{
       error: %{
@@ -17,6 +18,7 @@ defmodule CGraphWeb.ErrorJSON do
   end
 
   # Render changeset errors
+  @spec error(map()) :: map()
   def error(%{changeset: changeset}) do
     envelope("validation_error", "Validation failed", Ecto.Changeset.traverse_errors(changeset, &translate_error/1))
   end
@@ -37,6 +39,7 @@ defmodule CGraphWeb.ErrorJSON do
   end
 
   # Standard HTTP error codes
+  @spec render(String.t(), map()) :: map()
   def render("400.json", _assigns) do
     envelope("bad_request", "Bad request")
   end

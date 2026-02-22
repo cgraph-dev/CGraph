@@ -131,6 +131,7 @@ defmodule CGraphWeb.API.Response do
       conn |> success(%{id: 1, name: "John"})
       conn |> success(users, status: 201)
   """
+  @spec success(Plug.Conn.t(), term(), keyword()) :: Plug.Conn.t()
   def success(conn, data, opts \\ []) do
     status = Keyword.get(opts, :status, 200)
 
@@ -148,6 +149,7 @@ defmodule CGraphWeb.API.Response do
   @doc """
   Send a successful response for resource creation (201 Created).
   """
+  @spec created(Plug.Conn.t(), term(), keyword()) :: Plug.Conn.t()
   def created(conn, data, opts \\ []) do
     location = Keyword.get(opts, :location)
 
@@ -163,6 +165,7 @@ defmodule CGraphWeb.API.Response do
   @doc """
   Send a successful response with no content (204 No Content).
   """
+  @spec no_content(Plug.Conn.t()) :: Plug.Conn.t()
   def no_content(conn) do
     conn
     |> put_status(204)
@@ -172,6 +175,7 @@ defmodule CGraphWeb.API.Response do
   @doc """
   Send a successful response for accepted async operations (202 Accepted).
   """
+  @spec accepted(Plug.Conn.t(), term()) :: Plug.Conn.t()
   def accepted(conn, data \\ nil) do
     response = %{
       success: true,
@@ -205,6 +209,7 @@ defmodule CGraphWeb.API.Response do
       {users, meta} = Users.list_users(page: 1, per_page: 20)
       conn |> paginated(users, meta)
   """
+  @spec paginated(Plug.Conn.t(), term(), map()) :: Plug.Conn.t()
   def paginated(conn, data, pagination_info) do
     pagination = build_pagination(pagination_info)
 
@@ -278,6 +283,7 @@ defmodule CGraphWeb.API.Response do
       conn |> error(:not_found, "User not found")
       conn |> error(:forbidden, "You cannot access this resource")
   """
+  @spec error(Plug.Conn.t(), error_code(), String.t(), keyword()) :: Plug.Conn.t()
   def error(conn, code, message, opts \\ []) do
     status = Keyword.get(opts, :status) || Map.get(@error_status_map, code, 500)
     details = Keyword.get(opts, :details)
@@ -308,6 +314,7 @@ defmodule CGraphWeb.API.Response do
 
   Automatically extracts and formats all validation errors.
   """
+  @spec validation_error(Plug.Conn.t(), Ecto.Changeset.t()) :: Plug.Conn.t()
   def validation_error(conn, %Ecto.Changeset{} = changeset) do
     errors = format_changeset_errors(changeset)
 
@@ -317,6 +324,7 @@ defmodule CGraphWeb.API.Response do
   @doc """
   Shorthand for not found errors.
   """
+  @spec not_found(Plug.Conn.t(), String.t()) :: Plug.Conn.t()
   def not_found(conn, message \\ "Resource not found") do
     error(conn, :not_found, message)
   end
@@ -324,6 +332,7 @@ defmodule CGraphWeb.API.Response do
   @doc """
   Shorthand for unauthorized errors.
   """
+  @spec unauthorized(Plug.Conn.t(), String.t()) :: Plug.Conn.t()
   def unauthorized(conn, message \\ "Authentication required") do
     error(conn, :unauthorized, message)
   end
@@ -331,6 +340,7 @@ defmodule CGraphWeb.API.Response do
   @doc """
   Shorthand for forbidden errors.
   """
+  @spec forbidden(Plug.Conn.t(), String.t()) :: Plug.Conn.t()
   def forbidden(conn, message \\ "You don't have permission to access this resource") do
     error(conn, :forbidden, message)
   end
@@ -338,6 +348,7 @@ defmodule CGraphWeb.API.Response do
   @doc """
   Shorthand for conflict errors (e.g., duplicate resource).
   """
+  @spec conflict(Plug.Conn.t(), String.t()) :: Plug.Conn.t()
   def conflict(conn, message \\ "Resource already exists") do
     error(conn, :conflict, message)
   end
@@ -347,6 +358,7 @@ defmodule CGraphWeb.API.Response do
 
   Logs the error details but returns a generic message to clients.
   """
+  @spec internal_error(Plug.Conn.t(), term()) :: Plug.Conn.t()
   def internal_error(conn, reason \\ nil) do
     if reason do
       require Logger
@@ -401,6 +413,7 @@ defmodule CGraphWeb.API.Response do
 
   Handles nested changesets and arrays.
   """
+  @spec format_changeset_errors(Ecto.Changeset.t()) :: map()
   def format_changeset_errors(%Ecto.Changeset{} = changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Regex.replace(~r"%{(\w+)}", msg, fn _, key ->

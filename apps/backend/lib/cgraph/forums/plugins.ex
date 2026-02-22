@@ -13,6 +13,7 @@ defmodule CGraph.Forums.Plugins do
   @doc """
   List all plugins for a forum.
   """
+  @spec list_forum_plugins(String.t()) :: list(ForumPlugin.t())
   def list_forum_plugins(forum_id) do
     from(p in ForumPlugin,
       where: p.forum_id == ^forum_id,
@@ -24,6 +25,7 @@ defmodule CGraph.Forums.Plugins do
   @doc """
   List active plugins for a forum.
   """
+  @spec list_active_plugins(String.t()) :: list(ForumPlugin.t())
   def list_active_plugins(forum_id) do
     from(p in ForumPlugin,
       where: p.forum_id == ^forum_id and p.is_active == true,
@@ -35,6 +37,7 @@ defmodule CGraph.Forums.Plugins do
   @doc """
   Get a plugin by ID.
   """
+  @spec get_plugin(String.t()) :: {:ok, ForumPlugin.t()} | {:error, :not_found}
   def get_plugin(id) do
     case Repo.get(ForumPlugin, id) do
       nil -> {:error, :not_found}
@@ -45,6 +48,7 @@ defmodule CGraph.Forums.Plugins do
   @doc """
   Get a plugin by forum_id and plugin_id.
   """
+  @spec get_plugin_by_plugin_id(String.t(), String.t()) :: {:ok, ForumPlugin.t()} | {:error, :not_found}
   def get_plugin_by_plugin_id(forum_id, plugin_id) do
     from(p in ForumPlugin,
       where: p.forum_id == ^forum_id and p.plugin_id == ^plugin_id
@@ -59,6 +63,7 @@ defmodule CGraph.Forums.Plugins do
   @doc """
   Install a plugin from the marketplace.
   """
+  @spec install_plugin(String.t(), String.t(), map()) :: {:ok, ForumPlugin.t()} | {:error, Ecto.Changeset.t()}
   def install_plugin(forum_id, user_id, plugin_attrs) do
     attrs = plugin_attrs
       |> Map.put("forum_id", forum_id)
@@ -73,12 +78,14 @@ defmodule CGraph.Forums.Plugins do
   @doc """
   Uninstall a plugin.
   """
+  @spec uninstall_plugin(ForumPlugin.t()) :: {:ok, ForumPlugin.t()} | {:error, :cannot_uninstall_core_plugin} | {:error, Ecto.Changeset.t()}
   def uninstall_plugin(%ForumPlugin{is_core: true}), do: {:error, :cannot_uninstall_core_plugin}
   def uninstall_plugin(%ForumPlugin{} = plugin), do: Repo.delete(plugin)
 
   @doc """
   Toggle plugin active status.
   """
+  @spec toggle_plugin(ForumPlugin.t()) :: {:ok, ForumPlugin.t()} | {:error, Ecto.Changeset.t()}
   def toggle_plugin(%ForumPlugin{} = plugin) do
     plugin
     |> ForumPlugin.toggle_changeset(%{is_active: !plugin.is_active})
@@ -88,6 +95,7 @@ defmodule CGraph.Forums.Plugins do
   @doc """
   Update plugin settings.
   """
+  @spec update_plugin_settings(ForumPlugin.t(), map()) :: {:ok, ForumPlugin.t()} | {:error, Ecto.Changeset.t()}
   def update_plugin_settings(%ForumPlugin{} = plugin, settings) do
     plugin
     |> ForumPlugin.settings_changeset(%{settings: settings})
@@ -97,6 +105,7 @@ defmodule CGraph.Forums.Plugins do
   @doc """
   Get plugins for a specific hook.
   """
+  @spec get_plugins_for_hook(String.t(), String.t()) :: list(ForumPlugin.t())
   def get_plugins_for_hook(forum_id, hook) do
     from(p in ForumPlugin,
       where: p.forum_id == ^forum_id and p.is_active == true and ^hook in p.hooks
@@ -107,6 +116,7 @@ defmodule CGraph.Forums.Plugins do
   @doc """
   List available plugins from the marketplace.
   """
+  @spec list_available_plugins() :: list(map())
   def list_available_plugins do
     [
       %{
@@ -245,6 +255,7 @@ defmodule CGraph.Forums.Plugins do
   @doc """
   Get available plugin by plugin_id from marketplace.
   """
+  @spec get_available_plugin(String.t()) :: map() | nil
   def get_available_plugin(plugin_id) do
     list_available_plugins()
     |> Enum.find(&(&1.plugin_id == plugin_id))

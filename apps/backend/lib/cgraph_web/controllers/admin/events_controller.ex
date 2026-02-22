@@ -42,6 +42,7 @@ defmodule CGraphWeb.Admin.EventsController do
   - sort: field to sort by (default: starts_at)
   - order: asc or desc (default: desc)
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     page = get_page(params)
     per_page = get_per_page(params)
@@ -66,6 +67,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   Get detailed event information including analytics.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
     with {:ok, event} <- Events.get_event_with_analytics(id) do
       render(conn, :show, event: event)
@@ -94,6 +96,7 @@ defmodule CGraphWeb.Admin.EventsController do
   }
   ```
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"event" => event_params}) do
     admin = conn.assigns.current_admin
 
@@ -114,6 +117,7 @@ defmodule CGraphWeb.Admin.EventsController do
   Note: Some fields cannot be modified once an event is active
   (e.g., starts_at, battle pass structure).
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"id" => id, "event" => event_params}) do
     admin = conn.assigns.current_admin
 
@@ -135,6 +139,7 @@ defmodule CGraphWeb.Admin.EventsController do
 
   Only draft events can be deleted. Active/ended events are archived.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => id}) do
     admin = conn.assigns.current_admin
 
@@ -153,6 +158,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   Manually start a scheduled event early.
   """
+  @spec start(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def start(conn, %{"id" => id}) do
     admin = conn.assigns.current_admin
 
@@ -173,6 +179,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   Pause an active event temporarily.
   """
+  @spec pause(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def pause(conn, %{"id" => id}) do
     admin = conn.assigns.current_admin
 
@@ -192,6 +199,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   Resume a paused event.
   """
+  @spec resume(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def resume(conn, %{"id" => id}) do
     admin = conn.assigns.current_admin
 
@@ -211,6 +219,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   End an event early.
   """
+  @spec end_event(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def end_event(conn, %{"id" => id}) do
     admin = conn.assigns.current_admin
 
@@ -235,6 +244,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   Get battle pass tiers for an event.
   """
+  @spec list_tiers(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_tiers(conn, %{"event_id" => event_id}) do
     with {:ok, tiers} <- Events.list_battle_pass_tiers(event_id) do
       render(conn, :tiers, tiers: tiers)
@@ -244,6 +254,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   Create a new battle pass tier.
   """
+  @spec create_tier(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create_tier(conn, %{"event_id" => event_id, "tier" => tier_params}) do
     admin = conn.assigns.current_admin
 
@@ -262,6 +273,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   Bulk create battle pass tiers from template.
   """
+  @spec bulk_create_tiers(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def bulk_create_tiers(conn, %{"event_id" => event_id, "tiers" => tiers_params}) do
     admin = conn.assigns.current_admin
 
@@ -283,6 +295,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   Update a battle pass tier.
   """
+  @spec update_tier(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_tier(conn, %{"event_id" => event_id, "tier_id" => tier_id, "tier" => tier_params}) do
     admin = conn.assigns.current_admin
 
@@ -305,6 +318,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   List quests for an event.
   """
+  @spec list_quests(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_quests(conn, %{"event_id" => event_id}) do
     with {:ok, quests} <- Events.list_event_quests(event_id) do
       render(conn, :quests, quests: quests)
@@ -314,6 +328,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   Create a new quest.
   """
+  @spec create_quest(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create_quest(conn, %{"event_id" => event_id, "quest" => quest_params}) do
     admin = conn.assigns.current_admin
 
@@ -334,6 +349,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   Update a quest.
   """
+  @spec update_quest(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_quest(conn, %{"event_id" => event_id, "quest_id" => quest_id, "quest" => quest_params}) do
     admin = conn.assigns.current_admin
 
@@ -354,6 +370,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   Get event leaderboard.
   """
+  @spec leaderboard(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def leaderboard(conn, %{"event_id" => event_id} = params) do
     page = get_page(params)
     per_page = get_per_page(params)
@@ -370,6 +387,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   Get event analytics and statistics.
   """
+  @spec analytics(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def analytics(conn, %{"event_id" => event_id}) do
     with {:ok, analytics} <- Events.get_event_analytics(event_id) do
       render(conn, :analytics, analytics: analytics)
@@ -379,6 +397,7 @@ defmodule CGraphWeb.Admin.EventsController do
   @doc """
   Export event data (participants, leaderboard, etc.).
   """
+  @spec export(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def export(conn, %{"event_id" => event_id, "format" => format}) do
     admin = conn.assigns.current_admin
 

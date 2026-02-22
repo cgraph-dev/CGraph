@@ -12,6 +12,7 @@ defmodule CGraph.Forums.Moderation do
   @doc """
   Gets the moderation queue for a forum.
   """
+  @spec get_mod_queue(struct(), keyword()) :: {list(), map()}
   def get_mod_queue(forum, opts \\ []) do
     status = Keyword.get(opts, :status, "pending")
 
@@ -34,6 +35,7 @@ defmodule CGraph.Forums.Moderation do
   @doc """
   Hides a post.
   """
+  @spec hide_post(String.t(), String.t()) :: :ok
   def hide_post(post_id, reason) do
     from(p in Post, where: p.id == ^post_id)
     |> Repo.update_all(set: [
@@ -47,6 +49,7 @@ defmodule CGraph.Forums.Moderation do
   @doc """
   Soft deletes a post (marks as deleted but keeps record).
   """
+  @spec soft_delete_post(String.t(), keyword()) :: :ok
   def soft_delete_post(post_id, opts \\ []) do
     reason = Keyword.get(opts, :reason, "Removed by moderator")
 
@@ -62,6 +65,7 @@ defmodule CGraph.Forums.Moderation do
   @doc """
   Hides a comment.
   """
+  @spec hide_comment(String.t(), String.t()) :: {:ok, map()}
   def hide_comment(comment_id, reason) do
     # Similar implementation for comments
     {:ok, %{hidden: true, reason: reason, id: comment_id}}
@@ -70,6 +74,7 @@ defmodule CGraph.Forums.Moderation do
   @doc """
   Soft deletes a comment.
   """
+  @spec soft_delete_comment(String.t(), keyword()) :: {:ok, map()}
   def soft_delete_comment(comment_id, opts \\ []) do
     reason = Keyword.get(opts, :reason, "Removed by moderator")
     {:ok, %{deleted: true, reason: reason, id: comment_id}}
@@ -78,6 +83,7 @@ defmodule CGraph.Forums.Moderation do
   @doc """
   Adds a moderator to a forum.
   """
+  @spec add_moderator(struct(), struct(), keyword()) :: {:ok, Moderator.t()} | {:error, Ecto.Changeset.t()}
   def add_moderator(forum, user, opts \\ []) do
     permissions = Keyword.get(opts, :permissions, default_mod_permissions())
 
@@ -93,6 +99,7 @@ defmodule CGraph.Forums.Moderation do
   @doc """
   Removes a moderator from a forum.
   """
+  @spec remove_moderator(struct(), struct()) :: :ok
   def remove_moderator(forum, user) do
     Repo.delete_all(
       from(m in Moderator,
@@ -105,6 +112,7 @@ defmodule CGraph.Forums.Moderation do
   @doc """
   Checks if a user is a moderator.
   """
+  @spec moderator?(struct(), struct()) :: boolean()
   def moderator?(forum, user) do
     Repo.exists?(
       from(m in Moderator,
@@ -116,6 +124,7 @@ defmodule CGraph.Forums.Moderation do
   @doc """
   Bans a user from a forum.
   """
+  @spec ban_user(struct(), struct(), keyword()) :: {:ok, Ban.t()} | {:error, Ecto.Changeset.t()}
   def ban_user(forum, user, opts \\ []) do
     reason = Keyword.get(opts, :reason, "Banned by moderator")
     expires_at = Keyword.get(opts, :expires_at)
@@ -133,6 +142,7 @@ defmodule CGraph.Forums.Moderation do
   @doc """
   Unbans a user from a forum.
   """
+  @spec unban_user(struct(), struct()) :: :ok
   def unban_user(forum, user) do
     Repo.delete_all(
       from(b in Ban,
@@ -145,6 +155,7 @@ defmodule CGraph.Forums.Moderation do
   @doc """
   Checks if a user is banned.
   """
+  @spec banned?(struct(), struct()) :: boolean()
   def banned?(forum, user) do
     Repo.exists?(
       from(b in Ban,
@@ -157,6 +168,7 @@ defmodule CGraph.Forums.Moderation do
   @doc """
   Flags a post for review.
   """
+  @spec flag_post(struct(), struct(), String.t()) :: :ok
   def flag_post(post, user, reason) do
     from(p in Post, where: p.id == ^post.id)
     |> Repo.update_all(set: [
@@ -171,6 +183,7 @@ defmodule CGraph.Forums.Moderation do
   @doc """
   Resolves a flagged post.
   """
+  @spec resolve_flag(struct(), :approve | :remove) :: :ok
   def resolve_flag(post, action) when action in [:approve, :remove] do
     updates = case action do
       :approve ->

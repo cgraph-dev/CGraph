@@ -8,6 +8,7 @@ defmodule CGraphWeb.FallbackController do
   use CGraphWeb, :controller
 
   # Handle Ecto changesets
+  @spec call(Plug.Conn.t(), term()) :: Plug.Conn.t()
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn
     |> put_status(:unprocessable_entity)

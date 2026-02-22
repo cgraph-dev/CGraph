@@ -25,6 +25,7 @@ defmodule CGraphWeb.MarketplaceChannel do
   @max_subscribed_items 50
 
   @impl true
+  @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("marketplace:lobby", _params, socket) do
     send(self(), :after_join)
 
@@ -47,6 +48,7 @@ defmodule CGraphWeb.MarketplaceChannel do
   end
 
   @impl true
+  @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
     user = socket.assigns.current_user
 
@@ -148,6 +150,7 @@ defmodule CGraphWeb.MarketplaceChannel do
 
   # Client requests - browse listings
   @impl true
+  @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("browse", params, socket) do
     filters = %{
       type: Map.get(params, "type"),

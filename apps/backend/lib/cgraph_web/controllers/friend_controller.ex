@@ -18,6 +18,7 @@ defmodule CGraphWeb.FriendController do
   POST /api/v1/friends
   Body can contain one of: user_id, username, email, or uid
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, params) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -104,6 +105,7 @@ defmodule CGraphWeb.FriendController do
 
   GET /api/v1/friends
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     user = Guardian.Plug.current_resource(conn)
     limit = safe_to_integer(Map.get(params, "limit"), 50) |> min(100)
@@ -121,6 +123,7 @@ defmodule CGraphWeb.FriendController do
 
   GET /api/v1/friends/stats
   """
+  @spec stats(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def stats(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
     stats = Friends.get_friend_stats(user.id)
@@ -135,6 +138,7 @@ defmodule CGraphWeb.FriendController do
 
   GET /api/v1/friends/pending
   """
+  @spec pending(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def pending(conn, params) do
     incoming_requests(conn, params)
   end
@@ -144,6 +148,7 @@ defmodule CGraphWeb.FriendController do
 
   GET /api/v1/friends/requests/incoming
   """
+  @spec incoming_requests(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def incoming_requests(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
     requests = Friends.list_incoming_requests(user.id)
@@ -158,6 +163,7 @@ defmodule CGraphWeb.FriendController do
 
   GET /api/v1/friends/requests/outgoing
   """
+  @spec outgoing_requests(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def outgoing_requests(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
     requests = Friends.list_outgoing_requests(user.id)
@@ -173,6 +179,7 @@ defmodule CGraphWeb.FriendController do
   POST /api/v1/friends/requests
   Body: { "user_id": "uuid" } or { "username": "string" }
   """
+  @spec send_request(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def send_request(conn, %{"user_id" => to_user_id}) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -214,6 +221,7 @@ defmodule CGraphWeb.FriendController do
 
   POST /api/v1/friends/requests/:id/accept
   """
+  @spec accept_request(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def accept_request(conn, %{"id" => from_user_id}) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -235,6 +243,7 @@ defmodule CGraphWeb.FriendController do
 
   POST /api/v1/friends/requests/:id/decline
   """
+  @spec decline_request(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def decline_request(conn, %{"id" => from_user_id}) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -256,6 +265,7 @@ defmodule CGraphWeb.FriendController do
 
   DELETE /api/v1/friends/requests/:id
   """
+  @spec cancel_request(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def cancel_request(conn, %{"id" => to_user_id}) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -277,6 +287,7 @@ defmodule CGraphWeb.FriendController do
 
   DELETE /api/v1/friends/:id
   """
+  @spec remove(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def remove(conn, %{"id" => friend_id}) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -299,6 +310,7 @@ defmodule CGraphWeb.FriendController do
   POST /api/v1/friends/block
   Body: { "user_id": "uuid" }
   """
+  @spec block(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def block(conn, %{"user_id" => blocked_id}) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -320,6 +332,7 @@ defmodule CGraphWeb.FriendController do
 
   DELETE /api/v1/friends/block/:id
   """
+  @spec unblock(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unblock(conn, %{"id" => blocked_id}) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -341,6 +354,7 @@ defmodule CGraphWeb.FriendController do
 
   GET /api/v1/friends/blocked
   """
+  @spec blocked(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def blocked(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
     blocked = Friends.list_blocked_users(user.id)
@@ -355,6 +369,7 @@ defmodule CGraphWeb.FriendController do
 
   GET /api/v1/friends/mutual/:user_id
   """
+  @spec mutual(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def mutual(conn, %{"user_id" => other_id}) do
     user = Guardian.Plug.current_resource(conn)
     mutual = Friends.get_mutual_friends(user.id, other_id)
@@ -369,6 +384,7 @@ defmodule CGraphWeb.FriendController do
 
   GET /api/v1/friends/suggestions
   """
+  @spec suggestions(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def suggestions(conn, params) do
     user = Guardian.Plug.current_resource(conn)
     limit = safe_to_integer(Map.get(params, "limit"), 10) |> min(50)
@@ -386,6 +402,7 @@ defmodule CGraphWeb.FriendController do
   PUT /api/v1/friends/:id/nickname
   Body: { "nickname": "string" }
   """
+  @spec set_nickname(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def set_nickname(conn, %{"id" => friend_id, "nickname" => nickname}) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -407,6 +424,7 @@ defmodule CGraphWeb.FriendController do
 
   DELETE /api/v1/friends/:id/nickname
   """
+  @spec remove_nickname(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def remove_nickname(conn, %{"id" => friend_id}) do
     user = Guardian.Plug.current_resource(conn)
 

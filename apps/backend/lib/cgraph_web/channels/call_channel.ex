@@ -81,6 +81,7 @@ defmodule CGraphWeb.CallChannel do
   alias CGraph.WebRTC.Room
 
   @impl true
+  @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("call:" <> room_id, params, socket) do
     user_id = socket.assigns.user_id
 
@@ -123,6 +124,7 @@ defmodule CGraphWeb.CallChannel do
   end
 
   @impl true
+  @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
     # Broadcast to others that we joined
     broadcast_from!(socket, "participant:joined", %{
@@ -185,6 +187,7 @@ defmodule CGraphWeb.CallChannel do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("signal:offer", %{"to" => to_id, "sdp" => sdp}, socket) do
     room_id = socket.assigns.room_id
     from_id = socket.assigns.user_id
@@ -335,6 +338,7 @@ defmodule CGraphWeb.CallChannel do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @spec terminate(term(), Phoenix.Socket.t()) :: :ok
   def terminate(_reason, socket) do
     if room_id = socket.assigns[:room_id] do
       user_id = socket.assigns.user_id

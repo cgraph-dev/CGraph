@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.ForumJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @spec index(map()) :: map()
   def index(%{forums: forums, meta: meta}) do
     %{
       data: Enum.map(forums, &forum_data/1),
@@ -12,10 +13,12 @@ defmodule CGraphWeb.API.V1.ForumJSON do
     }
   end
 
+  @spec show(map()) :: map()
   def show(%{forum: forum}) do
     %{data: forum_data(forum)}
   end
 
+  @spec mod_queue(map()) :: map()
   def mod_queue(%{items: items, meta: meta}) do
     %{
       data: Enum.map(items, &mod_queue_item/1),
@@ -23,10 +26,12 @@ defmodule CGraphWeb.API.V1.ForumJSON do
     }
   end
 
+  @spec stats(map()) :: map()
   def stats(%{stats: stats}) do
     %{data: stats}
   end
 
+  @spec subscription(map()) :: map()
   def subscription(%{subscription: subscription}) do
     %{
       data: %{
@@ -39,6 +44,7 @@ defmodule CGraphWeb.API.V1.ForumJSON do
     }
   end
 
+  @spec leaderboard(map()) :: map()
   def leaderboard(%{forums: forums, meta: meta}) do
     %{
       data: Enum.map(forums, &forum_data_with_voting/1),
@@ -46,6 +52,7 @@ defmodule CGraphWeb.API.V1.ForumJSON do
     }
   end
 
+  @spec top(map()) :: map()
   def top(%{forums: forums}) do
     %{
       data: Enum.map(forums, &forum_data_with_voting/1)
@@ -55,6 +62,7 @@ defmodule CGraphWeb.API.V1.ForumJSON do
   @doc """
   Render feed (home or popular).
   """
+  @spec feed(map()) :: map()
   def feed(%{posts: posts, meta: meta, feed_type: feed_type}) do
     %{
       data: Enum.map(posts, &post_data/1),
@@ -66,6 +74,7 @@ defmodule CGraphWeb.API.V1.ForumJSON do
   @doc """
   Render post data for feeds.
   """
+  @spec post_data(map()) :: map()
   def post_data(post) do
     %{
       id: post.id,
@@ -128,6 +137,7 @@ defmodule CGraphWeb.API.V1.ForumJSON do
   @doc """
   Render forum data with categories and stats.
   """
+  @spec forum_data(map()) :: map()
   def forum_data(forum) do
     %{
       id: forum.id,
@@ -162,6 +172,7 @@ defmodule CGraphWeb.API.V1.ForumJSON do
   @doc """
   Render forum data with user's vote status for leaderboard.
   """
+  @spec forum_data_with_voting(map()) :: map()
   def forum_data_with_voting(forum) do
     forum_data(forum)
     |> Map.put(:user_vote, Map.get(forum, :user_vote, 0))
@@ -223,6 +234,7 @@ defmodule CGraphWeb.API.V1.ForumJSON do
   @doc """
   Render forum contributors (leaderboard within a forum).
   """
+  @spec contributors(map()) :: map()
   def contributors(%{contributors: contributors, meta: meta, forum: forum}) do
     %{
       data: Enum.map(contributors, &contributor_data/1),

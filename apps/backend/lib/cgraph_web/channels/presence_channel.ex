@@ -27,6 +27,7 @@ defmodule CGraphWeb.PresenceChannel do
   @bulk_presence_batch_size 100
 
   @impl true
+  @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("presence:lobby", _params, socket) do
     user = socket.assigns.current_user
 
@@ -39,6 +40,7 @@ defmodule CGraphWeb.PresenceChannel do
   end
 
   @impl true
+  @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
     user = socket.assigns.current_user
 
@@ -86,6 +88,7 @@ defmodule CGraphWeb.PresenceChannel do
   def handle_info(_msg, socket), do: {:noreply, socket}
 
   @impl true
+  @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("heartbeat", _params, socket) do
     user = socket.assigns.current_user
     Presence.heartbeat(socket, user.id, "lobby")
@@ -239,6 +242,7 @@ defmodule CGraphWeb.PresenceChannel do
   end
 
   @impl true
+  @spec terminate(term(), Phoenix.Socket.t()) :: :ok
   def terminate(_reason, socket) do
     user = socket.assigns[:current_user]
 

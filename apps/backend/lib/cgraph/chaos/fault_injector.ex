@@ -18,6 +18,7 @@ defmodule CGraph.Chaos.FaultInjector do
       inject_latency(:redis, 5_000)   # 5 second delay on Redis calls
       inject_latency(:database, 2_000) # 2 second delay on DB queries
   """
+  @spec inject_latency(atom(), pos_integer()) :: :ok
   def inject_latency(component, delay_ms) when is_atom(component) and is_integer(delay_ms) do
     Process.put({:chaos_latency, component}, delay_ms)
     Logger.warning("chaos_injecting_ms_latency_into", delay_ms: delay_ms, component: component)
@@ -28,6 +29,7 @@ defmodule CGraph.Chaos.FaultInjector do
   Check if latency injection is active for a component.
   Returns `{:delay, ms}` or `:none`.
   """
+  @spec check_latency(atom()) :: {:delay, pos_integer()} | :none
   def check_latency(component) do
     case Process.get({:chaos_latency, component}) do
       nil -> :none
@@ -38,6 +40,7 @@ defmodule CGraph.Chaos.FaultInjector do
   @doc """
   Apply any injected latency for a component. No-op if none injected.
   """
+  @spec maybe_apply_latency(atom()) :: :ok
   def maybe_apply_latency(component) do
     case check_latency(component) do
       {:delay, ms} ->
@@ -57,6 +60,7 @@ defmodule CGraph.Chaos.FaultInjector do
       inject_error(:redis, :connection_refused)
       inject_error(:apns, :timeout, count: 5)
   """
+  @spec inject_error(atom(), term(), keyword()) :: :ok
   def inject_error(component, reason, opts \\ []) do
     count = Keyword.get(opts, :count, :infinity)
     Process.put({:chaos_error, component}, {reason, count})
@@ -68,6 +72,7 @@ defmodule CGraph.Chaos.FaultInjector do
   Check if error injection is active. Returns `{:error, reason}` or `:none`.
   Decrements counter if count-limited.
   """
+  @spec check_error(atom()) :: {:error, term()} | :none
   def check_error(component) do
     case Process.get({:chaos_error, component}) do
       nil -> :none
@@ -88,6 +93,7 @@ defmodule CGraph.Chaos.FaultInjector do
   Simulate a network partition for a component.
   All calls will timeout until the partition is healed.
   """
+  @spec inject_partition(atom()) :: :ok
   def inject_partition(component) do
     Process.put({:chaos_partition, component}, true)
     Logger.warning("chaos_simulating_network_partition_for", component: component)
@@ -97,6 +103,7 @@ defmodule CGraph.Chaos.FaultInjector do
   @doc """
   Heal a simulated network partition.
   """
+  @spec heal_partition(atom()) :: :ok
   def heal_partition(component) do
     Process.delete({:chaos_partition, component})
     Logger.info("chaos_healed_network_partition_for", component: component)
@@ -106,6 +113,7 @@ defmodule CGraph.Chaos.FaultInjector do
   @doc """
   Check if a partition is active.
   """
+  @spec partitioned?(atom()) :: boolean()
   def partitioned?(component) do
     Process.get({:chaos_partition, component}) == true
   end
@@ -113,6 +121,7 @@ defmodule CGraph.Chaos.FaultInjector do
   @doc """
   Simulate resource exhaustion (e.g., connection pool depleted).
   """
+  @spec inject_resource_exhaustion(atom()) :: :ok
   def inject_resource_exhaustion(component) do
     Process.put({:chaos_exhaustion, component}, true)
     Logger.warning("chaos_simulating_resource_exhaustion_for", component: component)
@@ -122,6 +131,7 @@ defmodule CGraph.Chaos.FaultInjector do
   @doc """
   Check if resource exhaustion is simulated.
   """
+  @spec exhausted?(atom()) :: boolean()
   def exhausted?(component) do
     Process.get({:chaos_exhaustion, component}) == true
   end
@@ -129,6 +139,7 @@ defmodule CGraph.Chaos.FaultInjector do
   @doc """
   Clear all chaos injections for a component.
   """
+  @spec clear(atom()) :: :ok
   def clear(component) do
     Process.delete({:chaos_latency, component})
     Process.delete({:chaos_error, component})
@@ -140,6 +151,7 @@ defmodule CGraph.Chaos.FaultInjector do
   @doc """
   Clear ALL chaos injections.
   """
+  @spec clear_all() :: :ok
   def clear_all do
     Process.get_keys()
     |> Enum.filter(fn

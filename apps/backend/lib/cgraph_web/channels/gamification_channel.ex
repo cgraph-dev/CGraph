@@ -44,6 +44,7 @@ defmodule CGraphWeb.GamificationChannel do
   end
 
   @impl true
+  @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("gamification:" <> user_id, _params, socket) do
     # Only allow users to join their own gamification channel
     if socket.assigns.current_user.id == user_id do
@@ -59,6 +60,7 @@ defmodule CGraphWeb.GamificationChannel do
   end
 
   @impl true
+  @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
     user = socket.assigns.current_user
 
@@ -179,6 +181,7 @@ defmodule CGraphWeb.GamificationChannel do
 
   # Client requests current state
   @impl true
+  @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("get_state", _params, socket) do
     state = get_gamification_state(socket.assigns.current_user)
     {:reply, {:ok, state}, socket}

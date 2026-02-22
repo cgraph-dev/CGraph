@@ -12,6 +12,7 @@ defmodule CGraph.Accounts.Sessions do
   @doc """
   Creates a new session.
   """
+  @spec create_session(struct(), map()) :: {:ok, Session.t()} | {:error, Ecto.Changeset.t()}
   def create_session(user, device_info \\ %{}) do
     token = generate_session_token()
     expires_at = DateTime.add(DateTime.utc_now(), 60, :day)
@@ -32,6 +33,7 @@ defmodule CGraph.Accounts.Sessions do
   @doc """
   Gets a session by token.
   """
+  @spec get_session(String.t()) :: Session.t() | nil
   def get_session(token) do
     now = DateTime.utc_now()
 
@@ -48,6 +50,7 @@ defmodule CGraph.Accounts.Sessions do
   @doc """
   Gets a session by ID.
   """
+  @spec get_session_by_id(String.t()) :: Session.t() | nil
   def get_session_by_id(id) do
     Repo.get(Session, id)
   end
@@ -55,6 +58,7 @@ defmodule CGraph.Accounts.Sessions do
   @doc """
   Updates session activity.
   """
+  @spec touch_session(Session.t()) :: {:ok, Session.t()} | {:error, Ecto.Changeset.t()}
   def touch_session(session) do
     session
     |> Session.changeset(%{last_active_at: DateTime.utc_now()})
@@ -64,6 +68,7 @@ defmodule CGraph.Accounts.Sessions do
   @doc """
   Revokes a session.
   """
+  @spec revoke_session(Session.t()) :: {:ok, Session.t()} | {:error, Ecto.Changeset.t()}
   def revoke_session(session) do
     session
     |> Session.changeset(%{revoked_at: DateTime.utc_now()})
@@ -73,6 +78,7 @@ defmodule CGraph.Accounts.Sessions do
   @doc """
   Revokes a session by ID.
   """
+  @spec revoke_session_by_id(struct(), String.t()) :: {:ok, Session.t()} | {:error, :not_found} | {:error, Ecto.Changeset.t()}
   def revoke_session_by_id(user, session_id) do
     case Repo.one(
       from(s in Session,
@@ -90,6 +96,7 @@ defmodule CGraph.Accounts.Sessions do
   @doc """
   Revokes all sessions for a user.
   """
+  @spec revoke_all_sessions(struct()) :: :ok
   def revoke_all_sessions(user) do
     from(s in Session,
       where: s.user_id == ^user.id,
@@ -103,6 +110,7 @@ defmodule CGraph.Accounts.Sessions do
   @doc """
   Revokes all sessions except the current one.
   """
+  @spec revoke_other_sessions(struct(), String.t()) :: :ok
   def revoke_other_sessions(user, current_session_id) do
     from(s in Session,
       where: s.user_id == ^user.id,
@@ -117,6 +125,7 @@ defmodule CGraph.Accounts.Sessions do
   @doc """
   Lists active sessions for a user.
   """
+  @spec list_sessions(struct()) :: list(Session.t())
   def list_sessions(user) do
     from(s in Session,
       where: s.user_id == ^user.id,
@@ -130,6 +139,7 @@ defmodule CGraph.Accounts.Sessions do
   @doc """
   Counts active sessions for a user.
   """
+  @spec count_active_sessions(struct()) :: non_neg_integer()
   def count_active_sessions(user) do
     from(s in Session,
       where: s.user_id == ^user.id,
@@ -142,6 +152,7 @@ defmodule CGraph.Accounts.Sessions do
   @doc """
   Cleans up expired sessions.
   """
+  @spec cleanup_expired_sessions() :: {:ok, non_neg_integer()}
   def cleanup_expired_sessions do
     now = DateTime.utc_now()
 

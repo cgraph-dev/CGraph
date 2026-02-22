@@ -15,6 +15,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Lists members of a forum.
   """
+  @spec list_members(String.t(), keyword()) :: {list(), map()}
   def list_members(forum_id, opts \\ []) do
     cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 50)
@@ -41,6 +42,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Gets a forum member.
   """
+  @spec get_member(String.t(), String.t()) :: ForumMember.t() | nil
   def get_member(forum_id, user_id) do
     Repo.get_by(ForumMember, forum_id: forum_id, user_id: user_id)
   end
@@ -48,6 +50,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Gets or creates a forum member.
   """
+  @spec get_or_create_member(String.t(), String.t()) :: {:ok, ForumMember.t()} | {:error, Ecto.Changeset.t()}
   def get_or_create_member(forum_id, user_id) do
     case get_member(forum_id, user_id) do
       nil ->
@@ -67,6 +70,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Checks if a user is a member of a forum.
   """
+  @spec member?(String.t(), String.t()) :: boolean()
   def member?(forum_id, user_id) do
     Repo.exists?(
       from(m in ForumMember,
@@ -78,6 +82,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Updates a member's role.
   """
+  @spec update_role(String.t(), String.t(), String.t()) :: {:ok, ForumMember.t()} | {:error, :not_found} | {:error, Ecto.Changeset.t()}
   def update_role(forum_id, user_id, role) when role in ["member", "moderator", "admin"] do
     case get_member(forum_id, user_id) do
       nil -> {:error, :not_found}
@@ -91,6 +96,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Checks if a user is a moderator of a forum.
   """
+  @spec moderator?(Forum.t(), struct()) :: boolean()
   def moderator?(forum, user) do
     forum.owner_id == user.id || in_moderators?(forum, user)
   end
@@ -111,6 +117,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Adds a moderator to a forum.
   """
+  @spec add_moderator(Forum.t(), struct(), keyword()) :: {:ok, Moderator.t()} | {:error, Ecto.Changeset.t()}
   def add_moderator(forum, user, opts \\ []) do
     permissions = Keyword.get(opts, :permissions, [])
     added_by_id = Keyword.get(opts, :added_by_id)
@@ -130,6 +137,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Removes a moderator from a forum.
   """
+  @spec remove_moderator(Forum.t(), struct()) :: {:ok, Moderator.t()} | {:error, :not_found}
   def remove_moderator(forum, user) do
     query = from(m in Moderator,
       where: m.forum_id == ^forum.id and m.user_id == ^user.id
@@ -146,6 +154,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Subscribes a user to a forum (join).
   """
+  @spec subscribe(struct(), Forum.t()) :: {:ok, Subscription.t()} | {:error, term()}
   def subscribe(user, forum) do
     Repo.transaction(fn ->
       # Create subscription
@@ -171,6 +180,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Unsubscribes a user from a forum (leave).
   """
+  @spec unsubscribe(struct(), Forum.t()) :: {:ok, :unsubscribed} | {:error, :cannot_leave_own_forum} | {:error, term()}
   def unsubscribe(user, forum) do
     if forum.owner_id == user.id do
       {:error, :cannot_leave_own_forum}
@@ -195,6 +205,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Checks if a user is subscribed to a forum.
   """
+  @spec subscribed?(struct(), Forum.t()) :: boolean()
   def subscribed?(user, forum) do
     Repo.exists?(
       from(s in Subscription,
@@ -208,6 +219,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Bans a user from a forum.
   """
+  @spec ban_member(String.t(), String.t(), String.t(), String.t(), DateTime.t() | nil) :: {:ok, Ban.t()} | {:error, Ecto.Changeset.t()}
   def ban_member(forum_id, user_id, reason, banned_by_id, expires_at \\ nil) do
     %Ban{}
     |> Ban.changeset(%{
@@ -223,6 +235,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Unbans a user from a forum.
   """
+  @spec unban_member(String.t(), String.t()) :: :ok
   def unban_member(forum_id, user_id) do
     from(b in Ban,
       where: b.forum_id == ^forum_id and b.user_id == ^user_id
@@ -234,6 +247,7 @@ defmodule CGraph.Forums.Members do
   @doc """
   Checks if a user is banned from a forum.
   """
+  @spec banned?(String.t(), String.t()) :: boolean()
   def banned?(forum_id, user_id) do
     now = DateTime.utc_now()
 

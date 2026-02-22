@@ -28,6 +28,7 @@ defmodule CGraphWeb.EventsChannel do
   _ = @max_leaderboard_subscriptions
 
   @impl true
+  @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("events:global", _params, socket) do
     send(self(), :after_join_global)
     {:ok, %{status: "connected"}, socket}
@@ -45,6 +46,7 @@ defmodule CGraphWeb.EventsChannel do
   end
 
   @impl true
+  @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join_global, socket) do
     user = socket.assigns.current_user
 
@@ -164,6 +166,7 @@ defmodule CGraphWeb.EventsChannel do
 
   # Client requests - get full event details
   @impl true
+  @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("get_event", %{"event_id" => event_id}, socket) do
     case Gamification.get_event(event_id) do
       {:ok, event} ->

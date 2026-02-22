@@ -16,6 +16,7 @@ defmodule CGraph.Accounts.Authentication do
   @doc """
   Authenticates a user with email/username and password.
   """
+  @spec authenticate(String.t(), String.t()) :: {:ok, User.t()} | {:error, :invalid_credentials | :account_banned | :account_deleted}
   def authenticate(identifier, password) do
     user = Users.get_user_by_email_or_username(identifier)
 
@@ -42,6 +43,7 @@ defmodule CGraph.Accounts.Authentication do
   @doc """
   Creates a session for a user.
   """
+  @spec create_session(User.t(), map()) :: {:ok, Session.t()} | {:error, Ecto.Changeset.t()}
   def create_session(user, device_info \\ %{}) do
     token = generate_token()
     expires_at = DateTime.add(DateTime.utc_now(), @session_validity_days, :day)
@@ -61,6 +63,7 @@ defmodule CGraph.Accounts.Authentication do
   @doc """
   Gets a session by token.
   """
+  @spec get_session_by_token(String.t()) :: Session.t() | nil
   def get_session_by_token(token) do
     now = DateTime.utc_now()
 
@@ -77,6 +80,7 @@ defmodule CGraph.Accounts.Authentication do
   @doc """
   Revokes a session.
   """
+  @spec revoke_session(Session.t()) :: {:ok, Session.t()} | {:error, Ecto.Changeset.t()}
   def revoke_session(session) do
     session
     |> Session.changeset(%{revoked_at: DateTime.utc_now()})
@@ -86,6 +90,7 @@ defmodule CGraph.Accounts.Authentication do
   @doc """
   Revokes all sessions for a user except the current one.
   """
+  @spec revoke_other_sessions(User.t(), String.t()) :: :ok
   def revoke_other_sessions(user, current_session_id) do
     from(s in Session,
       where: s.user_id == ^user.id,
@@ -100,6 +105,7 @@ defmodule CGraph.Accounts.Authentication do
   @doc """
   Lists active sessions for a user.
   """
+  @spec list_sessions(User.t()) :: list(Session.t())
   def list_sessions(user) do
     from(s in Session,
       where: s.user_id == ^user.id,
@@ -113,6 +119,7 @@ defmodule CGraph.Accounts.Authentication do
   @doc """
   Generates a password reset token.
   """
+  @spec generate_password_reset_token(User.t()) :: {:ok, Token.t()} | {:error, Ecto.Changeset.t()}
   def generate_password_reset_token(user) do
     token = generate_token()
     expires_at = DateTime.add(DateTime.utc_now(), @token_validity_hours, :hour)
@@ -130,6 +137,7 @@ defmodule CGraph.Accounts.Authentication do
   @doc """
   Verifies and consumes a password reset token.
   """
+  @spec verify_password_reset_token(String.t()) :: {:ok, User.t()} | {:error, :invalid_token}
   def verify_password_reset_token(token) do
     now = DateTime.utc_now()
 
@@ -158,6 +166,7 @@ defmodule CGraph.Accounts.Authentication do
   @doc """
   Enables two-factor authentication.
   """
+  @spec enable_2fa(User.t(), String.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def enable_2fa(user, secret) do
     user
     |> User.changeset(%{
@@ -170,6 +179,7 @@ defmodule CGraph.Accounts.Authentication do
   @doc """
   Disables two-factor authentication.
   """
+  @spec disable_2fa(User.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def disable_2fa(user) do
     user
     |> User.changeset(%{
@@ -182,6 +192,7 @@ defmodule CGraph.Accounts.Authentication do
   @doc """
   Verifies a TOTP code.
   """
+  @spec verify_totp(User.t(), String.t()) :: :ok | {:error, :invalid_code}
   def verify_totp(user, code) do
     if user.two_factor_enabled do
       # Use NimbleTOTP or similar for verification

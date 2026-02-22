@@ -17,6 +17,7 @@ defmodule CGraphWeb.Validation do
           field :count, :integer
         end
 
+        @spec validate_create(term()) :: {:ok, term()} | {:error, String.t()}
         def validate_create(params) do
           %__MODULE__{}
           |> cast(params, [:name, :count])
@@ -57,6 +58,7 @@ defmodule CGraphWeb.Validation do
     @doc """
     Sanitize a string field by trimming whitespace and normalizing.
     """
+    @spec sanitize_string(Ecto.Changeset.t(), atom()) :: Ecto.Changeset.t()
     def sanitize_string(changeset, field) do
       update_change(changeset, field, fn value ->
         if is_binary(value) do
@@ -72,6 +74,7 @@ defmodule CGraphWeb.Validation do
     @doc """
     Sanitize HTML by encoding dangerous characters.
     """
+    @spec sanitize_html(Ecto.Changeset.t(), atom()) :: Ecto.Changeset.t()
     def sanitize_html(changeset, field) do
       update_change(changeset, field, fn value ->
         if is_binary(value) do
@@ -103,6 +106,7 @@ defmodule CGraphWeb.Validation do
     @doc """
     Validate that a field contains a valid HTTP(S) URL.
     """
+    @spec validate_url(Ecto.Changeset.t(), atom(), keyword()) :: Ecto.Changeset.t()
     def validate_url(changeset, field, opts \\ []) do
       validate_change(changeset, field, fn _, url ->
         if is_binary(url) and byte_size(url) > 0 do
@@ -122,6 +126,7 @@ defmodule CGraphWeb.Validation do
     @doc """
     Validate that a field contains a valid URL with specific allowed domains.
     """
+    @spec validate_url_domain(Ecto.Changeset.t(), atom(), list(), keyword()) :: Ecto.Changeset.t()
     def validate_url_domain(changeset, field, allowed_domains, opts \\ []) do
       validate_change(changeset, field, fn _, url ->
         if is_binary(url) and byte_size(url) > 0 do
@@ -149,6 +154,7 @@ defmodule CGraphWeb.Validation do
     @doc """
     Validate that a field contains a valid UUID.
     """
+    @spec validate_uuid(Ecto.Changeset.t(), atom()) :: Ecto.Changeset.t()
     def validate_uuid(changeset, field) do
       validate_change(changeset, field, fn _, value ->
         case Ecto.UUID.cast(value) do
@@ -161,6 +167,7 @@ defmodule CGraphWeb.Validation do
     @doc """
     Validate that all items in an array field are valid UUIDs.
     """
+    @spec validate_uuid_array(Ecto.Changeset.t(), atom()) :: Ecto.Changeset.t()
     def validate_uuid_array(changeset, field) do
       validate_change(changeset, field, fn _, values ->
         if is_list(values) do
@@ -189,6 +196,7 @@ defmodule CGraphWeb.Validation do
     @doc """
     Add and validate pagination fields with defaults.
     """
+    @spec validate_pagination(Ecto.Changeset.t(), keyword()) :: Ecto.Changeset.t()
     def validate_pagination(changeset, opts \\ []) do
       max_per_page = Keyword.get(opts, :max_per_page, 100)
       default_per_page = Keyword.get(opts, :default_per_page, 20)
@@ -207,6 +215,7 @@ defmodule CGraphWeb.Validation do
     @doc """
     Validate that a datetime is in the future.
     """
+    @spec validate_future_datetime(Ecto.Changeset.t(), atom()) :: Ecto.Changeset.t()
     def validate_future_datetime(changeset, field) do
       validate_change(changeset, field, fn _, datetime ->
         now = DateTime.utc_now()
@@ -222,6 +231,7 @@ defmodule CGraphWeb.Validation do
     @doc """
     Validate that a datetime is in the past.
     """
+    @spec validate_past_datetime(Ecto.Changeset.t(), atom()) :: Ecto.Changeset.t()
     def validate_past_datetime(changeset, field) do
       validate_change(changeset, field, fn _, datetime ->
         now = DateTime.utc_now()
@@ -274,6 +284,7 @@ defmodule CGraphWeb.Validation do
     @doc """
     Format changeset errors for API response.
     """
+    @spec format_errors(term()) :: String.t()
     def format_errors(%Ecto.Changeset{} = changeset) do
       Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
         Regex.replace(~r"%{(\w+)}", msg, fn _, key ->

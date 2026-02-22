@@ -32,6 +32,7 @@ defmodule CGraph.Jobs.Server do
   # Client
   # ---------------------------------------------------------------------------
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -41,6 +42,7 @@ defmodule CGraph.Jobs.Server do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @spec init(term()) :: {:ok, map()}
   def init(_opts) do
     :ets.new(@progress_table, [:named_table, :set, :public, read_concurrency: true])
     :ets.new(@workflow_table, [:named_table, :set, :public, read_concurrency: true])
@@ -61,6 +63,7 @@ defmodule CGraph.Jobs.Server do
   # -- Recurring Jobs --------------------------------------------------------
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:schedule_recurring, name, worker, args, cron}, _from, state) do
     recurring = Map.put(state.recurring_jobs, name, %{
       worker: worker,
@@ -194,6 +197,7 @@ defmodule CGraph.Jobs.Server do
   # -- Info Handlers ---------------------------------------------------------
 
   @impl true
+  @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do
     cleanup_expired_progress()
     cleanup_expired_workflows()

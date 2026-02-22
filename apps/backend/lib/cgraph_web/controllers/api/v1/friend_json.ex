@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @spec index(map()) :: map()
   def index(%{friends: friends, meta: meta}) do
     %{
       data: Enum.map(friends, &friend_data/1),
@@ -12,6 +13,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @spec requests(map()) :: map()
   def requests(%{requests: requests, meta: meta}) do
     %{
       data: Enum.map(requests, &request_data/1),
@@ -19,6 +21,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @spec sent(map()) :: map()
   def sent(%{requests: requests, meta: meta}) do
     %{
       data: Enum.map(requests, &sent_request_data/1),
@@ -26,10 +29,12 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @spec show(map()) :: map()
   def show(%{friendship: friendship}) do
     %{data: friendship_data(friendship)}
   end
 
+  @spec block(map()) :: map()
   def block(%{block: block}) do
     %{
       data: %{
@@ -40,6 +45,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @spec blocked(map()) :: map()
   def blocked(%{users: users, meta: meta}) do
     %{
       data: Enum.map(users, fn block ->
@@ -53,6 +59,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @spec mutual(map()) :: map()
   def mutual(%{friends: friends}) do
     %{
       data: %{
@@ -62,6 +69,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @spec online(map()) :: map()
   def online(%{friends: friends}) do
     %{
       data: Enum.map(friends, fn friend ->
@@ -72,6 +80,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @spec suggestions(map()) :: map()
   def suggestions(%{suggestions: suggestions}) do
     %{
       data: Enum.map(suggestions, fn suggestion ->
@@ -88,6 +97,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
   @doc """
   Render friend data (accepted friendship).
   """
+  @spec friend_data(map()) :: map()
   def friend_data(friendship) do
     # The friend is the other user in the friendship
     friend = friendship.friend || friendship.user
@@ -103,6 +113,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
   @doc """
   Render incoming friend request.
   """
+  @spec request_data(map()) :: map()
   def request_data(friendship) do
     %{
       id: friendship.id,
@@ -115,6 +126,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
   @doc """
   Render outgoing friend request.
   """
+  @spec sent_request_data(map()) :: map()
   def sent_request_data(friendship) do
     %{
       id: friendship.id,
@@ -126,6 +138,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
   @doc """
   Render friendship data.
   """
+  @spec friendship_data(map()) :: map()
   def friendship_data(friendship) do
     %{
       id: friendship.id,

@@ -22,6 +22,7 @@ defmodule CGraphWeb.UserChannel do
   @max_contact_batch 200
 
   @impl true
+  @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("user:" <> requested_user_id, params, socket) do
     user = socket.assigns.current_user
 
@@ -44,6 +45,7 @@ defmodule CGraphWeb.UserChannel do
   end
 
   @impl true
+  @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info({:after_join, params}, socket) do
     user = socket.assigns.current_user
 
@@ -140,6 +142,7 @@ defmodule CGraphWeb.UserChannel do
   end
 
   @impl true
+  @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("get_contact_presence", _params, socket) do
     user = socket.assigns.current_user
     contact_presence = fetch_contact_presence(user.id)

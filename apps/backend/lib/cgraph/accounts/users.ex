@@ -13,6 +13,7 @@ defmodule CGraph.Accounts.Users do
   @doc """
   Gets a user by ID.
   """
+  @spec get_user(String.t()) :: {:ok, User.t()} | {:error, :not_found}
   def get_user(id) do
     case Repo.get(User, id) do
       nil -> {:error, :not_found}
@@ -23,6 +24,7 @@ defmodule CGraph.Accounts.Users do
   @doc """
   Gets a user by email.
   """
+  @spec get_user_by_email(String.t()) :: User.t() | nil
   def get_user_by_email(email) do
     Repo.get_by(User, email: String.downcase(email))
   end
@@ -30,6 +32,7 @@ defmodule CGraph.Accounts.Users do
   @doc """
   Gets a user by username.
   """
+  @spec get_user_by_username(String.t()) :: User.t() | nil
   def get_user_by_username(username) do
     Repo.get_by(User, username: String.downcase(username))
   end
@@ -37,6 +40,7 @@ defmodule CGraph.Accounts.Users do
   @doc """
   Gets a user by email or username.
   """
+  @spec get_user_by_email_or_username(String.t()) :: User.t() | nil
   def get_user_by_email_or_username(identifier) do
     identifier = String.downcase(identifier)
 
@@ -50,6 +54,7 @@ defmodule CGraph.Accounts.Users do
   @doc """
   Creates a new user.
   """
+  @spec create_user(map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def create_user(attrs) do
     %User{}
     |> User.registration_changeset(attrs)
@@ -59,6 +64,7 @@ defmodule CGraph.Accounts.Users do
   @doc """
   Updates a user.
   """
+  @spec update_user(User.t(), map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def update_user(user, attrs) do
     user
     |> User.changeset(attrs)
@@ -68,6 +74,7 @@ defmodule CGraph.Accounts.Users do
   @doc """
   Updates a user's profile.
   """
+  @spec update_profile(User.t(), map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def update_profile(user, attrs) do
     user
     |> User.profile_changeset(attrs)
@@ -77,6 +84,7 @@ defmodule CGraph.Accounts.Users do
   @doc """
   Changes a user's password.
   """
+  @spec change_password(User.t(), String.t(), String.t()) :: {:ok, User.t()} | {:error, :invalid_current_password} | {:error, Ecto.Changeset.t()}
   def change_password(user, current_password, new_password) do
     if User.valid_password?(user, current_password) do
       user
@@ -90,6 +98,7 @@ defmodule CGraph.Accounts.Users do
   @doc """
   Deletes a user (soft delete).
   """
+  @spec delete_user(User.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def delete_user(user) do
     user
     |> User.changeset(%{deleted_at: DateTime.truncate(DateTime.utc_now(), :second)})
@@ -99,6 +108,7 @@ defmodule CGraph.Accounts.Users do
   @doc """
   Lists users with optional filters.
   """
+  @spec list_users(keyword()) :: {list(User.t()), map()}
   def list_users(opts \\ []) do
     search = Keyword.get(opts, :search)
 
@@ -119,6 +129,7 @@ defmodule CGraph.Accounts.Users do
   @doc """
   Counts total users.
   """
+  @spec count_users() :: non_neg_integer()
   def count_users do
     Repo.aggregate(
       from(u in User, where: not_deleted(u)),

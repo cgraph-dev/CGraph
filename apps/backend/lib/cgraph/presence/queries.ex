@@ -25,6 +25,7 @@ defmodule CGraph.Presence.Queries do
   For channels with >100 users, delegates to Sampled presence for efficiency.
   Returns map of user_id => presence metadata.
   """
+  @spec list_room_users(String.t()) :: map()
   def list_room_users(room_id) do
     # Try sampled presence first for large channels
     case Sampled.get_summary(room_id) do
@@ -42,6 +43,7 @@ defmodule CGraph.Presence.Queries do
   @doc """
   Get online user IDs in a room.
   """
+  @spec list_room_user_ids(String.t()) :: list(String.t())
   def list_room_user_ids(room_id) do
     Presence.list(Presence.room_topic(room_id))
     |> Map.keys()
@@ -53,6 +55,7 @@ defmodule CGraph.Presence.Queries do
   Uses Sampled presence HyperLogLog for O(1) approximate counts in large channels.
   Falls back to CRDT list for small channels.
   """
+  @spec count_room_users(String.t()) :: non_neg_integer()
   def count_room_users(room_id) do
     case Sampled.approximate_count(room_id) do
       {:ok, count} when count > 0 -> count
@@ -63,6 +66,7 @@ defmodule CGraph.Presence.Queries do
   @doc """
   Get users currently typing in a room.
   """
+  @spec list_typing_users(String.t()) :: list(String.t())
   def list_typing_users(room_id) do
     now = DateTime.utc_now()
 
@@ -84,6 +88,7 @@ defmodule CGraph.Presence.Queries do
 
   Uses Redis SET membership check — O(1) instead of loading all users.
   """
+  @spec user_online?(String.t()) :: boolean()
   def user_online?(user_id) do
     user_key = to_string(user_id)
 
@@ -99,6 +104,7 @@ defmodule CGraph.Presence.Queries do
   @doc """
   Check if user is online in a specific room.
   """
+  @spec user_online_in_room?(String.t(), String.t()) :: boolean()
   def user_online_in_room?(user_id, room_id) do
     presences = Presence.list(Presence.room_topic(room_id))
     Map.has_key?(presences, to_string(user_id))
@@ -111,6 +117,7 @@ defmodule CGraph.Presence.Queries do
   (paginated) or specific lookups like `user_online?/1`, `bulk_status/1`.
   Kept for backward compatibility but should be avoided at scale.
   """
+  @spec list_online_users() :: map()
   def list_online_users do
     Presence.list("users:online")
     |> transform_presence_list()
@@ -122,6 +129,7 @@ defmodule CGraph.Presence.Queries do
   Uses Redis SET for O(N) scan instead of materializing full CRDT with metadata.
   For large sets, prefer paginated endpoints.
   """
+  @spec list_online_user_ids() :: list(String.t())
   def list_online_user_ids do
     case CGraph.Redis.command(["SMEMBERS", @online_set_key]) do
       {:ok, ids} when is_list(ids) -> ids
@@ -134,6 +142,7 @@ defmodule CGraph.Presence.Queries do
   @doc """
   Get a user's current status. O(1) via Redis hash lookup.
   """
+  @spec get_user_status(String.t()) :: String.t()
   def get_user_status(user_id) do
     user_key = to_string(user_id)
 
@@ -149,6 +158,7 @@ defmodule CGraph.Presence.Queries do
   @doc """
   Get detailed user presence info. O(1) via Redis hash lookup.
   """
+  @spec get_user_presence(String.t()) :: map() | nil
   def get_user_presence(user_id) do
     user_key = to_string(user_id)
 
@@ -168,6 +178,7 @@ defmodule CGraph.Presence.Queries do
 
   Returns map of user_id => status.
   """
+  @spec bulk_status(list(String.t())) :: map()
   def bulk_status(user_ids) when is_list(user_ids) do
     if user_ids == [] do
       %{}
@@ -200,6 +211,7 @@ defmodule CGraph.Presence.Queries do
   @doc """
   Merge presence metadata across multiple devices into a single unified view.
   """
+  @spec merge_multi_device_presence(list(map())) :: map()
   def merge_multi_device_presence(metas) when is_list(metas) do
     base = %{
       devices: [],
@@ -233,6 +245,7 @@ defmodule CGraph.Presence.Queries do
   end
 
   @doc false
+  @spec transform_presence_list(map()) :: map()
   def transform_presence_list(presences) do
     Map.new(presences, fn {user_id, %{metas: metas}} ->
       {user_id, merge_multi_device_presence(metas)}

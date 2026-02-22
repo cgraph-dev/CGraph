@@ -57,6 +57,7 @@ defmodule CGraph.WebRTC.Participant do
   @doc """
   Check if participant is currently connected.
   """
+  @spec connected?(t()) :: boolean()
   def connected?(%__MODULE__{state: state}) do
     state in [:connected, :reconnecting]
   end
@@ -64,24 +65,28 @@ defmodule CGraph.WebRTC.Participant do
   @doc """
   Check if participant has video enabled.
   """
+  @spec has_video?(t()) :: boolean()
   def has_video?(%__MODULE__{media: %{video: video}}), do: video == true
   def has_video?(_), do: false
 
   @doc """
   Check if participant has audio enabled.
   """
+  @spec has_audio?(t()) :: boolean()
   def has_audio?(%__MODULE__{media: %{audio: audio}}), do: audio == true
   def has_audio?(_), do: false
 
   @doc """
   Check if participant is screen sharing.
   """
+  @spec screen_sharing?(t()) :: boolean()
   def screen_sharing?(%__MODULE__{media: %{screen: screen}}), do: screen == true
   def screen_sharing?(_), do: false
 
   @doc """
   Update media state.
   """
+  @spec update_media(t(), map()) :: t()
   def update_media(%__MODULE__{} = participant, updates) when is_map(updates) do
     %{participant | media: Map.merge(participant.media, updates)}
   end
@@ -89,6 +94,7 @@ defmodule CGraph.WebRTC.Participant do
   @doc """
   Mark participant as connected.
   """
+  @spec mark_connected(t(), String.t() | nil) :: t()
   def mark_connected(%__MODULE__{} = participant, connection_id \\ nil) do
     %{participant | state: :connected, connection_id: connection_id}
   end
@@ -96,6 +102,7 @@ defmodule CGraph.WebRTC.Participant do
   @doc """
   Mark participant as disconnected.
   """
+  @spec mark_disconnected(t()) :: t()
   def mark_disconnected(%__MODULE__{} = participant) do
     %{participant | state: :disconnected}
   end
@@ -103,6 +110,7 @@ defmodule CGraph.WebRTC.Participant do
   @doc """
   Convert to map for JSON serialization.
   """
+  @spec to_map(t()) :: map()
   def to_map(%__MODULE__{} = p) do
     %{
       id: p.id,
