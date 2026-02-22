@@ -90,7 +90,10 @@ export const useAdminStore = create<AdminStore>()(
         ...createEventActions(set, get),
         ...createUserActions(set, get),
         ...createSettingsActions(set),
-      }),
+  reset: () => set({
+    ...initialState,
+  }),
+}),
       {
         name: 'admin-store',
         partialize: (state) => ({

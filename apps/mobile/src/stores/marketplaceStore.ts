@@ -112,6 +112,7 @@ interface MarketplaceState {
   cancelListing: (listingId: string) => Promise<{ success: boolean }>;
   setFilters: (filters: Partial<MarketplaceFilters>) => void;
   clearFilters: () => void;
+  reset: () => void;
 }
 
 // ── Store ──────────────────────────────────────────────────────────────
@@ -261,6 +262,18 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
     set({ filters: DEFAULT_FILTERS });
     get().fetchListings(true);
   },
+  reset: () => set({
+    listings: [],
+    myListings: [],
+    selectedListing: null,
+    transactionHistory: [],
+    filters: DEFAULT_FILTERS,
+    hasMore: false,
+    currentOffset: 0,
+    isLoading: false,
+    isCreating: false,
+    isPurchasing: false,
+  }),
 }));
 
 // ── Selector hooks ───────────────────────────────────────────────────

@@ -24,6 +24,7 @@ interface ThemeState {
   readonly themePreference: ThemePreference;
   readonly colors: ThemeColors;
   readonly isDark: boolean;
+  reset: () => void;
 }
 
 interface ThemeActions {
@@ -352,6 +353,12 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     });
     await AsyncStorage.setItem(THEME_STORAGE_KEY, preference).catch(() => {});
   },
+  reset: () => set({
+    colorScheme: 'light',
+    themePreference: 'system',
+    colors: lightColors,
+    isDark: false,
+  }),
 }));
 
 // ---------------------------------------------------------------------------

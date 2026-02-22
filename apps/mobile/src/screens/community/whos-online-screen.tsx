@@ -24,7 +24,7 @@ import {
   PulsingDot,
   AnimatedStatCard,
   AnimatedRecordBadge,
-} from './WhosOnlineScreen/components';
+} from './whos-online-screen/components';
 
 // ============================================================================
 // Types

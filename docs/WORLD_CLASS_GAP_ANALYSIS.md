@@ -1,6 +1,6 @@
 # CGraph World-Class Gap Analysis
 
-> **Version**: 0.9.37 | **Audit Date**: February 22, 2026 **Standard**: Google/Discord/Meta/Telegram
+> **Version**: 0.9.38 | **Audit Date**: February 22, 2026 **Standard**: Google/Discord/Meta/Telegram
 > | **Target**: 100% plan compliance **Methodology**: Automated codebase scan against all 15
 > mandatory rules + 106 wave tasks
 
@@ -10,19 +10,21 @@
 
 | Category             | Current | Target | Gap                                       |
 | -------------------- | ------- | ------ | ----------------------------------------- |
-| Rule Compliance      | ~93%    | 100%   | 7% — 1 rule has major violations          |
+| Rule Compliance      | ~91%    | 100%   | 9% — 2 rules have violations               |
 | Wave Task Completion | ~25%    | 100%   | 75% — ~27 of 106 tasks done               |
-| Composite Score      | 9.5/10  | 9.5/10 | On target                                 |
+| Composite Score      | 9.1/10  | 9.5/10 | Close to target — type safety + tests remain |
 
 ### Critical Gaps (Blocks World-Class)
 
-1. ~~1,148 PascalCase filenames in web + 361 in mobile~~ **ALL RENAMED** (Tier 9 — 1,507 files kebab-cased)
+1. ~~1,148 PascalCase filenames in web + 361 in mobile~~ **ALL RENAMED** (Tier 9+10 — 1,510 files + 23 dirs kebab-cased)
 2. ~~73 React.FC usages~~ **ALL FIXED** — 0 remaining (Tiers 2+7+8)
 3. **960 type assertions** (`as X`) (Rule 11 requires type guards)
 4. **1,112 useMemo/useCallback** — React Compiler NOT enabled; keep for now
 5. ~~7 remaining offset pagination~~ **FIXED** (Tier 1 — all migrated to cursor)
 6. ~~6 missing shared packages~~ **ALL CREATED** (Tier 7 — all 12 packages exist)
 7. ~~4 mobile context shim files~~ **DELETED** (Tier 8 — 0 remaining)
+8. ~~31 Zustand stores missing reset()~~ **ALL FIXED** (Tier 10 — all stores have reset())
+9. **67 files using deprecated `Animated`** from react-native (should be react-native-reanimated)
 
 ---
 
@@ -30,19 +32,22 @@
 
 ### Rule 1: Google TypeScript Naming — PASS
 
-| Metric                        | Count     | Status                          |
-| ----------------------------- | --------- | ------------------------------- |
-| PascalCase filenames (web)    | **0**     | **PASS** — all renamed Tier 9   |
-| PascalCase filenames (mobile) | **0**     | **PASS** — all renamed Tier 9   |
-| **Only exception**            | App.tsx   | Excluded (RN entry point)       |
+| Metric                           | Count    | Status                                              |
+| -------------------------------- | -------- | --------------------------------------------------- |
+| PascalCase filenames (web)       | **0**    | **PASS** — all renamed Tier 9                       |
+| PascalCase filenames (mobile)    | **0**    | **PASS** — last 3 renamed Tier 10                   |
+| PascalCase directories (mobile)  | **0**    | **PASS** — 23 renamed Tier 10                       |
+| **Only exception**               | App.tsx  | Excluded (RN entry point)                           |
 
 **Action Items**:
 
 - [x] **1.1** ~~Create codemod script to rename PascalCase → kebab-case~~ **DONE** (Tier 9)
 - [x] **1.2** ~~Run codemod on `apps/web/src/`~~ **DONE** — 1,148 files renamed
-- [x] **1.3** ~~Run codemod on `apps/mobile/src/`~~ **DONE** — 361 files renamed
-- [x] **1.4** ~~Update all import paths project-wide~~ **DONE** — 2,972 imports updated
-- [ ] **1.5** Update ESLint config to enforce kebab-case filenames going forward
+- [x] **1.3** ~~Run codemod on `apps/mobile/src/`~~ **DONE** — 361 files + 3 remaining renamed
+- [x] **1.4** ~~Update all import paths project-wide~~ **DONE** — 2,972 + 31 imports updated
+- [x] **1.5** ~~Rename 3 remaining PascalCase mobile files~~ **DONE** (Tier 10)
+- [x] **1.6** ~~Rename 23 PascalCase mobile directories~~ **DONE** (Tier 10)
+- [ ] **1.7** Update ESLint config to enforce kebab-case filenames going forward
 
 ---
 
@@ -69,20 +74,21 @@
       `function Component(props: Props): React.ReactElement`~~ **DONE** (Tiers 2+7)
 - [x] **2.2** ~~Run codemod on all 73 occurrences~~ **DONE** — 0 remaining
 - [x] **2.3** ~~Replace 2 `forwardRef` calls with `ref` prop pattern~~ **DONE** (Tier 1)
-- [ ] **2.4** Add ESLint rule to ban `React.FC` (`@typescript-eslint/ban-types` or custom)
+- [x] **2.4** ~~Add ESLint rule to ban `React.FC`~~ **DONE** — `no-restricted-syntax` rules in
+      eslint.config.js lines 160-196 ban React.FC, FunctionComponent, forwardRef, useContext
 - [ ] **2.5** Audit for helper functions inside components (move to module level)
 
 ---
 
 ### Rule 3: State Management — PASS
 
-| Metric                  | Status   | Notes                                               |
-| ----------------------- | -------- | --------------------------------------------------- |
-| Web Zustand stores      | PASS     | 29+ stores, module-based                            |
-| Mobile Zustand stores   | PASS     | 11 stores — full Zustand migration complete         |
-| Mobile Context shims    | **PASS** | 0 remaining — all 4 deleted in Tier 8               |
-| Store MAX constants     | **PASS** | 20+ MAX constants, all stores bounded               |
-| Unbounded array spreads | **PASS** | All 18 spreads bounded with MAX + .slice() (Tier 5) |
+| Metric                  | Status   | Notes                                                |
+| ----------------------- | -------- | ---------------------------------------------------- |
+| Web Zustand stores      | **PASS** | All stores have reset() method                       |
+| Mobile Zustand stores   | **PASS** | All stores have reset() method                       |
+| Mobile Context shims    | **PASS** | 0 remaining — all 4 deleted in Tier 8                |
+| Store MAX constants     | **PASS** | 20+ MAX constants, all stores bounded                |
+| Unbounded array spreads | **PASS** | All 18 spreads bounded with MAX + .slice() (Tier 5)  |
 
 **Action Items**:
 
@@ -90,9 +96,9 @@
 - [x] **3.2** ~~Add MAX constants to ALL store arrays~~ **DONE** (Tier 5)
 - [x] **3.3** ~~Add `.slice(-MAX)` bounds to all unbounded `[...state.X, newItem]` patterns~~
       **DONE** (Tier 5)
-- [x] **3.4** ~~Add `reset()` action to every store~~ **DONE** (Tiers 7+8) — all 18 stores have
-      reset()
-- [ ] **3.5** Create mobile `stores/index.ts` facade matching web's 7-domain pattern
+- [x] **3.4** ~~Add `reset()` action to all stores~~ **DONE** (Tier 10) — 15 mobile + 22 web impl
+      stores verified with reset()
+- [x] **3.5** ~~Create mobile `stores/index.ts` facade~~ **DONE** — already exists (~350 lines, 7 domain facades)
 
 ---
 
@@ -103,7 +109,7 @@
 | Web animation presets      | EXISTS  | `apps/web/src/lib/animation-presets/` |
 | Mobile AnimationLibrary    | EXISTS  | `apps/mobile/src/lib/animations/`     |
 | Inline spring values       | UNKNOWN | Needs targeted audit                  |
-| Deprecated Animated API    | UNKNOWN | Needs mobile audit                    |
+| Deprecated Animated API    | **67 files** | **FAIL** — should be react-native-reanimated v4   |
 | Shared animation constants | EXISTS  | `packages/animation-constants/`       |
 
 **Action Items**:
@@ -385,7 +391,9 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 - [x] **13.1** ~~Add `permissions:` block to `backup.yml`~~ **DONE** (Tier 1)
 - [x] **13.2** ~~Add `permissions:` block to `deploy-backend.yml`~~ **DONE** (Tier 1)
 - [ ] **13.3** Raise web coverage gate from 60% → 70% (incremental ratchet)
-- [ ] **13.4** Add ESLint rules for: no React.FC, no forwardRef, no useContext, kebab-case files
+- [x] **13.4** ~~Add ESLint rules for: no React.FC, no forwardRef, no useContext~~ **DONE** —
+      already in eslint.config.js lines 160-196
+- [ ] **13.5** Add ESLint rule to enforce kebab-case filenames
 
 ---
 
@@ -618,21 +626,21 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 
 | Dimension                   | Current                          | After Tier 1-4 | World-Class Target  |
 | --------------------------- | -------------------------------- | -------------- | ------------------- |
-| File Naming (Rule 1)        | 0% (1,497 violations)            | 0%             | 100% (0 violations) |
-| Component Patterns (Rule 2) | **100%** (0 React.FC, 0 fwdRef)  | **100%**       | 100%                |
-| State Management (Rule 3)   | **100%** (0 contexts, all reset) | **100%**       | 100%                |
-| Cross-Platform (Rule 5)     | **100%** (12/12 packages)        | **100%**       | 100% (12/12)        |
-| Documentation (Rule 6)      | 75%                              | 80%            | 100%                |
-| Backend Standards (Rule 7)  | **47.1%** (2,253/4,792 specs)    | **55%**        | 100%                |
-| File Size (Rule 8)          | **100%** (0 over limits)         | **100%**       | 100%                |
-| Testing (Rule 9)            | 18% ratio                        | 20%            | 100%                |
-| Performance (Rule 10)       | **100%** (0 offsets)             | **100%**       | 100%                |
-| Security (Rule 11)          | 52% (960 assertions)             | 60%            | 100%                |
-| React 19 (Rule 12)          | **95%**                          | **95%**        | 100%                |
-| CI/CD (Rule 13)             | **100%** (17/17)                 | **100%**       | 100%                |
-| Observability (Rule 14)     | **100%** (0 violations)          | **100%**       | 100%                |
-| API Contract (Rule 15)      | **100%** (cursor + standardized) | **100%**       | 100%                |
-| **Overall**                 | **~88%**                         | **~93%**       | **100%**            |
+| File Naming (Rule 1)        | **100%** (0 files + 0 dirs)         | **100%**       | 100% (0 violations) |
+| Component Patterns (Rule 2) | **100%** (0 React.FC, 0 fwdRef)   | **100%**       | 100%                |
+| State Management (Rule 3)   | **100%** (all stores have reset)  | **100%**       | 100%                |
+| Cross-Platform (Rule 5)     | **100%** (12/12 packages)         | **100%**       | 100% (12/12)        |
+| Documentation (Rule 6)      | 75%                               | 80%            | 100%                |
+| Backend Standards (Rule 7)  | **52.6%** (2,520/4,792 specs)     | **60%**        | 100%                |
+| File Size (Rule 8)          | **~90%** (8 Elixir + 6 TSX over)  | **95%**        | 100%                |
+| Testing (Rule 9)            | 18% ratio                         | 20%            | 100%                |
+| Performance (Rule 10)       | **100%** (0 offsets)              | **100%**       | 100%                |
+| Security (Rule 11)          | 52% (960 assertions)              | 60%            | 100%                |
+| React 19 (Rule 12)          | **95%**                           | **95%**        | 100%                |
+| CI/CD (Rule 13)             | **100%** (17/17)                  | **100%**       | 100%                |
+| Observability (Rule 14)     | **100%** (0 violations)           | **100%**       | 100%                |
+| API Contract (Rule 15)      | **100%** (cursor + standardized)  | **100%**       | 100%                |
+| **Overall**                 | **~91%**                          | **~95%**       | **100%**            |
 
 ---
 
@@ -659,3 +667,10 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 > web + mobile (only App.tsx excluded), updated 2,972 imports across 1,039 files, renamed 2
 > PascalCase directories, fixed 101 circular barrel imports. Added 126 @spec annotations to
 > channels, controllers, validators. @spec coverage: 2,520/4,792 (52.6%). Rule 1 now PASS.
+> **Tier 10 COMPLETED** (2026-02-22): Strict audit revealed 6 false claims in gap analysis doc.
+> Fixed all: renamed last 3 PascalCase mobile files (ErrorBoundary, OAuthButtons, ProfilerWrapper),
+> renamed 23 PascalCase mobile directories to kebab-case + updated 31 imports, added reset() to
+> 15 mobile stores + verified all 22 web .impl.ts stores already had reset(), fixed
+> gamificationSocketStore reset to use correct fields, marked items 2.4 (ESLint bans) and 3.5
+> (mobile stores facade) as correctly DONE. Rule 1 now TRUE PASS (0 files + 0 dirs). Rule 3 now
+> TRUE PASS (all stores have reset()). Overall compliance: ~85% → ~91%.

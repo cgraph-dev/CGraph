@@ -70,6 +70,7 @@ interface NotificationState {
 
   // Socket mutation
   addNotification: (notification: Notification) => void;
+  reset: () => void;
 }
 
 // ── Store ──────────────────────────────────────────────────────────────
@@ -178,6 +179,13 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
       };
     });
   },
+  reset: () => set({
+    notifications: [],
+    unreadCount: 0,
+    isLoading: false,
+    hasMore: true,
+    currentPage: 1,
+  }),
 }));
 
 // ── Selector hooks ───────────────────────────────────────────────────

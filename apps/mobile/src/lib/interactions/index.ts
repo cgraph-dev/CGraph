@@ -18,7 +18,7 @@ export {
   EmptyState,
   Ripple,
   default as FeedbackSystem,
-} from './FeedbackSystem';
+} from './feedback-system';
 
 export type {
   PressableFeedbackProps,
@@ -31,7 +31,7 @@ export type {
   RippleProps,
   PressStyle,
   FeedbackIntensity,
-} from './FeedbackSystem';
+} from './feedback-system';
 
 // ============================================================================
 // Haptic Patterns
@@ -63,7 +63,7 @@ export type {
 // ============================================================================
 
 const Interactions = {
-  FeedbackSystem: require('./FeedbackSystem').default,
+  FeedbackSystem: require('./feedback-system').default,
   HapticPatterns: require('./haptic-patterns').default,
 };
 

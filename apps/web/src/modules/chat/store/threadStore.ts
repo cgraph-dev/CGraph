@@ -40,6 +40,7 @@ interface ThreadState {
   sendThreadReply: (content: string) => Promise<void>;
   addThreadMessage: (message: Message) => void;
   fetchReplyCounts: (conversationId: string, messageIds: string[]) => Promise<void>;
+  reset: () => void;
 }
 
 export const useThreadStore = create<ThreadState>()(
@@ -190,7 +191,16 @@ export const useThreadStore = create<ThreadState>()(
           // Silent fail — counts are non-critical UI decoration
         }
       },
-    }),
+  reset: () => set({
+    activeThread: null,
+    activeConversationId: null,
+    threadMessages: [],
+    isLoading: false,
+    hasMore: false,
+    endCursor: null,
+    replyCounts: {},
+  }),
+}),
     { name: 'thread-store' }
   )
 );

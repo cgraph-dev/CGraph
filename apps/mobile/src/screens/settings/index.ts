@@ -6,8 +6,8 @@
 
 // UI & Appearance
 export { default as UICustomizationScreen } from './ui-customization-screen';
-export { default as ChatBubbleSettingsScreen } from './ChatBubbleSettingsScreen';
-export { default as AvatarSettingsScreen } from './AvatarSettingsScreen';
+export { default as ChatBubbleSettingsScreen } from './chat-bubble-settings-screen';
+export { default as AvatarSettingsScreen } from './avatar-settings-screen';
 
 // Privacy & Security
 export { default as ProfileVisibilityScreen } from './profile-visibility-screen';

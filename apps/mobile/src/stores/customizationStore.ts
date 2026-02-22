@@ -65,6 +65,7 @@ interface CustomizationState {
   validateTheme: () => { valid: boolean; errors: string[] };
   isAccessible: () => { accessible: boolean; warnings: string[] };
   optimizeForDevice: (deviceTier: 'high' | 'mid' | 'low') => void;
+  reset: () => void;
 }
 
 // ============================================================================
@@ -285,6 +286,18 @@ export const useCustomizationStore = create<CustomizationState>((set, get) => ({
     const optimized = CustomizationEngine.optimizeForDevice(theme, deviceTier);
     get().setTheme(optimized);
   },
+  reset: () => set({
+    theme: DEFAULT_THEME,
+    history: {
+    past: [],
+    present: DEFAULT_THEME,
+    future: [],
+    isPreviewMode: false,
+    previewTheme: null,
+    isDirty: false,
+    isLoading: false,
+    error: null,
+  }),
 }));
 
 // ============================================================================

@@ -124,6 +124,7 @@ interface GroupState {
 
   // WebSocket
   subscribeToChannel: (channelId: string) => () => void;
+  reset: () => void;
 }
 
 // ── Store ──────────────────────────────────────────────────────────────
@@ -408,6 +409,19 @@ export const useGroupStore = create<GroupState>((set, get) => ({
       socketManager.leaveChannel(topic);
     };
   },
+  reset: () => set({
+    groups: [],
+    activeGroupId: null,
+    activeChannelId: null,
+    channelMessages: {},
+    channelMessageIds: {},
+    members: {},
+    isLoadingGroups: false,
+    isLoadingMessages: false,
+    hasMoreMessages: {},
+    typingUsers: {},
+    justJoinedGroupName: null,
+  }),
 }));
 
 // ── Selector hooks ───────────────────────────────────────────────────

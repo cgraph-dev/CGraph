@@ -59,6 +59,7 @@ export interface UIPreferencesStore {
   resetToDefaults: () => void;
   exportPreferences: () => string;
   importPreferences: (json: string) => void;
+  reset: () => void;
 }
 
 export const useUIPreferences = create<UIPreferencesStore>()(
@@ -96,7 +97,10 @@ export const useUIPreferences = create<UIPreferencesStore>()(
           HapticFeedback.error();
         }
       },
-    }),
+  reset: () => set({
+    preferences: defaultPreferences,
+  }),
+}),
     {
       name: 'cgraph-ui-preferences',
       storage: createJSONStorage(() => safeLocalStorage),

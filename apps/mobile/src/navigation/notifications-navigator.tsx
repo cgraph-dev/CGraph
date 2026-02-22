@@ -2,7 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NotificationsStackParamList } from '../types';
 import { useTheme } from '../contexts/theme-context';
-import NotificationsInboxScreen from '../screens/notifications/NotificationsInboxScreen';
+import NotificationsInboxScreen from '../screens/notifications/notifications-inbox-screen';
 
 const Stack = createNativeStackNavigator<NotificationsStackParamList>();
 

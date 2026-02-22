@@ -2,7 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GroupsStackParamList } from '../types';
 import { useTheme } from '../contexts/theme-context';
-import GroupListScreen from '../screens/groups/GroupListScreen';
+import GroupListScreen from '../screens/groups/group-list-screen';
 import GroupScreen from '../screens/groups/group-screen';
 import ChannelScreen from '../screens/groups/channel-screen';
 import GroupSettingsScreen from '../screens/groups/group-settings-screen';

@@ -40,7 +40,7 @@ import {
   AnimatedTabBar,
   AnimatedPeriodSelector,
   EmptyState,
-} from './ForumLeaderboardScreen/components';
+} from './forum-leaderboard-screen/components';
 
 // =============================================================================
 // TYPES

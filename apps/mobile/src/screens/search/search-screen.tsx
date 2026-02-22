@@ -44,7 +44,7 @@ import api from '../../lib/api';
 import debounce from 'lodash.debounce';
 
 // Import extracted styles
-import { styles } from './SearchScreen/styles';
+import { styles } from './search-screen/styles';
 
 // Import extracted components
 import {
@@ -55,13 +55,13 @@ import {
   GroupResultItem,
   ForumResultItem,
   DiscoverySection,
-} from './SearchScreen/components';
+} from './search-screen/components';
 import type {
   SearchFilters,
   SearchUser,
   SearchGroup,
   SearchForum,
-} from './SearchScreen/components';
+} from './search-screen/components';
 import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('Search');

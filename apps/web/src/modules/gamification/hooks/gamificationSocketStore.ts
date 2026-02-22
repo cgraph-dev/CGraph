@@ -228,4 +228,11 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
       channel.push('heartbeat', {});
     }
   },
+  reset: () => set({
+    socket: null,
+    channel: null,
+    state: { ...DEFAULT_STATE },
+    listeners: new Map(),
+    messageQueue: [],
+  }),
 }));

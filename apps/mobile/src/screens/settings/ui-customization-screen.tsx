@@ -41,10 +41,10 @@ import {
   EffectsTab,
   AnimationsTab,
   AccessibilityTab,
-} from './UICustomizationScreen/components/index';
+} from './ui-customization-screen/components/index';
 
 // Import extracted styles
-import { styles } from './UICustomizationScreen/styles';
+import { styles } from './ui-customization-screen/styles';
 
 type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'UICustomization'>;

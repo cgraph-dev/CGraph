@@ -31,10 +31,10 @@ import {
   PinnedMessagesBar,
   ChatInputArea,
   MessageBubble,
-} from './ConversationScreen/components';
-import { GifPickerModal } from './ConversationScreen/components/gif-picker-modal';
-import type { GifResult } from './ConversationScreen/components/gif-picker-modal';
-import { styles } from './ConversationScreen/styles';
+} from './conversation-screen/components';
+import { GifPickerModal } from './conversation-screen/components/gif-picker-modal';
+import type { GifResult } from './conversation-screen/components/gif-picker-modal';
+import { styles } from './conversation-screen/styles';
 import {
   useMediaViewer,
   useMessageActions,
@@ -52,14 +52,14 @@ import {
   usePinnedMessages,
   useSocketEventHandlers,
   useMessageActionWrappers,
-} from './ConversationScreen/hooks';
+} from './conversation-screen/hooks';
 import {
   formatSimpleTime,
   getMessageStatusInfo,
   isValidMessage,
   isOwnMessage as checkIsOwnMessage,
   getSenderInfo,
-} from './ConversationScreen/utils';
+} from './conversation-screen/utils';
 
 const logger = createLogger('ConversationScreen');
 

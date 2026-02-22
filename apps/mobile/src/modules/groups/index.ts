@@ -3,7 +3,7 @@
  * @module modules/groups
  */
 
-export { default as GroupListScreen } from '../../screens/groups/GroupListScreen';
+export { default as GroupListScreen } from '../../screens/groups/group-list-screen';
 export { default as GroupScreen } from '../../screens/groups/group-screen';
 export { default as ChannelScreen } from '../../screens/groups/channel-screen';
 export { default as GroupSettingsScreen } from '../../screens/groups/group-settings-screen';

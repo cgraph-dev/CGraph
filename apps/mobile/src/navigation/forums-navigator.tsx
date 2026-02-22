@@ -5,14 +5,14 @@ import { useTheme } from '../contexts/theme-context';
 import ForumListScreen from '../screens/forums/forum-list-screen';
 import ForumScreen from '../screens/forums/forum-screen';
 import PostScreen from '../screens/forums/post-screen';
-import CreatePostScreen from '../screens/forums/CreatePostScreen';
+import CreatePostScreen from '../screens/forums/create-post-screen';
 import CreateForumScreen from '../screens/forums/create-forum-screen';
 // MyBB-style forum screens
 import ForumBoardScreen from '../screens/forums/forum-board-screen';
 import ForumSettingsScreen from '../screens/forums/forum-settings-screen';
 import ForumAdminScreen from '../screens/forums/forum-admin-screen';
 import ForumLeaderboardScreen from '../screens/forums/forum-leaderboard-screen';
-import PluginMarketplaceScreen from '../screens/forums/PluginMarketplaceScreen';
+import PluginMarketplaceScreen from '../screens/forums/plugin-marketplace-screen';
 
 const Stack = createNativeStackNavigator<ForumsStackParamList>();
 

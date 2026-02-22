@@ -38,6 +38,7 @@ interface E2EEState {
   isInitialized: boolean;
   isLoading: boolean;
   error: string | null;
+  reset: () => void;
 }
 
 interface E2EEActions {
@@ -299,6 +300,11 @@ export const useE2EEStore = create<E2EEStore>((set, get) => ({
       set({ isInitialized: false });
     }
   },
+  reset: () => set({
+    isInitialized: false,
+    isLoading: true,
+    error: null,
+  }),
 }));
 
 // ── Convenience hooks ────────────────────────────────────────────────────────

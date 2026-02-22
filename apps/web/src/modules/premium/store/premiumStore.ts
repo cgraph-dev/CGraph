@@ -38,6 +38,7 @@ export interface PremiumState {
   // Computed
   getRemainingDays: () => number | null;
   canAfford: (price: number) => boolean;
+  reset: () => void;
 }
 
 export const usePremiumStore = create<PremiumState>()(
@@ -125,7 +126,17 @@ export const usePremiumStore = create<PremiumState>()(
       canAfford: (price) => {
         return get().coinBalance >= price;
       },
-    }),
+  reset: () => set({
+    isSubscribed: false,
+    currentTier: null,
+    subscribedAt: null,
+    expiresAt: null,
+    status: 'none',
+    coinBalance: 0,
+    purchaseHistory: [],
+    isLoading: false,
+  }),
+}),
     {
       name: 'cgraph-premium',
       storage: createJSONStorage(() => safeLocalStorage),

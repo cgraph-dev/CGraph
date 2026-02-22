@@ -207,6 +207,7 @@ interface ChatState {
 
   // Lifecycle
   subscribeToConversation: (conversationId: string) => () => void;
+  reset: () => void;
 }
 
 // ── Store ──────────────────────────────────────────────────────────────
@@ -583,6 +584,17 @@ export const useChatStore = create<ChatState>((set, get) => ({
       socketManager.leaveChannel(topic);
     };
   },
+  reset: () => set({
+    conversations: [],
+    activeConversationId: null,
+    messages: {},
+    messageIds: {},
+    typingUsers: {},
+    hasMoreMessages: {},
+    isLoadingConversations: false,
+    isLoadingMessages: false,
+    lastFetchedAt: null,
+  }),
 }));
 
 // ── Selector hooks for convenience ───────────────────────────────────

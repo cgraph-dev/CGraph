@@ -113,6 +113,7 @@ interface FriendState {
   // Socket mutations
   updateFriendStatus: (userId: string, status: string) => void;
   addRequest: (request: FriendRequest) => void;
+  reset: () => void;
 }
 
 // ── Store ──────────────────────────────────────────────────────────────
@@ -262,6 +263,13 @@ export const useFriendStore = create<FriendState>((set, get) => ({
       return { pendingRequests: [request, ...state.pendingRequests] };
     });
   },
+  reset: () => set({
+    friends: [],
+    pendingRequests: [],
+    sentRequests: [],
+    isLoading: false,
+    error: null,
+  }),
 }));
 
 // ── Selector hooks ───────────────────────────────────────────────────

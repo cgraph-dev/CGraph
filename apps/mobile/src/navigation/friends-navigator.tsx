@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { FriendsStackParamList } from '../types';
 import FriendListScreen from '../screens/friends/friend-list-screen';
 import AddFriendScreen from '../screens/friends/add-friend-screen';
-import FriendRequestsScreen from '../screens/friends/FriendRequestsScreen';
+import FriendRequestsScreen from '../screens/friends/friend-requests-screen';
 import UserProfileScreen from '../screens/friends/user-profile-screen';
 import LeaderboardScreen from '../screens/community/leaderboard-screen';
 

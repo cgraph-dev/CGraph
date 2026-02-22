@@ -288,6 +288,7 @@ interface SettingsActions {
   readonly updateAppearanceSettings: (updates: Partial<AppearanceSettings>) => Promise<void>;
   readonly updateLocaleSettings: (updates: Partial<LocaleSettings>) => Promise<void>;
   readonly resetToDefaults: () => Promise<void>;
+  readonly reset: () => void;
   readonly clearError: () => void;
 }
 
@@ -436,6 +437,8 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   },
 
   clearError: () => set({ error: null }),
+
+  reset: () => set(INITIAL_STATE),
 }));
 
 // ---------------------------------------------------------------------------
