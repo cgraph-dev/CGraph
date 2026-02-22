@@ -72,7 +72,6 @@ defmodule CGraph.Search.Engine do
   """
 
   require Logger
-  import CGraph.Query.SoftDelete
 
   @behaviour CGraph.Search.Backend
 
@@ -131,6 +130,10 @@ defmodule CGraph.Search.Engine do
     }
   }
 
+
+  alias CGraph.Search.Engine.MeilisearchAdapter
+  alias CGraph.Search.Engine.PostgresAdapter
+
   # ---------------------------------------------------------------------------
   # Client API
   # ---------------------------------------------------------------------------
@@ -157,27 +160,27 @@ defmodule CGraph.Search.Engine do
     start_time = System.monotonic_time(:millisecond)
 
     result = case get_backend() do
-      :meilisearch -> search_meilisearch(index, query, opts)
-      :postgres -> search_postgres(index, query, opts)
+      :meilisearch -> MeilisearchAdapter.search(index, query, opts)
+      :postgres -> PostgresAdapter.search(index, query, opts)
     end
 
     case result do
       {:ok, _} = success ->
-        emit_search_telemetry(index, query, opts, success, start_time)
+        PostgresAdapter.emit_search_telemetry(index, query, opts, success, start_time)
         success
 
       {:error, :meilisearch_unavailable} ->
         if config(:fallback_to_postgres) do
           Logger.warning("Meilisearch unavailable, falling back to PostgreSQL")
-          emit_fallback_telemetry(index, query)
-          search_postgres(index, query, opts)
+          PostgresAdapter.emit_fallback_telemetry(index, query)
+          PostgresAdapter.search(index, query, opts)
         else
-          emit_search_telemetry(index, query, opts, {:error, :meilisearch_unavailable}, start_time)
+          PostgresAdapter.emit_search_telemetry(index, query, opts, {:error, :meilisearch_unavailable}, start_time)
           {:error, :meilisearch_unavailable}
         end
 
       {:error, _} = error ->
-        emit_search_telemetry(index, query, opts, error, start_time)
+        PostgresAdapter.emit_search_telemetry(index, query, opts, error, start_time)
         error
     end
   end
@@ -196,8 +199,18 @@ defmodule CGraph.Search.Engine do
   @impl true
   def bulk_index(index_name, documents) when is_list(documents) do
     case get_backend() do
-      :meilisearch -> index_meilisearch(index_name, documents)
-      :postgres -> {:ok, :postgres_is_source_of_truth}
+      :meilisearch ->
+        case MeilisearchAdapter.bulk_index(index_name, documents) do
+          :ok ->
+            PostgresAdapter.emit_index_telemetry(index_name, length(documents))
+            :ok
+
+          error ->
+            error
+        end
+
+      :postgres ->
+        {:ok, :postgres_is_source_of_truth}
     end
   end
 
@@ -207,7 +220,7 @@ defmodule CGraph.Search.Engine do
   @impl true
   def delete(index_name, document_id) do
     case get_backend() do
-      :meilisearch -> delete_meilisearch(index_name, document_id)
+      :meilisearch -> MeilisearchAdapter.delete(index_name, document_id)
       :postgres -> {:ok, :postgres_is_source_of_truth}
     end
   end
@@ -218,7 +231,7 @@ defmodule CGraph.Search.Engine do
   @impl true
   def bulk_delete(index_name, document_ids) when is_list(document_ids) do
     case get_backend() do
-      :meilisearch -> bulk_delete_meilisearch(index_name, document_ids)
+      :meilisearch -> MeilisearchAdapter.bulk_delete(index_name, document_ids)
       :postgres -> {:ok, :postgres_is_source_of_truth}
     end
   end
@@ -230,7 +243,7 @@ defmodule CGraph.Search.Engine do
   def setup_indexes do
     if get_backend() == :meilisearch do
       Enum.each(@indexes, fn {name, settings} ->
-        case create_or_update_index(name, settings) do
+        case MeilisearchAdapter.create_or_update_index(name, settings) do
           :ok -> Logger.info("search_index_configured", name: name)
           {:error, reason} -> Logger.error("failed_to_configure_index", name: name, reason: inspect(reason))
         end
@@ -245,7 +258,7 @@ defmodule CGraph.Search.Engine do
   """
   def healthy? do
     case get_backend() do
-      :meilisearch -> meilisearch_healthy?()
+      :meilisearch -> MeilisearchAdapter.healthy?()
       :postgres -> true
     end
   end
@@ -262,246 +275,9 @@ defmodule CGraph.Search.Engine do
   """
   def stats do
     case get_backend() do
-      :meilisearch -> meilisearch_stats()
-      :postgres -> postgres_stats()
+      :meilisearch -> MeilisearchAdapter.stats()
+      :postgres -> PostgresAdapter.stats()
     end
-  end
-
-  # ---------------------------------------------------------------------------
-  # Meilisearch Implementation
-  # ---------------------------------------------------------------------------
-
-  defp search_meilisearch(index, query, opts) do
-    url = "#{config(:meilisearch_url)}/indexes/#{index}/search"
-
-    body = %{
-      q: query,
-      limit: min(Keyword.get(opts, :limit, 20), 100),
-      offset: Keyword.get(opts, :offset, 0)
-    }
-
-    body = if filter = Keyword.get(opts, :filter), do: Map.put(body, :filter, filter), else: body
-    body = if sort = Keyword.get(opts, :sort), do: Map.put(body, :sort, sort), else: body
-    body = if attrs = Keyword.get(opts, :attributes_to_retrieve), do: Map.put(body, :attributesToRetrieve, attrs), else: body
-
-    case http_post(url, body) do
-      {:ok, %{status: 200, body: response}} ->
-        {:ok, %{
-          hits: response["hits"] || [],
-          total: response["estimatedTotalHits"] || response["totalHits"] || 0,
-          processing_time_ms: response["processingTimeMs"] || 0,
-          query: query
-        }}
-
-      {:ok, %{status: status}} ->
-        {:error, {:meilisearch_error, status}}
-
-      {:error, :timeout} ->
-        {:error, :meilisearch_unavailable}
-
-      {:error, reason} ->
-        Logger.error("meilisearch_search_error", reason: inspect(reason))
-        {:error, :meilisearch_unavailable}
-    end
-  end
-
-  defp index_meilisearch(index_name, documents) do
-    url = "#{config(:meilisearch_url)}/indexes/#{index_name}/documents"
-
-    # Convert documents to maps with string keys
-    docs = Enum.map(documents, &stringify_keys/1)
-
-    case http_post(url, docs) do
-      {:ok, %{status: status}} when status in [200, 202] ->
-        emit_index_telemetry(index_name, length(documents))
-        :ok
-
-      {:ok, %{status: status, body: body}} ->
-        {:error, {:meilisearch_error, status, body}}
-
-      {:error, reason} ->
-        {:error, reason}
-    end
-  end
-
-  defp delete_meilisearch(index_name, document_id) do
-    url = "#{config(:meilisearch_url)}/indexes/#{index_name}/documents/#{document_id}"
-
-    case http_delete(url) do
-      {:ok, %{status: status}} when status in [200, 202, 204] -> :ok
-      {:ok, %{status: status}} -> {:error, {:meilisearch_error, status}}
-      {:error, reason} -> {:error, reason}
-    end
-  end
-
-  defp bulk_delete_meilisearch(index_name, document_ids) do
-    url = "#{config(:meilisearch_url)}/indexes/#{index_name}/documents/delete-batch"
-
-    case http_post(url, document_ids) do
-      {:ok, %{status: status}} when status in [200, 202] -> :ok
-      {:ok, %{status: status}} -> {:error, {:meilisearch_error, status}}
-      {:error, reason} -> {:error, reason}
-    end
-  end
-
-  defp create_or_update_index(name, settings) do
-    index_url = "#{config(:meilisearch_url)}/indexes/#{name}"
-    settings_url = "#{index_url}/settings"
-
-    # Create index if not exists
-    http_post("#{config(:meilisearch_url)}/indexes", %{uid: to_string(name), primaryKey: settings.primary_key})
-
-    # Update settings
-    meili_settings = %{
-      searchableAttributes: settings.searchable_attributes,
-      filterableAttributes: settings.filterable_attributes,
-      sortableAttributes: settings.sortable_attributes,
-      rankingRules: settings.ranking_rules
-    }
-
-    case http_patch(settings_url, meili_settings) do
-      {:ok, %{status: status}} when status in [200, 202] -> :ok
-      {:ok, %{status: status, body: body}} -> {:error, {:settings_update_failed, status, body}}
-      {:error, reason} -> {:error, reason}
-    end
-  end
-
-  defp meilisearch_healthy? do
-    url = "#{config(:meilisearch_url)}/health"
-
-    case http_get(url) do
-      {:ok, %{status: 200}} -> true
-      _ -> false
-    end
-  end
-
-  defp meilisearch_stats do
-    url = "#{config(:meilisearch_url)}/stats"
-
-    case http_get(url) do
-      {:ok, %{status: 200, body: body}} -> {:ok, body}
-      _ -> {:error, :unavailable}
-    end
-  end
-
-  # ---------------------------------------------------------------------------
-  # PostgreSQL Fallback
-  # ---------------------------------------------------------------------------
-
-  defp search_postgres(index, query, opts) do
-    # Direct PostgreSQL search using ILIKE — avoids recursion back through CGraph.Search
-    import Ecto.Query
-    limit = Keyword.get(opts, :limit, 20)
-    offset = Keyword.get(opts, :offset, 0)
-    search_term = "%#{query}%"
-
-    result = case index do
-      :users ->
-        CGraph.Repo.all(
-          from(u in CGraph.Accounts.User,
-            where: ilike(u.username, ^search_term) or ilike(u.display_name, ^search_term),
-            where: not_deleted(u) and is_nil(u.banned_at),
-            limit: ^limit,
-            offset: ^offset,
-            order_by: [asc: u.username]
-          )
-        )
-
-      :posts ->
-        CGraph.Repo.all(
-          from(p in CGraph.Forums.Post,
-            where: ilike(p.title, ^search_term) or ilike(p.content, ^search_term),
-            limit: ^limit,
-            offset: ^offset,
-            order_by: [desc: p.inserted_at]
-          )
-        )
-
-      :groups ->
-        CGraph.Repo.all(
-          from(g in CGraph.Groups.Group,
-            where: ilike(g.name, ^search_term) or ilike(g.description, ^search_term),
-            limit: ^limit,
-            offset: ^offset,
-            order_by: [asc: g.name]
-          )
-        )
-
-      :messages ->
-        []
-
-      _ ->
-        []
-    end
-
-    {:ok, %{
-      hits: Enum.map(result, &stringify_keys/1),
-      total: length(result),
-      processing_time_ms: 0,
-      query: query,
-      backend: :postgres
-    }}
-  end
-
-  defp postgres_stats do
-    {:ok, %{
-      backend: :postgres,
-      message: "Using PostgreSQL for search (Meilisearch not configured)"
-    }}
-  end
-
-  # ---------------------------------------------------------------------------
-  # HTTP Helpers
-  # ---------------------------------------------------------------------------
-
-  defp http_get(url) do
-    Finch.build(:get, url, headers())
-    |> Finch.request(CGraph.Finch, receive_timeout: config(:request_timeout))
-    |> parse_response()
-  end
-
-  defp http_post(url, body) do
-    Finch.build(:post, url, headers(), Jason.encode!(body))
-    |> Finch.request(CGraph.Finch, receive_timeout: config(:request_timeout))
-    |> parse_response()
-  end
-
-  defp http_patch(url, body) do
-    Finch.build(:patch, url, headers(), Jason.encode!(body))
-    |> Finch.request(CGraph.Finch, receive_timeout: config(:request_timeout))
-    |> parse_response()
-  end
-
-  defp http_delete(url) do
-    Finch.build(:delete, url, headers())
-    |> Finch.request(CGraph.Finch, receive_timeout: config(:request_timeout))
-    |> parse_response()
-  end
-
-  defp headers do
-    base = [{"Content-Type", "application/json"}]
-
-    case config(:meilisearch_key) do
-      nil -> base
-      key -> [{"Authorization", "Bearer #{key}"} | base]
-    end
-  end
-
-  defp parse_response({:ok, %Finch.Response{status: status, body: body}}) do
-    parsed_body = case Jason.decode(body) do
-      {:ok, decoded} -> decoded
-      _ -> body
-    end
-
-    {:ok, %{status: status, body: parsed_body}}
-  end
-
-  defp parse_response({:error, %Mint.TransportError{reason: :timeout}}) do
-    {:error, :timeout}
-  end
-
-  defp parse_response({:error, reason}) do
-    {:error, reason}
   end
 
   # ---------------------------------------------------------------------------
@@ -511,72 +287,5 @@ defmodule CGraph.Search.Engine do
   defp config(key) do
     app_config = Application.get_env(:cgraph, __MODULE__, [])
     Keyword.get(app_config, key) || Keyword.get(@default_config, key)
-  end
-
-  # ---------------------------------------------------------------------------
-  # Helpers
-  # ---------------------------------------------------------------------------
-
-  defp stringify_keys(%Ecto.Association.NotLoaded{}), do: nil
-
-  defp stringify_keys(%{__struct__: _} = struct) do
-    struct
-    |> Map.from_struct()
-    |> Map.drop([:__meta__])
-    |> stringify_keys()
-  end
-
-  defp stringify_keys(map) when is_map(map) do
-    Map.new(map, fn
-      {k, v} when is_atom(k) -> {Atom.to_string(k), stringify_keys(v)}
-      {k, v} -> {k, stringify_keys(v)}
-    end)
-  end
-
-  defp stringify_keys(list) when is_list(list) do
-    Enum.map(list, &stringify_keys/1)
-  end
-
-  defp stringify_keys(value), do: value
-
-  # ---------------------------------------------------------------------------
-  # Telemetry
-  # ---------------------------------------------------------------------------
-
-  defp emit_search_telemetry(index, query, opts, result, start_time) do
-    duration = System.monotonic_time(:millisecond) - start_time
-
-    measurements = %{
-      duration_ms: duration,
-      results_count: case result do
-        {:ok, %{total: total}} -> total
-        _ -> 0
-      end
-    }
-
-    metadata = %{
-      index: index,
-      query: query,
-      limit: Keyword.get(opts, :limit, 20),
-      success: match?({:ok, _}, result)
-    }
-
-    :telemetry.execute([:cgraph, :search, :query], measurements, metadata)
-  end
-
-  defp emit_index_telemetry(index, count) do
-    :telemetry.execute(
-      [:cgraph, :search, :index],
-      %{documents_count: count},
-      %{index: index}
-    )
-  end
-
-  defp emit_fallback_telemetry(index, query) do
-    :telemetry.execute(
-      [:cgraph, :search, :fallback],
-      %{count: 1},
-      %{index: index, query: query}
-    )
   end
 end

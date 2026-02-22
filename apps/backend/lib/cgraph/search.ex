@@ -28,14 +28,12 @@ defmodule CGraph.Search do
 
   import Ecto.Query, warn: false
   require Logger
-  import CGraph.Query.SoftDelete
 
   alias CGraph.Accounts.User
   alias CGraph.Forums.Post
   alias CGraph.Groups.Group
-  alias CGraph.Messaging.Message
   alias CGraph.Repo
-  alias CGraph.Search.Engine, as: SearchEngine
+  alias CGraph.Search.{Messages, Users}
 
   @doc """
   Search users by username, display name, bio, or user_id (identity number).
@@ -43,252 +41,14 @@ defmodule CGraph.Search do
 
   Attempts Meilisearch first, falls back to PostgreSQL on failure.
   """
-  def search_users(query, opts \\ []) do
-    opts = if is_map(opts), do: Map.to_list(opts), else: opts
-    limit = Keyword.get(opts, :limit, 20)
-    cursor = Keyword.get(opts, :cursor)
-    current_user = Keyword.get(opts, :current_user)
-
-    # Decode cursor to Meilisearch offset (cursor encodes next offset position)
-    meili_offset = decode_search_cursor(cursor) || 0
-
-    # Try Meilisearch first for fuzzy search
-    case SearchEngine.search(:users, query, limit: limit, offset: meili_offset) do
-      {:ok, %{hits: hits, total: total}} ->
-        user_ids = Enum.map(hits, & &1["id"])
-        users = fetch_users_by_ids(user_ids, current_user)
-        has_more = meili_offset + limit < total
-        next_cursor = if has_more, do: encode_search_cursor(meili_offset + limit), else: nil
-        {users, %{total: total, limit: limit, has_more: has_more, next_cursor: next_cursor}}
-
-      {:error, reason} ->
-        Logger.debug("meilisearch_unavailable_using_postgresql_fallback", reason: inspect(reason))
-        search_users_postgres(query, opts)
-    end
-  end
-
-  defp fetch_users_by_ids([], _current_user), do: []
-  defp fetch_users_by_ids(user_ids, current_user) do
-    from(u in User,
-      where: u.id in ^user_ids,
-      where: not_deleted(u) and is_nil(u.banned_at)
-    )
-    |> maybe_exclude_blocked(current_user)
-    |> Repo.all()
-    |> Enum.sort_by(&Enum.find_index(user_ids, fn id -> id == &1.id end))
-  end
-
-  defp search_users_postgres(query, opts) do
-    limit = Keyword.get(opts, :limit, 20)
-    current_user = Keyword.get(opts, :current_user)
-
-    {base_query, is_id_search} = build_user_search_query(query, limit, nil)
-
-    base_query = maybe_exclude_blocked(base_query, current_user)
-    users = Repo.all(base_query)
-    total = count_user_results(is_id_search, users, query)
-
-    {users, %{total: total, limit: limit, has_more: length(users) == limit, next_cursor: nil}}
-  end
-
-  defp build_user_search_query(query, limit, offset) do
-    case parse_user_id_query(query) do
-      {:ok, user_id_num} -> {build_user_id_query(user_id_num), true}
-      :error -> {build_text_search_query(query, limit, offset), false}
-    end
-  end
-
-  defp build_user_id_query(user_id_num) do
-    from u in User,
-      where: not_deleted(u) and is_nil(u.banned_at),
-      where: u.user_id == ^user_id_num,
-      limit: 1
-  end
-
-  defp build_text_search_query(query, limit, _cursor) do
-    search_term = "%#{sanitize_query(query)}%"
-    prefix_term = "#{sanitize_query(query)}%"
-
-    # Note: User search uses limit-based approach since relevance scoring
-    # makes cursor pagination impractical. For PostgreSQL fallback search,
-    # result sets are typically small (< 100) so offset risk is minimal.
-    from u in User,
-      where: not_deleted(u) and is_nil(u.banned_at),
-      where: ilike(u.username, ^search_term) or
-             ilike(u.display_name, ^search_term) or
-             ilike(u.bio, ^search_term),
-      order_by: [
-        desc: fragment("CASE WHEN ? ILIKE ? THEN 2 WHEN ? ILIKE ? THEN 1 ELSE 0 END",
-                       u.username, ^prefix_term,
-                       u.display_name, ^prefix_term)
-      ],
-      limit: ^limit
-  end
-
-  defp maybe_exclude_blocked(query, nil), do: query
-  defp maybe_exclude_blocked(query, current_user) do
-    blocker_id = current_user.id
-    from u in query,
-      where: u.id not in subquery(
-        from b in "blocks",
-        where: b.blocker_id == type(^blocker_id, Ecto.UUID),
-        select: b.blocked_id
-      )
-  end
-
-  defp count_user_results(true, users, _query), do: length(users)
-  defp count_user_results(false, _users, query) do
-    search_term = "%#{sanitize_query(query)}%"
-    from(u in User,
-      where: not_deleted(u) and is_nil(u.banned_at),
-      where: ilike(u.username, ^search_term) or
-             ilike(u.display_name, ^search_term) or
-             ilike(u.bio, ^search_term),
-      select: count(u.id)
-    )
-    |> Repo.one()
-  end
-
-  # Parse user_id query formats like "#0001", "#1", "0001", or just "1"
-  defp parse_user_id_query(query) do
-    cleaned = query |> String.trim() |> String.replace("#", "")
-
-    # Only treat as ID search if it looks like a number
-    if String.match?(cleaned, ~r/^\d+$/) do
-      case Integer.parse(cleaned) do
-        {num, ""} when num > 0 -> {:ok, num}
-        _ -> :error
-      end
-    else
-      :error
-    end
-  end
+  def search_users(query, opts \\ []), do: Users.search_users(query, opts)
 
   @doc """
   Search messages within user's conversations.
 
   Attempts Meilisearch first for fuzzy matching, falls back to PostgreSQL.
   """
-  def search_messages(user, query, opts \\ []) do
-    opts = if is_map(opts), do: Map.to_list(opts), else: opts
-    limit = Keyword.get(opts, :limit, 50)
-    cursor = Keyword.get(opts, :cursor)
-    conversation_id = Keyword.get(opts, :conversation_id)
-
-    # Decode cursor to Meilisearch offset
-    meili_offset = decode_search_cursor(cursor) || 0
-
-    # Build Meilisearch filter for user's conversations
-    filters = build_message_filters(user.id, conversation_id, opts)
-
-    case SearchEngine.search(:messages, query, limit: limit, offset: meili_offset, filter: filters) do
-      {:ok, %{hits: hits, total: total}} ->
-        message_ids = Enum.map(hits, & &1["id"])
-        messages = fetch_messages_by_ids(message_ids)
-        has_more = meili_offset + limit < total
-        next_cursor = if has_more, do: encode_search_cursor(meili_offset + limit), else: nil
-        {messages, %{limit: limit, has_more: has_more, next_cursor: next_cursor}}
-
-      {:error, reason} ->
-        Logger.debug("meilisearch_unavailable_using_postgresql_fallback", reason: inspect(reason))
-        search_messages_postgres(user, query, opts)
-    end
-  end
-
-  defp build_message_filters(user_id, conversation_id, opts) do
-    base = "user_id = #{user_id}"
-    filters = if conversation_id && valid_uuid?(conversation_id) do
-      "#{base} AND conversation_id = #{conversation_id}"
-    else
-      base
-    end
-
-    before_date = Keyword.get(opts, :before)
-    after_date = Keyword.get(opts, :after)
-
-    filters = if before_date, do: "#{filters} AND inserted_at < #{DateTime.to_unix(before_date)}", else: filters
-    filters = if after_date, do: "#{filters} AND inserted_at > #{DateTime.to_unix(after_date)}", else: filters
-
-    filters
-  end
-
-  defp valid_uuid?(id) when is_binary(id), do: Regex.match?(~r/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, id)
-  defp valid_uuid?(_), do: false
-
-  defp fetch_messages_by_ids([]), do: []
-  defp fetch_messages_by_ids(message_ids) do
-    from(m in Message,
-      where: m.id in ^message_ids,
-      preload: [:user, :conversation]
-    )
-    |> Repo.all()
-    |> Enum.sort_by(&Enum.find_index(message_ids, fn id -> id == &1.id end))
-  end
-
-  defp search_messages_postgres(user, query, opts) do
-    limit = Keyword.get(opts, :limit, 50)
-    cursor = Keyword.get(opts, :cursor)
-    conversation_id = Keyword.get(opts, :conversation_id)
-    before_date = Keyword.get(opts, :before)
-    after_date = Keyword.get(opts, :after)
-    from_user_id = Keyword.get(opts, :from)
-
-    search_term = "%#{sanitize_query(query)}%"
-
-    # Get user's conversations
-    user_conversations = from cp in "conversation_participants",
-      where: cp.user_id == type(^user.id, Ecto.UUID),
-      select: cp.conversation_id
-
-    base_query = from m in Message,
-      where: m.conversation_id in subquery(user_conversations),
-      where: ilike(m.content, ^search_term),
-      preload: [:user, :conversation]
-
-    # Apply filters
-    base_query = if conversation_id do
-      from m in base_query, where: m.conversation_id == ^conversation_id
-    else
-      base_query
-    end
-
-    base_query = if before_date do
-      from m in base_query, where: m.inserted_at < ^before_date
-    else
-      base_query
-    end
-
-    base_query = if after_date do
-      from m in base_query, where: m.inserted_at > ^after_date
-    else
-      base_query
-    end
-
-    base_query = if from_user_id do
-      from m in base_query, where: m.user_id == ^from_user_id
-    else
-      base_query
-    end
-
-    pagination_opts = %{
-      cursor: cursor,
-      after_cursor: nil,
-      before_cursor: nil,
-      limit: min(limit, 100),
-      sort_field: :inserted_at,
-      sort_direction: :desc,
-      include_total: false
-    }
-
-    {messages, page_info} = CGraph.Pagination.paginate(base_query, pagination_opts)
-
-    {messages, %{
-      limit: limit,
-      has_more: page_info.has_next_page,
-      end_cursor: page_info.end_cursor,
-      start_cursor: page_info.start_cursor
-    }}
-  end
+  def search_messages(user, query, opts \\ []), do: Messages.search_messages(user, query, opts)
 
   @doc """
   Search posts in forums using cursor-based pagination.
@@ -495,23 +255,6 @@ defmodule CGraph.Search do
   defdelegate record_search(user, query, result_count), to: CGraph.Accounts.Search
 
   # Private helpers
-
-  # Cursor helpers for Meilisearch offset-based pagination.
-  # Cursors are opaque to clients; internally they encode the next Meilisearch offset.
-  defp encode_search_cursor(offset) do
-    Base.url_encode64(to_string(offset), padding: false)
-  end
-
-  defp decode_search_cursor(nil), do: nil
-
-  defp decode_search_cursor(cursor) do
-    with {:ok, decoded} <- Base.url_decode64(cursor, padding: false),
-         {offset, _} <- Integer.parse(decoded) do
-      offset
-    else
-      _ -> nil
-    end
-  end
 
   defp sanitize_query(query) do
     query

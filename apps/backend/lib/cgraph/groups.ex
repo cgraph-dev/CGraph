@@ -16,9 +16,8 @@ defmodule CGraph.Groups do
   import Ecto.Query, warn: false
   import CGraph.Query.SoftDelete
 
-  alias CGraph.Groups.{AuditLog, Group, Member}
-  alias CGraph.Groups.{Channels, Emojis, Invites, Members, Roles}
-  alias CGraph.Messaging.Message
+  alias CGraph.Groups.{Group, Member}
+  alias CGraph.Groups.{Channels, Emojis, Invites, Members, Operations, Roles, Sync}
   alias CGraph.Repo
 
   # ============================================================================
@@ -124,13 +123,6 @@ defmodule CGraph.Groups do
   # Groups CRUD (inline — orchestrates sub-modules)
   # ============================================================================
 
-  defp stringify_keys(map) when is_map(map) do
-    Map.new(map, fn
-      {k, v} when is_atom(k) -> {Atom.to_string(k), v}
-      {k, v} -> {k, v}
-    end)
-  end
-
   @doc "List groups for a user."
   @spec list_groups(struct(), keyword()) :: {list(), map()}
   def list_groups(user, opts \\ []) do
@@ -213,42 +205,7 @@ defmodule CGraph.Groups do
   end
 
   @doc "Create a new group."
-  @spec create_group(struct(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
-  def create_group(user, attrs) do
-    attrs = stringify_keys(attrs) |> Map.put("owner_id", user.id)
-
-    case %Group{} |> Group.changeset(attrs) |> Repo.insert() do
-      {:error, changeset} ->
-        {:error, changeset}
-
-      {:ok, group} ->
-        Repo.transaction(fn ->
-          {:ok, admin_role} = Roles.create_role(group, %{
-            "name" => "Admin",
-            "color" => "#FF0000",
-            "position" => 1,
-            "is_admin" => true
-          })
-
-          {:ok, _member_role} = Roles.create_role(group, %{
-            "name" => "Member",
-            "color" => "#808080",
-            "position" => 0,
-            "is_default" => true
-          })
-
-          {:ok, _member} = Members.add_member(group, user, [admin_role.id])
-
-          {:ok, _channel} = Channels.create_channel(group, %{
-            "name" => "general",
-            "type" => "text"
-          })
-
-          {:ok, loaded_group} = get_group(group.id)
-          loaded_group
-        end)
-    end
-  end
+  defdelegate create_group(user, attrs), to: Operations
 
   @doc "Update a group."
   @spec update_group(struct(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
@@ -314,225 +271,44 @@ defmodule CGraph.Groups do
   end
 
   # ============================================================================
-  # Audit Log
+  # Audit Log — delegated to Operations
   # ============================================================================
 
   @doc "Log an audit event."
   @spec log_audit_event(struct(), struct(), atom() | binary(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
-  def log_audit_event(group, user, action, data \\ %{}) do
-    %AuditLog{}
-    |> AuditLog.changeset(%{
-      group_id: group.id,
-      user_id: user.id,
-      action_type: to_string(action),
-      changes: data
-    })
-    |> Repo.insert()
-  end
+  def log_audit_event(group, user, action, data \\ %{}), do: Operations.log_audit_event(group, user, action, data)
 
   @doc "Get audit log entries."
   @spec get_audit_log(struct(), keyword()) :: {list(), map()}
-  def get_audit_log(group, opts \\ []) do
-    action_filter = Keyword.get(opts, :action)
-    user_filter = Keyword.get(opts, :user_id)
-
-    query = from a in AuditLog,
-      where: a.group_id == ^group.id,
-      preload: [:user]
-
-    query = if action_filter do
-      from a in query, where: a.action == ^action_filter
-    else
-      query
-    end
-
-    query = if user_filter do
-      from a in query, where: a.user_id == ^user_filter
-    else
-      query
-    end
-
-    pagination_opts = CGraph.Pagination.parse_params(
-      Enum.into(opts, %{}),
-      sort_field: :inserted_at,
-      sort_direction: :desc,
-      default_limit: 50
-    )
-
-    CGraph.Pagination.paginate(query, pagination_opts)
-  end
+  def get_audit_log(group, opts \\ []), do: Operations.get_audit_log(group, opts)
 
   @doc "Alias for get_audit_log for controller compatibility."
   @spec list_audit_log(struct(), keyword()) :: {list(), map()}
-  def list_audit_log(group, opts \\ []), do: get_audit_log(group, opts)
+  def list_audit_log(group, opts \\ []), do: Operations.list_audit_log(group, opts)
 
   # ============================================================================
-  # Orchestrating Operations
+  # Orchestrating Operations — delegated to Operations
   # ============================================================================
 
   @doc "Send a message to a channel with idempotency support."
-  @spec send_channel_message(struct(), struct(), map()) :: {:ok, struct()} | {:error, any()}
-  def send_channel_message(channel, user, attrs) do
-    message_attrs = attrs
-      |> Map.put("user_id", user.id)
-      |> Map.put("channel_id", channel.id)
-
-    %Message{}
-    |> Message.changeset(message_attrs)
-    |> Repo.insert()
-    |> case do
-      {:ok, message} ->
-        {:ok, Repo.preload(message, [[sender: :customization], :reactions])}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        if idempotency_conflict?(changeset) do
-          client_message_id = Ecto.Changeset.get_field(changeset, :client_message_id)
-
-          case get_channel_message_by_client_id(channel.id, client_message_id) do
-            nil -> {:error, changeset}
-            message -> {:ok, Repo.preload(message, [[sender: :customization], :reactions])}
-          end
-        else
-          {:error, changeset}
-        end
-
-      error ->
-        error
-    end
-  end
+  defdelegate send_channel_message(channel, user, attrs), to: Operations
 
   @doc "Transfer group ownership."
-  @spec transfer_ownership(struct(), binary()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
-  def transfer_ownership(group, new_owner_id) do
-    group
-    |> Ecto.Changeset.change(owner_id: new_owner_id)
-    |> Repo.update()
-  end
-
-  # ============================================================================
-  # Private Helpers
-  # ============================================================================
-
-  defp idempotency_conflict?(changeset) do
-    Enum.any?(changeset.errors, fn {field, {_, _}} ->
-      field == :client_message_id
-    end)
-  end
-
-  defp get_channel_message_by_client_id(channel_id, client_message_id)
-       when is_binary(client_message_id) do
-    from(m in Message,
-      where: m.channel_id == ^channel_id,
-      where: m.client_message_id == ^client_message_id,
-      preload: [[sender: :customization], reactions: :user]
-    )
-    |> Repo.one()
-  end
-
-  defp get_channel_message_by_client_id(_, _), do: nil
+  defdelegate transfer_ownership(group, new_owner_id), to: Operations
 
   # ===========================================================================
-  # Sync Query Functions (WatermelonDB pull)
+  # Sync Query Functions — delegated to Sync
   # ===========================================================================
 
-  @doc """
-  List groups the user is a member of, updated since the given timestamp.
-  `since` is a millisecond Unix timestamp or nil for full sync.
-  """
-  @spec list_user_groups_since(struct(), integer() | nil) :: [struct()]
-  def list_user_groups_since(user, since) do
-    user_id = user.id
+  @doc "List groups the user is a member of, updated since the given timestamp."
+  defdelegate list_user_groups_since(user, since), to: Sync
 
-    query =
-      from g in Group,
-        join: m in Member, on: m.group_id == g.id,
-        where: m.user_id == ^user_id and is_nil(g.deleted_at) and m.is_banned == false,
-        select: g
+  @doc "List IDs of groups the user has left or been removed from since the given timestamp."
+  defdelegate list_left_group_ids_since(user, since), to: Sync
 
-    query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from g in query, where: g.updated_at > ^dt
-      else
-        query
-      end
+  @doc "List channels in user's groups, updated since the given timestamp."
+  defdelegate list_user_channels_since(user, since), to: Sync
 
-    Repo.all(query)
-  end
-
-  @doc """
-  List IDs of groups the user has left or been removed from since the given timestamp.
-  Uses group deleted_at and membership timestamps.
-  """
-  @spec list_left_group_ids_since(struct(), integer() | nil) :: [binary()]
-  def list_left_group_ids_since(user, since) do
-    user_id = user.id
-
-    # Groups that were deleted
-    deleted_query =
-      from g in Group,
-        join: m in Member, on: m.group_id == g.id,
-        where: m.user_id == ^user_id and not is_nil(g.deleted_at),
-        select: g.id
-
-    deleted_query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from g in deleted_query, where: g.deleted_at > ^dt
-      else
-        deleted_query
-      end
-
-    Repo.all(deleted_query)
-  end
-
-  @doc """
-  List channels in user's groups, updated since the given timestamp.
-  """
-  @spec list_user_channels_since(struct(), integer() | nil) :: [struct()]
-  def list_user_channels_since(user, since) do
-    user_id = user.id
-    alias CGraph.Groups.Channel
-
-    query =
-      from ch in Channel,
-        join: m in Member, on: m.group_id == ch.group_id,
-        where: m.user_id == ^user_id and is_nil(ch.deleted_at) and m.is_banned == false,
-        select: ch
-
-    query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from ch in query, where: ch.updated_at > ^dt
-      else
-        query
-      end
-
-    Repo.all(query)
-  end
-
-  @doc """
-  List IDs of channels that were deleted since the given timestamp.
-  """
-  @spec list_deleted_channel_ids_since(struct(), integer() | nil) :: [binary()]
-  def list_deleted_channel_ids_since(user, since) do
-    user_id = user.id
-    alias CGraph.Groups.Channel
-
-    query =
-      from ch in Channel,
-        join: m in Member, on: m.group_id == ch.group_id,
-        where: m.user_id == ^user_id and not is_nil(ch.deleted_at),
-        select: ch.id
-
-    query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from ch in query, where: ch.deleted_at > ^dt
-      else
-        query
-      end
-
-    Repo.all(query)
-  end
+  @doc "List IDs of channels that were deleted since the given timestamp."
+  defdelegate list_deleted_channel_ids_since(user, since), to: Sync
 end

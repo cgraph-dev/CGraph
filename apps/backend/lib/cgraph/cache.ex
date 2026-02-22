@@ -131,6 +131,7 @@ defmodule CGraph.Cache do
   - `:tier` - Specific tier to check (:l1, :l2, :l3, :all)
   - `:promote` - Whether to promote to higher tiers (default: true)
   """
+  @spec get(key(), keyword() | map()) :: {:ok, value()} | {:error, term()}
   def get(key, opts \\ []) do
     opts =
       cond do
@@ -166,6 +167,7 @@ defmodule CGraph.Cache do
   - `:tier` - Tiers to write to (:l1, :l2, :l3, :all)
   - `:tags` - Tags for group invalidation
   """
+  @spec set(key(), value(), keyword() | map()) :: {:ok, value()} | {:error, term()}
   def set(key, value, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     ttl = Keyword.get(opts, :ttl, @default_ttl)
@@ -194,6 +196,7 @@ defmodule CGraph.Cache do
   @doc """
   Delete a key from all cache tiers.
   """
+  @spec delete(key()) :: :ok
   def delete(key) do
     L1.delete(key)
     L2.delete(key)
@@ -209,6 +212,7 @@ defmodule CGraph.Cache do
 
   Pattern supports `*` wildcard.
   """
+  @spec delete_pattern(String.t()) :: :ok
   def delete_pattern(pattern) do
     keys = L2.get_matching_keys(pattern)
     Enum.each(keys, &delete/1)
@@ -221,6 +225,7 @@ defmodule CGraph.Cache do
   @doc """
   Delete all keys with a specific tag.
   """
+  @spec delete_by_tag(term()) :: {:ok, non_neg_integer()} | {:error, term()}
   def delete_by_tag(tag) do
     case Tags.get_keys(tag) do
       {:ok, keys} ->
@@ -255,6 +260,7 @@ defmodule CGraph.Cache do
         Repo.get(User, 123)
       end, ttl: :timer.hours(1))
   """
+  @spec fetch(key(), (() -> value()), keyword() | map() | integer()) :: value()
   def fetch(key, compute_fn, opts \\ []) when is_function(compute_fn, 0) do
     opts =
       cond do
@@ -282,6 +288,7 @@ defmodule CGraph.Cache do
   @doc """
   Fetch with a fallback value on error.
   """
+  @spec fetch_or_default(key(), value(), (() -> value()), keyword() | map()) :: value()
   def fetch_or_default(key, default, compute_fn, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     fetch(key, compute_fn, opts)
@@ -294,6 +301,7 @@ defmodule CGraph.Cache do
 
   Returns a map of key => value for found keys.
   """
+  @spec fetch_many([key()], (key() -> value()), keyword() | map()) :: %{key() => value()}
   def fetch_many(keys, compute_fn, opts \\ []) when is_list(keys) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
 
@@ -331,6 +339,7 @@ defmodule CGraph.Cache do
 
   Useful for pre-loading cache on startup.
   """
+  @spec warm_up([{key(), (() -> value())}], keyword() | map()) :: [key()]
   def warm_up(items, opts \\ []) when is_list(items) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     concurrency = Keyword.get(opts, :concurrency, 5)
@@ -351,6 +360,7 @@ defmodule CGraph.Cache do
   @doc """
   Clear all caches.
   """
+  @spec clear_all() :: :ok
   def clear_all do
     L1.clear()
     L2.clear()
@@ -363,6 +373,7 @@ defmodule CGraph.Cache do
   @doc """
   Get cache statistics.
   """
+  @spec stats() :: map()
   def stats do
     %{
       l1: L1.stats(),
@@ -374,6 +385,7 @@ defmodule CGraph.Cache do
   @doc """
   Get cache size across tiers.
   """
+  @spec size() :: map()
   def size do
     %{l1: L1.size(), l2: L2.size()}
   end

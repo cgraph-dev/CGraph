@@ -28,35 +28,42 @@ defmodule CGraph.Collaboration.DocumentServer do
   # Public API
   # ---------------------------------------------------------------------------
 
+  @spec start_link(String.t()) :: GenServer.on_start()
   def start_link(document_id) do
     GenServer.start_link(__MODULE__, document_id, name: via(document_id))
   end
 
+  @spec apply_update(String.t(), binary(), String.t()) :: :ok
   def apply_update(document_id, update, user_id) do
     ensure_started(document_id)
     GenServer.cast(via(document_id), {:apply_update, update, user_id})
   end
 
+  @spec get_state(String.t()) :: {:ok, binary()}
   def get_state(document_id) do
     ensure_started(document_id)
     GenServer.call(via(document_id), :get_state)
   end
 
+  @spec get_awareness(String.t()) :: {:ok, map()}
   def get_awareness(document_id) do
     ensure_started(document_id)
     GenServer.call(via(document_id), :get_awareness)
   end
 
+  @spec update_awareness(String.t(), String.t(), map()) :: :ok
   def update_awareness(document_id, user_id, data) do
     ensure_started(document_id)
     GenServer.cast(via(document_id), {:update_awareness, user_id, data})
   end
 
+  @spec client_connected(String.t(), String.t()) :: :ok
   def client_connected(document_id, user_id) do
     ensure_started(document_id)
     GenServer.cast(via(document_id), {:client_connected, user_id})
   end
 
+  @spec client_disconnected(String.t(), String.t()) :: :ok
   def client_disconnected(document_id, user_id) do
     GenServer.cast(via(document_id), {:client_disconnected, user_id})
   catch
@@ -67,6 +74,7 @@ defmodule CGraph.Collaboration.DocumentServer do
   # GenServer Implementation
   # ---------------------------------------------------------------------------
 
+  @spec init(String.t()) :: {:ok, map()}
   @impl true
   def init(document_id) do
     state = %{
@@ -91,6 +99,7 @@ defmodule CGraph.Collaboration.DocumentServer do
     {:ok, state}
   end
 
+  @spec handle_cast(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_cast({:apply_update, update, user_id}, state) do
     # Append to pending updates
@@ -152,6 +161,7 @@ defmodule CGraph.Collaboration.DocumentServer do
     {:noreply, %{state | connected_clients: clients, awareness: awareness}}
   end
 
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call(:get_state, _from, state) do
     {:reply, {:ok, state.yjs_state}, state}
@@ -162,6 +172,7 @@ defmodule CGraph.Collaboration.DocumentServer do
     {:reply, {:ok, state.awareness}, state}
   end
 
+  @spec handle_info(term(), map()) :: {:noreply, map()} | {:stop, :normal, map()}
   @impl true
   def handle_info(:flush, state) do
     state = flush_to_db(state)
@@ -195,6 +206,7 @@ defmodule CGraph.Collaboration.DocumentServer do
     end
   end
 
+  @spec terminate(term(), map()) :: :ok
   @impl true
   def terminate(_reason, state) do
     # Ensure all pending updates are persisted

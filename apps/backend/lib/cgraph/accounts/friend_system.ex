@@ -8,6 +8,7 @@ defmodule CGraph.Accounts.FriendSystem do
   alias CGraph.Repo
 
   @doc "List friends with pagination."
+  @spec list_friends(User.t(), keyword()) :: {[Friendship.t()], map()}
   def list_friends(user, opts \\ []) do
     status = Keyword.get(opts, :status, "accepted")
 
@@ -31,6 +32,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "List incoming friend requests."
+  @spec list_friend_requests(User.t(), keyword()) :: {[Friendship.t()], map()}
   def list_friend_requests(user, opts \\ []) do
     query = from f in Friendship,
       where: f.friend_id == ^user.id, where: f.status == :pending, preload: [:user]
@@ -41,6 +43,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "List sent friend requests."
+  @spec list_sent_friend_requests(User.t(), keyword()) :: {[Friendship.t()], map()}
   def list_sent_friend_requests(user, opts \\ []) do
     query = from f in Friendship,
       where: f.user_id == ^user.id, where: f.status == :pending, preload: [:friend]
@@ -51,6 +54,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Send a friend request."
+  @spec send_friend_request(User.t(), User.t()) :: {:ok, Friendship.t()} | {:error, Ecto.Changeset.t()}
   def send_friend_request(from_user, to_user) do
     %Friendship{}
     |> Friendship.changeset(%{user_id: from_user.id, friend_id: to_user.id, status: "pending"})
@@ -58,12 +62,14 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Accept a friend request (by struct or by users)."
+  @spec accept_friend_request(Friendship.t()) :: {:ok, Friendship.t()} | {:error, Ecto.Changeset.t()}
   def accept_friend_request(%Friendship{} = friendship) do
     friendship
     |> Ecto.Changeset.change(status: :accepted, accepted_at: DateTime.truncate(DateTime.utc_now(), :second))
     |> Repo.update()
   end
 
+  @spec accept_friend_request(User.t(), User.t()) :: {:ok, Friendship.t()} | {:error, :not_found | Ecto.Changeset.t()}
   def accept_friend_request(addressee, requester) do
     case Repo.one(from f in Friendship,
       where: f.friend_id == ^addressee.id and f.user_id == ^requester.id and f.status == :pending) do
@@ -73,8 +79,10 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Decline a friend request (by struct or by users)."
+  @spec decline_friend_request(Friendship.t()) :: {:ok, Friendship.t()} | {:error, Ecto.Changeset.t()}
   def decline_friend_request(%Friendship{} = friendship), do: Repo.delete(friendship)
 
+  @spec decline_friend_request(User.t(), User.t()) :: {:ok, Friendship.t()} | {:error, :not_found}
   def decline_friend_request(addressee, requester) do
     case Repo.one(from f in Friendship,
       where: f.friend_id == ^addressee.id and f.user_id == ^requester.id and f.status == :pending) do
@@ -84,6 +92,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Get a friend request by ID."
+  @spec get_friend_request(User.t(), String.t()) :: {:ok, Friendship.t()} | {:error, :not_found}
   def get_friend_request(user, friendship_id) do
     case Repo.one(from f in Friendship,
       where: f.id == ^friendship_id and f.friend_id == ^user.id and f.status == :pending) do
@@ -93,6 +102,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Get a friendship by ID."
+  @spec get_friendship(User.t(), String.t()) :: {:ok, Friendship.t()} | {:error, :not_found}
   def get_friendship(user, friendship_id) do
     case Repo.one(from f in Friendship,
       where: f.id == ^friendship_id,
@@ -103,9 +113,11 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Remove a friendship."
+  @spec remove_friendship(User.t(), Friendship.t()) :: {:ok, Friendship.t()} | {:error, Ecto.Changeset.t()}
   def remove_friendship(_user, friendship), do: Repo.delete(friendship)
 
   @doc "Unfriend a user."
+  @spec unfriend(User.t(), User.t()) :: {:ok, Friendship.t()} | {:error, :not_friends}
   def unfriend(user, target_user) do
     case Repo.one(from f in Friendship,
       where: (f.user_id == ^user.id and f.friend_id == ^target_user.id) or
@@ -126,6 +138,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Get friendship status between two users."
+  @spec get_friendship_status(User.t(), User.t()) :: :none | :pending | :incoming | :friends
   def get_friendship_status(user, target_user) do
     case Repo.one(from f in Friendship,
       where: (f.user_id == ^user.id and f.friend_id == ^target_user.id) or
@@ -139,12 +152,14 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Check if a user has blocked another."
+  @spec blocked?(User.t(), User.t()) :: boolean()
   def blocked?(blocker, blocked) do
     Repo.exists?(from f in Friendship,
       where: f.user_id == ^blocker.id and f.friend_id == ^blocked.id and f.status == :blocked)
   end
 
   @doc "Block a user (removes existing friendship first)."
+  @spec block_user(User.t(), User.t()) :: {:ok, Friendship.t()} | {:error, Ecto.Changeset.t()}
   def block_user(user, target_user) do
     from(f in Friendship,
       where: (f.user_id == ^user.id and f.friend_id == ^target_user.id) or
@@ -157,6 +172,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Unblock a user."
+  @spec unblock_user(User.t(), User.t()) :: {:ok, Friendship.t()} | {:error, :not_found}
   def unblock_user(user, target_user) do
     case Repo.one(from f in Friendship,
       where: f.user_id == ^user.id and f.friend_id == ^target_user.id and f.status == :blocked) do
@@ -166,6 +182,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "List blocked users."
+  @spec list_blocked_users(User.t(), keyword()) :: {[Friendship.t()], map()}
   def list_blocked_users(user, opts \\ []) do
     query = from f in Friendship,
       where: f.user_id == ^user.id and f.status == :blocked, preload: [:friend]
@@ -176,6 +193,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Get mutual friends between two users."
+  @spec get_mutual_friends(User.t(), User.t()) :: [User.t()]
   def get_mutual_friends(user, target_user) do
     mutual_ids = MapSet.intersection(
       MapSet.new(get_friend_ids(user)),
@@ -185,6 +203,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Get online friends."
+  @spec get_online_friends(User.t()) :: [map()]
   def get_online_friends(user) do
     friend_ids = get_friend_ids(user)
     statuses = CGraph.Presence.bulk_status(friend_ids)
@@ -207,6 +226,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Get friend suggestions (friends of friends)."
+  @spec get_friend_suggestions(User.t(), keyword()) :: [map()]
   def get_friend_suggestions(user, opts \\ []) do
     limit = Keyword.get(opts, :limit, 10)
     friend_ids = get_friend_ids(user)
@@ -228,6 +248,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Notify user of friend request."
+  @spec notify_friend_request(Friendship.t()) :: :ok | {:error, term()}
   def notify_friend_request(friendship) do
     with {:ok, recipient} <- CGraph.Accounts.get_user(friendship.friend_id),
          {:ok, sender} <- CGraph.Accounts.get_user(friendship.user_id) do
@@ -236,6 +257,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   @doc "Notify user friend request was accepted."
+  @spec notify_friend_accepted(Friendship.t()) :: :ok | {:error, term()}
   def notify_friend_accepted(friendship) do
     with {:ok, requester} <- CGraph.Accounts.get_user(friendship.user_id),
          {:ok, accepter} <- CGraph.Accounts.get_user(friendship.friend_id) do
@@ -244,6 +266,7 @@ defmodule CGraph.Accounts.FriendSystem do
   end
 
   # Get all accepted friend IDs for a user (single query with UNION)
+  @spec get_friend_ids(User.t()) :: [String.t()]
   def get_friend_ids(user) do
     sent_query = from(f in Friendship, where: f.user_id == ^user.id and f.status == :accepted, select: f.friend_id)
     received_query = from(f in Friendship, where: f.friend_id == ^user.id and f.status == :accepted, select: f.user_id)

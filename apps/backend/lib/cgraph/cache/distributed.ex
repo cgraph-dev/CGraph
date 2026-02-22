@@ -102,6 +102,7 @@ defmodule CGraph.Cache.Distributed do
   end
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(opts) do
     # Create L1 ETS cache
     :ets.new(:cache_l1, [:set, :named_table, :public, read_concurrency: true])
@@ -121,6 +122,7 @@ defmodule CGraph.Cache.Distributed do
   end
 
   @impl true
+  @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:cleanup_l1, state) do
     L1.cleanup_expired()
     L1.enforce_size_limit()

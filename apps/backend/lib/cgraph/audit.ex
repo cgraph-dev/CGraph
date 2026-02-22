@@ -13,37 +13,20 @@ defmodule CGraph.Audit do
 
   Retention periods range from 1 year (general) to 7 years (security/compliance).
 
-  See `CGraph.Audit.Query` for filtering and aggregation helpers.
+  Implementation is split across submodules:
+
+  - `CGraph.Audit.EntryBuilder` — entry construction, checksums, context extraction
+  - `CGraph.Audit.Persistence` — flushing, writing, alerting, retention
+  - `CGraph.Audit.Query` — filtering and aggregation helpers
   """
 
   use GenServer
   require Logger
 
-  alias CGraph.Audit.Query
+  alias CGraph.Audit.{EntryBuilder, Persistence, Query}
 
   @buffer_flush_interval :timer.seconds(5)
   @buffer_max_size 100
-
-  # Retention periods in days
-  @retention_periods %{
-    security: 365 * 7,   # 7 years
-    admin: 365 * 5,      # 5 years
-    compliance: 365 * 7, # 7 years
-    auth: 365 * 2,       # 2 years
-    user: 365 * 2,       # 2 years
-    data: 365 * 2,       # 2 years
-    general: 365         # 1 year
-  }
-
-  # Events that trigger real-time alerts
-  @alert_events [
-    {:auth, :login_failed_threshold},
-    {:auth, :suspicious_login},
-    {:security, :rate_limit_exceeded},
-    {:security, :blocked_request},
-    {:admin, :emergency_shutdown},
-    {:data, :mass_deletion}
-  ]
 
   # ---------------------------------------------------------------------------
   # Types
@@ -77,6 +60,7 @@ defmodule CGraph.Audit do
   @doc """
   Start the audit logging GenServer.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -109,18 +93,19 @@ defmodule CGraph.Audit do
         target_type: :user
       )
   """
+  @spec log(category(), event_type(), metadata(), keyword()) :: :ok
   def log(category, event_type, metadata \\ %{}, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
-    entry = build_entry(category, event_type, metadata, opts)
+    entry = EntryBuilder.build_entry(category, event_type, metadata, opts)
 
     if Keyword.get(opts, :sync, false) do
-      write_entry(entry)
+      Persistence.write_entry(entry)
     else
       GenServer.cast(__MODULE__, {:log, entry})
     end
 
     # Check for alert-worthy events
-    maybe_send_alert(category, event_type, entry)
+    Persistence.maybe_send_alert(category, event_type, entry)
 
     :ok
   end
@@ -128,13 +113,14 @@ defmodule CGraph.Audit do
   @doc """
   Log with Plug.Conn context extraction.
   """
+  @spec log_with_conn(Plug.Conn.t(), category(), event_type(), metadata(), keyword()) :: :ok
   def log_with_conn(conn, category, event_type, metadata \\ %{}, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     context_opts = [
-      ip_address: format_ip(conn.remote_ip),
-      user_agent: get_header(conn, "user-agent"),
-      request_id: get_header(conn, "x-request-id"),
-      session_id: get_session_id(conn)
+      ip_address: EntryBuilder.format_ip(conn.remote_ip),
+      user_agent: EntryBuilder.get_header(conn, "user-agent"),
+      request_id: EntryBuilder.get_header(conn, "x-request-id"),
+      session_id: EntryBuilder.get_session_id(conn)
     ]
 
     opts = Keyword.merge(context_opts, opts)
@@ -155,6 +141,7 @@ defmodule CGraph.Audit do
   - `:limit` - Maximum entries (default: 100)
   - `:offset` - Pagination offset
   """
+  @spec query(keyword()) :: {:ok, [audit_entry()]}
   def query(opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     GenServer.call(__MODULE__, {:query, opts})
@@ -163,6 +150,7 @@ defmodule CGraph.Audit do
   @doc """
   Get audit entries for a specific user (for GDPR exports).
   """
+  @spec get_user_audit_trail(String.t(), keyword()) :: {:ok, [audit_entry()]}
   def get_user_audit_trail(user_id, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     query(Keyword.merge([actor_id: user_id, limit: 1000], opts))
@@ -171,6 +159,7 @@ defmodule CGraph.Audit do
   @doc """
   Export audit log to JSON for compliance.
   """
+  @spec export(keyword()) :: {:ok, String.t()} | {:error, term()}
   def export(opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     case query(Keyword.put(opts, :limit, 10_000)) do
@@ -184,6 +173,7 @@ defmodule CGraph.Audit do
   @doc """
   Get audit statistics for dashboard.
   """
+  @spec stats(keyword()) :: {:ok, map()}
   def stats(opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     GenServer.call(__MODULE__, {:stats, opts})
@@ -194,13 +184,15 @@ defmodule CGraph.Audit do
 
   Checks that checksums are valid and entries haven't been tampered with.
   """
+  @spec verify_integrity([audit_entry()]) :: boolean()
   def verify_integrity(entries) when is_list(entries) do
-    Enum.all?(entries, &verify_entry_integrity/1)
+    Enum.all?(entries, &EntryBuilder.verify_entry_integrity/1)
   end
 
   @doc """
   Force flush the buffer (for testing/shutdown).
   """
+  @spec flush() :: :ok
   def flush do
     GenServer.call(__MODULE__, :flush)
   end
@@ -209,6 +201,7 @@ defmodule CGraph.Audit do
   # GenServer Implementation
   # ---------------------------------------------------------------------------
 
+  @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(_opts) do
     state = %{
@@ -227,6 +220,7 @@ defmodule CGraph.Audit do
     {:ok, state}
   end
 
+  @spec handle_cast(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_cast({:log, entry}, state) do
     buffer = [entry | state.buffer]
@@ -240,15 +234,16 @@ defmodule CGraph.Audit do
 
     # Flush if buffer is full
     if buffer_count >= @buffer_max_size do
-      {:noreply, do_flush(state)}
+      {:noreply, Persistence.do_flush(state)}
     else
       {:noreply, state}
     end
   end
 
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call(:flush, _from, state) do
-    {:reply, :ok, do_flush(state)}
+    {:reply, :ok, Persistence.do_flush(state)}
   end
 
   @impl true
@@ -277,25 +272,27 @@ defmodule CGraph.Audit do
     {:reply, {:ok, stats}, state}
   end
 
+  @spec handle_info(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_info(:flush, state) do
     schedule_flush()
-    {:noreply, do_flush(state)}
+    {:noreply, Persistence.do_flush(state)}
   end
 
   @impl true
   def handle_info(:retention_cleanup, state) do
     # Clean up old entries based on retention policy
-    do_retention_cleanup()
+    Persistence.do_retention_cleanup()
     schedule_retention_cleanup()
     {:noreply, state}
   end
 
+  @spec terminate(term(), map()) :: :ok
   @impl true
   def terminate(_reason, state) do
     # Flush any remaining buffered entries on shutdown to prevent data loss
     if state.buffer != [] do
-      do_flush(state)
+      Persistence.do_flush(state)
     end
 
     :ok
@@ -308,228 +305,5 @@ defmodule CGraph.Audit do
   defp schedule_retention_cleanup do
     # Run daily at 3 AM
     Process.send_after(self(), :retention_cleanup, :timer.hours(24))
-  end
-
-  # ---------------------------------------------------------------------------
-  # Entry Building
-  # ---------------------------------------------------------------------------
-
-  defp build_entry(category, event_type, metadata, opts) do
-    now = DateTime.utc_now()
-    id = generate_id()
-
-    entry = %{
-      id: id,
-      category: category,
-      event_type: event_type,
-      actor_id: Keyword.get(opts, :actor_id),
-      actor_type: Keyword.get(opts, :actor_type, :user),
-      target_id: Keyword.get(opts, :target_id),
-      target_type: Keyword.get(opts, :target_type),
-      metadata: metadata,
-      ip_address: Keyword.get(opts, :ip_address),
-      user_agent: Keyword.get(opts, :user_agent),
-      session_id: Keyword.get(opts, :session_id),
-      request_id: Keyword.get(opts, :request_id),
-      timestamp: now
-    }
-
-    # Add tamper-proof checksum
-    Map.put(entry, :checksum, compute_checksum(entry))
-  end
-
-  defp generate_id do
-    # ULID-style sortable ID
-    :crypto.strong_rand_bytes(16)
-    |> Base.encode16(case: :lower)
-  end
-
-  defp compute_checksum(entry) do
-    # Create deterministic hash of entry data
-    data = [
-      entry.id,
-      to_string(entry.category),
-      to_string(entry.event_type),
-      entry.actor_id || "",
-      entry.target_id || "",
-      Jason.encode!(entry.metadata),
-      DateTime.to_iso8601(entry.timestamp)
-    ]
-    |> Enum.join("|")
-
-    :crypto.hash(:sha256, data)
-    |> Base.encode16(case: :lower)
-    |> String.slice(0, 16)
-  end
-
-  defp verify_entry_integrity(entry) do
-    expected = compute_checksum(Map.delete(entry, :checksum))
-    entry.checksum == expected
-  end
-
-  # ---------------------------------------------------------------------------
-  # Buffer Operations
-  # ---------------------------------------------------------------------------
-
-  defp do_flush(%{buffer: []} = state), do: state
-
-  defp do_flush(state) do
-    entries = Enum.reverse(state.buffer)
-
-    # In production, this would batch insert to database
-    write_entries(entries)
-
-    %{state |
-      buffer: [],
-      buffer_count: 0,
-      last_flush: DateTime.utc_now()
-    }
-  end
-
-  defp write_entry(entry) do
-    write_entries([entry])
-  end
-
-  defp write_entries(entries) do
-    # Log to console in development
-    if Application.get_env(:cgraph, :env) == :dev do
-      Enum.each(entries, fn entry ->
-        Logger.debug("audit_entry",
-          category: entry.category,
-          event_type: entry.event_type,
-          actor_id: entry.actor_id,
-          target_id: entry.target_id,
-          metadata: inspect(entry.metadata)
-        )
-      end)
-    end
-
-    # Persist security-critical entries via the DB-backed AuditLog
-    Enum.each(entries, fn entry ->
-      if entry.category in [:security, :auth, :admin, :compliance] do
-        CGraph.Accounts.AuditLog.log(
-          "#{entry.category}_#{entry.event_type}",
-          entry.actor_id,
-          %{
-            resource_type: to_string(entry[:target_type] || entry.category),
-            resource_id: entry.target_id,
-            ip_address: entry[:ip_address],
-            user_agent: entry[:user_agent],
-            category: to_string(entry.category),
-            event_type: to_string(entry.event_type),
-            session_id: entry[:session_id],
-            original_metadata: entry.metadata
-          }
-        )
-      end
-    end)
-
-    :ok
-  end
-
-
-
-  # ---------------------------------------------------------------------------
-  # Alerting
-  # ---------------------------------------------------------------------------
-
-  defp maybe_send_alert(category, event_type, entry) do
-    if {category, event_type} in @alert_events do
-      send_alert(category, event_type, entry)
-    end
-  end
-
-  defp send_alert(category, event_type, entry) do
-    Logger.warning("Audit alert triggered",
-      category: category,
-      event_type: event_type,
-      actor_id: entry.actor_id,
-      target_id: entry.target_id,
-      ip_address: entry.ip_address
-    )
-
-    # In production, would send to:
-    # - Webhook
-    # - PagerDuty
-    # - Email to security team
-
-    :telemetry.execute(
-      [:cgraph, :audit, :alert],
-      %{count: 1},
-      %{category: category, event_type: event_type}
-    )
-  end
-
-  # ---------------------------------------------------------------------------
-  # Retention
-  # ---------------------------------------------------------------------------
-
-  defp do_retention_cleanup do
-    now = Date.utc_today()
-
-    Enum.each(@retention_periods, fn {category, days} ->
-      cutoff = Date.add(now, -days)
-
-      Logger.info("Audit retention cleanup",
-        category: category,
-        cutoff: cutoff
-      )
-
-      try do
-        import Ecto.Query
-
-        {deleted, _} =
-          CGraph.Repo.delete_all(
-            from(a in CGraph.Accounts.AuditLog,
-              where: a.category == ^to_string(category) and a.inserted_at < ^cutoff
-            )
-          )
-
-        if deleted > 0 do
-          Logger.info("Audit retention deleted entries",
-            category: category,
-            deleted_count: deleted,
-            cutoff: cutoff
-          )
-        end
-      rescue
-        e ->
-          Logger.error("Audit retention cleanup failed",
-            category: category,
-            error: inspect(e)
-          )
-      end
-    end)
-  end
-
-  # ---------------------------------------------------------------------------
-  # Context Extraction Helpers
-  # ---------------------------------------------------------------------------
-
-  defp format_ip(ip) when is_tuple(ip) and tuple_size(ip) == 4 do
-    ip
-    |> Tuple.to_list()
-    |> Enum.join(".")
-  end
-  defp format_ip(ip) when is_tuple(ip) and tuple_size(ip) == 8 do
-    ip
-    |> Tuple.to_list()
-    |> Enum.map(&Integer.to_string(&1, 16))
-    |> Enum.join(":")
-  end
-  defp format_ip(ip), do: to_string(ip)
-
-  defp get_header(conn, header) do
-    case Plug.Conn.get_req_header(conn, header) do
-      [value | _] -> value
-      _ -> nil
-    end
-  end
-
-  defp get_session_id(conn) do
-    case conn.assigns do
-      %{session_id: id} -> id
-      _ -> nil
-    end
   end
 end

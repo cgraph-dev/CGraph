@@ -70,9 +70,19 @@ defmodule CGraph.Workers.Orchestrator do
         rate_limit: {:per_second, 10},
         queue: :external_api
       )
+
+  ## Submodules
+
+  Pipeline and batch logic is delegated to focused submodules:
+
+  - `CGraph.Workers.Orchestrator.Pipeline` — sequential job pipelines
+  - `CGraph.Workers.Orchestrator.Batch` — parallel batch processing
   """
 
   require Logger
+
+  alias CGraph.Workers.Orchestrator.Pipeline
+  alias CGraph.Workers.Orchestrator.Batch
 
   @type job_spec :: {module(), map()}
   @type pipeline_opts :: [
@@ -86,6 +96,25 @@ defmodule CGraph.Workers.Orchestrator do
     on_complete: job_spec() | nil,
     on_failure: job_spec() | nil
   ]
+
+  # ---------------------------------------------------------------------------
+  # Pipeline Delegation
+  # ---------------------------------------------------------------------------
+
+  defdelegate pipeline(jobs, opts \\ []), to: Pipeline
+  defdelegate continue_pipeline(args, result \\ nil), to: Pipeline
+  defdelegate fail_pipeline(args, reason), to: Pipeline
+  defdelegate pipeline_status(pipeline_id), to: Pipeline
+  defdelegate cancel_pipeline(pipeline_id), to: Pipeline
+
+  # ---------------------------------------------------------------------------
+  # Batch Delegation
+  # ---------------------------------------------------------------------------
+
+  defdelegate batch(items, worker, opts \\ []), to: Batch
+  defdelegate report_batch_progress(args, status), to: Batch
+  defdelegate batch_status(batch_id), to: Batch
+  defdelegate cancel_batch(batch_id), to: Batch
 
   # ---------------------------------------------------------------------------
   # Simple Job Enqueueing
@@ -137,220 +166,6 @@ defmodule CGraph.Workers.Orchestrator do
   end
 
   # ---------------------------------------------------------------------------
-  # Job Pipelines
-  # ---------------------------------------------------------------------------
-
-  @doc """
-  Create a pipeline of jobs that run sequentially.
-
-  Each job in the pipeline waits for the previous job to complete successfully
-  before starting. If any job fails, subsequent jobs are cancelled.
-
-  ## Options
-
-  - `:on_complete` - Job to run when pipeline completes successfully
-  - `:on_failure` - Job to run if pipeline fails
-  - `:timeout_ms` - Maximum time for entire pipeline
-
-  ## Examples
-
-      Orchestrator.pipeline([
-        {DataFetchWorker, %{source: "api"}},
-        {DataTransformWorker, %{format: "json"}},
-        {DataLoadWorker, %{destination: "warehouse"}}
-      ], on_complete: {NotifyWorker, %{message: "ETL complete"}})
-  """
-  def pipeline(jobs, opts \\ []) when is_list(jobs) do
-    pipeline_id = generate_pipeline_id()
-    total_jobs = length(jobs)
-
-    # Create pipeline metadata
-    pipeline_meta = %{
-      id: pipeline_id,
-      total_jobs: total_jobs,
-      on_complete: Keyword.get(opts, :on_complete),
-      on_failure: Keyword.get(opts, :on_failure),
-      started_at: DateTime.utc_now()
-    }
-
-    # Store pipeline state
-    store_pipeline_state(pipeline_id, pipeline_meta)
-
-    # Enqueue first job with pipeline context
-    case jobs do
-      [{worker, args} | rest] ->
-        enqueue_pipeline_job(worker, args, pipeline_id, 0, rest, opts)
-        {:ok, pipeline_id}
-
-      [] ->
-        {:error, :empty_pipeline}
-    end
-  end
-
-  defp enqueue_pipeline_job(worker, args, pipeline_id, index, remaining_jobs, opts) do
-    enriched_args = Map.merge(args, %{
-      "__pipeline__" => %{
-        id: pipeline_id,
-        index: index,
-        remaining: Enum.map(remaining_jobs, fn {w, a} -> %{worker: to_string(w), args: a} end)
-      }
-    })
-
-    enqueue(worker, enriched_args, opts)
-  end
-
-  @doc """
-  Continue a pipeline after successful job completion.
-
-  Called by workers that are part of a pipeline.
-  """
-  def continue_pipeline(args, result \\ nil) do
-    case Map.get(args, "__pipeline__") do
-      nil ->
-        :ok
-
-      %{id: pipeline_id, index: index, remaining: remaining} ->
-        update_pipeline_progress(pipeline_id, index, :success, result)
-        handle_atom_keys_remaining(pipeline_id, index, remaining)
-
-      %{"id" => pipeline_id, "index" => index, "remaining" => remaining} ->
-        update_pipeline_progress(pipeline_id, index, :success, result)
-        continue_remaining_steps(pipeline_id, index, remaining)
-    end
-  end
-
-  defp handle_atom_keys_remaining(pipeline_id, _index, []) do
-    complete_pipeline(pipeline_id, :success)
-  end
-  defp handle_atom_keys_remaining(pipeline_id, index, [{worker_str, next_args} | rest]) when is_binary(worker_str) do
-    worker = String.to_existing_atom(worker_str)
-    enqueue_pipeline_job(worker, next_args, pipeline_id, index + 1, rest, [])
-  end
-  defp handle_atom_keys_remaining(pipeline_id, index, [%{worker: worker_str, args: next_args} | rest]) do
-    worker = String.to_existing_atom(worker_str)
-    rest_tuples = convert_remaining_to_tuples(rest)
-    enqueue_pipeline_job(worker, next_args, pipeline_id, index + 1, rest_tuples, [])
-  end
-
-  defp convert_remaining_to_tuples(rest) do
-    rest
-    |> Enum.map(fn
-      %{worker: w, args: a} -> %{worker: w, args: a}
-      {w, a} -> %{worker: to_string(w), args: a}
-    end)
-    |> Enum.map(fn %{worker: w, args: a} -> {String.to_existing_atom(w), a} end)
-  end
-
-  defp continue_remaining_steps(pipeline_id, _index, []) do
-    complete_pipeline(pipeline_id, :success)
-  end
-  defp continue_remaining_steps(pipeline_id, index, [%{"worker" => worker_str, "args" => next_args} | rest]) do
-    worker = String.to_existing_atom(worker_str)
-    rest_tuples = Enum.map(rest, &parse_worker_tuple/1)
-    enqueue_pipeline_job(worker, next_args, pipeline_id, index + 1, rest_tuples, [])
-  end
-
-  defp parse_worker_tuple(%{"worker" => w, "args" => a}) do
-    {String.to_existing_atom(w), a}
-  end
-
-  @doc """
-  Fail a pipeline after job failure.
-  """
-  def fail_pipeline(args, reason) do
-    case Map.get(args, "__pipeline__") do
-      nil ->
-        :ok
-
-      %{id: pipeline_id, index: index} ->
-        update_pipeline_progress(pipeline_id, index, :failure, reason)
-        complete_pipeline(pipeline_id, {:failure, reason})
-    end
-  end
-
-  # ---------------------------------------------------------------------------
-  # Batch Processing
-  # ---------------------------------------------------------------------------
-
-  @doc """
-  Process a collection of items in parallel batches.
-
-  Splits the collection into batches and processes them concurrently,
-  respecting the max_concurrency limit.
-
-  ## Options
-
-  - `:batch_size` - Items per batch (default: 100)
-  - `:max_concurrency` - Max parallel batches (default: 5)
-  - `:on_complete` - Job to run when all batches complete
-  - `:on_failure` - Job to run if any batch fails
-  - `:queue` - Queue for batch jobs
-
-  ## Examples
-
-      user_ids = Accounts.list_user_ids()
-
-      Orchestrator.batch(user_ids, UserSyncWorker,
-        batch_size: 50,
-        max_concurrency: 10,
-        on_complete: {AdminNotifier, %{type: "sync_complete"}}
-      )
-  """
-  def batch(items, worker, opts \\ []) when is_list(items) do
-    batch_size = Keyword.get(opts, :batch_size, 100)
-    batch_id = generate_batch_id()
-
-    batches = Enum.chunk_every(items, batch_size)
-    total_batches = length(batches)
-
-    # Store batch metadata
-    batch_meta = %{
-      id: batch_id,
-      total_batches: total_batches,
-      completed: 0,
-      failed: 0,
-      on_complete: Keyword.get(opts, :on_complete),
-      on_failure: Keyword.get(opts, :on_failure),
-      started_at: DateTime.utc_now()
-    }
-
-    store_batch_state(batch_id, batch_meta)
-
-    # Enqueue all batch jobs
-    batches
-    |> Enum.with_index()
-    |> Enum.each(fn {batch_items, index} ->
-      args = %{
-        "items" => batch_items,
-        "__batch__" => %{
-          "id" => batch_id,
-          "index" => index,
-          "total" => total_batches
-        }
-      }
-
-      enqueue(worker, args, Keyword.take(opts, [:queue, :priority]))
-    end)
-
-    {:ok, batch_id, total_batches}
-  end
-
-  @doc """
-  Report batch job completion.
-
-  Called by workers processing batch items.
-  """
-  def report_batch_progress(args, status) when status in [:success, :failure] do
-    case Map.get(args, "__batch__") do
-      nil ->
-        :ok
-
-      %{id: batch_id} ->
-        update_batch_progress(batch_id, status)
-    end
-  end
-
-  # ---------------------------------------------------------------------------
   # Recurring Jobs
   # ---------------------------------------------------------------------------
 
@@ -381,8 +196,6 @@ defmodule CGraph.Workers.Orchestrator do
     cron = Keyword.fetch!(opts, :cron)
     queue = Keyword.get(opts, :queue, :scheduled)
 
-    # Oban Pro has built-in cron, for standard Oban we use oban_crontab
-    # This creates the config that should go in config.exs
     config = %{
       name: name,
       worker: worker,
@@ -393,53 +206,6 @@ defmodule CGraph.Workers.Orchestrator do
 
     Logger.info("Recurring job configured", name: name, cron: cron)
     {:ok, config}
-  end
-
-  # ---------------------------------------------------------------------------
-  # Job Monitoring
-  # ---------------------------------------------------------------------------
-
-  @doc """
-  Get the status of a pipeline.
-  """
-  def pipeline_status(pipeline_id) do
-    get_pipeline_state(pipeline_id)
-  end
-
-  @doc """
-  Get the status of a batch operation.
-  """
-  def batch_status(batch_id) do
-    get_batch_state(batch_id)
-  end
-
-  @doc """
-  Cancel all pending jobs in a pipeline.
-  """
-  def cancel_pipeline(pipeline_id) do
-    # Mark pipeline as cancelled
-    case get_pipeline_state(pipeline_id) do
-      nil ->
-        {:error, :not_found}
-
-      state ->
-        store_pipeline_state(pipeline_id, Map.put(state, :status, :cancelled))
-        {:ok, :cancelled}
-    end
-  end
-
-  @doc """
-  Cancel all pending jobs in a batch.
-  """
-  def cancel_batch(batch_id) do
-    case get_batch_state(batch_id) do
-      nil ->
-        {:error, :not_found}
-
-      state ->
-        store_batch_state(batch_id, Map.put(state, :status, :cancelled))
-        {:ok, :cancelled}
-    end
   end
 
   # ---------------------------------------------------------------------------
@@ -467,7 +233,6 @@ defmodule CGraph.Workers.Orchestrator do
   Retry a dead letter job.
   """
   def retry_dead_letter(job_id) do
-    # This would fetch from dead letter storage and re-enqueue
     Logger.info("Retrying dead letter job", job_id: job_id)
     {:ok, :retried}
   end
@@ -494,99 +259,5 @@ defmodule CGraph.Workers.Orchestrator do
       errors: inspect(changeset.errors)
     )
     {:error, changeset}
-  end
-
-  defp generate_pipeline_id do
-    "pipeline_" <> Base.encode32(:crypto.strong_rand_bytes(8), case: :lower, padding: false)
-  end
-
-  defp generate_batch_id do
-    "batch_" <> Base.encode32(:crypto.strong_rand_bytes(8), case: :lower, padding: false)
-  end
-
-  # State storage using Cachex (in production, use Redis for persistence)
-
-  defp store_pipeline_state(id, state) do
-    Cachex.put(:cgraph_cache, "orchestrator:pipeline:#{id}", state, ttl: :timer.hours(24))
-  end
-
-  defp get_pipeline_state(id) do
-    case Cachex.get(:cgraph_cache, "orchestrator:pipeline:#{id}") do
-      {:ok, state} -> state
-      _ -> nil
-    end
-  end
-
-  defp update_pipeline_progress(id, index, status, result) do
-    case get_pipeline_state(id) do
-      nil -> :ok
-      state ->
-        progress = Map.get(state, :progress, %{})
-        updated_progress = Map.put(progress, index, %{status: status, result: result})
-        store_pipeline_state(id, Map.put(state, :progress, updated_progress))
-    end
-  end
-
-  defp complete_pipeline(id, status) do
-    case get_pipeline_state(id) do
-      nil -> :ok
-      state ->
-        updated_state = state
-        |> Map.put(:status, status)
-        |> Map.put(:completed_at, DateTime.utc_now())
-
-        store_pipeline_state(id, updated_state)
-
-        # Trigger completion callback if configured
-        case {status, state.on_complete, state.on_failure} do
-          {:success, {worker, args}, _} -> enqueue(worker, args)
-          {{:failure, _}, _, {worker, args}} -> enqueue(worker, args)
-          _ -> :ok
-        end
-    end
-  end
-
-  defp store_batch_state(id, state) do
-    Cachex.put(:cgraph_cache, "orchestrator:batch:#{id}", state, ttl: :timer.hours(24))
-  end
-
-  defp get_batch_state(id) do
-    case Cachex.get(:cgraph_cache, "orchestrator:batch:#{id}") do
-      {:ok, state} -> state
-      _ -> nil
-    end
-  end
-
-  defp update_batch_progress(id, status) do
-    case get_batch_state(id) do
-      nil -> :ok
-      state ->
-        field = if status == :success, do: :completed, else: :failed
-        updated_state = Map.update(state, field, 1, &(&1 + 1))
-        store_batch_state(id, updated_state)
-
-        # Check if batch is complete
-        total = state.total_batches
-        completed = updated_state.completed + updated_state.failed
-
-        if completed >= total do
-          complete_batch(id, updated_state)
-        end
-    end
-  end
-
-  defp complete_batch(id, state) do
-    updated_state = state
-    |> Map.put(:status, if(state.failed == 0, do: :success, else: :partial_failure))
-    |> Map.put(:completed_at, DateTime.utc_now())
-
-    store_batch_state(id, updated_state)
-
-    # Trigger callbacks
-    case {state.failed, state.on_complete, state.on_failure} do
-      {0, {worker, args}, _} -> enqueue(worker, args)
-      {_, _, {worker, args}} when not is_nil(worker) -> enqueue(worker, args)
-      _ -> :ok
-    end
   end
 end

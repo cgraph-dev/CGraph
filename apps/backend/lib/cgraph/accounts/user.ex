@@ -4,9 +4,16 @@ defmodule CGraph.Accounts.User do
 
   Supports both email/password and Ethereum wallet authentication.
   Uses UUIDs for primary keys and soft deletes.
+
+  ## Submodules
+
+  - `CGraph.Accounts.User.AuthStrategies` — Wallet, OAuth, TOTP, and subscription changesets
+  - `CGraph.Accounts.User.Helpers` — Password verification, display-ID formatting, cooldown checks
   """
   use Ecto.Schema
   import Ecto.Changeset
+
+  alias CGraph.Accounts.User.{AuthStrategies, Helpers}
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -140,23 +147,21 @@ defmodule CGraph.Accounts.User do
     timestamps()
   end
 
-  @doc """
-  Generic changeset for User updates.
+  # -- Delegated Functions ----------------------------------------------------
 
-  This is a general-purpose changeset that can be used for updating
-  any of the common user fields. For specific use cases, prefer the
-  specialized changesets (profile_changeset, username_changeset, etc.).
+  defdelegate totp_changeset(user, attrs), to: AuthStrategies
+  defdelegate oauth_changeset(user, attrs), to: AuthStrategies
+  defdelegate oauth_registration_changeset(user, attrs), to: AuthStrategies
+  defdelegate wallet_registration_changeset(user, attrs), to: AuthStrategies
+  defdelegate wallet_pin_registration_changeset(user, attrs), to: AuthStrategies
+  defdelegate subscription_changeset(user, attrs), to: AuthStrategies
 
-  ## Parameters
+  defdelegate valid_password?(user, password), to: Helpers
+  defdelegate format_user_id(user), to: Helpers
+  defdelegate can_change_username?(user), to: Helpers
+  defdelegate next_username_change_date(user), to: Helpers
 
-  - `user` - The User struct to update
-  - `attrs` - Map of attributes to update
-
-  ## Examples
-
-      iex> User.changeset(user, %{username: "new_name"})
-      %Ecto.Changeset{...}
-  """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(user, attrs) do
     user
     |> cast(attrs, [
@@ -181,62 +186,11 @@ defmodule CGraph.Accounts.User do
   end
 
   @doc """
-  Changeset for TOTP 2FA settings.
-  """
-  def totp_changeset(user, attrs) do
-    user
-    |> cast(attrs, [:totp_enabled, :totp_secret, :totp_backup_codes, :totp_enabled_at])
-  end
-
-  @doc """
-  Changeset for OAuth account updates.
-  Used when updating OAuth-related fields on existing users.
-  """
-  def oauth_changeset(user, attrs) do
-    user
-    |> cast(attrs, [:oauth_provider, :oauth_uid, :oauth_data, :avatar_url, :display_name, :email_verified_at])
-    |> validate_oauth_provider()
-  end
-
-  @doc """
-  Registration changeset for OAuth users.
-  Creates a new user from OAuth provider data without password.
-  """
-  def oauth_registration_changeset(user, attrs) do
-    user
-    |> cast(attrs, [
-      :email, :username, :display_name, :avatar_url,
-      :auth_type, :oauth_provider, :oauth_uid, :oauth_data,
-      :email_verified_at
-    ])
-    |> validate_required([:oauth_provider, :oauth_uid])
-    |> maybe_validate_username()
-    |> validate_email_format()
-    |> validate_oauth_provider()
-    |> unique_constraint(:email)
-    |> unique_constraint(:username)
-  end
-
-  defp validate_oauth_provider(changeset) do
-    changeset
-    |> validate_inclusion(:oauth_provider, ["google", "apple", "facebook", "tiktok", nil])
-  end
-
-  defp validate_email_format(changeset) do
-    case get_change(changeset, :email) do
-      nil -> changeset
-      _ ->
-        changeset
-        |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must be a valid email address")
-        |> validate_length(:email, max: 160)
-    end
-  end
-
-  @doc """
   Registration changeset for new users.
   Requires username, email, and password.
   Password confirmation is optional but validated if provided.
   """
+  @spec registration_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def registration_changeset(user, attrs) do
     user
     |> cast(attrs, [:username, :email, :password, :password_confirmation, :display_name])
@@ -256,61 +210,9 @@ defmodule CGraph.Accounts.User do
   end
 
   @doc """
-  Wallet registration changeset for Web3 users.
-  """
-  def wallet_registration_changeset(user, attrs) do
-    user
-    |> cast(attrs, [:username, :wallet_address, :display_name])
-    |> validate_required([:username, :wallet_address])
-    |> validate_username()
-    |> validate_wallet_address()
-    |> generate_wallet_nonce()
-  end
-
-  @doc """
-  Anonymous wallet registration changeset (PIN-based auth).
-  """
-  def wallet_pin_registration_changeset(user, attrs) do
-    user
-    |> cast(attrs, [:username, :wallet_address, :crypto_alias, :pin_hash, :display_name, :auth_type])
-    |> validate_required([:wallet_address, :crypto_alias, :pin_hash])
-    |> validate_cgraph_wallet_address()
-    |> validate_crypto_alias()
-    |> unique_constraint(:wallet_address)
-    |> unique_constraint(:crypto_alias)
-    |> put_default_username()
-  end
-
-  defp validate_cgraph_wallet_address(changeset) do
-    changeset
-    |> validate_format(:wallet_address, ~r/^0x[0-9A-F]{24}$/,
-      message: "must be a valid CGraph wallet address (0x + 24 hex chars)"
-    )
-    |> unique_constraint(:wallet_address)
-  end
-
-  defp validate_crypto_alias(changeset) do
-    changeset
-    |> validate_format(:crypto_alias, ~r/^[a-z]+-[a-z]+-[A-Z0-9]{6}$/,
-      message: "must be a valid crypto alias (word-word-XXXXXX format)"
-    )
-    |> unique_constraint(:crypto_alias)
-  end
-
-  defp put_default_username(changeset) do
-    case get_field(changeset, :username) do
-      nil ->
-        alias = get_change(changeset, :crypto_alias) || ""
-        username = String.replace(alias, "-", "_")
-        put_change(changeset, :username, username)
-      _ ->
-        changeset
-    end
-  end
-
-  @doc """
   Profile update changeset.
   """
+  @spec profile_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def profile_changeset(user, attrs) do
     user
     |> cast(attrs, [:display_name, :bio, :signature, :avatar_url, :banner_url, :custom_status, :pronouns])
@@ -322,6 +224,7 @@ defmodule CGraph.Accounts.User do
   @doc """
   Username change changeset with 14-day cooldown.
   """
+  @spec username_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def username_changeset(user, attrs) do
     user
     |> cast(attrs, [:username])
@@ -353,37 +256,9 @@ defmodule CGraph.Accounts.User do
   end
 
   @doc """
-  Returns true if the user can change their username.
-  """
-  def can_change_username?(%__MODULE__{username_changed_at: nil}), do: true
-  def can_change_username?(%__MODULE__{username_changed_at: last_changed}) do
-    cooldown_end = DateTime.add(last_changed, @username_change_cooldown_days * 24 * 60 * 60, :second)
-    DateTime.compare(DateTime.truncate(DateTime.utc_now(), :second), cooldown_end) != :lt
-  end
-
-  @doc """
-  Returns the date when the user can next change their username.
-  """
-  def next_username_change_date(%__MODULE__{username_changed_at: nil}), do: nil
-  def next_username_change_date(%__MODULE__{username_changed_at: last_changed}) do
-    DateTime.add(last_changed, @username_change_cooldown_days * 24 * 60 * 60, :second)
-  end
-
-  @doc """
-  Formats UID as display string (e.g., #4829173650).
-  Uses the new random 10-digit UID for security (non-enumerable).
-  Falls back to legacy user_id if uid is not yet set.
-  """
-  def format_user_id(%__MODULE__{uid: uid}) when is_binary(uid) and uid != "", do: "#" <> uid
-  def format_user_id(%__MODULE__{user_id: user_id}) when is_integer(user_id) do
-    # Legacy fallback for users before migration
-    "#" <> String.pad_leading(Integer.to_string(user_id), 4, "0")
-  end
-  def format_user_id(_), do: nil
-
-  @doc """
   Password change changeset.
   """
+  @spec password_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def password_changeset(user, attrs) do
     user
     |> cast(attrs, [:password, :password_confirmation])
@@ -395,6 +270,7 @@ defmodule CGraph.Accounts.User do
   @doc """
   Email change changeset.
   """
+  @spec email_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def email_changeset(user, attrs) do
     user
     |> cast(attrs, [:email])
@@ -407,6 +283,7 @@ defmodule CGraph.Accounts.User do
   General update changeset for user attributes.
   Allows updating profile fields and admin-controlled fields.
   """
+  @spec update_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def update_changeset(user, attrs) do
     user
     |> cast(attrs, [
@@ -423,31 +300,7 @@ defmodule CGraph.Accounts.User do
     |> unique_constraint(:username)
   end
 
-  # Private functions
-
-  @doc """
-  Verify a user's password against the stored hash.
-  """
-  def valid_password?(%__MODULE__{password_hash: hash}, password)
-      when is_binary(hash) and is_binary(password) do
-    Argon2.verify_pass(password, hash)
-  end
-  def valid_password?(_, _), do: false
-
-  @doc """
-  Changeset for subscription-related fields.
-  Used by Subscriptions context for tier updates and Stripe linking.
-  """
-  def subscription_changeset(user, attrs) do
-    user
-    |> cast(attrs, [
-      :subscription_tier,
-      :subscription_expires_at,
-      :stripe_customer_id,
-      :is_premium
-    ])
-    |> validate_inclusion(:subscription_tier, ~w(free premium enterprise))
-  end
+  # -- Private Validators ------------------------------------------------------
 
   defp validate_username(changeset) do
     changeset
@@ -488,16 +341,6 @@ defmodule CGraph.Accounts.User do
     |> validate_confirmation(:password, message: "passwords do not match")
   end
 
-  defp validate_wallet_address(changeset) do
-    changeset
-    |> validate_format(:wallet_address, ~r/^0x[a-fA-F0-9]{40}$/,
-      message: "must be a valid Ethereum address"
-    )
-    |> unsafe_validate_unique(:wallet_address, CGraph.Repo)
-    |> unique_constraint(:wallet_address)
-    |> update_change(:wallet_address, &String.downcase/1)
-  end
-
   defp hash_password(changeset) do
     case get_change(changeset, :password) do
       nil -> changeset
@@ -507,10 +350,5 @@ defmodule CGraph.Accounts.User do
         |> delete_change(:password)
         |> delete_change(:password_confirmation)
     end
-  end
-
-  defp generate_wallet_nonce(changeset) do
-    nonce = :crypto.strong_rand_bytes(32) |> Base.encode16(case: :lower)
-    put_change(changeset, :wallet_nonce, nonce)
   end
 end

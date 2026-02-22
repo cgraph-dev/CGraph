@@ -219,9 +219,11 @@ defmodule CGraph.Notifications do
   defdelegate mark_all_as_read(user, opts \\ []), to: Queries
 
   @doc "Gets a single notification by ID."
+  @spec get_notification(binary()) :: {:ok, Notification.t()} | {:error, :not_found}
   def get_notification(id) when is_binary(id), do: Queries.get_notification(id)
 
   @doc "Gets a notification by ID, ensuring it belongs to the user."
+  @spec get_notification(User.t(), binary()) :: {:ok, Notification.t()} | {:error, :not_found}
   def get_notification(%User{} = user, id), do: Queries.get_notification(user, id)
 
   defdelegate get_unread_counts(user), to: Queries

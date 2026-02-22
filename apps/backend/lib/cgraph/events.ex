@@ -59,6 +59,7 @@ defmodule CGraph.Events do
   - `:correlation_id` - For request tracing
   - `:causation_id` - ID of event that caused this one
   """
+  @spec publish(event_type(), map(), keyword()) :: {:ok, String.t()}
   def publish(type, payload, opts \\ []) do
     event = build_event(type, payload, opts)
 
@@ -70,6 +71,7 @@ defmodule CGraph.Events do
   @doc """
   Publish an event synchronously, waiting for all handlers.
   """
+  @spec publish_sync(event_type(), map(), keyword()) :: {:ok, list()}
   def publish_sync(type, payload, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     timeout = Keyword.get(opts, :timeout, 5000)
@@ -81,6 +83,7 @@ defmodule CGraph.Events do
   @doc """
   Publish multiple events as a batch.
   """
+  @spec publish_batch([{event_type(), map(), keyword()}]) :: {:ok, [String.t()]}
   def publish_batch(events) when is_list(events) do
     built_events = Enum.map(events, fn {type, payload, opts} ->
       build_event(type, payload, opts)
@@ -100,6 +103,7 @@ defmodule CGraph.Events do
 
   Handler can be a function or a module implementing `handle_event/1`.
   """
+  @spec subscribe(event_type(), handler()) :: :ok | {:ok, :already_subscribed}
   def subscribe(event_type, handler) do
     GenServer.call(__MODULE__, {:subscribe, event_type, handler})
   end
@@ -107,6 +111,7 @@ defmodule CGraph.Events do
   @doc """
   Subscribe to multiple event types.
   """
+  @spec subscribe_all([event_type()], handler()) :: :ok
   def subscribe_all(event_types, handler) when is_list(event_types) do
     Enum.each(event_types, &subscribe(&1, handler))
   end
@@ -114,6 +119,7 @@ defmodule CGraph.Events do
   @doc """
   Unsubscribe a handler from an event type.
   """
+  @spec unsubscribe(event_type(), handler()) :: :ok
   def unsubscribe(event_type, handler) do
     GenServer.call(__MODULE__, {:unsubscribe, event_type, handler})
   end
@@ -121,6 +127,7 @@ defmodule CGraph.Events do
   @doc """
   List all subscriptions.
   """
+  @spec subscriptions() :: map()
   def subscriptions do
     GenServer.call(__MODULE__, :subscriptions)
   end
@@ -132,6 +139,7 @@ defmodule CGraph.Events do
   @doc """
   Get events for an aggregate.
   """
+  @spec get_events(atom(), String.t(), keyword()) :: {:ok, [event()]}
   def get_events(aggregate_type, aggregate_id, opts \\ []) do
     GenServer.call(__MODULE__, {:get_events, aggregate_type, aggregate_id, opts})
   end
@@ -139,6 +147,7 @@ defmodule CGraph.Events do
   @doc """
   Get events by type.
   """
+  @spec get_events_by_type(event_type(), keyword()) :: {:ok, [event()]}
   def get_events_by_type(event_type, opts \\ []) do
     GenServer.call(__MODULE__, {:get_events_by_type, event_type, opts})
   end
@@ -146,6 +155,7 @@ defmodule CGraph.Events do
   @doc """
   Replay events for an aggregate to rebuild state.
   """
+  @spec replay(atom(), String.t(), (map(), event() -> map())) :: map()
   def replay(aggregate_type, aggregate_id, handler) do
     {:ok, events} = get_events(aggregate_type, aggregate_id)
 
@@ -158,10 +168,12 @@ defmodule CGraph.Events do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
+  @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(_opts) do
     # Subscribe to Phoenix PubSub for distributed events
@@ -176,6 +188,7 @@ defmodule CGraph.Events do
     {:ok, state}
   end
 
+  @spec handle_cast(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_cast({:publish, event}, state) do
     # Store event
@@ -212,6 +225,7 @@ defmodule CGraph.Events do
     }}
   end
 
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call({:publish_sync, event}, _from, state) do
     # Store event
@@ -282,6 +296,7 @@ defmodule CGraph.Events do
     {:reply, {:ok, events}, state}
   end
 
+  @spec handle_info(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_info({:event, event}, state) do
     # Handle event from another node

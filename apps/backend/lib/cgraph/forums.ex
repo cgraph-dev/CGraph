@@ -67,8 +67,11 @@ defmodule CGraph.Forums do
   defdelegate notify_comment(comment), to: CGraph.Forums.Core
 
   # Aliases for backward compatibility
+  @spec subscribe(term(), term()) :: term()
   def subscribe(forum, user), do: subscribe_to_forum(user, forum)
+  @spec unsubscribe(term(), term()) :: term()
   def unsubscribe(forum, user), do: unsubscribe_from_forum(user, forum)
+  @spec increment_views(term()) :: term()
   def increment_views(post), do: increment_post_views(post)
 
   # ============================================================================
@@ -87,6 +90,7 @@ defmodule CGraph.Forums do
   defdelegate toggle_lock(post), to: CGraph.Forums.Posts
 
   @doc "Get a post with optional user vote status."
+  @spec get_post(term(), String.t(), keyword()) :: {:ok, Post.t()} | {:error, :not_found}
   def get_post(forum, post_id, opts \\ []) do
     user_id = Keyword.get(opts, :user_id)
     query = from p in Post,
@@ -111,6 +115,7 @@ defmodule CGraph.Forums do
   defdelegate remove_comment_vote(user, comment), to: CGraph.Forums.Comments, as: :remove_vote
 
   @doc "List comments with cursor pagination and reply loading."
+  @spec list_comments(Post.t(), keyword()) :: {[Comment.t()], map()}
   def list_comments(post, opts \\ []) do
     per_page = Keyword.get(opts, :per_page, 50)
     sort = Keyword.get(opts, :sort, "best")
@@ -153,6 +158,7 @@ defmodule CGraph.Forums do
   end
 
   @doc "Get a comment by ID within a post."
+  @spec get_comment(Post.t(), String.t(), keyword()) :: {:ok, Comment.t()} | {:error, :not_found}
   def get_comment(post, comment_id, opts \\ []) do
     user_id = Keyword.get(opts, :user_id)
     query = from c in Comment,
@@ -165,7 +171,9 @@ defmodule CGraph.Forums do
     end
   end
 
+  @spec report_post(term(), term(), String.t()) :: {:ok, map()}
   def report_post(_user, _post, _reason), do: {:ok, %{id: Ecto.UUID.generate(), status: "pending"}}
+  @spec report_comment(term(), term(), String.t()) :: {:ok, map()}
   def report_comment(_user, _comment, _reason), do: {:ok, %{id: Ecto.UUID.generate(), status: "pending"}}
 
   # ============================================================================
@@ -186,6 +194,7 @@ defmodule CGraph.Forums do
   defdelegate get_user_vote(user, post), to: CGraph.Forums.Voting
 
   @doc "Vote on a post (flexible argument order)."
+  @spec vote_post(term(), term(), atom() | String.t()) :: term()
   def vote_post(%CGraph.Accounts.User{} = user, %Post{} = post, vote_type),
     do: vote_on_post(user, post, normalize_vote_type(vote_type))
   def vote_post(%Post{} = post, %CGraph.Accounts.User{} = user, vote_type),
@@ -259,29 +268,34 @@ defmodule CGraph.Forums do
   defdelegate create_thread(forum, user, attrs), to: CGraph.Forums.Threads
 
   @doc "Create a thread from a single attrs map (used by controllers)."
+  @spec create_thread(map()) :: {:ok, term()} | {:error, Ecto.Changeset.t()}
   def create_thread(attrs) when is_map(attrs) do
     alias CGraph.Forums.Thread
     %Thread{} |> Thread.changeset(attrs) |> Repo.insert()
   end
   defdelegate update_thread(thread, attrs), to: CGraph.Forums.Threads
 
+  @spec get_thread_by_slug(String.t(), String.t()) :: {:ok, term()} | {:error, :not_found}
   def get_thread_by_slug(board_id, _slug) do
     CGraph.Forums.Threads.get_thread(board_id)
   rescue
     _ -> {:error, :not_found}
   end
 
+  @spec delete_thread(term()) :: {:ok, term()} | {:error, Ecto.Changeset.t()}
   def delete_thread(thread) do
     thread
     |> Ecto.Changeset.change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
     |> Repo.update()
   end
 
+  @spec list_forum_threads(String.t(), keyword()) :: {list(), map()}
   def list_forum_threads(forum_id, opts \\ []) do
     # Threads.list_threads supports forum_id-based listing
     CGraph.Forums.Threads.list_threads(forum_id, opts)
   end
 
+  @spec toggle_thread_pin(String.t(), boolean()) :: {:ok, term()} | {:error, term()}
   def toggle_thread_pin(thread_id, pinned) when is_boolean(pinned) do
     case CGraph.Forums.Threads.get_thread(thread_id) do
       {:ok, thread} -> if pinned, do: CGraph.Forums.Threads.pin_thread(thread), else: CGraph.Forums.Threads.unpin_thread(thread)
@@ -289,6 +303,7 @@ defmodule CGraph.Forums do
     end
   end
 
+  @spec toggle_thread_lock(String.t(), boolean()) :: {:ok, term()} | {:error, term()}
   def toggle_thread_lock(thread_id, locked) when is_boolean(locked) do
     case CGraph.Forums.Threads.get_thread(thread_id) do
       {:ok, thread} -> if locked, do: CGraph.Forums.Threads.lock_thread(thread), else: CGraph.Forums.Threads.unlock_thread(thread)
@@ -296,6 +311,7 @@ defmodule CGraph.Forums do
     end
   end
 
+  @spec get_user_auto_subscribe_preference(String.t()) :: boolean()
   def get_user_auto_subscribe_preference(user_id) do
     CGraph.Forums.SubscriptionService.subscribed_to_thread?(user_id, nil) |> then(fn _ -> true end)
   rescue
@@ -322,10 +338,14 @@ defmodule CGraph.Forums do
   defdelegate get_or_create_member(forum_id, user_id), to: CGraph.Forums.Members
   defdelegate list_forum_members(forum_id, opts \\ []), to: CGraph.Forums.Members, as: :list_members
 
+  @spec get_forum_member(String.t(), String.t()) :: term()
   def get_forum_member(forum_id, user_id), do: CGraph.Forums.Members.get_member(forum_id, user_id)
+  @spec update_member_role(String.t(), String.t(), String.t()) :: term()
   def update_member_role(forum_id, user_id, role), do: CGraph.Forums.Members.update_role(forum_id, user_id, role)
+  @spec ban_forum_member(String.t(), String.t(), String.t(), String.t(), DateTime.t() | nil) :: term()
   def ban_forum_member(forum_id, user_id, reason, banned_by_id, expires_at \\ nil),
     do: CGraph.Forums.Members.ban_member(forum_id, user_id, reason, banned_by_id, expires_at)
+  @spec unban_forum_member(String.t(), String.t()) :: term()
   def unban_forum_member(forum_id, user_id), do: CGraph.Forums.Members.unban_member(forum_id, user_id)
 
   # ============================================================================
@@ -369,6 +389,7 @@ defmodule CGraph.Forums do
   # Forum User Leaderboard
   # ============================================================================
 
+  @spec get_forum_user_leaderboard(String.t(), keyword()) :: {[map()], map()}
   def get_forum_user_leaderboard(forum_id, opts \\ []) do
     page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 20)

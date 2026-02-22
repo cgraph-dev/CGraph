@@ -15,6 +15,7 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Gets settings for a user, creating defaults if they don't exist.
   """
+  @spec get_settings(User.t() | String.t()) :: {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
   def get_settings(%User{id: user_id}) do
     get_settings(user_id)
   end
@@ -29,11 +30,13 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Alias for get_settings/1 to match controller expectations.
   """
+  @spec get_user_settings(User.t() | String.t()) :: {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
   def get_user_settings(user), do: get_settings(user)
 
   @doc """
   Creates default settings for a user.
   """
+  @spec create_default_settings(String.t()) :: {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
   def create_default_settings(user_id) do
     %UserSettings{user_id: user_id}
     |> Repo.insert()
@@ -48,6 +51,7 @@ defmodule CGraph.Accounts.Settings do
       {:ok, %UserSettings{}}
 
   """
+  @spec update_settings(User.t() | String.t(), map()) :: {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
   def update_settings(%User{id: user_id}, attrs) do
     update_settings(user_id, attrs)
   end
@@ -63,11 +67,13 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Alias for update_settings/2.
   """
+  @spec update_all_settings(User.t() | String.t(), map()) :: {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
   def update_all_settings(user, attrs), do: update_settings(user, attrs)
 
   @doc """
   Update privacy-related settings.
   """
+  @spec update_privacy_settings(User.t() | String.t(), map()) :: {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
   def update_privacy_settings(user, privacy_attrs) do
     update_settings(user, privacy_attrs)
   end
@@ -75,6 +81,7 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Update notification-related settings.
   """
+  @spec update_notification_settings(User.t() | String.t(), map()) :: {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
   def update_notification_settings(user, notification_attrs) do
     update_settings(user, notification_attrs)
   end
@@ -82,6 +89,7 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Update appearance-related settings.
   """
+  @spec update_appearance_settings(User.t() | String.t(), map()) :: {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
   def update_appearance_settings(user, appearance_attrs) do
     update_settings(user, appearance_attrs)
   end
@@ -89,6 +97,7 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Update locale-related settings.
   """
+  @spec update_locale_settings(User.t() | String.t(), map()) :: {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
   def update_locale_settings(user, locale_attrs) do
     update_settings(user, locale_attrs)
   end
@@ -96,6 +105,7 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Resets all settings to their defaults.
   """
+  @spec reset_to_defaults(User.t() | String.t()) :: {:ok, UserSettings.t()} | {:error, Ecto.Changeset.t()}
   def reset_to_defaults(%User{id: user_id}) do
     reset_to_defaults(user_id)
   end
@@ -123,6 +133,7 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Checks if the user should receive a specific type of notification.
   """
+  @spec should_notify?(User.t(), atom()) :: boolean()
   def should_notify?(%User{} = user, type) do
     {:ok, settings} = get_settings(user)
 
@@ -142,6 +153,7 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Checks if current time is within the user's quiet hours.
   """
+  @spec in_quiet_hours?(UserSettings.t()) :: boolean()
   def in_quiet_hours?(%UserSettings{quiet_hours_enabled: false}), do: false
 
   def in_quiet_hours?(%UserSettings{quiet_hours_enabled: true} = settings) do
@@ -164,6 +176,7 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Checks if a user can be messaged by another user based on privacy settings.
   """
+  @spec can_message?(User.t(), User.t()) :: boolean()
   def can_message?(%User{} = sender, %User{} = recipient) do
     {:ok, settings} = get_settings(recipient)
 
@@ -173,6 +186,7 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Checks if a user is visible in search results.
   """
+  @spec visible_in_search?(User.t()) :: boolean()
   def visible_in_search?(%User{} = user) do
     {:ok, settings} = get_settings(user)
     settings.show_in_search
@@ -181,6 +195,7 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Gets users online status visibility.
   """
+  @spec show_online_status?(User.t()) :: boolean()
   def show_online_status?(%User{} = user) do
     {:ok, settings} = get_settings(user)
     settings.show_online_status
@@ -189,6 +204,7 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Gets users read receipt setting.
   """
+  @spec show_read_receipts?(User.t()) :: boolean()
   def show_read_receipts?(%User{} = user) do
     {:ok, settings} = get_settings(user)
     settings.show_read_receipts
@@ -197,6 +213,7 @@ defmodule CGraph.Accounts.Settings do
   @doc """
   Gets user's profile visibility setting.
   """
+  @spec profile_visible_to?(User.t(), User.t()) :: boolean()
   def profile_visible_to?(%User{} = profile_owner, %User{} = viewer) do
     {:ok, settings} = get_settings(profile_owner)
 

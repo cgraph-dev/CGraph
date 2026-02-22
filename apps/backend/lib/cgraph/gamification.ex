@@ -46,6 +46,7 @@ defmodule CGraph.Gamification do
   defdelegate claim_quest_rewards(user_id, user_quest_id), to: QuestSystem
 
   # 3-arg version (objective-based progress)
+  @spec update_quest_progress(String.t(), atom(), integer()) :: term()
   def update_quest_progress(user_id, objective_type, increment)
       when not is_integer(increment) or is_integer(increment) do
     QuestSystem.update_quest_progress(user_id, objective_type, increment)
@@ -85,16 +86,19 @@ defmodule CGraph.Gamification do
   defdelegate get_community_milestones(event_id), to: EventSystem
 
   @doc "Get event leaderboard (2-arg backward-compat)."
+  @spec get_event_leaderboard(String.t(), integer()) :: term()
   def get_event_leaderboard(event_id, limit) when is_integer(limit) do
     EventSystem.get_event_leaderboard(event_id, limit, 0)
   end
 
   @doc "Get event leaderboard with cursor/offset."
+  @spec get_event_leaderboard(String.t(), integer(), term()) :: term()
   def get_event_leaderboard(event_id, limit, cursor_or_offset) do
     EventSystem.get_event_leaderboard(event_id, limit, cursor_or_offset)
   end
 
   # 4-arg quest progress (event-based)
+  @spec update_quest_progress(String.t(), String.t(), String.t(), integer()) :: term()
   def update_quest_progress(user_id, event_id, quest_id, progress_increment) do
     EventSystem.update_quest_progress(user_id, event_id, quest_id, progress_increment)
   end
@@ -105,11 +109,13 @@ defmodule CGraph.Gamification do
   XP required to reach a given level.
   Uses a polynomial curve: 100 * level^1.5
   """
+  @spec xp_for_level(pos_integer()) :: non_neg_integer()
   def xp_for_level(level) when level >= 1 do
     round(100 * :math.pow(level, 1.5))
   end
 
   @doc "Calculate level from total XP."
+  @spec level_from_xp(non_neg_integer()) :: pos_integer()
   def level_from_xp(xp) when xp >= 0 do
     find_level(xp, 1, 100)
   end
@@ -127,6 +133,7 @@ defmodule CGraph.Gamification do
   end
 
   @doc "Get XP progress within current level as percentage (0-100)."
+  @spec level_progress(non_neg_integer()) :: non_neg_integer()
   def level_progress(xp) do
     level = level_from_xp(xp)
     current_level_xp = if level == 1, do: 0, else: xp_for_level(level)
@@ -140,6 +147,7 @@ defmodule CGraph.Gamification do
   Award XP to a user and create a transaction record.
   Returns {:ok, {%User{}, level_up?}} or {:error, changeset}
   """
+  @spec award_xp(User.t(), integer(), String.t(), keyword()) :: {:ok, {User.t(), boolean()}} | {:error, term()}
   def award_xp(%User{} = user, amount, source, opts \\ []) do
     description = Keyword.get(opts, :description)
     reference_type = Keyword.get(opts, :reference_type)
@@ -191,6 +199,7 @@ defmodule CGraph.Gamification do
   end
 
   @doc "Add XP to a user (simplified, by user_id)."
+  @spec add_xp(String.t(), pos_integer()) :: {:ok, {User.t(), boolean()}} | {:error, :user_not_found}
   def add_xp(user_id, amount) when is_binary(user_id) and amount > 0 do
     case Repo.get(User, user_id) do
       nil -> {:error, :user_not_found}
@@ -205,6 +214,7 @@ defmodule CGraph.Gamification do
   # ==================== COIN MANAGEMENT ====================
 
   @doc "Award coins to a user."
+  @spec award_coins(User.t(), integer(), String.t(), keyword()) :: {:ok, User.t()} | {:error, term()}
   def award_coins(%User{} = user, amount, type, opts \\ []) do
     description = Keyword.get(opts, :description)
     reference_type = Keyword.get(opts, :reference_type)
@@ -238,6 +248,7 @@ defmodule CGraph.Gamification do
   Spend coins from a user's balance with race condition protection.
   Uses SELECT FOR UPDATE to prevent concurrent balance modifications.
   """
+  @spec spend_coins(User.t(), pos_integer(), String.t(), keyword()) :: {:ok, User.t()} | {:error, :insufficient_funds}
   def spend_coins(%User{} = user, amount, type, opts \\ []) when amount > 0 do
     description = Keyword.get(opts, :description)
     reference_type = Keyword.get(opts, :reference_type)
@@ -277,6 +288,7 @@ defmodule CGraph.Gamification do
   end
 
   @doc "Get coin transaction history for a user."
+  @spec list_coin_transactions(String.t(), keyword()) :: {[CoinTransaction.t()], map()}
   def list_coin_transactions(user_id, opts \\ []) do
     query = CoinTransaction |> where([t], t.user_id == ^user_id)
 
@@ -294,6 +306,7 @@ defmodule CGraph.Gamification do
   # ==================== CURRENCY MANAGEMENT ====================
 
   @doc "Add currency to a user's account."
+  @spec add_currency(User.t() | String.t(), pos_integer(), atom()) :: {:ok, User.t()} | {:error, term()}
   def add_currency(%User{} = user, amount, currency_type) when amount > 0 do
     case currency_type do
       :coins ->
@@ -312,6 +325,7 @@ defmodule CGraph.Gamification do
   end
 
   @doc "Deduct currency from a user's account."
+  @spec deduct_currency(User.t() | String.t(), pos_integer(), atom()) :: {:ok, User.t()} | {:error, term()}
   def deduct_currency(%User{} = user, amount, currency_type) when amount > 0 do
     case currency_type do
       :coins when user.coins >= amount ->
@@ -338,6 +352,7 @@ defmodule CGraph.Gamification do
   Claim daily login streak bonus.
   Returns {:ok, {user, coins_awarded, new_streak}} or {:error, :already_claimed}
   """
+  @spec claim_daily_streak(User.t()) :: {:ok, {User.t(), non_neg_integer(), pos_integer()}} | {:error, :already_claimed}
   def claim_daily_streak(%User{} = user) do
     today = Date.utc_today()
     yesterday = Date.add(today, -1)
@@ -394,6 +409,7 @@ defmodule CGraph.Gamification do
   # ==================== USER STATS ====================
 
   @doc "Get complete gamification stats for a user."
+  @spec get_user_stats(String.t()) :: map()
   def get_user_stats(user_id) do
     alias CGraph.Gamification.{Achievement, UserAchievement, UserQuest}
 
@@ -428,6 +444,7 @@ defmodule CGraph.Gamification do
   # ==================== PRESTIGE ====================
 
   @doc "Get user's prestige info."
+  @spec get_user_prestige(String.t()) :: {:ok, map()}
   def get_user_prestige(user_id) do
     alias CGraph.Gamification.UserPrestige
 
@@ -459,11 +476,13 @@ defmodule CGraph.Gamification do
   end
 
   @doc "Get prestige leaderboard."
+  @spec get_prestige_leaderboard(keyword()) :: list()
   def get_prestige_leaderboard(_opts \\ []), do: []
 
   # ==================== MISC ====================
 
   @doc "Unlock a border for a user."
+  @spec unlock_border(String.t(), String.t()) :: {:ok, map()}
   def unlock_border(user_id, border_id) do
     {:ok, %{user_id: user_id, border_id: border_id}}
   end

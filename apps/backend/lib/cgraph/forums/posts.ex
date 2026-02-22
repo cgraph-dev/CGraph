@@ -16,6 +16,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Lists posts for a forum with pagination and sorting.
   """
+  @spec list_posts(struct(), keyword()) :: {[Post.t()], map()}
   def list_posts(forum, opts \\ []) do
     cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 20)
@@ -43,6 +44,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Gets a post by ID.
   """
+  @spec get_post(binary()) :: {:ok, Post.t()} | {:error, :not_found}
   def get_post(post_id) do
     query = Post
       |> exclude_deleted()
@@ -58,6 +60,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Gets a post with user's vote info.
   """
+  @spec get_post_with_vote(struct(), binary(), struct() | nil) :: {:ok, Post.t()} | {:error, :not_found}
   def get_post_with_vote(forum, post_id, user) do
     case get_post(post_id) do
       {:ok, post} ->
@@ -74,6 +77,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Creates a post in a forum.
   """
+  @spec create_post(struct(), struct(), map()) :: {:ok, Post.t()} | {:error, Ecto.Changeset.t()}
   def create_post(forum, user, attrs) do
     attrs = attrs |> stringify_keys() |> Map.merge(%{
       "forum_id" => forum.id,
@@ -95,6 +99,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Updates a post.
   """
+  @spec update_post(Post.t(), map()) :: {:ok, Post.t()} | {:error, Ecto.Changeset.t()}
   def update_post(post, attrs) do
     post
     |> Post.edit_changeset(attrs)
@@ -104,6 +109,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Deletes a post (soft delete).
   """
+  @spec delete_post(Post.t()) :: {:ok, Post.t()} | {:error, Ecto.Changeset.t()}
   def delete_post(post) do
     post
     |> Ecto.Changeset.change(%{deleted_at: DateTime.truncate(DateTime.utc_now(), :second)})
@@ -119,6 +125,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Hides a post (moderation action).
   """
+  @spec hide_post(binary(), term()) :: :ok
   def hide_post(post_id, _reason) do
     from(p in Post, where: p.id == ^post_id)
     |> Repo.update_all(set: [
@@ -130,6 +137,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Soft deletes a post.
   """
+  @spec soft_delete_post(binary(), keyword()) :: :ok
   def soft_delete_post(post_id, opts \\ []) do
     _reason = Keyword.get(opts, :reason, "Removed by moderator")
 
@@ -143,6 +151,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Increments post view count.
   """
+  @spec increment_views(Post.t()) :: :ok
   def increment_views(post) do
     from(p in Post, where: p.id == ^post.id)
     |> Repo.update_all(inc: [view_count: 1])
@@ -152,6 +161,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Pins a post.
   """
+  @spec pin_post(Post.t()) :: {:ok, Post.t()} | {:error, Ecto.Changeset.t()}
   def pin_post(post) do
     post
     |> Ecto.Changeset.change(%{is_pinned: true})
@@ -161,6 +171,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Unpins a post.
   """
+  @spec unpin_post(Post.t()) :: {:ok, Post.t()} | {:error, Ecto.Changeset.t()}
   def unpin_post(post) do
     post
     |> Ecto.Changeset.change(%{is_pinned: false})
@@ -170,6 +181,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Locks a post (prevents new comments).
   """
+  @spec lock_post(Post.t()) :: {:ok, Post.t()} | {:error, Ecto.Changeset.t()}
   def lock_post(post) do
     post
     |> Ecto.Changeset.change(%{is_locked: true})
@@ -179,6 +191,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Unlocks a post.
   """
+  @spec unlock_post(Post.t()) :: {:ok, Post.t()} | {:error, Ecto.Changeset.t()}
   def unlock_post(post) do
     post
     |> Ecto.Changeset.change(%{is_locked: false})
@@ -188,6 +201,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Toggles pin status.
   """
+  @spec toggle_pin(Post.t()) :: {:ok, Post.t()} | {:error, Ecto.Changeset.t()}
   def toggle_pin(post) do
     if post.is_pinned, do: unpin_post(post), else: pin_post(post)
   end
@@ -195,6 +209,7 @@ defmodule CGraph.Forums.Posts do
   @doc """
   Toggles lock status.
   """
+  @spec toggle_lock(Post.t()) :: {:ok, Post.t()} | {:error, Ecto.Changeset.t()}
   def toggle_lock(post) do
     if post.is_locked, do: unlock_post(post), else: lock_post(post)
   end

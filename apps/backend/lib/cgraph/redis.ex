@@ -44,6 +44,7 @@ defmodule CGraph.Redis do
   @doc """
   Start the Redis client supervisor.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -57,6 +58,7 @@ defmodule CGraph.Redis do
       {:ok, nil} = Redis.command(["GET", "nonexistent"])
       {:ok, 1} = Redis.command(["DEL", "key"])
   """
+  @spec command([String.t()], keyword()) :: {:ok, term()} | {:error, term()}
   def command(args, opts \\ []) when is_list(args) do
     timeout = Keyword.get(opts, :timeout, @default_timeout)
 
@@ -104,6 +106,7 @@ defmodule CGraph.Redis do
   @doc """
   Execute a Redis command, raising on error.
   """
+  @spec command!([String.t()], keyword()) :: term()
   def command!(args, opts \\ []) do
     case command(args, opts) do
       {:ok, result} -> result
@@ -126,6 +129,7 @@ defmodule CGraph.Redis do
       ])
       # => [{:ok, "OK"}, {:ok, "OK"}, {:ok, "value1"}, {:ok, "value2"}]
   """
+  @spec pipeline([[String.t()]], keyword()) :: {:ok, [term()]} | {:error, term()}
   def pipeline(commands, opts \\ []) when is_list(commands) do
     timeout = Keyword.get(opts, :timeout, @default_timeout * length(commands))
 
@@ -152,6 +156,7 @@ defmodule CGraph.Redis do
 
   All commands are executed atomically.
   """
+  @spec transaction([[String.t()]], keyword()) :: {:ok, term()} | {:error, term()}
   def transaction(commands, opts \\ []) when is_list(commands) do
     full_pipeline = [["MULTI"]] ++ commands ++ [["EXEC"]]
 
@@ -167,6 +172,7 @@ defmodule CGraph.Redis do
   @doc """
   Publish a message to a channel.
   """
+  @spec publish(String.t(), term()) :: {:ok, term()} | {:error, term()}
   def publish(channel, message) do
     command(["PUBLISH", channel, encode_message(message)])
   end
@@ -174,6 +180,7 @@ defmodule CGraph.Redis do
   @doc """
   Get Redis server info.
   """
+  @spec info(String.t() | nil) :: {:ok, map()} | {:error, term()}
   def info(section \\ nil) do
     cmd = if section, do: ["INFO", section], else: ["INFO"]
 
@@ -186,6 +193,7 @@ defmodule CGraph.Redis do
   @doc """
   Check if Redis is available.
   """
+  @spec ping() :: :ok | :error
   def ping do
     case command(["PING"]) do
       {:ok, "PONG"} -> :ok
@@ -196,6 +204,7 @@ defmodule CGraph.Redis do
   @doc """
   Get pool statistics.
   """
+  @spec pool_stats() :: map()
   def pool_stats do
     GenServer.call(__MODULE__, :pool_stats)
   end
@@ -205,6 +214,7 @@ defmodule CGraph.Redis do
 
   Returns `:ok` (closed), `:blown` (open), or `{:error, :not_found}`.
   """
+  @spec circuit_status() :: :ok | :blown | {:error, :not_found}
   def circuit_status do
     :fuse.ask(@fuse_name, :sync)
   end
@@ -215,6 +225,7 @@ defmodule CGraph.Redis do
   Use this after a known recovery to immediately restore Redis access
   without waiting for the automatic reset timeout.
   """
+  @spec reset_circuit() :: :ok
   def reset_circuit do
     :fuse.reset(@fuse_name)
   end
@@ -295,6 +306,7 @@ defmodule CGraph.Redis do
   # GenServer Implementation
   # ---------------------------------------------------------------------------
 
+  @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(opts) do
     config = get_config(opts)
@@ -327,6 +339,7 @@ defmodule CGraph.Redis do
     end
   end
 
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call({:command, args}, _from, state) do
     result = with_connection(state, fn conn ->

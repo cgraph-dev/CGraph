@@ -26,6 +26,8 @@ defmodule CGraph.Subscriptions.TierLimit do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
+  @type t :: %__MODULE__{}
+
   @valid_tiers ~w(free premium enterprise)
   @support_levels ~w(community priority dedicated)
 
@@ -134,6 +136,7 @@ defmodule CGraph.Subscriptions.TierLimit do
   @doc """
   Creates a changeset for a tier limit.
   """
+  @spec changeset(t(), map()) :: Ecto.Changeset.t()
   def changeset(tier_limit, attrs) do
     tier_limit
     |> cast(attrs, [
@@ -167,17 +170,20 @@ defmodule CGraph.Subscriptions.TierLimit do
   @doc """
   Returns valid tier names.
   """
+  @spec valid_tiers() :: [String.t()]
   def valid_tiers, do: @valid_tiers
 
   @doc """
   Returns valid support levels.
   """
+  @spec support_levels() :: [String.t()]
   def support_levels, do: @support_levels
 
   @doc """
   Checks if a limit value means "unlimited".
   nil is used to represent unlimited in the database.
   """
+  @spec unlimited?(term()) :: boolean()
   def unlimited?(nil), do: true
   def unlimited?(_), do: false
 
@@ -185,12 +191,14 @@ defmodule CGraph.Subscriptions.TierLimit do
   Checks if a user is within a specific limit.
   Returns true if the limit is unlimited (nil) or current < limit.
   """
+  @spec within_limit?(non_neg_integer() | nil, non_neg_integer()) :: boolean()
   def within_limit?(nil, _current), do: true
   def within_limit?(limit, current), do: current < limit
 
   @doc """
   Formats a limit value for display.
   """
+  @spec format_limit(non_neg_integer() | nil | term()) :: String.t()
   def format_limit(nil), do: "Unlimited"
   def format_limit(value) when is_integer(value), do: Integer.to_string(value)
   def format_limit(value), do: to_string(value)
@@ -198,6 +206,7 @@ defmodule CGraph.Subscriptions.TierLimit do
   @doc """
   Formats bytes to human-readable string.
   """
+  @spec format_bytes(non_neg_integer() | nil) :: String.t()
   def format_bytes(nil), do: "Unlimited"
   def format_bytes(bytes) when bytes < 1024, do: "#{bytes} B"
   def format_bytes(bytes) when bytes < 1_048_576, do: "#{Float.round(bytes / 1024, 1)} KB"

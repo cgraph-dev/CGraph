@@ -80,20 +80,21 @@ blast radius, do in a dedicated PR with comprehensive import updates
 
 ### Rule 3: State Management — PASS
 
-| Metric                  | Status  | Notes                                                                      |
-| ----------------------- | ------- | -------------------------------------------------------------------------- |
-| Web Zustand stores      | PASS    | 29+ stores, module-based                                                   |
-| Mobile Zustand stores   | PASS    | 11 stores — full Zustand migration complete                                |
-| Mobile Context shims    | CLEANUP | 4 `@deprecated` re-export files in `contexts/` (no real Context API usage) |
-| Store MAX constants     | PARTIAL | 20 MAX constants found, but some stores lack them                          |
-| Unbounded array spreads | FAIL    | 20+ spreads without MAX bounds                                             |
+| Metric                  | Status   | Notes                                                                      |
+| ----------------------- | -------- | -------------------------------------------------------------------------- |
+| Web Zustand stores      | PASS     | 29+ stores, module-based                                                   |
+| Mobile Zustand stores   | PASS     | 11 stores — full Zustand migration complete                                |
+| Mobile Context shims    | CLEANUP  | 4 `@deprecated` re-export files in `contexts/` (no real Context API usage) |
+| Store MAX constants     | **PASS** | 20+ MAX constants, all stores bounded                                      |
+| Unbounded array spreads | **PASS** | All 18 spreads bounded with MAX + .slice() (Tier 5)                        |
 
 **Action Items**:
 
 - [ ] **3.1** Delete 4 deprecated mobile context shim files in `contexts/` + update imports to use
       stores directly
-- [ ] **3.2** Add MAX constants to ALL store arrays (audit admin, chat, thread stores)
-- [ ] **3.3** Add `.slice(-MAX)` bounds to all unbounded `[...state.X, newItem]` patterns
+- [x] **3.2** ~~Add MAX constants to ALL store arrays~~ **DONE** (Tier 5)
+- [x] **3.3** ~~Add `.slice(-MAX)` bounds to all unbounded `[...state.X, newItem]` patterns~~
+      **DONE** (Tier 5)
 - [ ] **3.4** Add `reset()` action to every store (verify all stores have it)
 - [ ] **3.5** Create mobile `stores/index.ts` facade matching web's 7-domain pattern
 
@@ -157,15 +158,14 @@ blast radius, do in a dedicated PR with comprehensive import updates
 | Metric                                 | Count  | Status        |
 | -------------------------------------- | ------ | ------------- |
 | Files with JSDoc header (sampled 100)  | 83/100 | 83% — PARTIAL |
-| Modules missing `@moduledoc`           | 2      | NEAR PASS     |
+| Modules missing `@moduledoc`           | **0**  | **PASS**      |
 | `@doc` coverage (sampled messaging.ex) | 21/31  | 68% — FAIL    |
 | Files lacking any top comment          | ~173   | FAIL          |
 
 **Action Items**:
 
 - [ ] **6.1** Add JSDoc file headers to ~173 module files missing them
-- [ ] **6.2** Add `@moduledoc` to 2 remaining Elixir modules (settings_controller,
-      customization_controller)
+- [x] **6.2** ~~Add `@moduledoc` to 2 remaining Elixir modules~~ **DONE** (Tier 5)
 - [ ] **6.3** Add `@doc` to undocumented public Elixir functions (estimated 500+ functions)
 - [ ] **6.4** Add JSDoc to all exported interfaces/types that lack them
 - [ ] **6.5** Enforce JSDoc via ESLint rule (`jsdoc/require-jsdoc` for exported functions)
@@ -176,19 +176,19 @@ blast radius, do in a dedicated PR with comprehensive import updates
 
 | Metric                       | Count | Status                                         |
 | ---------------------------- | ----- | ---------------------------------------------- |
-| Public functions             | 2,796 | —                                              |
-| Functions with `@spec`       | 711   | **25.4%** — FAIL (target: 100%)                |
+| Public functions             | 3,220 | —                                              |
+| Functions with `@spec`       | 1,582 | **49.1%** — improved (target: 100%)            |
 | Logger string interpolation  | **0** | **PASS** — fixed in Tier 1 (commit `9d8fb58a`) |
-| Modules missing `@moduledoc` | 2     | NEAR PASS                                      |
+| Modules missing `@moduledoc` | **0** | **PASS** — all controllers have @moduledoc     |
 
 **Action Items**:
 
-- [ ] **7.1** Add `@spec` to remaining ~2,085 public functions (prioritize controllers + contexts)
+- [ ] **7.1** Add `@spec` to remaining ~1,638 public functions (prioritize contexts + services)
 - [x] **7.2** ~~Fix 111 Logger string interpolation → structured metadata~~ **DONE** (Tier 1)
   - All 111 violations converted to structured metadata format
 - [x] **7.3** ~~Add `@spec` to auth_controller (10), payment_controller (4), conversation_controller
       (5)~~ **DONE** (Tier 2b)
-- [ ] **7.4** Add `@moduledoc` to 2 remaining modules
+- [x] **7.4** ~~Add `@moduledoc` to 2 remaining modules~~ **DONE** (Tier 5)
 - [ ] **7.5** Enable `mix credo --strict` rule for missing `@spec` annotations
 - [ ] **7.6** Enable `mix credo --strict` rule for Logger interpolation
 
@@ -336,7 +336,7 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 | `useContext()` (legacy)     | **0**              | **PASS** — all 14 migrated to `use()` (Tier 2, commit `08b988c2`)               |
 | `useOptimistic()` adoption  | **7+**             | **PASS** — NestedComments, EnhancedMessageBubble, chatStore optimistic patterns |
 | `useFormStatus()` adoption  | **3 forms**        | **PARTIAL** — Login, ForgotPassword, ForumSettings migrated (Tier 3)            |
-| `useActionState()` adoption | 0                  | FAIL — not used anywhere                                                        |
+| `useActionState()` adoption | **3 forms**        | **PARTIAL** — CreateGroupModal, AccountSettings, Register (Tier 5)              |
 | `useMemo`/`useCallback`     | 1,174 in 269 files | N/A — React Compiler NOT enabled; keep for performance                          |
 | `React.FC`                  | **5**              | **NEAR PASS** — 68 fixed (Tier 2), 5 remain (HOC types)                         |
 | `forwardRef`                | **0**              | **PASS** — fixed in Tier 1                                                      |
@@ -351,7 +351,8 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 - [x] **12.4** ~~Add `useFormStatus()` to form submit buttons~~ **DONE** (Tier 3, commit `7d8cff09`)
   - Created shared `SubmitButton` component; migrated Login, ForgotPassword, ForumSettings to
     `<form action=>`
-- [ ] **12.5** Add `useActionState()` for form actions (settings, profile edit, create group)
+- [x] **12.5** ~~Add `useActionState()` for form actions~~ **DONE** (Tier 5) — CreateGroupModal,
+      AccountSettings, Register
 
 ---
 
@@ -397,20 +398,21 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 ### Rule 15: API Contract & Versioning — PARTIAL FAIL
 
-| Metric                          | Status          | Notes                                                                                                                                               |
-| ------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Consistent JSON response shapes | **MOSTLY PASS** | ~17 `json(conn, ...)` calls remaining (50 converted in Tier 4 across 17 controllers; 3 intentionally non-standard: stripe_webhook, sync_controller) |
-| Rate limit headers              | PASS            | `rate_limiter_v2.ex` adds headers                                                                                                                   |
-| Cursor-based pagination         | **PASS**        | 0 remaining — all migrated in Tier 1                                                                                                                |
-| API versioning                  | PASS            | `/api/v1/` namespace                                                                                                                                |
+| Metric                          | Status   | Notes                                                              |
+| ------------------------------- | -------- | ------------------------------------------------------------------ |
+| Consistent JSON response shapes | **PASS** | 3 intentional exceptions only (stripe_webhook, sync_controller ×2) |
+| Rate limit headers              | PASS     | `rate_limiter_v2.ex` adds headers                                  |
+| Cursor-based pagination         | **PASS** | 0 remaining — all migrated in Tier 1                               |
+| API versioning                  | PASS     | `/api/v1/` namespace                                               |
 
 **Action Items**:
 
-- [x] **15.1** ~~Audit remaining ~67 non-standard `json(conn, ...)` responses~~ **MOSTLY DONE**
-      (Tier 4)
-  - 50 converted in Tier 4 across 17 controllers + 5 in Tier 2b = 55 total
+- [x] **15.1** ~~Audit remaining non-standard `json(conn, ...)` responses~~ **DONE** (Tier 4+5)
+  - 55 converted across 17+ controllers in Tiers 2b–4
   - 3 intentionally non-standard: stripe_webhook_controller, sync_controller
-  - ~17 remaining: gamification, shop, cosmetics, premium, marketplace, wallet_auth controllers
+  - Gap analysis claim of ~17 remaining in
+    gamification/shop/cosmetics/premium/marketplace/wallet_auth was inaccurate — those controllers
+    don't exist. JSON standardization is COMPLETE.
 - [ ] **15.2** Add `meta:` with cursor/has_more to all list endpoints
 - [x] **15.3** ~~Create shared `render_data/render_error` helpers~~ **DONE** (Tier 2,
       ControllerHelpers)
@@ -602,23 +604,23 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 
 ## PART 5: CURRENT VS WORLD-CLASS SCORECARD
 
-| Dimension                   | Current                        | After Tier 1-4        | World-Class Target  |
-| --------------------------- | ------------------------------ | --------------------- | ------------------- |
-| File Naming (Rule 1)        | 0% (1,230 violations)          | 0%                    | 100% (0 violations) |
-| Component Patterns (Rule 2) | **99%** (5 React.FC, 0 fwdRef) | **99%**               | 100%                |
-| State Management (Rule 3)   | 95%                            | 98%                   | 100%                |
-| Cross-Platform (Rule 5)     | 55% (6/12 packages)            | 55%                   | 100% (12/12)        |
-| Documentation (Rule 6)      | 75%                            | 80%                   | 100%                |
-| Backend Standards (Rule 7)  | 35% (Logger fixed)             | 50%                   | 100%                |
-| File Size (Rule 8)          | 65% (35 violations)            | **89%** (7 remaining) | 100%                |
-| Testing (Rule 9)            | 18% ratio                      | 20%                   | 100%                |
-| Performance (Rule 10)       | **100%** (0 offsets)           | **100%**              | 100%                |
-| Security (Rule 11)          | 50% (949 assertions)           | 60%                   | 100%                |
-| React 19 (Rule 12)          | 35%                            | **85%**               | 100%                |
-| CI/CD (Rule 13)             | **100%** (17/17)               | **100%**              | 100%                |
-| Observability (Rule 14)     | **100%** (0 violations)        | **100%**              | 100%                |
-| API Contract (Rule 15)      | 70% (offset fixed)             | **92%**               | 100%                |
-| **Overall**                 | **~65%**                       | **~84%**              | **100%**            |
+| Dimension                   | Current                        | After Tier 1-4                 | World-Class Target  |
+| --------------------------- | ------------------------------ | ------------------------------ | ------------------- |
+| File Naming (Rule 1)        | 0% (1,230 violations)          | 0%                             | 100% (0 violations) |
+| Component Patterns (Rule 2) | **99%** (5 React.FC, 0 fwdRef) | **99%**                        | 100%                |
+| State Management (Rule 3)   | 95%                            | 98%                            | 100%                |
+| Cross-Platform (Rule 5)     | 55% (6/12 packages)            | 55%                            | 100% (12/12)        |
+| Documentation (Rule 6)      | 75%                            | 80%                            | 100%                |
+| Backend Standards (Rule 7)  | 35% (Logger fixed)             | **49%** (1,582 specs)          | 100%                |
+| File Size (Rule 8)          | 65% (35 violations)            | **97%** (6 controllers remain) | 100%                |
+| Testing (Rule 9)            | 18% ratio                      | 20%                            | 100%                |
+| Performance (Rule 10)       | **100%** (0 offsets)           | **100%**                       | 100%                |
+| Security (Rule 11)          | 50% (949 assertions)           | 60%                            | 100%                |
+| React 19 (Rule 12)          | 35%                            | **90%**                        | 100%                |
+| CI/CD (Rule 13)             | **100%** (17/17)               | **100%**                       | 100%                |
+| Observability (Rule 14)     | **100%** (0 violations)        | **100%**                       | 100%                |
+| API Contract (Rule 15)      | 70% (offset fixed)             | **100%**                       | 100%                |
+| **Overall**                 | **~65%**                       | **~88%**                       | **100%**            |
 
 ---
 
@@ -644,6 +646,9 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 > votePost, ThreadPanel), useFormStatus (SubmitButton + 3 forms), XSS audit (all safe). **Tier 4
 > COMPLETED — Session 40** (73 files): 50 json()→render_data/render_error conversions across 17
 > controllers, 8 file splits (4 Elixir + 4 TSX → 25 smaller modules), 7 N+1 query fixes in forums/.
-> Compliance: ~58% → ~84%. Next priorities: remaining ~17 JSON responses
-> (gamification/shop/cosmetics/premium/marketplace/wallet_auth), type assertions reduction, shared
-> packages, tests.
+> **Tier 5 COMPLETED** (commit `e8b326b3`, 43 files): 3 useActionState form migrations
+> (CreateGroupModal, AccountSettings, Register), 18 MAX array bounds across 13 stores, 267 @spec
+> annotations across 22 controllers, @moduledoc for last 2 controllers. **Tier 6 COMPLETED** (commit
+> pending): 20 oversized Elixir files split into 50+ submodules (all contexts now under 500 lines,
+> only 6 controllers remain at 509-561), 511 more @spec annotations across 38 files (coverage: 33% →
+> 49%, 1,582/3,220). Compliance: ~84% → ~88%.

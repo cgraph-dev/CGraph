@@ -2,43 +2,12 @@ defmodule CGraph.Permissions do
   @moduledoc """
   Fine-grained permission system with role-based and resource-level access control.
 
-  ## Overview
-
   Provides flexible authorization with multiple strategies:
 
   - **Role-Based (RBAC)**: Assign permissions via roles
   - **Resource-Based**: Per-resource permissions
   - **Attribute-Based (ABAC)**: Dynamic permissions based on context
   - **Hierarchical**: Permission inheritance
-
-  ## Architecture
-
-  ```
-  ┌─────────────────────────────────────────────────────────────────┐
-  │                   PERMISSION SYSTEM                             │
-  ├─────────────────────────────────────────────────────────────────┤
-  │                                                                  │
-  │  User ──► Roles ──► Permissions ──► Resources                   │
-  │            │             │              │                        │
-  │     ┌──────▼──────┐ ┌────▼────┐   ┌─────▼─────┐                │
-  │     │ admin       │ │ create  │   │ message   │                │
-  │     │ moderator   │ │ read    │   │ channel   │                │
-  │     │ member      │ │ update  │   │ user      │                │
-  │     │ guest       │ │ delete  │   │ file      │                │
-  │     └─────────────┘ └─────────┘   └───────────┘                │
-  │                                                                  │
-  │  ┌───────────────────────────────────────────────────────────┐ │
-  │  │                   Permission Check                         │ │
-  │  │  can?(user, :delete, message) -> true/false               │ │
-  │  │                                                            │ │
-  │  │  1. Check user roles                                       │ │
-  │  │  2. Check resource ownership                               │ │
-  │  │  3. Check resource-specific permissions                    │ │
-  │  │  4. Apply context rules (time, location, etc.)            │ │
-  │  └───────────────────────────────────────────────────────────┘ │
-  │                                                                  │
-  └─────────────────────────────────────────────────────────────────┘
-  ```
 
   ## Usage
 
@@ -47,9 +16,6 @@ defmodule CGraph.Permissions do
         delete_message(message)
       end
 
-      # With plug
-      plug Permissions.Plug, permission: :manage_users
-
       # Role-based
       Permissions.has_role?(user, :admin)
 
@@ -57,220 +23,84 @@ defmodule CGraph.Permissions do
       Permissions.grant(user, :moderate, channel)
       Permissions.revoke(user, :moderate, channel)
 
-  ## Default Roles
-
-  | Role | Description | Key Permissions |
-  |------|-------------|-----------------|
-  | `admin` | Full access | Everything |
-  | `moderator` | Content moderation | Delete messages, ban users |
-  | `member` | Standard user | Send messages, create channels |
-  | `guest` | Limited access | Read only |
-
-  ## Permission Format
-
-  Permissions follow the format: `action:resource` or `action:resource:scope`
-
-  Examples:
-  - `read:messages`
-  - `create:channels`
-  - `delete:messages:own`
-  - `manage:users`
+  See `CGraph.Permissions.Roles` for role definitions and
+  `CGraph.Permissions.Checker` for authorization logic.
   """
 
   use GenServer
   require Logger
 
-  # ---------------------------------------------------------------------------
-  # Role Definitions
-  # ---------------------------------------------------------------------------
-
-  @roles %{
-    super_admin: %{
-      name: "Super Admin",
-      permissions: [:*],
-      inherits: []
-    },
-    admin: %{
-      name: "Admin",
-      permissions: [
-        :manage_users, :manage_channels, :manage_settings,
-        :view_analytics, :view_audit_log, :export_data
-      ],
-      inherits: [:moderator]
-    },
-    moderator: %{
-      name: "Moderator",
-      permissions: [
-        :delete_messages, :mute_users, :kick_users,
-        :pin_messages, :slow_mode
-      ],
-      inherits: [:member]
-    },
-    member: %{
-      name: "Member",
-      permissions: [
-        :send_messages, :edit_own_messages, :delete_own_messages,
-        :create_channels, :join_channels, :upload_files,
-        :add_reactions, :mention_users, :use_custom_emoji
-      ],
-      inherits: [:guest]
-    },
-    guest: %{
-      name: "Guest",
-      permissions: [
-        :read_messages, :view_channels, :view_profiles
-      ],
-      inherits: []
-    }
-  }
-
-  # Available resource types: message, channel, user, file, reaction, invitation
-  # Available actions: create, read, update, delete, manage, moderate
+  alias CGraph.Permissions.{Checker, Roles}
 
   # ---------------------------------------------------------------------------
   # Types
   # ---------------------------------------------------------------------------
 
-  @type role :: :super_admin | :admin | :moderator | :member | :guest
+  @type role :: Roles.role()
   @type permission :: atom()
-  @type resource :: struct() | {atom(), String.t()}
-  @type user :: %{id: String.t(), roles: [role()]}
+  @type resource :: Checker.resource()
+  @type user :: Checker.user()
 
   # ---------------------------------------------------------------------------
-  # Client API - Permission Checks
+  # Permission Checks (delegated to Checker)
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Check if a user can perform an action on a resource.
+  @doc "Check if a user can perform an action on a resource."
+  @spec can?(user(), permission(), resource(), map()) :: boolean()
+  def can?(user, action, resource, context \\ %{}),
+    do: Checker.can?(user, action, resource, context)
 
-  ## Examples
+  @doc "Authorize an action, returning :ok or {:error, :unauthorized}."
+  @spec authorize(user(), permission(), resource(), map()) :: :ok | {:error, :unauthorized}
+  def authorize(user, action, resource, context \\ %{}),
+    do: Checker.authorize(user, action, resource, context)
 
-      can?(user, :delete, message)
-      can?(user, :manage, channel)
-      can?(user, :create, :channels)
-  """
-  def can?(user, action, resource, context \\ %{})
-
-  def can?(%{roles: roles} = user, action, resource, context) when is_list(roles) do
-    # Super admin can do anything
-    if :super_admin in roles do
-      true
-    else
-      check_permission(user, action, resource, context)
-    end
-  end
-
-  def can?(user_id, action, resource, context) when is_binary(user_id) do
-    case get_user_permissions(user_id) do
-      {:ok, user} -> can?(user, action, resource, context)
-      _ -> false
-    end
-  end
-
-  @doc """
-  Authorize an action, returning :ok or {:error, :unauthorized}.
-
-  Useful in pipelines.
-  """
-  def authorize(user, action, resource, context \\ %{}) do
-    if can?(user, action, resource, context) do
-      :ok
-    else
-      {:error, :unauthorized}
-    end
-  end
-
-  @doc """
-  Authorize or raise an exception.
-  """
-  def authorize!(user, action, resource, context \\ %{}) do
-    unless can?(user, action, resource, context) do
-      raise CGraph.UnauthorizedError,
-        message: "User not authorized to #{action} #{inspect(resource)}"
-    end
-
-    :ok
-  end
+  @doc "Authorize or raise an exception."
+  @spec authorize!(user(), permission(), resource(), map()) :: :ok | no_return()
+  def authorize!(user, action, resource, context \\ %{}),
+    do: Checker.authorize!(user, action, resource, context)
 
   # ---------------------------------------------------------------------------
-  # Client API - Role Checks
+  # Role Checks (delegated to Roles)
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Check if user has a specific role.
-  """
-  def has_role?(%{roles: roles}, role) when is_list(roles) do
-    role in roles || has_inherited_role?(roles, role)
-  end
-
-  def has_role?(_, _), do: false
-
-  @doc """
-  Check if user has any of the specified roles.
-  """
-  def has_any_role?(user, roles) when is_list(roles) do
-    Enum.any?(roles, &has_role?(user, &1))
-  end
-
-  @doc """
-  Check if user has all of the specified roles.
-  """
-  def has_all_roles?(user, roles) when is_list(roles) do
-    Enum.all?(roles, &has_role?(user, &1))
-  end
-
-  @doc """
-  Get all permissions for a role (including inherited).
-  """
-  def role_permissions(role) do
-    case Map.get(@roles, role) do
-      nil -> []
-      role_def -> expand_permissions(role_def)
-    end
-  end
-
-  @doc """
-  Get all available roles.
-  """
-  def available_roles do
-    Map.keys(@roles)
-  end
+  defdelegate has_role?(user, role), to: Roles
+  defdelegate has_any_role?(user, roles), to: Roles
+  defdelegate has_all_roles?(user, roles), to: Roles
+  defdelegate role_permissions(role), to: Roles
+  defdelegate available_roles(), to: Roles
 
   # ---------------------------------------------------------------------------
   # Client API - Permission Grants
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Grant a permission to a user for a resource.
-  """
+  @doc "Grant a permission to a user for a resource."
+  @spec grant(String.t(), permission(), resource()) :: :ok | {:ok, :already_granted}
   def grant(user_id, permission, resource) do
     GenServer.call(__MODULE__, {:grant, user_id, permission, resource})
   end
 
-  @doc """
-  Revoke a permission from a user for a resource.
-  """
+  @doc "Revoke a permission from a user for a resource."
+  @spec revoke(String.t(), permission(), resource()) :: :ok
   def revoke(user_id, permission, resource) do
     GenServer.call(__MODULE__, {:revoke, user_id, permission, resource})
   end
 
-  @doc """
-  Get resource-specific permissions for a user.
-  """
+  @doc "Get resource-specific permissions for a user."
+  @spec resource_permissions(String.t(), resource()) :: {:ok, [permission()]}
   def resource_permissions(user_id, resource) do
     GenServer.call(__MODULE__, {:resource_permissions, user_id, resource})
   end
 
-  @doc """
-  Assign a role to a user.
-  """
-  def assign_role(user_id, role) when role in [:super_admin, :admin, :moderator, :member, :guest] do
+  @doc "Assign a role to a user."
+  @spec assign_role(String.t(), role()) :: :ok | {:ok, :already_assigned}
+  def assign_role(user_id, role)
+      when role in [:super_admin, :admin, :moderator, :member, :guest] do
     GenServer.call(__MODULE__, {:assign_role, user_id, role})
   end
 
-  @doc """
-  Remove a role from a user.
-  """
+  @doc "Remove a role from a user."
+  @spec remove_role(String.t(), role()) :: :ok
   def remove_role(user_id, role) do
     GenServer.call(__MODULE__, {:remove_role, user_id, role})
   end
@@ -279,16 +109,14 @@ defmodule CGraph.Permissions do
   # Client API - Channel/Resource Roles
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Get user's role in a specific channel.
-  """
+  @doc "Get user's role in a specific channel."
+  @spec channel_role(String.t(), String.t()) :: {:ok, role()}
   def channel_role(user_id, channel_id) do
     GenServer.call(__MODULE__, {:channel_role, user_id, channel_id})
   end
 
-  @doc """
-  Set user's role in a channel.
-  """
+  @doc "Set user's role in a channel."
+  @spec set_channel_role(String.t(), String.t(), role()) :: :ok
   def set_channel_role(user_id, channel_id, role) do
     GenServer.call(__MODULE__, {:set_channel_role, user_id, channel_id, role})
   end
@@ -297,10 +125,12 @@ defmodule CGraph.Permissions do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
+  @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(_opts) do
     state = %{
@@ -315,9 +145,10 @@ defmodule CGraph.Permissions do
     {:ok, state}
   end
 
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call({:grant, user_id, permission, resource}, _from, state) do
-    key = resource_key(user_id, resource)
+    key = Checker.resource_key(user_id, resource)
     current = Map.get(state.resource_permissions, key, [])
 
     if permission in current do
@@ -331,7 +162,7 @@ defmodule CGraph.Permissions do
 
   @impl true
   def handle_call({:revoke, user_id, permission, resource}, _from, state) do
-    key = resource_key(user_id, resource)
+    key = Checker.resource_key(user_id, resource)
     current = Map.get(state.resource_permissions, key, [])
     new_list = List.delete(current, permission)
     new_perms = Map.put(state.resource_permissions, key, new_list)
@@ -341,7 +172,7 @@ defmodule CGraph.Permissions do
 
   @impl true
   def handle_call({:resource_permissions, user_id, resource}, _from, state) do
-    key = resource_key(user_id, resource)
+    key = Checker.resource_key(user_id, resource)
     permissions = Map.get(state.resource_permissions, key, [])
     {:reply, {:ok, permissions}, state}
   end
@@ -383,163 +214,6 @@ defmodule CGraph.Permissions do
     new_channel_roles = Map.put(state.channel_roles, key, role)
     {:reply, :ok, %{state | channel_roles: new_channel_roles}}
   end
-
-  # ---------------------------------------------------------------------------
-  # Permission Checking Logic
-  # ---------------------------------------------------------------------------
-
-  defp check_permission(user, action, resource, context) do
-    # 1. Check role-based permissions
-    role_allowed = check_role_permission(user, action, resource)
-
-    # 2. Check resource ownership
-    ownership_allowed = check_ownership(user, action, resource)
-
-    # 3. Check resource-specific grants
-    resource_allowed = check_resource_grant(user, action, resource)
-
-    # 4. Apply context rules
-    context_allowed = check_context_rules(user, action, resource, context)
-
-    (role_allowed || ownership_allowed || resource_allowed) && context_allowed
-  end
-
-  defp check_role_permission(%{roles: roles}, action, resource) do
-    permission = action_to_permission(action, resource)
-
-    Enum.any?(roles, fn role ->
-      perms = role_permissions(role)
-      :* in perms || permission in perms || wildcard_match?(perms, permission)
-    end)
-  end
-
-  defp check_ownership(%{id: user_id}, action, resource) when action in [:edit, :update, :delete] do
-    # Check if user owns the resource
-    case resource do
-      %{user_id: ^user_id} -> true
-      %{sender_id: ^user_id} -> true
-      %{author_id: ^user_id} -> true
-      %{creator_id: ^user_id} -> true
-      _ -> false
-    end
-  end
-
-  defp check_ownership(_, _, _), do: false
-
-  defp check_resource_grant(%{id: _user_id}, _action, _resource) do
-    # Would check stored resource permissions
-    # For now, just return false (let role-based handle it)
-    false
-  end
-
-  defp check_context_rules(_user, _action, _resource, context) do
-    # Time-based restrictions
-    time_allowed = case context[:time_restriction] do
-      nil -> true
-      {start_time, end_time} ->
-        now = Time.utc_now()
-        Time.compare(now, start_time) != :lt && Time.compare(now, end_time) != :gt
-    end
-
-    # IP-based restrictions
-    ip_allowed = case context[:ip_whitelist] do
-      nil -> true
-      ips -> context[:ip] in ips
-    end
-
-    time_allowed && ip_allowed
-  end
-
-  # ---------------------------------------------------------------------------
-  # Helpers
-  # ---------------------------------------------------------------------------
-
-  defp expand_permissions(role_def) do
-    # Get direct permissions
-    direct = role_def.permissions
-
-    # Get inherited permissions
-    inherited = Enum.flat_map(role_def.inherits, fn parent_role ->
-      case Map.get(@roles, parent_role) do
-        nil -> []
-        parent_def -> expand_permissions(parent_def)
-      end
-    end)
-
-    Enum.uniq(direct ++ inherited)
-  end
-
-  defp has_inherited_role?(user_roles, target_role) do
-    Enum.any?(user_roles, fn role ->
-      case Map.get(@roles, role) do
-        nil -> false
-        role_def -> target_role in role_def.inherits ||
-                    Enum.any?(role_def.inherits, &has_inherited_role?([&1], target_role))
-      end
-    end)
-  end
-
-  defp action_to_permission(action, resource) when is_atom(resource) do
-    # Build permission from known atoms — safe since both inputs are atoms
-    safe_to_permission_atom(action, resource)
-  end
-
-  defp action_to_permission(action, %{__struct__: struct}) do
-    # Struct — extract type from module name
-    type = struct
-    |> Module.split()
-    |> List.last()
-    |> Macro.underscore()
-    |> String.to_existing_atom()
-
-    safe_to_permission_atom(action, type)
-  end
-
-  defp action_to_permission(action, {type, _id}) do
-    safe_to_permission_atom(action, type)
-  end
-
-  defp action_to_permission(action, _) do
-    action
-  end
-
-  # Safely construct permission atoms using existing atom registration.
-  # Both action and type are already atoms from internal code, so the
-  # combined atom is predictable and bounded (Google-style allowlist safety).
-  defp safe_to_permission_atom(action, type) do
-    "#{action}_#{type}"
-    |> String.to_existing_atom()
-  rescue
-    ArgumentError -> :unknown_permission
-  end
-
-  defp wildcard_match?(permissions, permission) do
-    perm_str = to_string(permission)
-
-    Enum.any?(permissions, fn p ->
-      p_str = to_string(p)
-      String.ends_with?(p_str, "*") &&
-      String.starts_with?(perm_str, String.trim_trailing(p_str, "*"))
-    end)
-  end
-
-  defp resource_key(user_id, {type, id}) do
-    {user_id, type, id}
-  end
-
-  defp resource_key(user_id, %{__struct__: struct, id: id}) do
-    type = struct |> Module.split() |> List.last() |> Macro.underscore() |> String.to_existing_atom()
-    {user_id, type, id}
-  end
-
-  defp resource_key(user_id, resource_type) when is_atom(resource_type) do
-    {user_id, resource_type, :*}
-  end
-
-  defp get_user_permissions(user_id) do
-    # Would fetch from database
-    {:ok, %{id: user_id, roles: [:member]}}
-  end
 end
 
 defmodule CGraph.UnauthorizedError do
@@ -548,6 +222,7 @@ defmodule CGraph.UnauthorizedError do
   """
   defexception [:message]
 
+  @spec exception(keyword()) :: Exception.t()
   @impl true
   def exception(opts) do
     message = Keyword.get(opts, :message, "Unauthorized")

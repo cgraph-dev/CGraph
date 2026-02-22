@@ -27,6 +27,7 @@ defmodule CGraph.Presence.Store do
   @doc """
   Get when user was last seen.
   """
+  @spec last_seen(String.t()) :: DateTime.t() | nil
   def last_seen(user_id) do
     case Cachex.get(:cgraph_cache, last_seen_key(user_id)) do
       {:ok, nil} -> nil
@@ -38,6 +39,7 @@ defmodule CGraph.Presence.Store do
   @doc """
   Record user's last seen timestamp.
   """
+  @spec record_last_seen(String.t()) :: DateTime.t()
   def record_last_seen(user_id) do
     now = DateTime.utc_now()
     Cachex.put(:cgraph_cache, last_seen_key(user_id), now, ttl: @last_seen_ttl_ms)
@@ -47,6 +49,7 @@ defmodule CGraph.Presence.Store do
   @doc """
   Get last seen for multiple users.
   """
+  @spec bulk_last_seen([String.t()]) :: %{String.t() => DateTime.t() | nil}
   def bulk_last_seen(user_ids) when is_list(user_ids) do
     Map.new(user_ids, fn user_id ->
       {user_id, last_seen(user_id)}
@@ -63,6 +66,7 @@ defmodule CGraph.Presence.Store do
   Uses ZREVRANGE for O(log N + M) where M is the page size,
   instead of loading all users into memory.
   """
+  @spec list_online_users(keyword()) :: {[map()], map()}
   def list_online_users(opts) when is_list(opts) do
     page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 50)
@@ -165,6 +169,7 @@ defmodule CGraph.Presence.Store do
   Count guests (users not logged in).
   This is an estimate based on connected sockets without user tracking.
   """
+  @spec count_guests() :: non_neg_integer()
   def count_guests do
     # For now, return 0 - would need WebSocket tracking of anonymous connections
     0
@@ -173,6 +178,7 @@ defmodule CGraph.Presence.Store do
   @doc """
   Update user presence from REST API heartbeat.
   """
+  @spec update_presence(String.t(), term()) :: {:ok, :updated}
   def update_presence(user_id, location) do
     # Update last seen
     record_last_seen(user_id)
@@ -186,6 +192,7 @@ defmodule CGraph.Presence.Store do
   @doc """
   Get presence statistics. O(1) via Redis SCARD instead of loading all users.
   """
+  @spec get_stats() :: map()
   def get_stats do
     users_online =
       case CGraph.Redis.command(["SCARD", @online_set_key]) do
@@ -220,6 +227,7 @@ defmodule CGraph.Presence.Store do
   @doc """
   Get users at a specific location.
   """
+  @spec get_users_at_location(term()) :: [map()]
   def get_users_at_location(_location) do
     # Would need to be implemented with location tracking
     []
@@ -228,6 +236,7 @@ defmodule CGraph.Presence.Store do
   @doc """
   Get user status for a specific user (for viewing by another user).
   """
+  @spec get_user_status(String.t(), term()) :: {:ok, map()}
   def get_user_status(user_id, _viewer) do
     status = Queries.get_user_status(user_id)
     last_online = last_seen(user_id)
@@ -252,6 +261,7 @@ defmodule CGraph.Presence.Store do
   @doc """
   Update visibility (online vs invisible).
   """
+  @spec update_visibility(String.t(), boolean()) :: {:ok, :updated}
   def update_visibility(_user_id, _visible) do
     # Would need socket access to update presence
     {:ok, :updated}
@@ -264,6 +274,7 @@ defmodule CGraph.Presence.Store do
   @doc """
   Sync a user join to Redis backing store.
   """
+  @spec sync_presence_join(String.t(), map()) :: :ok
   def sync_presence_join(user_id, meta) do
     user_key = to_string(user_id)
     timestamp = System.system_time(:second)
@@ -297,6 +308,7 @@ defmodule CGraph.Presence.Store do
   @doc """
   Sync a user leave to Redis backing store.
   """
+  @spec sync_presence_leave(String.t()) :: :ok
   def sync_presence_leave(user_id) do
     user_key = to_string(user_id)
     meta_key = presence_meta_key(user_key)
@@ -315,11 +327,13 @@ defmodule CGraph.Presence.Store do
   @doc """
   Build the Redis hash key for a user's presence metadata.
   """
+  @spec presence_meta_key(String.t()) :: String.t()
   def presence_meta_key(user_id), do: "presence:meta:#{user_id}"
 
   @doc """
   Convert a flat Redis HGETALL result list into a presence map.
   """
+  @spec redis_hash_to_presence(list() | term()) :: map()
   def redis_hash_to_presence(fields) when is_list(fields) do
     fields
     |> Enum.chunk_every(2)

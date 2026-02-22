@@ -113,6 +113,7 @@ defmodule CGraph.WebRTC do
   @doc """
   Start the WebRTC manager.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -131,6 +132,7 @@ defmodule CGraph.WebRTC do
   - `{:ok, room}` - Room created successfully
   - `{:error, reason}` - Creation failed
   """
+  @spec create_room(participant_id(), call_type(), keyword()) :: {:ok, room()} | {:error, term()}
   def create_room(creator_id, type \\ :audio, opts \\ []) do
     room_id = generate_room_id()
     max = Keyword.get(opts, :max_participants, @max_participants)
@@ -163,6 +165,7 @@ defmodule CGraph.WebRTC do
   @doc """
   Get room by ID.
   """
+  @spec get_room(room_id()) :: {:ok, room()} | {:error, :not_found}
   def get_room(room_id) do
     case :ets.lookup(@ets_table, room_id) do
       [{^room_id, room}] -> {:ok, room}
@@ -173,6 +176,7 @@ defmodule CGraph.WebRTC do
   @doc """
   Join an existing call room.
   """
+  @spec join_room(room_id(), participant_id(), keyword()) :: {:ok, room()} | {:error, term()}
   def join_room(room_id, participant_id, opts \\ []) do
     device = Keyword.get(opts, :device, "unknown")
     media = Keyword.get(opts, :media, %{audio: true, video: false})
@@ -191,6 +195,7 @@ defmodule CGraph.WebRTC do
   @doc """
   Leave a call room.
   """
+  @spec leave_room(room_id(), participant_id()) :: {:ok, room() | :room_ended} | {:error, :not_found}
   def leave_room(room_id, participant_id) do
     GenServer.call(__MODULE__, {:leave_room, room_id, participant_id})
   end
@@ -198,6 +203,7 @@ defmodule CGraph.WebRTC do
   @doc """
   End a call (creator or last participant).
   """
+  @spec end_room(room_id(), participant_id()) :: {:ok, room()} | {:error, :not_found}
   def end_room(room_id, requester_id) do
     GenServer.call(__MODULE__, {:end_room, room_id, requester_id})
   end
@@ -205,6 +211,7 @@ defmodule CGraph.WebRTC do
   @doc """
   Update participant media state.
   """
+  @spec update_media(room_id(), participant_id(), map()) :: {:ok, Participant.t()} | {:error, term()}
   def update_media(room_id, participant_id, media_state) do
     GenServer.call(__MODULE__, {:update_media, room_id, participant_id, media_state})
   end
@@ -212,6 +219,7 @@ defmodule CGraph.WebRTC do
   @doc """
   List active rooms for a user.
   """
+  @spec list_user_rooms(participant_id()) :: [room()]
   def list_user_rooms(user_id) do
     :ets.foldl(fn
       {_id, %Room{participants: participants} = room}, acc ->
@@ -262,6 +270,7 @@ defmodule CGraph.WebRTC do
   @doc """
   List call history for a user, most recent first, with cursor-based pagination.
   """
+  @spec list_call_history(participant_id(), keyword()) :: {:ok, [map()]} | {:error, term()}
   def list_call_history(user_id, opts \\ []), do: Calls.list_call_history(user_id, opts)
 
   @doc """
@@ -278,6 +287,7 @@ defmodule CGraph.WebRTC do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(_opts) do
     :ets.new(@ets_table, [:named_table, :public, :set, {:read_concurrency, true}])
@@ -285,6 +295,7 @@ defmodule CGraph.WebRTC do
     {:ok, %{}}
   end
 
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call({:create_room, room}, _from, state) do
     :ets.insert(@ets_table, {room.id, room})
@@ -397,6 +408,7 @@ defmodule CGraph.WebRTC do
     end
   end
 
+  @spec handle_info(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_info({:room_timeout, room_id}, state) do
     case :ets.lookup(@ets_table, room_id) do

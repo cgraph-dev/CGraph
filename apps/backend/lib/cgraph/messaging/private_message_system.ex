@@ -12,6 +12,7 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
   # ==================== FOLDERS ====================
 
   @doc "List PM folders for a user, creating defaults if none exist."
+  @spec list_pm_folders(String.t()) :: [PMFolder.t()]
   def list_pm_folders(user_id) do
     query =
       from f in PMFolder,
@@ -23,11 +24,13 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
   end
 
   @doc "Create a PM folder."
+  @spec create_pm_folder(map()) :: {:ok, PMFolder.t()} | {:error, Ecto.Changeset.t()}
   def create_pm_folder(attrs) do
     %PMFolder{} |> PMFolder.changeset(attrs) |> Repo.insert()
   end
 
   @doc "Get a PM folder, optionally scoped to a user."
+  @spec get_pm_folder(String.t(), String.t() | nil) :: {:ok, PMFolder.t()} | {:error, :not_found}
   def get_pm_folder(folder_id, user_id \\ nil) do
     query =
       if user_id do
@@ -43,17 +46,20 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
   end
 
   @doc "Get a PM folder by name for a user."
+  @spec get_pm_folder_by_name(String.t(), String.t()) :: PMFolder.t() | nil
   def get_pm_folder_by_name(user_id, name) do
     Repo.get_by(PMFolder, user_id: user_id, name: name)
   end
 
   @doc "Update a PM folder (system folders cannot be modified)."
+  @spec update_pm_folder(PMFolder.t(), map()) :: {:ok, PMFolder.t()} | {:error, Ecto.Changeset.t() | :cannot_modify_system_folder}
   def update_pm_folder(%PMFolder{is_system: true}, _attrs), do: {:error, :cannot_modify_system_folder}
   def update_pm_folder(%PMFolder{} = folder, attrs) do
     folder |> PMFolder.changeset(attrs) |> Repo.update()
   end
 
   @doc "Delete a PM folder (system folders cannot be deleted). Moves messages to Inbox."
+  @spec delete_pm_folder(PMFolder.t()) :: {:ok, PMFolder.t()} | {:error, Ecto.Changeset.t() | :cannot_delete_system_folder}
   def delete_pm_folder(%PMFolder{is_system: true}), do: {:error, :cannot_delete_system_folder}
   def delete_pm_folder(%PMFolder{} = folder) do
     inbox = get_pm_folder_by_name(folder.user_id, "Inbox")
@@ -75,6 +81,7 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
     * `:search` - Search subject/content (min 2 chars)
     * `:include_total` - Include total count (default: false)
   """
+  @spec list_private_messages(String.t(), keyword()) :: {[PrivateMessage.t()], map()}
   def list_private_messages(user_id, opts) when is_list(opts) do
     alias CGraph.Pagination
 
@@ -123,11 +130,13 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
     {messages, pagination}
   end
 
+  @spec list_private_messages(String.t(), String.t(), keyword()) :: {[PrivateMessage.t()], map()}
   def list_private_messages(user_id, folder_id, opts) when is_binary(folder_id) do
     list_private_messages(user_id, Keyword.put(opts, :folder_id, folder_id))
   end
 
   @doc "Get a private message by ID, accessible by sender or recipient."
+  @spec get_private_message(String.t(), String.t()) :: {:ok, PrivateMessage.t()} | {:error, :not_found}
   def get_private_message(message_id, user_id) do
     query = from m in PrivateMessage,
       where: m.id == ^message_id,
@@ -141,6 +150,7 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
   end
 
   @doc "Send a private message (creates copies in recipient inbox and sender sent folder)."
+  @spec send_private_message(map()) :: {:ok, PrivateMessage.t()} | {:error, term()}
   def send_private_message(attrs) do
     recipient_id = Map.get(attrs, :recipient_id) || List.first(Map.get(attrs, :recipient_ids, []))
 
@@ -174,11 +184,13 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
   end
 
   @doc "Update a private message."
+  @spec update_private_message(PrivateMessage.t(), map()) :: {:ok, PrivateMessage.t()} | {:error, Ecto.Changeset.t()}
   def update_private_message(%PrivateMessage{} = message, attrs) do
     message |> PrivateMessage.changeset(attrs) |> Repo.update()
   end
 
   @doc "Delete a private message. Two-stage: moves to Trash first; hard-deletes from Trash (intentional — user explicitly empties Trash)."
+  @spec delete_private_message(PrivateMessage.t(), String.t()) :: {:ok, PrivateMessage.t()} | {:error, Ecto.Changeset.t()}
   def delete_private_message(%PrivateMessage{} = message, user_id) do
     trash = get_pm_folder_by_name(user_id, "Trash")
     if message.folder_id == trash.id do
@@ -190,6 +202,7 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
   end
 
   @doc "Mark private messages as read."
+  @spec mark_pm_as_read([String.t()], String.t()) :: :ok
   def mark_pm_as_read(message_ids, user_id) when is_list(message_ids) do
     from(m in PrivateMessage,
       where: m.id in ^message_ids and m.recipient_id == ^user_id)
@@ -198,6 +211,7 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
   end
 
   @doc "Move private messages to a folder."
+  @spec move_pm_to_folder([String.t()], String.t(), String.t()) :: :ok
   def move_pm_to_folder(message_ids, folder_id, user_id) when is_list(message_ids) do
     from(m in PrivateMessage,
       where: m.id in ^message_ids and m.recipient_id == ^user_id)
@@ -208,6 +222,7 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
   # ==================== DRAFTS ====================
 
   @doc "List PM drafts with cursor-based pagination."
+  @spec list_pm_drafts(String.t(), keyword()) :: {[PMDraft.t()], map()}
   def list_pm_drafts(user_id, opts \\ []) do
     alias CGraph.Pagination
 
@@ -244,9 +259,11 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
   end
 
   @doc "Save a PM draft."
+  @spec save_pm_draft(map()) :: {:ok, PMDraft.t()} | {:error, Ecto.Changeset.t()}
   def save_pm_draft(attrs), do: %PMDraft{} |> PMDraft.changeset(attrs) |> Repo.insert()
 
   @doc "Get a PM draft by ID."
+  @spec get_pm_draft(String.t(), String.t()) :: {:ok, PMDraft.t()} | {:error, :not_found}
   def get_pm_draft(draft_id, user_id) do
     query = from d in PMDraft,
       where: d.id == ^draft_id and d.sender_id == ^user_id,
@@ -259,12 +276,15 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
   end
 
   @doc "Update a PM draft."
+  @spec update_pm_draft(PMDraft.t(), map()) :: {:ok, PMDraft.t()} | {:error, Ecto.Changeset.t()}
   def update_pm_draft(%PMDraft{} = draft, attrs), do: draft |> PMDraft.changeset(attrs) |> Repo.update()
 
   @doc "Delete a PM draft."
+  @spec delete_pm_draft(PMDraft.t()) :: {:ok, PMDraft.t()} | {:error, Ecto.Changeset.t()}
   def delete_pm_draft(%PMDraft{} = draft), do: Repo.delete(draft)
 
   @doc "Send a PM draft (creates message and deletes draft)."
+  @spec send_pm_draft(PMDraft.t()) :: {:ok, PrivateMessage.t()} | {:error, term()}
   def send_pm_draft(%PMDraft{} = draft) do
     with {:ok, message} <- send_private_message(%{
            sender_id: draft.sender_id, recipient_id: draft.recipient_id,
@@ -278,6 +298,7 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
   # ==================== STATS & EXPORT ====================
 
   @doc "Get PM statistics for a user."
+  @spec get_pm_stats(String.t()) :: map()
   def get_pm_stats(user_id) do
     inbox = get_pm_folder_by_name(user_id, "Inbox")
     sent = get_pm_folder_by_name(user_id, "Sent")
@@ -307,6 +328,7 @@ defmodule CGraph.Messaging.PrivateMessageSystem do
   end
 
   @doc "Export private messages for a user with cursor-based pagination (max 500 per page)."
+  @spec export_pm(String.t(), keyword()) :: {:ok, [PrivateMessage.t()], map()}
   def export_pm(user_id, opts \\ []) do
     query = from(m in PrivateMessage,
       where: m.sender_id == ^user_id or m.recipient_id == ^user_id,

@@ -11,6 +11,7 @@ defmodule CGraph.Gamification.EventSystem do
   alias CGraph.Repo
 
   @doc "List currently active events."
+  @spec list_active_events() :: [SeasonalEvent.t()]
   def list_active_events do
     now = DateTime.utc_now()
     from(e in SeasonalEvent,
@@ -20,6 +21,7 @@ defmodule CGraph.Gamification.EventSystem do
   end
 
   @doc "List upcoming events within N days."
+  @spec list_upcoming_events(pos_integer()) :: [SeasonalEvent.t()]
   def list_upcoming_events(days \\ 7) do
     now = DateTime.utc_now()
     future = DateTime.add(now, days * 86_400, :second)
@@ -30,9 +32,11 @@ defmodule CGraph.Gamification.EventSystem do
   end
 
   @doc "Get event by ID."
+  @spec get_event(binary()) :: SeasonalEvent.t() | nil
   def get_event(event_id), do: Repo.get(SeasonalEvent, event_id)
 
   @doc "Get user's progress in an event."
+  @spec get_user_event_progress(binary(), binary()) :: {:ok, map()} | {:error, :not_found}
   def get_user_event_progress(user_id, event_id) do
     case Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id) do
       nil -> {:error, :not_found}
@@ -50,6 +54,7 @@ defmodule CGraph.Gamification.EventSystem do
   end
 
   @doc "Get user's rank in an event."
+  @spec get_user_event_rank(binary(), binary()) :: {:ok, non_neg_integer() | nil}
   def get_user_event_rank(user_id, event_id) do
     query = """
     SELECT rank FROM (
@@ -64,9 +69,11 @@ defmodule CGraph.Gamification.EventSystem do
   end
 
   @doc "Get event quests for a user."
+  @spec get_event_quests(binary(), binary()) :: list()
   def get_event_quests(_user_id, _event_id), do: []
 
   @doc "Get battle pass info."
+  @spec get_battle_pass_info(binary(), binary()) :: {:ok, map()} | {:error, :event_not_found}
   def get_battle_pass_info(event_id, user_id) do
     case {Repo.get(SeasonalEvent, event_id),
           Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id)} do
@@ -89,6 +96,7 @@ defmodule CGraph.Gamification.EventSystem do
   end
 
   @doc "Claim an event reward."
+  @spec claim_event_reward(binary(), binary(), non_neg_integer(), String.t()) :: {:ok, map()} | {:error, atom()}
   def claim_event_reward(user_id, event_id, tier, reward_type) do
     case Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id) do
       nil -> {:error, :not_joined}
@@ -98,10 +106,12 @@ defmodule CGraph.Gamification.EventSystem do
   end
 
   @doc "Get event leaderboard (2-arg)."
+  @spec get_event_leaderboard(binary(), integer()) :: {list(), map()}
   def get_event_leaderboard(event_id, limit) when is_integer(limit),
     do: get_event_leaderboard(event_id, limit, 0)
 
   @doc "Get event leaderboard with cursor."
+  @spec get_event_leaderboard(binary(), integer(), binary() | integer()) :: {list(), map()}
   def get_event_leaderboard(event_id, limit, cursor_or_offset) when is_integer(limit) do
     base_query = from p in UserEventProgress,
       join: u in assoc(p, :user),
@@ -125,6 +135,7 @@ defmodule CGraph.Gamification.EventSystem do
   end
 
   @doc "Purchase battle pass."
+  @spec purchase_battle_pass(binary(), binary()) :: {:ok, map()} | {:error, atom()}
   def purchase_battle_pass(user_id, event_id) do
     with event when not is_nil(event) <- Repo.get(SeasonalEvent, event_id),
          true <- event.has_battle_pass,
@@ -142,6 +153,7 @@ defmodule CGraph.Gamification.EventSystem do
   end
 
   @doc "Update quest progress (event-specific, 4-arg)."
+  @spec update_quest_progress(binary(), binary(), binary(), non_neg_integer()) :: {:ok, map()} | {:error, atom()}
   def update_quest_progress(user_id, event_id, quest_id, progress_increment) do
     case Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id) do
       nil -> {:error, :not_joined}
@@ -164,6 +176,7 @@ defmodule CGraph.Gamification.EventSystem do
   end
 
   @doc "Get community milestones for an event."
+  @spec get_community_milestones(binary() | term()) :: {:ok, map()}
   def get_community_milestones(event_id) when is_binary(event_id) do
     case Repo.get(SeasonalEvent, event_id) do
       nil -> {:ok, %{current_total: 0, milestones: [], next_milestone: nil}}

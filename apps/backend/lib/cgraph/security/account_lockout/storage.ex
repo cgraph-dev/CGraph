@@ -7,6 +7,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
   # Redis Availability
   # ============================================================================
 
+  @spec redis_available?() :: boolean()
   def redis_available? do
     case System.get_env("REDIS_URL") do
       nil -> false
@@ -19,6 +20,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
   # Storage Operations (Redis with ETS fallback)
   # ============================================================================
 
+  @spec get_from_storage(String.t(), boolean()) :: {:ok, term()}
   def get_from_storage(key, true = _redis_available) do
     Redix.command(:redix, ["GET", key])
   rescue
@@ -42,6 +44,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
     ArgumentError -> {:ok, nil}
   end
 
+  @spec set_in_storage(String.t(), term(), non_neg_integer(), boolean()) :: {:ok, String.t()} | {:error, term()}
   def set_in_storage(key, value, ttl, true = _redis_available) do
     Redix.command(:redix, ["SETEX", key, ttl, value])
   rescue
@@ -58,6 +61,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
     ArgumentError -> {:error, :ets_unavailable}
   end
 
+  @spec delete_from_storage(String.t(), boolean()) :: {:ok, non_neg_integer()} | {:error, term()}
   def delete_from_storage(key, true = _redis_available) do
     Redix.command(:redix, ["DEL", key])
   rescue
@@ -74,14 +78,17 @@ defmodule CGraph.Security.AccountLockout.Storage do
   end
 
   # Legacy Redis operations (kept for compatibility but wrapped)
+  @spec get_from_redis(String.t()) :: {:ok, term()}
   def get_from_redis(key) do
     get_from_storage(key, redis_available?())
   end
 
+  @spec set_in_redis(String.t(), term(), non_neg_integer()) :: {:ok, String.t()} | {:error, term()}
   def set_in_redis(key, value, ttl) do
     set_in_storage(key, value, ttl, redis_available?())
   end
 
+  @spec delete_from_redis(String.t()) :: {:ok, non_neg_integer()} | {:error, term()}
   def delete_from_redis(key) do
     delete_from_storage(key, redis_available?())
   end
@@ -90,6 +97,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
   # Counter Operations
   # ============================================================================
 
+  @spec increment_attempts(String.t(), non_neg_integer()) :: non_neg_integer()
   def increment_attempts(key, window) do
     redis_avail = redis_available?()
 
@@ -114,6 +122,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
     end
   end
 
+  @spec get_lock_count(String.t()) :: non_neg_integer()
   def get_lock_count(identifier) do
     key = lock_count_key(identifier)
     case get_from_redis(key) do
@@ -124,6 +133,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
     end
   end
 
+  @spec increment_lock_count(String.t()) :: term()
   def increment_lock_count(identifier) do
     key = lock_count_key(identifier)
     redis_avail = redis_available?()
@@ -150,9 +160,13 @@ defmodule CGraph.Security.AccountLockout.Storage do
   @redis_prefix "account_lockout:"
   @ip_prefix "ip_lockout:"
 
+  @spec lockout_key(String.t()) :: String.t()
   def lockout_key(identifier), do: "#{@redis_prefix}lock:#{identifier}"
+  @spec attempts_key(String.t()) :: String.t()
   def attempts_key(identifier), do: "#{@redis_prefix}attempts:#{identifier}"
+  @spec lock_count_key(String.t()) :: String.t()
   def lock_count_key(identifier), do: "#{@redis_prefix}lock_count:#{identifier}"
+  @spec ip_lockout_key(String.t()) :: String.t()
   def ip_lockout_key(ip), do: "#{@ip_prefix}#{ip}"
 
   # ============================================================================

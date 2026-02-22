@@ -22,20 +22,19 @@ defmodule CGraph.Notifications.PushService.FcmClient do
   - Condition-based targeting
   - Data-only messages for background processing
   - Android-specific notification options
+
+  Implementation is split across submodules:
+
+  - `FcmClient.Auth` — OAuth 2.0 token management
+  - `FcmClient.Http` — HTTP transport and response handling
+  - `FcmClient.MessageBuilder` — FCM message payload construction
   """
 
   use GenServer
 
   require Logger
 
-  @fcm_base_url "https://fcm.googleapis.com/v1/projects"
-  @fcm_send_endpoint "messages:send"
-
-  # OAuth token scope for FCM
-  @fcm_scope "https://www.googleapis.com/auth/firebase.messaging"
-
-  # Token refresh 5 minutes before expiry
-  @token_buffer_seconds 300
+  alias CGraph.Notifications.PushService.FcmClient.{Auth, Http, MessageBuilder}
 
   @default_timeout 30_000
   @max_retries 3
@@ -154,7 +153,7 @@ defmodule CGraph.Notifications.PushService.FcmClient do
     }
 
     # Get initial access token
-    state = refresh_access_token(state)
+    state = Auth.refresh_access_token(state)
 
     Logger.info("fcm_client_started", project_id: config[:project_id])
     {:ok, state}
@@ -162,23 +161,22 @@ defmodule CGraph.Notifications.PushService.FcmClient do
 
   @impl true
   def handle_call({:send, token, payload, opts}, _from, state) do
-    state = ensure_valid_token(state)
+    state = Auth.ensure_valid_token(state)
 
-    message = build_message(%{"token" => token}, payload)
+    message = MessageBuilder.build_message(%{"token" => token}, payload)
     {result, state} = do_send_message(message, opts, state, 0)
     {:reply, result, state}
   end
 
   @impl true
   def handle_call({:send_multicast, tokens, payload}, _from, state) do
-    state = ensure_valid_token(state)
+    state = Auth.ensure_valid_token(state)
 
     # FCM v1 doesn't have native multicast - we send individually but in parallel
-    # For true multicast, we'd use the legacy API
     tasks = Enum.map(tokens, fn token ->
       Task.Supervisor.async(CGraph.TaskSupervisor, fn ->
-        message = build_message(%{"token" => token}, payload)
-        do_http_send(message, state, false)
+        message = MessageBuilder.build_message(%{"token" => token}, payload)
+        Http.send_request(message, state, false)
       end)
     end)
 
@@ -205,18 +203,18 @@ defmodule CGraph.Notifications.PushService.FcmClient do
 
   @impl true
   def handle_call({:send_to_topic, topic, payload}, _from, state) do
-    state = ensure_valid_token(state)
+    state = Auth.ensure_valid_token(state)
 
-    message = build_message(%{"topic" => topic}, payload)
+    message = MessageBuilder.build_message(%{"topic" => topic}, payload)
     {result, state} = do_send_message(message, [], state, 0)
     {:reply, result, state}
   end
 
   @impl true
   def handle_call({:send_to_condition, condition, payload}, _from, state) do
-    state = ensure_valid_token(state)
+    state = Auth.ensure_valid_token(state)
 
-    message = build_message(%{"condition" => condition}, payload)
+    message = MessageBuilder.build_message(%{"condition" => condition}, payload)
     {result, state} = do_send_message(message, [], state, 0)
     {:reply, result, state}
   end
@@ -225,8 +223,8 @@ defmodule CGraph.Notifications.PushService.FcmClient do
   def handle_call(:status, _from, state) do
     status = %{
       project_id: state.config[:project_id],
-      token_valid: token_valid?(state),
-      token_expires_in: token_expires_in(state),
+      token_valid: Auth.token_valid?(state),
+      token_expires_in: Auth.token_expires_in(state),
       stats: state.stats
     }
     {:reply, status, state}
@@ -239,13 +237,13 @@ defmodule CGraph.Notifications.PushService.FcmClient do
   defp do_send_message(message, opts, state, retry_count) when retry_count < @max_retries do
     dry_run = Keyword.get(opts, :dry_run, false)
 
-    case do_http_send(message, state, dry_run) do
+    case Http.send_request(message, state, dry_run) do
       {:ok, message_id} ->
         state = update_stats(state, 1, 0)
         {{:ok, message_id}, state}
 
       {:error, :unauthorized} ->
-        state = refresh_access_token(state)
+        state = Auth.refresh_access_token(state)
         do_send_message(message, opts, state, retry_count + 1)
 
       {:error, :quota_exceeded} ->
@@ -269,255 +267,6 @@ defmodule CGraph.Notifications.PushService.FcmClient do
     {{:error, :max_retries}, state}
   end
 
-  defp do_http_send(message, state, dry_run) do
-    {url, headers, body} = build_fcm_request(message, state, dry_run)
-    handle_fcm_response(http_post(url, headers, body))
-  end
-
-  defp build_fcm_request(message, state, dry_run) do
-    project_id = state.config[:project_id]
-    url = "#{@fcm_base_url}/#{project_id}/#{@fcm_send_endpoint}"
-    body = %{"message" => message, "validate_only" => dry_run}
-    headers = [
-      {"authorization", "Bearer #{state.access_token}"},
-      {"content-type", "application/json"}
-    ]
-    {url, headers, Jason.encode!(body)}
-  end
-
-  defp handle_fcm_response({:ok, 200, _headers, response_body}) do
-    parse_success_response(response_body)
-  end
-  defp handle_fcm_response({:ok, 400, _headers, body}) do
-    error = parse_error(body)
-    Logger.warning("fcm_bad_request", error: inspect(error))
-    {:error, error}
-  end
-  defp handle_fcm_response({:ok, 401, _headers, _body}), do: {:error, :unauthorized}
-  defp handle_fcm_response({:ok, 403, _headers, _body}), do: {:error, :forbidden}
-  defp handle_fcm_response({:ok, 404, _headers, _body}), do: {:error, :not_found}
-  defp handle_fcm_response({:ok, 429, _headers, _body}), do: {:error, :quota_exceeded}
-  defp handle_fcm_response({:ok, status, _headers, body}) when status >= 500 do
-    Logger.error("fcm_server_error", status: status, body: body)
-    {:error, :unavailable}
-  end
-  defp handle_fcm_response({:error, reason}) do
-    Logger.error("fcm_connection_error", reason: inspect(reason))
-    {:error, :connection_failed}
-  end
-
-  defp parse_success_response(response_body) do
-    case Jason.decode(response_body) do
-      {:ok, %{"name" => name}} -> {:ok, name |> String.split("/") |> List.last()}
-      _ -> {:ok, "sent"}
-    end
-  end
-
-  defp http_post(url, headers, body) do
-    request = Finch.build(:post, url, headers, body)
-
-    case Finch.request(request, CGraph.Finch, receive_timeout: @default_timeout) do
-      {:ok, %Finch.Response{status: status, headers: headers, body: body}} ->
-        {:ok, status, headers, body}
-
-      {:error, reason} ->
-        {:error, reason}
-    end
-  rescue
-    e ->
-      Logger.error("fcm_http_request_failed", error: inspect(e))
-      {:error, :request_failed}
-  end
-
-  # ============================================================================
-  # Message Building
-  # ============================================================================
-
-  defp build_message(target, payload) do
-    base = target
-
-    # Add notification if present
-    base = if notification = payload["notification"] do
-      Map.put(base, "notification", notification)
-    else
-      base
-    end
-
-    # Add data if present
-    base = if data = payload["data"] do
-      # FCM requires all data values to be strings
-      string_data = Map.new(data, fn {k, v} -> {to_string(k), to_string(v)} end)
-      Map.put(base, "data", string_data)
-    else
-      base
-    end
-
-    # Add Android-specific options
-    base = if android = payload["android"] do
-      Map.put(base, "android", build_android_config(android))
-    else
-      base
-    end
-
-    # Add webpush options if targeting web
-    base = if webpush = payload["webpush"] do
-      Map.put(base, "webpush", webpush)
-    else
-      base
-    end
-
-    base
-  end
-
-  defp build_android_config(android) do
-    config = %{}
-
-    config = if priority = android["priority"] do
-      Map.put(config, "priority", String.upcase(to_string(priority)))
-    else
-      config
-    end
-
-    config = if ttl = android["ttl"] do
-      Map.put(config, "ttl", ttl)
-    else
-      config
-    end
-
-    config = if collapse_key = android["collapse_key"] do
-      Map.put(config, "collapse_key", collapse_key)
-    else
-      config
-    end
-
-    config = if notification = android["notification"] do
-      Map.put(config, "notification", notification)
-    else
-      config
-    end
-
-    config
-  end
-
-  # ============================================================================
-  # OAuth Token Management
-  # ============================================================================
-
-  defp refresh_access_token(state) do
-    case get_access_token(state.config) do
-      {:ok, token, expires_in} ->
-        expires_at = System.monotonic_time(:second) + expires_in - @token_buffer_seconds
-        Logger.debug("fcm_token_refreshed", expires_in: expires_in)
-        %{state | access_token: token, token_expires_at: expires_at}
-
-      {:error, reason} ->
-        Logger.error("fcm_token_refresh_failed", reason: inspect(reason))
-        state
-    end
-  end
-
-  defp ensure_valid_token(state) do
-    if token_valid?(state) do
-      state
-    else
-      refresh_access_token(state)
-    end
-  end
-
-  defp token_valid?(state) do
-    state.access_token != nil and
-      state.token_expires_at != nil and
-      System.monotonic_time(:second) < state.token_expires_at
-  end
-
-  defp token_expires_in(state) do
-    if state.token_expires_at do
-      max(0, state.token_expires_at - System.monotonic_time(:second))
-    else
-      0
-    end
-  end
-
-  defp get_access_token(config) do
-    service_account = load_service_account(config)
-
-    # Create JWT for service account authentication
-    private_key = service_account["private_key"]
-    client_email = service_account["client_email"]
-    token_uri = service_account["token_uri"] || "https://oauth2.googleapis.com/token"
-
-    assertion = build_jwt_assertion(private_key, client_email, token_uri)
-    exchange_jwt_for_token(token_uri, assertion)
-  rescue
-    e ->
-      Logger.error("fcm_access_token_error", error: inspect(e))
-      {:error, e}
-  end
-
-  defp load_service_account(config) do
-    cond do
-      path = config[:service_account_path] ->
-        path |> File.read!() |> Jason.decode!()
-      account = config[:service_account] ->
-        account
-      true ->
-        {:error, :fcm_not_configured}
-    end
-  end
-
-  defp build_jwt_assertion(private_key, client_email, token_uri) do
-    now = System.system_time(:second)
-
-    claims = %{
-      "iss" => client_email,
-      "sub" => client_email,
-      "aud" => token_uri,
-      "iat" => now,
-      "exp" => now + 3600,
-      "scope" => @fcm_scope
-    }
-
-    # Sign JWT with RS256
-    jwk = JOSE.JWK.from_pem(private_key)
-    jws = %{"alg" => "RS256"}
-    {_, assertion} = JOSE.JWT.sign(jwk, jws, claims) |> JOSE.JWS.compact()
-    assertion
-  end
-
-  defp exchange_jwt_for_token(token_uri, assertion) do
-    body = URI.encode_query(%{
-      "grant_type" => "urn:ietf:params:oauth:grant-type:jwt-bearer",
-      "assertion" => assertion
-    })
-
-    headers = [{"content-type", "application/x-www-form-urlencoded"}]
-
-    case http_post(token_uri, headers, body) do
-      {:ok, 200, _headers, response_body} ->
-        parse_token_response(response_body)
-
-      {:ok, status, _headers, body} ->
-        Logger.error("fcm_oauth_token_failed", status: status, body: body)
-        {:error, :token_request_failed}
-
-      {:error, reason} ->
-        {:error, reason}
-    end
-  end
-
-  defp parse_token_response(response_body) do
-    case Jason.decode(response_body) do
-      {:ok, %{"access_token" => token, "expires_in" => expires_in}} ->
-        {:ok, token, expires_in}
-      _ ->
-        {:error, :invalid_response}
-    end
-  end
-
-  # ============================================================================
-  # Helpers
-  # ============================================================================
-
   defp load_config do
     config = Application.get_env(:cgraph, CGraph.Notifications.PushService, [])
 
@@ -527,26 +276,6 @@ defmodule CGraph.Notifications.PushService.FcmClient do
       service_account: Keyword.get(config, :fcm_service_account)
     }
   end
-
-  defp parse_error(body) when is_binary(body) do
-    case Jason.decode(body) do
-      {:ok, %{"error" => %{"code" => code}}} ->
-        error_code_to_atom(code)
-      {:ok, %{"error" => %{"message" => message}}} ->
-        Logger.warning("fcm_error", message: message)
-        :unknown_error
-      _ ->
-        :unknown_error
-    end
-  end
-  defp parse_error(_), do: :unknown_error
-
-  defp error_code_to_atom(404), do: :not_found
-  defp error_code_to_atom(400), do: :invalid_argument
-  defp error_code_to_atom(401), do: :unauthorized
-  defp error_code_to_atom(403), do: :forbidden
-  defp error_code_to_atom(429), do: :quota_exceeded
-  defp error_code_to_atom(_), do: :unknown_error
 
   defp merge_multicast_results(acc, result) do
     %{

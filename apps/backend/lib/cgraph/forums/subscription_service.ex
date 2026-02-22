@@ -10,6 +10,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Subscribe to a forum.
   """
+  @spec subscribe_to_forum(binary(), binary(), keyword()) :: {:ok, Subscription.t()} | {:error, Ecto.Changeset.t()}
   def subscribe_to_forum(user_id, forum_id, opts \\ []) do
     %Subscription{}
     |> Subscription.changeset(%{
@@ -26,6 +27,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Subscribe to a board.
   """
+  @spec subscribe_to_board(binary(), binary(), keyword()) :: {:ok, Subscription.t()} | {:error, Ecto.Changeset.t()}
   def subscribe_to_board(user_id, board_id, opts \\ []) do
     %Subscription{}
     |> Subscription.changeset(%{
@@ -42,6 +44,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Subscribe to a thread.
   """
+  @spec subscribe_to_thread(binary(), binary(), keyword()) :: {:ok, Subscription.t()} | {:error, Ecto.Changeset.t()}
   def subscribe_to_thread(user_id, thread_id, opts \\ []) do
     %Subscription{}
     |> Subscription.changeset(%{
@@ -58,6 +61,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Unsubscribe from a forum/board/thread.
   """
+  @spec unsubscribe(binary()) :: {:ok, Subscription.t()} | {:error, :not_found} | {:error, Ecto.Changeset.t()}
   def unsubscribe(subscription_id) do
     case Repo.get(Subscription, subscription_id) do
       nil -> {:error, :not_found}
@@ -68,6 +72,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Get all subscriptions for a user.
   """
+  @spec list_subscriptions(binary()) :: [Subscription.t()]
   def list_subscriptions(user_id) do
     from(s in Subscription,
       where: s.user_id == ^user_id,
@@ -80,6 +85,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Get subscriptions by type.
   """
+  @spec list_forum_subscriptions(binary()) :: [Subscription.t()]
   def list_forum_subscriptions(user_id) do
     from(s in Subscription,
       where: s.user_id == ^user_id,
@@ -89,6 +95,7 @@ defmodule CGraph.Forums.SubscriptionService do
     |> Repo.all()
   end
 
+  @spec list_board_subscriptions(binary()) :: [Subscription.t()]
   def list_board_subscriptions(user_id) do
     from(s in Subscription,
       where: s.user_id == ^user_id,
@@ -98,6 +105,7 @@ defmodule CGraph.Forums.SubscriptionService do
     |> Repo.all()
   end
 
+  @spec list_thread_subscriptions(binary()) :: [Subscription.t()]
   def list_thread_subscriptions(user_id) do
     from(s in Subscription,
       where: s.user_id == ^user_id,
@@ -110,6 +118,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Update subscription settings.
   """
+  @spec update_subscription(binary(), map()) :: {:ok, Subscription.t()} | {:error, :not_found} | {:error, Ecto.Changeset.t()}
   def update_subscription(subscription_id, attrs) do
     case Repo.get(Subscription, subscription_id) do
       nil -> {:error, :not_found}
@@ -123,6 +132,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Get users subscribed to a thread (for sending notifications).
   """
+  @spec get_thread_subscribers(binary(), binary() | nil) :: [Subscription.t()]
   def get_thread_subscribers(thread_id, exclude_user_id \\ nil) do
     query =
       from s in Subscription,
@@ -143,6 +153,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Get users subscribed to a board (for new thread notifications).
   """
+  @spec get_board_subscribers(binary(), binary() | nil) :: [Subscription.t()]
   def get_board_subscribers(board_id, exclude_user_id \\ nil) do
     query =
       from s in Subscription,
@@ -163,6 +174,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Mark unread for a subscription.
   """
+  @spec increment_unread(binary()) :: {non_neg_integer(), nil | [term()]}
   def increment_unread(subscription_id) do
     from(s in Subscription, where: s.id == ^subscription_id)
     |> Repo.update_all(inc: [unread_count: 1])
@@ -171,6 +183,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Mark subscription as read.
   """
+  @spec mark_read(binary()) :: {non_neg_integer(), nil | [term()]}
   def mark_read(subscription_id) do
     from(s in Subscription, where: s.id == ^subscription_id)
     |> Repo.update_all(set: [unread_count: 0])
@@ -179,6 +192,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Check if user is subscribed to a thread.
   """
+  @spec subscribed_to_thread?(binary(), binary()) :: boolean()
   def subscribed_to_thread?(user_id, thread_id) do
     from(s in Subscription,
       where: s.user_id == ^user_id,
@@ -190,6 +204,7 @@ defmodule CGraph.Forums.SubscriptionService do
   @doc """
   Toggle subscription to a thread.
   """
+  @spec toggle_thread_subscription(binary(), binary()) :: {:ok, Subscription.t()} | {:error, Ecto.Changeset.t()}
   def toggle_thread_subscription(user_id, thread_id) do
     case Repo.one(from s in Subscription,
       where: s.user_id == ^user_id,

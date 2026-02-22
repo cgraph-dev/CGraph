@@ -16,6 +16,7 @@ defmodule CGraph.RequestContext.Propagation do
   @doc """
   Create a new child span within the current trace.
   """
+  @spec create_child_span() :: map() | nil
   def create_child_span do
     case Access.get() do
       nil ->
@@ -35,6 +36,7 @@ defmodule CGraph.RequestContext.Propagation do
 
   Returns headers compatible with W3C Trace Context and common correlation headers.
   """
+  @spec propagation_headers() :: [{String.t(), String.t()}]
   def propagation_headers do
     context = Access.get()
 
@@ -60,6 +62,7 @@ defmodule CGraph.RequestContext.Propagation do
   @doc """
   Execute a function with the current context.
   """
+  @spec with_context((-> term())) :: term()
   def with_context(fun) do
     context = Access.get()
 
@@ -75,6 +78,7 @@ defmodule CGraph.RequestContext.Propagation do
   @doc """
   Spawn a new process with the current context.
   """
+  @spec spawn_with_context((-> term())) :: pid()
   def spawn_with_context(fun) do
     context = Access.get()
 
@@ -91,6 +95,7 @@ defmodule CGraph.RequestContext.Propagation do
   @doc """
   Spawn a linked process with the current context.
   """
+  @spec spawn_link_with_context((-> term())) :: pid()
   def spawn_link_with_context(fun) do
     context = Access.get()
 
@@ -104,6 +109,7 @@ defmodule CGraph.RequestContext.Propagation do
   @doc """
   Start a Task with the current context.
   """
+  @spec async_with_context((-> term())) :: Task.t()
   def async_with_context(fun) do
     context = Access.get()
 
@@ -117,6 +123,7 @@ defmodule CGraph.RequestContext.Propagation do
   @doc """
   Get context suitable for passing to a background job.
   """
+  @spec job_context() :: map()
   def job_context do
     case Access.get() do
       nil ->
@@ -139,6 +146,7 @@ defmodule CGraph.RequestContext.Propagation do
   @doc """
   Restore context from job arguments.
   """
+  @spec restore_from_job(map()) :: term()
   def restore_from_job(args) do
     CGraph.RequestContext.init(%{
       request_id: args["request_id"] || args[:request_id] || generate_request_id(),
@@ -161,6 +169,7 @@ defmodule CGraph.RequestContext.Propagation do
   Format: version-trace_id-span_id-trace_flags
   Example: 00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01
   """
+  @spec parse_traceparent(Plug.Conn.t() | String.t() | nil) :: {String.t() | nil, String.t() | nil}
   def parse_traceparent(%Plug.Conn{} = conn) do
     header = get_header(conn, get_config(:trace_header))
     parse_traceparent(header)
@@ -182,6 +191,7 @@ defmodule CGraph.RequestContext.Propagation do
   @doc """
   Format context as W3C traceparent header value.
   """
+  @spec format_traceparent(map()) :: String.t() | nil
   def format_traceparent(%{trace_id: trace_id, span_id: span_id})
       when is_binary(trace_id) and is_binary(span_id) do
     "00-#{trace_id}-#{span_id}-01"
@@ -217,11 +227,13 @@ defmodule CGraph.RequestContext.Propagation do
   end
 
   @doc false
+  @spec generate_request_id() :: String.t()
   def generate_request_id do
     "req_" <> Base.encode16(:crypto.strong_rand_bytes(12), case: :lower)
   end
 
   @doc false
+  @spec generate_span_id() :: String.t()
   def generate_span_id do
     Base.encode16(:crypto.strong_rand_bytes(8), case: :lower)
   end

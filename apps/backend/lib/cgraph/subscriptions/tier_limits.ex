@@ -42,6 +42,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   Initializes the tier limits cache.
   Called during application startup.
   """
+  @spec init_cache() :: :ok
   def init_cache do
     if :ets.whereis(@cache_table) == :undefined do
       :ets.new(@cache_table, [:named_table, :public, read_concurrency: true])
@@ -52,6 +53,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Refreshes the tier limits cache from the database.
   """
+  @spec refresh_cache() :: :ok
   def refresh_cache do
     tiers = list_active_tiers()
 
@@ -92,6 +94,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Lists all active tiers ordered by position.
   """
+  @spec list_active_tiers() :: [TierLimit.t()]
   def list_active_tiers do
     TierLimit
     |> where([t], t.is_active == true)
@@ -102,6 +105,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Lists all tiers (including inactive).
   """
+  @spec list_all_tiers() :: [TierLimit.t()]
   def list_all_tiers do
     TierLimit
     |> order_by([t], t.position)
@@ -111,6 +115,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Gets a tier by name from cache (falls back to database).
   """
+  @spec get_tier(String.t()) :: {:ok, TierLimit.t()} | {:error, :tier_not_found}
   def get_tier(tier_name) do
     case :ets.whereis(@cache_table) do
       :undefined -> get_tier_from_db(tier_name)
@@ -121,6 +126,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Gets a tier directly from the database.
   """
+  @spec get_tier_from_db(String.t()) :: {:ok, TierLimit.t()} | {:error, :tier_not_found}
   def get_tier_from_db(tier_name) do
     case Repo.get_by(TierLimit, tier: tier_name) do
       nil -> {:error, :tier_not_found}
@@ -131,6 +137,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Gets a tier by ID.
   """
+  @spec get_tier_by_id(String.t()) :: {:ok, TierLimit.t()} | {:error, :tier_not_found}
   def get_tier_by_id(id) do
     case Repo.get(TierLimit, id) do
       nil -> {:error, :tier_not_found}
@@ -141,6 +148,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Gets features for a tier.
   """
+  @spec get_tier_features(String.t()) :: [TierFeature.t()]
   def get_tier_features(tier_id) do
     TierFeature
     |> where([f], f.tier_id == ^tier_id)
@@ -150,6 +158,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Creates a new tier.
   """
+  @spec create_tier(map()) :: {:ok, TierLimit.t()} | {:error, Ecto.Changeset.t()}
   def create_tier(attrs) do
     %TierLimit{}
     |> TierLimit.changeset(attrs)
@@ -163,6 +172,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Updates a tier.
   """
+  @spec update_tier(TierLimit.t(), map()) :: {:ok, TierLimit.t()} | {:error, Ecto.Changeset.t()}
   def update_tier(%TierLimit{} = tier, attrs) do
     tier
     |> TierLimit.changeset(attrs)
@@ -181,6 +191,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   Gets the user's subscription tier.
   Returns "free" if no subscription found.
   """
+  @spec get_user_tier(User.t() | String.t()) :: String.t()
   def get_user_tier(%User{} = user) do
     # Reads subscription_tier from user record, defaulting to "free"
     user.subscription_tier || "free"
@@ -196,6 +207,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Gets the full tier limits for a user.
   """
+  @spec get_user_tier_limits(User.t()) :: {:ok, TierLimit.t()} | {:error, :tier_not_found}
   def get_user_tier_limits(%User{} = user) do
     tier_name = get_user_tier(user)
     get_tier(tier_name)
@@ -208,6 +220,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Gets all active overrides for a user.
   """
+  @spec get_user_overrides(String.t()) :: [UserTierOverride.t()]
   def get_user_overrides(user_id) do
     now = DateTime.utc_now()
 
@@ -220,6 +233,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Gets a specific override for a user.
   """
+  @spec get_user_override(String.t(), String.t()) :: UserTierOverride.t() | nil
   def get_user_override(user_id, limit_key) do
     now = DateTime.utc_now()
 
@@ -232,6 +246,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Creates or updates an override for a user.
   """
+  @spec set_user_override(String.t(), String.t(), term(), keyword()) :: {:ok, UserTierOverride.t()} | {:error, Ecto.Changeset.t()}
   def set_user_override(user_id, limit_key, value, opts \\ []) do
     attrs = %{
       user_id: user_id,
@@ -258,6 +273,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Removes an override for a user.
   """
+  @spec remove_user_override(String.t(), String.t()) :: {non_neg_integer(), nil | list()}
   def remove_user_override(user_id, limit_key) do
     UserTierOverride
     |> where([o], o.user_id == ^user_id and o.limit_key == ^limit_key)
@@ -279,6 +295,7 @@ defmodule CGraph.Subscriptions.TierLimits do
       get_effective_limit(user, :max_storage_bytes)
       # => 5368709120
   """
+  @spec get_effective_limit(User.t(), atom()) :: term()
   def get_effective_limit(%User{} = user, limit_key) do
     limit_key_str = to_string(limit_key)
 
@@ -324,6 +341,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   Compares two tiers and returns the differences.
   Useful for upgrade/downgrade displays.
   """
+  @spec compare_tiers(String.t(), String.t()) :: {:ok, map()} | {:error, :tier_not_found}
   def compare_tiers(tier1_name, tier2_name) do
     with {:ok, tier1} <- get_tier(tier1_name),
          {:ok, tier2} <- get_tier(tier2_name) do
@@ -362,6 +380,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Serializes tier limits to a map suitable for API responses.
   """
+  @spec serialize_tier(TierLimit.t(), keyword()) :: map()
   def serialize_tier(%TierLimit{} = tier, opts \\ []) do
     base = %{
       id: tier.id,
@@ -415,6 +434,7 @@ defmodule CGraph.Subscriptions.TierLimits do
   @doc """
   Serializes user's effective limits for API responses.
   """
+  @spec serialize_user_limits(User.t()) :: map()
   def serialize_user_limits(%User{} = user) do
     case get_user_tier_limits(user) do
       {:ok, tier} ->

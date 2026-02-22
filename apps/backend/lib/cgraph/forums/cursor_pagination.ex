@@ -14,6 +14,7 @@ defmodule CGraph.Forums.CursorPagination do
   # Post Cursors
   # ============================================================================
 
+  @spec apply_post_cursor(Ecto.Query.t(), term(), String.t()) :: Ecto.Query.t()
   def apply_post_cursor(query, cursor, sort) do
     case sort do
       "new" -> apply_simple_cursor_desc(query, cursor, :inserted_at)
@@ -27,6 +28,7 @@ defmodule CGraph.Forums.CursorPagination do
   # Comment Cursors
   # ============================================================================
 
+  @spec apply_comment_cursor(Ecto.Query.t(), term(), String.t()) :: Ecto.Query.t()
   def apply_comment_cursor(query, cursor, sort) do
     case sort do
       "new" -> apply_simple_cursor_desc(query, cursor, :inserted_at)
@@ -40,6 +42,7 @@ defmodule CGraph.Forums.CursorPagination do
   # Forum (Leaderboard) Cursors
   # ============================================================================
 
+  @spec apply_forum_cursor(Ecto.Query.t(), term(), String.t()) :: Ecto.Query.t()
   def apply_forum_cursor(query, cursor, sort) do
     field = case sort do
       "hot" -> :hot_score
@@ -56,6 +59,7 @@ defmodule CGraph.Forums.CursorPagination do
   # Thread Cursors (compound: is_pinned + sort field)
   # ============================================================================
 
+  @spec apply_thread_cursor_filter(Ecto.Query.t(), term(), String.t()) :: Ecto.Query.t()
   def apply_thread_cursor_filter(query, cursor, sort) do
     sort_field = case sort do
       "latest" -> :last_post_at
@@ -82,6 +86,7 @@ defmodule CGraph.Forums.CursorPagination do
   # Generic Cursor Filters
   # ============================================================================
 
+  @spec apply_simple_cursor_desc(Ecto.Query.t(), term(), atom()) :: Ecto.Query.t()
   def apply_simple_cursor_desc(query, cursor, field) do
     case Pagination.decode_cursor(cursor) do
       %{v: v, id: id} ->
@@ -92,6 +97,7 @@ defmodule CGraph.Forums.CursorPagination do
     end
   end
 
+  @spec apply_simple_cursor_asc(Ecto.Query.t(), term(), atom()) :: Ecto.Query.t()
   def apply_simple_cursor_asc(query, cursor, field) do
     case Pagination.decode_cursor(cursor) do
       %{v: v, id: id} ->
@@ -102,6 +108,7 @@ defmodule CGraph.Forums.CursorPagination do
     end
   end
 
+  @spec apply_controversy_cursor(Ecto.Query.t(), term()) :: Ecto.Query.t()
   def apply_controversy_cursor(query, cursor) do
     case Pagination.decode_cursor(cursor) do
       %{v: v, id: id} ->
@@ -114,6 +121,7 @@ defmodule CGraph.Forums.CursorPagination do
     end
   end
 
+  @spec apply_hot_formula_cursor(Ecto.Query.t(), term()) :: Ecto.Query.t()
   def apply_hot_formula_cursor(query, cursor) do
     case Pagination.decode_cursor(cursor) do
       %{v: v, id: id} ->
@@ -130,6 +138,7 @@ defmodule CGraph.Forums.CursorPagination do
   # Cursor Metadata Builders
   # ============================================================================
 
+  @spec build_cursor_meta(list(), boolean(), pos_integer(), String.t(), atom()) :: map()
   def build_cursor_meta([], _has_next, per_page, _sort, _type) do
     %{per_page: per_page, has_next_page: false, next_cursor: nil}
   end
@@ -143,6 +152,7 @@ defmodule CGraph.Forums.CursorPagination do
     %{per_page: per_page, has_next_page: has_next, next_cursor: next_cursor}
   end
 
+  @spec build_item_cursor(struct(), String.t(), atom()) :: binary()
   def build_item_cursor(item, sort, :post) do
     val = case sort do
       "new" -> item.inserted_at
@@ -186,6 +196,7 @@ defmodule CGraph.Forums.CursorPagination do
     Pagination.encode_cursor_data(%{p: item.is_pinned, v: val, id: item.id})
   end
 
+  @spec compute_hot_value(struct()) :: float()
   def compute_hot_value(post) do
     age_seconds = DateTime.diff(DateTime.truncate(DateTime.utc_now(), :second), post.inserted_at, :second)
     age_hours = age_seconds / 3600.0

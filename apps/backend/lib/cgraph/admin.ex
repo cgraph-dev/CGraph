@@ -65,6 +65,7 @@ defmodule CGraph.Admin do
   - `:order` - Sort order (asc, desc)
   - `:page`, `:per_page` - Pagination
   """
+  @spec list_users(keyword()) :: {:ok, map()}
   def list_users(opts \\ []) do
     search = Keyword.get(opts, :search)
     status = Keyword.get(opts, :status)
@@ -106,6 +107,7 @@ defmodule CGraph.Admin do
   @doc """
   Get detailed user information for admin view.
   """
+  @spec get_user_details(String.t()) :: {:ok, map()} | {:error, :not_found}
   def get_user_details(user_id) do
     case Repo.get(User, user_id) do
       nil -> {:error, :not_found}
@@ -136,6 +138,7 @@ defmodule CGraph.Admin do
   - `:duration` - Duration in seconds, or `:permanent`
   - `:notify` - Whether to notify the user
   """
+  @spec ban_user(String.t(), String.t(), keyword()) :: {:ok, User.t()} | {:error, term()}
   def ban_user(user_id, admin_id, opts \\ []) do
     reason = Keyword.fetch!(opts, :reason)
     duration = Keyword.get(opts, :duration, :permanent)
@@ -192,6 +195,7 @@ defmodule CGraph.Admin do
   @doc """
   Unban a user.
   """
+  @spec unban_user(String.t(), String.t(), keyword()) :: {:ok, User.t()} | {:error, term()}
   def unban_user(user_id, admin_id, opts \\ []) do
     reason = Keyword.get(opts, :reason, "Ban lifted")
 
@@ -217,6 +221,7 @@ defmodule CGraph.Admin do
   @doc """
   Verify a user (add verified badge).
   """
+  @spec verify_user(String.t(), String.t()) :: {:ok, User.t()} | {:error, term()}
   def verify_user(user_id, admin_id) do
     with {:ok, user} <- get_user(user_id),
          {:ok, user} <- update_user_field(user, :is_verified, true),
@@ -244,6 +249,7 @@ defmodule CGraph.Admin do
   - `:type` - Filter by content type (message, post, comment, user)
   - `:page`, `:per_page` - Pagination
   """
+  @spec list_reports(keyword()) :: {:ok, map()}
   def list_reports(_opts \\ []) do
     # Would query from reports table
     {:ok, %{
@@ -262,6 +268,7 @@ defmodule CGraph.Admin do
   - `:remove` - Remove the content
   - `:ban` - Ban the user
   """
+  @spec resolve_report(String.t(), String.t(), atom(), keyword()) :: {:ok, :resolved} | {:error, term()}
   def resolve_report(report_id, admin_id, action, opts \\ []) do
     with {:ok, _report} <- get_report(report_id),
          :ok <- execute_moderation_action(action, opts),
@@ -290,6 +297,7 @@ defmodule CGraph.Admin do
   @doc """
   Log an administrative action.
   """
+  @spec log_admin_action(String.t(), atom(), map()) :: :ok
   def log_admin_action(admin_id, action, details) do
     Logger.info("Admin action",
       admin_id: admin_id,
@@ -304,6 +312,7 @@ defmodule CGraph.Admin do
   @doc """
   List audit log entries.
   """
+  @spec list_audit_log(keyword()) :: {:ok, map()}
   def list_audit_log(_opts \\ []) do
     # Would query from audit_log table
     {:ok, %{
@@ -319,6 +328,7 @@ defmodule CGraph.Admin do
   @doc """
   Get all system configuration.
   """
+  @spec get_config() :: map()
   def get_config do
     %{
       features: %{
@@ -345,6 +355,7 @@ defmodule CGraph.Admin do
   @doc """
   Update system configuration.
   """
+  @spec update_config(String.t(), String.t(), term()) :: {:ok, :updated}
   def update_config(admin_id, key, value) do
     # Would persist to database/runtime config
     log_admin_action(admin_id, :update_config, %{key: key, value: value})
@@ -354,6 +365,7 @@ defmodule CGraph.Admin do
   @doc """
   Enable maintenance mode.
   """
+  @spec enable_maintenance_mode(String.t(), String.t()) :: {:ok, :maintenance_enabled}
   def enable_maintenance_mode(admin_id, message \\ "System maintenance in progress") do
     log_admin_action(admin_id, :maintenance_mode, %{enabled: true, message: message})
     {:ok, :maintenance_enabled}
@@ -362,6 +374,7 @@ defmodule CGraph.Admin do
   @doc """
   Disable maintenance mode.
   """
+  @spec disable_maintenance_mode(String.t()) :: {:ok, :maintenance_disabled}
   def disable_maintenance_mode(admin_id) do
     log_admin_action(admin_id, :maintenance_mode, %{enabled: false})
     {:ok, :maintenance_disabled}
@@ -374,6 +387,7 @@ defmodule CGraph.Admin do
   @doc """
   Export user data (GDPR compliance).
   """
+  @spec export_user_data(String.t(), String.t()) :: {:ok, map()}
   def export_user_data(user_id, admin_id) do
     log_admin_action(admin_id, :export_user_data, %{user_id: user_id})
 
@@ -387,6 +401,7 @@ defmodule CGraph.Admin do
   @doc """
   Permanently delete user data (GDPR right to be forgotten).
   """
+  @spec delete_user_data(String.t(), String.t(), keyword()) :: {:ok, :deletion_scheduled} | {:error, :confirmation_required}
   def delete_user_data(user_id, admin_id, opts \\ []) do
     confirmation = Keyword.get(opts, :confirmation)
 

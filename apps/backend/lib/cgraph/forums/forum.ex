@@ -20,6 +20,8 @@ defmodule CGraph.Forums.Forum do
   @foreign_key_type :binary_id
   @timestamps_opts [type: :utc_datetime_usec]
 
+  @type t :: %__MODULE__{}
+
   @derive {Jason.Encoder, only: [
     :id, :name, :slug, :description, :icon_url, :banner_url,
     :is_public, :member_count, :post_count, :score, :upvotes, :downvotes,
@@ -136,6 +138,7 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Create a new forum.
   """
+  @spec changeset(t() | Ecto.Changeset.t(), map()) :: Ecto.Changeset.t()
   def changeset(forum, attrs) do
     forum
     |> cast(attrs, [
@@ -171,6 +174,7 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Update forum settings.
   """
+  @spec settings_changeset(t(), map()) :: Ecto.Changeset.t()
   def settings_changeset(forum, attrs) do
     forum
     |> cast(attrs, [
@@ -195,6 +199,7 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Update custom styling (CSS and sidebar).
   """
+  @spec styling_changeset(t(), map()) :: Ecto.Changeset.t()
   def styling_changeset(forum, attrs) do
     forum
     |> cast(attrs, [
@@ -212,6 +217,7 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Changeset for hierarchy operations (moving forums, reordering).
   """
+  @spec hierarchy_changeset(t(), map()) :: Ecto.Changeset.t()
   def hierarchy_changeset(forum, attrs) do
     forum
     |> cast(attrs, [
@@ -290,6 +296,7 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Query for root-level forums only (no parent).
   """
+  @spec root_forums_query() :: Ecto.Query.t()
   def root_forums_query do
     from f in __MODULE__,
       where: is_nil(f.parent_forum_id) and not_deleted(f),
@@ -299,6 +306,7 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Query for sub-forums of a given parent.
   """
+  @spec sub_forums_query(String.t()) :: Ecto.Query.t()
   def sub_forums_query(parent_id) do
     from f in __MODULE__,
       where: f.parent_forum_id == ^parent_id and not_deleted(f),
@@ -308,6 +316,7 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Query for forums at a specific depth level.
   """
+  @spec at_depth_query(non_neg_integer()) :: Ecto.Query.t()
   def at_depth_query(depth) do
     from f in __MODULE__,
       where: f.depth == ^depth and not_deleted(f),
@@ -317,6 +326,7 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Query for all forums in a subtree (using materialized path).
   """
+  @spec subtree_query(String.t()) :: Ecto.Query.t()
   def subtree_query(forum_path) do
     pattern = forum_path <> "%"
     from f in __MODULE__,
@@ -327,6 +337,7 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Query for visible forums in navigation.
   """
+  @spec navigation_query() :: Ecto.Query.t()
   def navigation_query do
     from f in __MODULE__,
       where: f.show_in_navigation == true and not_deleted(f),
@@ -336,6 +347,7 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Preload hierarchy relationships.
   """
+  @spec with_hierarchy(Ecto.Query.t()) :: Ecto.Query.t()
   def with_hierarchy(query) do
     from q in query,
       preload: [:parent_forum, :sub_forums]
@@ -345,6 +357,7 @@ defmodule CGraph.Forums.Forum do
   Build a nested tree structure from flat forum list.
   Returns forums organized by parent_id for efficient tree building.
   """
+  @spec build_tree([t()]) :: [map()]
   def build_tree(forums) do
     forums_by_parent =
       forums
@@ -365,6 +378,7 @@ defmodule CGraph.Forums.Forum do
   Get breadcrumb path for a forum.
   Returns list of {id, name, slug} tuples from root to current forum.
   """
+  @spec get_breadcrumbs(t(), module()) :: [map()]
   def get_breadcrumbs(forum, repo) do
     ancestors = get_ancestors(forum, repo)
     Enum.map(ancestors ++ [forum], fn f ->
@@ -375,6 +389,7 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Get all ancestor forums.
   """
+  @spec get_ancestors(t() | map(), module()) :: [map()]
   def get_ancestors(%{parent_forum_id: nil}, _repo), do: []
   def get_ancestors(%{parent_forum_id: parent_id}, repo) do
     # Use recursive CTE for efficient ancestor lookup
@@ -413,6 +428,7 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Check if forum is an ancestor of another forum.
   """
+  @spec ancestor?(t(), t()) :: boolean()
   def ancestor?(potential_ancestor, forum) do
     String.starts_with?(forum.path || "", potential_ancestor.path || "")
   end
@@ -420,6 +436,7 @@ defmodule CGraph.Forums.Forum do
   @doc """
   Check if forum is a descendant of another forum.
   """
+  @spec descendant?(t(), t()) :: boolean()
   def descendant?(potential_descendant, forum) do
     String.starts_with?(potential_descendant.path || "", forum.path || "")
   end

@@ -40,6 +40,7 @@ defmodule CGraph.Subscriptions do
 
   Returns `{:ok, checkout_url}` on success.
   """
+  @spec create_checkout_session(User.t(), String.t(), keyword()) :: {:ok, String.t()} | {:error, String.t()}
   def create_checkout_session(%User{} = user, tier, opts \\ []) do
     price_id = get_price_id(tier, opts)
     success_url = Keyword.get(opts, :success_url, default_success_url())
@@ -94,6 +95,7 @@ defmodule CGraph.Subscriptions do
   @doc """
   Creates a Stripe Customer Portal session for subscription management.
   """
+  @spec create_portal_session(User.t()) :: {:ok, String.t()} | {:error, :no_customer | String.t()}
   def create_portal_session(%User{stripe_customer_id: nil}), do: {:error, :no_customer}
 
   def create_portal_session(%User{stripe_customer_id: customer_id} = user) do
@@ -121,6 +123,7 @@ defmodule CGraph.Subscriptions do
   Activates a subscription for a user.
   Called when `customer.subscription.created` webhook is received.
   """
+  @spec activate_subscription(User.t(), map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def activate_subscription(%User{} = user, params) do
     attrs = %{
       subscription_tier: params.tier,
@@ -142,6 +145,7 @@ defmodule CGraph.Subscriptions do
   Updates a subscription tier or period.
   Called when `customer.subscription.updated` webhook is received.
   """
+  @spec update_subscription(User.t(), map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def update_subscription(%User{} = user, params) do
     attrs = %{
       subscription_tier: params[:tier] || user.subscription_tier,
@@ -161,6 +165,7 @@ defmodule CGraph.Subscriptions do
   Cancels a subscription, reverting user to free tier.
   Called when `customer.subscription.deleted` webhook is received.
   """
+  @spec cancel_subscription(User.t()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def cancel_subscription(%User{} = user) do
     attrs = %{
       subscription_tier: "free",
@@ -182,6 +187,7 @@ defmodule CGraph.Subscriptions do
   Links a Stripe customer and subscription to a user.
   Called after checkout.session.completed.
   """
+  @spec link_stripe_customer(User.t(), map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def link_stripe_customer(%User{} = user, params) do
     attrs = %{
       stripe_customer_id: params.stripe_customer_id,
@@ -200,6 +206,7 @@ defmodule CGraph.Subscriptions do
   @doc """
   Records a successful payment.
   """
+  @spec record_payment(User.t(), map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def record_payment(%User{} = user, params) do
     Logger.info("recording_payment_for_user", user_id: user.id, params_amount: params.amount, params_currency: params.currency)
 
@@ -215,6 +222,7 @@ defmodule CGraph.Subscriptions do
   @doc """
   Records a failed payment attempt.
   """
+  @spec record_payment_failure(User.t(), map()) :: {:ok, User.t()}
   def record_payment_failure(%User{} = user, params) do
     Logger.warning("payment_failed_for_user_attempt", user_id: user.id, params_attempt_count: params.attempt_count)
 
@@ -231,6 +239,7 @@ defmodule CGraph.Subscriptions do
   @doc """
   Checks if a user has an active subscription (non-free tier).
   """
+  @spec active?(User.t() | term()) :: boolean()
   def active?(%User{subscription_tier: tier, subscription_expires_at: expires_at}) do
     tier != "free" && tier != nil &&
       (expires_at == nil || DateTime.compare(expires_at, DateTime.utc_now()) == :gt)
@@ -241,12 +250,14 @@ defmodule CGraph.Subscriptions do
   @doc """
   Gets the user's current subscription tier.
   """
+  @spec get_tier(User.t()) :: String.t()
   def get_tier(%User{subscription_tier: nil}), do: "free"
   def get_tier(%User{subscription_tier: tier}), do: tier
 
   @doc """
   Checks if a user's subscription is about to expire (within 7 days).
   """
+  @spec expiring_soon?(User.t()) :: boolean()
   def expiring_soon?(%User{subscription_expires_at: nil}), do: false
 
   def expiring_soon?(%User{subscription_expires_at: expires_at}) do

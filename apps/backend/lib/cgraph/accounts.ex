@@ -5,299 +5,46 @@ defmodule CGraph.Accounts do
   Handles user management, authentication, sessions, friendships, and settings.
   """
 
-  import Ecto.Query, warn: false
-
-  alias CGraph.Accounts.{DeletedFriendship, Friendship, Session, User}
-  alias CGraph.Repo
-  alias CGraph.Security.PasswordBreachCheck
+  alias CGraph.Accounts.{Friendship, Session}
 
   # ============================================================================
-  # Submodule Delegations (Phase 6 Architecture Refactor)
-  # Canonical delegations to extracted submodules for better code organization.
-  # Legacy _v2 suffixes removed — these are now the primary API.
+  # Lookup (delegated to CGraph.Accounts.Lookup)
   # ============================================================================
 
-  # Submodule aliases — used via defdelegate or direct calls as needed.
-  # Kept as comments for documentation of the module architecture.
-  # alias CGraph.Accounts.Users, as: UsersModule
-  # alias CGraph.Accounts.Authentication, as: AuthModule
-  # alias CGraph.Accounts.Registration, as: RegModule
-  # alias CGraph.Accounts.Sessions, as: SessionsModule
-  # alias CGraph.Accounts.Friends, as: FriendsModule
-  # alias CGraph.Accounts.Settings, as: SettingsModule
-  # alias CGraph.Accounts.Search, as: SearchModule
-  # alias CGraph.Accounts.PasswordReset, as: PasswordResetModule
-  # alias CGraph.Accounts.EmailVerification, as: EmailVerificationModule
-  # alias CGraph.Accounts.MemberDirectory, as: MemberDirectoryModule
-  # alias CGraph.Accounts.Profile, as: ProfileModule
+  alias CGraph.Accounts.Lookup
+
+  defdelegate get_user_by_email(email), to: Lookup
+  defdelegate get_user_by_oauth(provider, uid), to: Lookup
+  defdelegate get_user_by_user_id(uid_or_user_id), to: Lookup
+  defdelegate get_user_by_stripe_customer(stripe_customer_id), to: Lookup
+  defdelegate get_user_by_stripe_subscription(stripe_subscription_id), to: Lookup
+  defdelegate verify_password(user, password), to: Lookup
+  defdelegate dismiss_friend_suggestion(user_id, suggested_user_id), to: Lookup
+  defdelegate get_dismissed_suggestion_ids(user_id), to: Lookup
 
   # ============================================================================
-  # Stub Functions (planned features, not yet implemented)
+  # Registration & Authentication (delegated to CGraph.Accounts.Credentials)
   # ============================================================================
 
-  @doc "Dismiss a friend suggestion so it won't appear again."
-  @spec dismiss_friend_suggestion(binary(), binary()) :: {:ok, :dismissed}
-  def dismiss_friend_suggestion(user_id, suggested_user_id) do
-    now = DateTime.truncate(DateTime.utc_now(), :second)
+  alias CGraph.Accounts.Credentials
 
-    Repo.insert_all("dismissed_suggestions",
-      [%{
-        id: Ecto.UUID.generate(),
-        user_id: user_id,
-        suggested_user_id: suggested_user_id,
-        inserted_at: now
-      }],
-      on_conflict: :nothing,
-      conflict_target: [:user_id, :suggested_user_id]
-    )
+  @doc "Register a new user with email/password credentials."
+  def register_user(attrs, opts \\ []), do: Credentials.register_user(attrs, opts)
 
-    {:ok, :dismissed}
-  end
-
-  @doc "Get list of dismissed suggestion user IDs for filtering."
-  @spec get_dismissed_suggestion_ids(binary()) :: [binary()]
-  def get_dismissed_suggestion_ids(user_id) do
-    from(d in "dismissed_suggestions",
-      where: d.user_id == type(^user_id, :binary_id),
-      select: d.suggested_user_id
-    )
-    |> Repo.all()
-  end
-
-  @doc "Look up a user by Stripe customer ID. Requires Stripe integration."
-  @spec get_user_by_stripe_customer(String.t()) :: {:ok, struct()} | {:error, :not_found}
-  def get_user_by_stripe_customer(stripe_customer_id) do
-    Repo.get_by(User, stripe_customer_id: stripe_customer_id)
-    |> case do
-      nil -> {:error, :not_found}
-      user -> {:ok, user}
-    end
-  end
-
-  @doc "Look up a user by Stripe subscription ID. Requires Stripe integration."
-  @spec get_user_by_stripe_subscription(String.t()) :: {:ok, struct()} | {:error, :not_found}
-  def get_user_by_stripe_subscription(stripe_subscription_id) do
-    Repo.get_by(User, stripe_subscription_id: stripe_subscription_id)
-    |> case do
-      nil -> {:error, :not_found}
-      user -> {:ok, user}
-    end
-  end
-
-  @doc "Verify a user's password. Returns true/false."
-  @spec verify_password(struct(), String.t()) :: boolean()
-  def verify_password(%User{} = user, password) when is_binary(password) do
-    User.valid_password?(user, password)
-  end
+  defdelegate create_user(attrs), to: Credentials
+  defdelegate authenticate_user(email, password), to: Credentials
+  defdelegate authenticate_by_identifier(identifier, password), to: Credentials
+  defdelegate create_session(user, conn_or_attrs), to: Credentials
 
   # ============================================================================
-  # Registration & Authentication
+  # Sync Queries (delegated to CGraph.Accounts.Sync)
   # ============================================================================
 
-  @doc """
-  Register a new user with email/password credentials.
+  alias CGraph.Accounts.Sync
 
-  Optionally checks password against HaveIBeenPwned database.
-  """
-  @spec register_user(map(), keyword()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
-  def register_user(attrs, opts \\ []) do
-    check_breach = Keyword.get(opts, :check_breach, true)
-
-    changeset = %User{}
-    |> User.registration_changeset(attrs)
-    |> maybe_apply_breach_check(check_breach)
-
-    case Repo.insert(changeset) do
-      {:ok, user} = result ->
-        maybe_async_breach_check(attrs, check_breach, user.id)
-        result
-      error -> error
-    end
-  end
-
-  defp maybe_apply_breach_check(changeset, true), do: apply_breach_check(changeset)
-  defp maybe_apply_breach_check(changeset, false), do: changeset
-
-  defp maybe_async_breach_check(_attrs, true, _user_id), do: :ok
-  defp maybe_async_breach_check(attrs, false, user_id) do
-    password = Map.get(attrs, "password") || Map.get(attrs, :password)
-    if password, do: PasswordBreachCheck.check_async(password, user_id: user_id)
-  end
-
-  defp apply_breach_check(changeset) do
-    password = Ecto.Changeset.get_change(changeset, :password)
-
-    if password do
-      PasswordBreachCheck.validate_changeset(changeset, :password)
-    else
-      changeset
-    end
-  end
-
-  @doc """
-  Create a new user (alias for register_user).
-  """
-  @spec create_user(map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
-  def create_user(attrs), do: register_user(attrs)
-
-  @doc """
-  Authenticate a user by email and password.
-  """
-  @spec authenticate_user(String.t(), String.t()) :: {:ok, struct()} | {:error, :invalid_credentials}
-  def authenticate_user(email, password) do
-    user = Repo.get_by(User, email: String.downcase(email))
-
-    cond do
-      is_nil(user) ->
-        # Perform dummy check to prevent timing attacks
-        Argon2.no_user_verify()
-        {:error, :invalid_credentials}
-
-      Argon2.verify_pass(password, user.password_hash) ->
-        {:ok, user}
-
-      true ->
-        {:error, :invalid_credentials}
-    end
-  end
-
-  @doc """
-  Authenticate a user by email OR username and password.
-  Automatically detects if identifier is email (contains @) or username.
-  Both email and username lookups are case-insensitive for better UX.
-  """
-  @spec authenticate_by_identifier(String.t(), String.t()) :: {:ok, struct()} | {:error, :invalid_credentials | :no_password_set}
-  def authenticate_by_identifier(identifier, password) do
-    user = if String.contains?(identifier, "@") do
-      Repo.get_by(User, email: String.downcase(identifier))
-    else
-      # Case-insensitive username lookup using Ecto query
-      from(u in User, where: fragment("lower(?)", u.username) == ^String.downcase(identifier))
-      |> Repo.one()
-    end
-
-    cond do
-      is_nil(user) ->
-        Argon2.no_user_verify()
-        {:error, :invalid_credentials}
-
-      is_nil(user.password_hash) ->
-        # User registered via OAuth/wallet only
-        {:error, :no_password_set}
-
-      Argon2.verify_pass(password, user.password_hash) ->
-        {:ok, user}
-
-      true ->
-        {:error, :invalid_credentials}
-    end
-  end
-
-  @doc """
-  Get a user by their UID (random 10-digit string).
-  Handles formats like "#4829173650" or "4829173650".
-  Also supports legacy numeric user_id for backward compatibility.
-  """
-  @spec get_user_by_user_id(binary() | integer()) :: {:ok, struct()} | {:error, :not_found}
-  def get_user_by_user_id(uid_or_user_id)
-
-  def get_user_by_user_id(uid) when is_binary(uid) do
-    # Handle formats like "#4829173650" or "4829173650"
-    cleaned = uid |> String.replace("#", "") |> String.trim()
-
-    # First try to find by new uid field (10-digit string)
-    case Repo.get_by(User, uid: cleaned) do
-      nil ->
-        # Fallback: try legacy numeric user_id
-        case Integer.parse(cleaned) do
-          {num, ""} ->
-            case Repo.get_by(User, user_id: num) do
-              nil -> {:error, :not_found}
-              user -> {:ok, user}
-            end
-          _ -> {:error, :not_found}
-        end
-      user -> {:ok, user}
-    end
-  end
-
-  def get_user_by_user_id(user_id) when is_integer(user_id) do
-    # Legacy: search by numeric user_id
-    case Repo.get_by(User, user_id: user_id) do
-      nil -> {:error, :not_found}
-      user -> {:ok, user}
-    end
-  end
-
-  @doc """
-  Create a session for user.
-
-  Accepts either a Plug.Conn or a map with session metadata.
-  """
-  @spec create_session(struct(), Plug.Conn.t() | map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
-  def create_session(user, conn_or_attrs) do
-    {user_agent, ip_address} = extract_session_metadata(conn_or_attrs)
-    token_hash = :crypto.strong_rand_bytes(32) |> Base.encode64()
-    expires_at = DateTime.utc_now() |> DateTime.add(30 * 24 * 60 * 60, :second)
-
-    %Session{}
-    |> Session.changeset(%{
-      user_id: user.id,
-      token_hash: token_hash,
-      user_agent: user_agent,
-      ip_address: ip_address,
-      expires_at: expires_at
-    })
-    |> Repo.insert()
-  end
-
-  # Extract session metadata from Plug.Conn
-  defp extract_session_metadata(%Plug.Conn{} = conn) do
-    user_agent = get_user_agent(conn)
-    ip_address = get_ip_address(conn)
-    {user_agent, ip_address}
-  end
-
-  # Extract session metadata from plain map
-  defp extract_session_metadata(attrs) when is_map(attrs) do
-    user_agent = Map.get(attrs, :user_agent) || Map.get(attrs, "user_agent")
-    ip_address = Map.get(attrs, :ip_address) || Map.get(attrs, "ip_address") || "127.0.0.1"
-    {user_agent, ip_address}
-  end
-
-  defp get_user_agent(conn) do
-    case Plug.Conn.get_req_header(conn, "user-agent") do
-      [ua | _] -> ua
-      _ -> nil
-    end
-  end
-
-  defp get_ip_address(conn) do
-    case Plug.Conn.get_req_header(conn, "x-forwarded-for") do
-      [ip | _] -> ip |> String.split(",") |> List.first() |> String.trim()
-      _ -> conn.remote_ip |> :inet.ntoa() |> to_string()
-    end
-  end
-
-  @doc """
-  Get user by email.
-  """
-  @spec get_user_by_email(String.t()) :: {:ok, struct()} | {:error, :not_found}
-  def get_user_by_email(email) do
-    case Repo.get_by(User, email: String.downcase(email)) do
-      nil -> {:error, :not_found}
-      user -> {:ok, user}
-    end
-  end
-
-  @doc """
-  Get user by OAuth provider and UID.
-  Returns the user if found, nil otherwise.
-  """
-  @spec get_user_by_oauth(String.t(), String.t()) :: struct() | nil
-  def get_user_by_oauth(provider, uid) when is_binary(provider) and is_binary(uid) do
-    Repo.get_by(User, oauth_provider: provider, oauth_uid: uid)
-  end
+  defdelegate list_contacts_since(user, since), to: Sync
+  defdelegate list_friendships_since(user, since), to: Sync
+  defdelegate list_removed_friendship_ids_since(user, since), to: Sync
 
   # ============================================================================
   # Wallet Authentication (delegated to WalletAuthentication)
@@ -353,13 +100,6 @@ defmodule CGraph.Accounts do
   defdelegate get_settings(user), to: UserManagement
   defdelegate update_settings(user, attrs), to: UserManagement
 
-  # ============================================================================
-  # Friendships
-  # ============================================================================
-
-  @doc """
-  List user's friends.
-  """
   # ============================================================================
   # Friends & Blocking (delegated to FriendSystem)
   # ============================================================================
@@ -450,102 +190,4 @@ defmodule CGraph.Accounts do
   defdelegate update_profile(user_id, attrs), to: CGraph.Accounts.Profile
   defdelegate get_user_activity(user_id, viewer, opts \\ []), to: CGraph.Accounts.Profile
   defdelegate get_profile_visitors(user_id, opts \\ []), to: CGraph.Accounts.Profile
-
-  # ===========================================================================
-  # Sync Query Functions (WatermelonDB pull)
-  # ===========================================================================
-
-  @doc """
-  List contacts (users) the current user has interacted with, updated since timestamp.
-  Returns users who are in accepted friendships with the given user.
-  `since` is a millisecond Unix timestamp or nil for full sync.
-  """
-  @spec list_contacts_since(struct(), integer() | nil) :: [struct()]
-  def list_contacts_since(user, since) do
-    user_id = user.id
-
-    query =
-      from u in User,
-        join: f in Friendship,
-          on: (f.user_id == ^user_id and f.friend_id == u.id) or
-              (f.friend_id == ^user_id and f.user_id == u.id),
-        where: f.status == :accepted,
-        select: u
-
-    query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from u in query, where: u.updated_at > ^dt
-      else
-        query
-      end
-
-    Repo.all(query)
-  end
-
-  @doc """
-  List friendships for the user, updated since the given timestamp.
-  """
-  @spec list_friendships_since(struct(), integer() | nil) :: [struct()]
-  def list_friendships_since(user, since) do
-    user_id = user.id
-
-    query =
-      from f in Friendship,
-        where: (f.user_id == ^user_id or f.friend_id == ^user_id) and f.status == :accepted,
-        select: f
-
-    query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from f in query, where: f.updated_at > ^dt
-      else
-        query
-      end
-
-    Repo.all(query)
-  end
-
-  @doc """
-  List IDs of friendships that were removed (blocked/unfriended) since the given timestamp.
-  Combines blocked friendships with the deleted_friendships audit table.
-  """
-  @spec list_removed_friendship_ids_since(struct(), integer() | nil) :: [binary()]
-  def list_removed_friendship_ids_since(user, since) do
-    user_id = user.id
-
-    # Blocked friendships (still in the friendships table with status :blocked)
-    blocked_query =
-      from f in Friendship,
-        where: (f.user_id == ^user_id or f.friend_id == ^user_id) and f.status == :blocked,
-        select: f.id
-
-    blocked_query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from f in blocked_query, where: f.updated_at > ^dt
-      else
-        blocked_query
-      end
-
-    # Unfriended records (hard-deleted from friendships, audited in deleted_friendships)
-    deleted_query =
-      from df in DeletedFriendship,
-        where: df.user_id == ^user_id or df.friend_id == ^user_id,
-        select: df.id
-
-    deleted_query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from df in deleted_query, where: df.deleted_at > ^dt
-      else
-        deleted_query
-      end
-
-    blocked_ids = Repo.all(blocked_query)
-    deleted_ids = Repo.all(deleted_query)
-
-    Enum.uniq(blocked_ids ++ deleted_ids)
-  end
-
 end

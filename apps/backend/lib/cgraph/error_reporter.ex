@@ -14,32 +14,12 @@ defmodule CGraph.ErrorReporter do
 
   ## Architecture
 
-  ```
-  ┌─────────────────────────────────────────────────────────────────┐
-  │                     ERROR REPORTER                              │
-  ├─────────────────────────────────────────────────────────────────┤
-  │                                                                  │
-  │   Exception/Error                                               │
-  │        │                                                        │
-  │        ▼                                                        │
-  │   ┌─────────────────────────────────────────────────────────┐  │
-  │   │                 Error Processing                         │  │
-  │   │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐    │  │
-  │   │  │Sanitize │─►│Enrich   │─►│Finger-  │─►│Rate     │    │  │
-  │   │  │Data     │  │Context  │  │print    │  │Limit    │    │  │
-  │   │  └─────────┘  └─────────┘  └─────────┘  └─────────┘    │  │
-  │   └──────────────────────────────┬──────────────────────────┘  │
-  │                                  │                              │
-  │          ┌───────────────────────┼───────────────────────┐     │
-  │          │                       │                       │     │
-  │          ▼                       ▼                       ▼     │
-  │   ┌─────────────┐         ┌─────────────┐         ┌──────────┐│
-  │   │   Logger    │         │   Sentry    │         │ Webhook  ││
-  │   │   (local)   │         │  (external) │         │ (custom) ││
-  │   └─────────────┘         └─────────────┘         └──────────┘│
-  │                                                                │
-  └────────────────────────────────────────────────────────────────┘
-  ```
+  Implementation is split across submodules:
+
+  - `CGraph.ErrorReporter.EventBuilder` — event construction, fingerprinting, breadcrumbs
+  - `CGraph.ErrorReporter.Context` — conn context extraction, process-dict helpers
+  - `CGraph.ErrorReporter.Adapters.Logger` — Logger adapter
+  - `CGraph.ErrorReporter.Adapters.Webhook` — Webhook adapter
 
   ## Usage
 
@@ -77,6 +57,8 @@ defmodule CGraph.ErrorReporter do
   use GenServer
   require Logger
 
+  alias CGraph.ErrorReporter.{Context, EventBuilder}
+
   @type severity :: :debug | :info | :warning | :error | :fatal
   @type context :: map()
 
@@ -92,9 +74,7 @@ defmodule CGraph.ErrorReporter do
   # Public API
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Start the error reporter.
-  """
+  @doc "Start the error reporter."
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -124,62 +104,39 @@ defmodule CGraph.ErrorReporter do
 
   @doc """
   Report an exception with Plug.Conn context.
-
   Automatically extracts request information.
   """
   def report_with_context(conn, exception, stacktrace, extra_context \\ %{}) do
-    context = extract_conn_context(conn)
-    |> Map.merge(extra_context)
+    context =
+      Context.extract_conn_context(conn)
+      |> Map.merge(extra_context)
 
     report(exception, stacktrace, context)
   end
 
   @doc """
   Capture a message (not an exception).
-
   Useful for logging significant events or warnings.
   """
   def capture_message(message, severity \\ :info, context \\ %{}) do
     GenServer.cast(__MODULE__, {:capture_message, message, severity, context})
   end
 
-  @doc """
-  Set user context for subsequent reports.
+  # --- Delegates to Context ---
 
-  Stored in process dictionary.
-  """
-  def set_user_context(user_context) do
-    Process.put(:error_reporter_user, user_context)
+  defdelegate set_user_context(user_context), to: Context
+  defdelegate set_tags(tags), to: Context
+  defdelegate set_extra(extra), to: Context
+  defdelegate clear_context(), to: Context
+
+  # --- Wrapper for add_breadcrumb (has default args) ---
+
+  @doc "Add a breadcrumb for error context."
+  def add_breadcrumb(message, category \\ "custom", data \\ %{}) do
+    EventBuilder.add_breadcrumb(message, category, data)
   end
 
-  @doc """
-  Add tags for subsequent reports.
-  """
-  def set_tags(tags) do
-    existing = Process.get(:error_reporter_tags, %{})
-    Process.put(:error_reporter_tags, Map.merge(existing, tags))
-  end
-
-  @doc """
-  Add extra context for subsequent reports.
-  """
-  def set_extra(extra) do
-    existing = Process.get(:error_reporter_extra, %{})
-    Process.put(:error_reporter_extra, Map.merge(existing, extra))
-  end
-
-  @doc """
-  Clear all context from process dictionary.
-  """
-  def clear_context do
-    Process.delete(:error_reporter_user)
-    Process.delete(:error_reporter_tags)
-    Process.delete(:error_reporter_extra)
-  end
-
-  @doc """
-  Get error statistics.
-  """
+  @doc "Get error statistics."
   def stats do
     GenServer.call(__MODULE__, :stats)
   end
@@ -212,7 +169,7 @@ defmodule CGraph.ErrorReporter do
       if should_report?(exception, state) do
         state = increment_rate_limit(state)
 
-        event = build_error_event(exception, stacktrace, context, state.config)
+        event = EventBuilder.build_error_event(exception, stacktrace, context, state.config)
         dispatch_to_adapters(event, state.adapters)
 
         {:noreply, %{state | error_count: state.error_count + 1}}
@@ -226,7 +183,7 @@ defmodule CGraph.ErrorReporter do
 
   @impl true
   def handle_cast({:capture_message, message, severity, context}, state) do
-    event = build_message_event(message, severity, context, state.config)
+    event = EventBuilder.build_message_event(message, severity, context, state.config)
     dispatch_to_adapters(event, state.adapters)
 
     {:noreply, state}
@@ -240,133 +197,8 @@ defmodule CGraph.ErrorReporter do
       rate_limit_remaining: max(0, @rate_limit_max - state.rate_limit_count),
       adapters: length(state.adapters)
     }
+
     {:reply, stats, state}
-  end
-
-  # ---------------------------------------------------------------------------
-  # Event Building
-  # ---------------------------------------------------------------------------
-
-  defp build_error_event(exception, stacktrace, context, config) do
-    # Get process context
-    user = Process.get(:error_reporter_user, %{})
-    tags = Process.get(:error_reporter_tags, %{})
-    extra = Process.get(:error_reporter_extra, %{})
-
-    {exc_type, exc_message, exc_module} =
-      if is_struct(exception) do
-        {exception_type(exception), Exception.message(exception), exception.__struct__}
-      else
-        {inspect(exception), inspect(exception), nil}
-      end
-
-    %{
-      type: :exception,
-      exception: %{
-        type: exc_type,
-        message: exc_message,
-        module: exc_module
-      },
-      stacktrace: format_stacktrace(stacktrace),
-      fingerprint: generate_fingerprint(exception, stacktrace),
-      severity: :error,
-      timestamp: DateTime.utc_now(),
-      environment: config[:environment],
-      release: config[:release],
-      server_name: node(),
-      context: Map.merge(context, extra),
-      user: user,
-      tags: tags,
-      breadcrumbs: get_breadcrumbs()
-    }
-  end
-
-  defp build_message_event(message, severity, context, config) do
-    user = Process.get(:error_reporter_user, %{})
-    tags = Process.get(:error_reporter_tags, %{})
-    extra = Process.get(:error_reporter_extra, %{})
-
-    %{
-      type: :message,
-      message: message,
-      severity: severity,
-      timestamp: DateTime.utc_now(),
-      environment: config[:environment],
-      release: config[:release],
-      server_name: node(),
-      context: Map.merge(context, extra),
-      user: user,
-      tags: tags
-    }
-  end
-
-  defp exception_type(%{__struct__: struct}), do: struct |> Module.split() |> Enum.join(".")
-  defp exception_type(_), do: "Unknown"
-
-  defp format_stacktrace(stacktrace) when is_list(stacktrace) do
-    Enum.map(stacktrace, fn
-      {mod, fun, arity, location} when is_integer(arity) ->
-        %{
-          module: inspect(mod),
-          function: "#{fun}/#{arity}",
-          file: Keyword.get(location, :file) |> to_string(),
-          line: Keyword.get(location, :line)
-        }
-      {mod, fun, args, location} when is_list(args) ->
-        %{
-          module: inspect(mod),
-          function: "#{fun}/#{length(args)}",
-          file: Keyword.get(location, :file) |> to_string(),
-          line: Keyword.get(location, :line)
-        }
-      entry ->
-        %{raw: inspect(entry)}
-    end)
-  end
-
-  defp format_stacktrace(stacktrace) when is_binary(stacktrace) do
-    [%{raw: stacktrace}]
-  end
-
-  defp format_stacktrace(_), do: []
-
-  defp generate_fingerprint(exception, stacktrace) do
-    stacktrace = if is_list(stacktrace), do: stacktrace, else: []
-    # Create a fingerprint based on exception type and top stack frames
-    frames = stacktrace
-    |> Enum.take(3)
-    |> Enum.map_join("|", fn
-      {mod, fun, arity, _} when is_integer(arity) -> "#{mod}.#{fun}/#{arity}"
-      {mod, fun, args, _} when is_list(args) -> "#{mod}.#{fun}/#{length(args)}"
-      _ -> "unknown"
-    end)
-
-    data = "#{exception_type(exception)}|#{frames}"
-
-    :crypto.hash(:md5, data)
-    |> Base.encode16(case: :lower)
-    |> String.slice(0, 16)
-  end
-
-  defp get_breadcrumbs do
-    Process.get(:error_reporter_breadcrumbs, [])
-  end
-
-  @doc """
-  Add a breadcrumb for error context.
-  """
-  def add_breadcrumb(message, category \\ "custom", data \\ %{}) do
-    breadcrumb = %{
-      message: message,
-      category: category,
-      data: data,
-      timestamp: DateTime.utc_now()
-    }
-
-    existing = Process.get(:error_reporter_breadcrumbs, [])
-    # Keep last 20 breadcrumbs
-    updated = Enum.take([breadcrumb | existing], 20)
-    Process.put(:error_reporter_breadcrumbs, updated)
   end
 
   # ---------------------------------------------------------------------------
@@ -378,14 +210,8 @@ defmodule CGraph.ErrorReporter do
 
     cond do
       is_nil(exception_module) -> true
-
-      # Excluded exception types
       exception_module in @excluded_exceptions -> false
-
-      # Rate limited
       state.rate_limit_count >= @rate_limit_max -> false
-
-      # Report it
       true -> true
     end
   end
@@ -394,10 +220,7 @@ defmodule CGraph.ErrorReporter do
     now = System.monotonic_time(:millisecond)
 
     if now >= state.rate_limit_reset do
-      %{state |
-        rate_limit_count: 0,
-        rate_limit_reset: now + @rate_limit_window
-      }
+      %{state | rate_limit_count: 0, rate_limit_reset: now + @rate_limit_window}
     else
       state
     end
@@ -406,55 +229,6 @@ defmodule CGraph.ErrorReporter do
   defp increment_rate_limit(state) do
     %{state | rate_limit_count: state.rate_limit_count + 1}
   end
-
-  # ---------------------------------------------------------------------------
-  # Context Extraction
-  # ---------------------------------------------------------------------------
-
-  defp extract_conn_context(conn) do
-    %{
-      request: %{
-        method: conn.method,
-        url: build_url(conn),
-        path: conn.request_path,
-        query_string: conn.query_string,
-        headers: sanitize_headers(conn.req_headers),
-        remote_ip: format_ip(conn.remote_ip)
-      },
-      user_agent: get_header(conn, "user-agent"),
-      request_id: get_header(conn, "x-request-id") || conn.assigns[:request_id]
-    }
-  end
-
-  defp build_url(conn) do
-    query = if conn.query_string != "", do: "?#{conn.query_string}", else: ""
-    "#{conn.scheme}://#{conn.host}#{conn.request_path}#{query}"
-  end
-
-  defp sanitize_headers(headers) do
-    sensitive = ["authorization", "cookie", "x-api-key"]
-
-    Enum.map(headers, fn {key, value} ->
-      if String.downcase(key) in sensitive do
-        {key, "[REDACTED]"}
-      else
-        {key, value}
-      end
-    end)
-    |> Map.new()
-  end
-
-  defp get_header(conn, header) do
-    case Plug.Conn.get_req_header(conn, header) do
-      [value | _] -> value
-      _ -> nil
-    end
-  end
-
-  defp format_ip(ip) when is_tuple(ip) do
-    ip |> Tuple.to_list() |> Enum.join(".")
-  end
-  defp format_ip(ip), do: to_string(ip)
 
   # ---------------------------------------------------------------------------
   # Adapter Management
@@ -486,71 +260,10 @@ defmodule CGraph.ErrorReporter do
     app_config = Application.get_env(:cgraph, CGraph.ErrorReporter, [])
 
     %{
-      environment: Keyword.get(opts, :environment, Keyword.get(app_config, :environment, :development)),
+      environment:
+        Keyword.get(opts, :environment, Keyword.get(app_config, :environment, :development)),
       release: Keyword.get(opts, :release, Keyword.get(app_config, :release, "unknown")),
       adapters: Keyword.get(opts, :adapters, Keyword.get(app_config, :adapters, []))
     }
   end
-end
-
-defmodule CGraph.ErrorReporter.Adapters.Logger do
-  @moduledoc """
-  Logger adapter for error reporting.
-  """
-
-  require Logger
-
-  def report(event, opts) do
-    level = Keyword.get(opts, :level, :error)
-
-    case event.type do
-      :exception ->
-        Logger.log(level, fn ->
-          """
-          [ErrorReporter] #{event.exception.type}: #{event.exception.message}
-          Fingerprint: #{event.fingerprint}
-          """
-        end,
-          error_type: event.exception.type,
-          fingerprint: event.fingerprint,
-          context: event.context
-        )
-
-      :message ->
-        Logger.log(level, "error_reporter_message",
-          message: event.message,
-          severity: event.severity,
-          context: event.context
-        )
-    end
-  end
-end
-
-defmodule CGraph.ErrorReporter.Adapters.Webhook do
-  @moduledoc """
-  Webhook adapter for error reporting to custom endpoints.
-  """
-
-  require Logger
-
-  def report(event, opts) do
-    url = Keyword.fetch!(opts, :url)
-
-    payload = %{
-      type: event.type,
-      message: get_message(event),
-      severity: event.severity,
-      timestamp: DateTime.to_iso8601(event.timestamp),
-      environment: event.environment,
-      context: event.context
-    }
-
-    # Would use HTTPoison or Finch here
-    Logger.debug("would_post_to", url: url, payload: inspect(payload))
-  end
-
-  defp get_message(%{type: :exception} = event) do
-    "#{event.exception.type}: #{event.exception.message}"
-  end
-  defp get_message(event), do: event.message
 end

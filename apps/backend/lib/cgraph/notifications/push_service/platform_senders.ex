@@ -10,6 +10,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
   # Platform-Specific Senders
   # ============================================================================
 
+  @spec send_to_apns([map()], map(), boolean()) :: {:ok, non_neg_integer(), non_neg_integer(), [String.t()]} | {:error, atom(), non_neg_integer()}
   def send_to_apns([], _notification, _silent), do: {:ok, 0, 0, []}
   def send_to_apns(tokens, notification, silent) do
     case CircuitBreakers.call(:apns, fn ->
@@ -45,6 +46,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
       {:error, :apns_error, length(tokens)}
   end
 
+  @spec send_to_fcm([map()], map(), boolean()) :: {:ok, non_neg_integer(), non_neg_integer(), [String.t()]} | {:error, atom(), non_neg_integer()}
   def send_to_fcm([], _notification, _silent), do: {:ok, 0, 0, []}
   def send_to_fcm(tokens, notification, silent) do
     case CircuitBreakers.call(:fcm, fn ->
@@ -80,6 +82,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
       {:error, :fcm_error, length(tokens)}
   end
 
+  @spec send_to_expo([map()], map(), boolean()) :: {:ok, non_neg_integer(), non_neg_integer(), [String.t()]} | {:error, atom(), non_neg_integer()}
   def send_to_expo([], _notification, _silent), do: {:ok, 0, 0, []}
   def send_to_expo(tokens, notification, silent) do
     case CircuitBreakers.call(:expo, fn ->
@@ -114,6 +117,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
       {:error, :expo_error, length(tokens)}
   end
 
+  @spec send_to_web([map()], map()) :: {:ok, non_neg_integer(), non_neg_integer(), [String.t()]} | {:error, atom(), non_neg_integer()}
   def send_to_web([], _notification), do: {:ok, 0, 0, []}
   def send_to_web(tokens, notification) do
     case CircuitBreakers.call(:web_push, fn ->
@@ -153,6 +157,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
   # Payload Builders
   # ============================================================================
 
+  @spec build_apns_payload(map(), boolean()) :: map()
   def build_apns_payload(notification, silent) do
     base_aps = if silent do
       %{"content-available" => 1}
@@ -182,6 +187,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
     end
   end
 
+  @spec build_fcm_payload(map(), boolean()) :: map()
   def build_fcm_payload(notification, silent) do
     if silent do
       %{
@@ -218,6 +224,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
     end
   end
 
+  @spec build_expo_message(String.t(), map(), boolean()) :: map()
   def build_expo_message(token, notification, silent) do
     base = %{
       "to" => token,
@@ -242,6 +249,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
     |> maybe_add("channelId", Map.get(notification, :thread_id))
   end
 
+  @spec build_web_push_payload(map()) :: String.t()
   def build_web_push_payload(notification) do
     %{
       "title" => notification.title,
@@ -260,6 +268,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
   # Response Parsers
   # ============================================================================
 
+  @spec parse_fcm_response(map(), [map()]) :: {non_neg_integer(), non_neg_integer(), [String.t()]}
   def parse_fcm_response(response, tokens) do
     results = Map.get(response, "responses", [])
 
@@ -278,6 +287,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
     {sent, failed, invalid}
   end
 
+  @spec parse_expo_response(map(), [map()]) :: {non_neg_integer(), non_neg_integer(), [String.t()]}
   def parse_expo_response(response, tokens) do
     results = Map.get(response, "data", [])
 
@@ -300,11 +310,13 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
   # Helpers
   # ============================================================================
 
+  @spec priority_to_fcm(atom()) :: String.t()
   def priority_to_fcm(:high), do: "high"
   def priority_to_fcm(:normal), do: "normal"
   def priority_to_fcm(:low), do: "normal"
   def priority_to_fcm(_), do: "high"
 
+  @spec priority_to_expo(atom()) :: String.t()
   def priority_to_expo(:high), do: "high"
   def priority_to_expo(:normal), do: "default"
   def priority_to_expo(:low), do: "default"

@@ -5,27 +5,34 @@ defmodule CGraph.Messaging do
   Delegates to specialized sub-contexts:
 
   - `Conversations` — Conversation CRUD and participant management
-  - `MessageOperations` — Message CRUD, pinning, read receipts, scheduling
-  - `Reactions` — Message reactions
+  - `CoreMessages` — Message listing, creation, threading, ephemeral
+  - `MessageOperations` — Message editing, pinning, read receipts, scheduling
+  - `ReactionActions` — Inline reaction add/remove and broadcasts
+  - `Reactions` — Reaction listing and user queries
   - `Search` — Full-text message search
   - `SavedMessages` — Bookmarks
+  - `SyncQueries` — WatermelonDB-style pull sync
   - `PrivateMessageSystem` — MyBB-style PM system
   """
 
-  import Ecto.Query, warn: false
-  import CGraph.Query.SoftDelete
-
-  alias CGraph.Messaging.{Conversation, ConversationParticipant, DeliveryTracking, Message, Reaction}
-  alias CGraph.Messaging.{Conversations, MessageOperations, SavedMessages}
-  alias CGraph.Repo
-  alias CGraph.Search.Indexer
+  alias CGraph.Messaging.{
+    Conversations,
+    CoreMessages,
+    MessageOperations,
+    PrivateMessageSystem,
+    ReactionActions,
+    SavedMessages,
+    SyncQueries
+  }
 
   # ============================================================================
   # Conversations
   # ============================================================================
 
   defdelegate list_conversations(user, opts \\ []), to: Conversations
+  @spec list_user_conversations(struct(), keyword()) :: {[struct()], map()}
   def list_user_conversations(user, opts \\ []), do: Conversations.list_conversations(user, opts)
+
   defdelegate get_conversation(id), to: Conversations
   defdelegate get_user_conversation(user, conversation_id), to: Conversations
   defdelegate authorize_access(user, conversation), to: Conversations
@@ -34,144 +41,41 @@ defmodule CGraph.Messaging do
   defdelegate create_conversation(user, attrs), to: Conversations
 
   # ============================================================================
-  # Messages — core message listing + creation with idempotency
+  # Messages — listing, creation, threading
   # ============================================================================
 
   @doc "List messages in a conversation using cursor-based pagination."
   @spec list_messages(struct(), keyword()) :: {[struct()], map()}
-  def list_messages(conversation, opts \\ []) do
-    alias CGraph.Pagination
-
-    cursor = Keyword.get(opts, :cursor)
-    limit = Keyword.get(opts, :limit, Keyword.get(opts, :per_page, 50))
-    before_id = Keyword.get(opts, :before)
-    after_id = Keyword.get(opts, :after)
-    include_total = Keyword.get(opts, :include_total, false)
-
-    base_query = from m in Message,
-      where: m.conversation_id == ^conversation.id,
-      preload: [[sender: :customization], [reactions: :user], [reply_to: [sender: :customization]]]
-
-    base_query = if before_id, do: from(m in base_query, where: m.id < ^before_id), else: base_query
-    base_query = if after_id, do: from(m in base_query, where: m.id > ^after_id), else: base_query
-
-    pagination_opts = %{
-      cursor: cursor, after_cursor: nil, before_cursor: nil,
-      limit: min(limit, 100), sort_field: :inserted_at,
-      sort_direction: :desc, include_total: include_total
-    }
-
-    {messages, page_info} = Pagination.paginate(base_query, pagination_opts)
-    messages = Enum.reverse(messages)
-
-    meta = %{
-      has_more: page_info.has_next_page,
-      end_cursor: page_info.end_cursor,
-      start_cursor: page_info.start_cursor,
-      has_next_page: page_info.has_next_page,
-      has_previous_page: page_info.has_previous_page
-    }
-
-    meta = if include_total, do: Map.put(meta, :total, page_info[:total_count]), else: meta
-    {messages, meta}
-  end
+  def list_messages(conversation, opts \\ []), do: CoreMessages.list_messages(conversation, opts)
 
   @doc "Get a message by conversation + message_id."
   @spec get_message(struct(), binary()) :: {:ok, struct()} | {:error, :not_found}
-  def get_message(conversation, message_id) do
-    query = from m in Message,
-      where: m.id == ^message_id,
-      where: m.conversation_id == ^conversation.id,
-      preload: [[sender: :customization], [reactions: :user], [reply_to: [sender: :customization]]]
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      message -> {:ok, message}
-    end
-  end
+  defdelegate get_message(conversation, message_id), to: CoreMessages
 
   @doc "List thread replies for a parent message."
   @spec list_thread_replies(binary(), keyword()) :: {[struct()], map()}
-  def list_thread_replies(parent_message_id, opts \\ []) do
-    alias CGraph.Pagination
-    limit = min(Keyword.get(opts, :limit, 50), 100)
-    cursor = Keyword.get(opts, :cursor)
+  def list_thread_replies(parent_message_id, opts \\ []),
+    do: CoreMessages.list_thread_replies(parent_message_id, opts)
 
-    base_query =
-      from m in Message,
-        where: m.reply_to_id == ^parent_message_id,
-        preload: [[sender: :customization], [reactions: :user], [reply_to: [sender: :customization]]]
-
-    pagination_opts = %{
-      cursor: cursor, after_cursor: nil, before_cursor: nil,
-      limit: limit, sort_field: :inserted_at,
-      sort_direction: :asc, include_total: false
-    }
-
-    {messages, page_info} = Pagination.paginate(base_query, pagination_opts)
-
-    meta = %{
-      has_more: page_info.has_next_page,
-      end_cursor: page_info.end_cursor,
-      start_cursor: page_info.start_cursor,
-      has_next_page: page_info.has_next_page,
-      has_previous_page: page_info.has_previous_page
-    }
-
-    {messages, meta}
-  end
-
-  @doc "Count replies per parent message ID. Returns `%{message_id => count}`."
+  @doc "Count replies per parent message ID."
   @spec count_thread_replies([binary()]) :: %{binary() => non_neg_integer()}
-  def count_thread_replies(parent_message_ids) when is_list(parent_message_ids) do
-    Message
-    |> exclude_deleted()
-    |> where([m], m.reply_to_id in ^parent_message_ids)
-    |> group_by([m], m.reply_to_id)
-    |> select([m], {m.reply_to_id, count(m.id)})
-    |> Repo.all()
-    |> Map.new()
-  end
+  defdelegate count_thread_replies(parent_message_ids), to: CoreMessages
 
   @doc "Create a message in a conversation (with idempotency via client_message_id)."
   @spec create_message(struct(), struct(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
-  def create_message(user, conversation, attrs) do
-    message_attrs = attrs
-      |> stringify_keys()
-      |> Map.put("sender_id", user.id)
-      |> Map.put("conversation_id", conversation.id)
-
-    case check_idempotency(conversation.id, message_attrs) do
-      {:ok, existing_message} -> {:ok, existing_message}
-      :not_found -> do_create_message(conversation, message_attrs)
-    end
-  end
+  defdelegate create_message(user, conversation, attrs), to: CoreMessages
 
   @doc "Send a message (alias for create_message with conversation first)."
   @spec send_message(struct(), struct(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
-  def send_message(conversation, user, attrs), do: create_message(user, conversation, attrs)
+  defdelegate send_message(conversation, user, attrs), to: CoreMessages
 
   @doc "Check if a user is a participant in a conversation."
   @spec user_in_conversation?(binary(), binary()) :: boolean()
-  def user_in_conversation?(conversation_id, user_id) do
-    query = from cp in ConversationParticipant,
-      where: cp.conversation_id == ^conversation_id,
-      where: cp.user_id == ^user_id,
-      where: is_nil(cp.left_at)
-
-    Repo.exists?(query)
-  end
+  defdelegate user_in_conversation?(conversation_id, user_id), to: CoreMessages
 
   @doc "Broadcast typing indicator."
   @spec broadcast_typing(struct(), struct()) :: :ok
-  def broadcast_typing(conversation, user) do
-    CGraphWeb.Endpoint.broadcast(
-      "conversation:#{conversation.id}",
-      "typing",
-      %{user_id: user.id, username: user.username}
-    )
-    :ok
-  end
+  defdelegate broadcast_typing(conversation, user), to: CoreMessages
 
   # ============================================================================
   # Reactions
@@ -181,68 +85,20 @@ defmodule CGraph.Messaging do
 
   @doc "Add reaction. Returns `{:ok, reaction, nil}` (3-element tuple for callers)."
   @spec add_reaction(struct(), struct(), String.t()) :: {:ok, struct(), nil} | {:error, :already_exists} | {:error, Ecto.Changeset.t()}
-  def add_reaction(user, message, emoji) do
-    existing_same = Repo.get_by(Reaction,
-      user_id: user.id,
-      message_id: message.id,
-      emoji: emoji
-    )
-
-    if existing_same do
-      {:error, :already_exists}
-    else
-      case %Reaction{}
-        |> Reaction.changeset(%{user_id: user.id, message_id: message.id, emoji: emoji})
-        |> Repo.insert() do
-        {:ok, reaction} -> {:ok, reaction, nil}
-        {:error, changeset} -> {:error, changeset}
-      end
-    end
-  end
+  defdelegate add_reaction(user, message, emoji), to: ReactionActions
 
   @doc "Remove reaction."
   @spec remove_reaction(struct(), struct(), String.t()) :: {:ok, struct()} | {:error, :not_found}
-  def remove_reaction(user, message, emoji) do
-    query = from r in Reaction,
-      where: r.user_id == ^user.id,
-      where: r.message_id == ^message.id,
-      where: r.emoji == ^emoji
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      reaction -> Repo.delete(reaction)
-    end
-  end
+  defdelegate remove_reaction(user, message, emoji), to: ReactionActions
 
   @doc "Broadcast reaction added event."
   @spec broadcast_reaction_added(struct(), struct(), struct(), struct() | nil) :: :ok
-  def broadcast_reaction_added(conversation, message, reaction, user \\ nil) do
-    user_data = user || reaction.user
-
-    CGraphWeb.Endpoint.broadcast(
-      "conversation:#{conversation.id}",
-      "reaction_added",
-      %{
-        message_id: message.id,
-        emoji: reaction.emoji,
-        user_id: reaction.user_id,
-        user: if(user_data,
-          do: %{id: user_data.id, username: user_data.username,
-                display_name: user_data.display_name, avatar_url: user_data.avatar_url},
-          else: %{id: reaction.user_id})
-      }
-    )
-  end
+  def broadcast_reaction_added(conversation, message, reaction, user \\ nil),
+    do: ReactionActions.broadcast_reaction_added(conversation, message, reaction, user)
 
   @doc "Broadcast reaction removed event."
   @spec broadcast_reaction_removed(struct(), struct(), struct(), String.t()) :: :ok
-  def broadcast_reaction_removed(conversation, message, user, emoji) do
-    CGraphWeb.Endpoint.broadcast(
-      "conversation:#{conversation.id}",
-      "reaction_removed",
-      %{message_id: message.id, user_id: user.id, emoji: emoji}
-    )
-  end
+  defdelegate broadcast_reaction_removed(conversation, message, user, emoji), to: ReactionActions
 
   defdelegate get_reaction_users(message, emoji, opts \\ []), to: CGraph.Messaging.Reactions
 
@@ -279,7 +135,9 @@ defmodule CGraph.Messaging do
   defdelegate get_unread_count(user, conversation), to: MessageOperations
   defdelegate mark_conversation_read(conversation, user), to: MessageOperations
 
+  @spec mark_message_read(struct(), struct(), binary()) :: :ok | {:ok, struct()} | {:error, term()}
   def mark_message_read(conversation, user, message_id), do: MessageOperations.mark_messages_read(user, conversation, message_id)
+  @spec mark_as_read(struct(), struct()) :: :ok | {:ok, struct()} | {:error, term()}
   def mark_as_read(message, user), do: MessageOperations.mark_message_read(message, user)
 
   @doc "Delete a message (soft delete, no auth check)."
@@ -298,8 +156,6 @@ defmodule CGraph.Messaging do
   # ============================================================================
   # Private Messages — delegated to PrivateMessageSystem
   # ============================================================================
-
-  alias CGraph.Messaging.PrivateMessageSystem
 
   defdelegate list_pm_folders(user_id), to: PrivateMessageSystem
   defdelegate create_pm_folder(attrs), to: PrivateMessageSystem
@@ -341,237 +197,19 @@ defmodule CGraph.Messaging do
   # ============================================================================
 
   @spec update_conversation_ttl(struct(), integer() | nil) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
-  def update_conversation_ttl(%Conversation{} = conversation, ttl) when is_nil(ttl) or is_integer(ttl) do
-    conversation |> Ecto.Changeset.change(message_ttl: ttl) |> Repo.update()
-  end
+  defdelegate update_conversation_ttl(conversation, ttl), to: CoreMessages
 
   @spec get_conversation_ttl(binary()) :: {:ok, integer() | nil} | {:error, :not_found}
-  def get_conversation_ttl(conversation_id) when is_binary(conversation_id) do
-    case Repo.get(Conversation, conversation_id) do
-      nil -> {:error, :not_found}
-      conv -> {:ok, conv.message_ttl}
-    end
-  end
+  defdelegate get_conversation_ttl(conversation_id), to: CoreMessages
 
   # ============================================================================
-  # Private Helpers
-  # ============================================================================
-
-  defp check_idempotency(conversation_id, attrs) do
-    client_id = Map.get(attrs, "client_message_id") || Map.get(attrs, :client_message_id)
-
-    if client_id do
-      case Repo.get_by(Message, conversation_id: conversation_id, client_message_id: client_id) do
-        nil -> :not_found
-        message -> {:ok, Repo.preload(message, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])}
-      end
-    else
-      :not_found
-    end
-  end
-
-  defp do_create_message(conversation, message_attrs) do
-    message_attrs = maybe_set_expires_at(conversation, message_attrs)
-
-    result = %Message{}
-      |> Message.changeset(message_attrs)
-      |> Repo.insert()
-
-    case result do
-      {:ok, message} ->
-        now = DateTime.truncate(DateTime.utc_now(), :second)
-        conversation
-        |> Ecto.Changeset.change(last_message_at: now)
-        |> Repo.update()
-
-        track_delivery_for_participants(message, conversation)
-
-        try do
-          Indexer.index_async(:messages, message)
-        rescue
-          _ -> :ok
-        end
-
-        {:ok, Repo.preload(message, [[sender: :customization], :reactions, [reply_to: [sender: :customization]]])}
-
-      error -> error
-    end
-  end
-
-  defp track_delivery_for_participants(message, conversation) do
-    recipient_ids =
-      from(cp in ConversationParticipant,
-        where: cp.conversation_id == ^conversation.id,
-        where: cp.user_id != ^message.sender_id,
-        select: cp.user_id
-      )
-      |> Repo.all()
-
-    if recipient_ids != [], do: DeliveryTracking.track_sent(message, recipient_ids)
-  rescue
-    _ -> :ok
-  end
-
-  defp stringify_keys(map) when is_map(map) do
-    Map.new(map, fn
-      {k, v} when is_atom(k) -> {Atom.to_string(k), v}
-      {k, v} -> {k, v}
-    end)
-  end
-
-  defp maybe_set_expires_at(%Conversation{message_ttl: nil}, attrs), do: attrs
-  defp maybe_set_expires_at(%Conversation{message_ttl: ttl}, attrs) when is_integer(ttl) and ttl > 0 do
-    Map.put(attrs, "expires_at", DateTime.utc_now() |> DateTime.add(ttl, :second))
-  end
-  defp maybe_set_expires_at(_conversation, attrs), do: attrs
-
-  # ===========================================================================
   # Sync Query Functions (WatermelonDB pull)
-  # ===========================================================================
+  # ============================================================================
 
-  @doc """
-  List conversations the user is part of, updated since the given timestamp.
-  `since` is a millisecond Unix timestamp or nil for full sync.
-  """
-  @spec list_user_conversations_since(struct(), integer() | nil) :: [struct()]
-  def list_user_conversations_since(user, since) do
-    user_id = user.id
-
-    query =
-      from c in Conversation,
-        join: cp in ConversationParticipant, on: cp.conversation_id == c.id,
-        where: cp.user_id == ^user_id and is_nil(cp.left_at),
-        select: c
-
-    query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from c in query, where: c.updated_at > ^dt
-      else
-        query
-      end
-
-    Repo.all(query)
-  end
-
-  @doc """
-  List IDs of conversations the user has left since the given timestamp.
-  """
-  @spec list_deleted_conversation_ids_since(struct(), integer() | nil) :: [binary()]
-  def list_deleted_conversation_ids_since(user, since) do
-    user_id = user.id
-
-    query =
-      from cp in ConversationParticipant,
-        where: cp.user_id == ^user_id and not is_nil(cp.left_at),
-        select: cp.conversation_id
-
-    query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from cp in query, where: cp.left_at > ^dt
-      else
-        query
-      end
-
-    Repo.all(query)
-  end
-
-  @doc """
-  List messages in user's conversations, updated since the given timestamp.
-  """
-  @spec list_user_messages_since(struct(), integer() | nil) :: [struct()]
-  def list_user_messages_since(user, since) do
-    user_id = user.id
-
-    query =
-      from m in Message,
-        join: cp in ConversationParticipant, on: cp.conversation_id == m.conversation_id,
-        where: cp.user_id == ^user_id and is_nil(cp.left_at) and is_nil(m.deleted_at),
-        select: m
-
-    query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from m in query, where: m.updated_at > ^dt
-      else
-        query
-      end
-
-    Repo.all(query)
-  end
-
-  @doc """
-  List IDs of messages that were soft-deleted since the given timestamp.
-  """
-  @spec list_deleted_message_ids_since(struct(), integer() | nil) :: [binary()]
-  def list_deleted_message_ids_since(user, since) do
-    user_id = user.id
-
-    query =
-      from m in Message,
-        join: cp in ConversationParticipant, on: cp.conversation_id == m.conversation_id,
-        where: cp.user_id == ^user_id and not is_nil(m.deleted_at),
-        select: m.id
-
-    query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from m in query, where: m.deleted_at > ^dt
-      else
-        query
-      end
-
-    Repo.all(query)
-  end
-
-  @doc """
-  List conversation participants updated since the given timestamp.
-  """
-  @spec list_participants_since(struct(), integer() | nil) :: [struct()]
-  def list_participants_since(user, since) do
-    user_id = user.id
-
-    query =
-      from cp in ConversationParticipant,
-        join: my_cp in ConversationParticipant,
-          on: my_cp.conversation_id == cp.conversation_id and my_cp.user_id == ^user_id,
-        where: is_nil(cp.left_at) and is_nil(my_cp.left_at),
-        select: cp
-
-    query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from cp in query, where: cp.updated_at > ^dt
-      else
-        query
-      end
-
-    Repo.all(query)
-  end
-
-  @doc """
-  List IDs of participants who left conversations since the given timestamp.
-  """
-  @spec list_removed_participant_ids_since(struct(), integer() | nil) :: [binary()]
-  def list_removed_participant_ids_since(user, since) do
-    user_id = user.id
-
-    query =
-      from cp in ConversationParticipant,
-        join: my_cp in ConversationParticipant,
-          on: my_cp.conversation_id == cp.conversation_id and my_cp.user_id == ^user_id,
-        where: not is_nil(cp.left_at),
-        select: cp.id
-
-    query =
-      if since do
-        dt = DateTime.from_unix!(since, :millisecond)
-        from cp in query, where: cp.left_at > ^dt
-      else
-        query
-      end
-
-    Repo.all(query)
-  end
+  defdelegate list_user_conversations_since(user, since), to: SyncQueries
+  defdelegate list_deleted_conversation_ids_since(user, since), to: SyncQueries
+  defdelegate list_user_messages_since(user, since), to: SyncQueries
+  defdelegate list_deleted_message_ids_since(user, since), to: SyncQueries
+  defdelegate list_participants_since(user, since), to: SyncQueries
+  defdelegate list_removed_participant_ids_since(user, since), to: SyncQueries
 end

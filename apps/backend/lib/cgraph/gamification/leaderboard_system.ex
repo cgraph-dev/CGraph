@@ -18,6 +18,7 @@ defmodule CGraph.Gamification.LeaderboardSystem do
   Categories: "xp", "level", "karma", "streak", "messages", "posts", "friends"
   Options: :limit (default 100), :cursor (opaque pagination cursor)
   """
+  @spec get_leaderboard(String.t(), keyword()) :: {list(), map()}
   def get_leaderboard(category, opts \\ []) do
     limit = Keyword.get(opts, :limit, 100)
     cursor = Keyword.get(opts, :cursor)
@@ -41,11 +42,13 @@ defmodule CGraph.Gamification.LeaderboardSystem do
   end
 
   @doc "Get total count for leaderboard pagination."
+  @spec get_leaderboard_count(String.t()) :: non_neg_integer()
   def get_leaderboard_count(_category) do
     from(u in User, where: u.is_active == true) |> ReadRepo.aggregate(:count)
   end
 
   @doc "Get a user's rank in a category."
+  @spec get_user_rank(binary(), String.t()) :: non_neg_integer()
   def get_user_rank(user_id, category) do
     case category do
       "friends" -> get_user_friends_rank(user_id)
@@ -54,6 +57,7 @@ defmodule CGraph.Gamification.LeaderboardSystem do
   end
 
   @doc "Get XP leaderboard (simple version)."
+  @spec get_xp_leaderboard(pos_integer()) :: list()
   def get_xp_leaderboard(_limit \\ 10), do: []
 
   # ============================================================================

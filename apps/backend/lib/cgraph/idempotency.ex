@@ -111,10 +111,16 @@ defmodule CGraph.Idempotency do
   - Redis backend available for distributed deployments
   - Request fingerprinting prevents misuse of idempotency keys
   - Automatic cleanup of expired records
+
+  ## Sub-modules
+
+  - `CGraph.Idempotency.Store` — ETS-backed record/lock management and cleanup
+  - `CGraph.Idempotency.Helpers` — Validation, fingerprinting, and configuration
   """
 
   use GenServer
-  require Logger
+
+  alias CGraph.Idempotency.{Helpers, Store}
 
   # ---------------------------------------------------------------------------
   # Type Definitions
@@ -138,25 +144,6 @@ defmodule CGraph.Idempotency do
     locked_by: lock() | nil,
     created_at: DateTime.t(),
     expires_at: DateTime.t()
-  }
-
-  # ---------------------------------------------------------------------------
-  # Configuration
-  # ---------------------------------------------------------------------------
-
-  @table :cgraph_idempotency
-  @locks_table :cgraph_idempotency_locks
-
-  @default_config %{
-    backend: :ets,
-    # 7 days TTL for idempotency keys - allows for retries across extended periods
-    # and handles cases where clients may retry failed payments days later
-    default_ttl: :timer.hours(168),
-    lock_ttl: :timer.seconds(30),
-    header: "idempotency-key",
-    fingerprint_body: true,
-    max_key_length: 255,
-    cleanup_interval: :timer.minutes(5)
   }
 
   # ---------------------------------------------------------------------------
@@ -226,65 +213,28 @@ defmodule CGraph.Idempotency do
   end
 
   # ---------------------------------------------------------------------------
-  # Client API - Query Operations
+  # Client API - Query Operations (delegated to Store)
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Get the record for an idempotency key.
-  """
+  @doc "Get the record for an idempotency key."
   @spec get(idempotency_key()) :: {:ok, record()} | {:error, :not_found}
-  def get(key) do
-    case :ets.lookup(@table, key) do
-      [{^key, record}] -> {:ok, record}
-      [] -> {:error, :not_found}
-    end
-  end
+  defdelegate get(key), to: Store
 
-  @doc """
-  Check if a key exists.
-  """
+  @doc "Check if a key exists."
   @spec exists?(idempotency_key()) :: boolean()
-  def exists?(key) do
-    :ets.member(@table, key)
-  end
+  defdelegate exists?(key), to: Store
 
-  @doc """
-  Get statistics about idempotency records.
-  """
+  @doc "Get statistics about idempotency records."
   @spec get_stats() :: map()
-  def get_stats do
-    records = :ets.tab2list(@table)
-    locks = :ets.tab2list(@locks_table)
-
-    now = DateTime.utc_now()
-
-    %{
-      total_records: length(records),
-      active_locks: length(locks),
-      with_responses: Enum.count(records, fn {_, r} -> r.response != nil end),
-      expired: Enum.count(records, fn {_, r} -> DateTime.compare(r.expires_at, now) == :lt end)
-    }
-  end
+  defdelegate get_stats(), to: Store
 
   # ---------------------------------------------------------------------------
-  # Client API - Plug Helpers
+  # Client API - Plug Helpers (delegated to Helpers)
   # ---------------------------------------------------------------------------
 
-  @doc """
-  Extract idempotency key from a Plug connection.
-  """
+  @doc "Extract idempotency key from a Plug connection."
   @spec get_key_from_conn(Plug.Conn.t()) :: idempotency_key() | nil
-  def get_key_from_conn(conn) do
-    header_name = get_config(:header)
-
-    case Plug.Conn.get_req_header(conn, header_name) do
-      [key | _] when is_binary(key) and byte_size(key) > 0 ->
-        validate_key(key)
-
-      _ ->
-        nil
-    end
-  end
+  defdelegate get_key_from_conn(conn), to: Helpers
 
   @doc """
   Compute a fingerprint for a request body.
@@ -292,15 +242,7 @@ defmodule CGraph.Idempotency do
   Used to detect when the same idempotency key is used with different request bodies.
   """
   @spec fingerprint(term()) :: fingerprint()
-  def fingerprint(nil), do: "empty"
-  def fingerprint(body) when is_binary(body) do
-    :crypto.hash(:sha256, body) |> Base.encode16(case: :lower)
-  end
-  def fingerprint(body) do
-    body
-    |> Jason.encode!()
-    |> fingerprint()
-  end
+  defdelegate fingerprint(body), to: Helpers
 
   # ---------------------------------------------------------------------------
   # GenServer Callbacks
@@ -312,45 +254,36 @@ defmodule CGraph.Idempotency do
 
   @impl true
   def init(_opts) do
-    # Create ETS tables
-    :ets.new(@table, [:named_table, :set, :public, read_concurrency: true])
-    :ets.new(@locks_table, [:named_table, :set, :public])
-
-    # Schedule cleanup
+    Store.init_tables()
     schedule_cleanup()
-
-    state = %{
-      config: load_config()
-    }
-
-    {:ok, state}
+    {:ok, %{config: Helpers.load_config()}}
   end
 
   @impl true
   def handle_call({:check, key, request_body}, _from, state) do
-    result = do_check(key, request_body)
+    result = Store.check_key(key, request_body)
     {:reply, result, state}
   end
 
   def handle_call({:store, lock, response}, _from, state) do
-    result = do_store(lock, response)
+    result = Store.store_response(lock, response)
     {:reply, result, state}
   end
 
   def handle_call({:release, lock}, _from, state) do
-    do_release(lock)
+    Store.release_lock(lock)
     {:reply, :ok, state}
   end
 
   def handle_call({:delete, key}, _from, state) do
-    :ets.delete(@table, key)
+    Store.delete_key(key)
     {:reply, :ok, state}
   end
 
   @impl true
   def handle_info(:cleanup, state) do
-    cleanup_expired()
-    cleanup_stale_locks()
+    Store.cleanup_expired()
+    Store.cleanup_stale_locks()
     schedule_cleanup()
     {:noreply, state}
   end
@@ -360,216 +293,11 @@ defmodule CGraph.Idempotency do
   end
 
   # ---------------------------------------------------------------------------
-  # Private Functions - Core Logic
-  # ---------------------------------------------------------------------------
-
-  defp do_check(key, request_body) do
-    case validate_key(key) do
-      nil ->
-        {:error, :invalid_key}
-
-      valid_key ->
-        fp = fingerprint(request_body)
-
-        case :ets.lookup(@table, valid_key) do
-          [{^valid_key, record}] ->
-            handle_existing_record(record, fp)
-
-          [] ->
-            acquire_lock(valid_key, fp)
-        end
-    end
-  end
-
-  defp handle_existing_record(record, fingerprint) do
-    cond do
-      # Check fingerprint mismatch
-      get_config(:fingerprint_body) and record.fingerprint != fingerprint ->
-        {:error, :fingerprint_mismatch}
-
-      # Check if response exists (completed request)
-      record.response != nil ->
-        {:cached, record.response}
-
-      # Check if locked by another request
-      record.locked_at != nil and not lock_expired?(record) ->
-        {:error, :concurrent_request}
-
-      # Lock expired or no lock - reacquire
-      true ->
-        reacquire_lock(record)
-    end
-  end
-
-  defp acquire_lock(key, fingerprint) do
-    lock = make_ref()
-    now = DateTime.utc_now()
-    ttl = get_config(:default_ttl)
-
-    record = %{
-      key: key,
-      fingerprint: fingerprint,
-      response: nil,
-      locked_at: now,
-      locked_by: lock,
-      created_at: now,
-      expires_at: DateTime.add(now, ttl, :millisecond)
-    }
-
-    :ets.insert(@table, {key, record})
-    :ets.insert(@locks_table, {lock, key})
-
-    {:ok, lock}
-  end
-
-  defp reacquire_lock(record) do
-    lock = make_ref()
-    now = DateTime.utc_now()
-
-    updated = %{record |
-      locked_at: now,
-      locked_by: lock
-    }
-
-    :ets.insert(@table, {record.key, updated})
-    :ets.insert(@locks_table, {lock, record.key})
-
-    {:ok, lock}
-  end
-
-  defp do_store(lock, response) do
-    case :ets.lookup(@locks_table, lock) do
-      [{^lock, key}] ->
-        case :ets.lookup(@table, key) do
-          [{^key, record}] when record.locked_by == lock ->
-            updated = %{record |
-              response: response,
-              locked_at: nil,
-              locked_by: nil
-            }
-
-            :ets.insert(@table, {key, updated})
-            :ets.delete(@locks_table, lock)
-
-            :ok
-
-          _ ->
-            {:error, :lock_expired}
-        end
-
-      [] ->
-        {:error, :lock_expired}
-    end
-  end
-
-  defp do_release(lock) do
-    case :ets.lookup(@locks_table, lock) do
-      [{^lock, key}] -> release_lock_for_key(lock, key)
-      [] -> :ok
-    end
-  end
-
-  defp release_lock_for_key(lock, key) do
-    update_locked_record(lock, key)
-    :ets.delete(@locks_table, lock)
-  end
-
-  defp update_locked_record(lock, key) do
-    case :ets.lookup(@table, key) do
-      [{^key, record}] when record.locked_by == lock -> clear_or_delete_record(key, record)
-      _ -> :ok
-    end
-  end
-
-  defp clear_or_delete_record(key, %{response: nil}), do: :ets.delete(@table, key)
-  defp clear_or_delete_record(key, record) do
-    updated = %{record | locked_at: nil, locked_by: nil}
-    :ets.insert(@table, {key, updated})
-  end
-
-  defp lock_expired?(record) do
-    lock_ttl = get_config(:lock_ttl)
-    cutoff = DateTime.add(DateTime.utc_now(), -lock_ttl, :millisecond)
-    DateTime.compare(record.locked_at, cutoff) == :lt
-  end
-
-  # ---------------------------------------------------------------------------
-  # Private Functions - Validation
-  # ---------------------------------------------------------------------------
-
-  defp validate_key(nil), do: nil
-  defp validate_key(key) when is_binary(key) do
-    max_length = get_config(:max_key_length)
-
-    if byte_size(key) > 0 and byte_size(key) <= max_length do
-      key
-    else
-      nil
-    end
-  end
-  defp validate_key(_), do: nil
-
-  # ---------------------------------------------------------------------------
-  # Private Functions - Cleanup
+  # Private
   # ---------------------------------------------------------------------------
 
   defp schedule_cleanup do
-    interval = get_config(:cleanup_interval)
+    interval = Helpers.get_config(:cleanup_interval)
     Process.send_after(self(), :cleanup, interval)
-  end
-
-  defp cleanup_expired do
-    now = DateTime.utc_now()
-
-    expired =
-      :ets.tab2list(@table)
-      |> Enum.filter(fn {_key, record} ->
-        DateTime.compare(record.expires_at, now) == :lt
-      end)
-
-    Enum.each(expired, fn {key, _} ->
-      :ets.delete(@table, key)
-    end)
-
-    unless Enum.empty?(expired) do
-      Logger.debug("idempotency_cleaned_up_expired_records", expired_count: inspect(length(expired)))
-    end
-  end
-
-  defp cleanup_stale_locks do
-    lock_ttl = get_config(:lock_ttl)
-    cutoff = DateTime.add(DateTime.utc_now(), -lock_ttl, :millisecond)
-
-    stale =
-      :ets.tab2list(@table)
-      |> Enum.filter(fn {_key, record} ->
-        record.locked_at != nil and
-        record.response == nil and
-        DateTime.compare(record.locked_at, cutoff) == :lt
-      end)
-
-    Enum.each(stale, fn {key, record} ->
-      # Release stale lock but keep record for fingerprint checking
-      updated = %{record | locked_at: nil, locked_by: nil}
-      :ets.insert(@table, {key, updated})
-
-      if record.locked_by do
-        :ets.delete(@locks_table, record.locked_by)
-      end
-    end)
-  end
-
-  # ---------------------------------------------------------------------------
-  # Private Functions - Configuration
-  # ---------------------------------------------------------------------------
-
-  defp load_config do
-    app_config = Application.get_env(:cgraph, __MODULE__, [])
-    Map.merge(@default_config, Map.new(app_config))
-  end
-
-  defp get_config(key) do
-    app_config = Application.get_env(:cgraph, __MODULE__, [])
-    Keyword.get(app_config, key, Map.get(@default_config, key))
   end
 end

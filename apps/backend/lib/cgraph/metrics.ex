@@ -77,6 +77,7 @@ defmodule CGraph.Metrics do
   @doc """
   Start the metrics collector.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -91,6 +92,7 @@ defmodule CGraph.Metrics do
         labels: [:method, :path, :status]
       )
   """
+  @spec define(metric_name(), metric_type(), keyword()) :: :ok
   def define(name, type, opts \\ []) do
     GenServer.call(__MODULE__, {:define, name, type, opts})
   end
@@ -98,6 +100,7 @@ defmodule CGraph.Metrics do
   @doc """
   Increment a counter metric.
   """
+  @spec increment(metric_name(), labels(), number()) :: :ok
   def increment(name, labels \\ %{}, amount \\ 1) do
     GenServer.cast(__MODULE__, {:increment, name, labels, amount})
   end
@@ -105,6 +108,7 @@ defmodule CGraph.Metrics do
   @doc """
   Set a gauge metric value.
   """
+  @spec set(metric_name(), number(), labels()) :: :ok
   def set(name, value, labels \\ %{}) do
     GenServer.cast(__MODULE__, {:set, name, value, labels})
   end
@@ -112,6 +116,7 @@ defmodule CGraph.Metrics do
   @doc """
   Add to a gauge (can be negative).
   """
+  @spec add(metric_name(), number(), labels()) :: :ok
   def add(name, value, labels \\ %{}) do
     GenServer.cast(__MODULE__, {:add, name, value, labels})
   end
@@ -119,6 +124,7 @@ defmodule CGraph.Metrics do
   @doc """
   Observe a value in a histogram.
   """
+  @spec observe(metric_name(), number(), labels()) :: :ok
   def observe(name, value, labels \\ %{}) do
     GenServer.cast(__MODULE__, {:observe, name, value, labels})
   end
@@ -132,6 +138,7 @@ defmodule CGraph.Metrics do
         Repo.all(User)
       end)
   """
+  @spec measure(metric_name(), labels(), (-> term())) :: term()
   def measure(name, labels \\ %{}, fun) when is_function(fun, 0) do
     start = System.monotonic_time(:millisecond)
 
@@ -151,6 +158,7 @@ defmodule CGraph.Metrics do
   @doc """
   Get current value of a metric.
   """
+  @spec get(metric_name(), labels()) :: {:ok, term()} | {:error, :not_defined | :unknown_type}
   def get(name, labels \\ %{}) do
     GenServer.call(__MODULE__, {:get, name, labels})
   end
@@ -163,6 +171,7 @@ defmodule CGraph.Metrics do
   - `:prometheus` - Prometheus text exposition format
   - `:json` - JSON format
   """
+  @spec export(atom()) :: String.t()
   def export(format \\ :prometheus) do
     GenServer.call(__MODULE__, {:export, format})
   end
@@ -170,6 +179,7 @@ defmodule CGraph.Metrics do
   @doc """
   Get all defined metrics.
   """
+  @spec all() :: map()
   def all do
     GenServer.call(__MODULE__, :all)
   end
@@ -177,6 +187,7 @@ defmodule CGraph.Metrics do
   @doc """
   Reset all metrics.
   """
+  @spec reset() :: :ok
   def reset do
     GenServer.call(__MODULE__, :reset)
   end
@@ -184,6 +195,7 @@ defmodule CGraph.Metrics do
   @doc """
   Attach to telemetry events.
   """
+  @spec attach_telemetry([[atom()]]) :: :ok
   def attach_telemetry(events) do
     Enum.each(events, fn event ->
       :telemetry.attach(
@@ -199,6 +211,7 @@ defmodule CGraph.Metrics do
   # GenServer Implementation
   # ---------------------------------------------------------------------------
 
+  @spec init(keyword()) :: {:ok, map(), {:continue, :define_defaults}}
   @impl true
   def init(_opts) do
     state = %{
@@ -212,6 +225,7 @@ defmodule CGraph.Metrics do
     {:ok, state, {:continue, :define_defaults}}
   end
 
+  @spec handle_continue(atom(), map()) :: {:noreply, map()}
   @impl true
   def handle_continue(:define_defaults, state) do
     state = Enum.reduce(Store.default_definitions(), state, fn {name, type, opts}, acc ->
@@ -224,6 +238,7 @@ defmodule CGraph.Metrics do
     {:noreply, state}
   end
 
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call({:define, name, type, opts}, _from, state) do
     state = Store.do_define(state, name, type, opts)
@@ -259,6 +274,7 @@ defmodule CGraph.Metrics do
     {:reply, :ok, new_state}
   end
 
+  @spec handle_cast(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_cast({:increment, name, labels, amount}, state) do
     key = Store.metric_key(name, labels)
@@ -291,6 +307,7 @@ defmodule CGraph.Metrics do
     {:noreply, %{state | histograms: histograms}}
   end
 
+  @spec handle_info(atom(), map()) :: {:noreply, map()}
   @impl true
   def handle_info(:collect_system_metrics, state) do
     collect_system_metrics()

@@ -55,6 +55,7 @@ defmodule CGraph.Notifications.PushService do
   # Client API
   # ============================================================================
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -71,6 +72,7 @@ defmodule CGraph.Notifications.PushService do
   Sends a push notification to a single device token on a specific platform.
   Used by the retry worker to re-attempt individual delivery.
   """
+  @spec send_single(atom(), binary(), notification()) :: send_result()
   def send_single(platform, token, notification) when is_atom(platform) and is_binary(token) do
     GenServer.call(__MODULE__, {:send_single, platform, token, notification}, :infinity)
   end
@@ -148,6 +150,7 @@ defmodule CGraph.Notifications.PushService do
   # ============================================================================
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     CircuitBreakers.install_all()
 
@@ -165,6 +168,7 @@ defmodule CGraph.Notifications.PushService do
   end
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:send, user_id, notification, opts}, _from, state) do
     result = do_send_to_user(user_id, notification, opts)
     state = update_stats(state, result)
