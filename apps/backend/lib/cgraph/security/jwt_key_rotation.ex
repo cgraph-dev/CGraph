@@ -55,6 +55,7 @@ defmodule CGraph.Security.JWTKeyRotation do
   @doc """
   Start the key rotation manager.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end

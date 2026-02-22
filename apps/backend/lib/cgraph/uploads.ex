@@ -104,6 +104,7 @@ defmodule CGraph.Uploads do
   - Preview (800x800) for chat view
   - Optimized original
   """
+  @spec store_file(map(), map(), keyword()) :: {:ok, Ecto.Schema.t()} | {:error, term()}
   def store_file(user, upload, opts \\ []) do
     context = Keyword.get(opts, :context, "message")
     skip_validation = Keyword.get(opts, :skip_validation, false)
@@ -175,6 +176,7 @@ defmodule CGraph.Uploads do
   @doc """
   Get a file by ID.
   """
+  @spec get_file(String.t()) :: {:ok, Ecto.Schema.t()} | {:error, :not_found}
   def get_file(file_id) do
     case Repo.get(UploadedFile, file_id) do
       nil -> {:error, :not_found}
@@ -185,6 +187,7 @@ defmodule CGraph.Uploads do
   @doc """
   Delete a file.
   """
+  @spec delete_file(Ecto.Schema.t()) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
   def delete_file(file) do
     # Delete physical file
     file_path = Path.join(["priv/static", file.url])
@@ -197,6 +200,7 @@ defmodule CGraph.Uploads do
   @doc """
   Check user's upload quota.
   """
+  @spec check_quota(map()) :: :ok | {:error, :quota_exceeded}
   def check_quota(user) do
     usage = get_user_usage(user)
     used = usage.used_bytes || 0
@@ -214,6 +218,7 @@ defmodule CGraph.Uploads do
   @doc """
   Get user's storage usage.
   """
+  @spec get_user_usage(map()) :: map()
   def get_user_usage(user) do
     query = from f in UploadedFile,
       where: f.user_id == ^user.id,
@@ -268,6 +273,7 @@ defmodule CGraph.Uploads do
   @doc """
   Generate a presigned URL for direct upload.
   """
+  @spec generate_presigned_url(map(), keyword()) :: {:ok, map()}
   def generate_presigned_url(_user, opts \\ []) do
     filename = Keyword.get(opts, :filename)
     content_type = Keyword.get(opts, :content_type)
@@ -289,6 +295,7 @@ defmodule CGraph.Uploads do
   @doc """
   Confirm a presigned upload completed.
   """
+  @spec confirm_presigned_upload(map(), String.t(), String.t()) :: {:ok, UploadedFile.t()}
   def confirm_presigned_upload(user, upload_id, key) do
     {:ok, %UploadedFile{
       id: upload_id,

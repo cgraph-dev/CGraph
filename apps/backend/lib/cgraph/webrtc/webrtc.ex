@@ -82,9 +82,9 @@ defmodule CGraph.WebRTC do
 
   alias CGraph.WebRTC.{Participant, Room}
   alias __MODULE__.{Calls, Signaling}
+  alias CGraph.WebRTC.RoomUtils
 
   @ets_table :cgraph_webrtc_rooms
-  @default_call_timeout 60_000
   @max_participants 10
 
   # ---------------------------------------------------------------------------
@@ -134,7 +134,7 @@ defmodule CGraph.WebRTC do
   """
   @spec create_room(participant_id(), call_type(), keyword()) :: {:ok, room()} | {:error, term()}
   def create_room(creator_id, type \\ :audio, opts \\ []) do
-    room_id = generate_room_id()
+    room_id = RoomUtils.generate_room_id()
     max = Keyword.get(opts, :max_participants, @max_participants)
     group_id = Keyword.get(opts, :group_id)
 
@@ -154,7 +154,7 @@ defmodule CGraph.WebRTC do
     case GenServer.call(__MODULE__, {:create_room, room}) do
       :ok ->
         Logger.info("webrtc_room_created_by", room_id: room_id, creator_id: creator_id)
-        emit_telemetry(:room_created, room)
+        RoomUtils.emit_telemetry(:room_created, room)
         {:ok, room}
 
       {:error, _} = error ->
@@ -291,7 +291,7 @@ defmodule CGraph.WebRTC do
   @impl true
   def init(_opts) do
     :ets.new(@ets_table, [:named_table, :public, :set, {:read_concurrency, true}])
-    schedule_cleanup()
+    RoomUtils.schedule_cleanup()
     {:ok, %{}}
   end
 
@@ -300,7 +300,7 @@ defmodule CGraph.WebRTC do
   def handle_call({:create_room, room}, _from, state) do
     :ets.insert(@ets_table, {room.id, room})
     # Schedule room timeout
-    Process.send_after(self(), {:room_timeout, room.id}, call_timeout())
+    Process.send_after(self(), {:room_timeout, room.id}, RoomUtils.call_timeout())
     {:reply, :ok, state}
   end
 
@@ -323,7 +323,7 @@ defmodule CGraph.WebRTC do
             participant_id: participant.id
           })
 
-          emit_telemetry(:participant_joined, updated, participant)
+          RoomUtils.emit_telemetry(:participant_joined, updated, participant)
           {:reply, {:ok, updated}, state}
         end
 
@@ -345,7 +345,7 @@ defmodule CGraph.WebRTC do
           final = %{updated | state: :ended, ended_at: DateTime.utc_now()}
           :ets.delete(@ets_table, room_id)
           Calls.persist_call_history(final, room)
-          emit_telemetry(:room_ended, final)
+          RoomUtils.emit_telemetry(:room_ended, final)
           {:reply, {:ok, :room_ended}, state}
         else
           :ets.insert(@ets_table, {room_id, updated})
@@ -371,7 +371,7 @@ defmodule CGraph.WebRTC do
 
         Calls.persist_call_history(final, room)
         broadcast_room_event(room_id, :room_ended, %{})
-        emit_telemetry(:room_ended, final)
+        RoomUtils.emit_telemetry(:room_ended, final)
 
         {:reply, {:ok, final}, state}
 
@@ -416,7 +416,7 @@ defmodule CGraph.WebRTC do
         # Room never started, clean it up
         :ets.delete(@ets_table, room_id)
         Logger.info("webrtc_room_timed_out_never_started", room_id: room_id)
-        emit_telemetry(:room_timeout, room)
+        RoomUtils.emit_telemetry(:room_timeout, room)
 
       _ ->
         :ok
@@ -427,8 +427,8 @@ defmodule CGraph.WebRTC do
 
   @impl true
   def handle_info(:cleanup, state) do
-    cleanup_stale_rooms()
-    schedule_cleanup()
+    RoomUtils.cleanup_stale_rooms()
+    RoomUtils.schedule_cleanup()
     {:noreply, state}
   end
 
@@ -441,66 +441,7 @@ defmodule CGraph.WebRTC do
   # Private Functions
   # ---------------------------------------------------------------------------
 
-  defp generate_room_id do
-    "room_" <> Base.encode16(:crypto.strong_rand_bytes(8), case: :lower)
-  end
-
-  defp call_timeout do
-    config(:call_timeout_ms) || @default_call_timeout
-  end
-
-  defp schedule_cleanup do
-    # Clean up every 5 minutes
-    Process.send_after(self(), :cleanup, 300_000)
-  end
-
-  defp cleanup_stale_rooms do
-    now = DateTime.utc_now()
-    max_age = 3600  # 1 hour
-
-    :ets.foldl(fn
-      {room_id, %Room{created_at: created_at, state: state}}, acc ->
-        age = DateTime.diff(now, created_at, :second)
-        if age > max_age or state == :ended do
-          :ets.delete(@ets_table, room_id)
-        end
-        acc
-
-      _, acc -> acc
-    end, nil, @ets_table)
-  end
-
   defp broadcast_room_event(room_id, event, payload) do
-    Phoenix.PubSub.broadcast(
-      CGraph.PubSub,
-      "webrtc:room:#{room_id}",
-      {event, payload}
-    )
-  end
-
-  defp config(key) do
-    Application.get_env(:cgraph, __MODULE__, [])
-    |> Keyword.get(key)
-  end
-
-  defp emit_telemetry(event, room, participant \\ nil) do
-    measurements = %{
-      participant_count: map_size(room.participants),
-      timestamp: System.system_time(:millisecond)
-    }
-
-    metadata = %{
-      room_id: room.id,
-      type: room.type,
-      state: room.state
-    }
-
-    metadata = if participant do
-      Map.put(metadata, :participant_id, participant.id)
-    else
-      metadata
-    end
-
-    :telemetry.execute([:cgraph, :webrtc, event], measurements, metadata)
+    RoomUtils.broadcast_room_event(room_id, event, payload)
   end
 end

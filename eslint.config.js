@@ -153,4 +153,39 @@ export default [
       '@typescript-eslint/no-explicit-any': 'error',
     },
   },
+  // Prevent regressions: ban React.FC, forwardRef, useContext (React 19 migration complete)
+  {
+    files: ['apps/web/src/**/*.{ts,tsx}', 'apps/mobile/src/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            'TSTypeReference[typeName.right.name="FC"], TSTypeReference[typeName.name="FC"]',
+          message:
+            'Do not use React.FC. Use plain function declarations with typed props and explicit return type instead.',
+        },
+        {
+          selector:
+            'TSTypeReference[typeName.right.name="FunctionComponent"], TSTypeReference[typeName.name="FunctionComponent"]',
+          message:
+            'Do not use React.FunctionComponent. Use plain function declarations with typed props instead.',
+        },
+        {
+          selector: 'CallExpression[callee.name="forwardRef"]',
+          message: 'Do not use forwardRef. In React 19, ref is a regular prop — pass it directly.',
+        },
+        {
+          selector: 'CallExpression[callee.object.name="React"][callee.property.name="forwardRef"]',
+          message:
+            'Do not use React.forwardRef. In React 19, ref is a regular prop — pass it directly.',
+        },
+        {
+          selector: 'CallExpression[callee.name="useContext"]',
+          message:
+            'Do not use useContext(). In React 19, use the use() hook instead: use(MyContext).',
+        },
+      ],
+    },
+  },
 ];

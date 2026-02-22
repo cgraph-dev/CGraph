@@ -85,6 +85,7 @@ defmodule CGraph.Mailer.Templates do
   # ============================================================================
 
   @doc false
+  @spec security_alert_content(atom()) :: {String.t(), String.t(), String.t()}
   def security_alert_content(:new_device_login) do
     {
       "New device login detected",

@@ -1,0 +1,41 @@
+import GlassCard from './GlassCard';
+import type { GlassCardProps } from './GlassCard.types';
+
+export function GlassCardNeon({ children, className, ...props }: Omit<GlassCardProps, 'variant'>) {
+  return (
+    <GlassCard variant="neon" glow borderGradient shimmer className={className} {...props}>
+      {children}
+    </GlassCard>
+  );
+}
+
+export function GlassCardHolographic({
+  children,
+  className,
+  ...props
+}: Omit<GlassCardProps, 'variant'>) {
+  return (
+    <GlassCard variant="holographic" hover3D particles className={className} {...props}>
+      {children}
+    </GlassCard>
+  );
+}
+
+export function GlassCardCrystal({
+  children,
+  className,
+  ...props
+}: Omit<GlassCardProps, 'variant'>) {
+  return (
+    <GlassCard
+      variant="crystal"
+      intensity="strong"
+      glow
+      glowColor="rgba(16, 185, 129, 0.3)"
+      className={className}
+      {...props}
+    >
+      {children}
+    </GlassCard>
+  );
+}

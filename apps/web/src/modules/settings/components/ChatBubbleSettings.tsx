@@ -25,6 +25,7 @@ import {
   LayoutTab,
   BackgroundsTab,
 } from './ChatBubbleTabs';
+import { CHAT_BUBBLE_PRESETS_UI } from './ChatBubbleSettings.constants';
 
 /**
  * Chat Bubble Customization Settings
@@ -63,18 +64,7 @@ export default function ChatBubbleSettings() {
     return getBackgroundsByCategory(backgroundCategory);
   }, [backgroundCategory]);
 
-  const presets = [
-    { id: 'default', label: 'Default', preview: 'bg-gradient-to-r from-primary-600 to-purple-600' },
-    { id: 'minimal', label: 'Minimal', preview: 'bg-dark-900 border border-dark-600' },
-    { id: 'modern', label: 'Modern', preview: 'bg-gradient-to-br from-purple-600 to-pink-600' },
-    { id: 'retro', label: 'Retro', preview: 'bg-primary-600 border-2 border-primary-400' },
-    { id: 'bubble', label: 'Bubble', preview: 'bg-blue-500' },
-    {
-      id: 'glass',
-      label: 'Glass',
-      preview: 'bg-primary-500/30 backdrop-blur-md border border-primary-400/50',
-    },
-  ];
+  const presets = CHAT_BUBBLE_PRESETS_UI;
 
   // Silently sync relevant fields to backend (debounced)
   useEffect(() => {

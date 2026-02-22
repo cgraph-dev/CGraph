@@ -57,6 +57,7 @@ defmodule CGraph.Workers.SendEmailNotification do
   alias CGraph.Notifications.Notification
   alias CGraph.Repo
 
+  @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   # Handle verification emails
   def perform(%Oban.Job{args: %{"user_id" => user_id, "email_type" => "verification"} = args}) do

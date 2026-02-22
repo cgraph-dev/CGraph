@@ -7,13 +7,11 @@ import { api } from '@/lib/api';
 import { toast } from '@/shared/components/ui';
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
-import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { getAvatarBorderId } from '@/lib/utils';
-
-interface SaveProfileState {
-  error: string | null;
-}
+import type { SaveProfileState } from './AccountSettings.types';
+import { UserIdBadge } from './UserIdBadge';
+import { AvatarSection } from './AvatarSection';
+import { ProfileFormFields } from './ProfileFormFields';
 
 /**
  * AccountSettings - User account management component
@@ -98,83 +96,8 @@ export function AccountSettings() {
         Account Settings
       </h1>
 
-      {/* User ID Badge */}
-      <GlassCard
-        variant="holographic"
-        glow
-        glowColor="rgba(16, 185, 129, 0.3)"
-        className="mb-8 p-4"
-      >
-        <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 ring-4 ring-primary-500/20">
-            {user?.avatarUrl ? (
-              <ThemedAvatar
-                src={user.avatarUrl}
-                alt={user?.displayName || user?.username || 'User'}
-                size="large"
-                className="h-16 w-16"
-                avatarBorderId={getAvatarBorderId(user)}
-              />
-            ) : (
-              <span className="text-2xl font-bold text-white">
-                {(user?.displayName || user?.username || 'U').charAt(0).toUpperCase()}
-              </span>
-            )}
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-bold text-white">
-                {user?.displayName || user?.username || 'Anonymous User'}
-              </span>
-              {user?.isVerified && <span className="text-blue-400">✓</span>}
-            </div>
-            <div className="mt-1 flex items-center gap-3">
-              <span className="rounded border border-primary-800/50 bg-dark-700 px-2 py-1 font-mono text-sm text-primary-400">
-                {user?.userIdDisplay || '#0000'}
-              </span>
-              {user?.username && <span className="text-gray-400">@{user.username}</span>}
-              {user?.karma !== undefined && user.karma > 0 && (
-                <span className="text-sm text-amber-400">
-                  ⚡ {(user.karma ?? 0).toLocaleString()} karma
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-      </GlassCard>
-
-      {/* Avatar */}
-      <GlassCard variant="crystal" glow className="mb-8 p-6">
-        <label className="mb-3 block text-sm font-medium text-gray-300">Profile Picture</label>
-        <div className="flex items-center gap-4">
-          <div className="h-20 w-20 overflow-hidden rounded-full bg-dark-700 ring-2 ring-dark-600 transition-all hover:ring-primary-500">
-            {user?.avatarUrl ? (
-              <ThemedAvatar
-                src={user.avatarUrl}
-                alt={user?.displayName || user?.username || 'User'}
-                size="large"
-                className="h-20 w-20"
-                avatarBorderId={getAvatarBorderId(user)}
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-3xl font-bold text-gray-400">
-                {(user?.displayName || user?.username || 'U').charAt(0).toUpperCase()}
-              </div>
-            )}
-          </div>
-          <div>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => HapticFeedback.medium()}
-              className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-500/20"
-            >
-              Upload Image
-            </motion.button>
-            <p className="mt-1 text-xs text-gray-500">JPG, PNG, or GIF. Max 2MB.</p>
-          </div>
-        </div>
-      </GlassCard>
+      <UserIdBadge user={user} />
+      <AvatarSection user={user} />
 
       {/* Username with 14-day cooldown */}
       <GlassCard variant="default" className="mb-6 p-6">
@@ -221,131 +144,13 @@ export function AccountSettings() {
 
       {/* Profile Form — uses React 19 useActionState */}
       <form action={saveAction}>
-        {saveState.error && (
-          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">
-            {saveState.error}
-          </div>
-        )}
-
-        {/* Display Name */}
-        <GlassCard variant="default" className="mb-6 p-6">
-          <label className="mb-2 block text-sm font-medium text-gray-300">Display Name</label>
-          <input
-            type="text"
-            name="displayName"
-            defaultValue={user?.displayName || ''}
-            placeholder="How should we call you?"
-            className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
-          />
-        </GlassCard>
-
-        {/* Bio */}
-        <GlassCard variant="default" className="mb-6 p-6">
-          <label className="mb-2 block text-sm font-medium text-gray-300">About Me</label>
-          <textarea
-            name="bio"
-            defaultValue={user?.bio || ''}
-            placeholder="Tell others about yourself..."
-            maxLength={300}
-            rows={3}
-            className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
-          />
-        </GlassCard>
-
-        {/* Pronouns */}
-        <GlassCard variant="default" className="mb-6 p-6">
-          <label className="mb-2 block text-sm font-medium text-gray-300">Pronouns</label>
-          <select
-            name="pronouns"
-            defaultValue={user?.pronouns || ''}
-            className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="">Prefer not to say</option>
-            <option value="he/him">he/him</option>
-            <option value="she/her">she/her</option>
-            <option value="they/them">they/them</option>
-            <option value="he/they">he/they</option>
-            <option value="she/they">she/they</option>
-            <option value="any">Any pronouns</option>
-            <option value="ask">Ask me</option>
-          </select>
-        </GlassCard>
-
-        {/* Banner */}
-        <GlassCard variant="crystal" glow className="mb-6 p-6">
-          <label className="mb-3 block text-sm font-medium text-gray-300">Profile Banner</label>
-          <div className="relative h-32 overflow-hidden rounded-lg bg-dark-700 ring-1 ring-dark-600">
-            {user?.bannerUrl ? (
-              <img src={user.bannerUrl} alt="Banner" className="h-full w-full object-cover" />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-dark-700 to-dark-800">
-                <span className="text-sm text-gray-500">No banner set</span>
-              </div>
-            )}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity hover:opacity-100">
-              <motion.button
-                type="button"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => HapticFeedback.medium()}
-                className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white"
-              >
-                Upload Banner
-              </motion.button>
-            </div>
-          </div>
-          <p className="mt-2 text-xs text-gray-500">Recommended: 1920x480px. Max 5MB.</p>
-        </GlassCard>
-
-        {/* Email */}
-        <GlassCard variant="default" className="mb-6 p-6">
-          <label className="mb-2 block text-sm font-medium text-gray-300">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
-          />
-        </GlassCard>
-
-        {/* Wallet */}
-        <GlassCard variant="crystal" glow className="mb-8 p-6">
-          <label className="mb-2 block text-sm font-medium text-gray-300">Connected Wallet</label>
-          {user?.walletAddress ? (
-            <div className="flex items-center gap-3">
-              <input
-                type="text"
-                value={user.walletAddress}
-                disabled
-                className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 font-mono text-sm text-gray-400"
-              />
-              <button
-                type="button"
-                className="rounded-lg bg-red-600/20 px-4 py-3 text-sm font-medium text-red-400 transition-all hover:scale-105 hover:bg-red-600/30 active:scale-95"
-              >
-                Disconnect
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              className="rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-sm font-medium text-white transition-all hover:border-primary-500 hover:bg-dark-600"
-            >
-              Connect Wallet
-            </button>
-          )}
-        </GlassCard>
-
-        {/* Save Button */}
-        <motion.button
-          type="submit"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          disabled={isSaving}
-          className="rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-3 font-medium text-white shadow-lg shadow-primary-500/20 transition-all hover:from-primary-700 hover:to-primary-800 disabled:opacity-50"
-        >
-          {isSaving ? 'Saving...' : 'Save Changes'}
-        </motion.button>
+        <ProfileFormFields
+          user={user}
+          email={email}
+          setEmail={setEmail}
+          isSaving={isSaving}
+          saveError={saveState.error}
+        />
       </form>
     </motion.div>
   );

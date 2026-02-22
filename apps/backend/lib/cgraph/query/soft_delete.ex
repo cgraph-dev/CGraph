@@ -250,6 +250,7 @@ defmodule CGraph.Query.SoftDelete do
 
         {:ok, post} = SoftDelete.Helpers.soft_delete(post)
     """
+    @spec soft_delete(Ecto.Schema.t()) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
     def soft_delete(%{__struct__: _} = struct) do
       struct
       |> Ecto.Changeset.change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
@@ -263,6 +264,7 @@ defmodule CGraph.Query.SoftDelete do
 
         {:ok, post} = SoftDelete.Helpers.restore(post)
     """
+    @spec restore(Ecto.Schema.t()) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
     def restore(%{__struct__: _} = struct) do
       struct
       |> Ecto.Changeset.change(deleted_at: nil)
@@ -272,6 +274,7 @@ defmodule CGraph.Query.SoftDelete do
     @doc """
     Soft delete a record with a specific reason (stores in metadata if available).
     """
+    @spec soft_delete_with_reason(Ecto.Schema.t(), String.t()) :: {:ok, Ecto.Schema.t()} | {:error, Ecto.Changeset.t()}
     def soft_delete_with_reason(%{__struct__: _} = struct, reason) when is_binary(reason) do
       changes = %{
         deleted_at: DateTime.truncate(DateTime.utc_now(), :second)
@@ -294,6 +297,7 @@ defmodule CGraph.Query.SoftDelete do
     @doc """
     Check if soft delete is supported for a schema.
     """
+    @spec soft_deletable?(map()) :: boolean()
     def soft_deletable?(%{__struct__: module}) do
       function_exported?(module, :__schema__, 1) and
         :deleted_at in (module.__schema__(:fields) || [])

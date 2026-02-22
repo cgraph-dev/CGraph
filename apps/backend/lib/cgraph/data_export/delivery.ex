@@ -66,6 +66,7 @@ defmodule CGraph.DataExport.Delivery do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec generate_download_token() :: String.t()
   def generate_download_token do
     :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
   end
@@ -91,6 +92,7 @@ defmodule CGraph.DataExport.Delivery do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec build_download_url(map()) :: String.t()
   def build_download_url(export) do
     base_url = Application.get_env(:cgraph, CGraphWeb.Endpoint)[:url][:host] || "localhost"
     scheme = Application.get_env(:cgraph, CGraphWeb.Endpoint)[:url][:scheme] || "http"
@@ -103,12 +105,14 @@ defmodule CGraph.DataExport.Delivery do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec send_export_notification(map(), String.t()) :: :ok
   def send_export_notification(export, email) do
     Logger.info("data_export_sending_notification", email: email, export_id: export.id)
     :ok
   end
 
   @doc false
+  @spec deliver_webhook(map(), String.t()) :: :ok
   def deliver_webhook(export, webhook_url) do
     payload = %{
       event: "export.completed",
@@ -144,6 +148,7 @@ defmodule CGraph.DataExport.Delivery do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec log_export_started(map()) :: term()
   def log_export_started(export) do
     Logger.info("data_export_started", export_id: export.id, user_id: export.user_id)
 
@@ -156,6 +161,7 @@ defmodule CGraph.DataExport.Delivery do
   end
 
   @doc false
+  @spec log_export_completed(map()) :: term()
   def log_export_completed(export) do
     Logger.info("data_export_completed", export_id: export.id, file_size: export.file_size)
 
@@ -168,6 +174,7 @@ defmodule CGraph.DataExport.Delivery do
   end
 
   @doc false
+  @spec log_export_failed(map()) :: term()
   def log_export_failed(export) do
     Logger.error("data_export_error", export_id: export.id, error: export.error)
 
@@ -179,6 +186,7 @@ defmodule CGraph.DataExport.Delivery do
   end
 
   @doc false
+  @spec log_download(map()) :: term()
   def log_download(export) do
     CGraph.Audit.log(:data_export, :export_downloaded, %{
       export_id: export.id,
@@ -188,6 +196,7 @@ defmodule CGraph.DataExport.Delivery do
   end
 
   @doc false
+  @spec log_export_deleted(map()) :: term()
   def log_export_deleted(export) do
     CGraph.Audit.log(:data_export, :export_deleted, %{
       export_id: export.id,

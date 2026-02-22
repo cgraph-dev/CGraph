@@ -3,7 +3,7 @@
  * @module components/ui/animated-avatar
  */
 
-import type { AvatarStyle, BorderStyleInfo } from './types';
+import type { AvatarStyle, BorderStyleInfo, BorderCategory } from './types';
 
 export const defaultAvatarStyle: AvatarStyle = {
   borderStyle: 'gradient',
@@ -280,3 +280,10 @@ export const ANIMATION_DURATIONS = {
   fast: 1.5,
   ultra: 0.75,
 } as const;
+
+export const AVATAR_CATEGORIES: { id: BorderCategory; name: string; description: string }[] = [
+  { id: 'free', name: 'Free', description: 'Available to everyone' },
+  { id: 'premium', name: 'Premium', description: 'Purchase with coins' },
+  { id: 'legendary', name: 'Legendary', description: 'Rare exclusive styles' },
+  { id: 'limited', name: 'Limited', description: 'Special editions' },
+];

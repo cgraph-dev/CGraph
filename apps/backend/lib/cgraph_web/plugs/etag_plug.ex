@@ -44,6 +44,7 @@ defmodule CGraphWeb.Plugs.ETagPlug do
   @private_max_age 60
   @public_max_age 300
 
+  @spec init(keyword()) :: map()
   @impl Plug
   def init(opts) do
     %{
@@ -56,6 +57,7 @@ defmodule CGraphWeb.Plugs.ETagPlug do
     }
   end
 
+  @spec call(Plug.Conn.t(), map()) :: Plug.Conn.t()
   @impl Plug
   def call(conn, opts) do
     conn
@@ -170,6 +172,7 @@ defmodule CGraphWeb.Plugs.ETagPlug do
   end
 
   @doc false
+  @spec generate_etag(etag_source() | any()) :: String.t() | nil
   def generate_etag(source)
 
   # Generate from struct with updated_at

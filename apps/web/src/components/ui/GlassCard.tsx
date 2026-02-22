@@ -8,75 +8,16 @@
  * @since v0.7.33
  */
 
-import { ReactNode, HTMLAttributes, useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useThrottledCallback, usePrefersReducedMotion } from '@/hooks';
 import { springs } from '@/lib/animation-presets/presets';
+import type { GlassCardProps } from './GlassCard.types';
+import { variantStyles } from './GlassCard.constants';
 
-// =============================================================================
-// TYPES
-// =============================================================================
-
-export interface GlassCardProps extends Omit<
-  HTMLAttributes<HTMLDivElement>,
-  | 'children'
-  | 'onDrag'
-  | 'onDragEnd'
-  | 'onDragStart'
-  | 'onAnimationStart'
-  | 'onAnimationEnd'
-  | 'onAnimationIteration'
-> {
-  children: ReactNode;
-  variant?: 'default' | 'frosted' | 'crystal' | 'neon' | 'holographic' | 'aurora';
-  intensity?: 'subtle' | 'medium' | 'strong';
-  glow?: boolean;
-  glowColor?: string;
-  hover3D?: boolean;
-  shimmer?: boolean;
-  borderGradient?: boolean;
-  particles?: boolean;
-  className?: string;
-}
-
-// =============================================================================
-// VARIANT STYLES
-// =============================================================================
-
-const variantStyles = {
-  default: {
-    background: 'rgba(17, 24, 39, 0.6)',
-    blur: 'blur(12px)',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-  },
-  frosted: {
-    background: 'rgba(31, 41, 55, 0.4)',
-    blur: 'blur(20px)',
-    border: '1px solid rgba(255, 255, 255, 0.15)',
-  },
-  crystal: {
-    background: 'rgba(17, 24, 39, 0.3)',
-    blur: 'blur(24px)',
-    border: '1px solid rgba(16, 185, 129, 0.3)',
-  },
-  neon: {
-    background: 'rgba(17, 24, 39, 0.5)',
-    blur: 'blur(16px)',
-    border: '2px solid rgba(16, 185, 129, 0.5)',
-  },
-  holographic: {
-    background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%)',
-    blur: 'blur(16px)',
-    border: '1px solid rgba(255, 255, 255, 0.2)',
-  },
-  aurora: {
-    background:
-      'linear-gradient(135deg, rgba(0, 255, 128, 0.08) 0%, rgba(0, 200, 255, 0.08) 50%, rgba(180, 100, 255, 0.08) 100%)',
-    blur: 'blur(20px)',
-    border: '1px solid rgba(100, 255, 218, 0.2)',
-  },
-};
+export type { GlassCardProps } from './GlassCard.types';
+export { GlassCardNeon, GlassCardHolographic, GlassCardCrystal } from './GlassCardVariants';
 
 // =============================================================================
 // COMPONENT
@@ -284,48 +225,5 @@ export default function GlassCard({
         />
       )}
     </motion.div>
-  );
-}
-
-// =============================================================================
-// SPECIALIZED VARIANTS
-// =============================================================================
-
-export function GlassCardNeon({ children, className, ...props }: Omit<GlassCardProps, 'variant'>) {
-  return (
-    <GlassCard variant="neon" glow borderGradient shimmer className={className} {...props}>
-      {children}
-    </GlassCard>
-  );
-}
-
-export function GlassCardHolographic({
-  children,
-  className,
-  ...props
-}: Omit<GlassCardProps, 'variant'>) {
-  return (
-    <GlassCard variant="holographic" hover3D particles className={className} {...props}>
-      {children}
-    </GlassCard>
-  );
-}
-
-export function GlassCardCrystal({
-  children,
-  className,
-  ...props
-}: Omit<GlassCardProps, 'variant'>) {
-  return (
-    <GlassCard
-      variant="crystal"
-      intensity="strong"
-      glow
-      glowColor="rgba(16, 185, 129, 0.3)"
-      className={className}
-      {...props}
-    >
-      {children}
-    </GlassCard>
   );
 }

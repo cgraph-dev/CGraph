@@ -1,6 +1,6 @@
 /**
  * GamingStatsGrid Component
- * 
+ *
  * Animated stats display grid for gaming profiles.
  * Shows level, XP, achievements, rank with visual effects.
  */
@@ -8,26 +8,7 @@
 import { useEffect, useState } from 'react';
 import { motion, useMotionValue, animate } from 'framer-motion';
 import { springs } from '@/lib/animation-presets';
-
-interface StatItem {
-  label: string;
-  value: number | string;
-  icon?: string;
-  suffix?: string;
-  color?: string;
-  animate?: boolean;
-}
-
-interface GamingStatsGridProps {
-  stats?: StatItem[];
-  level?: number;
-  xp?: number;
-  maxXp?: number;
-  rank?: string;
-  rankIcon?: string;
-  achievements?: number;
-  className?: string;
-}
+import type { StatItem, GamingStatsGridProps } from './GamingStatsGrid.types';
 
 /**
  * Animated counter component
@@ -56,7 +37,8 @@ function AnimatedCounter({
 
   return (
     <span>
-      {displayValue.toLocaleString()}{suffix}
+      {displayValue.toLocaleString()}
+      {suffix}
     </span>
   );
 }
@@ -64,15 +46,7 @@ function AnimatedCounter({
 /**
  * XP Progress Bar with animations
  */
-function XPProgressBar({
-  current,
-  max,
-  level,
-}: {
-  current: number;
-  max: number;
-  level: number;
-}) {
+function XPProgressBar({ current, max, level }: { current: number; max: number; level: number }) {
   const percentage = Math.min((current / max) * 100, 100);
 
   return (
@@ -116,7 +90,7 @@ function XPProgressBar({
             }}
           />
         </div>
-        <span className="text-xs text-muted-foreground">Level</span>
+        <span className="text-muted-foreground text-xs">Level</span>
       </motion.div>
 
       {/* Progress bar container */}
@@ -172,7 +146,7 @@ function XPProgressBar({
       </div>
 
       {/* XP text */}
-      <div className="mt-1 flex justify-between text-xs text-muted-foreground">
+      <div className="text-muted-foreground mt-1 flex justify-between text-xs">
         <span>
           <AnimatedCounter value={current} /> XP
         </span>
@@ -207,9 +181,13 @@ function StatCard({
       {icon && (
         <motion.span
           className="mb-1 text-2xl"
-          animate={shouldAnimate ? {
-            y: [0, -2, 0],
-          } : undefined}
+          animate={
+            shouldAnimate
+              ? {
+                  y: [0, -2, 0],
+                }
+              : undefined
+          }
           transition={{
             duration: 2,
             repeat: Infinity,
@@ -221,10 +199,7 @@ function StatCard({
       )}
 
       {/* Value */}
-      <div
-        className="text-lg font-bold"
-        style={{ color }}
-      >
+      <div className="text-lg font-bold" style={{ color }}>
         {isNumber && shouldAnimate ? (
           <AnimatedCounter value={value} suffix={suffix} />
         ) : (
@@ -233,7 +208,7 @@ function StatCard({
       </div>
 
       {/* Label */}
-      <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="text-muted-foreground text-xs">{label}</div>
 
       {/* Glow */}
       <div

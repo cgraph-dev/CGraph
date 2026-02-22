@@ -15,73 +15,18 @@
  * @since v0.7.33
  */
 
-import { ReactNode, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 import { useGesture } from '@use-gesture/react';
 import { AnimationEngine, HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { springs, staggerConfigs } from '@/lib/animation-presets/presets';
+import { springs } from '@/lib/animation-presets/presets';
 import { useCustomizationStore } from '@/modules/settings/store/customization';
+import type { AnimatedMessageWrapperProps } from './AnimatedMessageWrapper.types';
+import { SPEED_MULTIPLIERS } from './AnimatedMessageWrapper.types';
+import { messageVariants } from './AnimatedMessageWrapper.constants';
+import { MessageParticles } from './MessageParticles';
 
-// =============================================================================
-// TYPES
-// =============================================================================
-
-export interface AnimatedMessageWrapperProps {
-  children: ReactNode;
-  isOwnMessage: boolean;
-  index: number;
-  isNew?: boolean;
-  isEditing?: boolean;
-  isDeleting?: boolean;
-  messageId?: string;
-  onSwipeReply?: () => void;
-  onLongPress?: () => void;
-  enableGestures?: boolean;
-}
-
-/** Maps animation speed to stagger delay multiplier */
-const SPEED_MULTIPLIERS = { slow: 2, normal: 1, fast: 0.5 } as const;
-
-// =============================================================================
-// ANIMATION VARIANTS
-// =============================================================================
-
-const messageVariants = {
-  initial: (isOwnMessage: boolean) => ({
-    x: isOwnMessage ? 20 : -20,
-    opacity: 0,
-    scale: 0.97,
-  }),
-  animate: (custom: { index: number; speedMultiplier: number }) => ({
-    x: 0,
-    opacity: 1,
-    scale: 1,
-    transition: {
-      ...springs.snappy,
-      delay: custom.index * staggerConfigs.fast.staggerChildren * custom.speedMultiplier,
-    },
-  }),
-  exit: (isOwnMessage: boolean) => ({
-    x: isOwnMessage ? 20 : -20,
-    opacity: 0,
-    scale: 0.95,
-    height: 0,
-    marginBottom: 0,
-    transition: {
-      duration: 0.25,
-      ease: 'easeIn' as const,
-      height: { delay: 0.15, duration: 0.2 },
-      marginBottom: { delay: 0.15, duration: 0.2 },
-    },
-  }),
-  hover: {
-    scale: 1.01,
-    transition: springs.snappy,
-  },
-  tap: {
-    scale: 0.99,
-  },
-};
+export type { AnimatedMessageWrapperProps } from './AnimatedMessageWrapper.types';
 
 // =============================================================================
 // COMPONENT
@@ -273,39 +218,6 @@ export function AnimatedMessageWrapper({
         </div>
       </motion.div>
     </AnimatePresence>
-  );
-}
-
-// =============================================================================
-// MESSAGE PARTICLES
-// =============================================================================
-
-function MessageParticles({ isOwnMessage }: { isOwnMessage: boolean }) {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute h-1 w-1 rounded-full bg-primary-400"
-          style={{
-            left: isOwnMessage ? '90%' : '10%',
-            top: `${20 + Math.random() * 60}%`,
-          }}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{
-            opacity: [0, 0.8, 0],
-            scale: [0, 1.5, 0],
-            x: (isOwnMessage ? -1 : 1) * (30 + Math.random() * 40),
-            y: -30 - Math.random() * 40,
-          }}
-          transition={{
-            duration: 0.8 + Math.random() * 0.4,
-            delay: i * 0.05,
-            ease: 'easeOut',
-          }}
-        />
-      ))}
-    </div>
   );
 }
 

@@ -389,29 +389,7 @@ defmodule CGraph.Forums do
   # Forum User Leaderboard
   # ============================================================================
 
-  @spec get_forum_user_leaderboard(String.t(), keyword()) :: {[map()], map()}
-  def get_forum_user_leaderboard(forum_id, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
-    time_range = Keyword.get(opts, :time_range, :all)
-
-    time_filter = build_time_filter(time_range)
-    post_scores = build_post_karma_query(forum_id, time_filter) |> Repo.all()
-    comment_scores = build_comment_karma_query(forum_id, time_filter) |> Repo.all()
-    combined = combine_karma_scores(post_scores, comment_scores)
-    total = length(combined)
-    paginated = paginate_scores(combined, page, per_page)
-    entries = hydrate_users(paginated)
-
-    meta = %{
-      page: page,
-      per_page: per_page,
-      total: total,
-      total_pages: max(ceil(total / per_page), 1)
-    }
-
-    {entries, meta}
-  end
+  defdelegate get_forum_user_leaderboard(forum_id, opts \\ []), to: CGraph.Forums.UserLeaderboard
 
   # ============================================================================
   # Private Helpers
@@ -464,49 +442,5 @@ defmodule CGraph.Forums do
       r = Map.get(replies, c.id, [])
       c |> Map.put(:replies, r) |> Map.put(:reply_count, length(r))
     end)
-  end
-
-  # --- Leaderboard helpers ---
-
-  defp build_time_filter(:week), do: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -7, :day)
-  defp build_time_filter(:month), do: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -30, :day)
-  defp build_time_filter(:year), do: DateTime.add(DateTime.truncate(DateTime.utc_now(), :second), -365, :day)
-  defp build_time_filter(_all), do: nil
-
-  defp build_post_karma_query(forum_id, nil) do
-    from(p in Post, where: p.forum_id == ^forum_id,
-      group_by: p.author_id, select: %{user_id: p.author_id, karma: sum(p.score)})
-  end
-  defp build_post_karma_query(forum_id, time_filter) do
-    from(p in Post, where: p.forum_id == ^forum_id and p.inserted_at >= ^time_filter,
-      group_by: p.author_id, select: %{user_id: p.author_id, karma: sum(p.score)})
-  end
-
-  defp build_comment_karma_query(forum_id, nil) do
-    from(c in Comment, join: p in Post, on: c.post_id == p.id, where: p.forum_id == ^forum_id,
-      group_by: c.author_id, select: %{user_id: c.author_id, karma: sum(c.score)})
-  end
-  defp build_comment_karma_query(forum_id, time_filter) do
-    from(c in Comment, join: p in Post, on: c.post_id == p.id,
-      where: p.forum_id == ^forum_id and c.inserted_at >= ^time_filter,
-      group_by: c.author_id, select: %{user_id: c.author_id, karma: sum(c.score)})
-  end
-
-  defp combine_karma_scores(post_scores, comment_scores) do
-    all = (post_scores ++ comment_scores)
-    |> Enum.group_by(& &1.user_id)
-    |> Enum.map(fn {uid, entries} -> %{user_id: uid, karma: Enum.sum(Enum.map(entries, & &1.karma))} end)
-    |> Enum.sort_by(& &1.karma, :desc)
-    all
-  end
-
-  defp paginate_scores(scores, page, per_page) do
-    scores |> Enum.drop((page - 1) * per_page) |> Enum.take(per_page)
-  end
-
-  defp hydrate_users(paginated_scores) do
-    user_ids = Enum.map(paginated_scores, & &1.user_id) |> Enum.reject(&is_nil/1)
-    users = from(u in CGraph.Accounts.User, where: u.id in ^user_ids) |> Repo.all() |> Map.new(& {&1.id, &1})
-    Enum.map(paginated_scores, fn s -> Map.put(s, :user, Map.get(users, s.user_id)) end)
   end
 end

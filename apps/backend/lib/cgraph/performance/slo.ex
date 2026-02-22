@@ -44,6 +44,7 @@ defmodule CGraph.Performance.SLO do
 
   # ── Client API ──────────────────────────────────────────────
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     name = Keyword.get(opts, :name, __MODULE__)
     GenServer.start_link(__MODULE__, opts, name: name)
@@ -110,6 +111,7 @@ defmodule CGraph.Performance.SLO do
   end
 
   @doc false
+  @spec handle_phoenix_event(list(), map(), map(), term()) :: :ok | nil
   def handle_phoenix_event(_event, measurements, metadata, _config) do
     duration_ms = System.convert_time_unit(measurements.duration, :native, :millisecond)
 

@@ -7,17 +7,12 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 import type { BorderCategory } from './types';
-import { BORDER_STYLES } from './constants';
+import { BORDER_STYLES, AVATAR_CATEGORIES } from './constants';
 import { useAvatarStyle } from './store';
 import AnimatedAvatar from './AnimatedAvatar';
 import { springs } from '@/lib/animation-presets/presets';
 
-const CATEGORIES: { id: BorderCategory; name: string; description: string }[] = [
-  { id: 'free', name: 'Free', description: 'Available to everyone' },
-  { id: 'premium', name: 'Premium', description: 'Purchase with coins' },
-  { id: 'legendary', name: 'Legendary', description: 'Rare exclusive styles' },
-  { id: 'limited', name: 'Limited', description: 'Special editions' },
-];
+const CATEGORIES = AVATAR_CATEGORIES;
 
 export function AvatarStylePicker() {
   const { style, ownedStyles, updateStyle, resetStyle } = useAvatarStyle();

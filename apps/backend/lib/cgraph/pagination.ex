@@ -107,6 +107,7 @@ defmodule CGraph.Pagination do
   - `:sort_field` - Default sort field (default: :id)
   - `:sort_direction` - Default sort direction (default: :desc)
   """
+  @spec parse_params(map(), keyword() | map()) :: map()
   def parse_params(params, opts \\ [])
 
   def parse_params(params, opts) when is_map(opts) do
@@ -139,6 +140,7 @@ defmodule CGraph.Pagination do
 
   Returns `{results, page_info}`.
   """
+  @spec paginate(Ecto.Queryable.t(), map()) :: {list(), page_info()}
   def paginate(queryable, opts) do
     # Normalize cursor options
     cursor = opts[:after_cursor] || opts[:before_cursor] || opts[:cursor]
@@ -177,6 +179,7 @@ defmodule CGraph.Pagination do
   @doc """
   Generate a cursor for a record.
   """
+  @spec cursor_for(map(), keyword()) :: String.t()
   def cursor_for(record, opts \\ []) do
     sort_field = Keyword.get(opts, :sort_field, :id)
 
@@ -192,6 +195,7 @@ defmodule CGraph.Pagination do
   @doc """
   Decode a cursor to its components.
   """
+  @spec decode_cursor(String.t() | nil) :: map() | nil
   def decode_cursor(nil), do: nil
 
   def decode_cursor(cursor) when is_binary(cursor) do
@@ -412,6 +416,7 @@ defmodule CGraph.Pagination.JSON do
   @doc """
   Wrap data with pagination info for API response.
   """
+  @spec paginated_response(list(), map(), keyword()) :: map()
   def paginated_response(data, page_info, opts \\ []) do
     data_key = Keyword.get(opts, :data_key, :data)
 
@@ -435,6 +440,7 @@ defmodule CGraph.Pagination.JSON do
   @doc """
   Build pagination links for response headers.
   """
+  @spec pagination_links(String.t(), map()) :: String.t()
   def pagination_links(base_url, page_info) do
     links = []
 

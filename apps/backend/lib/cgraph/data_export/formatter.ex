@@ -112,6 +112,7 @@ defmodule CGraph.DataExport.Formatter do
   end
 
   @doc false
+  @spec csv_escape(term()) :: String.t()
   def csv_escape(nil), do: ""
 
   def csv_escape(value) when is_binary(value) do
@@ -149,6 +150,7 @@ defmodule CGraph.DataExport.Formatter do
   end
 
   @doc false
+  @spec format_xml_data(map()) :: String.t()
   def format_xml_data(data) when is_map(data) do
     Enum.map_join(data, "\n", fn {key, value} ->
       "    <#{key}>#{format_xml_value(value)}</#{key}>"
@@ -156,6 +158,7 @@ defmodule CGraph.DataExport.Formatter do
   end
 
   @doc false
+  @spec format_xml_value(term()) :: String.t()
   def format_xml_value(value) when is_list(value) do
     Enum.map_join(value, "\n", fn item ->
       "<item>#{format_xml_value(item)}</item>"
@@ -166,6 +169,7 @@ defmodule CGraph.DataExport.Formatter do
   def format_xml_value(value), do: xml_escape(to_string(value))
 
   @doc false
+  @spec xml_escape(term()) :: String.t()
   def xml_escape(text) when is_binary(text) do
     text
     |> String.replace("&", "&amp;")

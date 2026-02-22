@@ -93,6 +93,7 @@ defmodule CGraph.Security.TokenBlacklist do
   @doc """
   Start the token blacklist GenServer.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
