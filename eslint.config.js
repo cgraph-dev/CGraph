@@ -154,6 +154,19 @@ export default [
       '@typescript-eslint/no-explicit-any': 'error',
     },
   },
+  // Ban type assertions (as X) — prefer type guards, annotations, or satisfies
+  // `as const` is always allowed. Set to 'warn' while we eliminate existing assertions.
+  {
+    files: [
+      'apps/web/src/**/*.{ts,tsx}',
+      'apps/mobile/src/**/*.{ts,tsx}',
+      'packages/**/*.{ts,tsx}',
+    ],
+    ignores: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/mocks/**', '**/__tests__/**'],
+    rules: {
+      '@typescript-eslint/consistent-type-assertions': ['warn', { assertionStyle: 'never' }],
+    },
+  },
   // Prevent regressions: ban React.FC, forwardRef, useContext (React 19 migration complete)
   {
     files: ['apps/web/src/**/*.{ts,tsx}', 'apps/mobile/src/**/*.{ts,tsx}'],

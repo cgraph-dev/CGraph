@@ -49,10 +49,8 @@ export default function Customize() {
   );
 
   // Always guaranteed to have a valid category (fallback to first)
-  const category = categories.find((cat) => cat.id === activeCategory) || categories[0];
-  // TypeScript needs explicit assertion since we guarantee category exists via fallback
-  const safeCategory = category as Category;
-  const CategoryIcon = safeCategory.icon;
+  const category = categories.find((cat) => cat.id === activeCategory) ?? categories[0]!;
+  const CategoryIcon = category.icon;
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
@@ -69,21 +67,21 @@ export default function Customize() {
             className="mb-8"
           >
             <div className="mb-2 flex items-center gap-3">
-              <div className={`rounded-xl bg-gradient-to-r p-3 ${safeCategory.gradient}`}>
+              <div className={`rounded-xl bg-gradient-to-r p-3 ${category.gradient}`}>
                 <CategoryIcon className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h2 className="text-3xl font-bold text-white">{safeCategory.label}</h2>
-                <p className="text-sm text-white/60">{safeCategory.description}</p>
+                <h2 className="text-3xl font-bold text-white">{category.label}</h2>
+                <p className="text-sm text-white/60">{category.description}</p>
               </div>
             </div>
 
             {/* Feature badges */}
             <div className="mt-4 flex flex-wrap gap-2">
-              {safeCategory.features.map((feature) => (
+              {category.features.map((feature) => (
                 <span
                   key={feature}
-                  className={`rounded-full bg-gradient-to-r ${safeCategory.gradient} px-3 py-1 text-xs font-medium text-white`}
+                  className={`rounded-full bg-gradient-to-r ${category.gradient} px-3 py-1 text-xs font-medium text-white`}
                 >
                   {feature}
                 </span>

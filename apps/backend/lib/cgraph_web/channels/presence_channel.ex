@@ -262,6 +262,7 @@ defmodule CGraphWeb.PresenceChannel do
     :ok
   end
 
+  @spec schedule_offline_check(String.t()) :: {:ok, pid()}
   defp schedule_offline_check(user_id) do
     Task.Supervisor.start_child(CGraph.TaskSupervisor, fn ->
       Process.sleep(@offline_grace_period_ms)
@@ -269,6 +270,7 @@ defmodule CGraphWeb.PresenceChannel do
     end)
   end
 
+  @spec broadcast_offline_if_disconnected(String.t()) :: :ok
   defp broadcast_offline_if_disconnected(user_id) do
     unless Presence.user_online?(user_id) do
       Phoenix.PubSub.broadcast(
@@ -280,12 +282,14 @@ defmodule CGraphWeb.PresenceChannel do
   end
 
   # Get list of friend user IDs for the given user
+  @spec get_friend_ids(String.t()) :: list(String.t())
   defp get_friend_ids(user_id) do
     Friends.list_friends(user_id)
     |> Enum.map(& &1.friend_id)
   end
 
   # Broadcast a message to all friends of a user
+  @spec broadcast_to_friends(String.t(), list(String.t()), String.t(), map()) :: :ok
   defp broadcast_to_friends(user_id, friend_ids, event, payload) do
     # Normalize payload into presence update format for user channel
     presence_update =
@@ -308,6 +312,7 @@ defmodule CGraphWeb.PresenceChannel do
 
   # Build presence map for friends only using pipelined Redis lookups — O(F)
   # Instead of loading ALL online users and filtering, query only friends' statuses.
+  @spec build_friend_presence(list(String.t())) :: map()
   defp build_friend_presence(friend_ids) when is_list(friend_ids) and friend_ids != [] do
     statuses = Presence.bulk_status(friend_ids)
 

@@ -49,7 +49,8 @@ export function useThemeCustomization() {
     if (profileThemeCategory === 'all') {
       return ALL_PROFILE_THEMES;
     }
-    return getThemesByCategory(profileThemeCategory as ProfileThemeCategory);
+    // Narrowed: 'all' case handled above, so profileThemeCategory is ProfileThemeCategory
+    return getThemesByCategory(profileThemeCategory);
   }, [profileThemeCategory]);
 
   // Fetch customizations on mount

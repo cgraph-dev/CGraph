@@ -93,8 +93,8 @@ export function Sidebar({
         showUserStatus={showUserStatus}
         onGroupSelect={onGroupSelect}
         className={className}
-        groups={groups as unknown as Array<{ id: string; name: string; iconUrl?: string }>}
-        user={user as unknown as React.ComponentProps<typeof FloatingSidebar>['user']}
+        groups={groups}
+        user={user}
         isSubscribed={isSubscribed}
         quickActions={quickActions}
       />
@@ -165,6 +165,6 @@ export function Sidebar({
       )}
     </motion.aside>
   );
-};
+}
 
 export default Sidebar;

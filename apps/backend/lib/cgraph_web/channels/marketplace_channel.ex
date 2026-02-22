@@ -262,6 +262,7 @@ defmodule CGraphWeb.MarketplaceChannel do
 
   # Private helpers
 
+  @spec get_marketplace_stats() :: map()
   defp get_marketplace_stats do
     %{
       total_active_listings: Marketplace.count_active_listings(),
@@ -273,6 +274,7 @@ defmodule CGraphWeb.MarketplaceChannel do
     _ -> %{total_active_listings: 0, total_volume_24h: 0, trending_items: [], recent_sales: []}
   end
 
+  @spec get_featured_listings() :: list(map())
   defp get_featured_listings do
     case Marketplace.featured_listings(10) do
       listings when is_list(listings) -> listings
@@ -282,6 +284,7 @@ defmodule CGraphWeb.MarketplaceChannel do
     _ -> []
   end
 
+  @spec get_user_listings(String.t()) :: list(map())
   defp get_user_listings(user_id) do
     case Marketplace.user_listings(user_id, "active") do
       {:ok, listings} -> listings
@@ -291,6 +294,7 @@ defmodule CGraphWeb.MarketplaceChannel do
     _ -> []
   end
 
+  @spec get_pending_notifications(String.t()) :: list(map())
   defp get_pending_notifications(user_id) do
     case Marketplace.pending_notifications(user_id) do
       {:ok, notifications} -> notifications
@@ -300,6 +304,7 @@ defmodule CGraphWeb.MarketplaceChannel do
     _ -> []
   end
 
+  @spec sanitize_listing(map()) :: map()
   defp sanitize_listing(listing) do
     Map.take(listing, [
       :id, :listing_number, :item_type, :item_name, :item_rarity,
@@ -307,18 +312,21 @@ defmodule CGraphWeb.MarketplaceChannel do
     ])
   end
 
+  @spec should_broadcast?(Phoenix.Socket.t(), atom()) :: boolean()
   defp should_broadcast?(socket, event_type) do
     last = socket.assigns.last_broadcast[event_type] || 0
     now = System.monotonic_time(:millisecond)
     now - last > @broadcast_throttle_ms
   end
 
+  @spec update_broadcast_time(Phoenix.Socket.t(), atom()) :: Phoenix.Socket.t()
   defp update_broadcast_time(socket, event_type) do
     last_broadcast = socket.assigns.last_broadcast
     now = System.monotonic_time(:millisecond)
     assign(socket, :last_broadcast, Map.put(last_broadcast, event_type, now))
   end
 
+  @spec notify_seller(map()) :: :ok | {:error, term()}
   defp notify_seller(transaction) do
     Phoenix.PubSub.broadcast(
       CGraph.PubSub,
@@ -327,6 +335,7 @@ defmodule CGraphWeb.MarketplaceChannel do
     )
   end
 
+  @spec format_changeset_errors(Ecto.Changeset.t()) :: %{optional(atom()) => list(String.t())}
   defp format_changeset_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Enum.reduce(opts, msg, fn {key, value}, acc ->

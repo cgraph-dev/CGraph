@@ -164,13 +164,13 @@ export function useIdentityCustomization() {
     }
   };
 
-  const handleSelectLayout = (layoutId: string, layout: ProfileLayout) => {
+  const handleSelectLayout = (layoutId: ProfileCardStyle, layout: ProfileLayout) => {
     if (!layout.unlocked) {
       toast('👁️ Previewing layout - Premium required to use', { icon: '✨', duration: 3000 });
       return;
     }
     updateIdentity('profileLayout', layoutId);
-    store.setProfileCardStyle(layoutId as ProfileCardStyle);
+    store.setProfileCardStyle(layoutId);
   };
 
   const handleSaveChanges = async () => {

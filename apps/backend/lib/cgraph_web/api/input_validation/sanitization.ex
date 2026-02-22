@@ -124,6 +124,7 @@ defmodule CGraphWeb.API.InputValidation.Sanitization do
 
   def check_security(value), do: {:ok, value}
 
+  @spec contains_injection_pattern?(String.t()) :: boolean()
   defp contains_injection_pattern?(value) do
     Enum.any?(@sql_injection_patterns, fn pattern ->
       Regex.match?(pattern, value)
@@ -145,6 +146,7 @@ defmodule CGraphWeb.API.InputValidation.Sanitization do
 
   def apply_sanitizers(value, sanitizer), do: apply_sanitizers(value, [sanitizer])
 
+  @spec apply_sanitizer(atom() | (any() -> any()), any()) :: any()
   defp apply_sanitizer(:trim, value) when is_binary(value), do: String.trim(value)
   defp apply_sanitizer(:downcase, value) when is_binary(value), do: String.downcase(value)
   defp apply_sanitizer(:upcase, value) when is_binary(value), do: String.upcase(value)

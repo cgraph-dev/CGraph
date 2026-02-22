@@ -152,6 +152,7 @@ defmodule CGraphWeb.ErrorTracker.Extractor do
   # Private Helpers
   # ---------------------------------------------------------------------------
 
+  @spec extract_stacktrace() :: [String.t()]
   defp extract_stacktrace do
     case Process.info(self(), :current_stacktrace) do
       {:current_stacktrace, stacktrace} ->
@@ -164,6 +165,7 @@ defmodule CGraphWeb.ErrorTracker.Extractor do
     end
   end
 
+  @spec format_stack_frame(tuple() | term()) :: String.t()
   defp format_stack_frame({mod, fun, arity, location}) do
     file = Keyword.get(location, :file, "unknown")
     line = Keyword.get(location, :line, 0)
@@ -172,6 +174,7 @@ defmodule CGraphWeb.ErrorTracker.Extractor do
 
   defp format_stack_frame(_), do: "unknown"
 
+  @spec format_changeset_errors(Ecto.Changeset.t()) :: map()
   defp format_changeset_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Regex.replace(~r"%{(\w+)}", msg, fn _, key ->
@@ -182,6 +185,7 @@ defmodule CGraphWeb.ErrorTracker.Extractor do
     end)
   end
 
+  @spec get_path(keyword()) :: String.t()
   defp get_path(opts) do
     case Keyword.get(opts, :conn) do
       %Plug.Conn{request_path: path} -> normalize_path(path)
@@ -190,6 +194,7 @@ defmodule CGraphWeb.ErrorTracker.Extractor do
   end
 
   # Normalize path by replacing dynamic segments
+  @spec normalize_path(String.t()) :: String.t()
   defp normalize_path(path) do
     path
     |> String.replace(~r/\/[0-9a-f-]{36}/, "/:uuid")

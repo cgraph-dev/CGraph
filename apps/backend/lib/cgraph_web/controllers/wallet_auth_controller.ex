@@ -17,6 +17,7 @@ defmodule CGraphWeb.WalletAuthController do
 
   POST /api/v1/auth/wallet/generate
   """
+  @spec generate(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def generate(conn, _params) do
     {:ok, wallet_address} = WalletAuth.generate_wallet_address()
     {:ok, crypto_alias} = WalletAuth.generate_crypto_alias()
@@ -35,6 +36,7 @@ defmodule CGraphWeb.WalletAuthController do
   POST /api/v1/auth/wallet/validate-pin
   Body: { "pin": "123456" }
   """
+  @spec validate_pin(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def validate_pin(conn, %{"pin" => pin}) do
     case WalletAuth.validate_pin_strength(pin) do
       {:ok, strength} ->
@@ -73,6 +75,7 @@ defmodule CGraphWeb.WalletAuthController do
     "recovery_method": "backup_codes" | "file"
   }
   """
+  @spec register(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def register(conn, params) do
     %{
       "wallet_address" => wallet_address,
@@ -128,6 +131,7 @@ defmodule CGraphWeb.WalletAuthController do
   Body: { "wallet_address": "0x...", "pin": "123456" }
   OR:   { "crypto_alias": "quantum-cipher-ABC123", "pin": "123456" }
   """
+  @spec login(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def login(conn, %{"wallet_address" => wallet_address, "pin" => pin}) do
     case WalletAuth.authenticate_wallet(wallet_address, pin) do
       {:ok, user} ->
@@ -162,6 +166,7 @@ defmodule CGraphWeb.WalletAuthController do
     "new_pin": "654321"
   }
   """
+  @spec recover_with_code(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def recover_with_code(conn, params) do
     %{
       "wallet_address" => wallet_address,
@@ -211,6 +216,7 @@ defmodule CGraphWeb.WalletAuthController do
     "new_pin": "654321"
   }
   """
+  @spec recover_with_file(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def recover_with_file(conn, params) do
     %{
       "file_content" => file_content,
@@ -242,6 +248,7 @@ defmodule CGraphWeb.WalletAuthController do
   Body: { "pin": "123456" }
   Requires: Authentication (Bearer token)
   """
+  @spec link_wallet(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def link_wallet(conn, %{"pin" => pin}) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -273,6 +280,7 @@ defmodule CGraphWeb.WalletAuthController do
   DELETE /api/v1/auth/wallet/unlink
   Requires: Authentication (Bearer token)
   """
+  @spec unlink_wallet(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unlink_wallet(conn, _params) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -296,6 +304,7 @@ defmodule CGraphWeb.WalletAuthController do
   Body: { "current_pin": "123456", "new_pin": "654321" }
   Requires: Authentication (Bearer token)
   """
+  @spec update_pin(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_pin(conn, %{"current_pin" => current_pin, "new_pin" => new_pin}) do
     user = Guardian.Plug.current_resource(conn)
 
@@ -324,6 +333,7 @@ defmodule CGraphWeb.WalletAuthController do
 
   # Private helpers
 
+  @spec issue_tokens(Plug.Conn.t(), struct()) :: Plug.Conn.t()
   defp issue_tokens(conn, user) do
     {:ok, token, _claims} = Guardian.encode_and_sign(user, %{}, token_type: "access")
     {:ok, refresh_token, _claims} = Guardian.encode_and_sign(user, %{}, token_type: "refresh")
@@ -346,6 +356,7 @@ defmodule CGraphWeb.WalletAuthController do
     })
   end
 
+  @spec format_recovery_data(map()) :: map()
   defp format_recovery_data(%{type: :backup_codes, codes: codes}) do
     %{
       type: "backup_codes",
@@ -363,6 +374,7 @@ defmodule CGraphWeb.WalletAuthController do
     }
   end
 
+  @spec format_changeset_errors(Ecto.Changeset.t()) :: map()
   defp format_changeset_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Enum.reduce(opts, msg, fn {key, value}, acc ->
@@ -371,6 +383,7 @@ defmodule CGraphWeb.WalletAuthController do
     end)
   end
 
+  @spec count_remaining_codes(String.t()) :: non_neg_integer() | nil
   defp count_remaining_codes(user_id) do
     import Ecto.Query
 

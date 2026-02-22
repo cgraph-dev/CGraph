@@ -354,6 +354,7 @@ defmodule CGraphWeb.ConversationChannel do
     {:reply, {:error, %{reason: "unhandled_event"}}, socket}
   end
 
+  @spec format_errors(Ecto.Changeset.t()) :: %{optional(atom()) => list(String.t())}
   defp format_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Enum.reduce(opts, msg, fn {key, value}, acc ->
@@ -364,6 +365,7 @@ defmodule CGraphWeb.ConversationChannel do
 
   # Rate limiting: sliding window implementation
   # Tracks message timestamps and enforces max messages per window
+  @spec check_rate_limit(Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, :rate_limited, Phoenix.Socket.t()}
   defp check_rate_limit(socket) do
     now = System.monotonic_time(:millisecond)
     window_start = now - @rate_limit_window_ms

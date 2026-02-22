@@ -284,6 +284,7 @@ defmodule CGraphWeb.EventsChannel do
 
   # Private helpers
 
+  @spec get_active_events() :: [map()]
   defp get_active_events do
     case Gamification.list_active_events() do
       events when is_list(events) -> Enum.map(events, &sanitize_event/1)
@@ -293,6 +294,7 @@ defmodule CGraphWeb.EventsChannel do
     _ -> []
   end
 
+  @spec get_upcoming_events() :: [map()]
   defp get_upcoming_events do
     case Gamification.list_upcoming_events(7) do  # Next 7 days
       events when is_list(events) -> Enum.map(events, &sanitize_event/1)
@@ -302,6 +304,7 @@ defmodule CGraphWeb.EventsChannel do
     _ -> []
   end
 
+  @spec get_user_event_progress(String.t(), String.t()) :: map()
   defp get_user_event_progress(user_id, event_id) do
     case Gamification.get_user_event_progress(user_id, event_id) do
       {:ok, progress} -> progress
@@ -310,8 +313,7 @@ defmodule CGraphWeb.EventsChannel do
   rescue
     _ -> %{joined: false, event_points: 0, battle_pass_tier: 0}
   end
-
-  defp get_event_leaderboard(event_id, limit, cursor \\ nil) do
+  @spec get_event_leaderboard(String.t(), pos_integer(), String.t() | nil) :: {list(), map()}  defp get_event_leaderboard(event_id, limit, cursor \\ nil) do
     case Gamification.get_event_leaderboard(event_id, limit, cursor) do
       {entries, page_info} when is_list(entries) -> {entries, page_info}
       entries when is_list(entries) -> {entries, %{has_next_page: false, end_cursor: nil}}
@@ -321,6 +323,7 @@ defmodule CGraphWeb.EventsChannel do
     _ -> {[], %{has_next_page: false, end_cursor: nil}}
   end
 
+  @spec get_user_rank(String.t(), String.t()) :: non_neg_integer() | nil
   defp get_user_rank(user_id, event_id) do
     case Gamification.get_user_event_rank(user_id, event_id) do
       {:ok, rank} -> rank
@@ -330,6 +333,7 @@ defmodule CGraphWeb.EventsChannel do
     _ -> nil
   end
 
+  @spec get_community_milestones(String.t()) :: map()
   defp get_community_milestones(event_id) do
     case Gamification.get_community_milestones(event_id) do
       {:ok, milestones} -> milestones
@@ -339,6 +343,7 @@ defmodule CGraphWeb.EventsChannel do
     _ -> %{current_total: 0, milestones: [], next_milestone: nil}
   end
 
+  @spec sanitize_event(map()) :: map()
   defp sanitize_event(event) do
     Map.take(event, [
       :id, :slug, :name, :short_description, :event_type,

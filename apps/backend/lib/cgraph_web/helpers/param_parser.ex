@@ -184,6 +184,7 @@ defmodule CGraphWeb.Helpers.ParamParser do
 
   # Private helpers
 
+  @spec clamp_value(integer(), keyword()) :: integer()
   defp clamp_value(value, opts) do
     min_val = Keyword.get(opts, :min)
     max_val = Keyword.get(opts, :max)
@@ -292,6 +293,7 @@ defmodule CGraphWeb.Helpers.ParamParser do
   end
 
   # Strip script tags, event handlers, and other XSS vectors
+  @spec strip_dangerous_html(String.t()) :: String.t()
   defp strip_dangerous_html(html) do
     html
     |> String.replace(~r/<script\b[^>]*>.*?<\/script>/is, "")
@@ -304,6 +306,7 @@ defmodule CGraphWeb.Helpers.ParamParser do
   end
 
   # Check for prohibited words/patterns (basic implementation)
+  @spec contains_prohibited_content?(String.t()) :: boolean()
   defp contains_prohibited_content?(text) do
     # This would typically integrate with a more sophisticated content moderation system
     prohibited_patterns = [

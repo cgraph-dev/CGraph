@@ -62,13 +62,10 @@ export function CommandPalette({
   // Group commands by category
   const groupedCommands = useMemo(
     () =>
-      filteredCommands.reduce(
-        (acc, cmd) => {
-          (acc[cmd.category] ??= []).push(cmd);
-          return acc;
-        },
-        {} as Record<string, Command[]>
-      ),
+      filteredCommands.reduce<Record<string, Command[]>>((acc, cmd) => {
+        (acc[cmd.category] ??= []).push(cmd);
+        return acc;
+      }, {}),
     [filteredCommands]
   );
 
@@ -241,6 +238,6 @@ export function CommandPalette({
       )}
     </AnimatePresence>
   );
-};
+}
 
 export default CommandPalette;

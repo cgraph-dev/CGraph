@@ -11,10 +11,10 @@ export function LeaderboardsSection({
     <div className="space-y-4">
       {/* Leaderboard Type Selector */}
       <div className="flex gap-2">
-        {['global', 'friends', 'weekly'].map((type) => (
+        {(['global', 'friends', 'weekly'] as const).map((type) => (
           <button
             key={type}
-            onClick={() => onTypeChange(type as typeof leaderboardType)}
+            onClick={() => onTypeChange(type)}
             className={`rounded-lg px-4 py-2 font-medium transition-all ${
               leaderboardType === type
                 ? 'bg-primary-600 text-white'

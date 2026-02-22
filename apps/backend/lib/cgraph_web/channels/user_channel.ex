@@ -210,6 +210,7 @@ defmodule CGraphWeb.UserChannel do
   # Session Resumption — Replay
   # ---------------------------------------------------------------------------
 
+  @spec replay_missed_events(Phoenix.Socket.t(), String.t(), String.t(), integer()) :: :ok
   defp replay_missed_events(socket, user_id, old_session_id, last_seq) do
     key = "ws:buffer:#{user_id}:#{old_session_id}"
 
@@ -263,6 +264,7 @@ defmodule CGraphWeb.UserChannel do
 
   # Private helpers
 
+  @spec fetch_contact_presence(String.t()) :: map()
   defp fetch_contact_presence(user_id) do
     # Get user's friends/contacts
     contact_ids = get_contact_ids(user_id)
@@ -283,6 +285,7 @@ defmodule CGraphWeb.UserChannel do
     |> Map.new()
   end
 
+  @spec get_contact_ids(String.t()) :: list(String.t())
   defp get_contact_ids(user_id) do
     # Use accepted friendships for presence visibility
     Friends.get_accepted_friend_ids(user_id)
@@ -290,6 +293,7 @@ defmodule CGraphWeb.UserChannel do
     _ -> []
   end
 
+  @spec get_user_status(String.t()) :: map()
   defp get_user_status(user_id) do
     case Presence.user_online?(user_id) do
       true ->
@@ -313,6 +317,7 @@ defmodule CGraphWeb.UserChannel do
     end
   end
 
+  @spec can_view_presence?(String.t(), String.t()) :: boolean()
   defp can_view_presence?(viewer_id, target_id) do
     # Check if users share a conversation together
     import Ecto.Query
@@ -343,6 +348,7 @@ defmodule CGraphWeb.UserChannel do
     end
   end
 
+  @spec format_participants(list() | term()) :: list(map())
   defp format_participants(participants) when is_list(participants) do
     Enum.map(participants, fn p ->
       %{
@@ -359,6 +365,7 @@ defmodule CGraphWeb.UserChannel do
   end
   defp format_participants(_), do: []
 
+  @spec truncate_content(String.t() | nil, non_neg_integer()) :: String.t() | nil
   defp truncate_content(nil, _max_length), do: nil
   defp truncate_content(content, max_length) when byte_size(content) <= max_length, do: content
   defp truncate_content(content, max_length) do

@@ -17,11 +17,11 @@ import { CustomStatusModal } from '@/modules/social/components/custom-status-mod
 import type { SidebarProps, QuickAction } from './sidebar';
 
 interface FloatingSidebarProps extends Omit<SidebarProps, 'variant'> {
-  groups: Array<{ id: string; name: string; iconUrl?: string }>;
+  groups: Array<{ id: string; name: string; iconUrl?: string | null }>;
   user: {
-    avatarUrl?: string;
-    displayName?: string;
-    username?: string;
+    avatarUrl?: string | null;
+    displayName?: string | null;
+    username?: string | null;
     [key: string]: unknown;
   } | null;
   isSubscribed: boolean;
@@ -208,4 +208,4 @@ export function FloatingSidebar({
       </motion.div>
     </motion.div>
   );
-};
+}

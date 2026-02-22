@@ -59,8 +59,8 @@ export function useChatCustomization() {
   const [enableGlassEffect, setEnableGlassEffect] = useState(store.bubbleGlassEffect ?? false);
   const [enableBubbleTail, setEnableBubbleTail] = useState(store.bubbleShowTail ?? true);
   const [enableHoverEffects, setEnableHoverEffects] = useState(store.bubbleHoverEffect ?? true);
-  const [selectedEntranceAnimation, setSelectedEntranceAnimation] = useState<string>(
-    store.bubbleEntranceAnimation ?? 'fade'
+  const [selectedEntranceAnimation, setSelectedEntranceAnimation] = useState<EntranceAnimation>(
+    (store.bubbleEntranceAnimation as EntranceAnimation | undefined) ?? 'fade'
   );
 
   const [activeCategory, setActiveCategory] = useState<ChatCategory>('bubbles');
@@ -114,7 +114,7 @@ export function useChatCustomization() {
         bubbleGlassEffect: enableGlassEffect,
         bubbleShowTail: enableBubbleTail,
         bubbleHoverEffect: enableHoverEffects,
-        bubbleEntranceAnimation: selectedEntranceAnimation as EntranceAnimation,
+        bubbleEntranceAnimation: selectedEntranceAnimation,
       });
 
       await saveCustomizations(user.id);
@@ -184,9 +184,9 @@ export function useChatCustomization() {
 
   // Entrance-animation change also syncs the store
   const handleEntranceAnimationChange = useCallback(
-    (anim: string) => {
+    (anim: EntranceAnimation) => {
       setSelectedEntranceAnimation(anim);
-      setBubbleAnimation(anim as EntranceAnimation);
+      setBubbleAnimation(anim);
     },
     [setBubbleAnimation]
   );

@@ -243,6 +243,7 @@ defmodule CGraphWeb.GamificationChannel do
 
   # Private helpers
 
+  @spec get_gamification_state(struct()) :: map()
   defp get_gamification_state(user) do
     %{
       user_id: user.id,
@@ -258,6 +259,7 @@ defmodule CGraphWeb.GamificationChannel do
     }
   end
 
+  @spec get_active_event_ids() :: [String.t()]
   defp get_active_event_ids do
     # Get IDs of currently active events
     case Gamification.list_active_events() do
@@ -268,6 +270,7 @@ defmodule CGraphWeb.GamificationChannel do
     _ -> []
   end
 
+  @spec init_rate_limits() :: map()
   defp init_rate_limits do
     now = System.system_time(:second)
     Enum.into(@rate_limits, %{}, fn {key, _limit} ->
@@ -275,6 +278,7 @@ defmodule CGraphWeb.GamificationChannel do
     end)
   end
 
+  @spec check_rate_limit(Phoenix.Socket.t(), atom()) :: boolean()
   defp check_rate_limit(socket, event_type) do
     limits = socket.assigns[:rate_limits] || init_rate_limits()
     limit_config = @rate_limits[event_type] || 60
@@ -290,6 +294,7 @@ defmodule CGraphWeb.GamificationChannel do
     end
   end
 
+  @spec update_rate_limit(Phoenix.Socket.t(), atom()) :: Phoenix.Socket.t()
   defp update_rate_limit(socket, event_type) do
     limits = socket.assigns[:rate_limits] || init_rate_limits()
     state = limits[event_type] || %{count: 0, window_start: System.system_time(:second)}

@@ -18,6 +18,7 @@ export interface Friend {
   statusMessage: string | null;
   friendshipId: string;
   createdAt: string;
+  lastSeenAt?: string | null;
 }
 
 export interface FriendRequest {

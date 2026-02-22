@@ -351,6 +351,7 @@ defmodule CGraphWeb.CallChannel do
   # Private Functions
   # ---------------------------------------------------------------------------
 
+  @spec normalize_media(map() | term()) :: map()
   defp normalize_media(media) when is_map(media) do
     %{
       audio: Map.get(media, "audio", Map.get(media, :audio, true)),
