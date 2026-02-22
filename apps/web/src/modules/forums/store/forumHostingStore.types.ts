@@ -221,4 +221,5 @@ export interface ForumHostingState {
 
   // Actions - Members
   fetchMembers: (forumId: string, opts?: MemberListOptions) => Promise<void>;
+  reset: () => void;
 }

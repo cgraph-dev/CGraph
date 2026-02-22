@@ -37,6 +37,15 @@ export const useSettingsStore = create<SettingsState>()(
       lastSyncedAt: null,
 
       ...createSettingsActions(set, get),
+
+      reset: () =>
+        set({
+          settings: DEFAULT_SETTINGS,
+          isLoading: false,
+          isSaving: false,
+          error: null,
+          lastSyncedAt: null,
+        }),
     }),
     {
       name: 'cgraph-settings',

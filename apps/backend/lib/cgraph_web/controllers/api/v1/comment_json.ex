@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.CommentJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @spec index(map()) :: map()
   def index(%{comments: comments, meta: meta}) do
     %{
       data: Enum.map(comments, &comment_data/1),
@@ -12,10 +13,12 @@ defmodule CGraphWeb.API.V1.CommentJSON do
     }
   end
 
+  @spec show(map()) :: map()
   def show(%{comment: comment}) do
     %{data: comment_data(comment)}
   end
 
+  @spec vote(map()) :: map()
   def vote(%{vote: vote, comment: comment}) do
     %{
       data: %{
@@ -27,6 +30,7 @@ defmodule CGraphWeb.API.V1.CommentJSON do
     }
   end
 
+  @spec report(map()) :: map()
   def report(%{report: report}) do
     %{
       data: %{
@@ -41,6 +45,7 @@ defmodule CGraphWeb.API.V1.CommentJSON do
   Render comment data with author, votes, and replies.
   API uses `content` field (not `body`) for comment text.
   """
+  @spec comment_data(map()) :: map()
   def comment_data(comment) do
     %{
       id: comment.id,

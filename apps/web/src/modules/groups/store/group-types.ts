@@ -138,4 +138,5 @@ export interface GroupState {
     options?: { maxUses?: number; expiresIn?: number }
   ) => Promise<{ code: string; expiresAt: string }>;
   clearJoinCelebration: () => void;
+  reset: () => void;
 }

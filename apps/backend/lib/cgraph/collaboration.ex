@@ -38,6 +38,7 @@ defmodule CGraph.Collaboration do
   @doc """
   Create a new collaborative document.
   """
+  @spec create_document(map()) :: {:ok, Document.t()} | {:error, Ecto.Changeset.t()}
   def create_document(attrs) do
     %Document{}
     |> Document.changeset(attrs)
@@ -47,6 +48,7 @@ defmodule CGraph.Collaboration do
   @doc """
   Get a document by ID.
   """
+  @spec get_document(Ecto.UUID.t()) :: {:ok, Document.t()} | {:error, :not_found}
   def get_document(id) do
     case Repo.get(Document, id) do
       nil -> {:error, :not_found}
@@ -57,6 +59,7 @@ defmodule CGraph.Collaboration do
   @doc """
   Get a document by ID with permission check.
   """
+  @spec get_document(Ecto.UUID.t(), Ecto.UUID.t()) :: {:ok, Document.t()} | {:error, :not_found | :forbidden}
   def get_document(id, user_id) do
     case get_document(id) do
       {:ok, doc} ->
@@ -74,6 +77,7 @@ defmodule CGraph.Collaboration do
   @doc """
   List documents accessible to a user with cursor-based pagination.
   """
+  @spec list_documents(Ecto.UUID.t(), keyword()) :: {[Document.t()], map()}
   def list_documents(user_id, opts \\ []) do
     query = from(d in Document,
       where: d.owner_id == ^user_id or ^user_id in d.collaborator_ids
@@ -102,6 +106,7 @@ defmodule CGraph.Collaboration do
 
   The update is broadcast to all connected clients and persisted to DB.
   """
+  @spec apply_update(Ecto.UUID.t(), binary(), Ecto.UUID.t()) :: :ok | {:error, term()}
   def apply_update(document_id, update, user_id) when is_binary(update) do
     DocumentServer.apply_update(document_id, update, user_id)
   end
@@ -109,6 +114,7 @@ defmodule CGraph.Collaboration do
   @doc """
   Get the full Yjs state for a document (for initial sync).
   """
+  @spec get_state(Ecto.UUID.t()) :: {:ok, binary()} | {:error, term()}
   def get_state(document_id) do
     DocumentServer.get_state(document_id)
   end
@@ -116,6 +122,7 @@ defmodule CGraph.Collaboration do
   @doc """
   Get the current awareness/presence state for a document.
   """
+  @spec get_awareness(Ecto.UUID.t()) :: {:ok, map()} | {:error, term()}
   def get_awareness(document_id) do
     DocumentServer.get_awareness(document_id)
   end
@@ -123,6 +130,7 @@ defmodule CGraph.Collaboration do
   @doc """
   Update awareness (cursor position, selection, user info).
   """
+  @spec update_awareness(Ecto.UUID.t(), Ecto.UUID.t(), map()) :: :ok | {:error, term()}
   def update_awareness(document_id, user_id, awareness_data) do
     DocumentServer.update_awareness(document_id, user_id, awareness_data)
   end
@@ -140,6 +148,7 @@ defmodule CGraph.Collaboration do
   @doc """
   Add a collaborator to a document.
   """
+  @spec add_collaborator(Ecto.UUID.t(), Ecto.UUID.t(), Ecto.UUID.t()) :: {:ok, Document.t()} | {:error, :forbidden | :not_found | Ecto.Changeset.t()}
   def add_collaborator(document_id, owner_id, collaborator_id) do
     case get_document(document_id) do
       {:ok, doc} when doc.owner_id == owner_id ->
@@ -159,6 +168,7 @@ defmodule CGraph.Collaboration do
   @doc """
   Remove a collaborator from a document.
   """
+  @spec remove_collaborator(Ecto.UUID.t(), Ecto.UUID.t(), Ecto.UUID.t()) :: {:ok, Document.t()} | {:error, :forbidden | :not_found | Ecto.Changeset.t()}
   def remove_collaborator(document_id, owner_id, collaborator_id) do
     case get_document(document_id) do
       {:ok, doc} when doc.owner_id == owner_id ->

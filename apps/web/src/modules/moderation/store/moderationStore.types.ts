@@ -241,4 +241,5 @@ export interface ModerationState {
     reason?: string,
     details?: Record<string, unknown>
   ) => Promise<void>;
+  reset: () => void;
 }

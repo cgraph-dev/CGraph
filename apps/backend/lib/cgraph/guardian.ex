@@ -34,6 +34,7 @@ defmodule CGraph.Guardian do
   @doc """
   Subject for the token (user ID).
   """
+  @spec subject_for_token(Accounts.User.t() | term(), map()) :: {:ok, String.t()} | {:error, :invalid_resource}
   def subject_for_token(%Accounts.User{id: id}, _claims) do
     {:ok, id}
   end
@@ -45,6 +46,7 @@ defmodule CGraph.Guardian do
   @doc """
   Resource from claims (load user).
   """
+  @spec resource_from_claims(map()) :: {:ok, Accounts.User.t()} | {:error, :not_found | :invalid_claims}
   def resource_from_claims(%{"sub" => id}) do
     # Accounts.get_user/1 already returns {:ok, user} or {:error, :not_found}
     Accounts.get_user(id)
@@ -59,6 +61,7 @@ defmodule CGraph.Guardian do
 
   Called by Guardian before token generation.
   """
+  @spec build_claims(map(), term(), keyword()) :: {:ok, map()}
   def build_claims(claims, _resource, _opts) do
     # Add key ID for rotation tracking
     key_id = try do
@@ -80,6 +83,7 @@ defmodule CGraph.Guardian do
 
   Called by Guardian during token verification.
   """
+  @spec verify_claims(map(), keyword()) :: {:ok, map()} | {:error, :token_revoked}
   def verify_claims(claims, _opts) do
     jti = Map.get(claims, "jti")
     user_id = Map.get(claims, "sub")
@@ -101,6 +105,7 @@ defmodule CGraph.Guardian do
   @doc """
   Generate access and refresh token pair.
   """
+  @spec generate_tokens(Accounts.User.t()) :: {:ok, map()} | {:error, term()}
   def generate_tokens(user) do
     access_ttl = Application.get_env(:cgraph, :jwt_access_token_ttl, 900)  # 15 min default
     refresh_ttl = Application.get_env(:cgraph, :jwt_refresh_token_ttl, 604_800)  # 7 days default
@@ -120,6 +125,7 @@ defmodule CGraph.Guardian do
 
   The old refresh token is revoked after successful refresh.
   """
+  @spec refresh_tokens(String.t()) :: {:ok, map()} | {:error, term()}
   def refresh_tokens(refresh_token) do
     with {:ok, claims} <- decode_and_verify(refresh_token, %{"typ" => "refresh"}),
          {:ok, user} <- resource_from_claims(claims) do
@@ -138,6 +144,7 @@ defmodule CGraph.Guardian do
   @doc """
   Verify an access token.
   """
+  @spec verify_access_token(String.t()) :: {:ok, map()} | {:error, term()}
   def verify_access_token(token) do
     decode_and_verify(token, %{"typ" => "access"})
   end
@@ -145,6 +152,7 @@ defmodule CGraph.Guardian do
   @doc """
   Revoke a token by adding it to the blacklist.
   """
+  @spec revoke_token(String.t(), keyword()) :: :ok | {:error, term()}
   def revoke_token(token, opts \\ []) do
     case decode_and_verify(token, %{}) do
       {:ok, claims} ->
@@ -169,6 +177,7 @@ defmodule CGraph.Guardian do
 
   Useful for password changes, security incidents, or account deletion.
   """
+  @spec revoke_all_user_tokens(Ecto.UUID.t(), atom()) :: :ok | {:error, term()}
   def revoke_all_user_tokens(user_id, reason \\ :security_breach) do
     TokenBlacklist.revoke_all_for_user(user_id, reason: reason)
   end

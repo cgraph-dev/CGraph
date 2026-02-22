@@ -91,6 +91,7 @@ defmodule CGraph.ApiVersioning do
   @doc """
   Register a new API version.
   """
+  @spec register_version(version(), map()) :: :ok
   def register_version(version, opts \\ %{}) do
     GenServer.call(__MODULE__, {:register_version, version, opts})
   end
@@ -98,6 +99,7 @@ defmodule CGraph.ApiVersioning do
   @doc """
   Mark a version as deprecated.
   """
+  @spec deprecate_version(version(), keyword() | map()) :: :ok | {:error, :not_found}
   def deprecate_version(version, opts) do
     GenServer.call(__MODULE__, {:deprecate_version, version, opts})
   end
@@ -105,6 +107,7 @@ defmodule CGraph.ApiVersioning do
   @doc """
   Remove a version entirely (after sunset).
   """
+  @spec sunset_version(version()) :: :ok | {:error, :not_found}
   def sunset_version(version) do
     GenServer.call(__MODULE__, {:sunset_version, version})
   end
@@ -112,6 +115,7 @@ defmodule CGraph.ApiVersioning do
   @doc """
   Register a transformer for a resource type at a specific version.
   """
+  @spec register_transformer(resource_type(), version(), transformer()) :: :ok
   def register_transformer(resource_type, version, transformer) when is_function(transformer, 1) do
     GenServer.call(__MODULE__, {:register_transformer, resource_type, version, transformer})
   end
@@ -120,6 +124,7 @@ defmodule CGraph.ApiVersioning do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end

@@ -9,6 +9,7 @@ defmodule CGraphWeb.API.V1.CalendarJSON do
   # EVENTS
   # ========================================
 
+  @spec events(map()) :: map()
   def events(%{events: events, pagination: pagination}) do
     %{
       data: for(event <- events, do: event_data(event)),
@@ -16,6 +17,7 @@ defmodule CGraphWeb.API.V1.CalendarJSON do
     }
   end
 
+  @spec event(map()) :: map()
   def event(%{event: event}) do
     %{data: event_data(event)}
   end
@@ -81,10 +83,12 @@ defmodule CGraphWeb.API.V1.CalendarJSON do
   # CATEGORIES
   # ========================================
 
+  @spec categories(map()) :: map()
   def categories(%{categories: categories}) do
     %{data: for(cat <- categories, do: category_data(cat))}
   end
 
+  @spec category(map()) :: map()
   def category(%{category: category}) do
     %{data: category_data(category)}
   end
@@ -113,10 +117,12 @@ defmodule CGraphWeb.API.V1.CalendarJSON do
   # RSVP
   # ========================================
 
+  @spec rsvps(map()) :: map()
   def rsvps(%{rsvps: rsvps}) do
     %{data: for(rsvp <- rsvps, do: rsvp_data(rsvp))}
   end
 
+  @spec rsvp(map()) :: map()
   def rsvp(%{rsvp: rsvp}) do
     %{data: rsvp_data(rsvp)}
   end

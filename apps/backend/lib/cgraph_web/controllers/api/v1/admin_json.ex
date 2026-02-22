@@ -24,6 +24,7 @@ defmodule CGraphWeb.API.V1.AdminJSON do
   @doc """
   Render comprehensive system metrics.
   """
+  @spec metrics(map()) :: map()
   def metrics(metrics) do
     %{
       data: %{
@@ -68,6 +69,7 @@ defmodule CGraphWeb.API.V1.AdminJSON do
   @doc """
   Render real-time stats.
   """
+  @spec realtime(map()) :: map()
   def realtime(stats) do
     %{
       data: %{
@@ -88,6 +90,7 @@ defmodule CGraphWeb.API.V1.AdminJSON do
   @doc """
   Render paginated users list.
   """
+  @spec users(map()) :: map()
   def users(%{users: users, pagination: pagination}) do
     %{
       data: Enum.map(users, &user/1),
@@ -103,6 +106,7 @@ defmodule CGraphWeb.API.V1.AdminJSON do
   @doc """
   Render single user for admin view.
   """
+  @spec user(map()) :: map()
   def user(user) do
     %{
       id: user.id,
@@ -125,6 +129,7 @@ defmodule CGraphWeb.API.V1.AdminJSON do
   @doc """
   Render detailed user information.
   """
+  @spec user_details(map()) :: map()
   def user_details(%{user: user, stats: stats, sessions: sessions, moderation_history: history}) do
     %{
       data: %{
@@ -163,6 +168,7 @@ defmodule CGraphWeb.API.V1.AdminJSON do
   @doc """
   Render paginated reports list.
   """
+  @spec reports(map()) :: map()
   def reports(%{reports: reports, pagination: pagination}) do
     %{
       data: Enum.map(reports, &report/1),
@@ -178,6 +184,7 @@ defmodule CGraphWeb.API.V1.AdminJSON do
   @doc """
   Render single report.
   """
+  @spec report(map()) :: map()
   def report(report) do
     %{
       id: report.id,
@@ -207,6 +214,7 @@ defmodule CGraphWeb.API.V1.AdminJSON do
   @doc """
   Render paginated audit log.
   """
+  @spec audit_log(map()) :: map()
   def audit_log(%{entries: entries, pagination: pagination}) do
     %{
       data: Enum.map(entries, &audit_entry/1),
@@ -222,6 +230,7 @@ defmodule CGraphWeb.API.V1.AdminJSON do
   @doc """
   Render single audit log entry.
   """
+  @spec audit_entry(map()) :: map()
   def audit_entry(entry) do
     %{
       id: entry.id,
@@ -244,6 +253,7 @@ defmodule CGraphWeb.API.V1.AdminJSON do
   @doc """
   Render system configuration.
   """
+  @spec config(map()) :: map()
   def config(config) do
     %{
       data: %{

@@ -75,6 +75,7 @@ defmodule CGraph.ErrorReporter do
   # ---------------------------------------------------------------------------
 
   @doc "Start the error reporter."
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -98,6 +99,7 @@ defmodule CGraph.ErrorReporter do
           {:error, :operation_failed}
       end
   """
+  @spec report(Exception.t(), Exception.stacktrace(), context()) :: :ok
   def report(exception, stacktrace, context \\ %{}) do
     GenServer.cast(__MODULE__, {:report, exception, stacktrace, context})
   end
@@ -106,6 +108,7 @@ defmodule CGraph.ErrorReporter do
   Report an exception with Plug.Conn context.
   Automatically extracts request information.
   """
+  @spec report_with_context(Plug.Conn.t(), Exception.t(), Exception.stacktrace(), context()) :: :ok
   def report_with_context(conn, exception, stacktrace, extra_context \\ %{}) do
     context =
       Context.extract_conn_context(conn)
@@ -118,6 +121,7 @@ defmodule CGraph.ErrorReporter do
   Capture a message (not an exception).
   Useful for logging significant events or warnings.
   """
+  @spec capture_message(String.t(), severity(), context()) :: :ok
   def capture_message(message, severity \\ :info, context \\ %{}) do
     GenServer.cast(__MODULE__, {:capture_message, message, severity, context})
   end
@@ -132,11 +136,13 @@ defmodule CGraph.ErrorReporter do
   # --- Wrapper for add_breadcrumb (has default args) ---
 
   @doc "Add a breadcrumb for error context."
+  @spec add_breadcrumb(String.t(), String.t(), map()) :: :ok
   def add_breadcrumb(message, category \\ "custom", data \\ %{}) do
     EventBuilder.add_breadcrumb(message, category, data)
   end
 
   @doc "Get error statistics."
+  @spec stats() :: map()
   def stats do
     GenServer.call(__MODULE__, :stats)
   end

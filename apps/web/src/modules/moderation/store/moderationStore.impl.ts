@@ -34,6 +34,21 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
   ...createThreadActions(set, get),
   ...createUserActions(set),
   ...createLogActions(set),
+
+  reset: () =>
+    set({
+      queue: [],
+      queueCounts: { pending: 0, flagged: 0, reported: 0 },
+      isLoadingQueue: false,
+      warningTypes: [],
+      currentUserWarnings: [],
+      currentUserStats: null,
+      bans: [],
+      isLoadingBans: false,
+      moderationLog: [],
+      isLoadingLog: false,
+      bulkSelection: { threads: [], posts: [], comments: [] },
+    }),
 }));
 
 export default useModerationStore;

@@ -20,6 +20,7 @@ defmodule CGraphWeb.API.V1.AnnouncementController do
   @doc """
   List all active announcements for the current user.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     user = conn.assigns.current_user
 
@@ -36,6 +37,7 @@ defmodule CGraphWeb.API.V1.AnnouncementController do
   @doc """
   Get a single announcement.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -48,6 +50,7 @@ defmodule CGraphWeb.API.V1.AnnouncementController do
   @doc """
   Mark an announcement as read.
   """
+  @spec mark_read(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def mark_read(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -60,6 +63,7 @@ defmodule CGraphWeb.API.V1.AnnouncementController do
   @doc """
   Dismiss an announcement (won't show again).
   """
+  @spec dismiss(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def dismiss(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 

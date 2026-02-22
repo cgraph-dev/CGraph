@@ -41,6 +41,7 @@ export interface NotificationState {
   deleteNotification: (notificationId: string) => Promise<void>;
   addNotification: (notification: Notification) => void;
   clearAll: () => Promise<void>;
+  reset: () => void;
 }
 
 export const useNotificationStore = create<NotificationState>()(
@@ -70,11 +71,11 @@ export const useNotificationStore = create<NotificationState>()(
             const merged =
               page === 1 ? newNotifications : [...state.notifications, ...newNotifications];
             return {
-            notifications: merged.slice(0, MAX_NOTIFICATIONS),
-            unreadCount: metaUnreadCount ?? calculatedUnreadCount,
-            hasMore,
-            isLoading: false,
-          };
+              notifications: merged.slice(0, MAX_NOTIFICATIONS),
+              unreadCount: metaUnreadCount ?? calculatedUnreadCount,
+              hasMore,
+              isLoading: false,
+            };
           });
         } catch (error: unknown) {
           set({ isLoading: false });
@@ -125,6 +126,14 @@ export const useNotificationStore = create<NotificationState>()(
         await api.delete('/api/v1/notifications');
         set({ notifications: [], unreadCount: 0 });
       },
+
+      reset: () =>
+        set({
+          notifications: [],
+          unreadCount: 0,
+          isLoading: false,
+          hasMore: true,
+        }),
     }),
     {
       name: 'NotificationStore',

@@ -32,4 +32,17 @@ export const useAnnouncementStore = create<AnnouncementState>((set, get) => ({
   ...createFetchActions(set),
   ...createCrudActions(set, get),
   ...createReadAndHelperActions(set, get),
+
+  reset: () =>
+    set({
+      announcements: [],
+      globalAnnouncements: [],
+      forumAnnouncements: new Map(),
+      currentAnnouncement: null,
+      isLoading: false,
+      readAnnouncementIds: new Set(),
+      page: 1,
+      totalPages: 1,
+      totalCount: 0,
+    }),
 }));

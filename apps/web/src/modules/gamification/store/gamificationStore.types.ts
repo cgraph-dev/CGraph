@@ -158,4 +158,5 @@ export interface GamificationState {
   unequipBadge: (badgeId: string) => Promise<void>;
   unlockLoreEntry: (entryId: string) => Promise<void>;
   checkDailyLogin: () => Promise<void>;
+  reset: () => void;
 }

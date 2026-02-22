@@ -80,6 +80,18 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
 
   // Clear state
   clearProfile: createClearProfile(set),
+
+  reset: () =>
+    set({
+      currentProfile: null,
+      isLoadingProfile: false,
+      profileError: null,
+      myProfile: null,
+      mySignature: null,
+      blockedUsers: [],
+      isLoadingBlocked: false,
+      availableFields: [],
+    }),
 }));
 
 export default useProfileStore;

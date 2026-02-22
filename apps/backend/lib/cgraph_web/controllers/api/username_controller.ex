@@ -14,6 +14,7 @@ defmodule CGraphWeb.API.UsernameController do
   Check if a username is available.
   GET /api/users/check-username?username=xxx
   """
+  @spec check_availability(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def check_availability(conn, %{"username" => username}) do
     # Validate format first
     if valid_username_format?(username) do
@@ -39,6 +40,7 @@ defmodule CGraphWeb.API.UsernameController do
   Change the current user's username.
   POST /api/users/me/change-username
   """
+  @spec change_username(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def change_username(conn, %{"username" => new_username}) do
     user = conn.assigns.current_user
     is_premium = user.subscription_tier not in [nil, "free"]
@@ -72,6 +74,7 @@ defmodule CGraphWeb.API.UsernameController do
   Get username change history for the current user.
   GET /api/users/me/username-history
   """
+  @spec history(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def history(conn, _params) do
     user = conn.assigns.current_user
 
@@ -94,6 +97,7 @@ defmodule CGraphWeb.API.UsernameController do
   Get cooldown status for the current user.
   GET /api/users/me/username-cooldown
   """
+  @spec cooldown_status(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def cooldown_status(conn, _params) do
     user = conn.assigns.current_user
     is_premium = user.subscription_tier not in [nil, "free"]

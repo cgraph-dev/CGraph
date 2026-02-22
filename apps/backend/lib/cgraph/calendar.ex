@@ -22,6 +22,7 @@ defmodule CGraph.Calendar do
   @doc """
   List events with filtering.
   """
+  @spec list_events(map() | Ecto.UUID.t(), keyword()) :: {[Event.t()], map()}
   def list_events(user, opts \\ []) do
     user_id = extract_user_id(user)
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
@@ -90,6 +91,7 @@ defmodule CGraph.Calendar do
   @doc """
   Get a single event.
   """
+  @spec get_event(Ecto.UUID.t(), map() | Ecto.UUID.t()) :: {:ok, Event.t()} | {:error, :not_found}
   def get_event(id, user) do
     user_id = extract_user_id(user)
 
@@ -116,6 +118,7 @@ defmodule CGraph.Calendar do
   @doc """
   Create an event.
   """
+  @spec create_event(map()) :: {:ok, Event.t()} | {:error, Ecto.Changeset.t()}
   def create_event(attrs) do
     %Event{}
     |> Event.changeset(attrs)
@@ -125,6 +128,7 @@ defmodule CGraph.Calendar do
   @doc """
   Update an event.
   """
+  @spec update_event(Event.t(), map()) :: {:ok, Event.t()} | {:error, Ecto.Changeset.t()}
   def update_event(%Event{} = event, attrs) do
     event
     |> Event.changeset(attrs)
@@ -134,6 +138,7 @@ defmodule CGraph.Calendar do
   @doc """
   Delete an event.
   """
+  @spec delete_event(Event.t()) :: {:ok, Event.t()} | {:error, Ecto.Changeset.t()}
   def delete_event(%Event{} = event) do
     Repo.delete(event)
   end
@@ -145,6 +150,7 @@ defmodule CGraph.Calendar do
   @doc """
   List all event categories.
   """
+  @spec list_categories() :: [EventCategory.t()]
   def list_categories do
     from(c in EventCategory, order_by: [asc: c.order, asc: c.name])
     |> Repo.all()
@@ -162,6 +168,7 @@ defmodule CGraph.Calendar do
   @doc """
   Get a category by ID.
   """
+  @spec get_category(Ecto.UUID.t()) :: {:ok, EventCategory.t()} | {:error, :not_found}
   def get_category(id) do
     case Repo.get(EventCategory, id) do
       nil -> {:error, :not_found}
@@ -172,6 +179,7 @@ defmodule CGraph.Calendar do
   @doc """
   Create a category.
   """
+  @spec create_category(map()) :: {:ok, EventCategory.t()} | {:error, Ecto.Changeset.t()}
   def create_category(attrs) do
     %EventCategory{}
     |> EventCategory.changeset(attrs)
@@ -181,6 +189,7 @@ defmodule CGraph.Calendar do
   @doc """
   Update a category.
   """
+  @spec update_category(EventCategory.t(), map()) :: {:ok, EventCategory.t()} | {:error, Ecto.Changeset.t()}
   def update_category(%EventCategory{} = category, attrs) do
     category
     |> EventCategory.changeset(attrs)
@@ -190,6 +199,7 @@ defmodule CGraph.Calendar do
   @doc """
   Delete a category.
   """
+  @spec delete_category(EventCategory.t()) :: {:ok, EventCategory.t()} | {:error, Ecto.Changeset.t()}
   def delete_category(%EventCategory{} = category) do
     # Optionally remove category from events first
     from(e in Event, where: e.category_id == ^category.id)
@@ -205,6 +215,7 @@ defmodule CGraph.Calendar do
   @doc """
   List RSVPs for an event.
   """
+  @spec list_event_rsvps(Ecto.UUID.t()) :: [EventRSVP.t()]
   def list_event_rsvps(event_id) do
     from(r in EventRSVP,
       where: r.event_id == ^event_id,
@@ -217,6 +228,7 @@ defmodule CGraph.Calendar do
   @doc """
   Create or update RSVP.
   """
+  @spec create_or_update_rsvp(map()) :: {:ok, EventRSVP.t()} | {:error, Ecto.Changeset.t()}
   def create_or_update_rsvp(attrs) do
     case Repo.get_by(EventRSVP, event_id: attrs.event_id, user_id: attrs.user_id) do
       nil ->
@@ -234,6 +246,7 @@ defmodule CGraph.Calendar do
   @doc """
   Cancel RSVP.
   """
+  @spec cancel_rsvp(Ecto.UUID.t(), Ecto.UUID.t()) :: {:ok, EventRSVP.t()} | {:error, :not_found | Ecto.Changeset.t()}
   def cancel_rsvp(event_id, user_id) do
     case Repo.get_by(EventRSVP, event_id: event_id, user_id: user_id) do
       nil -> {:error, :not_found}
@@ -244,6 +257,7 @@ defmodule CGraph.Calendar do
   @doc """
   Get RSVP counts for an event.
   """
+  @spec get_rsvp_counts(Ecto.UUID.t()) :: map()
   def get_rsvp_counts(event_id) do
     query =
       from r in EventRSVP,

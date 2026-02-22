@@ -73,6 +73,7 @@ export interface SearchState {
   ) => Promise<SearchUser | SearchGroup | SearchForum | null>;
   clearResults: () => void;
   clearError: () => void;
+  reset: () => void;
 }
 
 export const useSearchStore = create<SearchState>()((set, get) => ({
@@ -216,4 +217,18 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
     }),
 
   clearError: () => set({ error: null }),
+
+  reset: () =>
+    set({
+      query: '',
+      category: 'all' as SearchCategory,
+      users: [],
+      groups: [],
+      forums: [],
+      posts: [],
+      messages: [],
+      isLoading: false,
+      error: null,
+      hasSearched: false,
+    }),
 }));

@@ -144,4 +144,5 @@ export interface AnnouncementState {
 
   // Clear
   clearState: () => void;
+  reset: () => void;
 }

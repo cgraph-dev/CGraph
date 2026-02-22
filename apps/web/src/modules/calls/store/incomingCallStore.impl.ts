@@ -15,6 +15,7 @@ export interface IncomingCallState {
   setIncomingCall: (call: IncomingCall | null) => void;
   acceptCall: () => void;
   declineCall: () => void;
+  reset: () => void;
 }
 
 export const useIncomingCallStore = create<IncomingCallState>()(
@@ -38,6 +39,8 @@ export const useIncomingCallStore = create<IncomingCallState>()(
       declineCall: () => {
         set({ incomingCall: null });
       },
+
+      reset: () => set({ incomingCall: null }),
     }),
     { name: 'IncomingCallStore' }
   )

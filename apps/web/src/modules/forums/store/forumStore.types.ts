@@ -525,4 +525,5 @@ export interface ForumState {
   mergeThreads: (sourceThreadId: string, targetThreadId: string) => Promise<void>;
   closeThread: (threadId: string) => Promise<void>;
   reopenThread: (threadId: string) => Promise<void>;
+  reset: () => void;
 }

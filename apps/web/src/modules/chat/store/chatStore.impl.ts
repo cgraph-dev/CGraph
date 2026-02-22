@@ -151,6 +151,22 @@ export const useChatStore = create<ChatState>()(
       ...createMessagingActions(set, get),
       ...createOperationsActions(set, get),
       ...createScheduledActions(set, get),
+
+      reset: () =>
+        set({
+          conversations: [],
+          activeConversationId: null,
+          messages: {},
+          messageIdSets: {},
+          isLoadingConversations: false,
+          isLoadingMessages: false,
+          typingUsers: {},
+          typingUsersInfo: {},
+          hasMoreMessages: {},
+          conversationsLastFetchedAt: null,
+          scheduledMessages: {},
+          isLoadingScheduledMessages: false,
+        }),
     }),
     {
       name: 'ChatStore',

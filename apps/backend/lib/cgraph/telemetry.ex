@@ -58,6 +58,7 @@ defmodule CGraph.Telemetry do
 
   Called during application startup in `CGraph.Application.start/2`.
   """
+  @spec attach_handlers() :: :ok
   def attach_handlers do
     handlers = [
       # HTTP Request Metrics
@@ -95,6 +96,7 @@ defmodule CGraph.Telemetry do
 
   Useful for testing or graceful shutdown.
   """
+  @spec detach_handlers() :: :ok
   def detach_handlers do
     [
       [:phoenix, :endpoint, :stop],
@@ -131,6 +133,7 @@ defmodule CGraph.Telemetry do
   - Duration in milliseconds
   - User ID if authenticated
   """
+  @spec handle_request_stop(term(), map(), map(), map()) :: :ok
   def handle_request_stop(_event, measurements, metadata, _config) do
     duration_ms = System.convert_time_unit(
       measurements[:duration],
@@ -170,6 +173,7 @@ defmodule CGraph.Telemetry do
   @doc """
   Handle router dispatch completion for more granular controller metrics.
   """
+  @spec handle_router_dispatch(term(), map(), map(), map()) :: :ok
   def handle_router_dispatch(_event, measurements, metadata, _config) do
     duration_ms = System.convert_time_unit(
       measurements[:duration],
@@ -189,6 +193,7 @@ defmodule CGraph.Telemetry do
   @doc """
   Handle router exceptions for error tracking.
   """
+  @spec handle_router_exception(term(), map(), map(), map()) :: :ok
   def handle_router_exception(_event, measurements, metadata, _config) do
     duration_ms = System.convert_time_unit(
       measurements[:duration],
@@ -224,6 +229,7 @@ defmodule CGraph.Telemetry do
   Logs slow queries and tracks query patterns for optimization.
   Slow query threshold: 100ms (configurable)
   """
+  @spec handle_repo_query(term(), map(), map(), map()) :: :ok
   def handle_repo_query(_event, measurements, metadata, _config) do
     duration_ms = System.convert_time_unit(
       measurements[:total_time] || 0,
@@ -260,6 +266,7 @@ defmodule CGraph.Telemetry do
   @doc """
   Handle cache get operations to track hit/miss rates.
   """
+  @spec handle_cache_get(term(), map(), map(), map()) :: :ok
   def handle_cache_get(_event, _measurements, metadata, _config) do
     result = if metadata[:result], do: :hit, else: :miss
     cache_name = metadata[:cache] || :unknown
@@ -274,6 +281,7 @@ defmodule CGraph.Telemetry do
   @doc """
   Handle cache put operations.
   """
+  @spec handle_cache_put(term(), map(), map(), map()) :: :ok
   def handle_cache_put(_event, _measurements, metadata, _config) do
     cache_name = metadata[:cache] || :unknown
 
@@ -290,6 +298,7 @@ defmodule CGraph.Telemetry do
   @doc """
   Handle rate limit check events.
   """
+  @spec handle_rate_limit_check(term(), map(), map(), map()) :: :ok
   def handle_rate_limit_check(_event, measurements, metadata, _config) do
     record_histogram("rate_limiter.remaining", measurements[:remaining], %{
       tier: metadata[:tier],
@@ -300,6 +309,7 @@ defmodule CGraph.Telemetry do
   @doc """
   Handle rate limit exceeded events.
   """
+  @spec handle_rate_limit_exceeded(term(), map(), map(), map()) :: :ok
   def handle_rate_limit_exceeded(_event, measurements, metadata, _config) do
     Logger.info(
       "Rate limit exceeded",
@@ -320,6 +330,7 @@ defmodule CGraph.Telemetry do
   @doc """
   Handle message sent events for business metrics.
   """
+  @spec handle_message_sent(term(), map(), map(), map()) :: :ok
   def handle_message_sent(_event, measurements, metadata, _config) do
     increment_counter("messaging.messages.sent", %{
       type: metadata[:type] || :dm
@@ -333,6 +344,7 @@ defmodule CGraph.Telemetry do
   @doc """
   Handle successful login events.
   """
+  @spec handle_login_success(term(), map(), map(), map()) :: :ok
   def handle_login_success(_event, _measurements, metadata, _config) do
     increment_counter("auth.login.success", %{
       method: metadata[:method] || :password
@@ -342,6 +354,7 @@ defmodule CGraph.Telemetry do
   @doc """
   Handle failed login events.
   """
+  @spec handle_login_failure(term(), map(), map(), map()) :: :ok
   def handle_login_failure(_event, _measurements, metadata, _config) do
     increment_counter("auth.login.failure", %{
       reason: metadata[:reason] || :unknown

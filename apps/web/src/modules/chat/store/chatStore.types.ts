@@ -215,4 +215,5 @@ export interface ChatState {
   ) => Promise<void>;
   cancelScheduledMessage: (messageId: string) => Promise<void>;
   rescheduleMessage: (messageId: string, newScheduledAt: Date) => Promise<void>;
+  reset: () => void;
 }

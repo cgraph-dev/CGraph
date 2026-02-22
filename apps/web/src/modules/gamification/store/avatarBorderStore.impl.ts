@@ -87,6 +87,31 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
       },
       handleAchievementUnlock: createHandleAchievementUnlock(set, get),
       handleEventReward: createHandleEventReward(set, get),
+
+      reset: () =>
+        set({
+          allBorders: AVATAR_BORDERS,
+          unlockedBorders: [
+            { borderId: 'none', unlockedAt: new Date().toISOString(), unlockSource: 'default' },
+            { borderId: 'static', unlockedAt: new Date().toISOString(), unlockSource: 'default' },
+            {
+              borderId: 'simple-glow',
+              unlockedAt: new Date().toISOString(),
+              unlockSource: 'default',
+            },
+            {
+              borderId: 'gentle-pulse',
+              unlockedAt: new Date().toISOString(),
+              unlockSource: 'default',
+            },
+          ],
+          preferences: DEFAULT_PREFERENCES,
+          previewBorderId: null,
+          isLoading: false,
+          isSaving: false,
+          error: null,
+          filters: DEFAULT_FILTERS,
+        }),
     }),
     {
       name: 'cgraph-avatar-borders',

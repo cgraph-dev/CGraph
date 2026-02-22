@@ -146,6 +146,7 @@ defmodule CGraph.RateLimiter do
 
   This is useful for test environments.
   """
+  @spec check(rate_limit_key(), scope(), keyword() | map()) :: check_result()
   def check(identifier, scope, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     # Check if rate limiting is enabled (defaults to true)
@@ -163,6 +164,7 @@ defmodule CGraph.RateLimiter do
 
       config :cgraph, CGraph.RateLimiter, enabled: false
   """
+  @spec enabled?() :: boolean()
   def enabled? do
     Application.get_env(:cgraph, __MODULE__, [])
     |> Keyword.get(:enabled, true)
@@ -182,6 +184,7 @@ defmodule CGraph.RateLimiter do
   @doc """
   Check multiple scopes at once. Fails if any scope is rate limited.
   """
+  @spec check_all(rate_limit_key(), [scope()], keyword()) :: :ok | {:error, scope(), check_result()}
   def check_all(identifier, scopes, opts \\ []) when is_list(scopes) do
     results = Enum.map(scopes, fn scope ->
       {scope, check(identifier, scope, opts)}
@@ -196,6 +199,7 @@ defmodule CGraph.RateLimiter do
   @doc """
   Get current rate limit status without consuming a request.
   """
+  @spec status(rate_limit_key(), scope()) :: rate_limit_info()
   def status(identifier, scope) do
     config = get_scope_config(scope, [])
     key = build_key(identifier, scope)
@@ -206,6 +210,7 @@ defmodule CGraph.RateLimiter do
   @doc """
   Reset rate limit for an identifier.
   """
+  @spec reset(rate_limit_key(), scope()) :: :ok
   def reset(identifier, scope) do
     key = build_key(identifier, scope)
     :ets.delete(@ets_table, key)
@@ -215,6 +220,7 @@ defmodule CGraph.RateLimiter do
   @doc """
   Reset all rate limits for an identifier.
   """
+  @spec reset_all(rate_limit_key()) :: :ok
   def reset_all(identifier) do
     # Match string keys containing the identifier suffix — no atom creation.
     suffix = ":#{identifier}"
@@ -249,6 +255,7 @@ defmodule CGraph.RateLimiter do
   @doc """
   Add to blacklist (always rate limited).
   """
+  @spec blacklist(rate_limit_key(), keyword()) :: :ok | {:error, term()}
   def blacklist(identifier, opts \\ []) do
     duration = Keyword.get(opts, :duration, :infinity)
     AccessControl.blacklist(identifier, duration)
@@ -267,6 +274,7 @@ defmodule CGraph.RateLimiter do
   @doc """
   Get configuration for a scope.
   """
+  @spec get_scope_config(scope(), keyword()) :: map()
   def get_scope_config(scope, opts) do
     base = Map.get(@default_scopes, scope, %{limit: 100, window: 60, algorithm: :sliding_window})
 
@@ -283,6 +291,7 @@ defmodule CGraph.RateLimiter do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end

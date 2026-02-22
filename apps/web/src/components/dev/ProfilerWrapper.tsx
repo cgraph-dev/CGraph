@@ -157,6 +157,7 @@ export function ProfilerWrapper({
       // Log if above threshold
       if (logToConsole && actualDuration >= thresholdMs) {
         const color = actualDuration > 16 ? '#f43f5e' : actualDuration > 8 ? '#f59e0b' : '#22c55e';
+        // eslint-disable-next-line no-console
         console.debug(
           `%c⚡ ${profilerId}%c ${phase} in %c${actualDuration.toFixed(2)}ms%c (base: ${baseDuration.toFixed(2)}ms)`,
           'color: #818cf8; font-weight: bold',
@@ -191,15 +192,15 @@ export function withProfiler<P extends object>(
   WrappedComponent: React.ComponentType<P>,
   id: string,
   options?: Omit<ProfilerWrapperProps, 'id' | 'children'>
-): React.FC<P> {
+): (props: P) => React.ReactElement | null {
   const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
 
   function WithProfiler(props: P): React.ReactElement | null {
     return (
-    <ProfilerWrapper id={id} {...options}>
-      <WrappedComponent {...props} />
-    </ProfilerWrapper>
-  );
+      <ProfilerWrapper id={id} {...options}>
+        <WrappedComponent {...props} />
+      </ProfilerWrapper>
+    );
   }
 
   WithProfiler.displayName = `withProfiler(${displayName})`;

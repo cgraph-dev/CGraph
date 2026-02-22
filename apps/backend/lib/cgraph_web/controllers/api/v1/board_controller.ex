@@ -13,6 +13,7 @@ defmodule CGraphWeb.API.V1.BoardController do
   List boards for a forum.
   GET /api/v1/forums/:forum_id/boards
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"forum_id" => forum_id} = params) do
     include_hidden = Map.get(params, "include_hidden", "false") == "true"
     parent_id = Map.get(params, "parent_id")
@@ -27,6 +28,7 @@ defmodule CGraphWeb.API.V1.BoardController do
   Get a single board.
   GET /api/v1/forums/:forum_id/boards/:id
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"forum_id" => forum_id, "id" => id}) do
     with {:ok, board} <- Forums.get_board(id),
          true <- board.forum_id == forum_id do
@@ -41,6 +43,7 @@ defmodule CGraphWeb.API.V1.BoardController do
   Get a board by slug.
   GET /api/v1/forums/:forum_id/boards/by-slug/:slug
   """
+  @spec show_by_slug(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show_by_slug(conn, %{"forum_id" => forum_id, "slug" => slug}) do
     with {:ok, board} <- Forums.get_board_by_slug(forum_id, slug) do
       render(conn, :show, board: board)
@@ -51,6 +54,7 @@ defmodule CGraphWeb.API.V1.BoardController do
   Create a new board.
   POST /api/v1/forums/:forum_id/boards
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"forum_id" => forum_id, "board" => board_params}) do
     user = conn.assigns.current_user
 
@@ -76,6 +80,7 @@ defmodule CGraphWeb.API.V1.BoardController do
   Update a board.
   PUT /api/v1/forums/:forum_id/boards/:id
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"forum_id" => forum_id, "id" => id, "board" => board_params}) do
     user = conn.assigns.current_user
 
@@ -95,6 +100,7 @@ defmodule CGraphWeb.API.V1.BoardController do
   Delete a board.
   DELETE /api/v1/forums/:forum_id/boards/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"forum_id" => forum_id, "id" => id}) do
     user = conn.assigns.current_user
 

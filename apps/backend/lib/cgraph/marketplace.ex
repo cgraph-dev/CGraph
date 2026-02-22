@@ -29,6 +29,7 @@ defmodule CGraph.Marketplace do
   Browse listings with filters.
   Supports: item_type, currency_type, min_price, max_price, sort_by, limit.
   """
+  @spec browse_listings(map()) :: {:ok, [MarketplaceItem.t()]}
   def browse_listings(filters) when is_map(filters) do
     query = from(i in MarketplaceItem, where: i.listing_status == "active")
 
@@ -57,6 +58,7 @@ defmodule CGraph.Marketplace do
   @doc """
   Get price history for an item type over N days.
   """
+  @spec get_price_history(String.t(), term(), integer()) :: [map()]
   def get_price_history(item_type, _item_id, days) do
     since = DateTime.add(DateTime.utc_now(), -days, :day)
 
@@ -73,6 +75,7 @@ defmodule CGraph.Marketplace do
   @doc """
   Create listing (2-arg version for channels).
   """
+  @spec create_listing(Ecto.UUID.t(), map()) :: {:ok, term()} | {:error, term()}
   def create_listing(user_id, params) when is_map(params) do
     item_id = Map.get(params, :item_id) || Map.get(params, "item_id")
     attrs = Map.drop(params, [:item_id, "item_id"])
@@ -86,6 +89,7 @@ defmodule CGraph.Marketplace do
   @doc """
   Create an offer on a listing.
   """
+  @spec create_offer(Ecto.UUID.t(), Ecto.UUID.t(), number(), String.t() | nil) :: {:ok, term()} | {:error, term()}
   def create_offer(buyer_id, listing_id, amount, _message) do
     case GMarketplace.get_listing(listing_id) do
       {:ok, listing} -> GMarketplace.make_offer(listing, buyer_id, amount)
@@ -96,6 +100,7 @@ defmodule CGraph.Marketplace do
   @doc """
   Respond to an offer (accept/reject).
   """
+  @spec respond_to_offer(Ecto.UUID.t(), Ecto.UUID.t(), boolean(), String.t() | nil) :: {:ok, term()} | {:error, term()}
   def respond_to_offer(_user_id, offer_id, accept, _message) do
     if accept, do: GMarketplace.accept_offer(offer_id), else: GMarketplace.reject_offer(offer_id)
   end
@@ -107,6 +112,7 @@ defmodule CGraph.Marketplace do
   @doc """
   Count currently active listings.
   """
+  @spec count_active_listings() :: non_neg_integer()
   def count_active_listings do
     from(i in MarketplaceItem, where: i.listing_status == "active")
     |> Repo.aggregate(:count, :id)
@@ -115,6 +121,7 @@ defmodule CGraph.Marketplace do
   @doc """
   Get total sales volume in last 24 hours.
   """
+  @spec volume_24h() :: number()
   def volume_24h do
     since = DateTime.add(DateTime.utc_now(), -1, :day)
 
@@ -129,6 +136,7 @@ defmodule CGraph.Marketplace do
   @doc """
   Get trending items (most sales in last 7 days).
   """
+  @spec trending_items(pos_integer()) :: [map()]
   def trending_items(limit) do
     since = DateTime.add(DateTime.utc_now(), -7, :day)
 
@@ -146,6 +154,7 @@ defmodule CGraph.Marketplace do
   @doc """
   Get recent sales.
   """
+  @spec recent_sales(pos_integer()) :: [map()]
   def recent_sales(limit) do
     from(i in MarketplaceItem,
       where: i.listing_status == "sold",
@@ -165,6 +174,7 @@ defmodule CGraph.Marketplace do
   @doc """
   Get featured listings (active, sorted by rarity).
   """
+  @spec featured_listings(pos_integer()) :: {:ok, [MarketplaceItem.t()]}
   def featured_listings(limit) do
     listings = from(i in MarketplaceItem,
       where: i.listing_status == "active",
@@ -184,6 +194,7 @@ defmodule CGraph.Marketplace do
   @doc """
   Get listings for a specific user, filtered by status.
   """
+  @spec user_listings(Ecto.UUID.t(), String.t() | nil) :: {:ok, [MarketplaceItem.t()]}
   def user_listings(user_id, status) do
     query = from(i in MarketplaceItem, where: i.seller_id == ^user_id)
     query = if status, do: from(i in query, where: i.listing_status == ^status), else: query
@@ -194,6 +205,7 @@ defmodule CGraph.Marketplace do
   @doc """
   Get pending marketplace notifications for a user (recent purchases).
   """
+  @spec pending_notifications(Ecto.UUID.t()) :: {:ok, [map()]}
   def pending_notifications(user_id) do
     since = DateTime.add(DateTime.utc_now(), -7, :day)
 

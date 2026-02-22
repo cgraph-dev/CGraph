@@ -11,6 +11,7 @@ defmodule CGraphWeb.API.V1.ChannelCategoryController do
   @doc """
   List channel categories for a group.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"group_id" => group_id}) do
     user = conn.assigns.current_user
 
@@ -23,6 +24,7 @@ defmodule CGraphWeb.API.V1.ChannelCategoryController do
   @doc """
   Get a specific channel category.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"group_id" => group_id, "id" => id}) do
     user = conn.assigns.current_user
 
@@ -35,6 +37,7 @@ defmodule CGraphWeb.API.V1.ChannelCategoryController do
   @doc """
   Create a channel category.
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"group_id" => group_id} = params) do
     user = conn.assigns.current_user
 
@@ -55,6 +58,7 @@ defmodule CGraphWeb.API.V1.ChannelCategoryController do
   @doc """
   Update a channel category.
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"group_id" => group_id, "id" => id} = params) do
     user = conn.assigns.current_user
 
@@ -69,6 +73,7 @@ defmodule CGraphWeb.API.V1.ChannelCategoryController do
   @doc """
   Delete a channel category.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"group_id" => group_id, "id" => id}) do
     user = conn.assigns.current_user
 

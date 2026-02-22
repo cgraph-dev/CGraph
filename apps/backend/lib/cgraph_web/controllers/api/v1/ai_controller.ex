@@ -19,6 +19,7 @@ defmodule CGraphWeb.API.V1.AIController do
 
   Body: { "messages": [{ "sender": "Alice", "content": "Hello!", "timestamp": 1234 }] }
   """
+  @spec summarize(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def summarize(conn, %{"messages" => messages}) do
     user = conn.assigns.current_user
     tier = user_tier(user)
@@ -42,6 +43,7 @@ defmodule CGraphWeb.API.V1.AIController do
 
   Body: { "message": "How are you?", "context": "optional context" }
   """
+  @spec smart_replies(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def smart_replies(conn, %{"message" => message} = params) do
     user = conn.assigns.current_user
     tier = user_tier(user)
@@ -66,6 +68,7 @@ defmodule CGraphWeb.API.V1.AIController do
 
   Body: { "content": "text to moderate" }
   """
+  @spec moderate(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def moderate(conn, %{"content" => content}) do
     user = conn.assigns.current_user
     tier = user_tier(user)
@@ -89,6 +92,7 @@ defmodule CGraphWeb.API.V1.AIController do
 
   Body: { "text": "I love this feature!" }
   """
+  @spec sentiment(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def sentiment(conn, %{"text" => text}) do
     user = conn.assigns.current_user
     tier = user_tier(user)

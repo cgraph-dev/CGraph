@@ -13,6 +13,7 @@ defmodule CGraphWeb.API.V1.CategoryController do
   List all categories in a forum.
   GET /api/v1/forums/:forum_id/categories
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"forum_id" => forum_id}) do
     user = conn.assigns.current_user
 
@@ -27,6 +28,7 @@ defmodule CGraphWeb.API.V1.CategoryController do
   Get a specific category.
   GET /api/v1/forums/:forum_id/categories/:id
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"forum_id" => forum_id, "id" => category_id}) do
     user = conn.assigns.current_user
 
@@ -41,6 +43,7 @@ defmodule CGraphWeb.API.V1.CategoryController do
   Create a new category.
   POST /api/v1/forums/:forum_id/categories
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"forum_id" => forum_id} = params) do
     user = conn.assigns.current_user
     category_params = Map.get(params, "category", %{})
@@ -58,6 +61,7 @@ defmodule CGraphWeb.API.V1.CategoryController do
   Update a category.
   PUT /api/v1/forums/:forum_id/categories/:id
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"forum_id" => forum_id, "id" => category_id} = params) do
     user = conn.assigns.current_user
     category_params = Map.get(params, "category", %{})
@@ -74,6 +78,7 @@ defmodule CGraphWeb.API.V1.CategoryController do
   Delete a category.
   DELETE /api/v1/forums/:forum_id/categories/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"forum_id" => forum_id, "id" => category_id}) do
     user = conn.assigns.current_user
 
@@ -89,6 +94,7 @@ defmodule CGraphWeb.API.V1.CategoryController do
   Reorder categories.
   PUT /api/v1/forums/:forum_id/categories/reorder
   """
+  @spec reorder(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def reorder(conn, %{"forum_id" => forum_id, "category_ids" => category_ids}) do
     user = conn.assigns.current_user
 

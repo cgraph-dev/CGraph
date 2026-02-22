@@ -27,6 +27,7 @@ export function createGroupActions(
   | 'typingUsers'
   | 'justJoinedGroupName'
   | 'clearJoinCelebration'
+  | 'reset'
 > {
   return {
     fetchGroups: async () => {

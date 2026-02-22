@@ -62,4 +62,6 @@ export const useForumStore = create<ForumState>((set, get) => ({
   ...createModerationActions(set, get),
   ...createFeatureActions(set, get),
   ...createAdminActions(set, get),
+
+  reset: () => set({ ...forumInitialState }),
 }));

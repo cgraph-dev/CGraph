@@ -118,5 +118,20 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
         eventRsvps: new Map(),
       });
     },
+
+    reset: () => {
+      const now = new Date();
+      set({
+        events: [],
+        currentEvent: null,
+        categories: [],
+        eventRsvps: new Map(),
+        currentYear: now.getFullYear(),
+        currentMonth: now.getMonth(),
+        viewMode: 'month',
+        isLoading: false,
+        isLoadingEvent: false,
+      });
+    },
   };
 });

@@ -41,6 +41,7 @@ defmodule CGraph.Search do
 
   Attempts Meilisearch first, falls back to PostgreSQL on failure.
   """
+  @spec search_users(String.t(), keyword()) :: {[User.t()], map()}
   def search_users(query, opts \\ []), do: Users.search_users(query, opts)
 
   @doc """
@@ -48,11 +49,13 @@ defmodule CGraph.Search do
 
   Attempts Meilisearch first for fuzzy matching, falls back to PostgreSQL.
   """
+  @spec search_messages(map() | Ecto.UUID.t(), String.t(), keyword()) :: {[map()], map()}
   def search_messages(user, query, opts \\ []), do: Messages.search_messages(user, query, opts)
 
   @doc """
   Search posts in forums using cursor-based pagination.
   """
+  @spec search_posts(String.t(), keyword()) :: {[Post.t()], map()}
   def search_posts(query, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     limit = Keyword.get(opts, :limit, 20)
@@ -122,6 +125,7 @@ defmodule CGraph.Search do
   @doc """
   Search groups/servers using cursor-based pagination.
   """
+  @spec search_groups(String.t(), keyword()) :: {[Group.t()], map()}
   def search_groups(query, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     limit = Keyword.get(opts, :limit, 20)
@@ -157,6 +161,7 @@ defmodule CGraph.Search do
   @doc """
   Unified search across all content types.
   """
+  @spec search_all(String.t(), keyword()) :: map()
   def search_all(query, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     current_user = Keyword.get(opts, :current_user)
@@ -188,6 +193,7 @@ defmodule CGraph.Search do
   @doc """
   Get search suggestions based on partial query.
   """
+  @spec get_suggestions(String.t(), keyword()) :: [map()]
   def get_suggestions(query, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     limit = Keyword.get(opts, :limit, 10)

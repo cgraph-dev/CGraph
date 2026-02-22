@@ -190,4 +190,5 @@ export interface CalendarState {
   getUpcomingEvents: (limit?: number) => CalendarEvent[];
 
   clearState: () => void;
+  reset: () => void;
 }

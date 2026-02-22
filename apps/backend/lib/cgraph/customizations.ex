@@ -11,6 +11,7 @@ defmodule CGraph.Customizations do
   Gets or creates user customizations for a given user.
   Returns default customizations if none exist.
   """
+  @spec get_user_customizations(Ecto.UUID.t()) :: {:ok, UserCustomization.t()} | {:error, Ecto.Changeset.t()}
   def get_user_customizations(user_id) do
     case Repo.get_by(UserCustomization, user_id: user_id) do
       nil -> create_default_customizations(user_id)
@@ -21,6 +22,7 @@ defmodule CGraph.Customizations do
   @doc """
   Creates default customizations for a user.
   """
+  @spec create_default_customizations(Ecto.UUID.t()) :: {:ok, UserCustomization.t()} | {:error, Ecto.Changeset.t()}
   def create_default_customizations(user_id) do
     %UserCustomization{}
     |> UserCustomization.changeset(%{user_id: user_id})
@@ -30,6 +32,7 @@ defmodule CGraph.Customizations do
   @doc """
   Updates user customizations.
   """
+  @spec update_user_customizations(Ecto.UUID.t(), map()) :: {:ok, UserCustomization.t()} | {:error, term()}
   def update_user_customizations(user_id, attrs) do
     case get_user_customizations(user_id) do
       {:ok, customization} ->
@@ -47,6 +50,7 @@ defmodule CGraph.Customizations do
   @doc """
   Updates a specific customization field.
   """
+  @spec update_customization_field(Ecto.UUID.t(), atom() | String.t(), term()) :: {:ok, UserCustomization.t()} | {:error, term()}
   def update_customization_field(user_id, field, value) do
     update_user_customizations(user_id, %{field => value})
   end
@@ -54,6 +58,7 @@ defmodule CGraph.Customizations do
   @doc """
   Deletes user customizations (resets to defaults).
   """
+  @spec delete_user_customizations(Ecto.UUID.t()) :: {:ok, UserCustomization.t()} | {:error, :not_found | Ecto.Changeset.t()}
   def delete_user_customizations(user_id) do
     case Repo.get_by(UserCustomization, user_id: user_id) do
       nil -> {:error, :not_found}

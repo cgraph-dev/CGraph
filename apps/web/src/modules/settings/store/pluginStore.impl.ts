@@ -74,6 +74,7 @@ export interface PluginState {
     pluginInstanceId: string,
     settings: Record<string, unknown>
   ) => Promise<InstalledPlugin>;
+  reset: () => void;
 }
 
 // =============================================================================
@@ -214,6 +215,15 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
 
     return updatedPlugin;
   },
+
+  reset: () =>
+    set({
+      marketplacePlugins: [],
+      marketplaceCategories: [],
+      isLoadingMarketplace: false,
+      installedPlugins: {},
+      isLoadingInstalled: false,
+    }),
 }));
 
 // =============================================================================

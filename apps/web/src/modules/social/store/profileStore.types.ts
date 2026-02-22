@@ -210,4 +210,5 @@ export interface ProfileState {
 
   // Clear state
   clearProfile: () => void;
+  reset: () => void;
 }

@@ -15,6 +15,7 @@ defmodule CGraphWeb.API.SubscriptionController do
   List all subscriptions for the current user.
   GET /api/forum/subscriptions
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, _params) do
     user = conn.assigns.current_user
     subscriptions = SubscriptionService.list_subscriptions(user.id)
@@ -26,6 +27,7 @@ defmodule CGraphWeb.API.SubscriptionController do
   Create a new subscription.
   POST /api/forum/subscriptions
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, params) do
     user = conn.assigns.current_user
     normalized = normalize_create_params(params)
@@ -45,6 +47,7 @@ defmodule CGraphWeb.API.SubscriptionController do
   Update subscription settings.
   PATCH /api/forum/subscriptions/:id
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"id" => id} = params) do
     user = conn.assigns.current_user
 
@@ -74,6 +77,7 @@ defmodule CGraphWeb.API.SubscriptionController do
   Delete a subscription.
   DELETE /api/forum/subscriptions/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -101,6 +105,7 @@ defmodule CGraphWeb.API.SubscriptionController do
   Bulk update all subscriptions.
   POST /api/forum/subscriptions/bulk-update
   """
+  @spec bulk_update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def bulk_update(conn, params) do
     user = conn.assigns.current_user
     subscriptions = SubscriptionService.list_subscriptions(user.id)
@@ -128,6 +133,7 @@ defmodule CGraphWeb.API.SubscriptionController do
   Toggle subscription for a thread.
   POST /api/forum/subscriptions/toggle-thread
   """
+  @spec toggle_thread(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def toggle_thread(conn, %{"threadId" => thread_id}) do
     user = conn.assigns.current_user
 
@@ -265,6 +271,7 @@ defmodule CGraphWeb.API.SubscriptionController do
 
   @doc false
   # Kept for future use when validation errors need formatting
+  @spec format_changeset_errors(Ecto.Changeset.t() | term()) :: map()
   def format_changeset_errors(%Ecto.Changeset{} = changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Enum.reduce(opts, msg, fn {key, value}, acc ->

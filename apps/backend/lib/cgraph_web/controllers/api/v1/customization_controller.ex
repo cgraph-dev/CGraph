@@ -19,6 +19,7 @@ defmodule CGraphWeb.API.V1.CustomizationController do
   GET /api/v1/users/:id/customizations
   Fetches all customizations for a user.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => user_id}) do
     with {:ok, customizations} <- Customizations.get_user_customizations(user_id) do
       conn
@@ -31,6 +32,7 @@ defmodule CGraphWeb.API.V1.CustomizationController do
   PUT /api/v1/users/:id/customizations
   Updates all customizations for a user.
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"id" => user_id} = params) do
     customization_params = Map.drop(params, ["id"])
 
@@ -44,6 +46,7 @@ defmodule CGraphWeb.API.V1.CustomizationController do
   PATCH /api/v1/users/:id/customizations
   Updates specific customization fields.
   """
+  @spec patch(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def patch(conn, %{"id" => user_id} = params) do
     customization_params = Map.drop(params, ["id"])
 
@@ -57,6 +60,7 @@ defmodule CGraphWeb.API.V1.CustomizationController do
   DELETE /api/v1/users/:id/customizations
   Resets customizations to defaults.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => user_id}) do
     with :ok <- authorize_customization_write(conn, user_id),
          {:ok, _customizations} <- Customizations.delete_user_customizations(user_id),
@@ -70,6 +74,7 @@ defmodule CGraphWeb.API.V1.CustomizationController do
   Fetches all customizations for the authenticated user.
   Optimized with caching headers for performance at scale.
   """
+  @spec my_customizations(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def my_customizations(conn, _params) do
     user = conn.assigns.current_user
 
@@ -97,6 +102,7 @@ defmodule CGraphWeb.API.V1.CustomizationController do
   - Optimistic concurrency with last_updated_at tracking
   - Returns full customization state for client sync
   """
+  @spec update_my_customizations(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_my_customizations(conn, params) do
     user = conn.assigns.current_user
 
@@ -142,6 +148,7 @@ defmodule CGraphWeb.API.V1.CustomizationController do
   DELETE /api/v1/me/customizations
   Resets the authenticated user's customizations to defaults.
   """
+  @spec delete_my_customizations(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_my_customizations(conn, _params) do
     user = conn.assigns.current_user
 

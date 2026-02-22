@@ -233,4 +233,5 @@ export interface SettingsState {
   // Helpers
   getTheme: () => 'light' | 'dark';
   getShouldReduceMotion: () => boolean;
+  reset: () => void;
 }

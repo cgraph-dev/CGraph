@@ -108,9 +108,11 @@ defmodule CGraph.Tracing do
   # ---------------------------------------------------------------------------
 
   # start_trace/2 has a default argument — wrapper required
+  @spec start_trace(String.t(), keyword()) :: {:ok, context()} | {:error, term()}
   def start_trace(name, opts \\ []), do: Context.start_trace(name, opts)
 
   # continue_trace/3 has a default argument — wrapper required
+  @spec continue_trace(String.t(), String.t(), keyword()) :: {:ok, context()} | {:error, term()}
   def continue_trace(name, traceparent, opts \\ []),
     do: Context.continue_trace(name, traceparent, opts)
 
@@ -123,27 +125,37 @@ defmodule CGraph.Tracing do
   # ---------------------------------------------------------------------------
 
   # with_span has multiple clauses and a default argument — wrapper required
+  @spec with_span(context(), String.t(), keyword() | (-> term())) :: term()
   def with_span(ctx, name, opts_or_fun), do: Span.with_span(ctx, name, opts_or_fun, nil)
+  @spec with_span(context(), String.t(), keyword(), (-> term())) :: term()
   def with_span(ctx, name, opts_or_fun, fun), do: Span.with_span(ctx, name, opts_or_fun, fun)
 
   # start_span/3 has a default argument — wrapper required
+  @spec start_span(context(), String.t(), map()) :: {context(), span_id()}
   def start_span(ctx, name, attributes \\ %{}), do: Span.start_span(ctx, name, attributes)
 
   # end_span/3 has a default argument — wrapper required
+  @spec end_span(context(), span_id(), :ok | :error) :: context()
   def end_span(ctx, span_id, status \\ :ok), do: Span.end_span(ctx, span_id, status)
 
   # add_attributes has a non-trailing default — wrapper required
+  @spec add_attributes(context(), map()) :: context()
   def add_attributes(ctx, attributes) when is_map(attributes),
     do: Span.add_attributes(ctx, nil, attributes)
+  @spec add_attributes(context(), span_id(), map()) :: context()
   def add_attributes(ctx, span_id, attributes),
     do: Span.add_attributes(ctx, span_id, attributes)
 
   # add_event/3 has a default argument — wrapper required
+  @spec add_event(context(), String.t(), map()) :: context()
   def add_event(ctx, name, attributes \\ %{}), do: Span.add_event(ctx, name, attributes)
 
   # record_error has non-trailing defaults — wrapper required
+  @spec record_error(context(), term()) :: context()
   def record_error(ctx, error), do: Span.record_error(ctx, nil, error, [])
+  @spec record_error(context(), span_id() | nil, term()) :: context()
   def record_error(ctx, span_id, error), do: Span.record_error(ctx, span_id, error, [])
+  @spec record_error(context(), span_id() | nil, term(), Exception.stacktrace()) :: context()
   def record_error(ctx, span_id, error, stacktrace),
     do: Span.record_error(ctx, span_id, error, stacktrace)
 
@@ -163,6 +175,7 @@ defmodule CGraph.Tracing do
   defdelegate sampled?(ctx), to: Context
 
   # should_sample?/1 has a default argument — wrapper required
+  @spec should_sample?(keyword()) :: boolean()
   def should_sample?(opts \\ []), do: Context.should_sample?(opts)
 
   # ---------------------------------------------------------------------------

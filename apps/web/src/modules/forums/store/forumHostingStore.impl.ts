@@ -123,4 +123,21 @@ export const useForumHostingStore = create<ForumHostingState>((set) => ({
   ...createThreadActions(set),
   ...createPostActions(set),
   ...createMemberActions(set),
+
+  reset: () =>
+    set({
+      boards: [],
+      currentBoard: null,
+      isLoadingBoards: false,
+      threads: [],
+      currentThread: null,
+      threadsMeta: null,
+      isLoadingThreads: false,
+      posts: [],
+      postsMeta: null,
+      isLoadingPosts: false,
+      members: [],
+      membersMeta: null,
+      isLoadingMembers: false,
+    }),
 }));

@@ -100,6 +100,7 @@ export interface AvatarBorderState {
   handleAchievementUnlock: (achievementId: string) => void;
   /** Handle event reward (called from event system) */
   handleEventReward: (eventId: string, borderId: string) => void;
+  reset: () => void;
 }
 
 // ==================== DEFAULT VALUES ====================

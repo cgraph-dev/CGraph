@@ -198,4 +198,13 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
   },
 
   clearError: () => set({ error: null }),
+
+  reset: () =>
+    set({
+      friends: [],
+      pendingRequests: [],
+      sentRequests: [],
+      isLoading: false,
+      error: null,
+    }),
 }));

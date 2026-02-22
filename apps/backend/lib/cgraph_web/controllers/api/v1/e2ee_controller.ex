@@ -63,6 +63,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
         }
       }
   """
+  @spec register_keys(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def register_keys(conn, params) do
     user = conn.assigns.current_user
 
@@ -116,6 +117,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
         }
       }
   """
+  @spec get_prekey_bundle(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def get_prekey_bundle(conn, %{"user_id" => user_id}) do
     case E2EE.get_prekey_bundle(user_id) do
       {:ok, bundle} ->
@@ -146,6 +148,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
         }
       }
   """
+  @spec prekey_count(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def prekey_count(conn, _params) do
     user = conn.assigns.current_user
     count = E2EE.one_time_prekey_count(user.id)
@@ -171,6 +174,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
         ]
       }
   """
+  @spec upload_prekeys(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def upload_prekeys(conn, %{"prekeys" => prekeys}) do
     user = conn.assigns.current_user
     parsed_prekeys = parse_prekey_list(prekeys)
@@ -190,6 +194,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
 
   Alias for upload_prekeys to match router.
   """
+  @spec replenish_prekeys(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def replenish_prekeys(conn, params), do: upload_prekeys(conn, params)
 
   @doc """
@@ -207,6 +212,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
         ]
       }
   """
+  @spec list_devices(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_devices(conn, _params) do
     user = conn.assigns.current_user
 
@@ -224,6 +230,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
 
   Called when a user logs out from a device or wants to revoke its keys.
   """
+  @spec remove_device(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def remove_device(conn, %{"device_id" => device_id}) do
     user = conn.assigns.current_user
 
@@ -254,6 +261,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
         }
       }
   """
+  @spec safety_number(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def safety_number(conn, %{"user_id" => other_user_id}) do
     user = conn.assigns.current_user
 
@@ -274,6 +282,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
 
   Called after users have verified each other's safety numbers.
   """
+  @spec verify_key(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def verify_key(conn, %{"key_id" => key_id}) do
     user = conn.assigns.current_user
 
@@ -306,6 +315,7 @@ defmodule CGraphWeb.API.V1.E2EEController do
   guarantee. Without this notification, contacts would continue encrypting
   messages for an attacker's stolen device.
   """
+  @spec revoke_key(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def revoke_key(conn, %{"key_id" => key_id}) do
     user = conn.assigns.current_user
 

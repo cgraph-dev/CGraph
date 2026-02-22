@@ -99,6 +99,27 @@ export const useGamificationStore = create<GamificationState>()(
       equipTitle: createEquipTitle(set, get),
       unlockLoreEntry: createUnlockLoreEntry(set, get),
       checkDailyLogin: createCheckDailyLogin(set, get),
+
+      reset: () =>
+        set({
+          level: 1,
+          currentXP: 0,
+          totalXP: 0,
+          achievements: [],
+          recentlyUnlocked: [],
+          activeQuests: [],
+          completedQuests: [],
+          availableTitles: [],
+          equippedTitle: null,
+          loreEntries: [],
+          currentChapter: 1,
+          loginStreak: 0,
+          lastLoginDate: null,
+          isLoading: false,
+          isLoadingAchievements: false,
+          karma: 0,
+          equippedBadges: [],
+        }),
     }),
     {
       name: 'cgraph-gamification',

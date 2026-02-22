@@ -24,6 +24,7 @@ defmodule CGraphWeb.Channels.AIChannel do
   alias CGraph.AI
   alias CGraph.AI.LLMClient
 
+  @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   @impl true
   def join("ai:" <> user_id, _params, socket) do
     current_user = socket.assigns[:current_user]
@@ -40,6 +41,7 @@ defmodule CGraphWeb.Channels.AIChannel do
     end
   end
 
+  @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:reply, {:ok, map()} | {:error, map()}, Phoenix.Socket.t()} | {:noreply, Phoenix.Socket.t()}
   @impl true
   def handle_in("summarize_stream", %{"messages" => messages}, socket) do
     user_id = socket.assigns.user_id
@@ -91,6 +93,7 @@ defmodule CGraphWeb.Channels.AIChannel do
   # Async streaming via handle_info (push must run in channel process)
   # ---------------------------------------------------------------------------
 
+  @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   @impl true
   def handle_info({:do_summarize_stream, messages, user_id, tier}, socket) do
     case AI.llm_available?() do

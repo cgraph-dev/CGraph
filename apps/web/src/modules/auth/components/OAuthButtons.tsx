@@ -3,7 +3,7 @@
  * Social login buttons for Google, Apple, Facebook, and TikTok
  */
 
-import React, { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import { OAuthProvider, openOAuthPopup, providerColors, providerNames } from '@/lib/oauth';
 import { useAuthStore, mapUserFromApi } from '@/modules/auth/store';
 import { createLogger } from '@/lib/logger';
@@ -65,7 +65,7 @@ const TikTokIcon = () => (
   </svg>
 );
 
-const providerIcons: Record<OAuthProvider, React.FC> = {
+const providerIcons: Record<OAuthProvider, () => ReactElement> = {
   google: GoogleIcon,
   apple: AppleIcon,
   facebook: FacebookIcon,

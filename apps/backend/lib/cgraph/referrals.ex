@@ -24,6 +24,7 @@ defmodule CGraph.Referrals do
   @doc """
   Get or create a referral code for a user.
   """
+  @spec get_or_create_code(Ecto.UUID.t()) :: {:ok, ReferralCode.t()} | {:error, Ecto.Changeset.t()}
   def get_or_create_code(user_id) do
     case Repo.get_by(ReferralCode, user_id: user_id) do
       nil -> create_code(user_id)
@@ -56,6 +57,7 @@ defmodule CGraph.Referrals do
   @doc """
   Regenerate a referral code.
   """
+  @spec regenerate_code(Ecto.UUID.t()) :: {:ok, ReferralCode.t()} | {:error, Ecto.Changeset.t()}
   def regenerate_code(user_id) do
     case Repo.get_by(ReferralCode, user_id: user_id) do
       nil ->
@@ -72,6 +74,7 @@ defmodule CGraph.Referrals do
   Get the owner (user_id) of a referral code.
   Used for self-referral prevention checks.
   """
+  @spec get_code_owner(String.t()) :: {:ok, Ecto.UUID.t()} | {:error, :not_found}
   def get_code_owner(code) do
     query =
       from rc in ReferralCode,
@@ -87,6 +90,7 @@ defmodule CGraph.Referrals do
   @doc """
   Validate a referral code.
   """
+  @spec validate_code(String.t()) :: {:ok, map()} | {:error, :invalid_code}
   def validate_code(code) do
     query =
       from rc in ReferralCode,
@@ -109,6 +113,7 @@ defmodule CGraph.Referrals do
   @doc """
   Apply a referral code for a new user.
   """
+  @spec apply_code(Ecto.UUID.t(), String.t()) :: {:ok, Referral.t()} | {:error, atom() | Ecto.Changeset.t()}
   def apply_code(user_id, code) do
     with {:ok, code_record} <- get_code_by_value(code),
          :ok <- validate_not_self(user_id, code_record.user_id),
@@ -157,6 +162,7 @@ defmodule CGraph.Referrals do
   @doc """
   List referrals made by a user.
   """
+  @spec list_referrals(Ecto.UUID.t(), keyword() | map()) :: {[Referral.t()], map()}
   def list_referrals(user_id, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     status = Keyword.get(opts, :status)
@@ -186,6 +192,7 @@ defmodule CGraph.Referrals do
   @doc """
   List pending referrals.
   """
+  @spec list_pending_referrals(Ecto.UUID.t(), keyword() | map()) :: {[Referral.t()], map()}
   def list_pending_referrals(user_id, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     list_referrals(user_id, Keyword.put(opts, :status, "pending"))
@@ -198,6 +205,7 @@ defmodule CGraph.Referrals do
   @doc """
   Get referral statistics for a user.
   """
+  @spec get_user_stats(Ecto.UUID.t()) :: map()
   def get_user_stats(user_id) do
     total_referrals =
       from(r in Referral, where: r.referrer_id == ^user_id)
@@ -305,6 +313,7 @@ defmodule CGraph.Referrals do
   @doc """
   Get referral leaderboard.
   """
+  @spec get_leaderboard(keyword() | map()) :: [map()]
   def get_leaderboard(opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     period = Keyword.get(opts, :period, "all")
@@ -348,6 +357,7 @@ defmodule CGraph.Referrals do
   @doc """
   List reward tiers with user progress.
   """
+  @spec list_reward_tiers(Ecto.UUID.t()) :: [map()]
   def list_reward_tiers(user_id) do
     tiers = list_reward_tiers_internal()
 
@@ -384,6 +394,7 @@ defmodule CGraph.Referrals do
   @doc """
   Claim a reward.
   """
+  @spec claim_reward(Ecto.UUID.t(), Ecto.UUID.t()) :: {:ok, ReferralReward.t()} | {:error, atom()}
   def claim_reward(user_id, tier_id) do
     with {:ok, tier} <- get_reward_tier(tier_id),
          :ok <- validate_can_claim(user_id, tier) do
@@ -432,6 +443,7 @@ defmodule CGraph.Referrals do
   @doc """
   Confirm a referral (e.g., after referred user completes an action).
   """
+  @spec confirm_referral(Ecto.UUID.t()) :: {:ok, Referral.t()} | {:error, :not_found | Ecto.Changeset.t()}
   def confirm_referral(referral_id) do
     case Repo.get(Referral, referral_id) do
       nil ->
