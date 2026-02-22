@@ -57,6 +57,7 @@ defmodule CGraph.Accounts.AuditLog do
   @doc """
   Creates a changeset for an audit log entry.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(audit_log, attrs) do
     audit_log
     |> cast(attrs, [:action, :actor_id, :resource_type, :resource_id, :metadata, :ip_address, :user_agent])
@@ -89,6 +90,7 @@ defmodule CGraph.Accounts.AuditLog do
       iex> AuditLog.log(:login_success, user_id, ip_address: "1.2.3.4")
       {:ok, %AuditLog{action: "login_success", ...}}
   """
+  @spec log(atom() | String.t(), String.t() | nil, map() | keyword()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def log(action, actor_id, metadata \\ %{}) when is_atom(action) or is_binary(action) do
     log_entry_attrs = %{
       action: to_string(action),
@@ -141,6 +143,7 @@ defmodule CGraph.Accounts.AuditLog do
       AuditLog.list(actor_id: user_id, limit: 50)
       AuditLog.list(action: "login_success", from: ~U[2026-01-01 00:00:00Z])
   """
+  @spec list(keyword()) :: {:ok, [struct()], map()}
   def list(opts \\ []) do
     query =
       from(a in __MODULE__)
@@ -166,6 +169,7 @@ defmodule CGraph.Accounts.AuditLog do
   @doc """
   Get audit logs for a specific actor.
   """
+  @spec get_by_actor(String.t(), keyword()) :: {:ok, [struct()], map()}
   def get_by_actor(actor_id, opts \\ []) do
     opts
     |> Keyword.put(:actor_id, actor_id)
@@ -175,6 +179,7 @@ defmodule CGraph.Accounts.AuditLog do
   @doc """
   Get audit logs for a specific action type.
   """
+  @spec get_by_action(atom() | String.t(), keyword()) :: {:ok, [struct()], map()}
   def get_by_action(action, opts \\ []) do
     opts
     |> Keyword.put(:action, to_string(action))

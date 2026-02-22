@@ -73,7 +73,7 @@ export function Social() {
     () =>
       storeNotifications.map((n) => ({
         id: n.id,
-        type: n.type as Notification['type'],
+        type: n.type as Notification['type'], // safe downcast – store type matches UI union
         title: n.title,
         message: n.body,
         timestamp: new Date(n.createdAt),
@@ -146,15 +146,15 @@ export function Social() {
     markAllNotificationsRead();
   }, [markAllNotificationsRead]);
 
-  const tabs = [
-    { id: 'friends' as SocialTab, label: 'Friends', icon: UsersIcon, count: friends.length },
+  const tabs: { id: SocialTab; label: string; icon: typeof UsersIcon; count: number }[] = [
+    { id: 'friends', label: 'Friends', icon: UsersIcon, count: friends.length },
     {
-      id: 'notifications' as SocialTab,
+      id: 'notifications',
       label: 'Notifications',
       icon: BellIcon,
       count: unreadCount,
     },
-    { id: 'discover' as SocialTab, label: 'Discover', icon: MagnifyingGlassIcon, count: 0 },
+    { id: 'discover', label: 'Discover', icon: MagnifyingGlassIcon, count: 0 },
   ];
 
   return (

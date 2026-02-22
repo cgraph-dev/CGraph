@@ -68,6 +68,7 @@ defmodule CGraphWeb.Validation.MessageParams do
   @doc """
   Validate parameters for creating a new message.
   """
+  @spec validate_create(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_create(params) do
     %__MODULE__{}
     |> cast(params, [
@@ -88,6 +89,7 @@ defmodule CGraphWeb.Validation.MessageParams do
   @doc """
   Validate parameters for editing a message.
   """
+  @spec validate_update(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_update(params) do
     %__MODULE__{}
     |> cast(params, [:content], empty_values: [""])
@@ -100,6 +102,7 @@ defmodule CGraphWeb.Validation.MessageParams do
   @doc """
   Validate parameters for adding a reaction.
   """
+  @spec validate_reaction(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_reaction(params) do
     %__MODULE__{}
     |> cast(params, [:emoji], empty_values: [""])
@@ -112,6 +115,7 @@ defmodule CGraphWeb.Validation.MessageParams do
   @doc """
   Validate search parameters for messages.
   """
+  @spec validate_search(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_search(params) do
     %__MODULE__{}
     |> cast(params, [:query, :conversation_id, :channel_id, :before, :after_time, :limit], empty_values: [""])

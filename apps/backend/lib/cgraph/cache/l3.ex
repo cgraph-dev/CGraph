@@ -13,6 +13,7 @@ defmodule CGraph.Cache.L3 do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec get(term()) :: {:ok, term()} | {:error, term()}
   def get(key) do
     redis_key = "cache:#{key}"
 
@@ -31,6 +32,7 @@ defmodule CGraph.Cache.L3 do
   end
 
   @doc false
+  @spec set(term(), term(), non_neg_integer() | :infinity) :: :ok | {:error, term()}
   def set(key, value, ttl) do
     redis_key = "cache:#{key}"
     data = :erlang.term_to_binary(value)
@@ -51,6 +53,7 @@ defmodule CGraph.Cache.L3 do
   end
 
   @doc false
+  @spec delete(term()) :: :ok
   def delete(key) do
     redis_key = "cache:#{key}"
     CGraph.Redis.command(["DEL", redis_key])
@@ -65,6 +68,7 @@ defmodule CGraph.Cache.L3 do
   Uses SCAN + pipelined DEL instead of KEYS to avoid blocking
   all Redis clients at scale.
   """
+  @spec delete_pattern(String.t()) :: :ok
   def delete_pattern(pattern) do
     redis_pattern = "cache:#{pattern}"
     {:ok, _count} = CGraph.Redis.scan_and_delete(redis_pattern)
@@ -74,6 +78,7 @@ defmodule CGraph.Cache.L3 do
   end
 
   @doc false
+  @spec stats() :: map()
   def stats do
     case CGraph.Redis.command(["INFO", "memory"]) do
       {:ok, info} -> parse_info(info)

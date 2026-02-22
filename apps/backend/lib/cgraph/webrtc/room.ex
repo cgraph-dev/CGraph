@@ -54,11 +54,13 @@ defmodule CGraph.WebRTC.Room do
   @doc """
   Check if room is still active.
   """
+  @spec active?(t()) :: boolean()
   def active?(%__MODULE__{state: state}), do: state == :active
 
   @doc """
   Check if room is full.
   """
+  @spec full?(t()) :: boolean()
   def full?(%__MODULE__{participants: participants, max_participants: max}) do
     map_size(participants) >= max
   end
@@ -66,6 +68,7 @@ defmodule CGraph.WebRTC.Room do
   @doc """
   Get participant count.
   """
+  @spec participant_count(t()) :: non_neg_integer()
   def participant_count(%__MODULE__{participants: participants}) do
     map_size(participants)
   end
@@ -73,6 +76,7 @@ defmodule CGraph.WebRTC.Room do
   @doc """
   Get call duration in seconds.
   """
+  @spec duration(t()) :: non_neg_integer()
   def duration(%__MODULE__{started_at: nil}), do: 0
   def duration(%__MODULE__{started_at: started, ended_at: nil}) do
     DateTime.diff(DateTime.utc_now(), started, :second)
@@ -84,6 +88,7 @@ defmodule CGraph.WebRTC.Room do
   @doc """
   Convert room to a map for JSON serialization.
   """
+  @spec to_map(t()) :: map()
   def to_map(%__MODULE__{} = room) do
     %{
       id: room.id,

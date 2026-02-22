@@ -11,6 +11,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageJSON do
   @doc """
   Render a single voice message.
   """
+  @spec show(map()) :: map()
   def show(%{voice_message: voice_message}) do
     %{data: voice_message_data(voice_message)}
   end
@@ -18,6 +19,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageJSON do
   @doc """
   Render a list of voice messages.
   """
+  @spec index(map()) :: map()
   def index(%{voice_messages: voice_messages}) do
     %{data: Enum.map(voice_messages, &voice_message_data/1)}
   end
@@ -25,6 +27,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageJSON do
   @doc """
   Render waveform data for audio visualization.
   """
+  @spec waveform(map()) :: map()
   def waveform(%{voice_message: voice_message}) do
     %{
       data: %{
@@ -38,6 +41,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageJSON do
   @doc """
   Render voice message metadata.
   """
+  @spec metadata(map()) :: map()
   def metadata(%{voice_message: voice_message}) do
     %{
       data: %{
@@ -56,6 +60,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageJSON do
   @doc """
   Serialize voice message data to JSON-compatible map.
   """
+  @spec voice_message_data(struct()) :: map()
   def voice_message_data(voice_message) do
     %{
       id: voice_message.id,

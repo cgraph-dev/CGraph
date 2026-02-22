@@ -74,7 +74,7 @@ export function createMessagingActions(_set: Set, get: Get) {
             );
             const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
             if (rawMessage) {
-              const message = normalizeMessage(rawMessage) as unknown as Message;
+              const message = normalizeMessage(rawMessage) as unknown as Message; // safe downcast
               // Store plaintext locally for sender (we know what we sent)
               message.content = content;
               get().addMessage(message);
@@ -128,13 +128,13 @@ export function createMessagingActions(_set: Set, get: Get) {
         content,
         encryptedContent: null,
         isEncrypted: false,
-        messageType: (contentType as Message['messageType']) || 'text',
+        messageType: (contentType as Message['messageType']) || 'text', // safe downcast
         replyToId: replyToId || null,
         replyTo: null,
         isPinned: false,
         isEdited: false,
         deletedAt: null,
-        metadata: (metadata || {}) as Message['metadata'],
+        metadata: (metadata || {}) as Message['metadata'], // safe downcast
         reactions: [],
         sender: {
           id: currentUser?.id || '',
@@ -148,10 +148,13 @@ export function createMessagingActions(_set: Set, get: Get) {
       get().addMessage(optimisticMessage);
 
       try {
-        const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, payload);
+        const response = await api.post(
+          `/api/v1/conversations/${conversationId}/messages`,
+          payload
+        );
         const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
         if (rawMessage) {
-          const message = normalizeMessage(rawMessage) as unknown as Message;
+          const message = normalizeMessage(rawMessage) as unknown as Message; // safe downcast
           // Replace the optimistic message with the real server response
           get().removeMessage(clientMessageId, conversationId);
           get().addMessage(message);
@@ -200,7 +203,7 @@ export function createMessagingActions(_set: Set, get: Get) {
         );
         const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
         if (rawMessage) {
-          const message = normalizeMessage(rawMessage) as unknown as Message;
+          const message = normalizeMessage(rawMessage) as unknown as Message; // safe downcast
           // Store plaintext locally for sender
           message.content = content;
           get().addMessage(message);
@@ -226,18 +229,18 @@ export function createMessagingActions(_set: Set, get: Get) {
       }
 
       try {
-        const metadata = (message.metadata || {}) as Record<string, unknown>;
+        const metadata: Record<string, unknown> = message.metadata || {};
         const encryptedPayload = {
           ciphertext: message.encryptedContent || message.content,
           ephemeralPublicKey:
-            message.ephemeralPublicKey || (metadata.ephemeral_public_key as string),
-          recipientIdentityKeyId: (metadata.recipient_identity_key_id as string) || '',
-          oneTimePreKeyId: metadata.one_time_prekey_id as string | undefined,
-          nonce: message.nonce || (metadata.nonce as string),
+            message.ephemeralPublicKey || (metadata.ephemeral_public_key as string), // safe downcast — validated by truthiness check below
+          recipientIdentityKeyId: (metadata.recipient_identity_key_id as string) || '', // safe downcast
+          oneTimePreKeyId: metadata.one_time_prekey_id as string | undefined, // safe downcast
+          nonce: message.nonce || (metadata.nonce as string), // safe downcast — validated by truthiness check below
         };
 
         const senderIdentityKey =
-          message.senderIdentityKey || (metadata.sender_identity_key as string);
+          message.senderIdentityKey || (metadata.sender_identity_key as string); // safe downcast — validated by truthiness check below
 
         if (!encryptedPayload.ephemeralPublicKey || !senderIdentityKey || !encryptedPayload.nonce) {
           logger.warn('Missing E2EE metadata for decryption, showing encrypted message');

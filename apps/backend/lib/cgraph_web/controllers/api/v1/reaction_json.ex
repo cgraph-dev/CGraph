@@ -5,14 +5,17 @@ defmodule CGraphWeb.API.V1.ReactionJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @spec index(map()) :: map()
   def index(%{reactions: reactions}) do
     %{data: group_reactions(reactions)}
   end
 
+  @spec show(map()) :: map()
   def show(%{reaction: reaction}) do
     %{data: reaction_data(reaction)}
   end
 
+  @spec users(map()) :: map()
   def users(%{users: users, emoji: emoji}) do
     %{
       data: %{
@@ -26,6 +29,7 @@ defmodule CGraphWeb.API.V1.ReactionJSON do
   @doc """
   Group reactions by emoji with count and sample users.
   """
+  @spec group_reactions([struct()]) :: [map()]
   def group_reactions(reactions) do
     reactions
     |> Enum.group_by(& &1.emoji)
@@ -44,6 +48,7 @@ defmodule CGraphWeb.API.V1.ReactionJSON do
   @doc """
   Render individual reaction data.
   """
+  @spec reaction_data(struct()) :: map()
   def reaction_data(reaction) do
     %{
       id: reaction.id,

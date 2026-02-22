@@ -13,6 +13,7 @@ defmodule CGraphWeb.UserAuth do
   @doc """
   Fetches the current user from the session or token.
   """
+  @spec fetch_current_user(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def fetch_current_user(conn, _opts) do
     case get_session(conn, :user_token) do
       nil ->
@@ -29,6 +30,7 @@ defmodule CGraphWeb.UserAuth do
   @doc """
   Authenticates the user by looking into the session.
   """
+  @spec require_authenticated_user(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def require_authenticated_user(conn, _opts) do
     if conn.assigns[:current_user] do
       conn
@@ -43,6 +45,7 @@ defmodule CGraphWeb.UserAuth do
   @doc """
   Redirects authenticated users (for login/register pages).
   """
+  @spec redirect_if_user_is_authenticated(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def redirect_if_user_is_authenticated(conn, _opts) do
     if conn.assigns[:current_user] do
       conn
@@ -56,6 +59,7 @@ defmodule CGraphWeb.UserAuth do
   @doc """
   Logs the user in by putting the user token in the session.
   """
+  @spec log_in_user(Plug.Conn.t(), map(), keyword()) :: Plug.Conn.t()
   def log_in_user(conn, user, _opts \\ []) do
     token = Accounts.generate_session_token(user)
 
@@ -69,6 +73,7 @@ defmodule CGraphWeb.UserAuth do
   @doc """
   Logs the user out by clearing the session.
   """
+  @spec log_out_user(Plug.Conn.t()) :: Plug.Conn.t()
   def log_out_user(conn) do
     if token = get_session(conn, :user_token) do
       Accounts.delete_session_token(token)

@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '@/lib/api';
+import { isRecord } from '@/lib/api-utils';
 import { TrophyIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { createLogger } from '@/lib/logger';
 
@@ -31,22 +32,22 @@ export function ForumLeaderboardWidget({
 
         const data = response.data?.data || [];
         setContributors(
-          data.map((c: Record<string, unknown>) => ({
-            rank: c.rank,
-            user: {
-              id: (c.user as Record<string, unknown>)?.id,
-              username: (c.user as Record<string, unknown>)?.username,
-              displayName: (c.user as Record<string, unknown>)?.display_name,
-              avatarUrl: (c.user as Record<string, unknown>)?.avatar_url,
-              avatarBorderId:
-                (c.user as Record<string, unknown>)?.avatar_border_id ||
-                (c.user as Record<string, unknown>)?.avatarBorderId ||
-                null,
-              isVerified: (c.user as Record<string, unknown>)?.is_verified,
-              karma: (c.user as Record<string, unknown>)?.karma,
-            },
-            forumKarma: c.forum_karma,
-          }))
+          data.map((c: Record<string, unknown>) => {
+            const userObj = isRecord(c.user) ? c.user : {};
+            return {
+              rank: c.rank,
+              user: {
+                id: userObj.id,
+                username: userObj.username,
+                displayName: userObj.display_name,
+                avatarUrl: userObj.avatar_url,
+                avatarBorderId: userObj.avatar_border_id || userObj.avatarBorderId || null,
+                isVerified: userObj.is_verified,
+                karma: userObj.karma,
+              },
+              forumKarma: c.forum_karma,
+            };
+          })
         );
       } catch (err) {
         logger.error('Failed to fetch forum contributors:', err);
@@ -107,19 +108,23 @@ export function ForumLeaderboardWidget({
 
         {/* Time Range Toggle */}
         <div className="flex items-center gap-1">
-          {(['week', 'month', 'all'] as TimeRange[]).map((range) => (
-            <button
-              key={range}
-              onClick={() => setTimeRange(range)}
-              className={`rounded px-2 py-1 text-xs transition-colors ${
-                timeRange === range
-                  ? 'bg-primary-600/30 text-primary-400'
-                  : 'text-gray-500 hover:text-gray-300'
-              }`}
-            >
-              {range === 'all' ? '∞' : range === 'week' ? '7d' : '30d'}
-            </button>
-          ))}
+          {(['week', 'month', 'all'] as TimeRange[]).map(
+            (
+              range // safe downcast — literals match TimeRange
+            ) => (
+              <button
+                key={range}
+                onClick={() => setTimeRange(range)}
+                className={`rounded px-2 py-1 text-xs transition-colors ${
+                  timeRange === range
+                    ? 'bg-primary-600/30 text-primary-400'
+                    : 'text-gray-500 hover:text-gray-300'
+                }`}
+              >
+                {range === 'all' ? '∞' : range === 'week' ? '7d' : '30d'}
+              </button>
+            )
+          )}
         </div>
       </div>
 

@@ -48,6 +48,7 @@ defmodule CGraph.Telemetry.OpenTelemetry do
   Call this from `Application.start/2` to configure auto-instrumentation
   for Phoenix requests, Ecto queries, and Oban jobs.
   """
+  @spec setup() :: :ok
   def setup do
     Logger.info("[OpenTelemetry] Setting up distributed tracing...")
 
@@ -80,6 +81,7 @@ defmodule CGraph.Telemetry.OpenTelemetry do
         encrypt(message)
       end)
   """
+  @spec with_span(String.t(), map(), (-> result)) :: result when result: term()
   def with_span(name, attributes \\ %{}, fun) when is_function(fun, 0) do
     # SECURITY: Use String.to_existing_atom to prevent atom exhaustion from external input.
     # OTel attribute keys should be predefined atoms; unknown keys are kept as strings.
@@ -114,6 +116,7 @@ defmodule CGraph.Telemetry.OpenTelemetry do
   @doc """
   Record a span for a cache operation (hit/miss/error).
   """
+  @spec cache_span(atom(), term(), (-> result)) :: result when result: term()
   def cache_span(operation, cache_key, fun) when is_function(fun, 0) do
     with_span("cache.#{operation}", %{
       "cache.key" => to_string(cache_key),
@@ -124,6 +127,7 @@ defmodule CGraph.Telemetry.OpenTelemetry do
   @doc """
   Record a span for a WebSocket broadcast.
   """
+  @spec ws_broadcast_span(String.t(), String.t(), non_neg_integer(), (-> result)) :: result when result: term()
   def ws_broadcast_span(topic, event, payload_size, fun) when is_function(fun, 0) do
     with_span("websocket.broadcast", %{
       "ws.topic" => topic,
@@ -135,6 +139,7 @@ defmodule CGraph.Telemetry.OpenTelemetry do
   @doc """
   Record a span for E2EE operations (encrypt/decrypt/key_exchange).
   """
+  @spec e2ee_span(atom(), map(), (-> result)) :: result when result: term()
   def e2ee_span(operation, attrs \\ %{}, fun) when is_function(fun, 0) do
     with_span("e2ee.#{operation}", Map.merge(%{
       "e2ee.operation" => to_string(operation),

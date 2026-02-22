@@ -5,14 +5,17 @@ defmodule CGraphWeb.API.V1.InviteJSON do
 
   alias CGraphWeb.API.V1.{GroupJSON, GroupMemberJSON, UserJSON}
 
+  @spec index(map()) :: map()
   def index(%{invites: invites}) do
     %{data: Enum.map(invites, &invite_data/1)}
   end
 
+  @spec show(map()) :: map()
   def show(%{invite: invite}) do
     %{data: invite_data(invite)}
   end
 
+  @spec joined(map()) :: map()
   def joined(%{member: member, group: group}) do
     %{
       data: %{
@@ -25,6 +28,7 @@ defmodule CGraphWeb.API.V1.InviteJSON do
   @doc """
   Render invite data.
   """
+  @spec invite_data(struct()) :: map()
   def invite_data(invite) do
     %{
       id: invite.id,

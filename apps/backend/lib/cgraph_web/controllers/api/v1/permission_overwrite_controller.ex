@@ -11,6 +11,7 @@ defmodule CGraphWeb.API.V1.PermissionOverwriteController do
   @doc """
   List permission overwrites for a channel.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"group_id" => group_id, "channel_id" => channel_id}) do
     user = conn.assigns.current_user
 
@@ -24,6 +25,7 @@ defmodule CGraphWeb.API.V1.PermissionOverwriteController do
   @doc """
   Create a permission overwrite.
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"group_id" => group_id, "channel_id" => channel_id} = params) do
     user = conn.assigns.current_user
 
@@ -48,6 +50,7 @@ defmodule CGraphWeb.API.V1.PermissionOverwriteController do
   @doc """
   Update a permission overwrite.
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"group_id" => group_id, "channel_id" => channel_id, "id" => id} = params) do
     user = conn.assigns.current_user
 
@@ -63,6 +66,7 @@ defmodule CGraphWeb.API.V1.PermissionOverwriteController do
   @doc """
   Delete a permission overwrite.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"group_id" => group_id, "channel_id" => channel_id, "id" => id}) do
     user = conn.assigns.current_user
 

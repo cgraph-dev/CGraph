@@ -16,6 +16,7 @@ defmodule CGraph.Forums.RSS do
   @doc """
   List recent threads across an entire forum (all boards) with pagination.
   """
+  @spec list_forum_threads_for_rss(String.t(), keyword()) :: {[struct()], map()}
   def list_forum_threads_for_rss(forum_id, opts \\ []) do
     cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 20)
@@ -37,6 +38,7 @@ defmodule CGraph.Forums.RSS do
   @doc """
   List recent posts across an entire forum (all threads).
   """
+  @spec list_recent_forum_posts(String.t(), keyword()) :: [struct()]
   def list_recent_forum_posts(forum_id, opts \\ []) do
     limit_count = Keyword.get(opts, :limit, 20)
 
@@ -55,6 +57,7 @@ defmodule CGraph.Forums.RSS do
   List global public activity across all forums.
   Combines threads and posts from public forums.
   """
+  @spec list_global_public_activity(keyword()) :: [map()]
   def list_global_public_activity(opts \\ []) do
     limit_count = Keyword.get(opts, :limit, 20)
 
@@ -116,6 +119,7 @@ defmodule CGraph.Forums.RSS do
   @doc """
   List a user's public threads (from public forums).
   """
+  @spec list_user_public_threads(String.t(), keyword()) :: [struct()]
   def list_user_public_threads(user_id, opts \\ []) do
     limit_count = Keyword.get(opts, :limit, 20)
 
@@ -133,6 +137,7 @@ defmodule CGraph.Forums.RSS do
   @doc """
   List a user's public posts (from public forums).
   """
+  @spec list_user_public_posts(String.t(), keyword()) :: [struct()]
   def list_user_public_posts(user_id, opts \\ []) do
     limit_count = Keyword.get(opts, :limit, 20)
 

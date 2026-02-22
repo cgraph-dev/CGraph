@@ -16,6 +16,7 @@ defmodule CGraph.Announcements do
   @doc """
   List announcements for a user.
   """
+  @spec list_for_user(map() | String.t() | nil, keyword() | map()) :: [struct()]
   def list_for_user(user, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
     forum_id = Keyword.get(opts, :forum_id)
@@ -108,6 +109,7 @@ defmodule CGraph.Announcements do
   @doc """
   Get an announcement by ID.
   """
+  @spec get(String.t()) :: {:ok, struct()} | {:error, :not_found}
   def get(id) do
     query =
       from a in ForumAnnouncement,
@@ -123,6 +125,7 @@ defmodule CGraph.Announcements do
   @doc """
   Check if announcement is visible to user.
   """
+  @spec visible_to_user?(struct(), map()) :: boolean()
   def visible_to_user?(%ForumAnnouncement{is_active: false}, _user), do: false
   def visible_to_user?(%ForumAnnouncement{target_groups: []}, _user), do: true
   def visible_to_user?(%ForumAnnouncement{target_groups: target_groups}, user) do
@@ -137,6 +140,7 @@ defmodule CGraph.Announcements do
   @doc """
   Mark an announcement as read.
   """
+  @spec mark_read(struct(), map()) :: {:ok, :marked}
   def mark_read(%ForumAnnouncement{} = announcement, _user) do
     # Increment view count
     from(a in ForumAnnouncement, where: a.id == ^announcement.id)
@@ -148,6 +152,7 @@ defmodule CGraph.Announcements do
   @doc """
   Dismiss an announcement (won't show again for this user).
   """
+  @spec dismiss(struct(), map()) :: {:ok, struct()} | {:error, :not_dismissible}
   def dismiss(%ForumAnnouncement{dismissible: false}, _user) do
     {:error, :not_dismissible}
   end

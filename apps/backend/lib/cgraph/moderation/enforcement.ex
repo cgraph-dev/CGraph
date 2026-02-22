@@ -43,6 +43,7 @@ defmodule CGraph.Moderation.Enforcement do
     - `duration_hours` - For suspensions, how long
     - `notify_reporter` - Whether to notify the reporter
   """
+  @spec review_report(User.t(), String.t(), map()) :: {:ok, Report.t()} | {:error, term()}
   def review_report(%User{} = reviewer, report_id, attrs) do
     with {:ok, report} <- get_report(report_id),
          :ok <- validate_reviewer(reviewer),
@@ -65,6 +66,7 @@ defmodule CGraph.Moderation.Enforcement do
   @doc """
   Create a user restriction (suspension/ban).
   """
+  @spec create_user_restriction(String.t(), atom(), integer() | nil) :: {:ok, UserRestriction.t()} | {:error, Ecto.Changeset.t()}
   def create_user_restriction(user_id, type, duration_hours) do
     expires_at = if duration_hours do
       DateTime.utc_now() |> DateTime.truncate(:second)
@@ -86,6 +88,7 @@ defmodule CGraph.Moderation.Enforcement do
   @doc """
   Check if a user is currently restricted.
   """
+  @spec user_restricted?(String.t()) :: boolean()
   def user_restricted?(user_id) do
     now = DateTime.utc_now() |> DateTime.truncate(:second)
 
@@ -100,6 +103,7 @@ defmodule CGraph.Moderation.Enforcement do
   @doc """
   Get active restriction for a user.
   """
+  @spec get_user_restriction(String.t()) :: UserRestriction.t() | nil
   def get_user_restriction(user_id) do
     now = DateTime.utc_now() |> DateTime.truncate(:second)
 
@@ -114,6 +118,7 @@ defmodule CGraph.Moderation.Enforcement do
   end
 
   @doc false
+  @spec validate_reviewer(User.t()) :: :ok | {:error, :unauthorized}
   def validate_reviewer(%User{is_admin: true}), do: :ok
   def validate_reviewer(_), do: {:error, :unauthorized}
 

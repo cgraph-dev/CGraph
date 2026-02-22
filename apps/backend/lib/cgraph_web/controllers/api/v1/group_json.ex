@@ -16,6 +16,7 @@ defmodule CGraphWeb.API.V1.GroupJSON do
   alias CGraph.Accounts.User
   alias CGraph.Groups.{AuditLog, Channel, Group, Member, Role}
 
+  @spec index(map()) :: map()
   def index(%{groups: groups, meta: meta}) do
     %{
       data: Enum.map(groups, &group_summary/1),
@@ -23,10 +24,12 @@ defmodule CGraphWeb.API.V1.GroupJSON do
     }
   end
 
+  @spec show(map()) :: map()
   def show(%{group: group, current_user: current_user}) do
     %{data: group_data(group, current_user)}
   end
 
+  @spec audit_log(map()) :: map()
   def audit_log(%{entries: entries, meta: meta}) do
     %{
       data: Enum.map(entries, &audit_entry/1),
@@ -56,6 +59,7 @@ defmodule CGraphWeb.API.V1.GroupJSON do
   @doc """
   Full group data for a single group without user context.
   """
+  @spec group_data(Group.t()) :: map()
   def group_data(%Group{} = group) do
     %{
       id: group.id,

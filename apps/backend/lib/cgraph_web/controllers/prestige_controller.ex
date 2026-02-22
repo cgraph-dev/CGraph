@@ -22,6 +22,7 @@ defmodule CGraphWeb.PrestigeController do
   GET /api/v1/prestige
   Get current user's prestige status and bonuses.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, _params) do
     user = conn.assigns.current_user
 
@@ -40,6 +41,7 @@ defmodule CGraphWeb.PrestigeController do
   POST /api/v1/prestige/reset
   Perform a prestige reset, gaining bonuses and exclusive rewards.
   """
+  @spec reset(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def reset(conn, _params) do
     user = conn.assigns.current_user
     prestige = get_or_create_prestige(user.id)
@@ -77,6 +79,7 @@ defmodule CGraphWeb.PrestigeController do
   GET /api/v1/prestige/rewards
   Get all available prestige rewards by tier.
   """
+  @spec rewards(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def rewards(conn, _params) do
     rewards = get_all_prestige_rewards()
 
@@ -89,6 +92,7 @@ defmodule CGraphWeb.PrestigeController do
   GET /api/v1/prestige/leaderboard
   Get prestige leaderboard.
   """
+  @spec leaderboard(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def leaderboard(conn, params) do
     limit = min(String.to_integer(params["limit"] || "50"), 100)
     cursor = params["cursor"]

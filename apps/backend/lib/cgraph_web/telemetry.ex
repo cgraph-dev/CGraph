@@ -16,6 +16,7 @@ defmodule CGraphWeb.Telemetry do
 
   alias CGraphWeb.Telemetry.{Handlers, Metrics}
 
+  @spec start_link(term()) :: Supervisor.on_start()
   def start_link(init_arg) do
     Supervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
@@ -40,6 +41,7 @@ defmodule CGraphWeb.Telemetry do
   This function is called during application startup and sets up listeners
   for all relevant telemetry events from Phoenix, Ecto, Oban, and custom events.
   """
+  @spec attach_handlers() :: :ok
   def attach_handlers do
     # Attach Phoenix events
     :telemetry.attach_many(
@@ -143,6 +145,7 @@ defmodule CGraphWeb.Telemetry do
 
       CGraphWeb.Telemetry.emit(:messaging, :message, :sent, %{latency_ms: 45}, %{channel_id: 1})
   """
+  @spec emit(atom(), atom(), atom(), map(), map()) :: :ok
   def emit(domain, resource, action, measurements, metadata \\ %{}) do
     :telemetry.execute(
       [:cgraph, domain, resource, action],

@@ -21,6 +21,7 @@ defmodule CGraphWeb.API.V1.MemberController do
   @doc """
   List all members with filtering and pagination.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     opts = [
       page: parse_int(params["page"], 1),
@@ -41,6 +42,7 @@ defmodule CGraphWeb.API.V1.MemberController do
   @doc """
   Get a specific member's public profile.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
     current_user = conn.assigns[:current_user]
 
@@ -52,6 +54,7 @@ defmodule CGraphWeb.API.V1.MemberController do
   @doc """
   List all user groups.
   """
+  @spec list_groups(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_groups(conn, params) do
     opts = [
       include_hidden: parse_bool(params["include_hidden"], false),
@@ -73,6 +76,7 @@ defmodule CGraphWeb.API.V1.MemberController do
   @doc """
   Search members.
   """
+  @spec search(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def search(conn, params) do
     opts = [
       query: params["q"] || params["query"],
@@ -88,6 +92,7 @@ defmodule CGraphWeb.API.V1.MemberController do
   @doc """
   Get member statistics.
   """
+  @spec stats(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def stats(conn, _params) do
     stats = Accounts.get_member_stats()
     render(conn, :member_stats, stats: stats)

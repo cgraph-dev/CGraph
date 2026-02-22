@@ -37,20 +37,35 @@ export function MembersTab({ groupId }: MembersTabProps) {
       const params: Record<string, string> = {};
       if (roleFilter !== 'all') params.role = roleFilter;
       const res = await api.get(`/api/v1/groups/${groupId}/members`, { params });
-      const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+      const data = Array.isArray(res.data?.data)
+        ? res.data.data
+        : Array.isArray(res.data)
+          ? res.data
+          : [];
       setMembers(
-        data.map((m: Record<string, unknown>) => ({
-          id: m.id as string,
-          userId: (m.user_id ?? m.userId ?? m.id) as string,
-          username: (m.username ?? (m.user as Record<string, unknown>)?.username ?? 'unknown') as string,
-          displayName: (m.display_name ?? m.displayName ?? (m.user as Record<string, unknown>)?.display_name ?? null) as string | null,
-          avatarUrl: (m.avatar_url ?? m.avatarUrl ?? (m.user as Record<string, unknown>)?.avatar_url ?? null) as string | null,
-          role: (m.role ?? 'member') as string,
-          roles: Array.isArray(m.roles) ? (m.roles as Array<{ id: string; name: string; color: string }>) : [],
-          joinedAt: (m.joined_at ?? m.joinedAt ?? m.inserted_at ?? '') as string,
-          isMuted: !!(m.is_muted ?? m.isMuted),
-          mutedUntil: (m.muted_until ?? m.mutedUntil ?? null) as string | null,
-        }))
+        data.map((m: Record<string, unknown>) => {
+          // safe downcast – runtime-verified object for nested user property
+          const mUser =
+            typeof m.user === 'object' && m.user !== null
+              ? (m.user as Record<string, unknown>)
+              : {};
+          return {
+            id: String(m.id ?? ''),
+            userId: String(m.user_id ?? m.userId ?? m.id ?? ''),
+            username: String(m.username ?? mUser.username ?? 'unknown'),
+            displayName: (m.display_name ?? m.displayName ?? mUser.display_name ?? null) as
+              | string
+              | null, // safe downcast – nullable API field
+            avatarUrl: (m.avatar_url ?? m.avatarUrl ?? mUser.avatar_url ?? null) as string | null, // safe downcast – nullable API field
+            role: String(m.role ?? 'member'),
+            roles: Array.isArray(m.roles)
+              ? (m.roles as Array<{ id: string; name: string; color: string }>)
+              : [], // safe downcast – array verified by Array.isArray
+            joinedAt: String(m.joined_at ?? m.joinedAt ?? m.inserted_at ?? ''),
+            isMuted: !!(m.is_muted ?? m.isMuted),
+            mutedUntil: (m.muted_until ?? m.mutedUntil ?? null) as string | null, // safe downcast – nullable API field
+          };
+        })
       );
     } catch {
       // Silently handle errors
@@ -61,15 +76,20 @@ export function MembersTab({ groupId }: MembersTabProps) {
 
   useEffect(() => {
     fetchMembers();
-    api.get(`/api/v1/groups/${groupId}/roles`)
+    api
+      .get(`/api/v1/groups/${groupId}/roles`)
       .then((res) => {
-        const roles = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
+        const roles = Array.isArray(res.data?.data)
+          ? res.data.data
+          : Array.isArray(res.data)
+            ? res.data
+            : [];
         setAvailableRoles(
           roles.map((r: Record<string, unknown>) => ({
-            id: r.id as string,
-            name: r.name as string,
-            color: (r.color ?? '#808080') as string,
-            position: (r.position ?? 0) as number,
+            id: String(r.id ?? ''),
+            name: String(r.name ?? ''),
+            color: String(r.color ?? '#808080'),
+            position: Number(r.position ?? 0),
           }))
         );
       })
@@ -80,7 +100,9 @@ export function MembersTab({ groupId }: MembersTabProps) {
     try {
       await api.delete(`/api/v1/groups/${groupId}/members/${memberId}`);
       setMembers((prev) => prev.filter((m) => m.id !== memberId));
-    } catch { /* Handle error */ }
+    } catch {
+      /* Handle error */
+    }
     setConfirmAction({ memberId: '', action: 'none' });
   };
 
@@ -90,7 +112,9 @@ export function MembersTab({ groupId }: MembersTabProps) {
       if (banDuration !== 'permanent') params.duration = banDuration;
       await api.post(`/api/v1/groups/${groupId}/members/${memberId}/ban`, params);
       setMembers((prev) => prev.filter((m) => m.id !== memberId));
-    } catch { /* Handle error */ }
+    } catch {
+      /* Handle error */
+    }
     setConfirmAction({ memberId: '', action: 'none' });
     setBanDuration('permanent');
   };
@@ -98,10 +122,10 @@ export function MembersTab({ groupId }: MembersTabProps) {
   const handleMute = async (memberId: string) => {
     try {
       await api.post(`/api/v1/groups/${groupId}/members/${memberId}/mute`);
-      setMembers((prev) =>
-        prev.map((m) => (m.id === memberId ? { ...m, isMuted: true } : m))
-      );
-    } catch { /* Handle error */ }
+      setMembers((prev) => prev.map((m) => (m.id === memberId ? { ...m, isMuted: true } : m)));
+    } catch {
+      /* Handle error */
+    }
     setConfirmAction({ memberId: '', action: 'none' });
   };
 
@@ -111,7 +135,9 @@ export function MembersTab({ groupId }: MembersTabProps) {
       setMembers((prev) =>
         prev.map((m) => (m.id === memberId ? { ...m, isMuted: false, mutedUntil: null } : m))
       );
-    } catch { /* Handle error */ }
+    } catch {
+      /* Handle error */
+    }
   };
 
   const handleConfirmAction = (memberId: string, action: MemberAction) => {
@@ -138,20 +164,20 @@ export function MembersTab({ groupId }: MembersTabProps) {
   const handleSaveRoles = async () => {
     if (!roleModalMemberId) return;
     try {
-      await api.put(
-        `/api/v1/groups/${groupId}/members/${roleModalMemberId}/roles`,
-        { role_ids: Array.from(selectedRoleIds) }
-      );
+      await api.put(`/api/v1/groups/${groupId}/members/${roleModalMemberId}/roles`, {
+        role_ids: Array.from(selectedRoleIds),
+      });
       fetchMembers();
-    } catch { /* Handle error */ }
+    } catch {
+      /* Handle error */
+    }
     setRoleModalMemberId(null);
   };
 
   const filtered = members.filter((m) => {
     const q = search.toLowerCase();
     return (
-      m.username.toLowerCase().includes(q) ||
-      (m.displayName?.toLowerCase().includes(q) ?? false)
+      m.username.toLowerCase().includes(q) || (m.displayName?.toLowerCase().includes(q) ?? false)
     );
   });
 
@@ -165,7 +191,8 @@ export function MembersTab({ groupId }: MembersTabProps) {
       <div>
         <h2 className="mb-2 text-2xl font-bold text-white">Members</h2>
         <p className="text-gray-400">
-          Manage group members, roles, and moderation. {members.length} member{members.length !== 1 ? 's' : ''}
+          Manage group members, roles, and moderation. {members.length} member
+          {members.length !== 1 ? 's' : ''}
         </p>
       </div>
 

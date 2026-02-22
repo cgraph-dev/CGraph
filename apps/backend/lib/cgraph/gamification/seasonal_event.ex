@@ -74,6 +74,7 @@ defmodule CGraph.Gamification.SeasonalEvent do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(event, attrs) do
     event
     |> cast(attrs, [
@@ -126,12 +127,16 @@ defmodule CGraph.Gamification.SeasonalEvent do
     end
   end
 
+  @spec event_types() :: [String.t()]
   def event_types, do: @event_types
+
+  @spec statuses() :: [String.t()]
   def statuses, do: @statuses
 
   @doc """
   Check if event is currently active.
   """
+  @spec active?(%__MODULE__{}) :: boolean()
   def active?(%__MODULE__{starts_at: starts_at, ends_at: ends_at}) do
     now = DateTime.utc_now()
     DateTime.compare(now, starts_at) in [:gt, :eq] and
@@ -141,6 +146,7 @@ defmodule CGraph.Gamification.SeasonalEvent do
   @doc """
   Check if event is in grace period.
   """
+  @spec in_grace_period?(%__MODULE__{}) :: boolean()
   def in_grace_period?(%__MODULE__{ends_at: ends_at, grace_period_ends_at: nil}) do
     DateTime.compare(DateTime.utc_now(), ends_at) == :gt
   end

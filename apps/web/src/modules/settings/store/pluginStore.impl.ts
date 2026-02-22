@@ -120,7 +120,9 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
 
   getMarketplacePlugin: async (pluginId) => {
     const response = await api.get(`/api/v1/plugins/marketplace/${pluginId}`);
-    return ensureObject<MarketplacePlugin>(response.data, 'plugin') as MarketplacePlugin;
+    const plugin = ensureObject<MarketplacePlugin>(response.data, 'plugin');
+    if (!plugin) throw new Error('Invalid marketplace plugin response');
+    return plugin;
   },
 
   // =========================================================================
@@ -153,7 +155,8 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
       settings,
     });
 
-    const plugin = ensureObject<InstalledPlugin>(response.data, 'plugin') as InstalledPlugin;
+    const plugin = ensureObject<InstalledPlugin>(response.data, 'plugin');
+    if (!plugin) throw new Error('Invalid plugin install response');
 
     // Add to installed plugins list
     set((state) => ({
@@ -181,7 +184,8 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
   togglePlugin: async (forumId, pluginInstanceId) => {
     const response = await api.post(`/api/v1/forums/${forumId}/plugins/${pluginInstanceId}/toggle`);
 
-    const updatedPlugin = ensureObject<InstalledPlugin>(response.data, 'plugin') as InstalledPlugin;
+    const updatedPlugin = ensureObject<InstalledPlugin>(response.data, 'plugin');
+    if (!updatedPlugin) throw new Error('Invalid plugin toggle response');
 
     // Update in installed plugins list
     set((state) => ({
@@ -201,7 +205,8 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
       settings,
     });
 
-    const updatedPlugin = ensureObject<InstalledPlugin>(response.data, 'plugin') as InstalledPlugin;
+    const updatedPlugin = ensureObject<InstalledPlugin>(response.data, 'plugin');
+    if (!updatedPlugin) throw new Error('Invalid plugin settings response');
 
     // Update in installed plugins list
     set((state) => ({

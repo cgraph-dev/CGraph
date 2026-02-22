@@ -13,6 +13,7 @@ defmodule CGraph.Accounts.Search do
   @doc """
   Search users by username, display name, email, or UID (random 10-digit like #4829173650).
   """
+  @spec search_users(String.t(), keyword()) :: {[struct()], map()}
   def search_users(query, opts \\ []) do
     search_term = "%#{query}%"
 
@@ -57,6 +58,7 @@ defmodule CGraph.Accounts.Search do
   @doc """
   Get user suggestions for autocomplete.
   """
+  @spec get_user_suggestions(String.t(), keyword()) :: [struct()]
   def get_user_suggestions(query, opts \\ []) do
     limit = Keyword.get(opts, :limit, 10)
     search_term = "#{query}%"
@@ -73,6 +75,7 @@ defmodule CGraph.Accounts.Search do
   Record a search query for a user's search history.
   Deduplicates by upserting on (user_id, query).
   """
+  @spec record_search(String.t(), String.t(), non_neg_integer()) :: :ok
   def record_search(user_id, query_text, result_count \\ 0) when is_binary(query_text) do
     cleaned = String.trim(query_text)
     if String.length(cleaned) >= 2 do
@@ -97,6 +100,7 @@ defmodule CGraph.Accounts.Search do
   @doc """
   Get recent searches for a user, most recent first.
   """
+  @spec get_recent_searches(map() | String.t(), keyword()) :: [map()]
   def get_recent_searches(user, opts \\ []) do
     user_id = extract_user_id(user)
     limit = Keyword.get(opts, :limit, 10)
@@ -117,6 +121,7 @@ defmodule CGraph.Accounts.Search do
   @doc """
   Clear search history for a user.
   """
+  @spec clear_search_history(map() | String.t()) :: :ok
   def clear_search_history(user) do
     user_id = extract_user_id(user)
 

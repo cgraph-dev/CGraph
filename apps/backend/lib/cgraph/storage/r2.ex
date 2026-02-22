@@ -132,6 +132,7 @@ defmodule CGraph.Storage.R2 do
   This allows clients to upload directly to R2 without going through the server,
   reducing bandwidth costs and improving upload speed.
   """
+  @spec presigned_upload_url(String.t(), keyword()) :: {:ok, map()}
   def presigned_upload_url(key, opts \\ []) do
     config = config()
     bucket = Keyword.fetch!(config, :bucket)

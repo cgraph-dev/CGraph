@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.NotificationJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @spec index(map()) :: map()
   def index(%{notifications: notifications, meta: meta}) do
     %{
       data: Enum.map(notifications, &notification_data/1),
@@ -12,10 +13,12 @@ defmodule CGraphWeb.API.V1.NotificationJSON do
     }
   end
 
+  @spec show(map()) :: map()
   def show(%{notification: notification}) do
     %{data: notification_data(notification)}
   end
 
+  @spec settings(map()) :: map()
   def settings(%{settings: settings}) do
     %{
       data: %{
@@ -45,6 +48,7 @@ defmodule CGraphWeb.API.V1.NotificationJSON do
   Render notification data.
   Schema uses read_at (datetime) not is_read (boolean).
   """
+  @spec notification_data(struct()) :: map()
   def notification_data(notification) do
     %{
       id: notification.id,

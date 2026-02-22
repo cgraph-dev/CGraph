@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.PostJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @spec index(map()) :: map()
   def index(%{posts: posts, meta: meta}) do
     %{
       data: Enum.map(posts, &post_data/1),
@@ -12,6 +13,7 @@ defmodule CGraphWeb.API.V1.PostJSON do
     }
   end
 
+  @spec show(map()) :: map()
   def show(%{post: post}) do
     %{data: post_data(post)}
   end
@@ -20,6 +22,7 @@ defmodule CGraphWeb.API.V1.PostJSON do
   Renders vote response with updated post scores.
   Vote schema uses `value` (1 or -1) which we convert to :up/:down for API.
   """
+  @spec vote(map()) :: map()
   def vote(%{vote: vote, post: post}) do
     # Convert vote.value to vote_type for API response
     vote_type = case vote.value do
@@ -38,6 +41,7 @@ defmodule CGraphWeb.API.V1.PostJSON do
     }
   end
 
+  @spec report(map()) :: map()
   def report(%{report: report}) do
     %{
       data: %{
@@ -51,6 +55,7 @@ defmodule CGraphWeb.API.V1.PostJSON do
   @doc """
   Render post data with author, category, and vote status.
   """
+  @spec post_data(struct()) :: map()
   def post_data(post) do
     %{
       id: post.id,

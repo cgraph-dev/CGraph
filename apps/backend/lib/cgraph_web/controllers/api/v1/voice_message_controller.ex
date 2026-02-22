@@ -43,6 +43,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
         }
       }
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"audio" => upload} = params) do
     user = conn.assigns.current_user
 
@@ -88,6 +89,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
   @doc """
   Get voice message details.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -107,6 +109,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
   @doc """
   Delete a voice message.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -127,6 +130,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
   @doc """
   Get waveform data for audio visualization.
   """
+  @spec waveform(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def waveform(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 

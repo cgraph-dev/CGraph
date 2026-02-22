@@ -16,6 +16,7 @@ defmodule CGraph.Accounts.PasswordReset do
   Generates a reset token and sends an email with reset instructions.
   Returns :ok regardless of whether email exists to prevent enumeration.
   """
+  @spec request_password_reset(String.t()) :: :ok
   def request_password_reset(email) do
     case CGraph.Accounts.get_user_by_email(email) do
       {:error, :not_found} ->
@@ -33,6 +34,7 @@ defmodule CGraph.Accounts.PasswordReset do
   @doc """
   Reset a user's password using a valid reset token.
   """
+  @spec reset_password(String.t(), String.t(), String.t()) :: {:ok, struct()} | {:error, atom()}
   def reset_password(token, new_password, new_password_confirmation) do
     with {:ok, user_id} <- verify_password_reset_token(token),
          {:ok, user} <- CGraph.Accounts.get_user(user_id),
@@ -60,6 +62,7 @@ defmodule CGraph.Accounts.PasswordReset do
   @doc """
   Generate a password reset token for a user.
   """
+  @spec generate_password_reset_token(struct()) :: String.t()
   def generate_password_reset_token(user) do
     token = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
     expires_at = DateTime.utc_now() |> DateTime.add(3600, :second)  # 1 hour
@@ -76,6 +79,7 @@ defmodule CGraph.Accounts.PasswordReset do
   @doc """
   Verify a password reset token.
   """
+  @spec verify_password_reset_token(String.t()) :: {:ok, String.t()} | {:error, :invalid_token | :expired_token}
   def verify_password_reset_token(token) do
     case Cachex.get(:cgraph_cache, "password_reset:#{token}") do
       {:ok, nil} ->
@@ -96,6 +100,7 @@ defmodule CGraph.Accounts.PasswordReset do
   @doc """
   Invalidate a password reset token.
   """
+  @spec invalidate_reset_token(String.t()) :: {:ok, boolean()}
   def invalidate_reset_token(token) do
     Cachex.del(:cgraph_cache, "password_reset:#{token}")
   end

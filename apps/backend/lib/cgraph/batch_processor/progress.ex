@@ -14,6 +14,7 @@ defmodule CGraph.BatchProcessor.Progress do
   @doc """
   Get current progress for a batch.
   """
+  @spec get_progress(String.t()) :: map() | nil
   def get_progress(batch_id) do
     case :ets.lookup(@progress_table, batch_id) do
       [{^batch_id, progress}] -> progress
@@ -24,6 +25,7 @@ defmodule CGraph.BatchProcessor.Progress do
   @doc """
   Subscribe to progress updates for a batch.
   """
+  @spec subscribe(String.t()) :: :ok | {:error, term()}
   def subscribe(batch_id) do
     Phoenix.PubSub.subscribe(CGraph.PubSub, "batch_progress:#{batch_id}")
   end
@@ -33,6 +35,7 @@ defmodule CGraph.BatchProcessor.Progress do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec init_progress(String.t(), non_neg_integer()) :: true
   def init_progress(batch_id, total) do
     progress = %{
       batch_id: batch_id,
@@ -52,6 +55,7 @@ defmodule CGraph.BatchProcessor.Progress do
   end
 
   @doc false
+  @spec update_progress(String.t(), non_neg_integer(), term(), function() | nil) :: :ok
   def update_progress(batch_id, processed, result, callback) do
     case :ets.lookup(@progress_table, batch_id) do
       [{^batch_id, progress}] ->
@@ -91,6 +95,7 @@ defmodule CGraph.BatchProcessor.Progress do
   end
 
   @doc false
+  @spec cleanup_progress(String.t()) :: true
   def cleanup_progress(batch_id) do
     :ets.delete(@progress_table, batch_id)
   end

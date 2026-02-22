@@ -13,6 +13,7 @@ defmodule CGraphWeb.API.V1.InviteController do
   List all invites for a group.
   GET /api/v1/groups/:group_id/invites
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"group_id" => group_id}) do
     user = conn.assigns.current_user
 
@@ -27,6 +28,7 @@ defmodule CGraphWeb.API.V1.InviteController do
   Get a specific invite by code.
   GET /api/v1/invites/:code
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"code" => code}) do
     # Public endpoint - anyone can view invite details
     with {:ok, invite} <- Groups.get_invite_by_code(code) do
@@ -38,6 +40,7 @@ defmodule CGraphWeb.API.V1.InviteController do
   Create a new invite.
   POST /api/v1/groups/:group_id/invites
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"group_id" => group_id} = params) do
     user = conn.assigns.current_user
     # Support both nested {"invite" => attrs} and flat params
@@ -76,6 +79,7 @@ defmodule CGraphWeb.API.V1.InviteController do
   Delete/revoke an invite.
   DELETE /api/v1/groups/:group_id/invites/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"group_id" => group_id, "id" => invite_id}) do
     user = conn.assigns.current_user
 
@@ -96,6 +100,7 @@ defmodule CGraphWeb.API.V1.InviteController do
   Join a group using an invite code.
   POST /api/v1/invites/:code/join
   """
+  @spec join(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def join(conn, %{"code" => code}) do
     user = conn.assigns.current_user
 

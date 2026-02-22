@@ -32,6 +32,7 @@ defmodule CGraph.Forums.ContentReport do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(report, attrs) do
     report
     |> cast(attrs, [:reporter_id, :forum_id, :target_type, :target_id, :reason, :description])
@@ -43,6 +44,7 @@ defmodule CGraph.Forums.ContentReport do
   end
 
   @doc "Changeset for reviewing/resolving a report."
+  @spec review_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def review_changeset(report, attrs) do
     report
     |> cast(attrs, [:status, :reviewed_by_id, :reviewed_at, :resolution_note])
@@ -50,7 +52,12 @@ defmodule CGraph.Forums.ContentReport do
     |> validate_inclusion(:status, @statuses)
   end
 
+  @spec reasons() :: [String.t()]
   def reasons, do: @reasons
+
+  @spec statuses() :: [String.t()]
   def statuses, do: @statuses
+
+  @spec target_types() :: [String.t()]
   def target_types, do: @target_types
 end

@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { ensureArray } from '@/lib/apiUtils';
+import { ensureArray, isRecord } from '@/lib/apiUtils';
 import { createLogger } from '@/lib/logger';
 import type { ReferralReward, ReferralState } from './referral-types';
 
@@ -21,17 +21,17 @@ export function createLeaderboardActions(
           params: { period },
         });
 
-        const leaderboard = (
-          ensureArray(response.data, 'leaderboard') as Record<string, unknown>[]
-        ).map((entry, index) => ({
-          userId: entry.user_id as string,
-          username: (entry.username as string) || 'Unknown',
-          displayName: (entry.display_name as string) || null,
-          avatarUrl: (entry.avatar_url as string) || null,
-          referralCount: (entry.referral_count as number) || 0,
-          rank: (entry.rank as number) || index + 1,
-          badge: entry.badge as string | undefined,
-        }));
+        const leaderboard = ensureArray(response.data, 'leaderboard')
+          .filter(isRecord)
+          .map((entry, index) => ({
+            userId: String(entry.user_id ?? ''),
+            username: String(entry.username ?? '') || 'Unknown',
+            displayName: typeof entry.display_name === 'string' ? entry.display_name : null,
+            avatarUrl: typeof entry.avatar_url === 'string' ? entry.avatar_url : null,
+            referralCount: Number(entry.referral_count) || 0,
+            rank: Number(entry.rank) || index + 1,
+            badge: typeof entry.badge === 'string' ? entry.badge : undefined,
+          }));
 
         set({ leaderboard });
       } catch (error) {
@@ -54,22 +54,24 @@ export function createRewardActions(
     fetchRewardTiers: async () => {
       try {
         const response = await api.get('/api/v1/referrals/rewards');
-        const tiers = (ensureArray(response.data, 'tiers') as Record<string, unknown>[]).map(
-          (tier) => ({
-            id: tier.id as string,
-            name: (tier.name as string) || '',
-            referralsRequired: (tier.referrals_required as number) || 0,
-            rewards: ((tier.rewards as Record<string, unknown>[]) || []).map((r) => ({
-              id: r.id as string,
-              type: (r.type as ReferralReward['type']) || 'xp',
-              amount: (r.amount as number) || 0,
-              description: (r.description as string) || '',
-              claimed: (r.claimed as boolean) || false,
-              claimedAt: (r.claimed_at as string) || null,
-            })),
-            achieved: (tier.achieved as boolean) || false,
-          })
-        );
+        const tiers = ensureArray(response.data, 'tiers')
+          .filter(isRecord)
+          .map((tier) => ({
+            id: String(tier.id ?? ''),
+            name: String(tier.name ?? ''),
+            referralsRequired: Number(tier.referrals_required) || 0,
+            rewards: (Array.isArray(tier.rewards) ? tier.rewards.filter(isRecord) : []).map(
+              (r) => ({
+                id: String(r.id ?? ''),
+                type: (r.type as ReferralReward['type']) || 'xp', // safe downcast — constrained by ReferralReward
+                amount: Number(r.amount) || 0,
+                description: String(r.description ?? ''),
+                claimed: Boolean(r.claimed),
+                claimedAt: typeof r.claimed_at === 'string' ? r.claimed_at : null,
+              })
+            ),
+            achieved: Boolean(tier.achieved),
+          }));
 
         set({ rewardTiers: tiers });
       } catch (error) {

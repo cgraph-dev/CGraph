@@ -118,7 +118,7 @@ export const conversationsApi = {
     const response = await api.get(`/api/v1/conversations/${conversationId}`);
     const data = response.data?.conversation || response.data?.data || response.data;
     // Return data directly - full validation on individual items would require importing conversationSchema
-    return data as Conversation;
+    return data as Conversation; // safe downcast – API response shape
   },
 
   /**
@@ -129,7 +129,7 @@ export const conversationsApi = {
       user_ids: userIds,
     });
     const data = response.data?.conversation || response.data?.data || response.data;
-    return data as Conversation;
+    return data as Conversation; // safe downcast – API response shape
   },
 };
 
@@ -185,7 +185,7 @@ export const messagesApi = {
       nonce: options?.nonce,
     });
     const data = response.data?.message || response.data?.data || response.data;
-    return data as Message;
+    return data as Message; // safe downcast – API response shape
   },
 
   /**
@@ -197,7 +197,7 @@ export const messagesApi = {
       { content }
     );
     const data = response.data?.message || response.data?.data || response.data;
-    return data as Message;
+    return data as Message; // safe downcast – API response shape
   },
 
   /**

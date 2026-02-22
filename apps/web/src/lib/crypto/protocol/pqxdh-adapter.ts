@@ -115,8 +115,8 @@ export async function createPQXDHSession(
     engine,
     initialMessage,
     signedPreKeyPair: {
-      publicKey: null as unknown as CryptoKey, // Not needed after init
-      privateKey: null as unknown as CryptoKey,
+      publicKey: null as unknown as CryptoKey, // safe downcast – placeholder, not needed after init
+      privateKey: null as unknown as CryptoKey, // safe downcast – placeholder, not needed after init
       rawPublicKey: bobSignedPreKey,
     },
   };

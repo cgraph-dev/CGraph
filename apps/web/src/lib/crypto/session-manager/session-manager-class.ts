@@ -160,7 +160,7 @@ class SessionManager {
     }
 
     // Check if we should use PQXDH + Triple Ratchet
-    const pqBundle = recipientBundle as PQPreKeyBundle;
+    const pqBundle = recipientBundle as PQPreKeyBundle; // safe downcast – checked by bundleSupportsPQ()
     if (this._useTripleRatchet && bundleSupportsPQ(pqBundle)) {
       return this._createPQSession(recipientId, identityKey, pqBundle);
     }
@@ -416,7 +416,7 @@ class SessionManager {
 
     if (session.protocol.protocol === CryptoProtocol.PQXDH_V1) {
       // Post-quantum Triple Ratchet path
-      const trEngine = session.engine as TripleRatchetEngine;
+      const trEngine = session.engine as TripleRatchetEngine; // safe downcast – guarded by protocol check
       const trMessage = await trEngine.encrypt(plaintextBytes);
       const serialized = serializePQMessage(trMessage);
 
@@ -456,7 +456,7 @@ class SessionManager {
       }
     } else {
       // Classical Double Ratchet path
-      const drEngine = session.engine as DoubleRatchetEngine;
+      const drEngine = session.engine as DoubleRatchetEngine; // safe downcast – guarded by protocol check
       const ratchetMessage = await drEngine.encryptMessage(plaintextBytes);
 
       message = buildSecureMessage({
@@ -531,7 +531,7 @@ class SessionManager {
 
     if (session.protocol.protocol === CryptoProtocol.PQXDH_V1 && message.pqRatchetHeader) {
       // PQ Triple Ratchet decryption
-      const trEngine = session.engine as TripleRatchetEngine;
+      const trEngine = session.engine as TripleRatchetEngine; // safe downcast – guarded by protocol check
       const trMessage = deserializePQMessage({
         header: {
           ec: message.ratchetMessage.header,
@@ -546,7 +546,7 @@ class SessionManager {
       plaintext = decrypted.plaintext;
     } else {
       // Classical Double Ratchet decryption
-      const drEngine = session.engine as DoubleRatchetEngine;
+      const drEngine = session.engine as DoubleRatchetEngine; // safe downcast – guarded by protocol check
       const ratchetMessage = toRatchetMessage(message);
       const decrypted = await drEngine.decryptMessage(ratchetMessage);
       plaintext = decrypted.plaintext;

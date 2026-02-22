@@ -21,6 +21,7 @@ defmodule CGraphWeb.CoinsController do
   GET /api/v1/coins
   Get current coin balance.
   """
+  @spec balance(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def balance(conn, _params) do
     user = conn.assigns.current_user
 
@@ -42,6 +43,7 @@ defmodule CGraphWeb.CoinsController do
   - `limit` - Max results to return (1-100, default: 50)
   - `cursor` - Opaque cursor for pagination
   """
+  @spec history(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def history(conn, params) do
     user = conn.assigns.current_user
     limit = parse_int(params["limit"], 50, min: 1, max: @max_limit)
@@ -58,6 +60,7 @@ defmodule CGraphWeb.CoinsController do
   GET /api/v1/coins/packages
   List available coin purchase packages (for real money).
   """
+  @spec packages(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def packages(conn, _params) do
     user = conn.assigns.current_user
 
@@ -93,6 +96,7 @@ defmodule CGraphWeb.CoinsController do
   GET /api/v1/coins/earn
   Get ways to earn coins.
   """
+  @spec earn_methods(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def earn_methods(conn, _params) do
     methods = [
       %{

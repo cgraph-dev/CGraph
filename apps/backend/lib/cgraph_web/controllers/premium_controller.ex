@@ -14,6 +14,7 @@ defmodule CGraphWeb.PremiumController do
   GET /api/v1/premium/status
   Get current subscription status.
   """
+  @spec status(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def status(conn, _params) do
     user = conn.assigns.current_user
 
@@ -31,6 +32,7 @@ defmodule CGraphWeb.PremiumController do
   GET /api/v1/premium/tiers
   List all subscription tiers and their features.
   """
+  @spec tiers(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def tiers(conn, _params) do
     tiers = [
       %{
@@ -139,6 +141,7 @@ defmodule CGraphWeb.PremiumController do
   - STRIPE_WEBHOOK_SECRET: Webhook signature verification
   - PREMIUM_DEMO_MODE: Set to "true" ONLY for development
   """
+  @spec subscribe(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def subscribe(conn, %{"tier" => tier}) do
     user = conn.assigns.current_user
 

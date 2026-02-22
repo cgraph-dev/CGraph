@@ -11,6 +11,7 @@ defmodule CGraphWeb.API.V1.GroupEmojiController do
   @doc """
   List custom emojis for a group.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"group_id" => group_id}) do
     user = conn.assigns.current_user
 
@@ -23,6 +24,7 @@ defmodule CGraphWeb.API.V1.GroupEmojiController do
   @doc """
   Upload a custom emoji.
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"group_id" => group_id} = params) do
     user = conn.assigns.current_user
 
@@ -44,6 +46,7 @@ defmodule CGraphWeb.API.V1.GroupEmojiController do
   @doc """
   Update a custom emoji (rename).
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"group_id" => group_id, "id" => id} = params) do
     user = conn.assigns.current_user
 
@@ -58,6 +61,7 @@ defmodule CGraphWeb.API.V1.GroupEmojiController do
   @doc """
   Delete a custom emoji.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"group_id" => group_id, "id" => id}) do
     user = conn.assigns.current_user
 

@@ -70,7 +70,7 @@ export const useThreadStore = create<ThreadState>()(
             { params: { limit: 50 } }
           );
 
-          const replies = (res.data?.data || []).map(normalizeMessage) as Message[];
+          const replies = (res.data?.data || []).map(normalizeMessage) as Message[]; // safe downcast
 
           set({
             threadMessages: replies,
@@ -106,11 +106,11 @@ export const useThreadStore = create<ThreadState>()(
             { params: { limit: 50, cursor: endCursor } }
           );
 
-          const newReplies = (res.data?.data || []).map(normalizeMessage) as Message[];
+          const newReplies = (res.data?.data || []).map(normalizeMessage) as Message[]; // safe downcast
 
           const MAX_THREAD_MESSAGES = 500;
           set((state) => {
-            const merged = [...state.threadMessages, ...newReplies] as Message[];
+            const merged = [...state.threadMessages, ...newReplies];
             return {
               threadMessages:
                 merged.length > MAX_THREAD_MESSAGES
@@ -136,11 +136,11 @@ export const useThreadStore = create<ThreadState>()(
             reply_to_id: activeThread.id,
           });
 
-          const message = normalizeMessage(res.data?.data) as unknown as Message;
+          const message = normalizeMessage(res.data?.data) as unknown as Message; // safe downcast
           if (message?.id) {
             const MAX_THREAD_MESSAGES = 500;
             set((state) => {
-              const updated = [...state.threadMessages, message] as Message[];
+              const updated = [...state.threadMessages, message];
               return {
                 threadMessages:
                   updated.length > MAX_THREAD_MESSAGES
@@ -191,16 +191,17 @@ export const useThreadStore = create<ThreadState>()(
           // Silent fail — counts are non-critical UI decoration
         }
       },
-  reset: () => set({
-    activeThread: null,
-    activeConversationId: null,
-    threadMessages: [],
-    isLoading: false,
-    hasMore: false,
-    endCursor: null,
-    replyCounts: {},
-  }),
-}),
+      reset: () =>
+        set({
+          activeThread: null,
+          activeConversationId: null,
+          threadMessages: [],
+          isLoading: false,
+          hasMore: false,
+          endCursor: null,
+          replyCounts: {},
+        }),
+    }),
     { name: 'thread-store' }
   )
 );

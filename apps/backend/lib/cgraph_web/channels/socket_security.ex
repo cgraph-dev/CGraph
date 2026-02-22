@@ -80,6 +80,7 @@ defmodule CGraphWeb.Channels.SocketSecurity do
   defdelegate ip_banned?(ip), to: Connection
 
   @doc "Ban an IP address for a specified duration."
+  @spec ban_ip(String.t(), non_neg_integer(), String.t()) :: :ok
   def ban_ip(ip, duration_seconds \\ 3600, reason \\ "abuse"),
     do: Connection.ban_ip(ip, duration_seconds, reason)
 
@@ -88,10 +89,12 @@ defmodule CGraphWeb.Channels.SocketSecurity do
   # ---------------------------------------------------------------------------
 
   @doc "Check if a message can be sent based on rate limits."
+  @spec rate_limit_message(socket(), atom()) :: :ok | {:error, :rate_limited}
   def rate_limit_message(socket, event_type \\ :message),
     do: RateLimiting.rate_limit_message(socket, event_type)
 
   @doc "Apply a cooldown after certain actions."
+  @spec apply_action_cooldown(socket(), atom(), non_neg_integer()) :: :ok | {:error, :cooldown_active}
   def apply_action_cooldown(socket, action, cooldown_seconds \\ 30),
     do: RateLimiting.apply_action_cooldown(socket, action, cooldown_seconds)
 

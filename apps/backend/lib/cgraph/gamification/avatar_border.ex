@@ -59,6 +59,7 @@ defmodule CGraph.Gamification.AvatarBorder do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(border, attrs) do
     border
     |> cast(attrs, [
@@ -81,8 +82,15 @@ defmodule CGraph.Gamification.AvatarBorder do
     |> unique_constraint(:slug)
   end
 
+  @spec rarities() :: [String.t()]
   def rarities, do: @rarities
+
+  @spec themes() :: [String.t()]
   def themes, do: @themes
+
+  @spec animation_types() :: [String.t()]
   def animation_types, do: @animation_types
+
+  @spec unlock_types() :: [String.t()]
   def unlock_types, do: @unlock_types
 end

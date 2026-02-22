@@ -22,6 +22,7 @@ defmodule CGraphWeb.ShopController do
   GET /api/v1/shop
   List all shop items.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     category = parse_string(params["category"])
     items = Gamification.list_shop_items(category: category)
@@ -35,6 +36,7 @@ defmodule CGraphWeb.ShopController do
   GET /api/v1/shop/:id
   Get a specific shop item.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => item_id}) do
     item = Gamification.get_shop_item(item_id)
 
@@ -57,6 +59,7 @@ defmodule CGraphWeb.ShopController do
 
   - `quantity` - Number of items to purchase (1-100, default: 1)
   """
+  @spec purchase(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def purchase(conn, %{"id" => item_id} = params) do
     user = conn.assigns.current_user
     # Safe parsing with validation: min 1, max 100
@@ -101,6 +104,7 @@ defmodule CGraphWeb.ShopController do
   GET /api/v1/shop/purchases
   Get user's purchase history.
   """
+  @spec purchases(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def purchases(conn, params) do
     user = conn.assigns.current_user
     category = parse_string(params["category"])
@@ -116,6 +120,7 @@ defmodule CGraphWeb.ShopController do
   GET /api/v1/shop/categories
   List available shop categories.
   """
+  @spec categories(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def categories(conn, _params) do
     categories = [
       %{id: "theme", name: "Themes", icon: "🎨", description: "Customize your look"},

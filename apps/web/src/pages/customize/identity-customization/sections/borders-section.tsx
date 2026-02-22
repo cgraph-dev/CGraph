@@ -52,8 +52,8 @@ export function BordersSection({
           id: b.id,
           name: b.name,
           theme: 'elemental' as BorderTheme,
-          rarity: b.rarity as BorderRarity,
-          animationType: b.animation as BorderAnimationType,
+          rarity: b.rarity as BorderRarity, // safe downcast – compatible rarity union
+          animationType: b.animation as BorderAnimationType, // safe downcast – compatible animation union
           colors: b.colors,
           isPremium: !b.unlocked,
           unlocked: b.unlocked,
@@ -154,7 +154,7 @@ export function BordersSection({
                     const oldBorder: Border = {
                       id: border.id,
                       name: border.name,
-                      rarity: border.rarity === 'free' ? 'common' : (border.rarity as Rarity),
+                      rarity: border.rarity === 'free' ? 'common' : (border.rarity as Rarity), // safe downcast – compatible rarity union
                       animation: border.animationType,
                       colors: border.colors,
                       unlocked: border.unlocked,

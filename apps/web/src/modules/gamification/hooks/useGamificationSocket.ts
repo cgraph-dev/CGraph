@@ -39,6 +39,7 @@ import type {
 
 // Re-export the store
 export { useGamificationSocketStore } from './gamificationSocketStore';
+import { isRecord } from '@/lib/api-utils';
 import { useGamificationSocketStore } from './gamificationSocketStore';
 
 // ==================== HOOKS ====================
@@ -66,7 +67,7 @@ export function useGamificationEvent<T = unknown>(event: string, callback: (data
 
   useEffect(() => {
     const unsubscribe = subscribe(event, (data) => {
-      callbackRef.current(data as T);
+      callbackRef.current(data as T); // safe downcast — generic event handler
     });
 
     return unsubscribe;
@@ -119,13 +120,13 @@ export function useMarketplaceNotifications(
   callback: (data: MarketplaceNotificationEvent) => void
 ) {
   useGamificationEvent('listing_sold', (data) =>
-    callback({ type: 'listing_sold', data: data as Record<string, unknown> })
+    callback({ type: 'listing_sold', data: isRecord(data) ? data : {} })
   );
   useGamificationEvent('item_purchased', (data) =>
-    callback({ type: 'purchase_complete', data: data as Record<string, unknown> })
+    callback({ type: 'purchase_complete', data: isRecord(data) ? data : {} })
   );
   useGamificationEvent('price_alert', (data) =>
-    callback({ type: 'price_drop', data: data as Record<string, unknown> })
+    callback({ type: 'price_drop', data: isRecord(data) ? data : {} })
   );
 }
 

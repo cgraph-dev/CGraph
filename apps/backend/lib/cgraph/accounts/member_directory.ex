@@ -14,6 +14,7 @@ defmodule CGraph.Accounts.MemberDirectory do
   @doc """
   List members with filtering and pagination.
   """
+  @spec list_members(keyword()) :: {[struct()], map()}
   def list_members(opts \\ []) do
     sort_by = Keyword.get(opts, :sort_by, :username)
     sort_order = Keyword.get(opts, :sort_order, :asc)
@@ -49,6 +50,7 @@ defmodule CGraph.Accounts.MemberDirectory do
   @doc """
   Search members.
   """
+  @spec search_members(keyword()) :: {[struct()], map()}
   def search_members(opts \\ []) do
     query = Keyword.get(opts, :query)
 
@@ -62,6 +64,7 @@ defmodule CGraph.Accounts.MemberDirectory do
   @doc """
   Get a member's public profile.
   """
+  @spec get_member_profile(String.t(), struct() | nil) :: {:ok, struct()} | {:error, :not_found}
   def get_member_profile(user_id, current_user) do
     case Repo.get(User, user_id) do
       nil -> {:error, :not_found}
@@ -72,6 +75,7 @@ defmodule CGraph.Accounts.MemberDirectory do
   @doc """
   List user groups.
   """
+  @spec list_user_groups(keyword()) :: [map()]
   def list_user_groups(opts \\ []) do
     include_hidden = Keyword.get(opts, :include_hidden, false)
     with_count = Keyword.get(opts, :with_count, true)
@@ -104,6 +108,7 @@ defmodule CGraph.Accounts.MemberDirectory do
   @doc """
   Get member statistics.
   """
+  @spec get_member_stats() :: map()
   def get_member_stats do
     total_members = from(u in User, where: u.role != "bot") |> ReadRepo.aggregate(:count, :id)
 

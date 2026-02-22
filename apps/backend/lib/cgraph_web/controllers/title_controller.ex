@@ -13,6 +13,7 @@ defmodule CGraphWeb.TitleController do
   GET /api/v1/titles
   List all available titles.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, _params) do
     titles = Gamification.list_titles()
     user = conn.assigns.current_user
@@ -40,6 +41,7 @@ defmodule CGraphWeb.TitleController do
   GET /api/v1/titles/owned
   Get user's owned titles.
   """
+  @spec owned(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def owned(conn, _params) do
     user = conn.assigns.current_user
     user_titles = Gamification.list_user_titles(user.id)
@@ -53,6 +55,7 @@ defmodule CGraphWeb.TitleController do
   POST /api/v1/titles/:id/equip
   Equip a title.
   """
+  @spec equip(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def equip(conn, %{"id" => title_id}) do
     user = conn.assigns.current_user
 
@@ -82,6 +85,7 @@ defmodule CGraphWeb.TitleController do
   POST /api/v1/titles/:id/unequip
   Unequip the current title.
   """
+  @spec unequip(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def unequip(conn, _params) do
     user = conn.assigns.current_user
 
@@ -99,6 +103,7 @@ defmodule CGraphWeb.TitleController do
   POST /api/v1/titles/:id/purchase
   Purchase a purchasable title.
   """
+  @spec purchase(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def purchase(conn, %{"id" => title_id}) do
     user = conn.assigns.current_user
 
