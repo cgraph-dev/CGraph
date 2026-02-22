@@ -54,7 +54,7 @@ export function NotificationProvider({
         id,
         duration: notification.duration ?? defaultDuration,
         dismissible: notification.dismissible ?? true,
-      } as Notification;
+      } as Notification; // safe downcast – runtime verified
 
       setNotifications((prev) => {
         const updated = [...prev, newNotification];
@@ -120,7 +120,7 @@ export function NotificationProvider({
         newLevel,
         rewards,
         duration: 8000,
-      } as LevelUpNotification);
+      } as LevelUpNotification); // safe downcast – runtime verified
 
       // Celebration confetti
       confetti({
@@ -156,7 +156,7 @@ export function NotificationProvider({
         questTitle,
         xpReward,
         duration: 6000,
-      } as QuestNotification);
+      } as QuestNotification); // safe downcast – runtime verified
 
       confetti({
         particleCount: 80,

@@ -82,6 +82,7 @@ defmodule CGraph.Messaging.Message do
   Create a new message.
   Includes content sanitization to prevent XSS attacks.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(message, attrs) do
     message
     |> cast(attrs, [
@@ -110,6 +111,7 @@ defmodule CGraph.Messaging.Message do
   @doc """
   Edit message content.
   """
+  @spec edit_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def edit_changeset(message, attrs) do
     message
     |> cast(attrs, [:content])
@@ -123,6 +125,7 @@ defmodule CGraph.Messaging.Message do
   @doc """
   Soft delete a message.
   """
+  @spec delete_changeset(%__MODULE__{}, boolean()) :: Ecto.Changeset.t()
   def delete_changeset(message, for_everyone \\ false) do
     message
     |> change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))

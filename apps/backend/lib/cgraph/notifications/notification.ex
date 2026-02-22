@@ -70,6 +70,7 @@ defmodule CGraph.Notifications.Notification do
   @optional_fields [:actor_id, :body, :data, :read_at, :clicked_at,
                     :push_sent, :email_sent, :group_key, :count]
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(notification, attrs) do
     notification
     |> cast(attrs, @required_fields ++ @optional_fields)
@@ -83,6 +84,7 @@ defmodule CGraph.Notifications.Notification do
   @doc """
   Marks a notification as read.
   """
+  @spec mark_read_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def mark_read_changeset(notification) do
     changeset(notification, %{read_at: DateTime.utc_now()})
   end
@@ -90,6 +92,7 @@ defmodule CGraph.Notifications.Notification do
   @doc """
   Marks a notification as clicked (opened).
   """
+  @spec mark_clicked_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def mark_clicked_changeset(notification) do
     changeset(notification, %{clicked_at: DateTime.utc_now()})
   end

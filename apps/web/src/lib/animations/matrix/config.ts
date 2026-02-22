@@ -1,9 +1,9 @@
 /**
  * Matrix Cipher Background Animation - Default Configuration
- * 
+ *
  * @description Default configuration and configuration factory functions.
  * Provides sensible defaults for all animation parameters with responsive overrides.
- * 
+ *
  * @version 1.0.0
  * @since v0.6.3
  * @author CGraph Development Team
@@ -36,14 +36,14 @@ export type DeepPartial<T> = {
  */
 export const DEFAULT_PERFORMANCE: PerformanceConfig = {
   targetFPS: 60,
-  maxColumns: 180,           // Increased for denser effect
+  maxColumns: 180, // Increased for denser effect
   useWebGL: false, // Canvas 2D is more reliable
   useOffscreenCanvas: false,
   adaptiveQuality: true,
   allowFrameSkip: true,
-  maxFrameSkip: 2,           // Less aggressive frame skipping
+  maxFrameSkip: 2, // Less aggressive frame skipping
   throttleOnBlur: true,
-  throttledFPS: 15,          // Slightly higher when throttled
+  throttledFPS: 15, // Slightly higher when throttled
 };
 
 /**
@@ -54,9 +54,9 @@ export const DEFAULT_CHARACTERS: CharacterSetConfig = {
   type: 'katakana',
   includeNumbers: true,
   includeSymbols: false,
-  changeFrequency: 0.12,     // Higher for more active cipher morphing
-  minChangeInterval: 2,      // Faster cycling
-  maxChangeInterval: 8,      // Faster max interval
+  changeFrequency: 0.12, // Higher for more active cipher morphing
+  minChangeInterval: 2, // Faster cycling
+  maxChangeInterval: 8, // Faster max interval
 };
 
 /**
@@ -64,18 +64,18 @@ export const DEFAULT_CHARACTERS: CharacterSetConfig = {
  * Fast-falling columns for authentic Matrix rain effect with higher density
  */
 export const DEFAULT_COLUMNS: ColumnConfig = {
-  minSpeed: 6,               // Faster minimum
-  maxSpeed: 18,              // Much faster maximum
-  minLength: 10,             // Longer minimum trails
-  maxLength: 35,             // Longer maximum trails
-  density: 0.85,             // Higher density
-  spacing: 14,               // Tighter spacing for more columns
+  minSpeed: 6, // Faster minimum
+  maxSpeed: 18, // Much faster maximum
+  minLength: 10, // Longer minimum trails
+  maxLength: 35, // Longer maximum trails
+  density: 0.85, // Higher density
+  spacing: 14, // Tighter spacing for more columns
   randomizeStart: true,
   staggerStart: true,
-  staggerDelay: 20,          // Faster stagger
-  respawnRate: 0.08,         // More frequent respawns
+  staggerDelay: 20, // Faster stagger
+  respawnRate: 0.08, // More frequent respawns
   minRespawnDelay: 0,
-  maxRespawnDelay: 40,       // Much faster respawn
+  maxRespawnDelay: 40, // Much faster respawn
 };
 
 /**
@@ -84,11 +84,11 @@ export const DEFAULT_COLUMNS: ColumnConfig = {
  */
 export const DEFAULT_EFFECTS: EffectsConfig = {
   enableDepth: true,
-  depthLayers: 4,            // More depth layers
-  trailFade: 0.92,           // Longer trails
-  backgroundFade: 0.035,     // Subtle background fade
+  depthLayers: 4, // More depth layers
+  trailFade: 0.92, // Longer trails
+  backgroundFade: 0.035, // Subtle background fade
   enableBloom: true,
-  bloomIntensity: 0.8,       // Strong bloom
+  bloomIntensity: 0.8, // Strong bloom
   enableScanlines: false,
   scanlineOpacity: 0.03,
   enableCRTEffect: false,
@@ -96,7 +96,7 @@ export const DEFAULT_EFFECTS: EffectsConfig = {
   enableVignette: true,
   vignetteIntensity: 0.22,
   blendMode: 'source-over',
-  speedMultiplier: 1.2,      // Global speed boost
+  speedMultiplier: 1.2, // Global speed boost
 };
 
 /**
@@ -105,10 +105,10 @@ export const DEFAULT_EFFECTS: EffectsConfig = {
  */
 export const DEFAULT_FONT: FontConfig = {
   family: 'JetBrains Mono, Fira Code, Consolas, Monaco, monospace',
-  baseSize: 14,              // Smaller for dense Matrix effect
+  baseSize: 14, // Smaller for dense Matrix effect
   minSize: 10,
   maxSize: 18,
-  weight: 'bold',            // Bold weight for better visibility with glow
+  weight: 'bold', // Bold weight for better visibility with glow
   letterSpacing: 0,
   sizeVariation: true,
 };
@@ -128,8 +128,8 @@ export const DEFAULT_CONFIG: MatrixConfig = {
   responsive: {
     mobile: {
       performance: {
-        targetFPS: 50,         // Higher FPS for smoother mobile
-        maxColumns: 60,        // More columns on mobile
+        targetFPS: 50, // Higher FPS for smoother mobile
+        maxColumns: 60, // More columns on mobile
       },
       columns: {
         density: 0.7,
@@ -140,8 +140,8 @@ export const DEFAULT_CONFIG: MatrixConfig = {
         maxLength: 25,
       },
       effects: {
-        depthLayers: 2,        // Reduced layers for performance
-        enableBloom: true,     // Keep glow!
+        depthLayers: 2, // Reduced layers for performance
+        enableBloom: true, // Keep glow!
         bloomIntensity: 0.7,
         enableVignette: true,
         speedMultiplier: 1.1,
@@ -195,7 +195,7 @@ export const PRESET_HIGH_QUALITY: Partial<MatrixConfig> = {
   performance: {
     ...DEFAULT_PERFORMANCE,
     targetFPS: 60,
-    maxColumns: 220,         // Even more columns
+    maxColumns: 220, // Even more columns
     adaptiveQuality: false,
   },
   columns: {
@@ -231,8 +231,8 @@ export const PRESET_POWER_SAVER: Partial<MatrixConfig> = {
   name: 'power-saver',
   performance: {
     ...DEFAULT_PERFORMANCE,
-    targetFPS: 50,            // Higher for smoother animation
-    maxColumns: 80,           // More columns
+    targetFPS: 50, // Higher for smoother animation
+    maxColumns: 80, // More columns
     adaptiveQuality: true,
     throttleOnBlur: true,
     throttledFPS: 15,
@@ -241,8 +241,8 @@ export const PRESET_POWER_SAVER: Partial<MatrixConfig> = {
     ...DEFAULT_COLUMNS,
     density: 0.7,
     spacing: 16,
-    minSpeed: 6,              // Fast falling
-    maxSpeed: 16,             // Fast falling
+    minSpeed: 6, // Fast falling
+    maxSpeed: 16, // Fast falling
     minLength: 8,
     maxLength: 25,
   },
@@ -255,7 +255,7 @@ export const PRESET_POWER_SAVER: Partial<MatrixConfig> = {
     vignetteIntensity: 0.2,
     enableScanlines: false,
     enableCRTEffect: false,
-    trailFade: 0.9,           // Longer trails
+    trailFade: 0.9, // Longer trails
   },
   font: {
     ...DEFAULT_FONT,
@@ -308,20 +308,20 @@ export const PRESET_INTENSE: Partial<MatrixConfig> = {
   performance: {
     ...DEFAULT_PERFORMANCE,
     targetFPS: 60,
-    maxColumns: 280,          // Maximum columns
+    maxColumns: 280, // Maximum columns
   },
   columns: {
     ...DEFAULT_COLUMNS,
     density: 1,
-    spacing: 10,              // Very tight spacing
+    spacing: 10, // Very tight spacing
     minSpeed: 8,
-    maxSpeed: 24,             // Very fast
+    maxSpeed: 24, // Very fast
     minLength: 12,
     maxLength: 40,
   },
   characters: {
     ...DEFAULT_CHARACTERS,
-    changeFrequency: 0.18,    // Very active morphing
+    changeFrequency: 0.18, // Very active morphing
     minChangeInterval: 1,
     maxChangeInterval: 5,
   },
@@ -333,7 +333,7 @@ export const PRESET_INTENSE: Partial<MatrixConfig> = {
     enableVignette: true,
     vignetteIntensity: 0.4,
     trailFade: 0.95,
-    speedMultiplier: 1.5,     // Maximum speed
+    speedMultiplier: 1.5, // Maximum speed
   },
   font: {
     ...DEFAULT_FONT,
@@ -363,12 +363,12 @@ export type ConfigPresetName = keyof typeof CONFIG_PRESETS;
  */
 function deepMerge<T extends object>(target: T, source: DeepPartial<T>): T {
   const result = { ...target };
-  
+
   for (const key in source) {
     if (Object.prototype.hasOwnProperty.call(source, key)) {
-      const sourceValue = source[key as keyof typeof source];
-      const targetValue = target[key as keyof T];
-      
+      const sourceValue = source[key as keyof typeof source]; // safe downcast – structural boundary
+      const targetValue = target[key as keyof T]; // safe downcast – structural boundary
+
       if (
         sourceValue !== undefined &&
         sourceValue !== null &&
@@ -379,21 +379,22 @@ function deepMerge<T extends object>(target: T, source: DeepPartial<T>): T {
         !Array.isArray(targetValue)
       ) {
         (result as Record<string, unknown>)[key] = deepMerge(
-          targetValue as object,
-          sourceValue as DeepPartial<object>
+          // safe downcast – structural boundary
+          targetValue as object, // safe downcast – runtime verified
+          sourceValue as DeepPartial<object> // safe downcast – runtime verified
         );
       } else if (sourceValue !== undefined) {
-        (result as Record<string, unknown>)[key] = sourceValue;
+        (result as Record<string, unknown>)[key] = sourceValue; // safe downcast – structural boundary
       }
     }
   }
-  
+
   return result;
 }
 
 /**
  * Create a configuration by merging with defaults
- * 
+ *
  * @param overrides - Partial configuration overrides
  * @returns Complete configuration
  */
@@ -403,7 +404,7 @@ export function createConfig(overrides: DeepPartial<MatrixConfig> = {}): MatrixC
 
 /**
  * Get a preset configuration
- * 
+ *
  * @param name - Preset name
  * @returns Complete configuration
  */
@@ -412,24 +413,24 @@ export function getPreset(name: ConfigPresetName): MatrixConfig {
   if (!preset) {
     return DEFAULT_CONFIG;
   }
-  
+
   if (name === 'default') {
     return DEFAULT_CONFIG;
   }
-  
-  return createConfig(preset as DeepPartial<MatrixConfig>);
+
+  return createConfig(preset as DeepPartial<MatrixConfig>); // safe downcast – structural boundary
 }
 
 /**
  * Get responsive configuration based on viewport width
- * 
+ *
  * @param config - Base configuration
  * @param width - Viewport width in pixels
  * @returns Configuration with responsive overrides applied
  */
 export function getResponsiveConfig(config: MatrixConfig, width: number): MatrixConfig {
   let responsiveOverrides: DeepPartial<MatrixConfig> = {};
-  
+
   if (width < 768 && config.responsive.mobile) {
     responsiveOverrides = config.responsive.mobile;
   } else if (width < 1024 && config.responsive.tablet) {
@@ -437,65 +438,82 @@ export function getResponsiveConfig(config: MatrixConfig, width: number): Matrix
   } else if (config.responsive.desktop) {
     responsiveOverrides = config.responsive.desktop;
   }
-  
+
   return deepMerge(config, responsiveOverrides);
 }
 
 /**
  * Validate a configuration object
- * 
+ *
  * @param config - Configuration to validate
  * @returns Array of validation errors (empty if valid)
  */
 export function validateConfig(config: Partial<MatrixConfig>): string[] {
   const errors: string[] = [];
-  
+
   if (config.performance) {
     const { performance } = config;
-    if (performance.targetFPS !== undefined && (performance.targetFPS < 1 || performance.targetFPS > 144)) {
+    if (
+      performance.targetFPS !== undefined &&
+      (performance.targetFPS < 1 || performance.targetFPS > 144)
+    ) {
       errors.push('performance.targetFPS must be between 1 and 144');
     }
-    if (performance.maxColumns !== undefined && (performance.maxColumns < 1 || performance.maxColumns > 500)) {
+    if (
+      performance.maxColumns !== undefined &&
+      (performance.maxColumns < 1 || performance.maxColumns > 500)
+    ) {
       errors.push('performance.maxColumns must be between 1 and 500');
     }
   }
-  
+
   if (config.columns) {
     const { columns } = config;
     if (columns.density !== undefined && (columns.density < 0 || columns.density > 1)) {
       errors.push('columns.density must be between 0 and 1');
     }
-    if (columns.minSpeed !== undefined && columns.maxSpeed !== undefined && columns.minSpeed > columns.maxSpeed) {
+    if (
+      columns.minSpeed !== undefined &&
+      columns.maxSpeed !== undefined &&
+      columns.minSpeed > columns.maxSpeed
+    ) {
       errors.push('columns.minSpeed cannot be greater than columns.maxSpeed');
     }
-    if (columns.minLength !== undefined && columns.maxLength !== undefined && columns.minLength > columns.maxLength) {
+    if (
+      columns.minLength !== undefined &&
+      columns.maxLength !== undefined &&
+      columns.minLength > columns.maxLength
+    ) {
       errors.push('columns.minLength cannot be greater than columns.maxLength');
     }
   }
-  
+
   if (config.effects) {
     const { effects } = config;
-    if (effects.depthLayers !== undefined && (effects.depthLayers < 1 || effects.depthLayers > 10)) {
+    if (
+      effects.depthLayers !== undefined &&
+      (effects.depthLayers < 1 || effects.depthLayers > 10)
+    ) {
       errors.push('effects.depthLayers must be between 1 and 10');
     }
     if (effects.trailFade !== undefined && (effects.trailFade < 0 || effects.trailFade > 1)) {
       errors.push('effects.trailFade must be between 0 and 1');
     }
   }
-  
+
   if (config.font) {
     const { font } = config;
     if (font.baseSize !== undefined && (font.baseSize < 4 || font.baseSize > 72)) {
       errors.push('font.baseSize must be between 4 and 72');
     }
   }
-  
+
   return errors;
 }
 
 /**
  * Merge multiple configuration partials
- * 
+ *
  * @param configs - Array of partial configurations to merge
  * @returns Merged configuration
  */
@@ -509,7 +527,7 @@ export function mergeConfigs(...configs: DeepPartial<MatrixConfig>[]): MatrixCon
 
 /**
  * Clone a configuration object
- * 
+ *
  * @param config - Configuration to clone
  * @returns Deep cloned configuration
  */

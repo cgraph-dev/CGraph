@@ -35,6 +35,7 @@ defmodule CGraph.Gamification.Achievement do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(achievement, attrs) do
     achievement
     |> cast(attrs, [
@@ -54,10 +55,12 @@ defmodule CGraph.Gamification.Achievement do
   @doc """
   Returns the list of valid categories.
   """
+  @spec categories() :: [String.t()]
   def categories, do: @categories
 
   @doc """
   Returns the list of valid rarities.
   """
+  @spec rarities() :: [String.t()]
   def rarities, do: @rarities
 end

@@ -54,6 +54,7 @@ defmodule CGraph.Groups.Group do
   @doc """
   Create a new group.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(group, attrs) do
     group
     |> cast(attrs, [
@@ -72,6 +73,7 @@ defmodule CGraph.Groups.Group do
   @doc """
   Update group settings.
   """
+  @spec update_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def update_changeset(group, attrs) do
     group
     |> cast(attrs, [
@@ -85,6 +87,7 @@ defmodule CGraph.Groups.Group do
   @doc """
   Transfer ownership.
   """
+  @spec transfer_ownership_changeset(%__MODULE__{}, String.t()) :: Ecto.Changeset.t()
   def transfer_ownership_changeset(group, new_owner_id) do
     change(group, owner_id: new_owner_id)
   end

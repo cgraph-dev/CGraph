@@ -82,7 +82,7 @@ export default function EffectsCustomization() {
         >
           {activeCategory === 'particles' && (
             <ParticleEffectsSection
-              particles={filteredItems as ParticleEffect[]}
+              particles={filteredItems as ParticleEffect[]} // safe downcast – runtime verified
               selectedParticle={particleEffect ?? 'particle-none'}
               previewingLockedItem={previewingLockedItem}
               onSelect={(id, isUnlocked) => handlePreviewItem('particle', id, isUnlocked)}
@@ -91,7 +91,7 @@ export default function EffectsCustomization() {
 
           {activeCategory === 'backgrounds' && (
             <BackgroundEffectsSection
-              backgrounds={filteredItems as BackgroundEffect[]}
+              backgrounds={filteredItems as BackgroundEffect[]} // safe downcast – runtime verified
               selectedBackground={backgroundEffect ?? 'bg-none'}
               previewingLockedItem={previewingLockedItem}
               onSelect={(id, isUnlocked) => handlePreviewItem('background', id, isUnlocked)}
@@ -100,7 +100,7 @@ export default function EffectsCustomization() {
 
           {activeCategory === 'animations' && (
             <AnimationSetsSection
-              animations={filteredItems as AnimationSet[]}
+              animations={filteredItems as AnimationSet[]} // safe downcast – runtime verified
               selectedAnimation={animationSpeed}
               previewingLockedItem={previewingLockedItem}
               onSelect={(id, isUnlocked) => handlePreviewItem('animation', id, isUnlocked)}

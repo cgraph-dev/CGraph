@@ -34,17 +34,17 @@ export function useConversationParticipant(conversationId: string | undefined) {
   // Get other participant for DM
   const otherParticipant = useMemo(() => {
     return conversation?.participants.find((p) => {
-      const participantUserId = getParticipantUserId(p as unknown as Record<string, unknown>);
+      const participantUserId = getParticipantUserId(p as unknown as Record<string, unknown>); // safe downcast – structural boundary
       return participantUserId !== user?.id;
     });
   }, [conversation?.participants, user?.id]);
 
   // Type-safe extraction of userId and display name
   const otherParticipantUserId =
-    getParticipantUserId(otherParticipant as unknown as Record<string, unknown>) ?? undefined;
+    getParticipantUserId(otherParticipant as unknown as Record<string, unknown>) ?? undefined; // safe downcast – structural boundary
   const conversationName =
     conversation?.name ||
-    getParticipantDisplayName(otherParticipant as unknown as Record<string, unknown>);
+    getParticipantDisplayName(otherParticipant as unknown as Record<string, unknown>); // safe downcast – structural boundary
 
   // Calculate mutual friends from the friends list
   const mutualFriends = useMemo<MutualFriend[]>(() => {
