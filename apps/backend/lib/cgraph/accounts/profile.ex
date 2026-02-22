@@ -14,6 +14,7 @@ defmodule CGraph.Accounts.Profile do
   @doc """
   Get a user's profile.
   """
+  @spec get_profile(Ecto.UUID.t(), term()) :: term()
   def get_profile(user_id, viewer) do
     MemberDirectory.get_member_profile(user_id, viewer)
   end
@@ -21,6 +22,7 @@ defmodule CGraph.Accounts.Profile do
   @doc """
   Update a user's signature.
   """
+  @spec update_signature(Ecto.UUID.t(), String.t()) :: {:ok, %User{}} | {:error, :not_found}
   def update_signature(user_id, signature) do
     case Repo.get(User, user_id) do
       nil -> {:error, :not_found}
@@ -34,6 +36,7 @@ defmodule CGraph.Accounts.Profile do
   @doc """
   Update a user's bio.
   """
+  @spec update_bio(Ecto.UUID.t(), String.t()) :: {:ok, %User{}} | {:error, :not_found}
   def update_bio(user_id, bio) do
     case Repo.get(User, user_id) do
       nil -> {:error, :not_found}
@@ -47,6 +50,7 @@ defmodule CGraph.Accounts.Profile do
   @doc """
   Update a user's profile fields.
   """
+  @spec update_profile(Ecto.UUID.t(), map()) :: {:ok, %User{}} | {:error, :not_found | Ecto.Changeset.t()}
   def update_profile(user_id, attrs) do
     case Repo.get(User, user_id) do
       nil -> {:error, :not_found}
@@ -68,6 +72,7 @@ defmodule CGraph.Accounts.Profile do
   @doc """
   Get a user's activity feed.
   """
+  @spec get_user_activity(Ecto.UUID.t(), term(), keyword()) :: {:ok, list(), map()}
   def get_user_activity(_user_id, _viewer, _opts \\ []) do
     # Would need to implement activity tracking
     {:ok, [], %{page: 1, per_page: 20, total_count: 0, total_pages: 0}}
@@ -76,6 +81,7 @@ defmodule CGraph.Accounts.Profile do
   @doc """
   Get profile visitors.
   """
+  @spec get_profile_visitors(Ecto.UUID.t(), keyword()) :: {list(), map()}
   def get_profile_visitors(_user_id, _opts \\ []) do
     # Would need to implement visitor tracking
     {[], %{page: 1, per_page: 20, total_count: 0, total_pages: 0}}

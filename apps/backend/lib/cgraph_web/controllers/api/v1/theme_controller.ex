@@ -23,6 +23,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
   GET /api/v1/users/:id/theme
   Get a user's theme preferences.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => user_id}) do
     theme = Themes.get_theme(user_id)
     render_data(conn, %{theme: theme})
@@ -32,6 +33,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
   PUT /api/v1/users/:id/theme
   Update the current user's theme preferences.
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"id" => user_id} = params) do
     current_user = conn.assigns.current_user
 
@@ -58,6 +60,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
   POST /api/v1/users/:id/theme/reset
   Reset user's theme to defaults.
   """
+  @spec reset(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def reset(conn, %{"id" => user_id}) do
     current_user = conn.assigns.current_user
 
@@ -78,6 +81,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
   POST /api/v1/users/themes/batch
   Batch fetch themes for multiple users.
   """
+  @spec batch(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def batch(conn, %{"user_ids" => user_ids}) when is_list(user_ids) do
     themes = Themes.get_themes_batch(user_ids)
     render_data(conn, %{themes: themes})
@@ -91,6 +95,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
   GET /api/v1/themes/default
   Get the default theme configuration.
   """
+  @spec default(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def default(conn, _params) do
     render_data(conn, %{theme: Themes.default_theme()})
   end
@@ -99,6 +104,7 @@ defmodule CGraphWeb.API.V1.ThemeController do
   GET /api/v1/themes/presets
   Get all available theme presets and options.
   """
+  @spec presets(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def presets(conn, _params) do
     render_data(conn, %{
       colorPresets: [

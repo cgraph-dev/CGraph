@@ -21,6 +21,7 @@ defmodule CGraphWeb.API.V1.PresenceController do
   @doc """
   Get list of online users.
   """
+  @spec online_users(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def online_users(conn, params) do
     opts = [
       page: parse_int(params["page"], 1),
@@ -45,6 +46,7 @@ defmodule CGraphWeb.API.V1.PresenceController do
   @doc """
   Send heartbeat to maintain presence.
   """
+  @spec heartbeat(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def heartbeat(conn, params) do
     user = conn.assigns.current_user
 
@@ -63,6 +65,7 @@ defmodule CGraphWeb.API.V1.PresenceController do
   @doc """
   Get presence statistics.
   """
+  @spec stats(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def stats(conn, _params) do
     stats = Presence.get_stats()
     render(conn, :stats, stats: stats)
@@ -71,6 +74,7 @@ defmodule CGraphWeb.API.V1.PresenceController do
   @doc """
   Get who's viewing a specific page/resource.
   """
+  @spec whos_here(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def whos_here(conn, params) do
     location = %{
       forum_id: params["forum_id"],
@@ -85,6 +89,7 @@ defmodule CGraphWeb.API.V1.PresenceController do
   @doc """
   Get user's current location/status.
   """
+  @spec user_status(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def user_status(conn, %{"user_id" => user_id}) do
     current_user = conn.assigns[:current_user]
 
@@ -96,6 +101,7 @@ defmodule CGraphWeb.API.V1.PresenceController do
   @doc """
   Update visibility settings (online/invisible).
   """
+  @spec update_visibility(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_visibility(conn, %{"visible" => visible}) do
     user = conn.assigns.current_user
 

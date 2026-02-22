@@ -50,6 +50,7 @@ defmodule CGraph.Gamification.UserPrestige do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(prestige, attrs) do
     prestige
     |> cast(attrs, [
@@ -70,6 +71,7 @@ defmodule CGraph.Gamification.UserPrestige do
     |> unique_constraint(:user_id)
   end
 
+  @spec prestige_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def prestige_changeset(prestige, attrs) do
     prestige
     |> cast(attrs, [
@@ -79,11 +81,13 @@ defmodule CGraph.Gamification.UserPrestige do
     ])
   end
 
+  @spec add_exclusive_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def add_exclusive_changeset(prestige, attrs) do
     prestige
     |> cast(attrs, [:exclusive_titles, :exclusive_borders, :exclusive_effects])
   end
 
+  @spec update_lifetime_stats_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def update_lifetime_stats_changeset(prestige, attrs) do
     prestige
     |> cast(attrs, [:lifetime_xp, :lifetime_karma, :lifetime_coins_earned, :lifetime_messages])
@@ -93,6 +97,7 @@ defmodule CGraph.Gamification.UserPrestige do
   Calculate XP required for next prestige level.
   Uses exponential scaling.
   """
+  @spec xp_required_for_prestige(integer()) :: non_neg_integer()
   def xp_required_for_prestige(level) when level < 0, do: 0
   def xp_required_for_prestige(0), do: 100_000
   def xp_required_for_prestige(level) do
@@ -104,6 +109,7 @@ defmodule CGraph.Gamification.UserPrestige do
   @doc """
   Calculate bonus percentage for a prestige level.
   """
+  @spec bonus_for_prestige_level(integer(), atom()) :: float()
   def bonus_for_prestige_level(level, _bonus_type) when level < 0, do: 0.0
   def bonus_for_prestige_level(level, bonus_type) do
     base_bonus = case bonus_type do

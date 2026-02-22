@@ -14,6 +14,7 @@ defmodule CGraphWeb.API.V1.PushTokenController do
   List user's registered push tokens.
   GET /api/v1/push_tokens
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, _params) do
     user = conn.assigns.current_user
 
@@ -25,6 +26,7 @@ defmodule CGraphWeb.API.V1.PushTokenController do
   Register a new push token.
   POST /api/v1/push_tokens
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, params) do
     user = conn.assigns.current_user
 
@@ -64,6 +66,7 @@ defmodule CGraphWeb.API.V1.PushTokenController do
   Update a push token (e.g., refresh token).
   PUT /api/v1/push_tokens/:id
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"id" => token_id} = params) do
     user = conn.assigns.current_user
 
@@ -79,6 +82,7 @@ defmodule CGraphWeb.API.V1.PushTokenController do
 
   Supports both :id (UUID) and :token (actual token string) params.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => token_id}) do
     user = conn.assigns.current_user
 
@@ -102,6 +106,7 @@ defmodule CGraphWeb.API.V1.PushTokenController do
   Delete push token by device ID (useful for logout).
   DELETE /api/v1/push_tokens/device/:device_id
   """
+  @spec delete_by_device(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete_by_device(conn, %{"device_id" => device_id}) do
     user = conn.assigns.current_user
 
@@ -114,6 +119,7 @@ defmodule CGraphWeb.API.V1.PushTokenController do
   Test push notification to a specific token.
   POST /api/v1/push_tokens/:id/test
   """
+  @spec test(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def test(conn, %{"id" => token_id}) do
     user = conn.assigns.current_user
 

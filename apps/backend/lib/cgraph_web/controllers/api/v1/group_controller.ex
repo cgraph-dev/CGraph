@@ -15,6 +15,7 @@ defmodule CGraphWeb.API.V1.GroupController do
   @doc """
   List all groups the user is a member of.
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     user = conn.assigns.current_user
     page = parse_int(params["page"], 1, min: 1)
@@ -34,6 +35,7 @@ defmodule CGraphWeb.API.V1.GroupController do
   @doc """
   Get a specific group.
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -45,6 +47,7 @@ defmodule CGraphWeb.API.V1.GroupController do
   @doc """
   Create a new group.
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, params) do
     user = conn.assigns.current_user
 
@@ -95,6 +98,7 @@ defmodule CGraphWeb.API.V1.GroupController do
   @doc """
   Update a group.
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"id" => id} = params) do
     user = conn.assigns.current_user
 
@@ -108,6 +112,7 @@ defmodule CGraphWeb.API.V1.GroupController do
   @doc """
   Delete a group.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
 
@@ -121,6 +126,7 @@ defmodule CGraphWeb.API.V1.GroupController do
   @doc """
   Get the audit log for a group.
   """
+  @spec audit_log(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def audit_log(conn, %{"group_id" => group_id} = params) do
     user = conn.assigns.current_user
     page = parse_int(params["page"], 1, min: 1)

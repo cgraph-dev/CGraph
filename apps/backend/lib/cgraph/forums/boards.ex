@@ -18,6 +18,7 @@ defmodule CGraph.Forums.Boards do
   - `:include_hidden` - include hidden boards (default: false)
   - `:parent_id` - filter by parent board (nil for top-level)
   """
+  @spec list_boards(Ecto.UUID.t(), keyword()) :: [%Board{}]
   def list_boards(forum_id, opts \\ []) do
     include_hidden = Keyword.get(opts, :include_hidden, false)
     parent_id = Keyword.get(opts, :parent_id, nil)
@@ -47,6 +48,7 @@ defmodule CGraph.Forums.Boards do
   @doc """
   Get a board by ID.
   """
+  @spec get_board(Ecto.UUID.t()) :: {:ok, %Board{}} | {:error, :not_found}
   def get_board(id) do
     query = from(b in Board, where: b.id == ^id, preload: [:forum])
 
@@ -59,6 +61,7 @@ defmodule CGraph.Forums.Boards do
   @doc """
   Get a board by forum_id and slug.
   """
+  @spec get_board_by_slug(Ecto.UUID.t(), String.t()) :: {:ok, %Board{}} | {:error, :not_found}
   def get_board_by_slug(forum_id, slug) do
     query = Board
       |> exclude_deleted()
@@ -73,6 +76,7 @@ defmodule CGraph.Forums.Boards do
   @doc """
   Create a board.
   """
+  @spec create_board(map()) :: {:ok, %Board{}} | {:error, Ecto.Changeset.t()}
   def create_board(attrs \\ %{}) do
     %Board{}
     |> Board.changeset(attrs)
@@ -82,6 +86,7 @@ defmodule CGraph.Forums.Boards do
   @doc """
   Update a board.
   """
+  @spec update_board(%Board{}, map()) :: {:ok, %Board{}} | {:error, Ecto.Changeset.t()}
   def update_board(%Board{} = board, attrs) do
     board
     |> Board.changeset(attrs)
@@ -91,6 +96,7 @@ defmodule CGraph.Forums.Boards do
   @doc """
   Delete a board (soft delete).
   """
+  @spec delete_board(%Board{}) :: {:ok, %Board{}} | {:error, Ecto.Changeset.t()}
   def delete_board(%Board{} = board) do
     board
     |> Ecto.Changeset.change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))

@@ -6,7 +6,7 @@
  */
 
 import { api } from '@/lib/api';
-import { ensureArray } from '@/lib/apiUtils';
+import { ensureArray, isRecord } from '@/lib/apiUtils';
 import { createLogger } from '@/lib/logger';
 import type { ModerationQueueItem, ModerationState } from './moderationStore.types';
 
@@ -32,29 +32,33 @@ export function createQueueActions(set: Set) {
         if (filters.priority) params.priority = filters.priority;
 
         const response = await api.get('/api/v1/admin/moderation/queue', { params });
-        const items = (ensureArray(response.data, 'items') as Record<string, unknown>[]).map(
-          (item) => ({
-            id: item.id as string,
-            itemType: item.item_type as ModerationQueueItem['itemType'],
-            itemId: item.item_id as string,
-            authorId: item.author_id as string,
-            authorUsername: item.author_username as string,
-            forumId: item.forum_id as string | undefined,
-            forumName: item.forum_name as string | undefined,
-            title: item.title as string | undefined,
-            content: item.content as string,
+        const items = ensureArray(response.data, 'items')
+          .filter(isRecord)
+          .map((item) => ({
+            id: String(item.id),
+            itemType: item.item_type as ModerationQueueItem['itemType'], // safe downcast – discriminated union from API
+            itemId: String(item.item_id),
+            authorId: String(item.author_id),
+            authorUsername: String(item.author_username),
+            forumId: typeof item.forum_id === 'string' ? item.forum_id : undefined,
+            forumName: typeof item.forum_name === 'string' ? item.forum_name : undefined,
+            title: typeof item.title === 'string' ? item.title : undefined,
+            content: String(item.content),
             contentPreview:
-              (item.content_preview as string) || (item.content as string).slice(0, 200),
-            reason: item.reason as ModerationQueueItem['reason'],
-            status: item.status as ModerationQueueItem['status'],
-            priority: item.priority as ModerationQueueItem['priority'],
-            reportCount: (item.report_count as number) || 0,
-            moderatedById: item.moderated_by_id as string | undefined,
-            moderatedAt: item.moderated_at as string | undefined,
-            moderationNotes: item.moderation_notes as string | undefined,
-            createdAt: (item.created_at as string) || (item.inserted_at as string),
-          })
-        );
+              typeof item.content_preview === 'string'
+                ? item.content_preview
+                : String(item.content).slice(0, 200),
+            reason: item.reason as ModerationQueueItem['reason'], // safe downcast – discriminated union from API
+            status: item.status as ModerationQueueItem['status'], // safe downcast – discriminated union from API
+            priority: item.priority as ModerationQueueItem['priority'], // safe downcast – discriminated union from API
+            reportCount: typeof item.report_count === 'number' ? item.report_count : 0,
+            moderatedById:
+              typeof item.moderated_by_id === 'string' ? item.moderated_by_id : undefined,
+            moderatedAt: typeof item.moderated_at === 'string' ? item.moderated_at : undefined,
+            moderationNotes:
+              typeof item.moderation_notes === 'string' ? item.moderation_notes : undefined,
+            createdAt: String(item.created_at || item.inserted_at),
+          }));
 
         const counts = response.data.counts || {};
         set({

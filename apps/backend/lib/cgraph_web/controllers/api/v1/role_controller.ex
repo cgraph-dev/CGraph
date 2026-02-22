@@ -13,6 +13,7 @@ defmodule CGraphWeb.API.V1.RoleController do
   List all roles in a group.
   GET /api/v1/groups/:group_id/roles
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"group_id" => group_id}) do
     user = conn.assigns.current_user
 
@@ -27,6 +28,7 @@ defmodule CGraphWeb.API.V1.RoleController do
   Get a specific role.
   GET /api/v1/groups/:group_id/roles/:id
   """
+  @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"group_id" => group_id, "id" => role_id}) do
     user = conn.assigns.current_user
 
@@ -46,6 +48,7 @@ defmodule CGraphWeb.API.V1.RoleController do
   - color: Hex color code (optional)
   - permissions: Permission bitfield (optional)
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"group_id" => group_id} = params) do
     user = conn.assigns.current_user
     # Accept params either nested under "role" key or directly
@@ -69,6 +72,7 @@ defmodule CGraphWeb.API.V1.RoleController do
   Update a role.
   PUT /api/v1/groups/:group_id/roles/:id
   """
+  @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"group_id" => group_id, "id" => role_id} = params) do
     user = conn.assigns.current_user
     # Support both nested {"role" => attrs} and flat {name, color, ...} params
@@ -100,6 +104,7 @@ defmodule CGraphWeb.API.V1.RoleController do
   Delete a role.
   DELETE /api/v1/groups/:group_id/roles/:id
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"group_id" => group_id, "id" => role_id}) do
     user = conn.assigns.current_user
 
@@ -121,6 +126,7 @@ defmodule CGraphWeb.API.V1.RoleController do
   Reorder roles (update positions).
   PUT /api/v1/groups/:group_id/roles/reorder
   """
+  @spec reorder(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def reorder(conn, %{"group_id" => group_id, "role_ids" => role_ids}) do
     user = conn.assigns.current_user
 

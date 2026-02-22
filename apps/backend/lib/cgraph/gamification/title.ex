@@ -29,6 +29,7 @@ defmodule CGraph.Gamification.Title do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{} | Ecto.Changeset.t(), map()) :: Ecto.Changeset.t()
   def changeset(title, attrs) do
     title
     |> cast(attrs, [
@@ -42,6 +43,9 @@ defmodule CGraph.Gamification.Title do
     |> unique_constraint(:slug)
   end
 
+  @spec rarities() :: [String.t()]
   def rarities, do: @rarities
+
+  @spec unlock_types() :: [String.t()]
   def unlock_types, do: @unlock_types
 end

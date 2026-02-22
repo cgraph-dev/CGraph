@@ -71,6 +71,7 @@ defmodule CGraph.Forums.ForumMember do
   @doc """
   Changeset for creating a new forum membership.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(member, attrs) do
     now = DateTime.truncate(DateTime.utc_now(), :second)
 
@@ -92,6 +93,7 @@ defmodule CGraph.Forums.ForumMember do
   @doc """
   Changeset for updating profile information.
   """
+  @spec profile_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def profile_changeset(member, attrs) do
     member
     |> cast(attrs, [
@@ -107,6 +109,7 @@ defmodule CGraph.Forums.ForumMember do
   @doc """
   Changeset for updating stats.
   """
+  @spec stats_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def stats_changeset(member, attrs) do
     member
     |> cast(attrs, [
@@ -119,6 +122,7 @@ defmodule CGraph.Forums.ForumMember do
   @doc """
   Changeset for moderation actions (ban, role change, etc.).
   """
+  @spec moderation_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def moderation_changeset(member, attrs) do
     member
     |> cast(attrs, [
@@ -131,6 +135,7 @@ defmodule CGraph.Forums.ForumMember do
   @doc """
   Check if user is banned.
   """
+  @spec banned?(%__MODULE__{}) :: boolean()
   def banned?(member) do
     member.is_banned &&
       (is_nil(member.ban_expires_at) || DateTime.compare(member.ban_expires_at, DateTime.truncate(DateTime.utc_now(), :second)) == :gt)
@@ -139,6 +144,7 @@ defmodule CGraph.Forums.ForumMember do
   @doc """
   Check if user is staff (moderator, admin, or owner).
   """
+  @spec staff?(%__MODULE__{}) :: boolean()
   def staff?(member) do
     member.role in ["moderator", "admin", "owner"]
   end
@@ -146,6 +152,7 @@ defmodule CGraph.Forums.ForumMember do
   @doc """
   Check if user is admin or owner.
   """
+  @spec admin?(%__MODULE__{}) :: boolean()
   def admin?(member) do
     member.role in ["admin", "owner"]
   end

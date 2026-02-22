@@ -42,6 +42,7 @@ defmodule CGraph.Groups.Member do
   @doc """
   Create a new member.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(member, attrs) do
     member
     |> cast(attrs, [:user_id, :group_id, :nickname])
@@ -56,6 +57,7 @@ defmodule CGraph.Groups.Member do
   @doc """
   Update member settings.
   """
+  @spec update_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def update_changeset(member, attrs) do
     member
     |> cast(attrs, [:nickname, :notifications, :suppress_everyone])
@@ -66,6 +68,7 @@ defmodule CGraph.Groups.Member do
   @doc """
   Mute a member.
   """
+  @spec mute_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def mute_changeset(member, attrs) do
     member
     |> cast(attrs, [:muted_until, :mute_reason])
@@ -76,6 +79,7 @@ defmodule CGraph.Groups.Member do
   @doc """
   Unmute a member.
   """
+  @spec unmute_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def unmute_changeset(member) do
     member
     |> change(is_muted: false)
@@ -86,6 +90,7 @@ defmodule CGraph.Groups.Member do
   @doc """
   Ban a member.
   """
+  @spec ban_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def ban_changeset(member, attrs) do
     member
     |> cast(attrs, [:banned_until, :ban_reason])
@@ -96,6 +101,7 @@ defmodule CGraph.Groups.Member do
   @doc """
   Unban a member.
   """
+  @spec unban_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def unban_changeset(member) do
     member
     |> change(is_banned: false)

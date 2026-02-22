@@ -33,6 +33,7 @@ defmodule CGraph.Gamification.Quest do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{} | Ecto.Changeset.t(), map()) :: Ecto.Changeset.t()
   def changeset(quest, attrs) do
     quest
     |> cast(attrs, [
@@ -49,11 +50,13 @@ defmodule CGraph.Gamification.Quest do
   @doc """
   Returns the list of valid quest types.
   """
+  @spec types() :: [String.t()]
   def types, do: @types
 
   @doc """
   Returns true if the quest is currently active based on time constraints.
   """
+  @spec available?(%__MODULE__{}) :: boolean()
   def available?(%__MODULE__{is_active: false}), do: false
   def available?(%__MODULE__{starts_at: nil, ends_at: nil}), do: true
   def available?(%__MODULE__{starts_at: starts_at, ends_at: ends_at}) do

@@ -12,6 +12,7 @@ defmodule CGraph.Chaos.CircuitBreakerValidator do
   Validate that a fuse exists and is in the expected state.
   Returns `:ok` (closed/healthy), `:blown` (open/tripped), or `:not_found`.
   """
+  @spec validate_fuse(atom()) :: :ok | :blown | :not_found
   def validate_fuse(fuse_name) do
     case :fuse.ask(fuse_name, :sync) do
       :ok -> :ok
@@ -31,6 +32,7 @@ defmodule CGraph.Chaos.CircuitBreakerValidator do
     * `:max_attempts` - Maximum failures to inject (default: 20)
     * `:delay_between` - ms between failures (default: 10)
   """
+  @spec stress_fuse(atom(), keyword()) :: {:tripped, pos_integer()} | {:still_ok, pos_integer()} | :not_found | {:error, term()}
   def stress_fuse(fuse_name, opts \\ []) do
     max = Keyword.get(opts, :max_attempts, 20)
     delay = Keyword.get(opts, :delay_between, 10)
@@ -72,6 +74,7 @@ defmodule CGraph.Chaos.CircuitBreakerValidator do
 
   Returns `:recovered` or `:still_blown`.
   """
+  @spec validate_recovery(atom(), non_neg_integer()) :: :recovered | :still_blown | :already_ok | :not_found
   def validate_recovery(fuse_name, wait_ms \\ 5_000) do
     # Ensure fuse is blown first
     case validate_fuse(fuse_name) do
@@ -104,6 +107,7 @@ defmodule CGraph.Chaos.CircuitBreakerValidator do
   @doc """
   Reset a fuse back to healthy state.
   """
+  @spec reset_fuse(atom()) :: :ok | {:error, :reset_failed}
   def reset_fuse(fuse_name) do
     :fuse.reset(fuse_name)
     Logger.info("chaos_fuse_manually_reset", fuse_name: fuse_name)
@@ -115,6 +119,7 @@ defmodule CGraph.Chaos.CircuitBreakerValidator do
   @doc """
   Get a list of all known fuse names in the system.
   """
+  @spec known_fuses() :: [atom()]
   def known_fuses do
     [
       :redis_fuse,
@@ -129,6 +134,7 @@ defmodule CGraph.Chaos.CircuitBreakerValidator do
   @doc """
   Validate all known fuses and return a health report.
   """
+  @spec health_report() :: %{atom() => :ok | :blown | :not_found}
   def health_report do
     known_fuses()
     |> Enum.map(fn fuse ->

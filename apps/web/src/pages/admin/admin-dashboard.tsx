@@ -25,12 +25,12 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const queryClient = useQueryClient();
 
-  const tabs = [
-    { id: 'overview' as TabId, name: 'Overview', icon: ChartBarIcon },
-    { id: 'users' as TabId, name: 'Users', icon: UsersIcon },
-    { id: 'reports' as TabId, name: 'Reports', icon: ShieldExclamationIcon },
-    { id: 'audit' as TabId, name: 'Audit Log', icon: ClockIcon },
-    { id: 'settings' as TabId, name: 'Settings', icon: CogIcon },
+  const tabs: { id: TabId; name: string; icon: typeof ChartBarIcon }[] = [
+    { id: 'overview', name: 'Overview', icon: ChartBarIcon },
+    { id: 'users', name: 'Users', icon: UsersIcon },
+    { id: 'reports', name: 'Reports', icon: ShieldExclamationIcon },
+    { id: 'audit', name: 'Audit Log', icon: ClockIcon },
+    { id: 'settings', name: 'Settings', icon: CogIcon },
   ];
 
   return (

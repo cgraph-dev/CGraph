@@ -3,10 +3,12 @@ defmodule CGraphWeb.API.V1.PushTokenJSON do
   JSON rendering for push token responses.
   """
 
+  @spec index(map()) :: map()
   def index(%{tokens: tokens}) do
     %{data: Enum.map(tokens, &token_data/1)}
   end
 
+  @spec show(map()) :: map()
   def show(%{token: token}) do
     %{data: token_data(token)}
   end
@@ -14,6 +16,7 @@ defmodule CGraphWeb.API.V1.PushTokenJSON do
   @doc """
   Render push token data.
   """
+  @spec token_data(map()) :: map()
   def token_data(token) do
     %{
       id: token.id,

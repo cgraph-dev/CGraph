@@ -45,6 +45,7 @@ defmodule CGraphWeb.Validation.GamificationParams do
   @doc """
   Validate leaderboard query parameters.
   """
+  @spec validate_leaderboard(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_leaderboard(params) do
     %__MODULE__{}
     |> cast(params, [:category, :period, :page, :per_page, :friends_only], empty_values: [""])
@@ -59,6 +60,7 @@ defmodule CGraphWeb.Validation.GamificationParams do
   @doc """
   Validate achievement claim.
   """
+  @spec validate_claim_achievement(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_claim_achievement(params) do
     %__MODULE__{}
     |> cast(params, [:achievement_id], empty_values: [""])
@@ -69,6 +71,7 @@ defmodule CGraphWeb.Validation.GamificationParams do
   @doc """
   Validate quest progress update.
   """
+  @spec validate_quest_progress(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_quest_progress(params) do
     %__MODULE__{}
     |> cast(params, [:quest_id, :progress], empty_values: [""])
@@ -80,6 +83,7 @@ defmodule CGraphWeb.Validation.GamificationParams do
   @doc """
   Validate title selection.
   """
+  @spec validate_select_title(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_select_title(params) do
     %__MODULE__{}
     |> cast(params, [:title_id], empty_values: [""])
@@ -90,6 +94,7 @@ defmodule CGraphWeb.Validation.GamificationParams do
   @doc """
   Validate badge selection for display.
   """
+  @spec validate_select_badges(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_select_badges(params) do
     # Use embedded schema approach for array validation
     %__MODULE__{}
@@ -129,6 +134,7 @@ defmodule CGraphWeb.Validation.GamificationParams do
   @doc """
   Validate admin XP grant.
   """
+  @spec validate_admin_grant_xp(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_admin_grant_xp(params) do
     %__MODULE__{}
     |> cast(params, [:user_id, :amount, :reason], empty_values: [""])

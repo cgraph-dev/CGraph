@@ -16,6 +16,7 @@ defmodule CGraph.Forums.Feeds do
   @doc """
   Lists posts from all public forums (public feed).
   """
+  @spec list_public_feed(keyword()) :: {[Post.t()], map()}
   def list_public_feed(opts \\ []) do
     cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 25)
@@ -42,6 +43,7 @@ defmodule CGraph.Forums.Feeds do
   @doc """
   Lists posts from user's subscribed forums (home feed).
   """
+  @spec list_home_feed(struct() | nil, keyword()) :: {[Post.t()], map()}
   def list_home_feed(nil, _opts), do: {[], %{per_page: 25, has_next_page: false, next_cursor: nil}}
   def list_home_feed(user, opts) do
     cursor = Keyword.get(opts, :cursor, nil)
@@ -82,6 +84,7 @@ defmodule CGraph.Forums.Feeds do
   @doc """
   Lists popular posts (trending).
   """
+  @spec list_popular_feed(keyword()) :: {[Post.t()], map()}
   def list_popular_feed(opts \\ []) do
     cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 25)

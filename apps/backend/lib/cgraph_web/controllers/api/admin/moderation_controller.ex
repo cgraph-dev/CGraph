@@ -39,6 +39,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
   - `priority` - Filter by priority (critical, high, normal, low)
   - `limit` - Number of results (default 50, max 100)
   """
+  @spec list_reports(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_reports(conn, params) do
     opts = [
       status: normalize_atom(params["status"], :pending),
@@ -63,6 +64,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
   @doc """
   Get detailed information about a specific report.
   """
+  @spec show_report(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show_report(conn, %{"id" => id}) do
     case CGraph.Repo.get(Report, id) |> CGraph.Repo.preload([:reporter, :review_actions]) do
       nil ->
@@ -95,6 +97,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
   - `suspend` - Temporarily suspend user (requires duration_hours)
   - `ban` - Permanently ban user
   """
+  @spec review_report(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def review_report(conn, %{"id" => id} = params) do
     reviewer = conn.assigns.current_user
 
@@ -133,6 +136,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
   @doc """
   List pending appeals.
   """
+  @spec list_appeals(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def list_appeals(conn, params) do
     limit = to_integer(params["limit"], 50) |> min(100)
     appeals = Moderation.list_appeals(limit: limit)
@@ -152,6 +156,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
   }
   ```
   """
+  @spec review_appeal(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def review_appeal(conn, %{"id" => id} = params) do
     reviewer = conn.assigns.current_user
 
@@ -182,6 +187,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
   @doc """
   Get moderation statistics.
   """
+  @spec stats(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def stats(conn, _params) do
     stats = %{
       pending_reports: Moderation.pending_report_counts(),

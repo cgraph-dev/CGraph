@@ -47,6 +47,7 @@ defmodule CGraph.Forums.Comment do
   @doc """
   Create a new comment.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(comment, attrs) do
     comment
     |> cast(attrs, [:content, :author_id, :post_id, :parent_id])
@@ -61,6 +62,7 @@ defmodule CGraph.Forums.Comment do
   @doc """
   Edit comment content.
   """
+  @spec edit_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def edit_changeset(comment, attrs) do
     comment
     |> cast(attrs, [:content])
@@ -72,6 +74,7 @@ defmodule CGraph.Forums.Comment do
   @doc """
   Update vote counts.
   """
+  @spec vote_changeset(%__MODULE__{}, integer(), integer()) :: Ecto.Changeset.t()
   def vote_changeset(comment, upvotes, downvotes) do
     score = upvotes - downvotes
 
@@ -85,6 +88,7 @@ defmodule CGraph.Forums.Comment do
   @doc """
   Remove a comment (moderation action).
   """
+  @spec remove_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def remove_changeset(comment, attrs) do
     comment
     |> cast(attrs, [:removed_by_id, :removal_reason])
@@ -94,6 +98,7 @@ defmodule CGraph.Forums.Comment do
   @doc """
   Soft delete by author.
   """
+  @spec delete_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def delete_changeset(comment) do
     comment
     |> change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
@@ -124,5 +129,6 @@ defmodule CGraph.Forums.Comment do
   @doc """
   Maximum nesting depth.
   """
+  @spec max_depth() :: non_neg_integer()
   def max_depth, do: @max_depth
 end

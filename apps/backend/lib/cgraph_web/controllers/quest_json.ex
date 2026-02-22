@@ -3,10 +3,12 @@ defmodule CGraphWeb.QuestJSON do
   JSON rendering for quest endpoints.
   """
 
+  @spec index(map()) :: map()
   def index(%{quests: quests}) do
     %{data: Enum.map(quests, &render_quest/1)}
   end
 
+  @spec show(map()) :: map()
   def show(%{quest: quest, user_quest: user_quest}) do
     %{
       data: %{
@@ -16,18 +18,22 @@ defmodule CGraphWeb.QuestJSON do
     }
   end
 
+  @spec user_quests(map()) :: map()
   def user_quests(%{user_quests: user_quests}) do
     %{data: Enum.map(user_quests, &render_user_quest_with_quest/1)}
   end
 
+  @spec user_quest(map()) :: map()
   def user_quest(%{user_quest: user_quest}) do
     %{data: render_user_quest_with_quest(user_quest)}
   end
 
+  @spec daily(map()) :: map()
   def daily(%{quests: quests}) do
     %{data: Enum.map(quests, &render_quest_with_progress/1)}
   end
 
+  @spec weekly(map()) :: map()
   def weekly(%{quests: quests}) do
     %{data: Enum.map(quests, &render_quest_with_progress/1)}
   end

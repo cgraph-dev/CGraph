@@ -78,6 +78,7 @@ defmodule CGraph.Forums.Post do
   @doc """
   Create a new post.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(post, attrs) do
     post
     |> cast(attrs, [
@@ -99,6 +100,7 @@ defmodule CGraph.Forums.Post do
   @doc """
   Edit post content.
   """
+  @spec edit_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def edit_changeset(post, attrs) do
     post
     |> cast(attrs, [:title, :content, :is_nsfw, :is_spoiler, :flair_text, :flair_color])
@@ -109,6 +111,7 @@ defmodule CGraph.Forums.Post do
   @doc """
   Update vote counts and recalculate scores.
   """
+  @spec vote_changeset(%__MODULE__{}, integer(), integer()) :: Ecto.Changeset.t()
   def vote_changeset(post, upvotes, downvotes) do
     score = upvotes - downvotes
     hot_score = calculate_hot_score_value(score, post.inserted_at)
@@ -123,6 +126,7 @@ defmodule CGraph.Forums.Post do
   @doc """
   Pin/unpin a post.
   """
+  @spec pin_changeset(%__MODULE__{}, boolean()) :: Ecto.Changeset.t()
   def pin_changeset(post, is_pinned) do
     change(post, is_pinned: is_pinned)
   end
@@ -130,6 +134,7 @@ defmodule CGraph.Forums.Post do
   @doc """
   Lock/unlock a post.
   """
+  @spec lock_changeset(%__MODULE__{}, boolean()) :: Ecto.Changeset.t()
   def lock_changeset(post, is_locked) do
     change(post, is_locked: is_locked)
   end
@@ -137,6 +142,7 @@ defmodule CGraph.Forums.Post do
   @doc """
   Remove a post (moderation action).
   """
+  @spec remove_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def remove_changeset(post, attrs) do
     post
     |> cast(attrs, [:removed_by_id, :removal_reason])

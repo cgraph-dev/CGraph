@@ -74,6 +74,7 @@ defmodule CGraph.Gamification.ProfileTheme do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(theme, attrs) do
     theme
     |> cast(attrs, [
@@ -95,9 +96,14 @@ defmodule CGraph.Gamification.ProfileTheme do
     |> unique_constraint(:slug)
   end
 
+  @spec rarities() :: [String.t()]
   def rarities, do: @rarities
+  @spec presets() :: [String.t()]
   def presets, do: @presets
+  @spec layout_types() :: [String.t()]
   def layout_types, do: @layout_types
+  @spec hover_effects() :: [String.t()]
   def hover_effects, do: @hover_effects
+  @spec unlock_types() :: [String.t()]
   def unlock_types, do: @unlock_types
 end

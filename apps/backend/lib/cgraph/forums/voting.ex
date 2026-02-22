@@ -12,6 +12,7 @@ defmodule CGraph.Forums.Voting do
   @doc """
   Votes on a post (upvote or downvote).
   """
+  @spec vote_on_post(%CGraph.Accounts.User{}, %Post{}, :up | :down | String.t()) :: {:ok, term()} | {:error, term()}
   def vote_on_post(user, post, vote_type) when vote_type in [:up, :down, "up", "down"] do
     vote_value = if vote_type in [:up, "up"], do: 1, else: -1
 
@@ -56,6 +57,7 @@ defmodule CGraph.Forums.Voting do
   @doc """
   Removes a vote from a post.
   """
+  @spec remove_vote(%CGraph.Accounts.User{}, %Post{}) :: {:ok, %Post{} | nil}
   def remove_vote(user, post) do
     case Repo.get_by(Vote, user_id: user.id, post_id: post.id) do
       nil ->
@@ -71,6 +73,7 @@ defmodule CGraph.Forums.Voting do
   @doc """
   Gets the current karma score for a post.
   """
+  @spec get_post_karma(%Post{}) :: integer()
   def get_post_karma(post) do
     from(v in Vote,
       where: v.post_id == ^post.id,
@@ -82,6 +85,7 @@ defmodule CGraph.Forums.Voting do
   @doc """
   Gets a user's vote on a post.
   """
+  @spec get_user_vote(%CGraph.Accounts.User{}, %Post{}) :: :up | :down | nil
   def get_user_vote(user, post) do
     case Repo.get_by(Vote, user_id: user.id, post_id: post.id) do
       nil -> nil
@@ -92,6 +96,7 @@ defmodule CGraph.Forums.Voting do
   @doc """
   Votes on a comment.
   """
+  @spec vote_on_comment(%CGraph.Accounts.User{}, %CGraph.Forums.Comment{}, :up | :down | String.t()) :: {:ok, term()} | {:error, term()}
   def vote_on_comment(user, comment, vote_type) when vote_type in [:up, :down, "up", "down"] do
     vote_value = if vote_type in [:up, "up"], do: 1, else: -1
 
@@ -121,6 +126,7 @@ defmodule CGraph.Forums.Voting do
   @doc """
   Gets top posts by karma in a time period.
   """
+  @spec top_posts_by_karma(keyword()) :: [%Post{}]
   def top_posts_by_karma(opts \\ []) do
     limit = Keyword.get(opts, :limit, 10)
     since = Keyword.get(opts, :since, DateTime.add(DateTime.utc_now(), -7, :day))

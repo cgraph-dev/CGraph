@@ -153,6 +153,7 @@ defmodule CGraph.Services.Registry.HealthChecks do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec check_postgres() :: :healthy | :unhealthy
   def check_postgres do
     case CGraph.Repo.query("SELECT 1") do
       {:ok, _} -> :healthy
@@ -163,6 +164,7 @@ defmodule CGraph.Services.Registry.HealthChecks do
   end
 
   @doc false
+  @spec check_redis() :: :healthy | :unhealthy
   def check_redis do
     case CGraph.Redis.command(["PING"]) do
       {:ok, "PONG"} -> :healthy
@@ -173,6 +175,7 @@ defmodule CGraph.Services.Registry.HealthChecks do
   end
 
   @doc false
+  @spec check_cachex() :: :healthy | :unhealthy
   def check_cachex do
     case Cachex.stats(:cgraph_cache) do
       {:ok, _} -> :healthy
@@ -183,6 +186,7 @@ defmodule CGraph.Services.Registry.HealthChecks do
   end
 
   @doc false
+  @spec check_oban() :: :healthy | :unhealthy
   def check_oban do
     if Process.whereis(Oban) do
       :healthy
@@ -198,6 +202,7 @@ defmodule CGraph.Services.Registry.HealthChecks do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec emit_health_check(String.t(), atom(), non_neg_integer()) :: :ok
   def emit_health_check(name, state, duration) do
     :telemetry.execute(
       [:cgraph, :service, :health_check],
@@ -207,6 +212,7 @@ defmodule CGraph.Services.Registry.HealthChecks do
   end
 
   @doc false
+  @spec emit_state_change(String.t(), atom(), atom()) :: :ok
   def emit_state_change(name, from, to) do
     :telemetry.execute(
       [:cgraph, :service, :state_change],

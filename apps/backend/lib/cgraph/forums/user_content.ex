@@ -22,6 +22,7 @@ defmodule CGraph.Forums.UserContent do
   - `:sort` - Sort order: :newest, :oldest, :popular (default: :newest)
   - `:forum_id` - Filter by specific forum (optional)
   """
+  @spec list_user_posts(String.t(), keyword()) :: {[Post.t()], map()}
   def list_user_posts(user_id, opts \\ []) do
     cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 20)
@@ -59,6 +60,7 @@ defmodule CGraph.Forums.UserContent do
   - `:sort` - Sort order: :newest, :oldest, :popular, :most_replies (default: :newest)
   - `:forum_id` - Filter by specific forum (optional)
   """
+  @spec list_user_threads(String.t(), keyword()) :: {[Post.t()], map()}
   def list_user_threads(user_id, opts \\ []) do
     cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 20)
@@ -93,6 +95,7 @@ defmodule CGraph.Forums.UserContent do
   @doc """
   Gets post/thread count statistics for a user.
   """
+  @spec get_user_post_stats(String.t()) :: map()
   def get_user_post_stats(user_id) do
     post_count =
       from(p in Post,

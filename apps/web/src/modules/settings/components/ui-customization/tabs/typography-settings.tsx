@@ -16,7 +16,7 @@ export function TypographySettings({ preferences, updatePreference }: SettingsTa
           <Select
             label="Font Size"
             value={preferences.fontSize}
-            onChange={(value) => updatePreference('fontSize', value as UIPreferences['fontSize'])}
+            onChange={(value) => updatePreference('fontSize', value as UIPreferences['fontSize'])} // safe downcast – value constrained by Select options
             options={[
               { value: 'small', label: 'Small (14px)' },
               { value: 'medium', label: 'Medium (16px)' },
@@ -27,8 +27,8 @@ export function TypographySettings({ preferences, updatePreference }: SettingsTa
           <Select
             label="Font Family"
             value={preferences.fontFamily}
-            onChange={(value) =>
-              updatePreference('fontFamily', value as UIPreferences['fontFamily'])
+            onChange={
+              (value) => updatePreference('fontFamily', value as UIPreferences['fontFamily']) // safe downcast – value constrained by Select options
             }
             options={[
               { value: 'system', label: 'System Default' },
@@ -40,8 +40,8 @@ export function TypographySettings({ preferences, updatePreference }: SettingsTa
           <Select
             label="Font Weight"
             value={preferences.fontWeight}
-            onChange={(value) =>
-              updatePreference('fontWeight', value as UIPreferences['fontWeight'])
+            onChange={
+              (value) => updatePreference('fontWeight', value as UIPreferences['fontWeight']) // safe downcast – value constrained by Select options
             }
             options={[
               { value: 'light', label: 'Light (300)' },
@@ -60,8 +60,8 @@ export function TypographySettings({ preferences, updatePreference }: SettingsTa
           <Select
             label="Line Height"
             value={preferences.lineHeight}
-            onChange={(value) =>
-              updatePreference('lineHeight', value as UIPreferences['lineHeight'])
+            onChange={
+              (value) => updatePreference('lineHeight', value as UIPreferences['lineHeight']) // safe downcast – value constrained by Select options
             }
             options={[
               { value: 'compact', label: 'Compact (1.2)' },
@@ -73,8 +73,8 @@ export function TypographySettings({ preferences, updatePreference }: SettingsTa
           <Select
             label="Letter Spacing"
             value={preferences.letterSpacing}
-            onChange={(value) =>
-              updatePreference('letterSpacing', value as UIPreferences['letterSpacing'])
+            onChange={
+              (value) => updatePreference('letterSpacing', value as UIPreferences['letterSpacing']) // safe downcast – value constrained by Select options
             }
             options={[
               { value: 'tight', label: 'Tight (-0.05em)' },

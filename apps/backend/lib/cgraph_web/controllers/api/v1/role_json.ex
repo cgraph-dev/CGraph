@@ -3,10 +3,12 @@ defmodule CGraphWeb.API.V1.RoleJSON do
   JSON rendering for role responses.
   """
 
+  @spec index(map()) :: map()
   def index(%{roles: roles}) do
     %{data: Enum.map(roles, &role_data/1)}
   end
 
+  @spec show(map()) :: map()
   def show(%{role: role}) do
     %{data: role_data(role)}
   end
@@ -15,6 +17,7 @@ defmodule CGraphWeb.API.V1.RoleJSON do
   Render role data with permissions.
   Role schema uses permissions bitfield and boolean flags.
   """
+  @spec role_data(map()) :: map()
   def role_data(role) do
     %{
       id: role.id,

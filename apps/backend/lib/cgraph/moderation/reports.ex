@@ -43,6 +43,7 @@ defmodule CGraph.Moderation.Reports do
   @doc """
   Get all valid report categories.
   """
+  @spec report_categories() :: [atom()]
   def report_categories, do: @report_categories
 
   # ---------------------------------------------------------------------------
@@ -69,6 +70,7 @@ defmodule CGraph.Moderation.Reports do
   - `{:error, :duplicate}` - Same report already exists
   - `{:error, :self_report}` - Cannot report own content
   """
+  @spec create_report(User.t(), map()) :: {:ok, Report.t()} | {:error, Ecto.Changeset.t()} | {:error, :duplicate} | {:error, :self_report}
   def create_report(%User{} = reporter, attrs) do
     attrs = Map.put(attrs, :reporter_id, reporter.id)
 
@@ -99,6 +101,7 @@ defmodule CGraph.Moderation.Reports do
   @doc """
   List reports for moderation queue.
   """
+  @spec list_reports(keyword()) :: [Report.t()]
   def list_reports(opts \\ []) do
     status = Keyword.get(opts, :status, :pending)
     category = Keyword.get(opts, :category)
@@ -120,6 +123,7 @@ defmodule CGraph.Moderation.Reports do
   @doc """
   List reports created by a specific user.
   """
+  @spec list_user_reports(Ecto.UUID.t(), keyword()) :: map()
   def list_user_reports(user_id, opts \\ []) do
     query =
       from(r in Report,
@@ -139,6 +143,7 @@ defmodule CGraph.Moderation.Reports do
   @doc """
   Get a specific report belonging to a user.
   """
+  @spec get_user_report(Ecto.UUID.t(), Ecto.UUID.t()) :: Report.t() | nil
   def get_user_report(user_id, report_id) do
     Repo.get_by(Report, id: report_id, reporter_id: user_id)
   end
@@ -146,6 +151,7 @@ defmodule CGraph.Moderation.Reports do
   @doc """
   Get pending report count by priority.
   """
+  @spec pending_report_counts() :: map()
   def pending_report_counts do
     Repo.all(
       from r in Report,

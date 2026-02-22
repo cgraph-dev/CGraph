@@ -30,6 +30,7 @@ defmodule CGraph.Accounts.Token do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(token, attrs) do
     token
     |> cast(attrs, [:token, :type, :expires_at, :used_at, :revoked_at, :metadata, :user_id])
@@ -41,6 +42,7 @@ defmodule CGraph.Accounts.Token do
   @doc """
   Create a new token for a user.
   """
+  @spec create(Ecto.UUID.t(), String.t(), keyword()) :: %__MODULE__{}
   def create(user_id, type, opts \\ []) do
     expires_in = Keyword.get(opts, :expires_in, default_expiry(type))
     metadata = Keyword.get(opts, :metadata, %{})
@@ -57,6 +59,7 @@ defmodule CGraph.Accounts.Token do
   @doc """
   Generate a secure random token.
   """
+  @spec generate_token() :: String.t()
   def generate_token do
     :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
   end
@@ -64,6 +67,7 @@ defmodule CGraph.Accounts.Token do
   @doc """
   Check if a token is expired.
   """
+  @spec expired?(%__MODULE__{}) :: boolean()
   def expired?(%__MODULE__{expires_at: nil}), do: false
   def expired?(%__MODULE__{expires_at: expires_at}) do
     DateTime.compare(DateTime.utc_now(), expires_at) == :gt
@@ -72,6 +76,7 @@ defmodule CGraph.Accounts.Token do
   @doc """
   Check if a token is valid (not expired, not used, not revoked).
   """
+  @spec valid?(%__MODULE__{}) :: boolean()
   def valid?(%__MODULE__{} = token) do
     !expired?(token) && is_nil(token.used_at) && is_nil(token.revoked_at)
   end
@@ -79,6 +84,7 @@ defmodule CGraph.Accounts.Token do
   @doc """
   Query for expired tokens.
   """
+  @spec expired_query() :: Ecto.Query.t()
   def expired_query do
     from t in __MODULE__,
       where: t.expires_at < ^DateTime.utc_now()

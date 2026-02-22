@@ -3,14 +3,17 @@ defmodule CGraphWeb.API.V1.PMJSON do
   JSON rendering for Private Message endpoints.
   """
 
+  @spec folders(map()) :: map()
   def folders(%{folders: folders}) do
     %{folders: Enum.map(folders, &folder_data/1)}
   end
 
+  @spec folder(map()) :: map()
   def folder(%{folder: folder}) do
     %{folder: folder_data(folder)}
   end
 
+  @spec messages(map()) :: map()
   def messages(%{messages: messages, pagination: pagination}) do
     %{
       messages: Enum.map(messages, &message_data/1),
@@ -18,10 +21,12 @@ defmodule CGraphWeb.API.V1.PMJSON do
     }
   end
 
+  @spec message(map()) :: map()
   def message(%{message: message}) do
     %{message: message_data(message)}
   end
 
+  @spec drafts(map()) :: map()
   def drafts(%{drafts: drafts, pagination: pagination}) do
     %{
       drafts: Enum.map(drafts, &draft_data/1),
@@ -29,6 +34,7 @@ defmodule CGraphWeb.API.V1.PMJSON do
     }
   end
 
+  @spec draft(map()) :: map()
   def draft(%{draft: draft}) do
     %{draft: draft_data(draft)}
   end

@@ -13,6 +13,7 @@ defmodule CGraph.Cache.L2 do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec get(term()) :: {:ok, term()} | {:error, term()}
   def get(key) do
     case Cachex.get(@cachex_name, key) do
       {:ok, nil} -> {:error, :not_found}
@@ -22,6 +23,7 @@ defmodule CGraph.Cache.L2 do
   end
 
   @doc false
+  @spec set(term(), term(), non_neg_integer() | :infinity) :: :ok | {:error, term()}
   def set(key, value, ttl) do
     opts = if ttl == :infinity, do: [], else: [ttl: ttl]
 
@@ -32,17 +34,20 @@ defmodule CGraph.Cache.L2 do
   end
 
   @doc false
+  @spec delete(term()) :: :ok
   def delete(key) do
     Cachex.del(@cachex_name, key)
     :ok
   end
 
   @doc false
+  @spec clear() :: {:ok, non_neg_integer()}
   def clear do
     Cachex.clear(@cachex_name)
   end
 
   @doc false
+  @spec size() :: non_neg_integer()
   def size do
     case Cachex.size(@cachex_name) do
       {:ok, size} -> size
@@ -51,6 +56,7 @@ defmodule CGraph.Cache.L2 do
   end
 
   @doc false
+  @spec stats() :: map()
   def stats do
     case Cachex.stats(@cachex_name) do
       {:ok, stats} -> stats
@@ -63,6 +69,7 @@ defmodule CGraph.Cache.L2 do
 
   Pattern supports `*` wildcard (translated to `.*` regex).
   """
+  @spec get_matching_keys(String.t()) :: [String.t()]
   def get_matching_keys(pattern) do
     regex =
       pattern

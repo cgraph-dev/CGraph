@@ -13,6 +13,7 @@ defmodule CGraph.Forums.Polls do
   @doc """
   Create a poll for a thread.
   """
+  @spec create_thread_poll(String.t(), map()) :: {:ok, ThreadPoll.t()} | {:error, Ecto.Changeset.t()}
   def create_thread_poll(thread_id, attrs) do
     %ThreadPoll{}
     |> ThreadPoll.changeset(Map.put(attrs, :thread_id, thread_id))
@@ -22,6 +23,7 @@ defmodule CGraph.Forums.Polls do
   @doc """
   Get poll for a thread.
   """
+  @spec get_thread_poll(String.t()) :: ThreadPoll.t() | nil
   def get_thread_poll(thread_id) do
     Repo.get_by(ThreadPoll, thread_id: thread_id)
   end
@@ -34,6 +36,7 @@ defmodule CGraph.Forums.Polls do
   - `user_id` - The voting user
   - `option_ids` - List of selected option IDs
   """
+  @spec vote_poll(String.t(), String.t(), [String.t()]) :: {:ok, PollVote.t()} | {:error, atom()}
   def vote_poll(poll_id, user_id, option_ids) when is_list(option_ids) do
     poll = Repo.get!(ThreadPoll, poll_id)
 
@@ -47,6 +50,7 @@ defmodule CGraph.Forums.Polls do
   @doc """
   Check if a user has voted on a poll.
   """
+  @spec has_voted?(String.t(), String.t()) :: boolean()
   def has_voted?(poll_id, user_id) do
     Repo.exists?(
       from v in PollVote,
@@ -57,6 +61,7 @@ defmodule CGraph.Forums.Polls do
   @doc """
   Get poll results with vote counts.
   """
+  @spec get_poll_results(String.t()) :: map()
   def get_poll_results(poll_id) do
     poll = Repo.get!(ThreadPoll, poll_id)
 

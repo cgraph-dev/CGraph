@@ -15,16 +15,19 @@ defmodule CGraph.Forums.DigestWorker do
   @daily_hour 8   # 8 AM UTC
   @weekly_day 1   # Monday
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
+  @spec init(map()) :: {:ok, map()}
   @impl true
   def init(state) do
     schedule_next_check()
     {:ok, state}
   end
 
+  @spec handle_info(:check_digests, map()) :: {:noreply, map()}
   @impl true
   def handle_info(:check_digests, state) do
     now = DateTime.utc_now()
@@ -51,6 +54,7 @@ defmodule CGraph.Forums.DigestWorker do
   @doc """
   Process daily digest subscriptions.
   """
+  @spec process_daily_digests() :: :ok
   def process_daily_digests do
     Logger.info("Processing daily digest subscriptions...")
 
@@ -80,6 +84,7 @@ defmodule CGraph.Forums.DigestWorker do
   @doc """
   Process weekly digest subscriptions.
   """
+  @spec process_weekly_digests() :: :ok
   def process_weekly_digests do
     Logger.info("Processing weekly digest subscriptions...")
 
@@ -181,6 +186,9 @@ defmodule CGraph.Forums.DigestWorker do
   @doc """
   Manually trigger digest processing (for testing).
   """
+  @spec trigger_daily() :: :ok
   def trigger_daily, do: process_daily_digests()
+
+  @spec trigger_weekly() :: :ok
   def trigger_weekly, do: process_weekly_digests()
 end

@@ -47,7 +47,7 @@ export function fromApiParams<T extends Record<string, unknown>>(
   for (const [snakeKey, value] of Object.entries(apiData)) {
     const camelKey = reverseSchema[snakeKey] || snakeToCamel(snakeKey);
     if (camelKey in defaults) {
-      (result as Record<string, unknown>)[camelKey] = value;
+      (result as Record<string, unknown>)[camelKey] = value; // safe downcast – T extends Record<string, unknown>
     }
   }
 
@@ -59,9 +59,9 @@ export function fromApiParams<T extends Record<string, unknown>>(
  */
 export function createSchemaMapper<T = Record<string, unknown>>(schema: FieldSchema) {
   return {
-    toApi: (updates: Partial<T>) => toApiParams(updates as Record<string, unknown>, schema),
+    toApi: (updates: Partial<T>) => toApiParams(updates as Record<string, unknown>, schema), // safe downcast – Partial<T> to Record
     fromApi: (apiData: Record<string, unknown>, defaults: T) =>
-      fromApiParams(apiData, schema, defaults as Record<string, unknown>) as T,
+      fromApiParams(apiData, schema, defaults as Record<string, unknown>) as T, // safe downcast – generic boundary
     schema,
   };
 }
@@ -110,16 +110,16 @@ export function createDebouncedSave<T extends BaseStoreState>(
       clearTimeout(existingTimer);
     }
 
-    set({ isSaving: true, error: null } as Partial<T>);
+    set({ isSaving: true, error: null } as Partial<T>); // safe downcast – Zustand set requires Partial<T>
 
     const timer = setTimeout(async () => {
       saveTimers.delete(key);
       try {
         await saveFn(state, set);
-        set({ isSaving: false } as Partial<T>);
+        set({ isSaving: false } as Partial<T>); // safe downcast – Zustand set requires Partial<T>
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Save failed';
-        set({ isSaving: false, error: errorMessage } as Partial<T>);
+        set({ isSaving: false, error: errorMessage } as Partial<T>); // safe downcast – Zustand set requires Partial<T>
       }
     }, delay);
 

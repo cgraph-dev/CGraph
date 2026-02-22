@@ -77,6 +77,7 @@ defmodule CGraph.Forums.Thread do
   @doc """
   Changeset for creating a new thread.
   """
+  @spec changeset(%__MODULE__{} | Ecto.Changeset.t(), map()) :: Ecto.Changeset.t()
   def changeset(thread, attrs) do
     thread
     |> cast(attrs, [
@@ -97,6 +98,7 @@ defmodule CGraph.Forums.Thread do
   @doc """
   Changeset for updating thread stats.
   """
+  @spec stats_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def stats_changeset(thread, attrs) do
     thread
     |> cast(attrs, [
@@ -108,6 +110,7 @@ defmodule CGraph.Forums.Thread do
   @doc """
   Changeset for moderator actions.
   """
+  @spec moderation_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def moderation_changeset(thread, attrs) do
     thread
     |> cast(attrs, [:is_locked, :is_pinned, :is_hidden, :is_approved, :thread_type])

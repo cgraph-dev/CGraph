@@ -43,6 +43,7 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
   # Public API
   # ===========================================================================
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
@@ -50,6 +51,7 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
   @doc """
   Get the current slow query statistics.
   """
+  @spec get_stats() :: map()
   def get_stats do
     queries = :ets.tab2list(@table)
     n_plus_ones = :ets.tab2list(@n_plus_one_table)
@@ -69,6 +71,7 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
   @doc """
   Reset statistics (called after periodic report).
   """
+  @spec reset_stats() :: :ok
   def reset_stats do
     :ets.delete_all_objects(@table)
     :ets.delete_all_objects(@n_plus_one_table)
@@ -119,6 +122,7 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
   # Telemetry Handler
   # ===========================================================================
 
+  @spec handle_query([atom()], map(), map(), map()) :: :ok
   def handle_query([:cgraph, :repo, :query], measurements, metadata, config) do
     duration_ms = System.convert_time_unit(measurements.total_time, :native, :millisecond)
 

@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.GroupMemberJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @spec index(map()) :: map()
   def index(%{members: members, meta: meta}) do
     %{
       data: Enum.map(members, &member_data/1),
@@ -12,18 +13,22 @@ defmodule CGraphWeb.API.V1.GroupMemberJSON do
     }
   end
 
+  @spec show(map()) :: map()
   def show(%{member: member}) do
     %{data: member_data(member)}
   end
 
+  @spec ban(map()) :: map()
   def ban(%{ban: ban}) do
     %{data: ban_data(ban)}
   end
 
+  @spec bans(map()) :: map()
   def bans(%{bans: bans}) do
     %{data: Enum.map(bans, &ban_data/1)}
   end
 
+  @spec transfer(map()) :: map()
   def transfer(%{group: group}) do
     %{
       data: %{
@@ -37,6 +42,7 @@ defmodule CGraphWeb.API.V1.GroupMemberJSON do
   @doc """
   Render member data with user, roles, and status.
   """
+  @spec member_data(map()) :: map()
   def member_data(member) do
     %{
       id: member.id,

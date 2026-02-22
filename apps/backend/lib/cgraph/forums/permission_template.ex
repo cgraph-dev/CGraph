@@ -36,6 +36,7 @@ defmodule CGraph.Forums.PermissionTemplate do
   @doc """
   Create or update a permission template.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(template, attrs) do
     template
     |> cast(attrs, [:name, :description, :is_system, :permissions, :forum_id])
@@ -86,6 +87,7 @@ defmodule CGraph.Forums.PermissionTemplate do
   @doc """
   Query for all system (global) templates.
   """
+  @spec system_templates_query() :: Ecto.Query.t()
   def system_templates_query do
     from t in __MODULE__,
       where: t.is_system == true,
@@ -96,6 +98,7 @@ defmodule CGraph.Forums.PermissionTemplate do
   Query for templates available to a forum.
   Includes system templates and forum-specific templates.
   """
+  @spec available_for_forum_query(Ecto.UUID.t()) :: Ecto.Query.t()
   def available_for_forum_query(forum_id) do
     from t in __MODULE__,
       where: t.is_system == true or t.forum_id == ^forum_id,
@@ -105,6 +108,7 @@ defmodule CGraph.Forums.PermissionTemplate do
   @doc """
   Query for templates created by a specific forum.
   """
+  @spec for_forum_query(Ecto.UUID.t()) :: Ecto.Query.t()
   def for_forum_query(forum_id) do
     from t in __MODULE__,
       where: t.forum_id == ^forum_id,
@@ -118,6 +122,7 @@ defmodule CGraph.Forums.PermissionTemplate do
   @doc """
   Get built-in template definitions.
   """
+  @spec built_in_templates() :: [map()]
   def built_in_templates do
     [
       %{
@@ -228,6 +233,7 @@ defmodule CGraph.Forums.PermissionTemplate do
   @doc """
   Get a specific built-in template by name.
   """
+  @spec get_built_in(String.t()) :: map() | nil
   def get_built_in(name) do
     Enum.find(built_in_templates(), fn t -> t.name == name end)
   end

@@ -208,14 +208,23 @@ defmodule CGraph.Notifications do
   # Delegated: Queries
   # ---------------------------------------------------------------------------
 
+  @spec list_notifications(User.t(), keyword()) :: {[Notification.t()], map()}
   defdelegate list_notifications(user, opts \\ []), to: Queries
+  @spec unread_count(User.t()) :: non_neg_integer()
   defdelegate unread_count(user), to: Queries
+  @spec mark_read(Notification.t()) :: {:ok, Notification.t()} | {:error, Ecto.Changeset.t()}
   defdelegate mark_read(notification), to: Queries
+  @spec mark_as_read(Notification.t() | String.t()) :: {:ok, Notification.t()} | {:error, :not_found | Ecto.Changeset.t()}
   defdelegate mark_as_read(notification_or_id), to: Queries
+  @spec mark_as_unread(Notification.t() | String.t()) :: {:ok, Notification.t()} | {:error, :not_found | Ecto.Changeset.t()}
   defdelegate mark_as_unread(notification_or_id), to: Queries
+  @spec mark_all_read(User.t()) :: {non_neg_integer(), nil | [term()]}
   defdelegate mark_all_read(user), to: Queries
+  @spec mark_read_up_to(User.t(), String.t()) :: {:error, :not_found} | {non_neg_integer(), nil | [term()]}
   defdelegate mark_read_up_to(user, notification_id), to: Queries
+  @spec mark_clicked(Notification.t()) :: {:ok, Notification.t()} | {:error, Ecto.Changeset.t()}
   defdelegate mark_clicked(notification), to: Queries
+  @spec mark_all_as_read(User.t(), keyword()) :: {:ok, non_neg_integer()}
   defdelegate mark_all_as_read(user, opts \\ []), to: Queries
 
   @doc "Gets a single notification by ID."
@@ -226,21 +235,33 @@ defmodule CGraph.Notifications do
   @spec get_notification(User.t(), binary()) :: {:ok, Notification.t()} | {:error, :not_found}
   def get_notification(%User{} = user, id), do: Queries.get_notification(user, id)
 
+  @spec get_unread_counts(User.t()) :: %{total: non_neg_integer(), by_type: map()}
   defdelegate get_unread_counts(user), to: Queries
+  @spec delete_notification(Notification.t()) :: {:ok, Notification.t()} | {:error, Ecto.Changeset.t()}
   defdelegate delete_notification(notification), to: Queries
+  @spec delete_all(User.t()) :: {non_neg_integer(), nil | [term()]}
   defdelegate delete_all(user), to: Queries
+  @spec delete_all_notifications(User.t(), keyword()) :: {:ok, non_neg_integer()}
   defdelegate delete_all_notifications(user, opts \\ []), to: Queries
+  @spec cleanup_old_notifications(pos_integer()) :: {non_neg_integer(), nil | [term()]}
   defdelegate cleanup_old_notifications(days \\ 30), to: Queries
 
   # ---------------------------------------------------------------------------
   # Delegated: Push Tokens
   # ---------------------------------------------------------------------------
 
+  @spec register_push_token(User.t(), map()) :: {:ok, CGraph.Accounts.PushToken.t()} | {:error, Ecto.Changeset.t()}
   defdelegate register_push_token(user, token_params), to: PushTokens
+  @spec list_push_tokens(User.t()) :: [CGraph.Accounts.PushToken.t()]
   defdelegate list_push_tokens(user), to: PushTokens
+  @spec get_push_token(User.t(), String.t()) :: {:ok, CGraph.Accounts.PushToken.t()} | {:error, :not_found}
   defdelegate get_push_token(user, token_id), to: PushTokens
+  @spec get_push_token_by_value(User.t(), String.t()) :: {:ok, CGraph.Accounts.PushToken.t()} | {:error, :not_found}
   defdelegate get_push_token_by_value(user, token_value), to: PushTokens
+  @spec update_push_token(User.t(), map()) :: {:ok, CGraph.Accounts.PushToken.t()} | {:error, :not_found | Ecto.Changeset.t()}
   defdelegate update_push_token(user, token_params), to: PushTokens
+  @spec delete_push_token(CGraph.Accounts.PushToken.t() | String.t()) :: {:ok, CGraph.Accounts.PushToken.t()} | {:error, :not_found | Ecto.Changeset.t()}
   defdelegate delete_push_token(token_or_id), to: PushTokens
+  @spec delete_push_token_by_device(User.t(), String.t()) :: {:ok, CGraph.Accounts.PushToken.t()} | {:error, :not_found | Ecto.Changeset.t()}
   defdelegate delete_push_token_by_device(user, device_id), to: PushTokens
 end

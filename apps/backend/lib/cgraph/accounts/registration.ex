@@ -15,6 +15,7 @@ defmodule CGraph.Accounts.Registration do
   @doc """
   Registers a new user.
   """
+  @spec register(map()) :: {:ok, %User{}} | {:error, Ecto.Changeset.t() | term()}
   def register(attrs) do
     Repo.transaction(fn ->
       case Users.create_user(attrs) do
@@ -38,6 +39,7 @@ defmodule CGraph.Accounts.Registration do
   @doc """
   Generates an email verification token.
   """
+  @spec generate_verification_token(%User{}) :: {:ok, %Token{}} | {:error, Ecto.Changeset.t()}
   def generate_verification_token(user) do
     token = :crypto.strong_rand_bytes(32) |> Base.url_encode64()
     expires_at = DateTime.add(DateTime.utc_now(), @verification_token_hours, :hour)
@@ -55,6 +57,7 @@ defmodule CGraph.Accounts.Registration do
   @doc """
   Verifies an email using a token.
   """
+  @spec verify_email(String.t()) :: {:ok, %User{}} | {:error, :invalid_token}
   def verify_email(token) do
     now = DateTime.utc_now()
 
@@ -88,6 +91,7 @@ defmodule CGraph.Accounts.Registration do
   @doc """
   Resends verification email.
   """
+  @spec resend_verification_email(%User{}) :: :ok | {:error, :already_verified | term()}
   def resend_verification_email(user) do
     if is_nil(user.email_verified_at) do
       # Invalidate existing tokens
@@ -109,6 +113,7 @@ defmodule CGraph.Accounts.Registration do
   @doc """
   Checks if a username is available.
   """
+  @spec username_available?(String.t()) :: boolean()
   def username_available?(username) do
     not Repo.exists?(
       from(u in User, where: fragment("lower(?)", u.username) == ^String.downcase(username))
@@ -118,6 +123,7 @@ defmodule CGraph.Accounts.Registration do
   @doc """
   Checks if an email is available.
   """
+  @spec email_available?(String.t()) :: boolean()
   def email_available?(email) do
     not Repo.exists?(
       from(u in User, where: fragment("lower(?)", u.email) == ^String.downcase(email))
@@ -127,6 +133,7 @@ defmodule CGraph.Accounts.Registration do
   @doc """
   Validates registration data without creating user.
   """
+  @spec validate_registration(map()) :: :ok | {:error, Ecto.Changeset.t()}
   def validate_registration(attrs) do
     changeset = User.registration_changeset(%User{}, attrs)
 

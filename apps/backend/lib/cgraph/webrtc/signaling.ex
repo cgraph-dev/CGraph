@@ -13,6 +13,7 @@ defmodule CGraph.WebRTC.Signaling do
   Handle incoming ICE candidate from a peer.
   Broadcasts to other participants in the room.
   """
+  @spec handle_ice_candidate(String.t(), String.t(), map()) :: :ok | {:error, :room_not_found}
   def handle_ice_candidate(room_id, from_id, candidate) do
     case WebRTC.get_room(room_id) do
       {:ok, room} ->
@@ -41,6 +42,7 @@ defmodule CGraph.WebRTC.Signaling do
   @doc """
   Handle SDP offer/answer exchange.
   """
+  @spec handle_sdp(String.t(), String.t(), String.t(), String.t(), String.t()) :: :ok | {:error, :room_not_found | :participant_not_found}
   def handle_sdp(room_id, from_id, to_id, sdp_type, sdp) do
     case WebRTC.get_room(room_id) do
       {:ok, room} ->
@@ -69,6 +71,7 @@ defmodule CGraph.WebRTC.Signaling do
   @doc """
   Send ringing notification to callees.
   """
+  @spec ring(String.t(), [String.t()]) :: :ok | {:error, term()}
   def ring(room_id, callee_ids) when is_list(callee_ids) do
     case WebRTC.get_room(room_id) do
       {:ok, room} ->
@@ -94,6 +97,7 @@ defmodule CGraph.WebRTC.Signaling do
   @doc """
   Get ICE server configuration for clients.
   """
+  @spec get_ice_servers() :: [map()]
   def get_ice_servers do
     stun =
       config(:stun_servers) || [
@@ -123,6 +127,7 @@ defmodule CGraph.WebRTC.Signaling do
   @doc """
   Check if SFU mode is enabled.
   """
+  @spec sfu_enabled?() :: boolean()
   def sfu_enabled? do
     config(:sfu_enabled) == true
   end
@@ -130,6 +135,7 @@ defmodule CGraph.WebRTC.Signaling do
   @doc """
   Get SFU connection URL.
   """
+  @spec get_sfu_url() :: String.t() | nil
   def get_sfu_url do
     config(:sfu_url)
   end

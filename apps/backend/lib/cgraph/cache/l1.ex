@@ -15,6 +15,7 @@ defmodule CGraph.Cache.L1 do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec get(term()) :: {:ok, term()} | {:error, :not_found}
   def get(key) do
     table = ensure_table()
 
@@ -33,6 +34,7 @@ defmodule CGraph.Cache.L1 do
   end
 
   @doc false
+  @spec set(term(), term(), non_neg_integer() | :infinity) :: :ok
   def set(key, value, ttl) do
     table = ensure_table()
 
@@ -48,6 +50,7 @@ defmodule CGraph.Cache.L1 do
   end
 
   @doc false
+  @spec delete(term()) :: :ok
   def delete(key) do
     table = ensure_table()
     :ets.delete(table, key)
@@ -55,6 +58,7 @@ defmodule CGraph.Cache.L1 do
   end
 
   @doc false
+  @spec clear() :: :ok
   def clear do
     if :ets.whereis(@l1_table) != :undefined do
       :ets.delete_all_objects(@l1_table)
@@ -64,6 +68,7 @@ defmodule CGraph.Cache.L1 do
   end
 
   @doc false
+  @spec stats() :: map()
   def stats do
     if :ets.whereis(@l1_table) != :undefined do
       %{
@@ -76,6 +81,7 @@ defmodule CGraph.Cache.L1 do
   end
 
   @doc false
+  @spec size() :: non_neg_integer()
   def size do
     if :ets.whereis(@l1_table) != :undefined do
       :ets.info(@l1_table, :size)

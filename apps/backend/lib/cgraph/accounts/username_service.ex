@@ -17,6 +17,7 @@ defmodule CGraph.Accounts.UsernameService do
   Check if a user can change their username.
   Returns {:ok, remaining_days} if allowed, {:error, reason} otherwise.
   """
+  @spec can_change_username?(Ecto.UUID.t(), boolean()) :: {:ok, non_neg_integer()} | {:error, {:cooldown, non_neg_integer()}}
   def can_change_username?(user_id, is_premium \\ false) do
     user = Repo.get!(User, user_id)
     cooldown_days = if is_premium, do: @premium_cooldown_days, else: @default_cooldown_days
@@ -39,6 +40,7 @@ defmodule CGraph.Accounts.UsernameService do
   @doc """
   Change a user's username.
   """
+  @spec change_username(Ecto.UUID.t(), String.t(), keyword()) :: {:ok, %User{}} | {:error, term()}
   def change_username(user_id, new_username, opts \\ []) do
     is_admin = Keyword.get(opts, :admin, false)
     is_premium = Keyword.get(opts, :premium, false)
@@ -96,6 +98,7 @@ defmodule CGraph.Accounts.UsernameService do
   @doc """
   Get username change history for a user.
   """
+  @spec get_history(Ecto.UUID.t()) :: [%UsernameChange{}]
   def get_history(user_id) do
     from(uc in UsernameChange,
       where: uc.user_id == ^user_id,
@@ -107,6 +110,7 @@ defmodule CGraph.Accounts.UsernameService do
   @doc """
   Check if a username was recently released (within 30 days).
   """
+  @spec username_recently_released?(String.t()) :: boolean()
   def username_recently_released?(username) do
     thirty_days_ago = DateTime.add(DateTime.utc_now(), -30, :day)
 
@@ -121,6 +125,7 @@ defmodule CGraph.Accounts.UsernameService do
   @doc """
   Check if a username is taken by another user.
   """
+  @spec username_taken?(String.t(), Ecto.UUID.t() | nil) :: boolean()
   def username_taken?(username, exclude_user_id \\ nil) do
     query = from(u in User, where: u.username == ^username)
 
@@ -137,6 +142,7 @@ defmodule CGraph.Accounts.UsernameService do
   @doc """
   Admin: Force change a user's username.
   """
+  @spec admin_change_username(Ecto.UUID.t(), Ecto.UUID.t(), String.t(), String.t()) :: {:ok, %User{}} | {:error, term()}
   def admin_change_username(admin_id, user_id, new_username, reason) do
     change_username(user_id, new_username, admin: true, reason: "Admin (#{admin_id}): #{reason}")
   end

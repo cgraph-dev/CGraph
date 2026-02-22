@@ -16,6 +16,7 @@ defmodule CGraph.Cache.Distributed.L2 do
 
   Returns `{:ok, value}` or `:miss`.
   """
+  @spec get(term()) :: {:ok, term()} | :miss
   def get(key) do
     case Cachex.get(:cgraph_cache, key) do
       {:ok, nil} -> :miss
@@ -27,6 +28,7 @@ defmodule CGraph.Cache.Distributed.L2 do
   @doc """
   Set a value in L2 cache with TTL and optional compression.
   """
+  @spec set(term(), term(), non_neg_integer(), keyword()) :: {:ok, boolean()}
   def set(key, value, ttl, opts) do
     should_compress =
       Keyword.get(opts, :compress, L1.byte_size_estimate(value) > L1.compression_threshold())
@@ -46,6 +48,7 @@ defmodule CGraph.Cache.Distributed.L2 do
   @doc """
   Delete a key from L2 cache.
   """
+  @spec delete(term()) :: {:ok, boolean()}
   def delete(key) do
     Cachex.del(:cgraph_cache, key)
   end
@@ -53,6 +56,7 @@ defmodule CGraph.Cache.Distributed.L2 do
   @doc """
   Delete keys matching a pattern from L2 cache using Cachex stream.
   """
+  @spec delete_pattern(String.t()) :: non_neg_integer()
   def delete_pattern(pattern) do
     count =
       Cachex.stream!(:cgraph_cache)
@@ -73,6 +77,7 @@ defmodule CGraph.Cache.Distributed.L2 do
   @doc """
   Get multiple keys from L2 cache.
   """
+  @spec get_many([term()]) :: map()
   def get_many(keys) do
     keys
     |> Enum.reduce(%{}, fn key, acc ->
@@ -86,6 +91,7 @@ defmodule CGraph.Cache.Distributed.L2 do
   @doc """
   Set multiple key-value pairs in L2 cache.
   """
+  @spec set_many([{term(), term()}], non_neg_integer()) :: :ok
   def set_many(entries, ttl) do
     Enum.each(entries, fn {key, value} ->
       set(key, value, ttl, [])

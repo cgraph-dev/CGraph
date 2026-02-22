@@ -70,6 +70,7 @@ defmodule CGraphWeb.Validation.UserParams do
   @doc """
   Validate parameters for updating user profile.
   """
+  @spec validate_update(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_update(params) do
     %__MODULE__{}
     |> cast(params, [
@@ -89,6 +90,7 @@ defmodule CGraphWeb.Validation.UserParams do
   @doc """
   Validate parameters for changing username.
   """
+  @spec validate_username_change(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_username_change(params) do
     %__MODULE__{}
     |> cast(params, [:username], empty_values: [""])
@@ -100,6 +102,7 @@ defmodule CGraphWeb.Validation.UserParams do
   @doc """
   Validate privacy settings update.
   """
+  @spec validate_privacy_settings(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_privacy_settings(params) do
     %__MODULE__{}
     |> cast(params, [
@@ -113,6 +116,7 @@ defmodule CGraphWeb.Validation.UserParams do
   @doc """
   Validate notification settings update.
   """
+  @spec validate_notification_settings(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_notification_settings(params) do
     %__MODULE__{}
     |> cast(params, [
@@ -125,6 +129,7 @@ defmodule CGraphWeb.Validation.UserParams do
   @doc """
   Validate appearance/preference settings.
   """
+  @spec validate_appearance_settings(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_appearance_settings(params) do
     %__MODULE__{}
     |> cast(params, [:theme, :language, :timezone], empty_values: [""])
@@ -137,6 +142,7 @@ defmodule CGraphWeb.Validation.UserParams do
   @doc """
   Validate search parameters for users.
   """
+  @spec validate_search(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_search(params) do
     %__MODULE__{}
     |> cast(params, [:query, :page, :per_page], empty_values: [""])

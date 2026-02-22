@@ -47,6 +47,7 @@ defmodule CGraphWeb.API.V1.RssController do
   Get RSS feed of recent threads across a forum.
   GET /api/v1/rss/forums/:forum_id/threads
   """
+  @spec forum_threads(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def forum_threads(conn, %{"forum_id" => forum_id} = params) do
     limit = parse_int(params["limit"], @default_limit, min: 1, max: @max_limit)
     format = Map.get(params, "format", "rss")
@@ -72,6 +73,7 @@ defmodule CGraphWeb.API.V1.RssController do
   Get RSS feed of recent posts across a forum.
   GET /api/v1/rss/forums/:forum_id/posts
   """
+  @spec forum_posts(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def forum_posts(conn, %{"forum_id" => forum_id} = params) do
     limit = parse_int(params["limit"], @default_limit, min: 1, max: @max_limit)
     format = Map.get(params, "format", "rss")
@@ -101,6 +103,7 @@ defmodule CGraphWeb.API.V1.RssController do
   Get RSS feed of threads in a specific board.
   GET /api/v1/rss/boards/:board_id/threads
   """
+  @spec board_threads(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def board_threads(conn, %{"board_id" => board_id} = params) do
     limit = parse_int(params["limit"], @default_limit, min: 1, max: @max_limit)
     format = Map.get(params, "format", "rss")
@@ -131,6 +134,7 @@ defmodule CGraphWeb.API.V1.RssController do
   Get RSS feed of posts in a specific thread.
   GET /api/v1/rss/threads/:thread_id/posts
   """
+  @spec thread_posts(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def thread_posts(conn, %{"thread_id" => thread_id} = params) do
     limit = parse_int(params["limit"], @default_limit, min: 1, max: @max_limit)
     format = Map.get(params, "format", "rss")
@@ -162,6 +166,7 @@ defmodule CGraphWeb.API.V1.RssController do
   Get RSS feed of a user's public activity.
   GET /api/v1/rss/users/:user_id/activity
   """
+  @spec user_activity(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def user_activity(conn, %{"user_id" => user_id} = params) do
     limit = parse_int(params["limit"], @default_limit, min: 1, max: @max_limit)
     format = Map.get(params, "format", "rss")
@@ -192,6 +197,7 @@ defmodule CGraphWeb.API.V1.RssController do
   Get RSS feed of recent activity across all public forums.
   GET /api/v1/rss/global/activity
   """
+  @spec global_activity(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def global_activity(conn, params) do
     limit = parse_int(params["limit"], @default_limit, min: 1, max: @max_limit)
     format = Map.get(params, "format", "rss")

@@ -1,6 +1,6 @@
 # CGraph World-Class Gap Analysis
 
-> **Version**: 0.9.41 | **Audit Date**: February 22, 2026 **Standard**: Google/Discord/Meta/Telegram
+> **Version**: 0.9.42 | **Audit Date**: February 22, 2026 **Standard**: Google/Discord/Meta/Telegram
 > | **Target**: 100% plan compliance **Methodology**: Automated codebase scan against all 15
 > mandatory rules + 106 wave tasks
 
@@ -655,7 +655,7 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | State Management (Rule 3)   | **100%** (all stores have reset)  | **100%**       | 100%                |
 | Cross-Platform (Rule 5)     | **100%** (12/12 packages)         | **100%**       | 100% (12/12)        |
 | Documentation (Rule 6)      | 75%                               | 80%            | 100%                |
-| Backend Standards (Rule 7)  | **63.4%** (3,038/4,792 specs)     | **70%**        | 100%                |
+| Backend Standards (Rule 7)  | **70.2%** (3,365/4,792 specs)     | **80%**        | 100%                |
 | File Size (Rule 8)          | **~90%** (8 Elixir + 6 TSX over)  | **95%**        | 100%                |
 | Testing (Rule 9)            | 18% ratio                         | 20%            | 100%                |
 | Performance (Rule 10)       | **100%** (0 offsets)              | **100%**       | 100%                |
@@ -664,7 +664,7 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | CI/CD (Rule 13)             | **100%** (17/17)                  | **100%**       | 100%                |
 | Observability (Rule 14)     | **100%** (0 violations)           | **100%**       | 100%                |
 | API Contract (Rule 15)      | **100%** (cursor + standardized)  | **100%**       | 100%                |
-| **Overall**                 | **~91%**                          | **~95%**       | **100%**            |
+| **Overall**                 | **~93%**                          | **~95%**       | **100%**            |
 
 ---
 
@@ -710,4 +710,14 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 > across 8 TypeScript files (response-extractors, normalizers, forumStore.core,
 > forumHosting-mappers, profile-mappers, calendar-events, referral-actions, gamification-queries) —
 > replaced unsafe `as` casts with runtime type guards (isRecord, asString, asNumber helpers). @spec:
-> 3,038/4,792 (63.4%).
+> 3,038/4,792 (63.4%). **Session 45** (2026-02-22): Added 327 more @spec annotations across 40+
+> Elixir modules pushing coverage past 70% target (3,365/4,792 = 70.2%). Modules: forum schemas
+> (member, post, comment, permission_template, voting, categories, boards), gamification schemas
+> (user_prestige, user_event_progress, profile_theme, quest, title, events, quest_system), account
+> modules (registration, username_service, token, profile), groups (member, automod), cache (l1, l2,
+> distributed/l2), infrastructure (circuit_breaker_validator, slow_query_reporter, health_checks,
+> signaling, orchestrator), controllers (theme, rss, role, push_token, presence, group, moderation),
+> JSON views (presence, role, push_token), validation (user_params, gamification_params),
+> digest_worker, reports. Fixed ~30 more type assertions in 6 TypeScript files
+> (moderationStore.users/queue, channelHandlers, schema-mapper, admin-dashboard,
+> typography-settings). Rule 7 now PASS (70%+).

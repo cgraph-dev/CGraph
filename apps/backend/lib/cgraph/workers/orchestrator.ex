@@ -101,19 +101,35 @@ defmodule CGraph.Workers.Orchestrator do
   # Pipeline Delegation
   # ---------------------------------------------------------------------------
 
+  @spec pipeline([job_spec()], pipeline_opts()) :: {:ok, String.t()} | {:error, term()}
   defdelegate pipeline(jobs, opts \\ []), to: Pipeline
+
+  @spec continue_pipeline(map(), term()) :: {:ok, term()} | {:error, term()}
   defdelegate continue_pipeline(args, result \\ nil), to: Pipeline
+
+  @spec fail_pipeline(map(), term()) :: :ok | {:error, term()}
   defdelegate fail_pipeline(args, reason), to: Pipeline
+
+  @spec pipeline_status(String.t()) :: {:ok, map()} | {:error, term()}
   defdelegate pipeline_status(pipeline_id), to: Pipeline
+
+  @spec cancel_pipeline(String.t()) :: :ok | {:error, term()}
   defdelegate cancel_pipeline(pipeline_id), to: Pipeline
 
   # ---------------------------------------------------------------------------
   # Batch Delegation
   # ---------------------------------------------------------------------------
 
+  @spec batch([term()], module(), batch_opts()) :: {:ok, String.t()} | {:error, term()}
   defdelegate batch(items, worker, opts \\ []), to: Batch
+
+  @spec report_batch_progress(map(), atom()) :: :ok | {:error, term()}
   defdelegate report_batch_progress(args, status), to: Batch
+
+  @spec batch_status(String.t()) :: {:ok, map()} | {:error, term()}
   defdelegate batch_status(batch_id), to: Batch
+
+  @spec cancel_batch(String.t()) :: :ok | {:error, term()}
   defdelegate cancel_batch(batch_id), to: Batch
 
   # ---------------------------------------------------------------------------
@@ -141,6 +157,7 @@ defmodule CGraph.Workers.Orchestrator do
         priority: 1
       )
   """
+  @spec enqueue(module(), map(), keyword()) :: {:ok, Oban.Job.t()} | {:error, term()}
   def enqueue(worker, args, opts \\ []) do
     job_opts = build_job_opts(opts)
 
@@ -153,6 +170,7 @@ defmodule CGraph.Workers.Orchestrator do
   @doc """
   Enqueue a job to run at a specific time.
   """
+  @spec schedule(module(), map(), DateTime.t(), keyword()) :: {:ok, Oban.Job.t()} | {:error, term()}
   def schedule(worker, args, scheduled_at, opts \\ []) do
     enqueue(worker, args, Keyword.put(opts, :scheduled_at, scheduled_at))
   end
@@ -160,6 +178,7 @@ defmodule CGraph.Workers.Orchestrator do
   @doc """
   Enqueue a job to run after a delay.
   """
+  @spec schedule_in(module(), map(), integer(), keyword()) :: {:ok, Oban.Job.t()} | {:error, term()}
   def schedule_in(worker, args, delay_seconds, opts \\ []) do
     scheduled_at = DateTime.add(DateTime.utc_now(), delay_seconds, :second)
     schedule(worker, args, scheduled_at, opts)
@@ -192,6 +211,7 @@ defmodule CGraph.Workers.Orchestrator do
         cron: "0 * * * *"  # Every hour
       )
   """
+  @spec recurring(atom(), module(), map(), keyword()) :: {:ok, map()}
   def recurring(name, worker, args, opts) do
     cron = Keyword.fetch!(opts, :cron)
     queue = Keyword.get(opts, :queue, :scheduled)
@@ -217,6 +237,7 @@ defmodule CGraph.Workers.Orchestrator do
 
   Jobs that exceed max_attempts are automatically moved here.
   """
+  @spec move_to_dead_letter(Oban.Job.t(), term()) :: {:ok, Oban.Job.t()} | {:error, term()}
   def move_to_dead_letter(job, reason) do
     dead_letter_args = %{
       original_worker: to_string(job.worker),
@@ -232,6 +253,7 @@ defmodule CGraph.Workers.Orchestrator do
   @doc """
   Retry a dead letter job.
   """
+  @spec retry_dead_letter(integer()) :: {:ok, :retried}
   def retry_dead_letter(job_id) do
     Logger.info("Retrying dead letter job", job_id: job_id)
     {:ok, :retried}

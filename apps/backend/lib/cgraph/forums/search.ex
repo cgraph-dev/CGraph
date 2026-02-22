@@ -23,6 +23,7 @@ defmodule CGraph.Forums.Search do
   - `:forum_id` - Filter by specific forum (optional)
   - `:sort` - Sort order: "relevance", "new", "top" (default: "relevance")
   """
+  @spec search_posts(String.t(), keyword()) :: {[Post.t()], map()}
   def search_posts(query_string, opts \\ []) do
     cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 20)

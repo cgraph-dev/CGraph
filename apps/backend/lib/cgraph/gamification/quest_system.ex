@@ -9,6 +9,7 @@ defmodule CGraph.Gamification.QuestSystem do
   alias CGraph.Repo
 
   @doc "List available quests, optionally filtered by type."
+  @spec list_available_quests(keyword()) :: [Quest.t()]
   def list_available_quests(opts \\ []) do
     quest_type = Keyword.get(opts, :type)
     now = DateTime.utc_now()
@@ -26,6 +27,7 @@ defmodule CGraph.Gamification.QuestSystem do
   end
 
   @doc "Get a user's active quests with progress."
+  @spec list_user_quests(String.t(), keyword()) :: [UserQuest.t()]
   def list_user_quests(user_id, opts \\ []) do
     include_completed = Keyword.get(opts, :include_completed, false)
 
@@ -40,6 +42,7 @@ defmodule CGraph.Gamification.QuestSystem do
   end
 
   @doc "Accept a quest for a user."
+  @spec accept_quest(String.t(), String.t()) :: {:ok, UserQuest.t()} | {:error, :not_found}
   def accept_quest(user_id, quest_id) do
     case Repo.get(Quest, quest_id) do
       nil ->
@@ -58,6 +61,7 @@ defmodule CGraph.Gamification.QuestSystem do
   end
 
   @doc "Update quest progress for a user based on objective type."
+  @spec update_quest_progress(String.t(), String.t(), non_neg_integer()) :: :ok
   def update_quest_progress(user_id, objective_type, increment \\ 1) do
     user_quests =
       from(uq in UserQuest,
@@ -97,6 +101,7 @@ defmodule CGraph.Gamification.QuestSystem do
   end
 
   @doc "Claim rewards for a completed quest."
+  @spec claim_quest_rewards(String.t(), String.t()) :: {:ok, map()} | {:error, atom()}
   def claim_quest_rewards(user_id, user_quest_id) do
     user_quest =
       UserQuest

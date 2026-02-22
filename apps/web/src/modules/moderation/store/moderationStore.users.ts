@@ -6,7 +6,7 @@
  */
 
 import { api } from '@/lib/api';
-import { ensureArray, ensureObject } from '@/lib/apiUtils';
+import { ensureArray, ensureObject, isRecord } from '@/lib/apiUtils';
 import { createLogger } from '@/lib/logger';
 import type {
   Ban,
@@ -54,27 +54,27 @@ export function createUserActions(set: Set) {
     fetchUserWarnings: async (userId: string) => {
       try {
         const response = await api.get(`/api/v1/admin/users/${userId}/warnings`);
-        const warnings = (ensureArray(response.data, 'warnings') as Record<string, unknown>[]).map(
-          (w) => ({
-            id: w.id as string,
-            userId: w.user_id as string,
-            username: w.username as string,
-            warningTypeId: w.warning_type_id as string,
-            warningTypeName: w.warning_type_name as string,
-            points: w.points as number,
-            reason: w.reason as string,
-            notes: w.notes as string | undefined,
-            issuedById: w.issued_by_id as string,
-            issuedByUsername: w.issued_by_username as string,
-            issuedAt: w.issued_at as string,
-            expiresAt: w.expires_at as string | null,
-            isActive: w.is_active as boolean,
-            isRevoked: w.is_revoked as boolean,
-            revokedById: w.revoked_by_id as string | undefined,
-            revokedAt: w.revoked_at as string | undefined,
-            revokeReason: w.revoke_reason as string | undefined,
-          })
-        );
+        const warnings = ensureArray(response.data, 'warnings')
+          .filter(isRecord)
+          .map((w) => ({
+            id: String(w.id),
+            userId: String(w.user_id),
+            username: String(w.username),
+            warningTypeId: String(w.warning_type_id),
+            warningTypeName: String(w.warning_type_name),
+            points: Number(w.points),
+            reason: String(w.reason),
+            notes: typeof w.notes === 'string' ? w.notes : undefined,
+            issuedById: String(w.issued_by_id),
+            issuedByUsername: String(w.issued_by_username),
+            issuedAt: String(w.issued_at),
+            expiresAt: typeof w.expires_at === 'string' ? w.expires_at : null,
+            isActive: Boolean(w.is_active),
+            isRevoked: Boolean(w.is_revoked),
+            revokedById: typeof w.revoked_by_id === 'string' ? w.revoked_by_id : undefined,
+            revokedAt: typeof w.revoked_at === 'string' ? w.revoked_at : undefined,
+            revokeReason: typeof w.revoke_reason === 'string' ? w.revoke_reason : undefined,
+          }));
         set({ currentUserWarnings: warnings });
         return warnings;
       } catch (error) {
@@ -90,27 +90,32 @@ export function createUserActions(set: Set) {
           reason,
           notes,
         });
-        const warning = ensureObject(response.data, 'warning') as Record<string, unknown>;
+        const rawWarning = ensureObject(response.data, 'warning');
+        const warning: Record<string, unknown> = isRecord(rawWarning) ? rawWarning : {};
         const newWarning: UserWarning = {
-          id: warning.id as string,
+          id: String(warning.id),
           userId,
-          username: warning.username as string,
+          username: String(warning.username),
           warningTypeId,
-          warningTypeName: warning.warning_type_name as string,
-          points: warning.points as number,
+          warningTypeName: String(warning.warning_type_name),
+          points: Number(warning.points),
           reason,
           notes,
-          issuedById: warning.issued_by_id as string,
-          issuedByUsername: warning.issued_by_username as string,
-          issuedAt: (warning.issued_at as string) || new Date().toISOString(),
-          expiresAt: warning.expires_at as string | null,
+          issuedById: String(warning.issued_by_id),
+          issuedByUsername: String(warning.issued_by_username),
+          issuedAt:
+            typeof warning.issued_at === 'string' ? warning.issued_at : new Date().toISOString(),
+          expiresAt: typeof warning.expires_at === 'string' ? warning.expires_at : null,
           isActive: true,
           isRevoked: false,
         };
         const MAX_WARNINGS = 200;
         set((state) => {
           const updated = [newWarning, ...state.currentUserWarnings];
-          return { currentUserWarnings: updated.length > MAX_WARNINGS ? updated.slice(0, MAX_WARNINGS) : updated };
+          return {
+            currentUserWarnings:
+              updated.length > MAX_WARNINGS ? updated.slice(0, MAX_WARNINGS) : updated,
+          };
         });
         return newWarning;
       } catch (error) {
@@ -146,24 +151,26 @@ export function createUserActions(set: Set) {
         if (filters.active !== undefined) params.active = String(filters.active);
 
         const response = await api.get('/api/v1/admin/bans', { params });
-        const bans = (ensureArray(response.data, 'bans') as Record<string, unknown>[]).map((b) => ({
-          id: b.id as string,
-          userId: b.user_id as string | null,
-          username: b.username as string | null,
-          email: b.email as string | null,
-          ipAddress: b.ip_address as string | null,
-          reason: b.reason as string,
-          notes: b.notes as string | undefined,
-          bannedById: b.banned_by_id as string,
-          bannedByUsername: b.banned_by_username as string,
-          bannedAt: b.banned_at as string,
-          expiresAt: b.expires_at as string | null,
-          isActive: b.is_active as boolean,
-          isLifted: b.is_lifted as boolean,
-          liftedById: b.lifted_by_id as string | undefined,
-          liftedAt: b.lifted_at as string | undefined,
-          liftReason: b.lift_reason as string | undefined,
-        }));
+        const bans = ensureArray(response.data, 'bans')
+          .filter(isRecord)
+          .map((b) => ({
+            id: String(b.id),
+            userId: typeof b.user_id === 'string' ? b.user_id : null,
+            username: typeof b.username === 'string' ? b.username : null,
+            email: typeof b.email === 'string' ? b.email : null,
+            ipAddress: typeof b.ip_address === 'string' ? b.ip_address : null,
+            reason: String(b.reason),
+            notes: typeof b.notes === 'string' ? b.notes : undefined,
+            bannedById: String(b.banned_by_id),
+            bannedByUsername: String(b.banned_by_username),
+            bannedAt: String(b.banned_at),
+            expiresAt: typeof b.expires_at === 'string' ? b.expires_at : null,
+            isActive: Boolean(b.is_active),
+            isLifted: Boolean(b.is_lifted),
+            liftedById: typeof b.lifted_by_id === 'string' ? b.lifted_by_id : undefined,
+            liftedAt: typeof b.lifted_at === 'string' ? b.lifted_at : undefined,
+            liftReason: typeof b.lift_reason === 'string' ? b.lift_reason : undefined,
+          }));
         set({ bans, isLoadingBans: false });
       } catch (error) {
         logger.error(' Failed to fetch bans:', error);
@@ -191,18 +198,19 @@ export function createUserActions(set: Set) {
           expires_at: data.expiresAt,
           notes: data.notes,
         });
-        const ban = ensureObject(response.data, 'ban') as Record<string, unknown>;
+        const rawBan = ensureObject(response.data, 'ban');
+        const ban: Record<string, unknown> = isRecord(rawBan) ? rawBan : {};
         const newBan: Ban = {
-          id: ban.id as string,
+          id: String(ban.id),
           userId: data.userId || null,
           username: data.username || null,
           email: data.email || null,
           ipAddress: data.ipAddress || null,
           reason: data.reason,
           notes: data.notes,
-          bannedById: ban.banned_by_id as string,
-          bannedByUsername: ban.banned_by_username as string,
-          bannedAt: (ban.banned_at as string) || new Date().toISOString(),
+          bannedById: String(ban.banned_by_id),
+          bannedByUsername: String(ban.banned_by_username),
+          bannedAt: typeof ban.banned_at === 'string' ? ban.banned_at : new Date().toISOString(),
           expiresAt: data.expiresAt || null,
           isActive: true,
           isLifted: false,
@@ -240,17 +248,18 @@ export function createUserActions(set: Set) {
     fetchWarningTypes: async () => {
       try {
         const response = await api.get('/api/v1/admin/warning-types');
-        const types = (
-          ensureArray(response.data, 'warning_types') as Record<string, unknown>[]
-        ).map((t) => ({
-          id: t.id as string,
-          name: t.name as string,
-          description: (t.description as string) || '',
-          points: t.points as number,
-          expiryDays: t.expiry_days as number,
-          action: t.action as WarningType['action'],
-          actionThreshold: t.action_threshold as number | undefined,
-        }));
+        const types = ensureArray(response.data, 'warning_types')
+          .filter(isRecord)
+          .map((t) => ({
+            id: String(t.id),
+            name: String(t.name),
+            description: typeof t.description === 'string' ? t.description : '',
+            points: Number(t.points),
+            expiryDays: Number(t.expiry_days),
+            action: t.action as WarningType['action'], // safe downcast – discriminated union from API
+            actionThreshold:
+              typeof t.action_threshold === 'number' ? t.action_threshold : undefined,
+          }));
         set({ warningTypes: types });
       } catch (error) {
         logger.error(' Failed to fetch warning types:', error);
