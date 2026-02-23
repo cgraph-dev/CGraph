@@ -1,0 +1,143 @@
+/** @module message-reactions tests */
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import MessageReactions from '../message-reactions';
+
+vi.mock('framer-motion', () => ({
+  motion: new Proxy(
+    {} as Record<
+      string,
+      (p: React.PropsWithChildren<Record<string, unknown>>) => React.ReactElement
+    >,
+    {
+      get:
+        (_target, prop) =>
+        ({
+          children,
+          className,
+          onClick,
+          disabled,
+          ..._rest
+        }: React.PropsWithChildren<Record<string, unknown>>) => {
+          const Tag = (
+            typeof prop === 'string' ? prop : 'div'
+          ) as keyof React.JSX.IntrinsicElements;
+          return (
+            <Tag
+              className={className as string}
+              onClick={onClick as React.MouseEventHandler}
+              disabled={disabled as boolean}
+              aria-label={(_rest as Record<string, unknown>)['aria-label'] as string}
+            >
+              {children}
+            </Tag>
+          );
+        },
+    }
+  ),
+  AnimatePresence: ({ children }: React.PropsWithChildren) => <>{children}</>,
+}));
+
+vi.mock('@heroicons/react/24/outline', () => ({
+  FaceSmileIcon: () => <span data-testid="smile-icon" />,
+  PlusIcon: () => <span data-testid="plus-icon" />,
+}));
+
+vi.mock('@/lib/animations/animation-engine', () => ({
+  HapticFeedback: { light: vi.fn(), medium: vi.fn() },
+}));
+
+const baseProps = {
+  messageId: 'msg-1',
+  currentUserId: 'user-1',
+  onAddReaction: vi.fn(),
+  onRemoveReaction: vi.fn(),
+};
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
+describe('MessageReactions', () => {
+  it('renders existing reactions with emoji and count', () => {
+    const reactions = [
+      {
+        emoji: '👍',
+        count: 3,
+        users: [
+          { id: 'u1', username: 'a' },
+          { id: 'u2', username: 'b' },
+          { id: 'u3', username: 'c' },
+        ],
+        hasReacted: false,
+      },
+    ];
+    render(<MessageReactions {...baseProps} reactions={reactions} />);
+    expect(screen.getByText('👍')).toBeTruthy();
+    expect(screen.getByText('3')).toBeTruthy();
+  });
+
+  it('does not show count when only 1 vote', () => {
+    const reactions = [
+      { emoji: '❤️', count: 1, users: [{ id: 'u1', username: 'a' }], hasReacted: false },
+    ];
+    render(<MessageReactions {...baseProps} reactions={reactions} />);
+    expect(screen.getByText('❤️')).toBeTruthy();
+    expect(screen.queryByText('1')).toBeNull();
+  });
+
+  it('calls onAddReaction when clicking an unreacted emoji', () => {
+    const reactions = [
+      {
+        emoji: '😂',
+        count: 2,
+        users: [
+          { id: 'u2', username: 'b' },
+          { id: 'u3', username: 'c' },
+        ],
+        hasReacted: false,
+      },
+    ];
+    render(<MessageReactions {...baseProps} reactions={reactions} />);
+    fireEvent.click(screen.getByText('😂'));
+    expect(baseProps.onAddReaction).toHaveBeenCalledWith('msg-1', '😂');
+  });
+
+  it('calls onRemoveReaction when clicking an already-reacted emoji', () => {
+    const reactions = [
+      { emoji: '🔥', count: 1, users: [{ id: 'user-1', username: 'me' }], hasReacted: true },
+    ];
+    render(<MessageReactions {...baseProps} reactions={reactions} />);
+    fireEvent.click(screen.getByText('🔥'));
+    expect(baseProps.onRemoveReaction).toHaveBeenCalledWith('msg-1', '🔥');
+  });
+
+  it('renders the add-reaction button', () => {
+    render(<MessageReactions {...baseProps} reactions={[]} />);
+    expect(screen.getByLabelText('Add reaction')).toBeTruthy();
+  });
+
+  it('shows quick reactions picker on button click', () => {
+    render(<MessageReactions {...baseProps} reactions={[]} />);
+    fireEvent.click(screen.getByLabelText('Add reaction'));
+    expect(screen.getByText('Quick Reactions')).toBeTruthy();
+  });
+
+  it('renders multiple reaction badges', () => {
+    const reactions = [
+      {
+        emoji: '👍',
+        count: 2,
+        users: [
+          { id: 'u1', username: 'a' },
+          { id: 'u2', username: 'b' },
+        ],
+        hasReacted: false,
+      },
+      { emoji: '❤️', count: 1, users: [{ id: 'u3', username: 'c' }], hasReacted: false },
+    ];
+    render(<MessageReactions {...baseProps} reactions={reactions} />);
+    expect(screen.getByText('👍')).toBeTruthy();
+    expect(screen.getByText('❤️')).toBeTruthy();
+  });
+});
