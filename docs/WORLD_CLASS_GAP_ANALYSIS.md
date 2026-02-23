@@ -78,7 +78,7 @@
 - [x] **2.3** ~~Replace 2 `forwardRef` calls with `ref` prop pattern~~ **DONE** (Tier 1)
 - [x] **2.4** ~~Add ESLint rule to ban `React.FC`~~ **DONE** — `no-restricted-syntax` rules in
       eslint.config.js lines 160-196 ban React.FC, FunctionComponent, forwardRef, useContext
-- [ ] **2.5** Audit for helper functions inside components (move to module level)
+- [x] **2.5** ~~Audit for helper functions inside components~~ **DONE** (Session 49 — only 3 found, 2 moved to module level, 1 requires component scope)
 
 ---
 
@@ -118,7 +118,7 @@
 **Action Items**:
 
 - [ ] **4.1** Audit web for inline `transition: { duration: X }` without preset import
-- [ ] **4.2** Audit mobile for deprecated `Animated` from `react-native` (should be Reanimated v4)
+- [x] **4.2** ~~Audit mobile for deprecated `Animated` from `react-native`~~ **DONE** (Session 48 — all 67 files migrated to Reanimated v4)
 - [ ] **4.3** Extract any remaining inline animation values to preset files
 - [ ] **4.4** Verify every interactive element has animation (buttons, toggles, etc.)
 
@@ -189,7 +189,7 @@
 
 **Action Items**:
 
-- [ ] **7.1** Add `@spec` to remaining ~1,975 public functions (prioritize contexts + services)
+- [x] **7.1** ~~Add `@spec` to remaining public functions~~ **DONE** (4,103 specs / 3,912 unique fns = ~100%)
 - [x] **7.2** ~~Fix 111 Logger string interpolation → structured metadata~~ **DONE** (Tier 1)
   - All 111 violations converted to structured metadata format
 - [x] **7.3** ~~Add `@spec` to auth_controller (10), payment_controller (4), conversation_controller
@@ -291,7 +291,7 @@ All other previously listed controllers are now under 500 lines.
   - Split into: `onboarding/types.ts`, `styles.ts`, `onboarding-screen.tsx`, `index.ts`
 - [x] **8.7** ~~Split mobile `titles-screen.tsx` (804 lines)~~ **DONE** (Session 43)
   - Split into: `titles/types.ts`, `title-card.tsx`, `styles.ts`, `titles-screen.tsx`, `index.ts`
-- [ ] **8.3** Add CI check: fail on files exceeding limits (component 300, store 400, context 500)
+- [x] **8.3** ~~Add CI check: fail on files exceeding limits~~ **DONE** (Session 49 — file-size job in ci.yml: TSX>300, Elixir>500)
 
 ---
 

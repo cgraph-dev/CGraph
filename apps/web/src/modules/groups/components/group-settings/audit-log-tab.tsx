@@ -76,6 +76,31 @@ const FILTER_OPTIONS = [
 
 const PER_PAGE = 25;
 
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = now.getTime() - d.getTime();
+  if (diff < 60_000) return 'Just now';
+  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
+  if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
+  if (diff < 604_800_000) return `${Math.floor(diff / 86_400_000)}d ago`;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function renderChanges(changes: Record<string, unknown> | null) {
+  if (!changes || Object.keys(changes).length === 0) return null;
+  return (
+    <div className="mt-2 space-y-1">
+      {Object.entries(changes).map(([key, value]) => (
+        <div key={key} className="flex items-center gap-2 text-xs text-gray-500">
+          <span className="font-mono text-gray-400">{key}:</span>
+          <span className="text-gray-300">{String(value)}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function AuditLogTab({ groupId }: AuditLogTabProps) {
   const [entries, setEntries] = useState<AuditLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -118,31 +143,6 @@ export function AuditLogTab({ groupId }: AuditLogTabProps) {
   });
 
   const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
-
-  function formatDate(iso: string): string {
-    const d = new Date(iso);
-    const now = new Date();
-    const diff = now.getTime() - d.getTime();
-    if (diff < 60_000) return 'Just now';
-    if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
-    if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
-    if (diff < 604_800_000) return `${Math.floor(diff / 86_400_000)}d ago`;
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  }
-
-  function renderChanges(changes: Record<string, unknown> | null) {
-    if (!changes || Object.keys(changes).length === 0) return null;
-    return (
-      <div className="mt-2 space-y-1">
-        {Object.entries(changes).map(([key, value]) => (
-          <div key={key} className="flex items-center gap-2 text-xs text-gray-500">
-            <span className="font-mono text-gray-400">{key}:</span>
-            <span className="text-gray-300">{String(value)}</span>
-          </div>
-        ))}
-      </div>
-    );
-  }
 
   return (
     <motion.div {...entranceVariants.fadeUp} className="space-y-4">

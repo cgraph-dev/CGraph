@@ -55,6 +55,48 @@ jobs:
           fi
 
   # ============================================
+  # File Size Compliance Check
+  # ============================================
+  file-size:
+    name: File Size Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check TSX components under 300 lines
+        run: |
+          violations=0
+          while IFS= read -r f; do
+            lines=$(wc -l < "$f")
+            if [ "$lines" -gt 300 ]; then
+              echo "::error file=${f}::${f} has ${lines} lines (limit: 300)"
+              violations=$((violations + 1))
+            fi
+          done < <(find apps/web/src -name '*.tsx' -not -path '*/__tests__/*' -not -path '*/*.test.*' -not -path '*/*.stories.*' -not -path '*/__dev__/*')
+          if [ "$violations" -gt 0 ]; then
+            echo "❌ ${violations} TSX file(s) exceed 300 lines"
+            exit 1
+          fi
+          echo "✅ All TSX components under 300 lines"
+
+      - name: Check Elixir contexts/controllers under 500 lines
+        run: |
+          violations=0
+          while IFS= read -r f; do
+            lines=$(wc -l < "$f")
+            if [ "$lines" -gt 500 ]; then
+              echo "::error file=${f}::${f} has ${lines} lines (limit: 500)"
+              violations=$((violations + 1))
+            fi
+          done < <(find apps/backend/lib -name '*.ex' -not -path '*/test/*')
+          if [ "$violations" -gt 0 ]; then
+            echo "❌ ${violations} Elixir file(s) exceed 500 lines"
+            exit 1
+          fi
+          echo "✅ All Elixir files under 500 lines"
+
+  # ============================================
   # Lint & Format Check
   # ============================================
   lint:
