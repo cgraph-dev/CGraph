@@ -221,6 +221,7 @@ defmodule CGraph.HealthCheck do
   end
 
   @impl true
+  @doc "Initializes the process state."
   @spec init(term()) :: {:ok, map()}
   def init(_opts) do
     state = %{
@@ -237,6 +238,7 @@ defmodule CGraph.HealthCheck do
   end
 
   @impl true
+  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call(:ping, _from, state) do
     {:reply, :pong, state}
@@ -274,6 +276,7 @@ defmodule CGraph.HealthCheck do
   end
 
   @impl true
+  @doc "Handles generic messages."
   @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:periodic_check, state) do
     # Run periodic health check

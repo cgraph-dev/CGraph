@@ -32,6 +32,7 @@ defmodule CGraph.Collaboration.Document do
     timestamps()
   end
 
+  @doc "Builds a changeset for validating document attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(document, attrs) do
     document

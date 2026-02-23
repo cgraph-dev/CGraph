@@ -25,6 +25,7 @@ defmodule CGraph.Referrals.RewardTier do
 
   @valid_reward_types ~w(badge points title custom)
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(tier, attrs) do
     tier

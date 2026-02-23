@@ -23,6 +23,7 @@ defmodule CGraphWeb.API.V1.AutomodController do
 
   # ── Index ────────────────────────────────────────────────────────────
 
+  @doc "Renders a list of resources as JSON."
   @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, %{"group_id" => group_id}) do
     with :ok <- authorize_automod(conn, group_id) do
@@ -33,6 +34,7 @@ defmodule CGraphWeb.API.V1.AutomodController do
 
   # ── Show ─────────────────────────────────────────────────────────────
 
+  @doc "Renders a single resource as JSON."
   @spec show(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def show(conn, %{"group_id" => group_id, "id" => id}) do
     with :ok <- authorize_automod(conn, group_id),
@@ -43,6 +45,7 @@ defmodule CGraphWeb.API.V1.AutomodController do
 
   # ── Create ───────────────────────────────────────────────────────────
 
+  @doc "Creates a new automod rule."
   @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"group_id" => group_id} = params) do
     with :ok <- authorize_automod(conn, group_id),
@@ -55,6 +58,7 @@ defmodule CGraphWeb.API.V1.AutomodController do
 
   # ── Update ───────────────────────────────────────────────────────────
 
+  @doc "Updates an existing automod rule."
   @spec update(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update(conn, %{"group_id" => group_id, "id" => id} = params) do
     with :ok <- authorize_automod(conn, group_id),
@@ -66,6 +70,7 @@ defmodule CGraphWeb.API.V1.AutomodController do
 
   # ── Delete ───────────────────────────────────────────────────────────
 
+  @doc "Deletes an automod rule."
   @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"group_id" => group_id, "id" => id}) do
     with :ok <- authorize_automod(conn, group_id),
@@ -77,6 +82,7 @@ defmodule CGraphWeb.API.V1.AutomodController do
 
   # ── Toggle ───────────────────────────────────────────────────────────
 
+  @doc "Toggles an automod rule on or off."
   @spec toggle(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def toggle(conn, %{"group_id" => group_id, "id" => id}) do
     with :ok <- authorize_automod(conn, group_id),

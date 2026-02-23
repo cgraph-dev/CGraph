@@ -155,6 +155,7 @@ defmodule CGraph.Search.Engine do
   - `{:ok, %{hits: [...], total: n, processing_time_ms: n}}`
   - `{:error, reason}`
   """
+  @doc "Performs a search query and returns matching results."
   @spec search(atom(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   @impl true
   def search(index, query, opts \\ []) do

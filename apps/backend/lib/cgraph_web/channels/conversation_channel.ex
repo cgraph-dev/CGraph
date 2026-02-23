@@ -23,6 +23,7 @@ defmodule CGraphWeb.ConversationChannel do
   @rate_limit_window_ms 10_000
   @rate_limit_max_messages 10
 
+  @doc "Joins a conversation channel for real-time messaging."
   @impl true
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("conversation:" <> conversation_id, _params, socket) do
@@ -45,6 +46,7 @@ defmodule CGraphWeb.ConversationChannel do
     end
   end
 
+  @doc "Handles asynchronous messages for the conversation channel."
   @impl true
   @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
@@ -97,6 +99,7 @@ defmodule CGraphWeb.ConversationChannel do
     {:noreply, socket}
   end
 
+  @doc "Handles incoming messages and events from the client."
   @impl true
   @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("new_message", %{"content" => content} = params, socket) do

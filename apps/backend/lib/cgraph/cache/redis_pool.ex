@@ -44,11 +44,13 @@ defmodule CGraph.Cache.RedisPool do
   # Supervisor
   # ============================================================================
 
+  @doc "Starts the process and links it to the current process."
   @spec start_link(keyword()) :: Supervisor.on_start()
   def start_link(opts \\ []) do
     Supervisor.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
+  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, tuple()}
   @impl true
   def init(_opts) do
@@ -90,6 +92,7 @@ defmodule CGraph.Cache.RedisPool do
 
   - `:timeout` - Command timeout in milliseconds (default: 5000)
   """
+  @doc "Executes a single Redis command from the pool."
   @spec command(list(), keyword()) :: {:ok, term()} | {:error, term()}
   def command(args, opts \\ []) when is_list(args) do
     timeout = Keyword.get(opts, :timeout, @command_timeout)
@@ -133,6 +136,7 @@ defmodule CGraph.Cache.RedisPool do
 
   Pipeline reduces round-trip latency from N*RTT to just RTT for N commands.
   """
+  @doc "Executes a pipeline of Redis commands from the pool."
   @spec pipeline(list(list()), keyword()) :: {:ok, list()} | {:error, term()}
   def pipeline(commands, opts \\ []) when is_list(commands) do
     timeout = Keyword.get(opts, :timeout, @command_timeout)

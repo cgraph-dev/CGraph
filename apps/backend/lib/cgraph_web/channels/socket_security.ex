@@ -38,6 +38,7 @@ defmodule CGraphWeb.Channels.SocketSecurity do
 
   In channels:
 
+      @doc "Handles incoming messages with security validation."
       def handle_in("new_message", payload, socket) do
         case SocketSecurity.rate_limit_message(socket) do
           :ok ->

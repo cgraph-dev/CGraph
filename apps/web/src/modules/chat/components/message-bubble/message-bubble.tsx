@@ -19,7 +19,7 @@ import { aggregateReactions, handleRemoveReaction } from '@/lib/chat';
 import { cn } from '@/lib/utils';
 
 import type { MessageBubbleProps, ReadByEntry } from './types';
-import { formatMessageTime, handleAddReaction } from './utils';
+import { formatMessageTime, handleAddReaction, areMessageBubblePropsEqual } from './utils';
 import { ReplyIcon } from './icons';
 import { ReadReceipts } from './read-receipts';
 import { MessageStatusIndicator } from './message-status-indicator';
@@ -279,28 +279,7 @@ export const MessageBubble = memo(
       </motion.div>
     );
   },
-  (prevProps, nextProps) => {
-    return (
-      prevProps.message.id === nextProps.message.id &&
-      prevProps.message.content === nextProps.message.content &&
-      prevProps.message.isEdited === nextProps.message.isEdited &&
-      prevProps.message.reactions.length === nextProps.message.reactions.length &&
-      prevProps.message.isPinned === nextProps.message.isPinned &&
-      prevProps.isOwn === nextProps.isOwn &&
-      prevProps.showAvatar === nextProps.showAvatar &&
-      prevProps.isMenuOpen === nextProps.isMenuOpen &&
-      prevProps.isEditing === nextProps.isEditing &&
-      prevProps.editContent === nextProps.editContent &&
-      // Customization fields — must track all sender rendering fields
-      prevProps.uiPreferences === nextProps.uiPreferences &&
-      prevProps.message.sender?.bubbleStyle === nextProps.message.sender?.bubbleStyle &&
-      prevProps.message.sender?.bubbleColor === nextProps.message.sender?.bubbleColor &&
-      prevProps.message.sender?.bubbleRadius === nextProps.message.sender?.bubbleRadius &&
-      prevProps.message.sender?.messageEffect === nextProps.message.sender?.messageEffect &&
-      prevProps.message.sender?.equippedTitleId === nextProps.message.sender?.equippedTitleId &&
-      prevProps.message.sender?.avatarBorderId === nextProps.message.sender?.avatarBorderId
-    );
-  }
+  areMessageBubblePropsEqual
 );
 
 export default MessageBubble;

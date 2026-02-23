@@ -7,6 +7,8 @@ import { motion } from 'framer-motion';
 import { useSettingsStore } from '@/modules/settings/store';
 import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';
+import { PROFILE_FIELD_VISIBILITY_OPTIONS } from './privacy-field-config';
+import { PrivacyToggle } from './privacy-toggle';
 
 export function PrivacySettingsPanel() {
   const { settings, updatePrivacySettings, isSaving } = useSettingsStore();
@@ -145,33 +147,7 @@ export function PrivacySettingsPanel() {
 
           {fieldVisExpanded && (
             <div className="mt-4 space-y-3 border-t border-white/5 pt-4">
-              {(
-                [
-                  { key: 'showBio', label: 'Bio', desc: 'Show your bio on your profile' },
-                  { key: 'showPostCount', label: 'Post Count', desc: 'Show your total post count' },
-                  { key: 'showJoinDate', label: 'Join Date', desc: 'Show when you joined' },
-                  {
-                    key: 'showLastActive',
-                    label: 'Last Active',
-                    desc: 'Show your last active time',
-                  },
-                  {
-                    key: 'showSocialLinks',
-                    label: 'Social Links',
-                    desc: 'Show linked social accounts',
-                  },
-                  {
-                    key: 'showActivity',
-                    label: 'Activity Feed',
-                    desc: 'Show recent activity on your profile',
-                  },
-                  {
-                    key: 'showInMemberList',
-                    label: 'Member List',
-                    desc: 'Appear in forum member lists',
-                  },
-                ] as const
-              ).map(({ key, label, desc }) => (
+              {PROFILE_FIELD_VISIBILITY_OPTIONS.map(({ key, label, desc }) => (
                 <div key={key} className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-200">{label}</p>
@@ -213,94 +189,58 @@ export function PrivacySettingsPanel() {
         </GlassCard>
 
         <GlassCard variant="default" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium text-white">Allow Friend Requests</h3>
-              <p className="text-sm text-gray-400">Let others send you friend requests</p>
-            </div>
-            <button
-              onClick={async () => {
-                try {
-                  await updatePrivacySettings({
-                    allowFriendRequests: !settings.privacy.allowFriendRequests,
-                  });
-                  toast.success('Friend request settings updated');
-                } catch {
-                  toast.error('Failed to update settings');
-                }
-              }}
-              disabled={isSaving}
-              className={`relative h-6 w-11 rounded-full transition-colors ${
-                settings.privacy.allowFriendRequests ? 'bg-primary-600' : 'bg-dark-600'
-              } ${isSaving ? 'opacity-50' : ''}`}
-            >
-              <span
-                className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform ${
-                  settings.privacy.allowFriendRequests ? 'translate-x-5' : ''
-                }`}
-              />
-            </button>
-          </div>
+          <PrivacyToggle
+            label="Allow Friend Requests"
+            description="Let others send you friend requests"
+            checked={settings.privacy.allowFriendRequests}
+            disabled={isSaving}
+            onToggle={async () => {
+              try {
+                await updatePrivacySettings({
+                  allowFriendRequests: !settings.privacy.allowFriendRequests,
+                });
+                toast.success('Friend request settings updated');
+              } catch {
+                toast.error('Failed to update settings');
+              }
+            }}
+          />
         </GlassCard>
 
         <GlassCard variant="default" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium text-white">Show in Search Results</h3>
-              <p className="text-sm text-gray-400">Allow others to find you in search</p>
-            </div>
-            <button
-              onClick={async () => {
-                try {
-                  await updatePrivacySettings({ showInSearch: !settings.privacy.showInSearch });
-                  toast.success('Search visibility updated');
-                } catch {
-                  toast.error('Failed to update settings');
-                }
-              }}
-              disabled={isSaving}
-              className={`relative h-6 w-11 rounded-full transition-colors ${
-                settings.privacy.showInSearch ? 'bg-primary-600' : 'bg-dark-600'
-              } ${isSaving ? 'opacity-50' : ''}`}
-            >
-              <span
-                className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform ${
-                  settings.privacy.showInSearch ? 'translate-x-5' : ''
-                }`}
-              />
-            </button>
-          </div>
+          <PrivacyToggle
+            label="Show in Search Results"
+            description="Allow others to find you in search"
+            checked={settings.privacy.showInSearch}
+            disabled={isSaving}
+            onToggle={async () => {
+              try {
+                await updatePrivacySettings({ showInSearch: !settings.privacy.showInSearch });
+                toast.success('Search visibility updated');
+              } catch {
+                toast.error('Failed to update settings');
+              }
+            }}
+          />
         </GlassCard>
 
         <GlassCard variant="default" className="p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium text-white">Read Receipts</h3>
-              <p className="text-sm text-gray-400">Show when you've read messages</p>
-            </div>
-            <button
-              onClick={async () => {
-                try {
-                  await updatePrivacySettings({
-                    showReadReceipts: !settings.privacy.showReadReceipts,
-                  });
-                  toast.success('Read receipts updated');
-                } catch {
-                  toast.error('Failed to update settings');
-                }
-              }}
-              disabled={isSaving}
-              className={`relative h-6 w-11 rounded-full transition-colors ${
-                settings.privacy.showReadReceipts ? 'bg-primary-600' : 'bg-dark-600'
-              } ${isSaving ? 'opacity-50' : ''}`}
-            >
-              <span
-                className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform ${
-                  settings.privacy.showReadReceipts ? 'translate-x-5' : ''
-                }`}
-              />
-            </button>
-          </div>
+          <PrivacyToggle
+            label="Read Receipts"
+            description="Show when you've read messages"
+            checked={settings.privacy.showReadReceipts}
+            disabled={isSaving}
+            onToggle={async () => {
+              try {
+                await updatePrivacySettings({
+                  showReadReceipts: !settings.privacy.showReadReceipts,
+                });
+                toast.success('Read receipts updated');
+              } catch {
+                toast.error('Failed to update settings');
+              }
+            }}
+          />
         </GlassCard>
       </div>
     </motion.div>

@@ -99,6 +99,7 @@ defmodule CGraph.ErrorReporter do
           {:error, :operation_failed}
       end
   """
+  @doc "Reports an error to the error tracking system."
   @spec report(Exception.t(), Exception.stacktrace(), context()) :: :ok
   def report(exception, stacktrace, context \\ %{}) do
     GenServer.cast(__MODULE__, {:report, exception, stacktrace, context})
@@ -168,6 +169,7 @@ defmodule CGraph.ErrorReporter do
     {:ok, state}
   end
 
+  @doc "Handles asynchronous cast messages."
   @spec handle_cast(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_cast({:report, exception, stacktrace, context}, state) do
@@ -197,6 +199,7 @@ defmodule CGraph.ErrorReporter do
     {:noreply, state}
   end
 
+  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call(:stats, _from, state) do

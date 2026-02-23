@@ -78,6 +78,7 @@ defmodule CGraph.FeatureFlags do
       # With default
       FeatureFlags.enabled?(:unknown_flag, default: true)
   """
+  @doc "Checks if a feature flag is enabled."
   @spec enabled?(atom(), keyword()) :: boolean()
   def enabled?(flag_name, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
@@ -203,6 +204,7 @@ defmodule CGraph.FeatureFlags do
         user_tiers: [:admin]
       )
   """
+  @doc "Sets targeting rules for a feature flag."
   @spec set_targeting(atom(), keyword()) :: {:ok, map()} | {:error, term()}
   def set_targeting(flag_name, rules) do
     update_flag(flag_name, %{
@@ -293,6 +295,7 @@ defmodule CGraph.FeatureFlags do
     {:ok, state}
   end
 
+  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call(:all_flags, _from, state) do
@@ -350,6 +353,7 @@ defmodule CGraph.FeatureFlags do
     {:reply, :ok, %{state | overrides: overrides}}
   end
 
+  @doc "Handles generic messages."
   @spec handle_info(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_info(:sync_flags, state) do

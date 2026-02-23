@@ -15,6 +15,7 @@ defmodule CGraph.Workers.EventExporter do
 
   require Logger
 
+  @doc "Executes the job."
   @spec perform(Oban.Job.t()) :: {:ok, map()} | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"event_id" => event_id, "format" => format}} = _job) do

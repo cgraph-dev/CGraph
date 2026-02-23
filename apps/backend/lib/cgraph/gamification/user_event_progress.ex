@@ -76,6 +76,7 @@ defmodule CGraph.Gamification.UserEventProgress do
     |> unique_constraint([:user_id, :seasonal_event_id])
   end
 
+  @doc "Builds a changeset for adding points."
   @spec add_points_changeset(%__MODULE__{}, integer()) :: Ecto.Changeset.t()
   def add_points_changeset(progress, points) do
     new_points = (progress.event_points || 0) + points
@@ -89,6 +90,7 @@ defmodule CGraph.Gamification.UserEventProgress do
     }, [:event_points, :leaderboard_points, :last_activity_at])
   end
 
+  @doc "Builds a changeset for adding currency."
   @spec add_currency_changeset(%__MODULE__{}, integer()) :: Ecto.Changeset.t()
   def add_currency_changeset(progress, amount) do
     new_earned = (progress.event_currency_earned || 0) + amount
@@ -97,6 +99,7 @@ defmodule CGraph.Gamification.UserEventProgress do
     |> cast(%{event_currency_earned: new_earned}, [:event_currency_earned])
   end
 
+  @doc "Builds a changeset for spending currency."
   @spec spend_currency_changeset(%__MODULE__{}, integer()) :: Ecto.Changeset.t()
   def spend_currency_changeset(progress, amount) do
     new_spent = (progress.event_currency_spent || 0) + amount
@@ -115,12 +118,14 @@ defmodule CGraph.Gamification.UserEventProgress do
     end
   end
 
+  @doc "Builds a changeset for purchasing a battle pass."
   @spec purchase_battle_pass_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def purchase_battle_pass_changeset(progress) do
     progress
     |> cast(%{has_battle_pass: true}, [:has_battle_pass])
   end
 
+  @doc "Builds a changeset for advancing battle pass progress."
   @spec advance_battle_pass_changeset(%__MODULE__{}, integer()) :: Ecto.Changeset.t()
   def advance_battle_pass_changeset(progress, xp) do
     new_xp = (progress.battle_pass_xp || 0) + xp

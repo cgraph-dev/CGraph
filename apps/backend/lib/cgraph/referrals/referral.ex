@@ -27,6 +27,7 @@ defmodule CGraph.Referrals.Referral do
 
   @valid_statuses ~w(pending confirmed rejected expired)
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(referral, attrs) do
     referral

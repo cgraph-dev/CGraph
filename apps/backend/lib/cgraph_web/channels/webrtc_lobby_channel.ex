@@ -59,6 +59,7 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
   alias CGraph.WebRTC
 
   @impl true
+  @doc "Handles a client joining the channel."
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("webrtc:lobby", _params, socket) do
     user_id = socket.assigns.user_id

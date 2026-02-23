@@ -46,6 +46,7 @@ defmodule CGraph.Gamification do
   defdelegate claim_quest_rewards(user_id, user_quest_id), to: QuestSystem
 
   # 3-arg version (objective-based progress)
+  @doc "Update quest progress by objective type."
   @spec update_quest_progress(String.t(), atom(), integer()) :: term()
   def update_quest_progress(user_id, objective_type, increment)
       when not is_integer(increment) or is_integer(increment) do
@@ -98,6 +99,7 @@ defmodule CGraph.Gamification do
   end
 
   # 4-arg quest progress (event-based)
+  @doc "Update quest progress for an event-based quest."
   @spec update_quest_progress(String.t(), String.t(), String.t(), integer()) :: term()
   def update_quest_progress(user_id, event_id, quest_id, progress_increment) do
     EventSystem.update_quest_progress(user_id, event_id, quest_id, progress_increment)

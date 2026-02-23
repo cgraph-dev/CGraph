@@ -43,6 +43,7 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
   # Public API
   # ===========================================================================
 
+  @doc "Starts the process and links it to the current process."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
@@ -84,6 +85,7 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
   # ===========================================================================
 
   @impl true
+  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, map()}
   def init(opts) do
     # Create ETS tables for tracking
@@ -113,6 +115,7 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
   end
 
   @impl true
+  @doc "Handles generic messages."
   @spec handle_info(:generate_report, map()) :: {:noreply, map()}
   def handle_info(:generate_report, state) do
     generate_and_log_report()
@@ -124,6 +127,7 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
   # Telemetry Handler
   # ===========================================================================
 
+  @doc "Handles and reports slow database queries."
   @spec handle_query([atom()], map(), map(), map()) :: :ok
   def handle_query([:cgraph, :repo, :query], measurements, metadata, config) do
     duration_ms = System.convert_time_unit(measurements.total_time, :native, :millisecond)

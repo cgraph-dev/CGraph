@@ -22,6 +22,7 @@ defmodule CGraph.Workers.Base do
       priority: 1
 
     @impl true
+    @doc "Executes the worker with error handling and telemetry."
     def execute(%{"to" => to, "template" => template, "data" => data}, job) do
       CGraph.Mailer.send(to, template, data)
     end
@@ -57,6 +58,7 @@ defmodule CGraph.Workers.Base do
       @behaviour CGraph.Workers.Base
       @timeout unquote(timeout)
 
+      @doc "Executes the job."
       @spec perform(Oban.Job.t()) :: :ok | {:ok, any()} | {:error, any()} | {:snooze, pos_integer()}
       @impl Oban.Worker
       def perform(%Oban.Job{args: args} = job) do

@@ -41,6 +41,7 @@ defmodule CGraphWeb.API.V1.ReportController do
   - `409 Conflict` - Duplicate report exists
   - `422 Unprocessable Entity` - Cannot report own content
   """
+  @doc "Creates a new content report."
   @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"report" => report_params}) do
     do_create(conn, report_params)

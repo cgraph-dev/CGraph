@@ -21,6 +21,7 @@ defmodule CGraph.Storage.Local do
   @default_base_url "/uploads"
 
   @impl true
+  @doc "Stores a file on the local filesystem."
   @spec store(String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def store(source_path, filename, opts \\ []) do
     context = Keyword.get(opts, :context, "files")
@@ -58,6 +59,7 @@ defmodule CGraph.Storage.Local do
   end
 
   @impl true
+  @doc "Deletes a file from the local filesystem."
   @spec delete(String.t()) :: :ok | {:error, term()}
   def delete(url_or_key) do
     config = config()
@@ -86,6 +88,7 @@ defmodule CGraph.Storage.Local do
   end
 
   @impl true
+  @doc "Generates a signed URL for local file access."
   @spec signed_url(String.t(), keyword()) :: {:ok, String.t()}
   def signed_url(key, _opts \\ []) do
     # Local storage doesn't need signed URLs
@@ -95,6 +98,7 @@ defmodule CGraph.Storage.Local do
   end
 
   @impl true
+  @doc "Checks if a file exists on the local filesystem."
   @spec exists?(String.t()) :: boolean()
   def exists?(key) do
     config = config()

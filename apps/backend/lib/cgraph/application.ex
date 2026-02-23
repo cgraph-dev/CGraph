@@ -14,6 +14,7 @@ defmodule CGraph.Application do
   alias CGraph.Subscriptions.TierLimits
   alias CGraph.Telemetry.OpenTelemetry
 
+  @doc "Starts the application."
   @spec start(term(), term()) :: {:ok, pid()} | {:error, term()}
   @impl true
   def start(_type, _args) do
@@ -236,6 +237,7 @@ defmodule CGraph.Application do
     end
   end
 
+  @doc "Handles configuration changes at runtime."
   @spec config_change(keyword(), keyword(), [atom()]) :: :ok
   @impl true
   def config_change(changed, _new, removed) do
@@ -243,6 +245,7 @@ defmodule CGraph.Application do
     :ok
   end
 
+  @doc "Prepares the application for shutdown."
   @spec prep_stop(term()) :: :ok
   @impl true
   def prep_stop(_state) do

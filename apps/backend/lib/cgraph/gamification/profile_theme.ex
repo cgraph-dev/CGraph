@@ -96,14 +96,19 @@ defmodule CGraph.Gamification.ProfileTheme do
     |> unique_constraint(:slug)
   end
 
+  @doc "Returns the list of available rarity levels."
   @spec rarities() :: [String.t()]
   def rarities, do: @rarities
+  @doc "Returns the list of available theme presets."
   @spec presets() :: [String.t()]
   def presets, do: @presets
+  @doc "Returns the list of available layout types."
   @spec layout_types() :: [String.t()]
   def layout_types, do: @layout_types
+  @doc "Returns the list of available hover effects."
   @spec hover_effects() :: [String.t()]
   def hover_effects, do: @hover_effects
+  @doc "Returns the list of available unlock types."
   @spec unlock_types() :: [String.t()]
   def unlock_types, do: @unlock_types
 end

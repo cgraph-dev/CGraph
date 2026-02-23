@@ -97,6 +97,7 @@ defmodule CGraphWeb.API.Admin.ModerationController do
   - `suspend` - Temporarily suspend user (requires duration_hours)
   - `ban` - Permanently ban user
   """
+  @doc "Reviews a moderation report as admin."
   @spec review_report(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def review_report(conn, %{"id" => id} = params) do
     reviewer = conn.assigns.current_user

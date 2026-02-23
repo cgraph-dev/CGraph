@@ -35,6 +35,7 @@ defmodule CGraph.Jobs.Progress do
         :ok
       end
   """
+  @doc "Updates the progress of a running job."
   @spec update_progress(pos_integer(), 0..100, String.t()) :: :ok
   def update_progress(job_id, percentage, message \\ "") do
     progress = %{

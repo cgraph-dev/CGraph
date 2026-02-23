@@ -71,6 +71,7 @@ defmodule CGraph.Gamification.UserPrestige do
     |> unique_constraint(:user_id)
   end
 
+  @doc "Builds a changeset for applying prestige."
   @spec prestige_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def prestige_changeset(prestige, attrs) do
     prestige
@@ -81,12 +82,14 @@ defmodule CGraph.Gamification.UserPrestige do
     ])
   end
 
+  @doc "Builds a changeset for adding exclusive content."
   @spec add_exclusive_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def add_exclusive_changeset(prestige, attrs) do
     prestige
     |> cast(attrs, [:exclusive_titles, :exclusive_borders, :exclusive_effects])
   end
 
+  @doc "Builds a changeset for updating lifetime stats."
   @spec update_lifetime_stats_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def update_lifetime_stats_changeset(prestige, attrs) do
     prestige

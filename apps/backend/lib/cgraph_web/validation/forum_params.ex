@@ -15,6 +15,7 @@ defmodule CGraphWeb.Validation.ForumParams do
     field :is_nsfw, :boolean, default: false
   end
 
+  @doc "Validates forum creation parameters."
   @spec validate_create(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_create(params) do
     %__MODULE__{}
@@ -27,6 +28,7 @@ defmodule CGraphWeb.Validation.ForumParams do
     |> result_from_changeset()
   end
 
+  @doc "Validates forum update parameters."
   @spec validate_update(map()) :: {:ok, map()} | {:error, Ecto.Changeset.t()}
   def validate_update(params) do
     %__MODULE__{}

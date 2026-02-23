@@ -3,6 +3,7 @@ defmodule CGraphWeb.GamificationJSON do
   JSON rendering for gamification endpoints.
   """
 
+  @doc "Renders gamification stats as JSON."
   @spec stats(map()) :: map()
   def stats(%{stats: stats}) do
     %{
@@ -23,6 +24,7 @@ defmodule CGraphWeb.GamificationJSON do
     }
   end
 
+  @doc "Renders a list of achievements as JSON."
   @spec achievements(map()) :: map()
   def achievements(%{achievements: achievements}) do
     %{
@@ -30,6 +32,7 @@ defmodule CGraphWeb.GamificationJSON do
     }
   end
 
+  @doc "Renders a single achievement as JSON."
   @spec achievement(map()) :: map()
   def achievement(%{achievement: achievement, user_achievement: ua}) do
     %{
@@ -52,6 +55,7 @@ defmodule CGraphWeb.GamificationJSON do
     }
   end
 
+  @doc "Renders streak claim result as JSON."
   @spec streak_claimed(map()) :: map()
   def streak_claimed(%{user: user, coins: coins, streak: streak}) do
     %{
@@ -65,6 +69,7 @@ defmodule CGraphWeb.GamificationJSON do
     }
   end
 
+  @doc "Renders the gamification leaderboard as JSON."
   @spec leaderboard(map()) :: map()
   def leaderboard(%{entries: entries, category: category, user_rank: user_rank}) do
     %{
@@ -76,6 +81,7 @@ defmodule CGraphWeb.GamificationJSON do
     }
   end
 
+  @doc "Renders XP history as JSON."
   @spec xp_history(map()) :: map()
   def xp_history(%{transactions: transactions}) do
     %{

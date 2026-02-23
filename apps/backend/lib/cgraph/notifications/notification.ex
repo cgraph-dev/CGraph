@@ -70,6 +70,7 @@ defmodule CGraph.Notifications.Notification do
   @optional_fields [:actor_id, :body, :data, :read_at, :clicked_at,
                     :push_sent, :email_sent, :group_key, :count]
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(notification, attrs) do
     notification

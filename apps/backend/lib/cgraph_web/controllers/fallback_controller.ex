@@ -8,6 +8,7 @@ defmodule CGraphWeb.FallbackController do
   use CGraphWeb, :controller
 
   # Handle Ecto changesets
+  @doc "Handles fallback error responses for controller actions."
   @spec call(Plug.Conn.t(), term()) :: Plug.Conn.t()
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn

@@ -15,6 +15,7 @@ defmodule CGraph.Workers.EventRewardDistributor do
   alias CGraph.Gamification.Events
   alias CGraph.Workers.NotificationWorker
 
+  @doc "Executes the job."
   @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"event_id" => event_id}}) do

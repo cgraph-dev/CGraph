@@ -46,9 +46,11 @@ defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
     end
   end
 
+  @doc "Initializes plug options."
   @spec init(keyword()) :: keyword()
   def init(opts), do: opts
 
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, _opts) do
     user = conn.assigns[:current_user]

@@ -9,6 +9,7 @@ defmodule CGraphWeb.API.V1.MessageJSON do
   alias CGraph.Accounts.User
   alias CGraph.Messaging.Message
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{messages: messages, meta: meta}) do
     %{
@@ -17,6 +18,7 @@ defmodule CGraphWeb.API.V1.MessageJSON do
     }
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{message: message}) do
     %{data: message_data(message)}

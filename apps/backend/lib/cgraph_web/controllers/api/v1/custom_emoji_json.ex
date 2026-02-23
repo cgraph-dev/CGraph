@@ -1,16 +1,19 @@
 defmodule CGraphWeb.API.V1.CustomEmojiJSON do
   @moduledoc "JSON rendering for Custom Emoji endpoints."
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{emojis: emojis}) do
     %{data: Enum.map(emojis, &emoji_data/1)}
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{emoji: emoji}) do
     %{data: emoji_data(emoji)}
   end
 
+  @doc "Renders emoji categories as JSON."
   @spec categories(map()) :: map()
   def categories(%{categories: categories}) do
     %{data: categories}

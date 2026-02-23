@@ -129,6 +129,7 @@ defmodule CGraph.Redis do
       ])
       # => [{:ok, "OK"}, {:ok, "OK"}, {:ok, "value1"}, {:ok, "value2"}]
   """
+  @doc "Executes a pipeline of Redis commands."
   @spec pipeline([[String.t()]], keyword()) :: {:ok, [term()]} | {:error, term()}
   def pipeline(commands, opts \\ []) when is_list(commands) do
     timeout = Keyword.get(opts, :timeout, @default_timeout * length(commands))
@@ -306,6 +307,7 @@ defmodule CGraph.Redis do
   # GenServer Implementation
   # ---------------------------------------------------------------------------
 
+  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(opts) do
@@ -339,6 +341,7 @@ defmodule CGraph.Redis do
     end
   end
 
+  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call({:command, args}, _from, state) do

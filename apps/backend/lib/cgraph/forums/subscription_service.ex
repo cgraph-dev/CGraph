@@ -105,6 +105,7 @@ defmodule CGraph.Forums.SubscriptionService do
     |> Repo.all()
   end
 
+  @doc "Lists thread subscriptions for a user."
   @spec list_thread_subscriptions(binary()) :: [Subscription.t()]
   def list_thread_subscriptions(user_id) do
     from(s in Subscription,

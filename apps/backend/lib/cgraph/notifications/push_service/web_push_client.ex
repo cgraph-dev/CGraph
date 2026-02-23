@@ -69,6 +69,7 @@ defmodule CGraph.Notifications.PushService.WebPushClient do
   - `{:error, :invalid_subscription}` - Subscription is invalid
   - `{:error, reason}` - Other failure
   """
+  @doc "Sends a web push notification."
   @spec send(map(), map(), keyword()) :: :ok | {:error, term()}
   def send(subscription, message, opts \\ [])
 

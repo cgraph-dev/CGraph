@@ -161,6 +161,7 @@ defmodule CGraph.Accounts.User do
   defdelegate can_change_username?(user), to: Helpers
   defdelegate next_username_change_date(user), to: Helpers
 
+  @doc "Builds a changeset for validating user attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(user, attrs) do
     user

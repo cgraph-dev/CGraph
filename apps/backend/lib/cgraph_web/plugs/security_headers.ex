@@ -62,6 +62,7 @@ defmodule CGraphWeb.Plugs.SecurityHeaders do
   # Preload HSTS to submit to browser preload lists
   @hsts_preload true
 
+  @doc "Initializes plug options."
   @spec init(keyword()) :: map()
   @impl true
   def init(opts) do
@@ -80,6 +81,7 @@ defmodule CGraphWeb.Plugs.SecurityHeaders do
     }
   end
 
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), map()) :: Plug.Conn.t()
   @impl true
   def call(conn, opts) do

@@ -47,6 +47,7 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
   # Client API
   # ============================================================================
 
+  @doc "Starts the process and links it to the current process."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
@@ -74,6 +75,7 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
   - `{:ok, apns_id}` - Notification was accepted
   - `{:error, reason}` - Notification failed
   """
+  @doc "Sends a push notification via Apple Push Notification Service."
   @spec send(String.t(), map(), keyword()) :: {:ok, String.t()} | {:error, atom()}
   def send(device_token, payload, opts \\ []) do
     GenServer.call(__MODULE__, {:send, device_token, payload, opts}, @default_timeout)
@@ -127,6 +129,7 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
   end
 
   @impl true
+  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:send, device_token, payload, opts}, _from, state) do
     state = ensure_valid_jwt(state)
@@ -147,6 +150,7 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
   end
 
   @impl true
+  @doc "Handles generic messages."
   @spec handle_info(:refresh_token, map()) :: {:noreply, map()}
   def handle_info(:refresh_token, state) do
     state = refresh_jwt_token(state)

@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{friends: friends, meta: meta}) do
     %{
@@ -13,6 +14,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @doc "Renders pending friend requests as JSON."
   @spec requests(map()) :: map()
   def requests(%{requests: requests, meta: meta}) do
     %{
@@ -21,6 +23,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @doc "Renders sent friend requests as JSON."
   @spec sent(map()) :: map()
   def sent(%{requests: requests, meta: meta}) do
     %{
@@ -29,11 +32,13 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{friendship: friendship}) do
     %{data: friendship_data(friendship)}
   end
 
+  @doc "Renders a blocked user entry as JSON."
   @spec block(map()) :: map()
   def block(%{block: block}) do
     %{
@@ -45,6 +50,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @doc "Renders the blocked users list as JSON."
   @spec blocked(map()) :: map()
   def blocked(%{users: users, meta: meta}) do
     %{
@@ -59,6 +65,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @doc "Renders mutual friends as JSON."
   @spec mutual(map()) :: map()
   def mutual(%{friends: friends}) do
     %{
@@ -69,6 +76,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @doc "Renders online friends as JSON."
   @spec online(map()) :: map()
   def online(%{friends: friends}) do
     %{
@@ -80,6 +88,7 @@ defmodule CGraphWeb.API.V1.FriendJSON do
     }
   end
 
+  @doc "Renders friend suggestions as JSON."
   @spec suggestions(map()) :: map()
   def suggestions(%{suggestions: suggestions}) do
     %{

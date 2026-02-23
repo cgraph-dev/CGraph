@@ -96,12 +96,14 @@ defmodule CGraph.Cache.Distributed do
   # GenServer API
   # ---------------------------------------------------------------------------
 
+  @doc "Starts the process and links it to the current process."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
   @impl true
+  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, map()}
   def init(opts) do
     # Create L1 ETS cache
@@ -122,6 +124,7 @@ defmodule CGraph.Cache.Distributed do
   end
 
   @impl true
+  @doc "Handles generic messages."
   @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:cleanup_l1, state) do
     L1.cleanup_expired()
@@ -201,6 +204,7 @@ defmodule CGraph.Cache.Distributed do
         expensive_computation()
       end, ttl: :timer.minutes(15))
   """
+  @doc "Fetches a value from the distributed cache."
   @spec fetch(cache_key(), (() -> cache_value()), cache_opts()) :: cache_value()
   def fetch(key, fallback, opts \\ []) when is_function(fallback, 0) do
     full_key = build_key(key, opts)

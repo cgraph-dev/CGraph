@@ -80,6 +80,7 @@ defmodule CGraphWeb.CallChannel do
   alias CGraph.WebRTC
   alias CGraph.WebRTC.Room
 
+  @doc "Handles channel join requests and initializes socket state."
   @impl true
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("call:" <> room_id, params, socket) do
@@ -123,6 +124,7 @@ defmodule CGraphWeb.CallChannel do
     end
   end
 
+  @doc "Handles asynchronous process messages."
   @impl true
   @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
@@ -186,6 +188,7 @@ defmodule CGraphWeb.CallChannel do
   # Client Events - Signaling
   # ---------------------------------------------------------------------------
 
+  @doc "Handles incoming channel events from clients."
   @impl true
   @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("signal:offer", %{"to" => to_id, "sdp" => sdp}, socket) do
@@ -337,6 +340,7 @@ defmodule CGraphWeb.CallChannel do
   # Termination
   # ---------------------------------------------------------------------------
 
+  @doc "Cleans up resources on server termination."
   @impl true
   @spec terminate(term(), Phoenix.Socket.t()) :: :ok
   def terminate(_reason, socket) do

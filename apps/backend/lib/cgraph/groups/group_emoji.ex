@@ -20,6 +20,7 @@ defmodule CGraph.Groups.GroupEmoji do
     timestamps()
   end
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(emoji, attrs) do
     emoji

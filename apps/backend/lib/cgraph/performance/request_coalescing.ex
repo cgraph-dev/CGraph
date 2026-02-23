@@ -39,6 +39,7 @@ defmodule CGraph.Performance.RequestCoalescing do
 
   # ── Client API ──────────────────────────────────────────────
 
+  @doc "Starts the process and links it to the current process."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     name = Keyword.get(opts, :name, __MODULE__)
@@ -124,6 +125,7 @@ defmodule CGraph.Performance.RequestCoalescing do
   end
 
   @impl true
+  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:execute, key, fun, ttl}, {caller_pid, _tag}, state) do
     now = System.monotonic_time(:millisecond)
@@ -191,6 +193,7 @@ defmodule CGraph.Performance.RequestCoalescing do
   end
 
   @impl true
+  @doc "Handles generic messages."
   @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info({:flight_complete, key, result, ttl}, state) do
     case Map.pop(state.in_flight, key) do
@@ -247,6 +250,7 @@ defmodule CGraph.Performance.RequestCoalescing do
   end
 
   @impl true
+  @doc "Handles asynchronous cast messages."
   @spec handle_cast(term(), map()) :: {:noreply, map()}
   def handle_cast(:clear_cache, state) do
     {:noreply, %{state | cache: %{}}}

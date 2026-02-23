@@ -52,12 +52,14 @@ defmodule CGraph.Gamification.UserAvatarBorder do
     |> unique_constraint([:user_id, :border_id])
   end
 
+  @doc "Builds a changeset for equipping an item."
   @spec equip_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def equip_changeset(user_border, attrs) do
     user_border
     |> cast(attrs, [:is_equipped])
   end
 
+  @doc "Returns the list of valid unlock sources."
   @spec unlock_sources() :: [String.t()]
   def unlock_sources, do: @unlock_sources
 end

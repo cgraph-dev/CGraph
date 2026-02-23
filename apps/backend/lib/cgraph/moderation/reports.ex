@@ -70,6 +70,7 @@ defmodule CGraph.Moderation.Reports do
   - `{:error, :duplicate}` - Same report already exists
   - `{:error, :self_report}` - Cannot report own content
   """
+  @doc "Creates a new moderation report."
   @spec create_report(User.t(), map()) :: {:ok, Report.t()} | {:error, Ecto.Changeset.t()} | {:error, :duplicate} | {:error, :self_report}
   def create_report(%User{} = reporter, attrs) do
     attrs = Map.put(attrs, :reporter_id, reporter.id)

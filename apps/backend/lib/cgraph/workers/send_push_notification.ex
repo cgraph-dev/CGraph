@@ -54,6 +54,7 @@ defmodule CGraph.Workers.SendPushNotification do
   alias CGraph.Notifications.{Notification, PushService}
   alias CGraph.Repo
 
+  @doc "Executes the job."
   @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: args, attempt: attempt}) do

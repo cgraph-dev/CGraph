@@ -7,6 +7,7 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   # CODE
   # ========================================
 
+  @doc "Renders a referral code as JSON."
   @spec code(map()) :: map()
   def code(%{code: code}) do
     %{data: code_data(code)}
@@ -27,6 +28,7 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   # VALIDATION
   # ========================================
 
+  @doc "Renders referral code validation result as JSON."
   @spec validation(map()) :: map()
   def validation(%{valid: valid, referrer: referrer}) do
     %{
@@ -60,6 +62,7 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   # REFERRALS
   # ========================================
 
+  @doc "Renders a list of referrals as JSON."
   @spec referrals(map()) :: map()
   def referrals(%{referrals: referrals, pagination: pagination}) do
     %{
@@ -68,6 +71,7 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
     }
   end
 
+  @doc "Renders a single referral as JSON."
   @spec referral(map()) :: map()
   def referral(%{referral: referral}) do
     %{data: referral_data(referral)}
@@ -102,6 +106,7 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   # STATS
   # ========================================
 
+  @doc "Renders referral statistics as JSON."
   @spec stats(map()) :: map()
   def stats(%{stats: stats}) do
     %{
@@ -123,6 +128,7 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   # LEADERBOARD
   # ========================================
 
+  @doc "Renders the referral leaderboard as JSON."
   @spec leaderboard(map()) :: map()
   def leaderboard(%{leaderboard: leaderboard}) do
     %{
@@ -148,11 +154,13 @@ defmodule CGraphWeb.API.V1.ReferralJSON do
   # REWARDS
   # ========================================
 
+  @doc "Renders referral reward tiers as JSON."
   @spec reward_tiers(map()) :: map()
   def reward_tiers(%{tiers: tiers}) do
     %{data: for(tier <- tiers, do: tier_data(tier))}
   end
 
+  @doc "Renders a referral reward as JSON."
   @spec reward(map()) :: map()
   def reward(%{reward: reward}) do
     %{data: reward_data(reward)}

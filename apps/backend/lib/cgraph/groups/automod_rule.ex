@@ -25,6 +25,7 @@ defmodule CGraph.Groups.AutomodRule do
   @valid_types ~w(word_filter link_filter spam_detection caps_filter)
   @valid_actions ~w(delete warn mute flag_for_review)
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(rule, attrs) do
     rule

@@ -35,10 +35,12 @@ defmodule CGraphWeb.Plugs.TraceContext do
   import Plug.Conn
   require Logger
 
+  @doc "Initializes plug options."
   @spec init(keyword()) :: keyword()
   @impl true
   def init(opts), do: opts
 
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   @impl true
   def call(conn, _opts) do

@@ -43,6 +43,7 @@ defmodule CGraphWeb.API.V1.VoiceMessageController do
         }
       }
   """
+  @doc "Creates and processes a new voice message."
   @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"audio" => upload} = params) do
     user = conn.assigns.current_user

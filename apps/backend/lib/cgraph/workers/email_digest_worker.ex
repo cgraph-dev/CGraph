@@ -28,6 +28,7 @@ defmodule CGraph.Workers.EmailDigestWorker do
   alias CGraph.{Accounts, Mailer, Repo}
   alias CGraph.Accounts.User
 
+  @doc "Executes the job."
   @spec perform(Oban.Job.t()) :: :ok | {:ok, String.t()} | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) when args == %{} or not is_map_key(args, "user_id") do

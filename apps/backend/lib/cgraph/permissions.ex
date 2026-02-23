@@ -130,6 +130,7 @@ defmodule CGraph.Permissions do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
+  @doc "Initializes the permissions server state."
   @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(_opts) do
@@ -145,6 +146,7 @@ defmodule CGraph.Permissions do
     {:ok, state}
   end
 
+  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call({:grant, user_id, permission, resource}, _from, state) do
@@ -222,6 +224,7 @@ defmodule CGraph.UnauthorizedError do
   """
   defexception [:message]
 
+  @doc "Creates a new exception struct."
   @spec exception(keyword()) :: Exception.t()
   @impl true
   def exception(opts) do

@@ -168,11 +168,13 @@ defmodule CGraph.Events do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @doc "Starts the events GenServer."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
+  @doc "Initializes the events GenServer state."
   @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(_opts) do
@@ -188,6 +190,7 @@ defmodule CGraph.Events do
     {:ok, state}
   end
 
+  @doc "Handles asynchronous event publishing and batch dispatching."
   @spec handle_cast(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_cast({:publish, event}, state) do
@@ -225,6 +228,7 @@ defmodule CGraph.Events do
     }}
   end
 
+  @doc "Handles synchronous event publishing, subscriptions, and queries."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call({:publish_sync, event}, _from, state) do
@@ -296,6 +300,7 @@ defmodule CGraph.Events do
     {:reply, {:ok, events}, state}
   end
 
+  @doc "Handles distributed event messages from other nodes."
   @spec handle_info(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_info({:event, event}, state) do

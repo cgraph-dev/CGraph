@@ -74,6 +74,7 @@ defmodule CGraphWeb.Plugs.TracingPlug do
   # Plug Callbacks
   # ---------------------------------------------------------------------------
 
+  @doc "Initializes plug options."
   @spec init(keyword()) :: map()
   @impl true
   def init(opts) do
@@ -81,6 +82,7 @@ defmodule CGraphWeb.Plugs.TracingPlug do
     config
   end
 
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), map()) :: Plug.Conn.t()
   @impl true
   def call(conn, config) do

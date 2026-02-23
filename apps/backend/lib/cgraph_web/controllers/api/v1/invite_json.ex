@@ -5,16 +5,19 @@ defmodule CGraphWeb.API.V1.InviteJSON do
 
   alias CGraphWeb.API.V1.{GroupJSON, GroupMemberJSON, UserJSON}
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{invites: invites}) do
     %{data: Enum.map(invites, &invite_data/1)}
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{invite: invite}) do
     %{data: invite_data(invite)}
   end
 
+  @doc "Renders join confirmation as JSON."
   @spec joined(map()) :: map()
   def joined(%{member: member, group: group}) do
     %{

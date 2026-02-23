@@ -90,6 +90,7 @@ defmodule CGraph.Accounts do
   defdelegate delete_session_token(token), to: SessionManagement
   defdelegate list_sessions(user), to: SessionManagement
   defdelegate list_user_sessions(user), to: SessionManagement
+  @doc "Revokes an active user session."
   @spec revoke_session(Session.t()) :: {:ok, Session.t()} | {:error, term()}
   def revoke_session(%Session{} = session), do: SessionManagement.revoke_session(session)
   @spec revoke_session(struct(), binary()) :: {:ok, struct()} | {:error, term()}
@@ -112,10 +113,12 @@ defmodule CGraph.Accounts do
   defdelegate list_friend_requests(user, opts \\ []), to: FriendSystem
   defdelegate list_sent_friend_requests(user, opts \\ []), to: FriendSystem
   defdelegate send_friend_request(from_user, to_user), to: FriendSystem
+  @doc "Accepts a pending friend request."
   @spec accept_friend_request(Friendship.t() | struct(), struct() | nil) :: {:ok, Friendship.t()} | {:error, term()}
   def accept_friend_request(friendship_or_addressee, requester \\ nil)
   def accept_friend_request(%Friendship{} = f, nil), do: FriendSystem.accept_friend_request(f)
   def accept_friend_request(addressee, requester), do: FriendSystem.accept_friend_request(addressee, requester)
+  @doc "Declines a pending friend request."
   @spec decline_friend_request(Friendship.t()) :: {:ok, Friendship.t()} | {:error, term()}
   def decline_friend_request(%Friendship{} = f), do: FriendSystem.decline_friend_request(f)
   @spec decline_friend_request(struct(), struct()) :: {:ok, Friendship.t()} | {:error, term()}

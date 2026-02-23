@@ -43,6 +43,7 @@ defmodule CGraph.Gamification.Title do
     |> unique_constraint(:slug)
   end
 
+  @doc "Returns the list of available title rarity levels."
   @spec rarities() :: [String.t()]
   def rarities, do: @rarities
 

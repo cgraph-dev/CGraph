@@ -55,6 +55,7 @@ defmodule CGraph.Forums.ContentReport do
   @spec reasons() :: [String.t()]
   def reasons, do: @reasons
 
+  @doc "Returns the list of valid report target types."
   @spec statuses() :: [String.t()]
   def statuses, do: @statuses
 

@@ -36,6 +36,7 @@ defmodule CGraph.Storage.R2 do
   require Logger
 
   @impl true
+  @doc "Stores a file in Cloudflare R2."
   @spec store(String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def store(source_path, filename, opts \\ []) do
     context = Keyword.get(opts, :context, "files")
@@ -83,6 +84,7 @@ defmodule CGraph.Storage.R2 do
   end
 
   @impl true
+  @doc "Deletes a file from Cloudflare R2."
   @spec delete(String.t()) :: :ok | {:error, term()}
   def delete(url_or_key) do
     config = config()
@@ -99,6 +101,7 @@ defmodule CGraph.Storage.R2 do
   end
 
   @impl true
+  @doc "Generates a signed URL for R2 file access."
   @spec signed_url(String.t(), keyword()) :: {:ok, String.t()}
   def signed_url(key, opts \\ []) do
     config = config()
@@ -117,6 +120,7 @@ defmodule CGraph.Storage.R2 do
   end
 
   @impl true
+  @doc "Checks if a file exists in Cloudflare R2."
   @spec exists?(String.t()) :: boolean()
   def exists?(key) do
     config = config()

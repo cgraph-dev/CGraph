@@ -82,12 +82,15 @@ defmodule CGraph.Gamification.AvatarBorder do
     |> unique_constraint(:slug)
   end
 
+  @doc "Returns the list of available rarity levels."
   @spec rarities() :: [String.t()]
   def rarities, do: @rarities
 
+  @doc "Returns the list of available animation types."
   @spec themes() :: [String.t()]
   def themes, do: @themes
 
+  @doc "Returns the list of available unlock types."
   @spec animation_types() :: [String.t()]
   def animation_types, do: @animation_types
 

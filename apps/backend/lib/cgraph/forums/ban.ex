@@ -23,6 +23,7 @@ defmodule CGraph.Forums.Ban do
     timestamps()
   end
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(ban, attrs) do
     ban
@@ -34,6 +35,7 @@ defmodule CGraph.Forums.Ban do
     |> foreign_key_constraint(:user_id)
   end
 
+  @doc "Builds a changeset for revoking a record."
   @spec revoke_changeset(%__MODULE__{}, Ecto.UUID.t()) :: Ecto.Changeset.t()
   def revoke_changeset(ban, revoked_by_id) do
     change(ban,

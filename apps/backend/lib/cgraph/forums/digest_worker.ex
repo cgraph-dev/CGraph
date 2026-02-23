@@ -15,11 +15,13 @@ defmodule CGraph.Forums.DigestWorker do
   @daily_hour 8   # 8 AM UTC
   @weekly_day 1   # Monday
 
+  @doc "Starts the process and links it to the current process."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
+  @doc "Initializes the process state."
   @spec init(map()) :: {:ok, map()}
   @impl true
   def init(state) do
@@ -27,6 +29,7 @@ defmodule CGraph.Forums.DigestWorker do
     {:ok, state}
   end
 
+  @doc "Handles generic messages."
   @spec handle_info(:check_digests, map()) :: {:noreply, map()}
   @impl true
   def handle_info(:check_digests, state) do

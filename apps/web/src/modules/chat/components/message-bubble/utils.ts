@@ -7,7 +7,7 @@
 import { format } from 'date-fns';
 import { useChatStore } from '@/modules/chat/store';
 import { createLogger } from '@/lib/logger';
-import type { UIPreferences } from './types';
+import type { UIPreferences, MessageBubbleProps } from './types';
 
 const logger = createLogger('MessageBubble');
 
@@ -52,4 +52,34 @@ export function mapVisualizerTheme(
     return 'amber';
   }
   return theme as 'matrix-green' | 'cyber-blue' | 'neon-pink' | 'amber';
+}
+
+/**
+ * Custom equality comparator for MessageBubble memo.
+ * Prevents unnecessary re-renders by comparing only rendering-relevant props.
+ */
+export function areMessageBubblePropsEqual(
+  prevProps: MessageBubbleProps,
+  nextProps: MessageBubbleProps
+): boolean {
+  return (
+    prevProps.message.id === nextProps.message.id &&
+    prevProps.message.content === nextProps.message.content &&
+    prevProps.message.isEdited === nextProps.message.isEdited &&
+    prevProps.message.reactions.length === nextProps.message.reactions.length &&
+    prevProps.message.isPinned === nextProps.message.isPinned &&
+    prevProps.isOwn === nextProps.isOwn &&
+    prevProps.showAvatar === nextProps.showAvatar &&
+    prevProps.isMenuOpen === nextProps.isMenuOpen &&
+    prevProps.isEditing === nextProps.isEditing &&
+    prevProps.editContent === nextProps.editContent &&
+    // Customization fields — must track all sender rendering fields
+    prevProps.uiPreferences === nextProps.uiPreferences &&
+    prevProps.message.sender?.bubbleStyle === nextProps.message.sender?.bubbleStyle &&
+    prevProps.message.sender?.bubbleColor === nextProps.message.sender?.bubbleColor &&
+    prevProps.message.sender?.bubbleRadius === nextProps.message.sender?.bubbleRadius &&
+    prevProps.message.sender?.messageEffect === nextProps.message.sender?.messageEffect &&
+    prevProps.message.sender?.equippedTitleId === nextProps.message.sender?.equippedTitleId &&
+    prevProps.message.sender?.avatarBorderId === nextProps.message.sender?.avatarBorderId
+  );
 }

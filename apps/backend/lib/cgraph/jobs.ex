@@ -73,6 +73,7 @@ defmodule CGraph.Jobs do
   ### Progress Tracking
 
       # In your worker
+      @doc "Executes the background job."
       def perform(%Oban.Job{id: job_id, args: args}) do
         CGraph.Jobs.update_progress(job_id, 0, "Starting...")
 

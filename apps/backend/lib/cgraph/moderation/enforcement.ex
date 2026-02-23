@@ -43,6 +43,7 @@ defmodule CGraph.Moderation.Enforcement do
     - `duration_hours` - For suspensions, how long
     - `notify_reporter` - Whether to notify the reporter
   """
+  @doc "Reviews and takes action on a moderation report."
   @spec review_report(User.t(), String.t(), map()) :: {:ok, Report.t()} | {:error, term()}
   def review_report(%User{} = reviewer, report_id, attrs) do
     with {:ok, report} <- get_report(report_id),

@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.ForumJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{forums: forums, meta: meta}) do
     %{
@@ -13,11 +14,13 @@ defmodule CGraphWeb.API.V1.ForumJSON do
     }
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{forum: forum}) do
     %{data: forum_data(forum)}
   end
 
+  @doc "Renders the moderation queue as JSON."
   @spec mod_queue(map()) :: map()
   def mod_queue(%{items: items, meta: meta}) do
     %{
@@ -26,11 +29,13 @@ defmodule CGraphWeb.API.V1.ForumJSON do
     }
   end
 
+  @doc "Renders forum statistics as JSON."
   @spec stats(map()) :: map()
   def stats(%{stats: stats}) do
     %{data: stats}
   end
 
+  @doc "Renders forum subscription status as JSON."
   @spec subscription(map()) :: map()
   def subscription(%{subscription: subscription}) do
     %{
@@ -44,6 +49,7 @@ defmodule CGraphWeb.API.V1.ForumJSON do
     }
   end
 
+  @doc "Renders the forum leaderboard as JSON."
   @spec leaderboard(map()) :: map()
   def leaderboard(%{forums: forums, meta: meta}) do
     %{
@@ -52,6 +58,7 @@ defmodule CGraphWeb.API.V1.ForumJSON do
     }
   end
 
+  @doc "Renders top forum content as JSON."
   @spec top(map()) :: map()
   def top(%{forums: forums}) do
     %{

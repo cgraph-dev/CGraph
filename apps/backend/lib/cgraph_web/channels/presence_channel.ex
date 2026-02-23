@@ -26,6 +26,7 @@ defmodule CGraphWeb.PresenceChannel do
   @offline_grace_period_ms 8_000
   @bulk_presence_batch_size 100
 
+  @doc "Joins the global presence channel for real-time user status tracking."
   @impl true
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("presence:lobby", _params, socket) do
@@ -39,6 +40,7 @@ defmodule CGraphWeb.PresenceChannel do
     end
   end
 
+  @doc "Handles asynchronous presence messages and heartbeat ticks."
   @impl true
   @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
@@ -87,6 +89,7 @@ defmodule CGraphWeb.PresenceChannel do
   # Catch-all for unhandled messages
   def handle_info(_msg, socket), do: {:noreply, socket}
 
+  @doc "Handles incoming presence events from the client."
   @impl true
   @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("heartbeat", _params, socket) do
@@ -241,6 +244,7 @@ defmodule CGraphWeb.PresenceChannel do
     {:reply, {:error, %{reason: "unhandled event"}}, socket}
   end
 
+  @doc "Handles channel termination and broadcasts offline status to friends."
   @impl true
   @spec terminate(term(), Phoenix.Socket.t()) :: :ok
   def terminate(_reason, socket) do

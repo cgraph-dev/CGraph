@@ -36,6 +36,7 @@ defmodule CGraph.Jobs.Scheduling do
       iex> CGraph.Jobs.Scheduling.enqueue(MyWorker, %{user_id: 123}, delay: 5000)
       {:ok, %Oban.Job{id: 2}}
   """
+  @doc "Enqueues a job for background execution."
   @spec enqueue(module(), map(), keyword()) :: {:ok, Oban.Job.t()} | {:error, term()}
   def enqueue(worker, args, opts \\ []) do
     args
@@ -84,6 +85,7 @@ defmodule CGraph.Jobs.Scheduling do
 
       {:ok, inserted_jobs} = CGraph.Jobs.Scheduling.enqueue_many(jobs)
   """
+  @doc "Enqueues multiple jobs for background execution."
   @spec enqueue_many([{module(), map()} | {module(), map(), keyword()}]) ::
           {:ok, [Oban.Job.t()]} | {:error, term()}
   def enqueue_many(jobs) do

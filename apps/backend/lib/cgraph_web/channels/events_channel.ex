@@ -27,6 +27,7 @@ defmodule CGraphWeb.EventsChannel do
   @max_leaderboard_subscriptions 3
   _ = @max_leaderboard_subscriptions
 
+  @doc "Handles channel join requests and initializes socket state."
   @impl true
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("events:global", _params, socket) do
@@ -45,6 +46,7 @@ defmodule CGraphWeb.EventsChannel do
     end
   end
 
+  @doc "Handles asynchronous process messages."
   @impl true
   @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join_global, socket) do
@@ -165,6 +167,7 @@ defmodule CGraphWeb.EventsChannel do
   end
 
   # Client requests - get full event details
+  @doc "Handles incoming channel events from clients."
   @impl true
   @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("get_event", %{"event_id" => event_id}, socket) do

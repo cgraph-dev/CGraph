@@ -14,6 +14,7 @@ defmodule CGraph.Workers.HardDeleteUser do
   alias CGraph.Repo
   import Ecto.Query
 
+  @doc "Executes the job."
   @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"user_id" => user_id}}) do

@@ -28,6 +28,19 @@ defmodule CGraphWeb.Admin.EventsController do
   alias CGraph.Workers.EventExporter
   alias CGraph.Workers.EventRewardDistributor
 
+  import CGraphWeb.Admin.EventsHelpers,
+    only: [
+      require_admin: 2,
+      rate_limit: 2,
+      get_page: 1,
+      get_per_page: 1,
+      validate_event_dates: 1,
+      validate_event_update: 2,
+      validate_can_delete: 1,
+      validate_can_modify_battle_pass: 1,
+      get_changes: 2
+    ]
+
   plug :require_admin
   plug :rate_limit, max_requests: 100, window_ms: 60_000
 
@@ -96,6 +109,7 @@ defmodule CGraphWeb.Admin.EventsController do
   }
   ```
   """
+  @doc "Creates a new event."
   @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"event" => event_params}) do
     admin = conn.assigns.current_admin
@@ -423,95 +437,5 @@ defmodule CGraphWeb.Admin.EventsController do
   end
 
   # ==================== PRIVATE FUNCTIONS ====================
-
-  defp require_admin(conn, _opts) do
-    case conn.assigns[:current_admin] do
-      nil ->
-        conn
-        |> put_status(:unauthorized)
-        |> json(%{error: "Admin authentication required"})
-        |> halt()
-
-      admin ->
-        if admin.role in [:admin, :super_admin] do
-          conn
-        else
-          conn
-          |> put_status(:forbidden)
-          |> json(%{error: "Insufficient permissions"})
-          |> halt()
-        end
-    end
-  end
-
-  defp rate_limit(conn, opts) do
-    max_requests = Keyword.get(opts, :max_requests, 100)
-    window_ms = Keyword.get(opts, :window_ms, 60_000)
-    key = "admin_events:#{conn.assigns.current_admin.id}"
-
-    case CGraph.RateLimiter.check(key, :admin_api, limit: max_requests, window_ms: window_ms) do
-      :ok ->
-        conn
-
-      {:error, :rate_limited, info} ->
-        conn
-        |> put_resp_header("x-ratelimit-limit", to_string(max_requests))
-        |> put_resp_header("x-ratelimit-remaining", "0")
-        |> put_resp_header("retry-after", to_string(info.retry_after))
-        |> put_status(:too_many_requests)
-        |> json(%{error: "Rate limit exceeded", retry_after: info.retry_after})
-        |> halt()
-    end
-  end
-
-  defp get_page(params), do: max(1, String.to_integer(params["page"] || "1"))
-  defp get_per_page(params), do: min(100, max(1, String.to_integer(params["per_page"] || "20")))
-
-  defp validate_event_dates(%{"starts_at" => starts_at, "ends_at" => ends_at}) do
-    with {:ok, start_dt, _} <- DateTime.from_iso8601(starts_at),
-         {:ok, end_dt, _} <- DateTime.from_iso8601(ends_at) do
-      cond do
-        DateTime.compare(end_dt, start_dt) != :gt ->
-          {:error, :invalid_dates, "End date must be after start date"}
-
-        DateTime.diff(end_dt, start_dt, :day) > 365 ->
-          {:error, :invalid_dates, "Event duration cannot exceed 365 days"}
-
-        true ->
-          :ok
-      end
-    else
-      _ -> {:error, :invalid_dates, "Invalid date format"}
-    end
-  end
-  defp validate_event_dates(_), do: :ok
-
-  defp validate_event_update(%{status: :active}, %{"starts_at" => _}) do
-    {:error, :immutable_field, "Cannot modify start date of active event"}
-  end
-  defp validate_event_update(_, _), do: :ok
-
-  defp validate_can_delete(%{status: :draft}), do: :ok
-  defp validate_can_delete(_), do: {:error, :cannot_delete, "Only draft events can be deleted"}
-
-  defp validate_can_modify_battle_pass(%{status: status}) when status in [:draft, :scheduled] do
-    :ok
-  end
-  defp validate_can_modify_battle_pass(_) do
-    {:error, :immutable, "Cannot modify battle pass of active/ended event"}
-  end
-
-  defp get_changes(old, new) do
-    [:name, :description, :starts_at, :ends_at, :config, :status]
-    |> Enum.reduce(%{}, fn field, acc ->
-      old_val = Map.get(old, field)
-      new_val = Map.get(new, field)
-
-      if old_val != new_val do
-        Map.put(acc, field, %{from: old_val, to: new_val})
-      else
-        acc
-      end
-    end)
-  end
+  # Moved to CGraphWeb.Admin.EventsHelpers
 end

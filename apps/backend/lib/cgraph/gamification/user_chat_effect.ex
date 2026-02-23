@@ -40,12 +40,14 @@ defmodule CGraph.Gamification.UserChatEffect do
     |> unique_constraint([:user_id, :effect_id])
   end
 
+  @doc "Builds a changeset for activating a record."
   @spec activate_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def activate_changeset(user_effect, attrs) do
     user_effect
     |> cast(attrs, [:is_active])
   end
 
+  @doc "Returns the list of valid unlock sources."
   @spec unlock_sources() :: [String.t()]
   def unlock_sources, do: @unlock_sources
 end

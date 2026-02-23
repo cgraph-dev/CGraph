@@ -15,6 +15,7 @@ defmodule CGraph.Events.TypedEvents do
 
   ## Pattern matching in handlers
 
+      @doc "Handles a typed domain event."
       def handle_event(%{type: :user_registered, payload: %UserRegistered{} = e}) do
         send_welcome_email(e.email)
       end
@@ -28,6 +29,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:user_id, :email]
     defstruct [:user_id, :email, :username, provider: "email"]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end
@@ -38,6 +40,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:user_id]
     defstruct [:user_id, :reason]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end
@@ -48,6 +51,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:from_user_id, :to_user_id]
     defstruct [:from_user_id, :to_user_id]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end
@@ -58,6 +62,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:user_id, :friend_id]
     defstruct [:user_id, :friend_id]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end
@@ -75,6 +80,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:message_id, :conversation_id, :sender_id]
     defstruct [:message_id, :conversation_id, :sender_id, is_encrypted: true]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end
@@ -85,6 +91,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:message_id, :conversation_id, :deleted_by]
     defstruct [:message_id, :conversation_id, :deleted_by]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end
@@ -95,6 +102,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:message_id, :user_id, :emoji]
     defstruct [:message_id, :user_id, :emoji]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end
@@ -113,6 +121,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:user_id, :amount, :source]
     defstruct [:user_id, :amount, :source, :new_level, level_up: false]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end
@@ -123,6 +132,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:user_id, :achievement_id]
     defstruct [:user_id, :achievement_id, :achievement_slug]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end
@@ -133,6 +143,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:user_id, :quest_id]
     defstruct [:user_id, :quest_id, xp_reward: 0, coin_reward: 0]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end
@@ -145,6 +156,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:post_id, :forum_id, :author_id]
     defstruct [:post_id, :forum_id, :author_id, :thread_id]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end
@@ -155,6 +167,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:post_id, :voter_id, :direction]
     defstruct [:post_id, :voter_id, :direction]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end
@@ -172,6 +185,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:content_type, :content_id, :reporter_id, :reason]
     defstruct [:content_type, :content_id, :reporter_id, :reason]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end
@@ -182,6 +196,7 @@ defmodule CGraph.Events.TypedEvents do
     @enforce_keys [:user_id, :banned_by, :reason]
     defstruct [:user_id, :banned_by, :reason, :duration]
 
+    @doc "Creates a new event struct from the given fields."
     @spec new(keyword()) :: t()
     def new(fields), do: struct!(__MODULE__, fields)
   end

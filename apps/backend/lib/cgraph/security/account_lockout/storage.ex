@@ -7,6 +7,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
   # Redis Availability
   # ============================================================================
 
+  @doc "Returns whether a Redis connection is available."
   @spec redis_available?() :: boolean()
   def redis_available? do
     case System.get_env("REDIS_URL") do
@@ -20,6 +21,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
   # Storage Operations (Redis with ETS fallback)
   # ============================================================================
 
+  @doc "Retrieves a value from Redis or the ETS fallback."
   @spec get_from_storage(String.t(), boolean()) :: {:ok, term()}
   def get_from_storage(key, true = _redis_available) do
     Redix.command(:redix, ["GET", key])
@@ -44,6 +46,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
     ArgumentError -> {:ok, nil}
   end
 
+  @doc "Stores a value in Redis or the ETS fallback with a TTL."
   @spec set_in_storage(String.t(), term(), non_neg_integer(), boolean()) :: {:ok, String.t()} | {:error, term()}
   def set_in_storage(key, value, ttl, true = _redis_available) do
     Redix.command(:redix, ["SETEX", key, ttl, value])
@@ -61,6 +64,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
     ArgumentError -> {:error, :ets_unavailable}
   end
 
+  @doc "Deletes a key from Redis or the ETS fallback."
   @spec delete_from_storage(String.t(), boolean()) :: {:ok, non_neg_integer()} | {:error, term()}
   def delete_from_storage(key, true = _redis_available) do
     Redix.command(:redix, ["DEL", key])
@@ -78,16 +82,19 @@ defmodule CGraph.Security.AccountLockout.Storage do
   end
 
   # Legacy Redis operations (kept for compatibility but wrapped)
+  @doc "Retrieves a value using the preferred storage backend."
   @spec get_from_redis(String.t()) :: {:ok, term()}
   def get_from_redis(key) do
     get_from_storage(key, redis_available?())
   end
 
+  @doc "Stores a value using the preferred storage backend."
   @spec set_in_redis(String.t(), term(), non_neg_integer()) :: {:ok, String.t()} | {:error, term()}
   def set_in_redis(key, value, ttl) do
     set_in_storage(key, value, ttl, redis_available?())
   end
 
+  @doc "Deletes a key using the preferred storage backend."
   @spec delete_from_redis(String.t()) :: {:ok, non_neg_integer()} | {:error, term()}
   def delete_from_redis(key) do
     delete_from_storage(key, redis_available?())
@@ -97,6 +104,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
   # Counter Operations
   # ============================================================================
 
+  @doc "Increments the failed login attempt counter."
   @spec increment_attempts(String.t(), non_neg_integer()) :: non_neg_integer()
   def increment_attempts(key, window) do
     redis_avail = redis_available?()
@@ -122,6 +130,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
     end
   end
 
+  @doc "Returns the number of times the account has been locked."
   @spec get_lock_count(String.t()) :: non_neg_integer()
   def get_lock_count(identifier) do
     key = lock_count_key(identifier)
@@ -133,6 +142,7 @@ defmodule CGraph.Security.AccountLockout.Storage do
     end
   end
 
+  @doc "Increments the account lock counter."
   @spec increment_lock_count(String.t()) :: term()
   def increment_lock_count(identifier) do
     key = lock_count_key(identifier)
@@ -160,12 +170,16 @@ defmodule CGraph.Security.AccountLockout.Storage do
   @redis_prefix "account_lockout:"
   @ip_prefix "ip_lockout:"
 
+  @doc "Builds the Redis key for an account lockout record."
   @spec lockout_key(String.t()) :: String.t()
   def lockout_key(identifier), do: "#{@redis_prefix}lock:#{identifier}"
+  @doc "Builds the Redis key for login attempt tracking."
   @spec attempts_key(String.t()) :: String.t()
   def attempts_key(identifier), do: "#{@redis_prefix}attempts:#{identifier}"
+  @doc "Builds the Redis key for the lock count."
   @spec lock_count_key(String.t()) :: String.t()
   def lock_count_key(identifier), do: "#{@redis_prefix}lock_count:#{identifier}"
+  @doc "Builds the Redis key for an IP-based lockout."
   @spec ip_lockout_key(String.t()) :: String.t()
   def ip_lockout_key(ip), do: "#{@ip_prefix}#{ip}"
 

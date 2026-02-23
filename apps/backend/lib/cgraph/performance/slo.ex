@@ -44,6 +44,7 @@ defmodule CGraph.Performance.SLO do
 
   # ── Client API ──────────────────────────────────────────────
 
+  @doc "Starts the process and links it to the current process."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     name = Keyword.get(opts, :name, __MODULE__)
@@ -133,6 +134,7 @@ defmodule CGraph.Performance.SLO do
   # ── Server Implementation ──────────────────────────────────
 
   @impl true
+  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, map()}
   def init(opts) do
     definitions =
@@ -156,6 +158,7 @@ defmodule CGraph.Performance.SLO do
   end
 
   @impl true
+  @doc "Handles asynchronous cast messages."
   @spec handle_cast(term(), map()) :: {:noreply, map()}
   def handle_cast({:record, name, latency_ms, result}, state) do
     now = bucket_key(state.bucket_seconds)
@@ -183,6 +186,7 @@ defmodule CGraph.Performance.SLO do
   end
 
   @impl true
+  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call(:status, _from, state) do
     cutoff = bucket_key(state.bucket_seconds) - state.window_seconds
@@ -204,6 +208,7 @@ defmodule CGraph.Performance.SLO do
   end
 
   @impl true
+  @doc "Handles generic messages."
   @spec handle_info(:cleanup, map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do
     cutoff = bucket_key(state.bucket_seconds) - state.window_seconds

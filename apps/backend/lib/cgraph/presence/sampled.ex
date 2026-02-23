@@ -205,6 +205,7 @@ defmodule CGraph.Presence.Sampled do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(_opts) do
@@ -216,6 +217,7 @@ defmodule CGraph.Presence.Sampled do
     {:ok, %{pending_broadcasts: %{}}}
   end
 
+  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call({:track, channel_id, user_id, meta}, _from, state) do
@@ -279,6 +281,7 @@ defmodule CGraph.Presence.Sampled do
     {:reply, result, state}
   end
 
+  @doc "Handles generic messages."
   @spec handle_info(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_info({:broadcast, channel_id}, state) do

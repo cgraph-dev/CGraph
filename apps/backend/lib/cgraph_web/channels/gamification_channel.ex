@@ -37,6 +37,7 @@ defmodule CGraphWeb.GamificationChannel do
   intercept ["level_up", "xp_gained", "achievement_unlocked", "cosmetic_unlocked",
              "item_sold", "listing_created", "event_milestone"]
 
+  @doc "Intercepts outgoing channel events before delivery."
   @impl true
   @spec handle_out(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_out(event, payload, socket) do
@@ -44,6 +45,7 @@ defmodule CGraphWeb.GamificationChannel do
     {:noreply, socket}
   end
 
+  @doc "Handles channel join requests and initializes socket state."
   @impl true
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("gamification:" <> user_id, _params, socket) do
@@ -60,6 +62,7 @@ defmodule CGraphWeb.GamificationChannel do
     end
   end
 
+  @doc "Handles asynchronous process messages."
   @impl true
   @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
@@ -181,6 +184,7 @@ defmodule CGraphWeb.GamificationChannel do
   end
 
   # Client requests current state
+  @doc "Handles incoming channel events from clients."
   @impl true
   @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("get_state", _params, socket) do

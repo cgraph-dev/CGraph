@@ -3,11 +3,13 @@ defmodule CGraphWeb.API.V1.UploadJSON do
   JSON rendering for upload responses.
   """
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{file: file}) do
     %{data: file_data(file)}
   end
 
+  @doc "Renders batch upload results as JSON."
   @spec batch(map()) :: map()
   def batch(%{files: files, errors: errors}) do
     %{
@@ -23,6 +25,7 @@ defmodule CGraphWeb.API.V1.UploadJSON do
     }
   end
 
+  @doc "Renders presigned upload URL as JSON."
   @spec presign(map()) :: map()
   def presign(%{presign: presign}) do
     %{
@@ -35,6 +38,7 @@ defmodule CGraphWeb.API.V1.UploadJSON do
     }
   end
 
+  @doc "Renders storage usage statistics as JSON."
   @spec usage(map()) :: map()
   def usage(%{usage: usage}) do
     %{

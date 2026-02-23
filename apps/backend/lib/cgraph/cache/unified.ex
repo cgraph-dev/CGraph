@@ -102,6 +102,7 @@ defmodule CGraph.Cache.Unified do
   # Client API
   # ---------------------------------------------------------------------------
 
+  @doc "Starts the unified cache GenServer."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
@@ -277,6 +278,7 @@ defmodule CGraph.Cache.Unified do
   # Server Callbacks
   # ---------------------------------------------------------------------------
 
+  @doc "Initializes the unified cache backend."
   @impl true
   @spec init(term()) :: {:ok, map()}
   def init(_opts) do
@@ -316,6 +318,7 @@ defmodule CGraph.Cache.Backend.Cachex do
 
   @cache_name :cgraph_cache
 
+  @doc "Returns the child spec for starting the Cachex cache."
   @spec child_spec(keyword()) :: Supervisor.child_spec()
   def child_spec(_opts) do
     %{
@@ -327,6 +330,7 @@ defmodule CGraph.Cache.Backend.Cachex do
     }
   end
 
+  @doc "Gets a value from the Cachex cache by key."
   def get(key) do
     case Cachex.get(@cache_name, key) do
       {:ok, nil} -> :error
@@ -335,17 +339,20 @@ defmodule CGraph.Cache.Backend.Cachex do
     end
   end
 
+  @doc "Puts a value into the Cachex cache with optional TTL."
   def put(key, value, opts) do
     ttl = Keyword.get(opts, :ttl)
     Cachex.put(@cache_name, key, value, ttl: ttl)
     :ok
   end
 
+  @doc "Deletes a value from the Cachex cache by key."
   def delete(key) do
     Cachex.del(@cache_name, key)
     :ok
   end
 
+  @doc "Deletes all Cachex cache entries matching a glob pattern."
   @spec delete_pattern(String.t()) :: :ok
   def delete_pattern(pattern) do
     # Convert glob pattern to regex
@@ -373,10 +380,12 @@ defmodule CGraph.Cache.Backend.ETS do
 
   @table :cgraph_cache_ets
 
+  @doc "Initializes the ETS table for the cache backend."
   def init do
     :ets.new(@table, [:named_table, :set, :public, read_concurrency: true])
   end
 
+  @doc "Gets a value from the ETS cache by key."
   def get(key) do
     case :ets.lookup(@table, key) do
       [{^key, value, expires_at}] ->
@@ -391,6 +400,7 @@ defmodule CGraph.Cache.Backend.ETS do
     end
   end
 
+  @doc "Puts a value into the ETS cache with a TTL."
   def put(key, value, opts) do
     ttl = Keyword.get(opts, :ttl, 300_000)
     expires_at = System.system_time(:millisecond) + ttl
@@ -398,11 +408,13 @@ defmodule CGraph.Cache.Backend.ETS do
     :ok
   end
 
+  @doc "Deletes a value from the ETS cache by key."
   def delete(key) do
     :ets.delete(@table, key)
     :ok
   end
 
+  @doc "Deletes all ETS cache entries matching a glob pattern."
   @spec delete_pattern(String.t()) :: :ok
   def delete_pattern(pattern) do
     regex = pattern

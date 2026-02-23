@@ -32,6 +32,7 @@ defmodule CGraph.Jobs.Server do
   # Client
   # ---------------------------------------------------------------------------
 
+  @doc "Starts the jobs server GenServer."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
@@ -41,6 +42,7 @@ defmodule CGraph.Jobs.Server do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @doc "Initializes the jobs server with ETS tables, telemetry, and cleanup scheduling."
   @impl true
   @spec init(term()) :: {:ok, map()}
   def init(_opts) do
@@ -62,6 +64,7 @@ defmodule CGraph.Jobs.Server do
 
   # -- Recurring Jobs --------------------------------------------------------
 
+  @doc "Handles synchronous recurring job scheduling and workflow management calls."
   @impl true
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:schedule_recurring, name, worker, args, cron}, _from, state) do
@@ -196,6 +199,7 @@ defmodule CGraph.Jobs.Server do
 
   # -- Info Handlers ---------------------------------------------------------
 
+  @doc "Handles cleanup, workflow step completion, and failure messages."
   @impl true
   @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do

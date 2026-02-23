@@ -41,6 +41,7 @@ defmodule CGraph.Workers.CriticalAlertDispatcher do
   alias CGraph.{Accounts, Notifications}
   alias CGraph.Workers.SendEmailNotification
 
+  @doc "Executes the job."
   @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) do

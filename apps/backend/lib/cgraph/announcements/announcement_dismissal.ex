@@ -20,6 +20,7 @@ defmodule CGraph.Announcements.AnnouncementDismissal do
 
   @required_fields ~w(user_id announcement_id)a
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(dismissal, attrs) do
     dismissal

@@ -30,6 +30,7 @@ defmodule CGraph.Messaging.PrivateMessage do
   @required_fields ~w(sender_id recipient_id content)a
   @optional_fields ~w(subject is_read read_at is_starred is_important folder_id reply_to_id)a
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(message, attrs) do
     message

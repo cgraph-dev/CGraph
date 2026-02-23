@@ -93,11 +93,13 @@ defmodule CGraph.Auth.TokenManager do
   # GenServer API
   # ---------------------------------------------------------------------------
 
+  @doc "Starts the TokenManager GenServer."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
+  @doc "Initializes the TokenManager state and ETS tables."
   @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(_opts) do
@@ -112,6 +114,7 @@ defmodule CGraph.Auth.TokenManager do
     {:ok, %{}}
   end
 
+  @doc "Handles periodic cleanup of expired tokens."
   @spec handle_info(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_info(:cleanup_expired, state) do
@@ -145,6 +148,7 @@ defmodule CGraph.Auth.TokenManager do
   }}
   ```
   """
+  @doc "Generates authentication tokens for a user."
   @spec generate_tokens(User.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def generate_tokens(%User{} = user, opts \\ []) do
     device_info = Keyword.get(opts, :device_info, %{})

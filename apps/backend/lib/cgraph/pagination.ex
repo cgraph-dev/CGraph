@@ -34,6 +34,7 @@ defmodule CGraph.Pagination do
   ## Usage
 
       # In controller
+      @doc "Paginates a query and returns a page of results."
       def index(conn, params) do
         opts = Pagination.parse_params(params, default_limit: 25)
 

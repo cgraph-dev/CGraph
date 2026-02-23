@@ -17,6 +17,7 @@ defmodule CGraphWeb.Validation do
           field :count, :integer
         end
 
+        @doc "Validates resource creation parameters."
         @spec validate_create(term()) :: {:ok, term()} | {:error, String.t()}
         def validate_create(params) do
           %__MODULE__{}

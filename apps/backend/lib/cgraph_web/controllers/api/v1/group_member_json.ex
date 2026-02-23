@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.GroupMemberJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{members: members, meta: meta}) do
     %{
@@ -13,21 +14,25 @@ defmodule CGraphWeb.API.V1.GroupMemberJSON do
     }
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{member: member}) do
     %{data: member_data(member)}
   end
 
+  @doc "Renders a group ban entry as JSON."
   @spec ban(map()) :: map()
   def ban(%{ban: ban}) do
     %{data: ban_data(ban)}
   end
 
+  @doc "Renders group ban list as JSON."
   @spec bans(map()) :: map()
   def bans(%{bans: bans}) do
     %{data: Enum.map(bans, &ban_data/1)}
   end
 
+  @doc "Renders group ownership transfer as JSON."
   @spec transfer(map()) :: map()
   def transfer(%{group: group}) do
     %{

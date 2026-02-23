@@ -11,6 +11,7 @@ defmodule CGraphWeb do
   component, etc, so keep them short and clean.
   """
 
+  @doc "Returns the list of static file paths for the application."
   @spec static_paths() :: [String.t()]
   def static_paths, do: ~w(assets fonts images uploads favicon.ico robots.txt)
 
@@ -25,6 +26,7 @@ defmodule CGraphWeb do
     end
   end
 
+  @doc "Sets up channel-level imports and helpers."
   @spec channel() :: Macro.t()
   def channel do
     quote do
@@ -32,6 +34,7 @@ defmodule CGraphWeb do
     end
   end
 
+  @doc "Sets up controller-level imports and helpers."
   @spec controller() :: Macro.t()
   def controller do
     quote do
@@ -46,6 +49,7 @@ defmodule CGraphWeb do
     end
   end
 
+  @doc "Sets up LiveView-level imports and helpers."
   @spec live_view() :: Macro.t()
   def live_view do
     quote do
@@ -56,6 +60,7 @@ defmodule CGraphWeb do
     end
   end
 
+  @doc "Sets up LiveComponent-level imports and helpers."
   @spec live_component() :: Macro.t()
   def live_component do
     quote do
@@ -65,6 +70,7 @@ defmodule CGraphWeb do
     end
   end
 
+  @doc "Sets up HTML rendering imports and helpers."
   @spec html() :: Macro.t()
   def html do
     quote do
@@ -89,6 +95,7 @@ defmodule CGraphWeb do
     end
   end
 
+  @doc "Configures verified route helpers for the application."
   @spec verified_routes() :: Macro.t()
   def verified_routes do
     quote do

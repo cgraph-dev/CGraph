@@ -26,6 +26,7 @@ defmodule CGraph.Groups.PermissionOverwrite do
     timestamps()
   end
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(overwrite, attrs) do
     overwrite

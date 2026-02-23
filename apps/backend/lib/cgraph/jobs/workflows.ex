@@ -30,6 +30,7 @@ defmodule CGraph.Jobs.Workflows do
 
       {:ok, workflow_id} = CGraph.Jobs.Workflows.start_workflow(workflow)
   """
+  @doc "Starts a multi-step job workflow."
   @spec start_workflow(map()) :: {:ok, String.t()} | {:error, term()}
   def start_workflow(workflow) do
     GenServer.call(CGraph.Jobs.Server, {:start_workflow, workflow})

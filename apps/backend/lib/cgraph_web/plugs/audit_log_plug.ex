@@ -28,6 +28,7 @@ defmodule CGraphWeb.Plugs.AuditLogPlug do
   require Logger
 
   @impl Plug
+  @doc "Initializes plug options."
   @spec init(keyword()) :: keyword()
   def init(opts) do
     %{
@@ -39,6 +40,7 @@ defmodule CGraphWeb.Plugs.AuditLogPlug do
   end
 
   @impl Plug
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, opts) do
     conn = Plug.Conn.put_private(conn, :cgraph_request_start, System.monotonic_time(:millisecond))

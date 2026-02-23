@@ -9,6 +9,7 @@ defmodule CGraph.Release do
 
   @app :cgraph
 
+  @doc "Runs pending database migrations."
   @spec migrate() :: :ok
   def migrate do
     load_app()
@@ -18,6 +19,7 @@ defmodule CGraph.Release do
     end
   end
 
+  @doc "Rolls back the last database migration."
   @spec rollback(module(), integer()) :: {:ok, [integer()], [integer()]}
   def rollback(repo, version) do
     load_app()

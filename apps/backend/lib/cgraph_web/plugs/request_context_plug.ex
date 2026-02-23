@@ -60,6 +60,7 @@ defmodule CGraphWeb.Plugs.RequestContext do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @doc "Initializes plug options."
   @spec init(keyword()) :: keyword()
   def init(opts) do
     %{
@@ -70,6 +71,7 @@ defmodule CGraphWeb.Plugs.RequestContext do
   end
 
   @impl true
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, opts) do
     start_time = if opts.timing, do: System.monotonic_time(:microsecond)

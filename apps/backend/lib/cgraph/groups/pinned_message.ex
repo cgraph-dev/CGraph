@@ -19,6 +19,7 @@ defmodule CGraph.Groups.PinnedMessage do
     timestamps()
   end
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(pinned_message, attrs) do
     pinned_message

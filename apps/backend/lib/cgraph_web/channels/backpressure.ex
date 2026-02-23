@@ -19,6 +19,7 @@ defmodule CGraphWeb.Channels.Backpressure do
   ## Usage in Channels
 
       # In any channel module:
+      @doc "Handles incoming messages with backpressure control."
       def handle_in("new_msg", payload, socket) do
         case Backpressure.check(socket) do
           :ok ->

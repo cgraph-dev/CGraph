@@ -11,6 +11,8 @@ import {
   LinkIcon,
 } from '@heroicons/react/24/outline';
 import { createLogger } from '@/lib/logger';
+import type { QuickReplyProps } from './quick-reply-types';
+import { ToolbarButton } from './toolbar-button';
 
 const logger = createLogger('QuickReply');
 
@@ -25,17 +27,6 @@ const logger = createLogger('QuickReply');
  * - Attachment quick-add
  * - Quote selected text
  */
-
-interface QuickReplyProps {
-  threadId: string;
-  onSubmit: (content: string, attachments?: File[]) => Promise<void>;
-  onExpandToFull?: () => void; // Navigate to full reply editor
-  placeholder?: string;
-  maxLength?: number;
-  disabled?: boolean;
-  quotedText?: string;
-  className?: string;
-}
 
 export function QuickReply({
   threadId,
@@ -278,26 +269,6 @@ export function QuickReply({
         </div>
       )}
     </div>
-  );
-}
-
-// Toolbar Button Component
-interface ToolbarButtonProps {
-  title: string;
-  onClick: () => void;
-  children: React.ReactNode;
-}
-
-function ToolbarButton({ title, onClick, children }: ToolbarButtonProps) {
-  return (
-    <button
-      type="button"
-      title={title}
-      onClick={onClick}
-      className="flex h-8 w-8 items-center justify-center rounded transition-colors hover:bg-gray-200 dark:hover:bg-gray-600"
-    >
-      {children}
-    </button>
   );
 }
 

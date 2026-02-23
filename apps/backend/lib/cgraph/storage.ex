@@ -212,6 +212,7 @@ defmodule CGraph.Storage do
     ".7z" => "application/x-7z-compressed"
   }
 
+  @doc "Detects the MIME content type of a file."
   @spec detect_content_type(String.t()) :: String.t()
   def detect_content_type(filename) do
     ext = filename |> Path.extname() |> String.downcase()

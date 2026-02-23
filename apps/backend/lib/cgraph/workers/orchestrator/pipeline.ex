@@ -40,6 +40,7 @@ defmodule CGraph.Workers.Orchestrator.Pipeline do
         {DataLoadWorker, %{destination: "warehouse"}}
       ], on_complete: {NotifyWorker, %{message: "ETL complete"}})
   """
+  @doc "Executes a pipeline of sequential jobs."
   @spec pipeline([job_spec()], keyword()) :: {:ok, String.t()} | {:error, :empty_pipeline}
   def pipeline(jobs, opts \\ []) when is_list(jobs) do
     pipeline_id = generate_pipeline_id()

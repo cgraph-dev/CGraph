@@ -24,6 +24,7 @@ defmodule CGraphWeb.Channels.AIChannel do
   alias CGraph.AI
   alias CGraph.AI.LLMClient
 
+  @doc "Handles a client joining the channel."
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   @impl true
   def join("ai:" <> user_id, _params, socket) do
@@ -41,6 +42,7 @@ defmodule CGraphWeb.Channels.AIChannel do
     end
   end
 
+  @doc "Handles incoming channel messages from the client."
   @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:reply, {:ok, map()} | {:error, map()}, Phoenix.Socket.t()} | {:noreply, Phoenix.Socket.t()}
   @impl true
   def handle_in("summarize_stream", %{"messages" => messages}, socket) do
@@ -93,6 +95,7 @@ defmodule CGraphWeb.Channels.AIChannel do
   # Async streaming via handle_info (push must run in channel process)
   # ---------------------------------------------------------------------------
 
+  @doc "Handles generic messages."
   @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   @impl true
   def handle_info({:do_summarize_stream, messages, user_id, tier}, socket) do

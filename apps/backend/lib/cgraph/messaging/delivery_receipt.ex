@@ -48,6 +48,7 @@ defmodule CGraph.Messaging.DeliveryReceipt do
     timestamps(updated_at: false)
   end
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(receipt, attrs) do
     receipt
@@ -60,6 +61,7 @@ defmodule CGraph.Messaging.DeliveryReceipt do
     |> foreign_key_constraint(:recipient_id)
   end
 
+  @doc "Builds a changeset for marking delivery status."
   @spec mark_delivered_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def mark_delivered_changeset(receipt) do
     receipt

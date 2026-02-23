@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.CustomizationJSON do
 
   alias CGraph.Customizations.UserCustomization
 
+  @doc "Renders user customizations as JSON."
   @spec show(map()) :: map()
   def show(%{customizations: nil}) do
     %{data: nil}

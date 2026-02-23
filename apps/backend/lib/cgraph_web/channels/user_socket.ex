@@ -32,6 +32,7 @@ defmodule CGraphWeb.UserSocket do
   channel "document:*", CGraphWeb.Channels.DocumentChannel
 
   @impl true
+  @doc "Authenticates and establishes a socket connection."
   @spec connect(map(), Phoenix.Socket.t(), map()) :: {:ok, Phoenix.Socket.t()} | :error
   def connect(%{"token" => token}, socket, _connect_info) do
     case verify_token(token) do
@@ -58,6 +59,7 @@ defmodule CGraphWeb.UserSocket do
   end
 
   @impl true
+  @doc "Returns the socket identifier for the connection."
   @spec id(Phoenix.Socket.t()) :: String.t() | nil
   def id(socket), do: "user_socket:#{socket.assigns.current_user.id}"
 

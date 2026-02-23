@@ -47,6 +47,7 @@ defmodule Mix.Tasks.Search.Reindex do
   @valid_indexes ~w(users posts groups messages)
 
   @impl Mix.Task
+  @doc "Runs the mix task."
   @spec run(list()) :: :ok
   def run(args) do
     {opts, _, _} = OptionParser.parse(args,

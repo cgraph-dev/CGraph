@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.CommentJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{comments: comments, meta: meta}) do
     %{
@@ -13,11 +14,13 @@ defmodule CGraphWeb.API.V1.CommentJSON do
     }
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{comment: comment}) do
     %{data: comment_data(comment)}
   end
 
+  @doc "Renders a comment vote as JSON."
   @spec vote(map()) :: map()
   def vote(%{vote: vote, comment: comment}) do
     %{
@@ -30,6 +33,7 @@ defmodule CGraphWeb.API.V1.CommentJSON do
     }
   end
 
+  @doc "Renders a comment report as JSON."
   @spec report(map()) :: map()
   def report(%{report: report}) do
     %{

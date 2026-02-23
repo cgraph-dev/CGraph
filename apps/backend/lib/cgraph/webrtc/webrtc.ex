@@ -287,6 +287,7 @@ defmodule CGraph.WebRTC do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @doc "Initializes the WebRTC room manager state and ETS table."
   @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(_opts) do
@@ -295,6 +296,7 @@ defmodule CGraph.WebRTC do
     {:ok, %{}}
   end
 
+  @doc "Handles synchronous WebRTC room management requests."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call({:create_room, room}, _from, state) do
@@ -408,6 +410,7 @@ defmodule CGraph.WebRTC do
     end
   end
 
+  @doc "Handles room timeout and periodic cleanup events."
   @spec handle_info(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_info({:room_timeout, room_id}, state) do

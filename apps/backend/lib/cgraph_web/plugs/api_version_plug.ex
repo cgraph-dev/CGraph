@@ -78,6 +78,7 @@ defmodule CGraphWeb.Plugs.ApiVersion do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @doc "Initializes plug options."
   @spec init(keyword()) :: keyword()
   def init(opts) do
     %{
@@ -89,6 +90,7 @@ defmodule CGraphWeb.Plugs.ApiVersion do
   end
 
   @impl true
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, opts) do
     case resolve_version(conn, opts) do

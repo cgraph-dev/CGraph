@@ -102,6 +102,7 @@ defmodule CGraphWeb.API.V1.CustomizationController do
   - Optimistic concurrency with last_updated_at tracking
   - Returns full customization state for client sync
   """
+  @doc "Updates the current user's customizations."
   @spec update_my_customizations(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def update_my_customizations(conn, params) do
     user = conn.assigns.current_user

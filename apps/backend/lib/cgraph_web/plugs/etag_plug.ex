@@ -13,6 +13,7 @@ defmodule CGraphWeb.Plugs.ETagPlug do
 
   Or use the helper in controllers for fine-grained control:
 
+      @doc "Generates an ETag for a show response."
       def show(conn, %{"id" => id}) do
         with {:ok, resource} <- get_resource(id) do
           conn
@@ -44,6 +45,7 @@ defmodule CGraphWeb.Plugs.ETagPlug do
   @private_max_age 60
   @public_max_age 300
 
+  @doc "Initializes plug options."
   @spec init(keyword()) :: map()
   @impl Plug
   def init(opts) do
@@ -57,6 +59,7 @@ defmodule CGraphWeb.Plugs.ETagPlug do
     }
   end
 
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), map()) :: Plug.Conn.t()
   @impl Plug
   def call(conn, opts) do

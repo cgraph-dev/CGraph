@@ -99,6 +99,7 @@ defmodule CGraph.Gamification.MarketplaceItem do
   defp validate_max_price(changeset, price, max_price) when price <= max_price, do: changeset
   defp validate_max_price(changeset, _, _), do: add_error(changeset, :price, "must not exceed maximum price")
 
+  @doc "Builds a changeset for processing a purchase."
   @spec purchase_changeset(t(), String.t()) :: Ecto.Changeset.t()
   def purchase_changeset(item, buyer_id) do
     item
@@ -109,12 +110,14 @@ defmodule CGraph.Gamification.MarketplaceItem do
     }, [:listing_status, :buyer_id, :sold_at])
   end
 
+  @doc "Builds a changeset for cancelling a record."
   @spec cancel_changeset(t()) :: Ecto.Changeset.t()
   def cancel_changeset(item) do
     item
     |> cast(%{listing_status: "cancelled"}, [:listing_status])
   end
 
+  @doc "Builds a changeset for updating the price."
   @spec update_price_changeset(t(), integer()) :: Ecto.Changeset.t()
   def update_price_changeset(item, new_price) do
     item
@@ -123,10 +126,13 @@ defmodule CGraph.Gamification.MarketplaceItem do
     |> validate_price_bounds()
   end
 
+  @doc "Returns the list of available item types."
   @spec item_types() :: [String.t()]
   def item_types, do: @item_types
+  @doc "Returns the list of available listing statuses."
   @spec listing_statuses() :: [String.t()]
   def listing_statuses, do: @listing_statuses
+  @doc "Returns the list of available currency types."
   @spec currency_types() :: [String.t()]
   def currency_types, do: @currency_types
 

@@ -20,6 +20,7 @@ defmodule CGraph.Query.SoftDelete do
 
       import CGraph.Query.SoftDelete
 
+      @doc "Lists messages that have not been soft-deleted."
       def list_active_messages(conversation_id) do
         Message
         |> exclude_deleted()
@@ -28,6 +29,7 @@ defmodule CGraph.Query.SoftDelete do
       end
 
       # Include deleted records
+      @doc "Lists all messages including soft-deleted ones."
       def list_all_messages(conversation_id) do
         Message
         |> with_deleted()
@@ -36,6 +38,7 @@ defmodule CGraph.Query.SoftDelete do
       end
 
       # Only deleted records (for admin/recovery)
+      @doc "Lists only soft-deleted messages."
       def list_deleted_messages(conversation_id) do
         Message
         |> only_deleted()
@@ -111,6 +114,7 @@ defmodule CGraph.Query.SoftDelete do
       # Best: build from schema directly
       Message |> with_deleted() |> Repo.all()
   """
+  @doc "Includes soft-deleted records in the query."
   @spec with_deleted(queryable()) :: Ecto.Query.t()
   def with_deleted(queryable) do
     # Remove any existing deleted_at filter and return base query

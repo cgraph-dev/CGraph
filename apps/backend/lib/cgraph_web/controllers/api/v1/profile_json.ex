@@ -7,6 +7,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
   # PROFILE
   # ========================================
 
+  @doc "Renders a user profile as JSON."
   @spec profile(map()) :: map()
   def profile(%{profile: profile}) do
     %{data: profile_data(profile)}
@@ -88,6 +89,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
   # POSTS
   # ========================================
 
+  @doc "Renders a user's posts as JSON."
   @spec posts(map()) :: map()
   def posts(%{posts: posts, pagination: pagination}) do
     %{
@@ -114,6 +116,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
   # THREADS
   # ========================================
 
+  @doc "Renders a user's threads as JSON."
   @spec threads(map()) :: map()
   def threads(%{threads: threads, pagination: pagination}) do
     %{
@@ -141,6 +144,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
   # REPUTATION
   # ========================================
 
+  @doc "Renders user reputation data as JSON."
   @spec reputation(map()) :: map()
   def reputation(%{entries: entries, pagination: pagination, summary: summary}) do
     %{
@@ -152,6 +156,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
     }
   end
 
+  @doc "Renders a reputation entry as JSON."
   @spec reputation_entry(map()) :: map()
   def reputation_entry(%{entry: entry}) do
     %{data: reputation_entry_data(entry)}
@@ -205,6 +210,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
   # ACTIVITY
   # ========================================
 
+  @doc "Renders user activity as JSON."
   @spec activity(map()) :: map()
   def activity(%{activity: activity, pagination: pagination}) do
     %{
@@ -229,6 +235,7 @@ defmodule CGraphWeb.API.V1.ProfileJSON do
   # VISITORS
   # ========================================
 
+  @doc "Renders profile visitors as JSON."
   @spec visitors(map()) :: map()
   def visitors(%{visitors: visitors, pagination: pagination}) do
     %{

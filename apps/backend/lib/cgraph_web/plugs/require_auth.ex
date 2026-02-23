@@ -28,10 +28,12 @@ defmodule CGraphWeb.Plugs.RequireAuth do
 
   require Logger
 
+  @doc "Initializes plug options."
   @spec init(keyword()) :: keyword()
   @impl Plug
   def init(opts), do: opts
 
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   @impl Plug
   def call(conn, _opts) do

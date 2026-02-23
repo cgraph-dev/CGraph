@@ -28,6 +28,7 @@ defmodule CGraph.Tracing.Span do
         PaymentGateway.charge(amount)
       end)
   """
+  @doc "Wraps a function call in a tracing span."
   @spec with_span(map() | {:ok, map()} | String.t(), String.t(), map() | (-> term()), (-> term()) | nil) :: term()
   def with_span(ctx, name, opts_or_fun, fun_or_nil \\ nil)
 

@@ -210,6 +210,7 @@ defmodule CGraph.RateLimiter.Distributed do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     # Create fallback ETS table
@@ -231,6 +232,7 @@ defmodule CGraph.RateLimiter.Distributed do
   end
 
   @impl true
+  @doc "Handles generic messages."
   @spec handle_info(:cleanup, map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do
     EtsFallback.cleanup()

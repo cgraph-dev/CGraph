@@ -113,6 +113,7 @@ defmodule CGraph.Security.TokenBlacklist do
       TokenBlacklist.revoke("eyJ...", reason: :logout, user_id: "user_123")
       TokenBlacklist.revoke("eyJ...", reason: :password_change)
   """
+  @doc "Revokes a specific authentication token."
   @spec revoke(token(), keyword()) :: :ok | {:error, term()}
   def revoke(token, opts \\ []) when is_binary(token) do
     reason = Keyword.get(opts, :reason, :logout)
@@ -156,6 +157,7 @@ defmodule CGraph.Security.TokenBlacklist do
       TokenBlacklist.revoke_all_for_user("user_123", reason: :password_change)
       TokenBlacklist.revoke_all_for_user("user_123", reason: :security_breach)
   """
+  @doc "Revokes all authentication tokens for a user."
   @spec revoke_all_for_user(user_id(), keyword()) :: :ok | {:error, term()}
   def revoke_all_for_user(user_id, opts \\ []) when is_binary(user_id) do
     GenServer.call(__MODULE__, {:revoke_all_user, user_id, opts})
@@ -215,6 +217,7 @@ defmodule CGraph.Security.TokenBlacklist do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @doc "Initializes the token blacklist GenServer and schedules periodic cleanup."
   @impl true
   @spec init(term()) :: {:ok, map()}
   def init(_opts) do
@@ -231,6 +234,7 @@ defmodule CGraph.Security.TokenBlacklist do
     {:ok, state}
   end
 
+  @doc "Handles synchronous token revocation, revocation checks, and stats queries."
   @impl true
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:revoke, token, opts}, _from, state) do
@@ -282,6 +286,7 @@ defmodule CGraph.Security.TokenBlacklist do
     {:reply, stats, state}
   end
 
+  @doc "Handles asynchronous cleanup of expired blacklist entries."
   @impl true
   @spec handle_cast(term(), map()) :: {:noreply, map()}
   def handle_cast(:cleanup, state) do
@@ -290,6 +295,7 @@ defmodule CGraph.Security.TokenBlacklist do
     {:noreply, new_state}
   end
 
+  @doc "Handles scheduled cleanup of expired blacklist entries."
   @impl true
   @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:scheduled_cleanup, state) do

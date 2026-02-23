@@ -60,6 +60,7 @@ defmodule CGraph.Workers.NotificationRetryWorker do
 
   require Logger
 
+  @doc "Executes the job."
   @spec perform(Oban.Job.t()) :: :ok | :discard | {:snooze, pos_integer()} | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: args, attempt: attempt}) do
@@ -102,6 +103,7 @@ defmodule CGraph.Workers.NotificationRetryWorker do
     end
   end
 
+  @doc "Calculates the backoff delay for notification retries."
   @spec backoff(Oban.Job.t()) :: pos_integer()
   @impl Oban.Worker
   def backoff(%Oban.Job{attempt: attempt}) do

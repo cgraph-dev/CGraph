@@ -102,6 +102,7 @@ defmodule CGraph.Security.AbuseDetection do
   # Client API
   # ---------------------------------------------------------------------------
 
+  @doc "Starts the AbuseDetection GenServer."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
@@ -247,6 +248,7 @@ defmodule CGraph.Security.AbuseDetection do
   # Server Callbacks
   # ---------------------------------------------------------------------------
 
+  @doc "Initializes the abuse detection ETS table and schedules cleanup."
   @impl true
   @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
@@ -259,6 +261,7 @@ defmodule CGraph.Security.AbuseDetection do
     {:ok, %{history: %{}}}
   end
 
+  @doc "Handles asynchronous abuse report and clear events."
   @impl true
   @spec handle_cast(term(), map()) :: {:noreply, map()}
   def handle_cast({:report, user_id, reporter_id, type, details}, state) do
@@ -292,6 +295,7 @@ defmodule CGraph.Security.AbuseDetection do
     {:noreply, %{state | history: history}}
   end
 
+  @doc "Returns the abuse history for a user."
   @impl true
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:get_history, user_id}, _from, state) do
@@ -299,6 +303,7 @@ defmodule CGraph.Security.AbuseDetection do
     {:reply, history, state}
   end
 
+  @doc "Handles periodic cleanup of expired abuse detection entries."
   @impl true
   @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do

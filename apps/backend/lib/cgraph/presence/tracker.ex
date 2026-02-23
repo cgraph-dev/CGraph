@@ -33,6 +33,7 @@ defmodule CGraph.Presence.Tracker do
         device: "web"
       })
   """
+  @doc "Tracks a user's presence in the system."
   @spec track_user(Phoenix.Socket.t(), String.t(), String.t(), map()) :: {:ok, binary()} | {:error, term()}
   def track_user(socket, user_id, room_id, meta \\ %{}) do
     now = DateTime.utc_now()

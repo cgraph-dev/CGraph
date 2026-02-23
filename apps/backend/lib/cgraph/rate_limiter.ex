@@ -146,6 +146,7 @@ defmodule CGraph.RateLimiter do
 
   This is useful for test environments.
   """
+  @doc "Checks if a rate limit has been exceeded."
   @spec check(rate_limit_key(), scope(), keyword() | map()) :: check_result()
   def check(identifier, scope, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
@@ -291,12 +292,14 @@ defmodule CGraph.RateLimiter do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @doc "Starts the process and links it to the current process."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
   @impl true
+  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     # Create ETS table
@@ -309,6 +312,7 @@ defmodule CGraph.RateLimiter do
   end
 
   @impl true
+  @doc "Handles generic messages."
   @spec handle_info(:cleanup, map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do
     AccessControl.cleanup_expired()

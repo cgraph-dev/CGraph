@@ -62,10 +62,12 @@ defmodule CGraphWeb.Plugs.RequestTracing do
   require Logger
 
   @impl true
+  @doc "Initializes plug options."
   @spec init(keyword()) :: keyword()
   def init(opts), do: opts
 
   @impl true
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, _opts) do
     trace_id = get_or_generate_trace_id(conn)

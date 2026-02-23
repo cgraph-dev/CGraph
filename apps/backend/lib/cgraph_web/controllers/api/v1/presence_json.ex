@@ -7,6 +7,7 @@ defmodule CGraphWeb.API.V1.PresenceJSON do
   # ONLINE USERS
   # ========================================
 
+  @doc "Renders online presence data as JSON."
   @spec online(map()) :: map()
   def online(%{users: users, pagination: pagination, guests: guests, total_online: total_online}) do
     %{
@@ -61,6 +62,7 @@ defmodule CGraphWeb.API.V1.PresenceJSON do
   # STATS
   # ========================================
 
+  @doc "Renders presence statistics as JSON."
   @spec stats(map()) :: map()
   def stats(%{stats: stats}) do
     %{
@@ -92,6 +94,7 @@ defmodule CGraphWeb.API.V1.PresenceJSON do
   # WHO'S HERE
   # ========================================
 
+  @doc "Renders current presence list as JSON."
   @spec whos_here(map()) :: map()
   def whos_here(%{users: users, location: location}) do
     %{
@@ -118,6 +121,7 @@ defmodule CGraphWeb.API.V1.PresenceJSON do
   # USER STATUS
   # ========================================
 
+  @doc "Renders a user's status as JSON."
   @spec user_status(map()) :: map()
   def user_status(%{status: status}) do
     %{

@@ -21,6 +21,7 @@ defmodule CGraph.Crypto.E2EE.KeyGeneration do
 
   `{:ok, bundle}` where bundle contains all key material.
   """
+  @doc "Generates a complete E2EE key bundle."
   @spec generate_key_bundle(String.t()) :: {:ok, map()}
   def generate_key_bundle(device_id) do
     # Generate Ed25519 identity key pair

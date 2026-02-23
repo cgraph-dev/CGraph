@@ -165,6 +165,7 @@ defmodule CGraph.Performance.QueryOptimizer do
 
   `{:ok, records, %{end_cursor: cursor, has_more: boolean}}`
   """
+  @doc "Performs cursor-based pagination on a query."
   @spec cursor_paginate(Ecto.Queryable.t(), keyword()) ::
     {:ok, [term()], map()}
   def cursor_paginate(query, opts \\ []) do

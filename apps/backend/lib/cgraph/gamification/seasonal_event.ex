@@ -127,6 +127,7 @@ defmodule CGraph.Gamification.SeasonalEvent do
     end
   end
 
+  @doc "Returns the list of available event types."
   @spec event_types() :: [String.t()]
   def event_types, do: @event_types
 

@@ -42,6 +42,7 @@ defmodule CGraph.HTTP.Middleware.CircuitBreaker do
   @default_reset 30_000
 
   @impl Tesla.Middleware
+  @doc "Processes the request through the circuit breaker middleware."
   @spec call(Tesla.Env.t(), list(), keyword()) :: Tesla.Env.result()
   def call(env, next, opts) do
     fuse_name = Keyword.get(opts, :name, :default_http_fuse)

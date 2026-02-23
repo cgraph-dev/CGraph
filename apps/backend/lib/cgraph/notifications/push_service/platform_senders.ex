@@ -10,6 +10,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
   # Platform-Specific Senders
   # ============================================================================
 
+  @doc "Sends push notifications to Apple APNs devices."
   @spec send_to_apns([map()], map(), boolean()) :: {:ok, non_neg_integer(), non_neg_integer(), [String.t()]} | {:error, atom(), non_neg_integer()}
   def send_to_apns([], _notification, _silent), do: {:ok, 0, 0, []}
   def send_to_apns(tokens, notification, silent) do
@@ -46,6 +47,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
       {:error, :apns_error, length(tokens)}
   end
 
+  @doc "Sends push notifications to Firebase FCM devices."
   @spec send_to_fcm([map()], map(), boolean()) :: {:ok, non_neg_integer(), non_neg_integer(), [String.t()]} | {:error, atom(), non_neg_integer()}
   def send_to_fcm([], _notification, _silent), do: {:ok, 0, 0, []}
   def send_to_fcm(tokens, notification, silent) do
@@ -82,6 +84,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
       {:error, :fcm_error, length(tokens)}
   end
 
+  @doc "Sends push notifications via Expo push service."
   @spec send_to_expo([map()], map(), boolean()) :: {:ok, non_neg_integer(), non_neg_integer(), [String.t()]} | {:error, atom(), non_neg_integer()}
   def send_to_expo([], _notification, _silent), do: {:ok, 0, 0, []}
   def send_to_expo(tokens, notification, silent) do
@@ -117,6 +120,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
       {:error, :expo_error, length(tokens)}
   end
 
+  @doc "Sends web push notifications to browser clients."
   @spec send_to_web([map()], map()) :: {:ok, non_neg_integer(), non_neg_integer(), [String.t()]} | {:error, atom(), non_neg_integer()}
   def send_to_web([], _notification), do: {:ok, 0, 0, []}
   def send_to_web(tokens, notification) do
@@ -157,6 +161,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
   # Payload Builders
   # ============================================================================
 
+  @doc "Builds the APNs notification payload."
   @spec build_apns_payload(map(), boolean()) :: map()
   def build_apns_payload(notification, silent) do
     base_aps = if silent do
@@ -187,6 +192,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
     end
   end
 
+  @doc "Builds the FCM notification payload."
   @spec build_fcm_payload(map(), boolean()) :: map()
   def build_fcm_payload(notification, silent) do
     if silent do
@@ -224,6 +230,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
     end
   end
 
+  @doc "Builds an Expo push notification message."
   @spec build_expo_message(String.t(), map(), boolean()) :: map()
   def build_expo_message(token, notification, silent) do
     base = %{
@@ -249,6 +256,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
     |> maybe_add("channelId", Map.get(notification, :thread_id))
   end
 
+  @doc "Builds a web push notification payload as JSON."
   @spec build_web_push_payload(map()) :: String.t()
   def build_web_push_payload(notification) do
     %{
@@ -268,6 +276,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
   # Response Parsers
   # ============================================================================
 
+  @doc "Parses an FCM batch send response into result counts."
   @spec parse_fcm_response(map(), [map()]) :: {non_neg_integer(), non_neg_integer(), [String.t()]}
   def parse_fcm_response(response, tokens) do
     results = Map.get(response, "responses", [])
@@ -287,6 +296,7 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
     {sent, failed, invalid}
   end
 
+  @doc "Parses an Expo batch send response into result counts."
   @spec parse_expo_response(map(), [map()]) :: {non_neg_integer(), non_neg_integer(), [String.t()]}
   def parse_expo_response(response, tokens) do
     results = Map.get(response, "data", [])
@@ -310,12 +320,14 @@ defmodule CGraph.Notifications.PushService.PlatformSenders do
   # Helpers
   # ============================================================================
 
+  @doc "Converts a priority atom to an FCM priority string."
   @spec priority_to_fcm(atom()) :: String.t()
   def priority_to_fcm(:high), do: "high"
   def priority_to_fcm(:normal), do: "normal"
   def priority_to_fcm(:low), do: "normal"
   def priority_to_fcm(_), do: "high"
 
+  @doc "Converts a priority atom to an Expo priority string."
   @spec priority_to_expo(atom()) :: String.t()
   def priority_to_expo(:high), do: "high"
   def priority_to_expo(:normal), do: "default"

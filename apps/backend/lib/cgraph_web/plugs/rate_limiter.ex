@@ -11,6 +11,7 @@ defmodule CGraphWeb.Plugs.RateLimiter do
   @default_limit 100
   @default_window_ms 60_000
 
+  @doc "Initializes plug options."
   @spec init(keyword()) :: keyword()
   def init(opts) do
     %{
@@ -19,6 +20,7 @@ defmodule CGraphWeb.Plugs.RateLimiter do
     }
   end
 
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, opts) do
     key = rate_limit_key(conn)

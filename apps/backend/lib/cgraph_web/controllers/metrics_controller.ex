@@ -9,6 +9,7 @@ defmodule CGraphWeb.MetricsController do
 
   use CGraphWeb, :controller
 
+  @doc "Renders application metrics."
   @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, _params) do
     # Custom metrics from CGraph.Metrics GenServer

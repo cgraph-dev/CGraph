@@ -40,6 +40,7 @@ defmodule CGraph.Forums.ThreadAttachment do
     timestamps()
   end
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(attachment, attrs) do
     attachment
@@ -89,6 +90,7 @@ defmodule CGraph.Forums.ThreadAttachment do
     end
   end
 
+  @doc "Returns the list of allowed file extensions."
   @spec allowed_extensions() :: [String.t()]
   def allowed_extensions, do: @allowed_extensions
 

@@ -102,11 +102,13 @@ defmodule CGraph.BatchProcessor do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @doc "Starts the process and links it to the current process."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
+  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(_opts) do

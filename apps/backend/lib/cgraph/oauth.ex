@@ -81,6 +81,7 @@ defmodule CGraph.OAuth do
 
       {:ok, url} = CGraph.OAuth.authorize_url(:google, "random-state-string")
   """
+  @doc "Generates the OAuth authorization URL."
   @spec authorize_url(provider(), String.t()) :: {:ok, String.t()} | {:error, term()}
   def authorize_url(provider, state) when provider in [:google, :apple, :facebook, :tiktok] do
     config = Config.get_provider_config(provider)
@@ -115,6 +116,7 @@ defmodule CGraph.OAuth do
   - `{:ok, %{user: user, tokens: tokens}}` - Success
   - `{:error, reason}` - Failure
   """
+  @doc "Handles the OAuth callback after authorization."
   @spec callback(provider(), String.t(), String.t()) :: oauth_result()
   def callback(provider, code, _state) when provider in [:google, :apple, :facebook, :tiktok] do
     config = Config.get_provider_config(provider)
@@ -156,6 +158,7 @@ defmodule CGraph.OAuth do
   - `{:ok, %{user: user, tokens: tokens}}` - Success
   - `{:error, reason}` - Failure
   """
+  @doc "Handles the OAuth callback for mobile clients."
   @spec mobile_callback(provider(), String.t(), String.t() | nil) :: oauth_result()
   def mobile_callback(provider, access_token, id_token \\ nil)
 

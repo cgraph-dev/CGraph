@@ -62,6 +62,7 @@ defmodule CGraph.Webhooks do
   defdelegate set_active(endpoint_id, active), to: Endpoints
 
   # list_endpoints/1 has a default argument — wrapper required
+  @doc "Lists registered webhook endpoints."
   @spec list_endpoints(keyword()) :: {:ok, [map()]} | {:error, term()}
   def list_endpoints(opts \\ []), do: Endpoints.list_endpoints(opts)
 
@@ -70,6 +71,7 @@ defmodule CGraph.Webhooks do
   # ---------------------------------------------------------------------------
 
   # dispatch/3 has a default argument — wrapper required
+  @doc "Dispatches a webhook event to registered endpoints."
   @spec dispatch(String.t(), map(), keyword()) :: {:ok, String.t()} | {:error, term()}
   def dispatch(event_type, payload, opts \\ []),
     do: Deliveries.dispatch(event_type, payload, opts)
@@ -81,6 +83,7 @@ defmodule CGraph.Webhooks do
   # ---------------------------------------------------------------------------
 
   # list_deliveries/2 has a default argument — wrapper required
+  @doc "Lists webhook delivery attempts."
   @spec list_deliveries(String.t(), keyword()) :: {:ok, [map()]} | {:error, term()}
   def list_deliveries(endpoint_id, opts \\ []),
     do: Deliveries.list_deliveries(endpoint_id, opts)

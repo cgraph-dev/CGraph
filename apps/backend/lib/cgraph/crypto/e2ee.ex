@@ -123,6 +123,7 @@ defmodule CGraph.Crypto.E2EE do
       timestamps()
     end
 
+    @doc "Builds a changeset for E2EE key attributes."
     @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
     def changeset(key, attrs) do
       key
@@ -295,6 +296,7 @@ defmodule CGraph.Crypto.E2EE do
   defdelegate generate_key_bundle(device_id), to: __MODULE__.KeyGeneration
   defdelegate fingerprint(public_key), to: __MODULE__.KeyGeneration
 
+  @doc "Encrypts a message for a specific user."
   @spec encrypt_for_user(String.t(), String.t(), keyword()) :: {:ok, map()} | {:error, term()}
   def encrypt_for_user(recipient_user_id, plaintext, opts \\ []) do
     __MODULE__.KeyGeneration.encrypt_for_user(recipient_user_id, plaintext, opts)
@@ -303,6 +305,7 @@ defmodule CGraph.Crypto.E2EE do
   # Key Registration
   defdelegate register_keys(user_id, keys), to: __MODULE__.KeyRegistration
 
+  @doc "Uploads one-time prekeys for E2EE key exchange."
   @spec upload_one_time_prekeys(String.t(), list(), String.t() | nil) :: {:ok, integer()} | {:error, term()}
   def upload_one_time_prekeys(user_id, prekeys, identity_key_id \\ nil) do
     __MODULE__.KeyRegistration.upload_one_time_prekeys(user_id, prekeys, identity_key_id)

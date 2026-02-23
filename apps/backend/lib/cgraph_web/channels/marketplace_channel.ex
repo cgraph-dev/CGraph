@@ -24,6 +24,7 @@ defmodule CGraphWeb.MarketplaceChannel do
   @broadcast_throttle_ms 100
   @max_subscribed_items 50
 
+  @doc "Handles channel join requests and initializes socket state."
   @impl true
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("marketplace:lobby", _params, socket) do
@@ -47,6 +48,7 @@ defmodule CGraphWeb.MarketplaceChannel do
     end
   end
 
+  @doc "Handles asynchronous process messages."
   @impl true
   @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
@@ -149,6 +151,7 @@ defmodule CGraphWeb.MarketplaceChannel do
   end
 
   # Client requests - browse listings
+  @doc "Handles incoming channel events from clients."
   @impl true
   @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("browse", params, socket) do

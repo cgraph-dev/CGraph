@@ -3,11 +3,13 @@ defmodule CGraphWeb.API.V1.AnnouncementJSON do
   JSON rendering for Announcement endpoints.
   """
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{announcements: announcements}) do
     %{announcements: Enum.map(announcements, &announcement_data/1)}
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{announcement: announcement}) do
     %{announcement: announcement_data(announcement)}

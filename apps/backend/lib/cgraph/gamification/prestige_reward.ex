@@ -20,6 +20,7 @@ defmodule CGraph.Gamification.PrestigeReward do
     timestamps(type: :utc_datetime)
   end
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(reward, attrs) do
     reward

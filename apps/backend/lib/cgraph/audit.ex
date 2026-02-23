@@ -93,6 +93,7 @@ defmodule CGraph.Audit do
         target_type: :user
       )
   """
+  @doc "Records an audit log entry."
   @spec log(category(), event_type(), metadata(), keyword()) :: :ok
   def log(category, event_type, metadata \\ %{}, opts \\ []) do
     opts = if is_map(opts), do: Map.to_list(opts), else: opts
@@ -201,6 +202,7 @@ defmodule CGraph.Audit do
   # GenServer Implementation
   # ---------------------------------------------------------------------------
 
+  @doc "Initializes the audit GenServer with an empty buffer and schedules periodic flushing."
   @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(_opts) do
@@ -220,6 +222,7 @@ defmodule CGraph.Audit do
     {:ok, state}
   end
 
+  @doc "Handles asynchronous audit log entry buffering."
   @spec handle_cast(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_cast({:log, entry}, state) do
@@ -240,6 +243,7 @@ defmodule CGraph.Audit do
     end
   end
 
+  @doc "Handles synchronous flush, query, and stats calls."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call(:flush, _from, state) do
@@ -272,6 +276,7 @@ defmodule CGraph.Audit do
     {:reply, {:ok, stats}, state}
   end
 
+  @doc "Handles periodic buffer flush and retention cleanup messages."
   @spec handle_info(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_info(:flush, state) do
@@ -287,6 +292,7 @@ defmodule CGraph.Audit do
     {:noreply, state}
   end
 
+  @doc "Flushes any remaining buffered audit entries on GenServer shutdown."
   @spec terminate(term(), map()) :: :ok
   @impl true
   def terminate(_reason, state) do

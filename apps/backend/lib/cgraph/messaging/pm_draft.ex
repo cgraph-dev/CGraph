@@ -23,6 +23,7 @@ defmodule CGraph.Messaging.PMDraft do
   @required_fields ~w(sender_id content)a
   @optional_fields ~w(subject recipient_id)a
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(draft, attrs) do
     draft

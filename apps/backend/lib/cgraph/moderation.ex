@@ -50,6 +50,7 @@ defmodule CGraph.Moderation do
   defdelegate get_user_report(user_id, report_id), to: CGraph.Moderation.Reports
   defdelegate pending_report_counts, to: CGraph.Moderation.Reports
 
+  @doc "Lists moderation reports."
   @spec list_reports(keyword()) :: [map()]
   def list_reports(opts \\ []), do: CGraph.Moderation.Reports.list_reports(opts)
 
@@ -72,6 +73,7 @@ defmodule CGraph.Moderation do
   defdelegate create_appeal(user, action_id, attrs), to: CGraph.Moderation.Appeals
   defdelegate review_appeal(reviewer, appeal_id, attrs), to: CGraph.Moderation.Appeals
 
+  @doc "Lists moderation appeals."
   @spec list_appeals(keyword()) :: [map()]
   def list_appeals(opts \\ []), do: CGraph.Moderation.Appeals.list_appeals(opts)
 

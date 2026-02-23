@@ -166,6 +166,7 @@ defmodule CGraph.DataExport.Server do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     :ets.new(@export_table, [:named_table, :set, :public, read_concurrency: true])
@@ -182,6 +183,7 @@ defmodule CGraph.DataExport.Server do
   end
 
   @impl true
+  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:export_user_data, user_id, opts}, _from, state) do
     result = Processor.do_export_user_data(user_id, opts)
@@ -211,6 +213,7 @@ defmodule CGraph.DataExport.Server do
   end
 
   @impl true
+  @doc "Handles generic messages."
   @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do
     cleanup_expired_exports()

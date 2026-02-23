@@ -24,6 +24,7 @@ defmodule CGraph.Referrals.ReferralCode do
   @required_fields ~w(user_id code)a
   @optional_fields ~w(is_active uses max_uses)a
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(code, attrs) do
     code

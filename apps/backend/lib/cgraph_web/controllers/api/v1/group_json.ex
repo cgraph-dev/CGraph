@@ -16,6 +16,7 @@ defmodule CGraphWeb.API.V1.GroupJSON do
   alias CGraph.Accounts.User
   alias CGraph.Groups.{AuditLog, Channel, Group, Member, Role}
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{groups: groups, meta: meta}) do
     %{
@@ -24,11 +25,13 @@ defmodule CGraphWeb.API.V1.GroupJSON do
     }
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{group: group, current_user: current_user}) do
     %{data: group_data(group, current_user)}
   end
 
+  @doc "Renders group audit log entries as JSON."
   @spec audit_log(map()) :: map()
   def audit_log(%{entries: entries, meta: meta}) do
     %{

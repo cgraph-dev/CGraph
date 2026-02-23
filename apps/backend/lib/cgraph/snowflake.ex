@@ -59,6 +59,7 @@ defmodule CGraph.Snowflake do
 
   # ── Client API ──
 
+  @doc "Starts the process and links it to the current process."
   @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
@@ -135,6 +136,7 @@ defmodule CGraph.Snowflake do
   end
 
   @impl true
+  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call(:generate, _from, state) do
     {id, new_state} = do_generate(state)

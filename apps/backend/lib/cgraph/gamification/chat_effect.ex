@@ -89,16 +89,22 @@ defmodule CGraph.Gamification.ChatEffect do
     end
   end
 
+  @doc "Returns the list of available rarity levels."
   @spec rarities() :: [String.t()]
   def rarities, do: @rarities
+  @doc "Returns the list of available effect types."
   @spec effect_types() :: [String.t()]
   def effect_types, do: @effect_types
+  @doc "Returns the list of available message effects."
   @spec message_effects() :: [String.t()]
   def message_effects, do: @message_effects
+  @doc "Returns the list of available bubble styles."
   @spec bubble_styles() :: [String.t()]
   def bubble_styles, do: @bubble_styles
+  @doc "Returns the list of available typing indicators."
   @spec typing_indicators() :: [String.t()]
   def typing_indicators, do: @typing_indicators
+  @doc "Returns the list of available unlock types."
   @spec unlock_types() :: [String.t()]
   def unlock_types, do: @unlock_types
 end

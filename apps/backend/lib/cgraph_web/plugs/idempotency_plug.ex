@@ -15,6 +15,7 @@ defmodule CGraphWeb.Plugs.IdempotencyPlug do
   @methods ~w(POST PUT PATCH DELETE)
   @header "idempotency-key"
 
+  @doc "Initializes plug options."
   @spec init(keyword()) :: keyword()
   def init(opts) do
     %{
@@ -22,6 +23,7 @@ defmodule CGraphWeb.Plugs.IdempotencyPlug do
     }
   end
 
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(%Plug.Conn{method: method} = conn, %{ttl_ms: ttl_ms}) when method in @methods do
     case get_req_header(conn, @header) do
@@ -31,6 +33,7 @@ defmodule CGraphWeb.Plugs.IdempotencyPlug do
     end
   end
 
+  @doc "Processes the connection through this plug."
   def call(conn, _opts), do: conn
 
   defp handle_key(conn, key, ttl_ms) do

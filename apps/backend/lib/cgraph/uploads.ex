@@ -81,6 +81,7 @@ defmodule CGraph.Uploads do
       timestamps()
     end
 
+    @doc "Builds a changeset for validating upload attributes."
     @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
     def changeset(file, attrs) do
       file

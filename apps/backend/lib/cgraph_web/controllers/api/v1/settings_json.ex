@@ -4,6 +4,7 @@ defmodule CGraphWeb.API.V1.SettingsJSON do
   """
   alias CGraph.Accounts.UserSettings
 
+  @doc "Renders user settings as JSON."
   @spec show(map()) :: map()
   def show(%{settings: settings}) do
     %{data: settings_data(settings)}

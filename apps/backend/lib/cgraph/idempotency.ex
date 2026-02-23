@@ -48,6 +48,7 @@ defmodule CGraph.Idempotency do
 
   ### In Controller
 
+      @doc "Creates an idempotency record for a request."
       def create(conn, params) do
         idempotency_key = get_idempotency_key(conn)
 
@@ -174,6 +175,7 @@ defmodule CGraph.Idempotency do
           # Handle error
       end
   """
+  @doc "Checks if an idempotent request has already been processed."
   @spec check(idempotency_key(), term()) ::
     {:cached, stored_response()} |
     {:ok, lock()} |
@@ -254,6 +256,7 @@ defmodule CGraph.Idempotency do
   end
 
   @impl true
+  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     Store.init_tables()
@@ -262,6 +265,7 @@ defmodule CGraph.Idempotency do
   end
 
   @impl true
+  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:check, key, request_body}, _from, state) do
     result = Store.check_key(key, request_body)
@@ -284,6 +288,7 @@ defmodule CGraph.Idempotency do
   end
 
   @impl true
+  @doc "Handles generic messages."
   @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do
     Store.cleanup_expired()

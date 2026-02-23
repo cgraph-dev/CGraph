@@ -4,11 +4,13 @@ defmodule CGraphWeb.API.V1.PermissionOverwriteJSON do
   """
   alias CGraph.Groups.PermissionOverwrite
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{overwrites: overwrites}) do
     %{data: Enum.map(overwrites, &overwrite_data/1)}
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{overwrite: overwrite}) do
     %{data: overwrite_data(overwrite)}

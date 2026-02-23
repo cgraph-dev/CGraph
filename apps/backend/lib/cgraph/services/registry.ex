@@ -167,6 +167,7 @@ defmodule CGraph.Services.Registry do
   # GenServer Implementation
   # ---------------------------------------------------------------------------
 
+  @doc "Initializes the service registry GenServer state."
   @spec init(keyword()) :: {:ok, map(), {:continue, :register_builtin}}
   @impl true
   def init(_opts) do
@@ -178,6 +179,7 @@ defmodule CGraph.Services.Registry do
     {:ok, state, {:continue, :register_builtin}}
   end
 
+  @doc "Handles continuation to register built-in services."
   @spec handle_continue(atom(), map()) :: {:noreply, map()}
   @impl true
   def handle_continue(:register_builtin, state) do
@@ -189,6 +191,7 @@ defmodule CGraph.Services.Registry do
     {:noreply, state}
   end
 
+  @doc "Handles synchronous service registration, status queries, and health checks."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call({:register, name, config}, _from, state) do
@@ -294,6 +297,7 @@ defmodule CGraph.Services.Registry do
     {:reply, graph, state}
   end
 
+  @doc "Handles periodic health check messages for registered services."
   @spec handle_info(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_info({:check_health, name}, state) do

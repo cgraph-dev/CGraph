@@ -61,10 +61,12 @@ defmodule CGraphWeb.Plugs.RequestId do
   @max_id_length 128
   @id_pattern ~r/^[a-zA-Z0-9_-]+$/
 
+  @doc "Initializes plug options."
   @spec init(keyword()) :: keyword()
   @impl true
   def init(opts), do: opts
 
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   @impl true
   def call(conn, _opts) do
@@ -175,6 +177,7 @@ defmodule CGraphWeb.Plugs.RequestLogger do
   @impl true
   def init(opts), do: opts
 
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   @impl true
   def call(conn, _opts) do
@@ -304,6 +307,7 @@ defmodule CGraphWeb.Plugs.HealthCheck do
   @impl true
   def init(opts), do: opts
 
+  @doc "Processes the connection through this plug."
   @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   @impl true
   def call(%Plug.Conn{request_path: "/health"} = conn, _opts) do
@@ -316,6 +320,7 @@ defmodule CGraphWeb.Plugs.HealthCheck do
     |> halt()
   end
 
+  @doc "Processes the connection through this plug."
   def call(%Plug.Conn{request_path: "/ready"} = conn, _opts) do
     checks = perform_readiness_checks()
     all_ok = Enum.all?(checks, fn {_, status} -> status == :ok end)
@@ -331,6 +336,7 @@ defmodule CGraphWeb.Plugs.HealthCheck do
     |> halt()
   end
 
+  @doc "Processes the connection through this plug."
   def call(conn, _opts), do: conn
 
   defp perform_readiness_checks do

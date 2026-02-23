@@ -30,6 +30,7 @@ defmodule CGraph.Messaging do
   # ============================================================================
 
   defdelegate list_conversations(user, opts \\ []), to: Conversations
+  @doc "Lists all conversations for a user."
   @spec list_user_conversations(struct(), keyword()) :: {[struct()], map()}
   def list_user_conversations(user, opts \\ []), do: Conversations.list_conversations(user, opts)
 
@@ -135,6 +136,7 @@ defmodule CGraph.Messaging do
   defdelegate get_unread_count(user, conversation), to: MessageOperations
   defdelegate mark_conversation_read(conversation, user), to: MessageOperations
 
+  @doc "Marks a specific message as read."
   @spec mark_message_read(struct(), struct(), binary()) :: :ok | {:ok, struct()} | {:error, term()}
   def mark_message_read(conversation, user, message_id), do: MessageOperations.mark_messages_read(user, conversation, message_id)
   @spec mark_as_read(struct(), struct()) :: :ok | {:ok, struct()} | {:error, term()}
@@ -161,8 +163,10 @@ defmodule CGraph.Messaging do
   defdelegate create_pm_folder(attrs), to: PrivateMessageSystem
   defdelegate get_pm_folder(folder_id, user_id \\ nil), to: PrivateMessageSystem
   defdelegate get_pm_folder_by_name(user_id, name), to: PrivateMessageSystem
+  @doc "Updates a private message folder."
   @spec update_pm_folder(struct(), map()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def update_pm_folder(folder, attrs), do: PrivateMessageSystem.update_pm_folder(folder, attrs)
+  @doc "Lists private messages for a user."
   @spec delete_pm_folder(struct()) :: {:ok, struct()} | {:error, Ecto.Changeset.t()}
   def delete_pm_folder(folder), do: PrivateMessageSystem.delete_pm_folder(folder)
   defdelegate list_private_messages(user_id, opts), to: PrivateMessageSystem

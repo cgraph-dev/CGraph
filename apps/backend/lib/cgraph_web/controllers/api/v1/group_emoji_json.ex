@@ -4,11 +4,13 @@ defmodule CGraphWeb.API.V1.GroupEmojiJSON do
   """
   alias CGraph.Groups.GroupEmoji
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{emojis: emojis}) do
     %{data: Enum.map(emojis, &emoji_data/1)}
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{emoji: emoji}) do
     %{data: emoji_data(emoji)}

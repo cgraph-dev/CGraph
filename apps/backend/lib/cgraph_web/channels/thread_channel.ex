@@ -20,6 +20,7 @@ defmodule CGraphWeb.ThreadChannel do
   @rate_limit_max_messages 5
 
   @impl true
+  @doc "Handles a client joining the channel."
   @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("thread:" <> thread_id, _params, socket) do
     user = socket.assigns.current_user
@@ -54,6 +55,7 @@ defmodule CGraphWeb.ThreadChannel do
   end
 
   @impl true
+  @doc "Handles generic messages."
   @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
     user = socket.assigns.current_user
@@ -90,6 +92,7 @@ defmodule CGraphWeb.ThreadChannel do
   # ============================================================================
 
   @impl true
+  @doc "Handles incoming channel messages from the client."
   @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("typing", params, socket) do
     user = socket.assigns.current_user

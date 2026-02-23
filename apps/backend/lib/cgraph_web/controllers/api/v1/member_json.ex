@@ -7,6 +7,7 @@ defmodule CGraphWeb.API.V1.MemberJSON do
   # MEMBERS
   # ========================================
 
+  @doc "Renders a list of members as JSON."
   @spec members(map()) :: map()
   def members(%{members: members, pagination: pagination}) do
     %{
@@ -15,6 +16,7 @@ defmodule CGraphWeb.API.V1.MemberJSON do
     }
   end
 
+  @doc "Renders a single member as JSON."
   @spec member(map()) :: map()
   def member(%{member: member}) do
     %{data: member_full_data(member)}
@@ -120,11 +122,13 @@ defmodule CGraphWeb.API.V1.MemberJSON do
   # GROUPS
   # ========================================
 
+  @doc "Renders member groups as JSON."
   @spec groups(map()) :: map()
   def groups(%{groups: groups}) do
     %{data: for(group <- groups, do: group_data(group))}
   end
 
+  @doc "Renders a member's group as JSON."
   @spec group(map()) :: map()
   def group(%{group: group}) do
     %{data: group_data(group)}
@@ -150,6 +154,7 @@ defmodule CGraphWeb.API.V1.MemberJSON do
   # STATS
   # ========================================
 
+  @doc "Renders member statistics as JSON."
   @spec member_stats(map()) :: map()
   def member_stats(%{stats: stats}) do
     %{

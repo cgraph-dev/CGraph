@@ -211,6 +211,7 @@ defmodule CGraph.Metrics do
   # GenServer Implementation
   # ---------------------------------------------------------------------------
 
+  @doc "Initializes the metrics GenServer state and schedules default metric definitions."
   @spec init(keyword()) :: {:ok, map(), {:continue, :define_defaults}}
   @impl true
   def init(_opts) do
@@ -225,6 +226,7 @@ defmodule CGraph.Metrics do
     {:ok, state, {:continue, :define_defaults}}
   end
 
+  @doc "Handles continuation to define default metrics and start system metrics collection."
   @spec handle_continue(atom(), map()) :: {:noreply, map()}
   @impl true
   def handle_continue(:define_defaults, state) do
@@ -238,6 +240,7 @@ defmodule CGraph.Metrics do
     {:noreply, state}
   end
 
+  @doc "Handles synchronous metric definition, retrieval, export, and reset calls."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call({:define, name, type, opts}, _from, state) do
@@ -274,6 +277,7 @@ defmodule CGraph.Metrics do
     {:reply, :ok, new_state}
   end
 
+  @doc "Handles asynchronous metric increment, set, add, and observe operations."
   @spec handle_cast(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_cast({:increment, name, labels, amount}, state) do
@@ -307,6 +311,7 @@ defmodule CGraph.Metrics do
     {:noreply, %{state | histograms: histograms}}
   end
 
+  @doc "Handles periodic system metrics collection."
   @spec handle_info(atom(), map()) :: {:noreply, map()}
   @impl true
   def handle_info(:collect_system_metrics, state) do

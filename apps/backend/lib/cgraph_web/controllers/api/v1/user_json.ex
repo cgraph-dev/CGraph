@@ -4,6 +4,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
   """
   alias CGraph.Accounts.User
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{users: users, meta: meta}) do
     %{
@@ -12,6 +13,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
     }
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{user: user, is_friend: is_friend, friend_request_sent: friend_request_sent, friend_request_received: friend_request_received}) do
     %{data: user_data(user)
@@ -25,6 +27,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
     %{data: user_data(user)}
   end
 
+  @doc "Renders a user's public profile as JSON."
   @spec profile(map()) :: map()
   def profile(%{user: user}) do
   end
@@ -38,10 +41,12 @@ defmodule CGraphWeb.API.V1.UserJSON do
     }
   end
 
+  @doc "Renders a user's private profile as JSON."
   def private_profile(%{user: user}) do
     %{data: hidden_profile(user)}
   end
 
+  @doc "Renders the user leaderboard as JSON."
   @spec leaderboard(map()) :: map()
   def leaderboard(%{users: users, meta: meta}) do
     %{
@@ -50,6 +55,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
     }
   end
 
+  @doc "Renders active user sessions as JSON."
   @spec sessions(map()) :: map()
   def sessions(%{sessions: sessions, current_token: current_token}) do
     %{

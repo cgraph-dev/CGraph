@@ -20,6 +20,7 @@ defmodule CGraph.Accounts.UsernameChange do
     timestamps()
   end
 
+  @doc "Builds a changeset for a username change request."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(username_change, attrs) do
     username_change

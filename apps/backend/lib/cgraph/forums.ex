@@ -67,10 +67,13 @@ defmodule CGraph.Forums do
   defdelegate notify_comment(comment), to: CGraph.Forums.Core
 
   # Aliases for backward compatibility
+  @doc "Subscribes a user to a forum."
   @spec subscribe(term(), term()) :: term()
   def subscribe(forum, user), do: subscribe_to_forum(user, forum)
+  @doc "Unsubscribes a user from a forum."
   @spec unsubscribe(term(), term()) :: term()
   def unsubscribe(forum, user), do: unsubscribe_from_forum(user, forum)
+  @doc "Increments the view count for a post."
   @spec increment_views(term()) :: term()
   def increment_views(post), do: increment_post_views(post)
 
@@ -171,8 +174,10 @@ defmodule CGraph.Forums do
     end
   end
 
+  @doc "Reports a post for moderation review."
   @spec report_post(term(), term(), String.t()) :: {:ok, map()}
   def report_post(_user, _post, _reason), do: {:ok, %{id: Ecto.UUID.generate(), status: "pending"}}
+  @doc "Reports a comment for moderation review."
   @spec report_comment(term(), term(), String.t()) :: {:ok, map()}
   def report_comment(_user, _comment, _reason), do: {:ok, %{id: Ecto.UUID.generate(), status: "pending"}}
 
@@ -275,6 +280,7 @@ defmodule CGraph.Forums do
   end
   defdelegate update_thread(thread, attrs), to: CGraph.Forums.Threads
 
+  @doc "Gets a thread by board ID and slug."
   @spec get_thread_by_slug(String.t(), String.t()) :: {:ok, term()} | {:error, :not_found}
   def get_thread_by_slug(board_id, _slug) do
     CGraph.Forums.Threads.get_thread(board_id)
@@ -282,6 +288,7 @@ defmodule CGraph.Forums do
     _ -> {:error, :not_found}
   end
 
+  @doc "Soft-deletes a thread by setting its deleted_at timestamp."
   @spec delete_thread(term()) :: {:ok, term()} | {:error, Ecto.Changeset.t()}
   def delete_thread(thread) do
     thread
@@ -289,12 +296,14 @@ defmodule CGraph.Forums do
     |> Repo.update()
   end
 
+  @doc "Lists threads for a forum with optional pagination."
   @spec list_forum_threads(String.t(), keyword()) :: {list(), map()}
   def list_forum_threads(forum_id, opts \\ []) do
     # Threads.list_threads supports forum_id-based listing
     CGraph.Forums.Threads.list_threads(forum_id, opts)
   end
 
+  @doc "Toggles the pinned status of a thread."
   @spec toggle_thread_pin(String.t(), boolean()) :: {:ok, term()} | {:error, term()}
   def toggle_thread_pin(thread_id, pinned) when is_boolean(pinned) do
     case CGraph.Forums.Threads.get_thread(thread_id) do
@@ -303,6 +312,7 @@ defmodule CGraph.Forums do
     end
   end
 
+  @doc "Toggles the locked status of a thread."
   @spec toggle_thread_lock(String.t(), boolean()) :: {:ok, term()} | {:error, term()}
   def toggle_thread_lock(thread_id, locked) when is_boolean(locked) do
     case CGraph.Forums.Threads.get_thread(thread_id) do
@@ -311,6 +321,7 @@ defmodule CGraph.Forums do
     end
   end
 
+  @doc "Gets the auto-subscribe preference for a user."
   @spec get_user_auto_subscribe_preference(String.t()) :: boolean()
   def get_user_auto_subscribe_preference(user_id) do
     CGraph.Forums.SubscriptionService.subscribed_to_thread?(user_id, nil) |> then(fn _ -> true end)
@@ -338,13 +349,17 @@ defmodule CGraph.Forums do
   defdelegate get_or_create_member(forum_id, user_id), to: CGraph.Forums.Members
   defdelegate list_forum_members(forum_id, opts \\ []), to: CGraph.Forums.Members, as: :list_members
 
+  @doc "Gets a forum member by forum and user ID."
   @spec get_forum_member(String.t(), String.t()) :: term()
   def get_forum_member(forum_id, user_id), do: CGraph.Forums.Members.get_member(forum_id, user_id)
+  @doc "Updates a forum member's role."
   @spec update_member_role(String.t(), String.t(), String.t()) :: term()
   def update_member_role(forum_id, user_id, role), do: CGraph.Forums.Members.update_role(forum_id, user_id, role)
+  @doc "Bans a member from a forum with a reason and optional expiration."
   @spec ban_forum_member(String.t(), String.t(), String.t(), String.t(), DateTime.t() | nil) :: term()
   def ban_forum_member(forum_id, user_id, reason, banned_by_id, expires_at \\ nil),
     do: CGraph.Forums.Members.ban_member(forum_id, user_id, reason, banned_by_id, expires_at)
+  @doc "Unbans a member from a forum."
   @spec unban_forum_member(String.t(), String.t()) :: term()
   def unban_forum_member(forum_id, user_id), do: CGraph.Forums.Members.unban_member(forum_id, user_id)
 

@@ -9,12 +9,8 @@ import { useChatCustomization } from '@/modules/settings/store/customization';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import {
-  ChatBubbleLeftIcon,
-  SparklesIcon,
-  SwatchIcon,
-  Cog6ToothIcon,
   ArrowPathIcon,
-  PhotoIcon,
+  ChatBubbleLeftIcon,
 } from '@heroicons/react/24/outline';
 import {
   CHAT_BACKGROUNDS,
@@ -22,7 +18,8 @@ import {
   getBackgroundsByCategory,
 } from '@/data/chatBackgrounds';
 
-import type { TabId, TabConfig, PresetConfig } from './types';
+import type { TabId } from './types';
+import { CHAT_BUBBLE_TABS, CHAT_BUBBLE_PRESETS_UI } from './constants';
 import { ColorsTab, ShapeTab, EffectsTab, AnimationsTab, LayoutTab } from './tabs';
 import { BackgroundsTab } from './backgrounds-tab';
 
@@ -45,33 +42,11 @@ export default function ChatBubbleSettings() {
   const [selectedBackground, setSelectedBackground] = useState<string>('default_dark');
   const [backgroundCategory, setBackgroundCategory] = useState<BackgroundCategory | 'all'>('all');
 
-  const tabs: TabConfig[] = [
-    { id: 'colors', label: 'Colors', icon: SwatchIcon },
-    { id: 'shape', label: 'Shape', icon: ChatBubbleLeftIcon },
-    { id: 'effects', label: 'Effects', icon: SparklesIcon },
-    { id: 'animations', label: 'Animations', icon: Cog6ToothIcon },
-    { id: 'layout', label: 'Layout', icon: Cog6ToothIcon },
-    { id: 'backgrounds', label: 'Backgrounds', icon: PhotoIcon },
-  ];
-
   // Filter backgrounds by category
   const filteredBackgrounds = useMemo(() => {
     if (backgroundCategory === 'all') return CHAT_BACKGROUNDS;
     return getBackgroundsByCategory(backgroundCategory);
   }, [backgroundCategory]);
-
-  const presets: PresetConfig[] = [
-    { id: 'default', label: 'Default', preview: 'bg-gradient-to-r from-primary-600 to-purple-600' },
-    { id: 'minimal', label: 'Minimal', preview: 'bg-dark-900 border border-dark-600' },
-    { id: 'modern', label: 'Modern', preview: 'bg-gradient-to-br from-purple-600 to-pink-600' },
-    { id: 'retro', label: 'Retro', preview: 'bg-primary-600 border-2 border-primary-400' },
-    { id: 'bubble', label: 'Bubble', preview: 'bg-blue-500' },
-    {
-      id: 'glass',
-      label: 'Glass',
-      preview: 'bg-primary-500/30 backdrop-blur-md border border-primary-400/50',
-    },
-  ];
 
   // Silently sync relevant fields to backend (debounced)
   useEffect(() => {
@@ -137,7 +112,7 @@ export default function ChatBubbleSettings() {
       <GlassCard variant="frosted" className="p-6">
         <h3 className="mb-4 text-lg font-bold text-white">Quick Presets</h3>
         <div className="grid grid-cols-3 gap-3 md:grid-cols-6">
-          {presets.map((preset) => (
+          {CHAT_BUBBLE_PRESETS_UI.map((preset) => (
             <motion.button
               key={preset.id}
               onClick={() => {
@@ -247,7 +222,7 @@ export default function ChatBubbleSettings() {
 
       {/* Tab Navigation */}
       <div className="flex gap-2 overflow-x-auto pb-2">
-        {tabs.map((tab) => {
+        {CHAT_BUBBLE_TABS.map((tab) => {
           const Icon = tab.icon;
           return (
             <motion.button

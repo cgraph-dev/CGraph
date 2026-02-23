@@ -11,12 +11,14 @@ defmodule CGraphWeb.MarketplaceController.Helpers do
   alias CGraph.Gamification.MarketplaceItem
   alias CGraph.Repo
 
+  @doc "Validates that the item type is a supported marketplace category."
   @spec validate_item_type(String.t()) :: {:ok, String.t()} | {:error, String.t()}
   def validate_item_type(type) when type in ~w(avatar_border profile_theme chat_effect title badge) do
     {:ok, type}
   end
   def validate_item_type(_), do: {:error, "Invalid item type"}
 
+  @doc "Retrieves an item owned by the specified user."
   @spec get_owned_item(String.t(), String.t(), String.t()) :: {:ok, term()} | {:error, String.t()}
   def get_owned_item(user_id, item_type, item_id) do
     # Check ownership based on item type
@@ -45,6 +47,7 @@ defmodule CGraphWeb.MarketplaceController.Helpers do
     end
   end
 
+  @doc "Checks that the item is not already listed for sale."
   @spec check_not_already_listed(String.t(), String.t()) :: {:ok, :not_listed} | {:error, String.t()}
   def check_not_already_listed(item_id, item_type) do
     existing = Repo.get_by(MarketplaceItem,
@@ -56,6 +59,7 @@ defmodule CGraphWeb.MarketplaceController.Helpers do
     if existing, do: {:error, "Item is already listed"}, else: {:ok, :not_listed}
   end
 
+  @doc "Validates the listing price against rarity-based bounds."
   @spec validate_price(integer() | String.t(), String.t()) :: {:ok, integer()} | {:error, String.t()}
   def validate_price(price, rarity) when is_integer(price) do
     recommended = MarketplaceItem.recommended_price_for_rarity(rarity)
@@ -71,12 +75,14 @@ defmodule CGraphWeb.MarketplaceController.Helpers do
   end
   def validate_price(_, _), do: {:error, "Invalid price"}
 
+  @doc "Calculates the listing fee for a given price."
   @spec calculate_listing_fee(integer()) :: integer()
   def calculate_listing_fee(suggested_price) do
     # 1% listing fee, minimum 10 coins
     max(round(suggested_price * 0.01), 10)
   end
 
+  @doc "Transfers item ownership from seller to buyer."
   @spec transfer_item(MarketplaceItem.t(), String.t()) :: term()
   def transfer_item(listing, buyer_id) do
     case listing.item_type do
@@ -103,6 +109,7 @@ defmodule CGraphWeb.MarketplaceController.Helpers do
     end
   end
 
+  @doc "Returns aggregate marketplace statistics."
   @spec get_market_stats() :: map()
   def get_market_stats do
     %{
@@ -112,6 +119,7 @@ defmodule CGraphWeb.MarketplaceController.Helpers do
     }
   end
 
+  @doc "Retrieves price history for a marketplace item."
   @spec get_price_history(String.t(), String.t()) :: [map()]
   def get_price_history(item_type, item_id) do
     from(m in MarketplaceItem,
@@ -123,6 +131,7 @@ defmodule CGraphWeb.MarketplaceController.Helpers do
     |> Repo.all()
   end
 
+  @doc "Calculates total buy and sell amounts for a user."
   @spec calculate_user_totals(String.t()) :: map()
   def calculate_user_totals(user_id) do
     sells = from(m in MarketplaceItem,
@@ -153,6 +162,7 @@ defmodule CGraphWeb.MarketplaceController.Helpers do
     }
   end
 
+  @doc "Formats changeset errors into a readable map."
   @spec format_errors(Ecto.Changeset.t()) :: map()
   def format_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
@@ -164,6 +174,7 @@ defmodule CGraphWeb.MarketplaceController.Helpers do
 
   # ==================== SERIALIZERS ====================
 
+  @doc "Serializes a marketplace listing to a JSON-friendly map."
   @spec serialize_listing(MarketplaceItem.t()) :: map()
   def serialize_listing(listing) do
     %{
@@ -193,6 +204,7 @@ defmodule CGraphWeb.MarketplaceController.Helpers do
     }
   end
 
+  @doc "Returns whether an Ecto association has been loaded."
   @spec assoc_loaded?(struct(), atom()) :: boolean()
   def assoc_loaded?(struct, field) do
     case Map.get(struct, field) do
@@ -202,6 +214,7 @@ defmodule CGraphWeb.MarketplaceController.Helpers do
     end
   end
 
+  @doc "Serializes a listing with extended detail fields."
   @spec serialize_listing_detailed(MarketplaceItem.t()) :: map()
   def serialize_listing_detailed(listing) do
     serialize_listing(listing)

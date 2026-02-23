@@ -25,7 +25,7 @@
 6. ~~6 missing shared packages~~ **ALL CREATED** (Tier 7 — all 12 packages exist)
 7. ~~4 mobile context shim files~~ **DELETED** (Tier 8 — 0 remaining)
 8. ~~31 Zustand stores missing reset()~~ **ALL FIXED** (Tier 10 — all stores have reset())
-9. **67 files using deprecated `Animated`** from react-native (should be react-native-reanimated)
+9. ~~67 files using deprecated `Animated`~~ **ALL MIGRATED** (Session 48 — react-native-reanimated v4)
 
 ---
 
@@ -225,12 +225,21 @@
 | `ChannelCategoriesPanel.tsx`         | ~~355~~ → 214 | **SPLIT** (Tier 4)               |
 | `chat-bubble-settings/tabs.tsx`      | ~~352~~ → 12  | **SPLIT** (Tier 4)               |
 | `chat-customization/sections.tsx`    | ~~342~~ → 11  | **SPLIT** (Tier 4)               |
-| `ChatPanel.tsx`                      | 340           | 40 — remaining                   |
-| `ProfilePanel.tsx`                   | 335           | 35 — remaining                   |
-| `AccountSettings.tsx`                | 354           | 54 — remaining                   |
-| `GlassCard.tsx`                      | 331           | 31 — remaining                   |
-| `MatrixBackground.tsx`               | 325           | 25 — remaining                   |
-| `AnimatedMessageWrapper.tsx`         | 312           | 12 — remaining                   |
+| ~~`ChatPanel.tsx`~~                  | ~~340~~ → N/A | **RENAMED/SPLIT** (prev. session) |
+| ~~`ProfilePanel.tsx`~~               | ~~335~~ → N/A | **RENAMED/SPLIT** (prev. session) |
+| ~~`AccountSettings.tsx`~~            | ~~354~~ → N/A | **RENAMED/SPLIT** (prev. session) |
+| `GlassCard.tsx`                      | ~~331~~ → 229 | **REDUCED** (prev. session)       |
+| ~~`MatrixBackground.tsx`~~           | ~~325~~ → N/A | **RENAMED/SPLIT** (prev. session) |
+| `AnimatedMessageWrapper.tsx`         | ~~312~~ → 224 | **REDUCED** (prev. session)       |
+
+**Remaining borderline TSX files (301-308 lines):**
+
+| File                         | Lines | Over By |
+| ---------------------------- | ----- | ------- |
+| `privacy-settings-panel.tsx` | 308   | 8       |
+| `message-bubble.tsx`         | 306   | 6       |
+| `quick-reply.tsx`            | 304   | 4       |
+| `chat-bubble-settings/page`  | 301   | 1       |
 
 #### Elixir Contexts Over 500 Lines (19 files)
 
@@ -260,14 +269,9 @@
 
 | File                              | Lines | Over By |
 | --------------------------------- | ----- | ------- |
-| `custom_emoji_controller.ex`      | 561   | 61      |
-| `marketplace_controller.ex`       | 547   | 47      |
-| `forum_controller.ex`             | 528   | 28      |
-| `cosmetics_controller.ex`         | 526   | 26      |
-| `forums.ex` (context)             | 512   | 12      |
-| `admin/marketplace_controller.ex` | 510   | 10      |
-| `events_controller.ex`            | 509   | 9       |
-| `webrtc.ex`                       | 506   | 6       |
+| `admin/events_controller.ex`      | 517   | 17      |
+
+All other previously listed controllers are now under 500 lines.
 
 **Action Items**:
 
@@ -658,7 +662,7 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | Cross-Platform (Rule 5)     | **100%** (12/12 packages)                 | **100%**       | 100% (12/12)        |
 | Documentation (Rule 6)      | **96%** (2,229/2,316 JSDoc headers)       | **96%**        | 100%                |
 | Backend Standards (Rule 7)  | **~100%** (4,103 specs, ~100% unique fns) | **80%**        | 100%                |
-| File Size (Rule 8)          | **~90%** (8 Elixir + 6 TSX over)          | **95%**        | 100%                |
+| File Size (Rule 8)          | **~98%** (1 Elixir + 4 borderline TSX)    | **~99%**       | 100%                |
 | Testing (Rule 9)            | 18% ratio                                 | 20%            | 100%                |
 | Performance (Rule 10)       | **100%** (0 offsets)                      | **100%**       | 100%                |
 | Security (Rule 11)          | **100%** (0 unannotated assertions)       | **100%**       | 100%                |

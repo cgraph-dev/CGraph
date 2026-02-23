@@ -28,41 +28,48 @@ defmodule CGraph.Collaboration.DocumentServer do
   # Public API
   # ---------------------------------------------------------------------------
 
+  @doc "Starts the server and links it to the calling process."
   @spec start_link(String.t()) :: GenServer.on_start()
   def start_link(document_id) do
     GenServer.start_link(__MODULE__, document_id, name: via(document_id))
   end
 
+  @doc "Applies a Yjs document update from a client."
   @spec apply_update(String.t(), binary(), String.t()) :: :ok
   def apply_update(document_id, update, user_id) do
     ensure_started(document_id)
     GenServer.cast(via(document_id), {:apply_update, update, user_id})
   end
 
+  @doc "Returns the current Yjs document state."
   @spec get_state(String.t()) :: {:ok, binary()}
   def get_state(document_id) do
     ensure_started(document_id)
     GenServer.call(via(document_id), :get_state)
   end
 
+  @doc "Returns the current awareness state for all clients."
   @spec get_awareness(String.t()) :: {:ok, map()}
   def get_awareness(document_id) do
     ensure_started(document_id)
     GenServer.call(via(document_id), :get_awareness)
   end
 
+  @doc "Updates awareness data for a connected client."
   @spec update_awareness(String.t(), String.t(), map()) :: :ok
   def update_awareness(document_id, user_id, data) do
     ensure_started(document_id)
     GenServer.cast(via(document_id), {:update_awareness, user_id, data})
   end
 
+  @doc "Registers a client connection to the document."
   @spec client_connected(String.t(), String.t()) :: :ok
   def client_connected(document_id, user_id) do
     ensure_started(document_id)
     GenServer.cast(via(document_id), {:client_connected, user_id})
   end
 
+  @doc "Unregisters a client from the document."
   @spec client_disconnected(String.t(), String.t()) :: :ok
   def client_disconnected(document_id, user_id) do
     GenServer.cast(via(document_id), {:client_disconnected, user_id})
@@ -74,6 +81,7 @@ defmodule CGraph.Collaboration.DocumentServer do
   # GenServer Implementation
   # ---------------------------------------------------------------------------
 
+  @doc "Initializes the server state."
   @spec init(String.t()) :: {:ok, map()}
   @impl true
   def init(document_id) do
@@ -99,6 +107,7 @@ defmodule CGraph.Collaboration.DocumentServer do
     {:ok, state}
   end
 
+  @doc "Handles asynchronous cast messages."
   @spec handle_cast(term(), map()) :: {:noreply, map()}
   @impl true
   def handle_cast({:apply_update, update, user_id}, state) do
@@ -161,6 +170,7 @@ defmodule CGraph.Collaboration.DocumentServer do
     {:noreply, %{state | connected_clients: clients, awareness: awareness}}
   end
 
+  @doc "Handles synchronous call messages."
   @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call(:get_state, _from, state) do
@@ -172,6 +182,7 @@ defmodule CGraph.Collaboration.DocumentServer do
     {:reply, {:ok, state.awareness}, state}
   end
 
+  @doc "Handles asynchronous process messages."
   @spec handle_info(term(), map()) :: {:noreply, map()} | {:stop, :normal, map()}
   @impl true
   def handle_info(:flush, state) do
@@ -206,6 +217,7 @@ defmodule CGraph.Collaboration.DocumentServer do
     end
   end
 
+  @doc "Cleans up resources on server termination."
   @spec terminate(term(), map()) :: :ok
   @impl true
   def terminate(_reason, state) do

@@ -2,12 +2,14 @@ defmodule CGraph.WorkerSupervisor do
   @moduledoc "Supervisor for background workers including Oban jobs, presence tracking, and WebRTC management."
   use Supervisor
 
+  @doc "Starts the process and links it to the current process."
   @spec start_link(keyword()) :: Supervisor.on_start()
   def start_link(init_arg) do
     Supervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
 
   @impl true
+  @doc "Initializes the process state."
   @spec init(keyword()) :: {:ok, {Supervisor.sup_flags(), [Supervisor.child_spec()]}}
   def init(_init_arg) do
     children = [

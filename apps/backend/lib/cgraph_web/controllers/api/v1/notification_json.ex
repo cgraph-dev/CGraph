@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.NotificationJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{notifications: notifications, meta: meta}) do
     %{
@@ -13,11 +14,13 @@ defmodule CGraphWeb.API.V1.NotificationJSON do
     }
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{notification: notification}) do
     %{data: notification_data(notification)}
   end
 
+  @doc "Renders notification settings as JSON."
   @spec settings(map()) :: map()
   def settings(%{settings: settings}) do
     %{

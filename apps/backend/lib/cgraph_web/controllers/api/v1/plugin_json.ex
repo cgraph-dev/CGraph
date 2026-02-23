@@ -3,6 +3,7 @@ defmodule CGraphWeb.API.V1.PluginJSON do
   JSON views for plugin endpoints.
   """
 
+  @doc "Renders the plugin marketplace listing as JSON."
   @spec marketplace(map()) :: map()
   def marketplace(%{plugins: plugins}) do
     %{
@@ -13,16 +14,19 @@ defmodule CGraphWeb.API.V1.PluginJSON do
     }
   end
 
+  @doc "Renders a single marketplace plugin as JSON."
   @spec marketplace_plugin(map()) :: map()
   def marketplace_plugin(%{plugin: plugin}) do
     %{plugin: marketplace_plugin_data(plugin)}
   end
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{plugins: plugins}) do
     %{data: Enum.map(plugins, &plugin_data/1)}
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{plugin: plugin}) do
     %{plugin: plugin_data(plugin)}

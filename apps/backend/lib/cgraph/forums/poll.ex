@@ -22,6 +22,7 @@ defmodule CGraph.Forums.Poll do
     timestamps()
   end
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(poll, attrs) do
     poll
@@ -43,6 +44,7 @@ defmodule CGraph.Forums.Poll do
     end
   end
 
+  @doc "Builds a changeset for recording a vote."
   @spec vote_changeset(%__MODULE__{}, term(), [non_neg_integer()]) :: Ecto.Changeset.t()
   def vote_changeset(poll, user_id, option_indices) do
     current_votes = poll.votes || %{}
@@ -50,6 +52,7 @@ defmodule CGraph.Forums.Poll do
     change(poll, votes: new_votes)
   end
 
+  @doc "Builds a changeset for closing a record."
   @spec close_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def close_changeset(poll) do
     change(poll, is_closed: true)

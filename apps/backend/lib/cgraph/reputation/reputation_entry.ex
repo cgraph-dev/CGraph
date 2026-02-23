@@ -30,6 +30,7 @@ defmodule CGraph.Reputation.ReputationEntry do
   @required_fields ~w(from_user_id to_user_id value)a
   @optional_fields ~w(comment post_id forum_id)a
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(entry, attrs) do
     entry

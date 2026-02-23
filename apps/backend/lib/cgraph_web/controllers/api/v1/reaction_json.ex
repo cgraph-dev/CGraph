@@ -5,16 +5,19 @@ defmodule CGraphWeb.API.V1.ReactionJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{reactions: reactions}) do
     %{data: group_reactions(reactions)}
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{reaction: reaction}) do
     %{data: reaction_data(reaction)}
   end
 
+  @doc "Renders users who reacted as JSON."
   @spec users(map()) :: map()
   def users(%{users: users, emoji: emoji}) do
     %{

@@ -5,6 +5,7 @@ defmodule CGraphWeb.API.V1.PostJSON do
 
   alias CGraphWeb.API.V1.UserJSON
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{posts: posts, meta: meta}) do
     %{
@@ -13,6 +14,7 @@ defmodule CGraphWeb.API.V1.PostJSON do
     }
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{post: post}) do
     %{data: post_data(post)}
@@ -41,6 +43,7 @@ defmodule CGraphWeb.API.V1.PostJSON do
     }
   end
 
+  @doc "Renders a post report as JSON."
   @spec report(map()) :: map()
   def report(%{report: report}) do
     %{

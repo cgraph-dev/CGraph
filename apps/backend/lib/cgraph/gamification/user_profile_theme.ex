@@ -43,18 +43,21 @@ defmodule CGraph.Gamification.UserProfileTheme do
     |> unique_constraint([:user_id, :theme_id])
   end
 
+  @doc "Builds a changeset for activating a record."
   @spec activate_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def activate_changeset(user_theme, attrs) do
     user_theme
     |> cast(attrs, [:is_active])
   end
 
+  @doc "Builds a changeset for applying customizations."
   @spec customize_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def customize_changeset(user_theme, attrs) do
     user_theme
     |> cast(attrs, [:custom_colors, :custom_background, :custom_layout, :custom_effects])
   end
 
+  @doc "Returns the list of valid unlock sources."
   @spec unlock_sources() :: [String.t()]
   def unlock_sources, do: @unlock_sources
 end

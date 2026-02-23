@@ -14,6 +14,7 @@ defmodule CGraph.Forums.CursorPagination do
   # Post Cursors
   # ============================================================================
 
+  @doc "Applies cursor-based pagination filter for posts."
   @spec apply_post_cursor(Ecto.Query.t(), term(), String.t()) :: Ecto.Query.t()
   def apply_post_cursor(query, cursor, sort) do
     case sort do
@@ -28,6 +29,7 @@ defmodule CGraph.Forums.CursorPagination do
   # Comment Cursors
   # ============================================================================
 
+  @doc "Applies cursor-based pagination filter for comments."
   @spec apply_comment_cursor(Ecto.Query.t(), term(), String.t()) :: Ecto.Query.t()
   def apply_comment_cursor(query, cursor, sort) do
     case sort do
@@ -42,6 +44,7 @@ defmodule CGraph.Forums.CursorPagination do
   # Forum (Leaderboard) Cursors
   # ============================================================================
 
+  @doc "Applies cursor-based pagination filter for forums."
   @spec apply_forum_cursor(Ecto.Query.t(), term(), String.t()) :: Ecto.Query.t()
   def apply_forum_cursor(query, cursor, sort) do
     field = case sort do
@@ -59,6 +62,7 @@ defmodule CGraph.Forums.CursorPagination do
   # Thread Cursors (compound: is_pinned + sort field)
   # ============================================================================
 
+  @doc "Applies compound cursor filter for threads."
   @spec apply_thread_cursor_filter(Ecto.Query.t(), term(), String.t()) :: Ecto.Query.t()
   def apply_thread_cursor_filter(query, cursor, sort) do
     sort_field = case sort do
@@ -86,6 +90,7 @@ defmodule CGraph.Forums.CursorPagination do
   # Generic Cursor Filters
   # ============================================================================
 
+  @doc "Applies a descending cursor filter on the given field."
   @spec apply_simple_cursor_desc(Ecto.Query.t(), term(), atom()) :: Ecto.Query.t()
   def apply_simple_cursor_desc(query, cursor, field) do
     case Pagination.decode_cursor(cursor) do
@@ -97,6 +102,7 @@ defmodule CGraph.Forums.CursorPagination do
     end
   end
 
+  @doc "Applies an ascending cursor filter on the given field."
   @spec apply_simple_cursor_asc(Ecto.Query.t(), term(), atom()) :: Ecto.Query.t()
   def apply_simple_cursor_asc(query, cursor, field) do
     case Pagination.decode_cursor(cursor) do
@@ -108,6 +114,7 @@ defmodule CGraph.Forums.CursorPagination do
     end
   end
 
+  @doc "Applies a controversy-based cursor filter."
   @spec apply_controversy_cursor(Ecto.Query.t(), term()) :: Ecto.Query.t()
   def apply_controversy_cursor(query, cursor) do
     case Pagination.decode_cursor(cursor) do
@@ -121,6 +128,7 @@ defmodule CGraph.Forums.CursorPagination do
     end
   end
 
+  @doc "Applies a hot-score formula cursor filter."
   @spec apply_hot_formula_cursor(Ecto.Query.t(), term()) :: Ecto.Query.t()
   def apply_hot_formula_cursor(query, cursor) do
     case Pagination.decode_cursor(cursor) do
@@ -138,6 +146,7 @@ defmodule CGraph.Forums.CursorPagination do
   # Cursor Metadata Builders
   # ============================================================================
 
+  @doc "Builds pagination metadata from a list of items."
   @spec build_cursor_meta(list(), boolean(), pos_integer(), String.t(), atom()) :: map()
   def build_cursor_meta([], _has_next, per_page, _sort, _type) do
     %{per_page: per_page, has_next_page: false, next_cursor: nil}
@@ -152,6 +161,7 @@ defmodule CGraph.Forums.CursorPagination do
     %{per_page: per_page, has_next_page: has_next, next_cursor: next_cursor}
   end
 
+  @doc "Builds a cursor string for a specific item and sort."
   @spec build_item_cursor(struct(), String.t(), atom()) :: binary()
   def build_item_cursor(item, sort, :post) do
     val = case sort do
@@ -196,6 +206,7 @@ defmodule CGraph.Forums.CursorPagination do
     Pagination.encode_cursor_data(%{p: item.is_pinned, v: val, id: item.id})
   end
 
+  @doc "Computes the hot-score value for ranking."
   @spec compute_hot_value(struct()) :: float()
   def compute_hot_value(post) do
     age_seconds = DateTime.diff(DateTime.truncate(DateTime.utc_now(), :second), post.inserted_at, :second)

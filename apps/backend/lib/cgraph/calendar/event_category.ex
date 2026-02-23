@@ -25,6 +25,7 @@ defmodule CGraph.Calendar.EventCategory do
   @required_fields ~w(name)a
   @optional_fields ~w(description color icon order)a
 
+  @doc "Builds a changeset for validating and casting attributes."
   @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(category, attrs) do
     category

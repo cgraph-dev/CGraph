@@ -15,9 +15,11 @@ defmodule CGraph.Encryption.EncryptedField do
   use Ecto.Type
 
   @impl true
+  @doc "Returns the underlying Ecto type for the encrypted field."
   @spec type() :: atom()
   def type, do: :binary
 
+  @doc "Casts the given value to the encrypted field type."
   @impl true
   @spec cast(term()) :: {:ok, String.t() | nil} | :error
   def cast(value) when is_binary(value) do
@@ -28,6 +30,7 @@ defmodule CGraph.Encryption.EncryptedField do
   def cast(_), do: :error
 
   @impl true
+  @doc "Loads and decrypts the value from the database."
   @spec load(term()) :: {:ok, String.t() | nil} | :error
   def load(nil), do: {:ok, nil}
 
@@ -39,6 +42,7 @@ defmodule CGraph.Encryption.EncryptedField do
   end
 
   @impl true
+  @doc "Encrypts and dumps the value for database storage."
   @spec dump(term()) :: {:ok, binary() | nil} | :error
   def dump(nil), do: {:ok, nil}
 
@@ -52,6 +56,7 @@ defmodule CGraph.Encryption.EncryptedField do
   def dump(_), do: :error
 
   @impl true
+  @doc "Compares two encrypted field values for equality."
   @spec equal?(term(), term()) :: boolean()
   def equal?(a, b), do: a == b
 end

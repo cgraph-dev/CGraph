@@ -4,11 +4,13 @@ defmodule CGraphWeb.API.V1.ChannelJSON do
   """
   alias CGraph.Groups.Channel
 
+  @doc "Renders a list of resources as JSON."
   @spec index(map()) :: map()
   def index(%{channels: channels}) do
     %{data: Enum.map(channels, &channel_data/1)}
   end
 
+  @doc "Renders a single resource as JSON."
   @spec show(map()) :: map()
   def show(%{channel: channel}) do
     %{data: channel_data(channel)}
