@@ -31,6 +31,7 @@ defmodule CGraph.Moderation.Appeal do
   @optional_fields ~w(status reviewer_id reviewer_notes reviewed_at)a
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(appeal, attrs) do
     appeal
     |> cast(attrs, @required_fields ++ @optional_fields)

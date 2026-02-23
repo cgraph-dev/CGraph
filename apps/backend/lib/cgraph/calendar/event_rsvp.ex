@@ -26,6 +26,7 @@ defmodule CGraph.Calendar.EventRSVP do
 
   @valid_statuses ~w(going maybe not_going interested)
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(rsvp, attrs) do
     rsvp
     |> cast(attrs, @required_fields ++ @optional_fields)

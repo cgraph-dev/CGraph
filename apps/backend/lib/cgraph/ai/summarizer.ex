@@ -17,6 +17,7 @@ defmodule CGraph.AI.Summarizer do
       decisions: ["decision 1", ...]
     }
   """
+  @spec summarize(list(), keyword()) :: map()
   def summarize(messages, opts \\ []) when is_list(messages) do
     if CGraph.AI.llm_available?() do
       llm_summarize(messages, opts)

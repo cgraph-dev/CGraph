@@ -16,6 +16,7 @@ defmodule CGraph.AI.Moderation do
       action: :allow | :flag | :block
     }
   """
+  @spec check(String.t(), keyword()) :: map()
   def check(content, opts \\ []) do
     if CGraph.AI.llm_available?() do
       llm_moderate(content, opts)

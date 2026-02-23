@@ -31,6 +31,7 @@ defmodule CGraph.ReadRepo do
   @doc """
   Default query options — exclude soft-deleted records.
   """
+  @spec default_options(atom()) :: keyword()
   def default_options(_operation) do
     []
   end

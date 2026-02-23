@@ -47,6 +47,7 @@ defmodule CGraph.Calendar.Event do
   @valid_visibilities ~w(public private forum)
   @valid_event_types ~w(single recurring birthday holiday)
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(event, attrs) do
     event
     |> cast(attrs, @required_fields ++ @optional_fields)

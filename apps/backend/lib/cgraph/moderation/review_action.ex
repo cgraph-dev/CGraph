@@ -30,6 +30,7 @@ defmodule CGraph.Moderation.ReviewAction do
   @optional_fields ~w(notes duration_hours)a
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(action, attrs) do
     action
     |> cast(attrs, @required_fields ++ @optional_fields)

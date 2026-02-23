@@ -23,6 +23,7 @@ defmodule CGraph.Groups.ChannelCategory do
   @doc """
   Create a category.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(category, attrs) do
     category
     |> cast(attrs, [:name, :position, :group_id])

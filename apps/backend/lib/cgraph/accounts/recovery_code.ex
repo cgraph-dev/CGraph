@@ -23,6 +23,7 @@ defmodule CGraph.Accounts.RecoveryCode do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(recovery_code, attrs) do
     recovery_code
     |> cast(attrs, [:user_id, :code_hash, :used, :used_at])

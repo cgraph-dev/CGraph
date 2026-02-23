@@ -26,6 +26,7 @@ defmodule CGraph.Groups.PermissionOverwrite do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(overwrite, attrs) do
     overwrite
     |> cast(attrs, [:channel_id, :role_id, :member_id, :allow, :deny, :type])

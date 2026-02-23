@@ -323,6 +323,7 @@ defmodule CGraph.BatchProcessor.Processing do
   end
 
   @doc false
+  @spec generate_batch_id() :: String.t()
   def generate_batch_id do
     "batch_" <> Base.encode16(:crypto.strong_rand_bytes(8), case: :lower)
   end

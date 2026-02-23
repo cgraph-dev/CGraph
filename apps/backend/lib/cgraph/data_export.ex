@@ -126,6 +126,7 @@ defmodule CGraph.DataExport do
   @doc """
   Start the DataExport GenServer.
   """
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []), do: CGraph.DataExport.Server.start_link(opts)
 
   # ---------------------------------------------------------------------------

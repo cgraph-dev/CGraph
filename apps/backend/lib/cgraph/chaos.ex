@@ -59,6 +59,7 @@ defmodule CGraph.Chaos do
   @doc """
   Check if chaos testing is enabled (test env only).
   """
+  @spec enabled?() :: boolean()
   def enabled? do
     Application.get_env(:cgraph, :env) == :test ||
       Mix.env() == :test

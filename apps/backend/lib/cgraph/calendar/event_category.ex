@@ -25,6 +25,7 @@ defmodule CGraph.Calendar.EventCategory do
   @required_fields ~w(name)a
   @optional_fields ~w(description color icon order)a
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(category, attrs) do
     category
     |> cast(attrs, @required_fields ++ @optional_fields)

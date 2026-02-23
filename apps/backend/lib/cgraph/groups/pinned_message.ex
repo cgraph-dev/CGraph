@@ -19,6 +19,7 @@ defmodule CGraph.Groups.PinnedMessage do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(pinned_message, attrs) do
     pinned_message
     |> cast(attrs, [:channel_id, :message_id, :pinned_by_id, :position])

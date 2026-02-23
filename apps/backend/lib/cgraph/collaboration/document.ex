@@ -32,6 +32,7 @@ defmodule CGraph.Collaboration.Document do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(document, attrs) do
     document
     |> cast(attrs, [

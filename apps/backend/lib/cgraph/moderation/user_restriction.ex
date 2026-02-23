@@ -29,6 +29,7 @@ defmodule CGraph.Moderation.UserRestriction do
   @optional_fields ~w(reason expires_at active)a
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(restriction, attrs) do
     restriction
     |> cast(attrs, @required_fields ++ @optional_fields)

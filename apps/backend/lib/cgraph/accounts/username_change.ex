@@ -20,6 +20,7 @@ defmodule CGraph.Accounts.UsernameChange do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(username_change, attrs) do
     username_change
     |> cast(attrs, [:user_id, :old_username, :new_username, :reason, :changed_by_admin])

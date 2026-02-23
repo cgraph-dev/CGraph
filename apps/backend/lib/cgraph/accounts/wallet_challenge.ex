@@ -22,6 +22,7 @@ defmodule CGraph.Accounts.WalletChallenge do
   @doc """
   Changeset for creating or updating a wallet challenge.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(challenge, attrs) do
     challenge
     |> cast(attrs, [:wallet_address, :nonce, :expires_at])

@@ -30,6 +30,7 @@ defmodule CGraph.Accounts.Friendship do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(friendship, attrs) do
     friendship
     |> cast(attrs, [:user_id, :friend_id, :status, :nickname, :notes, :accepted_at])

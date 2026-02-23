@@ -16,6 +16,7 @@ defmodule CGraph.AI.Sentiment do
       confidence: float (0-1)
     }
   """
+  @spec analyze(String.t(), keyword()) :: map()
   def analyze(text, opts \\ []) do
     if CGraph.AI.llm_available?() do
       llm_analyze(text, opts)

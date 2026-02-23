@@ -24,6 +24,7 @@ defmodule CGraph.Accounts.DeletedFriendship do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(record, attrs) do
     record
     |> cast(attrs, [:user_id, :friend_id, :deleted_at])

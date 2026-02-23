@@ -77,6 +77,7 @@ defmodule CGraph.Customizations.UserCustomization do
   - Enum-like fields validated against allowed values
   - Custom config size limited to prevent abuse
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(user_customization, attrs) do
     user_customization
     |> cast(attrs, [

@@ -52,6 +52,7 @@ defmodule CGraph.Moderation.Report do
   @optional_fields ~w(description evidence_urls status priority reviewed_at)a
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(report, attrs) do
     report
     |> cast(attrs, @required_fields ++ @optional_fields)

@@ -21,6 +21,7 @@ defmodule CGraph.Groups.CustomEmoji do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(emoji, attrs) do
     emoji
     |> cast(attrs, [:group_id, :uploaded_by_id, :name, :image_url, :is_animated])

@@ -123,6 +123,7 @@ defmodule CGraph.Crypto.E2EE do
       timestamps()
     end
 
+    @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
     def changeset(key, attrs) do
       key
       |> cast(attrs, [:public_key, :key_id, :device_id, :user_id, :is_verified, :verified_at, :revoked_at])
@@ -170,6 +171,7 @@ defmodule CGraph.Crypto.E2EE do
       timestamps()
     end
 
+    @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
     def changeset(key, attrs) do
       key
       |> cast(attrs, [:public_key, :signature, :key_id, :expires_at, :is_current, :user_id, :identity_key_id])
@@ -217,6 +219,7 @@ defmodule CGraph.Crypto.E2EE do
       timestamps()
     end
 
+    @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
     def changeset(key, attrs) do
       key
       |> cast(attrs, [:public_key, :key_id, :user_id, :identity_key_id, :used_at, :used_by_id])
@@ -273,6 +276,7 @@ defmodule CGraph.Crypto.E2EE do
       timestamps()
     end
 
+    @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
     def changeset(key, attrs) do
       key
       |> cast(attrs, [:public_key, :signature, :key_id, :user_id, :identity_key_id, :is_current, :used_at, :used_by_id])

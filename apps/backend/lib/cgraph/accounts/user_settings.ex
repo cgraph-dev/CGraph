@@ -78,6 +78,7 @@ defmodule CGraph.Accounts.UserSettings do
   @doc """
   Creates a changeset for user settings.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(settings, attrs) do
     settings
     |> cast(attrs, [
