@@ -1,3 +1,7 @@
+/**
+ * Seasonal event rewards display component.
+ * @module
+ */
 import { TrophyIcon, StarIcon } from '@heroicons/react/24/outline';
 import { useCurrentEventProgress } from '@/modules/gamification/store';
 import { GlassCard } from '@/shared/components/ui';

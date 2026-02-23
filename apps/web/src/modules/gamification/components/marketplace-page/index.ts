@@ -1,3 +1,7 @@
+/**
+ * Marketplace page module exports.
+ * @module
+ */
 export type {
   MarketplaceTab,
   ListingCardProps,

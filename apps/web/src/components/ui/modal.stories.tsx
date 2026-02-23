@@ -1,3 +1,7 @@
+/**
+ * Modal component Storybook stories.
+ * @module
+ */
 import type { Meta, StoryObj } from '@storybook/react';
 import { Modal } from './modal';
 import { Button } from './button';

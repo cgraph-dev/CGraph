@@ -1,3 +1,7 @@
+/**
+ * Forum board members list component.
+ * @module
+ */
 import { UserIcon, MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 
 import { MemberCard } from './member-card';

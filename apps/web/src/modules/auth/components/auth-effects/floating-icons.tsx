@@ -1,3 +1,7 @@
+/**
+ * Auth page floating icons animation.
+ * @module
+ */
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { prefersReducedMotion, DEFAULT_COLOR, SECURITY_ICONS } from './constants';

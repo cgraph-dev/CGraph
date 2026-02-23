@@ -1,3 +1,7 @@
+/**
+ * Admin users management tab.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { LoadingState } from '@/modules/admin/components';
 import { useUsersTab } from '@/pages/admin/tabs/users/useUsersTab';

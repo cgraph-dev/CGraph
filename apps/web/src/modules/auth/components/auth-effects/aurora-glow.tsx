@@ -1,3 +1,7 @@
+/**
+ * Auth page aurora glow background effect.
+ * @module
+ */
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { prefersReducedMotion, DEFAULT_AURORA_COLORS, DEFAULT_AURORA_SPEED } from './constants';

@@ -1,3 +1,7 @@
+/**
+ * Admin users pagination component.
+ * @module
+ */
 interface UsersPaginationProps {
   page: number;
   perPage: number;

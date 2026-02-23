@@ -1,3 +1,7 @@
+/**
+ * Avatar image display component.
+ * @module
+ */
 import { ReactNode } from 'react';
 import { getAvatarBorderStyle } from '@/modules/settings/hooks/useCustomizationApplication';
 

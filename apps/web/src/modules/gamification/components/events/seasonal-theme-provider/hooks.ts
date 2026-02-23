@@ -1,3 +1,7 @@
+/**
+ * Seasonal theme hooks.
+ * @module
+ */
 import { createContext, use } from 'react';
 import type { SeasonalThemeContextValue } from './types';
 

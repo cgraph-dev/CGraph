@@ -1,3 +1,7 @@
+/**
+ * Event form state management hooks.
+ * @module
+ */
 import { useState, useEffect } from 'react';
 import { useCalendarStore, EventFormData, RecurrencePattern } from '@/modules/settings/store';
 import { createLogger } from '@/lib/logger';

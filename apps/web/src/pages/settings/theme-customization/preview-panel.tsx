@@ -1,3 +1,7 @@
+/**
+ * Theme preview panel component.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';

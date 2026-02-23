@@ -1,3 +1,7 @@
+/**
+ * Achievement detail modal dialog.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import {
   TrophyIcon,

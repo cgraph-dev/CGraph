@@ -1,3 +1,7 @@
+/**
+ * Admin status badge component.
+ * @module
+ */
 import clsx from 'clsx';
 
 export function StatusBadge({ status }: { status: string }) {

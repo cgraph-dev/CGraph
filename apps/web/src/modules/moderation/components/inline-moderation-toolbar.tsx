@@ -1,3 +1,7 @@
+/**
+ * Inline content moderation toolbar.
+ * @module
+ */
 import { useState } from 'react';
 import {
   TrashIcon,

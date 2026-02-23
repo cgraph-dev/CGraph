@@ -1,3 +1,7 @@
+/**
+ * Marketplace statistics display.
+ * @module
+ */
 import { useMarketplaceStore } from '@/modules/gamification/store';
 
 export function MarketplaceStats() {

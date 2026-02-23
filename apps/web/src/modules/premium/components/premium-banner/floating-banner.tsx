@@ -1,3 +1,7 @@
+/**
+ * Floating premium upgrade banner.
+ * @module
+ */
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SparklesIcon, XMarkIcon, ChevronRightIcon } from '@heroicons/react/24/outline';

@@ -1,3 +1,7 @@
+/**
+ * Enhanced theme context hooks.
+ * @module
+ */
 import { createContext, use, useMemo } from 'react';
 import type { ThemeContextValue } from './types';
 

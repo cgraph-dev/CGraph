@@ -1,3 +1,7 @@
+/**
+ * Chat bubble backgrounds selection tab.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { LockClosedIcon, CheckIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';

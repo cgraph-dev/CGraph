@@ -1,3 +1,7 @@
+/**
+ * Quick reply input component for forum threads.
+ * @module
+ */
 import React, { useState, useCallback } from 'react';
 import {
   PaperAirplaneIcon,

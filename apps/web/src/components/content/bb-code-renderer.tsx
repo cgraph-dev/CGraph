@@ -1,3 +1,7 @@
+/**
+ * BBCode content renderer component.
+ * @module
+ */
 import { useMemo } from 'react';
 import DOMPurify from 'dompurify';
 import { parseBBCode, validateBBCode } from '@/lib/bbcode';

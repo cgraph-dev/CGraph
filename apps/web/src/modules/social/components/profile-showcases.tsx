@@ -1,3 +1,7 @@
+/**
+ * Profile showcase display components.
+ * @module
+ */
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SparklesIcon, TrophyIcon } from '@heroicons/react/24/outline';

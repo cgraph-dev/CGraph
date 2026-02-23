@@ -1,3 +1,7 @@
+/**
+ * Groups components module exports.
+ * @module
+ */
 // Groups Components
 // Complete set of components for group/server functionality
 

@@ -1,3 +1,7 @@
+/**
+ * Individual channel item component.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { NavLink, useParams } from 'react-router-dom';
 import { HashtagIcon } from '@heroicons/react/24/outline';

@@ -1,3 +1,7 @@
+/**
+ * Board listing component for forum view.
+ * @module
+ */
 import { useNavigate } from 'react-router-dom';
 import { FolderIcon, PlusIcon } from '@heroicons/react/24/solid';
 

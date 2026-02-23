@@ -1,3 +1,7 @@
+/**
+ * Call history page animation definitions.
+ * @module
+ */
 import type { Variants } from 'framer-motion';
 
 export const containerVariants: Variants = {

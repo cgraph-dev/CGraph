@@ -1,3 +1,7 @@
+/**
+ * Styled text input component.
+ * @module
+ */
 import React from 'react';
 
 interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {

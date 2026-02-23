@@ -1,3 +1,7 @@
+/**
+ * Forum plugin marketplace page.
+ * @module
+ */
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { createLogger } from '@/lib/logger';

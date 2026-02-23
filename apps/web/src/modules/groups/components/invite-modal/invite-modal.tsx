@@ -1,3 +1,7 @@
+/**
+ * Group invite modal dialog component.
+ * @module
+ */
 import { motion, AnimatePresence } from 'framer-motion';
 import { LinkIcon } from '@heroicons/react/24/outline';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';

@@ -1,3 +1,7 @@
+/**
+ * Hook for forum real-time socket connection.
+ * @module
+ */
 import { useEffect, useCallback, useState, useRef } from 'react';
 import {
   socketManager,

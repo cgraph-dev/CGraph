@@ -1,3 +1,7 @@
+/**
+ * Auth page text animation effects.
+ * @module
+ */
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { prefersReducedMotion } from './constants';

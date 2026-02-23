@@ -1,3 +1,7 @@
+/**
+ * Active invites management tab component.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import {
   LinkIcon,

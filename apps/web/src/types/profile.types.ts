@@ -1,3 +1,7 @@
+/**
+ * User profile type definitions.
+ * @module
+ */
 // Profile types and constants
 export interface UserProfileData {
   id: string;

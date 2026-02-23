@@ -1,3 +1,7 @@
+/**
+ * Referral system store actions.
+ * @module
+ */
 import type { StateCreator } from 'zustand';
 import { api } from '@/lib/api';
 import { ensureArray, isRecord } from '@/lib/apiUtils';

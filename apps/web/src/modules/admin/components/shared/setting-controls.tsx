@@ -1,3 +1,7 @@
+/**
+ * Admin settings control components.
+ * @module
+ */
 import clsx from 'clsx';
 
 export function SettingToggle({

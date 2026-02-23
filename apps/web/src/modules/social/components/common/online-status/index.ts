@@ -1,3 +1,7 @@
+/**
+ * Online status components module exports.
+ * @module
+ */
 export type { OnlineStatus } from './types';
 export { statusConfig, statusHexColors, glowColors, formatLastActive, formatLastActiveLong } from './types';
 export { OnlineStatusIndicator } from './online-status-indicator';

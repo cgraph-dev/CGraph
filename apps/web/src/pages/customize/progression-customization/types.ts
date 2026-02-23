@@ -1,3 +1,7 @@
+/**
+ * Progression customization type definitions.
+ * @module
+ */
 export type ProgressionCategory = 'achievements' | 'leaderboards' | 'quests' | 'rewards';
 
 export interface Achievement {

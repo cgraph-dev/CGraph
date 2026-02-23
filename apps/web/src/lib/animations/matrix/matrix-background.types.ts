@@ -1,3 +1,7 @@
+/**
+ * Matrix animation background type definitions.
+ * @module
+ */
 import React from 'react';
 import type { MatrixConfig, MatrixTheme, ThemePreset, DeepPartial } from './types';
 

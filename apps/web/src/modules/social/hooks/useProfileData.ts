@@ -1,3 +1,7 @@
+/**
+ * Hook for profile data fetching.
+ * @module
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';

@@ -1,3 +1,7 @@
+/**
+ * Settings store implementation.
+ * @module
+ */
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { createLogger } from '@/lib/logger';

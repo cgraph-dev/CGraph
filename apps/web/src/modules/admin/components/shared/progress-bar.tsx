@@ -1,3 +1,7 @@
+/**
+ * Admin progress bar component.
+ * @module
+ */
 import clsx from 'clsx';
 
 export function ProgressBar({

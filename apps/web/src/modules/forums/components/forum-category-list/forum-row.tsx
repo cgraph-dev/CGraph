@@ -1,3 +1,7 @@
+/**
+ * Individual forum row component in category list.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import {
   ChatBubbleLeftRightIcon,

@@ -1,3 +1,7 @@
+/**
+ * Hook for theme export/import functionality.
+ * @module
+ */
 import { useThemeStore } from '@/stores/theme';
 
 export function useThemeExport() {

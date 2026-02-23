@@ -1,3 +1,7 @@
+/**
+ * Forum subscription management component.
+ * @module
+ */
 import React, { useState } from 'react';
 import {
   Card,

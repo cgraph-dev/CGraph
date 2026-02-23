@@ -1,3 +1,7 @@
+/**
+ * Hook for level up visual effects.
+ * @module
+ */
 import { useEffect, useState } from 'react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import confetti from 'canvas-confetti';

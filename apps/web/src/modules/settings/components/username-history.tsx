@@ -1,3 +1,7 @@
+/**
+ * Username change history component.
+ * @module
+ */
 import React from 'react';
 import { Button } from '@/shared/components/ui';
 import { Loader2, History } from 'lucide-react';

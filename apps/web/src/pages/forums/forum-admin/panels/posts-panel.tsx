@@ -1,3 +1,7 @@
+/**
+ * Forum admin posts management panel.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';

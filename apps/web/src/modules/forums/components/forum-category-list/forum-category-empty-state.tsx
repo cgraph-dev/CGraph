@@ -1,3 +1,7 @@
+/**
+ * Empty state display for forum categories.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { FolderIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';

@@ -1,3 +1,7 @@
+/**
+ * Admin tabs module exports.
+ * @module
+ */
 // Admin Dashboard Tab Components - Barrel Export
 export { OverviewTab } from './overview-tab';
 export { UsersTab } from './users-tab';

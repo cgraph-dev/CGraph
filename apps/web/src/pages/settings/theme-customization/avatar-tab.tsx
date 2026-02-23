@@ -1,3 +1,7 @@
+/**
+ * Avatar customization settings tab.
+ * @module
+ */
 import { useThemeStore } from '@/stores/theme';
 import { AVATAR_BORDERS, AVATAR_SIZE_LABELS } from './constants';
 import type { AvatarSizeOption } from './types';

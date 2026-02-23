@@ -1,3 +1,7 @@
+/**
+ * E2EE encryption error modal dialog.
+ * @module
+ */
 import { motion, AnimatePresence } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';
 import {

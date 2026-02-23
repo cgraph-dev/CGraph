@@ -1,3 +1,7 @@
+/**
+ * Border particle system module exports.
+ * @module
+ */
 export type {
   BorderParticleSystemProps,
   Particle,

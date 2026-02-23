@@ -1,3 +1,7 @@
+/**
+ * Forum hosting store implementation.
+ * @module
+ */
 import { create } from 'zustand';
 import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';

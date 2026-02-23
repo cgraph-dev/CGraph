@@ -1,3 +1,7 @@
+/**
+ * Message reaction display and picker.
+ * @module
+ */
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaceSmileIcon, PlusIcon } from '@heroicons/react/24/outline';

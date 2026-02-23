@@ -1,3 +1,7 @@
+/**
+ * Video call top bar with call info.
+ * @module
+ */
 import { ArrowsPointingOutIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 interface VideoCallTopBarProps {

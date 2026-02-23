@@ -1,3 +1,7 @@
+/**
+ * Chat bubble appearance settings.
+ * @module
+ */
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useChatBubbleStore, CHAT_BUBBLE_PRESETS, type ChatBubbleConfig } from '@/stores/theme';

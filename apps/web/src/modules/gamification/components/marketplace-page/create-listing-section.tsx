@@ -1,3 +1,7 @@
+/**
+ * Create marketplace listing form section.
+ * @module
+ */
 import { useState } from 'react';
 import { useMarketplaceStore, type ItemType } from '@/modules/gamification/store';
 import { ITEM_TYPE_LABELS, type CreateListingFormData } from './types';

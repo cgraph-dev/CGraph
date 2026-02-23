@@ -1,3 +1,7 @@
+/**
+ * Glass card type definitions.
+ * @module
+ */
 import { ReactNode, HTMLAttributes } from 'react';
 
 export interface GlassCardProps extends Omit<

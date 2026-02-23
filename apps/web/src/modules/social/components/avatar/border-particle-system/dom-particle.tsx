@@ -1,3 +1,7 @@
+/**
+ * DOM-based particle rendering component.
+ * @module
+ */
 import { memo } from 'react';
 import type { DOMParticleProps } from './types';
 

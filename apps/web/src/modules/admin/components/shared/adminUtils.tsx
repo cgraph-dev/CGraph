@@ -1,3 +1,7 @@
+/**
+ * Admin shared utility components.
+ * @module
+ */
 export function formatUptime(seconds: number): string {
   const days = Math.floor(seconds / 86400);
   const hours = Math.floor((seconds % 86400) / 3600);

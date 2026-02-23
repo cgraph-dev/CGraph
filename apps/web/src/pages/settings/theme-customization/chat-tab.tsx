@@ -1,3 +1,7 @@
+/**
+ * Chat appearance customization tab.
+ * @module
+ */
 import { useThemeStore } from '@/stores/theme';
 import { BUBBLE_STYLES } from './constants';
 

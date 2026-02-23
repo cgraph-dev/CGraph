@@ -1,3 +1,7 @@
+/**
+ * Calendar events page component.
+ * @module
+ */
 import { useState } from 'react';
 import CalendarView from '@/modules/social/components/calendar';
 import EventForm from '@/modules/social/components/event-form';

@@ -1,3 +1,7 @@
+/**
+ * Admin reports tab component.
+ * @module
+ */
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';

@@ -1,3 +1,7 @@
+/**
+ * Forum statistics type definitions.
+ * @module
+ */
 export interface ForumStats {
   // Totals
   totalThreads: number;

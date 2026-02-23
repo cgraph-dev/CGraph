@@ -1,3 +1,7 @@
+/**
+ * Profile avatar upload and display section.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';

@@ -1,3 +1,7 @@
+/**
+ * Prestige system store slice.
+ * @module
+ */
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { safeLocalStorage } from '@/lib/safeStorage';

@@ -1,3 +1,7 @@
+/**
+ * RSS feeds settings page component.
+ * @module
+ */
 import { Rss, Info, HelpCircle, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { PageContainer } from '@/components/layout';

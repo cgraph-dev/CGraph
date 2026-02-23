@@ -1,3 +1,7 @@
+/**
+ * Tag input component with autocomplete.
+ * @module
+ */
 import { useState, useEffect, useRef, KeyboardEvent } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 

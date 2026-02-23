@@ -1,3 +1,7 @@
+/**
+ * RSS feed management hooks.
+ * @module
+ */
 import { useMemo, useCallback, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import type { RSSFeed, RecommendedApp } from './types';

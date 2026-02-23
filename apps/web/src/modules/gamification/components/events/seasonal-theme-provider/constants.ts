@@ -1,3 +1,7 @@
+/**
+ * Seasonal theme constant definitions.
+ * @module
+ */
 import type { SeasonalTheme, SeasonalThemeConfig } from './types';
 
 export const SEASONAL_THEMES: Record<SeasonalTheme, SeasonalThemeConfig> = {

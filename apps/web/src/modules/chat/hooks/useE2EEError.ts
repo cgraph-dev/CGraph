@@ -1,3 +1,7 @@
+/**
+ * Hook for E2EE error state handling.
+ * @module
+ */
 import { useState, useCallback } from 'react';
 
 // ============================================================================

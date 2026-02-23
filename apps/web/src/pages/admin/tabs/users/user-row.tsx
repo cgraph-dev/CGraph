@@ -1,3 +1,7 @@
+/**
+ * Admin user row component.
+ * @module
+ */
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { formatTimeAgo } from '@/lib/utils';

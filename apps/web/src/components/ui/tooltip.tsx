@@ -1,3 +1,7 @@
+/**
+ * Tooltip hover component.
+ * @module
+ */
 import { ReactNode, useRef, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 

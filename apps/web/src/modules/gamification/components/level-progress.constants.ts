@@ -1,3 +1,7 @@
+/**
+ * Level progress bar constant definitions.
+ * @module
+ */
 import type { Transition } from 'framer-motion';
 
 // ── XP Calculation ──────────────────────────────────────────────────

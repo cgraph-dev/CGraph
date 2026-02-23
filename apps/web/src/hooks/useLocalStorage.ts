@@ -1,3 +1,7 @@
+/**
+ * Hook for type-safe localStorage access.
+ * @module
+ */
 import { useState, useCallback, useEffect } from 'react';
 import { createLogger } from '@/lib/logger';
 

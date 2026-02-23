@@ -1,3 +1,7 @@
+/**
+ * Hook for responsive window size tracking.
+ * @module
+ */
 import { useState, useEffect } from 'react';
 
 interface WindowSize {

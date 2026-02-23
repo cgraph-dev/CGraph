@@ -1,3 +1,7 @@
+/**
+ * Seasonal event promotional banner.
+ * @module
+ */
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSeasonalEventStore, useFeaturedEvent } from '@/modules/gamification/store';

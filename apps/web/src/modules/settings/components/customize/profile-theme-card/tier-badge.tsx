@@ -1,3 +1,7 @@
+/**
+ * Premium tier badge on theme card.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { TIER_COLORS, type ProfileThemeConfig } from '@/data/profileThemes';
 import { CATEGORY_ICONS } from './constants';

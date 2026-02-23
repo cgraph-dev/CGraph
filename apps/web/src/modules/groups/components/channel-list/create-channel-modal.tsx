@@ -1,3 +1,7 @@
+/**
+ * Channel creation modal dialog.
+ * @module
+ */
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { SparklesIcon } from '@heroicons/react/24/outline';

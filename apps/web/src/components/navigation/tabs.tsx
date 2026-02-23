@@ -1,3 +1,7 @@
+/**
+ * Tab navigation component.
+ * @module
+ */
 interface Tab {
   id: string;
   label: string;

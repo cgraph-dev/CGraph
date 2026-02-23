@@ -1,3 +1,7 @@
+/**
+ * Markdown editor component with toolbar.
+ * @module
+ */
 import { useState } from 'react';
 import MarkdownRenderer from './markdown-renderer';
 import {

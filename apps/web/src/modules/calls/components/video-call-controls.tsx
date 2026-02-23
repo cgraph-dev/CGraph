@@ -1,3 +1,7 @@
+/**
+ * Video call controls UI component.
+ * @module
+ */
 import { PhoneXMarkIcon, MicrophoneIcon, VideoCameraIcon, ComputerDesktopIcon } from '@heroicons/react/24/outline';
 import { VideoCameraSlashIcon } from '@heroicons/react/24/solid';
 

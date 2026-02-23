@@ -1,3 +1,7 @@
+/**
+ * Glass card style variant components.
+ * @module
+ */
 import GlassCard from './glass-card';
 import type { GlassCardProps } from './glass-card.types';
 

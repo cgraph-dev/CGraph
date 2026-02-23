@@ -1,3 +1,7 @@
+/**
+ * Profile card preview component.
+ * @module
+ */
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { AnimatedAvatar } from '../animated-avatar';

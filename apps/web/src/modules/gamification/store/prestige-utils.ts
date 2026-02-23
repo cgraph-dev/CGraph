@@ -1,3 +1,7 @@
+/**
+ * Prestige system utility functions.
+ * @module
+ */
 import type { PrestigeBonuses, PrestigeReward } from './prestige-types';
 
 // ==================== BONUS CALCULATION ====================

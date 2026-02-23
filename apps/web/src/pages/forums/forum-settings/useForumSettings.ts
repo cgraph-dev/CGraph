@@ -1,3 +1,7 @@
+/**
+ * Hook for forum settings state management.
+ * @module
+ */
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useForumStore } from '@/modules/forums/store';

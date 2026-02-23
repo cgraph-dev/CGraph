@@ -1,3 +1,7 @@
+/**
+ * User login page.
+ * @module
+ */
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';

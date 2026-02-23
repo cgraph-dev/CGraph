@@ -1,3 +1,7 @@
+/**
+ * Seasonal theme context provider.
+ * @module
+ */
 // Re-export from modularized directory
 export { default } from './seasonal-theme-provider/index';
 export type * from './seasonal-theme-provider/index';

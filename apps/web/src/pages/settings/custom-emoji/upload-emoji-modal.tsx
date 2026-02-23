@@ -1,3 +1,7 @@
+/**
+ * Custom emoji upload modal dialog.
+ * @module
+ */
 import { useState, useRef } from 'react';
 import { X, Upload, Loader2 } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';

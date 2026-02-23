@@ -1,3 +1,7 @@
+/**
+ * User ID display badge component.
+ * @module
+ */
 import { GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { getAvatarBorderId } from '@/lib/utils';

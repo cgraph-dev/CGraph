@@ -1,3 +1,7 @@
+/**
+ * Admin user search bar component.
+ * @module
+ */
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 interface UserSearchBarProps {

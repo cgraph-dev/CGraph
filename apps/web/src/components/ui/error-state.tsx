@@ -1,3 +1,7 @@
+/**
+ * Error state display component.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { staggerConfigs } from '@/lib/animation-presets/presets';
 import { ExclamationTriangleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';

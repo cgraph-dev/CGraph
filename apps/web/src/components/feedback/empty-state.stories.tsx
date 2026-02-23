@@ -1,3 +1,7 @@
+/**
+ * Empty state Storybook stories.
+ * @module
+ */
 import type { Meta, StoryObj } from '@storybook/react';
 import {
   EmptyState,

@@ -1,3 +1,7 @@
+/**
+ * Marketplace page type definitions.
+ * @module
+ */
 import type { ItemType, MarketplaceListing } from '@/modules/gamification/store';
 
 export type MarketplaceTab = 'browse' | 'my-listings' | 'history' | 'create';

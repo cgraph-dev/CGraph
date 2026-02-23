@@ -1,3 +1,7 @@
+/**
+ * Styled select dropdown component.
+ * @module
+ */
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDownIcon, CheckIcon } from '@heroicons/react/24/outline';
 

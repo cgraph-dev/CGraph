@@ -1,3 +1,7 @@
+/**
+ * Hook for conversation action handlers.
+ * @module
+ */
 import { useState, useCallback } from 'react';
 import { useChatStore, Message } from '@/modules/chat/store';
 import { api } from '@/lib/api';

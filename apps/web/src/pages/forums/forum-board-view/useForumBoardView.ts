@@ -1,3 +1,7 @@
+/**
+ * Hook for forum board view state and data fetching.
+ * @module
+ */
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 

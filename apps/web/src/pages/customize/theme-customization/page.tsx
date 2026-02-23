@@ -1,3 +1,7 @@
+/**
+ * Theme customization settings page.
+ * @module
+ */
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { useThemeCustomization } from './hooks';

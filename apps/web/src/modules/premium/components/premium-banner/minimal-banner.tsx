@@ -1,3 +1,7 @@
+/**
+ * Minimal premium upgrade banner.
+ * @module
+ */
 import React from 'react';
 import { motion } from 'framer-motion';
 import { SparklesIcon } from '@heroicons/react/24/outline';

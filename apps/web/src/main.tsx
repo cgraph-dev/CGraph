@@ -1,3 +1,7 @@
+/**
+ * Application entry point and root render.
+ * @module
+ */
 // Startup debug logging (only in development)
 // Note: Using console directly here because logger isn't loaded yet
 const debugLog = import.meta.env.DEV

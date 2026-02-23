@@ -1,3 +1,7 @@
+/**
+ * Security settings panel.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/modules/auth/store';
 import { GlassCard } from '@/shared/components/ui';

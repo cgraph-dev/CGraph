@@ -1,3 +1,7 @@
+/**
+ * User's marketplace listings section.
+ * @module
+ */
 import { useEffect } from 'react';
 import { useMarketplaceStore } from '@/modules/gamification/store';
 import { ITEM_TYPE_LABELS } from './types';

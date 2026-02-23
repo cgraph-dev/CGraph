@@ -1,3 +1,7 @@
+/**
+ * Chat bubble color settings tab.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import type { TabProps } from './types';

@@ -1,3 +1,7 @@
+/**
+ * RSS feed link display component.
+ * @module
+ */
 import React from 'react';
 import {
   RssIcon,

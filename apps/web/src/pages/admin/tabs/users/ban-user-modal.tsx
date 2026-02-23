@@ -1,3 +1,7 @@
+/**
+ * Ban user confirmation modal.
+ * @module
+ */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { AdminUser } from '@/types/admin.types';

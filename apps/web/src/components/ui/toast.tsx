@@ -1,3 +1,7 @@
+/**
+ * Toast notification component.
+ * @module
+ */
 import { create } from 'zustand';
 import { motion, AnimatePresence } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';

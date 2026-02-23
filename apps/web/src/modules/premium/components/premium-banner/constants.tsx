@@ -1,3 +1,7 @@
+/**
+ * Premium banner constant definitions.
+ * @module
+ */
 import { BoltIcon, SparklesIcon, RocketLaunchIcon, GiftIcon } from '@heroicons/react/24/outline';
 
 export const ANIMATED_FEATURES = [

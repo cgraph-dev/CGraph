@@ -1,3 +1,7 @@
+/**
+ * Hook for achievement statistics computation.
+ * @module
+ */
 import { useMemo } from 'react';
 import type { Achievement, AchievementRarity } from './types';
 import { RARITY_ORDER } from './constants';

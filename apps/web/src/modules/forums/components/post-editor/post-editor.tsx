@@ -1,3 +1,7 @@
+/**
+ * Rich text post editor component.
+ * @module
+ */
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDownIcon, PaperClipIcon } from '@heroicons/react/24/outline';

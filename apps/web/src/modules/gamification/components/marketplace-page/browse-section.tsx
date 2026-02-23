@@ -1,3 +1,7 @@
+/**
+ * Marketplace browse and filter section.
+ * @module
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import {

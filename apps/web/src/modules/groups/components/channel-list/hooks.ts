@@ -1,3 +1,7 @@
+/**
+ * Channel list data fetching hooks.
+ * @module
+ */
 import { useState, useMemo, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useGroupStore } from '@/modules/groups/store';

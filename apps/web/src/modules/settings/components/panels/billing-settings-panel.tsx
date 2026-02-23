@@ -1,3 +1,7 @@
+/**
+ * Billing and subscription settings panel.
+ * @module
+ */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '@/modules/auth/store';

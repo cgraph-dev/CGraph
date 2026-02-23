@@ -1,3 +1,7 @@
+/**
+ * Level progress bar component.
+ * @module
+ */
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SparklesIcon, FireIcon } from '@heroicons/react/24/outline';

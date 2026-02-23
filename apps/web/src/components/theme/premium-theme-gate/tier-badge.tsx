@@ -1,3 +1,7 @@
+/**
+ * Premium tier badge component.
+ * @module
+ */
 import { tierConfig, type PremiumTier } from './tier-config';
 
 export function TierBadge({ tier }: { tier: PremiumTier }) {

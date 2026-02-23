@@ -1,3 +1,7 @@
+/**
+ * Avatar border store type definitions.
+ * @module
+ */
 import type {
   AvatarBorderConfig,
   BorderTheme,

@@ -1,3 +1,7 @@
+/**
+ * Navigation components module exports.
+ * @module
+ */
 // Navigation and interactive controls
 export { default as Tabs, TabPanel } from './tabs';
 export { default as Switch } from './switch';

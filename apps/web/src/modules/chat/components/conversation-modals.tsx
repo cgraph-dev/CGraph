@@ -1,3 +1,7 @@
+/**
+ * Conversation info and settings modals.
+ * @module
+ */
 import { AnimatePresence } from 'framer-motion';
 import { Message } from '@/modules/chat/store';
 import E2EEConnectionTester from '@/modules/chat/components/e2-ee-connection-tester';

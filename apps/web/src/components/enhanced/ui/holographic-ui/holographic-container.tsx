@@ -1,3 +1,7 @@
+/**
+ * Holographic-styled container component.
+ * @module
+ */
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';

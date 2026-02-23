@@ -1,3 +1,7 @@
+/**
+ * Message particle animation effects.
+ * @module
+ */
 import { motion } from 'framer-motion';
 
 interface MessageParticlesProps {

@@ -1,3 +1,7 @@
+/**
+ * Hook for profile editing state.
+ * @module
+ */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';

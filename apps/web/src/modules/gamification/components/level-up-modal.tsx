@@ -1,3 +1,7 @@
+/**
+ * Level up celebration modal component.
+ * @module
+ */
 import { motion, AnimatePresence } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';
 import { SparklesIcon, TrophyIcon, XMarkIcon } from '@heroicons/react/24/outline';

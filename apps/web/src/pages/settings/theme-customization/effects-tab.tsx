@@ -1,3 +1,7 @@
+/**
+ * Visual effects customization tab.
+ * @module
+ */
 import { useThemeStore } from '@/stores/theme';
 import { EFFECT_PRESETS } from './constants';
 import type { AnimationSpeedOption } from './types';

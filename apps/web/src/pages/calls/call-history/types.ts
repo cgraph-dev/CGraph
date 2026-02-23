@@ -1,3 +1,7 @@
+/**
+ * Call history type definitions.
+ * @module
+ */
 export type CallType = 'voice' | 'video';
 export type CallDirection = 'incoming' | 'outgoing' | 'missed';
 

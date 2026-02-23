@@ -1,3 +1,7 @@
+/**
+ * Theme selection switcher component.
+ * @module
+ */
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeRegistry } from '@/themes/theme-registry';

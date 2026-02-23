@@ -1,3 +1,7 @@
+/**
+ * Hook for message input state management.
+ * @module
+ */
 import { useState, useCallback, useRef } from 'react';
 import type { Message } from '@/modules/chat/store';
 

@@ -1,3 +1,7 @@
+/**
+ * Empty state component Storybook story with MSW.
+ * @module
+ */
 import type { Meta, StoryObj } from '@storybook/react';
 import { http, HttpResponse } from 'msw';
 import EmptyState from './feedback/empty-state';

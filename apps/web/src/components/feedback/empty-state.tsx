@@ -1,3 +1,7 @@
+/**
+ * Feedback empty state component.
+ * @module
+ */
 import React from 'react';
 import { motion } from 'framer-motion';
 import { staggerConfigs } from '@/lib/animation-presets/presets';

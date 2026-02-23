@@ -1,3 +1,7 @@
+/**
+ * Collaborative editing module exports.
+ * @module
+ */
 export { PhoenixProvider, getUserColor } from './phoenix-provider';
 export {
   useCollaborativeEditor,

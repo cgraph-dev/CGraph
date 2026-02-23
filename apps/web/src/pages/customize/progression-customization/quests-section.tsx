@@ -1,3 +1,7 @@
+/**
+ * Quests customization section.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import { GlassCard } from '@/shared/components/ui';

@@ -1,3 +1,7 @@
+/**
+ * Main forum board view page component.
+ * @module
+ */
 import { Link } from 'react-router-dom';
 import { ChatBubbleLeftRightIcon, FolderIcon, UserIcon } from '@heroicons/react/24/outline';
 

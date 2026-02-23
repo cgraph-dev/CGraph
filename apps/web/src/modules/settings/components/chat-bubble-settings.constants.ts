@@ -1,3 +1,7 @@
+/**
+ * Chat bubble settings constant definitions.
+ * @module
+ */
 export const CHAT_BUBBLE_PRESETS_UI = [
   { id: 'default', label: 'Default', preview: 'bg-gradient-to-r from-primary-600 to-purple-600' },
   { id: 'minimal', label: 'Minimal', preview: 'bg-dark-900 border border-dark-600' },

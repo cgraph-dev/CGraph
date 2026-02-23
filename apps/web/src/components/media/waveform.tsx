@@ -1,3 +1,7 @@
+/**
+ * Audio waveform visualization component.
+ * @module
+ */
 import { useRef, useEffect, memo } from 'react';
 
 interface WaveformProps {

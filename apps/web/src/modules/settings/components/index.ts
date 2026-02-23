@@ -1,3 +1,7 @@
+/**
+ * Settings components module exports.
+ * @module
+ */
 // Settings Components
 export { AccountSettings } from './account-settings';
 export { default as AppearanceSettingsEnhanced } from './appearance-settings-enhanced';

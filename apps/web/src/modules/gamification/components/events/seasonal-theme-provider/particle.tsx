@@ -1,3 +1,7 @@
+/**
+ * Seasonal particle effect component.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import type { ParticleProps } from './types';
 

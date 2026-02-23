@@ -1,3 +1,7 @@
+/**
+ * Group listing component with search.
+ * @module
+ */
 import { useState, useMemo } from 'react';
 import { Plus, Search, LayoutGrid, List, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

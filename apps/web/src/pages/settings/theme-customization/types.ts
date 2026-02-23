@@ -1,3 +1,7 @@
+/**
+ * Theme customization type definitions.
+ * @module
+ */
 import type {
   ColorPreset,
   AvatarBorderType,

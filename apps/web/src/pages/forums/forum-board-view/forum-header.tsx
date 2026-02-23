@@ -1,3 +1,7 @@
+/**
+ * Forum board header with navigation and info.
+ * @module
+ */
 import { Link } from 'react-router-dom';
 import {
   ArrowUpIcon,

@@ -1,3 +1,7 @@
+/**
+ * Progress bar component.
+ * @module
+ */
 interface ProgressBarProps {
   value: number;
   max?: number;

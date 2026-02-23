@@ -1,3 +1,7 @@
+/**
+ * User forum signature display component.
+ * @module
+ */
 import BBCodeRenderer from '@/components/content/bb-code-renderer';
 
 interface UserSignatureProps {

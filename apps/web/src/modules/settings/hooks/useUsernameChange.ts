@@ -1,3 +1,7 @@
+/**
+ * Hook for username change flow.
+ * @module
+ */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDebounce } from '@/shared/hooks';
 import { createLogger } from '@/lib/logger';

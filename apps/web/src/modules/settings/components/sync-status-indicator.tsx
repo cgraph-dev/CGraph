@@ -1,3 +1,7 @@
+/**
+ * Settings sync status indicator.
+ * @module
+ */
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircleIcon, XCircleIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 

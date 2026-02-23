@@ -1,3 +1,7 @@
+/**
+ * Announcement data fetching actions.
+ * @module
+ */
 import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';
 import { createLogger } from '@/lib/logger';

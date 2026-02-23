@@ -1,3 +1,7 @@
+/**
+ * Seasonal theme provider implementation.
+ * @module
+ */
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { SeasonalTheme, SeasonalThemeContextValue, SeasonalThemeProviderProps } from './types';

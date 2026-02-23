@@ -1,3 +1,7 @@
+/**
+ * Moderation components module exports.
+ * @module
+ */
 // Moderation Components
 export { default as InlineModerationToolbar } from './inline-moderation-toolbar';
 export { default as ReportDialog } from './report-dialog';

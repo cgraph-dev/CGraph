@@ -1,3 +1,7 @@
+/**
+ * User role and status badge component.
+ * @module
+ */
 import { CheckBadgeIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/solid';
 import { ThemedAvatar } from '@/components/theme/themed-avatar';
 import { transitions, hoverEffects } from '@/lib/animations';

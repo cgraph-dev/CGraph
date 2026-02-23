@@ -1,3 +1,7 @@
+/**
+ * Hook for post editor state and operations.
+ * @module
+ */
 import { useState, useRef, useCallback } from 'react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { useAdaptiveInterval } from '@/hooks/useAdaptiveInterval';

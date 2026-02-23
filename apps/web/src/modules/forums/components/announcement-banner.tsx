@@ -1,3 +1,7 @@
+/**
+ * Forum announcement banner component.
+ * @module
+ */
 import React, { useEffect, useState } from 'react';
 import { createLogger } from '@/lib/logger';
 import { useAnnouncementStore, type Announcement } from '@/modules/forums/store';

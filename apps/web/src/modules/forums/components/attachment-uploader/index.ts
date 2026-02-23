@@ -1,3 +1,7 @@
+/**
+ * Forum attachment uploader module exports.
+ * @module
+ */
 export { useAttachmentUploader } from './useAttachmentUploader';
 export {
   Dropzone,

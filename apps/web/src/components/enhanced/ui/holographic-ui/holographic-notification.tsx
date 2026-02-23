@@ -1,3 +1,7 @@
+/**
+ * Holographic-styled notification component.
+ * @module
+ */
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';

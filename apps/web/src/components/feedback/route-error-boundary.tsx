@@ -1,3 +1,7 @@
+/**
+ * Route-level error boundary component.
+ * @module
+ */
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { captureError, addBreadcrumb } from '@/lib/error-tracking';

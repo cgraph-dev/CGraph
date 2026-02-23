@@ -1,3 +1,7 @@
+/**
+ * Border particle system utility functions.
+ * @module
+ */
 export const random = (min: number, max: number) => Math.random() * (max - min) + min;
 
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;

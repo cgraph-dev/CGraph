@@ -1,3 +1,7 @@
+/**
+ * Forum settings management page.
+ * @module
+ */
 import { Link } from 'react-router-dom';
 import { ArrowLeftIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { useForumSettings } from '@/pages/forums/forum-settings/useForumSettings';

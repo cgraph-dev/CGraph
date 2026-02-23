@@ -1,3 +1,7 @@
+/**
+ * Premium tier configuration for theme gating.
+ * @module
+ */
 import { StarIcon } from '@heroicons/react/24/solid';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 

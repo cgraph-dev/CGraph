@@ -1,3 +1,7 @@
+/**
+ * Hook for scheduled messages management.
+ * @module
+ */
 import { useEffect, useState, useMemo } from 'react';
 import { isPast, isToday, isTomorrow, isThisWeek } from 'date-fns';
 import { createLogger } from '@/lib/logger';

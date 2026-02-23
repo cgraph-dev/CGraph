@@ -1,3 +1,7 @@
+/**
+ * Avatar border store implementation.
+ * @module
+ */
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { safeLocalStorage } from '@/lib/safeStorage';

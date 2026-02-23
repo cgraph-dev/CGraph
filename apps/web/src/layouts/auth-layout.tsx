@@ -1,3 +1,7 @@
+/**
+ * Authentication pages layout wrapper.
+ * @module
+ */
 import { ReactNode, memo } from 'react';
 import { motion } from 'framer-motion';
 import { LogoIcon } from '@/components/logo';

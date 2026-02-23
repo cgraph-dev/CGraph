@@ -1,3 +1,7 @@
+/**
+ * Theme-aware chat bubble component.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';

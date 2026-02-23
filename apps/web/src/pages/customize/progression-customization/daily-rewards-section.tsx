@@ -1,3 +1,7 @@
+/**
+ * Daily rewards customization section.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { FireIcon } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';

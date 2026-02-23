@@ -1,3 +1,7 @@
+/**
+ * Theme-aware avatar component.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import type { UserTheme } from '@/stores/theme';

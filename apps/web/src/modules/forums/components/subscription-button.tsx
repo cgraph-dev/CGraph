@@ -1,3 +1,7 @@
+/**
+ * Forum subscription toggle button component.
+ * @module
+ */
 import React from 'react';
 import { Bell, BellOff, Loader2 } from 'lucide-react';
 import {

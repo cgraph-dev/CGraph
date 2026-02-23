@@ -1,3 +1,7 @@
+/**
+ * Border particle system type definitions.
+ * @module
+ */
 import type { ParticleType, ParticleConfig } from '@/types/avatar-borders';
 
 export interface BorderParticleSystemProps {

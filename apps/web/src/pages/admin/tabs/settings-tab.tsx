@@ -1,3 +1,7 @@
+/**
+ * Admin settings tab component.
+ * @module
+ */
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { adminApi } from '@/modules/admin/api';

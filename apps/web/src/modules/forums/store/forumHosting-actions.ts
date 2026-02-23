@@ -1,3 +1,7 @@
+/**
+ * Forum hosting store action creators.
+ * @module
+ */
 import type { StoreApi } from 'zustand';
 import { createLogger } from '@/lib/logger';
 const logger = createLogger('forumHostingStore');

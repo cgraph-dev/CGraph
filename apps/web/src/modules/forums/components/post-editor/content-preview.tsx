@@ -1,3 +1,7 @@
+/**
+ * Post content preview component.
+ * @module
+ */
 import DOMPurify from 'dompurify';
 
 interface ContentPreviewProps {

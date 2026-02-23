@@ -1,3 +1,7 @@
+/**
+ * Hook for browser notification management.
+ * @module
+ */
 import { use } from 'react';
 import {
   NotificationContext,

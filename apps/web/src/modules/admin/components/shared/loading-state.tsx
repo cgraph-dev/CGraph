@@ -1,3 +1,7 @@
+/**
+ * Admin loading state component.
+ * @module
+ */
 export function LoadingState() {
   return (
     <div className="flex items-center justify-center py-12">

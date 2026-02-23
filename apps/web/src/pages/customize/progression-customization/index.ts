@@ -1,3 +1,7 @@
+/**
+ * Progression customization module exports.
+ * @module
+ */
 export type {
   ProgressionCategory,
   Achievement,

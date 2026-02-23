@@ -1,3 +1,7 @@
+/**
+ * Customization page category definitions.
+ * @module
+ */
 import {
   UserCircleIcon,
   PaintBrushIcon,

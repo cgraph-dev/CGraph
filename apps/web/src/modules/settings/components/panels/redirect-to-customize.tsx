@@ -1,3 +1,7 @@
+/**
+ * Redirect component to customization page.
+ * @module
+ */
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';

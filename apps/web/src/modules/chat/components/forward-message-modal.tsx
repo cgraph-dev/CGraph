@@ -1,3 +1,7 @@
+/**
+ * Message forwarding modal dialog.
+ * @module
+ */
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createLogger } from '@/lib/logger';

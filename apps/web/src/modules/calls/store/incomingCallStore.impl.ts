@@ -1,3 +1,7 @@
+/**
+ * Incoming call store implementation.
+ * @module
+ */
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 

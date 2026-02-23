@@ -1,3 +1,7 @@
+/**
+ * Username change confirmation modal.
+ * @module
+ */
 import React from 'react';
 import {
   Dialog,

@@ -1,3 +1,7 @@
+/**
+ * Theme selection and customization tab.
+ * @module
+ */
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';
 import type { ThemeColorPreset } from './types';
 import { THEME_PRESETS } from './constants';

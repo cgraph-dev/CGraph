@@ -1,3 +1,7 @@
+/**
+ * Customization sidebar navigation.
+ * @module
+ */
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { SparklesIcon } from '@heroicons/react/24/outline';

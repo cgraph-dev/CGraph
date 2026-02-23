@@ -1,3 +1,7 @@
+/**
+ * Leaderboards customization section.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import type { LeaderboardsSectionProps } from './types';

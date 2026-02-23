@@ -1,3 +1,7 @@
+/**
+ * Hook for conversation UI state.
+ * @module
+ */
 import { useState, useCallback } from 'react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import type { UIPreferences } from '@/modules/chat/components/message-bubble';

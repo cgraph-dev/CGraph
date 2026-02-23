@@ -1,3 +1,7 @@
+/**
+ * Online status colored indicator dot.
+ * @module
+ */
 import { motion, AnimatePresence } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';
 import {

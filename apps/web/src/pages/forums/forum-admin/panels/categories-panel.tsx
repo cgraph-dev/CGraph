@@ -1,3 +1,7 @@
+/**
+ * Forum admin categories management panel.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import {
   PlusIcon,

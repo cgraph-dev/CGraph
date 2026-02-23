@@ -1,3 +1,7 @@
+/**
+ * Premium theme access gate component.
+ * @module
+ */
 import { type ReactNode, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LockClosedIcon, SparklesIcon } from '@heroicons/react/24/outline';

@@ -1,3 +1,7 @@
+/**
+ * Chat bubble preview demo component.
+ * @module
+ */
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';

@@ -1,3 +1,7 @@
+/**
+ * Styled text area component.
+ * @module
+ */
 import { type Ref, TextareaHTMLAttributes, useState, useEffect, useRef } from 'react';
 
 interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {

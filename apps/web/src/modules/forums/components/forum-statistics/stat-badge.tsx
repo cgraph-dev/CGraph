@@ -1,3 +1,7 @@
+/**
+ * Forum statistics badge component.
+ * @module
+ */
 import type { StatBadgeProps } from '@/modules/forums/components/forum-statistics/forum-statistics.types';
 
 export function StatBadge({ icon, label, value }: StatBadgeProps) {

@@ -1,3 +1,7 @@
+/**
+ * Border particle system preset configurations.
+ * @module
+ */
 import type { ParticleType } from '@/types/avatar-borders';
 import type { ParticlePreset } from './types';
 

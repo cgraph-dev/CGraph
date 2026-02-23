@@ -1,3 +1,7 @@
+/**
+ * Premium bar-style banner component.
+ * @module
+ */
 import React from 'react';
 import { motion } from 'framer-motion';
 import { SparklesIcon, XMarkIcon } from '@heroicons/react/24/outline';

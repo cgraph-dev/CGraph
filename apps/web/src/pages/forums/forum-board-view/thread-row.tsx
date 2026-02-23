@@ -1,3 +1,7 @@
+/**
+ * Individual thread row component in board view.
+ * @module
+ */
 import { Link } from 'react-router-dom';
 import {
   MapPinIcon,

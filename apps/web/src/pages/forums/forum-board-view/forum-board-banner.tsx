@@ -1,3 +1,7 @@
+/**
+ * Forum board banner display component.
+ * @module
+ */
 import { useNavigate } from 'react-router-dom';
 import { CogIcon } from '@heroicons/react/24/outline';
 import {

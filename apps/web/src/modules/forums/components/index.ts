@@ -1,3 +1,7 @@
+/**
+ * Forum components module exports.
+ * @module
+ */
 // Forum Components
 // Complete set of components for forum functionality
 

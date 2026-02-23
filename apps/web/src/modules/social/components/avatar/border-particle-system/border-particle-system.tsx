@@ -1,3 +1,7 @@
+/**
+ * Avatar border particle system renderer.
+ * @module
+ */
 import { memo, useMemo, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';

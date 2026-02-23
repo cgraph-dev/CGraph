@@ -1,3 +1,7 @@
+/**
+ * Online status selection dropdown.
+ * @module
+ */
 import React from 'react';
 import { type OnlineStatus, statusConfig } from './types';
 import { OnlineStatusIndicator } from './online-status-indicator';

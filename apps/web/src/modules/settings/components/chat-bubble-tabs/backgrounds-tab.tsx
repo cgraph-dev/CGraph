@@ -1,3 +1,7 @@
+/**
+ * Chat bubble background settings tab.
+ * @module
+ */
 import React from 'react';
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';

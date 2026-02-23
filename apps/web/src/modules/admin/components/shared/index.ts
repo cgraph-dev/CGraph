@@ -1,3 +1,7 @@
+/**
+ * Admin shared components module exports.
+ * @module
+ */
 export { StatusBadge } from './status-badge';
 export { LoadingState } from './loading-state';
 export { EmptyState } from './admin-empty-state';

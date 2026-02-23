@@ -1,3 +1,7 @@
+/**
+ * Achievement page type definitions.
+ * @module
+ */
 import type {
   AchievementCategory,
   AchievementRarity,

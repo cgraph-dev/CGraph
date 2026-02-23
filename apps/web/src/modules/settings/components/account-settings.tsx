@@ -1,3 +1,7 @@
+/**
+ * Account settings form component.
+ * @module
+ */
 import { useState, useActionState } from 'react';
 import { useAuthStore } from '@/modules/auth/store';
 import { createLogger } from '@/lib/logger';

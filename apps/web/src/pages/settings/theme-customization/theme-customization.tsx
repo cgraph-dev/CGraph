@@ -1,3 +1,7 @@
+/**
+ * Theme customization settings page.
+ * @module
+ */
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useThemeStore, THEME_COLORS } from '@/stores/theme';

@@ -1,3 +1,7 @@
+/**
+ * API client configuration and base utilities.
+ * @module
+ */
 import { AxiosResponse } from 'axios';
 import { createHttpClient, extractApiError, withZod } from '@cgraph/utils';
 import { CircuitBreaker, CircuitOpenError } from '@cgraph/api-client';

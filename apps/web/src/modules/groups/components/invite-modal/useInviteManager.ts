@@ -1,3 +1,7 @@
+/**
+ * Hook for invite management operations.
+ * @module
+ */
 import { useState, useCallback, useEffect } from 'react';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { createLogger } from '@/lib/logger';

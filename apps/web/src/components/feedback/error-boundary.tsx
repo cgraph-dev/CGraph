@@ -1,3 +1,7 @@
+/**
+ * Feedback error boundary component.
+ * @module
+ */
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { captureError, addBreadcrumb } from '@/lib/error-tracking';
 import { createLogger } from '@/lib/logger';

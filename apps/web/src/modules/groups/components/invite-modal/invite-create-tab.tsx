@@ -1,3 +1,7 @@
+/**
+ * Invite link creation tab component.
+ * @module
+ */
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ClockIcon,

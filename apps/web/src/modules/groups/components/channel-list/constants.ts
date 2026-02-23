@@ -1,3 +1,7 @@
+/**
+ * Channel list constant definitions.
+ * @module
+ */
 import {
   HashtagIcon,
   SpeakerWaveIcon,

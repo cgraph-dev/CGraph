@@ -1,3 +1,7 @@
+/**
+ * Social components module exports.
+ * @module
+ */
 // Social Components
 export {
   ProfileLoadingState,

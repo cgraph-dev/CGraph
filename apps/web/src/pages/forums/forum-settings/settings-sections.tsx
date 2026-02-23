@@ -1,3 +1,7 @@
+/**
+ * Forum settings sections UI components.
+ * @module
+ */
 import {
   GlobeAltIcon,
   LockClosedIcon,

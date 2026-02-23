@@ -1,3 +1,7 @@
+/**
+ * Forum admin rules management panel.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';

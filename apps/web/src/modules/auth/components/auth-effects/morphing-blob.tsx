@@ -1,3 +1,7 @@
+/**
+ * Auth page morphing blob animation.
+ * @module
+ */
 import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { prefersReducedMotion, DEFAULT_COLOR, DEFAULT_BLOB_SIZE, BLOB_PATHS } from './constants';

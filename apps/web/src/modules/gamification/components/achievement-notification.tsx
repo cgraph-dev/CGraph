@@ -1,3 +1,7 @@
+/**
+ * Achievement unlock notification component.
+ * @module
+ */
 import { motion, AnimatePresence } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';
 import { TrophyIcon, XMarkIcon, SparklesIcon } from '@heroicons/react/24/outline';

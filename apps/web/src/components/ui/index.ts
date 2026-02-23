@@ -1,3 +1,7 @@
+/**
+ * UI components module exports.
+ * @module
+ */
 // UI Components
 export { default as Avatar, AvatarGroup } from './avatar';
 export {

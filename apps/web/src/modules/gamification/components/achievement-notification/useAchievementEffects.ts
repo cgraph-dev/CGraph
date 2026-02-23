@@ -1,3 +1,7 @@
+/**
+ * Hook for achievement notification effects.
+ * @module
+ */
 import { useEffect, useState } from 'react';
 import confetti from 'canvas-confetti';
 import { HapticFeedback } from '@/lib/animations/animation-engine';

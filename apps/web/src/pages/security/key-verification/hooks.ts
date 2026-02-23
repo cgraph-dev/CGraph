@@ -1,3 +1,7 @@
+/**
+ * E2EE key verification hooks.
+ * @module
+ */
 import { useState, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';

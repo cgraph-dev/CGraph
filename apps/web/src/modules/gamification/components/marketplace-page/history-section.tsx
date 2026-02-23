@@ -1,3 +1,7 @@
+/**
+ * Marketplace transaction history section.
+ * @module
+ */
 import { useEffect } from 'react';
 import { useMarketplaceStore } from '@/modules/gamification/store';
 

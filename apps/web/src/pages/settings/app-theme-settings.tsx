@@ -1,3 +1,7 @@
+/**
+ * Application theme settings page.
+ * @module
+ */
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Palette, Download, Upload, Sparkles } from 'lucide-react';

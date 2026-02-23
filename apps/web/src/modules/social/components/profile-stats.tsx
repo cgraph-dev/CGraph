@@ -1,3 +1,7 @@
+/**
+ * Profile statistics display component.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';
 import {

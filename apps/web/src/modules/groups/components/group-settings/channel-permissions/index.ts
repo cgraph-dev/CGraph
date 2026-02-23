@@ -1,3 +1,7 @@
+/**
+ * Channel permissions settings module exports.
+ * @module
+ */
 export { AddOverrideForm } from './add-override-form';
 export { OverwriteCard } from './overwrite-card';
 export { PermissionRow } from './permission-row';

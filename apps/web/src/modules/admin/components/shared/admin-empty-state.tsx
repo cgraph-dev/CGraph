@@ -1,3 +1,7 @@
+/**
+ * Admin empty state placeholder.
+ * @module
+ */
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 export function EmptyState({ message }: { message: string }) {

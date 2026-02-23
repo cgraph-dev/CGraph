@@ -1,3 +1,7 @@
+/**
+ * Call history page component.
+ * @module
+ */
 import { motion, AnimatePresence } from 'framer-motion';
 import { Phone } from 'lucide-react';
 import { PageContainer } from '@/components/layout';

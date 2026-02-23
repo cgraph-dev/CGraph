@@ -1,3 +1,7 @@
+/**
+ * Enhanced theme context type definitions.
+ * @module
+ */
 import type { Theme, ThemePreferences } from '@/lib/theme/theme-engine';
 
 export interface ThemeContextValue {

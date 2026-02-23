@@ -1,3 +1,7 @@
+/**
+ * Message composition input area.
+ * @module
+ */
 import { useRef, RefObject } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { springs } from '@/lib/animation-presets/presets';

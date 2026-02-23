@@ -1,3 +1,7 @@
+/**
+ * Announcement store implementation.
+ * @module
+ */
 import { create } from 'zustand';
 import type { AnnouncementState } from './announcementStore.types';
 import { createFetchActions } from './announcement-fetch-actions';

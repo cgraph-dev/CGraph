@@ -1,3 +1,7 @@
+/**
+ * Hook for profile action operations.
+ * @module
+ */
 import { useState, useCallback } from 'react';
 import { useFriendStore } from '@/modules/social/store';
 import type { UserProfileData, FriendshipStatus } from '@/types/profile.types';

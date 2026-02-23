@@ -1,3 +1,7 @@
+/**
+ * Main customization page layout.
+ * @module
+ */
 import { useCallback, lazy, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';

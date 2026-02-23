@@ -1,3 +1,7 @@
+/**
+ * Border particle animation definitions.
+ * @module
+ */
 import type { ParticleType } from '@/types/avatar-borders';
 import type { ParticleColors } from './types';
 import { random } from './utils';

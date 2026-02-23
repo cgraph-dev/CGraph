@@ -1,3 +1,7 @@
+/**
+ * Plugin settings store implementation.
+ * @module
+ */
 import { create } from 'zustand';
 import { api } from '@/lib/api';
 import { ensureArray, ensureObject } from '@/lib/apiUtils';

@@ -1,3 +1,7 @@
+/**
+ * Hook for profile theme card effects.
+ * @module
+ */
 import type React from 'react';
 import type { ProfileThemeConfig } from '@/data/profileThemes';
 import { BACKGROUND_ANIMATIONS, PARTICLE_CONFIGS, type ParticleType } from '@/data/profileThemes';

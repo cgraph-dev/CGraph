@@ -1,3 +1,7 @@
+/**
+ * Settings panels module exports.
+ * @module
+ */
 // Settings panels barrel export
 export { SecuritySettingsPanel } from './security-settings-panel';
 export { NotificationSettingsPanel } from './notification-settings-panel';

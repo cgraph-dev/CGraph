@@ -1,3 +1,7 @@
+/**
+ * E2EE verification page component.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import {
   Shield,

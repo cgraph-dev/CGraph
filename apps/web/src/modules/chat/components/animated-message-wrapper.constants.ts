@@ -1,3 +1,7 @@
+/**
+ * Animated message wrapper constants.
+ * @module
+ */
 import { springs, staggerConfigs } from '@/lib/animation-presets/presets';
 
 export const messageVariants = {

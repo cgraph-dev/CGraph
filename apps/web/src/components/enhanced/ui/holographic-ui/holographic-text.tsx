@@ -1,3 +1,7 @@
+/**
+ * Holographic-styled text component.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { getTheme } from './constants';

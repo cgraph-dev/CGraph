@@ -1,3 +1,7 @@
+/**
+ * Form submit button with loading state.
+ * @module
+ */
 import { useFormStatus } from 'react-dom';
 import { Button } from './button';
 

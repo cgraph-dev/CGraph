@@ -1,3 +1,7 @@
+/**
+ * Privacy settings configuration panel.
+ * @module
+ */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSettingsStore } from '@/modules/settings/store';

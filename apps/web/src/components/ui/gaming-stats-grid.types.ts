@@ -1,3 +1,7 @@
+/**
+ * Gaming stats grid type definitions.
+ * @module
+ */
 export interface StatItem {
   label: string;
   value: number | string;

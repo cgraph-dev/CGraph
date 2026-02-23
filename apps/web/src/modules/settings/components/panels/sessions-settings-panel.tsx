@@ -1,3 +1,7 @@
+/**
+ * Active sessions management panel.
+ * @module
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { DevicePhoneMobileIcon, ComputerDesktopIcon, DeviceTabletIcon, GlobeAltIcon } from '@heroicons/react/24/outline';

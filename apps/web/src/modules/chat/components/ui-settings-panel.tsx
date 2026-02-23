@@ -1,3 +1,7 @@
+/**
+ * Chat UI settings panel component.
+ * @module
+ */
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { SparklesIcon } from '@heroicons/react/24/outline';

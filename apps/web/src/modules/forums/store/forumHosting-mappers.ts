@@ -1,3 +1,7 @@
+/**
+ * Forum hosting API response mappers.
+ * @module
+ */
 import type {
   Board,
   Thread,

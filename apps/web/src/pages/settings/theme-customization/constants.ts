@@ -1,3 +1,7 @@
+/**
+ * Theme customization constant definitions.
+ * @module
+ */
 import type {
   TabDefinition,
   PresetOption,

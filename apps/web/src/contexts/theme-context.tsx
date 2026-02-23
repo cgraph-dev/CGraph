@@ -1,3 +1,7 @@
+/**
+ * Theme context provider and consumer.
+ * @module
+ */
 import { createContext, use, useEffect, useState, ReactNode } from 'react';
 
 type Theme = 'dark' | 'light' | 'system';

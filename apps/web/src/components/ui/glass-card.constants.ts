@@ -1,3 +1,7 @@
+/**
+ * Glass card style constant definitions.
+ * @module
+ */
 export const variantStyles = {
   default: {
     background: 'rgba(17, 24, 39, 0.6)',

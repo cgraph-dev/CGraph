@@ -1,3 +1,7 @@
+/**
+ * Hook for video call state and WebRTC management.
+ * @module
+ */
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useWebRTC } from '@/modules/calls/hooks/useWebRTC';
 import { toast } from '@/shared/components/ui';

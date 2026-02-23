@@ -1,3 +1,7 @@
+/**
+ * Animated message wrapper type definitions.
+ * @module
+ */
 import { ReactNode } from 'react';
 
 export interface AnimatedMessageWrapperProps {

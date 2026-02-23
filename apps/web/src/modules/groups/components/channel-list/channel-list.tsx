@@ -1,3 +1,7 @@
+/**
+ * Group channel list component.
+ * @module
+ */
 import { useCallback } from 'react';
 import { AnimatePresence, LayoutGroup } from 'framer-motion';
 import {

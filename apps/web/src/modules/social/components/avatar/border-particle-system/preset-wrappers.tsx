@@ -1,3 +1,7 @@
+/**
+ * Preset particle effect wrapper components.
+ * @module
+ */
 import { memo } from 'react';
 import type { ParticleConfig } from '@/types/avatar-borders';
 import type { BorderParticleSystemProps } from './types';

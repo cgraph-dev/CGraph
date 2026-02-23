@@ -1,3 +1,7 @@
+/**
+ * Hook for schedule message modal state.
+ * @module
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { add, format, isBefore, isAfter, addHours, type Duration } from 'date-fns';
 import { createLogger } from '@/lib/logger';

@@ -1,3 +1,7 @@
+/**
+ * Individual call history item component.
+ * @module
+ */
 import { Phone, Video, PhoneIncoming, PhoneOutgoing, PhoneMissed, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';

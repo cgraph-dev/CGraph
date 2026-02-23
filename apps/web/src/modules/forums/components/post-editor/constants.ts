@@ -1,3 +1,7 @@
+/**
+ * Post editor constant definitions.
+ * @module
+ */
 import {
   BoldIcon,
   ItalicIcon,

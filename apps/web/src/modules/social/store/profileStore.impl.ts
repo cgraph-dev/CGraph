@@ -1,3 +1,7 @@
+/**
+ * Profile store implementation.
+ * @module
+ */
 import { create } from 'zustand';
 
 // Re-export all types from the types file

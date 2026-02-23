@@ -1,3 +1,7 @@
+/**
+ * Notification preferences settings panel.
+ * @module
+ */
 import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useSettingsStore } from '@/modules/settings/store';

@@ -1,3 +1,7 @@
+/**
+ * Thread list component for forum board view.
+ * @module
+ */
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/solid';
 
 import { ThreadRow } from './thread-row';

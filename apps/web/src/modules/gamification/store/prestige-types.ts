@@ -1,3 +1,7 @@
+/**
+ * Prestige system type definitions.
+ * @module
+ */
 // ==================== TYPE DEFINITIONS ====================
 
 export interface PrestigeBonuses {

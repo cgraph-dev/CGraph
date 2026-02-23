@@ -1,3 +1,7 @@
+/**
+ * Channel category grouping component.
+ * @module
+ */
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDownIcon, PlusIcon } from '@heroicons/react/24/outline';

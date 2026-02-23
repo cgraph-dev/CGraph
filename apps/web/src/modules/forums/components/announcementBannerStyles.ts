@@ -1,3 +1,7 @@
+/**
+ * Announcement banner style definitions.
+ * @module
+ */
 import {
   MegaphoneIcon,
   ExclamationTriangleIcon,

@@ -1,3 +1,7 @@
+/**
+ * Marketplace main page component.
+ * @module
+ */
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { MarketplaceTab } from './types';

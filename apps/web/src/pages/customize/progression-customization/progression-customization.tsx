@@ -1,3 +1,7 @@
+/**
+ * Progression system customization page.
+ * @module
+ */
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGamificationStore } from '@/modules/gamification/store';

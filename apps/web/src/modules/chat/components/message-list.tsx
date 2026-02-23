@@ -1,3 +1,7 @@
+/**
+ * Converstion message list with virtualization.
+ * @module
+ */
 import { useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVirtualizer } from '@tanstack/react-virtual';

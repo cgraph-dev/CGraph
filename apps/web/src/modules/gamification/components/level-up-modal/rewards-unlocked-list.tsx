@@ -1,3 +1,7 @@
+/**
+ * Unlocked rewards list display.
+ * @module
+ */
 import { motion, AnimatePresence } from 'framer-motion';
 import { GiftIcon } from '@heroicons/react/24/outline';
 import { StarIcon } from '@heroicons/react/24/solid';

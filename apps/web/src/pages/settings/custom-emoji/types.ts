@@ -1,3 +1,7 @@
+/**
+ * Custom emoji type definitions.
+ * @module
+ */
 export interface CustomEmoji {
   id: string;
   name: string;

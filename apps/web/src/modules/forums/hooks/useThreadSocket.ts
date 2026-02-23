@@ -1,3 +1,7 @@
+/**
+ * Hook for thread real-time socket connection.
+ * @module
+ */
 import { useEffect, useCallback, useState, useRef } from 'react';
 import {
   socketManager,

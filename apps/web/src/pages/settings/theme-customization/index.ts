@@ -1,3 +1,7 @@
+/**
+ * Theme customization module exports.
+ * @module
+ */
 export { default } from './theme-customization';
 export { ThemeTab } from './theme-tab';
 export { AvatarTab } from './avatar-tab';

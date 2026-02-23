@@ -1,3 +1,7 @@
+/**
+ * Profile blocked users and media store actions.
+ * @module
+ */
 import { api } from '@/lib/api';
 import { ensureArray, isRecord } from '@/lib/apiUtils';
 import { createLogger } from '@/lib/logger';

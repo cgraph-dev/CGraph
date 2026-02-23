@@ -1,3 +1,7 @@
+/**
+ * Chat customization panel constants.
+ * @module
+ */
 import type { ChatBubbleStyle, BubbleAnimation } from '@/modules/settings/store/customization';
 
 export const bubbleStyles: { id: ChatBubbleStyle; name: string; icon: string }[] = [

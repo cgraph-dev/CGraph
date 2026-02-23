@@ -1,3 +1,7 @@
+/**
+ * Profile store action creators.
+ * @module
+ */
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';
 import type { StoreApi } from 'zustand';

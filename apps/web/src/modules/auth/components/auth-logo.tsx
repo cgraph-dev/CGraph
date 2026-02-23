@@ -1,3 +1,7 @@
+/**
+ * Auth page logo component.
+ * @module
+ */
 import React from 'react';
 import { motion } from 'framer-motion';
 import { LogoIcon } from '@/components/logo';

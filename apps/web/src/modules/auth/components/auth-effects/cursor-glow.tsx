@@ -1,3 +1,7 @@
+/**
+ * Auth page cursor-following glow effect.
+ * @module
+ */
 import { memo, useEffect } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { prefersReducedMotion, DEFAULT_COLOR, DEFAULT_GLOW_SIZE } from './constants';

@@ -1,3 +1,7 @@
+/**
+ * Badge display component.
+ * @module
+ */
 import { ReactNode } from 'react';
 
 export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'destructive' | 'secondary' | 'outline';

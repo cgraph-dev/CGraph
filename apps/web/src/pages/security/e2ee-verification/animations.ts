@@ -1,3 +1,7 @@
+/**
+ * E2EE verification page animations.
+ * @module
+ */
 import type { Variants } from 'framer-motion';
 
 export const containerVariants: Variants = {

@@ -1,3 +1,7 @@
+/**
+ * Scheduled messages list component.
+ * @module
+ */
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClockIcon, XMarkIcon, CalendarIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';

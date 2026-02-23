@@ -1,3 +1,7 @@
+/**
+ * Marketplace listing detail modal.
+ * @module
+ */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useMarketplaceStore } from '@/modules/gamification/store';

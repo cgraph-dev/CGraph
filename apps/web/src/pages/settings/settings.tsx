@@ -1,3 +1,7 @@
+/**
+ * Main settings page layout.
+ * @module
+ */
 import { useParams, NavLink } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/animation-engine';

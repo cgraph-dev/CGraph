@@ -1,3 +1,7 @@
+/**
+ * Progression customization category definitions.
+ * @module
+ */
 import { TrophyIcon, SparklesIcon, ChartBarIcon, GiftIcon } from '@heroicons/react/24/outline';
 import type { ProgressionCategory } from './types';
 import { MOCK_ACHIEVEMENTS, MOCK_LEADERBOARD, MOCK_QUESTS } from './mock-data';

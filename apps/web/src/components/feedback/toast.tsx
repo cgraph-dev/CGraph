@@ -1,3 +1,7 @@
+/**
+ * Toast notification feedback component.
+ * @module
+ */
 import React, { createContext, use, useState, useCallback, useRef, useEffect } from 'react';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';

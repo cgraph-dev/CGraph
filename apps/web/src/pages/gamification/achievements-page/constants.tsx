@@ -1,3 +1,7 @@
+/**
+ * Achievement page constant definitions.
+ * @module
+ */
 import {
   TrophyIcon,
   SparklesIcon,

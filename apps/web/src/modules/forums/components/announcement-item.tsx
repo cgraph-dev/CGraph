@@ -1,3 +1,7 @@
+/**
+ * Individual announcement item component.
+ * @module
+ */
 import DOMPurify from 'dompurify';
 import { XMarkIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import type { Announcement } from '@/modules/forums/store';

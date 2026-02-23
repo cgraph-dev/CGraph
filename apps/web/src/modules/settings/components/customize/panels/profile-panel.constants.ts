@@ -1,3 +1,7 @@
+/**
+ * Profile customization panel constants.
+ * @module
+ */
 import type { ProfileCardStyle } from '@/modules/settings/store/customization';
 
 export const profileStyles: {

@@ -1,3 +1,7 @@
+/**
+ * Progression stats overview component.
+ * @module
+ */
 import { StarIcon, BoltIcon, FireIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 

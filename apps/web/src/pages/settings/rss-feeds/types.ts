@@ -1,3 +1,7 @@
+/**
+ * RSS feeds type definitions.
+ * @module
+ */
 export interface RSSFeed {
   id: string;
   name: string;

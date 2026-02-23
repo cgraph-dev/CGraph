@@ -1,3 +1,7 @@
+/**
+ * Skeleton loading placeholder component.
+ * @module
+ */
 interface SkeletonProps {
   className?: string;
   variant?: 'text' | 'circular' | 'rectangular';
