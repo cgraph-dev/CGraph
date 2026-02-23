@@ -15,12 +15,14 @@ defmodule CGraphWeb.Plugs.IdempotencyPlug do
   @methods ~w(POST PUT PATCH DELETE)
   @header "idempotency-key"
 
+  @spec init(keyword()) :: keyword()
   def init(opts) do
     %{
       ttl_ms: Keyword.get(opts, :ttl_ms, 10_000)
     }
   end
 
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(%Plug.Conn{method: method} = conn, %{ttl_ms: ttl_ms}) when method in @methods do
     case get_req_header(conn, @header) do
       [] -> conn

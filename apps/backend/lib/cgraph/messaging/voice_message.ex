@@ -138,6 +138,7 @@ defmodule CGraph.Messaging.VoiceMessage do
   @doc """
   Changeset for creating a voice message record.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(voice_message, attrs) do
     voice_message
     |> cast(attrs, [
@@ -210,6 +211,7 @@ defmodule CGraph.Messaging.VoiceMessage do
   @doc """
   List voice messages for a user.
   """
+  @spec list_for_user(Ecto.UUID.t(), keyword()) :: [t()]
   def list_for_user(user_id, opts \\ []) do
     CGraph.Messaging.VoiceMessage.Query.list_for_user(user_id, opts)
   end

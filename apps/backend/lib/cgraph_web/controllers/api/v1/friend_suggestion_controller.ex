@@ -12,6 +12,7 @@ defmodule CGraphWeb.API.V1.FriendSuggestionController do
   Get friend suggestions for the current user.
   Algorithm scores by: mutual_friends * 3 + shared_groups * 2
   """
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, params) do
     user = conn.assigns.current_user
     limit = Map.get(params, "limit", "10") |> String.to_integer() |> min(50)
@@ -38,6 +39,7 @@ defmodule CGraphWeb.API.V1.FriendSuggestionController do
   @doc """
   Dismiss a friend suggestion.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, %{"id" => suggested_user_id}) do
     user = conn.assigns.current_user
 

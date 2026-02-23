@@ -2,11 +2,13 @@ defmodule CGraph.CacheSupervisor do
   @moduledoc "Supervisor for Cachex cache instances including general, session, and token caches."
   use Supervisor
 
+  @spec start_link(keyword()) :: Supervisor.on_start()
   def start_link(init_arg) do
     Supervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
   end
 
   @impl true
+  @spec init(keyword()) :: {:ok, {Supervisor.sup_flags(), [Supervisor.child_spec()]}}
   def init(_init_arg) do
     children = [
       # Start Cachex for local caching with memory bounds

@@ -172,6 +172,7 @@ defmodule CGraph.Webhooks.Endpoints do
   # -- Shared helpers (public for cross-module use) ---------------------------
 
   @doc false
+  @spec event_matches?([String.t()], String.t()) :: boolean()
   def event_matches?(subscribed_events, event_type) do
     Enum.any?(subscribed_events, fn subscribed ->
       subscribed == "*" ||
@@ -181,6 +182,7 @@ defmodule CGraph.Webhooks.Endpoints do
   end
 
   @doc false
+  @spec valid_events() :: [String.t()]
   def valid_events, do: @valid_events
 
   # -- Private ----------------------------------------------------------------

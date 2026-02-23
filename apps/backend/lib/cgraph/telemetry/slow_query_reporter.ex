@@ -84,6 +84,7 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
   # ===========================================================================
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(opts) do
     # Create ETS tables for tracking
     :ets.new(@table, [:named_table, :set, :public])
@@ -112,6 +113,7 @@ defmodule CGraph.Telemetry.SlowQueryReporter do
   end
 
   @impl true
+  @spec handle_info(:generate_report, map()) :: {:noreply, map()}
   def handle_info(:generate_report, state) do
     generate_and_log_report()
     Process.send_after(self(), :generate_report, @report_interval)

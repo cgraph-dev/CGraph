@@ -12,8 +12,10 @@ defmodule CGraphWeb.Plugs.CorrelationId do
 
   @header "x-correlation-id"
 
+  @spec init(keyword()) :: keyword()
   def init(opts), do: opts
 
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, _opts) do
     correlation_id =
       conn

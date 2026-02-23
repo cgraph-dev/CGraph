@@ -227,6 +227,7 @@ defmodule CGraphWeb.API.InputValidation do
         end
       end
   """
+  @spec validator(schema(), keyword()) :: (map() -> validation_result())
   def validator(schema, opts \\ []) do
     fn params -> validate(params, schema, opts) end
   end

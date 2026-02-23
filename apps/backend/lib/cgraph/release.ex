@@ -9,6 +9,7 @@ defmodule CGraph.Release do
 
   @app :cgraph
 
+  @spec migrate() :: :ok
   def migrate do
     load_app()
 
@@ -17,6 +18,7 @@ defmodule CGraph.Release do
     end
   end
 
+  @spec rollback(module(), integer()) :: {:ok, [integer()], [integer()]}
   def rollback(repo, version) do
     load_app()
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))

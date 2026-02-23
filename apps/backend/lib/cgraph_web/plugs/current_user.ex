@@ -4,8 +4,10 @@ defmodule CGraphWeb.Plugs.CurrentUser do
   """
   import Plug.Conn
 
+  @spec init(keyword()) :: keyword()
   def init(opts), do: opts
 
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, _opts) do
     case Guardian.Plug.current_resource(conn) do
       nil -> conn

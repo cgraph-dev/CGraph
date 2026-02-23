@@ -3,6 +3,7 @@ defmodule CGraphWeb.API.V1.ThreadPostJSON do
   JSON rendering for thread posts.
   """
 
+  @spec index(map()) :: map()
   def index(%{posts: posts, meta: meta}) do
     %{
       data: Enum.map(posts, &post_data/1),
@@ -10,6 +11,7 @@ defmodule CGraphWeb.API.V1.ThreadPostJSON do
     }
   end
 
+  @spec show(map()) :: map()
   def show(%{post: post}) do
     %{data: post_data(post)}
   end

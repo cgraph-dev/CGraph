@@ -92,6 +92,7 @@ defmodule CGraphWeb.Plugs.RateLimitPlug do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @spec init(keyword()) :: keyword()
   def init(opts) do
     %{
       scope: Keyword.get(opts, :scope, @default_scope),
@@ -105,6 +106,7 @@ defmodule CGraphWeb.Plugs.RateLimitPlug do
   end
 
   @impl true
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, opts) do
     identifier = extract_identifier(conn, opts.by)
 

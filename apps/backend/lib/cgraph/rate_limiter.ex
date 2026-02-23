@@ -297,6 +297,7 @@ defmodule CGraph.RateLimiter do
   end
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     # Create ETS table
     :ets.new(@ets_table, [:named_table, :public, :set, {:read_concurrency, true}])
@@ -308,6 +309,7 @@ defmodule CGraph.RateLimiter do
   end
 
   @impl true
+  @spec handle_info(:cleanup, map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do
     AccessControl.cleanup_expired()
     schedule_cleanup()
@@ -315,6 +317,7 @@ defmodule CGraph.RateLimiter do
   end
 
   @impl true
+  @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(_msg, state) do
     {:noreply, state}
   end

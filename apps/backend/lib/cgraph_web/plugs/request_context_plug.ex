@@ -60,6 +60,7 @@ defmodule CGraphWeb.Plugs.RequestContext do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @spec init(keyword()) :: keyword()
   def init(opts) do
     %{
       generate_request_id: Keyword.get(opts, :generate_request_id, true),
@@ -69,6 +70,7 @@ defmodule CGraphWeb.Plugs.RequestContext do
   end
 
   @impl true
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, opts) do
     start_time = if opts.timing, do: System.monotonic_time(:microsecond)
 

@@ -305,6 +305,7 @@ defmodule CGraphWeb.PremiumController do
   POST /api/v1/premium/cancel
   Cancel subscription (reverts to free at end of period).
   """
+  @spec cancel(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def cancel(conn, _params) do
     user = conn.assigns.current_user
 
@@ -334,6 +335,7 @@ defmodule CGraphWeb.PremiumController do
   GET /api/v1/premium/features
   Get features available to current user based on subscription.
   """
+  @spec features(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def features(conn, _params) do
     user = conn.assigns.current_user
     features = get_tier_features(user.subscription_tier)

@@ -143,6 +143,7 @@ defmodule CGraph.Notifications.PushService.FcmClient do
   # ============================================================================
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     config = load_config()
 
@@ -161,6 +162,7 @@ defmodule CGraph.Notifications.PushService.FcmClient do
   end
 
   @impl true
+  @spec handle_call({:send, String.t(), map(), keyword()}, GenServer.from(), map()) :: {:reply, {:ok, String.t()} | {:error, atom()}, map()}
   def handle_call({:send, token, payload, opts}, _from, state) do
     state = Auth.ensure_valid_token(state)
 

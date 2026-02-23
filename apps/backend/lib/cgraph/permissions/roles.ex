@@ -120,6 +120,7 @@ defmodule CGraph.Permissions.Roles do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec expand_permissions(map()) :: [atom()]
   def expand_permissions(role_def) do
     direct = role_def.permissions
 
@@ -135,6 +136,7 @@ defmodule CGraph.Permissions.Roles do
   end
 
   @doc false
+  @spec has_inherited_role?([role()], role()) :: boolean()
   def has_inherited_role?(user_roles, target_role) do
     Enum.any?(user_roles, fn role ->
       case Map.get(@roles, role) do

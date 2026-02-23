@@ -3,10 +3,12 @@ defmodule CGraphWeb.API.V1.BoardJSON do
   JSON rendering for boards.
   """
 
+  @spec index(map()) :: map()
   def index(%{boards: boards}) do
     %{data: Enum.map(boards, &board_data/1)}
   end
 
+  @spec show(map()) :: map()
   def show(%{board: board}) do
     %{data: board_data(board)}
   end

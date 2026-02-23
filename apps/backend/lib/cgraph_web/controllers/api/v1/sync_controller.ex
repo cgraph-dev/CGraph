@@ -49,6 +49,7 @@ defmodule CGraphWeb.Controllers.Api.V1.SyncController do
     - tables: comma-separated list of tables to sync
     - schema_version: client schema version (for future migration support)
   """
+  @spec pull(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def pull(conn, params) do
     user = conn.assigns.current_user
     last_pulled_at = parse_timestamp(params["last_pulled_at"])
@@ -75,6 +76,7 @@ defmodule CGraphWeb.Controllers.Api.V1.SyncController do
   Processes creates/updates/deletes per table within a single Ecto.Multi
   transaction for atomicity.
   """
+  @spec push(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def push(conn, %{"changes" => changes} = _params) do
     user = conn.assigns.current_user
 

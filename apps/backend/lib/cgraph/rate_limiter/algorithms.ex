@@ -14,6 +14,7 @@ defmodule CGraph.RateLimiter.Algorithms do
   @doc """
   Check if request is allowed using the configured algorithm.
   """
+  @spec check(String.t(), map()) :: :ok | {:error, :rate_limited, map()}
   def check(key, config) do
     case config.algorithm do
       :token_bucket -> check_token_bucket(key, config)
@@ -26,6 +27,7 @@ defmodule CGraph.RateLimiter.Algorithms do
   @doc """
   Get current rate limit status without consuming a request.
   """
+  @spec status(String.t(), map()) :: map()
   def status(key, config) do
     case config.algorithm do
       :token_bucket -> token_bucket_status(key, config)

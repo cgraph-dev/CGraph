@@ -23,6 +23,7 @@ defmodule CGraphWeb.API.V1.AccountDeletionController do
   Requires password confirmation.
   Soft-deletes the account and schedules hard-delete after grace period.
   """
+  @spec create(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def create(conn, %{"password" => password}) do
     user = conn.assigns.current_user
 
@@ -43,6 +44,7 @@ defmodule CGraphWeb.API.V1.AccountDeletionController do
   Cancel a pending account deletion.
   Only works within the grace period.
   """
+  @spec delete(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def delete(conn, _params) do
     user = conn.assigns.current_user
 

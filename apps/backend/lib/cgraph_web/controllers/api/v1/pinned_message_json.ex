@@ -4,10 +4,12 @@ defmodule CGraphWeb.API.V1.PinnedMessageJSON do
   """
   alias CGraph.Groups.PinnedMessage
 
+  @spec index(map()) :: map()
   def index(%{pinned_messages: pinned_messages}) do
     %{data: Enum.map(pinned_messages, &pinned_message_data/1)}
   end
 
+  @spec show(map()) :: map()
   def show(%{pinned_message: pinned_message}) do
     %{data: pinned_message_data(pinned_message)}
   end

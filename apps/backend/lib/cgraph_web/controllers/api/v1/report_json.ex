@@ -8,6 +8,7 @@ defmodule CGraphWeb.API.V1.ReportJSON do
   @doc """
   Renders a list of reports.
   """
+  @spec index(map()) :: map()
   def index(%{reports: {reports, _meta}}) when is_list(reports) do
     %{data: for(report <- reports, do: data(report))}
   end
@@ -19,6 +20,7 @@ defmodule CGraphWeb.API.V1.ReportJSON do
   @doc """
   Renders a single report.
   """
+  @spec show(map()) :: map()
   def show(%{report: report}) do
     %{data: data(report)}
   end

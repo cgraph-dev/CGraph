@@ -28,6 +28,7 @@ defmodule CGraphWeb.Plugs.AuditLogPlug do
   require Logger
 
   @impl Plug
+  @spec init(keyword()) :: keyword()
   def init(opts) do
     %{
       category: Keyword.get(opts, :category, :general),
@@ -38,6 +39,7 @@ defmodule CGraphWeb.Plugs.AuditLogPlug do
   end
 
   @impl Plug
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, opts) do
     conn = Plug.Conn.put_private(conn, :cgraph_request_start, System.monotonic_time(:millisecond))
 

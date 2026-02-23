@@ -59,6 +59,7 @@ defmodule CGraphWeb.API.V1.GifController do
   }
   ```
   """
+  @spec search(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def search(conn, %{"q" => query} = params) do
     limit = min(String.to_integer(params["limit"] || "#{@default_limit}"), 50)
     pos = params["pos"]
@@ -94,6 +95,7 @@ defmodule CGraphWeb.API.V1.GifController do
   - `limit` - Number of results (default: 30, max: 50)
   - `pos` - Pagination position (optional)
   """
+  @spec trending(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def trending(conn, params) do
     limit = min(String.to_integer(params["limit"] || "#{@default_limit}"), 50)
     pos = params["pos"]

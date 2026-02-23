@@ -6,6 +6,7 @@ defmodule CGraphWeb.API.V1.ChannelMessageJSON do
 
   alias CGraphWeb.API.V1.MessageJSON
 
+  @spec index(map()) :: map()
   def index(%{messages: messages, meta: meta}) do
     %{
       data: Enum.map(messages, &MessageJSON.message_data/1),
@@ -13,6 +14,7 @@ defmodule CGraphWeb.API.V1.ChannelMessageJSON do
     }
   end
 
+  @spec show(map()) :: map()
   def show(%{message: message}) do
     %{data: MessageJSON.message_data(message)}
   end

@@ -32,6 +32,7 @@ defmodule CGraph.Webhooks.Endpoint do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(endpoint, attrs) do
     endpoint
     |> cast(attrs, [:id, :url, :secret, :events, :active, :metadata, :failure_count, :description])
@@ -42,6 +43,7 @@ defmodule CGraph.Webhooks.Endpoint do
   end
 
   @doc "Returns the endpoint with secret masked (last 4 chars visible)."
+  @spec sanitize(%__MODULE__{}) :: map()
   def sanitize(%__MODULE__{} = endpoint) do
     %{
       id: endpoint.id,

@@ -59,6 +59,7 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
   alias CGraph.WebRTC
 
   @impl true
+  @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("webrtc:lobby", _params, socket) do
     user_id = socket.assigns.user_id
     Logger.info("webrtc_lobby_joined", user_id: user_id)
@@ -79,6 +80,7 @@ defmodule CGraphWeb.WebRTCLobbyChannel do
   - `{:error, reason}` if creation fails
   """
   @impl true
+  @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:reply, {:ok, map()} | {:error, map()}, Phoenix.Socket.t()} | {:noreply, Phoenix.Socket.t()}
   def handle_in("create_room", params, socket) do
     user_id = socket.assigns.user_id
     target_ids = params["target_ids"] || params["target_user_ids"] || []

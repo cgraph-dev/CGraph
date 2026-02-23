@@ -44,9 +44,11 @@ defmodule CGraphWeb.Plugs.GeoRouter do
   @write_methods ~w(POST PUT PATCH DELETE)
 
   @impl true
+  @spec init(keyword()) :: keyword()
   def init(opts), do: opts
 
   @impl true
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, _opts) do
     current_region = System.get_env("CGRAPH_REGION")
     primary_region = System.get_env("CGRAPH_PRIMARY_REGION")

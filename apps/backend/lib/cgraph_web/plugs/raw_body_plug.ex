@@ -20,9 +20,11 @@ defmodule CGraphWeb.Plugs.RawBodyPlug do
   @behaviour Plug
 
   @impl true
+  @spec init(keyword()) :: keyword()
   def init(opts), do: opts
 
   @impl true
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, _opts) do
     # Only cache body for webhook paths that need signature verification
     if should_cache_body?(conn.request_path) do

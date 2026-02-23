@@ -78,6 +78,7 @@ defmodule CGraphWeb.Plugs.ApiVersion do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @spec init(keyword()) :: keyword()
   def init(opts) do
     %{
       version: Keyword.get(opts, :version),
@@ -88,6 +89,7 @@ defmodule CGraphWeb.Plugs.ApiVersion do
   end
 
   @impl true
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   def call(conn, opts) do
     case resolve_version(conn, opts) do
       {:ok, version} ->

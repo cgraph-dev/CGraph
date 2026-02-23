@@ -210,6 +210,7 @@ defmodule CGraph.RateLimiter.Distributed do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @spec init(keyword()) :: {:ok, map()}
   def init(_opts) do
     # Create fallback ETS table
     :ets.new(@ets_fallback_table, [
@@ -230,6 +231,7 @@ defmodule CGraph.RateLimiter.Distributed do
   end
 
   @impl true
+  @spec handle_info(:cleanup, map()) :: {:noreply, map()}
   def handle_info(:cleanup, state) do
     EtsFallback.cleanup()
     schedule_cleanup()
@@ -237,6 +239,7 @@ defmodule CGraph.RateLimiter.Distributed do
   end
 
   @impl true
+  @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(_msg, state) do
     {:noreply, state}
   end

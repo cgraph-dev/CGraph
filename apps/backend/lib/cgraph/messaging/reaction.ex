@@ -47,6 +47,7 @@ defmodule CGraph.Messaging.Reaction do
   @doc """
   Add a reaction.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(reaction, attrs) do
     reaction
     |> cast(attrs, [:emoji, :message_id, :user_id])
@@ -60,5 +61,6 @@ defmodule CGraph.Messaging.Reaction do
   @doc """
   Returns the list of allowed emoji.
   """
+  @spec allowed_emoji() :: [String.t()]
   def allowed_emoji, do: @allowed_emoji
 end

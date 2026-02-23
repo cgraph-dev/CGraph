@@ -48,6 +48,7 @@ defmodule CGraph.Messaging.DeliveryReceipt do
     timestamps(updated_at: false)
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(receipt, attrs) do
     receipt
     |> cast(attrs, [:message_id, :recipient_id, :status, :delivered_at, :device_id, :platform, :failure_reason])
@@ -59,6 +60,7 @@ defmodule CGraph.Messaging.DeliveryReceipt do
     |> foreign_key_constraint(:recipient_id)
   end
 
+  @spec mark_delivered_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def mark_delivered_changeset(receipt) do
     receipt
     |> change(%{
