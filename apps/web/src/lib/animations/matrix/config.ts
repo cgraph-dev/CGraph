@@ -9,15 +9,35 @@
  * @author CGraph Development Team
  */
 
-import type {
-  MatrixConfig,
-  PerformanceConfig,
-  CharacterSetConfig,
-  ColumnConfig,
-  EffectsConfig,
-  FontConfig,
-} from './types';
-import { MATRIX_GREEN } from './themes';
+import type { MatrixConfig } from './types';
+import { DEFAULT_CONFIG } from './config-defaults';
+import { CONFIG_PRESETS, type ConfigPresetName } from './config-presets';
+
+// =============================================================================
+// RE-EXPORTS — preserve public API surface
+// =============================================================================
+
+export {
+  DEFAULT_PERFORMANCE,
+  DEFAULT_CHARACTERS,
+  DEFAULT_COLUMNS,
+  DEFAULT_EFFECTS,
+  DEFAULT_FONT,
+  DEFAULT_CONFIG,
+} from './config-defaults';
+
+export {
+  PRESET_HIGH_QUALITY,
+  PRESET_POWER_SAVER,
+  PRESET_MINIMAL,
+  PRESET_INTENSE,
+  CONFIG_PRESETS,
+  type ConfigPresetName,
+} from './config-presets';
+
+// =============================================================================
+// TYPES
+// =============================================================================
 
 /**
  * Deep partial type for nested configuration updates
@@ -25,334 +45,6 @@ import { MATRIX_GREEN } from './themes';
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
 };
-
-// =============================================================================
-// DEFAULT CONFIGURATIONS
-// =============================================================================
-
-/**
- * Default performance settings
- * Optimized for smooth 60fps on modern devices with adaptive quality
- */
-export const DEFAULT_PERFORMANCE: PerformanceConfig = {
-  targetFPS: 60,
-  maxColumns: 180, // Increased for denser effect
-  useWebGL: false, // Canvas 2D is more reliable
-  useOffscreenCanvas: false,
-  adaptiveQuality: true,
-  allowFrameSkip: true,
-  maxFrameSkip: 2, // Less aggressive frame skipping
-  throttleOnBlur: true,
-  throttledFPS: 15, // Slightly higher when throttled
-};
-
-/**
- * Default character settings
- * Classic Matrix-style Katakana with faster periodic changes for cipher effect
- */
-export const DEFAULT_CHARACTERS: CharacterSetConfig = {
-  type: 'katakana',
-  includeNumbers: true,
-  includeSymbols: false,
-  changeFrequency: 0.12, // Higher for more active cipher morphing
-  minChangeInterval: 2, // Faster cycling
-  maxChangeInterval: 8, // Faster max interval
-};
-
-/**
- * Default column behavior
- * Fast-falling columns for authentic Matrix rain effect with higher density
- */
-export const DEFAULT_COLUMNS: ColumnConfig = {
-  minSpeed: 6, // Faster minimum
-  maxSpeed: 18, // Much faster maximum
-  minLength: 10, // Longer minimum trails
-  maxLength: 35, // Longer maximum trails
-  density: 0.85, // Higher density
-  spacing: 14, // Tighter spacing for more columns
-  randomizeStart: true,
-  staggerStart: true,
-  staggerDelay: 20, // Faster stagger
-  respawnRate: 0.08, // More frequent respawns
-  minRespawnDelay: 0,
-  maxRespawnDelay: 40, // Much faster respawn
-};
-
-/**
- * Default visual effects
- * Enhanced effects for authentic Matrix look with glow and depth
- */
-export const DEFAULT_EFFECTS: EffectsConfig = {
-  enableDepth: true,
-  depthLayers: 4, // More depth layers
-  trailFade: 0.92, // Longer trails
-  backgroundFade: 0.035, // Subtle background fade
-  enableBloom: true,
-  bloomIntensity: 0.8, // Strong bloom
-  enableScanlines: false,
-  scanlineOpacity: 0.03,
-  enableCRTEffect: false,
-  crtStrength: 0.1,
-  enableVignette: true,
-  vignetteIntensity: 0.22,
-  blendMode: 'source-over',
-  speedMultiplier: 1.2, // Global speed boost
-};
-
-/**
- * Default font configuration
- * Monospace font with smaller characters for authentic Matrix look
- */
-export const DEFAULT_FONT: FontConfig = {
-  family: 'JetBrains Mono, Fira Code, Consolas, Monaco, monospace',
-  baseSize: 14, // Smaller for dense Matrix effect
-  minSize: 10,
-  maxSize: 18,
-  weight: 'bold', // Bold weight for better visibility with glow
-  letterSpacing: 0,
-  sizeVariation: true,
-};
-
-/**
- * Complete default configuration
- */
-export const DEFAULT_CONFIG: MatrixConfig = {
-  version: '2.0.0',
-  name: 'default',
-  theme: MATRIX_GREEN,
-  performance: DEFAULT_PERFORMANCE,
-  characters: DEFAULT_CHARACTERS,
-  columns: DEFAULT_COLUMNS,
-  effects: DEFAULT_EFFECTS,
-  font: DEFAULT_FONT,
-  responsive: {
-    mobile: {
-      performance: {
-        targetFPS: 50, // Higher FPS for smoother mobile
-        maxColumns: 60, // More columns on mobile
-      },
-      columns: {
-        density: 0.7,
-        spacing: 16,
-        minSpeed: 5,
-        maxSpeed: 14,
-        minLength: 8,
-        maxLength: 25,
-      },
-      effects: {
-        depthLayers: 2, // Reduced layers for performance
-        enableBloom: true, // Keep glow!
-        bloomIntensity: 0.7,
-        enableVignette: true,
-        speedMultiplier: 1.1,
-      },
-      font: {
-        baseSize: 12,
-      },
-    },
-    tablet: {
-      performance: {
-        targetFPS: 55,
-        maxColumns: 100,
-      },
-      columns: {
-        density: 0.75,
-        spacing: 15,
-        minSpeed: 6,
-        maxSpeed: 16,
-      },
-      effects: {
-        depthLayers: 3,
-        enableBloom: true,
-        bloomIntensity: 0.75,
-        speedMultiplier: 1.15,
-      },
-      font: {
-        baseSize: 13,
-      },
-    },
-    desktop: {
-      // Uses default configuration - maximum quality
-    },
-  },
-  debug: {
-    showFPS: false,
-    showColumnCount: false,
-    logPerformance: false,
-    highlightColumns: false,
-  },
-};
-
-// =============================================================================
-// CONFIGURATION PRESETS
-// =============================================================================
-
-/**
- * High performance preset - Maximum visual quality
- */
-export const PRESET_HIGH_QUALITY: Partial<MatrixConfig> = {
-  name: 'high-quality',
-  performance: {
-    ...DEFAULT_PERFORMANCE,
-    targetFPS: 60,
-    maxColumns: 220, // Even more columns
-    adaptiveQuality: false,
-  },
-  columns: {
-    ...DEFAULT_COLUMNS,
-    density: 0.95,
-    spacing: 12,
-    minSpeed: 7,
-    maxSpeed: 20,
-  },
-  effects: {
-    ...DEFAULT_EFFECTS,
-    depthLayers: 5,
-    enableBloom: true,
-    bloomIntensity: 0.85,
-    enableVignette: true,
-    vignetteIntensity: 0.35,
-    enableScanlines: true,
-    scanlineOpacity: 0.02,
-    speedMultiplier: 1.3,
-  },
-  font: {
-    ...DEFAULT_FONT,
-    baseSize: 13,
-    sizeVariation: true,
-  },
-};
-
-/**
- * Power saver preset - Optimized for auth pages with smooth animation
- * Balances visual quality with performance for all devices
- */
-export const PRESET_POWER_SAVER: Partial<MatrixConfig> = {
-  name: 'power-saver',
-  performance: {
-    ...DEFAULT_PERFORMANCE,
-    targetFPS: 50, // Higher for smoother animation
-    maxColumns: 80, // More columns
-    adaptiveQuality: true,
-    throttleOnBlur: true,
-    throttledFPS: 15,
-  },
-  columns: {
-    ...DEFAULT_COLUMNS,
-    density: 0.7,
-    spacing: 16,
-    minSpeed: 6, // Fast falling
-    maxSpeed: 16, // Fast falling
-    minLength: 8,
-    maxLength: 25,
-  },
-  effects: {
-    ...DEFAULT_EFFECTS,
-    depthLayers: 3,
-    enableBloom: true,
-    bloomIntensity: 0.75,
-    enableVignette: true,
-    vignetteIntensity: 0.2,
-    enableScanlines: false,
-    enableCRTEffect: false,
-    trailFade: 0.9, // Longer trails
-  },
-  font: {
-    ...DEFAULT_FONT,
-    baseSize: 14,
-    minSize: 11,
-    maxSize: 17,
-    sizeVariation: true,
-  },
-};
-
-/**
- * Minimal preset - Subtle background effect
- */
-export const PRESET_MINIMAL: Partial<MatrixConfig> = {
-  name: 'minimal',
-  performance: {
-    ...DEFAULT_PERFORMANCE,
-    targetFPS: 40,
-    maxColumns: 50,
-  },
-  columns: {
-    ...DEFAULT_COLUMNS,
-    density: 0.5,
-    spacing: 22,
-    minSpeed: 3,
-    maxSpeed: 8,
-  },
-  effects: {
-    ...DEFAULT_EFFECTS,
-    depthLayers: 2,
-    enableBloom: true,
-    bloomIntensity: 0.5,
-    enableVignette: true,
-    vignetteIntensity: 0.2,
-    trailFade: 0.9,
-    backgroundFade: 0.03,
-    speedMultiplier: 0.8,
-  },
-  font: {
-    ...DEFAULT_FONT,
-    baseSize: 14,
-  },
-};
-
-/**
- * Intense preset - Maximum density and effects with cipher animation
- */
-export const PRESET_INTENSE: Partial<MatrixConfig> = {
-  name: 'intense',
-  performance: {
-    ...DEFAULT_PERFORMANCE,
-    targetFPS: 60,
-    maxColumns: 280, // Maximum columns
-  },
-  columns: {
-    ...DEFAULT_COLUMNS,
-    density: 1,
-    spacing: 10, // Very tight spacing
-    minSpeed: 8,
-    maxSpeed: 24, // Very fast
-    minLength: 12,
-    maxLength: 40,
-  },
-  characters: {
-    ...DEFAULT_CHARACTERS,
-    changeFrequency: 0.18, // Very active morphing
-    minChangeInterval: 1,
-    maxChangeInterval: 5,
-  },
-  effects: {
-    ...DEFAULT_EFFECTS,
-    depthLayers: 5,
-    enableBloom: true,
-    bloomIntensity: 1,
-    enableVignette: true,
-    vignetteIntensity: 0.4,
-    trailFade: 0.95,
-    speedMultiplier: 1.5, // Maximum speed
-  },
-  font: {
-    ...DEFAULT_FONT,
-    baseSize: 11,
-  },
-};
-
-/**
- * All available presets
- */
-export const CONFIG_PRESETS = {
-  default: DEFAULT_CONFIG,
-  'high-quality': PRESET_HIGH_QUALITY,
-  'power-saver': PRESET_POWER_SAVER,
-  minimal: PRESET_MINIMAL,
-  intense: PRESET_INTENSE,
-} as const;
-
-export type ConfigPresetName = keyof typeof CONFIG_PRESETS;
 
 // =============================================================================
 // CONFIGURATION UTILITIES

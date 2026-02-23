@@ -34,21 +34,19 @@ import {
   leaveGroupChannel as leaveGroupChannelImpl,
 } from './groupChannel';
 import {
-  joinForum as joinForumImpl,
-  leaveForum as leaveForumImpl,
-  subscribeToForum as subscribeToForumImpl,
-  unsubscribeFromForum as unsubscribeFromForumImpl,
-} from './forumChannel';
-import {
-  joinThread as joinThreadImpl,
-  leaveThread as leaveThreadImpl,
-  voteOnThread as voteOnThreadImpl,
-  voteOnComment as voteOnCommentImpl,
-  sendComment as sendCommentImpl,
-  sendThreadTyping as sendThreadTypingImpl,
-  voteOnPoll as voteOnPollImpl,
-  getThreadViewers as getThreadViewersImpl,
-} from './threadChannel';
+  joinForum as joinForumFT,
+  leaveForum as leaveForumFT,
+  subscribeToForum as subscribeToForumFT,
+  unsubscribeFromForum as unsubscribeFromForumFT,
+  joinThread as joinThreadFT,
+  leaveThread as leaveThreadFT,
+  voteOnThread as voteOnThreadFT,
+  voteOnComment as voteOnCommentFT,
+  sendComment as sendCommentFT,
+  sendThreadTyping as sendThreadTypingFT,
+  voteOnPoll as voteOnPollFT,
+  getThreadViewers as getThreadViewersFT,
+} from './socket-manager-forum-thread';
 import type {
   ForumChannelCallbacks,
   ThreadChannelCallbacks,
@@ -56,7 +54,7 @@ import type {
   CommentVotePayload,
   ThreadViewerPayload,
   ThreadPollData,
-} from './types';
+} from './socket-manager-forum-thread';
 
 export class SocketManager {
   private state: SocketManagerState = {
@@ -224,95 +222,51 @@ export class SocketManager {
   }
 
   joinForum(forumId: string, callbacks?: ForumChannelCallbacks): Channel | null {
-    return joinForumImpl(
-      this.socket,
-      forumId,
-      {
-        channels: this.channels,
-        presences: this.presences,
-        channelHandlersSetUp: this.channelHandlersSetUp,
-      },
-      this.forumCallbacks,
-      callbacks
-    );
+    return joinForumFT(this.state, forumId, callbacks);
   }
 
   leaveForum(forumId: string) {
-    leaveForumImpl(
-      forumId,
-      {
-        channels: this.channels,
-        presences: this.presences,
-        channelHandlersSetUp: this.channelHandlersSetUp,
-      },
-      this.forumCallbacks
-    );
+    leaveForumFT(this.state, forumId);
   }
 
   subscribeToForum(forumId: string): Promise<{ subscribed: boolean }> {
-    return subscribeToForumImpl(forumId, this.channels);
+    return subscribeToForumFT(this.state, forumId);
   }
 
   unsubscribeFromForum(forumId: string): Promise<{ subscribed: boolean }> {
-    return unsubscribeFromForumImpl(forumId, this.channels);
+    return unsubscribeFromForumFT(this.state, forumId);
   }
 
   joinThread(threadId: string, callbacks?: ThreadChannelCallbacks): Channel | null {
-    return joinThreadImpl(
-      this.socket,
-      threadId,
-      {
-        channels: this.channels,
-        presences: this.presences,
-        channelHandlersSetUp: this.channelHandlersSetUp,
-      },
-      this.threadCallbacks,
-      callbacks
-    );
+    return joinThreadFT(this.state, threadId, callbacks);
   }
 
   leaveThread(threadId: string) {
-    leaveThreadImpl(
-      threadId,
-      {
-        channels: this.channels,
-        presences: this.presences,
-        channelHandlersSetUp: this.channelHandlersSetUp,
-      },
-      this.threadCallbacks
-    );
+    leaveThreadFT(this.state, threadId);
   }
 
   voteOnThread(threadId: string, value: 1 | -1 | 0): Promise<ThreadVotePayload> {
-    return voteOnThreadImpl(threadId, value, this.channels);
+    return voteOnThreadFT(this.state, threadId, value);
   }
 
-  voteOnComment(
-    threadId: string,
-    commentId: string,
-    value: 1 | -1 | 0
-  ): Promise<CommentVotePayload> {
-    return voteOnCommentImpl(threadId, commentId, value, this.channels);
+  voteOnComment(threadId: string, commentId: string, value: 1 | -1 | 0): Promise<CommentVotePayload> {
+    return voteOnCommentFT(this.state, threadId, commentId, value);
   }
 
-  sendComment(
-    threadId: string,
-    content: string,
-    parentId?: string
-  ): Promise<{ comment_id: string }> {
-    return sendCommentImpl(threadId, content, this.channels, parentId);
+  sendComment(threadId: string, content: string, parentId?: string): Promise<{ comment_id: string }> {
+    return sendCommentFT(this.state, threadId, content, parentId);
   }
 
   sendThreadTyping(threadId: string, isTyping: boolean) {
-    sendThreadTypingImpl(threadId, isTyping, this.channels);
+    sendThreadTypingFT(this.state, threadId, isTyping);
   }
 
   voteOnPoll(threadId: string, optionId: string): Promise<{ poll: ThreadPollData }> {
-    return voteOnPollImpl(threadId, optionId, this.channels);
+    return voteOnPollFT(this.state, threadId, optionId);
   }
 
   getThreadViewers(threadId: string): Promise<{ viewers: ThreadViewerPayload[] }> {
-    return getThreadViewersImpl(threadId, this.channels);
+    return getThreadViewersFT(this.state, threadId);
   }
 
   sendTyping(topic: string, isTyping: boolean) {
