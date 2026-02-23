@@ -319,35 +319,35 @@ All other previously listed controllers are now under 500 lines.
 
 ### Rule 9: Testing Requirements — FAIL
 
-| Metric                    | Current | Target       | Gap               |
-| ------------------------- | ------- | ------------ | ----------------- |
-| Web components (non-test) | 1,207   | —            | —                 |
-| Web test files            | 244     | ~1,207 (1:1) | **~963 missing**  |
-| Web test coverage ratio   | ~20.2%  | 100%         | ~79.8%            |
-| Mobile test files         | 25      | —            | Needs assessment  |
-| Backend test files        | 171     | —            | Likely sufficient |
+| Metric                    | Current | Target       | Gap                |
+| ------------------------- | ------- | ------------ | ------------------ |
+| Web components (non-test) | 2,229   | —            | —                  |
+| Web test files            | 263     | ~2,229 (1:1) | **~1,966 missing** |
+| Web test coverage ratio   | ~11.8%  | 100%         | ~88.2%             |
+| Mobile test files         | 25      | —            | Needs assessment   |
+| Backend test files        | 171     | —            | Likely sufficient  |
 
 **Module Test Coverage** (exact audit — February 23, 2026):
 
 | Module       | Tests | Components | Ratio | Gap |
 | ------------ | ----- | ---------- | ----- | --- |
 | chat         | 28    | 115        | 24.3% | 87  |
-| forums       | 15    | 133        | 11.3% | 118 |
-| gamification | 12    | 99         | 12.1% | 87  |
+| forums       | 19    | 133        | 14.3% | 114 |
+| gamification | 21    | 99         | 21.2% | 78  |
 | social       | 8     | 39         | 20.5% | 31  |
-| settings     | 8     | 116        | 6.9%  | 108 |
+| settings     | 13    | 116        | 11.2% | 103 |
 | auth         | 9     | 19         | 47.4% | 10  |
-| groups       | 6     | 53         | 11.3% | 47  |
+| groups       | 7     | 53         | 13.2% | 46  |
 | moderation   | 4     | 8          | 50.0% | 4   |
 | calls        | 4     | 7          | 57.1% | 3   |
 | premium      | 4     | 21         | 19.0% | 17  |
 | search       | 4     | 10         | 40.0% | 6   |
-| admin        | 4     | 29         | 13.8% | 25  |
+| admin        | 8     | 29         | 27.6% | 21  |
 | shared       | 4     | —          | —     | —   |
 | pages        | 3     | —          | —     | —   |
 
-> **Module-only ratio**: 106 tests / 649 module components = **16.3%** **Web-wide ratio**: 244 tests
-> / 1,207 non-test .tsx = **20.2%**
+> **Module-only ratio**: 125 tests / 649 module components = **19.3%** **Web-wide ratio**: 263 tests
+> / 2,229 non-test .tsx/.ts = **11.8%**
 
 **Action Items**:
 
@@ -366,7 +366,15 @@ All other previously listed controllers are now under 500 lines.
       (+3: scheduled-time-preview, thread-reply-count, scroll-to-bottom-button), forums 12→15 (+3:
       toolbar-button, thread-prefix, user-signature), gamification 11→12 (+1: crown-icon), social
       6→8 (+2: stat-item, online-status-badge), groups 4→6 (+2: save-bar, invites-tab)
-- [ ] **9.2e** Write tests for critical path (batch 6+): remaining modules
+- [x] **9.2e** ~~Write tests batch 7~~ **DONE** (Session 51) — settings +5 (visibility-badge,
+      sync-status-indicator, user-id-badge, username-history, avatar-section)
+- [x] **9.2f** ~~Write tests batch 8~~ **DONE** (Session 51) — forums +4 (announcement-item,
+      rss-feed-button, subscription-button, post-quote-button)
+- [x] **9.2g** ~~Write tests batch 9~~ **DONE** (Session 51) — gamification +5 (reward-card,
+      compact-view, rewards-unlocked-list, background-particles, compact-badge-showcase)
+- [x] **9.2h** ~~Write tests batch 10~~ **DONE** (Session 51) — admin +4 (metric-card, stats-card,
+      realtime-stat, jobs-status-card), groups +1 (group-join-celebration)
+- [ ] **9.2i** Write tests for critical path (batch 11+): remaining modules
 - [ ] **9.3** Add test files for remaining modules (target: 3 tests per component minimum)
 - [x] **9.4** ~~Set up coverage ratchet in CI~~ **DONE** (Session 50) — thresholds raised
       statements/lines 60→65%, branches/functions 50→55%
@@ -730,27 +738,28 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 
 ## PART 5: CURRENT VS WORLD-CLASS SCORECARD
 
-| Dimension                   | Current                                                                              | After Tier 1-4 | World-Class Target  |
-| --------------------------- | ------------------------------------------------------------------------------------ | -------------- | ------------------- |
-| File Naming (Rule 1)        | **100%** (0 files + 0 dirs)                                                          | **100%**       | 100% (0 violations) |
-| Component Patterns (Rule 2) | **100%** (0 React.FC, 0 fwdRef)                                                      | **100%**       | 100%                |
-| State Management (Rule 3)   | **100%** (all stores have reset)                                                     | **100%**       | 100%                |
-| Cross-Platform (Rule 5)     | **100%** (12/12 packages)                                                            | **100%**       | 100% (12/12)        |
-| Documentation (Rule 6)      | **100%** (100% JSDoc + 100% @doc + @moduledoc)                                       | **100%**       | 100%                |
-| Backend Standards (Rule 7)  | **~100%** (4,103 specs / 3,912 unique fns)                                           | **~100%**      | 100%                |
-| File Size (Rule 8)          | **100%** (0 Elixir over 500, 0 TSX over 300)                                         | **100%**       | 100%                |
-| Testing (Rule 9)            | **20.2%** (244 tests / 1,207 components)                                             | 25%            | 100%                |
-| Performance (Rule 10)       | **100%** (0 offsets)                                                                 | **100%**       | 100%                |
-| Security (Rule 11)          | **~95%** (~15-25 unannotated `as` casts remain)                                      | **100%**       | 100%                |
-| React 19 (Rule 12)          | **~98%** (core migrations done; 9 useOptimistic, 2 useFormStatus, 11 useActionState) | **~98%**       | 100%                |
-| CI/CD (Rule 13)             | **100%** (17/17)                                                                     | **100%**       | 100%                |
-| Observability (Rule 14)     | **100%** (0 violations)                                                              | **100%**       | 100%                |
-| API Contract (Rule 15)      | **100%** (cursor + standardized)                                                     | **100%**       | 100%                |
-| **Overall**                 | **~94%** (13 PASS + 2 PARTIAL)                                                       | **~96%**       | **100%**            |
+| Dimension                   | Current                                                                                   | After Tier 1-4 | World-Class Target  |
+| --------------------------- | ----------------------------------------------------------------------------------------- | -------------- | ------------------- |
+| File Naming (Rule 1)        | **100%** (0 files + 0 dirs)                                                               | **100%**       | 100% (0 violations) |
+| Component Patterns (Rule 2) | **100%** (0 React.FC, 0 fwdRef)                                                           | **100%**       | 100%                |
+| State Management (Rule 3)   | **100%** (all stores have reset)                                                          | **100%**       | 100%                |
+| Cross-Platform (Rule 5)     | **100%** (12/12 packages)                                                                 | **100%**       | 100% (12/12)        |
+| Documentation (Rule 6)      | **100%** (100% JSDoc + 100% @doc + @moduledoc)                                            | **100%**       | 100%                |
+| Backend Standards (Rule 7)  | **~100%** (4,103 specs / 3,912 unique fns)                                                | **~100%**      | 100%                |
+| File Size (Rule 8)          | **100%** (0 Elixir over 500, 0 TSX over 300)                                              | **100%**       | 100%                |
+| Testing (Rule 9)            | **11.8%** (263 tests / 2,229 source files)                                                | 25%            | 100%                |
+| Performance (Rule 10)       | **100%** (0 offsets)                                                                      | **100%**       | 100%                |
+| Security (Rule 11)          | **~65%** (~345 unannotated `as` casts across ~59 files, predominantly API boundary casts) | **100%**       | 100%                |
+| React 19 (Rule 12)          | **~98%** (core migrations done; 9 useOptimistic, 2 useFormStatus, 11 useActionState)      | **~98%**       | 100%                |
+| CI/CD (Rule 13)             | **100%** (17/17)                                                                          | **100%**       | 100%                |
+| Observability (Rule 14)     | **100%** (0 violations)                                                                   | **100%**       | 100%                |
+| API Contract (Rule 15)      | **100%** (cursor + standardized)                                                          | **100%**       | 100%                |
+| **Overall**                 | **~90%** (13 PASS + 2 PARTIAL)                                                            | **~96%**       | **100%**            |
 
-> **Methodology**: Equal-weight average across 15 rules. Testing at 20.2% and Security at ~95% bring
-> the overall from 100% down to ~94.4%. This is an honest assessment — the remaining gaps are
-> testing coverage (Rule 9) and ~15-25 unannotated type assertions (Rule 11).
+> **Methodology**: Equal-weight average across 15 rules. Testing at 11.8% and Security at ~65% bring
+> the overall from 100% down to ~90%. This is an honest assessment — the remaining gaps are testing
+> coverage (Rule 9) and ~345 unannotated type assertions across ~59 files (Rule 11), predominantly
+> API boundary casts from `Record<string, unknown>` to concrete types.
 
 ---
 
