@@ -104,7 +104,7 @@ export function createForumCrudActions(set: Set, get: Get) {
         });
         const forum = ensureObject<Forum>(response.data, 'forum');
         if (forum) {
-          const mapped = mapForumFromApi(forum as unknown as Record<string, unknown>);
+          const mapped = mapForumFromApi(forum as unknown as Record<string, unknown>); // safe downcast – structural boundary
           set((state) => ({ forums: state.forums.map((f) => (f.id === forumId ? mapped : f)) }));
           return mapped;
         }

@@ -28,7 +28,7 @@ function bool(val: unknown): boolean {
 
 /** Narrow unknown to Record — necessary cast after runtime object check. */
 function record(val: unknown): Record<string, unknown> {
-  return typeof val === 'object' && val !== null ? (val as Record<string, unknown>) : {};
+  return typeof val === 'object' && val !== null ? (val as Record<string, unknown>) : {}; // safe downcast – runtime verified
 }
 
 // =============================================================================

@@ -81,7 +81,7 @@ export const RoleBadge = memo(function RoleBadge({ role, size = 'md', className 
     <motion.span
       className={cn('inline-flex items-center gap-1 font-medium', SIZE_CLASSES[size], className)}
       style={getBadgeStyles()}
-      {...(getAnimationProps() as Record<string, unknown>)}
+      {...(getAnimationProps() as Record<string, unknown>)} // safe downcast – structural boundary
     >
       {role.badgeIcon && <span className="text-current">{role.badgeIcon}</span>}
       {role.name}

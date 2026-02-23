@@ -20,7 +20,7 @@ export function useThemeExport() {
     input.type = 'file';
     input.accept = 'application/json';
     input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
+      const file = (e.target as HTMLInputElement).files?.[0]; // safe downcast – DOM element
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {

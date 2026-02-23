@@ -55,7 +55,7 @@ export async function generateSafetyNumber(
     combined.set(new Uint8Array(ourIdentityKey), offset);
   }
 
-  const hash = await sha256(combined.buffer as ArrayBuffer);
+  const hash = await sha256(combined.buffer as ArrayBuffer); // safe downcast – structural boundary
   const hashBytes = new Uint8Array(hash);
 
   // Convert to 60-digit safety number (12 groups of 5 digits)

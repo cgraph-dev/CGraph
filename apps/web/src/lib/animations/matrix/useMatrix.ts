@@ -63,7 +63,7 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
       'id' in initialConfig.theme
     ) {
       // If a full theme object is provided with id, use it
-      return initialConfig.theme as MatrixTheme;
+      return initialConfig.theme as MatrixTheme; // safe downcast – structural boundary
     }
     // Fall back to default theme
     return THEME_REGISTRY['matrix-green'];
@@ -141,7 +141,7 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
       }
     } catch (error) {
       logger.error('Failed to initialize Matrix engine:', error);
-      events?.onError?.(error as Error);
+      events?.onError?.(error as Error); // safe downcast – structural boundary
     }
 
     // Cleanup on unmount

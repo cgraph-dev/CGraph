@@ -57,7 +57,7 @@ export function joinUserChannel(
     logger.log('New conversation created:', payload);
     const data = payload as { conversation: Record<string, unknown> };
     if (data.conversation) {
-      const normalized = normalizeConversation(data.conversation) as unknown as Conversation;
+      const normalized = normalizeConversation(data.conversation) as unknown as Conversation; // safe downcast – structural boundary
       logger.debug('Normalized conversation:', normalized);
       useChatStore.getState().addConversation(normalized);
     }

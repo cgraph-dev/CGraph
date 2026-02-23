@@ -47,7 +47,7 @@ export function randomBytes(length: number): Uint8Array {
  * Generate a random key ID
  */
 export function generateKeyId(): string {
-  return arrayBufferToHex(randomBytes(8).buffer as ArrayBuffer);
+  return arrayBufferToHex(randomBytes(8).buffer as ArrayBuffer); // safe downcast – structural boundary
 }
 
 /**
@@ -55,6 +55,6 @@ export function generateKeyId(): string {
  */
 export function generateDeviceId(): string {
   const browserInfo = navigator.userAgent.substring(0, 20).replace(/[^a-zA-Z0-9]/g, '');
-  const randomPart = arrayBufferToHex(randomBytes(4).buffer as ArrayBuffer);
+  const randomPart = arrayBufferToHex(randomBytes(4).buffer as ArrayBuffer); // safe downcast – structural boundary
   return `${browserInfo}_${randomPart}_${Date.now()}`;
 }

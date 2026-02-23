@@ -101,7 +101,7 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
     if (!isOpen) return undefined;
 
     const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) { // safe downcast – DOM element
         onClose();
       }
     };
@@ -243,7 +243,7 @@ export const CustomEmojiPicker = memo(function CustomEmojiPicker({
               input.type = 'file';
               input.accept = 'image/png,image/gif,image/webp';
               input.onchange = async (e) => {
-                const file = (e.target as HTMLInputElement).files?.[0];
+                const file = (e.target as HTMLInputElement).files?.[0]; // safe downcast – DOM element
                 if (!file) return;
                 const name = window.prompt('Emoji name (no spaces):', file.name.replace(/\.[^.]+$/, ''));
                 if (!name?.trim()) return;

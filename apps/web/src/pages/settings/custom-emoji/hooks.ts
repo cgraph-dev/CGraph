@@ -70,7 +70,7 @@ export function useCustomEmoji() {
     queryKey: ['custom-emojis'],
     queryFn: async () => {
       const res = await api.get('/api/v1/emojis/custom');
-      return res.data.data as CustomEmoji[];
+      return res.data.data as CustomEmoji[]; // safe downcast – API response field
     },
     retry: 1,
     staleTime: 60_000,

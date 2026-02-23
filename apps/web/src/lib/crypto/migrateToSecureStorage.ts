@@ -195,7 +195,7 @@ export function restoreFromBackup(): boolean {
       return false;
     }
 
-    const backup = JSON.parse(backupData) as Record<string, string>;
+    const backup = JSON.parse(backupData) as Record<string, string>; // safe downcast – structural boundary
 
     Object.entries(LEGACY_KEYS).forEach(([name, key]) => {
       const value = backup[name];

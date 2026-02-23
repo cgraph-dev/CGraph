@@ -53,7 +53,7 @@ export default function PremiumPage() {
 
       try {
         await redirectToCheckout(
-          tierId as Parameters<typeof redirectToCheckout>[0],
+          tierId as Parameters<typeof redirectToCheckout>[0], // safe downcast – structural boundary
           billingInterval === 'year'
         );
       } catch (error) {

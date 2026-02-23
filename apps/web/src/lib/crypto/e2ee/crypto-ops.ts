@@ -81,12 +81,12 @@ export async function encryptAES(
 
   const cryptoKey = await importAESKey(key);
   const ciphertext = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv: new Uint8Array(nonce.buffer as ArrayBuffer) },
+    { name: 'AES-GCM', iv: new Uint8Array(nonce.buffer as ArrayBuffer) }, // safe downcast – structural boundary
     cryptoKey,
     data
   );
 
-  return { ciphertext, nonce: nonce.buffer as ArrayBuffer };
+  return { ciphertext, nonce: nonce.buffer as ArrayBuffer }; // safe downcast – structural boundary
 }
 
 /**

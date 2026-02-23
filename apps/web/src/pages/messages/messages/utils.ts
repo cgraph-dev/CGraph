@@ -48,7 +48,7 @@ export function getConversationAvatarBorderId(
 ): string | null {
   if (conv.type === 'direct') {
     const otherParticipant = conv.participants.find((p) => p.userId !== currentUserId);
-    const user = (otherParticipant as Record<string, unknown> | undefined)?.user;
+    const user = (otherParticipant as Record<string, unknown> | undefined)?.user; // safe downcast – structural boundary
     return getAvatarBorderId(user);
   }
 

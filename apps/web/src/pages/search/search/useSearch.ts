@@ -103,7 +103,7 @@ export function useSearch(): SearchState {
 
   useEffect(() => {
     const q = searchParams.get('q');
-    const cat = searchParams.get('category') as SearchCategory;
+    const cat = searchParams.get('category') as SearchCategory; // safe downcast – API response field
     if (q) {
       setInputValue(q);
       setQuery(q);

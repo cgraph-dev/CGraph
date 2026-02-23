@@ -41,7 +41,7 @@ export function MembersList({
         </div>
         <select
           value={sort}
-          onChange={(e) => onSortChange(e.target.value as MemberSortOption)}
+          onChange={(e) => onSortChange(e.target.value as MemberSortOption)} // safe downcast – select event value
           className="rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
         >
           {MEMBER_SORT_OPTIONS.map((option) => (

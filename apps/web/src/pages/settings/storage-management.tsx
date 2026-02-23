@@ -173,7 +173,7 @@ export function StorageManagement() {
                 onChange={(e) =>
                   setAutoDownload((prev) => ({
                     ...prev,
-                    [type]: e.target.value as AutoDownloadOption,
+                    [type]: e.target.value as AutoDownloadOption, // safe downcast – select event value
                   }))
                 }
                 className="rounded-lg border border-white/10 bg-dark-800 px-3 py-1.5 text-sm text-white focus:border-primary-500 focus:outline-none"

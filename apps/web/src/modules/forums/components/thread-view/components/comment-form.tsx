@@ -41,7 +41,7 @@ export function CommentForm({
             placeholder="Write a comment..."
             className="focus:border-primary w-full resize-none rounded-lg border border-dark-600 bg-dark-700 p-3 focus:outline-none"
             rows={4}
-            style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
+            style={{ '--tw-ring-color': primaryColor } as React.CSSProperties} // safe downcast – CSS custom properties
           />
           <div className="mt-2 flex justify-end gap-2">
             <button onClick={onCancel} className="px-4 py-2 text-sm text-gray-400 hover:text-white">

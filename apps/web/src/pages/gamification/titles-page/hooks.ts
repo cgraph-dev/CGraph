@@ -150,7 +150,7 @@ export function useTitlesData() {
           };
           return acc;
         },
-        {} as Record<TitleRarity, { owned: number; total: number }>
+        {} as Record<TitleRarity, { owned: number; total: number }> // safe downcast – structural boundary
       ),
     }),
     [ownedTitles, isOwned]

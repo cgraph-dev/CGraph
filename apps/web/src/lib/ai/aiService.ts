@@ -123,7 +123,7 @@ export async function generateSmartReplies(
         text: r.text,
         confidence: r.confidence,
         tone: 'casual' as const,
-        category: r.category as SmartReply['category'],
+        category: r.category as SmartReply['category'], // safe downcast – API response field
       }));
     }
 

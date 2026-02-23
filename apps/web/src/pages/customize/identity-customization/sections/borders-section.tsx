@@ -51,7 +51,7 @@ export function BordersSection({
         ...(themedBorders.find((tb) => tb.name.toLowerCase().includes(b.name.toLowerCase())) || {
           id: b.id,
           name: b.name,
-          theme: 'elemental' as BorderTheme,
+          theme: 'elemental' as BorderTheme, // safe downcast – structural boundary
           rarity: b.rarity as BorderRarity, // safe downcast – compatible rarity union
           animationType: b.animation as BorderAnimationType, // safe downcast – compatible animation union
           colors: b.colors,

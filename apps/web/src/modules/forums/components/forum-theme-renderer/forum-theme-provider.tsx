@@ -47,7 +47,7 @@ export const ForumThemeProvider = memo(function ForumThemeProvider({
       backgroundColor: colors.background,
       color: colors.textPrimary,
       fontFamily: fontFamily,
-    } as React.CSSProperties;
+    } as React.CSSProperties; // safe downcast – CSS custom properties
   }, [theme]);
 
   return (

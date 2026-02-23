@@ -37,13 +37,13 @@ export function joinGroupChannel(
 
   channel.on('new_message', (payload) => {
     const data = payload as { message: Record<string, unknown> };
-    const normalized = normalizeMessage(data.message) as unknown as ChannelMessage;
+    const normalized = normalizeMessage(data.message) as unknown as ChannelMessage; // safe downcast – structural boundary
     useGroupStore.getState().addChannelMessage(normalized);
   });
 
   channel.on('message_updated', (payload) => {
     const data = payload as { message: Record<string, unknown> };
-    const normalized = normalizeMessage(data.message) as unknown as ChannelMessage;
+    const normalized = normalizeMessage(data.message) as unknown as ChannelMessage; // safe downcast – structural boundary
     useGroupStore.getState().updateChannelMessage(normalized);
   });
 

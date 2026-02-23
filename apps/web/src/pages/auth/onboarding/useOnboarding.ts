@@ -59,7 +59,7 @@ export function useOnboarding() {
           display_name: profileData.displayName,
           bio: profileData.bio,
           avatar_url: avatarUrl,
-        } as ProfileUpdatePayload);
+        } as ProfileUpdatePayload); // safe downcast – structural boundary
 
         // Update local user state
         updateUser({

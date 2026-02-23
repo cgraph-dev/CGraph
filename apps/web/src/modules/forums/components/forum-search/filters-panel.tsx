@@ -57,7 +57,7 @@ export function FiltersPanel({
                   <button
                     key={value}
                     onClick={() =>
-                      onFilterChange({ timeRange: value as SearchFilters['timeRange'] })
+                      onFilterChange({ timeRange: value as SearchFilters['timeRange'] }) // safe downcast – select event value
                     }
                     className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
                       filters.timeRange === value
@@ -79,7 +79,7 @@ export function FiltersPanel({
                 {CONTENT_TYPE_OPTIONS.map(({ value, label, icon: Icon }) => (
                   <button
                     key={value}
-                    onClick={() => onFilterChange({ type: value as SearchFilters['type'] })}
+                    onClick={() => onFilterChange({ type: value as SearchFilters['type'] })} // safe downcast – select event value
                     className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${
                       filters.type === value
                         ? 'text-white'

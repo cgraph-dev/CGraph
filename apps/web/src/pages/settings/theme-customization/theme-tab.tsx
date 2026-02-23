@@ -28,7 +28,7 @@ export function ThemeTab() {
       <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
         <h3 className="mb-4 text-lg font-semibold">Color Theme</h3>
         <div className="grid grid-cols-4 gap-3 md:grid-cols-6">
-          {(Object.keys(THEME_COLORS) as ThemeColorPreset[]).map((colorKey) => {
+          {(Object.keys(THEME_COLORS) as ThemeColorPreset[]).map((colorKey) => { // safe downcast – structural boundary
             const color = THEME_COLORS[colorKey];
             return (
               <button

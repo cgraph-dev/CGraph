@@ -116,7 +116,7 @@ export class PhoenixProvider {
     // Receive awareness updates — apply remote state
     const ref3 = this.channel.on('awareness_update', (payload: Record<string, unknown>) => {
       const userId = payload.user_id as string;
-      const data = payload.data as Record<string, unknown> | undefined;
+      const data = payload.data as Record<string, unknown> | undefined; // safe downcast – structural boundary
       if (userId && data) {
         // Store the remote awareness state keyed by userId
         this.remoteAwarenessStates.set(userId, data);

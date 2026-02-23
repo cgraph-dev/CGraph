@@ -48,7 +48,7 @@ export function PollCreator({
           onChange={(e) => setPollQuestion(e.target.value)}
           placeholder="Ask a question..."
           className="mb-3 w-full rounded-lg bg-dark-700 p-3 outline-none focus:ring-2"
-          style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
+          style={{ '--tw-ring-color': primaryColor } as React.CSSProperties} // safe downcast – CSS custom properties
         />
 
         <div className="mb-3 space-y-2">
@@ -61,7 +61,7 @@ export function PollCreator({
                 onChange={(e) => updatePollOption(option.id, e.target.value)}
                 placeholder={`Option ${index + 1}`}
                 className="flex-1 rounded-lg bg-dark-700 p-2 outline-none focus:ring-2"
-                style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
+                style={{ '--tw-ring-color': primaryColor } as React.CSSProperties} // safe downcast – CSS custom properties
               />
               {pollOptions.length > MIN_POLL_OPTIONS && (
                 <button

@@ -165,7 +165,7 @@ export function SubscriptionButton({
                   <Select
                     value={settings.notificationMode}
                     onValueChange={(value: string) =>
-                      handleSettingsChange({ notificationMode: value as NotificationMode })
+                      handleSettingsChange({ notificationMode: value as NotificationMode }) // safe downcast – select event value
                     }
                   >
                     <SelectTrigger id="notification-mode" className="mt-1.5">

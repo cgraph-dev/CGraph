@@ -38,7 +38,7 @@ export function withDelay(variants: Variants, delay: number): Variants {
       newVariants[key] = {
         ...variant,
         transition: {
-          ...(variant.transition as Transition),
+          ...(variant.transition as Transition), // safe downcast – structural boundary
           delay,
         },
       };

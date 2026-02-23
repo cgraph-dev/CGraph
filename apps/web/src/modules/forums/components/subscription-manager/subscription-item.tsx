@@ -82,7 +82,7 @@ export function SubscriptionItem({
         <Select
           value={subscription.notificationMode}
           onValueChange={(value: string) =>
-            onUpdate(subscription.id, { notificationMode: value as NotificationMode })
+            onUpdate(subscription.id, { notificationMode: value as NotificationMode }) // safe downcast – select event value
           }
         >
           <SelectTrigger className="w-28">

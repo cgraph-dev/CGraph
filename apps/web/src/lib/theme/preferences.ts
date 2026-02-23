@@ -62,7 +62,7 @@ export function loadPreferences(): ThemePreferences {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-      const parsed = JSON.parse(stored) as ThemePreferences;
+      const parsed = JSON.parse(stored) as ThemePreferences; // safe downcast – structural boundary
       return { ...getDefaultPreferences(), ...parsed };
     }
   } catch (error) {

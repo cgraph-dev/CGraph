@@ -172,7 +172,7 @@ export default function GroupChannel() {
           isLoadingMessages={isLoadingMessages}
           channelName={channel.name}
           typing={typing}
-          messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>}
+          messagesEndRef={messagesEndRef as React.RefObject<HTMLDivElement>} // safe downcast – DOM element
           onLoadMore={handleLoadMore}
           onReply={setReplyTo}
           formatDateHeader={formatDateHeader}

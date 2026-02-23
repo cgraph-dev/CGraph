@@ -56,7 +56,7 @@ export default function AchievementsPage() {
         progress: storeAchievement?.progress || 0,
         unlocked: storeAchievement?.unlocked || false,
         unlockedAt: storeAchievement?.unlockedAt,
-      } as Achievement;
+      } as Achievement; // safe downcast – structural boundary
     });
   }, [achievements]);
 

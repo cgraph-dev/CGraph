@@ -51,7 +51,7 @@ export function SubscriptionManager({ className }: SubscriptionManagerProps): Re
             <CardDescription>Manage your forum, board, and thread subscriptions</CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Select onValueChange={(value: string) => bulkUpdateMode(value as NotificationMode)}>
+            <Select onValueChange={(value: string) => bulkUpdateMode(value as NotificationMode)}> // safe downcast – select event value
               <SelectTrigger className="w-40">
                 <SelectValue placeholder="Bulk update..." />
               </SelectTrigger>

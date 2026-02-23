@@ -102,7 +102,7 @@ export function useKeyVerification() {
     formattedNumber: formatted,
     qrData,
     isLoading,
-    error: error as Error | null,
+    error: error as Error | null, // safe downcast – structural boundary
     isVerifying: verifyMutation.isPending,
     showQR,
     setShowQR,

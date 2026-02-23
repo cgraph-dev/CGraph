@@ -11,7 +11,7 @@ import type { Forum } from './forumStore.types';
 
 /** Map raw API response data into a typed Forum object. */
 export function mapForumFromApi(data: Record<string, unknown>): Forum {
-  const owner = data.owner as Record<string, unknown> | null;
+  const owner = data.owner as Record<string, unknown> | null; // safe downcast – API response field
   return {
     id: data.id as string,
     name: data.name as string,

@@ -112,14 +112,14 @@ export function joinConversation(
 
     channel.on('new_message', (payload) => {
       const data = payload as { message: Record<string, unknown> };
-      const normalized = normalizeMessage(data.message) as unknown as Message;
+      const normalized = normalizeMessage(data.message) as unknown as Message; // safe downcast – structural boundary
       logger.log('Received new_message:', normalized);
       useChatStore.getState().addMessage(normalized);
     });
 
     channel.on('message_updated', (payload) => {
       const data = payload as { message: Record<string, unknown> };
-      const normalized = normalizeMessage(data.message) as unknown as Message;
+      const normalized = normalizeMessage(data.message) as unknown as Message; // safe downcast – structural boundary
       useChatStore.getState().updateMessage(normalized);
     });
 

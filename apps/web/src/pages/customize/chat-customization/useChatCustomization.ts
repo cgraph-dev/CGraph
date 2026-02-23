@@ -60,7 +60,7 @@ export function useChatCustomization() {
   const [enableBubbleTail, setEnableBubbleTail] = useState(store.bubbleShowTail ?? true);
   const [enableHoverEffects, setEnableHoverEffects] = useState(store.bubbleHoverEffect ?? true);
   const [selectedEntranceAnimation, setSelectedEntranceAnimation] = useState<EntranceAnimation>(
-    (store.bubbleEntranceAnimation as EntranceAnimation | undefined) ?? 'fade'
+    (store.bubbleEntranceAnimation as EntranceAnimation | undefined) ?? 'fade' // safe downcast – structural boundary
   );
 
   const [activeCategory, setActiveCategory] = useState<ChatCategory>('bubbles');

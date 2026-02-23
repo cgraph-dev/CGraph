@@ -97,7 +97,7 @@ export default function EnhancedConversation() {
           messageInput={messageInput}
           isSending={isSending}
           showStickerPicker={showStickerPicker}
-          inputContainerRef={inputContainerRef as React.RefObject<HTMLDivElement>}
+          inputContainerRef={inputContainerRef as React.RefObject<HTMLDivElement>} // safe downcast – DOM element
           onMessageChange={setMessageInput}
           onSend={handleSend}
           onToggleStickerPicker={() => setShowStickerPicker(!showStickerPicker)}

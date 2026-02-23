@@ -4,14 +4,14 @@ import type { Announcement, AnnouncementScope } from './announcementStore.types'
  * Maps raw API response data to an Announcement object.
  */
 export function mapAnnouncementFromApi(data: Record<string, unknown>): Announcement {
-  const author = (data.author as Record<string, unknown>) || {};
+  const author = (data.author as Record<string, unknown>) || {}; // safe downcast – API response field
 
   return {
     id: data.id as string,
     title: (data.title as string) || 'Untitled',
     content: (data.content as string) || '',
 
-    scope: (data.scope as AnnouncementScope) || 'global',
+    scope: (data.scope as AnnouncementScope) || 'global', // safe downcast – API response field
     forumId: (data.forum_id as string) || null,
     forumName: data.forum_name as string | undefined,
 

@@ -34,7 +34,7 @@ export function createToggle<T extends BaseStoreState>(
         ({
           [field]: !state[field],
           ...(markDirty ? { isDirty: true } : {}),
-        }) as Partial<T>
+        }) as Partial<T> // safe downcast – structural boundary
     );
 }
 

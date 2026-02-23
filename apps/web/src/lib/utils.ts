@@ -65,7 +65,7 @@ export function formatBytes(bytes: number, decimals: number = 2): string {
  */
 export function getAvatarBorderId(obj: unknown): string | null {
   if (!obj || typeof obj !== 'object') return null;
-  const record = obj as Record<string, unknown>;
+  const record = obj as Record<string, unknown>; // safe downcast – runtime verified
   const borderId = record.avatarBorderId ?? record.avatar_border_id;
   return typeof borderId === 'string' ? borderId : null;
 }

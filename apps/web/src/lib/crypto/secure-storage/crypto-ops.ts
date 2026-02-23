@@ -27,7 +27,7 @@ export function initDB(): Promise<IDBDatabase> {
     request.onsuccess = () => resolve(request.result);
 
     request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
+      const db = (event.target as IDBOpenDBRequest).result; // safe downcast – DOM element
 
       // Create object stores
       if (!db.objectStoreNames.contains(STORE_NAME)) {
@@ -136,7 +136,7 @@ export async function encryptData(
     data
   );
 
-  return { ciphertext, iv: iv.buffer as ArrayBuffer };
+  return { ciphertext, iv: iv.buffer as ArrayBuffer }; // safe downcast – structural boundary
 }
 
 /**

@@ -53,7 +53,7 @@ export function AppearancePanel({
             {
               '--primary': appearance.primaryColor,
               '--secondary': appearance.secondaryColor,
-            } as React.CSSProperties
+            } as React.CSSProperties // safe downcast – CSS custom properties
           }
         >
           {appearance.bannerUrl ? (

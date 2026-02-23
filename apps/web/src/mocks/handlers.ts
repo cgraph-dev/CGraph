@@ -243,7 +243,7 @@ const authHandlers = [
 
   // Update current user
   http.patch(`${API_BASE}/api/v1/users/me`, async ({ request }) => {
-    const body = (await request.json()) as Partial<MockUser>;
+    const body = (await request.json()) as Partial<MockUser>; // safe downcast – API response field
     return HttpResponse.json({ data: mockUser(body) });
   }),
 ];

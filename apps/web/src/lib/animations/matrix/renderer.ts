@@ -182,7 +182,7 @@ export class MatrixRenderer {
       ctx.globalAlpha = alpha;
 
       for (const item of items) {
-        ctx.drawImage(item.glyph.canvas as CanvasImageSource, item.x, item.y);
+        ctx.drawImage(item.glyph.canvas as CanvasImageSource, item.x, item.y); // safe downcast – DOM element
       }
     }
 

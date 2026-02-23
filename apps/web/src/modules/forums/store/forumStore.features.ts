@@ -141,7 +141,7 @@ export function createFeatureActions(set: Set, _get: Get) {
         const response = await api.post('/api/v1/attachments', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        return response.data.attachment as PostAttachment;
+        return response.data.attachment as PostAttachment; // safe downcast – API response field
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'uploadAttachment');
         throw error;
@@ -181,7 +181,7 @@ export function createFeatureActions(set: Set, _get: Get) {
           timeout: data.timeout,
           public: data.public,
         });
-        return response.data.poll as Poll;
+        return response.data.poll as Poll; // safe downcast – API response field
       } catch (error: unknown) {
         logger.error(error instanceof Error ? error : new Error(String(error)), 'createPoll');
         throw error;

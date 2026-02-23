@@ -41,7 +41,7 @@ export function TitlePreviewModal({
               <p className="text-sm text-gray-400">{previewTitle.description}</p>
               <div className="flex items-center gap-2 text-sm">
                 <span className="capitalize text-gray-400">Rarity:</span>
-                <span className={getRarityColor(previewTitle.rarity as TitleRarity)}>
+                <span className={getRarityColor(previewTitle.rarity as TitleRarity)}> // safe downcast – structural boundary
                   {previewTitle.rarity}
                 </span>
               </div>

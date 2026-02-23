@@ -119,7 +119,7 @@ export function voteOnThread(
   return new Promise((resolve, reject) => {
     channel
       .push('vote', { value })
-      .receive('ok', (resp: unknown) => resolve(resp as ThreadVotePayload))
+      .receive('ok', (resp: unknown) => resolve(resp as ThreadVotePayload)) // safe downcast – API response field
       .receive('error', (resp: unknown) => reject(resp));
   });
 }
@@ -141,7 +141,7 @@ export function voteOnComment(
   return new Promise((resolve, reject) => {
     channel
       .push('vote_comment', { comment_id: commentId, value })
-      .receive('ok', (resp: unknown) => resolve(resp as CommentVotePayload))
+      .receive('ok', (resp: unknown) => resolve(resp as CommentVotePayload)) // safe downcast – API response field
       .receive('error', (resp: unknown) => reject(resp));
   });
 }

@@ -25,7 +25,7 @@ function OptionSelectInner<T extends string>({
       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}</span>
       <select
         value={value}
-        onChange={(e) => onChange(e.target.value as T)}
+        onChange={(e) => onChange(e.target.value as T)} // safe downcast – select event value
         className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300"
       >
         {options.map((option) => (

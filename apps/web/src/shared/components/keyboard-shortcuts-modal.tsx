@@ -75,7 +75,7 @@ export function KeyboardShortcutsModal() {
       // ? key (not in input/textarea)
       if (
         e.key === '?' &&
-        !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)
+        !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName) // safe downcast – DOM element
       ) {
         e.preventDefault();
         setIsOpen((o) => !o);

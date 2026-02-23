@@ -26,7 +26,7 @@ function toArrayBuffer(arr: Uint8Array): ArrayBuffer {
 /** Generate a unique, collision-resistant message ID. */
 export function generateMessageId(): string {
   const timestamp = Date.now().toString(36);
-  const random = arrayBufferToHex(crypto.getRandomValues(new Uint8Array(8)).buffer as ArrayBuffer);
+  const random = arrayBufferToHex(crypto.getRandomValues(new Uint8Array(8)).buffer as ArrayBuffer); // safe downcast – structural boundary
   return `${timestamp}-${random}`;
 }
 

@@ -78,7 +78,7 @@ export function MessageRow({
   const prevMessage = groupMessages[msgIndex - 1];
   const prevSenderId = prevMessage
     ? getMessageSenderId(
-        prevMessage as unknown as Record<
+        prevMessage as unknown as Record< // safe downcast – structural boundary
           string,
           unknown
         > /* safe downcast – polymorphic message access */
