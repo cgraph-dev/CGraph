@@ -31,7 +31,7 @@ export interface MorphingBlobProps extends ColorProps {
 /**
  * FloatingIcons component props
  */
-export interface FloatingIconsProps extends ColorProps {}
+export type FloatingIconsProps = ColorProps;
 
 /**
  * CursorGlow component props

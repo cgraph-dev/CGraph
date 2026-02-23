@@ -199,7 +199,7 @@ export default function RegisterScreen({ navigation }: Props) {
       // Log for debugging in development
       if (__DEV__) {
         if (__DEV__)
-          console.log(
+          console.warn(
             'Registration error:',
             JSON.stringify(err.response?.data || err.message, null, 2)
           );

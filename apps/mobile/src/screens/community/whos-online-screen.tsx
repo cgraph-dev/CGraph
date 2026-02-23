@@ -231,7 +231,7 @@ export default function WhosOnlineScreen() {
   // Navigate to member profile
   const handleUserPress = (user: OnlineUser) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    if (__DEV__) console.log('Navigate to profile:', user.id);
+    if (__DEV__) console.warn('Navigate to profile:', user.id);
   };
 
   // Parallax header transform

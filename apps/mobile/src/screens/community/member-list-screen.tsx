@@ -227,7 +227,7 @@ export default function MemberListScreen() {
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
 
   // Transform API response
-  const transformApiMembers = (data: Record<string, any>[]): Member[] => {
+  const transformApiMembers = (data: Record<string, unknown>[]): Member[] => {
     return data.map((m) => ({
       id: m.id,
       username: m.username || 'Unknown',
@@ -251,7 +251,7 @@ export default function MemberListScreen() {
         else setIsLoadingMore(true);
         setError(null);
 
-        const params: Record<string, any> = {
+        const params: Record<string, unknown> = {
           page: pageNum,
           per_page: 20,
           sort_by: sortField,

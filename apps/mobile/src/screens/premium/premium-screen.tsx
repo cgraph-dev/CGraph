@@ -193,7 +193,7 @@ function PremiumScreen(): React.ReactElement | null {
                 }
               }
             } catch (error: unknown) {
-              const err = error as any;
+              const err = error as Error;
               console.error('[PremiumScreen] Purchase error:', err);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert('Purchase Failed', err?.message || 'Unable to complete purchase.');
@@ -232,7 +232,7 @@ function PremiumScreen(): React.ReactElement | null {
                 Alert.alert('No Purchases', 'No previous purchases found to restore.');
               }
             } catch (error: unknown) {
-              const err = error as any;
+              const err = error as Error;
               console.error('[PremiumScreen] Restore error:', err);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
               Alert.alert('Restore Failed', err?.message || 'Unable to restore purchases.');
@@ -399,9 +399,7 @@ function PremiumScreen(): React.ReactElement | null {
                     end={{ x: 1, y: 1 }}
                   >
                     <Ionicons
-                      name={
-                        tier.id === 'free' ? 'people' : 'diamond'
-                      }
+                      name={tier.id === 'free' ? 'people' : 'diamond'}
                       size={28}
                       color="#fff"
                     />
@@ -516,7 +514,7 @@ function PremiumScreen(): React.ReactElement | null {
       </View>
     </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

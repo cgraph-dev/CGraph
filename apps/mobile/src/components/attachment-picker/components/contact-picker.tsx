@@ -53,6 +53,11 @@ export function ContactPicker({
   isDark,
   colors,
 }: ContactPickerProps) {
+  const overlayAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: animation.value,
+    transform: [{ scale: interpolate(animation.value, [0, 1], [0.9, 1]) }],
+  }));
+
   if (!visible) return null;
 
   // Filter contacts by search query
@@ -62,18 +67,8 @@ export function ContactPicker({
       contact.phoneNumbers?.some((p) => p.number?.includes(searchQuery))
   );
 
-  const overlayAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: animation.value,
-    transform: [{ scale: interpolate(animation.value, [0, 1], [0.9, 1]) }],
-  }));
-
   return (
-    <Animated.View
-      style={[
-        styles.contactPickerOverlay,
-        overlayAnimatedStyle,
-      ]}
-    >
+    <Animated.View style={[styles.contactPickerOverlay, overlayAnimatedStyle]}>
       <View
         style={[styles.contactPickerContainer, { backgroundColor: isDark ? '#1c1c1e' : '#fff' }]}
       >

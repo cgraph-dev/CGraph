@@ -5,7 +5,7 @@
 import { useCallback } from 'react';
 import * as Haptics from 'expo-haptics';
 
-export type HapticStyle = 
+export type HapticStyle =
   | 'light'
   | 'medium'
   | 'heavy'
@@ -18,12 +18,12 @@ export type HapticStyle =
 
 /**
  * Hook for triggering haptic feedback.
- * 
+ *
  * Provides a simple interface to expo-haptics with predefined styles.
- * 
+ *
  * @example
  * const haptic = useHaptics();
- * 
+ *
  * // In a handler
  * haptic('light');
  * haptic('success');
@@ -64,7 +64,7 @@ export function useHaptics() {
       }
     } catch (error) {
       // Haptics may not be available on all devices
-      console.debug('Haptics not available:', error);
+      console.warn('Haptics not available:', error);
     }
   }, []);
 
@@ -73,7 +73,7 @@ export function useHaptics() {
 
 /**
  * Hook for creating a haptic-enabled press handler.
- * 
+ *
  * @example
  * const onPress = useHapticPress(() => {
  *   doSomething();
@@ -84,11 +84,14 @@ export function useHapticPress<T extends (...args: Parameters<T>) => void>(
   style: HapticStyle = 'light'
 ): (...args: Parameters<T>) => void {
   const haptic = useHaptics();
-  
-  return useCallback((...args: Parameters<T>) => {
-    haptic(style);
-    callback(...args);
-  }, [callback, haptic, style]);
+
+  return useCallback(
+    (...args: Parameters<T>) => {
+      haptic(style);
+      callback(...args);
+    },
+    [callback, haptic, style]
+  );
 }
 
 export default useHaptics;

@@ -167,7 +167,7 @@ export default function LoginScreen({ navigation }: Props) {
       // Log for debugging in development
       if (__DEV__) {
         if (__DEV__)
-          console.log('Login error:', JSON.stringify(err.response?.data || err.message, null, 2));
+          console.warn('Login error:', JSON.stringify(err.response?.data || err.message, null, 2));
       }
 
       Alert.alert('Login Failed', errorMessage);

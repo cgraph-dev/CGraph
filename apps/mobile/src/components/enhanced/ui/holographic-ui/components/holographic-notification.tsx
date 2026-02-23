@@ -4,7 +4,16 @@
  */
 import React, { useEffect } from 'react';
 import { StyleSheet, ViewStyle, Platform, TouchableOpacity } from 'react-native';
-import Animated, { useSharedValue, withTiming, withSpring, withRepeat, withSequence, useAnimatedStyle, interpolate, runOnJS } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  withTiming,
+  withSpring,
+  withRepeat,
+  withSequence,
+  useAnimatedStyle,
+  interpolate,
+  runOnJS,
+} from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -74,10 +83,7 @@ export function HolographicNotification({
 
       // Glow pulse animation
       glowPulse.value = withRepeat(
-        withSequence(
-          withTiming(1, { duration: 1000 }),
-          withTiming(0, { duration: 1000 })
-        ),
+        withSequence(withTiming(1, { duration: 1000 }), withTiming(0, { duration: 1000 })),
         -1
       );
 
@@ -105,19 +111,21 @@ export function HolographicNotification({
     });
   };
 
-  if (!visible) return null;
-
   const containerAnimStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
     opacity: opacity.value,
-    ...(Platform.OS === 'ios' ? {
-      shadowOpacity: interpolate(glowPulse.value, [0, 1], [0.4, 0.8]),
-    } : {}),
+    ...(Platform.OS === 'ios'
+      ? {
+          shadowOpacity: interpolate(glowPulse.value, [0, 1], [0.4, 0.8]),
+        }
+      : {}),
   }));
 
   const borderGlowAnimStyle = useAnimatedStyle(() => ({
     opacity: interpolate(glowPulse.value, [0, 1], [0.5, 1]),
   }));
+
+  if (!visible) return null;
 
   return (
     <Animated.View
