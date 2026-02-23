@@ -20,7 +20,7 @@ export interface LandingButtonProps extends React.ButtonHTMLAttributes<HTMLButto
  * - "Shimmer" idle animation
  * - Accessible focus states
  */
-export const LandingButton: React.FC<LandingButtonProps> = ({
+export function LandingButton({
   variant = 'primary',
   size = 'md',
   children,
@@ -28,7 +28,7 @@ export const LandingButton: React.FC<LandingButtonProps> = ({
   href,
   className = '',
   ...props
-}) => {
+}: LandingButtonProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
@@ -115,4 +115,4 @@ export const LandingButton: React.FC<LandingButtonProps> = ({
       {Content}
     </motion.button>
   );
-};
+}

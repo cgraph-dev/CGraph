@@ -11,7 +11,7 @@ import { NeuralBackground } from '../effects/NeuralBackground';
  * - Strong vignette for focus
  * - Emerald & Purple gradient accents
  */
-export const GlobalBackground: React.FC = () => {
+export function GlobalBackground() {
   const prefersReducedMotion =
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
@@ -71,4 +71,4 @@ export const GlobalBackground: React.FC = () => {
       />
     </div>
   );
-};
+}

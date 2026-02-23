@@ -35,12 +35,7 @@ interface ForumNeonIconProps {
   color?: string;
 }
 
-export const ForumNeonIcon: React.FC<ForumNeonIconProps> = ({
-  variant,
-  className = '',
-  delay = 0,
-  color,
-}) => {
+export function ForumNeonIcon({ variant, className = '', delay = 0, color }: ForumNeonIconProps) {
   const style = {
     '--feature-icon-delay': `${delay}s`,
     color: color || 'inherit',
@@ -276,4 +271,4 @@ export const ForumNeonIcon: React.FC<ForumNeonIconProps> = ({
       </span>
     </span>
   );
-};
+}

@@ -16,12 +16,12 @@ export interface GlassCardProps {
  * - Mouse-following spotlight border
  * - Optional 3D tilt effect on hover
  */
-export const GlassCard: React.FC<GlassCardProps> = ({
+export function GlassCard({
   children,
   className = '',
   enableTilt = true,
   spotlightColor = 'rgba(16, 185, 129, 0.15)', // Default Emerald tint
-}) => {
+}: GlassCardProps) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
@@ -66,4 +66,4 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   }
 
   return Content;
-};
+}
