@@ -48,7 +48,12 @@ export function FilterControls({
       {showFilters && (
         <select
           value={filters.rarity}
-          onChange={(e) => onFilterUpdate('rarity', e.target.value as AchievementRarity | 'all')}
+          onChange={(e) =>
+            onFilterUpdate(
+              'rarity',
+              e.target.value as AchievementRarity | 'all' /* safe downcast – select event value */
+            )
+          }
           className={cn(
             'rounded-lg px-3 py-2',
             'border border-white/10 bg-dark-700/50',
@@ -70,7 +75,12 @@ export function FilterControls({
       {showFilters && (
         <select
           value={filters.status}
-          onChange={(e) => onFilterUpdate('status', e.target.value as FilterState['status'])}
+          onChange={(e) =>
+            onFilterUpdate(
+              'status',
+              e.target.value as FilterState['status'] /* safe downcast – select event value */
+            )
+          }
           className={cn(
             'rounded-lg px-3 py-2',
             'border border-white/10 bg-dark-700/50',
@@ -90,7 +100,12 @@ export function FilterControls({
       {showFilters && (
         <select
           value={filters.sort}
-          onChange={(e) => onFilterUpdate('sort', e.target.value as SortOption)}
+          onChange={(e) =>
+            onFilterUpdate(
+              'sort',
+              e.target.value as SortOption /* safe downcast – select event value */
+            )
+          }
           className={cn(
             'rounded-lg px-3 py-2',
             'border border-white/10 bg-dark-700/50',

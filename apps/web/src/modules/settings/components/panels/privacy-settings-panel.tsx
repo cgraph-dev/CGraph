@@ -75,7 +75,10 @@ export function PrivacySettingsPanel() {
             onChange={async (e) => {
               try {
                 await updatePrivacySettings({
-                  allowGroupInvites: e.target.value as 'anyone' | 'friends' | 'nobody',
+                  allowGroupInvites: e.target.value as
+                    | 'anyone'
+                    | 'friends'
+                    | 'nobody' /* safe downcast – select event value */,
                 });
                 toast.success('Group invite settings updated');
               } catch {
@@ -98,7 +101,10 @@ export function PrivacySettingsPanel() {
             onChange={async (e) => {
               try {
                 await updatePrivacySettings({
-                  profileVisibility: e.target.value as 'public' | 'friends' | 'private',
+                  profileVisibility: e.target.value as
+                    | 'public'
+                    | 'friends'
+                    | 'private' /* safe downcast – select event value */,
                 });
                 toast.success('Profile visibility updated');
               } catch {
@@ -171,6 +177,7 @@ export function PrivacySettingsPanel() {
                     onClick={async () => {
                       try {
                         await updatePrivacySettings({
+                          // safe downcast – dynamic key access on typed settings object
                           [key]: !(settings.privacy as unknown as Record<string, unknown>)[key],
                         });
                         toast.success(`${label} visibility updated`);
@@ -180,6 +187,7 @@ export function PrivacySettingsPanel() {
                     }}
                     disabled={isSaving}
                     className={`relative h-6 w-11 rounded-full transition-colors ${
+                      // safe downcast – dynamic key access on typed settings object
                       (settings.privacy as unknown as Record<string, unknown>)[key] !== false
                         ? 'bg-primary-600'
                         : 'bg-dark-600'
@@ -187,6 +195,7 @@ export function PrivacySettingsPanel() {
                   >
                     <span
                       className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform ${
+                        // safe downcast – dynamic key access on typed settings object
                         (settings.privacy as unknown as Record<string, unknown>)[key] !== false
                           ? 'translate-x-5'
                           : ''

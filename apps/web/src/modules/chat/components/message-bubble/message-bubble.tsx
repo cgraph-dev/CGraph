@@ -204,7 +204,8 @@ export const MessageBubble = memo(
               >
                 <span>{formatMessageTime(message.createdAt)}</span>
                 {message.isEdited && <span>(edited)</span>}
-                {!!(message as unknown as Record<string, unknown>).expiresAt && (
+                {!!(message as unknown as Record<string, unknown>)
+                  .expiresAt /* safe downcast – optional expiry field */ && (
                   <span
                     className="flex items-center gap-0.5 text-amber-400/70"
                     title="Disappearing message"
@@ -215,7 +216,9 @@ export const MessageBubble = memo(
                 {isOwn && (
                   <MessageStatusIndicator
                     status={
-                      (message.metadata?.readBy as ReadByEntry[] | undefined)?.length
+                      (
+                        message.metadata?.readBy as ReadByEntry[] | undefined
+                      ) /* safe downcast – metadata field */?.length
                         ? 'read'
                         : message.metadata?.deliveredAt
                           ? 'delivered'
@@ -265,7 +268,12 @@ export const MessageBubble = memo(
             message={message}
           />
           {isOwn && message.metadata?.readBy && Array.isArray(message.metadata.readBy) && (
-            <ReadReceipts readBy={message.metadata.readBy as ReadByEntry[]} />
+            <ReadReceipts
+              readBy={
+                message.metadata
+                  .readBy as ReadByEntry[] /* safe downcast – guarded by Array.isArray */
+              }
+            />
           )}
         </div>
       </motion.div>

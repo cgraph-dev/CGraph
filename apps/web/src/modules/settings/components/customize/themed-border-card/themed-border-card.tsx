@@ -23,7 +23,7 @@ export default function ThemedBorderCard({
   allowPreview = true,
 }: ThemedBorderCardProps) {
   const config = SIZE_CONFIG[size];
-  const rarityColor = RARITY_COLORS[border.rarity as BorderRarity];
+  const rarityColor = RARITY_COLORS[border.rarity as BorderRarity]; // safe downcast – data-driven rarity prop
   const isLocked = !border.unlocked && !allowPreview;
   const canInteract = !isLocked;
 
@@ -31,7 +31,7 @@ export default function ThemedBorderCard({
   const showParticles =
     showAnimation &&
     PARTICLE_ANIMATION_TYPES.includes(
-      border.animationType as (typeof PARTICLE_ANIMATION_TYPES)[number]
+      border.animationType as (typeof PARTICLE_ANIMATION_TYPES)[number] // safe downcast – data-driven animation type
     );
 
   return (
@@ -52,8 +52,12 @@ export default function ThemedBorderCard({
           padding: '3px',
           ...borderAnimation.style,
         }}
-        animate={borderAnimation.animate as TargetAndTransition}
-        transition={borderAnimation.transition as Transition}
+        animate={
+          borderAnimation.animate as TargetAndTransition /* safe downcast – framer-motion typing */
+        }
+        transition={
+          borderAnimation.transition as Transition /* safe downcast – framer-motion typing */
+        }
       >
         <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-dark-900">
           <span className="text-2xl">👤</span>

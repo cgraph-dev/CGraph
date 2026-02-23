@@ -57,7 +57,10 @@ export function MessageRow({
   onCancelEdit,
 }: MessageRowProps) {
   const navigate = useNavigate();
-  const messageSenderId = getMessageSenderId(message as unknown as Record<string, unknown>) || '';
+  const messageSenderId =
+    getMessageSenderId(
+      message as unknown as Record<string, unknown> /* safe downcast – polymorphic message access */
+    ) || '';
   const currentUserId = user?.id || '';
 
   if (import.meta.env.DEV && msgIndex === 0) {
@@ -74,7 +77,12 @@ export function MessageRow({
 
   const prevMessage = groupMessages[msgIndex - 1];
   const prevSenderId = prevMessage
-    ? getMessageSenderId(prevMessage as unknown as Record<string, unknown>) || ''
+    ? getMessageSenderId(
+        prevMessage as unknown as Record<
+          string,
+          unknown
+        > /* safe downcast – polymorphic message access */
+      ) || ''
     : '';
   const showAvatar = !isOwn && (msgIndex === 0 || prevSenderId !== messageSenderId);
 

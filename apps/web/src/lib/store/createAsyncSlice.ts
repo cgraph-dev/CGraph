@@ -71,7 +71,7 @@ export function createAsyncSlice<T>(
     onSuccess?: (data: T) => void;
     /** Callback on fetch error */
     onError?: (error: Error) => void;
-  } = {},
+  } = {}
 ) {
   const dataKey = `${name}Data`;
   const loadingKey = `${name}Loading`;
@@ -85,9 +85,9 @@ export function createAsyncSlice<T>(
     const doFetch = async (): Promise<T | null> => {
       // Check stale time
       if (options.staleTime) {
-        const lastFetched = get()[lastFetchedKey] as number | null;
+        const lastFetched = get()[lastFetchedKey] as number | null; // safe downcast – known async state shape
         if (lastFetched && Date.now() - lastFetched < options.staleTime) {
-          return get()[dataKey] as T;
+          return get()[dataKey] as T; // safe downcast – known async state shape
         }
       }
 
@@ -121,7 +121,7 @@ export function createAsyncSlice<T>(
     };
 
     return {
-      // State
+      // State (safe downcast – initial state typing for computed property keys)
       [dataKey]: null as T | null,
       [loadingKey]: false,
       [errorKey]: null as Error | null,
@@ -171,9 +171,7 @@ interface UseAsyncReturn<T> {
  * });
  * ```
  */
-export function useAsync<T>(
-  asyncFn: (...args: unknown[]) => Promise<T>,
-): UseAsyncReturn<T> {
+export function useAsync<T>(asyncFn: (...args: unknown[]) => Promise<T>): UseAsyncReturn<T> {
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -199,7 +197,7 @@ export function useAsync<T>(
         return null;
       }
     },
-    [asyncFn],
+    [asyncFn]
   );
 
   const reset = useCallback(() => {

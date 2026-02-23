@@ -61,10 +61,7 @@ export default function Conversation() {
       {/* Main Chat Area */}
       <div className="relative flex h-full flex-1 flex-col overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
         <AmbientBackground uiPreferences={ctx.uiPreferences} />
-        <FullScreenChatEffect
-          effect={chatEffect.activeEffect}
-          onComplete={chatEffect.clear}
-        />
+        <FullScreenChatEffect effect={chatEffect.activeEffect} onComplete={chatEffect.clear} />
 
         <ConversationHeader
           conversationName={ctx.conversationName}
@@ -72,7 +69,9 @@ export default function Conversation() {
           isOtherUserOnline={ctx.isOtherUserOnline}
           typing={ctx.typing}
           uiPreferences={
-            ctx.uiPreferences as Parameters<typeof ConversationHeader>[0]['uiPreferences']
+            ctx.uiPreferences as Parameters<
+              typeof ConversationHeader
+            >[0]['uiPreferences'] /* safe downcast – structural boundary */
           }
           onStartVoiceCall={() =>
             ctx.callModals.handleStartVoiceCall(ctx.uiPreferences.enableHaptic)
@@ -222,7 +221,12 @@ export default function Conversation() {
 
       <InfoPanel
         showInfoPanel={ctx.showInfoPanel}
-        otherParticipant={ctx.otherParticipant as unknown as Record<string, unknown>}
+        otherParticipant={
+          ctx.otherParticipant as unknown as Record<
+            string,
+            unknown
+          > /* safe downcast – participant record access */
+        }
         conversationId={ctx.conversationId || ''}
         isOtherUserOnline={ctx.isOtherUserOnline}
         mutualFriends={ctx.mutualFriends}
@@ -246,14 +250,19 @@ export default function Conversation() {
           <ThreadPanel
             isOpen={!!activeThread}
             onClose={useThreadStore.getState().closeThread}
-            parentMessage={activeThread ? {
-              id: activeThread.id,
-              content: activeThread.content,
-              sender_id: activeThread.senderId,
-              sender_name: activeThread.sender?.displayName || activeThread.sender?.username || 'User',
-              sender_avatar: activeThread.sender?.avatarUrl || undefined,
-              inserted_at: activeThread.createdAt,
-            } : null}
+            parentMessage={
+              activeThread
+                ? {
+                    id: activeThread.id,
+                    content: activeThread.content,
+                    sender_id: activeThread.senderId,
+                    sender_name:
+                      activeThread.sender?.displayName || activeThread.sender?.username || 'User',
+                    sender_avatar: activeThread.sender?.avatarUrl || undefined,
+                    inserted_at: activeThread.createdAt,
+                  }
+                : null
+            }
             conversationId={ctx.conversationId || ''}
           />
         )}

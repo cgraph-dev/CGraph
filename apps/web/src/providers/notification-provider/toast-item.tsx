@@ -41,7 +41,7 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
 
   // Special rendering for level up
   if (notification.type === 'levelup') {
-    const levelNotif = notification as LevelUpNotification;
+    const levelNotif = notification as LevelUpNotification; // safe downcast – guarded by type check
     return (
       <motion.div
         initial={{ opacity: 0, x: -100, scale: 0.8 }}
@@ -113,7 +113,7 @@ export function ToastItem({ notification, index: _index, onDismiss }: ToastItemP
 
   // Quest complete rendering
   if (notification.type === 'quest') {
-    const questNotif = notification as QuestNotification;
+    const questNotif = notification as QuestNotification; // safe downcast – guarded by type check
     return (
       <motion.div
         initial={{ opacity: 0, x: -100, scale: 0.8 }}

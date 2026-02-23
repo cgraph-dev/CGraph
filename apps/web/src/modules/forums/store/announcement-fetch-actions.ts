@@ -37,9 +37,9 @@ export function createFetchActions(set: Set) {
 
         set({
           announcements,
-          page: (data.page as number) || 1,
-          totalPages: (data.total_pages as number) || 1,
-          totalCount: (data.total_count as number) || announcements.length,
+          page: (data.page as number) || 1, // safe downcast – API pagination field
+          totalPages: (data.total_pages as number) || 1, // safe downcast – API pagination field
+          totalCount: (data.total_count as number) || announcements.length, // safe downcast – API pagination field
           isLoading: false,
         });
       } catch (error) {

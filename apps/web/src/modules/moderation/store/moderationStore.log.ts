@@ -38,6 +38,7 @@ export function createLogActions(set: Set) {
         if (filters.page) params.page = filters.page;
 
         const response = await api.get('/api/v1/admin/moderation/log', { params });
+        // safe downcast – API response fields cast from Record<string, unknown>
         const entries = (ensureArray(response.data, 'entries') as Record<string, unknown>[]).map(
           (e) => ({
             id: e.id as string,

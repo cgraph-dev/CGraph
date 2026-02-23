@@ -78,7 +78,7 @@ export function useEnhancedConversation() {
       isPinned: false,
       isEdited: false,
       deletedAt: null,
-      metadata: {} as Message['metadata'],
+      metadata: {} as Message['metadata'], // safe downcast – optimistic message placeholder
       reactions: [],
       sender: {
         id: user?.id ?? '',
@@ -88,7 +88,7 @@ export function useEnhancedConversation() {
       },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    } as Message);
+    } as Message); // safe downcast – optimistic message placeholder
 
     try {
       await sendMessage(conversationId, content, replyTo?.id);

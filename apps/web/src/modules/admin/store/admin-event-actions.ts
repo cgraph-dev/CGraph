@@ -23,13 +23,14 @@ export function createEventActions(set: Set, get: Get) {
         const { api } = await import('@/lib/api');
         const response = await api.get('/api/v1/admin/events');
         set({
-          events: (response.data as AdminEvent[]).map((event) => ({
-            ...event,
-            startDate: new Date(event.startDate),
-            endDate: new Date(event.endDate),
-            createdAt: new Date(event.createdAt),
-            updatedAt: new Date(event.updatedAt),
-          })),
+          events: (response.data as AdminEvent[]) /* safe downcast – API response */
+            .map((event) => ({
+              ...event,
+              startDate: new Date(event.startDate),
+              endDate: new Date(event.endDate),
+              createdAt: new Date(event.createdAt),
+              updatedAt: new Date(event.updatedAt),
+            })),
           isLoading: false,
         });
       } catch {
@@ -51,7 +52,7 @@ export function createEventActions(set: Set, get: Get) {
       try {
         const { api } = await import('@/lib/api');
         const response = await api.post('/api/v1/admin/events', event);
-        const newEvent = response.data as AdminEvent;
+        const newEvent = response.data as AdminEvent; // safe downcast – API response
         set((state) => ({
           events: [
             ...state.events,
@@ -76,7 +77,7 @@ export function createEventActions(set: Set, get: Get) {
               id: `event_${Date.now()}`,
               createdAt: now,
               updatedAt: now,
-            } as AdminEvent,
+            } as AdminEvent, // safe downcast – local fallback construction
           ],
           isLoading: false,
         }));
