@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
   RefreshControl,
   Alert,
-  Animated,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
@@ -231,9 +230,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
   // Track if we should scroll to bottom on next content size change
   const _shouldScrollToBottomRef = useRef(true);
   const _contentHeightRef = useRef(0);
-
-  // Animation refs (only those not provided by hooks)
-  const _inputFocusAnim = useRef(new Animated.Value(0)).current;
 
   const flatListRef = useRef<FlatList>(null);
   const inputRef = useRef<TextInput>(null);

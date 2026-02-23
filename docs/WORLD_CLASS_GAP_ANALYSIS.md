@@ -384,15 +384,15 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 ---
 
-### Rule 12: React 19 Patterns — FAIL
+### Rule 12: React 19 Patterns — PASS
 
 | Metric                      | Count               | Status                                                                          |
 | --------------------------- | ------------------- | ------------------------------------------------------------------------------- |
 | React version               | 19.x                | PASS                                                                            |
 | `useContext()` (legacy)     | **0**               | **PASS** — all 14 migrated to `use()` (Tier 2, commit `08b988c2`)               |
-| `useOptimistic()` adoption  | **3**               | **PARTIAL** — 3 verified usages across web app                                  |
-| `useFormStatus()` adoption  | **1 form**          | **PARTIAL** — 1 verified usage                                                  |
-| `useActionState()` adoption | **3 forms**         | **PARTIAL** — CreateGroupModal, AccountSettings, Register (Tier 5)               |
+| `useOptimistic()` adoption  | **9**               | **PASS** — 9 usages across web app                                              |
+| `useFormStatus()` adoption  | **2 forms**         | **PASS** — 2 usages                                                             |
+| `useActionState()` adoption | **11 forms**        | **PASS** — 11 usages across CreateGroupModal, AccountSettings, Register, etc.    |
 | `useMemo`/`useCallback`     | 1,112 in ~250 files | N/A — React Compiler NOT enabled; keep for performance                          |
 | `React.FC`                  | **0**               | **PASS** — all fixed (Tiers 2+7)                                                |
 | `forwardRef`                | **0**               | **PASS** — fixed in Tier 1                                                      |
@@ -480,13 +480,13 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 ## PART 2: WAVE TASK COMPLETION STATUS
 
-### Wave 0: Foundation (7 tasks — 0 DONE)
+### Wave 0: Foundation (7 tasks — 4 DONE)
 
 | Task | Name                                   | Status   | Blocker                                                      |
 | ---- | -------------------------------------- | -------- | ------------------------------------------------------------ |
-| 0.1  | Unify Mobile State (Context → Zustand) | NOT DONE | 11 stores exist but 4 Contexts remain                        |
+| 0.1  | Unify Mobile State (Context → Zustand) | **DONE** | All global contexts migrated; 1 component-local context remains (profile-photo-viewer) |
 | 0.2  | Consolidate Mobile Folder Architecture | NOT DONE | Still has `screens/` + `features/` split                     |
-| 0.3  | Complete Web Legacy Migration          | NOT DONE | 246+ files in legacy `components/` folder                    |
+| 0.3  | Complete Web Legacy Migration          | NOT DONE | 212 files in legacy `components/` folder                     |
 | 0.4  | Create Shared API Client Layer         | PARTIAL  | `packages/api-client/` exists but web still uses raw fetch   |
 | 0.5  | Establish Shared Animation Constants   | PARTIAL  | `packages/animation-constants/` exists but not fully adopted |
 | 0.6  | Create Shared Test Utilities Package   | **DONE** | `packages/test-utils/` created in Tier 7                     |
@@ -533,11 +533,11 @@ loading skeletons, sidebar physics, search animations, presence animations, sett
 | 4.6  | Migrate ALL Offset Pagination      | **DONE** (Tier 1 — all 10 migrated) |
 | 4.7  | Frontend Scaling Optimizations     | PARTIAL                             |
 
-### Wave 5: Code Quality (5 tasks — 4 DONE)
+### Wave 5: Code Quality (5 tasks — 5 DONE)
 
 | Task | Name                           | Status                                                          |
 | ---- | ------------------------------ | --------------------------------------------------------------- |
-| 5.1  | Standardize Animation Usage    | **IN PROGRESS** (5 critical files migrated to reanimated v4; ~48 MUST MIGRATE files remain) |
+| 5.1  | Standardize Animation Usage    | **DONE** (0 deprecated Animated imports from react-native; all files migrated to reanimated v4) |
 | 5.2  | Update Memo Comparators        | **DONE** (133 React.memo usages with proper comparators)         |
 | 5.3  | Customization Store Hydration  | **DONE** (78 hydrate/persist references across stores)           |
 | 5.4  | Reduced Motion / Accessibility | **DONE** (211 web + 18 mobile reduced-motion references)         |
@@ -671,11 +671,11 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | Cross-Platform (Rule 5)     | **100%** (12/12 packages)                 | **100%**       | 100% (12/12)        |
 | Documentation (Rule 6)      | **~98%** (96% JSDoc + 100% @doc + @moduledoc) | **~98%**       | 100%                |
 | Backend Standards (Rule 7)  | **~100%** (4,103 specs / 3,912 unique fns) | **~100%**     | 100%                |
-| File Size (Rule 8)          | **~99%** (1 Elixir borderline; 0 TSX borderline) | **~99%** | 100%                |
+| File Size (Rule 8)          | **100%** (0 Elixir over 500, 0 TSX over 300)  | **100%**       | 100%                |
 | Testing (Rule 9)            | 18% ratio                                 | 20%            | 100%                |
 | Performance (Rule 10)       | **100%** (0 offsets)                      | **100%**       | 100%                |
 | Security (Rule 11)          | **100%** (0 unannotated assertions)       | **100%**       | 100%                |
-| React 19 (Rule 12)          | **~85%** (core migrations done; low new API adoption: 3 useOptimistic, 1 useFormStatus, 3 useActionState) | **~85%** | 100% |
+| React 19 (Rule 12)          | **~98%** (core migrations done; 9 useOptimistic, 2 useFormStatus, 11 useActionState) | **~98%** | 100% |
 | CI/CD (Rule 13)             | **100%** (17/17)                          | **100%**       | 100%                |
 | Observability (Rule 14)     | **100%** (0 violations)                   | **100%**       | 100%                |
 | API Contract (Rule 15)      | **100%** (cursor + standardized)          | **100%**       | 100%                |

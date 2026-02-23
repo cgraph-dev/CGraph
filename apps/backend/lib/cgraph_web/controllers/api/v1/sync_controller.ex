@@ -65,8 +65,10 @@ defmodule CGraphWeb.Controllers.Api.V1.SyncController do
       |> Map.new()
 
     json(conn, %{
-      changes: changes,
-      timestamp: now
+      data: %{
+        changes: changes,
+        timestamp: now
+      }
     })
   end
 
@@ -94,7 +96,7 @@ defmodule CGraphWeb.Controllers.Api.V1.SyncController do
       end)
 
     if results.errors == [] do
-      json(conn, %{ok: true, processed: results.ok})
+      json(conn, %{data: %{ok: true, processed: results.ok}})
     else
       conn
       |> put_status(207)

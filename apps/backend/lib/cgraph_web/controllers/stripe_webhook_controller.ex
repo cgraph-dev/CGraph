@@ -42,7 +42,7 @@ defmodule CGraphWeb.StripeWebhookController do
       case verify_webhook(payload, signature) do
         {:ok, event} ->
           handle_event(event)
-          json(conn, %{received: true})
+          json(conn, %{data: %{received: true}})
 
         {:error, reason} ->
           Logger.warning("Stripe webhook verification failed", reason: inspect(reason))
