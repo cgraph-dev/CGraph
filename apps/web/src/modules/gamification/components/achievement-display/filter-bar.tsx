@@ -100,7 +100,7 @@ export function FilterBar({
       {/* Sort */}
       <select
         value={sortBy}
-        onChange={(e) => onSortChange(e.target.value as SortOption)}
+        onChange={(e) => onSortChange(e.target.value as SortOption)} // type assertion: select value is constrained to SortOption
         className="rounded-lg bg-dark-700 px-4 py-2 outline-none"
       >
         <option value="rarity">By Rarity</option>

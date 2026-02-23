@@ -68,7 +68,7 @@ export const useChatStore = create<ChatState>()(
           );
           const normalizedConversations = normalizeConversations(
             rawConversations
-          ) as unknown as Conversation[];
+          ) as unknown as Conversation[]; // type assertion: normalizer output type bridge
           set({
             conversations: normalizedConversations,
             isLoadingConversations: false,
@@ -88,7 +88,7 @@ export const useChatStore = create<ChatState>()(
             params,
           });
           const rawMessages = ensureArray<Record<string, unknown>>(response.data, 'messages');
-          const newMessages = rawMessages.map((m) => normalizeMessage(m)) as unknown as Message[];
+          const newMessages = rawMessages.map((m) => normalizeMessage(m)) as unknown as Message[]; // type assertion: normalizer output type bridge
           const hasMore = newMessages.length === 50;
 
           set((state) => {

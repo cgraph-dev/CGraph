@@ -131,7 +131,7 @@ export const useChatCustomization = () => {
         mapped[mappedKey] = mappedValue;
       }
     }
-    updateSettings(mapped as Parameters<typeof updateSettings>[0]);
+    updateSettings(mapped as Parameters<typeof updateSettings>[0]); // type assertion: mapped settings conform to update params
   };
 
   return {

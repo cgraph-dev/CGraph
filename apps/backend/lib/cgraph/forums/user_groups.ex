@@ -13,7 +13,7 @@ defmodule CGraph.Forums.UserGroups do
   @doc """
   List user groups for a forum.
   """
-  @spec list_user_groups(Ecto.UUID.t()) :: [%ForumUserGroup{}]
+  @spec list_user_groups(Ecto.UUID.t()) :: [ForumUserGroup.t()]
   def list_user_groups(forum_id) do
     from(g in ForumUserGroup,
       where: g.forum_id == ^forum_id,
@@ -24,7 +24,7 @@ defmodule CGraph.Forums.UserGroups do
   @doc """
   Get a user group by ID.
   """
-  @spec get_user_group(Ecto.UUID.t()) :: {:ok, %ForumUserGroup{}} | {:error, :not_found}
+  @spec get_user_group(Ecto.UUID.t()) :: {:ok, ForumUserGroup.t()} | {:error, :not_found}
   def get_user_group(id) do
     case Repo.get(ForumUserGroup, id) do
       nil -> {:error, :not_found}
@@ -35,7 +35,7 @@ defmodule CGraph.Forums.UserGroups do
   @doc """
   Create a user group.
   """
-  @spec create_user_group(map()) :: {:ok, %ForumUserGroup{}} | {:error, Ecto.Changeset.t()}
+  @spec create_user_group(map()) :: {:ok, ForumUserGroup.t()} | {:error, Ecto.Changeset.t()}
   def create_user_group(attrs) do
     %ForumUserGroup{}
     |> ForumUserGroup.changeset(attrs)
@@ -45,7 +45,7 @@ defmodule CGraph.Forums.UserGroups do
   @doc """
   Update a user group.
   """
-  @spec update_user_group(%ForumUserGroup{}, map()) :: {:ok, %ForumUserGroup{}} | {:error, Ecto.Changeset.t()}
+  @spec update_user_group(ForumUserGroup.t(), map()) :: {:ok, ForumUserGroup.t()} | {:error, Ecto.Changeset.t()}
   def update_user_group(%ForumUserGroup{} = group, attrs) do
     group
     |> ForumUserGroup.changeset(attrs)
@@ -55,7 +55,7 @@ defmodule CGraph.Forums.UserGroups do
   @doc """
   Delete a user group.
   """
-  @spec delete_user_group(%ForumUserGroup{}) :: {:ok, %ForumUserGroup{}} | {:error, :cannot_delete_default_group | Ecto.Changeset.t()}
+  @spec delete_user_group(ForumUserGroup.t()) :: {:ok, ForumUserGroup.t()} | {:error, :cannot_delete_default_group | Ecto.Changeset.t()}
   def delete_user_group(%ForumUserGroup{is_default: true}), do: {:error, :cannot_delete_default_group}
   def delete_user_group(%ForumUserGroup{} = group), do: Repo.delete(group)
 
@@ -63,7 +63,7 @@ defmodule CGraph.Forums.UserGroups do
   Get default user groups for a new forum.
   Creates the standard group hierarchy.
   """
-  @spec create_default_user_groups(Ecto.UUID.t()) :: [{:ok, %ForumUserGroup{}} | {:error, Ecto.Changeset.t()}]
+  @spec create_default_user_groups(Ecto.UUID.t()) :: [{:ok, ForumUserGroup.t()} | {:error, Ecto.Changeset.t()}]
   def create_default_user_groups(forum_id) do
     groups = [
       %{
@@ -111,7 +111,7 @@ defmodule CGraph.Forums.UserGroups do
   @doc """
   Reorder user groups.
   """
-  @spec reorder_user_groups(Ecto.UUID.t(), [Ecto.UUID.t()]) :: {:ok, [%ForumUserGroup{}]}
+  @spec reorder_user_groups(Ecto.UUID.t(), [Ecto.UUID.t()]) :: {:ok, [ForumUserGroup.t()]}
   def reorder_user_groups(forum_id, group_ids) do
     Enum.with_index(group_ids)
     |> Enum.each(fn {group_id, index} ->

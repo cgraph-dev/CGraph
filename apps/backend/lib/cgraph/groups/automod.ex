@@ -11,7 +11,7 @@ defmodule CGraph.Groups.Automod do
   alias CGraph.Repo
 
   @doc "List all automod rules for a group."
-  @spec list_rules(Ecto.UUID.t()) :: [%AutomodRule{}]
+  @spec list_rules(Ecto.UUID.t()) :: [AutomodRule.t()]
   def list_rules(group_id) do
     AutomodRule
     |> where(group_id: ^group_id)
@@ -20,7 +20,7 @@ defmodule CGraph.Groups.Automod do
   end
 
   @doc "Get a single automod rule by id, scoped to a group."
-  @spec get_rule(Ecto.UUID.t(), Ecto.UUID.t()) :: {:ok, %AutomodRule{}} | {:error, :not_found}
+  @spec get_rule(Ecto.UUID.t(), Ecto.UUID.t()) :: {:ok, AutomodRule.t()} | {:error, :not_found}
   def get_rule(group_id, rule_id) do
     case Repo.get_by(AutomodRule, id: rule_id, group_id: group_id) do
       nil -> {:error, :not_found}
@@ -29,7 +29,7 @@ defmodule CGraph.Groups.Automod do
   end
 
   @doc "Create a new automod rule for a group."
-  @spec create_rule(Ecto.UUID.t(), map()) :: {:ok, %AutomodRule{}} | {:error, Ecto.Changeset.t()}
+  @spec create_rule(Ecto.UUID.t(), map()) :: {:ok, AutomodRule.t()} | {:error, Ecto.Changeset.t()}
   def create_rule(group_id, attrs) do
     %AutomodRule{}
     |> AutomodRule.changeset(attrs |> stringify_keys() |> Map.put("group_id", group_id))
@@ -37,7 +37,7 @@ defmodule CGraph.Groups.Automod do
   end
 
   @doc "Update an existing automod rule."
-  @spec update_rule(%AutomodRule{}, map()) :: {:ok, %AutomodRule{}} | {:error, Ecto.Changeset.t()}
+  @spec update_rule(AutomodRule.t(), map()) :: {:ok, AutomodRule.t()} | {:error, Ecto.Changeset.t()}
   def update_rule(%AutomodRule{} = rule, attrs) do
     rule
     |> AutomodRule.changeset(attrs)
@@ -45,13 +45,13 @@ defmodule CGraph.Groups.Automod do
   end
 
   @doc "Delete an automod rule."
-  @spec delete_rule(%AutomodRule{}) :: {:ok, %AutomodRule{}} | {:error, Ecto.Changeset.t()}
+  @spec delete_rule(AutomodRule.t()) :: {:ok, AutomodRule.t()} | {:error, Ecto.Changeset.t()}
   def delete_rule(%AutomodRule{} = rule) do
     Repo.delete(rule)
   end
 
   @doc "Toggle the enabled state of a rule."
-  @spec toggle_rule(%AutomodRule{}) :: {:ok, %AutomodRule{}} | {:error, Ecto.Changeset.t()}
+  @spec toggle_rule(AutomodRule.t()) :: {:ok, AutomodRule.t()} | {:error, Ecto.Changeset.t()}
   def toggle_rule(%AutomodRule{} = rule) do
     rule
     |> AutomodRule.changeset(%{is_enabled: !rule.is_enabled})

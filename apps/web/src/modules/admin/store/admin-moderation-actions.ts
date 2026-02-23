@@ -22,7 +22,7 @@ export function createModerationActions(set: Set) {
         const { api } = await import('@/lib/api');
         const response = await api.get('/api/v1/admin/moderation');
         set({
-          moderationQueue: (response.data as ModerationItem[]).map((item) => ({
+          moderationQueue: (response.data as ModerationItem[]).map((item) => ({ // type assertion: API response data shape
             ...item,
             createdAt: new Date(item.createdAt),
             updatedAt: new Date(item.updatedAt),

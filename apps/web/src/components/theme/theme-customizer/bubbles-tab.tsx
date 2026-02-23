@@ -67,7 +67,7 @@ export function BubblesTab({
       <div className="mb-6">
         <h4 className="mb-3 text-sm font-semibold text-gray-400">Bubble Color</h4>
         <div className="flex flex-wrap gap-2">
-          {(Object.keys(THEME_COLORS) as ThemeColorPreset[]).map((preset) => (
+          {(Object.keys(THEME_COLORS) as ThemeColorPreset[]).map((preset) => ( // type assertion: Object.keys returns string[], narrowing to known keys
             <motion.button
               key={preset}
               whileHover={{ scale: 1.1 }}

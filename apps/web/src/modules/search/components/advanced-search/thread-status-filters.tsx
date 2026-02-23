@@ -28,7 +28,7 @@ export function ThreadStatusFilters({ filters, updateFilter }: ThreadStatusFilte
               checked={plain ? (filters[key] as boolean) : (filters[key] as boolean) || false}
               onChange={(e) => {
                 const val = plain ? e.target.checked : e.target.checked || undefined;
-                updateFilter(key, val as AdvancedSearchFilters[typeof key]);
+                updateFilter(key, val as AdvancedSearchFilters[typeof key]); // type assertion: dynamic filter key value type
               }}
               className={CHECKBOX_CLS}
             />

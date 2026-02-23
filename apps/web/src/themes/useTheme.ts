@@ -32,7 +32,7 @@ export function useTheme(): UseThemeReturn {
   // Listen for theme changes
   useEffect(() => {
     const handleThemeChange = (event: Event) => {
-      const customEvent = event as CustomEvent<{ theme: AppTheme }>;
+      const customEvent = event as CustomEvent<{ theme: AppTheme }>; // type assertion: custom event with theme payload
       setCurrentTheme(customEvent.detail.theme);
     };
 

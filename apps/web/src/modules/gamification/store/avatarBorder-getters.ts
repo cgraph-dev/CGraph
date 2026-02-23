@@ -91,6 +91,6 @@ export function createGetThemeUnlockCounts(get: GetState) {
       }
     });
 
-    return counts as Record<BorderTheme, { unlocked: number; total: number }>;
+    return counts as Record<BorderTheme, { unlocked: number; total: number }>; // type assertion: reduce accumulator type
   };
 }

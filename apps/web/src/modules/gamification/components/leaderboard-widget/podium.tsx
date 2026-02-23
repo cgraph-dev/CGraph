@@ -48,7 +48,7 @@ export function Podium({ entries, onUserClick }: PodiumProps) {
                 style={{ '--tw-ring-color': RANK_COLORS[actualRank] } as React.CSSProperties}
                 avatarBorderId={
                   entry.avatarBorderId ??
-                  (entry as LeaderboardEntry & { avatar_border_id?: string | null })
+                  (entry as LeaderboardEntry & { avatar_border_id?: string | null }) // type assertion: extending entry with optional field
                     .avatar_border_id
                 }
               />

@@ -54,7 +54,7 @@ export const useChatBubbleStore = () => {
       value?: ChatBubbleConfig[K]
     ) => {
       if (typeof keyOrUpdates === 'string') {
-        updateChatBubble({ [keyOrUpdates]: value } as Partial<ChatBubbleConfig>);
+        updateChatBubble({ [keyOrUpdates]: value } as Partial<ChatBubbleConfig>); // type assertion: computed property key as config partial
       } else {
         updateChatBubble(keyOrUpdates);
       }

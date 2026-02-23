@@ -38,7 +38,7 @@ export default function ChatBubbleSettings() {
   const themeStore = useChatBubbleStore();
   const style = themeStore.chatBubble;
   const updateStyle = <K extends keyof ChatBubbleConfig>(key: K, value: ChatBubbleConfig[K]) =>
-    themeStore.updateChatBubble({ [key]: value } as Partial<ChatBubbleConfig>);
+    themeStore.updateChatBubble({ [key]: value } as Partial<ChatBubbleConfig>); // type assertion: computed property key as config partial
   const resetStyle = themeStore.resetChatBubble;
   const applyPreset = themeStore.applyPreset;
   const { updateChat } = useChatCustomization();

@@ -67,7 +67,7 @@ export const useAdminStore = create<AdminStore>()(
             const { api } = await import('@/lib/api');
             const response = await api.get('/api/v1/admin/stats');
             set({
-              stats: response.data as AdminStats,
+              stats: response.data as AdminStats, // type assertion: API response data shape
               statsLastUpdated: new Date(),
               isLoading: false,
             });

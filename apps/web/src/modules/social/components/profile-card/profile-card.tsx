@@ -56,7 +56,7 @@ export const ProfileCard = memo(function ProfileCard({
       borderRadius: RADIUS_MAP[borderRadius],
       color: colors.text,
       fontFamily: theme.fontFamily,
-    } as React.CSSProperties;
+    } as React.CSSProperties; // type assertion: CSS custom properties not in CSSProperties type
   }, [theme]);
 
   const hoverVariants = theme ? getHoverVariants(theme.hoverEffect) : undefined;

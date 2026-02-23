@@ -17,8 +17,8 @@ interface AnimationVariant {
 }
 
 const getAnimationVariants = (effect: MessageEffect, config: Partial<MessageEffectConfig>) => {
-  const animationSpeed = (config as Record<string, unknown>).animationSpeed as string | undefined;
-  const size = (config as Record<string, unknown>).size as string | undefined;
+  const animationSpeed = (config as Record<string, unknown>).animationSpeed as string | undefined; // type assertion: accessing optional config properties
+  const size = (config as Record<string, unknown>).size as string | undefined; // type assertion: accessing optional config properties
   const duration = animationSpeed === 'slow' ? 0.8 : animationSpeed === 'fast' ? 0.3 : 0.5;
   const scale = size === 'small' ? 0.9 : size === 'large' ? 1.1 : 1;
 

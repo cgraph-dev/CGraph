@@ -12,7 +12,7 @@ defmodule CGraph.Forums.Categories do
   @doc """
   List categories in a forum.
   """
-  @spec list_categories(%CGraph.Forums.Forum{}) :: [%Category{}]
+  @spec list_categories(CGraph.Forums.Forum.t()) :: [Category.t()]
   def list_categories(forum) do
     from(c in Category,
       where: c.forum_id == ^forum.id,
@@ -24,7 +24,7 @@ defmodule CGraph.Forums.Categories do
   @doc """
   Get a category by ID within a forum.
   """
-  @spec get_category(%CGraph.Forums.Forum{}, Ecto.UUID.t()) :: {:ok, %Category{}} | {:error, :not_found}
+  @spec get_category(CGraph.Forums.Forum.t(), Ecto.UUID.t()) :: {:ok, Category.t()} | {:error, :not_found}
   def get_category(forum, category_id) do
     query = from c in Category,
       where: c.id == ^category_id,
@@ -39,7 +39,7 @@ defmodule CGraph.Forums.Categories do
   @doc """
   Create a category in a forum.
   """
-  @spec create_category(%CGraph.Forums.Forum{}, map()) :: {:ok, %Category{}} | {:error, Ecto.Changeset.t()}
+  @spec create_category(CGraph.Forums.Forum.t(), map()) :: {:ok, Category.t()} | {:error, Ecto.Changeset.t()}
   def create_category(forum, attrs) do
     %Category{}
     |> Category.changeset(attrs |> stringify_keys() |> Map.put("forum_id", forum.id))
@@ -49,7 +49,7 @@ defmodule CGraph.Forums.Categories do
   @doc """
   Update a category.
   """
-  @spec update_category(%Category{}, map()) :: {:ok, %Category{}} | {:error, Ecto.Changeset.t()}
+  @spec update_category(Category.t(), map()) :: {:ok, Category.t()} | {:error, Ecto.Changeset.t()}
   def update_category(category, attrs) do
     category
     |> Category.changeset(attrs)
@@ -59,7 +59,7 @@ defmodule CGraph.Forums.Categories do
   @doc """
   Delete a category.
   """
-  @spec delete_category(%Category{}) :: {:ok, %Category{}} | {:error, Ecto.Changeset.t()}
+  @spec delete_category(Category.t()) :: {:ok, Category.t()} | {:error, Ecto.Changeset.t()}
   def delete_category(category) do
     Repo.delete(category)
   end
@@ -67,7 +67,7 @@ defmodule CGraph.Forums.Categories do
   @doc """
   Reorder categories within a forum.
   """
-  @spec reorder_categories(%CGraph.Forums.Forum{}, [Ecto.UUID.t()]) :: {:ok, [%Category{}]}
+  @spec reorder_categories(CGraph.Forums.Forum.t(), [Ecto.UUID.t()]) :: {:ok, [Category.t()]}
   def reorder_categories(forum, category_ids) do
     Enum.with_index(category_ids)
     |> Enum.each(fn {category_id, index} ->

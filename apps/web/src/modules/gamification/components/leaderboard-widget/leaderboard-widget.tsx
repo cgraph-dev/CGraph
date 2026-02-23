@@ -109,7 +109,7 @@ export function LeaderboardWidget({
                 {TIME_PERIODS.map(({ value, label }) => (
                   <button
                     key={value}
-                    onClick={() => onTimePeriodChange?.(value as TimePeriod)}
+                    onClick={() => onTimePeriodChange?.(value as TimePeriod)} // type assertion: button value constrained to TimePeriod
                     className={`rounded px-3 py-1.5 text-sm transition-colors ${
                       timePeriod === value
                         ? 'bg-dark-600 text-white'

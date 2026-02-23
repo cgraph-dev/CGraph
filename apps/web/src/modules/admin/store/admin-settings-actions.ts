@@ -21,7 +21,7 @@ export function createSettingsActions(set: Set) {
       try {
         const { api } = await import('@/lib/api');
         const response = await api.get('/api/v1/admin/settings');
-        set({ systemSettings: response.data as SystemSetting[], isLoading: false });
+        set({ systemSettings: response.data as SystemSetting[], isLoading: false }); // type assertion: API response data shape
       } catch {
         // Use mock data for development
         set({

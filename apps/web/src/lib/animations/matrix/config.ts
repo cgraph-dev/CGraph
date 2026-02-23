@@ -378,7 +378,7 @@ function deepMerge<T extends object>(target: T, source: DeepPartial<T>): T {
         typeof targetValue === 'object' &&
         !Array.isArray(targetValue)
       ) {
-        (result as Record<string, unknown>)[key] = deepMerge(
+        (result as Record<string, unknown>)[key] = deepMerge( // type assertion: building merged config object
           // safe downcast – structural boundary
           targetValue as object, // safe downcast – runtime verified
           sourceValue as DeepPartial<object> // safe downcast – runtime verified

@@ -71,7 +71,7 @@ export function createScheduledActions(set: Set, _get: Get) {
         const response = await api.post(`/conversations/${conversationId}/messages`, payload);
         const scheduledMessage = normalizeMessage(
           response.data?.message || response.data
-        ) as unknown as Message;
+        ) as unknown as Message; // type assertion: normalizer output type bridge
 
         set((state) => {
           const existingScheduled = state.scheduledMessages[conversationId] || [];
@@ -118,7 +118,7 @@ export function createScheduledActions(set: Set, _get: Get) {
         });
         const updatedMessage = normalizeMessage(
           response.data?.message || response.data
-        ) as unknown as Message;
+        ) as unknown as Message; // type assertion: normalizer output type bridge
 
         set((state) => {
           const updatedScheduledMessages: Record<string, Message[]> = {};

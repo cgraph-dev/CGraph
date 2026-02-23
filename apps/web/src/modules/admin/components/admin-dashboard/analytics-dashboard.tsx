@@ -109,7 +109,7 @@ export function AnalyticsDashboard() {
         <DashboardChart
           title="Revenue Trend"
           data={
-            generateChartData(range, Math.max(rev, 80)) as unknown as Record<
+            generateChartData(range, Math.max(rev, 80)) as unknown as Record< // type assertion: chart data type bridge
               string,
               unknown
             >[] /* safe downcast – structural boundary */
@@ -130,7 +130,7 @@ export function AnalyticsDashboard() {
         <DashboardChart
           title="Marketplace Volume"
           data={
-            generateChartData(range, Math.max(rpm, 45)) as unknown as Record<
+            generateChartData(range, Math.max(rpm, 45)) as unknown as Record< // type assertion: chart data type bridge
               string,
               unknown
             >[] /* safe downcast – structural boundary */

@@ -41,7 +41,7 @@ export function BrowseSection() {
         {/* Type Filter */}
         <select
           value={filters.type || ''}
-          onChange={(e) => setFilters({ type: (e.target.value as ItemType) || undefined })}
+          onChange={(e) => setFilters({ type: (e.target.value as ItemType) || undefined })} // type assertion: select value constrained to ItemType
           className="rounded-lg border border-white/10 bg-black/50 px-4 py-2 text-white"
         >
           <option value="">All Types</option>
@@ -89,7 +89,7 @@ export function BrowseSection() {
         {/* Sort */}
         <select
           value={filters.sort}
-          onChange={(e) => setFilters({ sort: e.target.value as SortOption })}
+          onChange={(e) => setFilters({ sort: e.target.value as SortOption })} // type assertion: select value constrained to SortOption
           className="rounded-lg border border-white/10 bg-black/50 px-4 py-2 text-white"
         >
           <option value="newest">Newest First</option>

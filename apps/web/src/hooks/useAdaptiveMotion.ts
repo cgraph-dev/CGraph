@@ -61,7 +61,7 @@ function detectLowEndDevice(): boolean {
   if (cores <= 2) return true;
 
   // Check device memory if available
-  const nav = navigator as Navigator & { deviceMemory?: number };
+  const nav = navigator as Navigator & { deviceMemory?: number }; // type assertion: Navigator with optional deviceMemory API
   if (nav.deviceMemory && nav.deviceMemory < 4) return true;
 
   // Check if mobile device (more conservative with animations)

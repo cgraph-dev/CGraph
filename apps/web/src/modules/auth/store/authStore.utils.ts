@@ -15,7 +15,7 @@ import type { StateStorage } from 'zustand/middleware';
  */
 export function getApiErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof AxiosError) {
-    const data = error.response?.data as ApiErrorResponse | undefined;
+    const data = error.response?.data as ApiErrorResponse | undefined; // type assertion: axios error response data shape
     return data?.error || data?.message || fallback;
   }
   if (error instanceof Error) {

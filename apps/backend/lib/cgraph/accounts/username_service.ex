@@ -40,7 +40,7 @@ defmodule CGraph.Accounts.UsernameService do
   @doc """
   Change a user's username.
   """
-  @spec change_username(Ecto.UUID.t(), String.t(), keyword()) :: {:ok, %User{}} | {:error, term()}
+  @spec change_username(Ecto.UUID.t(), String.t(), keyword()) :: {:ok, User.t()} | {:error, term()}
   def change_username(user_id, new_username, opts \\ []) do
     is_admin = Keyword.get(opts, :admin, false)
     is_premium = Keyword.get(opts, :premium, false)
@@ -98,7 +98,7 @@ defmodule CGraph.Accounts.UsernameService do
   @doc """
   Get username change history for a user.
   """
-  @spec get_history(Ecto.UUID.t()) :: [%UsernameChange{}]
+  @spec get_history(Ecto.UUID.t()) :: [UsernameChange.t()]
   def get_history(user_id) do
     from(uc in UsernameChange,
       where: uc.user_id == ^user_id,
@@ -142,7 +142,7 @@ defmodule CGraph.Accounts.UsernameService do
   @doc """
   Admin: Force change a user's username.
   """
-  @spec admin_change_username(Ecto.UUID.t(), Ecto.UUID.t(), String.t(), String.t()) :: {:ok, %User{}} | {:error, term()}
+  @spec admin_change_username(Ecto.UUID.t(), Ecto.UUID.t(), String.t(), String.t()) :: {:ok, User.t()} | {:error, term()}
   def admin_change_username(admin_id, user_id, new_username, reason) do
     change_username(user_id, new_username, admin: true, reason: "Admin (#{admin_id}): #{reason}")
   end

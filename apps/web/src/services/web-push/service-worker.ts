@@ -87,7 +87,7 @@ export async function subscribeToPush(
 
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: vapidPublicKey as BufferSource,
+      applicationServerKey: vapidPublicKey as BufferSource, // type assertion: VAPID key conversion to BufferSource
     });
 
     logger.debug(' Push subscription created');

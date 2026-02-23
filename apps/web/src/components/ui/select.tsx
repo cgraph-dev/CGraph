@@ -53,7 +53,7 @@ export default function Select({
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) { // type assertion: EventTarget to Node for contains check
         setIsOpen(false);
         setSearchQuery('');
       }

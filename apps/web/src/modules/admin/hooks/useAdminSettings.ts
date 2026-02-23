@@ -33,7 +33,7 @@ export function useAdminSettings() {
         acc[category].push(setting);
         return acc;
       },
-      {} as Record<string, typeof systemSettings>
+      {} as Record<string, typeof systemSettings> // type assertion: initial empty record type
     );
   }, [systemSettings]);
 

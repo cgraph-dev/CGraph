@@ -56,7 +56,7 @@ export function SidebarVariant({
               size="xs"
               avatarBorderId={
                 entry.avatarBorderId ??
-                (entry as LeaderboardEntry & { avatar_border_id?: string | null }).avatar_border_id
+                (entry as LeaderboardEntry & { avatar_border_id?: string | null }).avatar_border_id // type assertion: extending entry with optional field
               }
             />
             <span className="flex-1 truncate text-sm">{entry.displayName || entry.username}</span>
@@ -77,7 +77,7 @@ export function SidebarVariant({
               size="xs"
               avatarBorderId={
                 currentUserEntry.avatarBorderId ??
-                (currentUserEntry as LeaderboardEntry & { avatar_border_id?: string | null })
+                (currentUserEntry as LeaderboardEntry & { avatar_border_id?: string | null }) // type assertion: extending entry with optional field
                   .avatar_border_id
               }
             />

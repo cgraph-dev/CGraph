@@ -119,7 +119,7 @@ export function useStickerPicker({
   // Outside-click handler
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) { // type assertion: EventTarget to Node for contains check
         onClose();
       }
     }

@@ -32,7 +32,7 @@ defmodule CGraph.Forums.ThreadPosts do
   @doc """
   Get a thread post by ID.
   """
-  @spec get_thread_post(Ecto.UUID.t()) :: {:ok, %ThreadPost{}} | {:error, :not_found}
+  @spec get_thread_post(Ecto.UUID.t()) :: {:ok, ThreadPost.t()} | {:error, :not_found}
   def get_thread_post(id) do
     query = from(p in ThreadPost, where: p.id == ^id, preload: [:author, :thread])
 
@@ -45,7 +45,7 @@ defmodule CGraph.Forums.ThreadPosts do
   @doc """
   Create a thread post (reply).
   """
-  @spec create_thread_post(map()) :: {:ok, %ThreadPost{}} | {:error, Ecto.Changeset.t()}
+  @spec create_thread_post(map()) :: {:ok, ThreadPost.t()} | {:error, Ecto.Changeset.t()}
   def create_thread_post(attrs \\ %{}) do
     Repo.transaction(fn ->
       thread_id = attrs[:thread_id] || attrs["thread_id"]
@@ -104,7 +104,7 @@ defmodule CGraph.Forums.ThreadPosts do
   @doc """
   Update a thread post.
   """
-  @spec update_thread_post(%ThreadPost{}, map(), Ecto.UUID.t()) :: {:ok, %ThreadPost{}} | {:error, Ecto.Changeset.t()}
+  @spec update_thread_post(ThreadPost.t(), map(), Ecto.UUID.t()) :: {:ok, ThreadPost.t()} | {:error, Ecto.Changeset.t()}
   def update_thread_post(%ThreadPost{} = post, attrs, editor_id) do
     attrs = Map.merge(attrs, %{
       is_edited: true,
@@ -121,7 +121,7 @@ defmodule CGraph.Forums.ThreadPosts do
   @doc """
   Delete a thread post (soft delete).
   """
-  @spec delete_thread_post(%ThreadPost{}) :: {:ok, %ThreadPost{}} | {:error, Ecto.Changeset.t()}
+  @spec delete_thread_post(ThreadPost.t()) :: {:ok, ThreadPost.t()} | {:error, Ecto.Changeset.t()}
   def delete_thread_post(%ThreadPost{} = post) do
     post
     |> Ecto.Changeset.change(deleted_at: DateTime.truncate(DateTime.utc_now(), :second))
@@ -131,7 +131,7 @@ defmodule CGraph.Forums.ThreadPosts do
   @doc """
   Vote on a thread.
   """
-  @spec vote_thread(Ecto.UUID.t(), Ecto.UUID.t(), 1 | -1) :: {:ok, %ThreadVote{} | :removed} | {:error, Ecto.Changeset.t()}
+  @spec vote_thread(Ecto.UUID.t(), Ecto.UUID.t(), 1 | -1) :: {:ok, ThreadVote.t() | :removed} | {:error, Ecto.Changeset.t()}
   def vote_thread(user_id, thread_id, value) when value in [1, -1] do
     case Repo.get_by(ThreadVote, user_id: user_id, thread_id: thread_id) do
       nil ->
@@ -169,7 +169,7 @@ defmodule CGraph.Forums.ThreadPosts do
   @doc """
   Vote on a post by user_id and post_id.
   """
-  @spec vote_post_by_id(Ecto.UUID.t(), Ecto.UUID.t(), 1 | -1) :: {:ok, %PostVote{} | :removed} | {:error, Ecto.Changeset.t()}
+  @spec vote_post_by_id(Ecto.UUID.t(), Ecto.UUID.t(), 1 | -1) :: {:ok, PostVote.t() | :removed} | {:error, Ecto.Changeset.t()}
   def vote_post_by_id(user_id, post_id, value) when value in [1, -1] do
     case Repo.get_by(PostVote, user_id: user_id, post_id: post_id) do
       nil ->

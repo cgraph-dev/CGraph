@@ -117,7 +117,7 @@ export const AvatarBorderRenderer = memo(function AvatarBorderRenderer({
           width: size,
           height: size,
           '--glow-color': colors.accent,
-        } as React.CSSProperties
+        } as React.CSSProperties // type assertion: CSS custom properties not in CSSProperties type
       }
       onClick={onClick}
       whileHover={interactive && !reducedMotion ? { scale: 1.05 } : undefined}

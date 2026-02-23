@@ -29,7 +29,7 @@ export function useLocalStorage<T>(
 
     try {
       const item = window.localStorage.getItem(key);
-      return item !== null ? (JSON.parse(item) as T) : initialValue;
+      return item !== null ? (JSON.parse(item) as T) : initialValue; // type assertion: JSON.parse result typed to generic param
     } catch (error: unknown) {
       logger.warn(
         `Error reading localStorage key "${key}":`,
@@ -85,7 +85,7 @@ export function useLocalStorage<T>(
         try {
           setStoredValue(JSON.parse(event.newValue));
         } catch {
-          setStoredValue(event.newValue as unknown as T);
+          setStoredValue(event.newValue as unknown as T); // type assertion: storage event value typed to generic param
         }
       } else if (event.key === key && event.newValue === null) {
         setStoredValue(initialValue);

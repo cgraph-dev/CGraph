@@ -19,7 +19,7 @@ export function getTierForPostCount(postCount: number): UserStarsTier {
     }
   }
   // Fallback to first tier - guaranteed to exist
-  return USER_TIERS[0] as UserStarsTier;
+  return USER_TIERS[0] as UserStarsTier; // type assertion: array element type from indexed access
 }
 
 /**

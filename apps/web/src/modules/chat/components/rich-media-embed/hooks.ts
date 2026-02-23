@@ -93,7 +93,7 @@ export function useMediaEmbeds(content: string, onLoad?: () => void) {
         })
       );
 
-      setEmbeds(metadata.filter((m): m is NonNullable<typeof m> => m !== null) as LinkMetadata[]);
+      setEmbeds(metadata.filter((m): m is NonNullable<typeof m> => m !== null) as LinkMetadata[]); // type assertion: post-filter null exclusion
       setIsLoading(false);
       onLoad?.();
     };

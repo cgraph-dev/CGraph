@@ -204,7 +204,7 @@ export const MessageBubble = memo(
               >
                 <span>{formatMessageTime(message.createdAt)}</span>
                 {message.isEdited && <span>(edited)</span>}
-                {!!(message as unknown as Record<string, unknown>)
+                {!!(message as unknown as Record<string, unknown>) // type assertion: checking optional property existence
                   .expiresAt /* safe downcast – optional expiry field */ && (
                   <span
                     className="flex items-center gap-0.5 text-amber-400/70"
@@ -217,7 +217,7 @@ export const MessageBubble = memo(
                   <MessageStatusIndicator
                     status={
                       (
-                        message.metadata?.readBy as ReadByEntry[] | undefined
+                        message.metadata?.readBy as ReadByEntry[] | undefined // type assertion: metadata readBy field type
                       ) /* safe downcast – metadata field */?.length
                         ? 'read'
                         : message.metadata?.deliveredAt

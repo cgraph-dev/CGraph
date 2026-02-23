@@ -40,7 +40,7 @@ export function createOperationsActions(set: Set, get: Get) {
       );
       const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
       if (rawMessage) {
-        const message = normalizeMessage(rawMessage) as unknown as Message;
+        const message = normalizeMessage(rawMessage) as unknown as Message; // type assertion: normalizer output type bridge
         get().updateMessage(message);
       }
     },

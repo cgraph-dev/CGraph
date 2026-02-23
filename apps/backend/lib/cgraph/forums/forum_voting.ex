@@ -39,7 +39,7 @@ defmodule CGraph.Forums.ForumVoting do
   @doc """
   Get user's vote on a forum.
   """
-  @spec get_user_forum_vote(Ecto.UUID.t(), Ecto.UUID.t()) :: %ForumVote{} | nil
+  @spec get_user_forum_vote(Ecto.UUID.t(), Ecto.UUID.t()) :: ForumVote.t() | nil
   def get_user_forum_vote(user_id, forum_id) do
     Repo.one(
       from v in ForumVote,

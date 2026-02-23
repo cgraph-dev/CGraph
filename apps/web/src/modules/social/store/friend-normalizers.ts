@@ -55,7 +55,7 @@ export function normalizeRequest(
  * Normalize friend data from API into our Friend interface.
  */
 export function normalizeFriend(data: Record<string, unknown>): Friend {
-  const userData = data.user as Record<string, unknown> | undefined;
+  const userData = data.user as Record<string, unknown> | undefined; // type assertion: dynamic API response shape
 
   return {
     id: (userData?.id as string) || (data.id as string),

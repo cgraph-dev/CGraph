@@ -249,7 +249,7 @@ export function ConversationModals({
               onlineStatus: isOtherUserOnline ? 'online' : 'offline',
               lastSeenAt: otherParticipant?.user?.lastSeenAt ?? undefined,
               bio: otherParticipant?.user?.bio ?? undefined,
-              badges: (otherParticipant?.user?.badges ?? []) as unknown as Array<{
+              badges: (otherParticipant?.user?.badges ?? []) as unknown as Array<{ // type assertion: badge type mismatch between API and component
                 id: string;
                 name: string;
                 emoji: string;

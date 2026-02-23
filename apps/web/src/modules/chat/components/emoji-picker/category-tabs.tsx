@@ -14,7 +14,7 @@ interface CategoryTabsProps {
 }
 
 export function CategoryTabs({ activeCategory, onCategoryChange }: CategoryTabsProps) {
-  const categories = Object.keys(EMOJI_CATEGORIES) as EmojiCategory[];
+  const categories = Object.keys(EMOJI_CATEGORIES) as EmojiCategory[]; // type assertion: Object.keys returns string[], narrowing to known keys
 
   return (
     <div className="scrollbar-thin scrollbar-thumb-gray-700 flex gap-1 overflow-x-auto border-b border-white/10 p-2">

@@ -44,7 +44,7 @@ export function useClickOutside(
 ) {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
+      if (ref.current && !ref.current.contains(event.target as Node)) { // type assertion: EventTarget to Node for contains check
         onClose();
       }
     };

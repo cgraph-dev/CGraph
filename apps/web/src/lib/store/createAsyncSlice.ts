@@ -122,9 +122,9 @@ export function createAsyncSlice<T>(
 
     return {
       // State (safe downcast – initial state typing for computed property keys)
-      [dataKey]: null as T | null,
+      [dataKey]: null as T | null, // type assertion: initial null state for generic type
       [loadingKey]: false,
-      [errorKey]: null as Error | null,
+      [errorKey]: null as Error | null, // type assertion: initial null state for error
       [lastFetchedKey]: null as number | null,
 
       // Actions

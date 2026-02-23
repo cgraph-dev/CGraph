@@ -22,7 +22,7 @@ defmodule CGraph.Accounts.Profile do
   @doc """
   Update a user's signature.
   """
-  @spec update_signature(Ecto.UUID.t(), String.t()) :: {:ok, %User{}} | {:error, :not_found}
+  @spec update_signature(Ecto.UUID.t(), String.t()) :: {:ok, User.t()} | {:error, :not_found}
   def update_signature(user_id, signature) do
     case Repo.get(User, user_id) do
       nil -> {:error, :not_found}
@@ -36,7 +36,7 @@ defmodule CGraph.Accounts.Profile do
   @doc """
   Update a user's bio.
   """
-  @spec update_bio(Ecto.UUID.t(), String.t()) :: {:ok, %User{}} | {:error, :not_found}
+  @spec update_bio(Ecto.UUID.t(), String.t()) :: {:ok, User.t()} | {:error, :not_found}
   def update_bio(user_id, bio) do
     case Repo.get(User, user_id) do
       nil -> {:error, :not_found}
@@ -50,7 +50,7 @@ defmodule CGraph.Accounts.Profile do
   @doc """
   Update a user's profile fields.
   """
-  @spec update_profile(Ecto.UUID.t(), map()) :: {:ok, %User{}} | {:error, :not_found | Ecto.Changeset.t()}
+  @spec update_profile(Ecto.UUID.t(), map()) :: {:ok, User.t()} | {:error, :not_found | Ecto.Changeset.t()}
   def update_profile(user_id, attrs) do
     case Repo.get(User, user_id) do
       nil -> {:error, :not_found}

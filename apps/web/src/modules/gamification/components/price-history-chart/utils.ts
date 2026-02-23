@@ -80,7 +80,7 @@ export function calculatePaths(
             volume: point.volume,
           };
         })
-        .filter(Boolean) as VolumeBar[])
+        .filter(Boolean) as VolumeBar[]) // type assertion: post-filter Boolean type narrowing
     : [];
 
   return {

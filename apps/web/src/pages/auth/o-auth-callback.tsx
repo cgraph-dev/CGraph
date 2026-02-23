@@ -57,7 +57,7 @@ export function OAuthCallbackPage() {
 
     // Validate provider
     const validProviders: OAuthProvider[] = ['google', 'apple', 'facebook', 'tiktok'];
-    if (!validProviders.includes(provider as OAuthProvider)) {
+    if (!validProviders.includes(provider as OAuthProvider)) { // type assertion: validated by includes check above
       // safe downcast – runtime verified
       setStatus('error');
       setErrorMessage('Invalid OAuth provider');

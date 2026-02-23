@@ -34,10 +34,10 @@ import {
 const chatEffectsInitialState = {
   activeMessageEffect: { effect: 'fade-in' as const, intensity: 'low' as const, duration: 400 },
   // safe downcast – structural boundary
-  activeBubbleStyle: BUBBLE_STYLE_PRESETS.default as BubbleStyleConfig & { style: BubbleStyle },
+  activeBubbleStyle: BUBBLE_STYLE_PRESETS.default as BubbleStyleConfig & { style: BubbleStyle }, // type assertion: preset conforms to extended config type
   activeEmojiPack: 'default' as const,
   // safe downcast – structural boundary
-  activeTypingIndicator: TYPING_INDICATOR_PRESETS.dots as TypingIndicatorConfig & {
+  activeTypingIndicator: TYPING_INDICATOR_PRESETS.dots as TypingIndicatorConfig & { // type assertion: preset conforms to extended config type
     style: TypingIndicator;
   },
   activeReactionConfig: { animation: 'pop' as const, scale: 1.2, duration: 300, sound: true },

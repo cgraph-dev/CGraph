@@ -73,7 +73,7 @@ export default function MessageReactions({
   // Close picker when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) { // type assertion: EventTarget to Node for contains check
         setShowPicker(false);
       }
     };
@@ -226,7 +226,7 @@ export default function MessageReactions({
 
               {/* Category tabs */}
               <div className="mb-2 flex gap-1 border-t border-dark-700 pt-2">
-                {(Object.keys(EMOJI_CATEGORIES) as Array<keyof typeof EMOJI_CATEGORIES>).map(
+                {(Object.keys(EMOJI_CATEGORIES) as Array<keyof typeof EMOJI_CATEGORIES>).map( // type assertion: Object.keys returns string[], narrowing to known keys
                   (category) => (
                     <button
                       key={category}

@@ -70,7 +70,7 @@ export function ThemeSwitcher({
       acc[category].push(theme);
       return acc;
     },
-    {} as Record<string, AppTheme[]>
+    {} as Record<string, AppTheme[]> // type assertion: reduce accumulator type
   );
 
   return (

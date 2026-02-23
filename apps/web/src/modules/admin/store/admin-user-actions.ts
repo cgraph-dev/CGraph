@@ -27,7 +27,7 @@ export function createUserActions(set: Set, get: Get) {
         });
         set({
           // safe downcast – API response
-          users: (response.data as AdminUser[]).map((user) => ({
+          users: (response.data as AdminUser[]).map((user) => ({ // type assertion: API response data shape
             ...user,
             createdAt: new Date(user.createdAt),
             lastActive: new Date(user.lastActive),
