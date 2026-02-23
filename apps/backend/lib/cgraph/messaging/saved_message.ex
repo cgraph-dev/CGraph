@@ -25,6 +25,7 @@ defmodule CGraph.Messaging.SavedMessage do
   end
 
   @doc "Changeset for creating a saved message."
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(saved_message, attrs) do
     saved_message
     |> cast(attrs, [:user_id, :message_id, :note])

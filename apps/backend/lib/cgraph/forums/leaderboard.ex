@@ -21,6 +21,7 @@ defmodule CGraph.Forums.Leaderboard do
   - `:page`, `:per_page` - pagination
   - `:featured_only` - only show featured forums
   """
+  @spec list_forum_leaderboard(keyword()) :: {list(), map()}
   def list_forum_leaderboard(opts \\ []) do
     cursor = Keyword.get(opts, :cursor, nil)
     per_page = Keyword.get(opts, :per_page, 25)
@@ -44,6 +45,7 @@ defmodule CGraph.Forums.Leaderboard do
   @doc """
   Get top N forums for a quick leaderboard display.
   """
+  @spec get_top_forums(pos_integer(), String.t()) :: list()
   def get_top_forums(limit \\ 10, sort \\ "hot") do
     from(f in Forum,
       where: not_deleted(f) and f.is_public == true,

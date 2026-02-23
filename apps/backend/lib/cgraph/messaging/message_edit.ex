@@ -24,6 +24,7 @@ defmodule CGraph.Messaging.MessageEdit do
   @doc """
   Record an edit.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(edit, attrs) do
     edit
     |> cast(attrs, [:previous_content, :edit_number, :message_id, :edited_by_id])

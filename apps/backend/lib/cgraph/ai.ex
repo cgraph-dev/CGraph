@@ -119,6 +119,7 @@ defmodule CGraph.AI do
   @doc """
   Get the current AI provider configuration.
   """
+  @spec config() :: keyword()
   def config do
     defaults = [
       provider: :openai,
@@ -134,6 +135,7 @@ defmodule CGraph.AI do
   @doc """
   Check if LLM provider is configured and available.
   """
+  @spec llm_available?() :: boolean()
   def llm_available? do
     config = config()
     config[:api_key] != nil and config[:api_key] != ""

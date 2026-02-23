@@ -18,6 +18,7 @@ defmodule CGraph.Gamification.UserTitle do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(user_title, attrs) do
     user_title
     |> cast(attrs, [:user_id, :title_id, :unlocked_at])

@@ -33,6 +33,7 @@ defmodule CGraph.Workers.ScheduledMessageWorker do
 
   Returns {:ok, count} where count is the number of messages sent.
   """
+  @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{}) do
     now = DateTime.utc_now()

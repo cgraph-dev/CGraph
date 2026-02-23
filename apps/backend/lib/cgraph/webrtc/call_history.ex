@@ -36,6 +36,7 @@ defmodule CGraph.WebRTC.CallHistory do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(call, attrs) do
     call
     |> cast(attrs, [

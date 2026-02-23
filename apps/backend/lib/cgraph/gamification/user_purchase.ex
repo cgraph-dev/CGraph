@@ -20,6 +20,7 @@ defmodule CGraph.Gamification.UserPurchase do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(purchase, attrs) do
     purchase
     |> cast(attrs, [:user_id, :item_id, :quantity, :coin_spent, :purchased_at])

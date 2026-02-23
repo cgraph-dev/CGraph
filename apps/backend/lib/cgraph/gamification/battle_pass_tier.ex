@@ -21,6 +21,7 @@ defmodule CGraph.Gamification.BattlePassTier do
     timestamps(type: :utc_datetime)
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(tier, attrs) do
     tier
     |> cast(attrs, [

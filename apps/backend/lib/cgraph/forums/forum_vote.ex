@@ -24,6 +24,7 @@ defmodule CGraph.Forums.ForumVote do
   @doc """
   Create or update a forum vote.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(vote, attrs) do
     vote
     |> cast(attrs, [:value, :user_id, :forum_id])

@@ -26,6 +26,7 @@ defmodule CGraph.Forums.Category do
   @doc """
   Create a category.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(category, attrs) do
     category
     |> cast(attrs, [:name, :color, :background_color, :description, :is_required, :position, :forum_id])

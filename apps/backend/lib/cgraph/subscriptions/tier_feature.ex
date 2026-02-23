@@ -45,6 +45,7 @@ defmodule CGraph.Subscriptions.TierFeature do
   @doc """
   Creates a changeset for a tier feature.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(feature, attrs) do
     feature
     |> cast(attrs, [:tier_id, :feature_key, :enabled, :config, :description])

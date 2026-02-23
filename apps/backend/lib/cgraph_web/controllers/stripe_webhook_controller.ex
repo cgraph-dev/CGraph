@@ -25,6 +25,7 @@ defmodule CGraphWeb.StripeWebhookController do
   @doc """
   Main webhook endpoint. Verifies signature and dispatches to handlers.
   """
+  @spec webhook(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def webhook(conn, _params) do
     # Raw body is cached by RawBodyPlug for signature verification
     payload = conn.private[:raw_body]

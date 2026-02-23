@@ -9,6 +9,7 @@ defmodule CGraphWeb.API.V1.LeaderboardJSON do
   @doc """
   Renders the leaderboard index with entries and metadata.
   """
+  @spec index(map()) :: map()
   def index(%{entries: entries, category: category, period: period, user_rank: user_rank, meta: meta}) do
     %{
       data: %{

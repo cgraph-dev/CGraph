@@ -18,6 +18,7 @@ defmodule CGraph.Forums.PollVote do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(vote, attrs) do
     vote
     |> cast(attrs, [:option_ids, :poll_id, :user_id])

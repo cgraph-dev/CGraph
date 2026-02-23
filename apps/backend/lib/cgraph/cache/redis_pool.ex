@@ -44,10 +44,12 @@ defmodule CGraph.Cache.RedisPool do
   # Supervisor
   # ============================================================================
 
+  @spec start_link(keyword()) :: Supervisor.on_start()
   def start_link(opts \\ []) do
     Supervisor.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
+  @spec init(keyword()) :: {:ok, tuple()}
   @impl true
   def init(_opts) do
     pool_size = get_pool_size()

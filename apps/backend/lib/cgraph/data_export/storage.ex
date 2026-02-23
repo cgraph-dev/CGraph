@@ -135,6 +135,7 @@ defmodule CGraph.DataExport.Storage do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec format_extension(atom()) :: String.t()
   def format_extension(:json), do: "json"
   def format_extension(:ndjson), do: "ndjson"
   def format_extension(:csv), do: "csv"
@@ -146,6 +147,7 @@ defmodule CGraph.DataExport.Storage do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec encrypt_content(binary(), String.t() | nil) :: binary()
   def encrypt_content(content, password) do
     {key, salt_prefix} =
       if password do

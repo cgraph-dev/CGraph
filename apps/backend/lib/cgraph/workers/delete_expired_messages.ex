@@ -11,6 +11,7 @@ defmodule CGraph.Workers.DeleteExpiredMessages do
   import Ecto.Query
   alias CGraph.Repo
 
+  @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(_job) do
     now = DateTime.utc_now()

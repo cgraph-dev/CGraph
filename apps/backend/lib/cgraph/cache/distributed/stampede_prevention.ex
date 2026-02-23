@@ -14,6 +14,7 @@ defmodule CGraph.Cache.Distributed.StampedePrevention do
   @doc """
   Compute a value with lock-based stampede prevention.
   """
+  @spec compute_with_lock(String.t(), (-> term()), keyword()) :: term()
   def compute_with_lock(key, fallback, opts) do
     use_lock = Keyword.get(opts, :lock, true)
 
@@ -36,6 +37,7 @@ defmodule CGraph.Cache.Distributed.StampedePrevention do
 
   10% chance to refresh stale data on access.
   """
+  @spec maybe_refresh_async(String.t(), (-> term()), keyword()) :: {:ok, pid()} | nil
   def maybe_refresh_async(key, fallback, opts) do
     if :rand.uniform(10) == 1 do
       Task.Supervisor.start_child(CGraph.TaskSupervisor, fn ->

@@ -14,6 +14,7 @@ defmodule CGraph.Workers.NotificationWorker do
 
   alias CGraph.Notifications.PushService
 
+  @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) do
     user_id = args["user_id"]

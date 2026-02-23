@@ -40,6 +40,7 @@ defmodule CGraph.Forums.ForumAnnouncement do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(announcement, attrs) do
     announcement
     |> cast(attrs, [
@@ -75,6 +76,7 @@ defmodule CGraph.Forums.ForumAnnouncement do
   @doc """
   Checks if the announcement should be displayed based on dates.
   """
+  @spec active?(%__MODULE__{}) :: boolean()
   def active?(%__MODULE__{is_active: false}), do: false
   def active?(%__MODULE__{start_date: nil, end_date: nil, is_active: true}), do: true
   def active?(%__MODULE__{start_date: start_date, end_date: end_date, is_active: true}) do

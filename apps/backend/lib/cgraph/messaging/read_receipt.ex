@@ -23,6 +23,7 @@ defmodule CGraph.Messaging.ReadReceipt do
   @doc """
   Create a read receipt.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(read_receipt, attrs) do
     read_receipt
     |> cast(attrs, [:message_id, :user_id])

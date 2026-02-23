@@ -19,6 +19,7 @@ defmodule CGraph.Forums.Rule do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(rule, attrs) do
     rule
     |> cast(attrs, [:forum_id, :position, :title, :description])

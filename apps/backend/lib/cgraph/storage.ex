@@ -76,6 +76,7 @@ defmodule CGraph.Storage do
   Upload a file with path, context directory, filename, and content type.
   Convenience wrapper around store/3 for controller usage.
   """
+  @spec upload(String.t(), String.t(), String.t(), String.t()) :: {:ok, storage_result()} | {:error, term()}
   def upload(source_path, context, filename, _content_type) when is_binary(source_path) do
     store(source_path, filename, context: context)
   end

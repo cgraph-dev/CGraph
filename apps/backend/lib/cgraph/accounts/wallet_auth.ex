@@ -38,6 +38,7 @@ defmodule CGraph.Accounts.WalletAuth do
   @doc """
   Generates single-use recovery codes. Defaults to 8 codes.
   """
+  @spec generate_recovery_codes(pos_integer()) :: [String.t()]
   def generate_recovery_codes(count \\ 8), do: Recovery.generate_recovery_codes(count)
 
   defdelegate hash_recovery_codes(codes), to: Recovery
@@ -54,6 +55,7 @@ defmodule CGraph.Accounts.WalletAuth do
   @doc """
   Creates a new wallet-authenticated user. Defaults recovery_method to :backup_codes.
   """
+  @spec create_wallet_user(String.t(), String.t(), String.t(), atom()) :: {:ok, term()} | {:error, term()}
   def create_wallet_user(wallet_address, crypto_alias, pin, recovery_method \\ :backup_codes) do
     AccountManager.create_wallet_user(wallet_address, crypto_alias, pin, recovery_method)
   end

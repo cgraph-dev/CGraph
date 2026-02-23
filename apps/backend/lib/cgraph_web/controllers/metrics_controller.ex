@@ -9,6 +9,7 @@ defmodule CGraphWeb.MetricsController do
 
   use CGraphWeb, :controller
 
+  @spec index(Plug.Conn.t(), map()) :: Plug.Conn.t()
   def index(conn, _params) do
     # Custom metrics from CGraph.Metrics GenServer
     custom_metrics = CGraph.Metrics.export(:prometheus)

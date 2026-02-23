@@ -7,6 +7,7 @@ defmodule CGraphWeb.Plugs.AuthErrorHandler do
   @behaviour Guardian.Plug.ErrorHandler
 
   @impl Guardian.Plug.ErrorHandler
+  @spec auth_error(Plug.Conn.t(), {atom(), term()}, keyword()) :: Plug.Conn.t()
   def auth_error(conn, {type, _reason}, _opts) do
     body = Jason.encode!(%{
       error: "Unauthorized",

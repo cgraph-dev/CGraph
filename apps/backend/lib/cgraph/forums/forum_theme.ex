@@ -52,6 +52,7 @@ defmodule CGraph.Forums.ForumTheme do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(theme, attrs) do
     theme
     |> cast(attrs, [

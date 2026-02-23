@@ -20,6 +20,7 @@ defmodule CGraph.Forums.UserLeaderboard do
   - `:per_page` - Items per page (default: 10, max: 50)
   - `:time_range` - Filter by time: :all, :week, :month, :year (default: :all)
   """
+  @spec get_forum_user_leaderboard(String.t(), keyword()) :: {list(), map()}
   def get_forum_user_leaderboard(forum_id, opts \\ []) do
     page = Keyword.get(opts, :page, 1)
     per_page = min(Keyword.get(opts, :per_page, 10), 50)

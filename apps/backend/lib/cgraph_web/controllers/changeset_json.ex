@@ -32,6 +32,7 @@ defmodule CGraphWeb.ChangesetJSON do
         message: "Custom error message"
       }
   """
+  @spec error(map()) :: map()
   def error(%{changeset: changeset}) do
     errors = Ecto.Changeset.traverse_errors(changeset, &translate_error/1)
 

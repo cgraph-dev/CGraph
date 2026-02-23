@@ -129,6 +129,7 @@ defmodule CGraph.ApiVersioning do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
+  @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(_opts) do
     # Create ETS tables
@@ -145,6 +146,7 @@ defmodule CGraph.ApiVersioning do
     {:ok, state}
   end
 
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   @impl true
   def handle_call({:register_version, version, opts}, _from, state) do
     info = %{

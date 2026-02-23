@@ -41,6 +41,7 @@ defmodule CGraph.Telemetry.JsonFormatter do
 
   Called by Logger as the format function.
   """
+  @spec format(atom(), term(), term(), keyword()) :: iodata()
   def format(level, message, timestamp, metadata) do
     json =
       %{

@@ -8,6 +8,7 @@ defmodule CGraphWeb.CustomizationJSON do
   @doc """
   Renders a single user_customization.
   """
+  @spec show(map()) :: map()
   def show(%{customizations: customizations}) do
     %{data: data(customizations)}
   end

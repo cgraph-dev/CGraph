@@ -41,6 +41,7 @@ defmodule CGraph.Workers.MessageArchivalWorker do
   @archive_threshold_days 180
   @batch_size 1000
 
+  @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) do
     threshold_days = Map.get(args, "threshold_days", @archive_threshold_days)

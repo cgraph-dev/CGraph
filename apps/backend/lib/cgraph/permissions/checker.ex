@@ -81,6 +81,7 @@ defmodule CGraph.Permissions.Checker do
   # ---------------------------------------------------------------------------
 
   @doc false
+  @spec resource_key(String.t(), {atom(), String.t()} | struct() | atom()) :: {String.t(), atom(), term()}
   def resource_key(user_id, {type, id}) do
     {user_id, type, id}
   end

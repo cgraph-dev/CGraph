@@ -316,6 +316,7 @@ defmodule CGraph.Cache.Backend.Cachex do
 
   @cache_name :cgraph_cache
 
+  @spec child_spec(keyword()) :: Supervisor.child_spec()
   def child_spec(_opts) do
     %{
       id: __MODULE__,
@@ -345,6 +346,7 @@ defmodule CGraph.Cache.Backend.Cachex do
     :ok
   end
 
+  @spec delete_pattern(String.t()) :: :ok
   def delete_pattern(pattern) do
     # Convert glob pattern to regex
     regex = pattern
@@ -401,6 +403,7 @@ defmodule CGraph.Cache.Backend.ETS do
     :ok
   end
 
+  @spec delete_pattern(String.t()) :: :ok
   def delete_pattern(pattern) do
     regex = pattern
       |> String.replace("*", ".*")

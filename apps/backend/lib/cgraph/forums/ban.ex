@@ -23,6 +23,7 @@ defmodule CGraph.Forums.Ban do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(ban, attrs) do
     ban
     |> cast(attrs, [:forum_id, :user_id, :banned_by_id, :reason, :expires_at, :is_permanent])
@@ -33,6 +34,7 @@ defmodule CGraph.Forums.Ban do
     |> foreign_key_constraint(:user_id)
   end
 
+  @spec revoke_changeset(%__MODULE__{}, Ecto.UUID.t()) :: Ecto.Changeset.t()
   def revoke_changeset(ban, revoked_by_id) do
     change(ban,
       revoked_at: DateTime.truncate(DateTime.utc_now(), :second),

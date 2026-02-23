@@ -30,6 +30,7 @@ defmodule CGraph.Workers.PartitionManager do
 
   require Logger
 
+  @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(_job) do
     today = Date.utc_today()

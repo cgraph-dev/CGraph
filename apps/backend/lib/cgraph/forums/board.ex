@@ -57,6 +57,7 @@ defmodule CGraph.Forums.Board do
   @doc """
   Changeset for creating a new board.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(board, attrs) do
     board
     |> cast(attrs, [
@@ -75,6 +76,7 @@ defmodule CGraph.Forums.Board do
   @doc """
   Changeset for updating board stats.
   """
+  @spec stats_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def stats_changeset(board, attrs) do
     board
     |> cast(attrs, [:thread_count, :post_count, :last_post_at, :last_post_id, :last_thread_id])

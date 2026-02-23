@@ -21,6 +21,7 @@ defmodule CGraph.Forums.ThreadVote do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(vote, attrs) do
     vote
     |> cast(attrs, [:value, :thread_id, :user_id])

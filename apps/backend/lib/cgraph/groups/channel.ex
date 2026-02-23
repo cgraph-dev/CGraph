@@ -64,6 +64,7 @@ defmodule CGraph.Groups.Channel do
   @doc """
   Create a new channel.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(channel, attrs) do
     channel
     |> cast(attrs, [
@@ -83,6 +84,7 @@ defmodule CGraph.Groups.Channel do
   @doc """
   Update channel settings.
   """
+  @spec update_changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def update_changeset(channel, attrs) do
     channel
     |> cast(attrs, [:name, :topic, :position, :is_nsfw, :slow_mode_seconds, :category_id])

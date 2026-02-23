@@ -25,6 +25,7 @@ defmodule CGraph.Workers.LeaderboardWarm do
 
   @categories ~w(xp level streak karma messages posts)
 
+  @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) do
     category = Map.get(args, "category")

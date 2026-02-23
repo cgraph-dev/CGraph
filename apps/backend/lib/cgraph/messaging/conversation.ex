@@ -29,6 +29,7 @@ defmodule CGraph.Messaging.Conversation do
   @doc """
   Create a new conversation between two users.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(conversation, attrs) do
     conversation
     |> cast(attrs, [:user_one_id, :user_two_id, :is_encrypted])
@@ -43,6 +44,7 @@ defmodule CGraph.Messaging.Conversation do
   @doc """
   Update last message timestamp.
   """
+  @spec touch_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def touch_changeset(conversation) do
     change(conversation, last_message_at: DateTime.truncate(DateTime.utc_now(), :second))
   end

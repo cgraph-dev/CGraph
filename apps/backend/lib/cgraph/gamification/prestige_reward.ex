@@ -20,6 +20,7 @@ defmodule CGraph.Gamification.PrestigeReward do
     timestamps(type: :utc_datetime)
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(reward, attrs) do
     reward
     |> cast(attrs, [:prestige_level, :reward_type, :reward_id, :reward_amount, :name, :description, :preview_url, :is_exclusive, :sort_order])

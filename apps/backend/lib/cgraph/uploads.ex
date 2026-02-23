@@ -81,6 +81,7 @@ defmodule CGraph.Uploads do
       timestamps()
     end
 
+    @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
     def changeset(file, attrs) do
       file
       |> cast(attrs, [:filename, :original_filename, :content_type, :size, :url,

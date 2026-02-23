@@ -21,6 +21,7 @@ defmodule CGraph.Groups.GroupBan do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(ban, attrs) do
     ban
     |> cast(attrs, [:user_id, :group_id, :banned_by_id, :reason, :expires_at])
@@ -32,6 +33,7 @@ defmodule CGraph.Groups.GroupBan do
   end
 
   @doc "Check if a ban is currently active (not expired)."
+  @spec active?(%__MODULE__{}) :: boolean()
   def active?(%__MODULE__{expires_at: nil}), do: true
   def active?(%__MODULE__{expires_at: expires_at}) do
     DateTime.compare(expires_at, DateTime.utc_now()) == :gt

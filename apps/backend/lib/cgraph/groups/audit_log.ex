@@ -42,6 +42,7 @@ defmodule CGraph.Groups.AuditLog do
   @doc """
   Create an audit log entry.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(log, attrs) do
     log
     |> cast(attrs, [:action_type, :reason, :changes, :group_id, :user_id, :target_user_id])
@@ -56,5 +57,6 @@ defmodule CGraph.Groups.AuditLog do
   @doc """
   Get list of valid action types.
   """
+  @spec action_types() :: [String.t()]
   def action_types, do: @action_types
 end

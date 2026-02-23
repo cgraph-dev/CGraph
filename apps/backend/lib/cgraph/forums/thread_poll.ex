@@ -34,6 +34,7 @@ defmodule CGraph.Forums.ThreadPoll do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(poll, attrs) do
     poll
     |> cast(attrs, [
@@ -64,6 +65,7 @@ defmodule CGraph.Forums.ThreadPoll do
   @doc """
   Check if poll is still open for voting.
   """
+  @spec open?(%__MODULE__{}) :: boolean()
   def open?(poll) do
     case poll.closes_at do
       nil -> true

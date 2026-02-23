@@ -20,6 +20,7 @@ defmodule CGraph.Cache.Stampede do
   computes the value. Retries with exponential backoff if the lock
   is held by another caller.
   """
+  @spec fetch_with_lock(String.t(), (-> term()), keyword()) :: term()
   def fetch_with_lock(key, compute_fn, opts) do
     lock_key = "lock:#{key}"
     do_fetch(key, compute_fn, opts, lock_key, 0)
@@ -28,6 +29,7 @@ defmodule CGraph.Cache.Stampede do
   @doc """
   Compute a value and write it into the cache.
   """
+  @spec compute_and_cache(String.t(), (-> term()), keyword()) :: term()
   def compute_and_cache(key, compute_fn, opts) do
     value = compute_fn.()
     CGraph.Cache.set(key, value, opts)

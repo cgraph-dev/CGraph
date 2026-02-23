@@ -12,6 +12,7 @@ defmodule CGraph.Workers.CleanupWorker do
 
   require Logger
 
+  @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: _args}) do
     Logger.info("[CleanupWorker] Starting daily cleanup...")

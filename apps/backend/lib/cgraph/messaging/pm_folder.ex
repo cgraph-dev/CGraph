@@ -28,6 +28,7 @@ defmodule CGraph.Messaging.PMFolder do
   @required_fields ~w(name user_id)a
   @optional_fields ~w(color icon is_system order)a
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(folder, attrs) do
     folder
     |> cast(attrs, @required_fields ++ @optional_fields)

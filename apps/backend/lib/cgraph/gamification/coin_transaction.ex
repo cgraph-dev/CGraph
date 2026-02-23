@@ -25,6 +25,7 @@ defmodule CGraph.Gamification.CoinTransaction do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(transaction, attrs) do
     transaction
     |> cast(attrs, [
@@ -36,5 +37,6 @@ defmodule CGraph.Gamification.CoinTransaction do
     |> foreign_key_constraint(:user_id)
   end
 
+  @spec types() :: [String.t()]
   def types, do: @types
 end

@@ -20,6 +20,7 @@ defmodule CGraph.Forums.Moderator do
     timestamps()
   end
 
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(moderator, attrs) do
     moderator
     |> cast(attrs, [:forum_id, :user_id, :permissions, :added_by_id, :notes])

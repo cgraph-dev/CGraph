@@ -27,6 +27,7 @@ defmodule CGraph.Workers.WebhookDeliveryWorker do
   @max_retries 5
   @retry_delays [1_000, 5_000, 30_000, 120_000, 600_000]
 
+  @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"delivery_id" => delivery_id}}) do
     with {:ok, delivery} <- fetch_delivery(delivery_id),

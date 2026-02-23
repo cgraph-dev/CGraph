@@ -232,6 +232,7 @@ defmodule CGraph.Search.Indexer do
   Prepare a document for indexing.
   Extracts and normalizes relevant fields for search.
   """
+  @spec prepare_document(atom(), struct()) :: map()
   def prepare_document(:users, user) do
     %{
       "id" => to_string(user.id),

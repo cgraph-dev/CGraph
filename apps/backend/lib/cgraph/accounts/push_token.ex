@@ -30,6 +30,7 @@ defmodule CGraph.Accounts.PushToken do
   @doc """
   Changeset for registering a push token.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(push_token, attrs) do
     push_token
     |> cast(attrs, [:user_id, :token, :platform, :device_id])
@@ -42,6 +43,7 @@ defmodule CGraph.Accounts.PushToken do
   @doc """
   Deactivate a token (e.g., after failed delivery).
   """
+  @spec deactivate_changeset(%__MODULE__{}) :: Ecto.Changeset.t()
   def deactivate_changeset(push_token) do
     change(push_token, is_active: false)
   end

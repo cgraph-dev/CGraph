@@ -102,10 +102,12 @@ defmodule CGraph.BatchProcessor do
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
 
+  @spec start_link(keyword()) :: GenServer.on_start()
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
 
+  @spec init(keyword()) :: {:ok, map()}
   @impl true
   def init(_opts) do
     :ets.new(@jobs_table, [:named_table, :set, :public, read_concurrency: true])

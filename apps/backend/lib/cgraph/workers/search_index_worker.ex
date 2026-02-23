@@ -14,6 +14,7 @@ defmodule CGraph.Workers.SearchIndexWorker do
 
   require Logger
 
+  @spec perform(Oban.Job.t()) :: :ok | {:error, term()}
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"operation" => "index", "index" => index, "document" => doc}}) do
     index_atom = String.to_existing_atom(index)

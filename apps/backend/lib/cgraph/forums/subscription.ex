@@ -26,6 +26,7 @@ defmodule CGraph.Forums.Subscription do
   @doc """
   Create a subscription.
   """
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(subscription, attrs) do
     subscription
     |> cast(attrs, [:forum_id, :thread_id, :board_id, :user_id, :notification_level])

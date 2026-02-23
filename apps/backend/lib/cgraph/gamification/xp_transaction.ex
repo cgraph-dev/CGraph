@@ -26,6 +26,7 @@ defmodule CGraph.Gamification.XpTransaction do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(transaction, attrs) do
     transaction
     |> cast(attrs, [
@@ -38,5 +39,6 @@ defmodule CGraph.Gamification.XpTransaction do
     |> foreign_key_constraint(:user_id)
   end
 
+  @spec sources() :: [String.t()]
   def sources, do: @sources
 end

@@ -2,6 +2,7 @@ defmodule CGraph.Mailer.Templates.Layout do
   @moduledoc false
 
   @doc false
+  @spec wrap_html_layout(String.t()) :: String.t()
   def wrap_html_layout(content) do
     """
     <!DOCTYPE html>
@@ -65,6 +66,7 @@ defmodule CGraph.Mailer.Templates.Layout do
   end
 
   @doc false
+  @spec html_escape(term()) :: String.t()
   def html_escape(nil), do: ""
   def html_escape(text) when is_binary(text) do
     text

@@ -40,6 +40,7 @@ defmodule CGraph.Webhooks.Delivery do
   end
 
   @doc false
+  @spec changeset(%__MODULE__{}, map()) :: Ecto.Changeset.t()
   def changeset(delivery, attrs) do
     delivery
     |> cast(attrs, [
