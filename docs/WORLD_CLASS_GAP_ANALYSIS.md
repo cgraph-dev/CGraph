@@ -322,16 +322,17 @@ All other previously listed controllers are now under 500 lines.
 | Metric                    | Current | Target       | Gap               |
 | ------------------------- | ------- | ------------ | ----------------- |
 | Web components (non-test) | ~1,150  | —            | —                 |
-| Web test files            | 213     | ~1,150 (1:1) | **~937 missing**  |
-| Web test coverage ratio   | ~19%    | 100%         | ~81%              |
+| Web test files            | 226     | ~1,150 (1:1) | **~924 missing**  |
+| Web test coverage ratio   | ~20%    | 100%         | ~80%              |
 | Mobile test files         | 27      | —            | Needs assessment  |
 | Backend test files        | 171     | —            | Likely sufficient |
 
 **Module Test Coverage** (tests per module): | Module | Tests | Components | Gap |
-|--------|-------|------------|-----| | chat | 17 | ~80 | 63 | | forums | 12 | ~90 | 78 | |
-gamification | 11 | ~60 | 49 | | social | 6 | ~40 | 34 | | settings | 8 | ~50 | 42 | | auth | 4 |
-~20 | 16 | | groups | 4 | ~40 | 36 | | moderation | 4 | ~20 | 16 | | calls | 3 | ~25 | 22 | |
-premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
+|--------|-------|------------|-----| | chat | 23 | ~80 | 57 | | forums | 12 | ~90 | 78 | |
+gamification | 11 | ~60 | 49 | | social | 6 | ~40 | 34 | | settings | 8 | ~50 | 42 | | auth | 9 |
+~20 | 11 | | groups | 4 | ~40 | 36 | | moderation | 4 | ~20 | 16 | | calls | 3 | ~25 | 22 | |
+premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 | | profile | 3 | ~10 | 7
+| | shared | 4 | ~30 | 26 |
 
 **Action Items**:
 
@@ -340,7 +341,13 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 - [x] **9.2** ~~Write tests for critical path (batch 1)~~ **PARTIAL** (Session 50) — auth 4→9 (+5:
       auth-card, auth-form-input, auth-button, auth-logo, social-login-divider), chat +1
       (typing-indicator), settings 5→8 (+3: notification, privacy, language panels)
-- [ ] **9.2b** Write tests for critical path (batch 2): auth (9→20), chat (17→80), settings (8→50)
+- [x] **9.2b** ~~Write tests for critical path (batch 2)~~ **PARTIAL** (Session 50) — chat 17→22
+      (+5: markdown-content, file-message, poll-message, create-poll-modal, message-reactions),
+      profile 0→3 (+3: profile-about, profile-name-section, friendship-actions)
+- [x] **9.2c** ~~Write tests for critical path (batch 3)~~ **PARTIAL** (Session 50) — chat 22→23
+      (+1: schedule-message-modal), shared 0→4 (+4: animated-empty-state, keyboard-shortcuts-modal,
+      quick-switcher, last-seen-badge)
+- [ ] **9.2d** Write tests for critical path (batch 4): chat (23→40), forums, gamification
 - [ ] **9.3** Add test files for remaining modules (target: 3 tests per component minimum)
 - [x] **9.4** ~~Set up coverage ratchet in CI~~ **DONE** (Session 50) — thresholds raised
       statements/lines 60→65%, branches/functions 50→55%
