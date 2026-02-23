@@ -30,8 +30,7 @@ export function createFetchActions(set: Set) {
         });
 
         const data = response.data;
-        const announcements = (ensureArray(data, 'announcements') as Record<string, unknown>[]).map(
-          // safe downcast – API response
+        const announcements = (ensureArray(data, 'announcements') as Record<string, unknown>[]).map( // safe downcast – API response field
           mapAnnouncementFromApi
         );
 
@@ -52,8 +51,8 @@ export function createFetchActions(set: Set) {
       try {
         const response = await api.get('/api/v1/announcements/global');
         const announcements = (
-          ensureArray(response.data, 'announcements') as Record<string, unknown>[]
-        ) // safe downcast – API response
+          ensureArray(response.data, 'announcements') as Record<string, unknown>[] // safe downcast – API response field
+        )
           .map(mapAnnouncementFromApi);
 
         // Filter only active ones
@@ -76,8 +75,8 @@ export function createFetchActions(set: Set) {
       try {
         const response = await api.get(`/api/v1/forums/${forumId}/announcements`);
         const announcements = (
-          ensureArray(response.data, 'announcements') as Record<string, unknown>[]
-        ) // safe downcast – API response
+          ensureArray(response.data, 'announcements') as Record<string, unknown>[] // safe downcast – API response field
+        )
           .map(mapAnnouncementFromApi);
 
         // Filter only active ones

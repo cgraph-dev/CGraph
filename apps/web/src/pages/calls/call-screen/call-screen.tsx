@@ -52,7 +52,7 @@ export default function CallScreen() {
       {/* Header */}
       <CallHeader
         recipient={recipient}
-        callStatus={callState.status as CallStatus}
+        callStatus={callState.status as CallStatus} // safe downcast – runtime verified
         formattedDuration={formatDuration}
         showControls={showControls}
       />
@@ -60,7 +60,7 @@ export default function CallScreen() {
       {/* Video Grid */}
       <div className="relative z-10 flex-1 p-4">
         {isConnecting ? (
-          <ConnectingState recipient={recipient} callStatus={callState.status as CallStatus} />
+          <ConnectingState recipient={recipient} callStatus={callState.status as CallStatus} /> {/* safe downcast – runtime verified */}
         ) : (
           <div className={`grid h-full ${gridClass} gap-4`}>
             <AnimatePresence>

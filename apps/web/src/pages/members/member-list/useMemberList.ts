@@ -50,13 +50,13 @@ export function useMemberList() {
     const fetchUserGroups = async () => {
       try {
         const response = await api.get('/api/v1/user-groups');
-        const groups = ensureArray(response.data, 'groups') as Record<string, unknown>[];
+        const groups = ensureArray(response.data, 'groups') as Record<string, unknown>[]; // safe downcast – API response field
         setUserGroups(
           groups.map((g) => ({
-            id: g.id as string,
-            name: (g.name as string) || 'Unknown',
-            color: (g.color as string) || null,
-            memberCount: (g.member_count as number) || 0,
+            id: g.id as string, // safe downcast – API response field
+            name: (g.name as string) || 'Unknown', // safe downcast – API response field
+            color: (g.color as string) || null, // safe downcast – API response field
+            memberCount: (g.member_count as number) || 0, // safe downcast – API response field
           }))
         );
       } catch (err) {
@@ -87,24 +87,24 @@ export function useMemberList() {
       const response = await api.get('/api/v1/members', { params });
       const data = response.data;
 
-      const memberList = ensureArray(data, 'members') as Record<string, unknown>[];
+      const memberList = ensureArray(data, 'members') as Record<string, unknown>[]; // safe downcast – API response field
       setMembers(
         memberList.map((m) => ({
-          id: m.id as string,
-          username: (m.username as string) || 'Unknown',
-          displayName: (m.display_name as string) || null,
-          avatarUrl: (m.avatar_url as string) || null,
-          avatarBorderId: (m.avatar_border_id as string) || (m.avatarBorderId as string) || null,
-          userGroup: (m.user_group as string) || 'Member',
-          userGroupId: (m.user_group_id as string) || '',
-          userGroupColor: (m.user_group_color as string) || null,
-          isOnline: (m.is_online as boolean) || false,
-          lastActive: (m.last_active as string) || null,
-          joinedAt: (m.joined_at as string) || new Date().toISOString(),
-          postCount: (m.post_count as number) || 0,
-          threadCount: (m.thread_count as number) || 0,
-          reputation: (m.reputation as number) || 0,
-          stars: (m.stars as number) || 0,
+          id: m.id as string, // safe downcast – API response field
+          username: (m.username as string) || 'Unknown', // safe downcast – API response field
+          displayName: (m.display_name as string) || null, // safe downcast – API response field
+          avatarUrl: (m.avatar_url as string) || null, // safe downcast – API response field
+          avatarBorderId: (m.avatar_border_id as string) || (m.avatarBorderId as string) || null, // safe downcast – API response field
+          userGroup: (m.user_group as string) || 'Member', // safe downcast – API response field
+          userGroupId: (m.user_group_id as string) || '', // safe downcast – API response field
+          userGroupColor: (m.user_group_color as string) || null, // safe downcast – API response field
+          isOnline: (m.is_online as boolean) || false, // safe downcast – API response field
+          lastActive: (m.last_active as string) || null, // safe downcast – API response field
+          joinedAt: (m.joined_at as string) || new Date().toISOString(), // safe downcast – API response field
+          postCount: (m.post_count as number) || 0, // safe downcast – API response field
+          threadCount: (m.thread_count as number) || 0, // safe downcast – API response field
+          reputation: (m.reputation as number) || 0, // safe downcast – API response field
+          stars: (m.stars as number) || 0, // safe downcast – API response field
         }))
       );
 

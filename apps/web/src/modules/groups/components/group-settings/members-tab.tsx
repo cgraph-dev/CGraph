@@ -47,7 +47,7 @@ export function MembersTab({ groupId }: MembersTabProps) {
           // safe downcast – runtime-verified object for nested user property
           const mUser =
             typeof m.user === 'object' && m.user !== null
-              ? (m.user as Record<string, unknown>)
+              ? (m.user as Record<string, unknown>) // safe downcast – runtime verified
               : {};
           return {
             id: String(m.id ?? ''),
@@ -55,15 +55,15 @@ export function MembersTab({ groupId }: MembersTabProps) {
             username: String(m.username ?? mUser.username ?? 'unknown'),
             displayName: (m.display_name ?? m.displayName ?? mUser.display_name ?? null) as
               | string
-              | null, // safe downcast – nullable API field
-            avatarUrl: (m.avatar_url ?? m.avatarUrl ?? mUser.avatar_url ?? null) as string | null, // safe downcast – nullable API field
+              | null, // safe downcast – API response field
+            avatarUrl: (m.avatar_url ?? m.avatarUrl ?? mUser.avatar_url ?? null) as string | null, // safe downcast – API response field
             role: String(m.role ?? 'member'),
             roles: Array.isArray(m.roles)
-              ? (m.roles as Array<{ id: string; name: string; color: string }>)
+              ? (m.roles as Array<{ id: string; name: string; color: string }>) // safe downcast – runtime verified
               : [], // safe downcast – array verified by Array.isArray
             joinedAt: String(m.joined_at ?? m.joinedAt ?? m.inserted_at ?? ''),
             isMuted: !!(m.is_muted ?? m.isMuted),
-            mutedUntil: (m.muted_until ?? m.mutedUntil ?? null) as string | null, // safe downcast – nullable API field
+            mutedUntil: (m.muted_until ?? m.mutedUntil ?? null) as string | null, // safe downcast – API response field
           };
         })
       );

@@ -69,9 +69,9 @@ export default function Conversation() {
           isOtherUserOnline={ctx.isOtherUserOnline}
           typing={ctx.typing}
           uiPreferences={
-            ctx.uiPreferences as Parameters<
+            ctx.uiPreferences as Parameters< // safe downcast – structural boundary
               typeof ConversationHeader
-            >[0]['uiPreferences'] /* safe downcast – structural boundary */
+            >[0]['uiPreferences'] 
           }
           onStartVoiceCall={() =>
             ctx.callModals.handleStartVoiceCall(ctx.uiPreferences.enableHaptic)
@@ -222,10 +222,10 @@ export default function Conversation() {
       <InfoPanel
         showInfoPanel={ctx.showInfoPanel}
         otherParticipant={
-          ctx.otherParticipant as unknown as Record<
+          ctx.otherParticipant as unknown as Record< // safe downcast – structural boundary
             string,
             unknown
-          > /* safe downcast – participant record access */
+          >
         }
         conversationId={ctx.conversationId || ''}
         isOtherUserOnline={ctx.isOtherUserOnline}

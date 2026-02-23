@@ -161,7 +161,7 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
                   onChange={(e) =>
                     setEditingRule({
                       ...editingRule,
-                      rule_type: e.target.value as AutomodRule['rule_type'],
+                      rule_type: e.target.value as AutomodRule['rule_type'], // safe downcast – select event value
                     })
                   }
                   className="rounded-lg border border-white/10 bg-dark-800 px-3 py-2 text-sm text-white focus:border-primary-500 focus:outline-none"
@@ -177,7 +177,7 @@ export function AutomodSettings({ groupId }: { groupId: string }) {
                   onChange={(e) =>
                     setEditingRule({
                       ...editingRule,
-                      action: e.target.value as AutomodRule['action'],
+                      action: e.target.value as AutomodRule['action'], // safe downcast – select event value
                     })
                   }
                   className="rounded-lg border border-white/10 bg-dark-800 px-3 py-2 text-sm text-white focus:border-primary-500 focus:outline-none"

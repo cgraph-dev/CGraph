@@ -144,7 +144,7 @@ export function ModerationQueue() {
       <div className="flex gap-2">
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as FilterStatus)}
+          onChange={(e) => setStatusFilter(e.target.value as FilterStatus)} // safe downcast – select event value
           className="rounded bg-gray-800 px-3 py-1.5 text-sm text-gray-300"
         >
           <option value="pending">Pending</option>
@@ -152,7 +152,7 @@ export function ModerationQueue() {
         </select>
         <select
           value={priorityFilter}
-          onChange={(e) => setPriorityFilter(e.target.value as FilterPriority)}
+          onChange={(e) => setPriorityFilter(e.target.value as FilterPriority)} // safe downcast – select event value
           className="rounded bg-gray-800 px-3 py-1.5 text-sm text-gray-300"
         >
           <option value="all">All Priorities</option>

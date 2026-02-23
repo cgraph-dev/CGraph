@@ -201,8 +201,7 @@ export function InfoPanel({
             onlineStatus: isOtherUserOnline ? 'online' : 'offline',
             lastSeenAt: (user?.lastSeenAt as string) ?? undefined, // safe downcast – structural boundary
             bio: (user?.bio as string) ?? undefined, // safe downcast – structural boundary
-            badges: ((user?.badges as unknown[]) ?? []) as unknown as Array<{
-              // safe downcast – structural boundary
+            badges: ((user?.badges as unknown[]) ?? []) as unknown as Array<{ // safe downcast – structural boundary
               id: string;
               name: string;
               emoji: string;
@@ -211,8 +210,7 @@ export function InfoPanel({
           }}
           mutualFriends={mutualFriends}
           sharedForums={
-            (user?.sharedForums ?? []) as Array<{
-              // safe downcast – structural boundary
+            (user?.sharedForums ?? []) as Array<{ // safe downcast – structural boundary
               id: string;
               name: string;
               icon: string;

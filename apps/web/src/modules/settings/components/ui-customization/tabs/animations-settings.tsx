@@ -16,7 +16,7 @@ export function AnimationsSettings({ preferences, updatePreference }: SettingsTa
           label="Global Animation Speed"
           value={preferences.animationSpeed}
           onChange={(value) =>
-            updatePreference('animationSpeed', value as UIPreferences['animationSpeed'])
+            updatePreference('animationSpeed', value as UIPreferences['animationSpeed']) // safe downcast – select event value
           }
           options={[
             { value: 'instant', label: 'Instant (No Animations)' },
@@ -34,7 +34,7 @@ export function AnimationsSettings({ preferences, updatePreference }: SettingsTa
           label="Effect Complexity"
           value={preferences.animationIntensity}
           onChange={(value) =>
-            updatePreference('animationIntensity', value as UIPreferences['animationIntensity'])
+            updatePreference('animationIntensity', value as UIPreferences['animationIntensity']) // safe downcast – select event value
           }
           options={[
             { value: 'minimal', label: 'Minimal (Best Performance)' },

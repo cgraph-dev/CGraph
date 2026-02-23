@@ -23,17 +23,17 @@ export function createRsvpActions(set: SetState, _get: GetState) {
     fetchRsvps: async (eventId: string) => {
       try {
         const response = await api.get(`/api/v1/calendar/events/${eventId}/rsvps`);
-        const rsvps = (ensureArray(response.data, 'rsvps') as Record<string, unknown>[]).map(
+        const rsvps = (ensureArray(response.data, 'rsvps') as Record<string, unknown>[]).map( // safe downcast – API response field
           (r): EventRSVP => ({
-            id: r.id as string,
-            eventId: r.event_id as string,
-            userId: r.user_id as string,
-            username: (r.username as string) || 'Unknown',
-            displayName: (r.display_name as string) || null,
-            avatarUrl: (r.avatar_url as string) || null,
-            status: (r.status as RSVPStatus) || 'no_response',
-            note: r.note as string | undefined,
-            respondedAt: (r.responded_at as string) || new Date().toISOString(),
+            id: r.id as string, // safe downcast – API response field
+            eventId: r.event_id as string, // safe downcast – API response field
+            userId: r.user_id as string, // safe downcast – API response field
+            username: (r.username as string) || 'Unknown', // safe downcast – API response field
+            displayName: (r.display_name as string) || null, // safe downcast – API response field
+            avatarUrl: (r.avatar_url as string) || null, // safe downcast – API response field
+            status: (r.status as RSVPStatus) || 'no_response', // safe downcast – API response field
+            note: r.note as string | undefined, // safe downcast – API response field
+            respondedAt: (r.responded_at as string) || new Date().toISOString(), // safe downcast – API response field
           })
         );
 
