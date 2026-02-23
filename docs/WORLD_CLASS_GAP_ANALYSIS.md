@@ -322,15 +322,15 @@ All other previously listed controllers are now under 500 lines.
 | Metric                    | Current | Target       | Gap               |
 | ------------------------- | ------- | ------------ | ----------------- |
 | Web components (non-test) | ~1,150  | —            | —                 |
-| Web test files            | 226     | ~1,150 (1:1) | **~924 missing**  |
-| Web test coverage ratio   | ~20%    | 100%         | ~80%              |
+| Web test files            | 237     | ~1,150 (1:1) | **~913 missing**  |
+| Web test coverage ratio   | ~21%    | 100%         | ~79%              |
 | Mobile test files         | 27      | —            | Needs assessment  |
 | Backend test files        | 171     | —            | Likely sufficient |
 
 **Module Test Coverage** (tests per module): | Module | Tests | Components | Gap |
-|--------|-------|------------|-----| | chat | 23 | ~80 | 57 | | forums | 12 | ~90 | 78 | |
-gamification | 11 | ~60 | 49 | | social | 6 | ~40 | 34 | | settings | 8 | ~50 | 42 | | auth | 9 |
-~20 | 11 | | groups | 4 | ~40 | 36 | | moderation | 4 | ~20 | 16 | | calls | 3 | ~25 | 22 | |
+|--------|-------|------------|-----| | chat | 26 | ~80 | 54 | | forums | 15 | ~90 | 75 | |
+gamification | 12 | ~60 | 48 | | social | 8 | ~40 | 32 | | settings | 8 | ~50 | 42 | | auth | 9 |
+~20 | 11 | | groups | 6 | ~40 | 34 | | moderation | 4 | ~20 | 16 | | calls | 3 | ~25 | 22 | |
 premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 | | profile | 3 | ~10 | 7
 | | shared | 4 | ~30 | 26 |
 
@@ -347,7 +347,11 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 | | pr
 - [x] **9.2c** ~~Write tests for critical path (batch 3)~~ **PARTIAL** (Session 50) — chat 22→23
       (+1: schedule-message-modal), shared 0→4 (+4: animated-empty-state, keyboard-shortcuts-modal,
       quick-switcher, last-seen-badge)
-- [ ] **9.2d** Write tests for critical path (batch 4): chat (23→40), forums, gamification
+- [x] **9.2d** ~~Write tests for critical path (batch 4+5)~~ **PARTIAL** (Session 50) — chat 23→26
+      (+3: scheduled-time-preview, thread-reply-count, scroll-to-bottom-button), forums 12→15 (+3:
+      toolbar-button, thread-prefix, user-signature), gamification 11→12 (+1: crown-icon), social
+      6→8 (+2: stat-item, online-status-badge), groups 4→6 (+2: save-bar, invites-tab)
+- [ ] **9.2e** Write tests for critical path (batch 6+): remaining modules
 - [ ] **9.3** Add test files for remaining modules (target: 3 tests per component minimum)
 - [x] **9.4** ~~Set up coverage ratchet in CI~~ **DONE** (Session 50) — thresholds raised
       statements/lines 60→65%, branches/functions 50→55%
