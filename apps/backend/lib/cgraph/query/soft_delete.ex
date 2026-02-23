@@ -204,6 +204,7 @@ defmodule CGraph.Query.SoftDelete do
         @doc """
         Check if the record is soft-deleted.
         """
+        @spec deleted?(map()) :: boolean()
         def deleted?(%{deleted_at: nil}), do: false
         def deleted?(%{deleted_at: %DateTime{}}), do: true
         def deleted?(_), do: false
@@ -211,6 +212,7 @@ defmodule CGraph.Query.SoftDelete do
         @doc """
         Check if the record is active (not soft-deleted).
         """
+        @spec active?(map()) :: boolean()
         def active?(record), do: not deleted?(record)
       end
     end

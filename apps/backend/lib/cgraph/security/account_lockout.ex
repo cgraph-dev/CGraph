@@ -130,6 +130,7 @@ defmodule CGraph.Security.AccountLockout do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @spec init(term()) :: {:ok, map()}
   def init(_opts) do
     config = load_config()
     redis_available = Storage.redis_available?()
@@ -155,6 +156,7 @@ defmodule CGraph.Security.AccountLockout do
   end
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:check_locked, identifier}, _from, state) do
     result = LockoutLogic.do_check_locked(identifier, state.config, state.redis_available)
     {:reply, result, state}

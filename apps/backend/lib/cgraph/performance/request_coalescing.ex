@@ -107,6 +107,7 @@ defmodule CGraph.Performance.RequestCoalescing do
   # ── Server Implementation ──────────────────────────────────
 
   @impl true
+  @spec init(term()) :: {:ok, map()}
   def init(_opts) do
     state = %{
       # key => %{task: Task.t(), waiters: [ref], ttl: integer()}
@@ -123,6 +124,7 @@ defmodule CGraph.Performance.RequestCoalescing do
   end
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:execute, key, fun, ttl}, {caller_pid, _tag}, state) do
     now = System.monotonic_time(:millisecond)
 
@@ -189,6 +191,7 @@ defmodule CGraph.Performance.RequestCoalescing do
   end
 
   @impl true
+  @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info({:flight_complete, key, result, ttl}, state) do
     case Map.pop(state.in_flight, key) do
       {nil, _} ->
@@ -244,6 +247,7 @@ defmodule CGraph.Performance.RequestCoalescing do
   end
 
   @impl true
+  @spec handle_cast(term(), map()) :: {:noreply, map()}
   def handle_cast(:clear_cache, state) do
     {:noreply, %{state | cache: %{}}}
   end

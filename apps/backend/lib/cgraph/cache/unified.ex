@@ -278,6 +278,7 @@ defmodule CGraph.Cache.Unified do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @spec init(term()) :: {:ok, map()}
   def init(_opts) do
     # Initialize cache backend
     {:ok, %{}}

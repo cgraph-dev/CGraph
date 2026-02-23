@@ -61,9 +61,11 @@ defmodule CGraphWeb.Plugs.RequestId do
   @max_id_length 128
   @id_pattern ~r/^[a-zA-Z0-9_-]+$/
 
+  @spec init(keyword()) :: keyword()
   @impl true
   def init(opts), do: opts
 
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   @impl true
   def call(conn, _opts) do
     request_id = get_or_generate_request_id(conn)
@@ -169,9 +171,11 @@ defmodule CGraphWeb.Plugs.RequestLogger do
   @sensitive_params ~w(password password_confirmation token secret api_key credit_card)
   @excluded_paths ~w(/health /ready /metrics /favicon.ico)
 
+  @spec init(keyword()) :: keyword()
   @impl true
   def init(opts), do: opts
 
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   @impl true
   def call(conn, _opts) do
     if should_log?(conn) do
@@ -296,9 +300,11 @@ defmodule CGraphWeb.Plugs.HealthCheck do
 
   @behaviour Plug
 
+  @spec init(keyword()) :: keyword()
   @impl true
   def init(opts), do: opts
 
+  @spec call(Plug.Conn.t(), keyword()) :: Plug.Conn.t()
   @impl true
   def call(%Plug.Conn{request_path: "/health"} = conn, _opts) do
     conn

@@ -4,6 +4,7 @@ defmodule CGraph.Mailer.Templates.TextRenderer do
   alias CGraph.Mailer.Templates
 
   @doc false
+  @spec render(atom(), map()) :: String.t()
   def render(:welcome, data) do
     username = Map.get(data, :username, "there")
     display_name = Map.get(data, :display_name, username)

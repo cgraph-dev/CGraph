@@ -221,6 +221,7 @@ defmodule CGraph.HealthCheck do
   end
 
   @impl true
+  @spec init(term()) :: {:ok, map()}
   def init(_opts) do
     state = %{
       started_at: System.monotonic_time(:second),
@@ -236,6 +237,7 @@ defmodule CGraph.HealthCheck do
   end
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call(:ping, _from, state) do
     {:reply, :pong, state}
   end
@@ -272,6 +274,7 @@ defmodule CGraph.HealthCheck do
   end
 
   @impl true
+  @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:periodic_check, state) do
     # Run periodic health check
     report = Reporter.generate_report(state.started_at)

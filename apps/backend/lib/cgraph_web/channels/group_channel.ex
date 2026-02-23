@@ -23,6 +23,7 @@ defmodule CGraphWeb.GroupChannel do
   @rate_limit_max_messages 10
 
   @impl true
+  @spec join(String.t(), map(), Phoenix.Socket.t()) :: {:ok, Phoenix.Socket.t()} | {:error, map()}
   def join("group:" <> channel_id, _params, socket) do
     user = socket.assigns.current_user
 
@@ -44,6 +45,7 @@ defmodule CGraphWeb.GroupChannel do
   end
 
   @impl true
+  @spec handle_info(term(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
     user = socket.assigns.current_user
     channel_id = socket.assigns.channel_id
@@ -69,6 +71,7 @@ defmodule CGraphWeb.GroupChannel do
   # ============================================================================
 
   @impl true
+  @spec handle_in(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()} | {:reply, term(), Phoenix.Socket.t()}
   def handle_in("new_message", %{"content" => content} = params, socket) do
     user = socket.assigns.current_user
     channel_id = socket.assigns.channel_id

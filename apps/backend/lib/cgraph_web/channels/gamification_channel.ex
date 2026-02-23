@@ -38,6 +38,7 @@ defmodule CGraphWeb.GamificationChannel do
              "item_sold", "listing_created", "event_milestone"]
 
   @impl true
+  @spec handle_out(String.t(), map(), Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_out(event, payload, socket) do
     push(socket, event, payload)
     {:noreply, socket}

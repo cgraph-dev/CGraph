@@ -284,6 +284,7 @@ defmodule CGraphWeb.ThreadChannel do
   @doc """
   Broadcast when a new comment is added to the thread.
   """
+  @spec broadcast_new_comment(String.t(), map()) :: :ok | {:error, term()}
   def broadcast_new_comment(thread_id, comment) do
     CGraphWeb.Endpoint.broadcast("thread:#{thread_id}", "new_comment", %{
       comment: serialize_comment(comment)
@@ -293,6 +294,7 @@ defmodule CGraphWeb.ThreadChannel do
   @doc """
   Broadcast when a comment is edited.
   """
+  @spec broadcast_comment_edited(String.t(), map()) :: :ok | {:error, term()}
   def broadcast_comment_edited(thread_id, comment) do
     CGraphWeb.Endpoint.broadcast("thread:#{thread_id}", "comment_edited", %{
       comment: serialize_comment(comment)
@@ -302,6 +304,7 @@ defmodule CGraphWeb.ThreadChannel do
   @doc """
   Broadcast when a comment is deleted.
   """
+  @spec broadcast_comment_deleted(String.t(), String.t()) :: :ok | {:error, term()}
   def broadcast_comment_deleted(thread_id, comment_id) do
     CGraphWeb.Endpoint.broadcast("thread:#{thread_id}", "comment_deleted", %{
       comment_id: comment_id
@@ -311,6 +314,7 @@ defmodule CGraphWeb.ThreadChannel do
   @doc """
   Broadcast vote changes on the thread.
   """
+  @spec broadcast_vote_changed(String.t(), non_neg_integer(), non_neg_integer(), integer()) :: :ok | {:error, term()}
   def broadcast_vote_changed(thread_id, upvotes, downvotes, score) do
     CGraphWeb.Endpoint.broadcast("thread:#{thread_id}", "vote_changed", %{
       thread_id: thread_id,
@@ -323,6 +327,7 @@ defmodule CGraphWeb.ThreadChannel do
   @doc """
   Broadcast when the thread is locked/unlocked.
   """
+  @spec broadcast_thread_status_changed(String.t(), boolean(), boolean()) :: :ok | {:error, term()}
   def broadcast_thread_status_changed(thread_id, is_locked, is_pinned) do
     CGraphWeb.Endpoint.broadcast("thread:#{thread_id}", "thread_status_changed", %{
       thread_id: thread_id,

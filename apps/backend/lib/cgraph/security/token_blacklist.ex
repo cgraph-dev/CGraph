@@ -216,6 +216,7 @@ defmodule CGraph.Security.TokenBlacklist do
   # ---------------------------------------------------------------------------
 
   @impl true
+  @spec init(term()) :: {:ok, map()}
   def init(_opts) do
     Storage.init_bloom_table()
     schedule_cleanup()
@@ -231,6 +232,7 @@ defmodule CGraph.Security.TokenBlacklist do
   end
 
   @impl true
+  @spec handle_call(term(), GenServer.from(), map()) :: {:reply, term(), map()}
   def handle_call({:revoke, token, opts}, _from, state) do
     result = Revocation.revoke_token(token, opts)
     new_state = %{state | revocation_count: state.revocation_count + 1}
@@ -281,6 +283,7 @@ defmodule CGraph.Security.TokenBlacklist do
   end
 
   @impl true
+  @spec handle_cast(term(), map()) :: {:noreply, map()}
   def handle_cast(:cleanup, state) do
     Storage.cleanup()
     new_state = %{state | last_cleanup: DateTime.utc_now()}
@@ -288,6 +291,7 @@ defmodule CGraph.Security.TokenBlacklist do
   end
 
   @impl true
+  @spec handle_info(term(), map()) :: {:noreply, map()}
   def handle_info(:scheduled_cleanup, state) do
     Storage.cleanup()
     schedule_cleanup()
