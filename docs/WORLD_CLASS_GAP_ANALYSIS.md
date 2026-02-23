@@ -1,6 +1,6 @@
 # CGraph World-Class Gap Analysis
 
-> **Version**: 0.9.45 | **Audit Date**: February 22, 2026 **Standard**: Google/Discord/Meta/Telegram
+> **Version**: 0.9.46 | **Audit Date**: February 22, 2026 **Standard**: Google/Discord/Meta/Telegram
 > | **Target**: 100% plan compliance **Methodology**: Automated codebase scan against all 15
 > mandatory rules + 106 wave tasks
 
@@ -159,18 +159,18 @@
 
 ---
 
-### Rule 6: Documentation Requirements — PARTIAL FAIL
+### Rule 6: Documentation Requirements — PARTIAL PASS
 
-| Metric                                 | Count  | Status        |
-| -------------------------------------- | ------ | ------------- |
-| Files with JSDoc header (sampled 100)  | 83/100 | 83% — PARTIAL |
-| Modules missing `@moduledoc`           | **0**  | **PASS**      |
-| `@doc` coverage (sampled messaging.ex) | 21/31  | 68% — FAIL    |
-| Files lacking any top comment          | ~173   | FAIL          |
+| Metric                                 | Count     | Status        |
+| -------------------------------------- | --------- | ------------- |
+| Files with JSDoc header                | 2,229/2,316 | 96.2% — **PASS** |
+| Modules missing `@moduledoc`           | **0**     | **PASS**      |
+| `@doc` coverage (sampled messaging.ex) | 21/31     | 68% — FAIL    |
+| Files lacking any top comment          | ~87       | PARTIAL       |
 
 **Action Items**:
 
-- [ ] **6.1** Add JSDoc file headers to ~173 module files missing them
+- [x] **6.1** ~~Add JSDoc file headers to ~173 module files missing them~~ **DONE** (Session 48 — added 385 headers, 96.2% coverage)
 - [x] **6.2** ~~Add `@moduledoc` to 2 remaining Elixir modules~~ **DONE** (Tier 5)
 - [ ] **6.3** Add `@doc` to undocumented public Elixir functions (estimated 500+ functions)
 - [ ] **6.4** Add JSDoc to all exported interfaces/types that lack them
@@ -582,7 +582,7 @@ mobile feature parity items.
 | 18     | Add useFormStatus to form buttons (8 forms)                           | 2h      | UX quality        | 12   |
 | ~~19~~ | ~~Create 6 missing shared packages~~ **DONE** (Tier 7 — all 12 exist) | ~~40h~~ | Architecture      | 5    |
 | 20     | Write 50 critical-path component tests                                | 40h     | Test coverage     | 9    |
-| 21     | Add JSDoc to ~173 module files                                        | 16h     | Documentation     | 6    |
+| ~~21~~ | ~~Add JSDoc to ~173 module files~~ **DONE** (Session 48 — 385 headers) | ~~16h~~ | Documentation     | 6    |
 | 22     | Add `@doc` to 500+ Elixir functions                                   | 40h     | Documentation     | 6, 7 |
 
 ### Priority Tier 4: File Naming Migration (Week 6-7)
@@ -656,7 +656,7 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | Component Patterns (Rule 2) | **100%** (0 React.FC, 0 fwdRef)           | **100%**       | 100%                |
 | State Management (Rule 3)   | **100%** (all stores have reset)          | **100%**       | 100%                |
 | Cross-Platform (Rule 5)     | **100%** (12/12 packages)                 | **100%**       | 100% (12/12)        |
-| Documentation (Rule 6)      | 75%                                       | 80%            | 100%                |
+| Documentation (Rule 6)      | **96%** (2,229/2,316 JSDoc headers)       | **96%**        | 100%                |
 | Backend Standards (Rule 7)  | **~100%** (4,103 specs, ~100% unique fns) | **80%**        | 100%                |
 | File Size (Rule 8)          | **~90%** (8 Elixir + 6 TSX over)          | **95%**        | 100%                |
 | Testing (Rule 9)            | 18% ratio                                 | 20%            | 100%                |
@@ -666,7 +666,7 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | CI/CD (Rule 13)             | **100%** (17/17)                          | **100%**       | 100%                |
 | Observability (Rule 14)     | **100%** (0 violations)                   | **100%**       | 100%                |
 | API Contract (Rule 15)      | **100%** (cursor + standardized)          | **100%**       | 100%                |
-| **Overall**                 | **~97%**                                  | **~97%**       | **100%**            |
+| **Overall**                 | **~98%**                                  | **~98%**       | **100%**            |
 
 ---
 
@@ -742,3 +742,8 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 > real unannotated assertions. Fixed 48 Credo SpecWithStruct warnings (%Struct{} → Struct.t()) across
 > 10 Elixir files. Final count: 0 real unannotated type assertions remain (4 false positives: JSX
 > text, import renames). Rule 11 now PASS. Overall compliance: ~95% → ~97%.
+> **Session 48 Part 3** (2026-02-22): Added JSDoc module headers to 385 web files (4 batches of
+> 100+100+100+85). Coverage: 81% → 96.2% (2,229/2,316 files). Migrated 67 mobile files from
+> deprecated Animated API to react-native-reanimated v4. Split 4 oversized web files into 10
+> (session-manager-class, matrix/config, socket-manager, chatStore.operations). Rule 6 now PARTIAL
+> PASS. Overall compliance: ~97% → ~98%.
