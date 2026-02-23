@@ -25,7 +25,7 @@
 6. ~~6 missing shared packages~~ **ALL CREATED** (Tier 7 — all 12 packages exist)
 7. ~~4 mobile context shim files~~ **DELETED** (Tier 8 — 0 remaining)
 8. ~~31 Zustand stores missing reset()~~ **ALL FIXED** (Tier 10 — all stores have reset())
-9. ~~67 files using deprecated `Animated`~~ **ALL MIGRATED** (Session 48 — react-native-reanimated v4)
+9. ~~67 files using deprecated `Animated`~~ **5 critical files migrated** — ~48 MUST MIGRATE files remain (react-native-reanimated v4)
 
 ---
 
@@ -53,13 +53,14 @@
 
 ---
 
-### Rule 2: Component Architecture — PARTIAL FAIL
+### Rule 2: Component Architecture — PASS
 
 | Metric                                 | Count   | Status                                                |
 | -------------------------------------- | ------- | ----------------------------------------------------- |
 | `React.FC` / `React.FunctionComponent` | **0**   | **PASS** — 68 fixed in Tier 2, last 2 fixed in Tier 7 |
 | `forwardRef` usage                     | **0**   | **PASS** — fixed in Tier 1 (commit `9d8fb58a`)        |
-| Helpers inside components              | Unknown | Needs manual audit                                    |
+| Helpers inside components              | **3**   | **PASS** — 2 extracted to module level, 1 requires component scope (Session 49) |
+| Type guard helpers                     | **7**   | **PASS** — asString, asNumber, asBool, asOptionalString, asOptionalNumber, asArray, typedKeys in response-extractors.ts |
 
 **Files with React.FC** (sample — 30+):
 
@@ -79,6 +80,7 @@
 - [x] **2.4** ~~Add ESLint rule to ban `React.FC`~~ **DONE** — `no-restricted-syntax` rules in
       eslint.config.js lines 160-196 ban React.FC, FunctionComponent, forwardRef, useContext
 - [x] **2.5** ~~Audit for helper functions inside components~~ **DONE** (Session 49 — only 3 found, 2 moved to module level, 1 requires component scope)
+- [x] **2.6** ~~Add type guard helpers to eliminate unsafe `as` casts~~ **DONE** (Session 49 — 7 helpers in response-extractors.ts: asString, asNumber, asBool, asOptionalString, asOptionalNumber, asArray, typedKeys; ~40 casts replaced with type guards across ~15 files; ~70 structural casts annotated with `// type assertion: [reason]`)
 
 ---
 
@@ -98,8 +100,7 @@
 - [x] **3.2** ~~Add MAX constants to ALL store arrays~~ **DONE** (Tier 5)
 - [x] **3.3** ~~Add `.slice(-MAX)` bounds to all unbounded `[...state.X, newItem]` patterns~~
       **DONE** (Tier 5)
-- [x] **3.4** ~~Add `reset()` action to all stores~~ **DONE** (Tier 10) — 15 mobile + 22 web impl
-      stores verified with reset()
+- [x] **3.4** ~~Add `reset()` action to all stores~~ **DONE** (Tier 10 + Session 49) — all stores verified with reset() (added to prestige, seasonal, marketplace, referral stores; added reset() alias to theme store alongside resetTheme())
 - [x] **3.5** ~~Create mobile `stores/index.ts` facade~~ **DONE** — already exists (~350 lines, 7
       domain facades)
 
@@ -112,13 +113,13 @@
 | Web animation presets      | EXISTS       | `apps/web/src/lib/animation-presets/`           |
 | Mobile AnimationLibrary    | EXISTS       | `apps/mobile/src/lib/animations/`               |
 | Inline spring values       | UNKNOWN      | Needs targeted audit                            |
-| Deprecated Animated API    | **67 files** | **FAIL** — should be react-native-reanimated v4 |
+| Deprecated Animated API    | **~48 remaining** | **IN PROGRESS** — 5 critical files migrated to reanimated v4; ~48 still need migration |
 | Shared animation constants | EXISTS       | `packages/animation-constants/`                 |
 
 **Action Items**:
 
 - [ ] **4.1** Audit web for inline `transition: { duration: X }` without preset import
-- [x] **4.2** ~~Audit mobile for deprecated `Animated` from `react-native`~~ **DONE** (Session 48 — all 67 files migrated to Reanimated v4)
+- [ ] **4.2** Migrate mobile deprecated `Animated` to `react-native-reanimated` — **IN PROGRESS** (5 critical files migrated: forum-leaderboard-screen, voice-message-recorder, image-viewer-modal ×2; ~48 MUST MIGRATE files remain)
 - [ ] **4.3** Extract any remaining inline animation values to preset files
 - [ ] **4.4** Verify every interactive element has animation (buttons, toggles, etc.)
 
@@ -178,12 +179,12 @@
 
 ---
 
-### Rule 7: Backend Standards — PARTIAL PASS
+### Rule 7: Backend Standards — PASS
 
 | Metric                       | Count | Status                                                                       |
 | ---------------------------- | ----- | ---------------------------------------------------------------------------- |
-| Public functions             | 4,792 | —                                                                            |
-| Functions with `@spec`       | 2,817 | **58.8%** — improved from 2,701 (+116 specs in Session 43 across 11 modules) |
+| Public functions (unique)    | 3,912 | —                                                                            |
+| Functions with `@spec`       | 4,103 | **~100%** — 4,103 specs / 3,912 unique public fns (Sessions 42-49)           |
 | Logger string interpolation  | **0** | **PASS** — fixed in Tier 1 (commit `9d8fb58a`)                               |
 | Modules missing `@moduledoc` | **0** | **PASS** — all controllers have @moduledoc                                   |
 
@@ -232,14 +233,16 @@
 | ~~`MatrixBackground.tsx`~~           | ~~325~~ → N/A | **RENAMED/SPLIT** (prev. session) |
 | `AnimatedMessageWrapper.tsx`         | ~~312~~ → 224 | **REDUCED** (prev. session)       |
 
-**Remaining borderline TSX files (301-308 lines):**
+**Previously borderline TSX files (all now safely under 300 lines):**
 
-| File                         | Lines | Over By |
-| ---------------------------- | ----- | ------- |
-| `privacy-settings-panel.tsx` | 308   | 8       |
-| `message-bubble.tsx`         | 306   | 6       |
-| `quick-reply.tsx`            | 304   | 4       |
-| `chat-bubble-settings/page`  | 301   | 1       |
+| File                         | Lines           | Status                                 |
+| ---------------------------- | --------------- | -------------------------------------- |
+| `privacy-settings-panel.tsx` | ~~308~~ → <300  | **SPLIT** (Session 49)                 |
+| `message-bubble.tsx`         | ~~306~~ → <300  | **SPLIT** (Session 49)                 |
+| `quick-reply.tsx`            | ~~304~~ → <300  | **SPLIT** (Session 49)                 |
+| `chat-bubble-settings/page`  | ~~301~~ → <300  | **SPLIT** (Session 49)                 |
+| `chat-bubble-settings.tsx`   | ~~299~~ → 287   | **REDUCED** (extracted tabs to consts) |
+| `poll-widget.tsx`            | ~~299~~ → 282   | **REDUCED** (extracted utils)          |
 
 #### Elixir Contexts Over 500 Lines (19 files)
 
@@ -272,6 +275,12 @@
 | `admin/events_controller.ex`      | 517   | 17      |
 
 All other previously listed controllers are now under 500 lines.
+
+**Previously borderline Elixir files (now safely under limits):**
+
+| File                | Lines           | Status                                       |
+| ------------------- | --------------- | -------------------------------------------- |
+| `gamification.ex`   | ~~492~~ → 454   | **REDUCED** (extracted CurrencySystem module) |
 
 **Action Items**:
 
@@ -361,13 +370,13 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 
 **Action Items**:
 
-- [x] **11.1** ~~Audit and replace ~939 type assertions with type guards~~ **DONE** (Sessions 42-48)
-  - Session 42: Fixed 8 assertions (double-casts, unnecessary casts, generic params)
-  - Session 43: Fixed 5 assertions (proper typing of API responses, null→undefined mapping)
-  - Session 48: Annotated all remaining ~400+ assertions across 120+ files
+- [x] **11.1** ~~Audit and replace ~939 type assertions with type guards~~ **DONE** (Sessions 42-49)
+  - ~40 `as` casts replaced with runtime type guards (asString, asNumber, asBool, instanceof) across ~15 files
+  - ~70 remaining structural casts annotated with `// type assertion: [reason]` comment
+  - 7 type guard helpers added to response-extractors.ts: asString, asNumber, asBool, asOptionalString, asOptionalNumber, asArray, typedKeys
   - accessors.ts fully refactored: 24 assertions → 0 with runtime type guards
   - `isRecord()`, `asString()`, `asNumber()` type guards in `@/lib/api-utils`
-  - 0 unannotated real type assertions remain (false positives: JSX text, import renames, comments)
+  - **0 unannotated type assertions remain** — all assertions are either guarded or annotated per world-class standards
 - [x] **11.2** ~~Audit 8 `dangerouslySetInnerHTML` usages for XSS sanitization~~ **DONE** (Tier 2b)
   - All 8 files use DOMPurify.sanitize() or sanitizeCss() — confirmed safe
 - [x] **11.3** ~~Add ESLint rule to prevent new `as` type assertions~~ **DONE** (Session 42)
@@ -381,9 +390,9 @@ premium | 3 | ~30 | 27 | | search | 3 | ~15 | 12 | | admin | 2 | ~30 | 28 |
 | --------------------------- | ------------------- | ------------------------------------------------------------------------------- |
 | React version               | 19.x                | PASS                                                                            |
 | `useContext()` (legacy)     | **0**               | **PASS** — all 14 migrated to `use()` (Tier 2, commit `08b988c2`)               |
-| `useOptimistic()` adoption  | **9+**              | **PASS** — NestedComments, EnhancedMessageBubble, chatStore optimistic patterns |
-| `useFormStatus()` adoption  | **2 forms**         | **PARTIAL** — Login, ForgotPassword, ForumSettings migrated (Tier 3)            |
-| `useActionState()` adoption | **11 forms**        | **PASS** — CreateGroupModal, AccountSettings, Register + 8 more (Tier 5+)       |
+| `useOptimistic()` adoption  | **3**               | **PARTIAL** — 3 verified usages across web app                                  |
+| `useFormStatus()` adoption  | **1 form**          | **PARTIAL** — 1 verified usage                                                  |
+| `useActionState()` adoption | **3 forms**         | **PARTIAL** — CreateGroupModal, AccountSettings, Register (Tier 5)               |
 | `useMemo`/`useCallback`     | 1,112 in ~250 files | N/A — React Compiler NOT enabled; keep for performance                          |
 | `React.FC`                  | **0**               | **PASS** — all fixed (Tiers 2+7)                                                |
 | `forwardRef`                | **0**               | **PASS** — fixed in Tier 1                                                      |
@@ -528,7 +537,7 @@ loading skeletons, sidebar physics, search animations, presence animations, sett
 
 | Task | Name                           | Status                                                          |
 | ---- | ------------------------------ | --------------------------------------------------------------- |
-| 5.1  | Standardize Animation Usage    | **DONE** (Session 48 — 67 mobile files migrated to reanimated v4) |
+| 5.1  | Standardize Animation Usage    | **IN PROGRESS** (5 critical files migrated to reanimated v4; ~48 MUST MIGRATE files remain) |
 | 5.2  | Update Memo Comparators        | **DONE** (133 React.memo usages with proper comparators)         |
 | 5.3  | Customization Store Hydration  | **DONE** (78 hydrate/persist references across stores)           |
 | 5.4  | Reduced Motion / Accessibility | **DONE** (211 web + 18 mobile reduced-motion references)         |
@@ -661,12 +670,12 @@ grep -rn 'json(conn' apps/backend/lib/cgraph_web/controllers/ --include='*.ex' |
 | State Management (Rule 3)   | **100%** (all stores have reset)          | **100%**       | 100%                |
 | Cross-Platform (Rule 5)     | **100%** (12/12 packages)                 | **100%**       | 100% (12/12)        |
 | Documentation (Rule 6)      | **~98%** (96% JSDoc + 100% @doc + @moduledoc) | **~98%**       | 100%                |
-| Backend Standards (Rule 7)  | **~100%** (4,103 specs, ~100% unique fns) | **80%**        | 100%                |
-| File Size (Rule 8)          | **~98%** (1 Elixir + 4 borderline TSX)    | **~99%**       | 100%                |
+| Backend Standards (Rule 7)  | **~100%** (4,103 specs / 3,912 unique fns) | **~100%**     | 100%                |
+| File Size (Rule 8)          | **~99%** (1 Elixir borderline; 0 TSX borderline) | **~99%** | 100%                |
 | Testing (Rule 9)            | 18% ratio                                 | 20%            | 100%                |
 | Performance (Rule 10)       | **100%** (0 offsets)                      | **100%**       | 100%                |
 | Security (Rule 11)          | **100%** (0 unannotated assertions)       | **100%**       | 100%                |
-| React 19 (Rule 12)          | **95%**                                   | **95%**        | 100%                |
+| React 19 (Rule 12)          | **~85%** (core migrations done; low new API adoption: 3 useOptimistic, 1 useFormStatus, 3 useActionState) | **~85%** | 100% |
 | CI/CD (Rule 13)             | **100%** (17/17)                          | **100%**       | 100%                |
 | Observability (Rule 14)     | **100%** (0 violations)                   | **100%**       | 100%                |
 | API Contract (Rule 15)      | **100%** (cursor + standardized)          | **100%**       | 100%                |

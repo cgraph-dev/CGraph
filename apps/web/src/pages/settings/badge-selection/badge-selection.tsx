@@ -70,7 +70,7 @@ export default function BadgeSelection() {
   }, [filteredBadges]);
 
   const userIsPremium =
-    user?.subscription?.tier === 'premium' || (user?.subscription?.tier as string) === 'enterprise';
+    user?.subscription?.tier === 'premium' || (typeof user?.subscription?.tier === 'string' && user.subscription.tier === 'enterprise');
 
   const handleEquipBadge = async (badgeId: string) => {
     try {

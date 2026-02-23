@@ -92,8 +92,8 @@ export function Avatar({ src, alt, size = 'md', status, fallback, className = ''
             // Hide broken image and show fallback
             e.currentTarget.style.display = 'none';
             const fallbackEl = e.currentTarget.nextElementSibling;
-            if (fallbackEl) {
-              (fallbackEl as HTMLElement).style.display = 'flex';
+            if (fallbackEl instanceof HTMLElement) {
+              fallbackEl.style.display = 'flex';
             }
           }}
         />

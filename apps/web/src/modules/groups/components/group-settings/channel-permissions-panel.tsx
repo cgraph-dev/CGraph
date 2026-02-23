@@ -13,6 +13,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
+import { asString, asNumber, asOptionalString } from '@/lib/api-utils';
 
 import { AddOverrideForm } from './channel-permissions/add-override-form';
 import { OverwriteCard } from './channel-permissions/overwrite-card';
@@ -59,14 +60,14 @@ export function ChannelPermissionsPanel({
       setOverwrites(
         Array.isArray(permsData)
           ? permsData.map((o: Record<string, unknown>) => ({
-              id: o.id as string,
-              type: (o.type ?? 'role') as 'role' | 'member',
-              roleId: (o.role_id ?? o.roleId ?? null) as string | null,
-              memberId: (o.member_id ?? o.memberId ?? null) as string | null,
-              roleName: (o.role_name ?? o.roleName) as string | undefined,
-              memberName: (o.member_name ?? o.memberName) as string | undefined,
-              allow: (o.allow ?? 0) as number,
-              deny: (o.deny ?? 0) as number,
+              id: asString(o.id),
+              type: asString(o.type, 'role') === 'member' ? 'member' as const : 'role' as const,
+              roleId: asOptionalString(o.role_id) ?? asOptionalString(o.roleId) ?? null,
+              memberId: asOptionalString(o.member_id) ?? asOptionalString(o.memberId) ?? null,
+              roleName: asOptionalString(o.role_name) ?? asOptionalString(o.roleName),
+              memberName: asOptionalString(o.member_name) ?? asOptionalString(o.memberName),
+              allow: asNumber(o.allow),
+              deny: asNumber(o.deny),
             }))
           : []
       );
@@ -75,9 +76,9 @@ export function ChannelPermissionsPanel({
       setRoles(
         Array.isArray(rolesData)
           ? rolesData.map((r: Record<string, unknown>) => ({
-              id: r.id as string,
-              name: (r.name ?? '') as string,
-              color: (r.color ?? '#718096') as string,
+              id: asString(r.id),
+              name: asString(r.name),
+              color: asString(r.color, '#718096'),
             }))
           : []
       );

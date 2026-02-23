@@ -46,6 +46,7 @@ export function createEventActions(set: SetState, get: GetState) {
           },
         });
 
+        // type assertion: ensureArray returns unknown[], narrowing to Record for mapping
         const events = (ensureArray(response.data, 'events') as Record<string, unknown>[]).map(
           mapEventFromApi
         );
@@ -158,6 +159,7 @@ export function createEventActions(set: SetState, get: GetState) {
 // API MAPPING HELPER
 // ========================================
 
+// type assertion: mapping untyped API response fields to CalendarEvent interface
 export function mapEventFromApi(data: Record<string, unknown>): CalendarEvent {
   const author: Record<string, unknown> = isRecord(data.author) ? data.author : {};
   const category: Record<string, unknown> = isRecord(data.category) ? data.category : {};

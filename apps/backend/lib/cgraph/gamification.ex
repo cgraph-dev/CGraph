@@ -19,6 +19,7 @@ defmodule CGraph.Gamification do
   alias CGraph.Gamification.{
     AchievementSystem,
     CoinTransaction,
+    CurrencySystem,
     EventSystem,
     Leaderboard,
     LeaderboardSystem,
@@ -305,48 +306,10 @@ defmodule CGraph.Gamification do
     CGraph.Pagination.paginate(query, pagination_opts)
   end
 
-  # ==================== CURRENCY MANAGEMENT ====================
+  # ==================== CURRENCY MANAGEMENT (delegated) ====================
 
-  @doc "Add currency to a user's account."
-  @spec add_currency(User.t() | String.t(), pos_integer(), atom()) :: {:ok, User.t()} | {:error, term()}
-  def add_currency(%User{} = user, amount, currency_type) when amount > 0 do
-    case currency_type do
-      :coins ->
-        user |> Ecto.Changeset.change(%{coins: user.coins + amount}) |> Repo.update()
-
-      _ ->
-        {:error, :invalid_currency_type}
-    end
-  end
-
-  def add_currency(user_id, amount, currency_type) when is_binary(user_id) do
-    case Repo.get(User, user_id) do
-      nil -> {:error, :user_not_found}
-      user -> add_currency(user, amount, currency_type)
-    end
-  end
-
-  @doc "Deduct currency from a user's account."
-  @spec deduct_currency(User.t() | String.t(), pos_integer(), atom()) :: {:ok, User.t()} | {:error, term()}
-  def deduct_currency(%User{} = user, amount, currency_type) when amount > 0 do
-    case currency_type do
-      :coins when user.coins >= amount ->
-        user |> Ecto.Changeset.change(%{coins: user.coins - amount}) |> Repo.update()
-
-      :coins ->
-        {:error, :insufficient_funds}
-
-      _ ->
-        {:error, :invalid_currency_type}
-    end
-  end
-
-  def deduct_currency(user_id, amount, currency_type) when is_binary(user_id) do
-    case Repo.get(User, user_id) do
-      nil -> {:error, :user_not_found}
-      user -> deduct_currency(user, amount, currency_type)
-    end
-  end
+  defdelegate add_currency(user_or_id, amount, currency_type), to: CurrencySystem
+  defdelegate deduct_currency(user_or_id, amount, currency_type), to: CurrencySystem
 
   # ==================== STREAK MANAGEMENT ====================
 

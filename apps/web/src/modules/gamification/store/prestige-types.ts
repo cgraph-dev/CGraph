@@ -97,4 +97,7 @@ export interface PrestigeState {
   getBonusForLevel: (level: number) => PrestigeBonuses;
   getXpWithBonus: (baseXp: number) => number;
   getCoinWithBonus: (baseCoins: number) => number;
+
+  /** Reset store to initial state */
+  reset: () => void;
 }

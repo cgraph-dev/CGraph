@@ -16,13 +16,13 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
-  Animated,
   Alert,
   Linking,
   StyleSheet,
   Platform,
   Dimensions,
 } from 'react-native';
+import ReanimatedAnimated, { type SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -35,9 +35,9 @@ export interface ImageViewerModalProps {
   /** Currently visible image index */
   currentIndex: number;
   /** Animation value for entrance/exit animations */
-  viewerAnim: Animated.Value;
+  viewerAnim: SharedValue<number>;
   /** Scale animation for zoom effect */
-  scaleAnim: Animated.Value;
+  scaleAnim: SharedValue<number>;
   /** Callback when index changes during swipe */
   onIndexChange: (index: number) => void;
   /** Callback to close the viewer */
@@ -77,6 +77,19 @@ export const ImageViewerModal = memo(function ImageViewerModal({
   onClose,
 }: ImageViewerModalProps) {
   const galleryRef = useRef<FlatList>(null);
+
+  const containerAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: viewerAnim.value,
+  }));
+
+  const contentAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleAnim.value }],
+    opacity: viewerAnim.value,
+  }));
+
+  const actionsAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: viewerAnim.value,
+  }));
 
   const handleScroll = useCallback(
     (event: { nativeEvent: { contentOffset: { x: number } } }) => {
@@ -125,18 +138,15 @@ export const ImageViewerModal = memo(function ImageViewerModal({
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <Animated.View style={[styles.container, { opacity: viewerAnim }]}>
+      <ReanimatedAnimated.View style={[styles.container, containerAnimatedStyle]}>
         {/* Backdrop - tap to close */}
         <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose} />
 
         {/* Image content */}
-        <Animated.View
+        <ReanimatedAnimated.View
           style={[
             styles.content,
-            {
-              transform: [{ scale: scaleAnim }],
-              opacity: viewerAnim,
-            },
+            contentAnimatedStyle,
           ]}
         >
           {images.length > 1 ? (
@@ -160,7 +170,7 @@ export const ImageViewerModal = memo(function ImageViewerModal({
               resizeMode="contain"
             />
           ) : null}
-        </Animated.View>
+        </ReanimatedAnimated.View>
 
         {/* Image counter for gallery */}
         {images.length > 1 && (
@@ -183,7 +193,7 @@ export const ImageViewerModal = memo(function ImageViewerModal({
         </TouchableOpacity>
 
         {/* Action buttons */}
-        <Animated.View style={[styles.actions, { opacity: viewerAnim }]}>
+        <ReanimatedAnimated.View style={[styles.actions, actionsAnimatedStyle]}>
           <TouchableOpacity style={styles.actionBtn} onPress={handleSave}>
             <Ionicons name="download-outline" size={22} color="#fff" />
             <Text style={styles.actionText}>Save</Text>
@@ -192,8 +202,8 @@ export const ImageViewerModal = memo(function ImageViewerModal({
             <Ionicons name="share-outline" size={22} color="#fff" />
             <Text style={styles.actionText}>Share</Text>
           </TouchableOpacity>
-        </Animated.View>
-      </Animated.View>
+        </ReanimatedAnimated.View>
+      </ReanimatedAnimated.View>
     </Modal>
   );
 });

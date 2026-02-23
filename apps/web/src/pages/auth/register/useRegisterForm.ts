@@ -21,14 +21,19 @@ export function useRegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  function getFormString(formData: FormData, key: string): string {
+    const value = formData.get(key);
+    return typeof value === 'string' ? value : '';
+  }
+
   const [formState, formAction, isPending] = useActionState(
     async (_prev: RegisterFormState, formData: FormData): Promise<RegisterFormState> => {
       clearError();
 
-      const email = formData.get('email') as string;
-      const username = formData.get('username') as string;
-      const password = formData.get('password') as string;
-      const confirmPassword = formData.get('confirmPassword') as string;
+      const email = getFormString(formData, 'email');
+      const username = getFormString(formData, 'username');
+      const password = getFormString(formData, 'password');
+      const confirmPassword = getFormString(formData, 'confirmPassword');
       const agreeToTerms = formData.get('agreeToTerms') === 'on';
 
       if (password !== confirmPassword) {

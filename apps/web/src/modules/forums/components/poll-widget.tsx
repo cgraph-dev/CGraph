@@ -16,6 +16,7 @@ import { useAuthStore } from '@/modules/auth/store';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import { GlassCard } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
+import { getVotePercentage, formatPollTimeRemaining } from './poll-widget.utils';
 
 const logger = createLogger('PollWidget');
 
@@ -88,26 +89,9 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
     }
   };
 
-  const getPercentage = (votes: number): number => {
-    if (totalVotes === 0) return 0;
-    return Math.round((votes / totalVotes) * 100);
-  };
+  const getPercentage = (votes: number): number => getVotePercentage(votes, totalVotes);
 
-  const formatTimeRemaining = (): string => {
-    if (!poll.timeout) return '';
-    const now = new Date();
-    const end = new Date(poll.timeout);
-    const diff = end.getTime() - now.getTime();
-
-    if (diff <= 0) return 'Expired';
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-
-    if (days > 0) return `${days}d ${hours}h remaining`;
-    if (hours > 0) return `${hours}h remaining`;
-    return 'Ending soon';
-  };
+  const formatTimeRemaining = (): string => formatPollTimeRemaining(poll.timeout);
 
   return (
     <GlassCard className={`p-6 ${className}`} variant="frosted">

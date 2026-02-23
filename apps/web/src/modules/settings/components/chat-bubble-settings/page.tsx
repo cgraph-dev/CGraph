@@ -116,6 +116,7 @@ export default function ChatBubbleSettings() {
             <motion.button
               key={preset.id}
               onClick={() => {
+                // type assertion: preset.id is a known key of CHAT_BUBBLE_PRESETS
                 applyPreset(preset.id as keyof typeof CHAT_BUBBLE_PRESETS);
                 HapticFeedback.light();
               }}

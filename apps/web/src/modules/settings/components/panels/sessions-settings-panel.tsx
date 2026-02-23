@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { DevicePhoneMobileIcon, ComputerDesktopIcon, DeviceTabletIcon, GlobeAltIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
+import { asString, asBool } from '@/lib/api-utils';
 import { createLogger } from '@/lib/logger';
 import { toast } from '@/shared/components/ui';
 import { GlassCard } from '@/shared/components/ui';
@@ -74,13 +75,13 @@ export function SessionsSettingsPanel() {
       const data = response.data?.data || response.data?.sessions || [];
 
       const mappedSessions: Session[] = data.map((s: Record<string, unknown>) => ({
-        id: s.id as string,
-        device: (s.device as string) || (s.user_agent as string) || 'Unknown Device',
-        location: (s.location as string) || (s.ip_location as string) || 'Unknown Location',
-        lastActive: formatLastActive((s.last_seen_at as string) || (s.inserted_at as string)),
-        current: (s.current as boolean) || false,
-        ipAddress: (s.ip_address as string) || '',
-        browser: parseBrowser((s.user_agent as string) || ''),
+        id: asString(s.id),
+        device: asString(s.device) || asString(s.user_agent) || 'Unknown Device',
+        location: asString(s.location) || asString(s.ip_location) || 'Unknown Location',
+        lastActive: formatLastActive(asString(s.last_seen_at) || asString(s.inserted_at)),
+        current: asBool(s.current),
+        ipAddress: asString(s.ip_address),
+        browser: parseBrowser(asString(s.user_agent)),
       }));
 
       setSessions(mappedSessions);

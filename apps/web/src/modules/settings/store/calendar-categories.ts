@@ -4,6 +4,7 @@
 import { createLogger } from '@/lib/logger';
 import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';
+import { asString, asNumber, asBool, asOptionalString } from '@/lib/api-utils';
 
 import type { CalendarState, EventCategory } from './calendarStore.types';
 
@@ -23,16 +24,17 @@ export function createCategoryActions(set: SetState, get: GetState) {
     fetchCategories: async () => {
       try {
         const response = await api.get('/api/v1/calendar/categories');
+        // type assertion: ensureArray returns unknown[], narrowing to Record
         const categories = (
           ensureArray(response.data, 'categories') as Record<string, unknown>[]
         ).map((c) => ({
-          id: c.id as string,
-          name: (c.name as string) || 'Uncategorized',
-          color: (c.color as string) || '#6366f1',
-          icon: c.icon as string | undefined,
-          description: c.description as string | undefined,
-          isDefault: (c.is_default as boolean) || false,
-          order: (c.order as number) || 0,
+          id: asString(c.id),
+          name: asString(c.name, 'Uncategorized'),
+          color: asString(c.color, '#6366f1'),
+          icon: asOptionalString(c.icon),
+          description: asOptionalString(c.description),
+          isDefault: asBool(c.is_default),
+          order: asNumber(c.order),
         }));
         set({ categories });
       } catch (error) {

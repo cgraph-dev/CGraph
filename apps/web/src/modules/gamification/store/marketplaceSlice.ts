@@ -82,6 +82,25 @@ export const useMarketplaceStore = create<MarketplaceState>()(
       setFilters: createSetFilters(set, get),
       clearFilters: createClearFilters(set, get),
       getPriceRecommendation,
+
+      /** Reset store to initial state */
+      reset: () =>
+        set({
+          listings: [],
+          selectedListing: null,
+          priceHistory: [],
+          recommendedPrice: null,
+          myListings: [],
+          transactionHistory: [],
+          userTotals: null,
+          stats: null,
+          filters: DEFAULT_FILTERS,
+          hasMore: false,
+          currentOffset: 0,
+          isLoading: false,
+          isCreating: false,
+          isPurchasing: false,
+        }),
     }),
     {
       name: 'cgraph-marketplace',

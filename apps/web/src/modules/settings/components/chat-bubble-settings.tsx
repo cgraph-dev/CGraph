@@ -9,12 +9,7 @@ import { useChatCustomization } from '@/modules/settings/store/customization';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
 import {
-  ChatBubbleLeftIcon,
-  SparklesIcon,
-  SwatchIcon,
-  Cog6ToothIcon,
   ArrowPathIcon,
-  PhotoIcon,
 } from '@heroicons/react/24/outline';
 import {
   CHAT_BACKGROUNDS,
@@ -29,7 +24,7 @@ import {
   LayoutTab,
   BackgroundsTab,
 } from './chat-bubble-tabs';
-import { CHAT_BUBBLE_PRESETS_UI } from './chat-bubble-settings.constants';
+import { CHAT_BUBBLE_PRESETS_UI, CHAT_BUBBLE_TABS } from './chat-bubble-settings.constants';
 
 /**
  * Chat Bubble Customization Settings
@@ -53,14 +48,7 @@ export default function ChatBubbleSettings() {
   const [selectedBackground, setSelectedBackground] = useState<string>('default_dark');
   const [backgroundCategory, setBackgroundCategory] = useState<BackgroundCategory | 'all'>('all');
 
-  const tabs = [
-    { id: 'colors' as const, label: 'Colors', icon: SwatchIcon },
-    { id: 'shape' as const, label: 'Shape', icon: ChatBubbleLeftIcon },
-    { id: 'effects' as const, label: 'Effects', icon: SparklesIcon },
-    { id: 'animations' as const, label: 'Animations', icon: Cog6ToothIcon },
-    { id: 'layout' as const, label: 'Layout', icon: Cog6ToothIcon },
-    { id: 'backgrounds' as const, label: 'Backgrounds', icon: PhotoIcon },
-  ];
+  const tabs = CHAT_BUBBLE_TABS;
 
   // Filter backgrounds by category
   const filteredBackgrounds = useMemo(() => {
@@ -138,6 +126,7 @@ export default function ChatBubbleSettings() {
             <motion.button
               key={preset.id}
               onClick={() => {
+                // type assertion: preset.id is a known key of CHAT_BUBBLE_PRESETS
                 applyPreset(preset.id as keyof typeof CHAT_BUBBLE_PRESETS);
                 HapticFeedback.light();
               }}

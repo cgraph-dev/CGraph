@@ -42,6 +42,7 @@ export const RewardCard = memo<RewardCardProps>(function RewardCard({
               : 'bg-dark-700'
       }`}
       style={
+        // type assertion: CSS custom property requires CSSProperties widening
         isToday && canClaim ? ({ '--tw-ring-color': primaryColor } as React.CSSProperties) : {}
       }
     >

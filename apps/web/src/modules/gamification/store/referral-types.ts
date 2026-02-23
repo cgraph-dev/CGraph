@@ -143,4 +143,7 @@ export interface ReferralState {
   getReferralUrl: () => string;
 
   clearState: () => void;
+
+  /** Reset store to initial state (standard naming convention) */
+  reset: () => void;
 }

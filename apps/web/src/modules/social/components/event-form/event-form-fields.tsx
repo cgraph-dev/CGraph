@@ -114,6 +114,7 @@ export default function EventFormFields({
           <ArrowPathIcon className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2" />
           <select
             value={formData.recurrence?.pattern || ''}
+            // type assertion: select element value matches RecurrencePattern union
             onChange={(e) => handleRecurrenceChange(e.target.value as RecurrencePattern | '')}
             className="bg-background border-border focus:ring-primary w-full appearance-none rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2"
           >

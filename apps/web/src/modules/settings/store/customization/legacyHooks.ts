@@ -108,6 +108,7 @@ export const useChatCustomization = () => {
     bubbleOpacity: 100,
     bubbleShadow: shadowIntensityToLegacy(bubbleShadowIntensity),
     bubbleStyle: chatBubbleStyle,
+    // type assertion: initializing compatibility layer with explicit null types
     textColor: null as string | null,
     textSize: 14,
     textWeight: 'normal' as string,

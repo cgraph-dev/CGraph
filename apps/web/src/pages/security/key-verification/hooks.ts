@@ -6,6 +6,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { asString } from '@/lib/api-utils';
 
 function formatSafetyNumber(n: string): string {
   return n.match(/.{1,5}/g)?.join(' ') || n;
@@ -34,7 +35,7 @@ export function useKeyVerification() {
       }
 
       return {
-        safetyNumber: d.safety_number as string,
+        safetyNumber: asString(d.safety_number),
         isVerified,
       };
     },

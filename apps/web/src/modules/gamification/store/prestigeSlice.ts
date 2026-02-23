@@ -48,6 +48,18 @@ export const usePrestigeStore = create<PrestigeState>()(
       isLoading: false,
       isPrestiging: false,
 
+      /** Reset store to initial state */
+      reset: () =>
+        set({
+          prestige: null,
+          requirements: null,
+          canPrestige: false,
+          allTiers: [],
+          leaderboard: [],
+          isLoading: false,
+          isPrestiging: false,
+        }),
+
       fetchPrestige: async () => {
         set({ isLoading: true });
         try {

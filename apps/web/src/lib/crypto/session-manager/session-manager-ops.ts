@@ -123,8 +123,9 @@ export async function encryptWithProtocol(
   recipientId: string
 ): Promise<SecureMessage> {
   if (session.protocol.protocol === CryptoProtocol.PQXDH_V1) {
+    if (!(session.engine instanceof TripleRatchetEngine)) throw new Error('Expected TripleRatchetEngine');
     const pqResult = await encryptWithTripleRatchet(
-      session.engine as TripleRatchetEngine,
+      session.engine,
       plaintextBytes
     );
     return {
@@ -141,7 +142,8 @@ export async function encryptWithProtocol(
   }
 
   // Classical Double Ratchet path
-  const drEngine = session.engine as DoubleRatchetEngine;
+  if (!(session.engine instanceof DoubleRatchetEngine)) throw new Error('Expected DoubleRatchetEngine');
+  const drEngine = session.engine;
   const ratchetMessage = await drEngine.encryptMessage(plaintextBytes);
   return buildSecureMessage({
     ourUserId,
@@ -169,11 +171,13 @@ export async function decryptWithProtocol(
   }
 
   if (session.protocol.protocol === CryptoProtocol.PQXDH_V1 && message.pqRatchetHeader) {
-    return decryptWithTripleRatchet(session.engine as TripleRatchetEngine, message);
+    if (!(session.engine instanceof TripleRatchetEngine)) throw new Error('Expected TripleRatchetEngine');
+    return decryptWithTripleRatchet(session.engine, message);
   }
 
   // Classical Double Ratchet decryption
-  const drEngine = session.engine as DoubleRatchetEngine;
+  if (!(session.engine instanceof DoubleRatchetEngine)) throw new Error('Expected DoubleRatchetEngine');
+  const drEngine = session.engine;
   const ratchetMessage = toRatchetMessage(message);
   const decrypted = await drEngine.decryptMessage(ratchetMessage);
   return decrypted.plaintext;

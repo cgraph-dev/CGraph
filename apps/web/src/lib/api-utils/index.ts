@@ -10,6 +10,13 @@ export {
   extractPagination,
   extractErrorMessage,
   isRecord,
+  asString,
+  asNumber,
+  asBool,
+  asOptionalString,
+  asOptionalNumber,
+  asArray,
+  typedKeys,
 } from './response-extractors';
 export { isNonEmptyString, isValidId } from './type-guards';
 export {

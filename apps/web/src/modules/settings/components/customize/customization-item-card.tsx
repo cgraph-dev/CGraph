@@ -278,6 +278,7 @@ function CustomizationItemCardInner<T extends CustomizationItem>({
 }
 
 // Export memoized component with generic type support
+// type assertion: preserving generic type through React.memo wrapper
 export const CustomizationItemCard = memo(
   CustomizationItemCardInner
 ) as typeof CustomizationItemCardInner;

@@ -12,6 +12,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, Reorder } from 'framer-motion';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
+import { asString, asNumber } from '@/lib/api-utils';
 import { CreateCategoryForm } from './create-category-form';
 import { CategoryListItem } from './category-list-item';
 import type { Category } from './category-list-item';
@@ -44,7 +45,7 @@ export function ChannelCategoriesPanel({ groupId }: ChannelCategoriesPanelProps)
 
       const countMap: Record<string, number> = {};
       for (const ch of channels) {
-        const catId = (ch.category_id ?? ch.categoryId) as string | null;
+        const catId = asString(ch.category_id) || asString(ch.categoryId);
         if (catId) {
           countMap[catId] = (countMap[catId] ?? 0) + 1;
         }
@@ -53,11 +54,11 @@ export function ChannelCategoriesPanel({ groupId }: ChannelCategoriesPanelProps)
       setCategories(
         (Array.isArray(catData) ? catData : [])
           .map((c: Record<string, unknown>) => ({
-            id: c.id as string,
-            name: (c.name ?? '') as string,
-            position: (c.position ?? 0) as number,
+            id: asString(c.id),
+            name: asString(c.name),
+            position: asNumber(c.position),
             isCollapsed: !!(c.is_collapsed ?? c.isCollapsed),
-            channelCount: countMap[c.id as string] ?? 0,
+            channelCount: countMap[asString(c.id)] ?? 0,
           }))
           .sort((a: Category, b: Category) => a.position - b.position)
       );

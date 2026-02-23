@@ -26,10 +26,15 @@ export function CreateGroupModal({ isOpen, onClose, onSubmit }: CreateGroupModal
   const [isPublic, setIsPublic] = useState(true);
   const navigate = useNavigate();
 
+  function getFormString(formData: FormData, key: string): string {
+    const value = formData.get(key);
+    return typeof value === 'string' ? value : '';
+  }
+
   const [state, formAction, isPending] = useActionState(
     async (_prev: CreateGroupState, formData: FormData): Promise<CreateGroupState> => {
-      const name = (formData.get('name') as string)?.trim();
-      const description = (formData.get('description') as string)?.trim();
+      const name = getFormString(formData, 'name').trim();
+      const description = getFormString(formData, 'description').trim();
 
       if (!name) return { error: 'Group name is required' };
 

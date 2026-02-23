@@ -120,6 +120,7 @@ export function StorageManagement() {
       {/* Usage breakdown */}
       <div className="mb-8 space-y-3">
         {CATEGORIES.map((cat) => {
+          // type assertion: cat.key maps to a known StorageBreakdown field
           const value = storage[cat.key as keyof StorageBreakdown];
           const pct = maxCategory > 0 ? (value / maxCategory) * 100 : 0;
 

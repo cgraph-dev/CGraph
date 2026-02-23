@@ -268,6 +268,8 @@ export interface ThemeActions {
   setChatBubbleStyle: (style: ChatBubbleStylePreset) => void;
   setEffect: (effect: EffectPreset) => void;
   resetTheme: () => void;
+  /** Reset store to initial state (standard naming convention) */
+  reset: () => void;
   applyPreset: (preset: string) => void;
 
   // Export/Import

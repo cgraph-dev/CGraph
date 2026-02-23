@@ -14,10 +14,10 @@ import {
   Modal,
   TouchableOpacity,
   FlatList,
-  Animated,
   Alert,
   Linking,
 } from 'react-native';
+import Animated, { SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { styles, SCREEN_WIDTH, SCREEN_HEIGHT } from '../styles';
 
@@ -27,8 +27,8 @@ interface ImageViewerModalProps {
   imageGallery: string[];
   currentIndex: number;
   galleryRef: React.RefObject<FlatList<string>>;
-  animValue: Animated.Value;
-  scaleAnim: Animated.Value;
+  animValue: SharedValue<number>;
+  scaleAnim: SharedValue<number>;
   onClose: () => void;
   onIndexChange: (index: number) => void;
   onImageSelect: (image: string) => void;
@@ -49,6 +49,19 @@ export function ImageViewerModal({
   onIndexChange,
   onImageSelect,
 }: ImageViewerModalProps) {
+  const containerAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: animValue.value,
+  }));
+
+  const contentAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleAnim.value }],
+    opacity: animValue.value,
+  }));
+
+  const actionsAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: animValue.value,
+  }));
+
   const handleScroll = (e: { nativeEvent: { contentOffset: { x: number } } }) => {
     const newIndex = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
     if (newIndex !== currentIndex && newIndex >= 0 && newIndex < imageGallery.length) {
@@ -77,15 +90,12 @@ export function ImageViewerModal({
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <Animated.View style={[styles.imageViewerContainer, { opacity: animValue }]}>
+      <Animated.View style={[styles.imageViewerContainer, containerAnimatedStyle]}>
         <TouchableOpacity style={styles.imageViewerBackdrop} activeOpacity={1} onPress={onClose} />
         <Animated.View
           style={[
             styles.imageViewerContent,
-            {
-              transform: [{ scale: scaleAnim }],
-              opacity: animValue,
-            },
+            contentAnimatedStyle,
           ]}
         >
           {imageGallery.length > 1 ? (
@@ -153,7 +163,7 @@ export function ImageViewerModal({
         </TouchableOpacity>
 
         {/* Action buttons */}
-        <Animated.View style={[styles.imageViewerActions, { opacity: animValue }]}>
+        <Animated.View style={[styles.imageViewerActions, actionsAnimatedStyle]}>
           <TouchableOpacity style={styles.imageViewerActionBtn} onPress={handleSave}>
             <Ionicons name="download-outline" size={22} color="#fff" />
             <Text style={styles.imageViewerActionText}>Save</Text>

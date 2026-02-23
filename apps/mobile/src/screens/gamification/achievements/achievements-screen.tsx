@@ -12,6 +12,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import type { ComponentProps } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useGamification } from '@/hooks/useGamification';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
@@ -24,7 +25,7 @@ import { styles } from './styles';
 
 export default function AchievementsScreen() {
   const navigation = useNavigation();
-  const { achievements, refreshAchievements, isLoading, stats } = useGamification();
+  const { achievements, refreshAchievements, isLoading } = useGamification();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<AchievementCategory>('all');
@@ -37,7 +38,7 @@ export default function AchievementsScreen() {
   // Initial load
   useEffect(() => {
     refreshAchievements();
-  }, []);
+  }, [refreshAchievements]);
 
   // Filtered achievements
   const filteredAchievements = useMemo(() => {
@@ -126,7 +127,7 @@ export default function AchievementsScreen() {
               }}
             >
               <Ionicons
-                name={item.icon as string}
+                name={item.icon as ComponentProps<typeof Ionicons>['name']} // type assertion: icon names from CATEGORIES constant are valid Ionicons names
                 size={16}
                 color={selectedCategory === item.id ? '#fff' : '#6b7280'}
               />

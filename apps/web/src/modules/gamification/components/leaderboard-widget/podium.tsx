@@ -45,6 +45,7 @@ export function Podium({ entries, onUserClick }: PodiumProps) {
                 alt={entry.displayName || entry.username}
                 size={index === 1 ? 'large' : 'medium'}
                 className="ring-2"
+                // type assertion: CSS custom property requires CSSProperties widening
                 style={{ '--tw-ring-color': RANK_COLORS[actualRank] } as React.CSSProperties}
                 avatarBorderId={
                   entry.avatarBorderId ??

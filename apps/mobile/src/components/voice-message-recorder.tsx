@@ -5,9 +5,18 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   StyleSheet,
-  Animated,
   Platform,
 } from 'react-native';
+import ReanimatedAnimated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+  withRepeat,
+  withSequence,
+  interpolate,
+  runOnJS,
+} from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import {
   useAudioRecorder,
@@ -74,12 +83,14 @@ export function VoiceMessageRecorder({
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const meteringIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const pulseAnim = useSharedValue(1);
   
-  // Animated values for recording waveform bars (30 bars)
-  const waveformAnims = useRef<Animated.Value[]>(
-    Array.from({ length: 30 }, () => new Animated.Value(0.1))
+  // Waveform bar heights (30 bars) - shared values for smooth animation
+  const waveformBarHeights = useRef<number[]>(
+    Array.from({ length: 30 }, () => 0.1)
   ).current;
+  // Force re-render trigger for waveform bars
+  const [waveformTick, setWaveformTick] = useState(0);
   
   // Current metering level for animations
   const currentMeteringRef = useRef(0);
@@ -108,29 +119,28 @@ export function VoiceMessageRecorder({
     };
   }, []);
 
-  // Pulsing animation for recording indicator
+  // Pulsing animation for recording indicator (reanimated v4)
   useEffect(() => {
     if (state === 'recording') {
-      const pulse = Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1.2,
-            duration: 500,
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 500,
-            useNativeDriver: true,
-          }),
-        ])
+      pulseAnim.value = withRepeat(
+        withSequence(
+          withTiming(1.2, { duration: 500 }),
+          withTiming(1, { duration: 500 })
+        ),
+        -1,
+        false
       );
-      pulse.start();
-      return () => pulse.stop();
+      return () => {
+        pulseAnim.value = 1;
+      };
     } else {
-      pulseAnim.setValue(1);
+      pulseAnim.value = 1;
     }
   }, [state, pulseAnim]);
+
+  const pulseAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pulseAnim.value }],
+  }));
 
   const cleanup = useCallback(async () => {
     if (timerRef.current) {
@@ -163,8 +173,9 @@ export function VoiceMessageRecorder({
       setDuration(0);
       setWaveformData([]);
       
-      // Reset all waveform animations
-      waveformAnims.forEach(anim => anim.setValue(0.1));
+      // Reset all waveform bar heights
+      waveformBarHeights.fill(0.1);
+      setWaveformTick(0);
 
       // Start duration timer
       const startTime = Date.now();
@@ -205,13 +216,8 @@ export function VoiceMessageRecorder({
         currentMeteringRef.current = normalizedLevel;
         setWaveformData(prev => [...prev, normalizedLevel].slice(-50));
         
-        // Animate the current bar with smooth spring animation
-        Animated.spring(waveformAnims[barIndex % 30], {
-          toValue: normalizedLevel,
-          friction: 3,
-          tension: 100,
-          useNativeDriver: false,
-        }).start();
+        // Update current bar height directly (no Animated API needed)
+        waveformBarHeights[barIndex % 30] = normalizedLevel;
         
         // Move to next bar
         barIndex++;
@@ -219,12 +225,10 @@ export function VoiceMessageRecorder({
         // Also add some random variation to nearby bars for organic feel
         const nearbyIndex = (barIndex + 1) % 30;
         const variation = normalizedLevel * (0.5 + Math.random() * 0.5);
-        Animated.spring(waveformAnims[nearbyIndex], {
-          toValue: variation,
-          friction: 4,
-          tension: 80,
-          useNativeDriver: false,
-        }).start();
+        waveformBarHeights[nearbyIndex] = variation;
+        
+        // Trigger re-render for waveform visualization
+        setWaveformTick(t => t + 1);
       }, 80);
 
     } catch (err) {
@@ -343,16 +347,13 @@ export function VoiceMessageRecorder({
     if (state === 'recording') {
       return (
         <View style={styles.waveformContainer}>
-          {waveformAnims.map((animValue, index) => (
-            <Animated.View
+          {waveformBarHeights.map((barHeight, index) => (
+            <View
               key={index}
               style={[
                 styles.waveformBar,
                 {
-                  height: animValue.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [4, maxHeight],
-                  }),
+                  height: 4 + barHeight * (maxHeight - 4),
                   backgroundColor: colors.error,
                   width: barWidth,
                   marginHorizontal: barGap / 2,
@@ -447,10 +448,11 @@ export function VoiceMessageRecorder({
       {state === 'recording' && (
         <View style={styles.recordingContainer}>
           <View style={styles.recordingHeader}>
-            <Animated.View
+            <ReanimatedAnimated.View
               style={[
                 styles.recordingIndicator,
-                { backgroundColor: colors.error, transform: [{ scale: pulseAnim }] },
+                { backgroundColor: colors.error },
+                pulseAnimatedStyle,
               ]}
             />
             <Text style={[styles.recordingTime, { color: colors.text }]}>

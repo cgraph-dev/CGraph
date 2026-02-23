@@ -4,6 +4,7 @@
  */
 import { api } from '@/lib/api';
 import { ensureArray, isRecord } from '@/lib/apiUtils';
+import { asString, asBool } from '@/lib/api-utils';
 import { createLogger } from '@/lib/logger';
 import type { StoreApi } from 'zustand';
 import type { ProfileField, ProfileState } from './profileStore.types';
@@ -135,14 +136,14 @@ export function createFetchProfileFields(set: Set) {
       const fields = ensureArray(response.data, 'fields')
         .filter(isRecord)
         .map((f) => ({
-          id: f.id as string,
-          name: f.name as string,
-          type: (f.type as ProfileField['type']) || 'text',
+          id: asString(f.id),
+          name: asString(f.name),
+          type: (f.type as ProfileField['type']) || 'text', // type assertion: narrowing unknown to union type after API boundary
           value: null,
           options: f.options as string[] | undefined, // safe downcast – structural boundary
-          required: (f.required as boolean) || false,
-          editable: (f.editable as boolean) ?? true,
-          visible: (f.visible as boolean) ?? true,
+          required: asBool(f.required),
+          editable: asBool(f.editable, true),
+          visible: asBool(f.visible, true),
         }));
       set({ availableFields: fields });
     } catch (error) {

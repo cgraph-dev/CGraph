@@ -17,7 +17,7 @@
  * @since v0.9.0
  */
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -25,8 +25,14 @@ import {
   StyleSheet,
   RefreshControl,
   ActivityIndicator,
-  Animated,
 } from 'react-native';
+import Reanimated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+  Easing,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
@@ -93,9 +99,14 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
   const [forums, setForums] = useState<LeaderboardForum[]>([]);
   const [contributors, setContributors] = useState<TopContributor[]>([]);
 
-  // Header animation
-  const headerOpacity = useRef(new Animated.Value(0)).current;
-  const headerSlide = useRef(new Animated.Value(-20)).current;
+  // Header animation (reanimated v4)
+  const headerOpacity = useSharedValue(0);
+  const headerSlide = useSharedValue(-20);
+
+  const headerAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: headerOpacity.value,
+    transform: [{ translateY: headerSlide.value }],
+  }));
 
   useEffect(() => {
     navigation.setOptions({
@@ -109,19 +120,8 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
       },
     });
 
-    Animated.parallel([
-      Animated.timing(headerOpacity, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-      Animated.spring(headerSlide, {
-        toValue: 0,
-        friction: 8,
-        tension: 50,
-        useNativeDriver: true,
-      }),
-    ]).start();
+    headerOpacity.value = withTiming(1, { duration: 400, easing: Easing.out(Easing.ease) });
+    headerSlide.value = withSpring(0, { damping: 12, stiffness: 100 });
 
     fetchLeaderboardData();
   }, [forumId, activeTab, timePeriod]);

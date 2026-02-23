@@ -231,6 +231,7 @@ export function ThemedAvatar({
         alt={alt}
         className="h-full w-full object-cover"
         onError={(e) => {
+          // type assertion: image onLoad event target is HTMLImageElement
           const target = e.target as HTMLImageElement;
           target.src = '/default-avatar.png';
         }}

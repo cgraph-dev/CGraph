@@ -131,6 +131,9 @@ export interface MarketplaceState {
 
   // Helpers
   getPriceRecommendation: (rarity: string) => PriceRecommendation;
+
+  /** Reset store to initial state */
+  reset: () => void;
 }
 
 // ==================== DEFAULT FILTERS ====================

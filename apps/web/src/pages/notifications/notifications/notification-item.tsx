@@ -102,17 +102,18 @@ export function NotificationItem({
             <p className="mt-1 text-xs text-gray-500">{formatTimeAgo(notification.createdAt)}</p>
 
             {/* Inline action buttons for actionable notifications */}
+            {/* type assertion: narrowing notification.type to known union after includes() check */}
             {(['friend_request', 'message', 'group_invite', 'mention'] as const).includes(
-              notification.type as 'friend_request' | 'message' | 'group_invite' | 'mention'
+              notification.type as 'friend_request' | 'message' | 'group_invite' | 'mention' // type assertion: narrowing notification.type to known union after includes() check
             ) && (
               <div className="mt-2" onClick={(e) => e.stopPropagation()}>
                 <NotificationActions
                   type={
-                    notification.type as 'friend_request' | 'message' | 'group_invite' | 'mention'
+                    notification.type as 'friend_request' | 'message' | 'group_invite' | 'mention' // type assertion: narrowing notification.type to known union after includes() check
                   }
                   notificationId={notification.id}
                   sourceId={
-                    (notification.data?.sourceId as string) ?? notification.sender?.id ?? ''
+                    typeof notification.data?.sourceId === 'string' ? notification.data.sourceId : (notification.sender?.id ?? '')
                   }
                   onAction={() => onMarkAsRead()}
                 />

@@ -8,6 +8,7 @@ import { motion, AnimatePresence, Reorder } from 'framer-motion';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
 import { api } from '@/lib/api';
+import { asString, asNumber, asBool } from '@/lib/api-utils';
 import { CreateChannelForm } from './create-channel-form';
 import { ChannelListItem } from './channel-list-item';
 import type { ChannelItem } from './channel-list-item';
@@ -40,16 +41,19 @@ export function ChannelsTab({ groupId }: ChannelsTabProps) {
       const data = Array.isArray(res.data?.data) ? res.data.data : Array.isArray(res.data) ? res.data : [];
       setChannels(
         data
-          .map((c: Record<string, unknown>) => ({
-            id: c.id as string,
-            name: (c.name ?? '') as string,
-            type: (c.type ?? 'text') as 'text' | 'voice' | 'announcement',
-            topic: (c.topic ?? null) as string | null,
-            position: (c.position ?? 0) as number,
-            categoryId: (c.category_id ?? c.categoryId ?? null) as string | null,
-            nsfw: !!(c.nsfw),
-            slowmodeSeconds: (c.slowmode_seconds ?? c.slowmodeSeconds ?? 0) as number,
-          }))
+          .map((c: Record<string, unknown>) => {
+            const channelType = asString(c.type, 'text');
+            return {
+              id: asString(c.id),
+              name: asString(c.name),
+              type: (channelType === 'voice' || channelType === 'announcement' ? channelType : 'text') as 'text' | 'voice' | 'announcement', // type assertion: narrowing validated string to union
+              topic: asString(c.topic) || null,
+              position: asNumber(c.position),
+              categoryId: asString(c.category_id) || asString(c.categoryId) || null,
+              nsfw: asBool(c.nsfw),
+              slowmodeSeconds: asNumber(c.slowmode_seconds) || asNumber(c.slowmodeSeconds),
+            };
+          })
           .sort((a: ChannelItem, b: ChannelItem) => a.position - b.position)
       );
     } catch {

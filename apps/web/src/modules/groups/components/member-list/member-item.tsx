@@ -45,7 +45,10 @@ export function RoleSection({ role, members, onMemberClick }: RoleSectionProps) 
 
 // Member Item Component
 export function MemberItem({ member, roleColor, onClick }: MemberItemProps) {
-  const status = (member.user.status as StatusType) || 'offline';
+  const validStatuses: StatusType[] = ['online', 'idle', 'dnd', 'offline'];
+  const status: StatusType = validStatuses.includes(member.user.status as StatusType)
+    ? (member.user.status as StatusType) // type assertion: validated by includes() check above
+    : 'offline';
   const displayName = member.nickname || member.user.displayName || member.user.username;
 
   return (

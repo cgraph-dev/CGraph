@@ -150,4 +150,7 @@ export interface SeasonalEventState {
   getTimeRemaining: (eventId: string) => { days: number; hours: number; minutes: number } | null;
   isEventActive: (eventId: string) => boolean;
   canClaimMilestone: (milestoneId: string) => boolean;
+
+  /** Reset store to initial state */
+  reset: () => void;
 }

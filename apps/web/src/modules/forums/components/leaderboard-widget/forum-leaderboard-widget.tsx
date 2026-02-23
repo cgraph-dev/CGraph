@@ -108,6 +108,7 @@ export function ForumLeaderboardWidget({
 
         {/* Time Range Toggle */}
         <div className="flex items-center gap-1">
+          // type assertion: array literal matches TimeRange union type
           {(['week', 'month', 'all'] as TimeRange[]).map(
             (
               range // safe downcast — literals match TimeRange

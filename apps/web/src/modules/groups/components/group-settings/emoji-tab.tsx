@@ -12,6 +12,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpTrayIcon } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
+import { asString } from '@/lib/api-utils';
 import { EmojiGrid } from './emoji-grid';
 import type { GroupEmoji } from './emoji-grid';
 import { DeleteEmojiModal } from './delete-emoji-modal';
@@ -40,13 +41,13 @@ export function EmojiTab({ groupId }: EmojiTabProps) {
       const data = res.data?.data ?? res.data ?? [];
       setEmojis(
         (Array.isArray(data) ? data : []).map((e: Record<string, unknown>) => ({
-          id: e.id as string,
-          name: (e.name ?? '') as string,
-          imageUrl: (e.image_url ?? e.imageUrl ?? '') as string,
+          id: asString(e.id),
+          name: asString(e.name),
+          imageUrl: asString(e.image_url) || asString(e.imageUrl),
           isAnimated: !!(e.is_animated ?? e.isAnimated),
           isAvailable: e.is_available !== false && e.isAvailable !== false,
-          uploadedBy: (e.uploaded_by ?? e.uploadedBy ?? '') as string,
-          createdAt: (e.inserted_at ?? e.createdAt ?? '') as string,
+          uploadedBy: asString(e.uploaded_by) || asString(e.uploadedBy),
+          createdAt: asString(e.inserted_at) || asString(e.createdAt),
         }))
       );
     } catch {

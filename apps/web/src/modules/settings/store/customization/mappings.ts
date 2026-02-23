@@ -239,6 +239,7 @@ export function getChatThemeColor(chatThemeId: string | null): ThemePreset {
  * Checks if a title ID is legendary or mythic (special rendering).
  */
 export function isRareTitle(titleId: string | null): boolean {
+  // type assertion: widening readonly tuple to string[] for Array.includes() compatibility
   return titleId !== null && (RARE_TITLE_IDS as readonly string[]).includes(titleId);
 }
 

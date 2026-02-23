@@ -59,6 +59,7 @@ export const usePremiumStore = create<PremiumState>()(
         set({ isLoading: true });
         try {
           const billing = await billingService.getStatus();
+          // type assertion: billing tier from API maps to SubscriptionTier enum
           const tier = (billing.tier === 'free' ? null : billing.tier) as SubscriptionTier | null;
           set({
             isSubscribed: billing.status === 'active' || billing.status === 'trialing',

@@ -145,6 +145,7 @@ export const createReferralActions: StateCreator<ReferralState> = (set, get) => 
     set({ isLoading: true });
     try {
       const response = await api.get('/api/v1/referrals');
+      // type assertion: ensureArray returns unknown[], narrowing to Record for field access
       const referrals = (ensureArray(response.data, 'referrals') as Record<string, unknown>[]).map(
         mapReferralFromApi
       );
@@ -158,6 +159,7 @@ export const createReferralActions: StateCreator<ReferralState> = (set, get) => 
   fetchPendingReferrals: async () => {
     try {
       const response = await api.get('/api/v1/referrals/pending');
+      // type assertion: ensureArray returns unknown[], narrowing to Record for field access
       const pendingReferrals = (
         ensureArray(response.data, 'referrals') as Record<string, unknown>[]
       ).map(mapReferralFromApi);
@@ -214,6 +216,17 @@ export const createReferralActions: StateCreator<ReferralState> = (set, get) => 
   },
 
   clearState: () => {
+    set({
+      referrals: [],
+      pendingReferrals: [],
+      referralCode: null,
+      stats: null,
+      leaderboard: [],
+    });
+  },
+
+  /** Reset store to initial state (standard naming convention) */
+  reset: () => {
     set({
       referrals: [],
       pendingReferrals: [],

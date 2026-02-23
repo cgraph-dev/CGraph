@@ -192,6 +192,8 @@ export const createThemeActions: StateCreator<ThemeStore, [], [], ThemeStore> = 
   setChatBubbleStyle: (style: ChatBubbleStylePreset) => set({ chatBubbleStyle: style }),
   setEffect: (effect: EffectPreset) => set({ effectPreset: effect }),
   resetTheme: () => set({ ...DEFAULT_THEME_STATE }),
+  /** Reset store to initial state (standard naming convention) */
+  reset: () => set({ ...DEFAULT_THEME_STATE }),
   applyPreset: (preset: string) => {
     const themePreset = THEME_PRESETS[preset];
     if (themePreset) {

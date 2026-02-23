@@ -28,6 +28,7 @@ export function useThemeExport() {
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
+          // type assertion: FileReader.result is string when readAsText() is used
           const json = e.target?.result as string;
           const success = importTheme(json);
           if (success) {

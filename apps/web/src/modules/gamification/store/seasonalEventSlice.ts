@@ -55,6 +55,26 @@ export const useSeasonalEventStore = create<SeasonalEventState>()(
       isClaiming: false,
       isPurchasing: false,
 
+      /** Reset store to initial state */
+      reset: () =>
+        set({
+          activeEvents: [],
+          upcomingEvents: [],
+          endedEvents: [],
+          featuredEvent: null,
+          currentEventId: null,
+          currentEvent: null,
+          currentProgress: null,
+          nextMilestone: null,
+          availableRewards: [],
+          leaderboard: [],
+          userRank: null,
+          isLoading: false,
+          isJoining: false,
+          isClaiming: false,
+          isPurchasing: false,
+        }),
+
       // Spread actions from submodule
       ...createSeasonalActions(set, get),
     }),

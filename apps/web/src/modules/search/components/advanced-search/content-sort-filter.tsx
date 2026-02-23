@@ -52,6 +52,7 @@ export function ContentSortFilter({ filters, updateFilter }: ContentSortFilterPr
           <select
             value={filters.sortBy}
             onChange={(e) =>
+              // type assertion: select element value matches sortBy filter union
               updateFilter('sortBy', e.target.value as AdvancedSearchFilters['sortBy'])
             }
             className={`flex-1 ${SELECT_CLS}`}

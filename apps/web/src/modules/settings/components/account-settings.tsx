@@ -9,6 +9,12 @@ import { createLogger } from '@/lib/logger';
 const logger = createLogger('AccountSettings');
 import { api } from '@/lib/api';
 import { toast } from '@/shared/components/ui';
+
+/** Safely extract a string from FormData */
+function getFormString(formData: FormData, key: string): string {
+  const value = formData.get(key);
+  return typeof value === 'string' ? value : '';
+}
 import { motion } from 'framer-motion';
 import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/animation-engine';
@@ -42,9 +48,9 @@ export function AccountSettings() {
 
   const [saveState, saveAction, isSaving] = useActionState(
     async (_prev: SaveProfileState, formData: FormData): Promise<SaveProfileState> => {
-      const displayName = formData.get('displayName') as string;
-      const bio = formData.get('bio') as string;
-      const pronouns = formData.get('pronouns') as string;
+      const displayName = getFormString(formData, 'displayName');
+      const bio = getFormString(formData, 'bio');
+      const pronouns = getFormString(formData, 'pronouns');
 
       try {
         const response = await api.put('/api/v1/me', {

@@ -5,7 +5,8 @@
  * and ensuring consistent data extraction across the application.
  */
 
-// Type guards for extractPagination
+// ==================== TYPE GUARDS ====================
+
 function isNumber(v: unknown): v is number {
   return typeof v === 'number';
 }
@@ -16,6 +17,51 @@ function isBoolean(v: unknown): v is boolean {
 
 export function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null;
+}
+
+/** Safely extract a string from an unknown value */
+export function asString(v: unknown, fallback = ''): string {
+  return typeof v === 'string' ? v : fallback;
+}
+
+/** Safely extract a number from an unknown value */
+export function asNumber(v: unknown, fallback = 0): number {
+  return typeof v === 'number' ? v : fallback;
+}
+
+/** Safely extract a boolean from an unknown value */
+export function asBool(v: unknown, fallback = false): boolean {
+  return typeof v === 'boolean' ? v : fallback;
+}
+
+/** Safely extract an optional string (returns undefined if not a string) */
+export function asOptionalString(v: unknown): string | undefined {
+  return typeof v === 'string' ? v : undefined;
+}
+
+/** Safely extract an optional number (returns undefined if not a number) */
+export function asOptionalNumber(v: unknown): number | undefined {
+  return typeof v === 'number' ? v : undefined;
+}
+
+/**
+ * Safely extract a typed array from an unknown value.
+ * Each element is validated with the provided guard function.
+ */
+export function asArray<T>(
+  v: unknown,
+  guard: (x: unknown) => x is T
+): T[] {
+  if (!Array.isArray(v)) return [];
+  return v.filter(guard);
+}
+
+/**
+ * Type-safe Object.keys that returns (keyof T)[] instead of string[].
+ * Use only when T is a known, closed interface.
+ */
+export function typedKeys<T extends object>(obj: T): (keyof T)[] {
+  return Object.keys(obj) as (keyof T)[];
 }
 
 /**
